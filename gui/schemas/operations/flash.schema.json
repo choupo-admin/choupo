@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/flash.schema.json",
+  "title": "flash operation",
+  "description": "Two-phase (or three-phase) equilibrium flash at a declared temperature and pressure. This is the SAME unit as `isothermalFlash` under a shorter name; both read the identical operation block. Omitting T or P holds the feed's value.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating temperature",
+      "description": "Override the feed temperature; if omitted, the flash uses the feed T.",
+      "unit": "K"
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating pressure",
+      "description": "Override the feed pressure; if omitted, the flash uses the feed P.",
+      "unit": "Pa"
+    },
+    "phaseSet": {
+      "type": "string",
+      "enum": [
+        "VL",
+        "LL",
+        "VLLE",
+        "auto"
+      ],
+      "title": "Phase set",
+      "description": "Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it already trusts and ANNOUNCES the set it chose, which is what the case dicts claimed all along while still making the author type it.",
+      "unit": "-"
+    },
+    "alphaRich": {
+      "type": "string",
+      "title": "Component rich in the alpha liquid",
+      "description": "Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without steering the Gibbs minimisation."
+    },
+    "betaRich": {
+      "type": "string",
+      "title": "Component rich in the beta liquid",
+      "description": "The counterpart of alphaRich."
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

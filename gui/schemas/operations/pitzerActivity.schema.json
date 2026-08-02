@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pitzerActivity.schema.json",
+  "title": "pitzerActivity operation",
+  "description": "Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitzer ion-interaction model, as a function of molality. The salt is named by its two ions and its stoichiometry is DERIVED from electroneutrality (Ca + Cl gives CaCl2), so the case never restates what the charges already say. The pair parameters come from the curated catalogue; a missing pair is an error, not a zero.",
+  "type": "object",
+  "properties": {
+    "cation": {
+      "type": "string",
+      "title": "Cation species",
+      "description": "Species key of the cation, e.g. Na. Its charge comes from its own species record."
+    },
+    "anion": {
+      "type": "string",
+      "title": "Anion species",
+      "description": "Species key of the anion, e.g. Cl."
+    },
+    "molality": {
+      "type": "object",
+      "title": "Molality scan",
+      "description": "`{ from ...; to ...; n ...; }` — the molality range to sweep. Absent, a default scan is used.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "minimum": 0,
+          "title": "First molality",
+          "unit": "mol/kg"
+        },
+        "to": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Last molality",
+          "unit": "mol/kg"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of points",
+          "unit": "-"
+        }
+      }
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Defaults to 298.15 K. Whether the parameters actually vary with T depends on the pair record's declared temperature form.",
+      "unit": "K"
+    },
+    "validation": {
+      "type": "object",
+      "title": "Reference points",
+      "description": "Published values to compare against, so the run reports a deviation rather than a bare curve."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "cation",
+    "anion"
+  ],
+  "additionalProperties": false
+}

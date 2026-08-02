@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/boiler.schema.json",
+  "title": "boiler operation",
+  "description": "Boiler — the SAME unit as `phaseChanger` under a name that says which direction it is used in; it reads the identical operation block. Phase changer: condenses or vaporises a stream at a declared pressure. The outlet is fixed by exactly ONE of Q, outletState, outletQuality, superheat, subcool or outletT — whichever you give, the others are RESULTS. Alternatively give a `coolant {}` or `boiling {}` block and let the duty EMERGE from the surface and the film coefficient, which is the rating route.",
+  "type": "object",
+  "properties": {
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Outlet pressure",
+      "description": "Pressure the phase change happens at; defaults to the feed pressure.",
+      "unit": "Pa"
+    },
+    "Q": {
+      "type": "number",
+      "title": "Imposed duty",
+      "description": "Absolute thermal power. One of Q / outletState / outletQuality / superheat / subcool / outletT fixes the outlet — declaring more than one over-specifies it.",
+      "unit": "W"
+    },
+    "outletState": {
+      "type": "string",
+      "enum": [
+        "saturatedLiquid",
+        "saturatedVapour",
+        "subcooledLiquid",
+        "superheatedVapour"
+      ],
+      "title": "Named outlet state",
+      "description": "Ask for a state by name and let the duty be the result — the usual way to say 'condense it to saturated liquid'."
+    },
+    "outletQuality": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Outlet vapour fraction",
+      "description": "Partial condensation or vaporisation to a declared quality.",
+      "unit": "-"
+    },
+    "superheat": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Superheat above saturation",
+      "description": "Leave the outlet this far ABOVE its saturation temperature.",
+      "unit": "K"
+    },
+    "subcool": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Subcooling below saturation",
+      "description": "Leave the outlet this far BELOW its saturation temperature.",
+      "unit": "K"
+    },
+    "outletT": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Outlet temperature",
+      "description": "Fix the outlet temperature directly; the duty follows.",
+      "unit": "K"
+    },
+    "coolant": {
+      "type": "object",
+      "title": "Coolant side (geometry mode)",
+      "description": "Present = let the condensing duty EMERGE from the film coefficient and the surface, instead of being declared. The driving difference is dT_film = Tsat − T_wall — the surface SUB-cools the film.",
+      "properties": {
+        "T_in": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant inlet temperature",
+          "unit": "K"
+        },
+        "h": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Coolant-side film coefficient",
+          "unit": "W/m2/K"
+        }
+      }
+    },
+    "boiling": {
+      "type": "object",
+      "title": "Pool-boiling side (geometry mode)",
+      "description": "Present = rate the boiling surface. The driving difference is dT_excess = T_surface − Tsat, which is NOT dT_film and the run never reuses that label. The Rohsenow nucleate flux scales as (dT_excess/C_sf) CUBED, so a modest C_sf error is amplified threefold and the flux is treated as INDICATIVE (a ±100 % band) — there is no default C_sf and `citation` is MANDATORY, since C_sf is surface-finish lab data, not a fluid property. The reliable number is the Zuber CHF ceiling (±15 %), printed first; a design above it is HARD-REFUSED as burnout.",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Boiling correlation"
+        },
+        "Csf": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Rohsenow surface-fluid constant C_sf",
+          "description": "No default exists. Surface-finish data for THIS fluid on THIS material.",
+          "unit": "-"
+        },
+        "s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Rohsenow Prandtl exponent",
+          "unit": "-"
+        },
+        "citation": {
+          "type": "string",
+          "title": "Source of C_sf",
+          "description": "MANDATORY — omit it and the run REFUSES. A cubed constant with no provenance is not a result."
+        }
+      },
+      "required": [
+        "Csf",
+        "citation"
+      ]
+    },
+    "geometry": {
+      "type": "object",
+      "title": "Tube-bundle geometry (rating mode)",
+      "description": "Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either directly (`wallK`) or by naming a material (`wall`) resolved in the assets catalogue.",
+      "properties": {
+        "orientation": {
+          "type": "string",
+          "title": "Bundle orientation",
+          "description": "e.g. horizontalTube — it selects the film correlation, so it is physics, not bookkeeping."
+        },
+        "tubeOD": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube outside diameter",
+          "unit": "m"
+        },
+        "tubeID": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube inside diameter",
+          "unit": "m"
+        },
+        "tubeL": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Tube length",
+          "unit": "m"
+        },
+        "nTubes": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Number of tubes",
+          "unit": "-"
+        },
+        "wall": {
+          "type": "string",
+          "title": "Wall material",
+          "description": "Resolved by name in the assets catalogue for its conductivity."
+        },
+        "wallK": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Wall conductivity",
+          "description": "Given directly, instead of naming a material.",
+          "unit": "W/m/K"
+        }
+      }
+    },
+    "condensation": {
+      "type": "object",
+      "title": "Condensation model",
+      "description": "Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916).",
+      "properties": {
+        "model": {
+          "type": "string",
+          "title": "Correlation name"
+        }
+      }
+    },
+    "heatingMedium": {
+      "type": "object",
+      "title": "Heating-medium side",
+      "description": "The heating-medium stream's inlet temperature and film coefficient — the other half of the rating.",
+      "properties": {
+        "T_in": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Inlet temperature",
+          "unit": "K"
+        },
+        "h": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Film coefficient",
+          "unit": "W/m2/K"
+        }
+      }
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

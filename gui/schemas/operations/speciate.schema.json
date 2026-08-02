@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/speciate.schema.json",
+  "title": "speciate operation",
+  "description": "Aqueous speciation: distributes the declared analytical totals over the curated equilibrium network and reports every species, its activity coefficient, the ionic strength, the water activity and the mineral saturation indices. By default it is SI-ONLY — it says which solids are supersaturated without precipitating any. Adding an `equilibrate { minerals ( ... ) }` block lets the NAMED solids precipitate to their SI = 0 ceiling; naming the allowed set is the author's decision and is required, because which solid a brine is permitted to drop is chemistry, not a default.",
+  "type": "object",
+  "properties": {
+    "analyticalTotals": {
+      "type": "object",
+      "title": "Analytical totals",
+      "description": "`{ Na 0.486 mol/kg; Cl 0.566 mol/kg; ... }` — the element/master totals the solution is made of. `totals` is accepted as a synonym."
+    },
+    "totals": {
+      "type": "object",
+      "title": "Analytical totals (synonym)",
+      "description": "Synonym of `analyticalTotals`."
+    },
+    "composition": {
+      "type": "object",
+      "title": "Composition form",
+      "description": "Alternative to the totals block for a case that states the solution as a composition."
+    },
+    "pH": {
+      "type": "number",
+      "title": "Given pH",
+      "description": "Fixes the proton balance. Read on the single-ion convention of the activity parameterisation in use — a meter reading is NBS and the run says so.",
+      "unit": "-"
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Defaults to 298.15 K.",
+      "unit": "K"
+    },
+    "atmosphere": {
+      "type": "object",
+      "title": "Open-system gas partial pressures",
+      "description": "`{ pCO2 4.2e-4 atm; ... }` — every key is a gas the solution equilibrates WITH, so the system is open to it. Each value MUST carry a pressure unit; a bare number is refused by name."
+    },
+    "activityModel": {
+      "type": "string",
+      "title": "Aqueous activity model",
+      "description": "Which per-ion model prices the gammas, e.g. davies or pitzerHMW. The model is the experiment's subject here, which is why a props BENCH may name it where a process unit may not."
+    },
+    "equilibrate": {
+      "type": "object",
+      "title": "Allowed precipitation",
+      "description": "Present = let the named solids precipitate to SI = 0. `minerals` is the ONLY key accepted inside; an empty list is refused, and so is any other key (seed and targetSI are reserved and NOT implemented).",
+      "properties": {
+        "minerals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Solids allowed to precipitate",
+          "minItems": 1
+        }
+      },
+      "required": [
+        "minerals"
+      ]
+    },
+    "diagSpecies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Species to pin as diagnostics",
+      "description": "Their activity coefficients are emitted as named KPIs, so a golden test can lock them."
+    },
+    "verifyGlobal": {
+      "type": "string",
+      "enum": [
+        "true",
+        "false"
+      ],
+      "title": "Run the full catalogue self-check",
+      "description": "Sweeps EVERY curated Pitzer binary against the closed single-salt kernel instead of only the case's own ions. Expensive, and belongs to the dedicated validation case."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

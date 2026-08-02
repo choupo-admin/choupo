@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/activityCoefficients.schema.json",
+  "title": "activityCoefficients operation",
+  "description": "Liquid activity coefficients of a MOLECULAR mixture at one temperature and composition, straight from the declared activity model. The glass-box counterpart of a VLE calculation: the gammas are what make a flash a flash, and this op prints them on their own so the model's behaviour can be read rather than inferred from a split. Change the declared model and the numbers move — which is the lesson.",
+  "type": "object",
+  "properties": {
+    "composition": {
+      "type": "object",
+      "title": "Liquid mole composition",
+      "description": "`{ <component> <x>; ... }`, normalised if the fractions do not sum to one."
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Evaluation temperature; defaults to 298.15 K.",
+      "unit": "K"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "composition"
+  ],
+  "additionalProperties": false
+}

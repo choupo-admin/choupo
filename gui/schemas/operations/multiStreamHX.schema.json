@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/multiStreamHX.schema.json",
+  "title": "multiStreamHX operation",
+  "description": "Multi-stream heat exchanger: several hot and cold streams exchanging in one block, each leaving at a declared target. The unit checks that the composite duties BALANCE to within a declared tolerance and refuses a set of targets that does not — an unbalanced multi-stream box is an energy leak, not a design.",
+  "type": "object",
+  "properties": {
+    "outlet": {
+      "type": "object",
+      "title": "Per-stream outlet targets",
+      "description": "One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs only its temperature.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "T": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "title": "Outlet temperature",
+            "unit": "K"
+          },
+          "vf": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "title": "Outlet vapour fraction",
+            "unit": "-"
+          }
+        },
+        "required": [
+          "T"
+        ]
+      }
+    },
+    "tolerance": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Duty-balance tolerance",
+      "description": "Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting a box that does not close.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "outlet"
+  ],
+  "additionalProperties": false
+}

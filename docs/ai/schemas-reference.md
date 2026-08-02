@@ -5,11 +5,11 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*41 of 76 registered operations carry a schema and are documented below.*
+*50 of 76 registered operations carry a schema and are documented below.*
 
 **Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
 
-> `activityCoefficients`, `boiler`, `column`, `condenser`, `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `extract`, `flash`, `FUG`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `isothermEval`, `kinetics1D`, `membraneSW`, `MHeatX`, `multiStreamHX`, `phaseChanger`, `pitzerActivity`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `REquil`, `scalingScan`, `speciate`, `spiralWoundModule`, `tsaTwinBed`
+> `column`, `electrodialysisStack`, `electrolyteActivity`, `enrtlMixedSolvent`, `enrtlMultiSalt`, `estimateComponent`, `evaporativeDryer`, `exchange`, `extract`, `FUG`, `gibbsMap`, `heatTransferBench`, `ionExchanger`, `kinetics1D`, `membraneSW`, `MHeatX`, `pneumaticConveyor`, `propertyScanBinary`, `propertyScanTernary`, `psa`, `psychrometricChart`, `purePhaseDiagram`, `REquil`, `scalingScan`, `spiralWoundModule`, `tsaTwinBed`
 
 ## `absorber`  (absorber operation)
 
@@ -18,6 +18,16 @@ Counter-current multistage gas absorber solved by the Kremser group method. Per-
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `stages` | ✓ | number | - | Number of equilibrium stages. |
+
+## `activityCoefficients`  (activityCoefficients operation)
+
+Liquid activity coefficients of a MOLECULAR mixture at one temperature and composition, straight from the declared activity model. The glass-box counterpart of a VLE calculation: the gammas are what make a flash a flash, and this op prints them on their own so the model's behaviour can be read rather than inferred from a split. Change the declared model and the numbers move — which is the lesson.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `composition` | ✓ | object | — | `{ <component> <x>; ... }`, normalised if the fractions do not sum to one. |
+| `temperature` |   | number | K | Evaluation temperature; defaults to 298.15 K. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `adiabaticFlash`  (adiabaticFlash operation)
 
@@ -40,6 +50,25 @@ Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure
 | `penetration0` |   | number | - | Penetration of the finest particles in η(d) = 1 - P0·exp(-d/d_c). |
 | `dCharacteristic` |   | number | m | Size scale of the grade-efficiency rise. |
 
+## `boiler`  (boiler operation)
+
+Boiler — the SAME unit as `phaseChanger` under a name that says which direction it is used in; it reads the identical operation block. Phase changer: condenses or vaporises a stream at a declared pressure. The outlet is fixed by exactly ONE of Q, outletState, outletQuality, superheat, subcool or outletT — whichever you give, the others are RESULTS. Alternatively give a `coolant {}` or `boiling {}` block and let the duty EMERGE from the surface and the film coefficient, which is the rating route.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `P` |   | number | Pa | Pressure the phase change happens at; defaults to the feed pressure. |
+| `Q` |   | number | W | Absolute thermal power. One of Q / outletState / outletQuality / superheat / subcool / outletT fixes the outlet — declaring more than one… |
+| `outletState` |   | string | — | Ask for a state by name and let the duty be the result — the usual way to say 'condense it to saturated liquid'. |
+| `outletQuality` |   | number | - | Partial condensation or vaporisation to a declared quality. |
+| `superheat` |   | number | K | Leave the outlet this far ABOVE its saturation temperature. |
+| `subcool` |   | number | K | Leave the outlet this far BELOW its saturation temperature. |
+| `outletT` |   | number | K | Fix the outlet temperature directly; the duty follows. |
+| `coolant` |   | object | — | Present = let the condensing duty EMERGE from the film coefficient and the surface, instead of being declared. The driving difference is … |
+| `boiling` |   | object | — | Present = rate the boiling surface. The driving difference is dT_excess = T_surface − Tsat, which is NOT dT_film and the run never reuses… |
+| `geometry` |   | object | — | Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either direct… |
+| `condensation` |   | object | — | Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916). |
+| `heatingMedium` |   | object | — | The heating-medium stream's inlet temperature and film coefficient — the other half of the rating. |
+
 ## `bubbleT`  (bubbleT operation)
 
 Bubble-point temperature at fixed pressure: the T at which the first vapour bubble forms from a saturated liquid. Solved by Newton-1D in T on Sum_i K_i(T) x_i = 1.
@@ -56,6 +85,25 @@ Gas-phase compressor. Given the shaft power and isentropic efficiency, the disch
 |---|:-:|---|---|---|
 | `W_shaft` |   | number | W | Mechanical power delivered to the gas (positive). It may also arrive over an ENERGY WIRE instead of being written here: a consumer declar… |
 | `eta` | ✓ | number | - | Isentropic efficiency w_isentropic / w_real (0 < eta <= 1). Lower eta dissipates more shaft work as heat. |
+
+## `condenser`  (condenser operation)
+
+Condenser — the SAME unit as `phaseChanger` under a name that says which direction it is used in; it reads the identical operation block. Phase changer: condenses or vaporises a stream at a declared pressure. The outlet is fixed by exactly ONE of Q, outletState, outletQuality, superheat, subcool or outletT — whichever you give, the others are RESULTS. Alternatively give a `coolant {}` or `boiling {}` block and let the duty EMERGE from the surface and the film coefficient, which is the rating route.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `P` |   | number | Pa | Pressure the phase change happens at; defaults to the feed pressure. |
+| `Q` |   | number | W | Absolute thermal power. One of Q / outletState / outletQuality / superheat / subcool / outletT fixes the outlet — declaring more than one… |
+| `outletState` |   | string | — | Ask for a state by name and let the duty be the result — the usual way to say 'condense it to saturated liquid'. |
+| `outletQuality` |   | number | - | Partial condensation or vaporisation to a declared quality. |
+| `superheat` |   | number | K | Leave the outlet this far ABOVE its saturation temperature. |
+| `subcool` |   | number | K | Leave the outlet this far BELOW its saturation temperature. |
+| `outletT` |   | number | K | Fix the outlet temperature directly; the duty follows. |
+| `coolant` |   | object | — | Present = let the condensing duty EMERGE from the film coefficient and the surface, instead of being declared. The driving difference is … |
+| `boiling` |   | object | — | Present = rate the boiling surface. The driving difference is dT_excess = T_surface − Tsat, which is NOT dT_film and the run never reuses… |
+| `geometry` |   | object | — | Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either direct… |
+| `condensation` |   | object | — | Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916). |
+| `heatingMedium` |   | object | — | The heating-medium stream's inlet temperature and film coefficient — the other half of the rating. |
 
 ## `conversionReactor`  (conversionReactor operation)
 
@@ -194,6 +242,18 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 | `options` |   | object | — | Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit. |
 | `output` |   | object | — | Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curate… |
 
+## `flash`  (flash operation)
+
+Two-phase (or three-phase) equilibrium flash at a declared temperature and pressure. This is the SAME unit as `isothermalFlash` under a shorter name; both read the identical operation block. Omitting T or P holds the feed's value.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` |   | number | K | Override the feed temperature; if omitted, the flash uses the feed T. |
+| `P` |   | number | Pa | Override the feed pressure; if omitted, the flash uses the feed P. |
+| `phaseSet` |   | string | - | Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it alr… |
+| `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
+| `betaRich` |   | string | — | The counterpart of alphaRich. |
+
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
 Ideal specification-driven gas-solid separator. The split is set directly, with no efficiency physics or size classification; the feed particle-size distribution passes through unchanged.
@@ -263,6 +323,18 @@ Single-stream heater. Given the thermal power Q (positive heats, negative cools)
 | `Q` |   | number | W | Absolute thermal power delivered to the stream (positive heats, negative cools). The outlet temperature is a RESULT, never a spec — `Tout… |
 | `Tref` |   | number | K | Reference for the enthalpy integrals; only differences enter the balance. |
 
+## `isothermEval`  (isothermEval operation)
+
+Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `adsorbent` | ✓ | string | — | Resolved by exact name in the assets catalogue (kind adsorbent). |
+| `adsorbate` | ✓ | string | — | The adsorbing species; the adsorbent record must carry parameters for it. |
+| `grid` | ✓ | object | — | The (T, p) points to evaluate: `{ T ( ... ); p ( ... ); }`, every combination of the two lists. Values are RAW canonical SI (K and Pa) — … |
+| `unitTwin` |   | string | — | Name of a flowsheet or batch unit whose isotherm settings this evaluation should reproduce exactly — so the plotted curve is provably the… |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
 ## `isothermalFlash`  (isothermalFlash operation)
 
 Isothermal two-phase flash at fixed T and P. Both are optional overrides of the feed-stream conditions; omitting them flashes at the feed T and P.
@@ -283,6 +355,15 @@ Adiabatic stream mixer. Sums the inlet component flows and closes the energy bal
 |---|:-:|---|---|---|
 | `T` |   | number | K | Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature f… |
 
+## `multiStreamHX`  (multiStreamHX operation)
+
+Multi-stream heat exchanger: several hot and cold streams exchanging in one block, each leaving at a declared target. The unit checks that the composite duties BALANCE to within a declared tolerance and refuses a set of targets that does not — an unbalanced multi-stream box is an energy leak, not a design.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `outlet` | ✓ | object | — | One sub-dict per stream NAME, each `{ T ...; vf ...; }`. The vapour fraction defaults to the inlet's, so a sensible-only stream needs onl… |
+| `tolerance` |   | number | - | Fractional imbalance allowed between the total hot and cold duties; defaults to 0.01. Exceeding it REFUSES the run rather than reporting … |
+
 ## `pfr`  (pfr operation)
 
 Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls the spatial discretisation.
@@ -298,6 +379,25 @@ Isothermal plug-flow reactor. The volume is integrated by RK4; nSteps controls t
 | `T_coolant` |   | number | K | Required by `thermalMode heatExchange`. |
 | `catalystLoading` |   | number | kg/m3 | Mass of catalyst per unit reactor volume. |
 
+## `phaseChanger`  (phaseChanger operation)
+
+Phase changer: condenses or vaporises a stream at a declared pressure. The outlet is fixed by exactly ONE of Q, outletState, outletQuality, superheat, subcool or outletT — whichever you give, the others are RESULTS. Alternatively give a `coolant {}` or `boiling {}` block and let the duty EMERGE from the surface and the film coefficient, which is the rating route.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `P` |   | number | Pa | Pressure the phase change happens at; defaults to the feed pressure. |
+| `Q` |   | number | W | Absolute thermal power. One of Q / outletState / outletQuality / superheat / subcool / outletT fixes the outlet — declaring more than one… |
+| `outletState` |   | string | — | Ask for a state by name and let the duty be the result — the usual way to say 'condense it to saturated liquid'. |
+| `outletQuality` |   | number | - | Partial condensation or vaporisation to a declared quality. |
+| `superheat` |   | number | K | Leave the outlet this far ABOVE its saturation temperature. |
+| `subcool` |   | number | K | Leave the outlet this far BELOW its saturation temperature. |
+| `outletT` |   | number | K | Fix the outlet temperature directly; the duty follows. |
+| `coolant` |   | object | — | Present = let the condensing duty EMERGE from the film coefficient and the surface, instead of being declared. The driving difference is … |
+| `boiling` |   | object | — | Present = rate the boiling surface. The driving difference is dT_excess = T_surface − Tsat, which is NOT dT_film and the run never reuses… |
+| `geometry` |   | object | — | Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either direct… |
+| `condensation` |   | object | — | Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916). |
+| `heatingMedium` |   | object | — | The heating-medium stream's inlet temperature and film coefficient — the other half of the rating. |
+
 ## `pipe`  (pipe operation)
 
 Pipe-segment pressure drop. Single-phase by default (Darcy-Weisbach with the friction factor from the `model` slot — Churchill, Haaland or Colebrook); declaring a `twoPhase` block switches to a gas-liquid multiplier method. Elevation is signed: a rise costs pressure. The outlet stream is the inlet at the reduced pressure — a pipe transports, it does not separate.
@@ -307,6 +407,19 @@ Pipe-segment pressure drop. Single-phase by default (Darcy-Weisbach with the fri
 | `geometry` | ✓ | object | — | The physical line. Diameter, length and roughness are required; elevation change and fittings are optional. |
 | `viscosity` |   | number | Pa.s | Use the declared liquid viscosity instead of the package's model. An explicit, announced aid for the case where a trace dissolved compone… |
 | `twoPhase` |   | object | — | Present = solve the segment as gas-liquid flow. Absent = single-phase. |
+
+## `pitzerActivity`  (pitzerActivity operation)
+
+Mean-ionic activity coefficient and osmotic coefficient of ONE salt by the Pitzer ion-interaction model, as a function of molality. The salt is named by its two ions and its stoichiometry is DERIVED from electroneutrality (Ca + Cl gives CaCl2), so the case never restates what the charges already say. The pair parameters come from the curated catalogue; a missing pair is an error, not a zero.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `cation` | ✓ | string | — | Species key of the cation, e.g. Na. Its charge comes from its own species record. |
+| `anion` | ✓ | string | — | Species key of the anion, e.g. Cl. |
+| `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. Absent, a default scan is used. |
+| `temperature` |   | number | K | Defaults to 298.15 K. Whether the parameters actually vary with T depends on the pair record's declared temperature form. |
+| `validation` |   | object | — | Published values to compare against, so the run reports a deviation rather than a bare curve. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `propertyPoint`  (propertyPoint operation)
 
@@ -369,6 +482,24 @@ Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Ret
 Convective solid dryer taking TWO real input streams — a wet solid and a hot-air stream — and producing a dry solid and a humid exhaust. It has NO operation parameters, and that absence is the design: the air stream BRINGS the heat (as its own sensible cooling) and CARRIES AWAY the moisture, so the energy balance closes on real streams with no phantom duty. The earlier `airTemperature` and `relativeHumidity` parameters were retired with that rewrite — the air temperature is the inlet stream's, and the humidity follows from its composition. The drying kinetics are a named reference at unit level (`dryingCurve <name>;` into `constant/dryingKinetics`), not an operation key.
 
 *(no operation-block fields)*
+
+## `speciate`  (speciate operation)
+
+Aqueous speciation: distributes the declared analytical totals over the curated equilibrium network and reports every species, its activity coefficient, the ionic strength, the water activity and the mineral saturation indices. By default it is SI-ONLY — it says which solids are supersaturated without precipitating any. Adding an `equilibrate { minerals ( ... ) }` block lets the NAMED solids precipitate to their SI = 0 ceiling; naming the allowed set is the author's decision and is required, because which solid a brine is permitted to drop is chemistry, not a default.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `analyticalTotals` |   | object | — | `{ Na 0.486 mol/kg; Cl 0.566 mol/kg; ... }` — the element/master totals the solution is made of. `totals` is accepted as a synonym. |
+| `totals` |   | object | — | Synonym of `analyticalTotals`. |
+| `composition` |   | object | — | Alternative to the totals block for a case that states the solution as a composition. |
+| `pH` |   | number | - | Fixes the proton balance. Read on the single-ion convention of the activity parameterisation in use — a meter reading is NBS and the run … |
+| `temperature` |   | number | K | Defaults to 298.15 K. |
+| `atmosphere` |   | object | — | `{ pCO2 4.2e-4 atm; ... }` — every key is a gas the solution equilibrates WITH, so the system is open to it. Each value MUST carry a pres… |
+| `activityModel` |   | string | — | Which per-ion model prices the gammas, e.g. davies or pitzerHMW. The model is the experiment's subject here, which is why a props BENCH m… |
+| `equilibrate` |   | object | — | Present = let the named solids precipitate to SI = 0. `minerals` is the ONLY key accepted inside; an empty list is refused, and so is any… |
+| `diagSpecies` |   | array[string] | — | Their activity coefficients are emitted as named KPIs, so a golden test can lock them. |
+| `verifyGlobal` |   | string | — | Sweeps EVERY curated Pitzer binary against the closed single-salt kernel instead of only the case's own ions. Expensive, and belongs to t… |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `splitter`  (splitter operation)
 

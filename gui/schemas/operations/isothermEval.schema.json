@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/isothermEval.schema.json",
+  "title": "isothermEval operation",
+  "description": "Evaluates a curated adsorption isotherm — the loading of one adsorbate on one adsorbent as a function of pressure and temperature — from the adsorbent record's own parameters. The glass-box surface of what a fixed-bed or TSA unit uses internally, so the isotherm a breakthrough case runs on can be plotted and checked before the bed is ever solved.",
+  "type": "object",
+  "properties": {
+    "adsorbent": {
+      "type": "string",
+      "title": "Adsorbent",
+      "description": "Resolved by exact name in the assets catalogue (kind adsorbent)."
+    },
+    "adsorbate": {
+      "type": "string",
+      "title": "Adsorbate",
+      "description": "The adsorbing species; the adsorbent record must carry parameters for it."
+    },
+    "grid": {
+      "type": "object",
+      "title": "Evaluation grid",
+      "description": "The (T, p) points to evaluate: `{ T ( ... ); p ( ... ); }`, every combination of the two lists. Values are RAW canonical SI (K and Pa) — this is a bench surface, not a case dict, so no unit suffix is applied.",
+      "properties": {
+        "T": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "title": "Temperatures",
+          "unit": "K",
+          "minItems": 1
+        },
+        "p": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0
+          },
+          "title": "Partial pressures",
+          "unit": "Pa",
+          "minItems": 1
+        }
+      },
+      "required": [
+        "T",
+        "p"
+      ]
+    },
+    "unitTwin": {
+      "type": "string",
+      "title": "Unit to mirror",
+      "description": "Name of a flowsheet or batch unit whose isotherm settings this evaluation should reproduce exactly — so the plotted curve is provably the one that unit runs on, rather than a second set of numbers that happens to look similar."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "adsorbent",
+    "adsorbate",
+    "grid"
+  ],
+  "additionalProperties": false
+}
