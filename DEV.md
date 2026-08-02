@@ -254,10 +254,24 @@ accepts today, and that is a policy call.
    gate `check_volatility_declaration` (sabotage-verified); fixture
    `utility01_dowtherm_preheat` — a fluid sold for vapour-phase heat
    transfer, modelled K = 0, and now saying so out loud.
-3. **flashComplex's 10 divergent component records** — adopt into the
-   catalogue, or keep the case out of `tutorials/`?  Its README carries the
-   numbers; this is the reason the hardest case the solver runs lives in
-   `docs/design/` and is gated separately.
+3. ~~**flashComplex's 10 divergent component records.**~~  **DECIDED AND
+   BUILT 2026-08-02 — and the premise was false.**  Vítor ruled "mete no
+   catálogo curado"; measuring before acting is what stopped that from
+   IMPOVERISHING it.  With block comments stripped and whitespace
+   normalised, the ten mirrors added **2 lines** and *lost* **93**: every
+   physical constant byte-identical, the copies missing `liquidViscosity`,
+   `uniquac`, `ebulioscopic`, `associationFactor`, `diffusionVolume`, the
+   `cosmo` sets and `aliases`.  One of the two additions merely restates
+   the catalogue's own uniquac values inline.  The ONE real fact was
+   `water: aqueousSpeciation none;` — required of every component in an
+   electrolyte system by the SystemClassifier contract and simply missing
+   from the curated water record, which is *why* the case mirrored water
+   at all.  PROMOTED to the catalogue; the nine impoverished mirrors
+   DELETED (the case's `converged/` is byte-identical after — the
+   definition of duplicate).  `NH4HCO3.dat` STAYS: it is a declared
+   REFUSAL with an order-of-magnitude logK, and promoting that into the
+   frozen tier is the fabrication the project forbids.  The provenance
+   blocker on moving the case into `tutorials/` is therefore GONE.
 4. **Seal divergence: announce or refuse?**  The runtime now hashes every
    record a sealed manifest claims and SAYS which diverged (2026-07-31).  It
    does not refuse — editing your own case is exactly what a glass-box

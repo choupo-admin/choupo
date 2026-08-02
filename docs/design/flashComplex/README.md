@@ -20,14 +20,36 @@ physics.**  Sealing refuses, correctly:
     records — second homes for values that already had one.  DELETED
     (2026-07-30); the case runs identically without them, which is what a
     duplicate means.
-  * TEN `constant/components/*.dat` differ from the catalogue in REAL DATA,
-    not just commentary — 5 lines for CO₂, 14 for ethanol, 16 for water.
-    Adopting them (`choupo-import --adopt-local`) seals those values as the
-    case's own, permanently, and that is a provenance decision a curator
-    makes deliberately.  Until it is made, this case stays here.
+  * ~~TEN `constant/components/*.dat` differ from the catalogue in REAL
+    DATA~~ — **MEASURED AND FALSE (2026-08-02).**  Vítor ruled "mete no
+    catálogo curado"; measuring first is what stopped that from
+    *impoverishing* the catalogue.  Across the ten records, with block
+    comments stripped and whitespace normalised, the case added **two
+    lines** and *lost* **93**: every physical constant was byte-identical,
+    and the mirrors were missing `liquidViscosity`, `uniquac`,
+    `ebulioscopic`, `associationFactor`, `diffusionVolume`, the `cosmo`
+    sets and `aliases`.  Of the two additions, one (`uniquac { r 0.9200;
+    q 1.4000; }`) restates the catalogue's own values inline — formatting,
+    not data.
+  * The ONE genuinely case-carried fact was **`water: aqueousSpeciation
+    none;`** — required of every component inside an electrolyte system by
+    the SystemClassifier contract (settled 2026-07-26), and simply missing
+    from the curated water record.  That absence is *why* this case had to
+    mirror water at all.  It is now **PROMOTED to the catalogue**, and the
+    nine impoverished mirrors are **DELETED** — the same act, for the same
+    reason, as the nine duplicate `species/` records deleted 2026-07-30.
+    The case's `converged/` is byte-identical after the deletion, which is
+    what "duplicate" means.
+  * `NH4HCO3.dat` STAYS. It is not a curated value but a declared REFUSAL:
+    its solubility product is available only as an order of magnitude
+    (logK25 ≈ 0.25, a full log unit on a solid whose appearance changes the
+    whole answer).  Promoting that into the frozen tier would be exactly
+    the fabrication this project forbids; the named gap belongs with the
+    case that names it.
 
-So the honest reading of its status: **the engine serves it; the data
-provenance is unresolved.**
+So the honest reading of its status: **the engine serves it, and the data
+provenance is now RESOLVED** — the blocker was one missing line in the
+curated water record, not ten divergent files.
 
 ## The physical system
 
