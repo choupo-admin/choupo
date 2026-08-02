@@ -154,13 +154,11 @@ Pair readPair(const std::string& cation, const std::string& anion)
 //   charge same-sign pairs).  Absent theta -> 0 (E_theta may still apply).
 // psi_ijk : the TRIPLET parameter (two like-sign i,j + one opposite k).
 //
-// mixing.dat is FLAT in electrolyte/ with per-ENTRY nearest-wins overlay (the
-// same rule pairs.dat uses); a case may localise one theta/psi.  We scan all
-// electrolytePaths and take the FIRST matching entry (case-local wins).
-
-// The mixing kind is now stored ONLY as per-(kind) per-key records under
+// The mixing kinds are stored ONLY as per-(kind) per-key records under
 // parameters/Pitzer/<kind>/<name>.dat (the monolithic
-// electrolyte/mixing.dat is gone).  Read one record's `value`, or NaN if absent.
+// electrolyte/mixing.dat is gone), with the same per-entry nearest-wins
+// case-local overlay the pair records use.  Read one record's `value`,
+// or NaN if absent.
 // EVERY reader below is called from inside evaluate()'s triple loops over the
 // ions, i.e. on every single gamma evaluation, and each one used to open, read
 // and PARSE a file to answer.  A 17-point scaling scan spent over two minutes in

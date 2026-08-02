@@ -5207,7 +5207,7 @@ $\rho=14.9$):
    \ln\gamma_c^{\mathrm{PDH}}
    = -2.9127\!\left[\frac{2}{14.9}\ln(1+14.9\times0.1319)
    + \frac{0.1319 - 2(0.01739)^{3/2}}{1+14.9\times0.1319}\right]
-   \approx -0.252.
+   \approx -0.550.
 \]
 \emph{Local term} (Eq.~\ref{eq:enrtl-lc}, with $\tau_{m,ca}=8.885$,
 $\tau_{ca,m}=-4.549$, $\alpha=0.2$, evaluated unsymmetrically) adds a
@@ -5270,7 +5270,7 @@ $\gamma_\pm$/$a_w$ surface, not single-salt aqueous precision.
 
 \begin{tutoriallink}
 \file{tutorials/steady/evaporation/evaporator07\_nacl\_enrtl} --- a NaCl
-evaporator with \code{activity \{ model eNRTL; \}}, where $\gamma_\pm$
+evaporator with \code{activityModel \{ model eNRTL; \}}, where $\gamma_\pm$
 sets the boiling-point rise and the saturation limit.
 \file{tutorials/steady/crystallisation/crystalliser06\_nacl\_antisolvent}
 exercises the mixed-solvent Born term (ethanol drowning-out).  Contrast
@@ -5634,7 +5634,8 @@ of the Davies model only, never a silent default under Pitzer.
 The multi-ion sums \emph{must} reduce to the closed single-salt kernel
 of \S\ref{ch:electrolytes} when only one salt is present, or there is a
 summation bug.  This is not asserted by faith: \code{PitzerHMW::verify}
-loops over \emph{every} binary in \file{pairs.dat}, builds the
+loops over \emph{every} binary in the
+\file{parameters/Pitzer/pairs/} catalogue, builds the
 single-salt solution at $m\in\{0.1,0.5,1,3\}$\,mol/kg, forms the mean
 \begin{equation}
    \ln\gamma_\pm^{\text{HMW}}
@@ -5658,13 +5659,13 @@ $\text{Cl}^-$/$\text{SO}_4^{2-}$ ($z_i=-1$, $z_j=-2$), the arguments are
 $x_{ij}=6\cdot2\cdot0.391\sqrt{0.72}=3.98$,
 $x_{ii}=6\cdot1\cdot0.391\sqrt{0.72}=1.99$,
 $x_{jj}=6\cdot4\cdot0.391\sqrt{0.72}=7.96$.  From \eqref{eq:Jfunc},
-$J(3.98)\approx0.62$, $J(1.99)\approx0.27$, $J(7.96)\approx1.55$, so
+$J(3.98)\approx0.695$, $J(1.99)\approx0.291$, $J(7.96)\approx1.574$, so
 \[
    E_{\theta} = \frac{(-1)(-2)}{4\times0.72}
-   \bigl[0.62 - \tfrac12(0.27) - \tfrac12(1.55)\bigr]
-   = 0.694\times(-0.29) \approx -0.20 .
+   \bigl[0.695 - \tfrac12(0.291) - \tfrac12(1.574)\bigr]
+   = 0.694\times(-0.238) \approx -0.17 .
 \]
-This $-0.20$ \emph{adds} to whatever constant $\theta_{\text{Cl,SO}_4}$
+This $-0.17$ \emph{adds} to whatever constant $\theta_{\text{Cl,SO}_4}$
 the catalogue carries (typically $\sim 0.02$): the electrostatic part
 \emph{dominates} the fitted constant here.  Dropping $E_\theta$ --- the
 ``constant-theta'' shortcut --- would mis-state the
@@ -5677,8 +5678,10 @@ single-salt osmotic coefficient into a full multi-component aqueous
 activity model: any mix of $\text{Na},\text{K},\text{Ca},\text{Mg},
 \text{H}$ cations and $\text{Cl},\text{SO}_4,\text{OH}$ (plus the
 carbonate subsystem) anions, with the higher-order electrostatics that
-make $2{:}1$ and $2{:}2$ brines correct, all driven from two flat
-catalogues (\file{pairs.dat}, \file{mixing.dat}) that cite a primary
+make $2{:}1$ and $2{:}2$ brines correct, all driven from the flat
+per-record catalogues under \file{parameters/Pitzer/} (\file{pairs/},
+and the mixing kinds \file{theta/}, \file{psi/}, \file{lambda/},
+\file{zeta/}) that cite a primary
 source per value and accept a per-case overlay.  The same surface feeds
 the speciation solver, the osmotic pressure, and --- through the
 Gibbs--Helmholtz identity $L_\phi=-RT^2\,\partial g^{ex}/\partial T$ ---
@@ -20057,7 +20060,8 @@ temperature derivatives of the Pitzer virial parameters
 ($\partial\beta^{(0)}/\partial T$, $\partial\beta^{(1)}/\partial T$,
 $\partial C^\phi/\partial T$, Eq.~\ref{eq:silvester-slots}) from which
 the relative apparent molar enthalpy $L_\phi$ is obtained by
-Gibbs--Helmholtz; carried per pair in \file{pairs.dat} and fitted by
+Gibbs--Helmholtz; carried per pair in the
+\file{parameters/Pitzer/pairs/} records and fitted by
 \code{bin/curate/fit\_lphi\_pitzer.py}.
 
 \bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
@@ -20074,8 +20078,8 @@ to high ionic strengths at 25\,\textdegree C'', \emph{Geochim.\
 Cosmochim.\ Acta}, 48(4), 723--751 (1984). The multi-ion assembly of the
 per-ion $\ln\gamma_i$ (Eqs.~\ref{eq:hmw-cation}--\ref{eq:hmw-F})
 implemented in \code{PitzerHMW}; the seawater/brine ternary parameter set
-($\theta$, $\psi$, $\lambda$, $\zeta$) carried in
-\file{electrolyte/mixing.dat}.
+($\theta$, $\psi$, $\lambda$, $\zeta$) carried as per-record files
+under \file{parameters/Pitzer/}.
 
 \bibitem{ChenEvans1986} Chen, C.-C., \& Evans, L. B., ``A Local
 Composition Model for the Excess Gibbs Energy of Aqueous Electrolyte
