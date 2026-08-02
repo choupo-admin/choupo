@@ -37,26 +37,6 @@ License
   "infer-from-value" form -- no GUI regression.
 \*---------------------------------------------------------------------------*/
 
-import cstrSchema from "../../schemas/operations/cstr.schema.json";
-import pfrSchema from "../../schemas/operations/pfr.schema.json";
-import isothermalFlashSchema from "../../schemas/operations/isothermalFlash.schema.json";
-import adiabaticFlashSchema from "../../schemas/operations/adiabaticFlash.schema.json";
-import heaterSchema from "../../schemas/operations/heater.schema.json";
-import compressorSchema from "../../schemas/operations/compressor.schema.json";
-import turbineSchema from "../../schemas/operations/turbine.schema.json";
-import pumpSchema from "../../schemas/operations/pump.schema.json";
-import evaporatorSchema from "../../schemas/operations/evaporator.schema.json";
-import sprayDryerSchema from "../../schemas/operations/sprayDryer.schema.json";
-import crystalliserSchema from "../../schemas/operations/crystalliser.schema.json";
-import solidDryerSchema from "../../schemas/operations/solidDryer.schema.json";
-import distillationColumnSchema from "../../schemas/operations/distillationColumn.schema.json";
-import absorberSchema from "../../schemas/operations/absorber.schema.json";
-import stripperSchema from "../../schemas/operations/stripper.schema.json";
-import cycloneSchema from "../../schemas/operations/cyclone.schema.json";
-import bagFilterSchema from "../../schemas/operations/bagFilter.schema.json";
-import gasSolidSplitterSchema from "../../schemas/operations/gasSolidSplitter.schema.json";
-import heatExchangerSchema from "../../schemas/operations/heatExchanger.schema.json";
-import shortcutColumnSchema from "../../schemas/operations/shortcutColumn.schema.json";
 
 export interface OperationField {
   key: string;
@@ -98,36 +78,44 @@ interface RawSchema {
   required?: string[];
 }
 
-const RAW: { [unitType: string]: RawSchema } = {
-  cstr: cstrSchema as RawSchema,
-  pfr: pfrSchema as RawSchema,
-  isothermalFlash: isothermalFlashSchema as RawSchema,
-  adiabaticFlash: adiabaticFlashSchema as RawSchema,
-  heater: heaterSchema as RawSchema,
-  compressor: compressorSchema as RawSchema,
-  turbine: turbineSchema as RawSchema,
-  pump: pumpSchema as RawSchema,
-  evaporator: evaporatorSchema as RawSchema,
-  sprayDryer: sprayDryerSchema as RawSchema,
-  crystalliser: crystalliserSchema as RawSchema,
-  solidDryer: solidDryerSchema as RawSchema,
-  distillationColumn: distillationColumnSchema as RawSchema,
-  absorber: absorberSchema as RawSchema,
-  stripper: stripperSchema as RawSchema,
-  cyclone: cycloneSchema as RawSchema,
-  bagFilter: bagFilterSchema as RawSchema,
-  gasSolidSplitter: gasSolidSplitterSchema as RawSchema,
-  heatExchanger: heatExchangerSchema as RawSchema,
-  shortcutColumn: shortcutColumnSchema as RawSchema,
-};
+//  EVERY schema file in gui/schemas/operations/ is imported, by glob --
+//  never a hand list.  The registry used to enumerate 20 imports (the files
+//  that existed when it was written), so the 56 schemas added later never
+//  reached the Property panel: adding a schema file and adding it HERE were
+//  two acts and only one got done -- the same failure the llmctx reading
+//  list had, one stack over.  The glob makes a new schema reach the panel by
+//  existing, and tests/operationSchemas.test.ts holds this against the
+//  directory.
+const GLOB = import.meta.glob("../../schemas/operations/*.schema.json", {
+  eager: true,
+}) as { [path: string]: RawSchema | { default: RawSchema } };
+
+const RAW: { [unitType: string]: RawSchema } = {};
+for (const [path, mod] of Object.entries(GLOB)) {
+  const name = /\/([A-Za-z0-9_]+)\.schema\.json$/.exec(path)?.[1];
+  if (!name) continue;
+  RAW[name] = (mod as { default?: RawSchema }).default ?? (mod as RawSchema);
+}
 
 export function operationSchemaFor(unitType: string): OperationSchema | null {
   const raw = RAW[unitType];
   if (!raw || !raw.properties) return null;
   const required = new Set(raw.required ?? []);
-  const fields: OperationField[] = Object.entries(raw.properties).map(
-    ([key, p]) => parseField(key, p, required.has(key)),
-  );
+  //  Only SCALAR properties become panel rows.  A structured block
+  //  (geometry {}, hydraulics {}, a feeds list) is real grammar the schema
+  //  documents for the generated reference, but a flat row cannot honestly
+  //  render or edit it -- forcing it through the string branch printed
+  //  "[object Object]" where a dict block sits.  Skipped here, the panel
+  //  shows the scalars it can own and stays silent about the rest, the same
+  //  degradation an unschema'd op already gets.
+  const scalar = (p: RawProperty) => {
+    const t = Array.isArray(p.type) ? p.type[0] : p.type;
+    return t === undefined || t === "number" || t === "integer"
+      || t === "string" || t === "boolean";
+  };
+  const fields: OperationField[] = Object.entries(raw.properties)
+    .filter(([, p]) => scalar(p))
+    .map(([key, p]) => parseField(key, p, required.has(key)));
   return {
     title: raw.title ?? unitType,
     description: raw.description,

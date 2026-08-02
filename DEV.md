@@ -519,7 +519,22 @@ accepts today, and that is a policy call.
    is an ERROR.  Its `--check` drift mode had existed since it was written and
    ran nowhere, which is how `components.md` came to advertise 56 components
    against a tree of 247; it is a `runTests` gate now.
-7. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
+7. ~~**The TS side was never audited this campaign**~~ — **AUDITED
+   2026-08-02**: `npm run typecheck` 0 errors; `npm test` 62 files / 1990
+   tests green (716 of them the dict round-trip over the corpus).  The audit
+   immediately found the campaign's recurring defect one stack over: the
+   GUI's schema REGISTRY (`gui/src/case/operationSchemas.ts`) enumerated 20
+   hand-written imports, so the 56 schemas written this campaign never
+   reached the Property panel — adding a file and adding its import were two
+   acts, and only one got done (the llmctx failure, again).  Fixed with an
+   `import.meta.glob` (a schema reaches the panel by existing), and the
+   flattener now SKIPS structured blocks (`geometry {}`, `hydraulics {}`)
+   instead of mis-typing them into text rows that render "[object Object]".
+   Held by `tests/operationSchemas.test.ts`: every file on disk must resolve
+   through the registry, no structured property may leak into the flat view
+   (sabotage-verified — removing the scalar filter fails 2 of 3), and pipe's
+   flat view is exactly its one scalar.
+8. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
    `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
    390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
    a check).  The adsorption debt is roadmap #7 above.
