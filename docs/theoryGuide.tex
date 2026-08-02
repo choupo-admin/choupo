@@ -4582,11 +4582,13 @@ The \emph{reference state} matters as much as the model.  A neutral activity
 model is anchored on pure-liquid Raoult ($\gamma_i \to 1$ as $x_i \to 1$); an ion
 has no pure liquid, so its datum is the \emph{aqueous infinite-dilution}
 reference on the $\mathrm{H}^{+}(\mathrm{aq})=0$ convention.  Choupo does not
-hardcode ``aqueous'': each \emph{property method} record declares its
-reference basis per phase --- a Pitzer method declares the aqueous
-infinite-dilution rung for the liquid and the ion-derived datum for the salt,
-where an NRTL method declares pure-liquid Raoult.  A case then selects a
-\emph{property package} that names the method, the salt (whose
+hardcode ``aqueous'': the reference basis is a \emph{consequence of the
+declared formulation} --- declaring a Pitzer formulation settles the aqueous
+infinite-dilution rung for the ions and the ion-derived datum for the salt,
+where declaring NRTL settles pure-liquid Raoult; formulation, standard
+states and Henry treatment travel together (the one-knob rule).  A case
+\emph{declares} its property package inline in
+\file{constant/thermoPhysPropDict} --- the formulation, the salt (whose
 \code{dissociatesTo} names the ions), and the Pitzer pairs; the Developer
 Guide (\emph{the thermophysical property architecture}) gives the full
 picture.  Here we keep to the physics: why $\phi(I)$, built next, is the
@@ -6685,15 +6687,20 @@ is forward-compatible by design.
 
 The simulator's \code{ThermoPackage::Kvec} computes
 \begin{equation}
-   K_i(\mathbf{x}, T, P)
+   K_i(\mathbf{x}, \mathbf{y}, T, P)
    \;=\; \frac{\gamma_i(\mathbf{x}, T)\,P_i^{\mathrm{sat}}(T)}
-              {P}
+              {\varphi_i(\mathbf{y}, T, P)\,P}
 \end{equation}
 exactly as Eq.~\eqref{eq:modified-raoult}, with $\gamma_i$ from
-NRTL/Wilson (or 1 for the ideal-solution model).  No
-$\varphi_i$ multiplications appear in the source --- they are all
-collapsed to unity at compile time by the \code{equationOfState
-\{ model idealGas; \}} block.
+NRTL/Wilson/UNIQUAC (or 1 for the ideal-solution model) and
+$\varphi_i$ from the declared \code{equationOfState} block --- the
+\code{idealGas} model simply returns $\varphi_i = 1$ at run time,
+and selecting \code{SRK} puts the real-vapour correction into the
+same formula with no other change.  For the systems where the
+liquid too is EoS-priced (light gases, no meaningful $\Psat$
+anchor), a second VLE world is declared as \code{vleWorld phiPhi;}:
+$K_i = \hat\varphi_i^L(\xv)/\hat\varphi_i^V(\yv)$, the same cubic
+evaluated in both phases (Chapter~\ref{ch:cubic-eos}).
 
 \subsection{Henry's law: the dilute-solute K-value}\label{sec:henry}
 
