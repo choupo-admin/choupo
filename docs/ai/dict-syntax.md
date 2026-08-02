@@ -840,3 +840,24 @@ options
 * v1 limits (deliberate): FD gradients only (no analytic sensitivities); the
   watchdog is the only Maratos mitigation; no feasibility restoration (an
   infeasible start that cannot recover is reported, not patched).
+
+## Where solver options live — the four homes are LEVELS, not scatter
+
+Numerical options deliberately live in FOUR places, one per configuration
+LEVEL (Vítor's 2026-08-02 ruling: the levels are intentional and must be
+explicit; what must NOT exist is a solver option ignored in silence):
+
+| home | level | carries |
+|---|---|---|
+| `system/solverDict` | steady FLOWSHEET numerics (choupoSolve only) | per-unit-TYPE subdicts merged into each unit; `tearStreams (…)`; recycle-driver scalars (`recycleSolver`, tolerances) |
+| unit `solver {}` (inside its flowsheetDict entry) | per-UNIT integrator choice (batch vessel units) | `integrator`, `rtol`, per-unit `verbosity` |
+| `controlDict` `timeStepping` / `timeSteppingControl {}` | TIME control of the transient binaries (choupoBatch/choupoCtrl) | `adaptive;` + `rtol/atol/deltaT0/deltaTmax/maxGrowth` |
+| `fixedBedAdsorber` sub-stepping | that unit's own inner discretisation | reads BOTH its `solver{rtol}` and controlDict timing |
+
+The anti-silence contract (gate `check_solverdict_lint`, all four
+binaries): a `system/solverDict` in a batch/ctrl/props case is announced
+by name with its cost stated ("every value in it had NO effect"), and a
+transient `timeStepping`/`timeSteppingControl` in a steady case is
+announced by choupoSolve the same way.  Announced, never refused — the
+unread-keys posture.  Consolidation of the homes stays open ONLY if this
+table proves unteachable (DEV.md §4b decision 3).

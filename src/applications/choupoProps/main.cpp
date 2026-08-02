@@ -320,6 +320,17 @@ try
     auto controlDict = Dictionary::fromFile(resolveUp("system/controlDict"));
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
     thermoAnnounceLevel() = verbosity;   // gate the load-phase thermo chorus too
+    //  A whole FILE nobody reads is the unread-key defect one level up
+    //  (scoping: docs/design/solverdict-consolidation-scope.md; Vitor's
+    //  2026-08-02 ruling: solver options ignored in silence must not exist).
+    //  The props bench has no flowsheet solve, so system/solverDict is never
+    //  read here.  Announced, never refused -- the unread-keys posture.
+    if (verbosity >= 1 && fs::exists("system/solverDict"))
+        std::cerr << "[dict] system/solverDict is present but choupoProps"
+                     " does not read it -- every value in it had NO effect"
+                     " on this run.  The props bench has no flowsheet"
+                     " numerics; steady solver options belong to a"
+                     " choupoSolve case.\n";
     const std::string description =
         controlDict->lookupWordOrDefault("description", "");
     if (verbosity >= 2 && !description.empty())

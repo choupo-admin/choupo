@@ -506,6 +506,19 @@ try
     // covers the LOAD phase too: the package/builder announcement chorus below
     // is gated at >= 2, same threshold as the flash's seed line.
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
+    //  The mirror of the batch/ctrl solverDict lint (Vitor's 2026-08-02
+    //  ruling: solver options ignored in silence must not exist): the
+    //  transient time-solver keys belong to choupoBatch/choupoCtrl's
+    //  controlDict grammar, and the steady binary never reads them -- so
+    //  their presence here means every value in them did nothing.
+    //  Announced, never refused -- the unread-keys posture.
+    for (const char* k : { "timeStepping", "timeSteppingControl" })
+        if (verbosity >= 1 && controlDict->found(k))
+            std::cerr << "[dict] controlDict `" << k << "` is present but"
+                         " choupoSolve does not read it -- it is transient"
+                         " (choupoBatch / choupoCtrl) time-solver grammar,"
+                         " and every value in it had NO effect on this"
+                         " steady run.\n";
     //  The manifest says it verifies its claimed records by sha256.  The
     //  importer did, and the offline gate does; the RUNTIME never did -- so
     //  an edited mirrored record ran and MOVED THE ANSWER while the manifest

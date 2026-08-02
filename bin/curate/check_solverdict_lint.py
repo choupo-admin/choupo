@@ -14,6 +14,13 @@ non-contentious half; the A/B/C grammar decision stays with Vitor).
                   lint must not cry wolf).
   POSITIVE-ctrl   ctrl01 + solverDict -> same, with choupoCtrl's wording.
   NEGATIVE-ctrl   unmodified ctrl01 -> silent.
+  POSITIVE-props  pcsaft01 + solverDict -> choupoProps announces (Vitor's
+                  2026-08-02 ruling widened the lint to every binary).
+  NEGATIVE-props  unmodified pcsaft01 -> silent.
+  POSITIVE-steady flash01 + `timeStepping adaptive;` in controlDict ->
+                  choupoSolve announces the transient time-solver key it
+                  never reads (the mirror image of the batch/ctrl lint).
+  NEGATIVE-steady unmodified flash01 -> silent.
 
 Exit 1 listing failures."""
 import shutil
@@ -29,7 +36,11 @@ CASES = {
               / "recipe02_setpoint_ramp", BUILD / "choupoBatch"),
     "ctrl": (ROOT / "tutorials" / "ctrl" / "ctrl01_cstr_temp_control",
              BUILD / "choupoCtrl"),
+    "props": (ROOT / "tutorials" / "props" / "molecular"
+              / "pcsaft01_pure_nhexane", BUILD / "choupoProps"),
 }
+STEADY_CASE = ROOT / "tutorials" / "steady" / "flash" / "flash01_benzene_toluene"
+STEADY_BIN = BUILD / "choupoSolve"
 
 failures = []
 
@@ -77,14 +88,44 @@ def main() -> int:
                 failures.append(f"NEGATIVE-{kind}: announcement fired with"
                                 " no solverDict present (crying wolf)")
 
+        # ---- steady mirror: a transient time-solver key in controlDict ------
+        if not STEADY_BIN.exists():
+            print(f"check_solverdict_lint: {STEADY_BIN} missing -- build first")
+            return 1
+        case = Path(td) / "probe_steady"
+        shutil.copytree(STEADY_CASE, case, ignore=shutil.ignore_patterns(
+            "expected", "*.csv", "resultJson*", "converged", "reports"))
+        cd = case / "system" / "controlDict"
+        cd.write_text(cd.read_text() + "\ntimeStepping adaptive;\n")
+        rc, out = run(STEADY_BIN, case)
+        needle = "[dict] controlDict `timeStepping` is present but choupoSolve"
+        if rc != 0:
+            failures.append(f"POSITIVE-steady: expected exit 0, got {rc}\n"
+                            + out[-600:])
+        elif needle not in out:
+            failures.append(f"POSITIVE-steady: announcement missing"
+                            f" ('{needle}')")
+        elif "NO effect" not in out:
+            failures.append("POSITIVE-steady: the cost is not stated"
+                            " ('NO effect')")
+
+        clean = Path(td) / "clean_steady"
+        shutil.copytree(STEADY_CASE, clean, ignore=shutil.ignore_patterns(
+            "expected", "*.csv", "resultJson*", "converged", "reports"))
+        rc, out = run(STEADY_BIN, clean)
+        if rc == 0 and "`timeStepping` is present" in out:
+            failures.append("NEGATIVE-steady: announcement fired on a clean"
+                            " case (crying wolf)")
+
     if failures:
         print("check_solverdict_lint: FAIL")
         for f in failures:
             print("  -", f)
         return 1
     print("check_solverdict_lint: OK -- an ignored system/solverDict is"
-          " announced by name in batch AND ctrl (run continues; cost"
-          " stated), and the clean cases stay silent")
+          " announced by name in batch, ctrl AND props, a transient"
+          " timeStepping key is announced by the steady binary (runs"
+          " continue; cost stated), and the clean cases stay silent")
     return 0
 
 
