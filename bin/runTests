@@ -693,6 +693,21 @@ PYEOF
     fi
     rm -f /tmp/thermbed.$$
 
+    # Volatility-declaration gate: `role` is the case's modelling class,
+    # `volatility {}` the substance's physics, and the engine ANNOUNCES the
+    # contradiction (dowthermA: modelled K = 0, declared volatile at
+    # Tb = 530.15 K) instead of obeying it in silence.  Absence stays
+    # UNKNOWN.  Sabotage-verified 2026-08-02.
+    if "$ROOT/bin/curate/check_volatility_declaration.py" > /tmp/volat.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "volatility-declaration-gate" "$(tail -1 /tmp/volat.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_volatility_declaration.py)\n" "volatility-declaration-gate"
+        cat /tmp/volat.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/volat.$$
+
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired

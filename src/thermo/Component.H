@@ -152,6 +152,23 @@ public:
     bool   isNonvolatile() const { return role_ == "nonvolatile"; }
     scalar dissociation() const { return nu_; }
 
+    // ---- The SUBSTANCE's volatility, orthogonal to the case's `role` ------
+    //  `role` says how THIS CASE models the component; `volatility` states
+    //  what the SUBSTANCE is, with the datum that makes the claim falsifiable.
+    //  Empty class == UNKNOWN (absence is not a claim) -- the engine announces
+    //  the gap where volatility matters and never reads it as "nonvolatile".
+    //  Forum: docs/design/role-vocabulary-forum-2026-08-02.md.
+    const std::string& volatilityClass() const { return volatilityClass_; }
+    bool   hasVolatilityDeclaration() const { return !volatilityClass_.empty(); }
+    //  The falsifying datum is the record's OWN canonical Tb -- one number,
+    //  one home; this block never restates it (the reader refuses if it tries).
+    scalar declaredBoilingPoint() const { return Tb_; }            // K, 0 = none
+    //  The announceable contradiction: the case models K = 0 while the record
+    //  says the substance boils.  LEGAL (a case-scoped simplification) and
+    //  never silent.
+    bool   modelledAgainstItsOwnVolatility() const
+    { return isNonvolatile() && volatilityClass_ == "volatile"; }
+
     // ---- Solid phase ----------------------------------------------
     // Optional `solid { rho_p; k_v; }` block for particulate solids.
     //   rho_p : particle (true) density [kg/m^3] --- used by gas-solid
@@ -454,6 +471,11 @@ private:
     // Populated by readFromDict from either `role <word>;` directly or from
     // the legacy `nonvolatile true;` shortcut.
     std::string role_ = "volatile";
+    //  The substance's own volatility (see volatilityClass()).  Empty ==
+    //  UNKNOWN: absence is not a claim, and must never be read as
+    //  "nonvolatile" -- that conflation is the defect this block exists to
+    //  end.  The falsifying datum stays the canonical Tb_ -- one home.
+    std::string volatilityClass_;
     bool        noncondensable_ = false;
 
     // Ebulioscopic / cryoscopic constants: solvent-only.

@@ -287,6 +287,47 @@ void Component::readFromDict(const DictPtr& d)
                 " volatile / solute / nonvolatile / radical");
     }
 
+    //  `volatility { class; normalBoilingPoint; }` -- the SUBSTANCE's physics,
+    //  orthogonal to `role` (which is the CASE's modelling class).  The two
+    //  reference process simulators both keep these apart -- one as a
+    //  participation Type beside a case-scoped Henry list, the other as
+    //  boolean facts beside the stored boiling point -- and Choupo's own
+    //  corpus reinvented the split in prose (14 staged files annotate their
+    //  role as "CASE role, not a claim about the physics"; the curated tier
+    //  carries a vapour-phase heat-transfer fluid declared unable to boil).
+    //  Forum: docs/design/role-vocabulary-forum-2026-08-02.md.
+    //
+    //  ABSENCE IS NOT A CLAIM: no block means UNKNOWN, never "nonvolatile".
+    if (d->found("volatility"))
+    {
+        auto vd = d->subDict("volatility");
+        volatilityClass_ = vd->lookupWord("class");
+        if (volatilityClass_ != "volatile"
+         && volatilityClass_ != "nonvolatile"
+         && volatilityClass_ != "decomposes")
+            throw std::runtime_error("Component '" + name_ +
+                "': volatility.class '" + volatilityClass_ + "' is not one of"
+                " volatile / nonvolatile / decomposes");
+        //  A claim of volatility must be FALSIFIABLE -- it needs the datum
+        //  that makes it checkable, not an opinion.  That datum is the
+        //  component's OWN `Tb`, which every record already has a home for:
+        //  the block must NOT restate it (a second home for one number is
+        //  the arity sin, and dowthermA already carries a cited Tb 530.15
+        //  that until now influenced nothing).
+        if (vd->found("normalBoilingPoint") || vd->found("Tb"))
+            throw std::runtime_error("Component '" + name_ +
+                "': volatility{} must NOT restate the boiling point -- `Tb`"
+                " is a component-level datum with one home, and this block"
+                " declares only the CLASS.  Remove it here; the engine reads"
+                " the record's own Tb.");
+        if (volatilityClass_ == "volatile" && Tb_ <= 0.0)
+            throw std::runtime_error("Component '" + name_ +
+                "': volatility.class volatile without a component-level"
+                " `Tb` -- a volatility claim must be falsifiable, and Tb is"
+                " the datum that makes it so (declare `Tb <K>;` with its"
+                " citation, or say `class decomposes` if it never boils)");
+    }
+
     //  `noncondensable true;` -- a permanent gas.  A curated FACT, not an
     //  inference from Tc: the record states it, the GUI catalogue has read it
     //  for a long time, and now the property builder does too.

@@ -20,16 +20,16 @@ propertyManifest
 {
     sealed             true;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
+    importedAt         "2026-08-02";
     importerVersion    "2";
     records
     {
         "components/dowthermA.dat"
         {
             type          imported;
-            sha256        "c3894944e10dcbdc3a466fbf47df1011937a15918a77e05b1f2719b4846cabd7";
+            sha256        "d9619ec07c8046bd696fcafabdf5fff63bdf2021140a1b9d4be2b79cc2d7dc8d";
             origin        "data/standards/components/dowthermA.dat";
-            originSha256  "29bc0d6f1b736a5aa6e743d5a0c52608080f136ed7816906ab63f47e804fa1d0";
+            originSha256  "609d64e9bc2156df9b76a4c68ae12229128bd1254073fa2168449e4fa51b82b5";
             release       Choupo-2607;
         }
         "components/nHexane.dat"

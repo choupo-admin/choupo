@@ -186,6 +186,38 @@ pureFluidRoute(const std::map<std::size_t, std::unique_ptr<PureFluidModel>>& pf,
                const std::vector<Component>& comps,
                const sVector& z);
 
+//  The volatility cross-check, ONE locus for every path that installs a
+//  component set (there are two, and a second copy of this text would be the
+//  arity sin the doctrine names).  `role` is the CASE's modelling class;
+//  `volatility {}` is the SUBSTANCE's physics.  When the case models K = 0
+//  for something its own record says boils, that is a LEGAL case-scoped
+//  simplification -- and it is ANNOUNCED, never silent.  Absence of the
+//  block is UNKNOWN, announced as such, never read as "nonvolatile".
+//  Forum: docs/design/role-vocabulary-forum-2026-08-02.md.
+static void announceVolatility(const std::vector<Component>& comps)
+{
+    if (!thermoAnnounce()) return;
+    for (const auto& c : comps)
+    {
+        if (c.modelledAgainstItsOwnVolatility())
+            std::cout << "[volatility] component '" << c.name()
+                      << "' is MODELLED nonvolatile (K = 0) although its"
+                         " record declares it VOLATILE with Tb = "
+                      << c.declaredBoilingPoint() << " K -- a case-scoped"
+                         " simplification, legal and announced (it is the"
+                         " model's choice, not the substance's physics).\n";
+        else if (c.isNonvolatile() && !c.hasVolatilityDeclaration())
+            std::cout << "[volatility] component '" << c.name()
+                      << "' is modelled nonvolatile (K = 0) and its record"
+                         " declares no volatility{} block -- the physics is"
+                         " UNKNOWN, not established.  Curation remedy:"
+                         " declare volatility { class volatile|nonvolatile|"
+                         "decomposes; provenance {…} } (the class only -- the"
+                         " falsifying Tb keeps its one home at record"
+                         " level).\n";
+    }
+}
+
 void ThermoPackage::adoptElectrolytePackage(std::vector<Component> comps,
                                             std::unique_ptr<ActivityModel> act,
                                             std::unique_ptr<EquationOfState> eos)
@@ -193,6 +225,7 @@ void ThermoPackage::adoptElectrolytePackage(std::vector<Component> comps,
     components_ = std::move(comps);
     activity_   = std::move(act);
     eos_        = std::move(eos);
+    announceVolatility(components_);
 }
 
 std::vector<std::string>
@@ -229,6 +262,7 @@ ThermoPackage::loadComponentSet(std::vector<std::string> names,
     components_.clear();
     components_.reserve(names.size());
     for (const auto& n : names) components_.push_back(db.loadComponent(n));
+    announceVolatility(components_);
 
     // Re-key the captured mixture seeds by post-expansion component index.
     mixtureSeed_.clear();

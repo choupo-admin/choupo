@@ -232,7 +232,28 @@ accepts today, and that is a policy call.
    `ChemicalPlantTutorial` declaring `T 310 K;` while running at 315.
    (The proposal doc this line used to point at never existed — the pointer was
    written from memory and was wrong.)
-2. **`role` vocabulary migration** — `data/tmp/_ROLE_VOCABULARY_GAP.md`.
+2. ~~**`role` vocabulary migration.**~~  **DECIDED AND BUILT 2026-08-02 —
+   the split, without the fifth word.**  Vítor asked for an MIT-level
+   thermodynamics panel and for evidence on the two reference process
+   simulators; the evidence settled it.  Neither carries a word meaning
+   "this liquid cannot evaporate" — one has a participation Type beside a
+   case-scoped Henry list, the other orthogonal boolean facts beside the
+   stored boiling point — so in both, volatility is a CONSEQUENCE of data
+   × declared model, never a declaration.  Both also fabricate where a
+   correlation is missing (1e-10 by hand; Lee-Kesler automatically), which
+   is the crutch this project forbids: **structure adopted, remedy
+   refused.**  `role` narrows to the case's modelling class (four words,
+   no migration); `volatility { class; provenance }` states the substance's
+   physics WITHOUT restating `Tb` (one datum, one home — the record already
+   carried a cited 530.15 K that influenced nothing); the engine ANNOUNCES
+   the contradiction and continues.  Absence stays UNKNOWN, so the
+   247-record migration is demand-driven.  The gap document's proposed
+   fifth word is DROPPED: "volatile, correlation missing" is a fact about
+   our curation backlog, not about the substance.  Forum:
+   [`docs/design/role-vocabulary-forum-2026-08-02.md`](docs/design/role-vocabulary-forum-2026-08-02.md);
+   gate `check_volatility_declaration` (sabotage-verified); fixture
+   `utility01_dowtherm_preheat` — a fluid sold for vapour-phase heat
+   transfer, modelled K = 0, and now saying so out loud.
 3. **flashComplex's 10 divergent component records** — adopt into the
    catalogue, or keep the case out of `tutorials/`?  Its README carries the
    numbers; this is the reason the hardest case the solver runs lives in

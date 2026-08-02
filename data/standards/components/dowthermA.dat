@@ -35,7 +35,22 @@ Tb          530.15;              // K   (257 C, normal boiling point)
 HvapTb      39000.0;             // J/mol at Tb (Dow TDS)
 Vliq        1.55e-4;             // m^3/mol at 298 K (MW / ρ(298))
 
-role        nonvolatile;         // utility heat-carrier, never appears in a flash
+role        nonvolatile;         // MODELLING class: how a case treats it (K = 0)
+
+//  The SUBSTANCE's physics, orthogonal to the modelling class above.  Dowtherm
+//  A is sold as a VAPOUR-PHASE heat-transfer fluid -- boiling is its industrial
+//  purpose -- so `role nonvolatile` is a case-scoped simplification for the
+//  closed-loop sensible-heat service, never a claim about the fluid.  The
+//  engine now ANNOUNCES that contradiction instead of obeying it in silence
+//  (it used to live only in the comment on the line above, where no machine
+//  could read it).  The falsifying datum is the canonical `Tb` at the top of
+//  this record -- one number, one home; this block must not restate it.
+//  Forum: docs/design/role-vocabulary-forum-2026-08-02.md.
+volatility
+{
+    class       volatile;
+    provenance  { citation "Dow Chemical TDS 176-01463-01: normal boiling point 257 C; the fluid's vapour-phase service is its documented use"; status accepted; }
+}
 
 liquidHeatCapacity
 {
