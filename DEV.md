@@ -363,16 +363,24 @@ accepts today, and that is a policy call.
    pick option A/B/C for the four solver-option homes (recommendation A —
    document + lint, no grammar move), and say whether speciation aliases
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
-   contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
-   demand / peak duty) — an architecture change, proposal-first.
+   contract.  The TEMPORAL half of phase (f) (time-resolved utility
+   demand / peak duty) now has its proposal —
+   [`docs/design/batch-temporal-utilities-proposal.md`](docs/design/batch-temporal-utilities-proposal.md)
+   (2026-08-03, shape B: a demand staircase on the accepted-step grid
+   that must CLOSE against the exact ledger records, peak KPIs, impulse
+   refusal) — awaiting Vítor's alignment before any code.
 7. **PC-SAFT association term (roadmap #4)** — approved 2026-08-02 and
    **BUILT 2026-08-03** per
    [`docs/design/pcsaft-association-proposal.md`](docs/design/pcsaft-association-proposal.md)
    (status block there records the three amendments and how each is
-   honoured).  Water 4C / ethanol 2B records curated; densities +0.6 % /
-   −1.2 % vs CRC; oracle at machine zero; non-associating corpus untouched
-   at 1e-10.  Next slice of the programme: ethanol/water mixture VLE
-   witness on the Wolbach-Sandler cross rules (predictive, stated as such).
+   honoured).  Water 2B / ethanol 2B records curated (water FIRST
+   mis-curated 4C — the mixture witness caught it; **the scheme is part
+   of the fit**); water density −7.5 % = the 2-site fit's published
+   trade-off, Psat −0.2 % at 358 K; oracle at machine zero;
+   non-associating corpus untouched at 1e-10.  Battery closed by
+   `flash20_ethanol_water_pcsaft` (predictive vs fitted NRTL side by
+   side: K's within ~2 %/~11 %, V/F 0.65 vs 0.51); theory-guide chapter
+   ch:pcsaft written (c4e35974).
 8. **Pinch full programme (roadmap #8)** — scoped 2026-08-02,
    [`docs/design/pinch-programme-scope.md`](docs/design/pinch-programme-scope.md):
    P1 targets (composite curves + problem table + Q_min/T_pinch) → P2
