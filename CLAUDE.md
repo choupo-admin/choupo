@@ -915,9 +915,24 @@ resolves `components/<name>.dat` by exact-name path concatenation, so any basis
 split is SOURCE-layout, never a runtime directory-walk, and the two decisions do
 not conflict.  (This sentence used to credit `generated/indexes/` and
 `flatCaches/`, neither of which was ever built — a doc claiming machinery that
-does not exist sends the next reader looking for it.)  **General basis reconciliation (the engine carrying the
-aqueous-species basis through every stream) stays `[ROADMAP]`** — build via a
-vertical spike end-to-end through all layers BEFORE any mass migration.  **Grammar
+does not exist sends the next reader looking for it.)  **General basis reconciliation — the vertical SPIKE is BUILT (2026-08-03),
+the MASS MIGRATION stays UNAUTHORISED.**  The two-unit chain
+(`tutorials/steady/thermo/basis01_two_unit_chain`) carries the species basis
+across a model boundary as MATTER: a `speciation {}` block a unit solved is
+stamped `origin "solved:<unit>"`, and a composition-preserving unit whose
+LOCAL `thermo {}` world resolves no chemistry TRANSPORTS its inlet's block
+(`origin "transported:<unit>"`) instead of letting the post-solve pass
+re-derive it with the global package — that re-derivation was silent
+respeciation across a boundary.  A carried equilibrium also states
+`solvedAtT` (the outlet is at 332 K carrying a block solved at 313 K; saying
+"transported" without saying from where leaves the reader to assume the two
+agree).  The reader STORES a verified block (carriage, not just checking),
+rows are written in canonical sorted order, and a block declaring no
+`network`/`basis` is REFUSED.  Gate `check_basis_spike` — ten criteria, five
+refusals, sabotage-verified twice; full record incl. the three finds and the
+open questions a migration must answer:
+[`docs/design/basis-reconciliation-spike.md`](docs/design/basis-reconciliation-spike.md).
+**Do NOT generalise to the corpus without Vítor's decision.**  **Grammar
 consolidated 2026-07-04** (professors+students fora, `docs/design/thermo-grammar-*`):
 per-GROUP reference rungs within a phase (A1), vapour/transport as method slots
 (A2), declared+verified parameters (A3); families implemented: electrolyte.*,

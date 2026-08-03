@@ -812,6 +812,23 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # Basis-reconciliation spike gate (ratified 2026-08-03): the two-unit
+    # chain's ten criteria -- elements + charge on both bases, the block
+    # transported unchanged with origin/solvedAtT, deletable, deterministic,
+    # canonically ordered, announced, 5 refusals firing, no lateral impact
+    # on molecular cases, and the intermediate stream untouched by what the
+    # downstream unit is.  Sabotage-verified twice (transport contract
+    # disabled -> C2/C4/C7 fail; R4 + canonical order removed -> C6/C8 fail).
+    if "$ROOT/bin/curate/check_basis_spike.py" > /tmp/bspk.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "basis-spike-gate" "$(tail -1 /tmp/bspk.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_basis_spike.py)\n" "basis-spike-gate"
+        cat /tmp/bspk.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bspk.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

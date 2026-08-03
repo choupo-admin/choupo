@@ -411,6 +411,24 @@ accepts today, and that is a policy call.
    ethyleneOxide (~71 kJ); the isomer-blind xylene/butene sets; the
    neopentane 13 kJ the process05 overlay already works around.
    Promotion is a curation act — the list only ranks it.
+10. **Basis reconciliation — the SPIKE is BUILT (2026-08-03), the MASS
+    MIGRATION is NOT authorised.**
+    [`docs/design/basis-reconciliation-spike.md`](docs/design/basis-reconciliation-spike.md)
+    §8.  The two-unit chain carries the species basis across a model
+    boundary as matter (`origin` + `solvedAtT`), the reader STORES a
+    verified block, rows are canonically ordered, a block with no
+    `network`/`basis` REFUSES, gate `check_basis_spike` sabotage-verified
+    twice.  Three finds beyond the ratified list: a carried equilibrium
+    must state the T it was solved at; `aqueousSpeciation none` is about
+    CHARGE not presence (ethanol no row, N2 a neutral one); and
+    **`bin/choupo-import` could not re-seal flash19 from scratch** —
+    mineral-bearing components declare their ion bridge in
+    `solidPhases.*.dissolutionReaction.masters`, where the runtime looks
+    and the importer did not (fixed).  **Vítor's call before any
+    generalisation**: is carrying the right default for non-preserving
+    units (a splitter must divide the block), should the post-solve pass
+    stamp its own origin, and should R1/R3 be named rather than caught by
+    the collapse net.
 6. ~~**A6 cyclic steady state (adsorption)**~~ — **BUILT 2026-08-02** on
    Vítor's "faz como achares melhor / Avança!".  `cycle { period; repeat;
    steps ( … ); cssTolerance }` expands to the SAME event stream the

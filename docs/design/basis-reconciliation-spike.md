@@ -1,9 +1,9 @@
 # Basis-reconciliation spike — the two-unit chain (ratified 2026-08-03)
 
-**Status: DESIGN (this document translates the ratified spike spec into
-the concrete Choupo shape).  Implementation follows this record slice by
-slice; MASS MIGRATION of the corpus is authorised ONLY after every gate
-criterion below passes and at least one gate has been sabotage-verified.**
+**Status: SPIKE COMPLETE 2026-08-03 (S1 + S2 + S3 built, gate
+sabotage-verified twice).  MASS MIGRATION REMAINS UNAUTHORISED — it is a
+separate decision, Vítor's, and §8 states what the spike learned that a
+migration proposal must answer first.**
 
 Authority chain: CLAUDE.md `[ROADMAP]` ("general basis reconciliation —
 build via a vertical spike end-to-end through all layers BEFORE any mass
@@ -39,24 +39,45 @@ Per the ratified minimum: at least one neutral molecular volatile, one
 cation, one anion, one aqueous molecular species in equilibrium, one
 pass-through spectator.  Concretely:
 
+AS BUILT (the sour-water system — this paragraph was rewritten to the
+chemistry that shipped; the first draft proposed NaCl and could not
+work, for the reason stated below):
+
     water          solvent
-    NaCl           dissociating salt        → Na+, Cl-   (cation+anion)
-    CO2            gas with aqueous network → CO2aq/HCO3- (equilibrium)
-    ethanol        neutral molecular volatile (nonionising, classified)
-    N2             pass-through spectator (aqueousSpeciation none)
+    NH3            the CATION route  → NH4+   (its declared bridge)
+    CO2            the ANION route   → HCO3-/CO3--, and the AQUEOUS
+                   MOLECULAR species CO2aq, in equilibrium
+    ethanol        nonionising CONDENSABLE → Raoult backbone, NO row
+    N2             nonionising NONCONDENSABLE → Henry rung, a NEUTRAL row
 
-Why not fewer: with only NaCl the charge balance closes by symmetry
-(one cation, one anion, equal totals) and a sign error is invisible;
-the CO2 network makes pH real; ethanol exercises the molecular backbone
-across the boundary; N2 proves the spectator is carried untouched (its
-row must be BIT-IDENTICAL across the chain).
+**Why a dissolving SALT could not fill the ionic roles.**  The first
+draft used NaCl (or CaCO3).  A dissolved salt is nonvolatile and has no
+route through the ideal-gas reference, so the downstream molecular world
+cannot price its enthalpy at all — the engine refuses, correctly, and
+there is no chain left to witness.  Carrying the ionic roles on
+MOLECULAR components (NH3, CO2) keeps the boundary crossable while still
+putting a genuine cation and a genuine anion in the block.
 
-Witness case: `tutorials/steady/electrolyte/basis01_two_unit_chain`
-(unit 1 electrolyte flash; unit 2 heater under a per-unit molecular
-`thermo {}` override).  The IDENTITY SECOND WITNESS (ratified): the
-same case with unit 2 under the SAME global model — the carried species
-state must be byte-identical to the first witness's intermediate stream
-(carriage cannot depend on the boundary being interesting).
+Why not fewer components: cation and anion come from DIFFERENT
+components in DIFFERENT amounts, so Σ z·n is a real test rather than a
+symmetry; the carbonate+ammonia networks make the pH solved rather than
+constant; and the two nonionising components differ from each other by
+reference rung, which is what makes `aqueousSpeciation none` legible as
+a statement about charge and not about presence.
+
+Witness case: `tutorials/steady/thermo/basis01_two_unit_chain` (unit 1
+electrolyte flash; unit 2 heater under a per-unit molecular `thermo {}`
+override).
+
+THE IDENTITY SECOND WITNESS, as built.  The ratified wording asked for
+"the same case with unit 2 under the same global model" and for the
+carried state to be identical.  Measured, the OUTLET is NOT identical
+and should not be: with no boundary the global world CAN re-solve the
+chemistry at the outlet temperature, and does.  The invariant that
+actually holds — and the one the gate asserts — is that the
+INTERMEDIATE stream is unchanged: what unit 2 is cannot reach back and
+change what unit 1 solved.  The differing outlet is the boundary being
+visible, not a failure.
 
 ## 3. The ten gate criteria, concretely
 
@@ -170,3 +191,61 @@ volatiles, organic declared) and ADD the N2 pass-through spectator
 bit-identical across the chain).  Chain: electrolyte flash →
 heater with per-unit molecular `thermo {}` override → outlet; the
 identity second witness is the same chain with the override removed.
+
+---
+
+## 8. BUILT (2026-08-03) — what the spike settled, and what it exposed
+
+**Shipped.**  S1 carriage (`origin` on the block, the reader STORES a
+verified block instead of only checking it, species rows written in
+canonical sorted order — commit 921ba8b9).  S2a the unit seam
+(`solved:<unit>` stamping; the transport contract for a
+composition-preserving unit whose local world resolves no chemistry —
+fbedeca3).  S2b the witness chain + `solvedT` (712c5376).  S3 the gate
+`bin/curate/check_basis_spike.py`, wired into runTests.
+
+**The witness.**  `tutorials/steady/thermo/basis01_two_unit_chain`:
+sour water (NH3 / CO2 / water / ethanol / N2), an electrolyte flash that
+SOLVES, a heater under a molecular `thermo {}` override that TRANSPORTS.
+Charge closes at 6.5e-11 kmol/h on both ends; the rows are bit-identical
+across the boundary.
+
+**Three things the spike exposed that were not in the ratified list.**
+
+1. **A carried equilibrium must say what state it was solved at.**  The
+   heater's outlet is at 332.23 K carrying a block solved at 313.15 K.
+   `origin "transported:…"` says it was carried but not from where, so
+   the two temperatures sat on one file with nothing marking that they
+   disagree.  `Speciation::solvedT` → `solvedAtT` on the file.
+2. **`aqueousSpeciation none` is a statement about CHARGE, not presence.**
+   Ethanol (condensable, Raoult backbone) gets no species row; N2
+   (permanent gas, Henry rung) gets a neutral one.  The witness carries
+   both so the distinction is visible rather than explained.
+3. **The importer and the runtime read different declarations.**  A
+   mineral-bearing component's ion bridge lives in its own
+   `solidPhases.*.dissolutionReaction.masters` — where the runtime looks
+   — while `bin/choupo-import` looked only at
+   `aqueousSpeciation`/`aqueousMapping`.  flash19, a shipped and passing
+   tutorial, could not be re-sealed from scratch.  Fixed; the
+   from-scratch closure now matches its shipped manifest record for
+   record.
+
+**The refusal battery, measured rather than assumed.**  R2 (broken
+`m = A n`) refuses by name.  R4 (a block declaring no `network` or no
+`basis`) refuses by name — BUILT with the gate; it did not refuse
+before.  R1 (charge imbalance) and R3 (an unknown species id) DO refuse,
+but through the collapse net, not by their own name.  **Named gap:**
+naming them needs the species-charge surface at the reader
+(`SpeciationSolver::chargeOf` is not on the reader's side today), which
+is a dependency and not a line — deliberately not smuggled in here.
+R5 (a boundary that would CHANGE the resolved species set) is NOT built:
+the transport contract fires only where the local world resolves
+*nothing*, so the case R5 governs cannot arise yet; building the refusal
+before the situation exists would be a guard over an empty road.
+
+**What a mass-migration proposal must answer first** (open, for Vítor):
+(a) is carrying an upstream equilibrium across a boundary the right
+default for every unit class, or only for composition-preserving ones —
+a splitter divides matter and the block would have to divide with it;
+(b) should the post-solve reporting pass stamp an origin of its own
+rather than leaving it blank; (c) R1/R3 naming, per the gap above.

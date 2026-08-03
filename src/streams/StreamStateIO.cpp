@@ -822,6 +822,27 @@ ProcessStream readStreamState(const fs::path&       file,
                 " aqueous bridge (`aqueousMapping` / `dissociatesTo`) and there"
                 " is no reactive chemistry -- the block's names answer to"
                 " nothing here, so nothing could check it.");
+        //  R4 (basis-reconciliation spike): A DECOMPOSITION THAT CANNOT SAY
+        //  WHAT IT IS, IS NOT ONE.  `network` names the chemistry set the
+        //  species names belong to and `basis` says whether the totals are
+        //  stoichiometric (the solver's: mediators excluded) or analytical
+        //  (a laboratory's: charge-closing).  Without them the rows are
+        //  numbers beside names with no stated meaning -- and the reader
+        //  would verify them against a matrix the file never claimed.
+        //  (`origin` stays OPTIONAL: a block written by the post-solve
+        //  reporting pass legitimately has no single unit to name, and
+        //  every pre-spike file has none.  Absent origin = unstated
+        //  provenance, which is honest; a WRONG one would not be.)
+        for (const char* need : { "network", "basis" })
+            if (!sd->found(need))
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `speciation` block declares no `" + std::string(need)
+                    + "`.  A decomposition must say WHICH chemistry set its"
+                    " names belong to (`network`) and on WHAT basis its"
+                    " totals are stated (`basis`) -- without both, the rows"
+                    " are numbers beside names and the closure check would"
+                    " verify them against a matrix the file never claimed.");
+
         std::map<std::string, scalar> declared;      // master -> kmol/s
         for (const auto& k : sd->keys())
         {
