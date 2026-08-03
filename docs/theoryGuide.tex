@@ -2820,15 +2820,15 @@ corresponding-states triad $\{T_c, P_c, \omega\}$ and derives its own
 $a_c, b, \kappa$ \emph{in source} --- adding PR after SRK touched no data
 file.  A model that needs parameters it \emph{cannot} derive ---
 PC-SAFT's segment number $m$, segment diameter $\sigma$, well depth
-$\varepsilon/k$ --- carries them in a \emph{model-keyed} sub-block on the
-component, \code{eosParameters\{ PCSAFT\{ \ldots \} \}}, each with its own
+$\varepsilon/k$ --- carries them in a \emph{model-keyed} block on the
+component, \code{pcsaft\{ m; sigma; epsilonK; \}}, with its own
 provenance.  One molecule then carries SRK, PR, PC-SAFT and the next EOS
 simultaneously, never colliding, and the run announces \emph{per
 component} whether its numbers were derived from corresponding states or
 read from a fitted block, and from whose paper:
 \begin{lstlisting}[language=dict]
 [thermo] EOS = PR     -- benzene: a_c,b,kappa derived from Tc,Pc,omega (intrinsic)
-[thermo] EOS = PCSAFT -- benzene: m,sigma,epsilon/k from eosParameters.PCSAFT
+[thermo] EOS = PCSAFT -- benzene: m,sigma,epsilon/k from the pcsaft{} block
                          [Gross & Sadowski 2001]  origin: regressed
 \end{lstlisting}
 A model missing a required block fails with a remedy --- never a silent
@@ -7320,6 +7320,143 @@ equilibrium
 The components must carry \code{Tc}, \code{Pc} and \code{omega} in
 their \file{.dat} files (the loader rejects the EoS otherwise --- see
 \code{requiredComponentProperties}).
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{PC-SAFT: a molecular equation of state}\label{ch:pcsaft}
+
+The cubic chapter closed on its own limit: hydrogen-bonded fluids,
+where much of the physics \emph{is} the directional bond.  PC-SAFT
+(Gross \& Sadowski, \emph{Ind.\ Eng.\ Chem.\ Res.}~40 (2001) 1244)
+approaches the problem from statistical mechanics instead of from a
+patched van~der~Waals loop: a molecule is a \textbf{chain of $m$
+tangent spherical segments} of diameter $\sigma$ and dispersion energy
+$\varepsilon/k$, and the residual Helmholtz energy is built as a sum of
+physically named contributions,
+\begin{equation}
+\frac{a^{\mathrm{res}}}{RT}
+  \;=\; a^{\mathrm{hc}} \;+\; a^{\mathrm{disp}}
+  \;\bigl(+\; a^{\mathrm{assoc}}\bigr),
+\end{equation}
+a hard-\emph{chain} reference (hard spheres plus the bonding of $m$
+segments into a chain, priced through the hard-sphere contact value
+$g^{\mathrm{hs}}_{ij}$), a two-term dispersion perturbation with
+universal constants, and --- for fluids whose molecules carry donor and
+acceptor sites --- the Wertheim association term of the next
+subsection.  Everything downstream is a \emph{derivative} of this one
+function: $Z = 1 + \rho\,(\partial \tilde a/\partial\rho)$, the
+pressure closes $P = Z\rho kT$, and $\ln\hat\varphi_i$ is a
+mole-number derivative at fixed $(T,V)$.  In Choupo the derivative is
+taken \emph{numerically from the analytic} $a^{\mathrm{res}}$ --- a
+declared choice: the physics lives once, and a derivative cannot
+disagree with it by a transcription error.  The price (a
+central-difference step) is measured, not assumed: every construction
+runs \code{verify()}, which checks the ideal-gas limit, the Euler
+identity $\sum x_i\ln\hat\varphi_i = g^{\mathrm{res}}/RT$, and the
+step-convergence plateau of the numeric derivative, and \emph{refuses}
+a parameter set that fails any of the three.
+
+Unlike the cubics, PC-SAFT's parameters cannot be derived from
+$\{T_c,P_c,\omega\}$: each component carries its fitted
+$\{m,\sigma,\varepsilon/k\}$ in its own record's \code{pcsaft\{\}}
+block, primary-cited.  With no binary correction ($k_{ij}=0$,
+announced) mixture behaviour is \emph{predicted} from pure-component
+parameters alone --- the CH$_4$/propane flash of
+\file{tutorials/steady/flash/flash10\_ch4propane\_pcsaft} splits within a few percent of
+the cubic route with nothing fitted to the pair.
+
+\subsection{Association: Wertheim's theory, visible}\label{sec:pcsaft-assoc}
+
+A hydrogen bond is short-ranged, directional and saturable --- one
+donor bonds one acceptor, and a site, once bonded, is spent.  Wertheim's
+first-order perturbation theory turns exactly those three facts into a
+closed contribution.  Let $X_i^A$ be the fraction of molecules $i$
+\emph{not} bonded at site $A$.  A mass-action closure determines it,
+\begin{equation}
+X_i^A \;=\;
+\frac{1}{\,1 + \rho \sum_j x_j \sum_{B\in\mathrm{sites}(j)}
+      X_j^B\, \Delta^{A_iB_j}\,},
+\qquad
+\Delta^{A_iB_j} = \sigma_{ij}^3\, g^{\mathrm{hs}}_{ij}\,
+\kappa^{A_iB_j}\!\left[e^{\varepsilon^{A_iB_j}/kT}-1\right],
+\label{eq:assoc-closure}
+\end{equation}
+and the Helmholtz contribution follows,
+\begin{equation}
+\frac{a^{\mathrm{assoc}}}{RT}
+ = \sum_i x_i\Bigl[\sum_{A\in\mathrm{sites}(i)}
+   \bigl(\ln X_i^A - \tfrac{1}{2}X_i^A\bigr) + \tfrac{1}{2}M_i\Bigr].
+\end{equation}
+Two new fitted constants per associating fluid --- the association
+energy $\varepsilon^{AB}/k$ and volume $\kappa^{AB}$ --- and a
+\textbf{site scheme} naming how many donors and acceptors the molecule
+carries (Huang--Radosz vocabulary: \code{2B} = one donor + one
+acceptor, the alcohols; \code{4C} = two + two).  Cross-association in
+mixtures needs \emph{no} new fitted constant: the Wolbach--Sandler
+combining rules build $\Delta$ between unlike sites from the pure
+constants.  The closure~(\ref{eq:assoc-closure}) is an inner fixed
+point solved at every $(T,\rho,x)$; for a pure fluid with equal site
+counts it collapses to a quadratic solved in closed form, and
+\code{verify()} checks the iteration against that closed form ---
+machine zero, printed --- beside the site fractions themselves:
+$X^A(\mathrm{water}) \approx 0.04$ at ambient conditions says 96\% of
+water's sites are hydrogen-bonded, which \emph{is} the physics the term
+adds.
+
+\paragraph{The scheme is part of the fit.}  A published
+$(\varepsilon^{AB},\kappa^{AB})$ pair is meaningful only under the site
+scheme it was regressed with, and the curator reads the paper's own
+site count rather than assuming one from the molecule's chemistry.
+Choupo paid for this lesson once: the Gross \& Sadowski (2002) water
+set --- which the paper fits with \emph{two} sites --- was first
+curated as \code{4C}.  The pure liquid density then read $+0.6\%$, a
+coincidence that masked the error, while the ethanol/water mixture
+flash collapsed and pure-water $P^{\mathrm{sat}}$ left the physical
+range.  Re-curated as \code{2B}, the set shows its true published
+face: $P^{\mathrm{sat}}$ accurate to a fraction of a percent near the
+normal boiling point, ambient liquid density $7.5\%$ light --- the
+trade-off the original regression chose, now stated on the record
+instead of discovered downstream.  The general moral is the same one
+this guide repeats about every model: a fitted parameter set is one
+object --- values, scheme, and validity range together --- and
+splitting it silently produces a model nobody ever validated.
+
+\paragraph{Predictive vs.\ fitted, measured.}  The mixture witness
+\file{tutorials/steady/flash/flash20\_ethanol\_water\_pcsaft} flashes one 30/70
+ethanol/water feed at 358~K, 1~atm through two thermodynamic worlds
+side by side: predictive PC-SAFT (association on, $k_{ij}=0$, nothing
+fitted to the pair) and the data-fitted NRTL $\gamma$--$\varphi$ route.
+The predictive route lands $K_{\mathrm{ethanol}}$ within ${\sim}2\%$
+of the fit and $K_{\mathrm{water}}$ within ${\sim}11\%$ --- from pure
+parameters alone, a genuinely strong showing for a hydrogen-bonded
+pair --- and that residual water error still moves $V/F$ from $0.51$
+to $0.65$.  Predictive means \emph{no mixture data used}; it does not
+mean \emph{as accurate as a fit}.  The fitted route remains the design
+tool where data exist; the molecular EoS is the screen for systems
+with nothing to fit.
+
+\begin{tutoriallink}
+The case declares only \code{equationOfState \{ model PCSAFT; \}}
+inside \code{formulation phiPhi}; whether association is active is
+decided by the FACTS on the component records --- a record carrying the
+trio associates, one without it does not, and the engine announces the
+roster it found (\code{[pcsaft] associating: water (2B), ethanol
+(2B); cross: Wolbach-Sandler}).  The component block, one home:
+\begin{lstlisting}
+pcsaft
+{
+    m           1.0656;     sigma  3.0007;    epsilonK 366.51;
+    assocScheme 2B;         // 2B | 4C  (absent = non-associating)
+    epsAB_K     2500.7;     // K
+    kappaAB     0.034868;
+    source      "Gross & Sadowski, IECR 41 (2002) 5510, Table 1";
+}
+\end{lstlisting}
+A partial trio refuses at load; an unknown scheme refuses listing the
+known ones.  Pure-fluid witnesses:
+\file{tutorials/props/molecular/pcsaft01\_pure\_nhexane} (non-associating core),
+\file{tutorials/props/molecular/pcsaft03\_association\_pure} (2B water + 2B ethanol, site
+fractions and the closed-form oracle echoed at verbosity~3).
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
