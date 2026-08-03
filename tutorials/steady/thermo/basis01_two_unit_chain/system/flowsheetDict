@@ -46,16 +46,38 @@
 
   (c) is the contract.  `converged/warmBrine` is where it is visible.
 
-  AND THE PART THAT COSTS A LINE TO SAY HONESTLY.  A heater is a heater: the
-  outlet is at 332.23 K while the speciation it carries was solved at 313.15
-  K.  Carrying an equilibrium to a temperature it was not solved at is only
-  honest if the file SAYS so, so the block also stamps `solvedAtT 313.15 K`
-  beside the stream's own `T 332.2309713 K`.  A reader who wants the
-  equilibrium AT the outlet temperature must put a unit there that can solve
-  one -- the molecular world cannot, which is the whole point of the
-  boundary.  (Without that stamp the two temperatures sit on the same file
-  and nothing tells the reader they disagree -- exactly the assumption the
-  boundary breaks.)
+  AND THE PART THAT TOOK A SECOND OPINION TO GET RIGHT.  A heater is a
+  heater: the outlet is at 332.23 K while the speciation it carries was
+  solved at 313.15 K.  The first version of this case stamped `solvedAtT`
+  and considered the matter closed -- the file said where the block came
+  from, so the reader could not be misled.  That was wrong, and the
+  counsel of 2026-08-03 named why:
+
+      AN EQUILIBRIUM IS NOT A COMPOSITION.  It is a RELATION between a
+      composition and a thermodynamic state.  A composition solved at
+      313 K does not become the equilibrium composition at 332 K by being
+      carried there with a note saying where it came from.  Stamping the
+      provenance makes the datum TRACEABLE; it does not make it VALID.
+
+  So the two claims are now separate, and only one of them travels:
+
+      the AMOUNTS are a material inventory -- the transport conserved
+      every species exactly, and they stand;
+      the EQUILIBRIUM is a claim about this state, and it dies here.
+
+  `converged/warmBrine` therefore carries `equilibriumValidHere false`,
+  both temperatures, and NO pH -- the pH is WITHHELD rather than inherited,
+  because inheriting it would publish a number nothing here computed.  The
+  same withholding applies to any activity, saturation index or conditional
+  constant that would rest on the old equilibrium.
+
+  Staleness is DECIDED, not assumed: the block goes stale because T
+  actually moved.  A pump carrying the same brine at constant T and P
+  across the same boundary would leave the equilibrium intact and the pH
+  reported -- the boundary alone does not invalidate anything; the change
+  of state does.  A reader who wants the equilibrium AT the outlet must put
+  a unit there that can solve one; the molecular world cannot, which is the
+  whole point of the boundary.
 
   THE IDENTITY SECOND WITNESS.  Delete the `thermo {}` block below: the
   transporter then runs the GLOBAL electrolyte world, which CAN re-solve the

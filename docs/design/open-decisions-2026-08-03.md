@@ -147,3 +147,53 @@ the canonical diff, which is checkable).
 2. post-solve origin → **stamp `reported:`** / leave blank
 3. R1+R3 by name → name them / **leave the collapse net**
 4. seal drift → keep policy / **measured selective re-seal** / re-seal all
+
+---
+
+## Resolution — 2026-08-03, second opinion received
+
+The counsel answered all four and amended three of them.  What follows is
+the ruling as received, and where each stands.
+
+**A — seal drift: my recommendation was REJECTED.**  "Não re-selar, nem
+sequer selectivamente, apenas porque os goldens não mudam."  The reasoning
+I could not refute is that `same golden` does not imply `same sealed
+artifact`: the seal asserts *this case contains exactly the data imported
+and accepted at that historical moment*, and refreshing it changes the
+provenance, the documentary state, the catalogue version reproduced, and
+potentially future behaviour if a new feature starts consuming the newly
+added blocks.  My criterion confused output stability with continuity of
+historical identity.  **The 435 are not the problem; the REPORT is.**  The
+fix is aggregation by severity class, two distinct KPIs
+(`sealedReproducibilityFailures` vs `catalogDivergenceCount`) so "435
+differences" can never read as "435 broken cases", and expanding only the
+classes that need a human.  Re-sealing stays legitimate for exactly three
+reasons: the case was scientifically reviewed, a new pedagogical version
+is wanted deliberately, or a format migration with a verifiable
+transformation that PRESERVES the previous artefact.  **Status: to build
+(report restructure).**
+
+**B — the transported equilibrium: my recommendation was INSUFFICIENT.**
+`solvedAtT` makes the datum traceable, not valid.  The amounts are a
+material inventory and travel; the equilibrium is a relation to a state
+and does not.  **Status: BUILT** — `equilibriumValidHere`, pH withheld
+rather than inherited, staleness decided from moved T/P rather than
+assumed for anything transported, announced, gated (C4b), sabotage-
+verified.  See `basis-reconciliation-spike.md` §9.
+
+**C — the splitter: my recommendation was REJECTED.**  "Recusar parece-me
+prudência excessiva."  A proportional split of an extensive inventory is
+exact algebra, not a thermodynamic hypothesis; the engine already knows
+the fractions; refusing forces the author to restructure a flowsheet
+around an artificial incapacity, and — worse — leaving the post-solve pass
+to re-derive is the worst of the three options, since it replaces known
+arithmetic with a model-dependent answer.  The argument "untested code" is
+answered by writing the witnesses, not by preferring an equally untested
+refusal.  The contract must key on a DECLARED CAPABILITY
+(`materialMapping proportionalExtensiveSplit`), never on a class name.
+**Status: to build.**
+
+**The two I considered settled: both confirmed**, with one refinement — the
+post-solve stamp must distinguish `producedBy` from the unit that
+physically solved the chemistry, so a serialising pass never appears to
+have performed an equilibrium.

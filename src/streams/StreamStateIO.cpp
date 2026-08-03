@@ -172,6 +172,22 @@ void writeStreamState(const ProcessStream&  s,
             out << pad << "    origin    \"" << sp.origin << "\";\n";
         if (sp.solvedT > 0.0)
             out << pad << "    solvedAtT " << sp.solvedT << " K;\n";
+        //  THE TWO CLAIMS, SEPARATED.  The amounts below are a material
+        //  inventory and are always true -- whatever carried them here
+        //  conserved them.  Whether they are still an EQUILIBRIUM is a
+        //  different statement, and it is false the moment the state they
+        //  were solved at is not the state they now sit in.
+        if (!sp.equilibriumValidHere)
+        {
+            out << pad << "    currentT  " << s.T << " K;\n"
+                << pad << "    equilibriumValidHere false;\n"
+                << pad << "    //  Solved at " << sp.solvedT << " K, carried"
+                          " to " << s.T << " K by a unit with no chemistry\n"
+                << pad << "    //  model.  The amounts stand (conserved"
+                          " exactly); pH and every other\n"
+                << pad << "    //  equilibrium-derived value are WITHHELD --"
+                          " re-equilibrate to restore them.\n";
+        }
         if (sp.pH_valid) out << pad << "    pH        " << sp.pH << ";\n";
         out << "\n";
         //  CANONICAL ORDER (basis-reconciliation spike, criterion 6): the
@@ -847,7 +863,8 @@ ProcessStream readStreamState(const fs::path&       file,
         for (const auto& k : sd->keys())
         {
             if (k == "network" || k == "basis" || k == "pH"
-                || k == "origin" || k == "solvedAtT") continue;
+                || k == "origin" || k == "solvedAtT"
+                || k == "currentT" || k == "equilibriumValidHere") continue;
             declared[k] += sd->lookupScalar(k);
         }
         //  m = A n from the material that IS state, against the same bridges.
@@ -931,6 +948,10 @@ ProcessStream readStreamState(const fs::path&       file,
         carried->origin = sd->lookupWordOrDefault("origin", "");
         carried->solvedT = sd->lookupScalarOrDefault("solvedAtT", 0.0,
                                                      Dims::temperature);
+        carried->equilibriumValidHere =
+            sd->found("equilibriumValidHere")
+                ? (sd->lookupWord("equilibriumValidHere") == "true")
+                : true;
         if (sd->found("pH"))
         {
             carried->pH       = sd->lookupScalar("pH");

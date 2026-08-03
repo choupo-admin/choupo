@@ -249,3 +249,46 @@ default for every unit class, or only for composition-preserving ones —
 a splitter divides matter and the block would have to divide with it;
 (b) should the post-solve reporting pass stamp an origin of its own
 rather than leaving it blank; (c) R1/R3 naming, per the gap above.
+
+---
+
+## 9. AMENDED 2026-08-03 (counsel) — the equilibrium claim does not travel
+
+§8 recorded `solvedT` as the fix for a block carried to a temperature it
+was not solved at.  A second opinion rejected that as sufficient, and it
+was right:
+
+> An equilibrium is not a composition.  It is a RELATION between a
+> composition and a thermodynamic state.  A composition solved at 313 K
+> does not become the equilibrium composition at 332 K by being carried
+> there with a note saying where it came from.  Stamping the provenance
+> makes the datum traceable; it does not make it valid.
+
+The defect was live, not theoretical: `converged/warmBrine` published
+`pH 8.830137823` — solved at 313.15 K — beside `T 332.2309713 K`, as if it
+were the pH of that stream.
+
+**As amended.**  The two claims are separated and only one travels.  The
+AMOUNTS are a material inventory and stand (the transport conserved every
+species exactly).  The EQUILIBRIUM is a claim about a state, and it dies
+when the state moves: the block carries `equilibriumValidHere false`, both
+temperatures, and NO pH — withheld, never inherited.  Every other
+equilibrium-derived quantity (activities, saturation indices, conditional
+constants) falls under the same rule as it is added.
+
+**Staleness is DECIDED, not assumed.**  The block goes stale because a
+state variable the equilibrium depends on actually moved — T or P compared
+against `solvedT`/`solvedP`.  A pump carrying the same brine at constant T
+and P across the same model boundary leaves the equilibrium intact and its
+pH reported.  The boundary alone invalidates nothing; the change of state
+does.  (This is the counsel's own invalidation policy, applied precisely
+rather than as a blanket rule for "anything transported".)
+
+Gate: `check_basis_spike` C4b — the transported block must declare itself
+invalid and must NOT publish a pH, the SOLVED block must still publish
+one (so the invalidation cannot fire where the state did not move), and
+the withholding must be announced.  Sabotage-verified: inheriting the
+claim fails two probes by name.
+
+Decision 3 of `open-decisions-2026-08-03.md` is unaffected; decisions 1 and
+4 are superseded by that document's own amendment (see its §Resolution).

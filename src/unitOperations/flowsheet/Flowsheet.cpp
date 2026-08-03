@@ -1383,6 +1383,8 @@ void runUnit(const DictPtr&                                          udict,
                     *s.speciation);
                 b->origin = "solved:" + uname;
                 b->solvedT = s.T;          // the state it was solved AT
+                b->solvedP = s.P;
+                b->equilibriumValidHere = true;   // solved here, by definition
                 s.speciation = std::move(b);
             }
             else if (!s.speciation && inletBlock && inletS
@@ -1401,13 +1403,56 @@ void runUnit(const DictPtr&                                          udict,
                     auto b = std::make_shared<ProcessStream::Speciation>(
                         *inletBlock);
                     b->origin = "transported:" + uname;
+
+                    //  THE AMOUNTS TRAVEL; THE EQUILIBRIUM CLAIM MAY NOT.
+                    //  The block stays a true material inventory -- the
+                    //  transport conserved every species exactly -- but it
+                    //  is only still an EQUILIBRIUM here if the state it
+                    //  was solved at is the state it now sits in.  A pump
+                    //  at constant T and P leaves it valid; a heater does
+                    //  not, and no amount of provenance stamping makes a
+                    //  313 K equilibrium into a 332 K one.
+                    const scalar solvedT = b->solvedT > 0.0 ? b->solvedT
+                                                            : inletS->T;
+                    const scalar solvedP = b->solvedP > 0.0 ? b->solvedP
+                                                            : inletS->P;
+                    const bool tMoved = std::abs(s.T - solvedT)
+                                        > 1.0e-9 * std::max(solvedT, 1.0);
+                    const bool pMoved = solvedP > 0.0
+                                     && std::abs(s.P - solvedP)
+                                        > 1.0e-9 * std::max(solvedP, 1.0);
+                    b->solvedT = solvedT;
+                    b->solvedP = solvedP;
+                    b->equilibriumValidHere = !(tMoved || pMoved);
+                    if (!b->equilibriumValidHere)
+                    {
+                        //  Every equilibrium-DERIVED quantity stops being
+                        //  reported for the new state.  pH is the one this
+                        //  block carries; inheriting it would publish a
+                        //  number nothing here computed.
+                        b->pH       = 0.0;
+                        b->pH_valid = false;
+                    }
                     s.speciation = std::move(b);
                     if (!quiet && verbosity >= 2)
+                    {
                         std::cout << "  [basis] unit '" << uname
-                                  << "': speciation block TRANSPORTED"
-                                     " across the model boundary (local"
-                                     " world resolves no chemistry;"
-                                     " chemistry not re-run)\n";
+                                  << "': species amounts TRANSPORTED across"
+                                     " the model boundary (local world"
+                                     " resolves no chemistry; chemistry not"
+                                     " re-run)\n";
+                        if (tMoved || pMoved)
+                            std::cout << "  [basis] unit '" << uname
+                                      << "': the carried block is NO LONGER"
+                                         " an equilibrium here -- solved at "
+                                      << solvedT << " K, the stream is now at "
+                                      << s.T << " K.  Amounts stand as a"
+                                         " material inventory; pH and every"
+                                         " other equilibrium-derived value are"
+                                         " WITHHELD (a unit able to"
+                                         " re-equilibrate would have to"
+                                         " restore them).\n";
+                    }
                 }
             }
         }

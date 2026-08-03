@@ -197,6 +197,27 @@ def main() -> int:
             failures.append("C4: the carried block does not report the state"
                             " it was solved at")
 
+        # ---- C4b THE EQUILIBRIUM CLAIM DIES WHEN THE STATE MOVES ---------
+        #  (counsel 2026-08-03) The amounts are a material inventory and
+        #  travel; the equilibrium is a RELATION to a state and does not.
+        #  The heater moves T, so the carried block must stop claiming to be
+        #  an equilibrium, and every equilibrium-derived value -- pH first --
+        #  must be WITHHELD rather than inherited.
+        wtxt = (conv / "warmBrine").read_text()
+        btxt = (conv / "brine").read_text()
+        if "equilibriumValidHere false" not in wtxt:
+            failures.append("C4b: the block carried to a different T still"
+                            " claims to be an equilibrium there")
+        if re.search(r'^\s*pH\s', wtxt[wtxt.find("speciation"):], re.M):
+            failures.append("C4b: a stale pH is published on the transported"
+                            " block -- it was solved at another temperature")
+        if not re.search(r'^\s*pH\s', btxt[btxt.find("speciation"):], re.M):
+            failures.append("C4b: the block SOLVED here withholds its pH --"
+                            " the invalidation is firing where the state did"
+                            " not move")
+        if "WITHHELD" not in out:
+            failures.append("C4b: the withholding is not announced")
+
         # ---- C7 GLASS-BOX TRACE ------------------------------------------
         if "TRANSPORTED across the model boundary" not in out \
            or "transporter" not in out:

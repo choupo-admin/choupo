@@ -166,14 +166,34 @@ struct ProcessStream
         //  matter, chemistry NOT re-run.  Empty = a pre-spike block (the
         //  post-solve pass); the stream-file writer stamps it when set.
         std::string origin;
-        //  AND AT WHAT STATE it was solved [K].  A transported block rides a
+        //  AND AT WHAT STATE it was solved.  A transported block rides a
         //  stream whose T has moved -- a heater is a heater -- so the
         //  speciation on the file is the UPSTREAM equilibrium carried
         //  forward, not the equilibrium at the temperature printed beside
-        //  it.  Saying "transported" without saying "solved at 313.15 K"
-        //  leaves the reader to assume the two agree, which is exactly the
-        //  assumption the boundary breaks.  0 = unstamped (pre-spike).
-        scalar solvedT = 0.0;
+        //  it.  0 = unstamped (pre-spike).
+        scalar solvedT = 0.0;   // [K]
+        scalar solvedP = 0.0;   // [Pa]
+
+        //  ...AND WHETHER IT IS STILL AN EQUILIBRIUM *HERE*.
+        //
+        //  An equilibrium is not a composition: it is a RELATION between
+        //  composition and a thermodynamic state.  A composition solved at
+        //  313 K does not become the equilibrium composition at 332 K by
+        //  being carried there with a note saying where it came from --
+        //  stamping the provenance makes the datum traceable, not valid.
+        //  So the two claims are separated: the AMOUNTS remain a true
+        //  material inventory (the transport conserved them exactly), while
+        //  every equilibrium-derived quantity -- pH first among them --
+        //  stops being reported for the new state.
+        //
+        //  Staleness is DECIDED, not assumed: the block goes stale when a
+        //  state variable the equilibrium depends on has actually moved
+        //  outside a unit authorised to recompute it.  A pump that carries
+        //  a brine at constant T and P across a model boundary leaves a
+        //  block that is still the equilibrium of that material; a heater
+        //  does not.  (Counsel, 2026-08-03: "transportar os montantes pode
+        //  ser correcto; transportar a alegação de equilíbrio não é.")
+        bool equilibriumValidHere = true;
         std::vector<std::pair<std::string, scalar>> flows;  // species [kmol/s]
         scalar      pH = 0.0;
         bool        pH_valid = false;
