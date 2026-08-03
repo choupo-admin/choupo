@@ -428,7 +428,10 @@ accepts today, and that is a policy call.
     generalisation**: is carrying the right default for non-preserving
     units (a splitter must divide the block), should the post-solve pass
     stamp its own origin, and should R1/R3 be named rather than caught by
-    the collapse net.
+    the collapse net.  **Those three, plus the seal-drift curation call,
+    are written up with cost, risk and a measured recommendation in
+    [`docs/design/open-decisions-2026-08-03.md`](docs/design/open-decisions-2026-08-03.md)
+    -- four one-line answers close them.**
 6. ~~**A6 cyclic steady state (adsorption)**~~ — **BUILT 2026-08-02** on
    Vítor's "faz como achares melhor / Avança!".  `cycle { period; repeat;
    steps ( … ); cssTolerance }` expands to the SAME event stream the
