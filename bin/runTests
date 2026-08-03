@@ -766,6 +766,20 @@ PYEOF
     fi
     rm -f /tmp/rnet.$$
 
+    # Pinch P1 gate (approved 2026-08-02, P1 only): the pass's targets
+    # equal an independent Python problem-table over the same segments,
+    # the composite CSV is coherent, the pass never runs uninvited, and
+    # dTmin <= 0 refuses; sabotage-verified (wrong shift -> 3 probes fail).
+    if "$ROOT/bin/curate/check_pinch_p1.py" > /tmp/pnch.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pinch-p1-gate" "$(tail -1 /tmp/pnch.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pinch_p1.py)\n" "pinch-p1-gate"
+        cat /tmp/pnch.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pnch.$$
+
     # Doc-reference gate: every repo path and tutorial case name mentioned in
     # the AI-facing docs (what bin/llmctx feeds an assistant) must exist.  A
     # dead path there is an instruction the reader follows into nothing.

@@ -1,9 +1,27 @@
 # Pinch full programme — scoping (roadmap #8)
 
-**Status: SCOPING — awaiting Vítor's alignment.  No code is authorised by
-this document.**  Propose-first, like the PC-SAFT proposal beside it.
+**Status: P1 APPROVED (Vítor, 2026-08-02 — "implementaria apenas a P1
+nesta primeira etapa") and BUILT 2026-08-03.  P2 (match recommendations)
+and P3 (area/cost targets) remain UNAUTHORISED — propose again before
+building either.**  Two conditions rode with the approval and both are
+honoured in the implementation: the pass *recommends but never rewrites
+the network* (it is a pure report — it mutates nothing but its own KPI
+block), and the METHOD HYPOTHESES (constant CP per segment, the
+near-isothermal latent slice, first non-utility stream pairing, raw
+current-duty sums) are stated in `src/postProcessing/PinchPass.H` where
+the reader of the code meets them first.
 
-Date: 2026-08-02.
+Built: `pinchPass` PostProcessor (postDict chain, `pinchPass { dTmin
+10 K; }`), printed Linnhoff-Flower problem table, KPIs
+`pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` (+hot/cold, +current
+duties), `reports/pinch/compositeCurves.csv`.  Witness:
+`tutorials/steady/heat/pinch01_four_stream_classic` (targets 107.5 kW /
+40 kW / pinch 90 °C hot, hand-worked in the flowsheetDict header).
+Gate: `bin/curate/check_pinch_p1.py` — independent Python cascade,
+CSV coherence, negative (never runs uninvited), dTmin ≤ 0 refusal;
+sabotage-verified (wrong shift → 3 probes fail by value).
+
+Date: 2026-08-02 (scoping) / 2026-08-03 (P1 built).
 
 ---
 

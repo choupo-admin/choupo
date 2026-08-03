@@ -177,6 +177,23 @@ keeps the hard ERROR, because its author asked for a verdict.
 `utilityAllocation` sizes each duty to a utility by T-level; its result is
 also emitted in the run JSON (the GUI reads it).
 
+**Pinch targets (P1, 2026-08-03)** — the `pinchPass` post-processor
+(`system/postDict`: `pinchPass { dTmin 10 K; }`) extracts every
+duty-carrying unit's segment from the converged result (CP = |Q|/|ΔT|
+between its process-side inlet and outlet T; a near-isothermal duty enters
+as a `latentWidth` slice), prints the **Linnhoff-Flower problem table**
+cascade row by row — the glass-box heart of the method — and reports
+`pinch.Q_H_min_kW` / `Q_C_min_kW` / `T_pinch_K` (+hot/cold ends) beside
+the honest current-vs-target line (what the unintegrated duties actually
+consume).  `reports/pinch/compositeCurves.csv` carries the hot/cold and
+shifted composite polylines for plotting.  The pass TARGETS only — it
+never rewrites the network (P2 match recommendations and P3 area/cost
+targets are deliberately not built; `docs/design/pinch-programme-scope.md`).
+Its method hypotheses (constant CP per segment, the latent slice, first
+non-utility stream pairing) are stated in `PinchPass.H`.  Witness:
+`tutorials/steady/heat/pinch01_four_stream_classic` (107.5 kW / 40 kW /
+pinch 90 °C hot — hand-worked in the case header); gate `check_pinch_p1`.
+
 **Phase split (steady)** — `streamTable` writes a second artefact,
 `phases.csv`, whenever a stream carries more than one phase: one row per
 (stream, phase, component) in kmol/h, phases named `aqueous` / `organic` /

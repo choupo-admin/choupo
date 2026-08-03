@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: hxFluid -- SYNTHETIC teaching fluid (case-local, GPL).
+
+  Purpose-built so the pinch-targeting exercise is hand-checkable:
+  a heavy, involatile organic liquid with a CONSTANT liquid heat
+  capacity cp = 100 J/(mol K), so every stream's CP = F * cp exactly
+  and the four-stream problem table can be worked on paper.  All other
+  values are plausible round numbers for a diphenyl-ether-like heat
+  transfer oil; NONE is a measured datum of any real substance.  Not
+  curated data -- do not promote to data/standards/.
+
+  No standardThermochemistry block ON PURPOSE: the default
+  energyBalance report then states UNAVAILABLE with the remedy (the
+  honest posture for a fluid with no formation datum) while the
+  heater enthalpy balances, which need only the liquid cp, are exact.
+\*---------------------------------------------------------------------------*/
+
+name        hxFluid;
+formula     C12H10O;
+
+MW          170.211;
+Tc          800.0;
+Pc          30.0;
+omega       0.40;
+Tb          600.0;
+HvapTb      45000;
+Vliq        1.60e-4;
+
+vaporPressure
+{
+    //  log10(P/bar) = A - B/(T + C):  Psat(423 K) ~ 0.009 bar, so every
+    //  stream in the case (max 150 C) is comfortably subcooled liquid;
+    //  Psat ~ 1 atm near Tb = 600 K.
+    model         Antoine;
+    coefficients  (4.0   2077.0   -80.0);
+    Trange        (280  620);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (160.0);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    //  THE defining property: constant, so CP = F*cp with no averaging.
+    model         polynomial;
+    coefficients  (100.0);
+    Trange        (270  620);
+}

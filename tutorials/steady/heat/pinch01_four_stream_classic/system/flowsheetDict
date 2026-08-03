@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Four independent duty units realise the classic four-stream pinch
+  population.  The working fluid (hxFluid, case-local SYNTHETIC teaching
+  fluid) has a CONSTANT liquid cp = 100 J/(mol K), so each stream's
+  CP = F*cp is exact and the targets are hand-checkable:
+
+    stream  F [mol/s]  CP [kW/K]   T_in [C]  T_out [C]   Q [kW]
+    H1 hot     20         2.0        150        60        -180.0
+    H2 hot     80         8.0         90        60        -240.0
+    C1 cold    25         2.5         20       125        +262.5
+    C2 cold    30         3.0         25       100        +225.0
+
+  Problem table at dTmin = 20 K (shift hot -10 K, cold +10 K; shifted
+  boundaries in C, descending: 140 135 110 80 50 35 30; a positive dH
+  is a heat SURPLUS cascading downward):
+
+    interval T*     CP_hot   CP_cold    dH [kW]   cascade [kW]
+    140 -> 135        2        0         +10.0       +10.0
+    135 -> 110        2        2.5       -12.5        -2.5
+    110 ->  80        2        5.5      -105.0      -107.5   <- minimum
+     80 ->  50       10        5.5      +135.0       +27.5
+     50 ->  35        0        5.5       -82.5       -55.0
+     35 ->  30        0        2.5       -12.5       -67.5
+
+  Targets: Q_H,min = -min(cascade) = 107.5 kW,
+           Q_C,min = final + Q_H,min = -67.5 + 107.5 = 40 kW,
+
+           pinch at T* = 80 C  ->  hot 90 C / cold 70 C.
+
+  Each unit is a `heater` with a SIGNED hardware duty Q; the outlet T is
+  the enthalpy-balance RESULT (with cp constant it lands exactly on the
+  table's target temperatures).  The four units are thermally independent
+  here -- the pinchPass only TARGETS; recommending matches (P2) is out of
+  scope and the network is never rewritten.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        coolerH1;
+        type        heater;
+        in          h1In;
+        outputs     ( h1Out );
+        operation   { Q  -180.0 kW; }   // 150 C -> 60 C at CP = 2 kW/K
+    }
+    {
+        name        coolerH2;
+        type        heater;
+        in          h2In;
+        outputs     ( h2Out );
+        operation   { Q  -240.0 kW; }   // 90 C -> 60 C at CP = 8 kW/K
+    }
+    {
+        name        heaterC1;
+        type        heater;
+        in          c1In;
+        outputs     ( c1Out );
+        operation   { Q  262.5 kW; }    // 20 C -> 125 C at CP = 2.5 kW/K
+    }
+    {
+        name        heaterC2;
+        type        heater;
+        in          c2In;
+        outputs     ( c2Out );
+        operation   { Q  225.0 kW; }    // 25 C -> 100 C at CP = 3 kW/K
+    }
+);

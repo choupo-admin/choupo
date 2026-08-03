@@ -1,0 +1,10 @@
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser
+     converts to SI.  componentMolarFlows is the OVERALL material. ---*/
+
+componentMolarFlows
+{
+    hxFluid    30 mol/s;
+}
+
+T               298.15 K;
+P               101325 Pa;

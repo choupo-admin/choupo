@@ -29,6 +29,7 @@ License
 #include "PostProcessor.H"
 #include "CostingPass.H"
 #include "EconomicsPass.H"
+#include "PinchPass.H"
 #include "SizingPass.H"
 #include "costing/CostingModel.H"
 #include "sizing/EquipmentSize.H"
@@ -104,6 +105,10 @@ void PostProcessor::registerBuiltins()
     registerType("economics",
         [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
         { return std::make_unique<EconomicsPass>(d); });
+
+    registerType("pinchPass",
+        [](const DictPtr& d) -> std::unique_ptr<PostProcessor>
+        { return std::make_unique<PinchPass>(d); });
 }
 
 } // namespace Choupo

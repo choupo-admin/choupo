@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pinch01_four_stream_classic -- meta-control
+
+  The classic four-stream pinch-targeting exercise (two hot, two cold),
+  in the tradition of Linnhoff & Hindmarsh, Chem. Eng. Sci. 38 (1983)
+  745: with dTmin = 20 K the problem-table cascade gives
+  Q_H,min = 107.5 kW, Q_C,min = 40 kW, pinch at 90 C (hot) / 70 C (cold).
+  The targets here are HAND-CHECKABLE from the four CPs -- see the
+  flowsheetDict header for the full table and the cascade worked by hand.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Pinch P1 targets: classic 4-stream problem table (dTmin 20 K)";
+
+verbosity     3;

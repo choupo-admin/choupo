@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- pinch-analysis energy TARGETS (programme P1).
+
+  The pass extracts every duty-carrying unit's segment from the
+  converged result, prints the Linnhoff-Flower problem table cascade
+  row by row, writes reports/pinch/compositeCurves.csv and reports the
+  targets as KPIs.  It only TARGETS -- it never rewrites the network.
+\*---------------------------------------------------------------------------*/
+
+pinchPass
+{
+    dTmin   20 K;      // minimum approach; the classic exercise's value
+}
