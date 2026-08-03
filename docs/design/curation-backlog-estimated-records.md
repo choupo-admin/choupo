@@ -1,12 +1,17 @@
 # Curation backlog — estimated `dHf_298` records with known primaries
 
-**Status: SURVEY for Vítor's curation.  No `.dat` was modified.**
-Promotion of any value is a curation act (primary review) and his alone.
+**Status: SURVEY for Vítor's curation.  No `.dat` was modified** (except
+the two he authorised 2026-08-02: `fluorine` P0 definition fix and the
+`neopentane` promotion, both committed b10dc211 with review-trail notes).
+Promotion of any remaining value is a curation act (primary review) and
+his alone.
 
-Date: 2026-08-02.  Method: every `provenance { dHf_298 { origin
-estimated; method "Joback"; } }` in `data/standards/components/`
-(45 records), cross-referenced against corpus consumers; deviations
-quoted only where the primary value is well established.
+Date: 2026-08-02; **ring-class survey (his 5c ruling: "prioridade alta,
+investigar a classe inteira") added 2026-08-03 — see the section below
+P2.**  Method: every `provenance { dHf_298 { origin estimated; method
+"Joback"; } }` in `data/standards/components/` (45 records),
+cross-referenced against corpus consumers; deviations quoted only where
+the primary value is well established.
 
 ---
 
@@ -46,13 +51,62 @@ Joback sees only the group multiset, so isomers collapse to one number:
 * **`cis2Butene` = `trans2Butene` = −8,670**; measured: cis ≈ −7.1,
   trans ≈ −11.4 kJ/mol — the cis/trans energy difference is real
   chemistry the estimate cannot see.
-* **`neopentane`**: −155,280 vs measured **−168,050** (Prosen &
-  Rossini 1945) — ~13 kJ; the `process05` tutorial already overlays
-  the measured value case-locally, so promoting the standard record
-  would also let that overlay retire.
+* **`neopentane`**: PROMOTED 2026-08-02 (b10dc211, his 5b ruling) —
+  the standard record now carries the measured −168,050 (Prosen &
+  Rossini 1945); the `process05` case-local overlay can retire at
+  Vítor's convenience (it now duplicates the standard value).
 * **`cyclopropane`**: −12,110 vs measured **+53,300** — a ~65 kJ error
   and the wrong SIGN: ring strain is the textbook failure mode of
   group additivity.  The worst suspected outlier in the tree.
+
+## THE RING CLASS — whole-class survey (Vítor's 5c ruling, 2026-08-03)
+
+**Why a class and not two compounds.**  Joback's method carries ring
+GROUPS (the `r`-prefixed saturated-ring atoms and the ring-ether/-ketone/
+-NH/-sulfide families of Table 2-2 — all 41 groups are in
+`data/standards/parameters/Joback.dat`) but **no ring-SIZE strain
+correction**: the group values average the strain of the fitting set
+(dominated by 5- and 6-membered rings), so a 3- or 4-membered ring is
+systematically wrong by roughly its excess strain energy.  The textbook
+strain ladder (Anslyn & Dougherty; values ~): cyclopropane ≈ 115,
+cyclobutane ≈ 110, cyclopentane ≈ 26, cyclohexane ≈ 0 kJ/mol.  The
+record deviations below follow that ladder exactly — the error is the
+physics the method cannot see, not a transcription slip.
+
+**Every ring-bearing record in `data/standards/components/` (name +
+formula sweep), with its dHf_298 status:**
+
+| compound | ring | record dHf [J/mol] | measured (primary) | Δ | verdict |
+|---|---|---|---|---|---|
+| `cyclopropane` | 3C | −12,110 [Joback] | **+53,300** (Knowlton & Rossini, J. Res. NBS 43 (1949) 113; NIST WebBook) | **~65 kJ, WRONG SIGN** | promote — worst in tree (already P2) |
+| `ethyleneOxide` | 3 (C₂O, oxirane) | −123,470 [Joback] | **−52,630** (NIST WebBook ideal-gas) | **~71 kJ** | promote (already P3, now class-priority) |
+| `RC318` (perfluorocyclobutane, c-C₄F₈) | 4C | −1,628,190 [Joback] | ≈ **−1,543,000** (JANAF class; needs per-value primary confirmation — fluorine thermochemistry compilations disagree at the ~10 kJ level) | **~85 kJ** | promote after primary confirmation — ring strain AND per-fluorine group error stack |
+| `cyclopentane` | 5C | −65,710 [Joback] | **−76,400** (Prosen & Rossini 1945; NIST) | ~11 kJ | promote (moderate — the 5-ring residual strain) |
+| `cyclohexane` | 6C | −123,299 [**measured**, NASA-TM4513] | (is the primary) | — | CONTROL — the strain-free ring, already curated |
+
+No other saturated-ring record exists in the standards tier (the
+aromatics — benzene/toluene/xylenes/ethylBenzene/styrene — are a
+different Joback family, parameterised on aromatic rings themselves;
+their known defect is the ISOMER blindness of P2, not strain).
+
+**Corpus impact: zero.**  None of the five is loaded by any tutorial
+(swept 2026-08-03) — promoting any of them moves no golden.  The risk
+is entirely forward-looking: the first future case that burns, epoxidises
+or refrigerates with these records inherits errors up to 85 kJ/mol.
+
+**The estimate lake** (`data/groupEstimative/`, 28,447 records): a
+name-pattern sweep (`cyclo|oxir|oxet|epox|furan|dioxan|pyran|lactone`)
+matches ≈ 3,589 records — the same generator, the same missing strain
+term, so the same class risk.  The lake's contract already labels every
+value an estimate (that tier is honest by construction); no per-compound
+action there, but any PROMOTION out of the lake for a 3-/4-membered ring
+must go through a measured primary, never the Joback number.
+
+**Priority within the class** (largest error first, all Vítor's to
+promote): `ethyleneOxide` → `cyclopropane` → `RC318` (after primary
+confirmation) → `cyclopentane`.  None is a definition-category error
+(the 5a assistant-correctable lane does not apply — these are estimates
+awaiting measured primaries).
 
 ## P3 — the remainder (no consumers; primaries exist but need per-value review)
 

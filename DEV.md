@@ -261,7 +261,14 @@ rulings, verbatim in spirit; each item below is annotated where it lives:
    (same commit; the process05 overlay stays — its nPentane twin
    carries sample-specific values, axiom 4); (c) ring-strain compounds
    are HIGH priority and the WHOLE CLASS should be surveyed, not just
-   two — new survey task.
+   two — **survey EXECUTED 2026-08-03**: the class section in
+   [`docs/design/curation-backlog-estimated-records.md`](docs/design/curation-backlog-estimated-records.md)
+   covers every saturated-ring record in standards (cyclopropane,
+   ethyleneOxide, RC318, cyclopentane + the cyclohexane control) with
+   deviations following the strain ladder (65 / 71 / ~85 / 11 kJ),
+   zero corpus consumers (no golden moves on promotion), and the
+   ≈3,589 ring-name estimates in the lake flagged at tier level.
+   Promotions are Vítor's; RC318 needs primary confirmation first.
 6. **P-swing (PSA): DO NOT ship** until the energy balance carries the
    expansion-work term (eps·dP/dt).  Explicit refusal over an
    incomplete model.  P1/P2 stay parked behind the term.
