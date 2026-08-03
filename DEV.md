@@ -153,9 +153,10 @@ ones for day-to-day work:
    the step/PI/OuterDriver cases.  The earlier search-snippet fragments
    (k20 7.2117e8 vs 7.2177e8) belong to the DIFFERENT Forbes-Marlin RTO
    lineage — never blend the two parameterisations.
-4. **PC-SAFT association term** — the non-associating core is validated (~1 %);
-   the association term is the next model growth (keep it separate from any
-   migration/refactor).
+4. **PC-SAFT association term** — **BUILT 2026-08-03** (2B+4C Wertheim with
+   the three ratified amendments; witness `pcsaft03_association_pure`, gate
+   `check_pcsaft_association`).  Remaining in this programme: the
+   ethanol/water mixture VLE witness (validation item 4 of the proposal).
 5. **New unit operations / catalogue expansion** — the strength area; add with
    KPIs + a golden-master tutorial + the theory-guide section (a feature is
    incomplete without its manual).
@@ -355,12 +356,14 @@ accepts today, and that is a policy call.
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
    contract.  Also the TEMPORAL half of phase (f) (time-resolved utility
    demand / peak duty) — an architecture change, proposal-first.
-7. **PC-SAFT association term (roadmap #4)** — proposal written 2026-08-02,
-   [`docs/design/pcsaft-association-proposal.md`](docs/design/pcsaft-association-proposal.md):
-   2B/4C Wertheim on the shipped core, `epsAB_K`/`kappaAB`/`assocScheme`
-   in the existing `pcsaft {}` block (absent = non-associating, goldens
-   untouched by construction), no case-grammar change, Gross-Sadowski-2002
-   validation battery.  Decide scheme scope, field names, battery.
+7. **PC-SAFT association term (roadmap #4)** — approved 2026-08-02 and
+   **BUILT 2026-08-03** per
+   [`docs/design/pcsaft-association-proposal.md`](docs/design/pcsaft-association-proposal.md)
+   (status block there records the three amendments and how each is
+   honoured).  Water 4C / ethanol 2B records curated; densities +0.6 % /
+   −1.2 % vs CRC; oracle at machine zero; non-associating corpus untouched
+   at 1e-10.  Next slice of the programme: ethanol/water mixture VLE
+   witness on the Wolbach-Sandler cross rules (predictive, stated as such).
 8. **Pinch full programme (roadmap #8)** — scoped 2026-08-02,
    [`docs/design/pinch-programme-scope.md`](docs/design/pinch-programme-scope.md):
    P1 targets (composite curves + problem table + Q_min/T_pinch) → P2

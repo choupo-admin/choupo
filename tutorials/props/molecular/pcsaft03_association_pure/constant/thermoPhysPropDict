@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- phi-phi on PC-SAFT.  Whether the association
+  term is active is decided by the FACTS on the component records (the
+  resolver posture): both records here carry the association trio, so the
+  engine announces the roster; a record without one is simply
+  non-associating, exactly the pre-association behaviour.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water ethanol );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PCSAFT; }
+}

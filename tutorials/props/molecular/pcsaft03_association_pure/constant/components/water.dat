@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/components/water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
   Warning: Antoine fit accurate for 273-373 K only.

@@ -414,6 +414,17 @@ public:
     bool   hasPcsaft()   const { return pcM_ > 0.0 && pcSigma_ > 0.0
                                      && pcEpsK_ > 0.0; }
 
+    // PC-SAFT association (Wertheim TPT1, approved 2026-08-02): the site
+    // scheme NAME (Huang-Radosz vocabulary: 2B, 4C), the association energy
+    // eps^AB/k [K] and the association volume kappa^AB [-].  All three live
+    // together in the same `pcsaft {}` block; a PARTIAL trio refuses at load
+    // (see the parse).  An empty scheme means non-associating -- exactly the
+    // pre-association behaviour.
+    const std::string& pcsaftAssocScheme() const { return pcAssocScheme_; }
+    scalar pcsaftEpsABK()  const { return pcEpsAB_; }
+    scalar pcsaftKappaAB() const { return pcKappaAB_; }
+    bool   hasPcsaftAssociation() const { return !pcAssocScheme_.empty(); }
+
     // COSMO-SAC surface data (intrinsic).  A component may carry SEVERAL named
     // parameter SETS (unlike Joback's single set) -- one per source/variant --
     // in its `cosmo { <setName> { variant; source; area; volume; sigmaProfile (…); } }`
@@ -539,6 +550,8 @@ private:
     scalar rUq_ = 0.0;
     scalar qUq_ = 0.0;
     scalar pcM_ = 0.0, pcSigma_ = 0.0, pcEpsK_ = 0.0;   // PC-SAFT segment params
+    std::string pcAssocScheme_;                          // "" = non-associating
+    scalar pcEpsAB_ = 0.0, pcKappaAB_ = 0.0;             // PC-SAFT association
 
     // COSMO-SAC surface data (intrinsic): named parameter sets by set name.
     std::map<std::string, CosmoSet> cosmoSets_;

@@ -739,6 +739,23 @@ void Component::readFromDict(const DictPtr& d)
         pcM_     = pc->lookupScalarOrDefault("m", 0.0);
         pcSigma_ = pc->lookupScalarOrDefault("sigma", 0.0);
         pcEpsK_  = pc->lookupScalarOrDefault("epsilonK", 0.0);
+
+        // Association trio (Wertheim TPT1): assocScheme + epsAB_K + kappaAB.
+        // All three or none -- a record carrying only part of the trio is a
+        // curation error, refused HERE at load (a partial set silently read
+        // as non-associating would run wrong thermo with no announcement).
+        pcAssocScheme_ = pc->lookupWordOrDefault("assocScheme", "");
+        pcEpsAB_       = pc->lookupScalarOrDefault("epsAB_K", 0.0);
+        pcKappaAB_     = pc->lookupScalarOrDefault("kappaAB", 0.0);
+        const bool any = !pcAssocScheme_.empty()
+                      || pcEpsAB_ > 0.0 || pcKappaAB_ > 0.0;
+        if (any && (pcAssocScheme_.empty() || pcEpsAB_ <= 0.0
+                    || pcKappaAB_ <= 0.0))
+            throw std::runtime_error("Component '" + name_ + "': the pcsaft"
+                " association trio is PARTIAL -- `assocScheme` (2B|4C),"
+                " `epsAB_K` [K] and `kappaAB` [-] must all be declared"
+                " together (or none, for a non-associating fluid).  Curate"
+                " the missing value(s) from the primary source.");
     }
 
     // COSMO-SAC surface data (intrinsic): `cosmo { <setName> { variant; source;

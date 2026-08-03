@@ -64,6 +64,30 @@ PCSAFT::PCSAFT(const DictPtr& dict, const std::vector<Component>& comps)
         sigma_[i] = c.pcsaftSigma() * 1.0e-10;             // Angstrom -> m
         epsK_[i]  = c.pcsaftEpsK();
     }
+
+    // Association roster from the SAME records (facts on the component,
+    // never a case list -- the resolver posture).  The scheme name becomes
+    // (nDonor, nAcceptor) through siteCounts(), the one map entry per scheme.
+    nD_.assign(n_, 0); nA_.assign(n_, 0);
+    epsABK_.assign(n_, 0.0); kappaAB_.assign(n_, 0.0); scheme_.assign(n_, "");
+    std::string roster;
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        const auto& c = comps[i];
+        if (!c.hasPcsaftAssociation()) continue;
+        const auto [nd, na] = siteCounts(c.pcsaftAssocScheme());
+        nD_[i] = nd;  nA_[i] = na;
+        epsABK_[i]  = c.pcsaftEpsABK();
+        kappaAB_[i] = c.pcsaftKappaAB();
+        scheme_[i]  = c.pcsaftAssocScheme();
+        hasAssoc_ = true;
+        roster += (roster.empty() ? "" : ", ") + c.name()
+                + " (" + scheme_[i] + ")";
+    }
+    if (hasAssoc_)
+        std::cout << "[pcsaft] associating: " << roster
+                  << "; cross: Wolbach-Sandler (eps arithmetic, kappa"
+                     " geometric with the sigma^3 correction)\n";
     // Optional k_ij from equationOfState { binaryInteractions ( ... ) } -- the
     // same declarative slot the cubic reads; absent pairs stay 0 (announced).
     if (dict && dict->found("binaryInteractions"))
@@ -84,7 +108,11 @@ PCSAFT::PCSAFT(const DictPtr& dict, const std::vector<Component>& comps)
     // PitzerHMW/IF97 verify()): the ideal-gas limit and the residual-Gibbs vs
     // Sum x_i ln phi_i identity MUST hold.  A failure means a sign/index bug in
     // a_res or the fugacity derivative -- REFUSE, never run wrong thermo.
-    const scalar dev = verify(0);
+    //  Associating systems echo the full verify block (incl. the site
+    //  fractions and the closed-form oracle -- the ratified widened
+    //  validation); non-associating systems stay silent here, keeping the
+    //  pre-association logs byte-identical.
+    const scalar dev = verify(hasAssoc_ ? 3 : 0);
     if (!(dev < 1.0e-6))
         throw std::runtime_error("PCSAFT: self-consistency check FAILED (max"
             " rel deviation " + std::to_string(dev) + " > 1e-6: ideal-gas"
@@ -157,7 +185,110 @@ scalar PCSAFT::aRes(scalar T, scalar rho, const sVector& x) const
     const scalar a_disp = -2.0*PI*rho*I1*m2es3
                         - PI*rho*mbar*C1*I2*m2e2s3;
 
+    //  Association is a strict ADD-ON: with no associating component the
+    //  term is never evaluated and the arithmetic below this line is the
+    //  exact pre-association code path (byte-identity by construction).
+    if (hasAssoc_)
+        return a_hc + a_disp + aAssoc(T, rho, x);
     return a_hc + a_disp;
+}
+
+// ---- association scheme map: the ONE place a name becomes site counts -------
+std::pair<int, int> PCSAFT::siteCounts(const std::string& scheme)
+{
+    if (scheme == "2B") return {1, 1};     // one donor + one acceptor (alcohols)
+    if (scheme == "4C") return {2, 2};     // two + two (water)
+    throw std::runtime_error("PCSAFT: unknown assocScheme '" + scheme
+        + "' -- known schemes: 2B (1 donor + 1 acceptor), 4C (2 + 2)."
+          "  Adding a scheme is one entry in PCSAFT::siteCounts().");
+}
+
+// ---- a_assoc/(NkT): Wertheim TPT1 with equivalent sites per class -----------
+scalar PCSAFT::aAssoc(scalar T, scalar rho, const sVector& x,
+                      std::vector<scalar>* XDout,
+                      std::vector<scalar>* XAout,
+                      std::vector<scalar>* DeltaOut) const
+{
+    // d_i and the zeta2/zeta3 moments feeding g_hs (same formulae as aRes;
+    // recomputed locally so this term stays self-contained and add-on).
+    std::vector<scalar> d(n_);
+    scalar z2 = 0.0, z3 = 0.0;
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        d[i] = sigma_[i] * (1.0 - 0.12 * std::exp(-3.0 * epsK_[i] / T));
+        const scalar c = (PI / 6.0) * rho * x[i] * m_[i];
+        z2 += c * d[i]*d[i];  z3 += c * d[i]*d[i]*d[i];
+    }
+    const scalar om = 1.0 - z3;
+
+    // Association strength Delta_ij between a site on i and a site on j
+    // (donor-acceptor only; the equivalent-site model makes it one number
+    // per component pair).  sigma_ij^3 convention -- the published kappa^AB
+    // were fitted under it (see the header).
+    std::vector<scalar> Delta(n_ * n_, 0.0);
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        if (!nD_[i] && !nA_[i]) continue;
+        for (std::size_t j = 0; j < n_; ++j)
+        {
+            if (!nD_[j] && !nA_[j]) continue;
+            const scalar dij = d[i]*d[j] / (d[i] + d[j]);
+            const scalar g   = 1.0/om + dij * 3.0*z2/(om*om)
+                             + dij*dij * 2.0*z2*z2/(om*om*om);
+            const scalar sij = 0.5 * (sigma_[i] + sigma_[j]);
+            // Wolbach-Sandler cross rules (self-pair: both reduce to own)
+            const scalar eps = 0.5 * (epsABK_[i] + epsABK_[j]);
+            const scalar kap = std::sqrt(kappaAB_[i] * kappaAB_[j])
+                * std::pow(std::sqrt(sigma_[i]*sigma_[j]) / sij, 3);
+            Delta[i*n_+j] = sij*sij*sij * g * kap * std::expm1(eps / T);
+        }
+    }
+
+    // Damped successive substitution (Jacobi update, blend 1/2) on the site
+    // fractions -- monotone on this closure (Michelsen 2006).  Converges to
+    // assocTol_ = 1e-14 (two orders below the eta bisection -- the nested-
+    // tolerance contract); non-convergence REFUSES, never a partial X.
+    std::vector<scalar> XD(n_, 1.0), XA(n_, 1.0);
+    bool converged = false;
+    for (int it = 0; it < assocMaxIter_ && !converged; ++it)
+    {
+        converged = true;
+        std::vector<scalar> nXD(XD), nXA(XA);
+        for (std::size_t i = 0; i < n_; ++i)
+        {
+            if (!nD_[i] && !nA_[i]) continue;
+            scalar sD = 0.0, sA = 0.0;
+            for (std::size_t j = 0; j < n_; ++j)
+            {
+                if (!nD_[j] && !nA_[j]) continue;
+                sD += x[j] * nA_[j] * XA[j] * Delta[i*n_+j];  // donors on i bond acceptors on j
+                sA += x[j] * nD_[j] * XD[j] * Delta[i*n_+j];
+            }
+            nXD[i] = 0.5 * (XD[i] + 1.0 / (1.0 + rho * sD));
+            nXA[i] = 0.5 * (XA[i] + 1.0 / (1.0 + rho * sA));
+            if (std::abs(nXD[i] - XD[i]) > assocTol_
+             || std::abs(nXA[i] - XA[i]) > assocTol_) converged = false;
+        }
+        XD.swap(nXD);  XA.swap(nXA);
+    }
+    if (!converged)
+        throw std::runtime_error("PCSAFT: association site-fraction fixed"
+            " point did not converge to 1e-14 in 500 iterations -- the"
+            " state is numerically pathological (report it; never run on a"
+            " partial X).");
+
+    scalar a = 0.0;
+    for (std::size_t i = 0; i < n_; ++i)
+    {
+        if (!nD_[i] && !nA_[i]) continue;
+        a += x[i] * ( nD_[i] * (std::log(XD[i]) - 0.5*XD[i])
+                    + nA_[i] * (std::log(XA[i]) - 0.5*XA[i])
+                    + 0.5 * (nD_[i] + nA_[i]) );
+    }
+    if (XDout)    *XDout = XD;
+    if (XAout)    *XAout = XA;
+    if (DeltaOut) *DeltaOut = Delta;
+    return a;
 }
 
 // Z = 1 + rho (d(a_res/RT)/d rho)_{T,x} -- central difference of the analytic
@@ -362,6 +493,57 @@ scalar PCSAFT::verify(int verbosity) const
         if (verbosity >= 3)
             std::cout << "  [PCSAFT verify] state solve skipped: "
                       << e.what() << "\n";
+    }
+
+    // (4) ASSOCIATION oracle (ratified amendment 3): for each associating
+    //     component AS A PURE FLUID at (298.15 K, 1 bar, liquid root), the
+    //     ITERATIVE site fraction must equal the CLOSED-FORM solution -- for
+    //     nD = nA the symmetric closure X = XD = XA collapses to
+    //     rho n Delta X^2 + X - 1 = 0, X = (-1 + sqrt(1 + 4 rho n Delta)) /
+    //     (2 rho n Delta) -- the internal oracle the fixed point is tested
+    //     against.  The site fractions and the a_assoc share are echoed.
+    if (hasAssoc_)
+    {
+        for (std::size_t i = 0; i < n_; ++i)
+        {
+            if (!nD_[i] && !nA_[i]) continue;
+            sVector xi(n_, 0.0);  xi[i] = 1.0;
+            try
+            {
+                const scalar rho = solveDensity(T, 1.0e5, xi, true);
+                std::vector<scalar> XD, XA, Delta;
+                const scalar aA = aAssoc(T, rho, xi, &XD, &XA, &Delta);
+                scalar oracleDev = 0.0;
+                if (nD_[i] == nA_[i])
+                {
+                    // Same Delta, INDEPENDENT solution path: for the pure
+                    // symmetric fluid the closure X = 1/(1 + rho n X Delta)
+                    // is the quadratic rho n Delta X^2 + X - 1 = 0 -- solve
+                    // it in closed form and the damped iteration must have
+                    // landed on the same root.
+                    const scalar rnD =
+                        rho * nA_[i] * Delta[i*n_+i];
+                    const scalar Xclosed =
+                        (-1.0 + std::sqrt(1.0 + 4.0*rnD)) / (2.0*rnD);
+                    oracleDev = std::max(std::abs(XD[i] - Xclosed),
+                                         std::abs(XA[i] - Xclosed));
+                    maxDev = std::max(maxDev, oracleDev);
+                }
+                if (verbosity >= 3)
+                    std::cout << "  [PCSAFT verify] assoc pure component " << i
+                              << " (" << scheme_[i] << "): rho_liq " << rho
+                              << " /m3, X^D " << XD[i] << ", X^A " << XA[i]
+                              << ", a_assoc " << aA
+                              << ", closed-form-vs-iterative dev "
+                              << oracleDev << "\n";
+            }
+            catch (const std::exception& e)
+            {
+                if (verbosity >= 3)
+                    std::cout << "  [PCSAFT verify] assoc oracle skipped for"
+                                 " component " << i << ": " << e.what() << "\n";
+            }
+        }
     }
     return maxDev;
 }

@@ -1,0 +1,44 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-03";
+    importerVersion    "2";
+    records
+    {
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "f88d7206fdb602a8aa14f76892242af8405aa6591f3eb92420e40e6d98cec092";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "995ae4d0c991bf371811c0fdef8c3e024687ca0b15e3ee97412b61b6e428b6a8";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "dcecf827b98c7622422840c5587f28616a9f05621ec0d68eb166acc2c74288d8";
+            origin        "data/standards/components/water.dat";
+            originSha256  "06cb37eb474d704c62bdd4ba54309b9ec91c01e368c0feb67de97749d5455651";
+            release       Choupo-2607;
+        }
+    }
+}

@@ -780,6 +780,21 @@ PYEOF
     fi
     rm -f /tmp/pnch.$$
 
+    # PC-SAFT association gate (approved 2026-08-02, the three ratified
+    # amendments): engine site fractions vs an independent Python closed
+    # form, CRC density anchors, partial-trio + unknown-scheme refusals,
+    # non-associating corpus untouched at 1e-10; sabotage-verified
+    # (Delta scaled 2% -> 4 probes fail by value).
+    if "$ROOT/bin/curate/check_pcsaft_association.py" > /tmp/pcsa.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pcsaft-association-gate" "$(tail -1 /tmp/pcsa.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pcsaft_association.py)\n" "pcsaft-association-gate"
+        cat /tmp/pcsa.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pcsa.$$
+
     # Doc-reference gate: every repo path and tutorial case name mentioned in
     # the AI-facing docs (what bin/llmctx feeds an assistant) must exist.  A
     # dead path there is an instruction the reader follows into nothing.

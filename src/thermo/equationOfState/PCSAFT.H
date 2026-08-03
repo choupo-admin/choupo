@@ -117,9 +117,69 @@ Description
     data/standards/parameters/PCSAFT/<i>-<j>.dat, resolved by the same declared
     channel the cubic kij uses.
 
-    STILL OUT (staged, per the ratified plan): association (2B sites), polar and
-    quadrupolar terms, electrolyte PC-SAFT, and any COSMO->kij coupling.  This
-    file is the non-associating first gate only.
+    ASSOCIATION (Wertheim TPT1, approved 2026-08-02; built with the three
+    ratified amendments).  The association contribution to a_res (Chapman et
+    al. 1990; working form of Gross & Sadowski, Ind. Eng. Chem. Res. 41
+    (2002) 5510):
+
+        a_assoc/RT = Σ_i x_i [ Σ_{A∈sites(i)} ( ln X_i^A − X_i^A/2 ) + M_i/2 ]
+
+    with the site fractions X_i^A (fraction of i NOT bonded at site A)
+    solving the mass-action closure
+
+        X_i^A = 1 / ( 1 + ρ Σ_j x_j Σ_{B∈sites(j)} X_j^B Δ^{A_i B_j} )
+
+    and the association strength (σ_ij³ convention, under which the
+    published κ^AB were fitted)
+
+        Δ^{A_i B_j} = σ_ij³ g_ij^hs(d⁺) κ^{A_i B_j} [ exp(ε^{A_i B_j}/kT) − 1 ]
+
+    Cross-association in mixtures: Wolbach-Sandler combining rules —
+    ε cross arithmetic mean, κ cross geometric mean with the
+    (√(σ_i σ_j)/σ_ij)³ correction.  No new fitted binary constant.
+
+    SITE REPRESENTATION IS EXTENSIBLE (ratified amendment 1): internally a
+    component carries (nDonor, nAcceptor) integer site counts, all sites of
+    a class equivalent; the scheme NAME (Huang-Radosz vocabulary) enters
+    ONLY through siteCounts() — 2B = (1,1), 4C = (2,2) — so adding 3B etc.
+    is one map entry, never a structural change.  An unknown scheme refuses
+    listing the known ones.
+
+    CONSISTENT NESTED TOLERANCES (ratified amendment 2): the density
+    bisection resolves η to 1e-12, so the association fixed point beneath
+    every P(η) evaluation converges max|ΔX| to assocTol_ = 1e-14 — two
+    orders tighter, the outer solver never sees fixed-point noise — and
+    both sit far below the 1e-6 relative FD steps of lnφ / H_res.  The
+    fixed point is damped successive substitution (Jacobi update, blend ½);
+    non-convergence at assocMaxIter_ REFUSES, never returns a partial X.
+
+    WIDENED VALIDATION (ratified amendment 3), all inside verify(): the
+    iterative X^A is cross-checked against the CLOSED-FORM pure-fluid
+    solution (for nD = nA the closure collapses to a quadratic — the
+    internal oracle), the site fractions and the a_assoc share are echoed
+    at verbosity >= 3, and a component set with no association block takes
+    the EXACT pre-association code path (a_assoc never evaluated), so the
+    non-associating corpus is byte-identical by construction — then proven
+    by the suite goldens.
+
+    Per-component association parameters extend the SAME pcsaft{} block
+    (one home, no new file kind):
+
+        pcsaft
+        {
+            m           1.0656;    sigma 3.0007;    epsilonK 366.51;
+            assocScheme 4C;        // 2B | 4C   (absent = non-associating)
+            epsAB_K     2500.7;    // K
+            kappaAB     0.034868;
+            source      "...primary citation...";
+        }
+
+    A partial trio refuses at Component load; the roster of associating
+    components is ANNOUNCED at construction ([pcsaft] associating: ...).
+
+    STILL OUT (staged, per the ratified plan): polar and quadrupolar terms,
+    electrolyte PC-SAFT, induced association, association-parameter fitting
+    tools, and any COSMO->kij coupling.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -129,6 +189,7 @@ Description
 
 #include <array>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace Choupo {
@@ -169,6 +230,32 @@ private:
     std::vector<scalar> sigma_;      // segment diameter [m]
     std::vector<scalar> epsK_;       // epsilon/k [K]
     std::vector<scalar> kij_;        // n*n, symmetric, default 0
+
+    // ---- association (Wertheim TPT1; see the header block) -------------------
+    bool                     hasAssoc_ = false;
+    std::vector<int>         nD_, nA_;      // donor/acceptor site counts (0 = none)
+    std::vector<scalar>      epsABK_;       // association energy eps^AB/k [K]
+    std::vector<scalar>      kappaAB_;      // association volume [-]
+    std::vector<std::string> scheme_;       // scheme name, for announcements
+
+    //  Consistent nested tolerances (ratified amendment 2): X fixed point two
+    //  orders tighter than the 1e-12 eta bisection above it.
+    static constexpr scalar assocTol_     = 1.0e-14;
+    static constexpr int    assocMaxIter_ = 500;
+
+    //  The ONE place a scheme name becomes site counts (ratified amendment 1).
+    //  Throws on an unknown scheme, listing the known ones.
+    static std::pair<int, int> siteCounts(const std::string& scheme);
+
+    //  a_assoc/(NkT) at (T, rho, x); optionally exposes the converged site
+    //  fractions (indexed by component; 1.0 for non-associating components)
+    //  and the n*n association-strength matrix Delta [m^3] -- the oracle in
+    //  verify() solves the pure-fluid closure in CLOSED FORM from the same
+    //  Delta and must land where the iteration landed.
+    scalar aAssoc(scalar T, scalar rho, const sVector& x,
+                  std::vector<scalar>* XD = nullptr,
+                  std::vector<scalar>* XA = nullptr,
+                  std::vector<scalar>* DeltaOut = nullptr) const;
 
     // ---- GS Table 1 universal dispersion constants (a0..a2, b0..b2) ----------
     static const std::array<scalar, 7> a0_, a1_, a2_, b0_, b1_, b2_;

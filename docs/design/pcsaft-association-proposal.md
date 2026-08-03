@@ -1,11 +1,35 @@
 # PC-SAFT association term — proposal (roadmap #4)
 
-**Status: PROPOSAL — awaiting Vítor's alignment.  No code is authorised by
-this document.**  (The no-skip-alignment rule of CLAUDE.md §10 applies:
-this is the propose-first half; building starts only on explicit
-approval.)
+**Status: APPROVED (Vítor, 2026-08-02 — 2B+4C, with three amendments) and
+BUILT 2026-08-03.**  The amendments, all honoured in the implementation
+(`src/thermo/equationOfState/PCSAFT.{H,cpp}`):
 
-Date: 2026-08-02.  Author: dev session, for Vítor's review.
+1. **Extensible site representation** — internally a component carries
+   (nDonor, nAcceptor) integer site counts; the scheme NAME enters only
+   through `PCSAFT::siteCounts()` (2B = (1,1), 4C = (2,2)), so a new
+   scheme is one map entry, never a structural change.
+2. **Consistent nested tolerances** — the association fixed point
+   converges max|ΔX| to 1e-14, two orders below the 1e-12 η bisection
+   above it, both far below the 1e-6 FD steps; non-convergence refuses.
+3. **Widened validation** — `verify()` echoes the site fractions X^D/X^A
+   and the a_assoc share per associating pure fluid, cross-checks the
+   iterative X against the CLOSED-FORM quadratic from the same Δ
+   (observed machine zero), and the non-associating corpus takes the
+   exact pre-association code path (byte-identity by construction,
+   asserted at 1e-10 by the gate).
+
+Records: water (4C) + ethanol (2B), G&S 2002 Table 1, primary-cited.
+Witness: `tutorials/props/molecular/pcsaft03_association_pure`
+(ρ_liq water +0.6 % / ethanol −1.2 % vs CRC — the published class).
+Gate: `bin/curate/check_pcsaft_association.py` (independent Python
+closed form, CRC anchors, two refusals, negative); sabotage-verified
+(Δ scaled 2 % → 4 probes fail by value).  The ethanol/water mixture
+VLE witness (validation item 4) is the named next slice of this
+programme.  Σ_ij convention: σ_ij³ (the published κ^AB were fitted
+under it).
+
+Date: 2026-08-02 (proposal) / 2026-08-03 (built).  Author: dev session,
+approved by Vítor.
 
 ---
 

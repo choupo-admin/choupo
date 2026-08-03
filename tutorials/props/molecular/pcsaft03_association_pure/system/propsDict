@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  PC-SAFT WITH ASSOCIATION (Wertheim TPT1; Gross & Sadowski, Ind. Eng.
+  Chem. Res. 41 (2002) 5510) -- the hydrogen-bonded liquids the
+  non-associating core cannot represent, as PURE liquids at 298.15 K, 1 bar.
+
+  The association parameters live on the component records (4C water,
+  2B ethanol -- both G&S 2002 Table 1, fitted WITH the association term);
+  the case only declares `model PCSAFT;`, and the engine announces the
+  roster it found on the records:
+
+      [pcsaft] associating: water (4C), ethanol (2B); cross: Wolbach-Sandler
+
+  Liquid densities PREDICTED here (goldened), vs the CRC Handbook 25 degC
+  values -- inside the ~1-2 % class Gross & Sadowski 2002 report over the
+  fitted ranges:
+
+      water    v_molar_liq -> rho_liq = 1002.9 kg/m3   vs 997.05  (+0.6 %)
+      ethanol  v_molar_liq -> rho_liq =  779.8 kg/m3   vs 789.3   (-1.2 %)
+
+  What the student sees at verbosity 3 (the widened validation, ratified
+  2026-08-02): the construction-time verify() now ALSO echoes, per
+  associating component as a pure fluid, the converged site fractions
+  X^D / X^A, the a_assoc share, and the CLOSED-FORM-vs-ITERATIVE oracle
+  deviation (for nD = nA the mass-action closure collapses to a quadratic;
+  the damped fixed point must land on its root -- observed machine zero).
+  X^A(water) ~ 0.024: 97.6 % of water's sites are hydrogen-bonded at
+  ambient conditions -- the physics the term adds.
+
+  The two ops publish the standard vapour-root family (Z, v_molar) plus
+  the labelled liquid root (v_molar_liq) where a metastable vapour root
+  exists; at 1 bar water resolves only the liquid root (Psat ~ 0.03 bar).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        water_liquid_298K;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+    {
+        name        ethanol_liquid_298K;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { ethanol 1.0; } }
+        properties  ( Z  molarVolume );
+    }
+);
