@@ -160,6 +160,12 @@ struct ProcessStream
         //  excluded mediators and the set does not close in charge.  An
         //  `analytical` set is what a LABORATORY writes, and it does.
         std::string basis = "stoichiometric";
+        //  WHO answered for this decomposition (basis-reconciliation spike,
+        //  2026-08-03): "solved:<unit>" = the chemistry was resolved there;
+        //  "transported:<unit>" = the block crossed that unit as carried
+        //  matter, chemistry NOT re-run.  Empty = a pre-spike block (the
+        //  post-solve pass); the stream-file writer stamps it when set.
+        std::string origin;
         std::vector<std::pair<std::string, scalar>> flows;  // species [kmol/s]
         scalar      pH = 0.0;
         bool        pH_valid = false;

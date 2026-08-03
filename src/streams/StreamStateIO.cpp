@@ -34,6 +34,7 @@ License
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <functional>
@@ -167,9 +168,19 @@ void writeStreamState(const ProcessStream&  s,
                       " bridges (verified on read).\n";
         out << pad << "    network   ( " << sp.network << " );\n";
         out << pad << "    basis     " << sp.basis << ";\n";
+        if (!sp.origin.empty())
+            out << pad << "    origin    \"" << sp.origin << "\";\n";
         if (sp.pH_valid) out << pad << "    pH        " << sp.pH << ";\n";
         out << "\n";
-        for (const auto& [nm, v] : sp.flows)
+        //  CANONICAL ORDER (basis-reconciliation spike, criterion 6): the
+        //  species rows are sorted by id, so the file does not depend on
+        //  the solver's container order and write->read->write is
+        //  byte-stable.
+        std::vector<std::pair<std::string, scalar>> rows(sp.flows.begin(),
+                                                         sp.flows.end());
+        std::sort(rows.begin(), rows.end(),
+                  [](const auto& a, const auto& b) { return a.first < b.first; });
+        for (const auto& [nm, v] : rows)
             if (std::abs(v) > 0.0)
                 out << pad << "    " << nm << "    " << v * 3600.0 << " kmol/h;\n";
         out << pad << "}\n";
@@ -812,7 +823,8 @@ ProcessStream readStreamState(const fs::path&       file,
         std::map<std::string, scalar> declared;      // master -> kmol/s
         for (const auto& k : sd->keys())
         {
-            if (k == "network" || k == "basis" || k == "pH") continue;
+            if (k == "network" || k == "basis" || k == "pH"
+                || k == "origin") continue;
             declared[k] += sd->lookupScalar(k);
         }
         //  m = A n from the material that IS state, against the same bridges.
@@ -878,6 +890,29 @@ ProcessStream readStreamState(const fs::path&       file,
                   " re-run the case that wrote it.";
             throw std::runtime_error(os.str());
         }
+
+        //  CARRIAGE (basis-reconciliation spike, criterion 5): a block that
+        //  just verified is STORED back on the stream -- ids, quantities,
+        //  basis, network, origin, pH all survive a write->read cycle, so
+        //  the chain's intermediate state can cross a driver restart or a
+        //  drill-in without being silently re-derived.  Flows are held in
+        //  the reader's sorted order (the writer emits sorted too --
+        //  criterion 6, container-order independence).
+        auto carried = std::make_shared<ProcessStream::Speciation>();
+        if (sd->found("network"))
+        {
+            const auto nets = sd->lookupWordList("network");
+            if (!nets.empty()) carried->network = nets.front();
+        }
+        carried->basis  = sd->lookupWordOrDefault("basis", "stoichiometric");
+        carried->origin = sd->lookupWordOrDefault("origin", "");
+        if (sd->found("pH"))
+        {
+            carried->pH       = sd->lookupScalar("pH");
+            carried->pH_valid = true;
+        }
+        carried->flows.assign(declared.begin(), declared.end());
+        s.speciation = std::move(carried);
     }
 
     // ---- Reconstruct the ProcessStream: fluid = overall - solid (the legacy
