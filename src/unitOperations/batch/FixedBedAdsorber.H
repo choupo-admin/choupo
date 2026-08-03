@@ -262,6 +262,12 @@ private:
     scalar A_    = 0.0;      // cross-section [m2]
     scalar eps_  = 0.0;      // interparticle void fraction [-]
     scalar u_    = 0.0;      // superficial velocity [m/s], DECLARED constant
+    //  P2 bookkeeping: the fed-total reference scale is the INTEGRAL of u
+    //  over the campaign (identical to u*(t-t0) until a valve event); the
+    //  closed segment folds in at the switch so the closure KPI keeps a
+    //  finite, honest denominator after the feed stops.
+    scalar uIntegral_ = 0.0;  // folded closed-segment integral [m]
+    scalar uSegStart_ = 0.0;  // when the current u took effect [s]
     scalar T_    = 0.0;      // temperature [K], DECLARED constant (A4: energy)
     scalar P_    = 0.0;      // pressure [Pa], DECLARED constant (A4: Ergun)
     scalar Dax_  = 0.0;      // axial dispersion [m2/s], DECLARED

@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch25_blowdown_thermal -- meta-control (P-swing WITNESS B)
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "P-swing witness B: adiabatic blowdown COOLS (expansion work)";
+
+verbosity     3;
+
+startTime       0;
+endTime         600;      // s
+deltaT          0.05;     // s   (unused: thermal requires adaptive)
+writeInterval   50;       // s
+timeStepping    adaptive;
+timeSteppingControl
+{
+    rtol        1.0e-6;
+    atol        1.0e-9;
+    deltaT0     1.0e-3;
+    deltaTmax   5.0;
+    maxGrowth   2.0;
+}

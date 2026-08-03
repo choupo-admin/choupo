@@ -18,8 +18,8 @@ physics witness stays batch19's golden in the main suite.
             running campaign), each asserted on exit != 0 AND the message
             naming the reason -- a gutted throw fails the gate:
               feed.T      thermal swing        -> non-isothermal balance
-              u           flow transient       -> transient Ergun
-              P           pressure swing       -> transient c_tot
+              u           (constantVelocity)   -> points at the ergun valve control
+              P           feed pressure        -> points at setParameter P_out
               feed.He     the by-difference carrier cannot be set
               feed.CO2=1.2  a feed MOLE FRACTION out of [0,1]
               feed.N2     a name that is not a component of the case
@@ -121,11 +121,16 @@ def main() -> int:
         expect_refusal(tmp, "feed.T", "310",
                        "DECLARED CONSTANT", "thermal-swing",
                        "non-isothermal bed energy balance")
+        #  P-swing contract (2026-08-03): in constantVelocity mode u is
+        #  still a declared constant, and the refusal now POINTS AT the
+        #  ergun-mode valve control instead of a blanket "transient Ergun";
+        #  P (the FEED pressure) refuses pointing at the downstream P_out.
         expect_refusal(tmp, "u", "0.1",
-                       "DECLARED CONSTANT", "transient Ergun")
+                       "DECLARED CONSTANT of the constant-velocity closure",
+                       "ergun-mode control")
         expect_refusal(tmp, "P", "200000",
-                       "DECLARED CONSTANT", "pressure-swing",
-                       "transient total concentration")
+                       "FEED pressure", "DECLARED CONSTANT",
+                       "setParameter P_out")
         expect_refusal(tmp, "feed.He", "1.0",
                        "by-difference CARRIER",
                        "the carrier follows")

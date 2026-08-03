@@ -780,6 +780,22 @@ PYEOF
     fi
     rm -f /tmp/pnch.$$
 
+    # P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over
+    # the section-9 expansion widening, ratified battery 2026-08-03):
+    # witness A pins the analytic inventory ratio, witness B the blowdown
+    # COOLING + the rigid-vessel U-basis energy closure; three refusals.
+    # Sabotage-verified: cp-form restored -> B fails by value (T 298.15,
+    # residual exactly the mis-booked 0.100 kJ).
+    if "$ROOT/bin/curate/check_pswing.py" > /tmp/pswg.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pswing-gate" "$(tail -1 /tmp/pswg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pswing.py)\n" "pswing-gate"
+        cat /tmp/pswg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pswg.$$
+
     # PC-SAFT association gate (approved 2026-08-02, the three ratified
     # amendments): engine site fractions vs an independent Python closed
     # form, CRC density anchors, partial-trio + unknown-scheme refusals,

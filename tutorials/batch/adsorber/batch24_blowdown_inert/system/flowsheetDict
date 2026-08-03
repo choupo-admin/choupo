@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch24_blowdown_inert  --  P-SWING WITNESS A: the inventory ratio.
+
+  The MATERIAL half of a blowdown, isolated from every thermal effect so
+  it cannot pass by coincidence (design note fixed-bed-thermal-a5.md,
+  section 8/9 amended battery, second-opinion review 2026-08-03):
+
+    * ideal gas, INERT bed (kLDF = 0: the solid is frozen, pure
+      transport), pure He;
+    * ISOTHERMAL ergun mode -- T is a DECLARED constant of this teaching
+      slice, so the energy question is out of frame BY DECLARATION (the
+      thermal half is witness B, batch25);
+    * at t = 200 s the recipe closes the feed valve (P2,
+      `setParameter u = 0` -- the whole remaining feed commitment
+      retires as a ledgered feedAmendment record) and drops the outlet
+      boundary (P1, `setParameter P_out` 1.0 -> 0.5 bar);
+    * the bed drains through the SAME Ergun face machinery every run
+      already uses; the vented gas rides the telescopic M_out ledger
+      rows.
+
+  THE ANCHORS (ideal-gas exactness, hand-computable):
+
+      n_end / n_0  =  P_end / P_0  =  0.5
+      n(P) = eps A L P / (R T)  =  0.0807 mol at 1 bar, 0.0403 at 0.5 bar
+      vented = inventory drop      (the mass-closure KPI is the proof)
+
+  The gate (check_pswing) recomputes both analytically and pins the
+  `gasInventory_mol` KPI + the closure against them.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { He 1.0; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "INERT witness: the solid is deliberately frozen";
+                source "declared (k = 0 -- transport-only, no adsorption)";
+                k { CO2 [0 0 -1 0 0] 0.0; }
+            }
+        }
+    }
+);
+
+recipe
+(
+    {
+        time     200;
+        action   setParameter;
+        unit     bed;
+        key      u;
+        value    0.0;
+    }
+    {
+        time     200;
+        action   setParameter;
+        unit     bed;
+        key      P_out;
+        value    50000;        // Pa = 0.5 bar
+    }
+);

@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch25_blowdown_thermal  --  P-SWING WITNESS B: the cooling.
+
+  The THERMAL half of a blowdown, isolated from adsorption so the only
+  heat effect in frame is the expansion work itself (design note
+  fixed-bed-thermal-a5.md, section 8/9 amended battery):
+
+    * same inert pure-He ergun bed as witness A (batch24), but
+      `energyBalance adiabatic;` -- the section-9 general energy row
+      (cv accumulation + the explicit eps R T dc_tot/dt source) is live;
+    * at t = 200 s the recipe closes the feed valve (P2) and halves the
+      outlet boundary (P1) -- the bed drains, dc_tot/dt < 0, and the
+      expansion source pulls T DOWN;
+    * the solid heat capacity is a declared SYNTHETIC LOW value
+      (9.2 J/(kg K), scope says so): the real ~920 of a zeolite pellet
+      would thermally bury the gas-phase cooling under the solid's mass
+      (dT ~ -0.03 K); at the teaching value the drop is visible
+      (~ -3 K class).  Same honest-teaching-value discipline as the
+      hxFluid of the pinch witness -- the physics on display is the
+      GAS's, and the header says which knob made it visible.
+
+  THE ANCHOR: T_min_final_K sits BELOW the declared 298.15 K by a
+  visible margin -- a depressurising cell COOLS, which is exactly what
+  the pre-widening cp-form could not show (the sabotage of the gate
+  restores that form and this witness fails).  The material anchors
+  stay witness A's business; this case pins the sign and visibility of
+  the thermal effect, and the campaign energy claim stays closed.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance adiabatic;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 9.2;   // J/(kg K)
+                scope  "SYNTHETIC LOW teaching value (real zeolite ~920): exposes the gas-phase expansion cooling the solid's thermal mass would bury";
+                source "declared teaching value, chosen for pedagogical visibility of the eps R T dc/dt term";
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { He 1.0; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "INERT witness: the solid is deliberately frozen";
+                source "declared (k = 0 -- transport-only, no adsorption)";
+                k { CO2 [0 0 -1 0 0] 0.0; }
+            }
+        }
+    }
+);
+
+recipe
+(
+    {
+        time     200;
+        action   setParameter;
+        unit     bed;
+        key      u;
+        value    0.0;
+    }
+    {
+        time     200;
+        action   setParameter;
+        unit     bed;
+        key      P_out;
+        value    50000;        // Pa = 0.5 bar
+    }
+);

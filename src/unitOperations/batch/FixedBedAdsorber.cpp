@@ -685,6 +685,8 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     // Breakthrough sampler seed + analytic anchors.
     tPrev_ = startTime_;
     tNow_  = startTime_;
+    uIntegral_ = 0.0;
+    uSegStart_ = startTime_;
     nextProfile_ = startTime_;
     fPrev_.assign(nAds, 0.0);
     integral_.assign(nAds, 0.0);
@@ -995,8 +997,13 @@ scalar FixedBedAdsorber::ergunVelocity_(scalar pLeft, scalar pRight,
         rho += ci * thermo_->comp(i).MW() / 1000.0; // mol/m3 * kg/mol
     }
     if (cSum <= 0.0)
-        throw std::runtime_error("fixedBedAdsorber '" + name_
-            + "': Ergun face has zero gas concentration");
+        //  A face with no gas carries no flux -- the correct physical
+        //  limit, and the state that reaches it is a TRIAL state of the
+        //  adaptive integrator overdraining a cell during blowdown (P1):
+        //  returning 0 lets the local-error control reject that step,
+        //  where the old hard throw killed the run mid-trial.  A real
+        //  (accepted) zero-gas cell cannot exist at P > 0: P_j = R T c.
+        return 0.0;
     for (scalar& yi : yMix) yi /= cSum;
     const scalar mu = muGas_ > 0.0 ? muGas_ : thermo_->viscosityGas(T_, yMix);
     const scalar de = sphericity_ * dParticle_;
@@ -1801,6 +1808,17 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
                      i, T_, P_, "gas",
                      ThermoPackage::ReferenceContext::StandardPhase);   // kJ
         }
+        //  RIGID-VESSEL basis (P-swing widening): the IN-VESSEL gas holdup
+        //  is priced u = h - RT (see the thermal branch for the full
+        //  rationale) -- only the holdup, never the boundary commitment
+        //  (a flow term, whose enthalpy IS the right function).
+        for (std::size_t j = 0; j < N_; ++j)
+        {
+            scalar ct = 0.0;
+            for (std::size_t i = 0; i < compNames_.size(); ++i)
+                ct += std::max(y_[i * N_ + j], scalar(0.0));
+            H -= (eps_ * A_ * dz_ * ct / 1000.0) * constant::R * T_;
+        }
     }
     else
     {
@@ -1830,6 +1848,19 @@ scalar FixedBedAdsorber::vesselEnthalpy(bool& ok, std::string& why) const
                          ThermoPackage::ReferenceContext::StandardPhase);
             }
             H += rhoB_ * A_ * dz_ * cpS_ * (Tj - T_) / 1000.0;   // kJ, solid
+            //  RIGID-VESSEL basis (P-swing widening): the bed's volume is
+            //  fixed, so the state function the first law closes on is the
+            //  INTERNAL ENERGY -- the in-vessel gas is priced u = h - RT
+            //  (ideal gas: PV = nRT per cell).  At pinned P the subtracted
+            //  Sum P_j V_cell is a campaign constant and every prior
+            //  difference is unchanged; in a blowdown it is exactly the
+            //  V dP the enthalpy basis mis-booked (batch25: 0.100 kJ).
+            {
+                scalar ct = 0.0;
+                for (std::size_t i = 0; i < compNames_.size(); ++i)
+                    ct += std::max(y_[i * N_ + j], scalar(0.0));
+                H -= (eps_ * A_ * dz_ * ct / 1000.0) * constant::R * Tj;
+            }
         }
         //  The remaining feed commitment enters at the CURRENT feed T
         //  (T1.5: a hot purge re-declares both the matter and its
@@ -2002,14 +2033,93 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
         return;
     }
     if (key == "u")
-        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': u is a"
-            " DECLARED CONSTANT -- a flow transient re-poses the momentum"
-            " problem (transient Ergun), which this unit does not carry");
+    {
+        //  P2 -- the FEED-VALVE CLOSURE (design note section 8).  In ergun
+        //  mode u_ is nothing but the imposed inlet flux: every interior
+        //  and outlet velocity is already algebraic from the pressure
+        //  field, so closing the valve re-poses NO interior problem.  The
+        //  old blanket "transient Ergun" refusal was written for the A3
+        //  constant-velocity closure and over-reached here.
+        if (!ergun_)
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "': u"
+                " is a DECLARED CONSTANT of the constant-velocity closure"
+                " -- the feed-valve closure (setParameter u = 0) is an"
+                " ergun-mode control (flowModel ergun)");
+        if (value != 0.0)
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "':"
+                " only FULL feed-valve closure (u = 0) is carried -- a"
+                " THROTTLED feed re-poses the imposed-flux commitment and"
+                " its frozen pre-run claims; got u = "
+                + std::to_string(value));
+        if (u_ == 0.0) return;          // valve already closed
+
+        //  The remaining declared feed commitment retires WHOLE: one OUT
+        //  package at the current feed T/composition (the T1.5 pattern,
+        //  OUT leg only) -- the balance reads a record, never a jump.
+        const scalar horizon = std::max(endTime_ - tNow_, 0.0);
+        const std::size_t n  = compNames_.size();
+        DatumAmendment outAm;
+        outAm.into = false;  outAm.pkg.n.assign(n, 0.0);
+        outAm.pkg.T = Tfeed_;  outAm.pkg.P = P_;  outAm.pkg.vf = 1.0;
+        for (std::size_t i = 0; i < n; ++i)
+            outAm.pkg.n[i] = A_ * u_ * cInAll_[i] * horizon / 1000.0;
+        {
+            std::ostringstream w;
+            w << "feed-valve closure on '" << name_ << "' at t = " << tNow_
+              << " s: the whole remaining feed commitment (" << horizon
+              << " s at the declared feed) retires";
+            outAm.why = w.str();
+        }
+        if (outAm.pkg.totalMoles() > 0.0)
+            pendingAmendments_.push_back(std::move(outAm));
+        uIntegral_ += u_ * std::max(tNow_ - uSegStart_, 0.0);
+        uSegStart_  = tNow_;
+        u_ = 0.0;
+        if (verbosity_ >= 2)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] P2"
+                         " FEED-VALVE CLOSURE at t = " << tNow_
+                      << " s: u -> 0 (inlet flux stops; interior/outlet"
+                         " velocities stay algebraic from the pressure"
+                         " field); remaining commitment retired as a"
+                         " ledgered feedAmendment record.\n";
+        return;
+    }
+    if (key == "P_out")
+    {
+        //  P1 -- the OUTLET-PRESSURE SWITCH (blowdown / repressurisation
+        //  boundary; design note section 8).  Pout_ is the downstream
+        //  boundary of the SAME Ergun pressure field every face velocity
+        //  already reads -- switching it re-drains (or refills) the bed
+        //  through the existing machinery, the vented gas flows through
+        //  the telescopic M_out ledger rows, and no boundary changes KIND.
+        if (!ergun_)
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "':"
+                " P_out is a boundary of the ergun PRESSURE FIELD -- the"
+                " constant-velocity closure has none (flowModel ergun)");
+        if (value <= 0.0)
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "':"
+                " P_out must be a positive absolute pressure; got "
+                + std::to_string(value));
+        if (value == Pout_) return;     // no-op re-declaration
+        const scalar Pold = Pout_;
+        Pout_ = value;
+        if (verbosity_ >= 2)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] P1"
+                         " OUTLET-PRESSURE SWITCH at t = " << tNow_
+                      << " s: P_out " << Pold << " -> " << Pout_
+                      << " Pa; the bed " << (Pout_ < Pold ? "drains"
+                                                          : "refills")
+                      << " toward the new boundary through the existing"
+                         " face machinery (vented gas rides the M_out"
+                         " ledger rows).\n";
+        return;
+    }
     if (key == "P")
-        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': P is a"
-            " DECLARED CONSTANT -- a pressure-swing (PSA) step (blowdown /"
-            " repressurisation) needs a transient total concentration,"
-            " which this unit does not carry");
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': P (the"
+            " FEED pressure) is a DECLARED CONSTANT -- the pressure-swing"
+            " boundary this unit carries is the DOWNSTREAM one"
+            " (setParameter P_out, ergun mode); repressurising through the"
+            " feed is a different control with its own commitment claims");
 
     if (key.rfind("feed.", 0) == 0)
     {
@@ -2233,6 +2343,19 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         k["P_last_cell_Pa"] = pressureCell_(y_, N_ - 1);
         k["P_out_boundary_Pa"] = Pout_;
         k["deltaP_first_to_out_Pa"] = pressureCell_(y_, 0) - Pout_;
+        //  End-state GAS-phase inventory (mol): the P-swing witnesses pin
+        //  the ideal-gas inventory ratio n_end/n_0 = P_end/P_0 against it.
+        {
+            scalar nGas = 0.0;
+            for (std::size_t j = 0; j < N_; ++j)
+            {
+                scalar ct = 0.0;
+                for (std::size_t i = 0; i < compNames_.size(); ++i)
+                    ct += std::max(y_[i * N_ + j], scalar(0.0));
+                nGas += eps_ * A_ * dz_ * ct;
+            }
+            k["gasInventory_mol"] = nGas;
+        }
     }
     // The carrier moles the declared constant-(u, P, T) closure fabricated
     // (= net uptake; announced in the header, NOT discounted anywhere --
@@ -2246,11 +2369,16 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         //  bed got, and the pre-run equilibrium-theory anchors the run
         //  had to respect -- FROZEN claims (stored at initialise; a T1.5
         //  feed switch must not silently rewrite what was announced).
-        scalar tMax = 0.0;
+        scalar tMax = 0.0, tMin = 1.0e30;
         for (std::size_t j = 0; j < N_; ++j)
+        {
             tMax = std::max(tMax, cellT_(y_, j));
+            tMin = std::min(tMin, cellT_(y_, j));
+        }
         k["T_out_final_K"] = cellT_(y_, N_ - 1);
         k["T_max_final_K"] = tMax;
+        //  The blowdown witness pins expansion COOLING against this one.
+        k["T_min_final_K"] = tMin;
         k["u_thermal_wave_m_s"] = uThAnn_;
         if (wallCooled_)
             k["Q_wall_removed_kJ"] = y_[qwOffset_()] / 1000.0;
@@ -2261,8 +2389,13 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     }
     k["carrier_fabricated_mol"] = carrierFabricated_();
     {
-        const scalar fedTot =
-            A_ * u_ * cTot_ * std::max(tNow_ - startTime_, scalar(0.0));
+        //  Fed-total reference = A c_tot INTEGRAL(u dt): identical to the
+        //  old A u c_tot (t - t0) while u never moves, and it stays the
+        //  honest pre-closure total after a P2 valve event (a current-u
+        //  formula would divide the closure by zero).
+        const scalar uInt = uIntegral_
+                          + u_ * std::max(tNow_ - uSegStart_, scalar(0.0));
+        const scalar fedTot = A_ * cTot_ * uInt;
         k["physical_mass_closure_rel"] =
             carrierFabricated_() / std::max(fedTot, scalar(1.0e-30));
     }

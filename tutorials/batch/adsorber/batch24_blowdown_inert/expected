@@ -1,0 +1,47 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     bed                    E_adsorption_seg0_kJ 0                  1e-4
+kpi     bed                    E_adsorption_total_kJ 0                  1e-4
+kpi     bed                    P_final          49999.9998988      1e-4
+kpi     bed                    P_first_cell_Pa  49999.9998996      1e-4
+kpi     bed                    P_last_cell_Pa   49999.9998972      1e-4
+kpi     bed                    P_mid_cell_Pa    49999.999899       1e-4
+kpi     bed                    P_out_boundary_Pa 50000              1e-4
+kpi     bed                    Pe               0                  1e-4
+kpi     bed                    T_final          298.15             1e-4
+kpi     bed                    carrier_fabricated_mol -8.881784197e-16   1e-4
+kpi     bed                    deltaP_first_to_out_Pa -0.000100418335933 1e-4
+kpi     bed                    gasInventory_mol 0.0403395454642    1e-4
+kpi     bed                    mass_closure_CO2 0                  1e-4
+kpi     bed                    n_CO2_final      0                  1e-4
+kpi     bed                    n_He_final       4.03395454642e-05  1e-4
+kpi     bed                    physical_mass_closure_rel -2.20175613702e-16 1e-4
+kpi     bed                    qbar_CO2_final   0                  1e-4
+kpi     bed                    t_end            1200               1e-4
+kpi     bed                    totalMoles_final 4.03395454642e-05  1e-4
+kpi     campaign               element_He_closure_rel 4.28601822768e-16  1e-4
+kpi     campaign               element_worst_closure_rel 4.28601822768e-16  1e-4
+kpi     campaign               energy_H_external_kJ 0                  1e-4
+kpi     campaign               energy_Q_ledger_kJ 0                  1e-4
+kpi     campaign               energy_balance_available 1                  1e-4
+kpi     campaign               energy_closure_rel 1                  1e-4
+kpi     campaign               energy_dH_vessels_kJ 0.100000000202     1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 1                  1e-4
+kpi     campaign               energy_residual_kJ 0.100000000202     1e-4
+kpi     campaign               mass_closure_rel 5.710978834e-16    1e-4
+kpi     campaign               mass_kg_amend_in 0                  1e-4
+kpi     campaign               mass_kg_amend_out 0.0807315325009    1e-4
+kpi     campaign               mass_kg_external_out 0.0163077695655    1e-4
+kpi     campaign               mass_kg_final    0.000161463064675  1e-4
+kpi     campaign               mass_kg_initial  0.0972007651311    1e-4
+kpi     campaign               mass_residual_kg 5.55111512313e-17  1e-4
+kpi     campaign               moles_kmol_amend_in 0                  1e-4
+kpi     campaign               moles_kmol_amend_out 0.0201697727729    1e-4
+kpi     campaign               moles_kmol_external_out 0.00407429410021   1e-4
+kpi     campaign               moles_kmol_final 4.03395454642e-05  1e-4
+kpi     campaign               moles_kmol_initial 0.0242844064186    1e-4
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 2                  1e-4
+kpi     campaign               transfers_logged 2                  1e-4

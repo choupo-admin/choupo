@@ -34,11 +34,11 @@ kpi     campaign               element_worst_closure_rel 2.15773827618e-15 1e-4
 kpi     campaign               energy_H_external_kJ -11900.6595153   1e-4
 kpi     campaign               energy_Q_ledger_kJ 0                1e-4
 kpi     campaign               energy_balance_available 1                1e-4
-kpi     campaign               energy_closure_rel 5.7258283696e-05 1e-4
-kpi     campaign               energy_dH_vessels_kJ 11899.978104     1e-4
+kpi     campaign               energy_closure_rel 5.72667499816e-05 1e-4
+kpi     campaign               energy_dH_vessels_kJ 11899.9780032    1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 0                1e-4
-kpi     campaign               energy_residual_kJ 0.681411338699   1e-4
+kpi     campaign               energy_residual_kJ 0.681512093081   1e-4
 kpi     campaign               mass_closure_rel 1.65048456534e-15 1e-4
 kpi     campaign               mass_kg_external_out 2.17632062501    1e-4
 kpi     campaign               mass_kg_final    0.245272992153   1e-4
