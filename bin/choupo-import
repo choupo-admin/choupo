@@ -704,6 +704,23 @@ def closure_of(pp_path, caseDir, std, AQ):
         for ctext in (read(std / "components" / (c + ".dat")) or "",
                       (read(walk_up_local("components/" + c + ".dat")) or "")
                       if walk_up_local("components/" + c + ".dat") else ""):
+            #      A MINERAL-BEARING component declares its ion bridge inside
+            #      its OWN solidPhases{} -- `dissolutionReaction { masters (
+            #      { ion Ca; ... } ) }` -- and that is precisely where the
+            #      RUNTIME derives them from ("[chemistry] masters DERIVED
+            #      from the declared component bridges").  Reading only
+            #      aqueousSpeciation/aqueousMapping missed CaCO3 entirely, so
+            #      species/Ca.dat never entered the closure and flash19 -- a
+            #      shipped, sealed, PASSING tutorial -- could not be re-sealed
+            #      from scratch (found 2026-08-03 building the basis witness).
+            #      A writer whose output the reader refuses is a bug in both:
+            #      the two must read the SAME declaration.
+            if aqueous_context:
+                spb = block(ctext, "solidPhases")
+                if spb:
+                    for im in re.finditer(r'\bion\s+([A-Za-z0-9_]+)\s*;', spb):
+                        ions.add(im.group(1))
+                        speciates = True
             am = re.search(r'\baqueousSpeciation\s+([A-Za-z0-9_]+)\s*;', ctext)
             if not am or am.group(1) == "none":
                 continue

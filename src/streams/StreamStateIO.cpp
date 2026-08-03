@@ -170,6 +170,8 @@ void writeStreamState(const ProcessStream&  s,
         out << pad << "    basis     " << sp.basis << ";\n";
         if (!sp.origin.empty())
             out << pad << "    origin    \"" << sp.origin << "\";\n";
+        if (sp.solvedT > 0.0)
+            out << pad << "    solvedAtT " << sp.solvedT << " K;\n";
         if (sp.pH_valid) out << pad << "    pH        " << sp.pH << ";\n";
         out << "\n";
         //  CANONICAL ORDER (basis-reconciliation spike, criterion 6): the
@@ -824,7 +826,7 @@ ProcessStream readStreamState(const fs::path&       file,
         for (const auto& k : sd->keys())
         {
             if (k == "network" || k == "basis" || k == "pH"
-                || k == "origin") continue;
+                || k == "origin" || k == "solvedAtT") continue;
             declared[k] += sd->lookupScalar(k);
         }
         //  m = A n from the material that IS state, against the same bridges.
@@ -906,6 +908,8 @@ ProcessStream readStreamState(const fs::path&       file,
         }
         carried->basis  = sd->lookupWordOrDefault("basis", "stoichiometric");
         carried->origin = sd->lookupWordOrDefault("origin", "");
+        carried->solvedT = sd->lookupScalarOrDefault("solvedAtT", 0.0,
+                                                     Dims::temperature);
         if (sd->found("pH"))
         {
             carried->pH       = sd->lookupScalar("pH");

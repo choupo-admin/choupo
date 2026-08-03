@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  basis01/0/feed -- the authored inlet (apparent component basis)             |
+|                                                                              |
+|  Five components, five roles (see constant/thermoPhysPropDict): the solvent,  |
+|  the cation route, the anion route + aqueous molecular, the nonionising       |
+|  volatile, and the pass-through spectator.  N2 is fed deliberately: it must   |
+|  reach the offgas untouched and must NEVER appear as a species row.           |
+|                                                                              |
+|  NH3 and CO2 are fed in DIFFERENT amounts on purpose -- an equimolar feed     |
+|  would make Sum z*n close by symmetry and hide a sign error.                  |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    NH3       1.5   kmol/h;
+    CO2       0.8   kmol/h;
+    water    96.0   kmol/h;
+    ethanol   1.0   kmol/h;
+    N2        0.5   kmol/h;
+}
+
+T               313.15 K;
+P               101325 Pa;

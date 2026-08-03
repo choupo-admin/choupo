@@ -166,6 +166,14 @@ struct ProcessStream
         //  matter, chemistry NOT re-run.  Empty = a pre-spike block (the
         //  post-solve pass); the stream-file writer stamps it when set.
         std::string origin;
+        //  AND AT WHAT STATE it was solved [K].  A transported block rides a
+        //  stream whose T has moved -- a heater is a heater -- so the
+        //  speciation on the file is the UPSTREAM equilibrium carried
+        //  forward, not the equilibrium at the temperature printed beside
+        //  it.  Saying "transported" without saying "solved at 313.15 K"
+        //  leaves the reader to assume the two agree, which is exactly the
+        //  assumption the boundary breaks.  0 = unstamped (pre-spike).
+        scalar solvedT = 0.0;
         std::vector<std::pair<std::string, scalar>> flows;  // species [kmol/s]
         scalar      pH = 0.0;
         bool        pH_valid = false;

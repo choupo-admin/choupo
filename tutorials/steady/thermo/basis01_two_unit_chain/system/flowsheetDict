@@ -1,0 +1,109 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE TWO-UNIT CHAIN (basis-reconciliation spike S2, ratified 2026-08-03).
+
+  Topology only; state lives in 0/.
+
+      feed --> [speciator: isothermalFlash]  --> offgas
+                        |
+                      brine   (carries BOTH bases: the apparent components
+                        |      that ARE the state, and the species the
+                        |      network resolved in them)
+                        v
+              [transporter: heater, LOCAL molecular thermo world]
+                        |
+                        v
+                    warmBrine
+
+  WHAT THE CHAIN IS FOR.  The `speciator` runs the case's electrolyte world
+  and SOLVES the chemistry: its brine outlet carries a speciation block
+  stamped `origin "solved:speciator"`.  The `transporter` runs a DIFFERENT
+  world -- a plain molecular gammaPhi declared in its own `thermo {}` block,
+  which resolves no ions at all.  It changes T (a duty) and nothing else:
+  one material in, one material out, F and z untouched.
+
+  The question the chain asks: what happens to the species basis at that
+  boundary?
+
+  Three answers were available and only one is honest.
+    (a) Re-derive the block with the GLOBAL package.  That is a chemistry
+        the unit's own world does not do, attributed to the unit -- silent
+        respeciation across a model boundary.  This is what the engine did
+        before the spike, and it is what the transport contract now stops.
+    (b) Drop the block.  The outlet then reports one basis where its inlet
+        reported two, and a student comparing them sees chemistry vanish
+        across a heater.
+    (c) CARRY it.  The heater moved no atoms and no charge; the ions in the
+        brine are the same ions, in the same amounts, at a higher T.  The
+        block crosses as MATTER, stamped `origin "transported:transporter"`
+        so the reader can see it was carried and not re-solved.
+
+  (c) is the contract.  `converged/warmBrine` is where it is visible.
+
+  AND THE PART THAT COSTS A LINE TO SAY HONESTLY.  A heater is a heater: the
+  outlet is at 332.23 K while the speciation it carries was solved at 313.15
+  K.  Carrying an equilibrium to a temperature it was not solved at is only
+  honest if the file SAYS so, so the block also stamps `solvedAtT 313.15 K`
+  beside the stream's own `T 332.2309713 K`.  A reader who wants the
+  equilibrium AT the outlet temperature must put a unit there that can solve
+  one -- the molecular world cannot, which is the whole point of the
+  boundary.  (Without that stamp the two temperatures sit on the same file
+  and nothing tells the reader they disagree -- exactly the assumption the
+  boundary breaks.)
+
+  THE IDENTITY SECOND WITNESS.  Delete the `thermo {}` block below: the
+  transporter then runs the GLOBAL electrolyte world, which CAN re-solve the
+  chemistry, and does -- at 332.23 K, giving a different (and locally
+  correct) block.  What must be identical either way is the INTERMEDIATE
+  stream `brine`: what unit 2 is cannot reach back and change what unit 1
+  solved.  That is the invariant the gate probes; the differing outlet is
+  not a failure, it is the boundary being visible.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        speciator;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( brine  offgas );
+
+        operation   { T 313.15 K;  P 1.0 atm; }
+    }
+
+    {
+        name        transporter;
+        type        heater;
+        in          brine;
+        outputs     ( warmBrine );
+
+        //  A duty, and nothing else: F and z cross untouched, T rises.
+        operation   { Q 40 kW; }
+
+        //  THE MODEL BOUNDARY.  A plain molecular world -- no electrolyte
+        //  formulation, no network.  It cannot resolve an ion and does not
+        //  pretend to; the species basis therefore crosses as carried
+        //  matter (the transport contract), never as a question re-asked
+        //  in a world that has no answer for it.
+        //  `ideal` is chosen for a reason worth stating: the point of the
+        //  boundary is that the local world resolves NO chemistry, not that
+        //  it is sophisticated.  A group-contribution backbone would also
+        //  have to price CO2 and N2, which carry no UNIFAC groups -- the
+        //  refusal a student meets if they try (see the header).
+        thermo
+        {
+            equilibrium
+            {
+                formulation gammaPhi;
+                liquid { activityModel { model ideal; } }
+                vapour { fugacityModel idealGas; }
+            }
+        }
+    }
+);

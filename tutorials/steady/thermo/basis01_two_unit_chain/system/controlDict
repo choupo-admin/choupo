@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Basis reconciliation, the two-unit chain: a speciating flash hands its brine to a unit running a DIFFERENT thermo world, which transports the species basis as matter instead of re-asking the chemistry";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    elementBalance { }
+}

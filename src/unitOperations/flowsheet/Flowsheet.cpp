@@ -1382,6 +1382,7 @@ void runUnit(const DictPtr&                                          udict,
                 auto b = std::make_shared<ProcessStream::Speciation>(
                     *s.speciation);
                 b->origin = "solved:" + uname;
+                b->solvedT = s.T;          // the state it was solved AT
                 s.speciation = std::move(b);
             }
             else if (!s.speciation && inletBlock && inletS
