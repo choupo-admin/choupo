@@ -256,7 +256,14 @@ rulings, verbatim in spirit; each item below is annotated where it lives:
    step is the characterization, then the lint/refusal.
 4. **Seal drift: NO mass reseal.**  Seals preserve case history;
    reseal a case only when that case is genuinely revised.  Debt #1 is
-   thereby CLOSED as policy.
+   thereby CLOSED as policy.  **Executed under that policy 2026-08-03:
+   the sealing-SCHEMA migration** — `sealSchema computational;` across
+   the corpus (328/0, fail-closed, legacy byte hashes preserved as
+   provenance): the claim is now the PARSED content
+   (`core/DictCanonical`), cosmetic drift is announced-not-diverged,
+   and the drift report classifies origin evolution
+   cosmetic-vs-computational.  Record:
+   [`docs/design/computational-seal-migration.md`](docs/design/computational-seal-migration.md).
 5. **Curation:** (a) definition-category errors are correctable by the
    assistant WITH a logged review trail — fluorine F2 = 0 EXECUTED
    2026-08-02 (this commit); (b) neopentane measured value PROMOTED

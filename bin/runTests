@@ -812,6 +812,22 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # computationalSeal gate (sealing-schema migration, ratified
+    # 2026-08-03): the canonicalization equivalences (comments/spacing/
+    # unit spellings cosmetic, values/dims not), cosmetic drift stays
+    # verified + announced, moved values diverge/refuse by name, the
+    # migration is idempotent + fail-closed; sabotage-verified
+    # (computational divergence classified cosmetic -> 2 probes fail).
+    if "$ROOT/bin/curate/check_seal_schema.py" > /tmp/sscm.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "seal-schema-gate" "$(tail -1 /tmp/sscm.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_seal_schema.py)\n" "seal-schema-gate"
+        cat /tmp/sscm.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sscm.$$
+
     # Temporal-utilities gate (ratified 2026-08-03, form B as amended):
     # the demand staircase reconciles EXACTLY against the energy ledger
     # (refused otherwise, the record stands), peaks come from the

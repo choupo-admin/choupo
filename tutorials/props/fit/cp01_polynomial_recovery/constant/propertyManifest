@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-30";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "0241bbd029fe4254a15fcd98d963cd07131cde61efa31f46e7324ae2349b0017";
+            computationalSha256 "0a048d1f80983268476ce792a28b84699d0e8c7395c215d9a0366b798f4db1b2";
             origin        "data/standards/components/Dichloroethane.dat";
             originSha256  "1d26819e8a5c3945d4a7d54367794407774a1cb7ab4cdbe96273d4aa0bc8d1f6";
             release       Choupo-2607;

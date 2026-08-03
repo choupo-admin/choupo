@@ -316,6 +316,17 @@ def main():
         newhash = hashlib.sha256(eth.read_bytes()).hexdigest()
         mtxt = re.sub(r'("components/ethanol\.dat"\s*\{[^}]*?sha256\s*)"[0-9a-f]{64}"',
                       r'\1"%s"' % newhash, mtxt, count=1, flags=re.S)
+        #  Under `sealSchema computational;` (2026-08-03) the manifest also
+        #  claims the PARSED content -- re-stamp it with the engine's own
+        #  canonical hash, same as the byte hash above.
+        props = ROOT / "build" / "linux64Gcc" / "choupoProps"
+        ch = subprocess.run([str(props), "--canonical-hash", str(eth)],
+                            capture_output=True, text=True)
+        if ch.returncode == 0:
+            mtxt = re.sub(r'("components/ethanol\.dat"\s*\{[^}]*?'
+                          r'computationalSha256\s*)"[0-9a-f]{64}"',
+                          r'\1"%s"' % ch.stdout.split()[0],
+                          mtxt, count=1, flags=re.S)
         man.write_text(mtxt)
         rr = subprocess.run([str(CTRL)], cwd=str(cvar), capture_output=True,
                             text=True, timeout=900)

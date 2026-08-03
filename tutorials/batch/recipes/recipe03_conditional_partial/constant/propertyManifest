@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-26";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "a879008c21b019ea83fb7910e54d5bc6247d2cfb8dfd20fdc8c8a70bccb2fe36";
+            computationalSha256 "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
             origin        "data/standards/components/aceticAcid.dat";
             originSha256  "335a69b7611e08ac3c6f9747a891c5583b6081ff3823be83959c0c6f0b264b72";
             release       Choupo-2607;
@@ -36,6 +38,7 @@ propertyManifest
         {
             type          imported;
             sha256        "74deafe861d657881887071276552fc99b4b5a7f17135cb683508a090686f9a9";
+            computationalSha256 "a4f8756bb96958ab663694a9b4fe55a720ea3938dc784d4eaeef692022c082a5";
             origin        "data/standards/components/ethanol.dat";
             originSha256  "29609267bbcd43a09d915f94aaead90bc1fd9907314209e6a95ecf8e587cb93b";
             release       Choupo-2607;
@@ -44,6 +47,7 @@ propertyManifest
         {
             type          imported;
             sha256        "76ae06b7a29934ba7d2cfbf322c5ac7aad4a2d7605e8f3c5adea0164ccc6371f";
+            computationalSha256 "566ca92262a5bee249b38da72a1723af6e4a6c5015f49c3f189d849853affdf8";
             origin        "data/standards/components/ethylAcetate.dat";
             originSha256  "635adb496feb0fccbfecf7bf30ce19356687c14615feec781b8a172e8dfcdfbb";
             release       Choupo-2607;
@@ -52,6 +56,7 @@ propertyManifest
         {
             type          imported;
             sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
+            computationalSha256 "3e8c44ab80e0523c199c4f6771e67607ef4d2193ac8f673b1781baeb13b0bd89";
             origin        "data/standards/components/water.dat";
             originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;

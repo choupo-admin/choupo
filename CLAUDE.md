@@ -738,7 +738,19 @@ closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/proper
 + mirrored `constant/` records (`bin/choupo-import` materialises the dependency closure + a per-record
 sha256 manifest; the runtime is FORBIDDEN the installation catalogue when sealed;
 versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  Full state:
-`memory/universal_solver_2026_07_06.md`.
+`memory/universal_solver_2026_07_06.md`.  **The seal is COMPUTATIONAL
+since 2026-08-03** (`sealSchema computational;`, corpus migrated 328/0 —
+a sealing-SCHEMA migration, never a scientific reseal): the claim is the
+PARSED content (`src/core/DictCanonical`, surface `choupoProps
+--canonical-hash/--canonical-dump`; exclusion by typed fields — the
+parser's tree — never comment-stripping), so comment/formatting/
+unit-spelling drift is COSMETIC (announced, verdict intact) while a
+moved value/dimension/key diverges and `onDivergence refuse` fires
+exactly as before; the legacy byte hashes stay in the manifests as
+historical provenance and seal-drift is now classified
+cosmetic-vs-computational.  Gate `check_seal_schema`
+(sabotage-verified); record:
+[`docs/design/computational-seal-migration.md`](docs/design/computational-seal-migration.md).
 
 **Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT
 relitigate.**  The solver executes the flattened units IN DECLARED ORDER

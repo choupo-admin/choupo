@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-26";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "40e103e2789866404b1b53cb3f7aa83ebbcc0fcc7d9054d6b517db51e9bbb3bb";
+            computationalSha256 "5037fc4b4aad8243202d5645341749d6566ea53c1448044154178a8aa09e8d14";
             origin        "data/standards/components/benzene.dat";
             originSha256  "47601243b330ce3a5b50cf5006627ed4adb352e66745237dbcd6eaca1bc46ffe";
             release       Choupo-2607;

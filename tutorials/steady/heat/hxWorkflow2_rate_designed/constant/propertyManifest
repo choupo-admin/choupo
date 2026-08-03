@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-26";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "b36c2cc9953114388053b90d46a121eb23a9b4dbdea2fa3e3a6f945a63fc5efb";
+            computationalSha256 "196804da7ded750b7a7503cfa911d1e02a3b47edd19225c7d43dfb6faf4d096e";
             origin        "data/standards/assets/carbonSteel.dat";
             originSha256  "dca20bc83c80933bece17f14d8e506f3b078a1ebfa543fc7eb6a8ed0e354e72e";
             release       Choupo-2607;
@@ -36,6 +38,7 @@ propertyManifest
         {
             type          imported;
             sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
+            computationalSha256 "3e8c44ab80e0523c199c4f6771e67607ef4d2193ac8f673b1781baeb13b0bd89";
             origin        "data/standards/components/water.dat";
             originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
             release       Choupo-2607;

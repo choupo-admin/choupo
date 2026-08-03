@@ -18,15 +18,33 @@ Adopted records are the author's -- never checked against the catalogue.
 """
 import hashlib
 import re
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 STD = ROOT / "data" / "standards"
+PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 
 
 def sha_file(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+#  computationalSha256 cache (sealing-schema migration, 2026-08-03): one
+#  canonical hash per distinct catalogue file classifies the drift --
+#  cosmetic (comments/spacing/unit spellings; the parsed content the
+#  seal claims is intact) vs COMPUTATIONAL (a value moved).
+_canon = {}
+
+
+def canon_sha(p):
+    key = str(p)
+    if key not in _canon:
+        r = subprocess.run([str(PROPS), "--canonical-hash", key],
+                           capture_output=True, text=True)
+        _canon[key] = r.stdout.split()[0] if r.returncode == 0 else None
+    return _canon[key]
 
 
 def read_manifest(mf):
@@ -71,7 +89,15 @@ for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
             drift.append(f"{case}: origin data/standards/{rel} VANISHED from"
                          " the catalogue")
         elif sha_file(src) != osha:
-            drift.append(f"{case}: data/standards/{rel} changed since import")
+            kind = "changed since import"
+            comp = e.get("computationalSha256")
+            if comp and PROPS.exists():
+                oc = canon_sha(src)
+                if oc == comp:
+                    kind = "changed since import (COSMETIC: comments/"                            "formatting only, parsed content identical)"
+                elif oc is not None:
+                    kind = "changed since import (COMPUTATIONAL: parsed"                            " content moved)"
+            drift.append(f"{case}: data/standards/{rel} {kind}")
 
 if damage:
     print("SEAL DAMAGE (broken manifests -- fix these, they are not drift):")

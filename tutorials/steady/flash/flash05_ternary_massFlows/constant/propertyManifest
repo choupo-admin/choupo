@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-26";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "40e103e2789866404b1b53cb3f7aa83ebbcc0fcc7d9054d6b517db51e9bbb3bb";
+            computationalSha256 "5037fc4b4aad8243202d5645341749d6566ea53c1448044154178a8aa09e8d14";
             origin        "data/standards/components/benzene.dat";
             originSha256  "47601243b330ce3a5b50cf5006627ed4adb352e66745237dbcd6eaca1bc46ffe";
             release       Choupo-2607;
@@ -36,6 +38,7 @@ propertyManifest
         {
             type          imported;
             sha256        "d59eabf9e5ddde8c5c350f4d9d7f7184d62a563f53758a6cac6249ee2826d0dd";
+            computationalSha256 "afc6cb6bfdfbc919feb57753e30a06f4469712f217b641a5a5ce8ca0504e43d5";
             origin        "data/standards/components/nHexane.dat";
             originSha256  "634759305340e6b7ab62f0b95a82fc4ac47226383d7105c86d67f0f88650fccb";
             release       Choupo-2607;
@@ -44,6 +47,7 @@ propertyManifest
         {
             type          imported;
             sha256        "d23b38ad2884c71a25bef5fe81ee357ca01958c35c7ce0c53798b1b538d78b00";
+            computationalSha256 "2f8c57b8dae2c4ee0627618dd83a75d58315e1478559d6e4aabe5812eefec9e4";
             origin        "data/standards/components/toluene.dat";
             originSha256  "758ad991ac14740952ba42bc88269a8d96ec22f6c516b8092cb9d79f859b112c";
             release       Choupo-2607;

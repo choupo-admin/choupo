@@ -19,6 +19,7 @@
 propertyManifest
 {
     sealed             true;
+    sealSchema         computational;
     catalogueRelease   Choupo-2607;
     importedAt         "2026-07-30";
     importerVersion    "2";
@@ -28,6 +29,7 @@ propertyManifest
         {
             type          imported;
             sha256        "1f2fda0c8b980e02d6b572d394bd16c1284ab64444d8f45b5f3052f776f0b77d";
+            computationalSha256 "de904f16a31dc41682f79479a1f1c048daf23773055413b68533990860f3541e";
             origin        "data/standards/components/isopentane.dat";
             originSha256  "691dbe43a077e822eb8d7d38dd6889bac779d586fdc8e178fa27b3ce573de1cd";
             release       Choupo-2607;
@@ -36,6 +38,7 @@ propertyManifest
         {
             type          imported;
             sha256        "eadeb9c6de933a835751a34833f78c69baf198843dba4d0ec3472d43c689146a";
+            computationalSha256 "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
             origin        "data/standards/components/nButane.dat";
             originSha256  "443936a019163698684601440d0cdd64551378c60916c3ddca87882734b5735b";
             release       Choupo-2607;
@@ -44,6 +47,7 @@ propertyManifest
         {
             type          imported;
             sha256        "b68da8ba2200eadf565ca6585a16a16bec15a8a33f3b26c903b898e0db4d3f97";
+            computationalSha256 "a401c305b39e1e0551b297a57c31126a9f61650b7361eb6cd4eb80288d3b5346";
             origin        "data/standards/components/nPentane.dat";
             originSha256  "c09bb31254fb78937e4744bbe49da3b01821bf661a9bdde0217761d945efa721";
             release       Choupo-2607;

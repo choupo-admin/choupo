@@ -15,6 +15,7 @@ License
 
 #include "thermo/SealCheck.H"
 
+#include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "core/Sha256.H"
 #include "thermo/RecordResolver.H"
@@ -87,8 +88,21 @@ int verifySeal(int verbosity)
     }
     if (root.empty()) return 0;
 
+    //  Sealing schema (migration ratified 2026-08-03).  `legacy` (or
+    //  absent) = the original whole-file byte claim.  `computational` =
+    //  the claim is about the PARSED content (core/DictCanonical): a
+    //  byte-only difference -- comments, whitespace, unit spellings at
+    //  equal SI -- is COSMETIC, announced but never a divergence; a
+    //  moved value, dimension, key or structure diverges exactly as
+    //  before.  The exclusion is by typed fields (the parser's tree),
+    //  never comment-stripping.
+    const std::string schema = m->lookupWordOrDefault("sealSchema", "legacy");
+    if (schema != "legacy" && schema != "computational")
+        throw std::runtime_error("propertyManifest: sealSchema '" + schema
+            + "' is not one of legacy / computational");
+
     auto recs = m->subDict("records");
-    std::vector<std::string> changed, missing;
+    std::vector<std::string> changed, missing, cosmetic;
     for (const auto& key : recs->keys())
     {
         auto r = recs->subDict(key);
@@ -103,8 +117,43 @@ int verifySeal(int verbosity)
         if (!fs::exists(f)) { missing.push_back(key); continue; }
         const std::string got = sha256::hexFile(f.string());
         if (got.empty()) { missing.push_back(key); continue; }
+
+        if (schema == "computational")
+        {
+            //  A computational-schema manifest whose record lacks the
+            //  computational claim is a broken manifest, not a pass.
+            if (!r->found("computationalSha256"))
+            {
+                changed.push_back(key + "  (sealSchema computational but"
+                                  " no computationalSha256 claimed)");
+                continue;
+            }
+            const std::string wantC = r->lookupWord("computationalSha256");
+            std::string gotC;
+            try { gotC = canonical::sha256OfFile(f.string()); }
+            catch (const std::exception&)
+            {
+                //  A record that no longer parses HAS diverged
+                //  computationally, whatever its bytes say.
+                changed.push_back(key + "  (no longer parses)");
+                continue;
+            }
+            if (gotC != wantC)       changed.push_back(key);
+            else if (got != want)    cosmetic.push_back(key);
+            continue;
+        }
         if (got != want) changed.push_back(key);
     }
+
+    //  A junk onDivergence word is a manifest GRAMMAR error and refuses
+    //  regardless of whether anything diverged -- validating it only on
+    //  the divergent path let a broken declaration ride every clean run
+    //  (found by check_seal_verdict when the computational schema made
+    //  its byte-edit probe clean).
+    const std::string onDiv = m->lookupWordOrDefault("onDivergence", "announce");
+    if (onDiv != "announce" && onDiv != "refuse")
+        throw std::runtime_error("propertyManifest: onDivergence '" + onDiv
+            + "' is not one of announce / refuse");
 
     divergences = static_cast<int>(changed.size() + missing.size());
     //  A manifest exists and was checkable, so a claim IS now made -- which
@@ -112,6 +161,19 @@ int verifySeal(int verbosity)
     verdict_() = (divergences == 0) ? "verified" : "diverged";
     for (const auto& k : changed) divergedRecords_().push_back(k);
     for (const auto& k : missing) divergedRecords_().push_back(k);
+    //  Cosmetic byte drift under the computational schema: the CLAIM the
+    //  manifest declares (parsed content) still holds, so the verdict is
+    //  untouched -- but the byte provenance line moved and the reader
+    //  deserves to know which files.
+    if (!cosmetic.empty() && verbosity >= 1)
+    {
+        std::cerr << "[seal] " << cosmetic.size() << " record(s) differ in"
+                     " BYTES ONLY (comments/whitespace/unit spellings) --"
+                     " the computational content the manifest claims is"
+                     " intact:\n";
+        for (const auto& k : cosmetic)
+            std::cerr << "[seal]   cosmetic  constant/" << k << "\n";
+    }
     if (divergences == 0) return 0;
 
     //  Loud, and specific about what the divergence COSTS: not "you did
@@ -139,13 +201,10 @@ int verifySeal(int verbosity)
     //  The REFUSAL is the CASE's to declare, never the engine's to infer
     //  (forum 2026-08-02: the first-year must be able to edit a record and
     //  learn from it; the doctoral student archiving her thesis appendix
-    //  wants the run to STOP if the bytes moved -- and that is a property
+    //  wants the run to STOP if the content moved -- and that is a property
     //  of what she is doing, not of the case or of the engine's taste).
     //  Default `announce`; an archival copy declares `onDivergence refuse;`.
-    const std::string onDiv = m->lookupWordOrDefault("onDivergence", "announce");
-    if (onDiv != "announce" && onDiv != "refuse")
-        throw std::runtime_error("propertyManifest: onDivergence '" + onDiv
-            + "' is not one of announce / refuse");
+    //  (The word itself was validated above, before the clean-run return.)
     if (onDiv == "refuse")
     {
         std::string names;

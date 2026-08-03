@@ -48,6 +48,7 @@ Description
 
 #include "AadCompare.H"
 #include "core/Banner.H"
+#include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "core/ResultEmitter.H"
 #include "core/ThermoResolution.H"
@@ -208,6 +209,25 @@ try
     for (int gi = 1; gi < argc; ++gi)
     {
         const std::string a = argv[gi];
+        //  The computationalSeal surface (sealing-schema migration, ratified
+        //  2026-08-03).  ONE implementation: the importer and the migration
+        //  script shell out HERE instead of re-implementing the
+        //  canonicalization in Python -- a second parser would be the
+        //  arity sin at the seal's own foundation.
+        if (a == "--canonical-hash" || a == "--canonical-dump")
+        {
+            if (gi + 1 >= argc)
+            {
+                std::cerr << "choupoProps " << a << " <file.dat>\n";
+                return 2;
+            }
+            const std::string f = argv[gi + 1];
+            if (a == "--canonical-dump")
+                std::cout << canonical::dump(*Dictionary::fromFile(f)) << "\n";
+            else
+                std::cout << canonical::sha256OfFile(f) << "  " << f << "\n";
+            return 0;
+        }
         if (a == "--aqueous-graph" || a == "--family")
         {
             // Resolve the catalogue root exactly as a case run would (CHOUPO_HOME

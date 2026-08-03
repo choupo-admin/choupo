@@ -87,7 +87,11 @@ def main() -> int:
         return 1
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
-        touch = lambda t: t + "\n// gate probe: one byte moved\n"
+        #  A COMPUTATIONAL edit: a new key reaches the parsed tree.  (Under
+        #  `sealSchema computational;` -- the 2026-08-03 schema migration --
+        #  a comment-only edit is COSMETIC and no longer diverges; that
+        #  behaviour has its own gate, check_seal_schema.)
+        touch = lambda t: t + "\ngateProbeKey 1;\n"
 
         # ---- VERIFIED -----------------------------------------------------
         rc, out = run(make_case(tmp, "verified"))

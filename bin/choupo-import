@@ -51,7 +51,7 @@ from hashlib import sha256 as _sha256
 from datetime import date
 from pathlib import Path
 
-IMPORTER_VERSION = "2"
+IMPORTER_VERSION = "3"
 
 # A sealed record must never point the builder back at the installation
 # catalogue.  Method records ship active `path "data/standards/...";` search
@@ -74,6 +74,24 @@ def sha(text):
 
 def sha_file(p):
     return _sha256(Path(p).read_bytes()).hexdigest()
+
+
+def canonical_sha_file(repo_root, p):
+    """computationalSha256 of a record (sealing-schema migration, ratified
+    2026-08-03): the SHA-256 of the PARSED canonical content, computed by
+    the ENGINE (choupoProps --canonical-hash) -- one implementation, never
+    a Python re-parse (a second parser at the seal's foundation would be
+    the arity sin)."""
+    exe = Path(repo_root) / "build" / "linux64Gcc" / "choupoProps"
+    if not exe.exists():
+        die("computationalSha256 needs the built engine (%s missing) --"
+            " run `make all` first" % exe)
+    r = subprocess.run([str(exe), "--canonical-hash", str(p)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        die("choupoProps --canonical-hash failed on %s:\n%s"
+            % (p, r.stderr.strip()))
+    return r.stdout.split()[0]
 
 
 def die(msg):
@@ -874,8 +892,20 @@ def read_manifest(constant):
     return out
 
 
-def manifest_text(entries, release, ctx_label):
-    """entries: {rel: entry-dict} -> the constant/propertyManifest text."""
+def manifest_text(entries, release, ctx_label, repo_root=None, const_dir=None):
+    """entries: {rel: entry-dict} -> the constant/propertyManifest text.
+    When repo_root+const_dir are given, imported/merged entries lacking a
+    computationalSha256 get one computed from the file under const_dir
+    (the sealing-schema migration, ratified 2026-08-03)."""
+    if repo_root is not None and const_dir is not None:
+        for rel, e in entries.items():
+            if e.get("type") not in ("imported", "merged"):
+                continue
+            if "computationalSha256" in e:
+                continue
+            f = Path(const_dir) / rel
+            if f.exists():
+                e["computationalSha256"] = canonical_sha_file(repo_root, f)
     L = []
     L.append("/*----------------------------------------------------------*\\")
     L.append("  constant/propertyManifest -- property-record OWNERSHIP registry")
@@ -899,6 +929,7 @@ def manifest_text(entries, release, ctx_label):
     L.append("propertyManifest")
     L.append("{")
     L.append("    sealed             true;")
+    L.append("    sealSchema         computational;")
     L.append("    catalogueRelease   %s;" % release)
     L.append('    importedAt         "%s";' % date.today().isoformat())
     L.append('    importerVersion    "%s";' % IMPORTER_VERSION)
@@ -918,6 +949,9 @@ def manifest_text(entries, release, ctx_label):
             L.append("        {")
             L.append("            type          merged;")
             L.append('            sha256        "%s";' % e["sha256"])
+            if "computationalSha256" in e:
+                L.append('            computationalSha256 "%s";'
+                         % e["computationalSha256"])
             L.append('            origin        "%s";' % e["origin"])
             L.append('            originSha256  "%s";' % e["originSha256"])
             L.append('            overlaySha256 "%s";' % e["overlaySha256"])
@@ -928,6 +962,9 @@ def manifest_text(entries, release, ctx_label):
             L.append("        {")
             L.append("            type          imported;")
             L.append('            sha256        "%s";' % e["sha256"])
+            if "computationalSha256" in e:
+                L.append('            computationalSha256 "%s";'
+                         % e["computationalSha256"])
             L.append('            origin        "%s";' % e["origin"])
             L.append('            originSha256  "%s";' % e["originSha256"])
             L.append("            release       %s;" % e.get("release", release))
@@ -1317,7 +1354,8 @@ def main():
             (sconst / "propertyManifest").write_text(
                 manifest_text(entries, release,
                               "context: " + (ctxDir.name if ctxDir != caseDir
-                                             else "case root")))
+                                             else "case root"),
+                              repo_root=root, const_dir=sconst))
         validate_staged(root, staged)
 
     # ---- install (validated): files first, each manifest LAST -------------
@@ -1343,7 +1381,8 @@ def main():
         (constant / "propertyManifest").write_text(
             manifest_text(entries, release,
                           "context: " + (ctxDir.name if ctxDir != caseDir
-                                         else "case root")))
+                                         else "case root"),
+                          repo_root=root, const_dir=constant))
         n_adopt += sum(1 for e in entries.values()
                        if e.get("type") == "adopted")
 
