@@ -221,7 +221,8 @@ name or marks — the code is open; the name is a trademark of
 ## Roadmap
 
 **Choupo-2607.**  Four binaries, three-layer architecture
-(outer driver / simulator / post-processor), 284 runnable cases.  Thermo:
+(outer driver / simulator / post-processor); the runnable-case tally is
+generated (`generated/releaseInventory.json`), never written here.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 ideal-gas H/S, Henry's law, Pitzer electrolyte osmotic, gas + liquid
 transport (viscosity / conductivity / diffusivity, selectable

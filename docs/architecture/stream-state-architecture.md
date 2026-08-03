@@ -245,7 +245,7 @@ under-specifies → FATAL** (both name what was found and the legal pairs). A
 zero-flow guess may keep `T`/`P` as numerical seeds.
 
 **The phase is a RESULT, not stored state** (settled 2026-07-09, the Claude+ChatGPT
-design forum + Vítor's Tc rule; `memory/phase-is-result-2026-07-09`). `(T, P, z)`
+design forum + Vítor's Tc rule; that 2026-07-09 forum was a session deliberation and is not in the repository -- this section is the record). `(T, P, z)`
 fix the phase; the file **NEVER** carries a decorative `vaporFraction 0/1`. The
 FILE READER does no thermodynamics — it reads only **pins**:
 

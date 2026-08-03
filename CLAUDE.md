@@ -74,7 +74,8 @@ Choupo/
 ├── bin/                        runCase, runTests, runGui, runSite, listCases, devGui, llmctx, …
 ├── data/standards/             components/ materials/ membranes/ utilities/ + pair catalogues
 ├── src/                        C++ source (see §4)
-└── tutorials/                  318 runnable cases under steady/ batch/ ctrl/ props/ plant/ (see §8)
+└── tutorials/                  runnable cases by application field (see §8; the
+                                COUNT is generated -- generated/releaseInventory.json)
 ```
 
 ### Git & release conventions
@@ -315,8 +316,10 @@ is gone — a real, ion-derived duty even unfitted/mixed-solvent), and
 NEVER route its enthalpy through the ideal-gas reference** (`h_pure_ig` /
 `idealGasHeatCapacity`) — it takes the solid/aqueous rung.  Property-architecture
 (curation-time resolution) is for a MISSING datum; this one is present-via-
-derivation, so single-source (arity-1) controls.  Full rationale: the
-`salt-crystallisation-enthalpy-2026-06-29` forum + [`docs/ai/energy.md`](docs/ai/energy.md).
+derivation, so single-source (arity-1) controls.  Full rationale:
+[`docs/ai/energy.md`](docs/ai/energy.md) (the 2026-06-29 deliberation that
+settled it was a session forum and is NOT in the repository -- this
+paragraph and that doc are the record).
 
 ### Aqueous chemistry: declared by the case, read by the units (settled 2026-07-25/26, do NOT relitigate)
 
@@ -737,8 +740,11 @@ as composite boxes across 4 worlds (Pitzer / NRTL LLE / Gibbs / molecular), mass
 closes on every element.  Cases are SELF-CONTAINED via a SEALED `constant/propertyManifest`
 + mirrored `constant/` records (`bin/choupo-import` materialises the dependency closure + a per-record
 sha256 manifest; the runtime is FORBIDDEN the installation catalogue when sealed;
-versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  Full state:
-`memory/universal_solver_2026_07_06.md`.  **The seal is COMPUTATIONAL
+versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  The
+architecture is
+[`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md);
+the 2026-07-06 working notes were a session memory and are NOT in the
+repository, so this paragraph is the record of the decision.  **The seal is COMPUTATIONAL
 since 2026-08-03** (`sealSchema computational;`, corpus migrated 328/0 —
 a sealing-SCHEMA migration, never a scientific reseal): the claim is the
 PARSED content (`src/core/DictCanonical`, surface `choupoProps
@@ -1140,8 +1146,9 @@ split below).
   must NOT carry a `thermoPhysPropDict` placeholder (that shadows the case default and
   breaks the run).  The inheritance cascade must be LOUD (per-unit `thermo:
   inherited (global)` vs `LOCAL override — …`, implemented in `runUnit`).  Full
-  rationale: the `fractal-dignified-units-2026-06-08` memory +
-  [`docs/ai/energy.md`](docs/ai/energy.md) §model boundaries.
+  rationale: [`docs/ai/energy.md`](docs/ai/energy.md) §model boundaries
+  (the 2026-06-08 forum that settled it was a session deliberation and is
+  NOT in the repository -- this paragraph is the record).
 
 ### Things to NEVER do
 
@@ -1265,9 +1272,22 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-06-06 — CLAUDE.md trimmed to its session-load essentials;
-the capabilities narrative, tutorials index, GUI internals + WASM quirks moved
+*Last reviewed: 2026-08-03 — COHERENCE SWEEP after the week's seven
+doctrine slices, read end to end rather than patched paragraph by
+paragraph.  What it found is the argument for doing it: four dangling
+pointers into a session `memory/` that was never in the repository (a
+reader would go looking and find nothing); this file's own layout block
+still carrying "318 runnable cases" against a tree of 328 — the exact
+hand-maintained tally §6 forbids, committed by the file that states the
+rule; the same defect in the public README (284); and
+`docs/design/unread-dict-keys-proposal.md` still headed "Nothing
+implemented" three days after it shipped as `core/DictAudit`.  A rule the
+file itself breaks is a wish, so the tally rule is now a GATE
+(`release_inventory.py --check`, sabotage-verified).  Verified clean in
+both directions: every `check_*` gate this file names exists, and every
+gate that exists is wired into `bin/runTests`.
+Earlier (2026-06-06): trimmed to its session-load essentials; the
+capabilities narrative, tutorials index, GUI internals + WASM quirks moved
 to `docs/engine-capabilities.md`, `docs/tutorials-catalogue.md`,
-`docs/gui-internals.md` (property contract already in
-`docs/property-architecture.md`).  Per-version history →
+`docs/gui-internals.md`.  Per-version history →
 [`CHANGELOG.md`](CHANGELOG.md).*

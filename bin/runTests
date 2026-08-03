@@ -1448,7 +1448,7 @@ PYEOF
         printf "PASS  %-40s  (%s)\n" "release-inventory-gate" "$(head -1 /tmp/inventory.$$)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (stale -- run bin/curate/release_inventory.py)\n" "release-inventory-gate"
+        printf "FAIL  %-40s  (stale, or a tally is hand-carried in prose -- see below)\n" "release-inventory-gate"
         cat /tmp/inventory.$$
         fail=$((fail+1))
     fi

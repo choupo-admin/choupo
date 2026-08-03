@@ -1,8 +1,17 @@
 # A key nobody reads — proposal, awaiting Vítor's ruling
 
-**Status: PROPOSAL.  Nothing implemented.**  Written 2026-07-30 after the
-last-wins sweep; it touches `core/Dictionary`, which is constitutional, so it
-waits for a ruling before a line of it is coded.
+**Status: BUILT 2026-07-31 (commit 700672a2, "A key nobody read is a key
+that did nothing, and the author believes it did").**  `src/core/DictAudit`
+carries the audit and `Flowsheet` runs it over each unit's `operation {}`
+on the LAST pass; the `murphreeEficiency` case below is the live example
+the implementation announces.  (This header still said "PROPOSAL.  Nothing
+implemented." until the 2026-08-03 coherence sweep -- a shipped feature
+whose design record invites someone to build it again is the same defect
+one level up: a document nobody re-read.)
+
+Written 2026-07-30 after the last-wins sweep; it touches `core/Dictionary`,
+which is constitutional, so it waited for a ruling before a line of it was
+coded.
 
 ---
 

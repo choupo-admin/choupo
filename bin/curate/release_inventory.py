@@ -11,7 +11,8 @@ re-run; the numbers follow.
 Usage:  bin/curate/release_inventory.py            # writes generated/releaseInventory.json
         bin/curate/release_inventory.py --check    # exit 1 if the file is stale
 """
-import json, re, subprocess, sys
+import json
+import re, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -145,6 +146,65 @@ def build() -> dict:
     return inv
 
 
+
+#  A GENERATED number has ONE home.  The rule is stated in CLAUDE.md par. 6
+#  ("Do NOT hand-maintain these numbers -- and that includes HERE"), it had
+#  already drifted once (41 aqueous species against 51, 194 components
+#  against 247), and on 2026-08-03 the coherence sweep found CLAUDE.md's own
+#  layout block still carrying "318 runnable cases" while the tree held 328.
+#  A rule the file itself breaks is a wish; this makes it a gate.
+DOC_COUNT_PAT = re.compile(
+    r'\b([0-9]{2,5})\s+(?:runnable\s+)?(?:tutorial\s+)?cases?\b|'
+    r'\b([0-9]{2,5})\s+(?:curated\s+)?components?\b|'
+    r'\b([0-9]{2,5})\s+aqueous\s+species\b')
+DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md"]
+
+QUOTE_SPAN = re.compile(r'"[^"]*"|`[^`]*`|\u201c[^\u201d]*\u201d')
+
+
+def quoted_spans(line):
+    """(start, end) of every quoted run on the line -- straight, backtick and
+    typographic.  A count INSIDE one is being cited; outside one it is being
+    asserted, and only the assertion is forbidden."""
+    return [(m.start(), m.end()) for m in QUOTE_SPAN.finditer(line)]
+
+
+def hand_carried_counts():
+    """-> [(file, line no, text)] for corpus tallies written by hand in the
+    AI-facing docs.  Only the SHAPE of the corpus belongs in prose; the size
+    lives in generated/releaseInventory.json."""
+    hits = []
+    for rel in DOC_SCAN:
+        f = ROOT / rel
+        if not f.is_file():
+            continue
+        lines = f.read_text().splitlines()
+        for i, line in enumerate(lines, 1):
+            if not DOC_COUNT_PAT.search(line):
+                continue
+            #  CITING a number is not ASSERTING one.  The paragraph that
+            #  states the rule, and the review footer that records the drift
+            #  it caught, both have to repeat the stale tally as EVIDENCE --
+            #  and both write it in quotes, because that is what quoting is
+            #  for.  A bare number in prose is the assertion this forbids.
+            #  (Keyword-sniffing the surrounding lines was the first attempt
+            #  and it misfired twice within the hour: the needle list can
+            #  never anticipate the next sentence.  Quoted-vs-bare is a
+            #  property of the text itself.)
+            m = DOC_COUNT_PAT.search(line)
+            if any(a < m.start() < b for a, b in quoted_spans(line)):
+                continue
+            #  Secondary net: the rule's own paragraph states the drift in
+            #  bare numbers, and says so in words a sentence away.
+            ctx = " ".join(lines[max(0, i - 4):i + 3]).lower()
+            if any(w in ctx for w in ("arity sin", "drifted",
+                                      "release_inventory",
+                                      "releaseinventory")):
+                continue
+            hits.append((rel, i, line.strip()[:90]))
+    return hits
+
+
 def main():
     inv = build()
     payload = json.dumps(inv, indent=2, sort_keys=False) + "\n"
@@ -153,7 +213,15 @@ def main():
         if current != payload:
             print("release inventory is STALE -- run bin/curate/release_inventory.py", file=sys.stderr)
             sys.exit(1)
-        print("release inventory up to date")
+        hand = hand_carried_counts()
+        if hand:
+            print("a GENERATED count is hand-carried in prose (one home:"
+                  " generated/releaseInventory.json):", file=sys.stderr)
+            for rel, ln, s in hand:
+                print("  %s:%d  %s" % (rel, ln, s), file=sys.stderr)
+            sys.exit(1)
+        print("release inventory up to date; no hand-carried corpus tally"
+              " in the AI-facing docs")
         return
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(payload)

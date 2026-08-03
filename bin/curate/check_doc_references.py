@@ -80,6 +80,39 @@ PATH_RE = re.compile(r'(?<![\w/.-])((?:' + "|".join(PREFIXES) +
                      r')/[A-Za-z0-9_./<>*-]+)')
 PLACEHOLDER = re.compile(r'[<>*]')
 
+#  THE BLIND SPOT THIS CLOSES (found by the 2026-08-03 coherence sweep).
+#  PATH_RE only recognises paths under the PREFIXES whitelist, so a citation
+#  under a top-level directory that does NOT exist was invisible: CLAUDE.md
+#  pointed at `memory/universal_solver_2026_07_06.md` for months -- a session
+#  memory never in the repository -- and this gate reported every path
+#  resolving.  A reference that LOOKS like a repo path and whose root is not
+#  a directory of the repo is exactly the reference a reader will chase and
+#  not find.  Extensions only, so `kmol/h` and `J/(mol K)` cannot match; URLs
+#  are excluded by the negative look-behind on `/` and `:`.
+#  Roots that legitimately appear WITHOUT a repo prefix, each with the
+#  frame it is relative to.  The list is explicit so that a NEW bare root
+#  has to be justified here rather than slipping in unnoticed -- which is
+#  the whole point: `memory/` would have had to be added, and could not
+#  have been, because it names nothing.
+BARE_ROOTS = {
+    # relative to a CASE directory (docs/ai/case-layout.md)
+    "constant", "system", "reports", "converged", "iterations",
+    "design", "economics",
+    # relative to data/standards/ (the catalogue's own homes)
+    "components", "species", "chemistry", "parameters", "conventions",
+    "assets", "mixtures", "utilities", "solution",
+    # relative to src/ (source-tree prose: `core/Dictionary`, ...)
+    "core", "streams", "thermo", "solver", "unitOperations", "flowsheet",
+    "postProcessing", "outerDriver", "materials", "control", "applications",
+    "choupoSolve", "choupoBatch", "choupoCtrl", "choupoProps",
+    # relative to a props case / guide prose
+    "propertyOps", "code",
+}
+
+FOREIGN_ROOT_RE = re.compile(
+    r'(?<![\w/:.-])([a-zA-Z][a-zA-Z0-9_-]*)/'
+    r'([A-Za-z0-9_./-]+\.(?:md|py|H|cpp|dat|json|sh|txt|csv))')
+
 dead = []
 
 
@@ -112,6 +145,18 @@ def main() -> int:
             if PLACEHOLDER.search(p) or p in ALLOWED_PATHS or path_exists(p):
                 continue
             dead.append(f"{rel}: path '{p}' does not exist")
+
+        for m in FOREIGN_ROOT_RE.finditer(txt):
+            root = m.group(1)
+            if root in PREFIXES or root in BARE_ROOTS \
+               or (ROOT / root).is_dir():
+                continue
+            whole = m.group(0).rstrip('.,;:)`"\'')
+            if PLACEHOLDER.search(whole) or whole in ALLOWED_PATHS:
+                continue
+            dead.append(f"{rel}: '{whole}' looks like a repo path but"
+                        f" '{root}/' is not a directory of this repository"
+                        f" -- a reader will chase it and find nothing")
 
         for c in sorted(set(CASE_RE.findall(txt))):
             nCases += 1
