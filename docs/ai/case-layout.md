@@ -276,6 +276,35 @@ files**: every file must carry its own explanatory content.  The
 is no selector into a shared catalogue); a content-free placeholder or an
 empty role overlay is forbidden the same way.
 
+## `system/postDict` — the post-processing chain
+
+Optional; steady only.  Each TOP-LEVEL key names a pass type and its
+sub-dict is that pass's configuration; the passes run in order after
+convergence and augment the result (they never change the solution):
+
+```
+sizing    { ... }                 // equipment sizes from the converged duties
+costing   { method guthrie; ... } // cost from the sizes
+economics { ... }                 // cash-flow aggregation over the costed plant
+pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
+                                  // problem table printed cascade by cascade,
+                                  // KPIs pinch.Q_H_min_kW / Q_C_min_kW /
+                                  // T_pinch_K, and
+                                  // reports/pinch/compositeCurves.csv
+```
+
+`pinchPass` extracts every duty-carrying unit's segment from the
+converged result (CP = |Q|/|ΔT| between its process-side inlet/outlet
+temperatures; a near-isothermal duty enters as a `latentWidth` slice,
+default 1 K).  It only TARGETS — it never rewrites the network — and its
+method hypotheses (constant CP per segment, the latent slice, first
+non-utility stream pairing) are stated in `src/postProcessing/PinchPass.H`.
+Its `dTmin` is the process–process approach of the targeting exercise, a
+separate declaration from the `utilityAllocation` report's duty-to-utility
+approach.  Exemplar: `tutorials/steady/heat/pinch01_four_stream_classic`.
+The `sizing`/`costing`/`economics` chain: `docs/ai/outer-drivers.md` §cost
+objectives and `tutorials/steady/flowsheets/process02_with_design`.
+
 ## Materialising `0/` — `bin/choupo-init0`
 
 You author the DOMAIN INLETS (and any recycle-tear seed, `solverDict
