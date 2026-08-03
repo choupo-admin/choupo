@@ -128,4 +128,41 @@ units
             }
         }
     }
+
+    {
+        //  THE SPLIT, on the far side of the boundary.  A proportional
+        //  splitter divides matter by ONE fraction common to every species,
+        //  which it DECLARES (`materialMapping proportionalExtensiveSplit`
+        //  in the C++, never inferred from the class name).  A carried
+        //  species inventory is extensive, so it divides by exactly that
+        //  fraction -- algebra, not chemistry.
+        //
+        //  Refusing this was the first instinct and it was wrong: the
+        //  engine already knows the fraction, so a refusal would force the
+        //  author to restructure the flowsheet around a limitation that
+        //  does not exist -- and leaving the post-solve pass to re-derive
+        //  the two blocks instead would replace known arithmetic with a
+        //  model-dependent answer, which is worse than either.
+        //
+        //  What must close, and does (the gate checks it): the two branch
+        //  inventories sum back to the inlet's, species by species, and
+        //  each branch stays electroneutral because one common fraction
+        //  cannot break a balance that held before it.
+        name        divider;
+        type        splitter;
+        in          warmBrine;
+        outputs     ( branchA  branchB );
+
+        operation   { fractions ( 0.25  0.75 ); }
+
+        thermo
+        {
+            equilibrium
+            {
+                formulation gammaPhi;
+                liquid { activityModel { model ideal; } }
+                vapour { fugacityModel idealGas; }
+            }
+        }
+    }
 );

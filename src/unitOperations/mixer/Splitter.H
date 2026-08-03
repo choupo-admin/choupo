@@ -57,6 +57,13 @@ class Splitter : public UnitOperation
 public:
     Splitter() = default;
 
+    //  Every outlet is the inlet scaled by one common fraction: the same
+    //  fraction for every component, no reaction and no phase selection.
+    //  That is exactly the contract a carried extensive inventory needs to
+    //  be divisible, so it is DECLARED rather than left to be guessed.
+    std::string materialMapping() const override
+    { return "proportionalExtensiveSplit"; }
+
     const std::string& type() const override { return type_; }
 
     int solve(const DictPtr& dict,

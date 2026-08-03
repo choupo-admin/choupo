@@ -1389,6 +1389,59 @@ void runUnit(const DictPtr&                                          udict,
             }
             else if (!s.speciation && inletBlock && inletS
                      && overrideWorld && !worldResolves
+                     && unit->materialMapping() == "proportionalExtensiveSplit"
+                     && inletS->F > 0.0)
+            {
+                //  A PROPORTIONAL SPLIT DIVIDES THE INVENTORY, exactly.
+                //  Every outlet is the inlet scaled by one common fraction
+                //  (the unit DECLARES that -- materialMapping, never its
+                //  class name), so each species amount is scaled by the
+                //  same number.  This is algebra on extensive quantities,
+                //  not a thermodynamic hypothesis: refusing it would force
+                //  the author around a limitation the engine does not have,
+                //  and letting the post-solve pass re-derive instead would
+                //  replace known arithmetic with a model-dependent answer.
+                //  The composition must be UNCHANGED -- a proportional
+                //  split cannot move z; if it did, the fraction is not
+                //  common to every species and this contract does not hold.
+                bool proportional = true;
+                for (std::size_t i = 0;
+                     proportional && i < s.z.size() && i < inletS->z.size(); ++i)
+                    proportional = std::abs(s.z[i] - inletS->z[i]) <= 1.0e-9;
+                const scalar frac = s.F / inletS->F;
+                if (proportional && frac >= 0.0 && frac <= 1.0 + 1.0e-9)
+                {
+                    auto b = std::make_shared<ProcessStream::Speciation>(
+                        *inletBlock);
+                    for (auto& fl : b->flows) fl.second *= frac;
+                    b->origin = "transportedAndSplit:" + uname;
+                    const scalar solvedT = b->solvedT > 0.0 ? b->solvedT
+                                                            : inletS->T;
+                    const scalar solvedP = b->solvedP > 0.0 ? b->solvedP
+                                                            : inletS->P;
+                    const bool moved =
+                        std::abs(s.T - solvedT) > 1.0e-9 * std::max(solvedT, 1.0)
+                     || (solvedP > 0.0 && std::abs(s.P - solvedP)
+                         > 1.0e-9 * std::max(solvedP, 1.0));
+                    b->solvedT = solvedT;
+                    b->solvedP = solvedP;
+                    b->equilibriumValidHere = !moved;
+                    //  An INTENSIVE equilibrium reading survives a split
+                    //  untouched -- halving a brine does not move its pH --
+                    //  so pH is withheld only if the STATE moved, exactly
+                    //  as for a straight transport.
+                    if (moved) { b->pH = 0.0; b->pH_valid = false; }
+                    s.speciation = std::move(b);
+                    if (!quiet && verbosity >= 2)
+                        std::cout << "  [basis] unit '" << uname << "': species"
+                                     " inventory SPLIT to '" << outputs[k]
+                                  << "' by the declared proportional fraction "
+                                  << frac << " (algebraic; chemistry not"
+                                     " re-run)\n";
+                }
+            }
+            else if (!s.speciation && inletBlock && inletS
+                     && overrideWorld && !worldResolves
                      && outputs.size() == 1)
             {
                 //  Composition preserved?  The heater/pump class: one

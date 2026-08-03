@@ -87,6 +87,27 @@ public:
     // via its `outputs (... )` declaration.
     virtual std::vector<ProcessStream> producedStreams() const { return {}; }
 
+    //  HOW THIS UNIT MAPS AN EXTENSIVE INVENTORY FROM ITS INLET TO ITS
+    //  OUTLETS -- a DECLARED CAPABILITY, never inferred from the class
+    //  name (basis spike, counsel 2026-08-03).
+    //
+    //  ""                          unclassified: nothing may be carried
+    //                              through this unit on trust.
+    //  "proportionalExtensiveSplit" every outlet is the inlet scaled by one
+    //                              common fraction -- the SAME fraction for
+    //                              every species, no reaction, no phase
+    //                              selection, no per-component spec.  A
+    //                              carried species inventory may therefore
+    //                              be divided by exactly that fraction: it
+    //                              is algebra, not chemistry.
+    //
+    //  A separator, membrane, filter, adsorber or selective splitter must
+    //  NOT declare this: their outlets are not proportional copies, so no
+    //  single fraction exists and the inventory cannot be divided without a
+    //  model.  The name of the class is irrelevant; what is declared here
+    //  is what the contract reads.
+    virtual std::string materialMapping() const { return ""; }
+
     // Key Performance Indicators emitted by this unit at its last solve().
     // Each unit op exposes scalar values useful for outer-driver layers
     // (sensitivity / optimisation / parameter estimation) and for

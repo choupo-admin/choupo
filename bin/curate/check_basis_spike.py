@@ -218,6 +218,52 @@ def main() -> int:
         if "WITHHELD" not in out:
             failures.append("C4b: the withholding is not announced")
 
+        # ---- C4c THE PROPORTIONAL SPLIT (counsel 2026-08-03) -------------
+        #  A splitter DECLARES that every outlet is the inlet scaled by one
+        #  common fraction, so a carried extensive inventory divides by
+        #  exactly that fraction.  Closure species-by-species is what
+        #  proves it was ALGEBRA and not a re-derivation -- but closure
+        #  alone cannot distinguish the two (two independently re-solved
+        #  branches would also sum), so the ORIGIN is checked as well.
+        ra, ma = spec_block(conv / "branchA")
+        rb, mb2 = spec_block(conv / "branchB")
+        rin, _ = spec_block(conv / "warmBrine")
+        if not (ra and rb and rin):
+            failures.append("C4c: the split branches carry no block")
+        else:
+            for nm, mm in (("branchA", ma), ("branchB", mb2)):
+                if (mm or {}).get("origin") != "transportedAndSplit:divider":
+                    failures.append(f"C4c: {nm} origin"
+                                    f" {(mm or {}).get('origin')!r} -- the"
+                                    f" block was re-derived, not split")
+            worst2 = 0.0
+            for k2, v in rin.items():
+                d = abs((ra.get(k2, 0.0) + rb.get(k2, 0.0)) - v)
+                worst2 = max(worst2, d / max(abs(v), 1e-30))
+            if worst2 > 1e-8:
+                failures.append(f"C4c: the branches do not sum back to the"
+                                f" inlet species-by-species (worst rel"
+                                f" {worst2})")
+            for nm, r2 in (("branchA", ra), ("branchB", rb)):
+                q = sum(CHARGE.get(k2, 0) * v for k2, v in r2.items())
+                sc = sum(abs(v) for k2, v in r2.items() if CHARGE.get(k2, 0))
+                if abs(q) > 1e-8 * max(sc, 1.0):
+                    failures.append(f"C4c: {nm} is not electroneutral"
+                                    f" after the split (Sum z*n = {q})")
+            for k2, v in rin.items():
+                if v <= 0.0:
+                    continue
+                if abs(ra.get(k2, 0.0) / v - 0.25) > 1e-6:
+                    failures.append(f"C4c: branchA/{k2} is not 0.25 of the"
+                                    f" inlet ({ra.get(k2, 0.0) / v})")
+                    break
+            if "SPLIT to" not in out:
+                failures.append("C4c: the split is not announced")
+            for nm in ("branchA", "branchB"):
+                if "equilibriumValidHere false" not in (conv / nm).read_text():
+                    failures.append(f"C4c: {nm} claims equilibrium validity"
+                                    f" its parent block did not have")
+
         # ---- C7 GLASS-BOX TRACE ------------------------------------------
         if "TRANSPORTED across the model boundary" not in out \
            or "transporter" not in out:
@@ -319,9 +365,26 @@ def main() -> int:
         idw = fresh(tmp, "identity")
         fsd = idw / "system" / "flowsheetDict"
         t = fsd.read_text()
-        i = t.index("        thermo\n        {")
-        j = t.index("\n    }\n);", i)
-        fsd.write_text(t[:i] + t[j + 1:])
+        #  Remove EVERY per-unit thermo override by balanced braces -- the
+        #  boundary is what the probe removes, and the chain carries more
+        #  than one unit that declares a local world.  (Cutting from the
+        #  first `thermo {` to the file's last `}` worked only while there
+        #  was exactly one, and broke when the splitter was added.)
+        while True:
+            i = t.find("        thermo\n        {")
+            if i < 0:
+                break
+            j = t.index("{", i)
+            depth = 0
+            for k2 in range(j, len(t)):
+                if t[k2] == "{":
+                    depth += 1
+                elif t[k2] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        break
+            t = t[:i] + t[k2 + 2:]
+        fsd.write_text(t)
         rc6, out6 = run(idw)
         if rc6 != 0:
             failures.append("C10: the boundary-free variant did not run")
