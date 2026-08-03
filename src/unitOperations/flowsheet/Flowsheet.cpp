@@ -3473,6 +3473,23 @@ int Flowsheet::solve(const DictPtr& dict,
                 const scalar kgw = (wi < nApp.size())
                     ? nApp[wi] * thermo.comp(wi).MW() : 0.0;
                 s.speciation = speciationBlock(thermo, sr, kgw, sr.pH);
+                //  WHO ANSWERED.  This pass is the most common producer of
+                //  blocks in the corpus and left `origin` blank, so an
+                //  empty mark meant two different things: "written before
+                //  the spike" and "written here".  It stamps itself, and
+                //  says REPORTED rather than SOLVED-BY-A-UNIT: no unit
+                //  performed this equilibrium: the reporting pass
+                //  speciated the material as it stands.
+                if (s.speciation)
+                {
+                    auto b = std::make_shared<ProcessStream::Speciation>(
+                        *s.speciation);
+                    b->origin  = "reported:postSolve";
+                    b->solvedT = s.T;
+                    b->solvedP = s.P;
+                    b->equilibriumValidHere = true;   // solved AT this state
+                    s.speciation = std::move(b);
+                }
             }
             catch (const std::exception&)
             {

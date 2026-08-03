@@ -47,6 +47,80 @@ def canon_sha(p):
     return _canon[key]
 
 
+_dump = {}
+
+
+def canon_dump(p):
+    key = str(p)
+    if key not in _dump:
+        r = subprocess.run([str(PROPS), "--canonical-dump", key],
+                           capture_output=True, text=True)
+        _dump[key] = r.stdout.strip() if r.returncode == 0 else None
+    return _dump[key]
+
+
+#  SEVERITY, from the parsed content -- not from the byte diff.
+#  A sealed case is BROKEN only if it no longer reproduces its OWN
+#  contents; differing from the LIVE catalogue is history, not failure,
+#  and the two must never be printed as one number.  (Counsel 2026-08-03:
+#  "não actualizes a história para tornar o aviso mais pequeno; resume a
+#  história e destaca apenas aquilo que exige decisão".)
+DOCUMENTATION_ONLY   = "documentation/provenance only"
+ADDITIVE_UNUSED_DATA = "additive data the sealed copy does not carry"
+VALUE_CHANGED        = "a declared VALUE moved"
+REMOVED              = "the origin no longer declares something the seal has"
+
+
+def kv(dump):
+    """Top-level `key=value;` pairs of a canonical dump -- enough to tell
+    an ADDED block from a MOVED number without a full tree diff."""
+    out, depth, buf = {}, 0, ""
+    body = dump[1:-1] if dump.startswith("{") else dump
+    for ch in body:
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+        if ch == ";" and depth == 0:
+            if "=" in buf:
+                k, _, v = buf.partition("=")
+                out[k] = v
+            buf = ""
+        else:
+            buf += ch
+    return out
+
+
+def classify(sealed, origin, claimType="imported"):
+    """-> severity class of the difference between two records.
+
+    `claimType` matters: a MERGED record is the catalogue base with a
+    case-local overlay already applied, so it carries keys the base does
+    not -- by construction, not by drift.  Reading that as "the origin no
+    longer declares something the seal has" invented a curation finding
+    on 5 cases that have none (caught 2026-08-03 by checking the claim
+    before reporting it).  Only an IMPORTED record -- a verbatim copy --
+    lets that comparison mean anything."""
+    ds, do = canon_dump(sealed), canon_dump(origin)
+    if ds is None or do is None:
+        return VALUE_CHANGED            # unreadable: assume the worst
+    if ds == do:
+        return DOCUMENTATION_ONLY       # parsed content identical
+    a, b = kv(ds), kv(do)
+    for k in a:
+        if k not in b:
+            #  Expected for a merged record; a real signal only for a
+            #  verbatim imported copy.
+            if claimType == "merged":
+                continue
+            return REMOVED
+        if a[k] != b[k]:
+            if claimType == "merged":
+                continue          # the overlay is what differs, by design
+            return VALUE_CHANGED
+    return ADDITIVE_UNUSED_DATA         # origin only GAINED keys
+
+
 def read_manifest(mf):
     txt = re.sub(r'/\*.*?\*/', '', mf.read_text(), flags=re.S)
     txt = re.sub(r'^\s*//.*$', '', txt, flags=re.M)
@@ -62,17 +136,19 @@ def read_manifest(mf):
 
 
 drift, damage = [], []
+byClass = {}
 nManifests = nRecords = 0
+FULL = "--full-drift-report" in sys.argv
 for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
     nManifests += 1
     case = mf.parent.parent.relative_to(ROOT)
     for rel, e in read_manifest(mf).items():
-        t = e.get("type", "")
-        if t == "adopted":
+        t2 = e.get("type", "")
+        if t2 == "adopted":
             continue                      # the author's record, not ours to check
         nRecords += 1
         dst = mf.parent / rel
-        # (a) integrity of the sealed copy itself -- damage, not drift
+        # (a) integrity of the sealed copy itself -- THIS is a failure
         if not dst.exists():
             damage.append(f"{case}: claimed constant/{rel} MISSING on disk")
             continue
@@ -80,38 +156,70 @@ for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
             damage.append(f"{case}: constant/{rel} fails its manifest sha256"
                           " (edited without --adopt-local/--overwrite?)")
             continue
-        # (b) drift of the origin -- informational
+        # (b) divergence from the LIVE catalogue -- history, not failure
         osha = e.get("originSha256")
         if not osha:
             continue
         src = STD / rel
         if not src.exists():
-            drift.append(f"{case}: origin data/standards/{rel} VANISHED from"
-                         " the catalogue")
+            drift.append((REMOVED, str(case), rel, "origin VANISHED"))
+            byClass[REMOVED] = byClass.get(REMOVED, 0) + 1
         elif sha_file(src) != osha:
-            kind = "changed since import"
-            comp = e.get("computationalSha256")
-            if comp and PROPS.exists():
-                oc = canon_sha(src)
-                if oc == comp:
-                    kind = "changed since import (COSMETIC: comments/"                            "formatting only, parsed content identical)"
-                elif oc is not None:
-                    kind = "changed since import (COMPUTATIONAL: parsed"                            " content moved)"
-            drift.append(f"{case}: data/standards/{rel} {kind}")
+            cls = classify(dst, src, t2) if PROPS.exists() \
+                  else VALUE_CHANGED
+            drift.append((cls, str(case), rel, ""))
+            byClass[cls] = byClass.get(cls, 0) + 1
+
+#  What a human must look at.  A sealed case is only BROKEN by (a); a
+#  value that moved in the live catalogue is worth a curator's eye, and
+#  added blocks or reworded comments are not.
+ACTIONABLE = (VALUE_CHANGED, REMOVED)
+actionable = [d for d in drift if d[0] in ACTIONABLE]
+cases_needing_review = len({d[1] for d in actionable})
+
+print("SEALED CATALOGUE DRIFT SUMMARY")
+print("  manifests inspected:            %6d" % nManifests)
+print("  embedded records inspected:     %6d" % nRecords)
+print("  records differing from origin:  %6d" % len(drift))
+for cls in (DOCUMENTATION_ONLY, ADDITIVE_UNUSED_DATA, VALUE_CHANGED, REMOVED):
+    if byClass.get(cls):
+        print("      %-46s %5d" % (cls, byClass[cls]))
+print()
+print("  sealedReproducibilityFailures:  %6d   <- a case that no longer"
+      " reproduces its OWN contents" % len(damage))
+print("  catalogDivergenceCount:         %6d   <- history: the live"
+      " catalogue moved on" % len(drift))
+print("  cases needing a curator's eye:  %6d" % cases_needing_review)
+print()
+print("  A sealed case is VALID while it reproduces its own records.")
+print("  Divergence from the live catalogue is a historical fact about")
+print("  the catalogue, NOT a defect in the case -- do not re-seal to")
+print("  make this number smaller: that rewrites the provenance the seal")
+print("  exists to preserve.")
 
 if damage:
-    print("SEAL DAMAGE (broken manifests -- fix these, they are not drift):")
+    print()
+    print("SEAL DAMAGE (these are real -- fix them):")
     for d in damage:
         print("  " + d)
-if drift:
-    print(f"SEAL DRIFT: {len(drift)} sealed record(s) whose catalogue origin"
-          " evolved (re-run `bin/choupo-import <case>` to refresh):")
+
+if actionable:
+    print()
+    print("REVIEW REQUIRED (a declared value moved under a sealed case):")
     seen = {}
-    for d in drift:
-        seen.setdefault(d.split(": ", 1)[1], []).append(d.split(": ", 1)[0])
-    for what, cases in sorted(seen.items()):
-        print(f"  {what}   [{len(cases)} case(s)]")
-if not damage and not drift:
-    print(f"seal drift: clean -- {nRecords} imported record(s) across"
-          f" {nManifests} manifest(s) all match the live catalogue")
+    for cls, case, rel, why in actionable:
+        seen.setdefault((cls, rel), []).append(case)
+    for (cls, rel), cases in sorted(seen.items()):
+        print("  %-58s %s   [%d case(s)]" % (rel, cls, len(cases)))
+
+if FULL:
+    print()
+    print("FULL INVENTORY (--full-drift-report):")
+    for cls, case, rel, why in sorted(drift):
+        print("  %-44s %-30s %s" % (rel, cls, case))
+elif len(drift) > len(actionable):
+    print()
+    print("  %d further difference(s) are documentation or additive data;"
+          " run with --full-drift-report to list them." % (len(drift) - len(actionable)))
+
 sys.exit(1 if damage else 0)
