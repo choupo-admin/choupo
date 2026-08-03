@@ -97,10 +97,13 @@ public:
     //   isothermal segment has Q = dH computed from the committed mole
     //   numbers alone -- the integrator is untouched and every existing
     //   trajectory stays byte-identical.  Segments close on setParameter
-    //   (T change) and on any recipe material charge/discharge
-    //   (notifyStateChanged), so the state difference is always PURELY
-    //   reactive.  Adiabatic mode exchanges nothing (records none).
+    //   (T change) and on any recipe material charge/discharge -- the
+    //   close fires PRE-mutation (notifyStateWillChange) so the state
+    //   difference is always PURELY reactive; notifyStateChanged then
+    //   re-bases on the post-transfer state.  Adiabatic mode exchanges
+    //   nothing (records none).
     void noteTimeAdvanced(scalar t) override;
+    void notifyStateWillChange() override;
     void notifyStateChanged() override;
     std::vector<SimulationResult::EnergyRecord>
          energyRecords(scalar tEnd) override;
@@ -207,6 +210,21 @@ private:
     sVector segN0_;
     scalar  segT_      = 0.0;    // the segment's pinned temperature
     std::vector<SimulationResult::EnergyRecord> energyLog_;
+
+    //  Temporal demand (ratified 2026-08-03): per-step samples of the SAME
+    //  exact state-difference pricing the segment record closes over --
+    //  Q_iso is linear in dn at fixed T, so the samples telescope to the
+    //  record EXACTLY (the driver's reconciliation closes at machine eps).
+    std::vector<DemandSample> demandLog_;
+    scalar isoMixH_(const sVector& nv) const;   // kJ at (segT_, P, vf)
+    //  Sample basis: snapshot at the last accepted DRIVER step (the sampler
+    //  lives in noteTimeAdvanced -- step() never fires for hasOdeForm()
+    //  units, the stiff sweep advances them via setOdeState).  Reset by
+    //  openSegment_ so a charge/impulse never leaks into a reaction sample.
+    sVector demandN0_;
+    scalar  demandTPrev_ = 0.0;
+    bool    demandDead_  = false;  // unpriceable inventory: stop sampling
+                                   // (the record goes invalid NAMED anyway)
     // Static duty resolution, decided once at initialise():
     //   dutyMissing_ non-empty  -> every segment is E-invalid, named.
     //   dutyByStateDiff_        -> all reacting species carry formation data:
@@ -224,6 +242,12 @@ private:
     // difference E = H(n, T_new) - H(n, T_old) on the SAME elements datum
     // the duty uses -- never Sum n*Cp*dT when enthalpy is available.
     void emitImpulse_(scalar T_old, scalar T_new);
+
+public:
+    std::vector<DemandSample> takeDemandSamples() override
+    { auto s = std::move(demandLog_); demandLog_.clear(); return s; }
+
+private:
 };
 
 } // namespace Choupo

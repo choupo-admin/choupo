@@ -578,14 +578,54 @@ void BatchReactor::noteTimeAdvanced(scalar t)
     {
         timeSeen_ = true;
         openSegment_(t);
+        return;
     }
+    //  Temporal demand sample (ratified 2026-08-03): the SAME exact
+    //  state-difference pricing the segment record closes over, taken per
+    //  accepted DRIVER step.  It lives HERE and not in step() because a
+    //  hasOdeForm() unit is advanced by the stiff sweep (setOdeState) --
+    //  step() never runs for it -- while noteTimeAdvanced fires for every
+    //  unit on every accepted step.  Q_iso is linear in dn at fixed T, so
+    //  the samples telescope to the record exactly; a sampler bug shows up
+    //  as a refused profile, never a moved ledger.
+    if (mode_ == Mode::Isothermal && dutyByStateDiff_ && dutyMissing_.empty()
+        && !demandDead_ && t > demandTPrev_)
+    {
+        //  An inventory the datum cannot price (e.g. a SPECTATOR without
+        //  formation data -- dutyByStateDiff_ only vets the REACTING
+        //  species) throws here just as it does at segment close; the
+        //  close catches it and the record goes invalid NAMED, so the
+        //  sampler stops quietly -- an invalid record casts no profile.
+        try
+        {
+            const scalar dE = isoMixH_(state_.n) - isoMixH_(demandN0_);
+            if (dE != 0.0)
+                demandLog_.push_back({demandTPrev_, t, "reaction", dE, true});
+        }
+        catch (const std::exception&)
+        {
+            demandDead_ = true;
+            demandLog_.clear();
+        }
+    }
+    demandN0_    = state_.n;
+    demandTPrev_ = t;
+}
+
+void BatchReactor::notifyStateWillChange()
+{
+    // Recipe material charge/discharge, PRE-mutation: the segment closes
+    // on the untouched inventory so its state difference stays PURELY
+    // reactive.  (Closing post-mutation priced the transfer jump into the
+    // "reaction" record -- recipe01's +6716.6 kJ that was really
+    // H(empty)-H(charge), caught by the temporal-demand reconciliation.)
+    closeSegment_(lastTime_);
 }
 
 void BatchReactor::notifyStateChanged()
 {
-    // Recipe material charge/discharge: the state difference the segment
-    // prices must stay PURELY reactive, so the boundary lands here.
-    closeSegment_(lastTime_);
+    // POST-mutation re-base: the next segment starts from the transferred
+    // state.  Never close here -- the close happened above, pre-mutation.
     openSegment_(lastTime_);
 }
 
@@ -619,6 +659,11 @@ void BatchReactor::openSegment_(scalar t)
     segStart_ = t;
     segN0_    = state_.n;
     segT_     = state_.T;
+    // The demand-sample basis follows the segment: a charge/discharge or a
+    // T impulse re-bases the sampler so the next reaction sample is purely
+    // reactive (same reason the record's segN0_ resets here).
+    demandN0_    = state_.n;
+    demandTPrev_ = t;
 }
 
 void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
@@ -678,6 +723,11 @@ void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
         er.basis   = "instantaneous setParameter T: E = H(n,T_new) -"
                      " H(n,T_old) on the elements datum (state difference,"
                      " never Sum n*Cp*dT)";
+        //  Temporal demand: an impulse sample -- energy with no duration
+        //  has NO finite rate (rateDefined=false: excluded from the peak,
+        //  reported with a warning by the driver).
+        demandLog_.push_back({lastTime_, lastTime_, "impulse",
+                              er.E_kJ, false});
     }
     else
     {
@@ -686,6 +736,22 @@ void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
                      " inventory";
     }
     energyLog_.push_back(std::move(er));
+}
+
+scalar BatchReactor::isoMixH_(const sVector& nv) const
+{
+    //  The ONE pricing of the isothermal segment (record AND per-step
+    //  demand samples read it -- two pricings would leak a fake
+    //  reconciliation residual): H on the canonical elements-datum
+    //  surface at (segT_, P, phase leg).
+    scalar nTot = 0.0;
+    for (auto v : nv) nTot += v;
+    if (nTot <= 0.0) return 0.0;
+    const scalar vf = (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
+    const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
+    sVector z(nv.size());
+    for (std::size_t i = 0; i < nv.size(); ++i) z[i] = nv[i] / nTot;
+    return thermo_->H_stream_formation(segT_, P_Pa, vf, z) * nTot;  // kJ
 }
 
 void BatchReactor::closeSegment_(scalar t)
@@ -723,21 +789,7 @@ void BatchReactor::closeSegment_(scalar t)
             // (H_stream_formation -- the same one the vessel terms and the
             // material ledger read; two surfaces would leak a fake residual
             // into the balance, found live on batch05/batch01).
-            const scalar vf =
-                (energy_ == Energy::GasConstantV) ? 1.0 : 0.0;
-            const scalar P_Pa = state_.P > 0.0 ? state_.P * 1.0e5 : 1.0e5;
-            auto mixH = [&](const sVector& nv) -> scalar
-            {
-                scalar nTot = 0.0;
-                for (auto v : nv) nTot += v;
-                if (nTot <= 0.0) return 0.0;
-                sVector z(nv.size());
-                for (std::size_t i = 0; i < nv.size(); ++i)
-                    z[i] = nv[i] / nTot;
-                return thermo_->H_stream_formation(segT_, P_Pa, vf, z)
-                     * nTot;   // J/mol * kmol = kJ
-            };
-            er.E_kJ    = mixH(state_.n) - mixH(segN0_);
+            er.E_kJ    = isoMixH_(state_.n) - isoMixH_(segN0_);
             er.E_valid = true;
             er.basis   = "isothermal closed vessel at constant P:"
                          " Q = dH = H(n1,T) - H(n0,T), canonical elements-"

@@ -201,7 +201,7 @@ public:
 
     // Raffinate shed since the last call (the driver routes it to
     // `dischargeTo` or records it as an external outlet).
-    BatchState takeContinuousDischarge() override;
+    BatchState takeContinuousDischarge(scalar tNow) override;
 
     scalar vesselEnthalpy(bool& ok, std::string& why) const override;
     std::string energyLedgerGap() const override;

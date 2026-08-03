@@ -209,6 +209,29 @@ public:
     { return {}; }
 
     // ---------------------------------------------------------------------
+    //  TEMPORAL utility demand (phase (f) second half, ratified 2026-08-03).
+    //  A unit that CAN resolve its ledgered duty in time emits one sample
+    //  per accepted driver step and per live record kind; the driver
+    //  RECONCILES each energy record's window sum against the record's
+    //  exact E_kJ (the ledger stays the only authority -- a profile that
+    //  does not close is refused, the record stands) and only then writes
+    //  the demand staircase.  The default is honest silence: a unit with
+    //  no sampler contributes nothing and its records are LISTED as
+    //  unprofiled, never guessed.  rateDefined=false marks an IMPULSE
+    //  (energy with no duration has no finite rate: excluded from the
+    //  peak, reported with a warning).  Drain semantics: the caller takes
+    //  the samples and the unit forgets them.
+    // ---------------------------------------------------------------------
+    struct DemandSample
+    {
+        scalar      tStart = 0.0, tEnd = 0.0;   // s
+        std::string kind;                       // matches the record kind
+        scalar      dE_kJ = 0.0;
+        bool        rateDefined = true;
+    };
+    virtual std::vector<DemandSample> takeDemandSamples() { return {}; }
+
+    // ---------------------------------------------------------------------
     //  Recipe hooks.  Default behaviour is sensible enough that
     //  most concrete vessels do not need to override --- BatchReactor and
     //  BatchStill rely on the defaults for chargeFrom / dischargeAll.
@@ -250,12 +273,29 @@ public:
     // `dischargeTo` target each step --- a distillate receiver.  Default:
     // nothing (returns an empty package); concrete units override + clear
     // their per-step buffer.  Returned moles are CONDENSED into the target.
-    virtual BatchState takeContinuousDischarge();
+    // `tNow` is the COMMITTED time of the step being drained: the driver
+    // routes discharges BEFORE noteTimeAdvanced (the hand-off belongs to
+    // the step the clock-note will stamp), so a drain that needs the time
+    // must take it from here, never from its own last clock note (the
+    // fixed bed's algebraic carrier outlet was one boundary behind).
+    virtual BatchState takeContinuousDischarge(scalar tNow);
+
+    // Notify the unit that its state is ABOUT to be modified externally
+    // (fired by the base chargeFrom/discharge primitives BEFORE the first
+    // mole is moved).  This is where an energy-ledger unit CLOSES its
+    // constant-physics segment, so the segment's state difference stays
+    // purely reactive/distillative -- closing after the mutation prices
+    // the transfer jump into the duty record (the recipe01 mis-attribution
+    // the temporal-demand reconciliation caught, 2026-08-03: a "reaction"
+    // record of +6716.6 kJ that was really H(empty)-H(charge)).  Default
+    // is no-op.
+    virtual void notifyStateWillChange() {}
 
     // Notify the unit that its state was just modified externally
-    // (typically after a chargeFrom from the recipe layer).  Default
-    // is no-op; e.g. BatchStill uses this to invalidate its warm
-    // bubble-T seed.
+    // (after a chargeFrom/discharge from the recipe layer).  This is the
+    // RE-BASE hook: reopen the segment on the post-transfer state, refresh
+    // warm seeds/invariants.  It must NOT close a segment -- the close
+    // belongs to notifyStateWillChange() above, on the pre-transfer state.
     virtual void notifyStateChanged() {}
 
     // ---- A6: the state that DEFINES a cyclic steady state ---------------

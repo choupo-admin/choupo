@@ -1649,7 +1649,7 @@ std::map<std::string, scalar> FixedBedAdsorber::declaredMaterialResidual() const
     return { { compNames_[carrierIdx_], carrierFabricated_() / 1000.0 } };
 }
 
-BatchState FixedBedAdsorber::takeContinuousDischarge()
+BatchState FixedBedAdsorber::takeContinuousDischarge(scalar tNow)
 {
     const std::size_t nAds = adsIdx_.size();
     BatchState out;
@@ -1687,7 +1687,7 @@ BatchState FixedBedAdsorber::takeContinuousDischarge()
     // Carrier outlet by difference: total outlet flow is A*u*c_tot exactly
     // (the constant-c_tot closure), so its cumulative is algebraic.
     const scalar mOutCarrier =
-        A_ * u_ * cTot_ * (tNow_ - startTime_) - mOutSum;
+        A_ * u_ * cTot_ * (tNow - startTime_) - mOutSum;
     out.n[carrierIdx_] = (mOutCarrier - shedMarkCarrier_) / 1000.0;
     shedMarkCarrier_ = mOutCarrier;
     return out;

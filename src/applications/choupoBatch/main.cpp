@@ -949,22 +949,32 @@ if (flowsheetDict->found("cycle"))
     if (verbosity >= 3) echoLine(t);
     nextWrite += writeInterval;
 
-    // Shared post-step processing (discharge routing, events, writes).
-    auto postStep = [&](scalar tNow)
+    // Continuous discharge routing: hand each unit's per-step sheddings
+    // (e.g. a still's condensed vapour) to its `dischargeTo` receiver, so a
+    // distillate-receiver tank fills up step by step.  Runs BEFORE
+    // noteTimeAdvanced: the hand-off belongs to the step just committed
+    // (the still's segVapH_/segLatent_ accumulate at hand-off), so the
+    // clock-note -- and the temporal-demand samples taken there -- must
+    // see it, or every sample window lags its hand-off by one step and the
+    // final one is lost (found by the recipe01 profile reconciliation).
+    auto routeDischarges = [&](scalar tNow)
     {
-        // Continuous discharge routing: hand each unit's per-step
-        // sheddings (e.g. a still's condensed vapour) to its `dischargeTo`
-        // receiver, so a distillate-receiver tank fills up step by step.
         for (std::size_t i = 0; i < units.size(); ++i)
             if (dischargeToIdx[i] >= 0)
             {
-                const BatchState pkg = units[i]->takeContinuousDischarge();
+                const BatchState pkg = units[i]->takeContinuousDischarge(tNow);
                 recordContinuous(i, tNow, pkg);
                 units[dischargeToIdx[i]]->chargeFrom(pkg);
             }
             else
-                recordVented(i, tNow, units[i]->takeContinuousDischarge());
+                recordVented(i, tNow, units[i]->takeContinuousDischarge(tNow));
+    };
 
+    // Recipe events whose trigger has elapsed.  Runs AFTER noteTimeAdvanced:
+    // an event's segment boundary (notifyStateWillChange/Changed) stamps
+    // lastTime_, which must already hold the committed step time.
+    auto fireDueEvents = [&](scalar tNow)
+    {
         while (nextEvent < events.size() && events[nextEvent].time <= tNow + 1.0e-9)
         {
             fireEvent(events[nextEvent].dict, tNow,
@@ -985,19 +995,9 @@ if (flowsheetDict->found("cycle"))
 
             for (auto& unit : units) unit->step(t, dt);
             t += dt;
+            routeDischarges(t);
             for (auto& unit : units) unit->noteTimeAdvanced(t);
             captureCycleBoundary(t);
-
-            // Continuous discharge routing.
-            for (std::size_t i = 0; i < units.size(); ++i)
-                if (dischargeToIdx[i] >= 0)
-                {
-                    const BatchState pkg = units[i]->takeContinuousDischarge();
-                    recordContinuous(i, t, pkg);
-                    units[dischargeToIdx[i]]->chargeFrom(pkg);
-                }
-                else
-                    recordVented(i, t, units[i]->takeContinuousDischarge());
 
             // Fire any events whose trigger has just elapsed.  Pedagogical
             // simplification: we do not cut dt to land exactly on the
@@ -1078,9 +1078,10 @@ if (flowsheetDict->found("cycle"))
                 stepper.advance(odeUnits, t, tNext, onStep);
 
             t = tNext;
+            routeDischarges(t);
             for (auto& unit : units) unit->noteTimeAdvanced(t);
             captureCycleBoundary(t);
-            postStep(t);
+            fireDueEvents(t);
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
             {
@@ -1562,6 +1563,10 @@ if (flowsheetDict->found("cycle"))
                                         : "  (closed)"))
                           << "\n";
         }
+        //  Temporal demand samples, drained per unit alongside the record
+        //  collection below; the utilities block reconciles + emits them.
+        std::map<std::string,
+                 std::vector<BatchUnitOperation::DemandSample>> demandByUnit;
         // ---- ENERGY ledger + campaign energy balance (phase (a),
         //      forum #98.3 as amended by #99-1..5 and gated by #101) -------
         //  Q = dH per closed constant-P segment is an EXACT state
@@ -1598,6 +1603,10 @@ if (flowsheetDict->found("cycle"))
                     result.kpis[unitNames[i]]["E_" + kind + "_total_kJ"] = tot;
                 result.energyLedger.insert(result.energyLedger.end(),
                                            recs.begin(), recs.end());
+                //  Temporal demand samples (ratified 2026-08-03): drained
+                //  HERE, reconciled against the exact records below.
+                for (auto& s : units[i]->takeDemandSamples())
+                    demandByUnit[unitNames[i]].push_back(std::move(s));
                 const std::string gap = units[i]->energyLedgerGap();
                 if (!gap.empty())
                     eMissing.push_back("unit '" + unitNames[i] + "' ("
@@ -1728,6 +1737,9 @@ if (flowsheetDict->found("cycle"))
             struct UtilAgg { scalar E_kJ = 0.0, kg = 0.0, eur = 0.0; };
             std::map<std::string, UtilAgg> byUtil;
             std::vector<std::string> unserved;
+            //  ONE allocator: the temporal profile below INHERITS each
+            //  record's pick, never re-picks.
+            std::vector<std::string> recUtil(result.energyLedger.size());
             for (const auto& er : result.energyLedger)
             {
                 if (!er.E_valid || er.E_kJ == 0.0) continue;
@@ -1754,6 +1766,8 @@ if (flowsheetDict->found("cycle"))
                 a.E_kJ += std::abs(er.E_kJ);
                 a.kg   += std::abs(er.E_kJ) * 1000.0 / u->dutyPerKg;
                 a.eur  += std::abs(er.E_kJ) * 1.0e-6 * u->cost;   // kJ->GJ
+                recUtil[static_cast<std::size_t>(
+                    &er - result.energyLedger.data())] = u->name;
             }
             scalar totalEur = 0.0;
             for (const auto& [nm, a] : byUtil)
@@ -1776,6 +1790,160 @@ if (flowsheetDict->found("cycle"))
                     std::cout << "    TOTAL: " << totalEur << " EUR\n";
                 for (const auto& m2 : unserved)
                     std::cout << "    UNSERVED: " << m2 << "\n";
+            }
+
+            // ---- TEMPORAL demand (phase (f) second half, ratified
+            //      2026-08-03, second-opinion review): a demand STAIRCASE
+            //      on the accepted-step grid.  The exact ledger stays the
+            //      ONLY authority: each record's window sum of samples must
+            //      CLOSE against its E_kJ (tolerance declared below) or
+            //      that record's profile is REFUSED -- the record stands,
+            //      the staircase does not lie.  Units without a sampler
+            //      contribute nothing and their records are LISTED as
+            //      unprofiled, so a partial staircase never reads total.
+            {
+                struct Row
+                {
+                    scalar tS, tE, dE; bool rateDef;
+                    std::string unit, kind, util;
+                };
+                std::vector<Row> rows;
+                std::vector<std::string> unprofiled, refused;
+                bool anyImpulse = false;
+                std::vector<char> used;   // per-unit sample used flags
+                for (std::size_t r = 0; r < result.energyLedger.size(); ++r)
+                {
+                    const auto& er = result.energyLedger[r];
+                    if (!er.E_valid || er.E_kJ == 0.0) continue;
+                    auto it = demandByUnit.find(er.unit);
+                    std::vector<const BatchUnitOperation::DemandSample*> win;
+                    if (it != demandByUnit.end())
+                        for (const auto& s : it->second)
+                            if (s.kind == er.kind
+                                && s.tStart >= er.tStart - 1.0e-9
+                                && s.tEnd   <= er.tEnd   + 1.0e-9)
+                                win.push_back(&s);
+                    if (win.empty())
+                    {
+                        unprofiled.push_back("unit '" + er.unit + "' "
+                            + er.kind + " [" + std::to_string(er.tStart)
+                            + ".." + std::to_string(er.tEnd) + "] s ("
+                            + std::to_string(er.E_kJ) + " kJ)");
+                        continue;
+                    }
+                    scalar sum = 0.0;
+                    for (auto* s : win) sum += s->dE_kJ;
+                    //  DECLARED tolerance: 1e-6 relative (the isothermal
+                    //  reaction sampler telescopes exactly; anything worse
+                    //  is a sampler bug, and the profile is refused).
+                    const scalar tol =
+                        std::max(1.0e-6 * std::abs(er.E_kJ), 1.0e-9);
+                    if (std::abs(sum - er.E_kJ) > tol)
+                    {
+                        refused.push_back("unit '" + er.unit + "' " + er.kind
+                            + ": profile sum " + std::to_string(sum)
+                            + " kJ vs exact record "
+                            + std::to_string(er.E_kJ)
+                            + " kJ -- profile REFUSED, the record stands");
+                        continue;
+                    }
+                    const std::string util =
+                        recUtil[r].empty() ? "-" : recUtil[r];
+                    for (auto* s : win)
+                    {
+                        if (!s->rateDefined) anyImpulse = true;
+                        rows.push_back({s->tStart, s->tEnd, s->dE_kJ,
+                                        s->rateDefined, er.unit, er.kind,
+                                        util});
+                    }
+                }
+
+                if (!rows.empty() || !unprofiled.empty() || !refused.empty())
+                {
+                    namespace fs = std::filesystem;
+                    fs::create_directories("reports/utilities");
+                    std::ofstream csv("reports/utilities/utilityDemand.csv");
+                    csv << "tStart_s,tEnd_s,unit,eventType,utility,"
+                           "deltaEnergy_kJ,averageRate_kW\n"
+                        << std::setprecision(12);
+                    for (const auto& w : rows)
+                    {
+                        csv << w.tS << "," << w.tE << "," << w.unit << ","
+                            << w.kind << "," << w.util << "," << w.dE << ",";
+                        if (w.rateDef && w.tE > w.tS)
+                            csv << (w.dE / (w.tE - w.tS));
+                        csv << "\n";     // impulse: rate column EMPTY
+                    }
+
+                    //  Peaks per utility, from the DEFINED-rate staircase
+                    //  only (impulses carry no rate and are excluded, with
+                    //  the warning below).  Sum of step functions on the
+                    //  union grid -- the honest staircase, no resampling.
+                    std::map<std::string,
+                             std::vector<std::pair<scalar, scalar>>> evs;
+                    for (const auto& w : rows)
+                        if (w.rateDef && w.tE > w.tS && w.util != "-")
+                        {
+                            const scalar rate =
+                                std::abs(w.dE) / (w.tE - w.tS);
+                            evs[w.util].push_back({w.tS, +rate});
+                            evs[w.util].push_back({w.tE, -rate});
+                        }
+                    for (auto& [nm, ev] : evs)
+                    {
+                        std::sort(ev.begin(), ev.end());
+                        scalar run = 0.0, peak = 0.0, tPeak = 0.0;
+                        for (const auto& [tv, dr] : ev)
+                        {
+                            run += dr;
+                            if (run > peak) { peak = run; tPeak = tv; }
+                        }
+                        uk["utility_" + nm + "_peak_kW"]  = peak;
+                        uk["utility_" + nm + "_t_peak_s"] = tPeak;
+                    }
+
+                    std::ofstream meta("reports/utilities/utilityDemand.meta");
+                    meta << "# temporal demand reconciliation -- the exact"
+                            " ledger is the authority; every profiled"
+                            " record's window sum closed within the declared"
+                            " tolerance (1e-6 rel)\n"
+                         << "profiledRows " << rows.size() << "\n"
+                         << "unprofiledRecords " << unprofiled.size() << "\n";
+                    for (const auto& m2 : unprofiled)
+                        meta << "UNPROFILED " << m2 << "\n";
+                    meta << "refusedProfiles " << refused.size() << "\n";
+                    for (const auto& m2 : refused)
+                        meta << "REFUSED " << m2 << "\n";
+                    if (anyImpulse)
+                        meta << "WARNING impulsive energy present without a"
+                                " modelled duration: excluded from every"
+                                " peak KPI -- peak-based equipment sizing"
+                                " cannot see it\n";
+
+                    if (verbosity >= 2)
+                    {
+                        std::cout << "[campaign] temporal demand: "
+                                  << rows.size() << " sample row(s) ->"
+                                     " reports/utilities/utilityDemand.csv";
+                        for (const auto& [nm, ev] : evs)
+                        {
+                            (void)ev;
+                            std::cout << "; peak " << nm << " = "
+                                      << uk["utility_" + nm + "_peak_kW"]
+                                      << " kW";
+                        }
+                        std::cout << "\n";
+                        for (const auto& m2 : unprofiled)
+                            std::cout << "    UNPROFILED: " << m2 << "\n";
+                        for (const auto& m2 : refused)
+                            std::cout << "    " << m2 << "\n";
+                        if (anyImpulse)
+                            std::cout << "    WARNING: impulsive energy has"
+                                         " no modelled duration -- excluded"
+                                         " from the peak KPIs\n";
+                    }
+                }
+                (void)used;
             }
         }
         result.transfers = std::move(transfers);

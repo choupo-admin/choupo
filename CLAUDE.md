@@ -686,10 +686,32 @@ ledger record with a service T is allocated to a catalogue utility by the
 SAME `pickForDuty` rule the steady report uses (phase-aware dutyPerKg —
 condensing steam is latent), campaign cost = Σ E·price, unserved records
 LISTED never dropped (`utility_*_kJ/kg/eur` + `utility_cost_eur_total`
-KPIs).  The TEMPORAL half — time-resolved utility demand / peak duty (a
-campaign total hides the peak that sizes the boiler) — stays pending and
-is an architecture change (per-segment records would need per-step duty
-increments): propose before building.
+KPIs).  The TEMPORAL half SHIPPED 2026-08-03 (form B as ratified): the
+demand STAIRCASE on the accepted-driver-step grid
+(`reports/utilities/utilityDemand.csv`, row = tStart/tEnd/unit/eventType/
+utility/deltaEnergy/averageRate — the rate an explicit step MEAN), the
+ledger stays the SOLE authority (per record Σprofile == exact E at 1e-6
+rel or the profile is REFUSED and the record stands; unprofiled records
+LISTED), impulses are an explicit class (no rate, excluded from peaks,
+warned), peaks (`utility_*_peak_kW/_t_peak_s`) come from the canonical
+profile only, ONE allocator (the profile inherits each record's
+`pickForDuty`).  Samplers live in `noteTimeAdvanced` (a `hasOdeForm()`
+unit never runs `step()`).  The reconciliation caught two REAL ledger
+bugs on first contact, both fixed with it: (1) transfers were priced
+into duty records (`chargeFrom`/`discharge*` mutated before notifying —
+recipe01's "reaction" +6716.6 kJ was H(empty)−H(charge), and steam was
+billed for a vessel transfer; now `notifyStateWillChange()` closes the
+segment PRE-mutation, `notifyStateChanged()` only re-bases); (2) the
+driver routed continuous discharges AFTER the clock-note, so hand-off
+accumulators lagged their sample window by one step (now
+`routeDischarges` → `noteTimeAdvanced` → events, and
+`takeContinuousDischarge(tNow)` carries the committed time — the fixed
+bed's algebraic carrier outlet must never read its own stale clock).
+Witnesses recipe01 (steam peak 16.96 kW at the bring-to-boil vs 0.76 kW
+mean — the number the total hides) + recipe02 (impulses) + batch13
+(unprofiled listing); gate `check_temporal_utilities` (3 mandated
+sabotages).  Full record:
+[`docs/design/batch-temporal-utilities-proposal.md`](docs/design/batch-temporal-utilities-proposal.md) §8.
 
 **General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
 A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set,

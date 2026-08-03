@@ -126,6 +126,7 @@ public:
     const BatchState& state() const override { return state_; }
 
     void setOperationParameter(const std::string& key, scalar value) override;
+    void notifyStateWillChange() override;
     void notifyStateChanged() override;
 
     // The vapour removed since the last call, condensed for a receiver
@@ -133,7 +134,7 @@ public:
     // buffer.  The recipe layer routes this to a `dischargeTo` target.
     // In the rectifier model the buffer holds D·x_D·dt by construction
     // (the pot only ever loses product), never V·y (forum #85-1).
-    BatchState takeContinuousDischarge() override;
+    BatchState takeContinuousDischarge(scalar tNow) override;
 
     // rectifier: instantaneous x_D + R + D in trajectory.csv (the
     // INSTANTANEOUS distillate; the receiver holds the ACCUMULATED mean --
@@ -233,6 +234,25 @@ private:
     bool    segPoisoned_ = false;   // per-segment: reset at open
     std::vector<std::string> segMissing_;
     std::vector<SimulationResult::EnergyRecord> energyLog_;
+
+    //  Temporal demand (ratified 2026-08-03): per accepted DRIVER step, the
+    //  SAME duty formulas the segment records close over, taken as
+    //  increments of the pot enthalpy + the per-package accumulators above
+    //  -- so the samples telescope to each record EXACTLY.  Basis trackers
+    //  re-base at openSegment_ (a charge never reads as reboiler duty).
+    std::vector<DemandSample> demandLog_;
+    scalar  demandPotH_    = 0.0;   // phaseH_(pot) at the last sample basis
+    scalar  demandVapH_    = 0.0;   // segVapH_    at the last sample basis
+    scalar  demandLiqH_    = 0.0;   // segLiqH_    at the last sample basis
+    scalar  demandLatent_  = 0.0;   // segLatent_  at the last sample basis
+    scalar  demandCondTop_ = 0.0;   // segCondTop_ at the last sample basis
+    scalar  demandTPrev_   = 0.0;
+
+public:
+    std::vector<DemandSample> takeDemandSamples() override
+    { auto s = std::move(demandLog_); demandLog_.clear(); return s; }
+
+private:
 
     // Total-phase enthalpy [kJ] of `nv` at (T, P_op_), vf-selected; on any
     // failure poisons the CURRENT segment with a named reason.

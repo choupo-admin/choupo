@@ -1,9 +1,9 @@
-# Batch temporal utilities — time-resolved demand and the peak (proposal)
+# Batch temporal utilities — time-resolved demand and the peak
 
-**Status: PROPOSAL — awaiting Vítor's alignment.  No code is authorised
-by this document.**  (The no-skip-alignment rule of CLAUDE.md §10; this
-is the second half of campaign phase (f), which DEV.md §4b names as an
-architecture change: *propose before building*.)
+**Status: BUILT 2026-08-03 — form B approved with amendments (the
+ratified second-opinion round of 2026-08-03, executed same day).  §8
+records the as-built contract and the two real ledger bugs the
+reconciliation caught on first contact.**
 
 Date: 2026-08-03.  Author: dev session, for Vítor's review.
 
@@ -140,3 +140,77 @@ amend.  Named alternatives if the accepted-step grid is judged too fine
 for the artefact: emit on the `writeInterval` grid instead (coarser,
 still closing, loses intra-interval peaks — the trade-off would be
 stated in the meta).
+
+---
+
+## 8. BUILT (2026-08-03) — the as-built contract and what it caught
+
+Form B was approved with amendments and executed the same day.  The
+as-built deltas against §4, then the finds.
+
+**As-built contract.**  Canonical grid = the ACCEPTED DRIVER STEPS,
+never `writeInterval`.  Row schema (ratified):
+`tStart_s,tEnd_s,unit,eventType,utility,deltaEnergy_kJ,averageRate_kW`
+with `averageRate = deltaEnergy/(tEnd−tStart)` — explicitly a step
+MEAN.  The engine reconciles, per record, Σ profile.deltaEnergy against
+the record's exact E_kJ at a DECLARED tolerance (1e-6 relative — the
+samplers are exact state-difference increments, so they telescope to the
+record identically; anything worse is a sampler bug): a non-closing
+profile is **REFUSED, the record stands** (the ledger is never poisoned
+by its derivative).  Unprofiled records are LISTED (`UNPROFILED`, stdout
++ `.meta`).  Impulses are an explicit class (`eventType impulse`, rate
+column EMPTY, excluded from every peak KPI, warning in stdout + meta).
+Peaks (`utility_<name>_peak_kW`/`_t_peak_s`) come from the canonical
+profile only — sum of step functions on the union grid, defined-rate
+rows only, `utility` inherited from each record's `pickForDuty` (ONE
+allocator; the profile never re-picks).
+
+**Samplers.**  `BatchUnitOperation::takeDemandSamples()` (drain);
+BatchReactor samples the isothermal jacket duty per accepted driver step
+(same `isoMixH_` state-difference pricing as the record — linear in Δn
+at fixed T, so it telescopes exactly); BatchStill samples reboiler +
+condenser as increments of the pot enthalpy + the per-package
+accumulators (both models, rayleigh and rectifier).  The sampler lives
+in `noteTimeAdvanced` — NOT `step()` — because a `hasOdeForm()` unit is
+advanced by the stiff sweep (`setOdeState`) and `step()` never fires for
+it.
+
+**Find 1 — the transfer mis-attribution (a real, golden-locked ledger
+bug).**  On recipe01 the reconciliation refused the reactor's profile:
+sample sum −181.06 kJ vs record +6716.64 kJ.  The samples were right —
+the RECORD was wrong: `chargeFrom`/`dischargeAll`/`discharge` mutated
+the inventory FIRST and fired `notifyStateChanged` after, so the
+segment closed on the post-transfer state and priced the t=400 transfer
+jump into the "reaction" record (+6716.64 = H(empty)−H(charge); the
+still's "reboiler" seg0 −6897.69 kJ over an EMPTY still was the charge
+arriving).  The campaign closure never saw it because the
+mis-attributed terms cancel pairwise across vessels — but the utility
+allocator charged 7324 kJ of LP steam for what was mostly a vessel
+transfer.  Fix: `notifyStateWillChange()` (new hook, fired by the base
+transfer primitives BEFORE the first mole moves) closes the segment on
+the pure state; `notifyStateChanged()` is now re-base only.  recipe01
+after: reaction −181.06 kJ (exothermic → coolingWater), reboiler 607.59
+kJ (steamLP), campaign cost 0.0909 → 0.0076 EUR.
+
+**Find 2 — the hand-off ordering.**  The still's `segVapH_`/`segLatent_`
+accumulate at package HAND-OFF (`takeContinuousDischarge`), which the
+driver ran AFTER `noteTimeAdvanced` — every sample window lagged its
+hand-off by one step and the final one was lost (reboiler off by exactly
+one step's vapour enthalpy, 6.03 kJ).  Fix: the driver routes continuous
+discharges BEFORE the clock-note (`routeDischarges` → `noteTimeAdvanced`
+→ events), in both the fixed and the adaptive loops.
+
+**The number the totals hid.**  recipe01 steamLP: mean reboiler draw
+0.76 kW, peak 16.96 kW at t=400 — the bring-to-boil spike, 22× the
+mean.  That ratio is the whole pedagogical case for this artefact.
+
+**Witnesses + gate.**  recipe01 (2000 rows, 0 refused, 0 unprofiled,
+peak == staircase recomputed independently), recipe02 (impulse rows,
+exclusion + warning, impulse-only utility grows NO peak KPI), batch13
+(crystalliser has no sampler → records LISTED unprofiled, no rows).
+Gate `bin/curate/check_temporal_utilities.py` (wired into runTests)
+includes the three MANDATED sabotages — removed interval, flipped sign,
+altered deltaEnergy ⇒ the reconciliation refuses each.  The engine-side
+refusal branch was additionally verified live: the pre-fix ordering
+produced `profile sum 613.63 kJ vs exact record 607.59 kJ -- profile
+REFUSED, the record stands` through the real path.

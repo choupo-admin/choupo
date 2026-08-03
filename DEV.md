@@ -363,12 +363,17 @@ accepts today, and that is a policy call.
    pick option A/B/C for the four solver-option homes (recommendation A —
    document + lint, no grammar move), and say whether speciation aliases
    are wanted at all given the settled `pitzer` ≠ `pitzerHMW` key
-   contract.  The TEMPORAL half of phase (f) (time-resolved utility
-   demand / peak duty) now has its proposal —
+   contract.  The TEMPORAL half of phase (f) is **BUILT 2026-08-03**
+   (form B ratified with amendments) —
    [`docs/design/batch-temporal-utilities-proposal.md`](docs/design/batch-temporal-utilities-proposal.md)
-   (2026-08-03, shape B: a demand staircase on the accepted-step grid
-   that must CLOSE against the exact ledger records, peak KPIs, impulse
-   refusal) — awaiting Vítor's alignment before any code.
+   §8: the demand staircase on the accepted-driver-step grid closes
+   against the exact ledger records (REFUSED otherwise, the record
+   stands), peaks from the canonical profile only, impulses excluded
+   with a warning, gate `check_temporal_utilities` with the three
+   mandated sabotages.  The reconciliation caught two REAL ledger bugs
+   on day one (transfer jumps priced as duty; hand-off routed after the
+   clock-note) — both fixed, recipe goldens re-recorded with the
+   attribution reason.
 7. **PC-SAFT association term (roadmap #4)** — approved 2026-08-02 and
    **BUILT 2026-08-03** per
    [`docs/design/pcsaft-association-proposal.md`](docs/design/pcsaft-association-proposal.md)

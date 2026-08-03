@@ -794,6 +794,21 @@ PYEOF
         cat /tmp/pswg.$$
         fail=$((fail+1))
     fi
+
+    # Temporal-utilities gate (ratified 2026-08-03, form B as amended):
+    # the demand staircase reconciles EXACTLY against the energy ledger
+    # (refused otherwise, the record stands), peaks come from the
+    # canonical profile only, impulses are excluded with a warning,
+    # unprofiled records are LISTED.  Includes the three mandated
+    # sabotages (removed interval / flipped sign / altered deltaEnergy).
+    if "$ROOT/bin/curate/check_temporal_utilities.py" > /tmp/tmpu.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "temporal-utilities-gate" "$(tail -1 /tmp/tmpu.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_temporal_utilities.py)\n" "temporal-utilities-gate"
+        cat /tmp/tmpu.$$
+        fail=$((fail+1))
+    fi
     rm -f /tmp/pswg.$$
 
     # PC-SAFT association gate (approved 2026-08-02, the three ratified

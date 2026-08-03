@@ -634,6 +634,16 @@ void BatchStill::setOperationParameter(const std::string& key, scalar value)
     BatchUnitOperation::setOperationParameter(key, value);
 }
 
+void BatchStill::notifyStateWillChange()
+{
+    // Recipe charge/discharge, PRE-mutation: the duty records' pot state
+    // difference must stay purely distillative, so the segment closes on
+    // the untouched inventory.  (Closing post-mutation priced the charge
+    // enthalpy into the "reboiler" record -- recipe01's -6897.7 kJ over
+    // an EMPTY still, caught by the temporal-demand reconciliation.)
+    closeSegment_(lastTime_);
+}
+
 void BatchStill::notifyStateChanged()
 {
     // The warm bubble-T seed is no longer valid after a charge --- the
@@ -641,9 +651,8 @@ void BatchStill::notifyStateChanged()
     // base chargeFrom set by enthalpy equality).  The first
     // derivatives_ call after this will refine the seed.
     T_warm_ = state_.T;
-    // A recipe charge/discharge is a segment boundary: the duty records'
-    // pot state difference must stay purely distillative.
-    closeSegment_(lastTime_);
+    // POST-mutation re-base: the next segment starts from the transferred
+    // state.  Never close here -- the close fired pre-mutation above.
     openSegment_(lastTime_);
 }
 
@@ -659,6 +668,44 @@ void BatchStill::noteTimeAdvanced(scalar t)
         return;
     }
     if (state_.T > segTmax_) segTmax_ = state_.T;
+
+    //  Temporal demand samples (ratified 2026-08-03): the SAME duty
+    //  formulas closeSegment_ prices, taken as increments per accepted
+    //  driver step -- they telescope to the segment records exactly, so
+    //  the driver's reconciliation closes at machine epsilon.  A poisoned
+    //  segment stops sampling (its record goes invalid and is skipped).
+    if (thermo_ && !segPoisoned_ && t > demandTPrev_)
+    {
+        const scalar potH = phaseH_(state_.n, state_.T, 0.0);
+        if (!segPoisoned_)
+        {
+            scalar reb, cond;
+            if (model_ == "rectifier")
+            {
+                reb  = (potH - demandPotH_)
+                     + (segLiqH_    - demandLiqH_)
+                     + (segCondTop_ - demandCondTop_);
+                cond = -(segCondTop_ - demandCondTop_);
+            }
+            else
+            {
+                reb  = (potH - demandPotH_) + (segVapH_ - demandVapH_);
+                cond = -(segLatent_ - demandLatent_);
+            }
+            if (reb != 0.0)
+                demandLog_.push_back({demandTPrev_, t, "reboiler",
+                                      reb, true});
+            if (cond != 0.0)
+                demandLog_.push_back({demandTPrev_, t, "condenser",
+                                      cond, true});
+            demandPotH_    = potH;
+            demandVapH_    = segVapH_;
+            demandLiqH_    = segLiqH_;
+            demandLatent_  = segLatent_;
+            demandCondTop_ = segCondTop_;
+            demandTPrev_   = t;
+        }
+    }
 }
 
 scalar BatchStill::phaseH_(const sVector& nv, scalar T, scalar vf)
@@ -711,6 +758,15 @@ void BatchStill::openSegment_(scalar t)
     segCondTmin_ = 0.0;             // no condensing package yet
     segPoisoned_ = false;
     segMissing_.clear();
+    // Re-base the demand-sample trackers on the fresh segment: a recipe
+    // charge/discharge or a boilup switch must never read as duty in the
+    // next sample.  (phaseH_ on an empty pot returns 0 without pricing.)
+    demandVapH_    = 0.0;
+    demandLiqH_    = 0.0;
+    demandLatent_  = 0.0;
+    demandCondTop_ = 0.0;
+    demandPotH_    = phaseH_(state_.n, state_.T, 0.0);
+    demandTPrev_   = t;
 }
 
 void BatchStill::closeSegment_(scalar t)
@@ -945,7 +1001,7 @@ std::vector<SimulationResult::TimelineEvent> BatchStill::statusEvents() const
     return { { tLimit_, "status", "refluxLimitReached", d.str(), "", name_, "" } };
 }
 
-BatchState BatchStill::takeContinuousDischarge()
+BatchState BatchStill::takeContinuousDischarge(scalar /*tNow*/)
 {
     const std::size_t n = state_.n.size();
     if (vapourBuf_.size() != n) vapourBuf_.assign(n, 0.0);

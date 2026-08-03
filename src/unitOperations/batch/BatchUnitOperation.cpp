@@ -158,6 +158,11 @@ void BatchUnitOperation::chargeFrom(const BatchState& src)
             " must share the same thermo package");
     }
 
+    // The segment boundary must land on the PRE-charge state: a ledger
+    // unit closes its constant-physics segment here, so the charge jump
+    // never reads as duty.  (No material arriving => no boundary.)
+    if (nSrc > 0.0) notifyStateWillChange();
+
     // Enthalpies BEFORE the merge (each package at its own T) -- the mix
     // temperature must satisfy H(n1+n2, T_mix) = H1 + H2 on the elements
     // datum: charging is a material act, never a thermal one (phase (b),
@@ -246,6 +251,7 @@ void BatchUnitOperation::chargeFrom(const BatchState& src)
 BatchState BatchUnitOperation::dischargeAll()
 {
     BatchState& s = mutableState();
+    if (s.totalMoles() > 0.0) notifyStateWillChange();
     BatchState out = s;             // copy n, T, P, V
     std::fill(s.n.begin(), s.n.end(), 0.0);
     notifyStateChanged();
@@ -262,6 +268,7 @@ BatchState BatchUnitOperation::discharge(scalar fraction)
         std::fill(out.n.begin(), out.n.end(), 0.0);
         return out;                 // nothing moved, vessel untouched
     }
+    if (s.totalMoles() > 0.0) notifyStateWillChange();
     for (std::size_t i = 0; i < s.n.size(); ++i)
     {
         out.n[i] = s.n[i] * fraction;
@@ -278,7 +285,7 @@ void BatchUnitOperation::setOperationParameter(const std::string& key,
         + type() + "): does not accept runtime parameter '" + key + "'");
 }
 
-BatchState BatchUnitOperation::takeContinuousDischarge()
+BatchState BatchUnitOperation::takeContinuousDischarge(scalar /*tNow*/)
 {
     // Default: the unit sheds nothing.  Return an empty package shaped to
     // the vessel's component count so chargeFrom() can mix it harmlessly.
