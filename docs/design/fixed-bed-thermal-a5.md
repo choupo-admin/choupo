@@ -283,3 +283,26 @@ Recommended to Vítor rather than done at 06:20 with nobody awake: moving
 four thermal goldens is a judgement about the corpus, and "faz como
 achares melhor" is not a licence to make a physics-visible change
 invisible.
+
+**WIDENING BUILT 2026-08-03, its own slice, as this section prescribes**
+(ratified with second-opinion review; the 2026-08-02 ruling "P1/P2 stay
+parked BEHIND the term" made the term the path).  The change landed
+exactly in the shape derived above: `cv = cp − R` in the gas
+accumulation plus the explicit `eps R T dc_tot/dt` source, `dc_tot/dt`
+summed from the species rows of the same evaluation.  Golden change
+class: **model-generalization** — physical KPI impact: none above 1e-4;
+residual impact: machine-noise level (1e-15-class mass residuals,
+1e-11..1e-16 closures) plus batch20's `energy_residual_kJ`
+0.6815 → 0.6814 (−0.015 %, marginally BETTER: the cv accumulation is
+the more correct functional).  The containment anchors (h → 0
+adiabatic, large h isothermal) ride the unchanged wall term and are
+re-proven by the suite.  **The pressure-swing CAPABILITY stays gated
+until the dedicated witnesses pass** — three, separated so no single
+case proves two things: (A) inert isothermal blowdown pinning the
+ideal-gas inventory ratio n_end/n_0 = P_end/P_0 AND vented = ΔInventory;
+(B) thermally active blowdown SHOWING the temperature drop with the
+energy balance closed, sabotage = restoring the old cp accumulation
+must fail it; (C) the constant-P limit reproducing the old cases when
+dc_tot/dt ≈ 0 (the suite's four re-recorded thermal cases are this
+witness in effect).  P1/P2 land on top as their own slices;
+countercurrent (P3) stays refused — that boundary changes KIND.

@@ -1181,7 +1181,18 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 for (std::size_t i = 0; i < n; ++i)
                     ctotJ += std::max(y[i * N_ + j], scalar(0.0));
                 const scalar cpgJ  = cpgCell_(y, j);
-                const scalar denom = eps_ * ctotJ * cpgJ + rhoB_ * cpS_;
+                //  GENERAL (P-swing-ready) form, derived in the design note
+                //  §9: a FIXED-VOLUME cell whose pressure moves must account
+                //  on internal energy, u_g = h_g - RT.  Collecting the
+                //  implicit dP/dt (P_j = R T_j c_tot,j) gives cv = cp - R in
+                //  the gas accumulation PLUS an explicit expansion source
+                //  eps R T dc_tot/dt -- fully explicit, dc_tot/dt being the
+                //  sum of the species rows this evaluation just computed.
+                //  At pinned P the source is ~0 and cv-vs-cp moves the gas
+                //  accumulation by ~R/cp, three orders under rho_b cp_s --
+                //  the widening that lets a depressurising cell COOL.
+                const scalar cvgJ  = cpgJ - constant::R;
+                const scalar denom = eps_ * ctotJ * cvgJ + rhoB_ * cpS_;
 
                 scalar adv = 0.0;                       // J/(m3 s)
                 const scalar uIn = uface[j];
@@ -1237,7 +1248,14 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                     dy[qwOffset_()] += wall * A_ * dz_;  // W
                 }
 
-                dy[tOff + j] = (adv + src - wall) / denom;
+                //  The expansion-work source of the same derivation (see the
+                //  cv comment above): eps R T dc_tot/dt, J/(m3 s).
+                scalar dctot = 0.0;
+                for (std::size_t i = 0; i < n; ++i)
+                    dctot += dy[i * N_ + j];
+                const scalar expand = eps_ * constant::R * Tj * dctot;
+
+                dy[tOff + j] = (adv + src - wall + expand) / denom;
             }
         }
         return dy;

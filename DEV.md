@@ -423,13 +423,19 @@ accepts today, and that is a policy call.
    batch case reads, which is why it is yours.  `batch23_tsa_cycles`
    already MEASURES the approach it cannot claim (qbar 0.315 → 0.242 →
    0.175 over three cycles).
-7. **P-swing P1/P2 (adsorption)** — designed 2026-08-01, same note §8:
-   outlet-pressure switch + feed-valve closure, both the T1.5
-   commitment pattern, contained in ergun mode.  The physics cost is
-   named: the T1 energy row dropped the expansion-work term at constant
-   pressure, so P1/P2 REQUIRE adding `+ eps dP/dt` or a depressurising
-   cell would cool only in reality, not in the model.  Countercurrent
-   steps (P3) stay refused — that boundary changes KIND.
+7. **P-swing P1/P2 (adsorption)** — designed 2026-08-01, same note §8;
+   **the expansion-work WIDENING is BUILT 2026-08-03** (§9's own-slice
+   prescription, ratified with second-opinion review: cv accumulation +
+   explicit `eps R T dc_tot/dt` source; golden change class
+   model-generalization — no physical KPI above 1e-4, four thermal
+   goldens re-recorded for machine-noise residuals, batch20 energy
+   residual −0.015 % i.e. marginally better).  The pressure-swing
+   CAPABILITY stays gated until the three dedicated witnesses pass
+   (§9's amended battery: A inert-isothermal inventory ratio; B thermal
+   blowdown cooling shown, sabotage = old cp accumulation must fail;
+   C constant-P limit).  P1 (outlet-pressure switch) and P2 (feed-valve
+   closure) land as their own slices on top.  Countercurrent steps (P3)
+   stay refused — that boundary changes KIND.
 
 ## 5. Known debts (severity-ish)
 
