@@ -67,7 +67,20 @@ provenance
         methodVersion    "joback-poling5e-table2-2";
         input            joback;
         inputFingerprint "F:8,rC:4";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified -- AND the 4-ring strain the method cannot see: the compiled literature sits ~85 kJ/mol away (see bestCompiledValue)"; }
+        //  Ring-class ruling 2026-08-03: the best available COMPILED value is
+        //  recorded here for the curator, but it is NOT promoted -- fluorine
+        //  thermochemistry compilations disagree at the ~10 kJ level and the
+        //  primary-source-per-value rule is not broken for a plausible number
+        //  (zero corpus consumers today, so nothing is waiting on it).
+        bestCompiledValue
+        {
+            value              -1543000;      // J/mol, JANAF-class compilations
+            status             compiled;
+            source             "JANAF-class thermochemical tables (c-C4F8, gas)";
+            uncertainty        "~10 kJ/mol spread between compilations";
+            promotionBlockedBy primarySourceUnresolved;
+        }
     }
 
     constants      "CoolProp 7.2.0 -- Platzer-BOOK-1990";

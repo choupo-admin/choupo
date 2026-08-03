@@ -49,9 +49,9 @@ triplePoint
 
 standardThermochemistry
 {
-    dHf_298   -12110;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
-    dGf_298   42840;      // J/mol  ideal-gas [Joback]
-    s_298     224.957;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+    dHf_298   53300;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   104530;      // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     237.45;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
 }
 
 groups { unifac ( { group CH2; count 3; } ); joback ( { group rCH2; count 3; } ); }
@@ -60,12 +60,10 @@ provenance
 {
     dHf_298
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "rCH2:3";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Knowlton & Rossini, J. Res. Natl. Bur. Stand. 43 (1949) 113 (heat of combustion of cyclopropane); s_298 third-law, TRC class";
+        note             "PROMOTED 2026-08-03 from the Joback estimate (-12,110 -- a ~65 kJ/mol error with the WRONG SIGN: ring strain is the method's textbook failure) under the ratified ring-class ruling (docs/design/curation-backlog-estimated-records.md, ring section).  dGf derived from the measured dHf + third-law S + CODATA element entropies; cross-checks the literature dGf ~104.5 kJ/mol.  FOR REVIEW.";
     }
 
     constants      "CoolProp 7.2.0 -- Polt-CT-1992";

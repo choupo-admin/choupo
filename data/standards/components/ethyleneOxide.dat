@@ -51,9 +51,9 @@ triplePoint
 
 standardThermochemistry
 {
-    dHf_298   -123470;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
-    dGf_298   -51700;      // J/mol  ideal-gas [Joback]
-    s_298     134.697;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+    dHf_298   -52630;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   -13150;      // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     243.0;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
 }
 
 groups { joback ( { group rCH2; count 2; } { group etherRing; count 1; } ); }
@@ -62,12 +62,10 @@ provenance
 {
     dHf_298
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "etherRing:1,rCH2:2";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Pell & Pilcher, Trans. Faraday Soc. 61 (1965) 71, via NIST WebBook (gas-phase dHf = -52.63 kJ/mol); s_298 third-law, TRC class";
+        note             "PROMOTED 2026-08-03 from the Joback estimate (-123,470 -- a ~71 kJ/mol ring-strain error) under the ratified ring-class ruling (docs/design/curation-backlog-estimated-records.md, ring section).  dGf derived from the measured dHf + third-law S + CODATA element entropies; cross-checks the literature dGf ~ -13.1 kJ/mol.  FOR REVIEW.";
     }
 
     constants      "CoolProp 7.2.0 -- Thol-CES-2015,Thol-CES-2015-CORR,Thol-THESIS-2015";

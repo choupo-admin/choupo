@@ -51,9 +51,9 @@ triplePoint
 
 standardThermochemistry
 {
-    dHf_298   -65710;      // J/mol ideal-gas -- provenance: see the structured dHf_298 block below
-    dGf_298   35480;      // J/mol  ideal-gas [Joback]
-    s_298     342.707;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S]
+    dHf_298   -76400;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   39640;      // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     292.9;      // J/(mol*K) third-law absolute (TRC class; primary re-citation pending IST review)
 }
 
 groups { unifac ( { group CH2; count 5; } ); joback ( { group rCH2; count 5; } ); }
@@ -62,12 +62,10 @@ provenance
 {
     dHf_298
     {
-        origin           estimated;
-        method           "Joback";
-        methodVersion    "joback-poling5e-table2-2";
-        input            joback;
-        inputFingerprint "rCH2:5";
-        uncertainty      { status unquantified; reason "bulk-import band ~9 kJ/mol, primary basis not verified"; }
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Prosen & Rossini (NBS heats of combustion of cyclopentane series), via NIST WebBook (gas-phase dHf = -76.4 kJ/mol); s_298 third-law, TRC class";
+        note             "PROMOTED 2026-08-03 from the Joback estimate (-65,710 -- the ~11 kJ/mol residual 5-ring strain) under the ratified ring-class ruling (docs/design/curation-backlog-estimated-records.md, ring section).  dGf derived from the measured dHf + third-law S + CODATA element entropies (literature tabulations sit ~38.8-39.6 kJ/mol; the derived value is inside that band).  FOR REVIEW.";
     }
 
     constants      "CoolProp 7.2.0 -- Gedanitz-JCED-2015";

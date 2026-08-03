@@ -102,11 +102,30 @@ value an estimate (that tier is honest by construction); no per-compound
 action there, but any PROMOTION out of the lake for a 3-/4-membered ring
 must go through a measured primary, never the Joback number.
 
-**Priority within the class** (largest error first, all Vítor's to
-promote): `ethyleneOxide` → `cyclopropane` → `RC318` (after primary
-confirmation) → `cyclopentane`.  None is a definition-category error
-(the 5a assistant-correctable lane does not apply — these are estimates
-awaiting measured primaries).
+**Priority within the class — EXECUTED 2026-08-03** under the ratified
+second-opinion review (order kept: sign-error compounds first):
+
+* `ethyleneOxide` **PROMOTED** — measured −52,630 J/mol (Pell & Pilcher
+  1965 via NIST WebBook); dGf derived, cross-checks literature −13.1.
+* `cyclopropane` **PROMOTED** — measured +53,300 J/mol (Knowlton &
+  Rossini 1949); dGf derived, cross-checks literature ~104.5.
+* `cyclopentane` **PROMOTED** — measured −76,400 J/mol (Prosen &
+  Rossini via NIST); derived dGf inside the 38.8–39.6 literature band.
+* `RC318` **NOT promoted** — the best compiled value (≈ −1,543,000
+  J/mol, JANAF-class) is recorded ON the record as a structured
+  `bestCompiledValue { status compiled; promotionBlockedBy
+  primarySourceUnresolved; }` marker; the Joback estimate stays the
+  honestly-labelled active value.  The primary-source-per-value rule is
+  not broken for a plausible number.
+
+All four carry `FOR REVIEW` trails; final ratification of the digits is
+Vítor's, as with fluorine/neopentane (b10dc211).
+
+**CLASS QUALITY RULE (ratified 2026-08-03):** a cyclic compound whose
+thermochemistry materially depends on ring strain is NEVER considered
+validated merely because a Joback estimate passes a general tolerance
+defined for acyclic compounds — the 3-/4-ring members of any future
+import must arrive with a measured primary or wear the estimate label.
 
 ## P3 — the remainder (no consumers; primaries exist but need per-value review)
 
