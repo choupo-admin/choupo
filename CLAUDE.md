@@ -576,6 +576,33 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**Pinch targets — P1 ONLY (approved 2026-08-02, built 2026-08-03; P2 match
+recommendations / P3 area-cost stay UNAUTHORISED).**  A `pinchPass`
+PostProcessor in the postDict chain: Linnhoff-Flower problem table printed
+cascade by cascade, `pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` KPIs,
+`reports/pinch/compositeCurves.csv`; targets only, never rewrites the
+network; method hypotheses stated in `PinchPass.H`.  Witness
+`pinch01_four_stream_classic` (hand-worked cascade in its header); gate
+`check_pinch_p1` (independent Python cascade + latent-branch probe, both
+sabotage-verified).  Scope: `docs/design/pinch-programme-scope.md`.
+
+**PC-SAFT association — built 2026-08-03 with the three ratified amendments**
+(extensible (nD,nA) site representation behind `siteCounts()`; nested
+tolerances X-fixed-point 1e-14 under the 1e-12 η bisection; widened
+validation: X^A echoed + closed-form oracle + non-associating corpus
+untouched at 1e-10).  The trio `assocScheme/epsAB_K/kappaAB` extends the
+component's `pcsaft{}` block, all-or-nothing, Wolbach-Sandler cross rules,
+kij = 0 announced.  **THE SCHEME IS PART OF THE FIT** (paid for once: the
+G&S-2002 water set is 2B — the paper's own site count — and curated as 4C it
+passed a pure-density anchor by coincidence while the ethanol/water mixture
+flash collapsed; a mixture witness catches what a pure anchor cannot).
+Witnesses `pcsaft03_association_pure` + `flash20_ethanol_water_pcsaft`
+(predictive vs fitted NRTL side by side); gate `check_pcsaft_association`
+(independent Python closure, per-set anchors, sabotage-verified); theory
+guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
+importer's dependency closure since flash20 (a sealed case must never change
+physics on sealing).
+
 **Balance diagnostics, three levels (2026-07-19): total mass · per-element
 atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on
 every converged steady run (2026-08-02, roadmap #7):** conservation is the
