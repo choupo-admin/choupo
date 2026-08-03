@@ -179,6 +179,31 @@ Common mistake.  Ethanol/water at 1 atm has a 12% offset from Raoult
 near the azeotrope; using ideal there gives wrong K-values.  Switch
 to NRTL.
 
+### PC-SAFT association: the scheme is PART of the fit
+A published `(epsAB_K, kappaAB)` pair is meaningful only under the site
+scheme the paper regressed it with — read the paper's own site count,
+never assume one from the molecule's chemistry ("water is 4C" is a
+chemistry intuition, not a fact about a parameter set).  The corpus
+paid for this once: the Gross & Sadowski 2002 water set is fitted with
+TWO sites (2B); curated as 4C, the PURE liquid density read +0.6 % — a
+coincidence that masked the error — while pure-water Psat left the
+physical range and the ethanol/water mixture flash collapsed
+(K_water = 0.0044).  Two lessons: (1) the `assocScheme` you write must
+be the paper's, and (2) a single pure-density check cannot validate an
+association trio — a MIXTURE case (or a Psat point) is the witness that
+catches a scheme mismatch.  Also remember the trio is all-or-nothing:
+`assocScheme`/`epsAB_K`/`kappaAB` declared together or not at all (a
+partial trio refuses at load).
+
+### PC-SAFT parameters are not derivable — and the fitted set is one object
+The segment trio `m/sigma/epsilonK` cannot be generated from
+`{Tc, Pc, omega}` (a component without a `pcsaft{}` block refuses, with
+a remedy — never a silent corresponding-states fallback), and a set
+fitted WITH association is meaningless without it: the 2002 water
+segment trio under a bare non-associating PCSAFT gives a fluid that is
+not water.  Never mix a segment trio from one paper with an association
+pair from another.
+
 ## The declared system (thermoPhysPropDict)
 
 Reference cases: `flash08_co2_water_package` (diluteSolution / Henry
@@ -305,6 +330,19 @@ overlays it **block-by-block** over the standard (you copy the whole
 hybrid — see `data-doctrine.md` §3).  (Property axiom 4.)
 
 ## Electrolyte speciation / precipitation
+
+### `networkScope restricted` is a modelling claim, not a convenience switch
+The admitted-list restriction (`networkScope restricted; network ( … );
+reason "…";`) exists for cases where the FULL network is the wrong
+model (e.g. HMW theta/psi fitted to a non-pairing major-ion treatment).
+The `reason` string is mandatory because it must carry a MODELLING
+argument — "runs faster" or "silences the missing-K error" is not one,
+and the outputs of a restricted run are permanently labelled
+`networkRestricted` so a reduced model can never pass as the full one.
+The engine already refuses the dishonest shapes (no list, no reason,
+unknown record, unreachable record, two authorities); the pitfall left
+to the author is a technically-valid reason string that argues
+convenience instead of chemistry.
 
 ### `equilibrate` gives a CEILING, not a deposit prediction
 `equilibrate { minerals ( calcite gypsum ); }` (in `speciate` /
