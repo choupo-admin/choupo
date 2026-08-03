@@ -435,6 +435,15 @@ accepts today, and that is a policy call.
 
 1. **SEAL DRIFT — awaiting Vítor's decision.**  Sealed copies differ from the
    live catalogue (comment-only origin changes); no mass reseal without his call.
+1b. **`pcsaft{}` vs the doctrine's `eosParameters{}` container — awaiting
+   Vítor's decision (flagged 2026-08-03).**  The shipped PC-SAFT reads a
+   flat model-named `pcsaft{}` block (the uniquac/cosmo precedent); the
+   data-doctrine §4 describes an `eosParameters{ <model>{} }` container
+   that was never built.  Options: migrate the six records into the
+   container when a second parameter-carrying EoS family arrives, or
+   amend the doctrine to bless the flat block.  Author-facing docs
+   (`docs/ai/thermo.md`) and the guides now document the SHIPPED shape;
+   the doctrine carries a divergence note pointing here.
 2. ~~**ctrl physical-energy refusal**~~ — **PAID 2026-08-01** (roadmap #1
    above).  What remains is narrower and named: the claim covers
    `dynamicCSTR`; any future dynamic unit type must fill `storedEnergy_kJ` /

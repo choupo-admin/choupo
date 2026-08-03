@@ -330,19 +330,33 @@ number require you to name the model?*).  See
    `a_c, b, m, α(T)` **in source**.  Adding such a model touches **zero data
    files**.  Never pre-bake `a_c` into a `.dat`.
 2. **Model-specific PURE parameters that cannot be generated → a
-   `model`-keyed `eosParameters{}` sub-block on the component**, read as a raw
-   sub-dict (exactly like the `liquidViscosity{}` pattern):
+   model-NAMED block on the component** (the `uniquac{}` / `cosmo{}` /
+   `liquidViscosity{}` precedent).  The SHIPPED grammar for PC-SAFT —
+   what you actually write in a `.dat` today:
    ```
    // inside the component .dat — ADDITIVE; never disturbs the triad
-   eosParameters
+   pcsaft
    {
-       PCSAFT { m 2.4653;  sigma 3.6478e-10;  epsilon_k 287.35;
-                provenance { origin regressed; method "Gross & Sadowski 2001 Table 1"; } }
-       // a future EOS adds its OWN key; SRK/PR appear in NO key (they read Tc,Pc,ω)
+       m           2.3827;      // segment number [-]
+       sigma       3.1771;      // segment diameter [Angstrom]
+       epsilonK    198.24;      // segment energy eps/k [K]
+       // association trio — ALL THREE or NONE (a partial trio refuses):
+       assocScheme 2B;          // 2B | 4C  (absent = non-associating)
+       epsAB_K     2653.4;      // association energy [K]
+       kappaAB     0.032384;    // association volume [-]
+       source      "Gross & Sadowski, IECR 41 (2002) 5510, Table 1";
    }
    ```
-   A model with **no** required block on a component **fails with a remedy**
-   — never a silent corresponding-states fallback.
+   **The scheme is part of the fit**: a published `(epsAB, kappaAB)` pair
+   is meaningful only under the site scheme the paper regressed it with —
+   read the paper's own site count, never assume one from the chemistry
+   (the G&S-2002 water set is 2B; curated as 4C it collapsed the
+   ethanol/water flash while the pure density looked fine).  A model with
+   **no** required block on a component **fails with a remedy** — never a
+   silent corresponding-states fallback.  (The data-doctrine's
+   `eosParameters{ <model>{} }` container is the NAMED INTENT for future
+   EoS families, not the shipped shape — see
+   [`data-doctrine.md`](data-doctrine.md) §4's divergence note.)
 3. **PAIR parameters (NRTL τ, Henry, Pitzer β, `k_ij`) → the parameter
    catalogue**, `data/standards/parameters/<MODEL>/<i>-<j>.dat`, referenced
    from a `binaryParameters`/`binaryInteractions` block by `source`, loaded

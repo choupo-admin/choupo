@@ -1137,8 +1137,9 @@ gitignored \file{data/local/} tier; every use is announced
         \textbf{curated central catalogue} shipped with the simulator.  Carries
         only \textbf{arity-1 intrinsic} data: identity, \code{critical},
         \code{gasIdeal}, \code{liquidPure}, \code{solid}, \code{transport}, the
-        \code{standardThermochemistry} datum, and any \code{eosParameters\{\}}
-        model-keyed block.  Treat it as read-only --- the engine
+        \code{standardThermochemistry} datum, and any model-named
+        parameter block (\code{pcsaft\{\}}, \code{uniquac\{\}},
+        \code{cosmo\{\}}).  Treat it as read-only --- the engine
         \emph{refuses} to write here; a change is a reviewed curation act.  A
         \textbf{pair} number (NRTL \(\tau\), Henry, \(k_{ij}\), a heat of
         solution) is \textbf{never} copied into the \code{.dat}; it lives in a

@@ -249,6 +249,20 @@ component.
 
 ## 4. Model extensibility — `eosParameters{ <model>{…} }`
 
+> **DIVERGENCE NOTE (2026-08-03, for Vítor to settle).**  The shipped
+> PC-SAFT implementation reads a FLAT, model-named `pcsaft{}` block on
+> the component (`m; sigma [Angstrom]; epsilonK;` + the association trio
+> `assocScheme/epsAB_K/kappaAB` — the live `uniquac{}`/`cosmo{}`
+> precedent), NOT the `eosParameters{ PCSAFT{…} }` container this
+> section describes.  The container remains this doctrine's named intent
+> for when a SECOND parameter-carrying EoS family arrives; the six
+> records in the tree carry `pcsaft{}` today, and the author-facing
+> grammar ([`thermo.md`](thermo.md)) documents the shipped shape.  The
+> open decision: migrate the records into the container, or amend this
+> section to bless the flat per-model block.  Everything else in this
+> section (the tier test, generated-vs-fitted, the loud refusal, the
+> pair catalogue) is live doctrine the implementation follows.
+
 A parameter lives at the **highest tier where it is TRUE** — the same
 definition test as §2, asked of the *model*: *does the number require you to
 name the model?*
