@@ -23,6 +23,12 @@ Probes, through the real choupoSolve binary:
                reports no pinch KPIs (the pass never runs uninvited).
   REFUSAL      dTmin <= 0 refuses loudly (a zero approach makes every
                match infinitely large).
+  LATENT       H2's duty compressed into |dT| = 0.8 K (< latentWidth) must
+               enter as the documented near-isothermal SLICE (width 1 K,
+               CP = |Q|/latentWidth centred on the unit T); the independent
+               cascade models exactly that representation, so a pass that
+               quietly kept the sensible branch fails by value
+               (sabotage-verified: branch disabled -> 3 probes fail).
 
 Exit 1 listing failures."""
 import csv
@@ -177,6 +183,42 @@ def main() -> int:
             failures.append("refusal: dTmin 0 accepted (expected refusal)")
         elif "dTmin must be positive" not in out:
             failures.append("refusal: message lacks 'dTmin must be positive'")
+
+        # ---- LATENT branch: a near-isothermal duty becomes a slice ---------
+        #  Raise H2's flow so its -240 kW compresses into |dT| = 0.8 K
+        #  (< latentWidth 1 K): the pass must represent it as a 1-K slice
+        #  of CP = |Q| / latentWidth centred on the unit temperature -- the
+        #  documented phase-change hypothesis -- and the independent cascade
+        #  below models EXACTLY that representation.  Sensible-vs-latent is
+        #  not numerically inert here (the boundaries move), so a pass that
+        #  quietly kept the sensible branch fails by value.
+        lt = copy(tmp, "latent")
+        f = lt / "0" / "h2In"
+        f.write_text(f.read_text().replace("hxFluid    80 mol/s;",
+                                           "hxFluid    3000 mol/s;"))
+        rc, out = run(lt)
+        if rc != 0:
+            failures.append(f"latent: exit {rc}")
+        else:
+            #  H2: CP = 3000*100 = 300 kW/K, dT = 240/300 = 0.8 K,
+            #  Tc = 363.15 - 0.4 = 362.75, slice [362.25, 363.25] at 240 kW/K.
+            lat_streams = [
+                (True, 423.15, 333.15, 2000.0),
+                (True, 362.25, 363.25, 240000.0),   # the latent slice
+                (False, 293.15, 398.15, 2500.0),
+                (False, 298.15, 373.15, 3000.0),
+            ]
+            qh_l, qc_l, tp_l = problem_table(lat_streams, DTMIN)
+            k = kpi_block(out)
+            if not k:
+                failures.append("latent: no pinch KPI block")
+            else:
+                for key, ref in (("Q_H_min_kW", qh_l), ("Q_C_min_kW", qc_l),
+                                 ("T_pinch_K", tp_l)):
+                    got = k.get(key)
+                    if got is None or abs(got - ref) > 1e-6 * max(1.0, abs(ref)):
+                        failures.append(f"latent: pinch.{key} = {got},"
+                                        f" independent slice model = {ref}")
 
     if failures:
         print("check_pinch_p1: FAIL")
