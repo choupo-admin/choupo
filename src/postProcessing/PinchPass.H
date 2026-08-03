@@ -29,8 +29,10 @@ Class
     Choupo::PinchPass
 
 Description
-    Pinch-analysis TARGETS (programme phase P1, approved 2026-08-02 --
-    P2 match recommendations and P3 area/cost targets are NOT built).
+    Pinch-analysis TARGETS (programme phase P1, approved 2026-08-02) and
+    the CANDIDATE-MATCH ANALYSIS TABLE (phase P2, ratified 2026-08-03 --
+    an analysis table, never a rewiring; P3 area/cost targets stay
+    UNAUTHORISED).
 
     Declared in the postDict chain:
 
@@ -71,6 +73,39 @@ Description
         approach, declared in that report's block; the two are separate
         declarations because they are separate physical approaches
         (same 10 K default).
+
+    P2 -- the candidate-match table (Linnhoff & Hindmarsh 1983, the
+    design-method rules applied as ANALYSIS, never synthesis):
+
+        CSV   reports/pinch/candidateMatches.csv
+              region,hotStream,coldStream,temperatureFeasible,pinchRule,
+              maximumCandidateDuty_kW,limitingReason,recommendation
+        KPIs  pinch.candidates_admissible / candidates_total
+              pinch.violation_heat_below_pinch_kW
+              pinch.violation_cool_above_pinch_kW
+
+    P2 HYPOTHESES (on top of P1's):
+      * Segments are CLIPPED at the pinch into the above/below regions;
+        every hot x cold pair per region is a row -- the table is
+        exhaustive per region, and the author owns the topology (the
+        engine says what the physics ADMITS, it recommends no network
+        and NEVER writes "optimal": every feasible row is a
+        "thermodynamically admissible candidate", nothing more).
+      * The maximum candidate duty is the exact counter-current bound of
+        two constant-CP segments at the declared dTmin:
+        Q_max = min(Q_hot, Q_cold, min(CP_h, CP_c)*(Th_hi - Tc_lo -
+        dTmin)) -- for straight segments the approach is monotone along
+        the exchanger, so the end constraints are sufficient.  The
+        BINDING bound is named per row (limitingReason).
+      * The CP rule binds ONLY at the pinch (above: CP_hot <= CP_cold;
+        below: CP_hot >= CP_cold).  A pinch match violating it may still
+        be admissible AWAY from the pinch -- said so, by name.
+      * The violation diagnostics classify the P1 population against the
+        pinch: heating demand below it / cooling demand above it are the
+        coursework violations (served by recovery in the design method,
+        never by a utility), reported per unit with their duties.  With
+        the P1 raw-duty hypothesis these sum, together with any
+        cross-pinch transfer, to EXACTLY the current-vs-target excess.
     See docs/design/pinch-programme-scope.md and the theory guide.
 
 \*---------------------------------------------------------------------------*/

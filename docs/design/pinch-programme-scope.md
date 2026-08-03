@@ -1,15 +1,33 @@
 # Pinch full programme — scoping (roadmap #8)
 
-**Status: P1 APPROVED (Vítor, 2026-08-02 — "implementaria apenas a P1
-nesta primeira etapa") and BUILT 2026-08-03.  P2 (match recommendations)
-and P3 (area/cost targets) remain UNAUTHORISED — propose again before
-building either.**  Two conditions rode with the approval and both are
-honoured in the implementation: the pass *recommends but never rewrites
-the network* (it is a pure report — it mutates nothing but its own KPI
-block), and the METHOD HYPOTHESES (constant CP per segment, the
-near-isothermal latent slice, first non-utility stream pairing, raw
-current-duty sums) are stated in `src/postProcessing/PinchPass.H` where
+**Status: P1 BUILT 2026-08-03 (approved Vítor 2026-08-02).  P2 BUILT
+2026-08-03 as an ANALYSIS TABLE per the ratified second-opinion round of
+2026-08-03: columns region/hotStream/coldStream/temperatureFeasible/
+pinchRule/maximumCandidateDuty/limitingReason/recommendation; every
+feasible row is a "thermodynamically admissible candidate" and the word
+"optimal" never appears (gate-enforced).  P3 (area/cost targets) stays
+UNAUTHORISED — propose again before building it.**  Two conditions rode
+with the P1 approval and both are honoured across P1+P2: the pass
+*analyses but never rewrites the network* (it is a pure report — it
+mutates nothing but its own KPI block and artefacts), and the METHOD
+HYPOTHESES (constant CP per segment, the near-isothermal latent slice,
+first non-utility stream pairing, raw current-duty sums; P2: pinch
+clipping, the counter-current end-approach bound, the CP rule binding
+only at the pinch) are stated in `src/postProcessing/PinchPass.H` where
 the reader of the code meets them first.
+
+P2 as built: `reports/pinch/candidateMatches.csv` (exhaustive hot×cold
+pairs per region), KPIs `pinch.candidates_total / candidates_admissible /
+violation_heat_below_pinch_kW / violation_cool_above_pinch_kW`, the
+coursework violation diagnostics printed per unit, and — on the
+pinch01 classic — the identity check the header hand-works: violations
+120 + 260 = 380 kW = Q_heat_current − Q_H_min.  A pinch match violating
+the CP rule is still reported with its away-from-pinch feasible duty
+("admissible only away from the pinch"), never silently dropped.  Gate:
+`bin/curate/check_pinch_p2.py` (independent duty recomputation, exact
+CP-rule wording, the no-"optimal" language boundary, the excess
+identity; sabotage-verified — flipped below-pinch inequality → 4 probes
+fail by value).
 
 Built: `pinchPass` PostProcessor (postDict chain, `pinchPass { dTmin
 10 K; }`), printed Linnhoff-Flower problem table, KPIs

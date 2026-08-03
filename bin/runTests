@@ -780,6 +780,23 @@ PYEOF
     fi
     rm -f /tmp/pnch.$$
 
+    # Pinch P2 gate (ratified 2026-08-03, analysis table only): the
+    # candidate-match table is the exhaustive per-region enumeration,
+    # duties equal an independent counter-current bound, the CP rule
+    # binds only at the pinch and is worded exactly, the word "optimal"
+    # never appears, and the violation diagnostics satisfy
+    # violations == current - target; sabotage-verified (flipped
+    # below-pinch inequality -> 4 wording probes fail by value).
+    if "$ROOT/bin/curate/check_pinch_p2.py" > /tmp/pnc2.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pinch-p2-gate" "$(tail -1 /tmp/pnc2.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pinch_p2.py)\n" "pinch-p2-gate"
+        cat /tmp/pnc2.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pnc2.$$
+
     # P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over
     # the section-9 expansion widening, ratified battery 2026-08-03):
     # witness A pins the analytic inventory ratio, witness B the blowdown

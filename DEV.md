@@ -386,13 +386,15 @@ accepts today, and that is a policy call.
    `flash20_ethanol_water_pcsaft` (predictive vs fitted NRTL side by
    side: K's within ~2 %/~11 %, V/F 0.65 vs 0.51); theory-guide chapter
    ch:pcsaft written (c4e35974).
-8. **Pinch full programme (roadmap #8)** — scoped 2026-08-02,
-   [`docs/design/pinch-programme-scope.md`](docs/design/pinch-programme-scope.md):
-   P1 targets (composite curves + problem table + Q_min/T_pinch) → P2
-   match recommendations (a table, never a rewiring) → P3 area/cost
-   targets via ShellTubeHX + Guthrie; home = a `pinchPass` PostProcessor;
-   needs no data the engine lacks.  Decide staging (or P1-only), home,
-   witness (Linnhoff & Hindmarsh 1983 four-stream).
+8. **Pinch full programme (roadmap #8)** — P1 targets BUILT 2026-08-03;
+   **P2 BUILT 2026-08-03** as the ratified ANALYSIS table
+   (candidateMatches.csv, exhaustive per-region pairs, independent-bound
+   duties, CP rule at the pinch only, "thermodynamically admissible
+   candidate" and never "optimal" — gate `check_pinch_p2`,
+   sabotage-verified; violations sum == current − target on the classic).
+   [`docs/design/pinch-programme-scope.md`](docs/design/pinch-programme-scope.md).
+   **P3 (area/cost via ShellTubeHX + Guthrie) stays UNAUTHORISED** —
+   propose again before building.
 9. **Curation backlog: estimated dHf records** — survey 2026-08-02,
    [`docs/design/curation-backlog-estimated-records.md`](docs/design/curation-backlog-estimated-records.md):
    all 45 Joback dHf_298 records vs known primaries.  Headline:

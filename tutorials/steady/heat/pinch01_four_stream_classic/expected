@@ -48,4 +48,8 @@ kpi     pinch                  Q_heat_current_kW 487.5            1e-4
 kpi     pinch                  T_pinch_K        353.15           1e-4
 kpi     pinch                  T_pinch_cold_K   343.15           1e-4
 kpi     pinch                  T_pinch_hot_K    363.15           1e-4
+kpi     pinch                  candidates_admissible 6                1e-4
+kpi     pinch                  candidates_total 6                1e-4
 kpi     pinch                  dTmin_K          20               1e-4
+kpi     pinch                  violation_cool_above_pinch_kW 120              1e-4
+kpi     pinch                  violation_heat_below_pinch_kW 260              1e-4

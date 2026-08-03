@@ -38,8 +38,27 @@
   Each unit is a `heater` with a SIGNED hardware duty Q; the outlet T is
   the enthalpy-balance RESULT (with cp constant it lands exactly on the
   table's target temperatures).  The four units are thermally independent
-  here -- the pinchPass only TARGETS; recommending matches (P2) is out of
-  scope and the network is never rewritten.
+  here -- the pinchPass only TARGETS and ANALYSES; the network is never
+  rewritten.
+
+  P2 candidate-match table (hand-worked; pinch hot 90 C / cold 70 C,
+  segments clipped at the pinch; Q_max = min(Q_hot, Q_cold,
+  min(CP_h,CP_c)*(Th_hi - Tc_lo - dTmin))):
+
+    region  hot  cold  CP rule at the pinch      Q_max [kW]  limited by
+    above   H1   C1    2.0 <= 2.5 holds             120      approach (and H1's 120 kW)
+    above   H1   C2    2.0 <= 3.0 holds              90      C2's above-duty
+    below   H1   C1    2.0 >= 2.5 VIOLATED           60      H1's below-duty (away from pinch only)
+    below   H1   C2    2.0 >= 3.0 VIOLATED           60      H1's below-duty (away from pinch only)
+    below   H2   C1    8.0 >= 2.5 holds             125      approach == C1's below-duty
+    below   H2   C2    8.0 >= 3.0 holds             135      approach == C2's below-duty
+
+  Violation diagnostics (each unit is utility-served here, so every duty
+  on the wrong side of the pinch is a coursework violation):
+  cooler above the pinch: H1's 120 kW above 90 C; heaters below the
+  pinch: C1's 125 kW + C2's 135 kW below 70 C.  Identity check:
+  120 + 260 = 380 kW = Q_heat_current - Q_H_min = 487.5 - 107.5 -- the
+  excess over target IS the sum of the violations.
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only

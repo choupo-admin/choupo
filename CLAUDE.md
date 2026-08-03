@@ -576,15 +576,24 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
-**Pinch targets — P1 ONLY (approved 2026-08-02, built 2026-08-03; P2 match
-recommendations / P3 area-cost stay UNAUTHORISED).**  A `pinchPass`
-PostProcessor in the postDict chain: Linnhoff-Flower problem table printed
-cascade by cascade, `pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` KPIs,
-`reports/pinch/compositeCurves.csv`; targets only, never rewrites the
-network; method hypotheses stated in `PinchPass.H`.  Witness
-`pinch01_four_stream_classic` (hand-worked cascade in its header); gate
-`check_pinch_p1` (independent Python cascade + latent-branch probe, both
-sabotage-verified).  Scope: `docs/design/pinch-programme-scope.md`.
+**Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost
+stays UNAUTHORISED).**  A `pinchPass` PostProcessor in the postDict chain:
+Linnhoff-Flower problem table printed cascade by cascade,
+`pinch.Q_H_min_kW / Q_C_min_kW / T_pinch_K` KPIs,
+`reports/pinch/compositeCurves.csv`; P2 (ratified 2026-08-03) adds the
+candidate-match ANALYSIS table `reports/pinch/candidateMatches.csv`
+(exhaustive hot×cold pairs per region, the exact counter-current
+end-approach bound, the CP rule binding only AT the pinch — a violating
+pinch match keeps its away-from-pinch duty, said so) + the coursework
+violation diagnostics (heater below / cooler above the pinch, whose sum
+equals the current-vs-target excess).  **Every feasible row is a
+"thermodynamically admissible candidate" — the word "optimal" never
+appears (gate-enforced), and the pass never rewrites the network.**
+Method hypotheses stated in `PinchPass.H`.  Witness
+`pinch01_four_stream_classic` (hand-worked cascade + candidate table in
+its header); gates `check_pinch_p1` + `check_pinch_p2` (independent
+recomputation, both sabotage-verified).  Scope:
+`docs/design/pinch-programme-scope.md`.
 
 **PC-SAFT association — built 2026-08-03 with the three ratified amendments**
 (extensible (nD,nA) site representation behind `siteCounts()`; nested

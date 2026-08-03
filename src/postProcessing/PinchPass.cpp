@@ -222,7 +222,142 @@ int PinchPass::run(SimulationResult& result)
     emit("hotShifted",  true,  hs);
     emit("coldShifted", false, cs);
 
-    // ---- 4. KPIs ------------------------------------------------------------
+    // ---- 4. P2: the candidate-match analysis table -------------------------
+    //  (Linnhoff & Hindmarsh 1983 design-method rules as ANALYSIS -- the
+    //  table names what the physics ADMITS per region; it recommends no
+    //  network, and no row is ever called "optimal".  Hypotheses: header.)
+    const scalar TpHot  = Tpinch - hs;   // pinch on the hot/cold scales
+    const scalar TpCold = Tpinch - cs;
+
+    //  Clip a segment to one side of the pinch (its own scale's pinch T).
+    auto clip = [](const Segment& s, scalar Tp, bool above)
+        -> std::pair<bool, Segment>
+    {
+        Segment c = s;
+        if (above) c.Tlo = std::max(s.Tlo, Tp);
+        else       c.Thi = std::min(s.Thi, Tp);
+        return { c.Thi - c.Tlo > 1.0e-9, c };
+    };
+
+    struct Row
+    {
+        std::string region, hotU, coldU, feas, rule, limit, rec;
+        scalar Qmax = 0.0;
+    };
+    std::vector<Row> rows;
+    std::size_t admissible = 0;
+
+    for (const bool above : { true, false })
+    {
+        for (const auto& h : segs)
+        {
+            if (!h.hot) continue;
+            auto [okH, H] = clip(h, TpHot, above);
+            if (!okH) continue;
+            for (const auto& c : segs)
+            {
+                if (c.hot) continue;
+                auto [okC, C] = clip(c, TpCold, above);
+                if (!okC) continue;
+
+                Row r;
+                r.region = above ? "abovePinch" : "belowPinch";
+                r.hotU = H.unit;
+                r.coldU = C.unit;
+
+                //  The CP rule binds only AT the pinch: above, both
+                //  segments must start there; below, both must end there.
+                const bool pinchMatch = above
+                    ? (std::abs(H.Tlo - TpHot) < 1.0e-6
+                       && std::abs(C.Tlo - TpCold) < 1.0e-6)
+                    : (std::abs(H.Thi - TpHot) < 1.0e-6
+                       && std::abs(C.Thi - TpCold) < 1.0e-6);
+                const bool cpOk = above ? (H.CP <= C.CP + 1.0e-9)
+                                        : (H.CP + 1.0e-9 >= C.CP);
+                if (!pinchMatch)
+                    r.rule = "not a pinch match (CP rule does not bind)";
+                else if (cpOk)
+                    r.rule = above ? "pinch match: CP_hot <= CP_cold holds"
+                                   : "pinch match: CP_hot >= CP_cold holds";
+                else
+                    r.rule = above
+                        ? "pinch match: CP_hot <= CP_cold VIOLATED"
+                        : "pinch match: CP_hot >= CP_cold VIOLATED";
+
+                //  Exact counter-current bound of two straight segments at
+                //  dTmin (end approaches suffice -- hypothesis, header).
+                const scalar Qh = H.CP * (H.Thi - H.Tlo);
+                const scalar Qc = C.CP * (C.Thi - C.Tlo);
+                const scalar Qa = std::min(H.CP, C.CP)
+                                * (H.Thi - C.Tlo - dTmin_);
+                r.Qmax = std::max(0.0, std::min({ Qh, Qc, Qa }));
+                r.feas = r.Qmax > 1.0e-9 ? "yes" : "no";
+                if (r.Qmax <= 1.0e-9)
+                    r.limit = "no feasible approach at dTmin";
+                else if (Qa <= std::min(Qh, Qc) + 1.0e-9)
+                    r.limit = "approach dTmin binds at an exchanger end";
+                else if (Qh <= Qc)
+                    r.limit = "hot stream duty exhausted";
+                else
+                    r.limit = "cold stream duty exhausted";
+
+                if (r.Qmax <= 1.0e-9)
+                    r.rec = "not admissible";
+                else if (pinchMatch && !cpOk)
+                    r.rec = "thermodynamically admissible candidate"
+                            " (away from the pinch only)";
+                else
+                    r.rec = "thermodynamically admissible candidate";
+                if (r.Qmax > 1.0e-9) ++admissible;
+                rows.push_back(std::move(r));
+            }
+        }
+    }
+
+    //  The coursework violation diagnostics, applied to the P1 population:
+    //  heating demanded below the pinch / cooling demanded above it.
+    scalar heatBelow = 0.0, coolAbove = 0.0;
+    std::cout << "[pinch] candidate matches (" << rows.size()
+              << " pair(s), " << admissible << " admissible) ->"
+                 " reports/pinch/candidateMatches.csv\n";
+    for (const auto& s : segs)
+    {
+        if (s.hot)
+        {
+            auto [ok, A] = clip(s, TpHot, true);
+            if (!ok) continue;
+            const scalar Q = A.CP * (A.Thi - A.Tlo);
+            coolAbove += Q;
+            std::cout << "[pinch]   VIOLATION cooler above the pinch:"
+                         " unit '" << s.unit << "' rejects "
+                      << Q / 1.0e3 << " kW above " << TpHot
+                      << " K -- the design method serves this by process"
+                         " recovery, never a cold utility\n";
+        }
+        else
+        {
+            auto [ok, B] = clip(s, TpCold, false);
+            if (!ok) continue;
+            const scalar Q = B.CP * (B.Thi - B.Tlo);
+            heatBelow += Q;
+            std::cout << "[pinch]   VIOLATION heater below the pinch:"
+                         " unit '" << s.unit << "' draws "
+                      << Q / 1.0e3 << " kW below " << TpCold
+                      << " K -- the design method serves this by process"
+                         " recovery, never a hot utility\n";
+        }
+    }
+
+    std::ofstream mcsv("reports/pinch/candidateMatches.csv");
+    mcsv << "region,hotStream,coldStream,temperatureFeasible,pinchRule,"
+            "maximumCandidateDuty_kW,limitingReason,recommendation\n"
+         << std::setprecision(10);
+    for (const auto& r : rows)
+        mcsv << r.region << "," << r.hotU << "," << r.coldU << ","
+             << r.feas << "," << r.rule << "," << r.Qmax / 1.0e3 << ","
+             << r.limit << "," << r.rec << "\n";
+
+    // ---- 5. KPIs ------------------------------------------------------------
     auto& k = result.kpis["pinch"];
     k["Q_H_min_kW"]        = QHmin / 1.0e3;
     k["Q_C_min_kW"]        = QCmin / 1.0e3;
@@ -232,6 +367,10 @@ int PinchPass::run(SimulationResult& result)
     k["dTmin_K"]           = dTmin_;
     k["Q_heat_current_kW"] = heatCur / 1.0e3;
     k["Q_cool_current_kW"] = coolCur / 1.0e3;
+    k["candidates_total"]      = static_cast<scalar>(rows.size());
+    k["candidates_admissible"] = static_cast<scalar>(admissible);
+    k["violation_heat_below_pinch_kW"] = heatBelow / 1.0e3;
+    k["violation_cool_above_pinch_kW"] = coolAbove / 1.0e3;
     return 0;
 }
 
