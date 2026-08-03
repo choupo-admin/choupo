@@ -155,8 +155,10 @@ ones for day-to-day work:
    lineage — never blend the two parameterisations.
 4. **PC-SAFT association term** — **BUILT 2026-08-03** (2B+4C Wertheim with
    the three ratified amendments; witness `pcsaft03_association_pure`, gate
-   `check_pcsaft_association`).  Remaining in this programme: the
-   ethanol/water mixture VLE witness (validation item 4 of the proposal).
+   `check_pcsaft_association`).  The mixture witness (flash20,
+   2026-08-03) closed the validation battery AND caught the water-scheme
+   mis-curation (4C → 2B, the paper's own site count) plus an importer
+   gap (per-unit `thermo{}` overrides now ride the seal closure).
 5. **New unit operations / catalogue expansion** — the strength area; add with
    KPIs + a golden-master tutorial + the theory-guide section (a feature is
    incomplete without its manual).

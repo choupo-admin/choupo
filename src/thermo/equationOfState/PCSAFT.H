@@ -168,7 +168,7 @@ Description
         pcsaft
         {
             m           1.0656;    sigma 3.0007;    epsilonK 366.51;
-            assocScheme 4C;        // 2B | 4C   (absent = non-associating)
+            assocScheme 2B;        // 2B | 4C   (absent = non-associating)
             epsAB_K     2500.7;    // K
             kappaAB     0.034868;
             source      "...primary citation...";
@@ -176,6 +176,17 @@ Description
 
     A partial trio refuses at Component load; the roster of associating
     components is ANNOUNCED at construction ([pcsaft] associating: ...).
+
+    THE SCHEME IS PART OF THE FIT.  A published (epsAB, kappaAB) pair is
+    meaningful ONLY under the site scheme it was regressed with -- the
+    curator reads the paper's own site count, never assumes one from the
+    molecule's chemistry.  Paid for once already: the G&S 2002 water set
+    (2 sites, 2B) was first curated as 4C; the PURE density then looked
+    fine (+0.6% -- a coincidence that masked the error) while the
+    ethanol/water MIXTURE flash collapsed (K_water 0.0044) and pure-water
+    Psat left the physical range.  The mixture witness
+    (flash20_ethanol_water_pcsaft) is the class of test that catches a
+    scheme mismatch; a pure-density anchor alone cannot.
 
     STILL OUT (staged, per the ratified plan): polar and quadrupolar terms,
     electrolyte PC-SAFT, induced association, association-parameter fitting

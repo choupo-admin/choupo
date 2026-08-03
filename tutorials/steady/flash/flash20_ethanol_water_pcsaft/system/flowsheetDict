@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash20 -- ethanol/water VLE, PREDICTIVE vs FITTED on the same state
+  ====================================================================
+  The same 30/70 mol% ethanol/water feed flashed at 358.15 K / 1 atm
+  through TWO thermodynamic worlds, side by side:
+
+    flashPCSAFT  the GLOBAL world: phi-phi PC-SAFT with the ASSOCIATION
+                 term active on both components (2B water + 2B ethanol,
+                 Gross & Sadowski 2002 Table 1 -- the paper lists water
+                 with TWO sites; the mixture witness of the association
+                 programme, validation item 4).  The cross-association
+                 follows the Wolbach-Sandler combining rules and kij = 0
+                 (announced) -- so the MIXTURE behaviour is fully
+                 PREDICTED: nothing in this route was fitted to any
+                 ethanol/water datum.  Only the PURE parameters are fits.
+
+    flashNRTL    a per-unit thermo {} override: the classic gamma-phi
+                 route on the curated NRTL pair (fitted TO ethanol/water
+                 VLE data) + Antoine.  This is the case's experimental
+                 anchor: the fitted route reproduces the measured
+                 azeotropic system, so the DIFFERENCE between the two
+                 units' K-values and splits is an honest measurement of
+                 what pure-component association physics alone can and
+                 cannot predict for a strongly hydrogen-bonded pair.
+
+  What the student compares (both goldened), measured at this state:
+
+                       predictive PC-SAFT     fitted NRTL (gamma-phi)
+    K_ethanol (at z)        2.185                  2.238
+    K_water   (at z)        0.769                  0.695
+    V/F                     0.649                  0.512
+    x_ethanol / y_ethanol   0.038 / 0.441          0.121 / 0.471
+
+  The predictive route lands the K's within ~2 % (ethanol) and ~11 %
+  (water) of the data-fitted route -- from PURE-component parameters
+  alone, a genuinely strong showing for a hydrogen-bonded pair -- and
+  the residual K_water error still moves V/F from 0.51 to 0.65: the
+  pedagogical point, stated up front rather than hidden.  Predictive
+  means "no mixture data used", not "as accurate as a fit"; the fitted
+  gamma-phi route stays the design tool, the predictive EoS is the
+  screen for systems with NO data to fit.
+
+  This case is ALSO the witness that catches a curation error the pure
+  witnesses cannot: with water mis-curated as 4C (the same eps/kappa,
+  the wrong scheme) the pure density read +0.6 % -- fine -- while THIS
+  flash collapsed to K_water = 0.0044.  The scheme is part of the fit.
+
+  A model boundary note: the two units run DIFFERENT thermo worlds on
+  the same global component set (the general heterogeneous-solver
+  contract); each stream leaves in its own unit's world.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flashPCSAFT;
+        type        isothermalFlash;
+        in          feedA;
+        outputs     ( liqPCSAFT  vapPCSAFT );
+        operation   { T 358.15 K;  P 101325 Pa; }
+    }
+    {
+        name        flashNRTL;
+        type        isothermalFlash;
+        in          feedB;
+        outputs     ( liqNRTL  vapNRTL );
+        operation   { T 358.15 K;  P 101325 Pa; }
+
+        thermo
+        {
+            equilibrium
+            {
+                formulation gammaPhi;
+                liquid { activityModel NRTL;  standardState pureLiquid; }
+                vapour { fugacityModel idealGas; }
+            }
+        }
+    }
+);

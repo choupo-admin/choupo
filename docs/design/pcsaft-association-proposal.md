@@ -18,15 +18,30 @@ BUILT 2026-08-03.**  The amendments, all honoured in the implementation
    exact pre-association code path (byte-identity by construction,
    asserted at 1e-10 by the gate).
 
-Records: water (4C) + ethanol (2B), G&S 2002 Table 1, primary-cited.
+Records: water (2B — **the paper's own site count**; see below) +
+ethanol (2B), G&S 2002 Table 1, primary-cited.
 Witness: `tutorials/props/molecular/pcsaft03_association_pure`
-(ρ_liq water +0.6 % / ethanol −1.2 % vs CRC — the published class).
+(ρ_liq water −7.5 % — the published trade-off of the Psat-accurate
+2-site fit — / ethanol −1.2 % vs CRC).
 Gate: `bin/curate/check_pcsaft_association.py` (independent Python
 closed form, CRC anchors, two refusals, negative); sabotage-verified
-(Δ scaled 2 % → 4 probes fail by value).  The ethanol/water mixture
-VLE witness (validation item 4) is the named next slice of this
-programme.  Σ_ij convention: σ_ij³ (the published κ^AB were fitted
-under it).
+(Δ scaled 2 % → 4 probes fail by value).  Σ_ij convention: σ_ij³ (the
+published κ^AB were fitted under it).
+
+**Validation item 4 (mixture witness) BUILT 2026-08-03, and it earned
+its place immediately**: `tutorials/steady/flash/flash20_ethanol_water_pcsaft`
+flashes one 30/70 ethanol/water feed through the predictive PC-SAFT
+world and a per-unit NRTL override side by side (K_ethanol 2.185 vs
+2.238, K_water 0.769 vs 0.695, V/F 0.649 vs 0.512 — predictive within
+~2 %/~11 % of the fit).  Building it CAUGHT a scheme mis-curation:
+water had been curated 4C, but G&S 2002 fitted water with TWO sites
+(2B) — under 4C the pure density read +0.6 % (coincidence) while the
+mixture collapsed (K_water 0.0044) and pure-water Psat left the
+physical range.  **The scheme is part of the fit** — recorded in
+PCSAFT.H and on the water record.  The seal of flash20 also fixed a
+real importer gap: per-unit `thermo{}` overrides now ride the
+dependency closure (sealing had silently downgraded the NRTL leg to
+ideal — announced by the runtime, caught by the golden).
 
 Date: 2026-08-02 (proposal) / 2026-08-03 (built).  Author: dev session,
 approved by Vítor.

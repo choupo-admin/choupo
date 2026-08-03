@@ -548,12 +548,34 @@ def closure_of(pp_path, caseDir, std, AQ):
                 a, b = sorted((comps[i], comps[j]))
                 want("parameters/NRTL/" + a + "-" + b + ".dat")
 
+    # ---- per-unit thermo{} overrides in system/flowsheetDict -----------------
+    # A unit's `thermo { equilibrium { ... activityModel NRTL; } }` selects a
+    # model the GLOBAL package never names (flash20's fitted-vs-predictive
+    # twin: global PCSAFT, one unit overridden to gamma-phi NRTL); the pair
+    # records that unit reads must ride the closure, or sealing CHANGES the
+    # physics -- the runtime announces the ideal default loudly, but a sealed
+    # tutorial must never move on sealing.  Same lesson the UNIFAC trace
+    # below already carries for per-OP propsDict overrides.
+    fs_dict = Path(caseDir) / "system" / "flowsheetDict"
+    fs_text = ""
+    if fs_dict.exists():
+        fs_text = fs_dict.read_text()
+        fs_text = re.sub(r'/\*.*?\*/', '', fs_text, flags=re.S)
+        fs_text = re.sub(r'(^|\s)//.*$', '', fs_text, flags=re.M)
+        if re.search(r'\bactivityModel\s+NRTL\s*;', fs_text):
+            for i in range(len(comps)):
+                for j in range(i + 1, len(comps)):
+                    a, b = sorted((comps[i], comps[j]))
+                    want("parameters/NRTL/" + a + "-" + b + ".dat")
+
     # ---- UNIFAC group-contribution tables ------------------------------------
     # UNIFAC's R_k/Q_k (groups.dat) + a_mn (interactions.dat) are SINGLETON
     # tables, not per-pair records: the model reads them through the case-local
     # resolver (UNIFAC.cpp), so any package selecting UNIFAC -- v2 `activityModel
     # { model UNIFAC; }` or v1 `activity.UNIFAC` -- must carry BOTH in its closure.
     unifac_texts = [t_nc]
+    if fs_text:
+        unifac_texts.append(fs_text)   # per-UNIT overrides select UNIFAC too
     # per-op thermo{} overrides in the propsDict select models the PACKAGE
     # never names (compare_vle's txy_unifac) -- their closure needs rides too.
     props_dict = Path(caseDir) / "system" / "propsDict"

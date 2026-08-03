@@ -96,16 +96,23 @@ uniquac
 
 pcsaft
 {
-    // Associating (4C: two donors + two acceptors) -- the water set of
-    // Gross & Sadowski 2002, fitted WITH the association term; the segment
-    // trio below is meaningless without assocScheme 4C.
+    // Associating (2B: one donor + one acceptor) -- the water set of
+    // Gross & Sadowski 2002, whose Table 1 lists water with TWO
+    // association sites: this parameter set was FITTED AS 2B and is
+    // meaningless under any other scheme (curated first as 4C, which
+    // over-associated so strongly the ethanol/water flash collapsed --
+    // the scheme is part of the fit, not a free choice).  A 4C water
+    // from later literature is a DIFFERENT parameter set; curate it as
+    // its own trio if ever needed.  Known published trade-off of this
+    // set: Psat accurate (about -0.2% at 358 K, +4% at 298 K) while the
+    // ambient liquid density reads about -7.5% (922 kg/m3 vs 997).
     m           1.0656;
     sigma       3.0007;
     epsilonK    366.51;
-    assocScheme 4C;
+    assocScheme 2B;
     epsAB_K     2500.7;
     kappaAB     0.034868;
-    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (4C water)";
+    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (water, 2 sites)";
 }
 
 cosmo

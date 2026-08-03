@@ -11,19 +11,23 @@
   Chem. Res. 41 (2002) 5510) -- the hydrogen-bonded liquids the
   non-associating core cannot represent, as PURE liquids at 298.15 K, 1 bar.
 
-  The association parameters live on the component records (4C water,
-  2B ethanol -- both G&S 2002 Table 1, fitted WITH the association term);
+  The association parameters live on the component records (2B water,
+  2B ethanol -- both G&S 2002 Table 1, fitted WITH the association term;
+  the paper lists water with TWO sites, and the scheme is PART of the
+  fit: this same set mis-curated as 4C passed the pure-density check by
+  coincidence and collapsed the ethanol/water mixture flash);
   the case only declares `model PCSAFT;`, and the engine announces the
   roster it found on the records:
 
-      [pcsaft] associating: water (4C), ethanol (2B); cross: Wolbach-Sandler
+      [pcsaft] associating: water (2B), ethanol (2B); cross: Wolbach-Sandler
 
   Liquid densities PREDICTED here (goldened), vs the CRC Handbook 25 degC
-  values -- inside the ~1-2 % class Gross & Sadowski 2002 report over the
-  fitted ranges:
+  values -- each deviation stated against what the SET is fitted for:
 
-      water    v_molar_liq -> rho_liq = 1002.9 kg/m3   vs 997.05  (+0.6 %)
-      ethanol  v_molar_liq -> rho_liq =  779.8 kg/m3   vs 789.3   (-1.2 %)
+      water    v_molar_liq -> rho_liq = 921.9 kg/m3   vs 997.05  (-7.5 % --
+               the PUBLISHED trade-off of the 2-site water fit, which is
+               Psat-accurate instead: -0.2 % at 358 K, +4 % at 298 K)
+      ethanol  v_molar_liq -> rho_liq = 779.8 kg/m3   vs 789.3   (-1.2 %)
 
   What the student sees at verbosity 3 (the widened validation, ratified
   2026-08-02): the construction-time verify() now ALSO echoes, per
@@ -31,12 +35,12 @@
   X^D / X^A, the a_assoc share, and the CLOSED-FORM-vs-ITERATIVE oracle
   deviation (for nD = nA the mass-action closure collapses to a quadratic;
   the damped fixed point must land on its root -- observed machine zero).
-  X^A(water) ~ 0.024: 97.6 % of water's sites are hydrogen-bonded at
+  X^A(water) ~ 0.039: 96 % of water's sites are hydrogen-bonded at
   ambient conditions -- the physics the term adds.
 
   The two ops publish the standard vapour-root family (Z, v_molar) plus
-  the labelled liquid root (v_molar_liq) where a metastable vapour root
-  exists; at 1 bar water resolves only the liquid root (Psat ~ 0.03 bar).
+  the labelled liquid root (v_molar_liq); at 1 bar both fluids carry a
+  metastable vapour root beside the stable liquid.
 \*---------------------------------------------------------------------------*/
 
 operations

@@ -7,10 +7,19 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  pcsaft03_association_pure -- meta-control
+  thermoPhysPropDict (v2) -- the GLOBAL world: phi-phi on PC-SAFT with the
+  association term (the trio lives on the component records: 4C water,
+  2B ethanol).  kij = 0, the predictive baseline (announced).  The
+  flashNRTL unit overrides this world per-unit (see flowsheetDict).
 \*---------------------------------------------------------------------------*/
 
-application   choupoProps;
-description   "PC-SAFT association (Wertheim TPT1): 2B water + 2B ethanol, pure liquids";
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
 
-verbosity     3;
+components ( ethanol water );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PCSAFT; }
+}
