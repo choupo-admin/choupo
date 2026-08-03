@@ -1336,12 +1336,80 @@ void runUnit(const DictPtr&                                          udict,
     else if (udict->found("inputs"))
         P_inherit = streams.at(udict->lookupWordList("inputs").front()).P;
 
+    //  Inlet speciation captured BEFORE registration (an in-place name
+    //  would overwrite it) -- the transport contract below reads it.
+    std::shared_ptr<const ProcessStream::Speciation> inletBlock;
+    const ProcessStream* inletS = nullptr;
+    if (udict->found("in"))
+    {
+        auto itIn = streams.find(udict->lookupWord("in"));
+        if (itIn != streams.end())
+        {
+            inletS     = &itIn->second;
+            inletBlock = itIn->second.speciation;
+        }
+    }
+
     for (std::size_t k = 0; k < outputs.size(); ++k)
     {
         ProcessStream s = produced[k];
         s.name = outputs[k];
         if (s.P <= 0.0) s.P = P_inherit;
         streams[outputs[k]] = s;
+    }
+
+    //  ---- Basis carriage across the unit (basis-reconciliation spike S2,
+    //  ratified 2026-08-03; docs/design/basis-reconciliation-spike.md) ----
+    //  (a) ORIGIN: a block the unit itself attached to an outlet is the
+    //      chemistry it SOLVED there -- stamp who answered for it.
+    //  (b) TRANSPORT: a composition-preserving unit under a LOCAL
+    //      `thermo {}` override whose world does NOT resolve the case's
+    //      chemistry carries its inlet's block as MATTER.  Without this
+    //      the post-solve pass re-derives the outlet's block with the
+    //      GLOBAL package -- the silent respeciation across a model
+    //      boundary the spike forbids: the unit's own world is molecular,
+    //      so the block it outputs must be carried, not re-asked in a
+    //      world the unit is not running.
+    {
+        const bool overrideWorld = udict->found("thermo");
+        const bool worldResolves = thermo.hasReactiveEquilibrium()
+                                || thermo.hasElectrolyte();
+        for (std::size_t k = 0; k < outputs.size(); ++k)
+        {
+            auto& s = streams[outputs[k]];
+            if (s.speciation && s.speciation->origin.empty())
+            {
+                auto b = std::make_shared<ProcessStream::Speciation>(
+                    *s.speciation);
+                b->origin = "solved:" + uname;
+                s.speciation = std::move(b);
+            }
+            else if (!s.speciation && inletBlock && inletS
+                     && overrideWorld && !worldResolves
+                     && outputs.size() == 1)
+            {
+                //  Composition preserved?  The heater/pump class: one
+                //  material in, one out, F and z untouched (T/P free).
+                bool same = std::abs(s.F - inletS->F)
+                          <= 1.0e-9 * std::max(inletS->F, 1.0e-30);
+                for (std::size_t i = 0;
+                     same && i < s.z.size() && i < inletS->z.size(); ++i)
+                    same = std::abs(s.z[i] - inletS->z[i]) <= 1.0e-9;
+                if (same)
+                {
+                    auto b = std::make_shared<ProcessStream::Speciation>(
+                        *inletBlock);
+                    b->origin = "transported:" + uname;
+                    s.speciation = std::move(b);
+                    if (!quiet && verbosity >= 2)
+                        std::cout << "  [basis] unit '" << uname
+                                  << "': speciation block TRANSPORTED"
+                                     " across the model boundary (local"
+                                     " world resolves no chemistry;"
+                                     " chemistry not re-run)\n";
+                }
+            }
+        }
     }
 
     //  A NAME MUST MEAN WHAT IT SAYS.  Outlets are bound POSITIONALLY --
