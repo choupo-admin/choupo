@@ -132,3 +132,41 @@ Species-basis solver variables (the apparent basis stays the state);
 any corpus migration; new grammar beyond the stream-file `speciation`
 block's `origin` entry; batch/ctrl carriage (steady first, the pattern
 generalises later).
+
+## 7. Implementation notes (S1 done; the S2 seam, located)
+
+S1 SHIPPED (commit 921ba8b9): `origin` on `ProcessStream::Speciation`,
+reader stores a verified block back on the stream (carriage), writer
+emits species rows in canonical sorted order (round-trip byte-stable,
+container-order independent).
+
+THE S2 SEAM.  The post-solve pass (`Flowsheet.cpp` ~3268, "Stream
+SPECIATION (post-solve)") speciates every liquid stream lacking a block
+using the GLOBAL package, guarded by `if (s.speciation) continue;`.
+That guard is exactly where the transport contract lands:
+
+* a unit that SOLVES chemistry (IsothermalFlash liquid outlet) stamps
+  `origin = "solved:<unit>"`;
+* a unit under a per-unit `thermo {}` override whose world does NOT
+  resolve the case chemistry, whose inlet carries a block, and which
+  preserves composition (heater/pump class: one material in, one out,
+  z unchanged) attaches the INLET's block to its outlet with
+  `origin = "transported:<unit>"` — because TODAY the post-solve pass
+  would re-derive that outlet's block with the GLOBAL package, which is
+  precisely the silent respeciation across a model boundary the spike
+  names (the unit's own world is molecular; the block it outputs must
+  be carried matter, not a question re-asked in a world the unit is not
+  running);
+* R5 fires when the override's world WOULD resolve a DIFFERENT species
+  set (its own chemistry declaration) — refuse at the boundary, never
+  overwrite;
+* the post-solve `continue` guard then keeps transported blocks intact
+  (already true — non-null skips).
+
+Witness base: clone flash19's package (CO2/CaCO3/water/benzene/ethanol
+— network equilibrium + Ca cation + carbonate anion + two molecular
+volatiles, organic declared) and ADD the N2 pass-through spectator
+(`aqueousSpeciation none`; its row and its apparent flow must be
+bit-identical across the chain).  Chain: electrolyte flash →
+heater with per-unit molecular `thermo {}` override → outlet; the
+identity second witness is the same chain with the override removed.
