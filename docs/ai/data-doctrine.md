@@ -189,7 +189,7 @@ GEOMETRY; that is never component data.*
 
 | Level | MAY add | MAY NOT add | Overlay merges… |
 |---|---|---|---|
-| **standard** `data/standards/components/<name>.dat` | the canonical molecule: identity, critical, gasIdeal, liquidPure, solid, transport, `eosParameters{}`; the FROZEN truth | sample-specific data; equipment rates/PSD; **engine REFUSES to write here** | — (base) |
+| **standard** `data/standards/components/<name>.dat` | the canonical molecule: identity, critical, gasIdeal, liquidPure, solid, transport, the model blocks (`pcsaft{}`, `uniquac{}`, …); the FROZEN truth | sample-specific data; equipment rates/PSD; **engine REFUSES to write here** | — (base) |
 | **catalogue** `data/standards/<feature>/<pair>.dat` (binaryPairs, henrysLaw, electrolyte, **solution**, unifac, `parameters/{binary,electrolyte,eos}/` — e.g. `parameters/SRK/<i>-<j>.dat`) | PAIR/SET/ion-tier data with no single owning molecule (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | anything ownable by one molecule alone | — (base, per pair) |
 | **case** `<case>/constant/components/<name>.dat`, `constant/<feature>/<pair>.dat` | sample-refined molecular **blocks**; case-local pairs/ions the case uses (self-containment) | a NEW molecule's identity (MW/Tc/Pc are born only at standard); equipment rates/PSD | **top-level BLOCK** |
 | **sector** `<case>/<sector>/constant/…` | the SAME, scoped to the sector (a sector = a thermo region) | re-hosting the whole molecule; equipment physics | top-level BLOCK |
@@ -222,7 +222,7 @@ sub-dict.  An overlay carrying `solid { rho_p 1610; }` replaces the **entire**
 `solid{}` block — the standard's `k_v` is **lost**, not deep-merged.
 
 A reference-state block (`solid{}`, `gasIdeal{}`, `liquidPure{}`, each
-`eosParameters.<model>{}`) is the **atomic unit of physical meaning** — you
+`pcsaft{}`) is the **atomic unit of physical meaning** — you
 override a reference state, not a stray scalar inside one.  Deep-merging a
 lone scalar across a block boundary would silently mix a sample's `rho_p` with
 the catalogue's `k_v` — the exact **hidden-hybrid** the engine warns about.
@@ -238,7 +238,7 @@ gap — that stays.
 1. refine a component **block** → `constant/components/<name>.dat` overlay
    (whole block);
 2. refine/supply a pair or model-param block →
-   `constant/<feature>/<pair>.dat` or an `eosParameters{}` overlay;
+   `constant/<feature>/<pair>.dat` or a model-block overlay;
 3. supply equipment physics → the operation's own `constant/<physics>`.
 
 A node can do **nothing else** — it cannot mint a molecule mid-tree, cannot
@@ -247,21 +247,21 @@ component.
 
 ---
 
-## 4. Model extensibility — `eosParameters{ <model>{…} }`
+## 4. Model extensibility — flat model-NAMED blocks (`pcsaft{}`, `uniquac{}`, …)
 
-> **DIVERGENCE NOTE (2026-08-03, for Vítor to settle).**  The shipped
-> PC-SAFT implementation reads a FLAT, model-named `pcsaft{}` block on
-> the component (`m; sigma [Angstrom]; epsilonK;` + the association trio
-> `assocScheme/epsAB_K/kappaAB` — the live `uniquac{}`/`cosmo{}`
-> precedent), NOT the `eosParameters{ PCSAFT{…} }` container this
-> section describes.  The container remains this doctrine's named intent
-> for when a SECOND parameter-carrying EoS family arrives; the six
-> records in the tree carry `pcsaft{}` today, and the author-facing
-> grammar ([`thermo.md`](thermo.md)) documents the shipped shape.  The
-> open decision: migrate the records into the container, or amend this
-> section to bless the flat per-model block.  Everything else in this
-> section (the tier test, generated-vs-fitted, the loud refusal, the
-> pair catalogue) is live doctrine the implementation follows.
+> **RULED 2026-08-03 (with second-opinion review): the FLAT, model-named
+> block IS the doctrine.**  Each model family that needs parameters the
+> engine cannot derive owns a TOP-LEVEL block under its canonical name —
+> `pcsaft{}`, `uniquac{}`, `cosmo{}`, tomorrow `pengRobinson{}` — the
+> shape the implementation ships.  The earlier `eosParameters{ <model>{} }`
+> container is RETIRED as intent: it added taxonomic classification with
+> no operational semantics, and **containers are not created for
+> classification alone** — only when the container itself would carry
+> shared behaviour (inheritance, selection, common validation).  Model
+> SELECTION stays where it always was: in the case's thermoPhysPropDict,
+> never on the component record.  Everything else in this section (the
+> tier test, generated-vs-fitted, the loud refusal, the pair catalogue)
+> is unchanged live doctrine.
 
 A parameter lives at the **highest tier where it is TRUE** — the same
 definition test as §2, asked of the *model*: *does the number require you to
@@ -275,20 +275,21 @@ name the model?*
    **not** pre-bake `a_c` into the `.dat` — that duplicates a value the model
    owns and lets the two drift.
 2. **Model-specific PURE parameters that CANNOT be generated → a
-   `model`-keyed sub-block on the component**, read as a raw sub-dict (exactly
-   like the live `liquidViscosity{}` pattern):
+   flat model-NAMED top-level block on the component** (exactly the live
+   `liquidViscosity{}` / `uniquac{}` / `cosmo{}` pattern):
    ```
    // inside the component .dat — ADDITIVE; never disturbs the triad
-   eosParameters
+   pcsaft
    {
-       PCSAFT  { m 2.4653;  sigma 3.6478e-10;  epsilon_k 287.35;
-                 provenance { origin regressed; method "Gross & Sadowski 2001 Table 1"; } }
-       // a future EOS adds its OWN key here; SRK/PR appear in NO key (they read Tc,Pc,omega)
+       m        2.3827;   sigma 3.1771;   epsilonK 198.24;   // Angstrom, K
+       source   "Gross & Sadowski, IECR 40 (2001) 1244, Table 1";
    }
+   // a future EoS adds its OWN block (pengRobinson{...} if PR ever grew
+   // fitted parameters); SRK/PR today have NO block (they read Tc,Pc,omega)
    ```
-   Each factory reads **its own** sub-block by name and ignores the rest.  One
-   molecule carries SRK + PR + PC-SAFT + the next EOS simultaneously, never
-   colliding, each with its own `provenance{}`.
+   Each factory reads **its own** block by name and ignores the rest.  One
+   molecule carries SRK + PR + PC-SAFT + the next EoS simultaneously, never
+   colliding, each block with its own provenance.
 3. **PAIR parameters (k_ij and friends) → the declarative parameter
    catalogue**, `data/standards/parameters/SRK/<i>-<j>.dat` (siblings:
    `parameters/<MODEL>/` for activity pairs, `parameters/electrolyte/` for
@@ -301,11 +302,11 @@ name the model?*
 **The boundary test (tier-1 vs tier-2):** *could ANY model in principle
 consume this number (Tc, Pc, ω, MW)? → shared intrinsic field.  Does it only
 have meaning INSIDE one model's equation (PC-SAFT's segment number m)? → that
-model's key in `eosParameters{}`.*
+model's own flat block (`pcsaft{}`).*
 
 **Glass-box requirement (non-negotiable):** a model with **no** required
-`eosParameters.<model>` block on a component **fails with a remedy** ("PCSAFT
-needs m,sigma,epsilon_k for 'X'; none in catalogue/case/node; fit them with
+model block on a component **fails with a remedy** ("PCSAFT
+needs m,sigma,epsilonK for 'X'; none in catalogue/case/node; fit them with
 choupoProps or pick SRK/PR which run off Tc,Pc,omega") — **never** a silent
 corresponding-states fallback.
 
@@ -323,7 +324,7 @@ at the point of use.*
   is a **curation defect**.
 - Reference-state block headers
   (`identity/critical/gasIdeal/liquidPure/solid/aqueousInfDil/anchors/transport`
-  + `eosParameters` + the referenced `solution/` pair file) make the file read
+  + the model blocks + the referenced `solution/` pair file) make the file read
   as the γ-φ / EOS equation itself.  **The second species and the model are
   always named in the file**, never implied.
 
@@ -360,7 +361,7 @@ suppress.
 Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
 `{m, σ, ε/k}`.
 1. SRK/PR on this gas need **no data** — they derive `a_c,b,κ` from the triad.
-2. PC-SAFT's `{m,σ,ε/k}` go in a `model`-keyed `eosParameters{ PCSAFT{…} }`
+2. PC-SAFT's `{m,σ,ε/k}` go in the component's own flat `pcsaft{}`
    block (research path: a `constant/components/methane.dat` overlay carrying
    *only* that block; promotion path: the same block in the standard `.dat`,
    primary-cited).
@@ -369,7 +370,7 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
    `data/standards/parameters/SRK/<i>-<j>.dat`, and a new family adds its
    own folder beside it.  Or inline.
 4. The run prints `[thermo] EOS = PCSAFT — methane: m,sigma,epsilon/k from
-   eosParameters.PCSAFT [Gross&Sadowski 2001] origin: regressed`; a missing
+   the pcsaft{} block [Gross&Sadowski 2001] origin: regressed`; a missing
    block fails with a remedy.
 
 ---
@@ -380,7 +381,7 @@ Gas = methane (already carries `{Tc,Pc,ω}`).  New EOS = `pcSaft`, needing
 > catalogue, water included, with water's ubiquity earning a single canonical
 > by-name aqueous tier and a LOUD default-solvent line — never an implied
 > slot).  Models ride corresponding states off `critical{}` or carry a
-> `model`-keyed `eosParameters{}` sub-block, selected by the explicit factory,
+> flat model-named block, selected by the explicit factory,
 > overridable per node by a BLOCK-by-block fractal overlay.  A component is one
 > molecule, whole at every level; equipment physics is a rate or a geometry,
 > never a component property.  No second species, no model, and no level is

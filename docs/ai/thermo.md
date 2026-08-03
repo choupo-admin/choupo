@@ -353,10 +353,11 @@ number require you to name the model?*).  See
    (the G&S-2002 water set is 2B; curated as 4C it collapsed the
    ethanol/water flash while the pure density looked fine).  A model with
    **no** required block on a component **fails with a remedy** — never a
-   silent corresponding-states fallback.  (The data-doctrine's
-   `eosParameters{ <model>{} }` container is the NAMED INTENT for future
-   EoS families, not the shipped shape — see
-   [`data-doctrine.md`](data-doctrine.md) §4's divergence note.)
+   silent corresponding-states fallback.  (Ruled 2026-08-03: the flat
+   model-named block IS the doctrine — a future EoS with fitted
+   parameters adds its own `pengRobinson{}`-style block; the old
+   `eosParameters{}` container idea is retired.  See
+   [`data-doctrine.md`](data-doctrine.md) §4.)
 3. **PAIR parameters (NRTL τ, Henry, Pitzer β, `k_ij`) → the parameter
    catalogue**, `data/standards/parameters/<MODEL>/<i>-<j>.dat`, referenced
    from a `binaryParameters`/`binaryInteractions` block by `source`, loaded
