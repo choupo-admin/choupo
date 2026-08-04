@@ -526,8 +526,39 @@ accepts today, and that is a policy call.
    refuse a stale number; no gate notices a capability nobody documented.
    That sweep was done by hand and will need doing again.
 
-1. **SEAL DRIFT — awaiting Vítor's decision.**  Sealed copies differ from the
-   live catalogue (comment-only origin changes); no mass reseal without his call.
+1. ~~**SEAL DRIFT**~~ — **NOT A DEBT.  RULED 2026-08-04 (Vítor): the sealed
+   cases stay PINNED, permanently, and this is a POLICY rather than a
+   backlog item.**
+
+   The facts, because the earlier wording of this entry got two of them
+   wrong.  There are ~435 records whose sealed copy differs from the live
+   catalogue, and **0 sealed cases fail to reproduce** — nothing is broken;
+   the catalogue moved on.  The drift is **COMPUTATIONAL, not
+   "comment-only"**: this entry claimed comment-only until 2026-08-04, and
+   the classifier built on 2026-08-03 had already measured otherwise — the
+   catalogue genuinely gained content (pcsaft blocks, ring-campaign
+   thermochemistry).  A description nobody re-read after the measurement
+   that refuted it.
+
+   **Why pinned is the answer and not a deferral.**  A sealed case is a
+   record of what it was validated against.  Resealing wholesale would
+   destroy the distinction between "the bytes moved" and "the content
+   moved", and it would *look* like re-validation when nothing was
+   re-validated — the computational-seal migration record says exactly
+   this, and it says it about a much smaller change than 435 records.  The
+   goldens would move for reasons no human reviewed.
+
+   **What this means in practice:**
+   * `catalogDivergenceCount` is a **curation diagnostic**, not a failure
+     count.  It tells a curator which records the catalogue has advanced
+     past; it is not a queue to be drained.
+   * `sealedReproducibilityFailures` is the number that must stay 0, and
+     does.  The two KPIs are deliberately separate and must not be
+     conflated (that conflation is what made this look like debt).
+   * A case is resealed when someone re-imports it **for a reason of its
+     own** — never as bookkeeping.
+   * There is no scheduled mass reseal.  Proposing one again needs a new
+     argument, not a re-reading of this drift count.
 1b. ~~**`pcsaft{}` vs the doctrine's `eosParameters{}` container**~~ —
    **RULED 2026-08-03 (second-opinion review): the flat model-named
    block IS the doctrine.**  data-doctrine §4 amended; the container is
@@ -764,6 +795,27 @@ the loss visible in a second instead of surfacing later as a confusing failure
 -- a regression suite quietly running against week-old sources, for instance,
 which is exactly how it was first noticed (a case count that dropped with
 nothing reported as failing).
+
+**AND THE RULE COVERS REPORTING, NOT ONLY CODING.**  Added 2026-08-04, after
+the failure it describes.  A reversion happened mid-session while answering a
+question about project status; the tree silently went back three days, and the
+answer -- a percent-complete table and a "6 to 10 days to finish" estimate --
+was computed from it.  Two workstreams that had SHIPPED were reported as half
+done, and the largest, least-confident item in the estimate (the PC-SAFT
+association term, quoted at 2-4 days) had been built the previous day.  The
+error surfaced only because a stop hook flagged two files that did not belong
+to the session.
+
+The reversion was not the mistake.  The mistake was answering a question about
+the state of the repository without first running the check that exists for
+exactly that purpose.  `bin/checkWorkspace` costs a second, and the rule is now
+symmetric:
+
+* before you WRITE code -- check, because you may be building on a stale base;
+* before you SAY anything about the state of the project -- check, because a
+  confident wrong status is worse than a slow one.  Percent complete, days
+  remaining, "is X done", "what is left": every one of those reads the tree,
+  and a reverted tree answers them all plausibly and wrongly.
 
 ## 6. How to work (the short version; full: RELEASING.md)
 
