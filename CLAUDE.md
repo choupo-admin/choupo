@@ -207,6 +207,30 @@ src/
 
 ## 5. Conventions
 
+### Language — **the repository is English (US)**
+
+**All repository artifacts are English: code, comments, identifiers, test
+and gate names, commit messages, documentation.  This holds regardless of
+the language used in conversation.**
+
+Settled 2026-08-04.  Conversation with a maintainer may be in any language;
+what lands in the tree may not.  The reason is not style — it is that a
+contract nobody can read is not a contract.  This project's architecture
+lives in prose (the settled sections here, `docs/architecture/`, every
+refusal message), and a reader who cannot read that prose cannot check
+whether the engine honours it.  A gate named in one language and a contract
+written in another cannot be audited together.
+
+Three things are NOT covered by this rule, and must stay as they are:
+
+* **Proper nouns** — `Vítor Geraldes`, `TalentGround Lda.`, *Métodos
+  Computacionais em Fenómenos de Transferência* (the MCFT course), and
+  *choupo* itself (the poplar).  A name is not text to be translated.
+* **Third-party legal text** — `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES`,
+  anything under `thirdParty/`.  Retranslating a licence changes it.
+* **Git history** — commit messages already written stay written.  The rule
+  binds what is authored from here on, not the record of what was.
+
 ### Factory pattern — **always explicit**
 
 Every base class (`UnitOperation`, `Phase`, `ActivityModel`,
