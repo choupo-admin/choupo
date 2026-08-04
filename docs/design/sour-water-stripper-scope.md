@@ -118,6 +118,14 @@ enough; I will not need the PDF.
 * **S1** — the effective-K seam: `Kvec` gains a reactive branch (or the
   column gains a `stageEquilibrium` that dispatches), with the ONE-STAGE
   IDENTITY as its witness.  No new case yet.
+  **DONE 2026-08-04** — `ThermoPackage::stageK(T, P, zStage, x, y)` is the
+  one entry a tray asks for equilibrium: it forwards to `Kvec` for a
+  molecular package (all twelve column tutorials byte-identical) and runs
+  the reactive flash for a reacting one, reading back the effective
+  apparent K = y/x.  The witness is
+  `tutorials/steady/distillation/column12_stage_is_a_flash`, gated by
+  `bin/curate/check_stage_identity.py` — see §6a for what the witness
+  turned into and why.
 * **S2** — the stripper case: a real multi-stage sour-water column, the
   per-tray speciation reported, conservation + direction gated.
 * **S3** — the literature anchor, once the tables exist: goldens locked on
@@ -125,6 +133,52 @@ enough; I will not need the PDF.
 * **S4 (deferred, named)** — H₂S as the third volatile weak electrolyte.
   The paper covers it; the corpus has no H₂S network records, so it is a
   curation slice of its own and must not ride along silently.
+
+## 6a. The one-stage identity, as built (2026-08-04)
+
+§4 asked for "a column of a single equilibrium stage, total reboiler, no
+reflux".  **The engine cannot express one, and that is not a defect to
+work around by force.**  Both methods build a cascade with a total
+condenser above and a partial reboiler below: Wang-Henke requires
+`feedStage < nStages`, the simultaneous MESH requires `feedStage >= 2`,
+and at zero reflux the top stage is starved of liquid, so the smallest
+honest column is two real stages.  Bending the column to fit the test
+would have been the wrong repair — the test exists to check the column,
+not the reverse.
+
+The claim was therefore restated in a form the engine states naturally,
+and it is the SAME claim: **an equilibrium stage is a flash of its own two
+products.**
+
+    feed -> [15-stage MESH column] -> distillate, bottoms
+                                   -> stageLiquid, stageVapour   (stage 5)
+    stageLiquid + stageVapour -> [mixer] -> stageMix
+    stageMix -> [adiabatic flash] -> checkLiquid, checkVapour
+
+Both phases are drawn off ONE stage as real streams, recombined, and
+re-flashed adiabatically at the same pressure.  Nothing may happen: the
+same temperature, the same two compositions, and a vapour fraction equal
+to the draw ratio.  None of those numbers is authored — both sides are
+computed, by different code, and the gate compares them.  Because the
+flash is ADIABATIC, its outlet temperature is solved from an energy
+balance rather than declared, so the identity is an ENERGY statement as
+well as an equilibrium one.
+
+Two things worth carrying forward:
+
+* **The tolerance is ~1e-7 relative, not machine precision**, and the
+  reason is in the log: the adiabatic flash's outer Newton stops at an
+  energy residual of ~2.5e-4 J/mol out of 5.4e+4.  That is the limit of
+  the check, not of the physics.  The gate sits at 1e-6.
+* **Building it found a real bug.**  `adiabaticFlash` priced every inlet
+  as a sub-cooled liquid regardless of its vapour fraction — invisible,
+  because the flash still converges, just to the wrong temperature, and
+  because no case in the corpus had ever fed it a two-phase stream.  It
+  now reads the feed's `vf`, on the stream's own enthalpy surface.
+
+The molecular case is the CONTROL: the identity must hold on a system
+nobody doubts before the same construction is trusted on one where the
+K-values come out of a chemistry.  The reacting twin is S2's first piece.
 
 ## 7. Decision requested
 
