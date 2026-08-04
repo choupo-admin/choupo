@@ -166,9 +166,39 @@ $\gamma$, and the one that needs no binary datum at all.
 Debye--H\"uckel derived the ionic atmosphere and is \emph{exact} in the dilute
 limit --- and only there.  Davies (1962) stretched it empirically to a few
 tenths molal.  Pitzer (1973) abandoned the pretence of derivation and wrote a
-virial expansion in molality that holds to seawater and beyond.  eNRTL (Chen,
-1982) carried local composition into ionic solutions, which is what makes a
-mixed solvent --- salt plus water plus ethanol --- tractable at all.
+virial expansion in molality that holds to seawater and beyond.  Edwards
+\emph{et al.}\ (1978) extended that expansion to \emph{molecular} solutes ---
+dissolved $\mathrm{NH_3}$, $\mathrm{CO_2}$, $\mathrm{H_2S}$ --- which a
+charge-only correlation cannot price at all, since $z = 0$ makes it return
+$\gamma = 1$ identically.  eNRTL (Chen, 1982) carried local composition into
+ionic solutions, which is what makes a mixed solvent --- salt plus water plus
+ethanol --- tractable at all.
+
+\paragraph{Choosing among the three aqueous models.}
+The bench offers \code{davies}, \code{pitzerHMW} and \code{edwardsPitzer} as
+the \code{activityModel} of a \code{speciate} operation, and they are not
+interchangeable:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \code{davies} --- one line, no parameters, trustworthy to about
+  $I \approx 0.5$ mol/kg and \emph{announced} as indicative beyond it.  Every
+  neutral solute gets exactly $1$.  Use it for a first look and for teaching
+  what a dilute correlation is.
+\item \code{pitzerHMW} --- the Harvie--M\o ller--Weare parameterisation, per
+  ion, with ternary mixing.  The right tool for brines, scaling and seawater.
+\item \code{edwardsPitzer} --- a \emph{different} truncation of Pitzer's
+  expansion, extended to molecules, and the one its
+  $\mathrm{NH_3}/\mathrm{CO_2}/\mathrm{H_2S}/\mathrm{SO_2}$ parameters were
+  regressed in.  Use it for weak-electrolyte and sour-water systems.
+\end{itemize}
+
+The last point generalises and is worth stating once: \textbf{a parameter set
+belongs to the equation it was fitted in.}  Pitzer's expansion admits several
+truncations, and a $\beta$ regressed under one of them is not a $\beta$ for
+another.  Quoting a published number inside a different model is a category
+error that no amount of agreement in one test case repairs, which is why
+Choupo carries the two Pitzer engines side by side under distinct names
+rather than merging their parameter tables.
 
 \begin{keyidea}
 Each model was invented because the previous one \emph{failed} at something

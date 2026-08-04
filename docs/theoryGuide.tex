@@ -5720,6 +5720,179 @@ binaries, $\theta/\psi$ ternaries and $E_\theta$ pairs.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Molecular solutes in a Pitzer expansion: the Edwards
+truncation}\label{ch:edwards}
+
+\begin{whatyoulllearn}
+Every model so far has priced \emph{ions}.  A sour water --- the condensate
+off a crude unit, a refinery stripper feed, an ammonia scrubber blowdown ---
+is difficult for the opposite reason: the species whose escape you care
+about, dissolved $\text{NH}_3$ and $\text{CO}_2$, are \emph{neutral}.  A
+charge-only correlation cannot say anything about them at all: put $z = 0$
+into Debye--H\"uckel and you get $\gamma = 1$, exactly, at every ionic
+strength.  This section builds the truncation of Edwards, Maurer, Newman and
+Prausnitz (1978) \cite{Edwards1978}, which extends Pitzer's virial expansion
+to molecular solutes, and --- just as importantly --- shows how little of it
+is measured and how the rest is estimated.
+\end{whatyoulllearn}
+
+\subsection{Why $\gamma = 1$ for a neutral is a structural silence}
+
+It is worth being precise about what a charge-only model does and does not
+claim.  The Davies equation is
+%
+\begin{equation}
+  \log_{10}\gamma_i = -A z_i^2
+     \left( \frac{\sqrt{I}}{1+\sqrt{I}} - 0.3\,I \right),
+\end{equation}
+%
+a function of $|z_i|$ and $I$ alone.  For a neutral solute $z_i = 0$ and the
+whole right-hand side vanishes, so $\gamma_i = 1$ identically --- not
+approximately, not as a small-correction limit, but as an algebraic
+consequence of the model having no term that could depend on the solute's
+identity.  It is a \emph{structural} silence, and a student who has only met
+Davies can easily read that 1 as ``the correction is negligible'' when what
+it means is ``this model has nothing to say''.
+
+Physically the correction is not negligible.  A neutral molecule in a
+concentrated brine is \emph{salted out}: the ions organise the water around
+themselves, less free solvent is available to the neutral, and its escaping
+tendency rises.  Pricing that is exactly what a stripper design turns on.
+
+\subsection{The three-term working equation}
+
+Edwards keeps Pitzer's expansion to the second virial coefficient and lets
+the sums run over \emph{all} solute species, ions and molecules alike.  With
+$m$ in mol per kg of \emph{water} and the indices $i,j,k$ over solutes,
+%
+\begin{equation}
+\begin{split}
+  \ln \gamma_i^{*} = &-A_\phi z_i^2
+     \left[ \frac{\sqrt{I}}{1 + 1.2\sqrt{I}}
+            + \frac{2}{1.2}\ln\!\left(1 + 1.2\sqrt{I}\right) \right] \\
+   &+ 2\sum_j m_j \left\{ \beta^{(0)}_{ij}
+        + \frac{\beta^{(1)}_{ij}}{2I}
+          \left[ 1 - \left(1 + 2\sqrt{I}\right)e^{-2\sqrt{I}} \right] \right\} \\
+   &- \frac{z_i^2}{4I^2} \sum_j \sum_k m_j m_k \beta^{(1)}_{jk}
+        \left\{ 1 - \left(1 + 2\sqrt{I} + 2I\right)e^{-2\sqrt{I}} \right\},
+\end{split}
+\label{eq:edwards8}
+\end{equation}
+%
+with $I = \tfrac12\sum_j z_j^2 m_j$ as always, and $A_\phi = 2.303\,
+A_\gamma/3$ the osmotic Debye--H\"uckel slope.  The water activity comes from
+the Gibbs--Duhem partner of \eqref{eq:edwards8},
+%
+\begin{equation}
+  \ln a_w = M_w\left[
+     \frac{2 A_\phi I^{3/2}}{1 + 1.2\sqrt{I}}
+     - \sum_i\sum_j m_i m_j\left(\beta^{(0)}_{ij}
+       + \beta^{(1)}_{ij} e^{-2\sqrt{I}}\right)\right]
+     - M_w \sum_i m_i .
+\label{eq:edwards10}
+\end{equation}
+%
+Read \eqref{eq:edwards8} one term at a time.  The \textbf{first} is
+Debye--H\"uckel and carries $z_i^2$, so it vanishes for a molecule --- a
+neutral gets \emph{no} long-range term, correctly, because it has no charge
+to screen.  The \textbf{second} is the pairwise virial, and it is the only
+term a molecule has: its $\gamma$ comes entirely from how it interacts with
+each species present, weighted by that species' molality.  The
+\textbf{third} is a $z_i^2$-weighted double sum, so it too is silent for a
+molecule.
+
+Three rules the paper states \emph{around} the equation rather than in it,
+each load-bearing and none visible in the algebra:
+
+\begin{itemize}
+  \item if either index is a molecular species, $\beta^{(1)}_{ij} = 0$
+        (``because experimental data are inadequate'');
+  \item for ions of \emph{like} charge,
+        $\beta^{(0)}_{ij} = \beta^{(1)}_{ij} = 0$ --- Br\o nsted's assumption
+        that like charges do not approach closely enough to interact
+        specifically;
+  \item $m$ must be \emph{molal} for \eqref{eq:edwards8} as written.
+\end{itemize}
+
+\subsection{One measured family, four estimation rules}
+
+This is the part a user must not skip.  Edwards measured
+$\beta^{(0)}$ for \emph{like molecule pairs} only, as a two-constant
+temperature fit
+%
+\begin{equation}
+  \beta^{(0)}_{aa}(T) = E + F/T ,
+\end{equation}
+%
+tabulated for $\text{NH}_3$, $\text{CO}_2$, $\text{H}_2\text{S}$ and
+$\text{SO}_2$.  Everything else in the matrix that \eqref{eq:edwards8} sums
+over is \emph{estimated} from those by four rules:
+%
+\begin{align}
+  \text{unlike molecules:} && \beta^{(0)}_{ij}
+     &= \tfrac12\left(\beta^{(0)}_{ii} + \beta^{(0)}_{jj}\right), \\
+  \text{ion--ion (Bromley):} && \beta^{(0)}_{+-}
+     &= \beta^{(0)}_{+} + \beta^{(0)}_{-}, \\
+  \text{molecule--ion:} && \beta^{(0)}_{m\text{-}i}
+     &= \beta^{(0)}_{m} + \beta^{(0)}_{i}, \\
+  \text{and, for every ion pair:} && \beta^{(1)}
+     &= 0.018 + 3.06\,\beta^{(0)} .
+  \label{eq:edwards24}
+\end{align}
+%
+Equation \eqref{eq:edwards24} is what makes a multisolute calculation
+tractable at all: $\beta^{(1)}$ is never an independent datum in this model,
+only a correlation of $\beta^{(0)}$.  The paper calls both of its parameter
+tables ``preliminary results subject to change as more and better data
+become available'', and a case using them may not present them as measured
+constants.
+
+Choupo takes that seriously enough to make it visible.  The estimated pairs
+are \emph{not stored}: only the measured tables live on disk, and each
+estimated $\beta$ is derived when the parameter set is assembled and printed
+with the rule that produced it.  At \code{verbosity 3} a run lists every
+active pair as, for instance,
+%
+\begin{lstlisting}
+  CO2aq -    CO2aq   beta0 =  0.008219   beta1 =  0.000000   [Eq 14, measured]
+  CO2aq -    NH3aq   beta0 =  0.011720   beta1 =  0.000000   [Eq 21, estimated]
+   HCO3 -      NH4   beta0 = -0.077000   beta1 = -0.217620   [Eq 22 + Eq 24, estimated]
+   HCO3 -     HCO3   beta0 =  0.000000   beta1 =  0.000000   [Bronsted, like signs -> 0]
+\end{lstlisting}
+%
+so that the one measured number on the page is distinguishable at a glance
+from the three estimated ones beside it.
+
+\subsection{What it is worth on a real feed}
+
+Take an ammonia-rich sour water, total $\text{NH}_3$ 2.9 and total
+$\text{CO}_2$ 1.45 mol/kg, at 25\,\textdegree C and pH 9.  Under Davies the
+two neutral species come back at $\gamma = 1.000000$ and
+$1.000000$.  Under the Edwards truncation they come back at $1.0224$ and
+$1.0101$: both salted out, ammonia rather more, because both measured
+self-terms are positive at 25\,\textdegree C and ammonia is the more
+abundant of the two by three orders of magnitude, so its own $\beta^{(0)}_{aa}$
+dominates its sum in \eqref{eq:edwards8}.
+
+The larger difference, though, is not molecular at all.  The two models
+disagree about the \emph{ions} --- Davies returns $\gamma_{\text{NH}_4^+} =
+0.956$ at $I \approx 2$, because its bracket saturates and then turns back
+upward, where \eqref{eq:edwards8} returns $0.301$ --- and the
+$\text{NH}_4^+/\text{NH}_3$ equilibrium reads those coefficients.  So the
+speciation itself moves: $I = 2.78$ against $1.78$, with $m_{\text{NH}_3}$
+$0.41$ against $1.01$.  A dilute correlation used far outside its band does
+not merely lose accuracy; it changes the \emph{shape} of the answer.
+
+\begin{tutoriallink}
+\file{props/electrolyte/edwards01\_sour\_water\_activity} runs both models on
+one feed so the comparison above is reproducible, and prints the full
+parameter table with its rule labels.  The case is a \emph{structural}
+witness: it validates the machinery, not the numbers.  Measured validation
+requires the vapour side --- Henry's constants on the paper's own convention
+and the two-phase equilibrium --- which is a separate development.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Aqueous speciation: mass action, charge balance, and the
 pH closure}\label{ch:speciation}
 
@@ -8309,7 +8482,10 @@ simulator:
         the reaction on, seeded from that profile.  For a mole-conserving
         ($\sum_i\nu_i=0$) reaction the constant-molal-overflow flow
         profile is undisturbed; the worked methyl-acetate case is in the
-        User Guide, \S\ref{sec:advanced-distillation} of that document.
+        User Guide, under \emph{Multiple feeds, side draws, reactive
+        stages}.  (Named rather than numbered: \code{\\ref} cannot reach a
+        label in another document, and this one rendered as \texttt{??}
+        in every build of this guide until 2026-08-04.)
 \end{itemize}
 The pattern is universal: residuals $F_i$ that all depend on all the
 unknowns $x_j$, and zero of them can be solved independently.
@@ -20720,6 +20896,14 @@ correlation.
 \bibitem{Helfferich1962} Helfferich, F., \emph{Ion Exchange}, McGraw-Hill, New York (1962; Dover reprint 1995). The classic monograph on ion-exchange equilibria, selectivity and the strong-acid cation resin used as the textbook capacity nameplate for \code{SAC\_Na}.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
+
+\bibitem{Edwards1978} Edwards, T. J., Maurer, G., Newman, J. and
+Prausnitz, J. M., ``Vapor-Liquid Equilibria in Multicomponent Aqueous
+Solutions of Volatile Weak Electrolytes'', \emph{AIChE J.}, 24(6),
+966--976 (1978). The Pitzer truncation extended to molecular solutes
+(\S\ref{ch:edwards}); its Tables 4--6 carry the one measured parameter
+family and the estimation rules for the rest, under the authors' own
+caveat that they are ``preliminary results subject to change''.
 
 \bibitem{Pitzer1973} Pitzer, K. S., ``Thermodynamics of Electrolytes.
 I.\ Theoretical Basis and General Equations'', \emph{J.\ Phys.\ Chem.},

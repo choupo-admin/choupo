@@ -1208,11 +1208,86 @@ and the electrolyte tutorials declare \code{electrolyteGammaPhi} systems.
 A molecular case is the same record degenerate --- a \code{gammaPhi} block,
 no dissociation, no chemistry; lightweight is not legacy.  Two
 electrolyte front-ends remain deliberately separate: \emph{multi-ion
-speciation} (\code{pitzerHMW}/\code{davies} via a \code{propsDict}
-\code{speciate} op) and the flat membrane/DSPM-DE data path.  The
+speciation} (\code{pitzerHMW}/\code{davies}/\code{edwardsPitzer} via a
+\code{propsDict} \code{speciate} op --- see
+\S\ref{sec:add-aqueous-model}) and the flat membrane/DSPM-DE data path.  The
 mixed-solvent, segment-based eNRTL of Chen \& Song (2004) ships as
 \code{ENRTLMixedSolvent} with a primary-data validation tutorial
 (\file{tutorials/props/electrolyte/enrtl\_mixed\_nacl\_ethanol\_esteso}).
+
+\subsection{Adding an AQUEOUS activity model --- and the four things that
+are not the registration line}\label{sec:add-aqueous-model}
+
+\code{AqueousActivity} (the \code{speciate} path) has a \emph{nullary}
+factory, unlike the \code{ActivityModel} bases above, so a model whose
+parameters depend on the run must assemble them inside \code{evaluate()}.
+Adding \code{edwardsPitzer} in August 2026 exercised every way that can go
+wrong, and the list is worth having before you start, because \emph{four of
+the five defects were invisible to a compiling, self-checking, unit-tested
+model}.
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Register it, or it is not a capability.}  The model sat in
+        the tree for a day: it compiled, its closed-form self-checks against
+        the source paper passed, and \emph{no case could reach it}, because
+        it was missing from \code{AqueousActivity::registerBuiltins()}.  No
+        unit-level test can see this.  Write the gate so it runs the model
+        \emph{through the engine} on a real case.
+
+  \item \textbf{Add it to the declared-name table too.}  A case selects a
+        model by a declared word (\code{model EdwardsPitzer;}), which
+        \file{src/propertyOps/CasePackage.H} maps to the factory key.  Keep
+        the accepted list and the refusal message reading \emph{one} table:
+        the if-chain that preceded it held those two facts in two places,
+        where a model added to one and not the other refuses by naming
+        itself unimplemented.
+
+  \item \textbf{An \code{ActivityResult} outlives the frame that built
+        it.}  Its closures are called by the solver long after
+        \code{evaluate()} returns, so they must be \emph{self-contained}.
+        The Edwards kernel captured its names and molalities by value and
+        its parameter set by reference; the asymmetry was harmless while
+        every caller outlived its result, and segfaulted the moment an
+        adapter built the model as a temporary.  Capture by value.
+
+  \item \textbf{Say what \emph{your} model's scope is.}  The speciation
+        banner was a two-way switch on one model name with everything else
+        falling through to Davies' sentence --- so a new model inherited a
+        description of a model that was not running, and both halves of it
+        were false (the quoted trust band belonged to Davies; the ``$a_w$
+        from $\phi = 1$'' claim was contradicted by the run's own $a_w$).
+        A banner keyed on one branch and defaulting for the rest is a lie
+        waiting for its second author.
+
+  \item \textbf{Teach \code{bin/choupo-import} about your parameter home,
+        in the same commit.}  This is the one that can corrupt data rather
+        than merely mislead.  A sealed case is forbidden the installation
+        catalogue, so a record home the importer's dependency closure does
+        not know is a record home the sealed case \emph{loses}.  The first
+        sealed Edwards case kept 9 of its 28 pair parameters --- the ones
+        that need no record at all --- and still ran, still converged, and
+        answered with 19 terms missing.  Nothing refused.
+\end{enumerate}
+
+\begin{keyidea}
+\textbf{Running is not agreeing.}  The importer used to validate a seal by
+re-running the staged case with the catalogue hidden and checking the exit
+code, and that is exactly the check the defect above passes.
+\code{validate\_staged\_agrees} now compares the staged run against the
+case's own \file{expected} golden and refuses with the likely cause named,
+installing nothing.  A case with no golden yet keeps the exit-code check and
+is \emph{told} its answer is unverified --- an unverifiable claim announced
+is not the same as one quietly not made.
+\end{keyidea}
+
+\noindent Where the parameters themselves live is a separate decision, and
+the doctrine is unchanged: \emph{the tree never stores a derivative}.  Edwards
+measured one family of interaction parameters and estimates the rest from it
+by four rules; only the measured tables are on disk, and the estimated pairs
+are derived at assembly time in \file{EdwardsCatalogue.cpp} and printed with
+the rule that produced each one.  Keeping the estimation out of the kernel is
+what lets the kernel stay a pure function of its parameters, testable against
+the paper's own closed forms with no filesystem in sight.
 
 % =====================================================================
 \section{Adding components, materials, reactions}\label{sec:add-data}
