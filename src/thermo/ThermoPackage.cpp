@@ -61,6 +61,7 @@ License
 #include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 
 #include <limits>
+#include <sstream>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -755,7 +756,99 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
     //  The stage's own equilibrium, on its own overall composition.  F is
     //  the per-mole-of-feed basis the result's xApp/yApp already use, so 1
     //  is not a placeholder: it is the basis.
-    const auto r = equilibrate(T, P, 1.0, zStage, 0);
+    //
+    //  A REFUSAL FROM IN HERE MUST NAME THE STATE THAT PROVOKED IT.  The
+    //  caller is a column solver taking finite differences: it asks for
+    //  equilibrium at hundreds of trial compositions the author never
+    //  wrote, and a bare "the chemistry set does not form species X"
+    //  sends them auditing curated records that are perfectly correct.
+    //  The trial (T, z) is the missing half of the sentence, so it is
+    //  appended -- the exception is re-thrown, never swallowed.
+    //  THE TRIAL COMPOSITION IS PROJECTED ONTO THE SIMPLEX, AND IT SAYS SO.
+    //  A Newton taking finite differences on a column overshoots, and a
+    //  minor component is where it overshoots first: on the sour-water
+    //  witness CO2 was proposed at -8.5e-4 while it is fed at 8e-3.  A
+    //  NEGATIVE AMOUNT IS NOT A STATE -- there is no liquid whose CO2
+    //  content is minus a thousandth, and pricing one is not something the
+    //  model can be asked to do.  The choice is between refusing (which
+    //  stops a column solve that was going to converge) and pricing the
+    //  nearest physical composition (which is what a MESH needs).  We price
+    //  it, and we ANNOUNCE it -- the no-silent-crutch rule: a solver aid is
+    //  allowed, disguising one is not.
+    //
+    //  The rule is deliberately narrow.  A NEGATIVE entry is clamped to a
+    //  floor, because negative means the solver overshot a component that
+    //  is genuinely in the problem.  An entry that is EXACTLY ZERO stays
+    //  zero, because zero means absent, and absent means absent.
+    constexpr scalar kSimplexFloor = 1.0e-12;
+    sVector zTrial = zStage;
+    bool projected = false;
+    for (auto& v : zTrial)
+        if (v < 0.0) { v = kSimplexFloor; projected = true; }
+    if (projected)
+    {
+        scalar s = 0.0;
+        for (auto v : zTrial) s += v;
+        if (s > 0.0) for (auto& v : zTrial) v /= s;
+        if (!stageProjectionAnnounced_)
+        {
+            stageProjectionAnnounced_ = true;
+            std::cout << "  [stageK] a trial stage composition arrived with a"
+                         " NEGATIVE amount and was projected onto the physical"
+                         " simplex (negatives -> " << kSimplexFloor
+                      << ", renormalised) before the chemistry was solved.\n"
+                         "           Announced once, and declared: the column's"
+                         " Newton proposes states that are not liquids on its"
+                         " way to one that is.  It does not touch the converged"
+                         " answer, whose composition is positive -- if it did,"
+                         " the residual could not have reached zero.\n";
+        }
+    }
+
+    electrolyte::ReactiveVLEResult r;
+    try
+    {
+        r = equilibrate(T, P, 1.0, zTrial, 0);
+    }
+    catch (const std::exception& ex)
+    {
+        std::ostringstream st;
+        st << ex.what() << "\n  [stage state] T = " << T << " K, P = "
+           << (P * 1.0e-5) << " bar, z =";
+        for (std::size_t i = 0; i < n() && i < zStage.size(); ++i)
+            st << "  " << components_[i].name() << "=" << zStage[i];
+        st << "\n  (this equilibrium was asked for by a STAGE, at a trial"
+              " composition the solver proposed -- not by the case's own"
+              " input.  A negative or vanishing amount here is a solver"
+              " excursion, not a curation gap.)";
+        throw std::runtime_error(st.str());
+    }
+
+    //  A STAGE K-VALUE IS AN INCIPIENT QUANTITY.  This is the definition,
+    //  and getting it wrong is invisible in a flash and fatal in a column.
+    //
+    //  The first version read K = yApp/xApp off the flash.  That is right
+    //  whenever the trial state is two-phase and WRONG the moment it is
+    //  not: a subsaturated liquid has yApp == 0 for every component, so the
+    //  column receives a column of zeros, every bubble-point residual reads
+    //  -1, the Jacobian is singular in T, and the MESH stops without moving
+    //  ("Newton iters: 0", measured on the sour-water witness).  A column
+    //  ASKS ABOUT LIQUIDS, most of which are below their bubble point on
+    //  the way to the answer; refusing to price them is refusing to solve.
+    //
+    //  So the subsaturated branch uses the equilibrium partial pressures
+    //  the reactive VLE already computes over the fully speciated liquid:
+    //
+    //      K_i = (p_i^eq / P) / x_i
+    //
+    //  which is the ordinary gamma-phi K generalised to a liquid whose
+    //  speciation sets the volatility.  The two branches AGREE where they
+    //  meet -- at a two-phase state the partials sum to P by construction,
+    //  so p_i/P is y_i -- and the two-phase branch is kept because there
+    //  the partials must be taken over the CONVERGED liquid, which is not
+    //  the feed the pre-check speciated.
+    const bool incipient = (r.V_over_F <= 0.0) && (r.pEqAtm.size() >= n());
+    constexpr scalar kAtm = 101325.0;
 
     sVector K(n(), 0.0);
     for (std::size_t i = 0; i < n() && i < r.xApp.size(); ++i)
@@ -766,11 +859,15 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
         //  where the model has none.
         if (r.xApp[i] <= 0.0)
         {
-            K[i] = (i < r.yApp.size() && r.yApp[i] > 0.0)
-                 ? std::numeric_limits<scalar>::infinity() : 0.0;
+            const scalar up = incipient
+                ? r.pEqAtm[i]
+                : (i < r.yApp.size() ? r.yApp[i] : 0.0);
+            K[i] = (up > 0.0) ? std::numeric_limits<scalar>::infinity() : 0.0;
             continue;
         }
-        K[i] = (i < r.yApp.size() ? r.yApp[i] : 0.0) / r.xApp[i];
+        K[i] = incipient
+             ? (r.pEqAtm[i] * kAtm / P) / r.xApp[i]
+             : (i < r.yApp.size() ? r.yApp[i] : 0.0) / r.xApp[i];
     }
     return K;
 }

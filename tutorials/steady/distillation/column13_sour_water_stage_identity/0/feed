@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  column13/0/feed -- sour water on the apparent component basis.               |
+|                                                                              |
+|  Three components, three roles: water the solvent, NH3 the cation route       |
+|  (its declared bridge is NH4+ minus H+), CO2 the anion route (HCO3-, CO3--)   |
+|  and at the same time the aqueous molecular species CO2aq.                    |
+|                                                                              |
+|  NH3 and CO2 are fed in different amounts on purpose: an equimolar feed       |
+|  would close the charge balance by symmetry and hide a sign error.            |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    NH3       1.5   kmol/h;
+    CO2       0.8   kmol/h;
+    water    96.0   kmol/h;
+}
+
+T               350.0 K;
+P               101325 Pa;

@@ -851,6 +851,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         //  hunting a vapour that is not there (2026-07-27).
         LiquidState ls0; (void)liquidState(v0, ls0);
         scalar pSum = 0.0;
+        //  Kept component by component as well as summed: a stage K-value is
+        //  an incipient quantity and needs the parts, not the total.
+        res.pEqAtm.assign(nApp, 0.0);
         for (const auto appIdx : cfg_.volatiles)
         {
             //  Nonreactive molecular volatile on the backbone: p = gamma *
@@ -868,6 +871,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                     gI * xI * cfg_.psatOf.at(appIdx)(T_K) / kAtm;
                 pSum += pI;
                 res.pMolecularAtm[cfg_.apparent[appIdx]] = pI;
+                res.pEqAtm[appIdx] = pI;
                 if (verbosity >= 2)
                     std::cout << "  [reactive] " << cfg_.apparent[appIdx]
                               << ": molecular VLE: p = gamma * x * psat = "
@@ -884,6 +888,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             const scalar K  = std::pow(10.0, gasLogK(*g, T_K));
             const scalar pM = dissolvedActivity(appIdx, sr, ls0) / K;
             pSum += pM;
+            res.pEqAtm[appIdx] = pM;
             // Carboxylic-acid VAPOUR DIMERISATION (2A = A2, K_dim = pD/pM^2):
             // at equilibrium over this liquid the dimer contributes its OWN
             // partial pressure.  Announced below; van't Hoff in T.
@@ -894,6 +899,9 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                       * (1.0/T_K - 1.0/298.15));
                 const scalar pD = Kd * pM * pM;
                 pSum += pD;
+                //  Apparent (monomer) basis: a dimer is two monomers here as
+                //  it is everywhere else on the apparent component basis.
+                res.pEqAtm[appIdx] = pM + 2.0 * pD;
                 res.dimerOn   = true;
                 res.pMonoAtm  = pM;
                 res.pDimerAtm = pD;

@@ -1,0 +1,40 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0259166666667    1e-4
+stream  checkLiquid            F                0.000416666666622  1e-4
+stream  checkVapour            F                0.000138888888934  1e-4
+stream  distillate             F                0.000833333333333  1e-4
+stream  feed                   F                0.0273055555556    1e-4
+stream  stageLiquid            F                0.000416666666667  1e-4
+stream  stageMix               F                0.000555555555556  1e-4
+stream  stageVapour            F                0.000138888888889  1e-4
+kpi     recombine              F_out            0.000555555555556  1e-4
+kpi     recombine              P_out            101325             1e-4
+kpi     recombine              T_out            483.325341355      1e-4
+kpi     recombine              n_in             2                  1e-4
+kpi     recombine              vf               0                  1e-4
+kpi     restage                F_alpha          0.000416666666622  1e-4
+kpi     restage                F_beta           0.000138888888934  1e-4
+kpi     restage                F_in             0.000555555555556  1e-4
+kpi     restage                P                101325             1e-4
+kpi     restage                Q                1.03920077284e-06  1e-4
+kpi     restage                Q_kW             1.03920077284e-09  1e-4
+kpi     restage                T                367.3397849        1e-4
+kpi     restage                V_over_F         0.250000000081     1e-4
+kpi     restage                pH               8.36128444355      1e-4
+kpi     restage                p_eq_sum_atm     1                  1e-4
+kpi     restage                phaseSet         0                  1e-4
+kpi     tower                  B                0.0259166666667    1e-4
+kpi     tower                  D                0.000833333333333  1e-4
+kpi     tower                  Q_condenser_kW   -59.2600941799     1e-4
+kpi     tower                  Q_reboiler_kW    107.253038219      1e-4
+kpi     tower                  R                2                  1e-4
+kpi     tower                  T_bottom         371.482225858      1e-4
+kpi     tower                  T_top            354.631541425      1e-4
+kpi     tower                  feedStage        3                  1e-4
+kpi     tower                  nFeeds           1                  1e-4
+kpi     tower                  nSideDraws       2                  1e-4
+kpi     tower                  nStages          4                  1e-4
+kpi     tower                  x_B_HK           0.994105151535     1e-4
+kpi     tower                  x_D_LK           0.3028299343       1e-4

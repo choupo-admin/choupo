@@ -678,6 +678,11 @@ private:
     // query can materialise it without the case pre-paying for a
     // speciation it may never ask for.
     mutable std::unique_ptr<electrolyte::SpeciationSolver> speciator_;
+
+    //  stageK's simplex projection, announced ONCE per process rather than
+    //  once per trial: a column solver proposes hundreds of them and the
+    //  student needs to know it happened, not to read it hundreds of times.
+    mutable bool stageProjectionAnnounced_ = false;
 };
 
 } // namespace Choupo

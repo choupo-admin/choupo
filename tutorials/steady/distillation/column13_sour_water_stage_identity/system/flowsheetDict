@@ -1,0 +1,165 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE STAGE IDENTITY, UNDER CHEMISTRY.
+
+  This is column12 (`column12_stage_is_a_flash`) with one thing changed:
+  the thermodynamic package resolves an aqueous EQUILIBRIUM.  Read that
+  case first -- the construction, the mixer's fictitious temperature and
+  the tolerance are all explained there and not repeated here.
+
+      feed --> [tower] --> distillate, bottoms
+                       --> stageLiquid, stageVapour     (stage 2)
+      stageLiquid + stageVapour --> [recombine] --> stageMix
+      stageMix --> [restage] --> checkLiquid, checkVapour
+
+  WHY IT IS A DIFFERENT TEST FROM column12, and not a copy.
+
+  In a molecular world a stage's K-values and a flash's split come from
+  the same handful of lines: `ThermoPackage::stageK` forwards straight to
+  `Kvec`, and the identity, while worth having, is checking arithmetic
+  that was never in doubt.
+
+  Here it is not the same code.  A package that resolves chemistry has no
+  K-value to hand out: the volatility of NH3 is set by how much of it is
+  NH4+, which depends on the pH, which depends on how much CO2 has left.
+  `stageK` therefore solves the stage's own equilibrium at its own
+  (T, P, z) and returns an effective APPARENT K -- a definition, made by
+  us, which nothing outside this case checks.  A wrong normalisation, a
+  basis confusion between apparent components and species, or the
+  speciation counted twice would all produce a column that converges to a
+  plausible profile.  This case is what refuses it.
+
+  AND THE DEFINITION WAS WRONG ONCE, WHICH IS THE ARGUMENT FOR THE CASE.
+  The first version read K = y/x off the flash.  That is right whenever
+  the stage is two-phase, and it hands back a column of ZEROS the moment
+  the trial state is subsaturated -- which a column solver's trial states
+  usually are, on the way to the answer.  Every bubble-point residual then
+  reads -1, the Jacobian is singular in T, and the MESH stops without
+  moving: "Newton iters: 0".  A K-value is an INCIPIENT quantity, defined
+  over a liquid whether or not a vapour happens to be there, so the
+  subsaturated branch now uses the equilibrium partial pressures over the
+  fully speciated liquid, K_i = (p_i/P)/x_i.  The two branches agree where
+  they meet, because at a two-phase state the partials sum to P.
+
+  WHAT MUST HOLD, all of it produced by the run and none of it authored:
+
+      T(checkLiquid) == T(stageLiquid) == T(stageVapour)
+      z(checkLiquid) == z(stageLiquid)     (apparent component basis)
+      z(checkVapour) == z(stageVapour)
+      F(checkVapour)/(F(checkLiquid)+F(checkVapour))  ==  W/(U+W)
+
+  and, in addition to column12, the thing only a reacting stage can be
+  asked: the two liquids must carry the SAME SPECIATION.  The column's
+  stage liquid and the re-flashed liquid are the same material at the
+  same state, so their ion inventories must agree species by species --
+  not merely their apparent compositions.  That is the check that would
+  catch an effective K which happens to reproduce the apparent split
+  while resting on a different chemistry underneath.
+
+  THE COST, said out loud.  Every stage K-value evaluation is a full
+  reactive flash, and the MESH Jacobian is numerical, so one Newton pass
+  costs of the order of (stages x unknowns) reactive flashes.  The column
+  is FOUR stages for that reason and no other: this is an identity
+  witness, not a design study.  A student who wants a real sour-water
+  stripper wants the S2 case, which does not exist yet.
+
+  WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile.
+  It converges in 7 Newton iterations to |F| ~ 8e-10, and the answer is
+  the physics: NH3 climbs from 0.0054 in the reboiler liquid to 0.30 in
+  the overhead vapour while CO2 strips out ahead of it, and T falls from
+  371.5 K at the bottom to 354.6 K at the top.  No gammaPhi column can
+  produce that profile, because in a molecular world ammonia's volatility
+  does not depend on how much carbon dioxide has left the liquid.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tower;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms  stageLiquid  stageVapour );
+
+        operation
+        {
+            nStages        4;
+            feedStage      3;
+            refluxRatio    2.0;
+            distillateRate 3.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+
+            //  Both halves of stage 2, drawn as real streams.  Stage 2 is
+            //  in the rectifying section, where the liquid is thin and the
+            //  chemistry is at its most sensitive -- the pH there is set by
+            //  what little CO2 has not yet left.
+            //  THE DRAWS ARE UNEQUAL, and the reason is the mixer, not the
+            //  physics.  A Choupo mixer reports its outlet as the DOMINANT
+            //  phase (flow-weighted vf >= 0.5 => vapour), and here the two
+            //  surfaces are far apart: water's latent heat is large enough
+            //  that the fictitious all-vapour temperature carrying this
+            //  pair's enthalpy falls below the model's floor, and the mixer
+            //  refuses rather than extrapolate (measured: it clamped at
+            //  150 K and reported non-convergence -- an honest refusal, not
+            //  a wrong number).  With more liquid than vapour the carrier
+            //  rides the LIQUID surface, which is the one the adiabatic
+            //  flash reads back, and the pair's enthalpy is carried exactly.
+            //  The identity itself does not care about the ratio -- the
+            //  gate checks the re-flashed V/F against the actual draws, not
+            //  against 0.5.
+            sideDraws
+            (
+                { stage 2;  phase liquid;  rate 1.5 kmol/h; }
+                { stage 2;  phase vapor;   rate 0.5 kmol/h; }
+            );
+        }
+    }
+
+    {
+        //  The enthalpy carrier.  A mixer mixes; it does not split.  See
+        //  column12's header for why its outlet temperature is fictitious
+        //  and why that is exactly what this construction needs.
+        name        recombine;
+        type        mixer;
+        inputs      ( stageLiquid  stageVapour );
+        outputs     ( stageMix );
+    }
+
+    {
+        //  The independent path.  ISOTHERMAL, and the difference from
+        //  column12 is a limitation worth stating rather than hiding.
+        //
+        //  column12 re-flashes ADIABATICALLY, so its outlet temperature is
+        //  solved from an energy balance and recovering the stage's T is a
+        //  result rather than an input.  That route is not available here
+        //  yet: the adiabatic flash brackets T by marching up from 200 K,
+        //  and the reactive VLE does not converge down there (measured:
+        //  "|r|max = 4.74 after 21 outer iterations" on the first trial).
+        //  The honest options were to weaken the claim or to fake the
+        //  bracket, and weakening it is the smaller loss -- so this case
+        //  checks the EQUILIBRIUM identity and column12 keeps the ENERGY
+        //  one.  A reactive adiabatic flash needs a bracket seeded from
+        //  the feed rather than from a constant, and that is a named gap,
+        //  not a thing this case pretends to have.
+        //
+        //  The declared T is therefore the one number here that is typed
+        //  in -- and the gate REFUSES it if it is not the column's own
+        //  converged stage-2 temperature, read from the profile.  A number
+        //  that has to match a computed one is a pinned result, not a
+        //  free parameter; if the stage moves, this case fails loudly,
+        //  which is exactly what it is for.
+        name        restage;
+        type        isothermalFlash;
+        in          stageMix;
+        outputs     ( checkLiquid  checkVapour );
+        operation   { T 367.3397849 K;  P 1.01325 bar; }
+    }
+);

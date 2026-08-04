@@ -35,6 +35,28 @@ into the case:
       must move it -- and the identity must FAIL.  Without this probe the
       gate would pass on an engine that simply copied its inlet through.
 
+THE REACTING TWIN (column13_sour_water_stage_identity) runs the same four
+identity claims under an aqueous equilibrium, where `stageK` is not a
+forwarding call but a reactive flash whose effective apparent K-value is a
+definition of ours.  It adds two claims and drops one:
+
+  R1  THE SPECIATION AGREES.  The column's stage liquid and the re-flashed
+      liquid are the same material at the same state, so their ion
+      inventories must match species by species -- not merely their
+      apparent compositions.  This is the claim that would catch an
+      effective K reproducing the apparent split on top of a different
+      chemistry.
+  R2  THE DECLARED TEMPERATURE IS THE COLUMN'S OWN.  The reacting twin
+      re-flashes ISOTHERMALLY (see its header: the adiabatic bracket
+      starts at 200 K, where the reactive VLE does not converge), so its
+      flash temperature is typed in.  A typed number that must equal a
+      computed one is a pinned result, not a free parameter -- so the gate
+      reads stage 2's temperature out of the column's own profile.csv and
+      refuses any disagreement.
+  I1 is therefore WEAKER on the twin than on column12: recovering the
+      temperature is an input there rather than a result.  The energy half
+      of the identity lives in column12 and is not claimed here.
+
 Tolerances are 1e-6 relative, stated in the witness README with the
 measurement that justifies them: the observed agreement is ~1e-7, limited
 by the adiabatic flash's own outer-Newton energy residual, not by the
@@ -52,6 +74,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 CASE = ROOT / "tutorials" / "steady" / "distillation" / "column12_stage_is_a_flash"
+REACTIVE = (ROOT / "tutorials" / "steady" / "distillation"
+            / "column13_sour_water_stage_identity")
 
 RTOL = 1.0e-6
 
@@ -64,11 +88,22 @@ def run(case: Path):
     return p.returncode, p.stdout + p.stderr
 
 
-def fresh(tmp: Path, tag: str) -> Path:
+def fresh(tmp: Path, tag: str, src: Path = None) -> Path:
     d = tmp / tag
-    shutil.copytree(CASE, d, ignore=shutil.ignore_patterns(
+    shutil.copytree(src or CASE, d, ignore=shutil.ignore_patterns(
         "converged", "reports", "log.*", "resultJson*"))
     return d
+
+
+def spec_rows(case: Path, name: str) -> dict:
+    """The speciation block's species rows of converged/<name>, kmol/h."""
+    t = (case / "converged" / name).read_text()
+    i = t.find("speciation")
+    if i < 0:
+        return {}
+    return {k: float(v) for k, v in
+            re.findall(r'^\s{4,}([A-Za-z][A-Za-z0-9]*)\s+([-\d.eE+]+)\s*kmol/h;',
+                       t[i:], re.M)}
 
 
 def stream(case: Path, name: str):
@@ -194,6 +229,59 @@ def main() -> int:
                     fail("N1: liquid from stage 5 and vapour from stage 6 "
                          "recombined into a mixture the flash did NOT move "
                          "-- the identity is insensitive and proves nothing")
+
+        # ---- THE REACTING TWIN -----------------------------------------
+        rx = fresh(tmp, "rx", REACTIVE)
+        rc, rout = run(rx)
+        if rc != 0:
+            fail("the reacting twin (column13) did not run:\n"
+                 + rout[-2500:])
+        else:
+            compare(rx, "reactive", fail)
+
+            # R1 -- the speciation must agree, species by species
+            sL = spec_rows(rx, "stageLiquid")
+            sC = spec_rows(rx, "checkLiquid")
+            if not sL:
+                fail("R1: the column's stage liquid carries NO speciation "
+                     "block -- a reacting stage that reports one basis is "
+                     "not reporting the chemistry it solved")
+            elif set(sL) != set(sC):
+                fail(f"R1: species sets differ {sorted(sL)} vs {sorted(sC)}")
+            else:
+                tL, tC = sum(sL.values()), sum(sC.values())
+                for s in sorted(sL):
+                    a, b = sL[s] / tL, sC[s] / tC
+                    if not close(a, b):
+                        fail(f"R1: species {s} {a:.12g} vs {b:.12g}")
+
+            # R2 -- the declared flash T is the column's own stage-2 T
+            prof = rx / "reports" / "unitOperations" / "tower" / "profile.csv"
+            m = re.search(r'T\s+([\d.eE+-]+)\s*K\s*;',
+                          (rx / "system" / "flowsheetDict").read_text()
+                          [(rx / "system" / "flowsheetDict").read_text()
+                           .find("name        restage;"):])
+            if not prof.exists():
+                fail("R2: the column wrote no profile.csv, so the declared "
+                     "flash temperature cannot be checked against anything")
+            elif not m:
+                fail("R2: could not read the declared flash temperature")
+            else:
+                rows = prof.read_text().strip().splitlines()
+                head = rows[0].split(",")
+                iT = head.index("T")
+                stageT = float(rows[2].split(",")[iT])   # stage 2
+                if not close(float(m.group(1)), stageT, 1.0e-7):
+                    fail(f"R2: the flash declares T = {m.group(1)} K but the "
+                         f"column's stage 2 converged at {stageT} K -- a "
+                         "declared temperature that is not the column's own "
+                         "makes the identity a comparison of two different "
+                         "states")
+
+            # R3 -- the twin must really be reacting: a pH, and ions
+            if "pH" not in (rx / "converged" / "stageLiquid").read_text():
+                fail("R3: the stage liquid reports no pH -- this witness is "
+                     "supposed to be running a chemistry")
 
     if failures:
         print("check_stage_identity: FAIL")

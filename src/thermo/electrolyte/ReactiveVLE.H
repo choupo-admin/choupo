@@ -291,6 +291,32 @@ struct ReactiveVLEResult
     // volatile, [atm] -- KPI-bound as p_<component>_atm.
     std::map<std::string, scalar> pMolecularAtm;
 
+    //  THE INCIPIENT PARTIAL PRESSURES, per APPARENT component and index-
+    //  aligned with the package's component vector, [atm]: the equilibrium
+    //  partial pressure of each volatile over the FULLY SPECIATED liquid at
+    //  v = 0.  Their sum is pEqSumAtm, which is what the saturation
+    //  pre-check compares against P; this vector is the same quantity kept
+    //  component by component instead of collapsed.
+    //
+    //  Why it has to exist.  A column stage needs a K-VALUE, and a K-value
+    //  is an INCIPIENT quantity -- it is defined over a liquid whether or
+    //  not a vapour phase happens to be present.  Reading K = y/x off a
+    //  flash gives zero for every component the moment the trial state is
+    //  subsaturated, and a MESH handed a column of zeros has a singular
+    //  Jacobian and stops without moving (measured, on the sour-water
+    //  witness: "Newton iters: 0").  With these partials the stage K is
+    //  (p_i / P) / x_i, which is the ordinary gamma-phi K generalised to a
+    //  liquid whose speciation sets the volatility -- and which agrees with
+    //  y/x exactly when a vapour IS present, since then the partials sum to
+    //  P by construction.
+    //
+    //  A nonvolatile keeps 0: no vapour route, no partial pressure, and
+    //  saying so is the point (see stageK's ABSENT MEANS ABSENT).
+    //  Where a volatile declares vapour dimerisation the entry is the
+    //  APPARENT (monomer-basis) partial p_mono + 2*p_dimer, because the
+    //  apparent component counts a dimer as two monomers everywhere else.
+    sVector pEqAtm;
+
     // Two-phase dimer accounting (the re-weighted vapour balance,
     // 2026-07-26): TRUE dimer moles per mole of FEED, and the association
     // enthalpy [J/mol dimer] -- the vapour's true enthalpy is the apparent
