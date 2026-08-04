@@ -19257,12 +19257,16 @@ knows about chemistry, and for a hydrocarbon splitter nothing needs to.
 
 A sour-water stripper breaks it.  Ammonia's volatility is not a property of
 ammonia: it is set by how much of the ammonia in the liquid is free
-NH$_3$ and how much is NH$_4^+$, and that is set by the pH, which is set by
-how much CO$_2$ has already left.  Strip the carbon dioxide from the top of
-the column and the liquid's pH rises; the rising pH converts ammonium back
-to free ammonia; the free ammonia then strips.  \emph{The separation and
-the speciation are the same problem}, and no molecular $K$-value can
-express it.
+NH$_3$ and how much is NH$_4^+$, and \emph{that} is set by how much CO$_2$
+the liquid still carries --- the carbon dioxide is what holds the ammonia
+as ammonium, so stripping it sets the ammonia free and the free ammonia
+then strips.  \emph{The separation and the speciation are the same
+problem}, and no molecular $K$-value can express it.
+
+(The familiar shorthand for this is ``stripping CO$_2$ raises the pH''.
+It is a true statement about \emph{one} solution whose composition changes,
+and it is \emph{not} how the finished column reads tray by tray --- which
+is worth a page of its own once we have the profile in hand, below.)
 
 \begin{keyidea}
 The stage does not stop being a stage.  What changes is the \emph{answer to
@@ -19371,6 +19375,72 @@ zero} entry stays zero, because zero means absent, and absent means absent.
 The projection cannot reach the answer.  At convergence every mole fraction
 is positive --- if the clamp were still binding there, the residual could
 not have reached zero.
+
+\paragraph{Reading the tray's own chemistry}
+
+A profile that prints $x$, $y$ and $T$ shows the \emph{consequence} and
+hides the \emph{cause}.  When the package resolves a chemistry, Choupo
+therefore speciates each tray liquid once after convergence --- one flash
+per stage, not one per residual --- and writes the pH, the ionic strength
+and every species molality beside the compositions.
+
+For the four-stage sour-water column:
+
+\medskip
+\begin{tabular}{crrrrr}
+\hline
+stage & $T$ [K] & pH & $I$ [mol/kg] & free-NH$_3$ & CO$_3$ loading \\
+\hline
+1 (top)      & 354.63 & 8.485 & 0.636 & 0.7767 & 0.2120 \\
+2            & 367.34 & 8.361 & 0.130 & 0.8319 & 0.1627 \\
+3            & 368.14 & 8.328 & 0.110 & 0.8283 & 0.1670 \\
+4 (reboiler) & 371.48 & 8.532 & 0.029 & 0.9091 & 0.0872 \\
+\hline
+\end{tabular}
+\medskip
+
+\noindent where the free-ammonia fraction is
+$m_{\mathrm{NH_3(aq)}} / (m_{\mathrm{NH_3(aq)}} + m_{\mathrm{NH_4^+}})$ and
+the loading is total carbonate over total ammonia, both read off the
+species inventory.
+
+\paragraph{And the shorthand that does not survive contact with the table}
+
+Every account of this process, including the one at the head of this
+section, says: \emph{strip the CO$_2$ and the pH rises, the rising pH frees
+the ammonia, and the ammonia strips.}  Look at the pH column.  It runs
+$8.485 \to 8.361 \to 8.328 \to 8.532$ --- monotone in neither direction.
+
+The shorthand is not wrong; it is a statement about \emph{one solution
+whose composition changes}, and it is being read as a statement about
+\emph{four different solutions compared side by side}.  Those are not the
+same claim, and the difference is the ionic strength column: it varies
+22-fold from the top tray to the reboiler.
+
+\begin{keyidea}
+\textbf{A pH is an activity; a loading is an inventory.}
+$\mathrm{pH} = -\log_{10}(\gamma_{\mathrm{H^+}} m_{\mathrm{H^+}})$ moves
+with the activity coefficients as well as with the amounts, so across trays
+at wildly different ionic strengths it is not a clean ordering variable.
+The carbonate loading is a ratio of inventories and carries no $\gamma$ at
+all.
+\end{keyidea}
+
+Order the trays by loading and the free-ammonia fraction orders
+\emph{strictly} the other way, across all four.  That is the mechanism
+stated in a form that survives: the carbon dioxide a liquid still carries
+is what holds its ammonia as ammonium.  It is also the form Choupo gates,
+because a check on the monotone pH would have been a check on a
+coincidence --- true for this feed, false for the next one.
+
+\begin{pitfall}
+The same care applies one row down.  H$^+$ and OH$^-$ do \emph{not} fall
+monotonically down the column even though every solute does: they are not
+solutes being stripped but water's own dissociation products, pinned by
+the pH.  $m_{\mathrm{OH^-}}$ rises between trays 1 and 2.  An earlier
+version of the regression check asserted that they fall, and failed ---
+which is a better outcome than a check that passes for the wrong reason.
+\end{pitfall}
 
 \paragraph{How you know the $K$ is right}
 
