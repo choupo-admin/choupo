@@ -18692,6 +18692,306 @@ spreadsheet.  Open, cited, and reproducible --- the black box a commercial
 tool hands you, opened.
 
 % ---------------------------------------------------------------------
+\section{Pinch analysis: the target before the network}\label{ch:pinch}
+
+Every heat exchanger so far in this guide has been a \emph{device}: two
+streams, an area, a duty.  This section asks a question that comes
+\emph{before} any of them exists.
+
+A plant has hot streams that must be cooled and cold streams that must be
+heated.  Some of that heat can be moved from the first group to the
+second; the rest has to come from steam and go to cooling water.  How much
+is \emph{the rest}?  Not for a particular network --- for the best network
+that could ever be built.
+
+The answer is a \emph{thermodynamic target}, and it can be computed from
+the stream data alone, without drawing a single exchanger.  That is the
+whole of pinch analysis, and it is one of the few results in this guide
+that a student can hand-check on paper in ten minutes and then watch the
+engine reproduce line for line.
+
+\begin{keyidea}
+The target comes first, the network second.  A network is judged by how
+close it gets to a number that was known before it was drawn.  Designing
+first and asking ``is this good?'' afterwards has no answer, because there
+is nothing to compare against.
+\end{keyidea}
+
+\subsection{Streams, CP, and why a duty becomes a line}
+
+A stream that changes temperature carries a \emph{heat-capacity flowrate}
+
+\begin{equation}
+CP \;=\; \dot n\, c_p \;=\; \frac{|Q|}{|T_{\mathrm{out}} - T_{\mathrm{in}}|}
+\qquad [\mathrm{kW/K}],
+\label{eq:pinch-cp}
+\end{equation}
+
+and if $c_p$ is constant the stream is a straight line on a $T$--$H$
+diagram with slope $1/CP$.  A \emph{hot} stream runs from a high $T_{\rm
+in}$ down to a low $T_{\rm out}$ and releases $Q = CP\,\Delta T$; a
+\emph{cold} stream is the mirror image.
+
+Choupo does not ask you to type stream data into a separate pinch tool.
+It reads the \emph{converged flowsheet}: every unit that carries a duty
+contributes one segment, with $CP$ from Eq.~\eqref{eq:pinch-cp} between
+its own inlet and outlet temperatures.  This is the first of the method's
+hypotheses and it is stated out loud, because it is the one a student will
+trip over:
+
+\begin{pitfall}
+\textbf{$CP$ is constant per segment.}  A unit whose $c_p$ varies strongly
+across its own temperature range is \emph{linearised} over that range ---
+one segment, one slope.  If that matters for your case, split the unit in
+the flowsheet: two units in series give two segments and two slopes.  The
+engine will not silently subdivide on your behalf, because where to
+subdivide is a modelling decision and not an arithmetic one.
+\end{pitfall}
+
+A phase change is the limiting case: a large duty across (almost) no
+temperature change, so $CP \to \infty$ and Eq.~\eqref{eq:pinch-cp} is
+useless.  The standard treatment, and Choupo's, is to give the latent duty
+a near-isothermal slice of finite width (\code{latentWidth}, 1\,K by
+default) centred on the unit's temperature.  The composite curve then has
+a nearly flat step there, which is exactly what a condenser looks like on
+a $T$--$H$ plot.
+
+\subsection{The shift: why $\Delta T_{\min}$ moves the axes}
+
+Heat flows from hot to cold, and it needs a driving force.  A designer
+declares the smallest approach they are prepared to pay for,
+$\Delta T_{\min}$ --- a capital-versus-energy choice, since a smaller
+approach recovers more heat and needs more area.
+
+Rather than carry $\Delta T_{\min}$ through every inequality, the method
+\emph{shifts the temperature axis} once, at the start:
+
+\begin{equation}
+T^{*}_{\rm hot} = T_{\rm hot} - \tfrac{1}{2}\Delta T_{\min},
+\qquad
+T^{*}_{\rm cold} = T_{\rm cold} + \tfrac{1}{2}\Delta T_{\min}.
+\label{eq:pinch-shift}
+\end{equation}
+
+On the shifted axis, a hot stream and a cold stream at the same $T^{*}$ are
+in fact $\Delta T_{\min}$ apart in reality.  So on shifted temperatures
+heat may be exchanged wherever a hot stream sits at or above a cold one,
+with no further bookkeeping.  That single change of variable is what makes
+the rest of the method arithmetic instead of case analysis.
+
+\begin{keyidea}
+$\Delta T_{\min}$ is a \emph{declaration}, not a property of the plant.
+Choupo makes you write it (\code{pinchPass \{ dTmin 10 K; \}}) and it keeps
+it separate from the \emph{utility} approach declared in the utility
+report --- a process-to-process approach and a duty-to-utility approach
+are different physical quantities, and giving them one name is how they
+come to disagree.
+\end{keyidea}
+
+\subsection{The problem table, cascade by cascade}
+
+Now the arithmetic.  Sort every shifted stream endpoint into a descending
+list; these are the interval boundaries.  In each interval, the net
+enthalpy surplus is
+
+\begin{equation}
+\Delta H_k \;=\; \Bigl( \sum_{\text{hot in } k} CP \;-\;
+                        \sum_{\text{cold in } k} CP \Bigr)\,
+                 \bigl(T^{*}_{k} - T^{*}_{k+1}\bigr),
+\label{eq:pinch-interval}
+\end{equation}
+
+positive when the hot streams present there release more than the cold
+streams absorb.  Cascade the surpluses downward from the top with zero
+entering:
+
+\begin{equation}
+R_0 = 0, \qquad R_k = R_{k-1} + \Delta H_k .
+\label{eq:pinch-cascade}
+\end{equation}
+
+If every $R_k \ge 0$ the cascade is feasible as it stands.  In general it
+is not: some $R_k$ goes negative, which would mean heat flowing \emph{up}
+the temperature scale.  The repair is to feed in exactly enough hot
+utility at the top to lift the worst deficit to zero:
+
+\begin{equation}
+Q_{H,\min} = -\min_k R_k ,
+\qquad
+Q_{C,\min} = R_N + Q_{H,\min} ,
+\label{eq:pinch-targets}
+\end{equation}
+
+and the interval where the corrected cascade touches zero is the
+\textbf{pinch}.  There, and only there, the two composite curves are
+$\Delta T_{\min}$ apart; everywhere else there is slack.
+
+\begin{intuition}
+The pinch is a bottleneck in temperature, not in equipment.  Above it the
+process is a net heat \emph{sink} and can only be served by hot utility;
+below it, a net heat \emph{source} that can only be served by cold
+utility.  Move a single kilowatt across the pinch and you pay for it
+twice --- one extra kilowatt of steam \emph{and} one extra of cooling
+water.  That is the whole design rule, and it follows from
+Eq.~\eqref{eq:pinch-cascade} alone.
+\end{intuition}
+
+Choupo prints the table \emph{row by row} at \code{verbosity 3} --- the
+interval boundaries, the $CP$ sums, $\Delta H_k$ and the running cascade
+--- because the table \emph{is} the method.  A student who is handed only
+$Q_{H,\min}$ has been handed a number to trust; a student who is handed
+the cascade can check it.
+
+\begin{example}[The four-stream classic, by hand]
+Two hot streams and two cold, with constant $c_p$ so every $CP$ is exact:
+
+\medskip
+\begin{tabular}{llrrrr}
+\hline
+stream & type & $CP$ [kW/K] & $T_{\rm in}$ [\textdegree C] &
+$T_{\rm out}$ [\textdegree C] & $Q$ [kW] \\
+\hline
+H1 & hot  & 2.0 & 150 &  60 & $-180.0$ \\
+H2 & hot  & 8.0 &  90 &  60 & $-240.0$ \\
+C1 & cold & 2.5 &  20 & 125 & $+262.5$ \\
+C2 & cold & 3.0 &  25 & 100 & $+225.0$ \\
+\hline
+\end{tabular}
+\medskip
+
+At $\Delta T_{\min} = 20$\,K the shifted boundaries are
+$140, 135, 110, 80, 50, 35, 30$\,\textdegree C, and the cascade is
+
+\medskip
+\begin{tabular}{lrrrr}
+\hline
+interval $T^{*}$ & $\sum CP_{\rm hot}$ & $\sum CP_{\rm cold}$ &
+$\Delta H$ [kW] & cascade [kW] \\
+\hline
+$140 \to 135$ & 2  & 0   & $+10.0$  & $+10.0$ \\
+$135 \to 110$ & 2  & 2.5 & $-12.5$  & $-2.5$ \\
+$110 \to 80$  & 2  & 5.5 & $-105.0$ & $-107.5$ \quad$\leftarrow$ minimum \\
+$80 \to 50$   & 10 & 5.5 & $+135.0$ & $+27.5$ \\
+$50 \to 35$   & 0  & 5.5 & $-82.5$  & $-55.0$ \\
+$35 \to 30$   & 0  & 2.5 & $-12.5$  & $-67.5$ \\
+\hline
+\end{tabular}
+\medskip
+
+So $Q_{H,\min} = 107.5$\,kW, $Q_{C,\min} = -67.5 + 107.5 = 40$\,kW, and the
+pinch sits at $T^{*} = 80$\,\textdegree C --- hot 90\,\textdegree C, cold
+70\,\textdegree C.  Unintegrated, the same four duties consume 487.5\,kW of
+heating: the target says 380\,kW of that is recoverable.
+\end{example}
+
+\begin{tutoriallink}
+\file{tutorials/steady/heat/pinch01\_four\_stream\_classic} is that table.
+Its \file{flowsheetDict} header carries the hand-worked cascade above so
+you can compare it against what the run prints, line by line.
+\end{tutoriallink}
+
+\subsection{Composite curves: the same result, drawn}
+
+The problem table is the arithmetic; the \emph{composite curves} are the
+picture.  Add the hot streams' $T$--$H$ segments horizontally into one hot
+composite, do the same for the cold, and slide the cold curve until the
+closest vertical approach is $\Delta T_{\min}$.  The overlap is the
+recoverable heat; the hot curve's overhang on the right is $Q_{C,\min}$,
+the cold curve's on the left is $Q_{H,\min}$, and the point of closest
+approach is the pinch.  It is the same three numbers, seen instead of
+counted.
+
+Choupo writes both curves, shifted and unshifted, to
+\file{reports/pinch/compositeCurves.csv}.
+
+\subsection{Candidate matches: what the physics admits}
+
+Targets say \emph{how much}.  The next question is \emph{which stream
+against which} --- and here the guide has to be careful about what the
+engine does and does not claim.
+
+Choupo clips every segment at the pinch into an above-region and a
+below-region, and then enumerates \emph{every} hot--cold pair in each
+region.  For each pair it reports the largest duty that pair could carry,
+which for two constant-$CP$ segments meeting counter-currently at the
+declared approach is exactly
+
+\begin{equation}
+Q_{\max} \;=\; \min\Bigl( Q_{\rm hot},\; Q_{\rm cold},\;
+      \min(CP_h, CP_c)\,\bigl(T_{h,{\rm hi}} - T_{c,{\rm lo}} -
+      \Delta T_{\min}\bigr)\Bigr),
+\label{eq:pinch-qmax}
+\end{equation}
+
+and it names which of the three terms is binding.  (For straight segments
+the approach varies monotonically along the exchanger, so checking the two
+ends is sufficient --- that is why Eq.~\eqref{eq:pinch-qmax} needs no
+integration.)
+
+It also applies the classical $CP$ rule --- above the pinch $CP_h \le
+CP_c$, below it $CP_h \ge CP_c$ --- and reports, per row, whether the pair
+obeys it.
+
+\begin{pitfall}
+\textbf{The $CP$ rule binds only \emph{at} the pinch.}  A match that
+violates it is not thereby forbidden: it simply cannot be the match that
+sits against the pinch.  It may carry duty perfectly well further away
+from it, and Choupo says exactly that in the row's own words rather than
+striking it out.
+\end{pitfall}
+
+\begin{keyidea}
+The candidate table is an \textbf{analysis}, never a synthesis.  Choupo
+does not draw your network, does not rewrite your flowsheet, and ---
+deliberately, and checked by a gate --- \emph{never uses the word
+``optimal''}.  Every feasible row is a ``thermodynamically admissible
+candidate''.  Which candidates become exchangers is the engineer's
+decision, and it involves plot plans, control, startup and safety that no
+temperature table knows about.
+\end{keyidea}
+
+\subsection{The violation diagnostics, and why they add up}
+
+The last thing the pass reports is the pair of coursework violations:
+\emph{heating below the pinch} and \emph{cooling above it}.  Each is a
+duty that a utility is currently serving and that a recovery match could
+serve instead, and each is listed per unit with its duty.
+
+They are not decoration.  With the raw-duty hypothesis above they satisfy
+an identity worth checking by hand:
+
+\begin{equation}
+\sum(\text{heating below}) \;+\; \sum(\text{cooling above})
+\;=\; Q_{H,\rm current} - Q_{H,\min},
+\label{eq:pinch-violation-identity}
+\end{equation}
+
+--- the excess over target \emph{is} the sum of the violations.  In the
+four-stream example: 120\,kW of cooling above the pinch plus
+$125 + 135 = 260$\,kW of heating below it gives 380\,kW, and
+$487.5 - 107.5 = 380$\,kW.  The two sides are computed by different code
+and must agree; the gate that ships with the case checks that they do.
+
+\subsection{What this pass does not do}
+
+Stated plainly, because the boundary is a decision and not a to-do list:
+
+\begin{itemize}
+\item It \textbf{targets and analyses}; it never rewrites the network.
+      The flowsheet you wrote is the flowsheet that ran.
+\item It reports \textbf{energy} targets.  Area and capital targets ---
+      the $\sum \Delta H / (\Delta T_{\rm LM}\, U)$ construction and the
+      capital-versus-energy trade-off that sets $\Delta T_{\min}$
+      economically --- are a further phase and are not implemented.  A
+      guide that described them here would be describing something the
+      engine does not have.
+\item It takes the \textbf{unit's net duty}.  Equipment with two duties
+      --- a column with a reboiler and a condenser --- enters as its net
+      unless you model the two as separate units.  For a column that is
+      usually the wrong picture, and splitting is the fix.
+\end{itemize}
+
+% ---------------------------------------------------------------------
 \section{Shortcut distillation: Fenske--Underwood--Gilliland}\label{ch:fug}
 
 \begin{figure}[ht]

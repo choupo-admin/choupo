@@ -2756,6 +2756,109 @@ and cited in the dict, never invented by the engine.  Run
 chain, and \file{optim02\_process\_cost} for an optimiser driving it.
 
 % =====================================================================
+\section{Heat integration: pinch targets and candidate matches}\label{sec:pinch}
+
+\begin{whatyoulllearn}
+How to ask a converged flowsheet the question that comes before any
+exchanger exists --- how much heating and cooling the plant would need if
+its heat recovery were perfect --- and how to read the two reports that
+answer it.
+\end{whatyoulllearn}
+
+Add one block to \file{system/postDict}:
+
+\begin{lstlisting}[language=dict]
+pinchPass
+{
+    dTmin        10 K;      // process-to-process approach (declared, not defaulted)
+    latentWidth  1 K;       // width given to a phase-change slice
+}
+\end{lstlisting}
+
+That is the whole interface.  The pass reads the converged result, builds
+the stream population from the units that carry a duty, and reports:
+
+\begin{center}
+\begin{tabular}{ll}
+\hline
+\multicolumn{2}{l}{\textbf{KPIs}} \\
+\code{pinch.Q\_H\_min\_kW}, \code{pinch.Q\_C\_min\_kW} & the energy targets \\
+\code{pinch.T\_pinch\_K} & the pinch, on the shifted axis \\
+\code{pinch.T\_pinch\_hot\_K} / \code{\_cold\_K} & and on the real one \\
+\code{pinch.Q\_heat\_current\_kW} / \code{Q\_cool\_current\_kW} & what you consume today \\
+\code{pinch.candidates\_admissible} / \code{\_total} & the match table's tally \\
+\code{pinch.violation\_heat\_below\_pinch\_kW} & heating on the wrong side \\
+\code{pinch.violation\_cool\_above\_pinch\_kW} & cooling on the wrong side \\
+\hline
+\multicolumn{2}{l}{\textbf{Files}} \\
+\file{reports/pinch/compositeCurves.csv} & hot / cold curves, shifted and not \\
+\file{reports/pinch/candidateMatches.csv} & every hot$\times$cold pair, per region \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent At \code{verbosity 3} the Linnhoff--Flower problem table is
+printed \emph{cascade row by cascade row}, which is the point: the targets
+are checkable by hand from what the run prints.  The theory, the
+arithmetic and a fully hand-worked example are in the theory guide,
+\S\ref{ch:pinch}.
+
+\subsection{Reading the answer}
+
+Three numbers matter first.  \code{Q\_H\_min\_kW} is the least heating any
+network could get away with; \code{Q\_heat\_current\_kW} is what your
+flowsheet actually spends.  The gap between them is the prize.  The pinch
+temperature tells you where the plant divides: above it the process is a
+net heat sink, below it a net heat source, and a kilowatt carried across
+that line costs you twice --- once in steam, once in cooling water.
+
+The violation lines name the units doing exactly that.  They also add up:
+
+\[
+\sum(\text{heating below the pinch}) + \sum(\text{cooling above})
+\;=\; Q_{H,\rm current} - Q_{H,\min},
+\]
+
+so if the two sides of that identity disagree in your case, something in
+the stream population is not what you think it is.
+
+\subsection{Two declarations that look like one}
+
+\begin{pitfall}
+\code{pinchPass}'s \code{dTmin} is the \textbf{process-to-process}
+approach.  The utility report has its own \code{dTmin}, which is the
+\textbf{duty-to-utility} approach.  They default to the same 10\,K and
+they are not the same physical quantity --- one governs whether two
+process streams may exchange, the other whether a utility may serve a
+duty.  Choupo keeps them as two declarations on purpose; setting one and
+assuming the other followed is how the two come to disagree silently.
+\end{pitfall}
+
+\subsection{What it will not do}
+
+\begin{itemize}
+\item \textbf{It never rewrites your flowsheet.}  The candidate table says
+      what the physics admits; which candidates become exchangers is
+      yours to decide, with plot plan, control and startup in view.
+\item \textbf{It never says ``optimal''.}  Every feasible row is a
+      \emph{thermodynamically admissible candidate} --- and that wording
+      is enforced by a regression gate, not just by good intentions.
+\item \textbf{It targets energy, not area or capital.}  The area-target
+      and capital-versus-energy phase is not implemented; nothing in the
+      output should be read as a cost.
+\item \textbf{It takes each unit's net duty.}  A column enters as
+      reboiler minus condenser unless you model the two as separate
+      units --- which, for heat integration, you usually should.
+\end{itemize}
+
+\begin{tutoriallink}
+\file{tutorials/steady/heat/pinch01\_four\_stream\_classic} --- four
+streams whose $CP$ values are exact, so every number the pass prints can
+be checked on paper.  The hand-worked cascade and candidate table are in
+the case's own \file{flowsheetDict} header.
+\end{tutoriallink}
+
+% =====================================================================
 \section{Batch simulation: \code{choupoBatch}}\label{sec:batch}
 
 \begin{whatyoulllearn}
