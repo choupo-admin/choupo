@@ -1508,6 +1508,23 @@ PYEOF
     fi
     rm -f /tmp/propsops.$$
 
+    # Guide version-stamp gate: the manuals' footer and title page are
+    # RENDERED from CHOUPO_VERSION (src/core/Banner.H), because they used to
+    # hardcode it -- every guide built from main was stamped Choupo-2607
+    # while documenting the development line, which is a manual naming a
+    # release it does not describe.  Regenerate with
+    # bin/curate/guide_version.py (and rebuild the PDFs).
+    # Sabotage-verified: bumping CHOUPO_VERSION makes it fail by name.
+    if "$ROOT/bin/curate/guide_version.py" --check > /tmp/gver.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guide-version-gate" "$(head -1 /tmp/gver.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/guide_version.py)\n" "guide-version-gate"
+        cat /tmp/gver.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gver.$$
+
     # Adsorption catalogue gate: pair records have one home, declared bases,
     # provenance and an honest quality class.  In particular a historical
     # teaching fit may not masquerade as directly measured literature data.

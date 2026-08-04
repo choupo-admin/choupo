@@ -34,7 +34,11 @@ tutorialsGuide.pdf: $(wildcard tutorialsGuide-*.tex)
 # schema must rebuild the PDF, exactly as editing a tutorials part does.
 propsGuide.pdf: propsGuide-operations.tex
 
-%.pdf: %.tex preamble.tex cc-by-sa-4.0.txt
+# Every guide depends on the GENERATED version stamp -- a version bump must
+# rebuild all four PDFs, or they keep claiming the previous release.
+$(PDFS) tutorialsGuide.pdf: version.tex
+
+%.pdf: %.tex preamble.tex version.tex cc-by-sa-4.0.txt
 	@echo "  pdflatex (pass 1)  $<"
 	@$(LATEX) $(LATEXFLAGS) $< > $*.build.log 2>&1 || \
 	    (echo "  FAIL --- see $*.build.log"; tail -40 $*.build.log; exit 1)
