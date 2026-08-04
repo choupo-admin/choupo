@@ -15,6 +15,12 @@ exit 1 only on manifest corruption (a claimed file missing on disk or failing
 its own sha256 -- that is damage, not drift).
 
 Adopted records are the author's -- never checked against the catalogue.
+
+WHICH HASH THE SEAL CLAIMS.  A manifest declares `sealSchema legacy` (the
+original whole-file byte claim) or `sealSchema computational` (the claim is
+the PARSED content).  This reporter reads the declaration and checks the
+hash the manifest actually claims -- see seal_check() for why that had to be
+said in code as well as here.
 """
 import hashlib
 import re
@@ -124,6 +130,8 @@ def classify(sealed, origin, claimType="imported"):
 def read_manifest(mf):
     txt = re.sub(r'/\*.*?\*/', '', mf.read_text(), flags=re.S)
     txt = re.sub(r'^\s*//.*$', '', txt, flags=re.M)
+    m = re.search(r'\bsealSchema\s+(\w+)\s*;', txt)
+    schema = m.group(1) if m else "legacy"
     out = {}
     for m in re.finditer(r'"([^"]+)"\s*\{([^}]*)\}', txt):
         rel, body = m.group(1), m.group(2)
@@ -132,17 +140,55 @@ def read_manifest(mf):
             entry[km.group(1)] = km.group(3) if km.group(3) is not None \
                 else km.group(2)
         out[rel] = entry
-    return out
+    return schema, out
 
 
-drift, damage = [], []
+#  WHICH HASH IS THE CLAIM.  Under `sealSchema computational` the manifest
+#  claims the PARSED content; the byte sha256 is kept beside it as a record
+#  of what was installed, not as the claim.  This reporter checked the byte
+#  hash unconditionally and so was one schema behind the runtime -- the
+#  2026-08-04 banner sweep (a comment-only edit, canonical hash BYTE-IDENTICAL
+#  by construction) made it report SEAL DAMAGE on a case SealCheck.cpp passes.
+#  A gate that disagrees with the engine about what the seal means is worse
+#  than no gate: it teaches you to distrust a true refusal.
+#
+#  Cosmetic byte drift is COUNTED and reported, never treated as damage --
+#  exactly the runtime's `cosmetic` bucket.
+def seal_check(dst, e, schema):
+    """-> (status, detail).  status in {ok, cosmetic, damage}."""
+    if schema == "computational":
+        #  A computational manifest whose record omits the computational
+        #  claim is a BROKEN MANIFEST, not a pass -- same verdict as
+        #  SealCheck.cpp, so the two can never disagree about a record.
+        if "computationalSha256" not in e:
+            return "damage", ("declares sealSchema computational but claims"
+                              " no computationalSha256 -- re-import the case")
+        got = canon_sha(dst) if PROPS.exists() else None
+        if got is None:
+            #  Cannot parse (or no binary): fall back to the byte claim
+            #  rather than pass silently on an unverifiable record.
+            if "sha256" in e and sha_file(dst) != e["sha256"]:
+                return "damage", "unparseable AND fails its byte sha256"
+            return "ok", ""
+        if got != e["computationalSha256"]:
+            return "damage", "fails its manifest computationalSha256"
+        if "sha256" in e and sha_file(dst) != e["sha256"]:
+            return "cosmetic", ""
+        return "ok", ""
+    if "sha256" in e and sha_file(dst) != e["sha256"]:
+        return "damage", "fails its manifest sha256"
+    return "ok", ""
+
+
+drift, damage, cosmeticSeal = [], [], []
 byClass = {}
 nManifests = nRecords = 0
 FULL = "--full-drift-report" in sys.argv
 for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
     nManifests += 1
     case = mf.parent.parent.relative_to(ROOT)
-    for rel, e in read_manifest(mf).items():
+    schema, records = read_manifest(mf)
+    for rel, e in records.items():
         t2 = e.get("type", "")
         if t2 == "adopted":
             continue                      # the author's record, not ours to check
@@ -152,10 +198,14 @@ for mf in sorted((ROOT / "tutorials").rglob("constant/propertyManifest")):
         if not dst.exists():
             damage.append(f"{case}: claimed constant/{rel} MISSING on disk")
             continue
-        if "sha256" in e and sha_file(dst) != e["sha256"]:
-            damage.append(f"{case}: constant/{rel} fails its manifest sha256"
-                          " (edited without --adopt-local/--overwrite?)")
+        status, detail = seal_check(dst, e, schema)
+        if status == "damage":
+            hint = "" if detail.endswith("re-import the case") \
+                else "  (edited without --adopt-local/--overwrite?)"
+            damage.append(f"{case}: constant/{rel} {detail}{hint}")
             continue
+        if status == "cosmetic":
+            cosmeticSeal.append(f"{case}: constant/{rel}")
         # (b) divergence from the LIVE catalogue -- history, not failure
         osha = e.get("originSha256")
         if not osha:
@@ -187,6 +237,8 @@ for cls in (DOCUMENTATION_ONLY, ADDITIVE_UNUSED_DATA, VALUE_CHANGED, REMOVED):
 print()
 print("  sealedReproducibilityFailures:  %6d   <- a case that no longer"
       " reproduces its OWN contents" % len(damage))
+print("  cosmeticSealDrift:              %6d   <- bytes moved, the"
+      " CLAIMED (parsed) content did not" % len(cosmeticSeal))
 print("  catalogDivergenceCount:         %6d   <- history: the live"
       " catalogue moved on" % len(drift))
 print("  cases needing a curator's eye:  %6d" % cases_needing_review)

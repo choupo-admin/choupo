@@ -1525,6 +1525,28 @@ PYEOF
     fi
     rm -f /tmp/gver.$$
 
+    # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
+    # arrangement).  Every file in the tree carries the version of the LINE
+    # it belongs to: `Choupo-dev` on main, rewritten to `Choupo-YYMM` when a
+    # release is frozen and back again afterwards.  Before this, 2053 case
+    # files said `Choupo-2607` on the development line -- the same defect the
+    # guides had, in its largest form.
+    #
+    # What the gate does NOT touch: `catalogueRelease Choupo-2607` in a
+    # sealed case's propertyManifest.  That is a HISTORICAL FACT (this case
+    # was sealed against the 2607 catalogue), not a label, and rewriting it
+    # would falsify provenance.  Same string, opposite meaning.
+    # Sabotage-verified: restoring one banner to Choupo-2607 fails by name.
+    if "$ROOT/bin/curate/banner_version.py" --check > /tmp/bver.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "banner-version-gate" "$(head -1 /tmp/bver.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/banner_version.py)\n" "banner-version-gate"
+        cat /tmp/bver.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bver.$$
+
     # Adsorption catalogue gate: pair records have one home, declared bases,
     # provenance and an honest quality class.  In particular a historical
     # teaching fit may not masquerade as directly measured literature data.
