@@ -45,50 +45,12 @@ HENRY = ROOT / "data" / "standards" / "parameters" / "Henry"
 COMPONENTS = ROOT / "data" / "standards" / "components"
 CHEMISTRY = ROOT / "data" / "standards" / "chemistry"
 
-#  The convention this script DERIVES for a record that declares none.  It is
-#  the default of the corpus it migrated, not a property of Henry's law:
-#  a record that declares an ALTERNATIVE parameterisation (ALT_FORMS below)
-#  carries its own, and is verified against that rather than against this.
-#  Written as a default because the D2 identity contract says a
-#  parameterisation is the unit of identity -- so "the convention" is a
-#  per-record fact, never a global constant.
 CONVENTION = "Sander-Hxp-v1"
 
 # Keys a plain Henry pair record may carry (anything else refuses).
 EXPECTED_KEYS = {"solute", "solvent", "model", "H_ref", "T_ref",
                  "enthalpy", "Trange"}
 IDENTITY_KEYS = {"gasSpecies", "dissolvedSpecies", "convention"}
-
-#  A SECOND FUNCTIONAL FORM, admitted 2026-08-04, narrowly.
-#
-#  This checker was written when every Henry record in the tree was a van't
-#  Hoff pair (H_ref, T_ref, enthalpy) under Sander-Hxp-v1, so "the expected
-#  fields" and "the van't Hoff fields" were the same set.  They are not the
-#  same idea.  The D2 identity contract makes a PARAMETERISATION the unit of
-#  identity, and a different parameterisation may carry a different
-#  functional form: Edwards et al. (1978) tabulate
-#      ln H = B1/T + B2 ln T + B3 T + B4        [kg-atm/mol, T in K]
-#  which has no H_ref and no enthalpy to give.
-#
-#  The admission is deliberately NOT a blanket escape hatch.  A record may
-#  use these fields ONLY when it declares BOTH `model EdwardsEq13` and
-#  `convention Edwards-Hkgatm-v1`; anything else still refuses to human
-#  curation, exactly as before.  A new form in future gets its own entry
-#  here and its own pair of declarations -- one more line, and visible.
-ALT_FORMS = {
-    ("EdwardsEq13", "Edwards-Hkgatm-v1"):
-        {"solute", "solvent", "model", "Trange",
-         "parameters", "B1", "B2", "B3", "B4", "source"},
-}
-
-
-def alt_form_keys(t):
-    """The extra keys this record's DECLARED (model, convention) admits."""
-    m = re.search(r'^\s*model\s+(\S+)\s*;', t, re.M)
-    c = re.search(r'^\s*convention\s+(\S+)\s*;', t, re.M)
-    if not m or not c:
-        return set()
-    return ALT_FORMS.get((m.group(1).rstrip(";"), c.group(1).rstrip(";")), set())
 
 # ---------------------------------------------------------------------------
 # EXPLICIT EXCEPTION TABLES -- hand-curated, each entry a reviewed decision.
@@ -239,8 +201,7 @@ def derive(path, gas_keys):
     solute, solvent = sol.group(1), svt.group(1)
 
     ki = (solute, solvent) in KI_PAIRS
-    allowed = (EXPECTED_KEYS | IDENTITY_KEYS | alt_form_keys(t)
-               | (KI_EXTRA_KEYS if ki else set()))
+    allowed = EXPECTED_KEYS | IDENTITY_KEYS | (KI_EXTRA_KEYS if ki else set())
     unexpected = keys - allowed
     if unexpected:
         raise ValueError(f"unexpected fields {sorted(unexpected)} -- refuse"
@@ -270,16 +231,8 @@ def derive(path, gas_keys):
     have = {k: re.search(rf'^\s*{k}\s+(\S+)\s*;', t, re.M)
             for k in IDENTITY_KEYS}
     present = {k: m.group(1) for k, m in have.items() if m}
-    #  A record declaring one of the admitted alternative forms is verified
-    #  against ITS OWN convention.  Anything else is held to the default --
-    #  so this is not a hole: a record cannot pick a convention freely, only
-    #  one that ALT_FORMS pairs with the model it also declares.
-    declaredConv = re.search(r'^\s*convention\s+(\S+)\s*;', t, re.M)
-    conv = CONVENTION
-    if declaredConv and alt_form_keys(t):
-        conv = declaredConv.group(1).rstrip(";")
     want = {"gasSpecies": solute, "dissolvedSpecies": solute,
-            "convention": conv}
+            "convention": CONVENTION}
     if present:
         if set(present) != IDENTITY_KEYS:
             raise ValueError(f"partial identity {sorted(present)} -- refuse")

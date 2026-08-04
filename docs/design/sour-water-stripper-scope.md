@@ -180,6 +180,43 @@ The molecular case is the CONTROL: the identity must hold on a system
 nobody doubts before the same construction is trusted on one where the
 K-values come out of a chemistry.  The reacting twin is S2's first piece.
 
+## 6b. A NAMED GAP found by curating: one pair, two parameterisations
+
+Discovered 2026-08-04 while curating Edwards' Henry constants, and it is
+the D2 identity contract meeting the code that has to honour it.
+
+`HenrysLawRegistry` keys its map by **(solute, solvent)** and scans the
+whole of `parameters/Henry/`.  Dropping `CO2-water-Edwards1978.dat` beside
+`CO2-water.dat` therefore did not add a second parameterisation — it
+**silently overwrote the first** (later filename wins the scan), and the
+run then refused because the surviving record's model was not `vantHoff`.
+The refusal was luck: had Edwards' form also been van't Hoff, the corpus
+would have quietly switched conventions on every CO₂ case with nothing
+reported.
+
+That is precisely what the D2 ADR forbids in principle — "a
+parameterisation is the unit of identity", so NH₃-water under Sander and
+NH₃-water under Edwards must coexist and a case must SELECT one — and the
+registry has no way to express it.  A per-pair map cannot hold two.
+
+**What was done instead**, because a selector is a real feature and not a
+line: the Edwards Henry records live under
+`parameters/EdwardsPitzer/henry-<solute>-<solvent>.dat`, beside the rest
+of that parameterisation and outside the shared registry's scan.  The
+engine that needs them loads its own; nothing collides.  This is honest —
+`parameters/<Model>/` is already the layout convention — but it is a
+WORKAROUND, and it does not scale to the case where two parameterisations
+of the same pair must both be *selectable* from a case dict.
+
+**Also reverted**: a widening of `check_legacy_schema`'s Henry identity
+checker that admitted Edwards' four-parameter form.  The widening was
+correct in itself — that checker derives the convention with
+`Sander-Hxp-v1` hardcoded, which is the same one-convention assumption in
+a second place — but with the records moved it guards nothing, and
+unused machinery with three passing sabotage tests is a hole waiting for
+somebody to walk through it.  When parameterisation SELECTION is built,
+that assumption must be lifted with it; this paragraph is the reminder.
+
 ## 7. Decision requested
 
 Approve the effective-K shape (§3) and the two-stage delivery (engine now,
