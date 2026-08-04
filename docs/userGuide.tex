@@ -3461,6 +3461,90 @@ the \emph{Explorer Guide} cover it in depth; start with
 \file{tutorials/props/}.
 
 % =====================================================================
+\section{Cases pinned on published sources}\label{sec:references}
+
+\begin{whatyoulllearn}
+Which tutorials are validated against a primary published source rather
+than against Choupo's own previous answer --- and, just as important, what
+part of such a benchmark is portable and what part is not.
+\end{whatyoulllearn}
+
+Most tutorials carry a \emph{golden master}: a recorded set of KPIs that
+the regression suite re-checks on every run.  That catches a change, which
+is what it is for, but it is self-referential --- it proves the engine
+still agrees with itself.  A handful of cases do something harder: they are
+pinned, digit for digit, on numbers somebody else published.
+
+\begin{keyidea}
+The rule for these cases is \textbf{one coherent primary source end to
+end, never a blend}, and the provenance of every number stated in the case
+itself.  Two papers' conditions mixed into one case produce a benchmark
+that matches neither and is impossible to argue with afterwards.
+\end{keyidea}
+
+\paragraph{\file{cavett01\_recycle\_train} --- the recycle solver.}
+The Cavett (1963) four-flash train on the Rosen--Pauls specification,
+verbatim.  Two torn streams; Newton closes them in 7 iterations to
+$|r| = 4\times10^{-9}$.  Its teaching value is a \emph{negative} result:
+per-component Wegstein acceleration, the classic recycle accelerator, is
+not merely slow here --- it is \emph{defeated}, limit-cycling for 300
+iterations and exiting non-zero with no \file{converged/} written.  Propane
+circulates at 35\,716\,kmol/h against 2291 fed, and the accelerator chases
+a moving inventory.  Swap \code{recycleSolver} in \file{system/solverDict}
+and watch it happen.
+
+\begin{pitfall}
+\textbf{Stream values were never the portable part of this benchmark.}
+The case runs SRK ($k_{ij}=0$); the published solutions used an advanced
+Peng--Robinson package and, before that, FLOWTRAN.  The light ends agree to
+under 1\% (N$_2$ 358.2 exact; CH$_4$ 2995.4 vs 2995.3) and the loop
+intermediates carry the model difference openly (iso-butane in P1: 153.9
+here, 197.7 and 198.2 published).  The case reports that component by
+component instead of quietly choosing the flattering comparison.
+\end{pitfall}
+
+\begin{pitfall}
+\textbf{A published table is not scripture.}  Rosen himself notes that the
+1977 FLOWTRAN ethane row is internally inconsistent --- 2883.2 in P1 where
+the component balance wants ${\sim}2383.2$, a transcription slip carrying
+502\,mol/h of imbalance in print for 28 years.  Check a source's own
+balance before you calibrate against it.
+\end{pitfall}
+
+\paragraph{The Williams--Otto four.}  Reactor $+$ decanter $+$ column $+$
+purge/recycle, with a published steady state, published PI tunings and
+published optimisation values --- so the same plant anchors four different
+parts of the engine:
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\hline
+\file{ctrl12\_williams\_otto} & the steady state, to all printed digits \\
+\file{ctrl13\_williams\_otto\_step} & the paper's Fig.-2 step, 3.901 $\to$ 4.446 klb/h \\
+\file{ctrl14\_williams\_otto\_pi} & the Fig.-4 PI tracking, on the figure's own shape \\
+\file{ctrl16\_williams\_otto\_optimal} & the §5.3 optimum, via \file{outerDict} over \code{choupoCtrl} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{keyidea}
+\textbf{The gap is stated up front and measured.}  \file{ctrl16} reaches
+$J = 546.8$ against the paper's $551.8$ --- \textbf{99.1\,\%} --- because
+Choupo shoots with $K = 5$ where the paper used orthogonal collocation.
+That is a different numerical method solving the same problem, and saying
+so is worth more than a tuned number that matches.  A benchmark you can
+only pass is not a benchmark.
+\end{keyidea}
+
+Both design records are in the repository:
+\file{docs/design/williams-otto-reference-case.md} carries the full
+transcription with the paper's own equation numbers, and
+\file{cavett01}'s own \file{controlDict} header carries its provenance and
+the history of its own wiring --- including that the first version of that
+dict was reconstructed from paraphrases and said so, until the primary
+source arrived.
+
+% =====================================================================
 \section{Tour of the tutorials}\label{sec:tutorials}
 
 \begin{whatyoulllearn}
