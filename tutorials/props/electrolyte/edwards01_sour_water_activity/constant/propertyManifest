@@ -1,0 +1,272 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-04";
+    importerVersion    "3";
+    records
+    {
+        "chemistry/CO2aq-formation.dat"
+        {
+            type          imported;
+            sha256        "064dc1f8695407573153f7cb94b62bfbeb9dcade879e4a92f5ebe300d072d701";
+            computationalSha256 "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
+            origin        "data/standards/chemistry/CO2aq-formation.dat";
+            originSha256  "23b5195333523b65f320ef9d0362539449fecf0fd48ad1520b3728c54bec07a6";
+            release       Choupo-2607;
+        }
+        "chemistry/CO3-formation.dat"
+        {
+            type          imported;
+            sha256        "9a448314ee47c7f34ebbe4f54abb3db49d19d77e80404d00e4d1694b0a23bb50";
+            computationalSha256 "456cfa93c424f63aa3af4f8351a88ed25d9189c3bd5cf5055b4a136f5a36d09d";
+            origin        "data/standards/chemistry/CO3-formation.dat";
+            originSha256  "d08e8abdea3dfaaa57ed2fed4204f8be4a6aeda5712a75c6963be0569dd5fc90";
+            release       Choupo-2607;
+        }
+        "chemistry/NH3aq-formation.dat"
+        {
+            type          imported;
+            sha256        "c09a9ec014a58780d832ec127aab07cca1a238664f82639dba2dd921ff5a390b";
+            computationalSha256 "b32d25c260fb801920c87fbf19e52c2583e0bb48c16ad24fb84622dcad7426d3";
+            origin        "data/standards/chemistry/NH3aq-formation.dat";
+            originSha256  "f43c6c55272c53be048a52794d358ba19ecb0ddaf59c78eee193b8bf7459d75a";
+            release       Choupo-2607;
+        }
+        "chemistry/water-dissociation.dat"
+        {
+            type          imported;
+            sha256        "63a8e7d2c83deda7eb1b6254cb7788b180acc12bde7d9b0400fb440e8e11463f";
+            computationalSha256 "a4bf1f8f902f95e740a3100399b149894b8d380a82c9dfb17c6e81362ff91c89";
+            origin        "data/standards/chemistry/water-dissociation.dat";
+            originSha256  "b2ae1698798cd472c4e75d1c4b186e1ac762852b40512a998ba247a22a0b9a80";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "cd1a2cceda1fa948b2d99d6c5a02e16e8f9b166f8a134dbfd6ebf48aef971631";
+            computationalSha256 "1ae02f590e8dc0288f0565b02cca96c154fcda126587a64d850e4d6f9e5cada3";
+            origin        "data/standards/components/water.dat";
+            originSha256  "c3fd14fe63c4f78da937a8fad7b29d6feabc65848dcd32d8d1766289fbd3f10a";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/CO2aq.dat"
+        {
+            type          imported;
+            sha256        "0650f84f597d763af0b64898a66b0ee808bb6e5ae409ac55480b47bf19e4e2ed";
+            computationalSha256 "60921949805e2ebc3460ae482b5012dde343e346620370fa00aff3ed4d154338";
+            origin        "data/standards/parameters/EdwardsPitzer/CO2aq.dat";
+            originSha256  "48b3b5ed8bc9676caea12a45810ff45f031e959411938e76b27812d82a85af8c";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/NH3aq.dat"
+        {
+            type          imported;
+            sha256        "01023e5dc15cf43ec9a7396c5918af3ce93d26990fe66620b036a67113b4f1ff";
+            computationalSha256 "43a47398ef82199fd8e21d8d1bed469f2fea35d9556d0f433c4a3504fd72dce5";
+            origin        "data/standards/parameters/EdwardsPitzer/NH3aq.dat";
+            originSha256  "aa1c03de27145f0c835bd45a6d64e8588f0ba8052fda965b867d1b2305bc4acb";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/ion-CO3.dat"
+        {
+            type          imported;
+            sha256        "c845a9fcf2b996ce7d7c9b1e52c9a7b992fc503ba8db671e97074c1b803772eb";
+            computationalSha256 "8d38aa4234762cc352257eb7ccd51ba9327f76d5084e138ddf2f986609c30b23";
+            origin        "data/standards/parameters/EdwardsPitzer/ion-CO3.dat";
+            originSha256  "83ff5ae1cd0e16d030ca3e83cd88c568aaccdce61f240af5347465d09bb358f2";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/ion-H.dat"
+        {
+            type          imported;
+            sha256        "706984c3c14698acd30cff8023ffb687306df0cddb35be8979ff2e21a4686c03";
+            computationalSha256 "7b3b707bd1efaecea32875bd4ac6636b6edf80899086f0c8e565f61c907f9f88";
+            origin        "data/standards/parameters/EdwardsPitzer/ion-H.dat";
+            originSha256  "1033546d9e7b61a3551adeb9ce0fb07258e6382840b6db977b844c4e0d33d60f";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/ion-HCO3.dat"
+        {
+            type          imported;
+            sha256        "ea3153216e5c17fd47ff418a2357399512f808b79e562a569c27b34466a30da0";
+            computationalSha256 "7e07abae8fbb40922d82a7112587a890aa62eb3480266756e15f586b237418f6";
+            origin        "data/standards/parameters/EdwardsPitzer/ion-HCO3.dat";
+            originSha256  "55e4ec8cf3fbf6204dec0ff3c1347acae36b57a21b10baafd2dd2aeca91de722";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/ion-NH4.dat"
+        {
+            type          imported;
+            sha256        "0283c3d3d70137075a18d8529abc00d6feab042153554a340f994689b254a969";
+            computationalSha256 "5ded89d8dcf0b81656ce014806b46eaa34fc1a246a0697c5f84fabfc222b4ab9";
+            origin        "data/standards/parameters/EdwardsPitzer/ion-NH4.dat";
+            originSha256  "28014395f0aa9055e4b3568fafe7be73b242cd8675305cd4a91a869a97c4d5b8";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/ion-OH.dat"
+        {
+            type          imported;
+            sha256        "e8f8970802b982eb1a6edc3f2e2bf2c142009c3f2e998d933943672ff0ff209d";
+            computationalSha256 "0def633ed1bddb3ff5caf270374e790457658720d3d6102084a166a6173e1491";
+            origin        "data/standards/parameters/EdwardsPitzer/ion-OH.dat";
+            originSha256  "d212df5b14306ee7cdb8157dcf7d58e640a9b601f967bd89dc901324f5af93e1";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-CO2aq-CO3.dat"
+        {
+            type          imported;
+            sha256        "a7b04749a61f745cb51cbfbd8da219b0bb79a9f6b2622f808325afb4b3719a82";
+            computationalSha256 "44a5689300a683ba4dd560123baee14291f6a2d3d29beb6e656c52f530840b1c";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-CO2aq-CO3.dat";
+            originSha256  "7ef214ef6160be1d4e4b21eca2c0312fcce686ebc37de7980390ba75de5e0c04";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-CO2aq-H.dat"
+        {
+            type          imported;
+            sha256        "2edfb74970f21a0dc7cba8a2e5c9838b986c34bc01e5fe7471ea902b20d7ea31";
+            computationalSha256 "1e0a543e426ff7c4551fec53dbbcd736c43ecd1bc6b5d264a0ae89ca4f7c7cd5";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-CO2aq-H.dat";
+            originSha256  "40ca676d02956e46d089a344d5444c0eaa4d724d44be751b46d0535eceacc488";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-CO2aq-HCO3.dat"
+        {
+            type          imported;
+            sha256        "735b3b2ccb40421e29f3ffacdd4f116e5557acc0b04ed4e3999db7a8042a6608";
+            computationalSha256 "1ec408de865b32a4d0d3d8c1ebbf33e69e923bd754e54f63378a5f7755c7de38";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-CO2aq-HCO3.dat";
+            originSha256  "3461e6ebbf163d9657a2e9a6f953a3b1754dd5331f330227f4a3f711581af007";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-CO2aq-NH4.dat"
+        {
+            type          imported;
+            sha256        "47932a65bd0f77c00bd25cd7c4c469a17660c3fd8565622b193660d848c6e48e";
+            computationalSha256 "4f42e82cd2ce725a3cdbda3a43d6440fe2910940dddcc069f34ccbb3df7bfbb9";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-CO2aq-NH4.dat";
+            originSha256  "0d1a3b151ced09b07cbdd6d13c7617dfd5630fea36691c683e79e982a52218c1";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-CO2aq-OH.dat"
+        {
+            type          imported;
+            sha256        "9a6dc1620b947ac7059ddfa8ec474519312c907572d6c65789a2c1c5cc343b56";
+            computationalSha256 "94cc9f5413c71be7cd9e1eb734d60f8548e537122189cccd972d065de3c1d57f";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-CO2aq-OH.dat";
+            originSha256  "8067a0aa8ffb5c5c5b09ff3feae3e2331171f1a0314565f471061f22624ea445";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-NH3aq-CO3.dat"
+        {
+            type          imported;
+            sha256        "38199434b6ce5243617147dd95e655641d82e4ea488f147d73c26b32769331cf";
+            computationalSha256 "d3680ae8c712937fb7936c496c9d9612fb3dd9fe50ad36381de5f5ec4ec15e73";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-CO3.dat";
+            originSha256  "ff9e8b4392c71f715aff567026340c97bff23342e61fdda4756bc5795dc465fe";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-NH3aq-H.dat"
+        {
+            type          imported;
+            sha256        "bcc1b9875530f5a4dd2d1b4883ab2c7fefe333ab189da82eb9e7d7fc4869454e";
+            computationalSha256 "456b571a1cfc9f148a79b693ea8b441156e81b32590892344f68e39d9839ba28";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-H.dat";
+            originSha256  "8d40d1c84a171d54e3a518f6ffd15edbcaf160e1cde81d0cf7196da0b1ff55b3";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-NH3aq-HCO3.dat"
+        {
+            type          imported;
+            sha256        "4791b60a535206511e60aee99908e8714c594c730522c5cc1f74dbab64dcccc5";
+            computationalSha256 "bd3ffb01800ea38ad2b2d997ea64c4fa281a1ee94ba9369362dc83a5978a8aa3";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-HCO3.dat";
+            originSha256  "8f04b9af733ce7338744def0e10a75184f22ee7922d86f0b1c99cc6517b9a077";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-NH3aq-NH4.dat"
+        {
+            type          imported;
+            sha256        "5f0c311e98b21d299e7005480f3c2a90d24888dbc0d2e121def90cf313e473ac";
+            computationalSha256 "c0e6bbe715486750eb0e6cb48183bfe0fd9e4a0fabfe0c6563c0458e07b4dd50";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-NH4.dat";
+            originSha256  "7a1bd9f1bc9f64b1bfca7d53e27317f751658cde0960c0e5afa7dda6c1e3b82b";
+            release       Choupo-2607;
+        }
+        "parameters/EdwardsPitzer/mi-NH3aq-OH.dat"
+        {
+            type          imported;
+            sha256        "385ef4aa3ecf3b4926731d7a5d90cae466a5e20aa9ee39b8adcf92fa66bb5efd";
+            computationalSha256 "59a0ecda61714efbb8d9f119daaf86154e4c86a70cd47434e3a203c62bef5a56";
+            origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-OH.dat";
+            originSha256  "e9ddba8b8352ccda170c6f89829eb83871417380f6b771d481d2ebdebcbe66ae";
+            release       Choupo-2607;
+        }
+        "species/CO3.dat"
+        {
+            type          imported;
+            sha256        "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
+            computationalSha256 "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
+            origin        "data/standards/species/CO3.dat";
+            originSha256  "22c12d5a838fc0b0c10fb8dbfbbbc3147bb68c06ba62ce799c138c8f939e7d90";
+            release       Choupo-2607;
+        }
+        "species/H.dat"
+        {
+            type          imported;
+            sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            computationalSha256 "f8bc7c69e327342f330a3541a9d33d6c985e1b10b22553472a14b3ae69fee9d5";
+            origin        "data/standards/species/H.dat";
+            originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            release       Choupo-2607;
+        }
+        "species/HCO3.dat"
+        {
+            type          imported;
+            sha256        "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
+            computationalSha256 "dad707574331c50df07ba18cc9761be6f0ddf223c9bb331073975f4351468a10";
+            origin        "data/standards/species/HCO3.dat";
+            originSha256  "fa092d8333300568a4de38d72d9253bf46a677a9de05e3c08eede5c73990be23";
+            release       Choupo-2607;
+        }
+        "species/NH4.dat"
+        {
+            type          imported;
+            sha256        "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
+            computationalSha256 "b71a10fcbb01895c0df8d8059e1c23f621dfb43e1ac0aa0d90ea8ad63e405899";
+            origin        "data/standards/species/NH4.dat";
+            originSha256  "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
+            release       Choupo-2607;
+        }
+        "species/OH.dat"
+        {
+            type          imported;
+            sha256        "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            computationalSha256 "5a06c59147ab12cb832bfa5258560ebcfd9e764cf1fb2e6d0faada7b3f349529";
+            origin        "data/standards/species/OH.dat";
+            originSha256  "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            release       Choupo-2607;
+        }
+    }
+}

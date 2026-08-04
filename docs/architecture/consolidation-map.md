@@ -74,6 +74,8 @@ flowchart TB
 | **Dynamic initial state in `0/`** (no inline `initial{}` / `inlet{}`) | [`../../DYNAMIC_0_MIGRATION_HANDOFF.md`](../../DYNAMIC_0_MIGRATION_HANDOFF.md) | `choupoCtrl` + `choupoBatch` refuse the inline block by name | 42 dynamic cases seed from `0/` | **2026-07-16** |
 | **Effective stage K** (incipient, defined without vapour) | CLAUDE.md §6 | `stageK` projects onto the simplex and announces | `check_stage_identity`, `check_tray_chemistry` | **2026-08-03** |
 | **Version stamp = the LINE** (`Choupo-dev` on main) | `bin/curate/banner_version.py` header | `banner-version-gate` fails by name | one banner restored to `Choupo-2607` | **2026-08-04** |
+| **A model is reachable or it is not a capability** (`edwardsPitzer`) | CLAUDE.md §5 | the props package refuses an unknown declared model from ONE name table | `check_edwards_model` (5 sabotages) | **2026-08-04** |
+| **Sealing must not change the physics** | CLAUDE.md §5 | `choupo-import` compares the staged sealed run against the case's own golden | the closure disabled -> 12 named row differences, nothing installed | **2026-08-04** |
 | Unread keys (`murphreeEficiency` runs silently) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **awaiting a decision** |
 | `role` vocabulary | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **awaiting a decision** |
 | Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | to be implemented |

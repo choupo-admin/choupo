@@ -535,6 +535,74 @@ The molality+charge surface is a PURE INTERFACE (`ElectrolyteModel`) reached via
 construction-time configure downcasts were removed in A1; the engine query is the
 `asElectrolyte()` virtual, A2).
 
+### A THIRD aqueous activity engine: `edwardsPitzer` (2026-08-04)
+
+Beside `davies` and `pitzerHMW` sits **`edwardsPitzer`** — the truncated Pitzer
+expansion of **Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976
+(1978)**, selected `activityModel edwardsPitzer;` in a **propsDict `speciate`**
+op or declared `model EdwardsPitzer;` in a case's `aqueousProperties`.  It is
+here because neither of the other two can serve a sour-water fluid: Davies is
+charge-only and returns **exactly 1** for any neutral solute at any ionic
+strength (so it cannot express salting-out at all), and PitzerHMW is a
+DIFFERENT truncation with a different parameter set — using Edwards' numbers
+inside HMW's equation would be quoting him under someone else's model.
+
+**The layering is the point, and it is enforced by the file split.**
+`EdwardsPitzer.{H,cpp}` is a PURE kernel: it computes Eqs 8/9/10 from a
+parameter set handed to it, reads no files, and is verified against two closed
+forms the paper supplies.  `EdwardsCatalogue.{H,cpp}` is the CURATION
+arithmetic — Edwards measured ONE family (beta0 for like molecule pairs, Eq 14 /
+Table 4) and **estimated everything else** by Eqs 21/22/23/24 — plus the
+registered `EdwardsPitzerModel` adapter.  *The tree never stores a derivative*,
+so no estimated pair is written to disk; each is derived at assembly and
+**ANNOUNCED with the rule that produced it** (four of the five rules are
+estimates, and a reader must be able to tell which is which).  `beta1` is never
+an independent datum here: Eq 24 correlates it from beta0, and it is 0 on every
+pair involving a molecule.
+
+**Records** live under `data/standards/parameters/EdwardsPitzer/` and are keyed
+by the **runtime species name** (`CO2aq.dat`, `mi-NH3aq-NH4.dat`), never by a
+name a lookup would have to strip a suffix from — that would be the name-identity
+crossing the F2 contract bans.  `Trange` is CHECKED where the record is read;
+extrapolation is announced and the run continues.
+
+Two traps this slice paid for, both worth generalising:
+
+* **An ActivityResult outlives the frame that made it**, so its closures must be
+  SELF-CONTAINED.  The kernel captured names and molalities by value and the
+  parameter set by reference; the asymmetry was invisible until a caller built
+  the model as a temporary, and then it segfaulted.
+* **A banner keyed on one model and defaulting for the rest describes a model
+  that is not running.**  The speciation banner was a two-way switch on
+  `pitzerHMW`, so Edwards inherited Davies' sentence — and both halves of it
+  were false (the "I ~ 0.5" band is Davies' own; the "a_w from phi = 1" claim
+  was contradicted by the run's own a_w).  Each model states its OWN scope.
+
+Gate: `check_edwards_model` (reachability through the engine, the neutral gamma
+with its exactly-1 Davies negative, all five rules announced, Eq 24 recomputed
+from the printed beta0, the banner).  Reference case:
+`tutorials/props/electrolyte/edwards01_sour_water_activity` — a STRUCTURAL
+witness only; no number in it is validated against measurement.  The measured
+comparison is the paper's Table 7, which needs the vapour side
+(`docs/design/sour-water-stripper-scope.md`).
+
+**THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not
+merely that the case runs (2026-08-04).**  Adding an activity model without
+teaching `bin/choupo-import` about its parameter home broke exactly that
+invariant: the first sealed `edwards01` kept 9 of its 28 pair parameters (the
+Bronsted like-sign zeros, which need no record) and answered with 19 terms
+missing — it RAN, it CONVERGED, and it reported two identical monovalent gammas
+and two neutral gammas of exactly 1, which is what a *Davies* run prints.
+Nothing refused.  The importer's own validation passed it, because that
+validation asked whether the staged case RUNS.  **Running is not agreeing.**
+`validate_staged_agrees` now compares the staged sealed run against the case's
+own `expected` golden with runTests' tolerances and REFUSES with the likely
+cause named, installing nothing; a case with no golden yet keeps the exit-code
+check and is TOLD its answer is unverified.  Catching it via the corpus golden
+one step later was luck: a case sealed BEFORE its golden was recorded would
+have frozen the damaged answer as the reference.  When you add a record home a
+model reads, add it to the importer's closure in the same commit.
+
 ### Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout)
 
 A substance's ROLE (lumped / dissociated / multi-ion / molten) is chosen by the

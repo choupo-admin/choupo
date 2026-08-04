@@ -42,6 +42,7 @@
 # Curation-time tool (like bin/curate/*.py); the engine never estimates or
 # imports at runtime.
 
+import json
 import re
 import shutil
 import subprocess
@@ -866,6 +867,38 @@ def closure_of(pp_path, caseDir, std, AQ):
             # catalogue -- the dedicated case seals it whole
             ions.update(AQ.keys())
 
+    # ---- the EdwardsPitzer family (2026-08-04) -------------------------------
+    # THE SEAL MUST NOT CHANGE THE PHYSICS, and adding an activity model without
+    # teaching the importer about its parameter home breaks exactly that: the
+    # first sealed edwards01 kept 9 of its 28 pair parameters -- the Bronsted
+    # like-sign zeros, which need no record at all -- and silently answered with
+    # 19 terms missing.  gamma_HCO3 and gamma_NH4 came back identical (the
+    # charge-only Debye-Huckel fallback) and both neutral gammas came back
+    # exactly 1, which is indistinguishable from a Davies run.  Nothing refused.
+    #
+    # Worse, the importer's OWN validation passed: it re-runs the staged case
+    # with the catalogue hidden and checks that it RUNS.  Running is not
+    # agreeing.  The corpus golden is what caught this, one gate later.
+    #
+    # The records are keyed by the RUNTIME SPECIES NAME (CO2aq.dat,
+    # ion-NH4.dat, mi-NH3aq-HCO3.dat), so the reachable set filters them the
+    # same way the Pitzer family is filtered: every participant in the stem
+    # must be reachable.  An estimated pair needs no record -- Eqs 21/22/23
+    # derive it from these -- so sealing the reachable records seals the whole
+    # assembly.
+    uses_edwards = bool(re.search(r'\bedwardsPitzer\b|\bEdwardsPitzer\b',
+                                  models_txt))
+    if uses_edwards:
+        dpath = std / "parameters" / "EdwardsPitzer"
+        if dpath.is_dir():
+            for f in sorted(dpath.glob("*.dat")):
+                # Strip the record-KIND prefixes (`ion-`, `mi-`, `henry-`);
+                # what remains is the participant list.
+                stem = re.sub(r'^(?:ion|mi|henry)-', '', f.stem)
+                toks = set(re.split(r'-', stem))
+                if not reach or toks <= reach:
+                    want("parameters/EdwardsPitzer/" + f.name)
+
     # the ion Cp(T) tier (Criss-Cobble nodes): consumed by the ENTHALPY route
     # of an electrolyte WORLD (buildElectrolyte ion Cp), never by the
     # speciation ops -- seal it only when a flowsheet/single-salt electrolyte
@@ -1077,6 +1110,81 @@ def validate_staged(root, staged):
         die("validation FAILED: the staged sealed case does not run with the"
             " catalogue hidden (exit %d) -- nothing was installed.\n"
             "--- last lines ---\n%s" % (r.returncode, tail))
+    validate_staged_agrees(staged, r.stdout)
+
+
+def validate_staged_agrees(staged, out):
+    """The sealed run must give the SAME ANSWER, not merely an answer.
+
+    RUNNING IS NOT AGREEING, and the gap between the two is where a seal
+    silently changes physics.  Found 2026-08-04 on the first sealed
+    edwards01: the closure did not know the EdwardsPitzer parameter home, so
+    the sealed case kept 9 of its 28 pair parameters -- the Bronsted
+    like-sign zeros, which need no record at all -- and answered with 19
+    terms missing.  It ran.  It converged.  gamma_HCO3 and gamma_NH4 came
+    back identical (the charge-only Debye-Huckel fallback) and both neutral
+    gammas came back exactly 1, which is what a *Davies* run prints.  The
+    exit code was 0 and this validation passed it.
+
+    The corpus golden caught it one step later -- which is luck, not design:
+    a case sealed BEFORE its golden was recorded would have frozen the
+    damaged answer as the reference, and nothing downstream could tell.
+
+    So: when the case ships an `expected` golden, the staged sealed run is
+    compared against it here, with the same per-row tolerance runTests uses.
+    A case with no golden yet keeps the exit-code check and is SAID to have
+    only that -- an unverifiable claim announced is not the same as one
+    quietly not made.
+    """
+    exp = Path(staged) / "expected"
+    if not exp.exists():
+        print("  validation: staged case RAN with the catalogue hidden"
+              " (no `expected` golden yet -- the ANSWER is unverified)")
+        return
+    m = re.search(r"<<<Choupo:result-begin>>>(.*?)<<<Choupo:result-end>>>",
+                  out, re.S)
+    if not m:
+        die("validation FAILED: the staged sealed run emitted no structured"
+            " result, so its answer cannot be compared with the case's"
+            " `expected` golden -- nothing was installed.")
+    res = json.loads(m.group(1))
+    diags = {o.get("name"): o.get("diagnostics", {})
+             for o in res.get("operationResults", [])}
+    kpis = res.get("kpis", {}) or {}
+    bad = []
+    for line in exp.read_text().splitlines():
+        line = line.split("#")[0].strip()
+        if not line:
+            continue
+        f = line.split()
+        if len(f) < 4:
+            continue
+        kind, name, key, want = f[0], f[1], f[2], float(f[3])
+        tol = float(f[4]) if len(f) > 4 else 1e-4
+        if kind == "diag":
+            got = diags.get(name, {}).get(key)
+        elif kind == "kpi":
+            got = kpis.get(key)
+        else:
+            continue                       # stream rows: not in this reader
+        if got is None:
+            bad.append("%s %s.%s MISSING from the sealed run" % (kind, name, key))
+            continue
+        denom = abs(want) if want else 1.0
+        if abs(float(got) - want) / denom > tol:
+            bad.append("%s %s.%s: sealed %.6g vs golden %.6g (reltol %g)"
+                       % (kind, name, key, float(got), want, tol))
+    if bad:
+        die("validation FAILED: the staged sealed case RUNS but does not"
+            " AGREE with its own `expected` golden -- the seal changed the"
+            " physics, which is the one thing it must never do.  Nothing was"
+            " installed.  Most likely the dependency closure does not know"
+            " about a record home this case's models read.\n  "
+            + "\n  ".join(bad[:12]))
+    print("  validation: staged case ran with the catalogue hidden AND"
+          " reproduced its `expected` golden (%d row(s))"
+          % sum(1 for l in exp.read_text().splitlines()
+                if l.split('#')[0].strip()))
 
 
 # ---------------------------------------------------------------------------

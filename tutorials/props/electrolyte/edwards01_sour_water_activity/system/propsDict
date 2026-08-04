@@ -81,9 +81,19 @@
   WHICH RULE produced each number -- one measured family and four estimation
   routes -- so nothing here can be mistaken for a measured constant.
 
-  DATA SCOPE: self-DESCRIBING (inline manifest); species, reactions and the
-  EdwardsPitzer parameter records resolve from the curated data/standards/
-  tree at runtime.
+  DATA SCOPE: SEALED (bin/choupo-import).  The case carries its own species,
+  reactions and EdwardsPitzer parameter records under constant/, each named
+  and sha256-verified by constant/propertyManifest, and the runtime is
+  FORBIDDEN the installation catalogue.
+
+  Sealing this case is where the importer's dependency closure was found not
+  to know the EdwardsPitzer parameter home.  The first seal kept 9 of the 28
+  pair parameters -- the Bronsted like-sign zeros, which need no record at
+  all -- and the case still RAN, still converged, and answered with 19 terms
+  missing: gamma_HCO3 and gamma_NH4 identical (the charge-only Debye-Huckel
+  fallback) and both neutral gammas exactly 1, which is what a Davies run
+  prints.  Nothing refused.  The importer now compares the staged sealed run
+  against this case's own `expected` golden, because running is not agreeing.
 \*---------------------------------------------------------------------------*/
 
 operations
