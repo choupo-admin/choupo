@@ -634,6 +634,117 @@ distribution rides in a \code{psd \{\}} block.  A utility stream may
 carry \code{category <word>;} so the utilities report can aggregate
 consumption by header (\S\ref{sec:reports}).
 
+\paragraph{The second basis: the \code{speciation \{\}} block.}
+Where the property package resolves ions, a stream carries \emph{two}
+descriptions of the same material, and both appear in the file:
+
+\begin{lstlisting}
+componentMolarFlows          // THE STATE: apparent components
+{
+    NH3    0.019858 kmol/h;
+    CO2    0.003231 kmol/h;
+    water  1.476911 kmol/h;
+}
+T  367.3398 K;   P  101325 Pa;
+
+speciation                   // A VIEW of it: what the chemistry resolved
+{
+    network   ( ammonia carbonate );
+    basis     stoichiometric;
+    origin    "reported:postSolve";
+    solvedAtT 367.3398 K;
+    pH        8.361284;
+
+    CO2aq  2.4982e-05 kmol/h;   HCO3  0.003078 kmol/h;
+    CO3    1.2831e-04 kmol/h;   NH3aq 0.016520 kmol/h;
+    H      1.5754e-10 kmol/h;   NH4   0.003338 kmol/h;
+    OH     3.7577e-06 kmol/h;
+}
+\end{lstlisting}
+
+\begin{keyidea}
+\code{componentMolarFlows} is the \textbf{state}; \code{speciation \{\}} is a
+\textbf{view} of it.  The apparent components are what the solver carries,
+what the balances close on, and what you edit.  The species block is
+report-only --- delete it from an input file and every answer is
+unchanged.  It exists so a student can \emph{see} the chemistry the
+package solved instead of taking the outlet on trust, and it is written on
+the inlet too: a feed nobody speciates is exactly the stream you would
+want to compare an outlet against.
+\end{keyidea}
+
+The block is verified on read.  Each species collapses back to the
+apparent components through the same \emph{declared bridges} the component
+records carry (\code{aqueousMapping} / \code{dissociatesTo}) --- never by
+name similarity --- so it closes by construction, and a block that cannot
+be verified is refused rather than trusted.  Rows are written in canonical
+sorted order, so a diff between two runs shows a change in the chemistry
+and never a change in the solver's container order.
+
+\paragraph{Where the block came from, and whether it is still true.}
+Three fields answer questions a bare list of ions cannot:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\hline
+\code{origin} & \code{solved:<unit>} --- this unit ran the chemistry \\
+               & \code{transported:<unit>} --- carried across, not re-solved \\
+               & \code{reported:postSolve} --- derived after the solve \\
+\code{solvedAtT} & the temperature the equilibrium was solved at \\
+\code{equilibriumValidHere} & whether it still holds \emph{here} \\
+\hline
+\end{tabular}
+\end{center}
+
+That last one is the part worth understanding, because it is a
+distinction the file has to make and prose usually does not:
+
+\begin{keyidea}
+\textbf{An equilibrium is not a composition.}  It is a \emph{relation}
+between a composition and a thermodynamic state.  A composition solved at
+313\,K does not become the equilibrium composition at 332\,K by being
+carried there with a note saying where it came from.
+\end{keyidea}
+
+So when a unit that resolves no chemistry --- a heater, a pump, a splitter
+--- passes such a stream along, the two claims are separated and only one
+travels.  The \emph{amounts} are a material inventory: the unit moved no
+atoms and no charge, so every species crosses exactly and the numbers
+stand.  The \emph{equilibrium} is a claim about this state, and if $T$
+moved it dies at the boundary.  The outlet then reads:
+
+\begin{lstlisting}
+    origin    "transported:transporter";
+    solvedAtT 313.15 K;
+    currentT  332.2310 K;
+    equilibriumValidHere false;
+    //  Solved at 313.15 K, carried to 332.2310 K by a unit with no chemistry
+    //  model.  The amounts stand (conserved exactly); pH and every other
+    //  equilibrium-derived value are WITHHELD -- re-equilibrate to restore them.
+\end{lstlisting}
+
+\begin{pitfall}
+Notice what is \emph{absent}: there is no \code{pH}.  It is withheld, not
+inherited --- publishing the old pH here would put a number in the file
+that nothing at this state computed.  Any activity, saturation index or
+conditional constant resting on the dead equilibrium is withheld the same
+way.  If you want the equilibrium at that point, put a unit there that can
+solve one.
+\end{pitfall}
+
+Staleness is \emph{decided}, not assumed: the block goes stale because $T$
+actually moved.  A pump carrying the same brine at constant $T$ and $P$
+across the same model boundary leaves the equilibrium intact and keeps
+reporting the pH.  The boundary alone invalidates nothing; the change of
+state does.
+
+\begin{tutoriallink}
+\file{tutorials/steady/thermo/basis01\_two\_unit\_chain} --- a speciating
+flash hands its brine to a heater running a plain molecular world.  Its
+\file{flowsheetDict} header walks the three answers that were available
+at that boundary and why only one of them is honest.
+\end{tutoriallink}
+
 \paragraph{The completeness contract.}  $N$ streams in the flowsheet
 graph $\;=\;$ $N$ files in \file{0/}.  A missing or an orphan file is
 \textbf{fatal} for \code{choupoSolve} --- there is no partial state.
