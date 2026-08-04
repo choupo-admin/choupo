@@ -353,38 +353,122 @@ NH3/CO2 subset only — the H2S/SO2/HCN rows are deferred with S4.
     CO2-H+       0.033
     CO2-OH-      0.26 - 1.62e-3 T + 2.89e-6 T²
 
-**TRANSCRIPTION AMBIGUITY, FLAGGED NOT ASSUMED.**  Table 6's header gives
-the VALIDITY range in °C while the rest of the paper (Eqs 7, 13, 14 and
-Table 3's own header) uses T in kelvin.  The polynomials give different
-values under the two readings, so the case must not guess: the intended
-scale is settled by reproducing Table 7 (below), which is the point of
-having a numeric anchor at all.
+**THE TEMPERATURE SCALE: KELVIN.  Settled 2026-08-04, arithmetically,
+from the paper's own worked number — no longer a flag.**
+
+Table 6's header quotes the VALIDITY range in °C while its polynomials
+are written in `T`, and the two readings give different values.  The
+paper settles it itself: Table 7's column II states
+
+    β⁰(NH3,NH4+) = ½β⁰(NH3,NH3) + ½β⁰(CO2,NH4+) − ½β⁰(CO2,CO2) = 0.051
+
+at 100 °C.  Evaluating the right-hand side both ways:
+
+    KELVIN  (T = 373.15)  β⁰(CO2-NH4+) = +0.001520  ->  0.0504   ✔
+    CELSIUS (T = 100)     β⁰(CO2-NH4+) = +0.017030  ->  0.0582   ✘
+
+against a stated 0.051.  Kelvin lands within rounding; Celsius is out by
+ten times that.  **`T` in Table 6 is kelvin, and the °C in its header is
+the validity range** — exactly the convention Tables 1 and 3 already use
+(formula in K, "Range of validity, °C" as a separate column).
+
+Worth keeping as a method note: the resolution came from an internal
+CONSISTENCY relation the paper published alongside its parameters, not
+from reproducing the whole table.  A single closed-form identity settled
+in one line what a full multisolute solve would have settled ambiguously
+— many knobs, one number to match.
+
+### The MULTISOLUTE system (NH3–CO2–H2O): 17 equations, 17 unknowns
+
+Nine species: NH3(molecular), CO2(molecular), NH4+, HCO3−, CO3=, H+,
+OH−, NH2COO−, H2O.  Unknowns are `m_i` and `γ_i*` for all but water,
+plus `a_w`.
+
+**Five chemical equilibria** (15,16,17a,17b,18a,18b,19 combine to these):
+
+    K1 = a(NH4+)·a(OH−) / (a(NH3)·a(H2O))          NH3  + H2O ⇌ NH4+ + OH−
+    K2 = a(H+)·a(HCO3−) / (a(CO2)·a(H2O))          CO2  + H2O ⇌ H+ + HCO3−
+    K3 = a(H+)·a(CO3=) / a(HCO3−)                  HCO3− ⇌ H+ + CO3=
+    K4 = a(NH3)·a(HCO3−) / (a(NH2COO−)·a(H2O))     the CARBAMATE reaction
+    K5 = a(H+)·a(OH−) / a(H2O)                     water
+
+**Two mass balances:**
+
+    total NH3 = m(NH3) + m(NH4+) + m(NH2COO−)
+    total CO2 = m(CO2) + m(HCO3−) + m(CO3=) + m(NH2COO−)
+
+**Electroneutrality:**
+
+    m(NH4+) + m(H+) = m(HCO3−) + 2 m(CO3=) + m(NH2COO−) + m(OH−)
+
+**Plus** Eq (8) for eight activity coefficients (one per species except
+water) and Eq (10) for `a_w`.  8 + 1 + 5 + 2 + 1 = 17.
+
+**(19)/(20) the carbamate reaction**, `NH3 + HCO3− ⇌ NH2COO− + H2O`:
+
+    ln K = −8.6 + 2900/T                       (20 to 60 °C)
+
+The paper notes the answer is INSENSITIVE to it — decreasing K by a
+factor of two changes the Table 7 total pressure by under 2 % — which is
+why Eq 20 is used above its stated range without ceremony.  Worth
+carrying: it tells us this is not the knob to blame if the anchor misses.
+
+### How the interaction parameters are ESTIMATED (Eqs 21–25)
+
+Only β⁰ for LIKE molecules is measured (Eq 14 / Table 4).  Everything
+else is estimated, and the case must say so:
+
+    (21)  unlike molecules:     β⁰_ij = ½ ( β⁰_ii + β⁰_jj )
+    (22)  Bromley (1972):       β_+− = β_+ + β_−            [ion-ion]
+    (23)  Edwards et al. 1975:  β_(m−i) = β_molecule + β_ion  [molecule-ion]
+    (24)  Pitzer & Mayorga:     β⁽¹⁾ = 0.018 + 3.06 β⁰
+    (25)  dβ⁰_(m−i)/dT = − ( v̄_a^∞ / (β_w R T) ) · dv̄_i^∞/dT
+
+Eq (24) is what makes the multisolute calculation tractable: β⁽¹⁾ is
+never an independent datum, it is a correlation of β⁰.
+
+**Both parameter tables carry the same caveat in the paper's own words**
+— "preliminary results subject to change as more and better data become
+available" — and Table 5 adds that ion-ion parameters for LIKE-signed
+ions are assumed zero.  A case using these must not present them as
+measured constants.
 
 ### Table 7 — THE ANCHOR.  NH3–CO2–H2O at 100 °C
-Experimental data from Otsuka et al. (1960); columns I and II are the
-paper's own predictions (II re-estimates three β⁰ by Eq 21 as noted).
 
-    total molality      predicted molecular m      y in vapour
-    NH3    CO2          I(NH3)  I(CO2)  II(NH3) II(CO2)   exp NH3  I     II
-    2.90   1.45         1.245   0.014   1.225   0.015     0.066   0.123 0.140
-                                                exp CO2 0.506  I 0.494  II 0.481
-      ionic strength    I 1.50          II 1.55
-      pressure, atm     exp 3.15        I 2.51   II 2.53
+Experimental data from Otsuka et al. (1960).  Columns **I** and **II** are
+the paper's OWN predictions; II re-estimates three β⁰ as footnoted below.
+Three points, not one — so a golden can lock a trend, not a coincidence.
 
-    3.71   1.14         2.279   0.0056  2.263   0.0065    0.274   0.293 0.310
-                                                exp CO2 0.202  I 0.230  II 0.242
-      ionic strength    I 1.26          II 1.24
-      pressure, atm     exp 2.08        I 1.98   II 2.10
+| total m(NH3) | total m(CO2) | | m(NH3) mol. | m(CO2) mol. | I | y(NH3) | y(CO2) | P [atm] |
+|---|---|---|---|---|---|---|---|---|
+| 2.90 | 1.45 | **exp** | — | — | | 0.066 | 0.506 | 3.15 |
+| | | **I** | 1.245 | 0.014 | I = 1.50 | 0.123 | 0.494 | 2.51 |
+| | | **II** | 1.225 | 0.015 | I = 1.55 | 0.140 | 0.481 | 2.53 |
+| 3.71 | 1.14 | **exp** | — | — | | 0.274 | 0.202 | 2.08 |
+| | | **I** | 2.279 | 0.0056 | I = 1.26 | 0.293 | 0.230 | 1.98 |
+| | | **II** | 2.263 | 0.0065 | I = 1.24 | 0.310 | 0.242 | 2.10 |
+| 4.30 | 0.907 | **exp** | — | — | | 0.355 | 0.095 | 2.00 |
+| | | **I** | 3.087 | 0.0030 | I = 1.01 | 0.407 | 0.116 | 1.97 |
+| | | **II** | 3.077 | 0.0038 | I = 0.98 | 0.419 | 0.135 | 2.10 |
 
-    4.30   0.907        3.087   0.0030  3.077   0.0038    0.355   0.407 0.419
-                                                exp CO2 0.095  I 0.116  II 0.135
-      ionic strength    I 1.01          II 0.98
-      pressure, atm     exp 2.00        I 1.97   II 2.10
+("I =" in the sixth column is the IONIC STRENGTH, mol/kg — the paper
+reports it per prediction column.)
 
-    II differs from I by:  β⁰(NH3,NH4+) = ½β⁰(NH4+,NH4+) + ½β⁰(CO2,NH4+)
-                                        - ½β⁰(CO2,CO2) = 0.051
-                           β⁰(NH3,HCO3-) = β⁰(CO2,HSO3-) = -0.03
-                           β⁰(CO2,CO3=)  = β⁰(CO2,SO3=)  =  0.068
+**Column II differs from I in exactly three parameters:**
+
+    β⁰(NH3,NH4+)  = ½β⁰(NH3,NH3) + ½β⁰(CO2,NH4+) − ½β⁰(CO2,CO2) = 0.051
+    β⁰(NH3,HCO3−) = β⁰(CO2,HSO3−) = −0.03
+    β⁰(CO2,CO3=)  = β⁰(CO2,SO3=)  =  0.068
+
+> **A TRANSCRIPTION ERROR, CORRECTED 2026-08-04.**  The first line read
+> `½β⁰(NH4+,NH4+)` in this document until the paper was re-read.  It is
+> `½β⁰(NH3,NH3)`.  The difference is not cosmetic: β⁰ between LIKE-SIGNED
+> ions is zero by Brønsted (Table 5's own footnote), so the wrong version
+> evaluates to 0.047 where the paper states 0.051 — and it was the
+> relation used to settle the kelvin/Celsius question, so the error would
+> have propagated into the temperature scale of every Table 6 parameter.
+> Caught only because the check was carried out arithmetically instead of
+> being read past.
 
 ### What the anchor can and cannot claim — read this before locking a golden
 
