@@ -29,6 +29,11 @@ props:  propsGuide.pdf
 tutorialsGuide.pdf: $(wildcard tutorialsGuide-*.tex)
 
 # Two passes so the TOC resolves.
+# The props guide \input{}s a GENERATED operations reference (rendered from
+# gui/schemas/operations/ by bin/curate/props_ops_reference.py) -- editing a
+# schema must rebuild the PDF, exactly as editing a tutorials part does.
+propsGuide.pdf: propsGuide-operations.tex
+
 %.pdf: %.tex preamble.tex cc-by-sa-4.0.txt
 	@echo "  pdflatex (pass 1)  $<"
 	@$(LATEX) $(LATEXFLAGS) $< > $*.build.log 2>&1 || \

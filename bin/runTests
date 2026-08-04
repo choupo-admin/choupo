@@ -1474,6 +1474,22 @@ PYEOF
     fi
     rm -f /tmp/inventory.$$
 
+    # Props operations-reference gate: the propsGuide's operations chapter is
+    # RENDERED from gui/schemas/operations/, so adding or changing an op
+    # schema must not leave the manual describing the previous one.  The
+    # props-op partition is derived from the C++ unit-op registries, not
+    # listed anywhere, so a new operation appears in the guide the day its
+    # schema does.  Regenerate with bin/curate/props_ops_reference.py.
+    if "$ROOT/bin/curate/props_ops_reference.py" --check > /tmp/propsops.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "props-ops-reference-gate" "$(head -1 /tmp/propsops.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (stale -- run bin/curate/props_ops_reference.py)\n" "props-ops-reference-gate"
+        cat /tmp/propsops.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/propsops.$$
+
     # Adsorption catalogue gate: pair records have one home, declared bases,
     # provenance and an honest quality class.  In particular a historical
     # teaching fit may not masquerade as directly measured literature data.
