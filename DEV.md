@@ -6,7 +6,7 @@ next work — no need to reconstruct it from scattered notes.  Companion to
 [`RELEASING.md`](RELEASING.md) (how to cut a release) — this file is *where we
 are and what to do next*.
 
-*Last synced 2026-07-31.  Verify any number against the tree before relying on it —
+*Last synced 2026-08-04.  Verify any number against the tree before relying on it —
 and prefer `generated/releaseInventory.json` to any number written in prose.*
 
 ---
@@ -96,6 +96,37 @@ ones for day-to-day work:
   otherwise in any prose.
 
 ## 4. Roadmap for the development line (candidate work, priority-ish)
+
+0. ~~**A column over a chemistry (sour-water programme S1 + S2 first
+   piece)**~~ — **DONE 2026-08-04.**  `ThermoPackage::stageK` is the one
+   entry a tray asks for equilibrium: forwards to `Kvec` for a molecular
+   package (all 12 column tutorials byte-identical), runs the reactive
+   flash for a reacting one.  A four-stage sour-water column converges in
+   7 Newton iterations to |F| 8e-10.  **Two definition errors paid for
+   once and worth remembering**: a K-value is an INCIPIENT quantity (y/x
+   off the flash returns a column of zeros on a subsaturated trial state →
+   singular Jacobian → `Newton iters: 0`; the subsaturated branch now uses
+   the equilibrium partial pressures, `pEqAtm`); and a trial composition
+   can leave the simplex (CO2 at −8.5e-4 against a feed of 8e-3) → an
+   ANNOUNCED projection, negatives clamped, exact zeros left alone.
+   Witnesses `column12_stage_is_a_flash` (molecular control, adiabatic
+   re-flash) + `column13_sour_water_stage_identity` (identity closing at
+   1e-9 **on the ions too**).  Per-tray chemistry (pH, ionic strength,
+   every molality) now rides in `profile.csv`.  Gates
+   `check_stage_identity` + `check_tray_chemistry`, both
+   sabotage-verified.  Fixed on the way: `adiabaticFlash` priced EVERY
+   inlet as a sub-cooled liquid regardless of its vapour fraction.
+   **NAMED GAPS**, neither of them papered over:
+   * a reactive ADIABATIC flash needs its bracket seeded from the feed and
+     not from 200 K — until then column13 claims the equilibrium half of
+     the identity and column12 keeps the energy half;
+   * S2 proper (a taller stripper, wider loading range so the mechanism
+     check has more than four points) and S3 (the Edwards 1978 literature
+     anchor, whose data is transcribed in
+     `docs/design/sour-water-stripper-scope.md` Appendix A) are NOT built.
+     S3 needs a decision first: Edwards' activity model is a Pitzer
+     truncation, not `davies`, so it is a MODEL addition and not only a
+     curation act.
 
 1. ~~**Ctrl physical energy**~~ — **DONE 2026-08-01.**  `dynamicCSTR` is
    reformulated on a stored `H(n,T)` (elements datum): the inlet term is the
@@ -473,6 +504,27 @@ accepts today, and that is a policy call.
    stay refused — that boundary changes KIND.
 
 ## 5. Known debts (severity-ish)
+
+0. **THE MANUALS WERE OUTSIDE THE FENCES, and are now inside them.**  A
+   coverage sweep on 2026-08-04 found seven shipped capabilities described
+   in no guide at all (pinch, the effective stage K, the demand staircase,
+   the computational seal, the `speciation {}` block, the ctrl first-law
+   routes, the external-reference battery) plus two stale hand-carried
+   lists in the developer guide.  All are written now, and two structural
+   fixes came with them so the class of defect cannot recur silently:
+   * the props guide's 27-operation reference is **generated** from
+     `gui/schemas/operations/` (`bin/curate/props_ops_reference.py`), with
+     a gate refusing a stale render — a hand-written reference against
+     evolving schemas is the arity sin with a deadline;
+   * the release-inventory gate now scans **the four manuals** as well as
+     the AI-facing docs, and its pattern learned `N tutorials` beside
+     `N cases`.  Both changes were needed: the user guide said "about 200
+     tutorials" against 330, and the widened pattern immediately caught a
+     second stale count on the **public README** (191/243 against 330/295)
+     that had been passing the gate the whole time.
+   **The remaining debt is that nothing checks COVERAGE.**  A gate can
+   refuse a stale number; no gate notices a capability nobody documented.
+   That sweep was done by hand and will need doing again.
 
 1. **SEAL DRIFT — awaiting Vítor's decision.**  Sealed copies differ from the
    live catalogue (comment-only origin changes); no mass reseal without his call.
