@@ -1280,26 +1280,22 @@ split below).
 
 ### Things to NEVER do
 
+**These rules are DEFINED in
+[`docs/architecture/project-philosophy.md`](docs/architecture/project-philosophy.md)
+§4 (level 1).  This file references them and defines none** — settled
+2026-08-04: `CLAUDE.md` is a level-4 operational guide, and a level-4 document
+cannot define policy that binds the project.  When the two disagree, the
+philosophy wins and this list is the stale copy.
+
 * **Never** suggest a Python rewrite or wrapper.
 * **Never** add macro magic for self-registration (RTS-style macros).
 * **Never** import a heavy CFD framework or any heavy dep.
-* **Never** joke about "$N in tokens replacing commercial software" — taken as
-  a flippant signal.
-* **Never** skip alignment when proposing architecture changes — make a
-  proposal, wait for confirmation, then code.
-* **Never name Aspen (or any commercial competitor — HYSYS, ProSim, DWSIM,
-  gPROMS, ChemCAD…) in the USER-FACING MANUALS** (settled 2026-07-03, Vítor).
-  This covers everything a user reads: the `docs/` guides (`theoryGuide`,
-  `tutorialsGuide`, `explorerGuide`, `propsGuide`, developer guide), tutorial
-  `controlDict`/`flowsheetDict` header comments and `description` strings, the
-  tutorials catalogue, and GUI-visible copy.  Describe the *concept*
-  generically instead — "commercial process simulators", "a detailed
-  exchanger-rating tool", "the standard/industrial design workflow", "detailed
-  design / detailed rating" (not "EDR Design/Rating"), "a black-box tool".  Do
-  NOT carry a competitor trademark attribution in a manual's front-matter (if
-  it is never named, none is needed).  Source-code comments and git commit
-  messages are developer-facing, not manuals — a passing Aspen reference there
-  is tolerated, but prefer the generic phrasing there too.
+* **Never** joke about "$N in tokens replacing commercial software".
+* **Never** skip alignment when proposing architecture changes — propose, wait
+  for confirmation, then code.
+* **Never name a commercial competitor in the USER-FACING MANUALS** (settled
+  2026-07-03).  Scope, phrasing and the tolerated developer-facing exception:
+  philosophy §4.  Enforced by `check_doctrine`.
 
 ### When proposing features
 

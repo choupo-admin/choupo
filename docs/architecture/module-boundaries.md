@@ -1,21 +1,106 @@
-# Module boundaries — MEASURED, not yet ratified
+# Module boundaries — the contract, and the measured state
 
-> **STATUS: EVIDENCE, NOT AUTHORITY.**  This document reports the dependency
-> graph the code actually has, measured from every `#include "..."` under
-> `src/`.  It does **not** define the rule, because no document ever has, and
-> inventing one retroactively would be the architecture emerging accidentally
-> from the code — precisely what the governance principle forbids.
+> **AUTHORITY: LEVEL 1**, ratified 2026-08-04.  Authority map:
+> [`README.md`](README.md).
 >
-> Authority map: [`README.md`](README.md).  When Vítor rules on the questions
-> at the end, this file becomes level 1 (a boundary contract) and grows a gate;
-> until then it is a survey with an open finding list.
+> §1–§3 are the CONTRACT.  §4–§8 are the MEASUREMENT that produced it: the
+> dependency graph the code actually has, from every `#include "..."` under
+> `src/`.  The two are kept apart deliberately.  The measurement did not
+> *become* the rule — three of its findings are recorded as **violations of the
+> rule**, with removal conditions, rather than being blessed into it.  A
+> boundary document that ratifies whatever the code happens to do is the
+> architecture emerging accidentally from the code, which is the failure the
+> governance principle names.
 
 Reproduce with the snippet in §5.  Counts are include-site counts, not file
 counts, and self-edges within a subsystem are excluded.
 
 ---
 
-## 1. Why this document did not exist, and what that cost
+## 1. The layering
+
+```
+applications
+   └─ outerDriver ─ postProcessing ─ reporting
+        └─ unitOperations ─ propertyOps ─ control
+             └─ thermo ─ streams ─ materials ─ solver
+                  └─ core                       (the bottom: depends on nothing)
+```
+
+**A subsystem may depend downward and sideways within its band.  It may not
+depend upward, and the graph must be acyclic.**  These are invariants I17 and
+I18 in [`global-invariants.md`](global-invariants.md), and both are currently
+violated by measured code (§5, §6) — stated as violations with removal
+conditions, never as licence.
+
+## 2. Record resolution belongs to thermo — through ONE seam
+
+*Ratified 2026-08-04, against an external proposal that `src/thermo/` must not
+touch the filesystem.  That proposal is REJECTED, and the reasoning is recorded
+because it is the kind that returns.*
+
+`records::resolveRecord` is not filesystem access.  It is **seal-aware
+provenance resolution**: under `sealed true;` it deliberately refuses the
+installation catalogue so that a case reproduces from its own closure.  *Which
+parameterisation is in force* is a thermodynamic question, and a layer that
+does not know thermodynamics cannot answer it.
+
+Three reasons the general advice fails here:
+
+1. Moving resolution out relocates a thermo DECISION to a layer that cannot
+   make it.
+2. It relitigates a closed decision — exact-name `components/<name>.dat`
+   lookup, settled 2026-06-07, O(1), no startup directory walk
+   ([`project-philosophy.md`](project-philosophy.md) §5).
+3. Decisively: an ingestion boundary would need to know, ahead of time, every
+   record every model might read.  That is exactly the dependency-closure
+   problem that produced the 2026-08-04 sealing defect — a new activity model's
+   parameter home was unknown to the importer, so the sealed case kept 9 of its
+   28 pair parameters and still ran, still converged, and silently answered as a
+   different model.  The proposal moves that problem one layer up and makes it
+   harder: thermo knows what it needs; an ingestion layer must guess.
+
+**The defect underneath is ARITY, not layering.**  Record resolution has three
+independent implementations and no declared contract, so `bin/choupo-import`
+must know each separately.  The rule:
+
+> **Thermo owns record resolution, through exactly one seam
+> (`records::resolveRecord`), and a model must be able to DECLARE which records
+> it consumes, so the sealing closure asks instead of guessing.**
+
+`PitzerHMW`, `EdwardsCatalogue` and `Database` are conformant under this rule.
+The declarable-consumption half is not built; it is debt D3 in §8, and until it
+exists every new record home must be added to the importer's closure in the
+same commit that introduces it.
+
+## 3. Where shared logic lives
+
+*Ratified 2026-08-04.  Supersedes the weaker "below its lowest consumer" I
+first proposed, which would have dragged reporting vocabulary into `core`.*
+
+> **Shared logic goes to the lowest NEUTRAL layer that can own its concepts
+> without acquiring upward dependencies.**
+
+The word doing the work is *neutral*.  Do not mechanically move a
+reporting-domain concept downward because a lower consumer wants a piece of it
+— **extract the genuinely neutral calculation or model instead**, and leave the
+domain concern where it belongs.  A second consumer in a lower layer is a
+signal that a neutral calculation is buried inside a domain helper, not that
+the domain helper is in the wrong place.
+
+Applied to the three sites measured in §7:
+
+| helper | verdict |
+|---|---|
+| `missingEnthalpyData` | The calculation is `thermo.hasEnthalpyDatum(i)` over present species — a **thermo query wearing a reporting jacket**.  Extracts downward whole. |
+| `ModelBoundaryAudit` | **Splits.**  `ΔH = H_down(T,P,z) − H_up(T,P,z)` at one state is neutral thermo; formatting and printing it stay in `reporting`. |
+| `closures::rackettVliq` | A thermo correlation misplaced in `propertyOps`.  Moves outright — and `DerivedClosures.H` already documents this answer for its own `AmbroseWalton` entry ("runtime and estimator share ONE implementation"), so the file contradicts itself today. |
+
+---
+
+# The measurement
+
+## 4. Why this document did not exist, and what that cost
 
 Of the eight constitutional documents, module boundaries was the only one with
 **zero coverage** — no document anywhere states which subsystem may depend on
@@ -29,7 +114,7 @@ header justifying the split.
 That is exactly how erosion works.  Every individual decision is defensible,
 no document is contradicted, and the boundary moves anyway.
 
-## 2. The measured graph
+## 5. The measured graph
 
 Subsystems under `src/`, by file count:
 
@@ -50,7 +135,7 @@ The dominant edges are exactly what the layering in
 `unitOperations -> core` (96), `applications -> thermo` (93),
 `propertyOps -> thermo` (75).  The spine is sound.
 
-## 3. Findings
+## 6. Findings
 
 The layering the existing documents *imply* — never state — is:
 
@@ -148,29 +233,49 @@ this the cheapest of the four findings to fix and the most likely to recur:
 every future shared helper will land in whichever layer its FIRST consumer
 happened to be in.
 
-## 4. The questions only the architect can answer
+## 7. What the rulings settled
 
-1. **May a `src/thermo/` component read the filesystem?**  `PitzerHMW`,
-   `Database` and `EdwardsCatalogue` do.  Either that is the rule — thermo owns
-   its own record resolution — or those three are violations and record access
-   belongs behind an interface `core` or `io` provides.
-2. **Does `SimulationResult` belong in `core`?**  It is the reason for three of
-   the four `core`-reaches-up edges.  Moving it to its own `result/` subsystem
-   would make `core` a true bottom layer at the cost of one rename.
-3. **Are the three cycles ACCEPTED or SCHEDULED?**  Each needs a verdict:
-   accepted-and-documented (with the reason recorded here) or entered in the
-   debt register with a removal condition.
-4. **Where does a SHARED helper live?**  Proposed (F4): below its lowest
-   consumer, always — so a second consumer in a lower layer MOVES the helper
-   rather than creating an upward edge.  This is the rule that would have
-   placed `BalanceMath`, `ModelBoundaryAudit` and `rackettVliq` correctly on
-   the day each was written.
-5. **Is `CLAUDE.md` constitutional?**  It carries the "Things to NEVER do"
-   list — the project philosophy — while the authority index places level-4
-   documents as "derived DESCRIPTION of the contract, never its definition".
-   Both statements cannot hold.
+All five questions this audit raised were ruled on 2026-08-04.
 
-## 5. Reproducing the measurement
+| # | question | ruling |
+|---|---|---|
+| 1 | May `src/thermo/` read the filesystem? | **Yes, through one seam.**  §2 — the proposal to forbid it was rejected; the real defect is arity. |
+| 2 | Does `SimulationResult` belong in `core`? | **No.**  It is the pipeline's OUTPUT and names what the pipeline produced; it is the cause of three of the four `core`-reaches-up edges.  Moves to its own `result/` band above `core`.  Debt D1. |
+| 3 | Are the three cycles accepted or scheduled? | **`solver` ↔ `thermo`: ACCEPTED and documented** — Michelsen's stability test is a thermodynamic criterion solved numerically, and the dependency is irreducible without a worse abstraction.  **The other two: SCHEDULED.**  Debt D2. |
+| 4 | Where does a shared helper live? | §3, with the neutrality refinement. |
+| 5 | Is `CLAUDE.md` constitutional? | **No.**  The binding rules moved to [`project-philosophy.md`](project-philosophy.md); `CLAUDE.md` references and defines nothing. |
+
+## 8. Debt register — the violations this contract creates
+
+Ratifying §1 makes three measured facts into violations.  They are entered
+here with removal conditions rather than being smoothed into the rule.
+
+**D1 — `core` reaches up (F1, 4 sites).**  `SimulationResult` moves to a
+`result/` band above `core`.  *Removal condition:* `core` includes nothing but
+`core/`; invariant I17 gains a gate.
+
+**D2 — two scheduled cycles (F2).**  `unitOperations` ↔ `propertyOps` and
+`reporting` ↔ `postProcessing`.  *Removal condition:* the shared concept is
+extracted per §3 — `propertyOps::readExchange` to a neutral reader,
+`OdsWriter` below both consumers — and invariant I18 gains a gate.
+`solver` ↔ `thermo` is accepted and stays.
+
+**D3 — a model cannot declare what it consumes (§2).**  Until it can, the
+sealing closure must be taught each new record home by hand.  *Removal
+condition:* a model declares its record dependencies, `bin/choupo-import`
+enumerates them, and the closure stops being a hand-maintained list.  This is
+the debt that produced the 2026-08-04 sealing defect and will produce the next
+one.
+
+**D4 — F3, eight boundary-crossing `../` includes.**  *Removal condition:*
+zero `../` includes crossing a subsystem, so the graph is measurable by the
+obvious method.
+
+**D5 — the three structural invariants have no gate.**  I17, I18 and I19 are
+written and violated, so a gate today would fail the suite.  *Removal
+condition:* D1, D2 and D4 paid, then one gate covering all three.
+
+## 9. Reproducing the measurement
 
 ```python
 import re, collections
