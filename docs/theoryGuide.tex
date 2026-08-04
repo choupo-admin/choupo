@@ -19247,6 +19247,159 @@ same homotopy: the column is solved non-reactive first, then the reaction is
 switched on from that profile.  \file{column05\_reactive\_methylacetate} (methyl
 acetate, validated vs P\"opken 2001) reaches the equilibrium ceiling this way.
 
+\subsection{A column over a chemistry: the effective stage
+\texorpdfstring{$K$}{K}}\label{sec:stagek}
+
+Every column so far has stood on a \emph{molecular} thermodynamic package:
+the stage asks for $K_i(T_j, P, \xv_j)$ and the package answers with
+$\gamma_i P_i^{\rm sat}/P$ or a fugacity ratio.  Nothing in that exchange
+knows about chemistry, and for a hydrocarbon splitter nothing needs to.
+
+A sour-water stripper breaks it.  Ammonia's volatility is not a property of
+ammonia: it is set by how much of the ammonia in the liquid is free
+NH$_3$ and how much is NH$_4^+$, and that is set by the pH, which is set by
+how much CO$_2$ has already left.  Strip the carbon dioxide from the top of
+the column and the liquid's pH rises; the rising pH converts ammonium back
+to free ammonia; the free ammonia then strips.  \emph{The separation and
+the speciation are the same problem}, and no molecular $K$-value can
+express it.
+
+\begin{keyidea}
+The stage does not stop being a stage.  What changes is the \emph{answer to
+one question} --- what is the equilibrium ratio here? --- and so that is the
+only place the engine changes.  The MESH equations, the tridiagonal solve,
+the Jacobian, the flows: all untouched.
+\end{keyidea}
+
+\paragraph{The seam}
+
+Every stage evaluation, in every one of the three column models, goes
+through one call:
+
+\[
+\Kv_j \;=\; \texttt{thermo.stageK}(T_j,\, P,\, \zv_j,\, \xv_j,\, \yv_j).
+\]
+
+For a molecular package that call forwards, unchanged, to the ordinary
+$K$-value routine --- the twelve molecular column tutorials are
+bit-identical to what they were before it existed.  For a package that
+resolves chemistry, it solves the stage's \emph{own} equilibrium at its own
+$(T_j, P, \zv_j)$ --- speciation, phase transfer and electroneutrality
+together --- and reports an \textbf{effective apparent} $K$: the ratio the
+apparent components would need in order to produce the split the chemistry
+actually gives.
+
+The apparent components stay the state, exactly as they do in a reactive
+flash.  The ions are internal to the stage; the Jacobian never sees one.
+
+\begin{pitfall}
+This is \emph{not} a rigorous species-basis MESH.  The chemistry is
+re-solved inside each residual evaluation --- the same nested posture the
+two-liquid flash uses --- and the Jacobian sees apparent components only.
+It also costs one reactive flash per stage per residual, and the Jacobian
+is numerical, so a pass costs of order (stages $\times$ unknowns) flashes.
+A case that runs this must say so; the tutorial does, in its header.
+\end{pitfall}
+
+\paragraph{A $K$-value is an incipient quantity}
+
+Here is the mistake worth making once, because it is invisible in a flash
+and fatal in a column, and because the first implementation made it.
+
+The obvious definition is $K_i = y_i / x_i$, read off the converged flash.
+That is correct \emph{whenever the stage is two-phase}.  A column solver,
+however, spends most of its life asking about states that are not: on the
+way to the answer the Newton proposes stage liquids well below their bubble
+point.  For those, a flash reports no vapour at all, so $y_i = 0$ and every
+$K_i$ comes back zero.
+
+Follow that through.  The bubble-point residual $\sum_i K_i x_i - 1$ then
+reads $-1$ at every stage; worse, it reads $-1$ for a \emph{range} of $T$,
+so $\partial r / \partial T = 0$ and the Jacobian is singular.  The column
+does not diverge --- it does not move at all.  The measured symptom is a
+line in the log that says \code{Newton iters: 0} above a profile that is
+still the initial guess.
+
+The repair is to say what a $K$-value actually is.  It is an
+\textbf{incipient} quantity: defined over a liquid whether or not a vapour
+phase happens to be present, because it describes the vapour that
+\emph{would} form.  The reactive solver already computes exactly that when
+it tests for saturation --- the equilibrium partial pressure of each
+volatile over the fully speciated liquid --- so
+
+\begin{equation}
+K_i \;=\; \frac{p_i^{\,\rm eq}(T, \xv) / P}{x_i},
+\label{eq:stagek-incipient}
+\end{equation}
+
+which is the ordinary $\gamma$--$\phi$ $K$-value, $\gamma_i P_i^{\rm
+sat}/P$, generalised to a liquid whose \emph{speciation} sets the
+volatility.  The two definitions agree where they meet: at a two-phase
+state the partial pressures sum to $P$ by construction, so $p_i/P$ is $y_i$
+and Eq.~\eqref{eq:stagek-incipient} is $y_i/x_i$ again.
+
+\begin{intuition}
+The molecular case hides this because $\gamma_i P_i^{\rm sat}/P$ is written
+down without ever mentioning a vapour phase --- nobody is tempted to define
+it as a ratio of two things a flash returned.  Under chemistry the
+temptation exists, because the chemistry solver returns a whole phase
+split, and taking $y/x$ from it feels like reading the answer rather than
+inventing one.
+\end{intuition}
+
+\paragraph{Trial states that are not states}
+
+A second thing goes wrong, and its repair is a matter of honesty rather
+than of physics.
+
+A Newton on a column takes finite differences, and it overshoots.  It
+overshoots the \emph{minor} components first: on the sour-water witness the
+solver proposed a stage liquid whose CO$_2$ mole fraction was $-8.5\times
+10^{-4}$, against a feed value of $8\times 10^{-3}$.  There is no liquid
+whose carbon-dioxide content is minus a thousandth.  Asking a
+thermodynamic model to price one is not a hard question --- it is not a
+question.
+
+So the trial composition is projected onto the physical simplex before the
+chemistry is solved.  Every MESH does this; what Choupo adds is that it
+\textbf{says so}, once, naming what it did and why (see \S\ref{ch:sm-architecture}:
+a solver aid is allowed, disguising one is not).  The rule is deliberately
+narrow: a \emph{negative} entry is clamped, because negative means the
+solver overshot a component that is genuinely present; an \emph{exactly
+zero} entry stays zero, because zero means absent, and absent means absent.
+
+The projection cannot reach the answer.  At convergence every mole fraction
+is positive --- if the clamp were still binding there, the residual could
+not have reached zero.
+
+\paragraph{How you know the $K$ is right}
+
+The effective apparent $K$ is a \emph{definition we made}.  A wrong
+normalisation, a confusion between the apparent and species bases, or the
+speciation counted twice would each produce a column that converges to a
+profile which looks entirely plausible.  Nothing about the column itself
+would give it away.
+
+The check is an identity, and it is one a student can state in a sentence:
+\emph{an equilibrium stage is a flash of its own two products.}  Draw both
+phases off one stage, put them back together, and let the mixture separate
+again at the same pressure.  Nothing may happen --- not to the
+temperature, not to either composition, not to the phase ratio.  Two
+independent pieces of code, one answer.
+
+\begin{tutoriallink}
+\file{tutorials/steady/distillation/column12\_stage\_is\_a\_flash} does that
+on benzene/toluene, where nobody doubts the answer --- the control.
+\file{tutorials/steady/distillation/column13\_sour\_water\_stage\_identity}
+does it under the chemistry: four stages of NH$_3$ + CO$_2$ in water,
+converging in seven Newton iterations to $\|F\| \approx 8\times 10^{-10}$,
+with ammonia climbing from $0.005$ in the reboiler liquid to $0.30$ in the
+overhead vapour.  The recombined stage comes back unchanged to about
+$10^{-9}$ relative --- \emph{and so does its ion inventory}, which is the
+half of the check that a comparison of apparent compositions alone would
+miss.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Tray hydraulics: can the column be built?}\label{ch:hydraulics}
 
