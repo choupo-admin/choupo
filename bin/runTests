@@ -829,6 +829,26 @@ PYEOF
     fi
     rm -f /tmp/bspk.$$
 
+    # Stage-identity gate (2026-08-04): an equilibrium stage IS a flash.
+    # The witness draws BOTH phases off one stage, recombines them and
+    # re-flashes the mixture adiabatically; T, x, y and V/F must all come
+    # back unchanged, and the same construction with the vapour taken from
+    # a DIFFERENT stage must NOT hold.  This is the check that catches a
+    # wrong effective-K definition on the reacting path, where the column
+    # and the flash reach equilibrium through different code.
+    # Sabotage-verified twice (the adiabatic flash's feed vf reverted to
+    # sub-cooled liquid -> the witness cannot converge at all; stageK
+    # perturbed by 2e-4 relative -> all four claims fail).
+    if "$ROOT/bin/curate/check_stage_identity.py" > /tmp/stgid.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "stage-identity-gate" "$(tail -1 /tmp/stgid.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_stage_identity.py)\n" "stage-identity-gate"
+        cat /tmp/stgid.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stgid.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

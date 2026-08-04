@@ -90,13 +90,26 @@ int AdiabaticFlash::solve(const DictPtr& dict,
              +        sol.V_over_F  * vapourH(T, P, sol.y);
     };
 
-    // The authored feed is a sub-cooled liquid.  On the canonical path this is
-    // exactly the value that Flowsheet later publishes for the feed stream.
-    const scalar Hin  = liquidH(Tfeed, Pfeed, z);
+    //  THE INLET'S PHASE STATE IS READ, NOT ASSUMED.  This used to price the
+    //  feed as a sub-cooled liquid unconditionally, with the comment "the
+    //  authored feed is a sub-cooled liquid" -- true of every authored 0/ file
+    //  in the corpus (no `vaporFraction` key means vf = 0), and silently wrong
+    //  for any stream arriving with vapour in it.  A unit that mis-prices its
+    //  own inlet cannot close an energy balance no matter how good its solver
+    //  is, and the error is invisible: the flash simply converges to the wrong
+    //  temperature.  The feed's vf is on the stream (`Flowsheet` writes it
+    //  beside T and P), so it is read from there -- the same rule the column
+    //  already enforces on a feed's thermal state.  A vf of 0 reproduces the
+    //  previous value exactly, which is why every existing case is untouched.
+    const scalar vfFeed = feedDict->lookupScalarOrDefault("vf", 0.0);
+    const scalar Hin  = useFormation
+        ? thermo.H_stream_formation(Tfeed, Pfeed, vfFeed, z)   // the stream's own surface
+        : (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)
+          +      vfFeed  * thermo.Hvapour(Tfeed, z, Tref);
     const scalar Hreq = Hin;            // adiabatic: H_out = H_in
 
     std::cout << "Feed:       F = " << (F * 3600.0) << " kmol/h, T = " << Tfeed
-              << " K, P = " << (Pfeed * 1.0e-5) << " bar\n"
+              << " K, P = " << (Pfeed * 1.0e-5) << " bar, vf = " << vfFeed << "\n"
               << "Outlet:     P = " << (Pout * 1.0e-5) << " bar  (adiabatic, Q = 0)\n"
               << "Enthalpy:   "
               << (useFormation ? "elements datum (same surface as stream H/H_kW)"

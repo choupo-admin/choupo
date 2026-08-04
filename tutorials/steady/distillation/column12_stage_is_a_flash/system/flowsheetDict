@@ -1,0 +1,133 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-2607                        |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  AN EQUILIBRIUM STAGE IS A FLASH -- the identity witness.
+
+  A column's MESH equations and a flash drum's Rachford-Rice are two
+  DIFFERENT pieces of code that claim to compute the same thing: the
+  equilibrium split of a mixture at (T, P).  Nothing in the corpus made
+  them say it to each other.  This case does.
+
+      feed --> [tower]  --> distillate
+                        --> bottoms
+                        --> stageLiquid   (the liquid LEAVING stage 5)
+                        --> stageVapour   (the vapour LEAVING stage 5)
+
+      stageLiquid + stageVapour --> [recombine] --> stageMix
+      stageMix --> [restage] --> checkLiquid, checkVapour
+
+  THE CLAIM.  Stage 5 is an equilibrium stage: by definition the vapour
+  leaving it is in equilibrium with the liquid leaving it.  So if the two
+  are put back together and the mixture is allowed to separate again, at
+  the same pressure and with no heat added or removed, NOTHING must
+  happen: the same temperature, the same two compositions, and a vapour
+  fraction equal to the ratio of the two draws.
+
+      T(checkLiquid)  == T(stageLiquid) == T(stageVapour)
+      z(checkLiquid)  == z(stageLiquid)
+      z(checkVapour)  == z(stageVapour)
+      F(checkVapour) / (F(checkLiquid) + F(checkVapour))  ==  W / (U + W)
+
+  Nothing above is a number anyone typed.  Every one of them is produced
+  by the run, on both sides, and the gate `check_stage_identity` compares
+  them.  That is what makes this a witness rather than a demonstration.
+
+  WHY IT IS WORTH A CASE.  The column asks the thermodynamic package for
+  K-values per stage; the flash asks it for an equilibrium split.  Those
+  are different entry points and, for a package that resolves CHEMISTRY,
+  they are different code.  The effective K-value a reacting stage uses
+  (`ThermoPackage::stageK`, added 2026-08-04 for the sour-water column)
+  is exactly the sort of definition that can be subtly wrong -- wrong
+  normalisation, wrong basis, the reaction counted twice -- and still
+  produce a column that converges to a plausible-looking profile.  This
+  identity is what catches it.  The molecular case here is the CONTROL:
+  it must hold on a system where nobody doubts the answer, before the
+  same construction is trusted on one where they should.
+
+  HOW THE RECOMBINATION WORKS, and the one thing to understand about it.
+  `recombine` is a plain mixer, and a Choupo mixer MIXES -- it does not do
+  the vapour/liquid split ("mixers mix, flashes separate").  Handed a
+  liquid and a vapour it conserves total enthalpy exactly and reports the
+  result as a single dominant phase at whatever temperature carries that
+  enthalpy.  That temperature is FICTITIOUS -- a sub-cooled liquid held
+  well above its bubble point -- and the case does not use it for
+  anything.  What the mixer is doing here is carrying an ENTHALPY across
+  one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is
+  precisely the quantity it reads back, and the fictitious temperature
+  cancels out of the answer.  The identity is therefore an ENERGY
+  statement as well as an equilibrium one: it would fail if the column
+  and the flash disagreed about the enthalpy of either phase.
+
+  WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO.  Both draws come off stage
+  5.  A liquid draw from stage 5 and a vapour draw from stage 6 would
+  also recombine into something -- and it would not be an equilibrium
+  mixture, so the flash would move it.  The point of the case is that
+  when the two phases genuinely leave the SAME stage, the flash cannot
+  move them at all.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tower;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms  stageLiquid  stageVapour );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+
+            //  The two halves of stage 5, drawn off as real streams.  The
+            //  rates are small beside the internal traffic (L ~ 100, V ~
+            //  150 kmol/h), so the column is a normal column; they are
+            //  equal to each other only for readability -- the identity
+            //  does not need them equal, and the gate checks the vapour
+            //  fraction against the actual ratio, not against 0.5.
+            sideDraws
+            (
+                { stage 5;  phase liquid;  rate 10.0 kmol/h; }
+                { stage 5;  phase vapor;   rate 10.0 kmol/h; }
+            );
+        }
+    }
+
+    {
+        //  The enthalpy carrier.  See the header: this unit's outlet
+        //  temperature is fictitious ON PURPOSE and is never read.
+        name        recombine;
+        type        mixer;
+        inputs      ( stageLiquid  stageVapour );
+        outputs     ( stageMix );
+
+        //  No `operation {}` at all, deliberately.  A mixer's outlet
+        //  pressure is the LOWEST inlet pressure -- it is not something a
+        //  case declares -- and its outlet temperature here must be the
+        //  one the energy balance gives, not one anybody picked.  (An
+        //  earlier draft carried `P 1.01325 bar` and the run said so:
+        //  "1 key written and never read".)
+    }
+
+    {
+        //  The independent path.  Adiabatic: the outlet temperature is
+        //  SOLVED from the energy balance, not declared -- so recovering
+        //  stage 5's temperature is a result, not an input.
+        name        restage;
+        type        adiabaticFlash;
+        in          stageMix;
+        outputs     ( checkLiquid  checkVapour );
+        operation   { P 1.01325 bar; }
+    }
+);
