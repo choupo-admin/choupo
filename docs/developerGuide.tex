@@ -849,6 +849,67 @@ exit code 0; \code{bin/runTests} is the only honest gate (\S\ref{sec:regression}
 All previously-passing tutorials \emph{must} still pass.
 
 % =====================================================================
+\section{Declaring what a unit does to material}\label{sec:material-mapping}
+
+Some engine machinery needs to know not what a unit \emph{is} but what it
+\emph{does to the material passing through it}.  The carried species
+inventory is the current example: when a stream arrives with a
+\code{speciation \{\}} block and the unit resolves no chemistry of its own,
+the block has to cross somehow, and how depends entirely on the unit's
+material mapping.
+
+A splitter is the easy case and the instructive one.  It divides matter by
+\emph{one} fraction common to every species, so a carried species
+inventory --- which is extensive --- divides by exactly that fraction.
+Algebra, not chemistry.  A separator, membrane, filter or adsorber has no
+such fraction: its outlets are not proportional copies of its inlet, and
+the inventory cannot be divided without a model.
+
+The distinction is \textbf{declared}, on the unit:
+
+\begin{lstlisting}[language=C++]
+// UnitOperation.H -- the default is silence
+virtual std::string materialMapping() const { return ""; }
+
+// Splitter.H -- the capability, stated
+std::string materialMapping() const override
+{ return "proportionalExtensiveSplit"; }
+\end{lstlisting}
+
+\begin{keyidea}
+\textbf{The name of the class is irrelevant; what is declared is what the
+contract reads.}  It would have been shorter to test whether the unit is a
+\code{Splitter} --- and it would have been wrong the day somebody wrote a
+selective splitter, or a proportional divider that is not called one.  A
+capability that a caller must rely on is declared by the class that has
+it, never inferred by the caller from a name.
+\end{keyidea}
+
+Two consequences worth stating, because the first instinct on both was the
+wrong one:
+
+\begin{itemize}
+\item \textbf{Refusing was considered and rejected.}  The engine already
+      knows the fraction; refusing would force an author to restructure a
+      flowsheet around a limitation that does not exist.
+\item \textbf{So was falling back to re-derivation.}  Letting the
+      post-solve pass rebuild the two branch blocks from scratch would
+      replace known arithmetic with a model-dependent answer --- worse
+      than either alternative.
+\end{itemize}
+
+What must close, and is checked: the two branch inventories sum back to
+the inlet's, species by species, and each branch stays electroneutral,
+because one common fraction cannot break a balance that held before it.
+\file{basis01\_two\_unit\_chain} exercises exactly this on the far side of
+a model boundary.
+
+When you add a unit whose outlets \emph{are} proportional copies of its
+inlet, declare the mapping.  When they are not, say nothing --- the
+default silence is the honest answer, and the machinery that needs the
+capability will decline rather than guess.
+
+% =====================================================================
 \section{Adding a new thermodynamic model}\label{sec:add-thermo-model}
 
 Same explicit-factory spirit as everywhere else, with \code{ActivityModel} /

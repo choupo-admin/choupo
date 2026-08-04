@@ -3179,6 +3179,46 @@ not cooling water), with campaign totals under \code{utility\_*} ---
 energy, mass and cost per utility; a duty no utility can serve is
 listed, never dropped.
 
+\subsection{Switching a feed mid-campaign: the datum amendment}\label{sec:feed-switch}
+
+A batch \code{recipe} can re-declare an open-boundary unit's feed while
+the campaign is running --- the classic case being an adsorber that loads
+on a CO$_2$/He mixture and is then purged with pure helium:
+
+\begin{lstlisting}[language=dict]
+recipe
+(
+    { time 3600;  action setParameter;  unit bed;
+      key feed.CO2;  value 0.0; }        // the NEW feed mole fraction
+);
+\end{lstlisting}
+
+That looks like an ordinary parameter change and it is not, because of
+what an open boundary means: the unit's \emph{declared feed commitment} is
+campaign matter from $t = 0$.  Re-declare it and the commitment changes
+\emph{discontinuously} --- matter enters or leaves the campaign's datum
+without ever flowing through a piece of equipment.
+
+\begin{keyidea}
+The jump is \textbf{ledgered, never absorbed.}  The unit prices each
+amendment as a package at the commitment's own $(T, P, \text{phase})$ and
+the driver records it against the external boundary as a
+\code{feedAmendment}.  The campaign's mass, element and energy balances
+then read a \emph{record} where they would otherwise see a leak --- and a
+balance that closes because the discrepancy was quietly written off is
+worse than one that fails.
+\end{keyidea}
+
+\begin{pitfall}
+Only the \emph{composition} of a declared feed may be amended this way.
+Swinging its temperature, velocity or pressure mid-campaign is refused by
+name --- those change the physics of the boundary, not just the inventory
+crossing it, and the amendment machinery has nothing honest to say about
+them.  See \file{batch19\_feed\_switch\_purge}, whose breakthrough KPIs
+stay frozen across the switch while the desorption duty appears as the
+same exact state difference every other duty uses.
+\end{pitfall}
+
 \subsection{When the utility is needed, not just how much}\label{sec:utility-demand}
 
 A campaign total sizes nobody's boiler.  Two batches that consume the same
