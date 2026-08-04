@@ -921,10 +921,19 @@ Each inherits \code{PropertyOperation} (same explicit factory as everywhere
 else; \code{registerBuiltins()} is called from
 \file{src/propertyOps/PropertyOperation.cpp}). An op reads a \code{state}
 (\(T\), \(P\), composition), a \code{properties} list and an \code{output}
-block, and writes a CSV the GUI auto-plots. Built-ins: \code{propertyPoint},
-\code{propertyScan1D}, \code{propertyScan2D}, \code{propertyScanTernary},
-\code{fitParameters}, \code{vleConsistency}, \code{estimateComponent}. Property
-keywords live in \file{PropertyEvaluator.cpp}: per-component
+block, and writes a CSV the GUI auto-plots.
+
+\emph{Which ops exist is not listed here.}  This paragraph used to carry
+seven names and the engine registers twenty-seven; a list of built-ins in a
+manual is a second home for a fact the code already states, and it drifts
+the first time somebody adds one.  The authority is
+\file{gui/schemas/operations/}, and the props guide's operations chapter is
+\emph{rendered} from it (\file{bin/curate/props\_ops\_reference.py}, with a
+\code{runTests} gate that refuses a stale render).  The props--unit
+partition is derived too: an op is a unit op precisely when one of the three
+\code{UnitOperation} registries registers it.
+
+Property keywords live in \file{PropertyEvaluator.cpp}: per-component
 \code{Psat\_<c>}, \code{gamma\_<c>}, \code{y\_eq\_<c>}, \code{Cp\_liquid\_<c>}
 (each guarded --- e.g.\ \code{Psat} on a component with no vapour-pressure
 model throws a clear error instead of dereferencing null), and mixture scalars
@@ -959,6 +968,13 @@ full grid exactly). No physics is reimplemented --- the op is a triangular loop
 optionally \code{diagnostics()}), then one \code{reg("myOp", ...)} line in
 \code{PropertyOperation::registerBuiltins()}. Rebuild the native binary AND the
 WASM (\code{make wasm-gui}) or the browser will not see the new op.
+
+\textbf{And write the schema} --- \file{gui/schemas/operations/myOp.schema.json},
+with a \code{title} and a \code{description} for the op and for every key it
+reads.  It is not optional decoration: the GUI builds its form from it,
+\code{check\_schema\_coverage} refuses a key the corpus uses and the schema
+does not declare, and the props guide's reference chapter is generated from
+it.  An op without a schema is an op nobody can find.
 
 % =====================================================================
 \section{The thermophysical property architecture}\label{sec:property-architecture}
@@ -1014,30 +1030,50 @@ stored on the substance.  Two orthogonal choices define the role:
   the thermo data inside are medium-tagged blocks (\code{aqueousThermo}).
 \end{description}
 
-\subsection{The seven data homes}
+\subsection{The data homes}
+
+\code{ls data/standards/} is the authority on this list, and that sentence is
+not a formality: this subsection was headed ``the seven data homes'' while the
+tree held eight directories, and the one it left out was
+\file{conventions/} --- the versioned convention profiles the whole
+equilibrium-parameterisation identity references.  A count written into prose
+is a derived number in a second home; it drifts, and it drifts silently.  What
+follows is the \emph{shape}, never the tally:
 
 \begin{lstlisting}
 data/standards/
   components/<name>.dat        identity (name, MW, nonvolatile)
                                + dissociatesTo { Na 1; Cl 1; }  [salts]
+                               + solidPhases{}: rho_p, k_v and the salt's
+                                 OWN dissolution anchor (the retired
+                                 phases/solid/<phase>.dat is a legacy read)
   species/<name>.dat           one modelSpecies file per species:
                                formula + charge + medium-tagged thermo
                                (charge 0 for O2/N2(aq); never fed to a flowsheet)
-  (crystalline-phase data -- rho_p, k_v and the salt's own dissolution
-   anchor -- lives in the COMPONENT's solidPhases{} block; the old
-   phases/solid/<phase>.dat is a legacy read only)
-  chemistry/<name>.dat         FLAT (Migration 5): REAL equilibria
-                               (stoichiometry + K + dH); each record's
-                               recordType names its family
+  chemistry/<name>.dat         FLAT: REAL equilibria (stoichiometry + K + dH);
+                               each record's recordType names its family
                                (aqueousSpeciation / gasLiquidEquilibrium /
                                ionExchangeEquilibrium) -- never a subfolder
   parameters/
     Pitzer/{pairs,lambda,psi}/...             Pitzer binaries + ternaries
     eNRTL/<c>-<a>.dat                         eNRTL tau pairs
     NRTL/ UNIQUAC/ Wilson/ Henry/ SRK/ ...    molecular pair catalogues
-  (the system is declared INLINE in constant/thermoPhysPropDict -- THE
-   CENTRE; there is no shared package catalogue, and the old per-model
-   methods/<name>.dat ceremony records were retired)
+  conventions/<profile>.dat    the VERSIONED, immutable convention profiles
+                               a curated parameterisation cites by name
+                               (Sander-Hxp-v1, PHREEQC-gasMolal-v1, ...):
+                               what the constant MEANS, kept apart from
+                               what it IS
+  assets/<name>.dat            FLAT with a `kind` field -- construction
+                               materials, membranes, adsorbents, resins:
+                               one home, filtered by kind, not by directory
+  mixtures/                    curated mixture records
+  utilities/<name>.dat         steam LP/MP/HP, cooling + chilled water,
+                               dowthermA, hitecSalt, refrigerationPG,
+                               electricity
+  (the property SYSTEM is not a directory at all: a case DECLARES it INLINE
+   in constant/thermoPhysPropDict -- THE CENTRE.  There is no shared package
+   catalogue, and the old per-model methods/<name>.dat ceremony records were
+   retired.)
 \end{lstlisting}
 
 \code{components/} stays \emph{flat} (the loader resolves \code{<name>.dat} by
