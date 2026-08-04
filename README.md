@@ -11,8 +11,11 @@ directories, modular thermo, file-based component database, browser GUI
 > [versioned releases](https://github.com/choupo-admin/choupo/releases).
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
-> property evaluation + parameter fitting); 191 tutorials guarded by 243
-> regression checks (golden-master KPIs + a NaN/inf guard on every case);
+> property evaluation + parameter fitting); a large runnable tutorial
+> corpus, every case guarded by regression checks (golden-master KPIs +
+> a NaN/inf guard on every case; `listCases` and
+> [`generated/releaseInventory.json`](generated/releaseInventory.json)
+> carry the current counts);
 > three-layer simulator architecture (outer driver / simulator / post).
 > Thermo: NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 > gas + liquid transport (viscosity, conductivity, diffusivity),

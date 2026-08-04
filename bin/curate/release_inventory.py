@@ -155,9 +155,23 @@ def build() -> dict:
 #  A rule the file itself breaks is a wish; this makes it a gate.
 DOC_COUNT_PAT = re.compile(
     r'\b([0-9]{2,5})\s+(?:runnable\s+)?(?:tutorial\s+)?cases?\b|'
+    #  "N tutorials" was the phrasing this pattern did not have, and it is
+    #  the one the user guide used: "Choupo ships about 200 tutorials"
+    #  against a corpus of 330.  A detector that only knows one wording
+    #  catches only the wording it knows.
+    r'\b([0-9]{2,5})\s+(?:runnable\s+)?tutorials?\b|'
     r'\b([0-9]{2,5})\s+(?:curated\s+)?components?\b|'
     r'\b([0-9]{2,5})\s+aqueous\s+species\b')
-DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md"]
+#  THE MANUALS ARE NOT EXEMPT.  This list held only the AI-facing docs, so
+#  the four LaTeX guides -- the surface an actual reader meets -- could
+#  carry a stale tally indefinitely, and one did.  Adding them found
+#  exactly one hit across ~41k lines and no false positives; the pattern is
+#  narrow enough (a 2-5 digit number immediately before the noun) that the
+#  guides' legitimate numbers -- tube counts, stage counts, coefficients --
+#  do not trip it.
+DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md",
+            "docs/theoryGuide.tex", "docs/userGuide.tex",
+            "docs/propsGuide.tex", "docs/developerGuide.tex"]
 
 QUOTE_SPAN = re.compile(r'"[^"]*"|`[^`]*`|\u201c[^\u201d]*\u201d')
 
@@ -171,8 +185,9 @@ def quoted_spans(line):
 
 def hand_carried_counts():
     """-> [(file, line no, text)] for corpus tallies written by hand in the
-    AI-facing docs.  Only the SHAPE of the corpus belongs in prose; the size
-    lives in generated/releaseInventory.json."""
+    scanned docs -- the AI-facing ones AND the four manuals.  Only the SHAPE
+    of the corpus belongs in prose; the size lives in
+    generated/releaseInventory.json."""
     hits = []
     for rel in DOC_SCAN:
         f = ROOT / rel
@@ -221,7 +236,7 @@ def main():
                 print("  %s:%d  %s" % (rel, ln, s), file=sys.stderr)
             sys.exit(1)
         print("release inventory up to date; no hand-carried corpus tally"
-              " in the AI-facing docs")
+              " in the scanned docs or manuals")
         return
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(payload)
