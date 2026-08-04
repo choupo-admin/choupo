@@ -227,6 +227,70 @@ record can cite it exactly.
     (21)  unlike molecules:  β⁰_ij = ½(β⁰_ii + β⁰_jj)
     (24)  β⁽¹⁾ = 0.018 + 3.06 β⁰
 
+### THE EQUATIONS, in full (transcribed 2026-08-04, second pass)
+
+Written out rather than named, per the rule above.  `w` = water, `a` =
+molecular solute, `i,j,k` = solute species (molecular or ionic), `m` in
+**mol per kg of WATER**, `z` = charge.
+
+**(8) Activity coefficient of a solute species — the Pitzer truncation**
+(Pitzer 1973; Pitzer & Kim 1974):
+
+    ln γ_i* = − A_φ z_i² [ √I/(1 + 1.2√I) + (2/1.2) ln(1 + 1.2√I) ]
+
+              + 2 Σ_{j≠w} m_j { β_ij⁽⁰⁾ + (β_ij⁽¹⁾/(2I))
+                                · [ 1 − (1 + 2√I) exp(−2√I) ] }
+
+              − (z_i²/(4I²)) Σ_{j≠w} Σ_{k≠w} m_j m_k β_jk⁽¹⁾
+                                · { 1 − (1 + 2√I + 2I) exp(−2√I) }
+
+**(9)**  `I = ½ Σ_j z_j² m_j`
+
+**The three rules the paper states around Eq 8, each load-bearing:**
+* if `i` OR `j` is a MOLECULAR species, keep `β_ij⁽⁰⁾` but set
+  **`β_ij⁽¹⁾ = 0`** — "because experimental data are inadequate";
+* for ions `i,j` of **LIKE charge**, `β_ij⁽⁰⁾ = β_ij⁽¹⁾ = 0` (Brønsted
+  1922/1923: like charges do not approach);
+* `m` MUST be molal (mol/kg water) for Eqs 8 and 9 as written.
+
+**A_φ** (paper's own footnote): `A_φ = 2.303 A_γ / 3`, with `A_γ` the
+Debye–Hückel parameter tabulated 0–100 °C in Lewis et al. (1961)
+Appendix 4.  Above that:
+
+    A_φ = 1.4017e-6 · √(ρ*) / (D* T)^(3/2)
+
+with `ρ*` the density of saturated water [g/cm³] (CRC 1970-71) and `D*`
+its dielectric constant (Akerlof & Oshry 1950).
+
+**(10) Water activity, from Gibbs–Duhem:**
+
+    ln a_w = M_w { 2 A_φ I^(3/2)/(1 + 1.2√I)
+                   − Σ_{i≠w} Σ_{j≠w} m_i m_j [ β_ij⁽⁰⁾
+                                              + β_ij⁽¹⁾ exp(−2√I) ] }
+             − M_w Σ_{i≠w} m_i
+
+**Low-dissociation limits** (single weak electrolyte, ions negligible) —
+useful as an implementation self-check:
+
+    (8a)  ln γ_a* = 2 β_aa⁽⁰⁾ m_a
+    (10a) ln a_w  = [ − β_aa⁽⁰⁾ m_a² − m_a ] M_w
+
+**(11) Henry pressure correction (Krichevsky–Kasarnovsky):**
+
+    ln H^(P) = ln H^(P_w^s) + v̄_a^∞ (P − P_w^s) / (R T)
+
+**(12) The data-reduction form** (how B and β⁰ were fitted; a second
+self-check):
+
+    ln( y_a φ_a P / m_a ) − v̄_a^∞ (P − P_w^s)/(R T) = ln H + 2 β_aa⁽⁰⁾ m_a
+
+**(13)** `ln H = B1/T + B2 ln T + B3 T + B4`   [H in kg·atm/mol]
+**(14)** `β_aa⁽⁰⁾ = E + F/T`
+
+**Also from Table 1's footnote**, and easy to get wrong:
+`K_NH4OH = K_w / K_NH4+` — the ammonium-hydroxide dissociation constant
+is *derived* from the ammonium-ion one, not tabulated separately.
+
 ### Table 1 — dissociation constants (Eq 7), molality units
 
     species   A1          A2         A3            A4         valid, °C
