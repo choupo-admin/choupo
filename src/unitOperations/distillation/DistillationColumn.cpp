@@ -231,7 +231,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         // 1. K-matrix at current (T, x)
         std::vector<sVector> K(N, sVector(n, 1.0));
         for (std::size_t j = 0; j < N; ++j)
-            K[j] = thermo.Kvec(T[j], P, x[j], x[j]);
+            K[j] = thermo.stageK(T[j], P, x[j], x[j], x[j]);
 
         // 1b. Fold the tray efficiency into an EFFECTIVE K, so that y_j = Keff_j x_j
         //     carries the Murphree relation without changing a single equation below.
@@ -342,7 +342,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     // ---- Distillate composition: x_D = y_1, the vapour leaving the TOP TRAY.
     //  With E_MV < 1 that is Keff_1 x_1, not the equilibrium K_1 x_1: a real top
     //  tray hands the condenser a vapour it never fully equilibrated with.
-    auto K1 = (Emv < 1.0) ? Keff[0] : thermo.Kvec(T[0], P, x[0], x[0]);
+    auto K1 = (Emv < 1.0) ? Keff[0] : thermo.stageK(T[0], P, x[0], x[0], x[0]);
     sVector xD(n);
     for (std::size_t i = 0; i < n; ++i) xD[i] = K1[i] * x[0][i];
     {
@@ -366,7 +366,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     }
     for (std::size_t j = 0; j < N; ++j)
     {
-        const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.Kvec(T[j], P, x[j], x[j]);
+        const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
         profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
         profile_.columns["T"].push_back(T[j]);
         for (std::size_t i = 0; i < n; ++i)
@@ -496,7 +496,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             const bool rect = (j + 1 < static_cast<std::size_t>(NFint));
             Vs[j] = rect ? Vl : Vp;
             Ls[j] = rect ? Ll : Lp;
-            const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.Kvec(T[j], P, x[j], x[j]);
+            const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
             scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yAll[j][i] = Kj[i] * x[j][i]; sy += yAll[j][i]; }
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
@@ -802,7 +802,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         sVector T(N);
         for (std::size_t j = 0; j < N; ++j) {
             unpack(u, j, x[j], T[j]);
-            K[j] = thermo.Kvec(T[j], P, x[j], x[j]);
+            K[j] = thermo.stageK(T[j], P, x[j], x[j], x[j]);
             y[j].assign(n, 0.0);
             for (std::size_t i = 0; i < n; ++i) y[j][i] = K[j][i] * x[j][i];
         }
@@ -934,7 +934,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             sVector Ts(N), Vs(N), Ls(N);
             for (std::size_t j = 0; j < N; ++j) {
                 unpackF(w, j, xs[j], Ts[j], Vs[j], Ls[j]);
-                const auto Kj = thermo.Kvec(Ts[j], P, xs[j], xs[j]);
+                const auto Kj = thermo.stageK(Ts[j], P, xs[j], xs[j], xs[j]);
                 ys[j].assign(n, 0.0);
                 for (std::size_t i = 0; i < n; ++i) ys[j][i] = Kj[i]*xs[j][i];
             }
@@ -1002,7 +1002,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // ========================================================================
 
     // Distillate (total condenser): x_D = K_1·x_1, normalised.
-    auto K0 = thermo.Kvec(T[0], P, x[0], x[0]);
+    auto K0 = thermo.stageK(T[0], P, x[0], x[0], x[0]);
     sVector xD(n);
     { scalar s = 0.0;
       for (std::size_t i = 0; i < n; ++i) { xD[i] = K0[i]*x[0][i]; s += xD[i]; }
@@ -1012,7 +1012,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     profile_ = UnitProfile{};
     profile_.xAxis = "stage";
     for (std::size_t j = 0; j < N; ++j) {
-        const auto Kj = thermo.Kvec(T[j], P, x[j], x[j]);
+        const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
         profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
         profile_.columns["T"].push_back(T[j]);
         for (std::size_t i = 0; i < n; ++i) {
@@ -1037,7 +1037,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::cout << "\n";
         for (std::size_t j = 0; j < N; ++j)
         {
-            const auto Kj = thermo.Kvec(T[j], P, x[j], x[j]);
+            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
             std::cout << "    " << std::setw(4) << (j+1) << "    "
                       << std::fixed << std::setprecision(2) << std::setw(8) << T[j] << "  ";
             for (std::size_t i = 0; i < n; ++i)
@@ -1079,7 +1079,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         }
         if (Wdraw[j] > 0.0)
         {
-            const auto Kj = thermo.Kvec(T[j], P, x[j], x[j]);
+            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
             sVector yj(n, 0.0); scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yj[i] = Kj[i]*x[j][i]; sy += yj[i]; }
             if (sy > 0.0) for (auto& v : yj) v /= sy;
@@ -1160,7 +1160,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             if (Udraw[j] > 0.0) Hout += H(Udraw[j], T[j], 0.0, x[j]);
             if (Wdraw[j] > 0.0)
             {
-                const auto Kj = thermo.Kvec(T[j], P, x[j], x[j]);
+                const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
                 sVector yj(n, 0.0); scalar sy = 0.0;
                 for (std::size_t i = 0; i < n; ++i) { yj[i] = Kj[i]*x[j][i]; sy += yj[i]; }
                 if (sy > 0.0) for (auto& v : yj) v /= sy;
@@ -1186,7 +1186,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         std::vector<sVector> yAll(N, sVector(n, 0.0));
         for (std::size_t j = 0; j < N; ++j)
         {
-            const auto Kj = thermo.Kvec(T[j], P, x[j], x[j]);
+            const auto Kj = thermo.stageK(T[j], P, x[j], x[j], x[j]);
             scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yAll[j][i] = Kj[i] * x[j][i]; sy += yAll[j][i]; }
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;

@@ -738,6 +738,42 @@ sVector ThermoPackage::Kvec(scalar T, scalar P,
     return K;
 }
 
+//  ---- The K-values an equilibrium STAGE sees (sour-water scope S1) ------
+//
+//  Molecular package: this IS Kvec, forwarded, so every existing column is
+//  bit-identical.  Reactive package: the stage's own flash, read back as
+//  effective apparent K.  The dispatch is on what the PACKAGE declares,
+//  never on the calling unit -- a tray and a flash in the same world must
+//  get the same chemistry.
+sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
+                              const sVector& x, const sVector& y) const
+{
+    if (!hasReactiveEquilibrium())
+        return Kvec(T, P, x, y);
+
+    //  The stage's own equilibrium, on its own overall composition.  F is
+    //  the per-mole-of-feed basis the result's xApp/yApp already use, so 1
+    //  is not a placeholder: it is the basis.
+    const auto r = equilibrate(T, P, 1.0, zStage, 0);
+
+    sVector K(n(), 0.0);
+    for (std::size_t i = 0; i < n() && i < r.xApp.size(); ++i)
+    {
+        //  ABSENT MEANS ABSENT.  A component in neither phase has no
+        //  partition coefficient; returning 0 says that, where y/x would
+        //  divide by zero and any invented finite value would put a number
+        //  where the model has none.
+        if (r.xApp[i] <= 0.0)
+        {
+            K[i] = (i < r.yApp.size() && r.yApp[i] > 0.0)
+                 ? std::numeric_limits<scalar>::infinity() : 0.0;
+            continue;
+        }
+        K[i] = (i < r.yApp.size() ? r.yApp[i] : 0.0) / r.xApp[i];
+    }
+    return K;
+}
+
 sVector ThermoPackage::Kvec_Raoult(scalar T, scalar P) const
 {
     sVector K(n());

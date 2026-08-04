@@ -180,6 +180,39 @@ public:
 
     sVector Kvec_Raoult(scalar T_K, scalar P_Pa) const;
 
+    //  ---- STAGE EQUILIBRIUM: the K-values an EQUILIBRIUM STAGE sees -----
+    //
+    //  `Kvec` is the MOLECULAR K-value surface and has no reactive branch,
+    //  so a tray in a speciating world has no equilibrium to ask for.  A
+    //  sour-water stripper is the case that needs one: strip CO2 and the
+    //  liquid pH rises, the rising pH converts NH4+ back to free NH3, and
+    //  the NH3 then strips -- the separation and the speciation are the
+    //  same problem, which no molecular K can express.
+    //
+    //  This is the ONE entry a staged unit calls.  Under a molecular
+    //  package it IS `Kvec` (bit-identical, so every existing column is
+    //  untouched).  Under a reactive package it runs the reactive flash at
+    //  the stage's own (T, P, z) and reads back the EFFECTIVE APPARENT
+    //  K_i = y_i / x_i.
+    //
+    //  What that is, and is not.  The apparent components remain the
+    //  state, as the two-bases doctrine requires -- the chemistry is
+    //  internal to the stage exactly as it is internal to a flash, and the
+    //  Jacobian above sees apparent components only.  It is NOT a rigorous
+    //  species-basis MESH: the chemistry is re-solved inside each residual
+    //  evaluation (the nested posture the two-liquid flash already uses),
+    //  and it costs one reactive flash per stage per iteration.  A case
+    //  that runs it must SAY so; scope:
+    //  docs/design/sour-water-stripper-scope.md.
+    //
+    //  `zStage` is the stage's overall apparent composition (the feed to
+    //  its own equilibrium).  A component absent from both phases returns
+    //  K = 0 rather than a division by zero -- an absent species has no
+    //  partition coefficient, and inventing one would put a number where
+    //  the model has none.
+    sVector stageK(scalar T_K, scalar P_Pa, const sVector& zStage,
+                   const sVector& x, const sVector& y) const;   // .cpp
+
     // ----- Phase access (multi-phase generalisation) ---------------------
     std::size_t       nPhases()                       const { return phases_.size(); }
     const Phase&      phase(std::size_t k)            const;   // .cpp (fwd-decl Phase)
