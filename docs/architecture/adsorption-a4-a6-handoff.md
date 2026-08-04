@@ -1,128 +1,128 @@
-# Adsorption A4–A6 — handoff de física fechada (fórum #123)
+# Adsorption A4-A6 — handoff of closed physics (forum #123)
 
-**Estatuto:** as decisões FÍSICAS irreversíveis das fases A4 (fluxo/Ergun +
-energia), A5 (ciclos/CSS) e A6 (TSA), fechadas com âncoras numéricas
-independentes para implementação MECÂNICA sem novas decisões de arquitetura.
-Complementa `adsorption-contract.md` (§1–§9, que continua a mandar) e o código
-A3 (`FixedBedAdsorber`, commit `21917b20`).  Escrito sob a regra de orçamento
-do #123.  Numerário das âncoras: script reproduzível no fim de cada secção.
+**Status:** the irreversible PHYSICAL decisions of phases A4 (flow/Ergun +
+energy), A5 (cycles/CSS) and A6 (TSA), closed with independent numerical anchors
+so the implementation is MECHANICAL, with no new architecture decisions.  It
+complements `adsorption-contract.md` (§1-§9, which still rules) and the A3 code
+(`FixedBedAdsorber`, commit `21917b20`).  Written under #123's budget rule.  The
+anchors' numbers: a reproducible script at the end of each section.
 
 ---
 
-## Parte 1 — A4-fluxo: continuidade multicomponente + Ergun (mata o carrier fabricado)
+## Part 1 — A4-flow: multicomponent continuity + Ergun (kills the fabricated carrier)
 
-### 1.1 Variáveis de estado e closures (DECIDIDO)
+### 1.1 State variables and closures (DECIDED)
 
-* **Estado ODE por célula j:** `c_ij` [mol/m³ de gás] por componente
-  (TODOS, carrier incluído — deixa de haver "carrier por diferença") e
-  `q_ij` [mol/kg] por adsorvente ativo.  MAIS NADA: nem P nem u são estado.
-* **P é DERIVADO:** `P_j = R·T_j·Σ_i c_ij` (gás ideal DECLARADO, contrato
-  §1.2).  Como a continuidade total é a SOMA das equações por espécie, é
-  IMPOSSÍVEL o sistema fabricar matéria — o invariante que em A3 era uma
-  hipótese (Σc constante) passa a consequência.
-* **u é ALGÉBRICO por face**, da queda de pressão entre células vizinhas
-  (Ergun, 1.2).  Sem loop implícito: `odeDerivative` avalia u das P's do
-  estado corrente (explícito); a rigidez resultante pertence ao integrador
-  (Rosenbrock23 existente), não a um solver algébrico novo.
+* **ODE state per cell j:** `c_ij` [mol/m3 of gas] per component (ALL of them,
+  carrier included — there is no longer a "carrier by difference") and `q_ij`
+  [mol/kg] per active adsorbent.  NOTHING ELSE: neither P nor u is state.
+* **P is DERIVED:** `P_j = R.T_j.Sum_i c_ij` (an ideal gas DECLARED, contract
+  §1.2).  Because total continuity is the SUM of the per-species equations, it is
+  IMPOSSIBLE for the system to fabricate matter — the invariant that was a
+  hypothesis in A3 (constant Sum c) becomes a consequence.
+* **u is ALGEBRAIC per face**, from the pressure drop between neighbouring cells
+  (Ergun, 1.2).  No implicit loop: `odeDerivative` evaluates u from the current
+  state's pressures (explicitly); the resulting stiffness belongs to the
+  integrator (the existing Rosenbrock23), not to a new algebraic solver.
 
-### 1.2 Ergun por face — forma, sinal, reversão, u→0 (DECIDIDO)
+### 1.2 Ergun per face — form, sign, reversal, u -> 0 (DECIDED)
 
-Coeficientes (identidade do adsorvente ganha `d_p` e opcional esfericidade φ;
-μ da mistura gasosa pela regra já usada no transporte, anunciada):
-
-```
-A' = 150·(1−ε)²·μ / (ε³·(φ d_p)²)      [Pa·s/m²]   (viscoso)
-B' = 1.75·(1−ε)·ρ_g / (ε³·φ d_p)       [kg/m⁴]     (inercial; ρ_g = P·M̄/(R T) na face, média harmónica das células)
-−dP/dz = A'·u + B'·u·|u|               (u SUPERFICIAL, com sinal)
-```
-
-Por face j+½ com `ΔP = P_j − P_{j+1}` e `g = |ΔP|/Δz`:
+Coefficients (the adsorbent's identity gains `d_p` and an optional sphericity
+phi; the gas mixture's mu by the rule already used in transport, announced):
 
 ```
-u = sign(ΔP) · ( −A' + sqrt(A'² + 4·B'·g) ) / (2·B')
+A' = 150.(1-eps)^2.mu / (eps^3.(phi d_p)^2)   [Pa.s/m^2]  (viscous)
+B' = 1.75.(1-eps).rho_g / (eps^3.phi d_p)     [kg/m^4]    (inertial; rho_g = P.Mbar/(R T) at the face, harmonic mean of the cells)
+-dP/dz = A'.u + B'.u.|u|                      (u SUPERFICIAL, signed)
 ```
 
-* **Sem singularidade em u=0:** quando ΔP→0 a raiz tende a `g/A'` (limite
-  de Darcy, suave); em ΔP=0, u=0 exato.  NUNCA dividir por u.
-* **Reversão de fluxo é o sinal de ΔP** — o upwind das espécies segue
-  `sign(u_face)` por face (necessário para A5: pressurização/blowdown
-  invertem o escoamento localmente).
-* B'=0 (d_p grande ou declaração `darcyOnly`) degrada para Darcy sem ramo
-  especial (a fórmula geral com B'→0 precisa do limite: implementar
-  `u = g/A'` quando `4B'g < 1e-12·A'²` — escrever o porquê no comentário).
-
-### 1.3 FV por célula — pseudocódigo e unidades (DECIDIDO)
+Per face j+1/2 with `DP = P_j - P_{j+1}` and `g = |DP|/Dz`:
 
 ```
-para cada face f (0..N):                        # inclui as duas fronteiras
-    u_f   = ergun(P_up, P_down, props_f)        # m/s, com sinal
-    para cada componente i:
-        F_if = u_f · c_i,upwind(f)              # mol/m²/s  (advecção upwind)
-              − Dax · (c_i,down − c_i,up)/Δz    # mol/m²/s  (dispersão central)
-
-para cada célula j, componente i:
-    ε · dc_ij/dt = (F_i,j−½ − F_i,j+½)/Δz       # mol/m³/s
-                   − ρ_b · k_i · (q*_ij − q_ij) # só se i ativo no adsorvente
-    dq_ij/dt     = k_i · (q*_ij − q_ij)         # mol/kg/s
-    # q*_ij = MixingRule(T_j, p_vector_j), p_ij = c_ij·R·T_j  (Pa)
+u = sign(DP) . ( -A' + sqrt(A'^2 + 4.B'.g) ) / (2.B')
 ```
 
-* **Fronteiras:** entrada = CAUDAL MOLAR DECLARADO (`F_feed,i = u_in·c_in,i`
-  imposto na face 0, o Danckwerts advectivo de A3 mantém-se para a parte
-  dispersiva); saída = **P_out DECLARADA** na face N (u_N do Ergun entre
-  P_N e P_out; ∂c/∂z|N = 0 na dispersão).  O perfil P(z) FLUTUA — é
-  resultado.  (Estas duas escolhas são o par industrial: alimentação a
-  caudal fixo, jusante a pressão fixa; o par alternativo P_in/P_out fica
-  como opção declarável, mesma máquina.)
-* **Ledger:** M_in integra `A·F_i,0`, M_out integra `A·F_i,N` — POR ESPÉCIE,
-  incluindo carrier (linhas de estado do ODE como em A3).
-  `carrier_fabricated_mol` mantém-se como KPI e TEM de medir < 1e-12 (gate
-  F3) — deixa de ser residual declarado; `declaredMaterialResidual()`
-  devolve {} nesta unidade a partir de A4-fluxo.
+* **No singularity at u = 0:** as DP -> 0 the root tends to `g/A'` (the Darcy
+  limit, smooth); at DP = 0, u = 0 exactly.  NEVER divide by u.
+* **Flow reversal is the sign of DP** — the species upwind follows
+  `sign(u_face)` per face (necessary for A5: pressurisation/blowdown reverse the
+  flow locally).
+* B' = 0 (large d_p, or a `darcyOnly` declaration) degrades to Darcy with no
+  special branch (the general formula with B' -> 0 needs the limit: implement
+  `u = g/A'` when `4B'g < 1e-12.A'^2` — write the why in the comment).
 
-### 1.4 Rigidez e blocos do Jacobiano (DECIDIDO)
+### 1.3 FV per cell — pseudocode and units (DECIDED)
 
-Modos: LDF (λ ≈ −k(1+ρ_b·q*′/ε), até ~−9e3 s⁻¹ medido em A3), advecção
-(u/(εΔz)), dispersão (4Dax/(εΔz²)), e o NOVO acoplamento de pressão
-(∂u_f/∂P ≈ 1/(A'Δz) no limite Darcy → modo acústico-lento ~R·T·c_tot/(A'Δz²)
-— avaliar no arranque e IMPRIMIR como os três termos de A3).  Estrutura:
-blocos densos por célula (nComp+nAds) + acoplamento tridiagonal por blocos
-(as faces só ligam vizinhos).  Rosenbrock23 com o Jacobiano por FD como hoje
-chega; se o custo O((N·n)²) doer, o packet de otimização é banded-FD
-(colorir 3 grupos) — mecânico, sem física.
+```
+for each face f (0..N):                          # includes both boundaries
+    u_f   = ergun(P_up, P_down, props_f)         # m/s, signed
+    for each component i:
+        F_if = u_f . c_i,upwind(f)               # mol/m2/s  (upwind advection)
+              - Dax . (c_i,down - c_i,up)/Dz     # mol/m2/s  (central dispersion)
 
-### 1.5 Âncoras A4-fluxo (NÚMEROS INDEPENDENTES)
+for each cell j, component i:
+    eps . dc_ij/dt = (F_i,j-1/2 - F_i,j+1/2)/Dz  # mol/m3/s
+                   - rho_b . k_i . (q*_ij - q_ij)  # only if i is active on the adsorbent
+    dq_ij/dt       = k_i . (q*_ij - q_ij)          # mol/kg/s
+    # q*_ij = MixingRule(T_j, p_vector_j), p_ij = c_ij.R.T_j  (Pa)
+```
 
-Geometria batch13 (L=0.5 m, ε=0.4, A=0.01 m²), d_p=2.0e-3 m, φ=1,
-T=298.15 K, gás ideal.
+* **Boundaries:** inlet = a DECLARED MOLAR FLOW (`F_feed,i = u_in.c_in,i` imposed
+  on face 0; A3's advective Danckwerts stays for the dispersive part); outlet =
+  a **DECLARED P_out** on face N (u_N from Ergun between P_N and P_out;
+  dc/dz|N = 0 in the dispersion).  The P(z) profile FLOATS — it is a result.
+  (These two choices are the industrial pair: a fixed-flow feed, a fixed-pressure
+  downstream; the alternative P_in/P_out pair stays as a declarable option, same
+  machine.)
+* **Ledger:** M_in integrates `A.F_i,0`, M_out integrates `A.F_i,N` — PER
+  SPECIES, carrier included (ODE state rows, as in A3).
+  `carrier_fabricated_mol` stays as a KPI and MUST measure < 1e-12 (gate F3) — it
+  stops being a declared residual; `declaredMaterialResidual()` returns {} on
+  this unit from A4-flow onwards.
 
-* **F1 — Ergun sem adsorção, forma FECHADA** (k=0, He puro,
-  μ_He=1.99e-5 Pa·s e M̄=4.003e-3 kg/mol DECLARADOS como data de teste
-  case-local): com caudal molar constante N = u_in·c_tot(P_in) =
-  0.05·40.3395 = 2.01697 mol/m²/s e P_in=1e5 Pa, a solução exata é
-  **P(z)² = P_in² − 2RT·(A'N + B'_m·M̄·N²)·z** (B'_m = B'/ρ_g·…, i.e. o
-  coeficiente inercial com ρ_g eliminado analiticamente — derivação: em
-  estado estacionário isotérmico N é constante, u = N·RT/P,
-  ρ_g·u² = M̄·N²·RT/P, logo −P·dP = RT(A'N + 1.75(1−ε)/(ε³d_p)·M̄N²)dz).
-  Números: A'=4197.66, coef. inercial=8203.12 (unidades SI acima);
-  **ΔP_total = 106.6540743 Pa, P(L) = 99893.34593 Pa,
-  P(L/2) = 99946.68719 Pa**; só-Darcy daria P(L)=99895.00347 (o termo B
-  vale 1.658 Pa — o caso distingue os dois termos).  Gate: perfil FV
-  estacionário bate a forma fechada a 1e-8 rel com N=100.
-* **F2 — uptake diluído** (CO2 400 ppm em He): conservação total por
-  espécie a erro de máquina (é estrutural agora) e u(z) constante a <1e-5
-  rel — o limite onde A3 e A4 coincidem; breakthrough de A4 vs A3 difere
-  <0.1% em t_b5.
-* **F3 — o caso 15% (batch13 re-corrido em A4):**
-  `carrier_fabricated_mol < 1e-12` SEM nenhuma correção contabilística
-  (o gate central do #123); o balanço de campanha fecha nos elementos a
-  <1e-6 com `declaredMaterialResidual()` vazio; sentido esperado do
-  desvio vs A3: u cai ao atravessar a zona de captação (−15% local),
-  logo t_b5 AUMENTA — reportar o Δt_b5 obtido (não pinado a priori: é o
-  resultado novo; pina-se no golden ao gravar, com o sentido verificado).
+### 1.4 Stiffness and Jacobian blocks (DECIDED)
+
+Modes: LDF (lambda ~ -k(1 + rho_b.q*'/eps), down to ~-9e3 1/s measured in A3),
+advection (u/(eps.Dz)), dispersion (4Dax/(eps.Dz^2)), and the NEW pressure
+coupling (du_f/dP ~ 1/(A'.Dz) in the Darcy limit -> a slow-acoustic mode
+~R.T.c_tot/(A'.Dz^2) — evaluate it at start-up and PRINT it like A3's three
+terms).  Structure: dense blocks per cell (nComp + nAds) plus a block-tridiagonal
+coupling (faces only link neighbours).  Rosenbrock23 with the FD Jacobian, as
+today, suffices; if the O((N.n)^2) cost hurts, the optimisation packet is
+banded-FD (colour 3 groups) — mechanical, no physics.
+
+### 1.5 A4-flow anchors (INDEPENDENT NUMBERS)
+
+batch13 geometry (L = 0.5 m, eps = 0.4, A = 0.01 m2), d_p = 2.0e-3 m, phi = 1,
+T = 298.15 K, ideal gas.
+
+* **F1 — Ergun with no adsorption, CLOSED form** (k = 0, pure He,
+  mu_He = 1.99e-5 Pa.s and Mbar = 4.003e-3 kg/mol DECLARED as case-local test
+  data): with a constant molar flow N = u_in.c_tot(P_in) = 0.05 x 40.3395 =
+  2.01697 mol/m2/s and P_in = 1e5 Pa, the exact solution is
+  **P(z)^2 = P_in^2 - 2RT.(A'N + B'_m.Mbar.N^2).z** (B'_m = B'/rho_g..., i.e. the
+  inertial coefficient with rho_g eliminated analytically — derivation: at
+  isothermal steady state N is constant, u = N.RT/P, rho_g.u^2 = Mbar.N^2.RT/P,
+  hence -P.dP = RT(A'N + 1.75(1-eps)/(eps^3 d_p).Mbar N^2)dz).
+  Numbers: A' = 4197.66, inertial coefficient = 8203.12 (SI units as above);
+  **DP_total = 106.6540743 Pa, P(L) = 99893.34593 Pa,
+  P(L/2) = 99946.68719 Pa**; Darcy alone would give P(L) = 99895.00347 (the B
+  term is worth 1.658 Pa — the case distinguishes the two terms).  Gate: the
+  steady FV profile matches the closed form to 1e-8 relative at N = 100.
+* **F2 — dilute uptake** (400 ppm CO2 in He): total conservation per species to
+  machine error (it is structural now) and u(z) constant to < 1e-5 relative — the
+  limit where A3 and A4 coincide; A4's breakthrough differs from A3's by < 0.1 %
+  in t_b5.
+* **F3 — the 15 % case (batch13 re-run under A4):**
+  `carrier_fabricated_mol < 1e-12` with NO accounting correction whatsoever
+  (#123's central gate); the campaign balance closes on the elements to < 1e-6
+  with an empty `declaredMaterialResidual()`; expected sense of the deviation vs
+  A3: u drops crossing the uptake zone (-15 % locally), so t_b5 INCREASES —
+  report the Dt_b5 obtained (not pinned a priori: it is the new result; it is
+  pinned into the golden when recorded, with the sense verified).
 
 ```python
-# reprodução F1 (verbatim do cálculo usado acima)
+# reproduction of F1 (verbatim from the calculation used above)
 import math; R=8.314462618; T=298.15
 eps,dp,L,mu,M=0.4,2e-3,0.5,1.99e-5,4.003e-3
 P_in=1e5; N=0.05*P_in/(R*T)
@@ -132,133 +132,134 @@ S=2*R*T*(A1*N+B1*M*N**2); print(math.sqrt(P_in**2-S*L))  # 99893.34593
 
 ---
 
-## Parte 2 — A4-energia: balanço T + ledger (sem segunda superfície de entalpia)
+## Part 2 — A4-energy: the T balance + the ledger (no second enthalpy surface)
 
-### 2.1 Balanço por célula (DECIDIDO — um lump térmico gás+sólido)
+### 2.1 Per-cell balance (DECIDED — one gas+solid thermal lump)
 
 ```
-[ε·Σ_i c_ij·cp_g,i(T_j) + ρ_b·cp_s] · dT_j/dt =
-      − Σ_i (F_i upwind na face)·cp_g,i·(ΔT upwind)/Δz     # convecção térmica
-      + λ_ax · (T_{j+1} − 2T_j + T_{j−1})/Δz²              # condução/dispersão térmica
-      + ρ_b · Σ_i (−ΔH_ads,i) · k_i·(q*_ij − q_ij)          # fonte de adsorção (≥0 se ΔH<0 e a adsorver)
-      + (4·h_w/d_bed) · (T_w − T_j)                        # parede/jacket (opt-in; h_w, T_w declarados)
+[eps.Sum_i c_ij.cp_g,i(T_j) + rho_b.cp_s] . dT_j/dt =
+      - Sum_i (F_i upwind at the face).cp_g,i.(DT upwind)/Dz  # thermal convection
+      + lambda_ax . (T_{j+1} - 2T_j + T_{j-1})/Dz^2           # thermal conduction/dispersion
+      + rho_b . Sum_i (-dH_ads,i) . k_i.(q*_ij - q_ij)        # adsorption source (>=0 if dH<0 and adsorbing)
+      + (4.h_w/d_bed) . (T_w - T_j)                           # wall/jacket (opt-in; h_w, T_w declared)
 ```
 
-* **Sinais FIXADOS:** ΔH_ads < 0 (contrato §2); a fonte é `+(−ΔH)·dq/dt`
-  — adsorção aquece, dessorção arrefece, SEM ramos de sinal no código.
-* cp_g,i = `idealGasHeatCapacity` dos records EXISTENTES avaliado a T_j —
-  **a mesma superfície canónica de sempre, NUNCA uma tabela paralela**
-  (a lição #106 é lei aqui).  `cp_s` = campo novo `cpSolid` na IDENTIDADE
-  do adsorvente (curado; ausente → o balanço T RECUSA nomeado, contrato
-  §9).  Capacidade da fase adsorvida: DESPREZADA E DECLARADA no header
-  (extensão futura, nunca default silencioso).
-* λ_ax e h_w/T_w: equipamento (caso), como Dax.  T na entrada: Danckwerts
-  térmico (fluxo entálpico imposto na face 0), ∂T/∂z|N = 0.
-* Datum: irrelevante para o ODE (só ΔT entra); o LEDGER preços tudo na
-  superfície canónica (2.2) — não existe integração térmica fora dela.
+* **Signs FIXED:** dH_ads < 0 (contract §2); the source is `+(-dH).dq/dt` —
+  adsorption heats, desorption cools, with NO sign branches in the code.
+* cp_g,i = the `idealGasHeatCapacity` of the EXISTING records evaluated at T_j —
+  **the same canonical surface as always, NEVER a parallel table** (lesson #106
+  is law here).  `cp_s` = a new `cpSolid` field on the adsorbent's IDENTITY
+  (curated; absent -> the T balance REFUSES by name, contract §9).  The adsorbed
+  phase's heat capacity: NEGLECTED AND DECLARED in the header (a future
+  extension, never a silent default).
+* lambda_ax and h_w/T_w: equipment (the case), like Dax.  T at the inlet: a
+  thermal Danckwerts (an imposed enthalpy flux on face 0), dT/dz|N = 0.
+* Datum: irrelevant to the ODE (only DT enters); the LEDGER prices everything on
+  the canonical surface (2.2) — there is no thermal integration outside it.
 
-### 2.2 Ledger (DECIDIDO)
+### 2.2 Ledger (DECIDED)
 
-* Kind **`adsorption`** (reservado no contrato §2, ativa-se aqui):
-  `E = Σ_i (−ΔH_ads,i) · Δ(m_ads·q_i)` por segmento — diferença de estado
-  EXATA (Hess), nunca quadratura; validade exige ΔH_ads em TODOS os pares
-  ativos, senão gap NOMEADO.
-* Sensível do inventário: `H(estado_fim) − H(estado_início)` pela
-  superfície canónica (gás) + `m_ads·cp_s·ΔT` (sólido, porque o sólido
-  não tem superfície H — declarado como perna própria do ledger com o
-  cp_s curado).  Parede/jacket: kind `heatLoss` (já reservado).
-* O `energyLedgerGap()` de A3 ("isothermal … A4") morre nesta slice; o
-  batch09 ganha a variante adiabática com o balanço DISPONÍVEL.
+* Kind **`adsorption`** (reserved in contract §2, activated here):
+  `E = Sum_i (-dH_ads,i) . D(m_ads.q_i)` per segment — an EXACT state difference
+  (Hess), never a quadrature; validity requires dH_ads on ALL active pairs,
+  otherwise a NAMED gap.
+* Inventory sensible heat: `H(end state) - H(start state)` on the canonical
+  surface (gas) plus `m_ads.cp_s.DT` (solid, because the solid has no H surface —
+  declared as its own ledger leg with the curated cp_s).  Wall/jacket: kind
+  `heatLoss` (already reserved).
+* A3's `energyLedgerGap()` ("isothermal ... A4") dies in this slice; batch09
+  gains the adiabatic variant with the balance AVAILABLE.
 
-### 2.3 Âncoras A4-energia (NÚMEROS)
+### 2.3 A4-energy anchors (NUMBERS)
 
-* **T1 — adiabático lumped (batchAdsorber + energia):** batch09
-  (1 kg 13X, V=0.01 m³, n0=2 mol CO2, T0=298.15) com `cpSolid = 920
-  J/kg/K` (DECLARADO caso-local como dado de TESTE — a curadoria do valor
-  real é do Vítor) e cp_g,CO2=37.1 J/mol/K: o ponto fixo
-  inventário+energia (n_gas+m·q=n0; T = T0 + (−ΔH)·q·m/(m·cp_s+n0·cp_g);
-  q* à T nova) converge para **T_∞ = 366.983377 K (ΔT = 68.833 K),
-  q_∞ = 1.52075875 mol/kg, p_∞ = 146229 Pa** — fisicamente certo: quente
-  adsorve MENOS que os 1.9708 isotérmicos.  Gate 1e-6 rel.
-* **T2 — duty isotérmico exato:** já pinado hoje
-  (Q = 1.970838025·45000 = **88.68771113 kJ** — o KPI existente); em A4
-  vira registo `adsorption` do ledger com o balanço a fechar.
-* **T3 — redução:** `dH_ads = 0` em todos os pares (records de teste
-  case-local) + adiabático ⇒ T constante e o leito reproduz o A3
-  isotérmico BIT-IDÊNTICO (mesmos goldens) — o gate de não-regressão.
+* **T1 — adiabatic lumped (batchAdsorber + energy):** batch09 (1 kg 13X,
+  V = 0.01 m3, n0 = 2 mol CO2, T0 = 298.15) with `cpSolid = 920 J/kg/K`
+  (DECLARED case-local as TEST data — curating the real value is Vitor's) and
+  cp_g,CO2 = 37.1 J/mol/K: the inventory+energy fixed point
+  (n_gas + m.q = n0; T = T0 + (-dH).q.m/(m.cp_s + n0.cp_g); q* at the new T)
+  converges to **T_inf = 366.983377 K (DT = 68.833 K),
+  q_inf = 1.52075875 mol/kg, p_inf = 146229 Pa** — physically right: hot adsorbs
+  LESS than the isothermal 1.9708.  Gate 1e-6 relative.
+* **T2 — exact isothermal duty:** already pinned today
+  (Q = 1.970838025 x 45000 = **88.68771113 kJ** — the existing KPI); under A4 it
+  becomes an `adsorption` ledger record with the balance closing.
+* **T3 — reduction:** `dH_ads = 0` on all pairs (case-local test records) plus
+  adiabatic => T constant, and the bed reproduces the isothermal A3
+  BIT-IDENTICALLY (same goldens) — the non-regression gate.
 
 ---
 
-## Parte 3 — A5/A6: máquina de steps, invariantes e CSS (SPEC, não código)
+## Part 3 — A5/A6: the step machine, invariants and CSS (SPEC, not code)
 
-### 3.1 Steps e transições (DECIDIDO)
+### 3.1 Steps and transitions (DECIDED)
 
-* O sequenciador É a camada de recipe do choupoBatch (contrato §9): um
-  step = {duração OU evento de fim; BCs de cada extremidade do leito}.
-  Vocabulário mínimo: `pressurize` (entrada: P_feed rampa/valor, saída
-  FECHADA — face N com u=0), `adsorb` (caudal in / P_out), `blowdown`
-  (entrada FECHADA, saída P baixa), `purge` (fluxo INVERTIDO — entrada
-  fechada, face N alimentada pelo produto de outro leito),
-  `equalize` (dois leitos ligados: fluxo de face comum pelo Ergun da
-  válvula declarada `u = f(ΔP entre topos)` com conservação PAR-A-PAR),
-  `heat`/`cool` (A6: T_w ou T_feed em rampa — `setParameter` existente).
-* **Invariante de transição:** o estado do leito (c,q,T,P) é CONTÍNUO
-  através de qualquer transição — steps só trocam BCs; NENHUMA transição
-  reinicializa estado.  Matéria transferida entre leitos (purge/equalize)
-  é ledgerizada nos DOIS (o TransferRecord existente); ownership: a
-  corrente pertence ao leito PRODUTOR no intervalo, como no fractal.
-* O leito não sabe em que step está (contrato §9) — recebe BCs.
+* The sequencer IS choupoBatch's recipe layer (contract §9): a step =
+  {a duration OR an end event; the BCs at each end of the bed}.  Minimal
+  vocabulary: `pressurize` (inlet: P_feed as a ramp or a value, outlet CLOSED —
+  face N with u = 0), `adsorb` (flow in / P_out), `blowdown` (inlet CLOSED,
+  outlet at low P), `purge` (REVERSED flow — inlet closed, face N fed by another
+  bed's product), `equalize` (two beds connected: the common face's flow from the
+  declared valve's Ergun, `u = f(DP between the tops)`, with PAIRWISE
+  conservation), `heat`/`cool` (A6: T_w or T_feed on a ramp — the existing
+  `setParameter`).
+* **Transition invariant:** the bed's state (c, q, T, P) is CONTINUOUS across any
+  transition — steps only swap BCs; NO transition re-initialises state.  Matter
+  transferred between beds (purge/equalize) is ledgered in BOTH (the existing
+  TransferRecord); ownership: the stream belongs to the PRODUCING bed over the
+  interval, as in the fractal.
+* The bed does not know which step it is in (contract §9) — it receives BCs.
 
-### 3.2 CSS (DECIDIDO)
+### 3.2 CSS (DECIDED)
 
 ```
-err_css(n) = max_{campo ∈ {c_i,q_i,T}, célula j} |Y_n(j) − Y_{n−1}(j)| / scale(campo)
-scale: c → c_feed,i (ou c_tot,feed se traço);  q → q_sat,i;  T → ΔT_swing declarado
+err_css(n) = max_{field in {c_i, q_i, T}, cell j} |Y_n(j) - Y_{n-1}(j)| / scale(field)
+scale: c -> c_feed,i (or c_tot,feed if a trace);  q -> q_sat,i;  T -> the declared DT_swing
 ```
 
-avaliado no INÍCIO de ciclo; tolerância DECLARADA no caso; `maxCycles`
-declarado — atingi-lo sem convergir é FALHA NOMEADA (nunca reportar médias
-de um ciclo não convergido; o driver recusa como recusa o LEAK).  KPIs de
-ciclo (recovery, purity, produtividade, consumo específico) SÓ após CSS.
+evaluated at the START of a cycle; the tolerance is DECLARED in the case;
+`maxCycles` is declared — reaching it without converging is a NAMED FAILURE
+(never report averages from a non-converged cycle; the driver refuses as it
+refuses a LEAK).  Cycle KPIs (recovery, purity, productivity, specific
+consumption) ONLY after CSS.
 
-### 3.3 Vetores de aceitação (DECIDIDO como alvo, números na implementação)
+### 3.3 Acceptance vectors (DECIDED as the target; the numbers come with the implementation)
 
-* **Skarstrom PSA 2 leitos H2/CH4** (carvão ativado do catálogo): o psa01
-  de equilíbrio é o LIMITE IDEAL — recovery/purity do ciclo têm de
-  convergir PARA BAIXO do limite com Δ explicável por LDF+dispersão+purga
-  (reportar a decomposição, nunca calibrar contra o psa01: é âncora de
-  limite, não oráculo).
-* **TSA 2 leitos CO2/13X**: média de ciclo vs a álgebra do `tsaTwinBed`
-  steady (packet 118.5) — mesmo estatuto: limite superior, com o défice
-  a fechar quando t_cycle → grande e k → grande (verificação assintótica,
-  o anti-circularidade que o #123 pede).
+* **A 2-bed Skarstrom PSA, H2/CH4** (activated carbon from the catalogue): the
+  equilibrium psa01 is the IDEAL LIMIT — the cycle's recovery/purity must
+  converge BELOW that limit with a D explained by LDF + dispersion + purge
+  (report the decomposition; never calibrate against psa01: it is a limit anchor,
+  not an oracle).
+* **A 2-bed TSA, CO2/13X**: the cycle average against the steady `tsaTwinBed`
+  algebra (packet 118.5) — same status: an upper limit, with the deficit closing
+  as t_cycle -> large and k -> large (an asymptotic check, the anti-circularity
+  #123 asks for).
 
 ---
 
-## Parte 4 — Auditoria e sequência de implementação
+## Part 4 — Audit and implementation sequence
 
-**Decisões FECHADAS:** tudo acima + contrato §1–§9.  **Abertas (não
-bloqueiam):** valor curado de cpSolid/d_p por adsorvente (curadoria Vítor;
-testes usam valores case-local declarados); correlações Dax/λ_ax como aids
-de curadoria; banded-FD do Jacobiano (só se o perfil de custo o pedir);
-dual-site/IAST (fora, #122).
+**CLOSED decisions:** everything above plus contract §1-§9.  **Open (not
+blocking):** the curated cpSolid / d_p value per adsorbent (Vitor's curation;
+the tests use declared case-local values); Dax / lambda_ax correlations as
+curation aids; a banded-FD Jacobian (only if the cost profile asks for it);
+dual-site/IAST (out of scope, #122).
 
-**Sequência de commits (cada um inteiro, corpus verde, goldens novos):**
+**Commit sequence (each one whole, a green corpus, new goldens):**
 
-1. `tsaTwinBed` steady (packet 118.5 — álgebra, independente de A4);
-2. slice curatorial teaching-only dos 15 records (#122 — tokens do enum
-   Origin existente, advisory anti-design-grade, gate);
-3. A4-fluxo no `fixedBedAdsorber` (ficheiros: FixedBedAdsorber.{H,cpp};
-   identidade do adsorvente ganha d_p/φ opcionais + parser; âncoras
-   F1/F2/F3 como tutoriais batch16_ergun_profile / batch17_dilute /
-   re-record batch13; `declaredMaterialResidual()` esvazia AQUI);
-4. A4-energia (mesmos ficheiros + BatchAdsorber.{H,cpp} para T1;
-   cpSolid no reader da identidade com recusa; kind `adsorption` no
-   ledger de main.cpp; T1/T2/T3 como batch18_adiabatic_uptake +
-   variante batch09 + gate de redução);
-5. A5 steps+CSS (recipe layer + um `bedPair` de coordenação para
-   equalize/purge; Skarstrom como plant/ ou batch/ com 2 leitos);
-6. A6 TSA (rampas — quase só caso + goldens).
+1. `tsaTwinBed` steady (packet 118.5 — algebra, independent of A4);
+2. the teaching-only curatorial slice of the 15 records (#122 — tokens of the
+   existing Origin enum, an anti-design-grade advisory, a gate);
+3. A4-flow in `fixedBedAdsorber` (files: FixedBedAdsorber.{H,cpp}; the
+   adsorbent's identity gains optional d_p/phi plus the parser; anchors F1/F2/F3
+   as the tutorials batch16_ergun_profile / batch17_dilute / a re-recorded
+   batch13; `declaredMaterialResidual()` empties HERE);
+4. A4-energy (the same files plus BatchAdsorber.{H,cpp} for T1; cpSolid in the
+   identity reader with its refusal; kind `adsorption` in main.cpp's ledger;
+   T1/T2/T3 as batch18_adiabatic_uptake + a batch09 variant + the reduction
+   gate);
+5. A5 steps + CSS (the recipe layer plus a coordinating `bedPair` for
+   equalize/purge; Skarstrom as a plant/ or batch/ case with 2 beds);
+6. A6 TSA (ramps — almost entirely case files and goldens).
 
-*Autor: Claude (loop autónomo), 2026-07-13, sob o orçamento do #123.  Os
-números das âncoras são reproduzíveis pelos snippets python incluídos.*
+*Author: Claude (autonomous loop), 2026-07-13, under #123's budget.  The anchors'
+numbers are reproducible from the included Python snippets.*

@@ -1,10 +1,20 @@
 # Forum — mixing rules & per-component models: the "cão e gato" grammar (2026-07-04)
 
-**Convened by:** Vítor, on reading the plant thermoPackage: *"Faltam as regras
-de mistura! Compostos diferentes podem usar modelos diferentes... Já percebi
-que não há o ULTIMATE MODEL e que há uma altura em que é 'seja o que Deus
-quiser' e 'quem não tem cão caça com gato'. Mas não se pode embrulhar esta
-falta de conhecimento em verborreia matemática e escondê-la do utilizador!"*
+**Convened by:** Vitor, on reading the plant thermoPackage: *"The mixing rules
+are missing!  Different compounds may use different models...  I have understood
+by now that there is no ULTIMATE MODEL, and that there comes a point where it is
+'whatever God wills' and 'whoever has no dog hunts with a cat'.  But you cannot
+wrap that lack of knowledge in mathematical verbiage and hide it from the
+user!"*
+
+(Translated from the Portuguese original: *"Faltam as regras de mistura!
+Compostos diferentes podem usar modelos diferentes... Já percebi que não há o
+ULTIMATE MODEL e que há uma altura em que é 'seja o que Deus quiser' e 'quem não
+tem cão caça com gato'. Mas não se pode embrulhar esta falta de conhecimento em
+verborreia matemática e escondê-la do utilizador!"*  The doctrine below keeps
+its Portuguese name, as Vitor coined it; `cão-e-gato` is "dog-and-cat", from the
+proverb *quem não tem cão caça com gato* — you hunt with a cat when you have no
+dog, i.e. you make do with what you have, and you say so.)
 
 ## The founding principle (ratified as doctrine, named his way)
 

@@ -1,223 +1,226 @@
-# Adsorption Contract v1 — o contrato físico comum A1–A6
+# Adsorption Contract v1 — the physical contract common to A1-A6
 
-**Estatuto:** decision record (fórum #116/#118).  Congela estados, bases,
-sinais, equilíbrio multicomponente, propriedade da energia, âmbito cinético,
-unidades, validade/proveniência e as interfaces entre isotérmica, batch,
-leito e sequenciador de ciclos — ANTES de qualquer implementação além de A1.
-Revisão adversarial no fim do documento.  Alterar este contrato exige nova
-entrada no fórum; implementações citam a secção que honram.
+**Status:** decision record (forum #116/#118).  Freezes states, bases, signs,
+multicomponent equilibrium, ownership of the energy, kinetic scope, units,
+validity/provenance and the interfaces between the isotherm, the batch vessel,
+the bed and the cycle sequencer — BEFORE any implementation beyond A1.  An
+adversarial review closes the document.  Changing this contract requires a new
+forum entry; implementations cite the section they honour.
 
 ---
 
-## 1. Estados e bases
+## 1. States and bases
 
-### 1.1 Loading (o estado do sólido)
+### 1.1 Loading (the solid's state)
 
-* **Grandeza canónica:** `q_i` = mol de adsorbato i por kg de ADSORVENTE
-  (regenerado, seco) — `mol/kg`.  SI interna do motor.
-* `loadingBasis` é OBRIGATÓRIA em cada record de equilíbrio; formas aceites
-  e convertidas NO CARREGAMENTO (nunca no hot path):
-  `molPerKgAdsorbent` (canónica) · `mmolPerG` (×1) · `cm3stpPerG`
-  (÷ 22 413.6 cm³STP/mol, IUPAC 273.15 K/1 atm — o fator fica escrito no
-  conversor) · `kgPerKgAdsorbent` (÷ M_i).
-* O estado EXTENSIVO do sólido é sempre `m_ads · q_i` [mol]; `m_ads` é a
-  massa de adsorvente do EQUIPAMENTO (caso), nunca do catálogo.
+* **Canonical quantity:** `q_i` = mol of adsorbate i per kg of ADSORBENT
+  (regenerated, dry) — `mol/kg`.  The engine's internal SI.
+* `loadingBasis` is MANDATORY on every equilibrium record; the accepted forms,
+  converted AT LOAD TIME (never on the hot path):
+  `molPerKgAdsorbent` (canonical) · `mmolPerG` (x1) · `cm3stpPerG`
+  (/ 22,413.6 cm3STP/mol, IUPAC 273.15 K / 1 atm — the factor is written into
+  the converter) · `kgPerKgAdsorbent` (/ M_i).
+* The solid's EXTENSIVE state is always `m_ads . q_i` [mol]; `m_ads` is the
+  EQUIPMENT's adsorbent mass (the case), never the catalogue's.
 
-### 1.2 Força motriz (o estado do gás visto pela isotérmica)
+### 1.2 Driving force (the gas state as the isotherm sees it)
 
-* **Canónica:** pressão parcial `p_i` [Pa].  `pressureBasis` obrigatória no
-  record: `partialPressurePa` (canónica) · `partialPressureBar` (×1e5) ·
-  `concentrationMolM3` (p = cRT na conversão, gás ideal DECLARADO).
-* Fugacidade é um EXTENSION POINT (§7): a assinatura da API recebe (T, p_i)
-  e um futuro `fugacityAdapter` pode pré-transformar p_i → f_i ANTES da
-  isotérmica; a isotérmica em si nunca conhece o modelo de gás.
+* **Canonical:** partial pressure `p_i` [Pa].  `pressureBasis` is mandatory on
+  the record: `partialPressurePa` (canonical) · `partialPressureBar` (x1e5) ·
+  `concentrationMolM3` (p = cRT in the conversion, an ideal gas DECLARED).
+* Fugacity is an EXTENSION POINT (§7): the API signature takes (T, p_i) and a
+  future `fugacityAdapter` may pre-transform p_i -> f_i BEFORE the isotherm; the
+  isotherm itself never knows the gas model.
 
-### 1.3 Densidades — a armadilha ρ_p vs ρ_bulk
+### 1.3 Densities — the rho_p vs rho_bulk trap
 
-* O catálogo (identidade do adsorvente) transporta **ρ_bulk** [kg/m³ de
-  leito empacotado] — é o que os 3 `.dat` atuais têm.
-* INVARIANTE do leito: inventário sólido por volume de leito =
-  `ρ_bulk · q_i` [mol/m³_leito].  O termo fonte 1-D usa `ρ_bulk`
-  diretamente; NUNCA se escreve `(1−ε)·ρ_p` com ε e ρ_p de fontes
-  diferentes (dupla contabilidade da porosidade — o erro clássico).
-* `ε` (vazio interparticular) é do EQUIPAMENTO (caso; afeta hold-up do gás
-  e velocidade intersticial u = u_s/ε).  Se um caso declarar ε e o
-  catálogo ρ_bulk, são compatíveis por construção: ρ_p nunca é necessário
-  em A1–A3.  (ρ_p entra só em A4+ para inércia térmica da partícula —
-  campo opcional futuro `rho_particle`, extension point.)
+* The catalogue (the adsorbent's identity) carries **rho_bulk** [kg/m3 of packed
+  bed] — that is what the 3 current `.dat` files hold.
+* BED INVARIANT: solid inventory per bed volume = `rho_bulk . q_i`
+  [mol/m3_bed].  The 1-D source term uses `rho_bulk` directly; one NEVER writes
+  `(1 - eps) . rho_p` with eps and rho_p from different sources (double counting
+  the porosity — the classic error).
+* `eps` (interparticle void) belongs to the EQUIPMENT (the case; it sets the gas
+  hold-up and the interstitial velocity u = u_s/eps).  If a case declares eps
+  and the catalogue rho_bulk, they are compatible by construction: rho_p is
+  never needed in A1-A3.  (rho_p enters only at A4+ for the particle's thermal
+  inertia — a future optional `rho_particle` field, an extension point.)
 
-## 2. Sinais e temperatura
+## 2. Signs and temperature
 
-* **ΔH_ads < 0 = exotérmico** (convenção dos `.dat` atuais, mantida).
-* van't Hoff: `b(T) = b_ref · exp( −ΔH_ads/R · (1/T − 1/T_ref) )` com
-  `tRef` OBRIGATÓRIO no record (hoje 298 K).  Com ΔH_ads<0, b decresce com
-  T — verificação de sanidade no gate.
-* TODA a API leva T explícito (mesmo em fases isotérmicas) — A4
-  não-isotérmico não muda NENHUMA assinatura, só quem fornece T.
-* Energia (A4, reservado — NÃO implementar): o calor libertado por unidade
-  de tempo é `Q̇_ads = −Σ_i ΔH_ads,i · m_ads · dq_i/dt` ≥ 0 para adsorção
-  exotérmica; PROPRIETÁRIO: o balanço de energia da UNIDADE (batch/leito),
-  nunca a isotérmica.  No ledger de campanha entra como kind reservado
-  `adsorption` (novo, ao lado de reaction/latent/…), com a validade a
-  exigir ΔH_ads presente em TODOS os pares ativos — senão gap NOMEADO
-  (padrão energyLedgerGap, como sempre).
+* **dH_ads < 0 = exothermic** (the current `.dat` convention, kept).
+* van't Hoff: `b(T) = b_ref . exp( -dH_ads/R . (1/T - 1/T_ref) )` with `tRef`
+  MANDATORY on the record (298 K today).  With dH_ads < 0, b decreases with T —
+  a sanity check in the gate.
+* The WHOLE API carries T explicitly (even in isothermal phases) — a
+  non-isothermal A4 changes NO signature, only who supplies T.
+* Energy (A4, reserved — do NOT implement): the heat released per unit time is
+  `Qdot_ads = -Sum_i dH_ads,i . m_ads . dq_i/dt` >= 0 for exothermic adsorption;
+  OWNER: the UNIT's energy balance (batch/bed), never the isotherm.  In the
+  campaign ledger it enters as the reserved kind `adsorption` (new, beside
+  reaction/latent/...), with validity requiring dH_ads present on ALL active
+  pairs — otherwise a NAMED gap (the energyLedgerGap pattern, as always).
 
-## 3. Equilíbrio multicomponente
+## 3. Multicomponent equilibrium
 
-* **A1–A3 usam Langmuir ESTENDIDO** (competitivo):
-  `q_i = q_max,i · b_i(T) · p_i / (1 + Σ_j b_j(T) · p_j)` — é a física
-  atual do PSA, preservada byte-a-byte.
-* HONESTIDADE PEDAGÓGICA (escrita nos manuais e no header dos records): o
-  Langmuir estendido só é termodinamicamente consistente se todos os
-  q_max forem iguais; com q_max diferentes é um modelo de ENSINO útil e
-  auto-inconsistente (viola Gibbs-Duhem da fase adsorvida).  A extensão
-  honesta é IAST — extension point §7, NUNCA um default silencioso.
-* ARQUITETURA em duas camadas para o tornar possível:
-  - `IsothermModel` — PURO, por par (adsorvente × espécie): `q(T,p)`,
+* **A1-A3 use EXTENDED Langmuir** (competitive):
+  `q_i = q_max,i . b_i(T) . p_i / (1 + Sum_j b_j(T) . p_j)` — this is the PSA's
+  current physics, preserved byte for byte.
+* PEDAGOGICAL HONESTY (written in the manuals and in the records' headers):
+  extended Langmuir is thermodynamically consistent only if all the q_max are
+  equal; with unequal q_max it is a useful and self-inconsistent TEACHING model
+  (it violates the adsorbed phase's Gibbs-Duhem).  The honest extension is IAST
+  — extension point §7, NEVER a silent default.
+* A two-layer ARCHITECTURE makes that possible:
+  - `IsothermModel` — PURE, per pair (adsorbent x species): `q(T,p)`,
     `dq_dp(T,p)`, `qsat(T)`, `henryLimit(T)`;
-  - `MixingRule` — recebe os modelos puros + (T, vetor p) e devolve o
-    vetor q: `extendedLangmuir` (agora) · `iast` (futuro).  O PSA, o
-    batch e o leito falam SEMPRE com a MixingRule, nunca com um modelo
-    puro isolado (mesmo mono-componente: MixingRule de 1 espécie).
-  - *Realização v1 (auditada 2026-07-12):* a MixingRule é o método
-    `Adsorbent::loading(species, p_map, T)` — extended Langmuir num único
-    locus; o IAST entra por dispatch nesse método (`mixingRule` no dict),
-    sem tocar em batch/leito/PSA.  Uma classe separada só nasce quando o
-    segundo rule existir (arity-1: nada de abstração especulativa).
+  - `MixingRule` — takes the pure models + (T, vector p) and returns the vector
+    q: `extendedLangmuir` (now) · `iast` (future).  The PSA, the batch vessel
+    and the bed ALWAYS talk to the MixingRule, never to an isolated pure model
+    (even single-component: a MixingRule over 1 species).
+  - *v1 realisation (audited 2026-07-12):* the MixingRule IS the method
+    `Adsorbent::loading(species, p_map, T)` — extended Langmuir at a single
+    locus; IAST enters by dispatch in that method (`mixingRule` in the dict),
+    without touching batch/bed/PSA.  A separate class is born only when the
+    second rule exists (arity-1: no speculative abstraction).
 
-## 4. Cinética e transporte — quem é dono de quê
+## 4. Kinetics and transport — who owns what
 
-* A isotérmica é EQUILÍBRIO: catálogo (`parameters/adsorption/equilibria/`),
-  par-dependente (axioma 2 da doutrina de dados).
-* LDF `dq_i/dt = k_i · (q*_i − q_i)` é EQUIPAMENTO: `k_i` [1/s] agrega
-  difusão no filme+macroporo+cristal DAQUELA partícula naquele leito →
-  vive no CASO (axioma 3), com scope/provenance obrigatórios; um `k_i` em
-  falta para espécie ativa é RECUSA nomeada, nunca default.
-* Dispersão axial `Dax` [m²/s]: equipamento (caso), declarada; correlações
-  (Chung-Wen etc.) são AIDS de curadoria futuros, nunca defaults ocultos.
-* Queda de pressão (Ergun, A4+): reservada; u e P constantes DECLARADOS em
-  A3 (isolar transporte) — o dict de A3 já nasce com `flow { u ...; P ...; }`
-  para que A4 troque o bloco por um modelo sem tocar no resto.
+* The isotherm is EQUILIBRIUM: the catalogue
+  (`parameters/adsorption/equilibria/`), pair-dependent (axiom 2 of the data
+  doctrine).
+* LDF `dq_i/dt = k_i . (q*_i - q_i)` is EQUIPMENT: `k_i` [1/s] lumps film +
+  macropore + crystal diffusion of THAT particle in THAT bed -> it lives in the
+  CASE (axiom 3), with mandatory scope/provenance; a `k_i` missing for an active
+  species is a NAMED REFUSAL, never a default.
+* Axial dispersion `Dax` [m2/s]: equipment (the case), declared; correlations
+  (Chung-Wen and the like) are future curation AIDS, never hidden defaults.
+* Pressure drop (Ergun, A4+): reserved; u and P are DECLARED constants in A3 (to
+  isolate transport) — A3's dict is born with `flow { u ...; P ...; }` so that
+  A4 swaps the block for a model without touching anything else.
 
-## 5. Unidades e validade
+## 5. Units and validity
 
-* SI canónico interno: Pa, K, mol, kg, s, J.  Records declaram unidades
-  nas 3 formas do parser (named/bracket/raw) e o loader converte com
-  verificação dimensional — invariância de unidades é GATE (mesmo caso em
-  bar e em Pa → bit-idêntico após conversão).
-* Cada record de equilíbrio carrega `validity { Trange (...); pRange (...); }`
-  quando a fonte o der; avaliação fora da validade ANUNCIA (advisory
-  estruturado, padrão PitzerActivity), nunca cala nem recusa (o professor
-  extrapola de propósito — mas sabe que o fez).
-* Proveniência per-record obrigatória (origin/method com a citação
-  primária); o gate recusa record sem ela.
+* Internal canonical SI: Pa, K, mol, kg, s, J.  Records declare units in the
+  parser's 3 forms (named/bracket/raw) and the loader converts with dimensional
+  verification — unit invariance is a GATE (the same case in bar and in Pa ->
+  bit-identical after conversion).
+* Every equilibrium record carries `validity { Trange (...); pRange (...); }`
+  where the source gives it; evaluation outside the validity ANNOUNCES (a
+  structured advisory, the PitzerActivity pattern), never staying silent and
+  never refusing (the professor extrapolates on purpose — but knows he did).
+* Per-record provenance is mandatory (origin/method with the primary citation);
+  the gate refuses a record without it.
 
-## 6. Interfaces A1/A2/A3 (API mínima congelada)
+## 6. A1/A2/A3 interfaces (the frozen minimal API)
 
 ```cpp
-// A1 — src/thermo/adsorbent/
-class IsothermModel {                    // factory EXPLÍCITA (padrão Choupo)
+// A1 -- src/thermo/adsorbent/
+class IsothermModel {                    // EXPLICIT factory (the Choupo pattern)
     virtual double q     (double T, double p) const = 0;  // mol/kg, Pa
     virtual double dq_dp (double T, double p) const = 0;
     virtual double qsat  (double T) const = 0;
     virtual double henryLimit (double T) const = 0;       // lim p->0 q/p
 };
-class MixingRule {                       // extendedLangmuir | (iast futuro)
-    // pura: sem estado entre chamadas; recebe os modelos no construtor
+class MixingRule {                       // extendedLangmuir | (iast, future)
+    // pure: no state between calls; it takes the models in the constructor
     virtual std::vector<double> loadings (double T,
                        const std::vector<double>& p_partial) const = 0;
 };
-// Adsorbent = identidade (name/type/rho_bulk) + acesso aos IsothermModel
-// por espécie carregados de parameters/adsorption/equilibria/<name>/.
+// Adsorbent = identity (name/type/rho_bulk) + access to the per-species
+// IsothermModel loaded from parameters/adsorption/equilibria/<name>/.
 
-// A2 — batchAdsorber (choupoBatch): estado {n_gas_i, q_i}; T,V_gas,m_ads
-// declarados; dq_i/dt = k_i (q*_i - q_i); dn_gas_i/dt = -m_ads dq_i/dt;
-// p_i = n_gas_i R T / V_gas.  Conservação n_gas_i + m_ads q_i = const
-// verificada a eps de máquina em cada passo aceite.
+// A2 -- batchAdsorber (choupoBatch): state {n_gas_i, q_i}; T, V_gas, m_ads
+// declared; dq_i/dt = k_i (q*_i - q_i); dn_gas_i/dt = -m_ads dq_i/dt;
+// p_i = n_gas_i R T / V_gas.  Conservation n_gas_i + m_ads q_i = const
+// verified to machine eps at every accepted step.
 
-// A3 — fixedBedAdsorber (choupoBatch): FV conservativo, célula j:
+// A3 -- fixedBedAdsorber (choupoBatch): conservative FV, cell j:
 // eps V_j dc_ij/dt = F_conv(j-1/2) - F_conv(j+1/2) + F_disp(...)
 //                    - rho_bulk V_j dq_ij/dt        [mol/s]
 // dq_ij/dt = k_i (q*(T, p_ij) - q_ij);  Danckwerts inlet/outlet.
 ```
 
-* O sequenciador de ciclos (A5) fala com o LEITO por condições de
-  fronteira e eventos (step transitions), reutilizando a camada de recipe
-  do choupoBatch — NUNCA por acesso interno ao estado da isotérmica.
-  Critério de CSS: reservado, definido em A5 (norma da diferença de
-  perfis ciclo-a-ciclo sob tolerância declarada).
+* The cycle sequencer (A5) talks to the BED through boundary conditions and
+  events (step transitions), reusing choupoBatch's recipe layer — NEVER through
+  internal access to the isotherm's state.  The CSS criterion is reserved,
+  defined in A5 (the norm of the cycle-to-cycle profile difference under a
+  declared tolerance).
 
-## 7. Extension points verificados (A4–A6 não bloqueados)
+## 7. Verified extension points (A4-A6 are not blocked)
 
-| Extensão | O que já está preparado em A1–A3 | O que falta (e onde entra) |
+| Extension | What A1-A3 already prepares | What is missing (and where it enters) |
 |---|---|---|
-| A4 energia | T em toda a API; ΔH_ads no record; kind `adsorption` reservado no ledger | balanço T do leito/batch; Cp do sólido (campo novo na identidade) |
-| A4 Ergun | bloco `flow{}` isolado no dict de A3 | d_p, esfericidade na identidade (opcionais); solver P-u |
-| A5 PSA/VSA | recipe/eventos do choupoBatch; leito como unidade reutilizável | sequenciador + CSS |
-| A6 TSA | van't Hoff já é T-dependente; API leva T | rampa T (já existe no ctrl/batch como setParameter) |
-| IAST | camada MixingRule | integrais de spreading pressure (novo MixingRule) |
-| Fugacidade | isotérmica cega ao modelo de gás | adapter p→f antes da MixingRule |
+| A4 energy | T throughout the API; dH_ads on the record; kind `adsorption` reserved in the ledger | the bed/batch T balance; the solid's Cp (a new field on the identity) |
+| A4 Ergun | the isolated `flow{}` block in A3's dict | d_p, sphericity on the identity (optional); a P-u solver |
+| A5 PSA/VSA | choupoBatch's recipe/events; the bed as a reusable unit | the sequencer + CSS |
+| A6 TSA | van't Hoff is already T-dependent; the API carries T | a T ramp (already exists in ctrl/batch as setParameter) |
+| IAST | the MixingRule layer | spreading-pressure integrals (a new MixingRule) |
+| Fugacity | the isotherm is blind to the gas model | a p -> f adapter before the MixingRule |
 
-## 8. Revisão adversarial (contraexemplos tentados)
+## 8. Adversarial review (counter-examples attempted)
 
-1. *"ρ_bulk·q dupla-conta a porosidade"* — não: ρ_bulk é kg de sólido por
-   m³ de LEITO; multiplicar por q [mol/kg] dá mol/m³_leito sem ε em lado
-   nenhum.  O erro só aparece se alguém escrever (1−ε)ρ_bulk — proibido
-   pelo §1.3.
-2. *"Extended Langmuir com q_max distintos viola consistência e vamos
-   fixar isso escondendo-o"* — rejeitado: fica DECLARADO como modelo de
-   ensino; IAST é extensão explícita.  O gate NÃO exige q_max iguais
-   (quebraria os dados atuais); o manual ensina porquê.
-3. *"LDF com q* de MixingRule multicomponente não tem solução analítica →
-   os gates analíticos de A2 morrem"* — falso: o gate analítico congela
-   q* (mono-componente, k fixo) onde a solução exp(−kt) é exata; o caso
-   multicomponente valida-se por inventário no equilíbrio final (equação
-   escalar) + conservação, não por trajetória analítica.
-4. *"Danckwerts na saída com upwind puro é redundante"* — verdadeiro para
-   convecção pura, mas o termo de dispersão exige ∂c/∂z|L=0 explícito; o
-   stencil da última célula difere e TEM de estar no spec de A3 (Agent D).
-5. *"b(T) de van't Hoff com tRef implícito 298"* — proibido: tRef
-   obrigatório no record; o pin b(tRef)=b_ref é gate.
-6. *"Converter cm³STP/g com 22 414 vs 22 413.6 vs 22 711 (STP NIST)"* —
-   fonte de erro real de 1.3%: o conversor fixa IUPAC 273.15 K/1 atm =
-   22 413.6 cm³/mol e ESCREVE o fator usado no log de conversão; um
-   dataset que declare outra convenção STP declara-a no record.
+1. *"rho_bulk . q double-counts the porosity"* — no: rho_bulk is kg of solid per
+   m3 of BED; multiplying by q [mol/kg] gives mol/m3_bed with eps nowhere.  The
+   error only appears if someone writes (1 - eps) rho_bulk — forbidden by §1.3.
+2. *"Extended Langmuir with unequal q_max violates consistency, and we are going
+   to fix that by hiding it"* — rejected: it stands DECLARED as a teaching
+   model; IAST is the explicit extension.  The gate does NOT demand equal q_max
+   (that would break the current data); the manual teaches why.
+3. *"LDF with a q* from a multicomponent MixingRule has no analytic solution ->
+   A2's analytic gates die"* — false: the analytic gate freezes q*
+   (single-component, fixed k) where the solution exp(-kt) is exact; the
+   multicomponent case is validated by inventory at the final equilibrium (a
+   scalar equation) plus conservation, not by an analytic trajectory.
+4. *"Danckwerts at the outlet with pure upwind is redundant"* — true for pure
+   convection, but the dispersion term requires an explicit dc/dz|L = 0; the last
+   cell's stencil differs and MUST be in A3's spec (Agent D).
+5. *"van't Hoff's b(T) with tRef implicitly 298"* — forbidden: tRef is mandatory
+   on the record; the pin b(tRef) = b_ref is a gate.
+6. *"Converting cm3STP/g with 22,414 vs 22,413.6 vs 22,711 (NIST STP)"* — a real
+   1.3 % error source: the converter fixes IUPAC 273.15 K / 1 atm =
+   22,413.6 cm3/mol and WRITES the factor used into the conversion log; a
+   dataset declaring another STP convention declares it on the record.
 
-*Autor: Claude (loop autónomo), 2026-07-12, sob #116/#118.  Revisão humana:
-Vítor (pendente).  Implementações: A1 = migração+factory (Agent A, auditada
-contra §1/§3/§5/§6); A2/A3 = specs dos Agents C/D congeladas contra §6.*
+*Author: Claude (autonomous loop), 2026-07-12, under #116/#118.  Human review:
+Vitor (pending).  Implementations: A1 = migration + factory (Agent A, audited
+against §1/§3/§5/§6); A2/A3 = the Agent C/D specs, frozen against §6.*
 
 ---
 
-## 9. Decision records A4–A6 (arquitetura + âncoras; NUNCA implementação parcial)
+## 9. Decision records A4-A6 (architecture + anchors; NEVER a partial implementation)
 
-**A4-energia** — o leito/batch ganham o balanço T com UM lump declarado por
-fase (gás+sólido em equilíbrio térmico local; o split gás/sólido é uma
-extensão posterior, nunca default silencioso).  Fonte térmica por célula:
-`ρ_b·Σ_i(−ΔH_ads,i)·dq_i/dt` [W/m³]; requer `cpSolid` na identidade do
-adsorvente (campo NOVO, curado) — em falta, o balanço T RECUSA nomeado.
-Ledger: kind `adsorption`, E = Σ_i(−ΔH_ads,i)·Δ(m_ads·q_i) por segmento —
-diferença de estado exata (Hess), nunca quadratura.  ÂNCORA: aquecimento
-adiabático do batch09 fechado, ΔT = Σ(−ΔH)·Δq·m_ads/(Σn·cp) resolvido por
-inventário+energia simultâneos (raiz 1-D, número exato a calcular na spec).
-**A4-Ergun** — o bloco `flow{u;P;}` de A3 é SUBSTITUÍDO (não estendido) por
-`flow{model ergun; d_p ...; }` com u(z) da continuidade total
-(Σc constante deixa de ser imposto — o carrier fabricado MORRE aqui e o
-gate é: `carrier_fabricated_mol < 1e-12` no anchor batch13 re-corrido).
-d_p/esfericidade = identidade do adsorvente (opcionais, curados).
+**A4-energy** — the bed/batch gain the T balance with ONE declared lump per
+phase (gas + solid in local thermal equilibrium; the gas/solid split is a later
+extension, never a silent default).  Thermal source per cell:
+`rho_b . Sum_i(-dH_ads,i) . dq_i/dt` [W/m3]; it requires `cpSolid` on the
+adsorbent's identity (a NEW, curated field) — missing, the T balance REFUSES by
+name.  Ledger: kind `adsorption`, E = Sum_i(-dH_ads,i) . D(m_ads . q_i) per
+segment — an exact state difference (Hess), never a quadrature.  ANCHOR: the
+adiabatic heating of a closed batch09, DT = Sum(-dH) . Dq . m_ads / (Sum n . cp)
+solved by simultaneous inventory + energy (a 1-D root, the exact number to be
+computed in the spec).
 
-**A5-PSA/VSA** — o sequenciador é a camada de RECIPE existente
-(time-triggered actions do choupoBatch), NUNCA um driver novo: steps
-(pressurise/adsorb/blowdown/purge) = eventos que trocam as BCs do leito;
-o leito não sabe em que step está.  CSS: norma L∞ da diferença dos perfis
-(c,q) início-de-ciclo entre ciclos consecutivos, tolerância DECLARADA no
-caso; o driver anuncia ciclo a ciclo e RECUSA reportar médias antes de
-CSS.  ÂNCORA: Skarstrom 2-leitos H2/CH4 com recovery/purity vs o psa01 de
-equilíbrio (o twin-bed steady é o LIMITE ideal — a diferença é a lição).
+**A4-Ergun** — A3's `flow{u;P;}` block is REPLACED (not extended) by
+`flow{model ergun; d_p ...; }` with u(z) from total continuity (constant Sum c
+is no longer imposed — the fabricated carrier DIES here, and the gate is
+`carrier_fabricated_mol < 1e-12` on the re-run batch13 anchor).
+d_p / sphericity = the adsorbent's identity (optional, curated).
 
-**A6-TSA** — rampa T = `setParameter` da recipe (já existe); van't Hoff dá
-q*(T) sem código novo na isotérmica.  ÂNCORA: batch TSA CO2/13X
-298→398 K, working capacity Δq vs a álgebra do tsaTwinBed steady (118.5).
+**A5-PSA/VSA** — the sequencer is the EXISTING recipe layer (choupoBatch's
+time-triggered actions), NEVER a new driver: the steps
+(pressurise / adsorb / blowdown / purge) are events that swap the bed's BCs; the
+bed does not know which step it is in.  CSS: the L-infinity norm of the
+difference between start-of-cycle (c, q) profiles on consecutive cycles, with
+the tolerance DECLARED in the case; the driver announces cycle by cycle and
+REFUSES to report averages before CSS.  ANCHOR: a 2-bed Skarstrom H2/CH4 with
+recovery/purity against the equilibrium psa01 (the twin-bed steady case is the
+ideal LIMIT — the difference is the lesson).
 
-*Sequência obrigatória: tsaTwinBed steady (118.5) → A4-energia →
-A4-Ergun → A5 → A6.  Cada um inteiro ou nada (#116).*
+**A6-TSA** — the T ramp is the recipe's `setParameter` (already exists); van't
+Hoff gives q*(T) with no new code in the isotherm.  ANCHOR: a TSA batch, CO2/13X
+298 -> 398 K, working capacity Dq against the algebra of the steady tsaTwinBed
+(118.5).
+
+*Mandatory sequence: tsaTwinBed steady (118.5) -> A4-energy -> A4-Ergun -> A5 ->
+A6.  Each one whole or not at all (#116).*

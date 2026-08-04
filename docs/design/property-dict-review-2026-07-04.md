@@ -16,9 +16,9 @@ The ammonia arc produced five consecutive patches to the same wound:
 |---|---|
 | separator ideal at 200 bar | fugacity in the Gibbs reactor |
 | dissolved gas by extrapolated Psat | Henry pairs + `solvent` keyword |
-| "não há sumo no overlay!" | comments quoting constants |
+| "there is no juice in the overlay!" | comments quoting constants |
 | silent physics | `[henry]` LOUD announcement |
-| "a convenção está obscura!" | a `solutes ( )` keyword (half-built, reverted) |
+| "the convention is obscure!" | a `solutes ( )` keyword (half-built, reverted) |
 
 Each patch was locally correct.  Together they are the SYMPTOM: **the
 `thermoPackage` is a pile of flat, ad-hoc keys** (`activityModel` +

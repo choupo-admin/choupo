@@ -9,10 +9,11 @@ tags:
   - WebAssembly
 authors:
   - name: Vítor Geraldes
-    orcid: 0000-0000-0000-0000   # TODO(Vítor): ORCID real
+    orcid: 0000-0000-0000-0000   # TODO(Vitor): real ORCID
     affiliation: 1
-# TODO(Vítor): decidir coautores (AUTHORS lista Pedro Mendes como co-mantenedor
-# das guides; a autoria do PAPER é decisão tua) e afiliações.
+# TODO(Vitor): decide the co-authors (AUTHORS lists Pedro Mendes as a
+# co-maintainer of the guides; authorship of the PAPER is your call) and the
+# affiliations.
 affiliations:
   - name: Department of Chemical Engineering, Instituto Superior Técnico, Universidade de Lisboa, Portugal
     index: 1

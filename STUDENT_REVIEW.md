@@ -1,100 +1,121 @@
-# Revisão dos tutoriais no papel de aluno — 2026-07-18
+# Tutorial review, read in the role of a student — 2026-07-18
 
-Varridos ~280 casos (3 revisores + leitura pessoal). O **estado numérico** dos
-casos é limpo (valores em `0/` e `operation` quase sempre com unidade + comentário
-inline). A dívida de clareza está na **camada narrativa** — headers e citações — e
-num bug de **dados a mais** que já corrigi.
+Swept ~280 cases (3 reviewers + a personal read).  The **numerical state** of
+the cases is clean (values in `0/` and `operation` almost always carry a unit
+plus an inline comment).  The clarity debt is in the **narrative layer** —
+headers and citations — and in one **too-much-data** bug already fixed.
 
-## JÁ CORRIGIDO nesta sessão (todos byte-identical, goldens intactos)
-- **Pares-espectadores no selo** (invariante 3): Davies selava pares Pitzer/eNRTL
-  sem consumidor. 39 casos, records 2400→2123. `83bc9c1e4`.
-- **S1 headers eletrólito**: 6 casos Pitzer/eNRTL diziam "ideal γ=1". `c882c4673`.
-- **#2 factuais** (copy-paste outro caso): sprayDryer03-07 títulos, ctrl08
-  sinusoidal→PRBS, hxWorkflow2 146→105 tubes+backref, evaporator01 V/F 0.55→0.82.
-  `b4ca4d352`, `c13fff597`.
-- **#3 jargão em descriptions** (roadmap Phase/slice S/gate G/forum #): 7 casos.
-  `032dd9c65`.
-- **#4 unidades+rótulo nas cinéticas-toy** (A[1/s]/Ea[J/mol], "ILLUSTRATIVE"):
-  21 ficheiros de reações da esterificação. `f8457bce4`.
-- **#6 rodapé tear-seed** (author-owned guess, solver converge): 6 seeds de
-  recycle. `ad1d3a865`.
-- **#5 política MHeatX**: nome de bloco Aspen fora da prosa do mheatx01. `37274a5d7`.
+## ALREADY FIXED in that session (all byte-identical, goldens intact)
+- **Spectator pairs in the seal** (invariant 3): Davies was sealing Pitzer/eNRTL
+  pairs with no consumer.  39 cases, records 2400 -> 2123.  `83bc9c1e4`.
+- **S1 electrolyte headers**: 6 Pitzer/eNRTL cases said "ideal gamma = 1".
+  `c882c4673`.
+- **#2 factual** (copy-paste from another case): sprayDryer03-07 titles, ctrl08
+  sinusoidal -> PRBS, hxWorkflow2 146 -> 105 tubes + backref, evaporator01
+  V/F 0.55 -> 0.82.  `b4ca4d352`, `c13fff597`.
+- **#3 jargon in descriptions** (roadmap Phase / slice S / gate G / forum #):
+  7 cases.  `032dd9c65`.
+- **#4 units + label on the toy kinetics** (A [1/s] / Ea [J/mol],
+  "ILLUSTRATIVE"): 21 esterification reaction files.  `f8457bce4`.
+- **#6 tear-seed footer** (author-owned guess, the solver converges it): 6
+  recycle seeds.  `ad1d3a865`.
+- **#5 competitor-name policy**: a commercial simulator's block name removed
+  from the mheatx01 prose.  `37274a5d7`.
 
-## RESTA PARA O VÍTOR (decisão / toca goldens / design grande)
-- **#1 headers boilerplate→porquê físico** (~50 casos gammaPhi) — mecânico mas de
-  juízo; os 6 eletrólito ficaram como padrão. Recomendo vaga por família.
-- **#5 renames** `radfrac`/`radfracLite` (unit names, column04/08) e a folder
-  `column08_radfrac` — tocam KPI keys nos goldens.
-- **recycle_autoinit_tear**: description diz "no authored tear guess" mas tem
-  0/recycle — verificar se é init0-materializado ou contradição.
-- **#7 duas convenções thermoPhysPropDict** (gammaPhi vs aqueousProperties) nos
-  irmãos electrolyte.
+## OPEN, FOR VITOR (a decision / touches goldens / large design)
+- **#1 boilerplate headers -> the physical WHY** (~50 gammaPhi cases) —
+  mechanical but a matter of judgement; the 6 electrolyte ones were left as
+  the pattern.  Recommend one wave per family.
+- **#5 renames** `radfrac` / `radfracLite` (unit names, column04/08) and the
+  `column08_radfrac` folder — they touch KPI keys in the goldens.
+- **recycle_autoinit_tear**: the description says "no authored tear guess" but
+  the case has `0/recycle` — check whether that is init0-materialised or a
+  contradiction.
+- **#7 two thermoPhysPropDict conventions** (gammaPhi vs aqueousProperties)
+  among sibling electrolyte cases.
 
-## SISTÉMICO (por ordem de valor)
+## SYSTEMIC (in order of value)
 
-### #1 [HIGH, ~50 casos] header do `thermoPhysPropDict` = boilerplate, não o PORQUÊ físico
-Quase todos repetem *"T1/T2 gamma-phi … Migrated mechanically from the v1 flat
-form; v2 contract 2026-07-17"* + os códigos `T1/T2` não definidos. O ficheiro que
-o aluno abre para perceber a ESCOLHA de modelo explica plumbing interno. Casos que
-motivam a escolha (`cstr07`: "UNIQUAC não é livre — a constante foi regredida com
-ele") leem-se muito melhor. **Fix recomendado:** substituir por UMA linha
-case-specific "porquê esta termo". Grande, mecânico-mas-de-juízo — recomendo vaga
-com piloto por família (deixei os 6 eletrólito feitos como padrão).
+### #1 [HIGH, ~50 cases] the `thermoPhysPropDict` header is boilerplate, not the physical WHY
+Almost all of them repeat *"T1/T2 gamma-phi ... Migrated mechanically from the
+v1 flat form; v2 contract 2026-07-17"* plus the undefined codes `T1/T2`.  The
+file a student opens to understand the model CHOICE explains internal plumbing
+instead.  Cases that motivate the choice (`cstr07`: "UNIQUAC is not free — the
+constant was regressed with it") read far better.  **Recommended fix:** replace
+it with ONE case-specific line, "why this thermo".  Large, mechanical-but-
+judgemental — recommend a wave with a pilot per family (the 6 electrolyte cases
+are already done as the pattern).
 
-### #2 [HIGH, factual] headers/descriptions copy-paste que descrevem OUTRO caso
-Bugs, não estilo — corrijo já os claros:
-- `sprayDryer03-07/flowsheetDict` — todos ainda se intitulam `sprayDryer01_sugar`.
-- `sprayDryer05_whey` — header (sucrose) contradiz description + 0/ (whey).
-- `hxWorkflow2_rate_designed` — `nTubes 105` vs comentário "146 tubes"; back-ref ao
-  caso Part-1 errado; description copiada de heatExchanger02.
-- `evaporator01_brine` — description (V/F=0.82) vs flowsheetDict (V/F≈0.55): exclusivos.
-- `ctrl08_prbs_ident` — description copiada de ctrl06 (sinusoidal), mas é PRBS binário.
-- `recycle_autoinit_tear` — description FALSA ("no authored tear guess") + diz Wegstein
-  mas corre Newton.
+### #2 [HIGH, factual] headers/descriptions copy-pasted from ANOTHER case
+Bugs, not style — the clear ones are fixed:
+- `sprayDryer03-07/flowsheetDict` — all still titled `sprayDryer01_sugar`.
+- `sprayDryer05_whey` — the header (sucrose) contradicts the description
+  and `0/` (whey).
+- `hxWorkflow2_rate_designed` — `nTubes 105` against a comment saying "146
+  tubes"; back-reference to the wrong Part-1 case; description copied from
+  heatExchanger02.
+- `evaporator01_brine` — description (V/F = 0.82) against flowsheetDict
+  (V/F ~ 0.55): mutually exclusive.
+- `ctrl08_prbs_ident` — description copied from ctrl06 (sinusoidal), but the
+  case is a binary PRBS.
+- `recycle_autoinit_tear` — FALSE description ("no authored tear guess") and it
+  says Wegstein while running Newton.
 
-### #3 [HIGH] jargão privado de dev em texto de aluno
-`forum #119/#85/#98.3`, `gate G1/G6`, `roadmap Phase A/B`, `slice S6`, `A3 anchor`,
-`RUN-A3-ANCHOR`, `Dictionary::deepCopy`, `the old alias bug`. Sem significado para
-um aluno. Espalhado por batch/ctrl/electrolyte.
+### #3 [HIGH] private dev jargon in student-facing text
+`forum #119/#85/#98.3`, `gate G1/G6`, `roadmap Phase A/B`, `slice S6`,
+`A3 anchor`, `RUN-A3-ANCHOR`, `Dictionary::deepCopy`, `the old alias bug`.
+Meaningless to a student.  Scattered across batch/ctrl/electrolyte.
 
-### #4 [MED-HIGH] cinéticas-toy dos PRIMEIROS tutoriais são números mágicos sem unidade/fonte
-A família esterificação (`cstr01/04/06`, `pfr01/04`, `batch01`, `recipe01-03`)
-partilha `A 1.0e8; Ea 7.0e4;` sem unidade inline nem fonte — enquanto `cstr07`/
-`batch08` escrevem `// 1/s`, `// J/mol` meticulosamente. Os primeiros casos que o
-aluno encontra são os menos anotados.
+### #4 [MED-HIGH] the toy kinetics of the FIRST tutorials are magic numbers with no unit or source
+The esterification family (`cstr01/04/06`, `pfr01/04`, `batch01`,
+`recipe01-03`) shares `A 1.0e8; Ea 7.0e4;` with neither an inline unit nor a
+source — while `cstr07` / `batch08` write `// 1/s`, `// J/mol` meticulously.
+The first cases a student meets are the least annotated.
 
-### #5 [MED, POLICY] nomes de blocos de simuladores comerciais em superfícies user-facing
-`radfrac` (unit name em column04/08 + folder), `MHeatX` (mheatx01), "RadFrac".
-Viola a política "nunca nomear concorrentes em manuais/user-facing". **Renomear toca
-goldens (unit names em KPIs) — decisão tua.**
+### #5 [MED, POLICY] commercial-simulator block names on user-facing surfaces
+`radfrac` (unit name in column04/08 plus the folder), one exchanger block name
+in mheatx01.  This violates the "never name competitors in manuals / on
+user-facing surfaces" policy.  **Renaming touches goldens (unit names appear in
+KPI keys) — your call.**
 
-### #6 [MED] `0/` com valores convergidos a 9-10 algarismos indistinguíveis de input autorado
-Um `0/` é "estado inicial", mas correntes de produto/saída e seeds de recycle leem
-`benzene 49.0622523 kmol/h` — o aluno não distingue seed-da-resposta de dado real.
-Os seeds de recycle deviam ter o rodapé "estimate, o solver reescreve" que `plant02`
-já tem. **Fix parcial seguro:** rodapé nos seeds de tear.
+### #6 [MED] `0/` carrying converged values to 9-10 digits, indistinguishable from authored input
+A `0/` is the "initial state", but product/outlet streams and recycle seeds
+read `benzene 49.0622523 kmol/h` — the student cannot tell a seed-of-the-answer
+from real data.  The recycle seeds should carry the "estimate, the solver
+rewrites it" footer that `plant02` already has.  **Safe partial fix:** that
+footer on the tear seeds.
 
-### #7 [MED] duas convenções de `thermoPhysPropDict` entre casos-irmãos
-Uns usam `equilibrium/gammaPhi` (modelo invisível), outros `aqueousProperties {
-activityCoefficients { model … } }` (modelo declarado, honesto). Mesma pasta, duas
-respostas a "onde vejo o modelo".
+### #7 [MED] two `thermoPhysPropDict` conventions among sibling cases
+Some use `equilibrium/gammaPhi` (the model invisible), others
+`aqueousProperties { activityCoefficients { model ... } }` (the model declared,
+honest).  Same folder, two answers to "where do I see the model".
 
-### #8 [MED] `description` usada como ensaio de 150-300 palavras
-É o rótulo de uma linha do run-header/GUI; em `precipitation_ro_brackish`,
-`rainwater_air`, `flash08/09` transborda. O conteúdo é bom — pertence ao README.
+### #8 [MED] `description` used as a 150-300 word essay
+It is the one-line label of the run header and the GUI; in
+`precipitation_ro_brackish`, `rainwater_air`, `flash08/09` it overflows.  The
+content is good — it belongs in the README.
 
-## CASOS EXEMPLARES (os padrões a copiar)
-- `reactors/cstr07_lhhw_methylAcetate` — citação primária completa (Pöpken 2000, Eq
-  16, tabelas+páginas), cada K₀ mostrado como `K_i/M_i`, termo motivado.
-- `heat/heatExchanger01_water_water` — ε-NTU à mão no header, unidade em cada linha.
-- `flowsheets/ammonia01/02` — história de processo completa, termo com PORQUÊ (SRK+Henry).
-- `credo01_valve_heater_drum` — "a informação segue as correntes", um knob por caixa.
-- `vlle01_waterButanol` (README) — comando, tabela previsto-vs-publicado, DOI por valor.
-- `column09/11/07`, `membrane01/11`, `pitzer_vs_davies` — cada número impresso com fonte.
-- `combustion/ignition02` — bloco `provenance{}` em reactions (DOI, kinetics_source, reviewer).
+## EXEMPLARY CASES (the patterns to copy)
+- `reactors/cstr07_lhhw_methylAcetate` — complete primary citation (Popken
+  2000, Eq 16, tables + pages), every K0 shown as `K_i/M_i`, each term
+  motivated.
+- `heat/heatExchanger01_water_water` — eps-NTU worked by hand in the header, a
+  unit on every line.
+- `flowsheets/ammonia01/02` — the full process story, thermo with its WHY
+  (SRK + Henry).
+- `credo01_valve_heater_drum` — "information follows the streams", one knob per
+  box.
+- `vlle01_waterButanol` (README) — the command, a predicted-vs-published table,
+  a DOI per value.
+- `column09/11/07`, `membrane01/11`, `pitzer_vs_davies` — every printed number
+  with its source.
+- `combustion/ignition02` — a `provenance{}` block in reactions (DOI,
+  kinetics_source, reviewer).
 
-## Recomendação
-Duas vagas mecânicas limpam a maior parte: (1) header `thermoPhysPropDict`
-case-specific + tirar `T1/T2` e jargão de forum/gate; (2) auditar headers/descriptions
-copy-paste nas famílias hxWorkflow/sprayDryer/ctrl/evaporator (descrevem outro caso).
-As famílias avançadas (combustão, adsorção, cstr07, batch08) já são o padrão-alvo.
+## Recommendation
+Two mechanical waves clear most of it: (1) a case-specific
+`thermoPhysPropDict` header, dropping `T1/T2` and the forum/gate jargon;
+(2) audit the copy-pasted headers/descriptions in the
+hxWorkflow / sprayDryer / ctrl / evaporator families (they describe another
+case).  The advanced families (combustion, adsorption, cstr07, batch08) are
+already the target standard.

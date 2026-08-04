@@ -1,6 +1,7 @@
 # Forum — γ-φ (Raoult) vs φ-φ (EOS-EOS) for the flash (2026-07-04)
 
-**Convened by:** Vítor ("convoca o forum porque estou confuso!").
+**Convened by:** Vitor ("convene the forum, because I am confused!" — translated
+from the Portuguese original: *"convoca o forum porque estou confuso!"*).
 **Trigger:** the ammonia separator uses `activityModel { model ideal; }` +
 Psat/Raoult while the reactor uses SRK fugacity — an inconsistency at 200 bar.
 

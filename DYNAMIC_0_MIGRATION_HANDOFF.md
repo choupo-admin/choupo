@@ -1,183 +1,138 @@
-# HANDOFF — migração `initial{}`/`inlet{}` → `0/` nos casos dinâmicos (SEM legacy)
+# HANDOFF — migrating `initial{}` / `inlet{}` to `0/` in the dynamic cases (NO legacy)
 
-**Mandato do Vítor (2026-07-16, FURIOSO — não relitigar):** o estado vive SEMPRE
-em `0/`, um formato, ZERO exceções, ZERO legacy/dual-reader. Os blocos INLINE
-`initial{}` (holdup) e `inlet{}` (corrente) no `flowsheetDict` dos casos dinâmicos
-são a exceção que baralha os alunos (uns casos têm `0/`, os dinâmicos não). É o
-gémeo dinâmico do `streams{}`→`0/` já feito no steady.
+**Vitor's mandate (2026-07-16, FURIOUS — do not relitigate):** state lives
+ALWAYS in `0/`, one format, ZERO exceptions, ZERO legacy / dual-reader.  The
+INLINE `initial{}` (holdup) and `inlet{}` (stream) blocks in the dynamic cases'
+`flowsheetDict` were the exception that confuses students (some cases have
+`0/`, the dynamic ones did not).  It is the dynamic twin of the
+`streams{}` -> `0/` migration already done on the steady side.
 
-## Estado atual (o problema)
-- `src/unitOperations/dynamic/DynamicCSTR.cpp:50` lê `unitDict->subDict("initial")`
-  (T,P,V,totalMoles,composição = holdup) e `:64` `subDict("inlet")` (F,T,composição).
-  Idem `BatchReactor`, `BatchStill` (verificar).
-- O `0/internalState`+`0/streams` que o ctrl03 tem são **OUTPUT escrito** (snapshot
-  t=0 via `solutionControl { write true; }`), NÃO input. Todos os 42 dinâmicos
-  lêem inline.
-- **42 casos**: 9 `ctrl/` + 33 `batch/` com `initial{}` inline.
+**STATUS: CLOSED.  Phase A (ctrl, 9 cases) and Phase B (batch, 33 cases) are
+both done and green; both binaries hard-refuse an inline block.**  What remains
+is a short list of optional follow-ups at the end, none of them blocking.
 
-## Formato-alvo do `0/` dinâmico (o que o motor JÁ escreve — reutilizar)
-- **`0/internalState`** = holdup por unidade: `time 0; application <ctrl|batch>;
+> Read the "what the unit code still does" note below before filing a bug: the
+> units still call `subDict("initial")` / `subDict("inlet")` **by design** —
+> that is the injection target, not surviving legacy.  Mistaking one for the
+> other cost a wrong entry on a release-readiness list once already.
+
+## The problem, as it stood
+- `src/unitOperations/dynamic/DynamicCSTR.cpp` read `unitDict->subDict("initial")`
+  (T, P, V, totalMoles, composition = holdup) and `subDict("inlet")`
+  (F, T, composition).  Likewise `BatchReactor`, `BatchStill`.
+- The `0/internalState` + `0/streams` that ctrl03 carried were **written
+  OUTPUT** (a t = 0 snapshot via `solutionControl { write true; }`), NOT input.
+  All 42 dynamic cases read inline.
+- **42 cases**: 9 `ctrl/` + 33 `batch/` with an inline `initial{}`.
+
+## Target format for the dynamic `0/` (what the engine ALREADY writes — reused)
+- **`0/internalState`** = holdup per unit: `time 0; application <ctrl|batch>;
   units { <unit> { n_i [kmol], T, V, ... } }`.
-- **`0/streams`** = faces: `time 0; streams { "<unit>.<face>" { bc inlet; F, T, P,
-  molarFlows{...} } ... }` (a face de entrada tem `bc inlet`).
+- **`0/streamFaces`** = faces: `time 0; streams { "<unit>.<face>" { bc inlet;
+  F, T, P, molarFlows{...} } ... }` (the inlet face carries `bc inlet`).
 
-## Plano (por fases, corpo verde a cada uma)
-1. **Leitor 0/ dinâmico (C++):** parsear `0/internalState` (holdup por unidade) +
-   `0/streams` (faces). O motor já os ESCREVE — falta LÊ-los no arranque.
-2. **Seeding:** `choupoCtrl`/`Flowsheet` lêem o `0/` e passam holdup+inlet às
-   unidades; `DynamicCSTR/BatchReactor/BatchStill::initialise` deixam de ler
-   `subDict("initial")`/`subDict("inlet")` e recebem o estado do `0/`.
-3. **RECUSA dura** dos blocos `initial{}`/`inlet{}` inline (erro como o `streams{}`),
-   zero dual-reader. `start steadyState` mantém-se (seed calculado, lê o feed do
-   `0/streams`).
-4. **`choupo-init0`** materializa o `0/` dinâmico (holdup+faces) por propagação.
-5. **PROVA:** migrar `ctrl09_stream_disturbance` primeiro (o caso que despoletou
-   isto) → 1 caso verde → validar formato.
-6. **Escalar aos 42** (9 ctrl + 33 batch): materializar `0/internalState`+`0/streams`
-   de cada, apagar `initial{}`/`inlet{}` do flowsheetDict. Goldens são KPIs (não mudam).
-7. **Corpus 280/0** + doctrine-gate (adicionar `initial{}`/`inlet{}` à lista de
-   gramáticas retiradas em `check_doctrine.py`, como o `streams{}`).
+## What the unit code still does, and why that is correct
+The low-risk route chosen (and executed) was **INJECTION at the orchestrator**,
+not rewriting three units' `initialise()`.  Before its init loop, `choupoCtrl` /
+`choupoBatch` reads `0/internalState` + `0/streamFaces`, TRANSLATES them into
+`initial{}` / `inlet{}` dicts and injects those into the unit dict.  The unit
+code is UNCHANGED — `DynamicCSTR::initialise` still reads `subDict("initial")`,
+and that is the interface the injection writes to.
 
-## REFINAMENTOS (investigação 2026-07-16 — baixam o risco)
-- **Splitável por binário:** `choupoCtrl` (9 casos) e `choupoBatch` (33) são
-  binários SEPARADOS. NÃO é 42-all-at-once — faz-se **ctrl primeiro (verde,
-  auto-contido), batch depois**. Cada fase = 1 binário + os seus casos.
-- **Abordagem de baixo risco = INJEÇÃO no orquestrador** (não reescrever o
-  `initialise` de 3 unidades): o `choupoCtrl`/`choupoBatch`, ANTES do loop de
-  init, lê `0/internalState`+`0/streams`, TRADUZ para dicts `initial{}`/`inlet{}`
-  e injeta-os no `uDict`. O código da unidade (`DynamicCSTR::initialise` lê
-  `subDict("initial")`/`("inlet")`) fica IGUAL. Recusa dura se o flowsheetDict
-  ainda tiver `initial`/`inlet` inline (zero legacy).
-- **Ponto de leitura:** `choupoCtrl/main.cpp:147` faz `fs::current_path(caseDir)`
-  → `0/internalState`/`0/streams` são relativos ao CWD a partir daí; injetar
-  ANTES do loop em `:257`.
-- **Tradução:** `0/internalState.units.<u>{T,P,V,holdupMolar{}}` →
-  `initial{T,P,V,totalMoles=Σholdup, molarComposition=holdup/Σ}`; face inlet de
-  `0/streams` `{F,T,P,molarFlows{}}` → `inlet{F,T,molarComposition=molarFlows/F}`.
-  `T_jacket`/`UA` FICAM na `operation{}` do flowsheetDict (não são estado).
-- **Formato input == output:** manter o `0/internalState` com `holdupMolar`
-  (o que o writer já emite) para input e output serem UM formato.
-- **Batch:** `BatchStill`/`BatchReactor` — alguns vasos começam VAZIOS (o recipe
-  carrega depois via `chargeFrom`); esses não têm holdup em `0/` (ou têm um
-  internalState vazio). Tratar no migrador.
+The mandate is enforced where it must be, on the CASE format: a `flowsheetDict`
+still carrying an inline block is REFUSED by name, in both binaries, with the
+remedy (`choupoCtrl: unit '<u>' carries an inline initial{}/inlet{} block --
+the initial holdup and inlet live in 0/internalState + 0/streamFaces
+(bin/choupo-init0 materialises them).  Delete the inline block from
+flowsheetDict.`).  Zero dual-reader.  `start steadyState` remains (a computed
+seed, reading the feed from `0/streamFaces`).
 
-## ESTADO (2026-07-16)
-- **Fase A (ctrl, 9 casos): FEITA, VERDE.** `choupoCtrl` injeta
-  `initial{}`/`inlet{}` de `0/internalState`+`0/streams`, recusa inline.
-  Migrador: `bin/curate/migrate_dyn0.py`.
-  - **BUG encontrado + corrigido (o writer reescrevia o `0/` autorado):** os 4
-    casos com `solutionControl { write true; }` (ctrl03_startup, 05, 06, 08)
-    tinham o `0/internalState` no formato-WRITER do motor (`holdupMolar` +
-    `extras{F_in,z_in,T_jacket}`, SEM `V`) — porque o `SolutionWriter` escrevia
-    o instante t=0 POR CIMA do `0/` autorado, e o snapshot não populava `V`
-    (`u.V==0` → linha omitida). Na corrida seguinte o seed lia esse `0/` sem V
-    e rebentava em `lookupScalar("V")` ("Dictionary 'reactor': missing V").
-  - **Fix:** `SolutionWriter` NUNCA escreve o diretório `0/` (é o input
-    autorado, a fonte única) — guard `if (solWriter && std::abs(t) > 1e-9)` em
-    `choupoCtrl/main.cpp`; snapshots físicos só t>0 (50/ 100/ …). Os 4 `0/`
-    re-migrados para formato-V (`T,P,V,holdupMolar`), uniformes com os outros 5.
-  - **NOTA p/ Fase B:** o MESMO guard tem de ir ao `choupoBatch` quando ele
-    passar a ler `0/` (senão o writer batch reescreve o `0/` autorado). Hoje o
-    batch está inline (não lê `0/`), por isso não afeta — mas é obrigatório na
-    Fase B. Ideal: mover o guard para dentro do próprio `SolutionWriter`
-    (recusar timeName=="0") para ser à prova de ambos os binários.
-- **Fase B (batch, 33 casos): REVERTIDA** — batch volta ao inline (verde). O
-  batch É MUITO MAIS NUANÇADO que o ctrl (3+ semânticas de estado inicial):
-  - **CSTR/reactor holdup** (~27): T/P/V/holdupMolar — o migrador do ctrl serve.
-  - **`fixedBedAdsorber`** (batch09-18): `initial{}` = SÓ `molarComposition`
-    (gás inicial do leito), SEM T/V/holdup. Precisa de formato `0/` de LEITO.
-    (batch09-12 parecem ter outra variante ainda — investigar.)
-  - **`BatchStill`** (still03-06): semântica de vaso vazio / `charge` diferente
-    (o `initialise` tem ramo "vessel starts empty" que salta a composição).
-  - **Recipes** (recipe01/03/04): **MULTI-VASO** — o migrador atual só trata
-    1 unidade; recipes precisam de N entradas em `0/internalState` + o wiring
-    `dischargeTo`. Foi isto que partiu 16 casos na tentativa genérica.
-  - O migrador+injeção têm de tratar CADA tipo de unidade corretamente
-    (holdup vs leito vs vazio-com-charge vs multi-vaso), não um genérico de 2
-    formas. A tentativa (injeção holdupMolar-OU-molarComposition) compilou mas
-    16/33 partiram.
-- **PENDENTE:** Fase B batch (por-tipo), `choupo-init0` dinâmico, doctrine-gate
-  (adicionar `initial{}`/`inlet{}` às gramáticas retiradas), corpus final.
+## PHASE A (ctrl, 9 cases): DONE, GREEN
+`choupoCtrl` injects `initial{}` / `inlet{}` from `0/internalState` +
+`0/streamFaces` and refuses inline.  Migrator: `bin/curate/migrate_dyn0.py`.
 
-## FASE B (batch): FEITA + PUSHED 2026-07-16 (`dcd74dac3`)
-Resolvida por **relocação VERBATIM** (não canonicalização — foi isso que partiu
-16 casos antes): o bloco `initial{}` inteiro de cada vaso de holdup move-se
-tal-e-qual para `0/internalState units{<name>}`, e o `choupoBatch` reinjeta-o
-verbatim (zero tradução de valores). 27 casos migrados (reactor/still/crystalliser/
-accumulator/adsorber, single + multi-vaso incl. still06 com 7 vasos). Os 6
-`fixedBedAdsorber` NÃO foram tocados: o seu `initial{}` é `operation.initial`
-(perfil-Y do leito = parâmetro de operação) e o estado espacial já vive em
-`0/bed.profile`. Guard do writer replicado no choupoBatch. Recusa inline dura.
-Corpus **280/0**. Os 42 casos dinâmicos de holdup (33 batch + 9 ctrl) leem o
-estado inicial de `0/` — uma regra, zero exceções.
+- **BUG found + fixed (the writer was overwriting the AUTHORED `0/`):** the 4
+  cases with `solutionControl { write true; }` (ctrl03_startup, 05, 06, 08) had
+  their `0/internalState` in the engine's WRITER format (`holdupMolar` +
+  `extras{F_in, z_in, T_jacket}`, with NO `V`) — because `SolutionWriter` wrote
+  the t = 0 instant ON TOP of the authored `0/`, and the snapshot did not
+  populate `V` (`u.V == 0` -> the line was omitted).  On the next run the seed
+  read that `V`-less `0/` and blew up in `lookupScalar("V")`
+  ("Dictionary 'reactor': missing V").
+- **Fix:** `SolutionWriter` NEVER writes the `0/` directory (it is the authored
+  input, the single source) — guard `if (solWriter && std::abs(t) > 1e-9)` in
+  `choupoCtrl/main.cpp`; physical snapshots only at t > 0 (50/, 100/, ...).  The
+  4 `0/` files were re-migrated to the V-form (`T, P, V, holdupMolar`), uniform
+  with the other 5.
 
-### Follow-ups OPCIONAIS (não bloqueiam; para o Vítor)
-- **Formato:** ctrl usa `holdupMolar` (canonicalizado); batch usa verbatim
-  (`totalMoles`+`molarComposition`). Ambos corretos, mas não idênticos. Se
-  quiseres UM formato, o mais simples/seguro é passar o ctrl a verbatim também
-  (menos risco que o contrário). Não urgente.
-- **doctrine-gate:** a recusa-inline em runtime (nos dois binários) já garante
-  "no legacy" mais forte que um grep-gate; um gate `check_doctrine.py` teria de
-  distinguir `initial{}` unit-level de `operation.initial` (dos leitos) — deixei
-  de fora para não arriscar falsos positivos.
+## PHASE B (batch, 33 cases): DONE + PUSHED 2026-07-16 (`dcd74dac3`)
+Solved by **VERBATIM relocation** (not canonicalisation — canonicalising is
+what broke 16 cases on the first attempt): each holdup vessel's whole
+`initial{}` block moves as-is into `0/internalState units{<name>}`, and
+`choupoBatch` re-injects it verbatim (zero value translation).  27 cases
+migrated (reactor / still / crystalliser / accumulator / adsorber, single and
+multi-vessel including still06 with 7 vessels).
 
-## DESENHO FASE B (batch) — levantamento 2026-07-16 (histórico, já executado)
-Levantei os 33 casos batch (5 subcategorias, 6 tipos de unidade). **Só 2 formas
-de estado inicial**, mas com arestas que exigem decisão antes de codificar:
+The 6 `fixedBedAdsorber` cases were NOT touched: their `initial{}` is
+`operation.initial` (the bed's Y-profile = an operating parameter) and the
+spatial state already lives in `0/bed.profile`.  The writer guard is replicated
+in `choupoBatch`.  Hard inline refusal.  Corpus **280/0**.  The 42 dynamic
+holdup cases (33 batch + 9 ctrl) read their initial state from `0/` — one rule,
+zero exceptions.
 
-**Forma 1 — célula de holdup** (`T,[P],V,totalMoles,molarComposition`):
-batchReactor (batch01-08 exceto 05, ignition01/02, nox01, recipe02),
-batchCrystalliser (batch05), batchStill (still01-06 + recipes), batchAccumulator
-(still03-06, recipe04). ~26 casos. O migrador do ctrl JÁ trata isto
-(totalMoles+molarComposition → holdupMolar). Arestas:
-  - **P omisso** = RESULTADO (adsorber): não forçar P; o injector calcula/anuncia.
-  - **Acumulador VAZIO** (`totalMoles 0.0`, sem molarComposition): holdupMolar
-    fica vazio; o initialise do accumulator tem de aceitar leito/vaso vazio.
-  - **batchAdsorber (batch09-12)**: holdup de GÁS (T,V,totalMoles,molarComposition,
-    P-result) + `initialLoading{}` opcional (mol/kg no adsorvente) — 2º campo de
-    estado, hoje comentado/default 0. Se um caso o usar, tem de ir para o 0/.
+## OPTIONAL follow-ups (non-blocking; for Vitor)
+- **Format:** ctrl uses `holdupMolar` (canonicalised); batch uses verbatim
+  (`totalMoles` + `molarComposition`).  Both correct, but not identical.  If you
+  want ONE format, the simplest and safest is to move ctrl to verbatim too (less
+  risk than the reverse).  Not urgent.
+- **doctrine-gate:** the runtime inline refusal (in both binaries) already
+  guarantees "no legacy" more strongly than a grep gate would; a
+  `check_doctrine.py` gate would have to distinguish a unit-level `initial{}`
+  from the beds' `operation.initial`, and was left out rather than risk false
+  positives.
+- **Writer-clobber guard:** move the `abs(t) > 1e-9` guard from the two
+  `main.cpp` files INTO `SolutionWriter` (never write `timeName == "0"`), so
+  both binaries are protected DRY.  Check it does not affect the authored
+  `0/bed.profile` files.
 
-**Forma 2 — leito espacial** (`fixedBedAdsorber`, batch13-18):
-  - JÁ têm `0/bed.profile` / `0/ergun.profile` committado = perfil espacial
-    inicial do leito (input autorado, JÁ em 0/!). O `initial{ molarComposition }`
-    inline é só o GÁS inicial. Migrar = mover ESSE molarComposition para o 0/
-    (juntar ao bed.profile ou um `0/internalState` com molarComposition-only).
+## HISTORICAL — the Phase B survey (2026-07-16, before execution)
+Kept because it records why the first, generic attempt failed.  33 batch cases,
+5 subcategories, 6 unit types.  **Only 2 forms of initial state**, but with
+edges that needed deciding before coding:
 
-**Multi-vaso / recipes** (recipe01/03/04, still03-06): 2-7 unidades. O migrador
-atual só apanha a 1ª unidade (`re.search` do 1º name/type) — TEM de iterar todas
-e escrever uma entrada `units{ <u> {...} }` por vaso. O `chargeFrom`/`recipe`
-carrega vasos DEPOIS de t=0 (não é estado inicial — fica na flowsheetDict recipe).
+**Form 1 — a holdup cell** (`T, [P], V, totalMoles, molarComposition`):
+batchReactor (batch01-08 except 05, ignition01/02, nox01, recipe02),
+batchCrystalliser (batch05), batchStill (still01-06 + recipes),
+batchAccumulator (still03-06, recipe04).  ~26 cases.  Edges:
+  - **P omitted** = a RESULT (adsorber): do not force P; the injector computes
+    and announces it.
+  - **An EMPTY accumulator** (`totalMoles 0.0`, no molarComposition):
+    `holdupMolar` ends up empty; the accumulator's `initialise` must accept an
+    empty bed/vessel.
+  - **batchAdsorber (batch09-12)**: a GAS holdup (T, V, totalMoles,
+    molarComposition, P-as-result) plus an optional `initialLoading{}` (mol/kg
+    on the adsorbent) — a second state field, today commented out / defaulted
+    to 0.  If a case ever uses it, it must go into `0/`.
 
-**`batch04_transient_dirs`**: tem `0/internalState` committado = snapshot de
-OUTPUT (como os 4 ctrl). Limpar/re-materializar no formato de input.
+**Form 2 — a spatial bed** (`fixedBedAdsorber`, batch13-18): these already have
+`0/bed.profile` / `0/ergun.profile` committed = the bed's initial spatial
+profile (authored input, ALREADY in `0/`).  The inline
+`initial{ molarComposition }` is only the initial gas.
 
-### Decisões a tomar (Vítor)
-1. **Formato uniforme?** ctrl usa `holdupMolar`. Batch deve usar o mesmo
-   (input==output, o writer já emite holdupMolar) OU relocação verbatim do
-   `initial{}`? Rec: holdupMolar uniforme (consistente com ctrl + writer).
-2. **All-or-nothing:** migrar SÓ parte do batch cria a exceção intra-batch
-   ("uns batch têm 0/, outros não") — exatamente o que despoletou isto. Rec:
-   migrar os 33 de uma vez, num só commit verde, ou nenhum.
-3. **Guard writer-clobber:** mover o `abs(t)>1e-9` de `choupoCtrl/main.cpp` para
-   DENTRO do `SolutionWriter` (nunca escrever timeName=="0"), protegendo os DOIS
-   binários DRY. Atenção: verificar que não afeta os `0/bed.profile` autorados.
-4. **fixedBedAdsorber:** o gás inicial vai para `0/internalState`
-   (molarComposition-only) OU para dentro do `0/bed.profile`? Rec: `0/internalState`
-   separado, consistente com o resto.
+**Multi-vessel / recipes** (recipe01/03/04, still03-06): 2-7 units.  The first
+migrator only caught the first unit (a `re.search` for the first name/type) — it
+has to iterate all of them and write one `units{ <u> {...} }` entry per vessel.
+`chargeFrom` / `recipe` loads vessels AFTER t = 0 (that is not initial state; it
+stays in the flowsheetDict recipe).  **This is what broke 16 cases in the
+generic attempt.**
 
-### Plano de execução (quando aprovado)
-(a) guard → SolutionWriter; (b) migrador multi-unidade + P-omisso + vazio + leito;
-(c) `seedBatchUnitsFrom0` no choupoBatch (espelha o ctrl, trata as formas);
-(d) migrar as 5 subcategorias, corpus verde a CADA subcategoria; (e) recusa
-inline dura; (f) doctrine-gate `initial{}`/`inlet{}`; (g) corpus 280/0.
-Risco: a tentativa genérica anterior partiu 16/33 — por isso testar por-tipo.
-
-## Notas
-- ctrl09 é `dynamicCSTR`: holdup `initial{ T V totalMoles molarComposition }`,
-  inlet `inlet{ F T molarComposition }` — mapear para `0/internalState`+`0/streams`.
-- Batch (vaso fechado) NÃO tem face de saída → só `internalState`, sem `bc inlet`
-  extra além do carregamento inicial.
-- Constraints perenes: PT, sem legacy, sem exceções; identidade
-  `Vítor Geraldes <talentgroundlda@gmail.com>`; corpo verde a cada fase; NUNCA
-  deixar os 42 partidos entre fases (migrar motor+casos no MESMO passo, ou um gate
-  temporário — mas o alvo final é zero legacy).
+## Notes
+- ctrl09 is a `dynamicCSTR`: holdup `initial{ T V totalMoles molarComposition }`,
+  inlet `inlet{ F T molarComposition }` -> mapped to `0/internalState` +
+  `0/streamFaces`.
+- A batch (closed) vessel has NO outlet face -> `internalState` only, with no
+  `bc inlet` beyond the initial charge.
+- Standing constraints: no legacy, no exceptions; identity
+  `Vitor Geraldes <talentgroundlda@gmail.com>`; a green corpus at every phase;
+  NEVER leave the 42 broken between phases (migrate engine + cases in the SAME
+  step, or use a temporary gate — but the end target is zero legacy).

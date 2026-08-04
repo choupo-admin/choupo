@@ -1,7 +1,9 @@
 # The comfort loop — round 1 (2026-07-04)
 
-**Mandate (Vítor):** "não andes a apagar fogos — loop acompanhado com o fórum,
-para só quando TODOS se sentirem confortáveis."  Exit condition: a full round
+**Mandate (Vitor):** "do not go around putting out fires — run the loop with the
+forum alongside, and stop only when EVERYONE feels comfortable."  (Translated
+from the Portuguese original: *"não andes a apagar fogos — loop acompanhado com
+o fórum, para só quando TODOS se sentirem confortáveis."*)  Exit condition: a full round
 with ZERO new findings from the student AND professor chairs.
 
 ## Round 1 — done this round

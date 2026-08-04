@@ -1,13 +1,13 @@
-# Variantes propostas de `thermophysicalPropertiesDict`
+# Proposed variants of `thermophysicalPropertiesDict`
 
-Documento de arquitetura para cobrir os 289 dicionarios de propriedades dos
-tutoriais Choupo-2607. Nao descreve a gramatica transitoria atual.
+An architecture document covering the 289 property dictionaries of the
+Choupo-2607 tutorials.  It does NOT describe the current transitional grammar.
 
-**Regra:** nao existe `propertyMethods{}`. Esse nome mistura coeficientes de
-atividade, EOS, propriedades caloricas e transporte sem dizer qual propriedade
-fisica cada modelo calcula.
+**Rule:** there is no `propertyMethods{}`.  That name mixes activity
+coefficients, EoS, caloric properties and transport without saying which
+physical property each model computes.
 
-O contrato proposto usa blocos com significado fisico:
+The proposed contract uses blocks with a physical meaning:
 
 ```text
 recordType thermophysicalPropertySystem;
@@ -22,13 +22,13 @@ propertyKernel  { ... }   // opcional: pacote fundamental coordenado
 chemistryRef    "constant/chemistryDict"; // opcional: quimica ativa
 ```
 
-Nem todos os blocos sao obrigatorios. Um caso de especiacao aquosa nao inventa
-uma fase vapor; um caso isotermico nao e obrigado a declarar uma rota calorica
-que nunca usa.
+Not every block is mandatory.  An aqueous speciation case does not invent a
+vapour phase; an isothermal case is not obliged to declare a caloric route it
+never uses.
 
-Nao existe um saco global `parameters{}`. Cada modelo referencia os parametros
-que consome dentro do seu proprio bloco. O ficheiro de dados continua separado,
-mas a ligacao deixa de estar pendurada:
+There is no global `parameters{}` bag.  Each model references the parameters it
+consumes inside its own block.  The data file stays separate, but the link stops
+dangling:
 
 ```text
 activityModel
@@ -45,28 +45,28 @@ fugacityModel
 }
 ```
 
-## Lista das variantes
+## List of the variants
 
-| ID | Variante | Cobre |
+| ID | Variant | Covers |
 |---|---|---|
-| T1 | mistura molecular ideal gamma-phi | flash, colunas e unidades moleculares ideais |
-| T2 | atividade molecular gamma-phi | NRTL, UNIQUAC, Wilson e UNIFAC |
-| T3 | COSMO-SAC gamma-phi | atividade liquida por sigma profiles |
-| T4 | EOS phi-phi | SRK e Peng-Robinson |
-| T5 | PC-SAFT phi-phi | PC-SAFT nao associativo e associativo futuro |
-| T6 | solucao diluida/Henry | gases e solutos moleculares diluidos |
-| T7 | eletrolito com VLE | Pitzer/eNRTL com componentes aparentes |
-| T8 | propriedades de solucao ionica aquosa | Davies/Pitzer-HMW, sem VLE artificial |
-| T9 | equilibrio gas-liquido com eletrolito | CO2/O2/N2 entre vapor e fase aquosa |
-| T10 | multiplas fases liquidas | LLE e VLLE |
-| T11 | solido-liquido | cristalizacao, sais e minerais |
-| T12 | kernel de fluido puro | IF97 e futuros modelos fundamentais |
-| T13 | transporte completo | gas, liquido, interface e regras de mistura |
-| T14 | material solido continuo | Cp, rho e condutividade de uma regiao solida |
-| T15 | contexto local por unidade | override termofisico num no da planta |
-| T16 | pacote selado | snapshot fechado dos dados usados |
+| T1 | ideal molecular mixture, gamma-phi | flashes, columns and ideal molecular units |
+| T2 | molecular activity, gamma-phi | NRTL, UNIQUAC, Wilson and UNIFAC |
+| T3 | COSMO-SAC gamma-phi | liquid activity from sigma profiles |
+| T4 | EoS phi-phi | SRK and Peng-Robinson |
+| T5 | PC-SAFT phi-phi | PC-SAFT, non-associating and associating in future |
+| T6 | dilute solution / Henry | dilute gases and molecular solutes |
+| T7 | electrolyte with VLE | Pitzer/eNRTL with apparent components |
+| T8 | aqueous ionic solution properties | Davies / Pitzer-HMW, with no artificial VLE |
+| T9 | gas-liquid equilibrium with an electrolyte | CO2/O2/N2 between vapour and the aqueous phase |
+| T10 | multiple liquid phases | LLE and VLLE |
+| T11 | solid-liquid | crystallisation, salts and minerals |
+| T12 | pure-fluid kernel | IF97 and future fundamental models |
+| T13 | full transport | gas, liquid, interface and mixing rules |
+| T14 | continuous solid material | Cp, rho and conductivity of a solid region |
+| T15 | per-unit local context | a thermophysical override at a plant node |
+| T16 | sealed package | a closed snapshot of the data used |
 
-## T1 - mistura molecular ideal gamma-phi
+## T1 - ideal molecular mixture, gamma-phi
 
 ```text
 recordType thermophysicalPropertySystem;
@@ -113,7 +113,7 @@ volumetric
 }
 ```
 
-## T2 - atividade molecular gamma-phi
+## T2 - molecular activity, gamma-phi
 
 ```text
 components ( ethanol water );
@@ -138,7 +138,7 @@ equilibrium
     }
     vapour
     {
-        fugacityModel idealGas;   // ou uma EOS real
+        fugacityModel idealGas;   // or a real EoS
     }
 }
 
@@ -159,11 +159,11 @@ caloric
 }
 ```
 
-Se o par NRTL nao tem ajuste calorimetrico, `excessModel NRTL` deve recusar ou
-ser explicitamente omitido. Ajustar VLE nao prova a entalpia de excesso.
+If the NRTL pair has no calorimetric fit, `excessModel NRTL` must refuse or be
+explicitly omitted.  Fitting VLE does not prove the excess enthalpy.
 
-UNIFAC usa os grupos guardados no componente. NRTL, UNIQUAC e Wilson usam pares
-do modelo selecionado.
+UNIFAC uses the groups stored on the component.  NRTL, UNIQUAC and Wilson use
+pairs of the selected model.
 
 ## T3 - COSMO-SAC gamma-phi
 
@@ -189,7 +189,7 @@ equilibrium
 }
 ```
 
-Os dados ficam no componente, nao no codigo nem em componentes duplicados:
+The data live on the component, not in the code and not in duplicated components:
 
 ```text
 cosmo
@@ -207,10 +207,10 @@ cosmo
 }
 ```
 
-COSMO-SAC calcula coeficientes de atividade da fase liquida. Nao e uma EOS,
-nao calcula diretamente densidade de vapor e nao exige `binaryPairs`.
+COSMO-SAC computes liquid-phase activity coefficients.  It is not an EoS, it does
+not directly compute a vapour density, and it does not require `binaryPairs`.
 
-## T4 - EOS phi-phi
+## T4 - EoS phi-phi
 
 ```text
 components ( N2 CH4 );
@@ -247,8 +247,8 @@ caloric
 }
 ```
 
-`equationOfState` pode ser `SRK` ou `PengRobinson`. A mesma EOS serve as duas
-fases. Cada `kij` declara a EOS para a qual foi ajustado.
+`equationOfState` may be `SRK` or `PengRobinson`.  The same EoS serves both
+phases.  Every `kij` declares the EoS it was fitted to.
 
 ## T5 - PC-SAFT phi-phi
 
@@ -287,11 +287,11 @@ caloric
 }
 ```
 
-Primeira versao: hard-sphere, hard-chain e dispersion. As contribuicoes sao a
-definicao da variante implementada, anunciadas pelo modelo; nao sao botoes para
-o utilizador ligar e desligar arbitrariamente.
+First version: hard-sphere, hard-chain and dispersion.  The contributions ARE the
+definition of the implemented variant, announced by the model; they are not
+switches for the user to turn on and off arbitrarily.
 
-Dados puros no componente:
+Pure-component data on the component:
 
 ```text
 eosParameters
@@ -306,10 +306,10 @@ eosParameters
 }
 ```
 
-Associacao acrescentara locais e parametros dentro do mesmo bloco `PCSAFT`, sem
-criar outro componente nem outra floresta de diretorios.
+Association will add sites and parameters inside the same `PCSAFT` block, without
+creating another component or another forest of directories.
 
-## T6 - solucao diluida/Henry
+## T6 - dilute solution / Henry
 
 ```text
 components ( water CO2 );
@@ -340,10 +340,10 @@ equilibrium
 
 ```
 
-Henry e uma convencao para o grupo de solutos, nao um modelo de toda a fase
-liquida.
+Henry is a CONVENTION for the group of solutes, not a model of the whole liquid
+phase.
 
-## T7 - eletrolito com VLE
+## T7 - electrolyte with VLE
 
 ```text
 components ( water NaCl );
@@ -380,10 +380,10 @@ caloric
 }
 ```
 
-Pitzer/eNRTL calculam a atividade da fase aquosa. Dissociacao do sal, referencias
-ionicas e interacoes ficam nos seus registos, nao em componentes especiais.
+Pitzer/eNRTL compute the aqueous phase's activity.  Salt dissociation, ionic
+references and interactions live in their own records, not in special components.
 
-## T8 - propriedades de solucao ionica aquosa
+## T8 - aqueous ionic solution properties
 
 ```text
 recordType thermophysicalPropertySystem;
@@ -401,15 +401,15 @@ aqueousProperties
 }
 ```
 
-Este dicionario fornece atividades, nao faz a especiacao. Totais analiticos,
-masters admitidos, pH dado/resolvido, reacoes ativas e minerais a testar
-pertencem ao problema `speciate` e aos dados quimicos. Nao se inventa uma fase
-vapor nem se transforma a composicao da analise numa propriedade do fluido.
+This dictionary supplies activities; it does not do the speciation.  Analytical
+totals, admitted masters, a given/solved pH, active reactions and the minerals to
+test belong to the `speciate` problem and to the chemical data.  One does not
+invent a vapour phase, nor turn the analysis's composition into a fluid property.
 
-## T9 - equilibrio gas-liquido com eletrolito
+## T9 - gas-liquid equilibrium with an electrolyte
 
-Isto e um equilibrio entre duas fases. O dicionario declara as superficies das
-fases e a igualdade que as liga:
+This is an equilibrium between two phases.  The dictionary declares the phases'
+surfaces and the equality that links them:
 
 ```text
 components ( water NaCl CO2 O2 N2 );
@@ -487,19 +487,19 @@ equilibrium
 chemistryRef "constant/chemistryDict";
 ```
 
-Pitzer/eNRTL continua a representar a fase aquosa; Henry fornece a ponte de
-referencia para cada gas transferido. A especiacao transforma CO2aq em HCO3- e
-CO3-- sem contar novamente a transferencia gas-liquido.
+Pitzer/eNRTL still represents the aqueous phase; Henry supplies the reference
+bridge for each transferred gas.  The speciation turns CO2aq into HCO3- and
+CO3-- without counting the gas-liquid transfer a second time.
 
-O sistema ser aberto ou fechado **nao e uma propriedade termofisica**:
+Whether the system is open or closed **is not a thermophysical property**:
 
-- atmosfera com `pCO2` imposto: condicao da operacao de especiacao;
-- fase gasosa finita: inventario/volume no estado e na unidade;
-- fluxo continuo de gas: corrente e topologia do flowsheet.
+- an atmosphere with an imposed `pCO2`: a condition of the speciation operation;
+- a finite gas phase: inventory/volume, in the state and in the unit;
+- a continuous gas flow: a stream and the flowsheet topology.
 
-Os tres usam exatamente o mesmo equilibrio gas-liquido declarado acima.
+All three use exactly the same gas-liquid equilibrium declared above.
 
-## T10 - multiplas fases liquidas
+## T10 - multiple liquid phases
 
 ```text
 components ( water organicSolvent solute );
@@ -531,10 +531,11 @@ equilibrium
 }
 ```
 
-Para VLLE acrescenta-se a fase vapor. Se duas fases usam convencoes diferentes,
-`phaseEquilibrium` declara a ponte e o datum; nao se mistura silenciosamente.
+For VLLE the vapour phase is added.  If two phases use different conventions,
+`phaseEquilibrium` declares the bridge and the datum; they are never silently
+mixed.
 
-## T11 - solido-liquido
+## T11 - solid-liquid
 
 ```text
 components ( water NaOH ethanol );
@@ -575,14 +576,14 @@ caloric
 }
 ```
 
-Variantes: solubilidade molecular, sais, minerais, fusao e sublimacao.
-`availablePhaseData` disponibiliza a fase ao calculo, mas a operacao decide se
-apenas calcula SI ou se permite transferencia de massa para atingir equilibrio.
-Propriedades intrinsecas do cristal, reacao de dissolucao/K e dados de amostra
-nao sao a mesma categoria. PSD e cinetica de crescimento pertencem a
-amostra/unidade.
+Variants: molecular solubility, salts, minerals, melting and sublimation.
+`availablePhaseData` makes the phase available to the calculation, but the
+OPERATION decides whether it merely computes SI or permits mass transfer to reach
+equilibrium.  The crystal's intrinsic properties, the dissolution reaction / K,
+and sample data are not one category.  PSD and growth kinetics belong to the
+sample/unit.
 
-## T12 - kernel coordenado de fluido puro
+## T12 - coordinated pure-fluid kernel
 
 ```text
 components ( water );
@@ -604,10 +605,10 @@ caloric  { energyBasis absoluteEnthalpy; route kernelNative; }
 transport { route kernelNative; }
 ```
 
-Um kernel fundamental entrega propriedades coerentes em conjunto. Nao deve ser
-desmontado artificialmente em modelos independentes.
+A fundamental kernel delivers coherent properties as a set.  It must not be
+artificially dismantled into independent models.
 
-## T13 - transporte completo
+## T13 - full transport
 
 ```text
 transport
@@ -660,14 +661,15 @@ transport
 }
 ```
 
-Uma `mixingRule` so aparece se for selecionavel. Se houver uma unica regra, o
-runtime anuncia-a no plano resolvido sem fingir escolha.
+A `mixingRule` appears only if it is selectable.  Where there is a single rule,
+the runtime announces it in the resolved plan without pretending there was a
+choice.
 
-Extensoes cobertas quando necessarias: condutividade eletrica, mobilidade ionica,
-difusao multicomponente e propriedades efetivas de duas fases. Transporte em
-poros, membranas e leitos referencia assets do material/equipamento.
+Extensions covered when needed: electrical conductivity, ionic mobility,
+multicomponent diffusion and effective two-phase properties.  Transport in pores,
+membranes and beds references the material/equipment assets.
 
-## T14 - material solido continuo
+## T14 - continuous solid material
 
 ```text
 components ( steel );
@@ -694,19 +696,19 @@ transport
 }
 ```
 
-Este e o equivalente a uma regiao solida de conducao. Nao justifica um
-`solidPropertiesDict` global: continua a ser um contexto termofisico.
+This is the equivalent of a conducting solid region.  It does not justify a global
+`solidPropertiesDict`: it remains a thermophysical context.
 
-## T15 - contexto local por unidade
+## T15 - per-unit local context
 
-Uma unidade ou setor pode possuir o seu proprio
-`constant/thermophysicalPropertiesDict`, herdando componentes e substituindo
-apenas um contexto termofisico completo. A fronteira anuncia modelos e audita o
-datum de entalpia. Correntes transportam estado, nao modelos.
+A unit or a sector may own its own
+`constant/thermophysicalPropertiesDict`, inheriting the components and replacing
+only a COMPLETE thermophysical context.  The boundary announces its models and
+audits the enthalpy datum.  Streams carry state, not models.
 
-## T16 - pacote selado
+## T16 - sealed package
 
-Qualquer T1-T15 pode fechar as dependencias:
+Any of T1-T15 may close its dependencies:
 
 ```text
 constant/propertyData/
@@ -717,49 +719,49 @@ constant/propertyData/
     parameters/
 ```
 
-Selar altera reproducibilidade e resolucao de dados, nao a fisica declarada.
+Sealing changes reproducibility and data resolution, not the declared physics.
 
-## Aplicacao aos casos de Farelo
+## Application to the Farelo cases
 
-Os tutoriais de Farelo sao um teste particularmente util desta arquitetura:
-combinam atividade aquosa a concentracoes extremas, saturacao de dois sais,
-efeito de iao comum e, no caso de LiCl, um hidrato cuja reacao inclui a atividade
-da agua. O artigo de referencia e Farelo, Fernandes e Avelino, *J. Chem. Eng.
-Data* 50 (2005) 1470-1477, DOI 10.1021/je050111j.
+The Farelo tutorials are a particularly useful test of this architecture: they
+combine aqueous activity at extreme concentrations, saturation of two salts, the
+common-ion effect and, in the LiCl case, a hydrate whose reaction includes the
+water activity.  The reference paper is Farelo, Fernandes and Avelino, *J. Chem.
+Eng. Data* 50 (2005) 1470-1477, DOI 10.1021/je050111j.
 
-Separacao conferida contra duas arquiteturas maduras:
+The separation was checked against two mature architectures:
 
-- Aspen Plus, `Literature/ASPEN/APRSYS 111 Physical Property Methods and
-  Models-1.pdf`, capitulos 1 e 5: electrolyte property method, solution
-  chemistry, componentes aparentes/reais e precipitacao de sais;
-- Aspen Plus, `Literature/ASPEN/AspUserGuide10-1.pdf`, capitulos 6 e 27:
-  `Chemistry ID`, selecao global/local e tipos de reacao eletrolitica;
-- USGS PHREEQC 3: base de dados termodinamica separada de `SOLUTION`, fases
-  candidatas separadas de `EQUILIBRIUM_PHASES`, e output separado em
+- A commercial simulator, `Literature/ASPEN/APRSYS 111 Physical Property Methods
+  and Models-1.pdf`, chapters 1 and 5: the electrolyte property method, solution
+  chemistry, apparent/real components and salt precipitation;
+- the same simulator, `Literature/ASPEN/AspUserGuide10-1.pdf`, chapters 6 and 27:
+  `Chemistry ID`, global/local selection and the electrolyte reaction types;
+- USGS PHREEQC 3: a thermodynamic database separate from `SOLUTION`, candidate
+  phases separate from `EQUILIBRIUM_PHASES`, and output separate in
   `SELECTED_OUTPUT`.
 
-Os exemplos seguintes mostram o **contrato proposto**, nao a gramatica
-transitoria que os dois tutoriais executam hoje. Ha quatro casas distintas:
+The examples that follow show the **proposed contract**, not the transitional
+grammar the two tutorials execute today.  There are four distinct homes:
 
-| Facto | Casa |
+| Fact | Home |
 |---|---|
-| modelo de atividade, referencia e parametros de interacao | `constant/thermophysicalPropertiesDict` |
-| especies, reacoes aquosas e fases puras candidatas | rede selecionada por `constant/chemistryDict` |
-| log K, estequiometria das reacoes e dados das fases | catalogo quimico/termodinamico |
-| composicao, pH, sistema aberto/fechado e fases autorizadas a reagir | `system/propsDict` |
-| pontos medidos e observaveis de comparacao | `constant/experimental/` + teste/relatorio |
+| the activity model, its reference and the interaction parameters | `constant/thermophysicalPropertiesDict` |
+| species, aqueous reactions and candidate pure phases | the network selected by `constant/chemistryDict` |
+| log K, the reactions' stoichiometry and the phases' data | the chemical/thermodynamic catalogue |
+| composition, pH, open/closed system and the phases authorised to react | `system/propsDict` |
+| measured points and the observables to compare against | `constant/experimental/` + the test/report |
 
-Os pontos medidos nunca sao propriedades intrinsecas de um componente. Um
-`propsDict` pede calculos nos pontos experimentais; nao redefine a
-termodinamica para cada ponto.
+Measured points are NEVER intrinsic properties of a component.  A `propsDict`
+asks for calculations AT the experimental points; it does not redefine the
+thermodynamics for each point.
 
 ### F1 - NaCl + NH4Cl + H2O
 
-O dicionario termofisico declara apenas o contexto de propriedades da solucao.
-Como a alimentacao deste tutorial e uma analise em totais ionicos, NaCl e NH4Cl
-nao sao componentes de corrente: o unico componente aparente e agua. A rede
-quimica ligada ao pacote determina as especies aquosas e os minerais sobre os
-quais se podem calcular indices de saturacao.
+The thermophysical dictionary declares only the solution's property context.
+Because this tutorial's feed is an analysis in ionic totals, NaCl and NH4Cl are
+NOT stream components: the only apparent component is water.  The chemical
+network bound to the package determines the aqueous species and the minerals for
+which saturation indices can be computed.
 
 ```text
 recordType thermophysicalPropertySystem;
@@ -797,25 +799,25 @@ aqueousProperties
 chemistryRef "constant/chemistryDict";
 ```
 
-`aqueousProperties` fornece `gamma_i`, `a_i`, `a_w` e o coeficiente osmotico.
-Nao declara que especies existem, nao resolve balancos e nao precipita solidos.
-Nao ha bloco calorico neste ensaio isotermico; `logK25` nao implica por si so uma
-rota de entalpia para um cristalizador adiabatico.
+`aqueousProperties` supplies `gamma_i`, `a_i`, `a_w` and the osmotic coefficient.
+It does not declare which species exist, does not solve balances and does not
+precipitate solids.  There is no caloric block in this isothermal experiment;
+`logK25` does not by itself imply an enthalpy route for an adiabatic crystalliser.
 
-`missingPolicy declaredZeroApproximation` e deliberadamente ruidoso. O catalogo
-atual contem os pares Na-Cl e NH4-Cl, mas nao contem uma interacao
-`theta(Na,NH4)` nem `psi(Na,NH4,Cl)`. A previsao ternaria nao pode fingir que
-esses dados foram medidos ou ajustados.
+`missingPolicy declaredZeroApproximation` is deliberately noisy.  The current
+catalogue contains the Na-Cl and NH4-Cl pairs, but contains neither a
+`theta(Na,NH4)` interaction nor a `psi(Na,NH4,Cl)`.  A ternary prediction cannot
+pretend that data was measured or fitted.
 
-O `chemistryDict`, equivalente conceptual ao `Chemistry ID` do Aspen e a rede
-`SOLUTION_MASTER_SPECIES` + `SOLUTION_SPECIES` + `PHASES` do PHREEQC, deve
-selecionar a rede Na/NH4/Cl e tornar halite/salammoniac disponiveis para o
-calculo de SI. **A sua gramatica ainda nao esta ratificada e por isso nao se
-inventa aqui um bloco.** Disponivel para SI nao significa presente nem
-autorizado a precipitar; essa autorizacao pertence a uma operacao
-`equilibrate`, como `EQUILIBRIUM_PHASES` no PHREEQC.
+`chemistryDict` — the conceptual equivalent of the commercial simulator's
+`Chemistry ID` and of PHREEQC's `SOLUTION_MASTER_SPECIES` +
+`SOLUTION_SPECIES` + `PHASES` network — must select the Na/NH4/Cl network and
+make halite/salammoniac available for the SI calculation.  **Its grammar is not
+ratified yet, and so no block is invented here.**  Available for SI does not mean
+present, nor authorised to precipitate; that authorisation belongs to an
+`equilibrate` operation, like PHREEQC's `EQUILIBRIUM_PHASES`.
 
-O catalogo Choupo atual co-localiza a fase e a reacao de dissolucao em
+The current Choupo catalogue co-locates the phase and the dissolution reaction in
 `components/NH4Cl.dat`:
 
 ```text
@@ -837,17 +839,17 @@ solidPhases
 }
 ```
 
-Isto descreve fielmente o estado atual, mas **nao deve ainda ser declarado como
-a arquitetura final**. Aspen guarda a precipitacao e a constante na solution
-chemistry; PHREEQC guarda estequiometria e `log K` no registo `PHASES`. Em
-termos termodinamicos, o K da reacao depende da estequiometria e dos estados de
-referencia das especies aquosas, nao apenas da identidade do cristal. A decisao
-v2 e entre (a) manter um sub-registo de fase tipado dentro do componente, com a
-dependencia quimica explicita, ou (b) separar identidade/propriedades do solido
-da reacao de dissolucao no catalogo quimico. Nao se escolhe entre as duas por
-conveniencia do leitor.
+This describes the current state faithfully, but **must not yet be declared the
+final architecture**.  The commercial simulator keeps precipitation and the
+constant in its solution chemistry; PHREEQC keeps stoichiometry and `log K` in
+the `PHASES` record.  Thermodynamically, the reaction's K depends on the
+stoichiometry and on the aqueous species' reference states, not on the crystal's
+identity alone.  The v2 decision is between (a) keeping a typed phase sub-record
+inside the component, with the chemical dependency explicit, and (b) separating
+the solid's identity/properties from the dissolution reaction in the chemical
+catalogue.  One does not choose between them for the reader's convenience.
 
-O par Pitzer e um registo do proprio modelo, consumido onde foi referenciado:
+The Pitzer pair is a record of the model itself, consumed where it was referenced:
 
 ```text
 recordType electrolytePairParameters;
@@ -862,8 +864,8 @@ coefficients
 source "Pitzer and Mayorga (1973); validated against Farelo (2005)";
 ```
 
-Finalmente, `system/propsDict` contem a base da analise e percorre as
-composicoes medidas. Esta e a forma executavel atual de uma entrada:
+Finally, `system/propsDict` holds the analysis's basis and walks the measured
+compositions.  This is the current executable form of one entry:
 
 ```text
 {
@@ -879,19 +881,19 @@ composicoes medidas. Esta e a forma executavel atual de uma entrada:
 }
 ```
 
-Esta operacao calcula a especiacao e os SI das fases candidatas; nao altera a
-composicao para atingir SI = 0. Um calculo eutonico teria adicionalmente
-`equilibrate { minerals ( halite salammoniac ); }` e inventarios/limites das
-fases. A nao convergencia atual desse active-set a forca ionica aproximada de
-8.6 mol/kg e uma limitacao numerica separada.
+This operation computes the speciation and the SI of the candidate phases; it does
+not alter the composition to reach SI = 0.  A eutonic calculation would
+additionally carry `equilibrate { minerals ( halite salammoniac ); }` plus phase
+inventories/limits.  That active set's current non-convergence at an approximate
+ionic strength of 8.6 mol/kg is a separate numerical limitation.
 
-### F2 - LiCl + H2O com LiCl.H2O(s)
+### F2 - LiCl + H2O with LiCl.H2O(s)
 
-Este caso usa LiCl como componente aparente porque as operacoes fornecem
-`composition { LiCl ...; }`; `dissociatesTo` converte essa entrada na base
-ionica. O hidrato continua a ser uma fase quimica candidata, nao uma fase
-automaticamente presente. O modelo aquoso tem de fornecer `waterActivity`,
-porque `a_w` entra no quociente da reacao do hidrato.
+This case uses LiCl as an apparent component because the operations supply
+`composition { LiCl ...; }`; `dissociatesTo` converts that entry onto the ionic
+basis.  The hydrate remains a CANDIDATE chemical phase, not an automatically
+present one.  The aqueous model must supply `waterActivity`, because `a_w` enters
+the hydrate reaction's quotient.
 
 ```text
 recordType thermophysicalPropertySystem;
@@ -920,13 +922,13 @@ aqueousProperties
 chemistryRef "constant/chemistryDict";
 ```
 
-O `chemistryDict` deve incluir Li e Cl na rede e tornar
-`lithiumChlorideH2O` disponivel para SI. A sintaxe fica por ratificar. A fase so
-entra num equilibrio com transferencia de massa quando uma operacao a lista
-explicitamente em `equilibrate`.
+`chemistryDict` must include Li and Cl in the network and make
+`lithiumChlorideH2O` available for SI.  The syntax remains to be ratified.  The
+phase enters a mass-transfer equilibrium only when an operation lists it
+explicitly in `equilibrate`.
 
-No catalogo atual, o registo co-localizado do hidrato torna explicita a perna de
-agua; aplica-se a mesma decisao arquitetural pendente descrita acima:
+In the current catalogue, the hydrate's co-located record makes the water leg
+explicit; the same pending architectural decision described above applies:
 
 ```text
 solidPhases
@@ -947,8 +949,8 @@ solidPhases
 }
 ```
 
-O respetivo registo Pitzer documenta que ja nao e uma previsao independente de
-Farelo:
+Its Pitzer record documents that this is no longer an independent prediction of
+Farelo's data:
 
 ```text
 recordType electrolytePairParameters;
@@ -967,29 +969,29 @@ fit
 }
 ```
 
-Assim, a comparacao a 19.7 mol/kg e uma verificacao da calibracao de `Li-Cl` e
-do Ksp do hidrato, nao uma validacao cega. Os pontos intermedios de atividade
-media continuam a testar a forma da correlacao. A divergencia atual do percurso
-de precipitacao perto de I = 20 mol/kg deve aparecer como limite numerico no
-relatorio da operacao, sem alterar estes dicionarios.
+So the comparison at 19.7 mol/kg is a CHECK of the `Li-Cl` calibration and of the
+hydrate's Ksp, not a blind validation.  The intermediate mean-activity points
+still test the correlation's shape.  The precipitation path's current divergence
+near I = 20 mol/kg should appear as a numerical limit in the operation's report,
+without altering these dictionaries.
 
-### F3 - restantes sistemas do artigo
+### F3 - the paper's remaining systems
 
-| Sistema | Variacao sobre F1/F2 | Estado honesto |
+| System | Variation on F1/F2 | Honest status |
 |---|---|---|
-| KCl + NH4Cl + H2O | `sylvite` + `salammoniac`; pares K-Cl e NH4-Cl; interacoes mistas declaradas | mesma arquitetura de F1 |
-| NaCl + LiCl + H2O | `halite` + `lithiumChlorideH2O`; pares Na-Cl e Li-Cl | mesma arquitetura, incluindo `a_w` |
-| KCl + LiCl + H2O | `sylvite` + `lithiumChlorideH2O`; pares K-Cl e Li-Cl | mesma arquitetura, incluindo `a_w` |
-| NaCl/KCl + AlCl3 + H2O | cloretos alcalinos + `AlCl3.6H2O` e hidrolise de Al3+ | recusado ate existir especiacao, parametros e fase solida curados |
+| KCl + NH4Cl + H2O | `sylvite` + `salammoniac`; the K-Cl and NH4-Cl pairs; mixed interactions declared | the same architecture as F1 |
+| NaCl + LiCl + H2O | `halite` + `lithiumChlorideH2O`; the Na-Cl and Li-Cl pairs | the same architecture, `a_w` included |
+| KCl + LiCl + H2O | `sylvite` + `lithiumChlorideH2O`; the K-Cl and Li-Cl pairs | the same architecture, `a_w` included |
+| NaCl/KCl + AlCl3 + H2O | alkali chlorides + `AlCl3.6H2O` and Al3+ hydrolysis | refused until curated speciation, parameters and a solid phase exist |
 
-O artigo contem 553 pontos para seis ternarios, mas um CSV grande nao transforma
-automaticamente os seis sistemas em modelos validos. Em particular, os casos
-de AlCl3 nao devem ser ativados com um dicionario cosmetico: o artigo reporta
-pH inferior a 2.75 e a hidrolise de Al3+ faz parte da fisica necessaria.
+The paper contains 553 points for six ternaries, but a large CSV does not
+automatically turn the six systems into valid models.  In particular, the AlCl3
+cases must not be activated with a cosmetic dictionary: the paper reports a pH
+below 2.75, and Al3+ hydrolysis is part of the necessary physics.
 
-## Casas dos dados
+## Homes of the data
 
-### Dados intrinsecos por componente
+### Intrinsic per-component data
 
 ```text
 components/<name>.dat
@@ -1027,17 +1029,17 @@ components/<name>.dat
     transportParameters
 ```
 
-Nao existem componentes por modelo (`water_PC-SAFT`, `water_COSMO`, etc.).
+There are no per-model components (`water_PC-SAFT`, `water_COSMO`, and so on).
 
-`vaporPressure` e `phaseTransitions.liquidVapour` sao dados diferentes. Uma
-correlacao Antoine fornece `Psat(T)`; nao fornece, por si so, uma entalpia de
-vaporizacao independente. A derivada de `ln(Psat)` pode produzir um valor
-Clausius-Clapeyron efetivo sob hipoteses, e deve servir como auditoria de
-consistencia, nao como substituto silencioso de `Hvap(T)`. Analogamente, fusao
-exige pelo menos `Tm`, `Hfus` e as rotas de Cp do solido e do liquido para sair
-da temperatura de transicao.
+`vaporPressure` and `phaseTransitions.liquidVapour` are DIFFERENT data.  An
+Antoine correlation supplies `Psat(T)`; it does not, by itself, supply an
+independent enthalpy of vaporisation.  The derivative of `ln(Psat)` can produce an
+effective Clausius-Clapeyron value under assumptions, and should serve as a
+consistency AUDIT, never as a silent substitute for `Hvap(T)`.  Likewise melting
+requires at least `Tm`, `Hfus` and the solid and liquid Cp routes to leave the
+transition temperature.
 
-### Dados que nomeiam um par ou interacao
+### Data that name a pair or an interaction
 
 ```text
 parameters/NRTL/<i>-<j>.dat
@@ -1050,55 +1052,55 @@ parameters/PCSAFT/<i>-<j>.dat
 parameters/electrolyte/{pairs,lambda,theta,psi,zeta}/...
 ```
 
-Estes ficheiros nao sao selecionados por um bloco global. A referencia aparece
-dentro do `activityModel`, `fugacityModel`, grupo Henry ou modelo eletrolitico
-que efetivamente os consome.
+These files are not selected by a global block.  The reference appears inside the
+`activityModel`, `fugacityModel`, Henry group or electrolyte model that actually
+consumes them.
 
-## Onde vivem as regras de mistura
+## Where the mixing rules live
 
-Nao existe uma `mixingRules{}` global, porque uma regra de viscosidade nao pode
-ser aplicada a densidade ou a uma EOS. Cada propriedade declara a sua regra:
+There is no global `mixingRules{}`, because a viscosity rule cannot be applied to
+a density or to an EoS.  Each property declares its own rule:
 
-| Propriedade | Local da regra | Exemplos |
+| Property | Where the rule lives | Examples |
 |---|---|---|
-| EOS/fugacidade | `equilibrium.equationOfState.mixingRule` | van der Waals one-fluid, PC-SAFT one-fluid |
-| atividade/excesso | o proprio `activityModel` | NRTL, UNIQUAC, Wilson, UNIFAC, COSMO-SAC |
-| Cp/entalpia ideal | `caloric.<phase>.heatCapacityMixingRule` | moleWeighted, massWeighted |
-| entalpia de excesso | `caloric.<phase>.excessModel` | mesma superficie de atividade, se calorimetricamente suportada |
-| densidade/volume | `volumetric.<phase>.mixingRule` | volumeAdditive, EOS-native |
-| viscosidade | `transport.<phase>.viscosity.mixingRule` | Wilke, logarithmic |
-| condutividade termica | `transport.<phase>.thermalConductivity.mixingRule` | Wassiljewa, massWeighted |
-| difusao | `transport.<phase>.diffusivity.mixingRule` | Maxwell-Stefan/multicomponente |
-| tensao superficial | `transport.interface.surfaceTension.mixingRule` | moleWeighted ou modelo interfacial validado |
+| EoS/fugacity | `equilibrium.equationOfState.mixingRule` | van der Waals one-fluid, PC-SAFT one-fluid |
+| activity/excess | the `activityModel` itself | NRTL, UNIQUAC, Wilson, UNIFAC, COSMO-SAC |
+| ideal Cp/enthalpy | `caloric.<phase>.heatCapacityMixingRule` | moleWeighted, massWeighted |
+| excess enthalpy | `caloric.<phase>.excessModel` | the same activity surface, IF calorimetrically supported |
+| density/volume | `volumetric.<phase>.mixingRule` | volumeAdditive, EoS-native |
+| viscosity | `transport.<phase>.viscosity.mixingRule` | Wilke, logarithmic |
+| thermal conductivity | `transport.<phase>.thermalConductivity.mixingRule` | Wassiljewa, massWeighted |
+| diffusion | `transport.<phase>.diffusivity.mixingRule` | Maxwell-Stefan / multicomponent |
+| surface tension | `transport.interface.surfaceTension.mixingRule` | moleWeighted, or a validated interfacial model |
 
-Numa mudanca de fase de uma mistura, a entalpia nao e uma media isolada de
-`Hvap_i`: resulta da diferenca entre as entalpias completas das fases, incluindo
-composicoes diferentes, Cp, entalpias de excesso e contribuicoes residuais da
-EOS. Os dados `Hvap`/`Hfus` dos componentes sao ancora/rota de componente, nao
-uma regra de mistura universal.
+In a mixture's phase change, the enthalpy is not an isolated average of `Hvap_i`:
+it follows from the difference between the phases' COMPLETE enthalpies, including
+their different compositions, Cp, excess enthalpies and the EoS's residual
+contributions.  A component's `Hvap`/`Hfus` data are a component anchor/route,
+not a universal mixing rule.
 
-### Quimica ativa
+### Active chemistry
 
-`chemistryDict` seleciona reacoes aquosas, gas-liquido, minerais, troca ionica
-e reacoes de processo. A selecao e separada do calculo termofisico, mas a
-montagem valida ambos em conjunto.
+`chemistryDict` selects aqueous, gas-liquid, mineral, ion-exchange and process
+reactions.  The selection is separate from the thermophysical calculation, but
+the assembly validates both together.
 
-## Combinacoes invalidas
+## Invalid combinations
 
-1. duas EOS diferentes nas raizes de um flash phi-phi;
-2. `kij` ajustado para uma EOS consumido por outra;
-3. COSMO-SAC sem perfil ou misturando familias de sigma profiles;
-4. dois modelos gerais de atividade na mesma fase;
-5. Henry a substituir Pitzer/eNRTL em toda a salmoura;
-6. equilibrio entre fases com data diferentes sem `phaseEquilibrium`;
-7. rota calorica a reutilizar parametros ajustados apenas a VLE sem evidencia;
-8. transporte pedido sem modelo, dados ou regra de mistura necessarios;
-9. estimacao silenciosa durante a montagem;
-10. dados de amostra/equipamento apresentados como intrinsecos do componente.
+1. two different EoS on the roots of one phi-phi flash;
+2. a `kij` fitted for one EoS consumed by another;
+3. COSMO-SAC with no profile, or mixing sigma-profile families;
+4. two general activity models on the same phase;
+5. Henry replacing Pitzer/eNRTL across a whole brine;
+6. equilibrium between phases with different data and no `phaseEquilibrium`;
+7. a caloric route reusing parameters fitted to VLE alone, with no evidence;
+8. transport requested without the necessary model, data or mixing rule;
+9. silent estimation during assembly;
+10. sample/equipment data presented as intrinsic to the component.
 
-## Cobertura
+## Coverage
 
-T1-T16 cobrem as configuracoes presentes nos 289 `propertyDict` e as extensoes
-discutidas: COSMO-SAC, PC-SAFT, CO2 gasoso, transporte completo, especiacao,
-solidos e kernels fundamentais. A gramatica executavel atual deve ser migrada
-para este contrato; nao deve determinar o desenho final.
+T1-T16 cover the configurations present in the 289 `propertyDict` files plus the
+extensions discussed: COSMO-SAC, PC-SAFT, gaseous CO2, full transport,
+speciation, solids and fundamental kernels.  The current executable grammar
+should be MIGRATED to this contract; it must not determine the final design.

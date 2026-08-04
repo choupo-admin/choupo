@@ -1,23 +1,23 @@
-# Fórum virtual — segunda sessão, sobre os dicionários reescritos
+# Virtual forum — second session, on the rewritten dictionaries
 
-**O que isto é:** um dispositivo de autocrítica estruturada, não pessoas
-reais. Seis vozes com ângulos genuinamente diferentes atacam o desenho.
-**Cada achado abaixo foi verificado no repositório antes de entrar aqui** —
-onde digo "confirmado", há um ficheiro e uma linha.
+**What this is:** a device for structured self-criticism, not real people.
+Six voices with genuinely different angles attack the design.
+**Every finding below was verified against the repository before it was written
+here** — where it says "confirmed", there is a file and a line.
 
-Sistema em revisão: `docs/design/flashComplex/` no commit `3f0778fd` (a
-reescrita para a forma do corpus).
+System under review: `docs/design/flashComplex/` at commit `3f0778fd` (the
+rewrite into the corpus form).
 
 ---
 
-## Sessão 1 — o engenheiro de estruturas de dados abre
+## Session 1 — the data-structures engineer opens
 
-**Arquitecto de software**
+**Software architect**
 
-> Vou ser breve porque o achado é grande e não precisa de floreado.
+> I will be brief, because the finding is large and needs no ornament.
 >
-> Vocês declaram cinco masters e dois sólidos. Fui ler o construtor. Em
-> `ThermoPackageBuilder.cpp:690` há isto:
+> You declare five masters and two solids.  I went and read the builder.  At
+> `ThermoPackageBuilder.cpp:690` there is this:
 >
 > ```
 > apparent component '<X>' carries TWO candidate marker elements (C, Ca)
@@ -25,207 +25,204 @@ reescrita para a forma do corpus).
 >   reconstruction is a later, deliberate slice.
 > ```
 >
-> `CaCO3` tem Ca e C. `NH4HCO3` tem N e C. **Os dois sólidos deste caso
-> caem os dois nessa recusa**, e a mensagem até nomeia a fatia que falta.
+> `CaCO3` has Ca and C.  `NH4HCO3` has N and C.  **Both of this case's solids
+> fall into that refusal**, and the message even names the missing slice.
 >
-> E há um segundo andar: mesmo que declarassem a ponte tipada em cada um,
-> `markersSeen` (linha 709) recusa dois componentes que partilhem o
-> elemento marcador. CO₂, CaCO₃ e NH₄HCO₃ competem todos pelo C.
+> And there is a second floor: even if you declared the typed bridge on each of
+> them, `markersSeen` (line 709) refuses two components sharing the marker
+> element.  CO2, CaCO3 and NH4HCO3 all compete for C.
 >
-> Não é um bug. É a gramática a dizer, corretamente e por escrito, que
-> ainda não sabe representar um sal que dissolve para dentro de **duas**
-> redes. O caso encontrou a sua segunda fatia obrigatória.
+> This is not a bug.  It is the grammar saying, correctly and in writing, that
+> it does not yet know how to represent a salt dissolving into **two** networks.
+> The case has found its second mandatory slice.
 
-**Professor de termodinâmica de electrólitos**
+**Professor of electrolyte thermodynamics**
 
-> Subscrevo, e é bom que assim seja — a recusa é mais honesta do que
-> qualquer resposta que o código pudesse inventar. O CaCO₃ dissolvido
-> **é** ao mesmo tempo cálcio e carbonato; não há colapso de um elemento
-> só que o represente. É o teorema dos (c−1)(a−1) graus de liberdade a
-> aparecer como mensagem de erro em vez de como equação.
+> Seconded, and it is good that it is so — the refusal is more honest than any
+> answer the code could have invented.  Dissolved CaCO3 **is** calcium and
+> carbonate at the same time; there is no single-element collapse that
+> represents it.  It is the (c-1)(a-1) degrees-of-freedom theorem showing up as
+> an error message instead of as an equation.
 >
-> Agora o meu ponto, e é sobre a escada do CO₂ que aprovaram.
+> Now my point, and it is about the CO2 ladder you approved.
 >
-> Vocês escrevem no `DESIGN_DECISIONS.md` §3.3 que *"o comportamento
-> agregado é exacto por construção"*. **Não é.** Ao dar ao `CO2aq` a
-> constante do agregado (6.352) e acrescentar o H₂CO₃ por cima, a rede
-> passa a reproduzir um agregado de **6.352564**, não 6.352 — porque o
-> agregado é agora a soma dos dois e vocês puseram o valor da soma num
-> dos dois.
+> You write in `DESIGN_DECISIONS.md` §3.3 that *"the aggregate behaviour is
+> exact by construction"*.  **It is not.**  By giving `CO2aq` the aggregate's
+> constant (6.352) and adding H2CO3 on top, the network now reproduces an
+> aggregate of **6.352564**, not 6.352 — because the aggregate is now the sum of
+> the two and you put the sum's value into one of the two.
 >
-> O desvio é 0.00056 unidades log, contra uma incerteza declarada de
-> 0.002. Está **dentro** da incerteza, portanto não muda um único número
-> que um aluno cite. Mas a frase "exacto por construção" está errada, e
-> é o género de frase que alguém cita mais tarde como se fosse teorema.
+> The deviation is 0.00056 log units, against a declared uncertainty of 0.002.
+> It is **inside** the uncertainty, so it changes not one number a student would
+> quote.  But the phrase "exact by construction" is wrong, and it is the kind of
+> phrase somebody later cites as though it were a theorem.
 >
-> A correção é uma subtração: `logK(CO2aq) = 6.352 − log(1+10⁻²·⁸⁸⁶) =
-> **6.351436**`, e o H₂CO₃ passa a 3.465436. Aí sim é exacto por
-> construção.
+> The correction is a subtraction: `logK(CO2aq) = 6.352 - log(1 + 10^-2.886) =
+> **6.351436**`, and H2CO3 becomes 3.465436.  Then it IS exact by construction.
 
 ---
 
-## Sessão 2 — os que têm de usar isto
+## Session 2 — the people who have to use this
 
-**Doutorando**
+**Doctoral student**
 
-> A minha objecção é ao `chemistryDict`. Vocês declaram
+> My objection is to `chemistryDict`.  You declare
 >
 > ```
 > solidPhases ( calcite  ammoniumBicarbonate );
 > ```
 >
-> e o construtor, em `ThermoPackageBuilder.cpp:248`, imprime:
+> and the builder, at `ThermoPackageBuilder.cpp:248`, prints:
 >
 > ```
 > [builder] chemistryDict solidPhases lists 2 phases but the single-salt
 >   adapter honours ONLY 'calcite' -- the rest are IGNORED
 > ```
 >
-> **Ignorados.** O caso inteiro foi construído à volta de dois sólidos
-> que partilham o carbonato, e o adaptador de hoje pega no primeiro e
-> deita fora o segundo — com aviso, mas deita.
+> **Ignored.**  The whole case was built around two solids sharing the
+> carbonate, and today's adapter takes the first and throws the second away —
+> with a warning, but it throws it away.
 >
-> Isso torna a ordem da lista significativa. Se eu trocar as duas
-> palavras, o caso muda de resposta. Uma lista onde a ordem decide a
-> física, sem que nada o diga, é pior do que uma recusa.
+> That makes the list's ORDER significant.  If I swap the two words, the case
+> changes its answer.  A list where the order decides the physics, with nothing
+> saying so, is worse than a refusal.
 >
-> *(Precisão acrescentada depois de verificar: a truncagem está confinada
-> ao adaptador de SAL ÚNICO. O `formulation gammaPhi` lê a lista inteira
-> por `aq.solidPhases`, e é por isso que os quatro tutoriais de scaling
-> com `( calcite gypsum )` funcionam. O achado mantém-se — só é mais
-> estreito do que eu o disse.)*
+> *(Precision added after checking: the truncation is confined to the
+> SINGLE-SALT adapter.  `formulation gammaPhi` reads the whole list via
+> `aq.solidPhases`, which is why the four scaling tutorials with
+> `( calcite gypsum )` work.  The finding stands — it is just narrower than I
+> stated it.)*
 
-**Aluno de licenciatura**
+**Undergraduate**
 
-> Eu agora percebo o ficheiro do NH₃, e não percebia antes. As duas
-> últimas linhas dizem tudo e o cabeçalho explica-me o sinal −1. Isso
-> está bem.
+> I understand the NH3 file now, and I did not before.  The last two lines say
+> everything and the header explains the -1 sign to me.  That is good.
 >
-> O que não percebo é: se o `CaCO3.dat` tem lá dentro a reação de
-> dissolução (`solidPhases { calcite { dissolutionReaction … } }`), e
-> vocês passaram a semana a explicar-me que **as reações não vivem dentro
-> dos componentes**… porque é que esta vive?
+> What I do not understand is: if `CaCO3.dat` has the dissolution reaction
+> inside it (`solidPhases { calcite { dissolutionReaction ... } }`), and you
+> spent the week explaining to me that **reactions do not live inside
+> components**... why does this one?
 
-**Geoquímico**
+**Geochemist**
 
-> Boa pergunta, e a resposta existe — mas não está escrita onde ele a
-> procurou.
+> Good question, and the answer exists — but it is not written where he looked
+> for it.
 >
-> A dissolução do calcite não é uma reação entre duas famílias: é uma
-> propriedade **daquela fase sólida daquele componente**. O `README.md`
-> de `data/standards/chemistry/` diz-o explicitamente ("Where the salt /
-> mineral solubility lives (NOT here)"). O critério é limpo: se a reação
-> pertence a um único componente, mora nele; se acopla duas famílias,
-> mora em `chemistry/`.
+> Calcite dissolution is not a reaction between two families: it is a property
+> of **that solid phase of that component**.  The `README.md` in
+> `data/standards/chemistry/` says so explicitly ("Where the salt / mineral
+> solubility lives (NOT here)").  The criterion is clean: if the reaction
+> belongs to a single component, it lives in it; if it couples two families, it
+> lives in `chemistry/`.
 >
-> Mas o `constant/chemistry/README.md` do caso não diz isto. Diz o que
-> está lá dentro e não diz o que deliberadamente **não** está. Um aluno
-> que leia só o caso tira a regra errada.
+> But the case's own `constant/chemistry/README.md` does not say this.  It says
+> what IS in there and does not say what deliberately is **not**.  A student
+> reading only the case draws the wrong rule.
 
-**Professor de separações**
+**Professor of separations**
 
-> Eu volto ao que disse na sessão anterior e reconheço que foi tratado —
-> a lacuna da segunda fase líquida está agora declarada em vez de
-> escondida, e o texto diz que a imiscibilidade água-benzeno é a
-> aproximação grande, não os 0.2 % de água. Aceito.
+> I return to what I said in the previous session and acknowledge it was
+> handled — the second-liquid-phase gap is now declared instead of hidden, and
+> the text says the water/benzene immiscibility is the large approximation, not
+> the 0.2 % of water.  Accepted.
 >
-> O que me incomoda agora é outra coisa, e é pequena mas é do género que
-> corrói: o `NH3.dat` carrega um `liquidHeatCapacity { 80.0 }` que este
-> caso nunca usa, porque o amoníaco aqui está dissolvido ou é vapor,
-> nunca líquido puro. Espelharam-no do catálogo. Bem — espelhar é a
-> regra certa. Mas então o caso tem blocos que não usa, e um aluno que
-> leia à procura do que importa lê 80 J/mol·K como se importasse.
+> What bothers me now is something else, small but of the corroding kind:
+> `NH3.dat` carries a `liquidHeatCapacity { 80.0 }` that this case never uses,
+> because ammonia here is dissolved or vapour, never a pure liquid.  You
+> mirrored it from the catalogue.  Fine — mirroring is the right rule.  But then
+> the case carries blocks it does not use, and a student reading for what
+> matters reads 80 J/mol.K as though it mattered.
 
 ---
 
-## Achados — o que sobreviveu à verificação
+## Findings — what survived verification
 
-Seis objeções. **Cinco confirmam-se; uma é de redação.**
+Six objections.  **Five confirm; one is editorial.**
 
-| # | achado | estado | severidade |
+| # | finding | status | severity |
 |---|---|---|---|
-| 1 | os DOIS sólidos do caso (CaCO₃, NH₄HCO₃) caem na recusa dos "dois elementos marcadores"; a própria mensagem nomeia a fatia em falta | **CONFIRMADO** `ThermoPackageBuilder.cpp:690` | **estrutural** — é a segunda fatia obrigatória |
-| 2 | `chemistryDict` com dois sólidos: o adaptador honra o PRIMEIRO e ignora o resto, com aviso. A ordem da lista decide a física | **CONFIRMADO** `ThermoPackageBuilder.cpp:248` | alta |
-| 3 | "o agregado é exacto por construção" é falso por 0.00056 log (dentro da incerteza de 0.002, mas a frase é um teorema falso) | **CONFIRMADO** por cálculo | média |
-| 4 | os masters declarados no corpus foram sempre só `Acetate` e `NH4`; este caso declara CINCO — território não exercitado | **CONFIRMADO** (varrimento dos tutoriais) | média |
-| 5 | o `README.md` de `constant/chemistry/` não diz o que deliberadamente NÃO está lá (a solubilidade mineral) | **CONFIRMADO** por leitura | média — pedagógica |
-| 6 | blocos espelhados que o caso não usa (`liquidHeatCapacity` do NH₃) | confirmado, mas é o **preço correto** de espelhar | baixa |
+| 1 | BOTH of the case's solids (CaCO3, NH4HCO3) fall into the "two marker elements" refusal; the message itself names the missing slice | **CONFIRMED** `ThermoPackageBuilder.cpp:690` | **structural** — this is the second mandatory slice |
+| 2 | `chemistryDict` with two solids: the adapter honours the FIRST and ignores the rest, with a warning.  The list order decides the physics | **CONFIRMED** `ThermoPackageBuilder.cpp:248` | high |
+| 3 | "the aggregate is exact by construction" is false by 0.00056 log (inside the 0.002 uncertainty, but the sentence is a false theorem) | **CONFIRMED** by calculation | medium |
+| 4 | the masters declared in the corpus have only ever been `Acetate` and `NH4`; this case declares FIVE — unexercised territory | **CONFIRMED** (tutorial sweep) | medium |
+| 5 | the `README.md` in `constant/chemistry/` does not say what is deliberately NOT there (mineral solubility) | **CONFIRMED** by reading | medium — pedagogical |
+| 6 | mirrored blocks the case does not use (NH3's `liquidHeatCapacity`) | confirmed, but it is the **correct price** of mirroring | low |
 
-### O achado 1 é o que muda o plano
+### Finding 1 is what changes the plan
 
-O caso já tinha uma lacuna nomeada: **não há slot para uma segunda fase
-líquida**. Agora tem uma segunda, e é anterior: **não há representação para
-um sal que dissolve para dentro de duas famílias declaradas**.
+The case already had one named gap: **there is no slot for a second liquid
+phase**.  Now it has a second, and it comes first: **there is no representation
+for a salt dissolving into two declared families**.
 
-A segunda é mais fundamental que a primeira. Uma segunda fase líquida é uma
-extensão da gramática de fases. A reconstrução geral de sais é uma extensão
-da relação entre a base de componentes e a base de espécies — é exatamente o
-seam que o `[ROADMAP]` da reconciliação de bases já nomeia, e que traz a
-instrução *fazer um spike vertical ponta-a-ponta antes de qualquer migração*.
+The second is more fundamental than the first.  A second liquid phase is an
+extension of the phase grammar.  General salt reconstruction is an extension of
+the relation between the component basis and the species basis — it is exactly
+the seam the basis-reconciliation `[ROADMAP]` already names, and which carries
+the instruction *do a vertical end-to-end spike before any migration*.
 
-O caso, sem escrever uma linha de motor, produziu a ordem correta das duas.
+The case, without a line of engine written, produced the correct order of the
+two.
 
-### O achado 2 é o mais barato de resolver e o mais perigoso de deixar
+### Finding 2 is the cheapest to fix and the most dangerous to leave
 
-Uma lista silenciosamente truncada ao primeiro elemento, com a ordem a
-decidir o resultado, é a forma clássica de um caso dar uma resposta errada
-com código de saída 0. A recusa certa é: *se o `chemistryDict` declara mais
-sólidos do que o adaptador ativo consegue honrar, recusa nomeando ambos* —
-não avisa e continua.
+A list silently truncated to its first element, with the order deciding the
+result, is the classic way for a case to give a wrong answer with exit code 0.
+The right refusal is: *if `chemistryDict` declares more solids than the active
+adapter can honour, refuse naming both* — not warn and continue.
 
-### O achado 6 não é para corrigir
+### Finding 6 is not for fixing
 
-Espelhar do catálogo é a regra que apanhou seis constantes inventadas nesta
-mesma reescrita. Se agora começarmos a podar os blocos "que este caso não
-usa", voltamos a re-autorar registos à mão — e é exatamente aí que os
-valores derivam. O preço de um bloco a mais é muito menor do que o preço de
-um valor inventado.
+Mirroring from the catalogue is the rule that caught six invented constants in
+this very rewrite.  If we now start pruning the blocks "this case does not use",
+we go back to re-authoring records by hand — and that is precisely where values
+drift.  The price of one block too many is far smaller than the price of one
+invented value.
 
-## O que o fórum NÃO derrubou
+## What the forum did NOT overturn
 
-- a química fora dos componentes, plana, um ficheiro por reação;
-- espelhar em vez de re-autorar (com a prova das seis constantes);
-- o `authority` escrito duas vezes e não quinze;
-- as duas saídas do flash;
-- a identidade com uma casa só (ion/z inline);
-- a recusa do NH₄HCO₃ por falta de dado curado;
-- a divisão da escada do CO₂ — a física está certa, só a frase sobre ela
-  é que estava.
+- chemistry outside the components, flat, one file per reaction;
+- mirroring instead of re-authoring (with the six-constants proof);
+- the `authority` written twice and not fifteen times;
+- the flash's two outlets;
+- identity with a single home (inline ion/z);
+- the NH4HCO3 refusal for want of a curated datum;
+- the split of the CO2 ladder — the physics is right, only the sentence about
+  it was wrong.
 
-## Estado dos achados do PRIMEIRO fórum
+## Status of the FIRST forum's findings
 
-O achado 2 daquela sessão — o pH impresso sem escala declarada — está
-**fechado**. `AqueousActivity::pHScale()` é **virtual pura**: um modelo novo
-declara a sua convenção de ião único ou não compila. Não há default, porque
-um default deixaria um modelo herdar em silêncio a convenção de outro.
+Finding 2 of that session — pH printed with no declared scale — is **closed**.
+`AqueousActivity::pHScale()` is **pure virtual**: a new model declares its
+single-ion convention or it does not compile.  There is no default, because a
+default would let one model silently inherit another's convention.
 
-Os dois modelos declaram-se: Davies dá `log10 g = -A z^2 (…)`, função só da
-carga, portanto `g_H = g_Na = g_Cl` — é escala **livre** por construção. O
-HMW regride contra coeficientes médios, e a divisão de ião único é a que a
-parameterização implica.
+Both models declare themselves: Davies gives `log10 g = -A z^2 (...)`, a
+function of charge alone, so `g_H = g_Na = g_Cl` — a **free** scale by
+construction.  HMW regresses against mean coefficients, and the single-ion split
+is the one its parameterisation implies.
 
-O sentido perigoso é o outro, e está tratado: quando o caso **impõe** um pH,
-o output diz que esse número está a ser **lido** naquela escala — e que a
-leitura de um eléctrodo é NBS. Um aluno que escreva o pH medido no laboratório
-vê agora que o motor não o está a ler como ele o mediu.
+The dangerous direction is the other one, and it is handled: when the case
+**imposes** a pH, the output says that number is being **read** on that scale —
+and that an electrode reading is NBS.  A student who writes down the pH measured
+in the lab now sees that the engine is not reading it the way they measured it.
 
-O achado 1 daquela sessão — a banda de silêncio do Davies — está **fechado**
-(commit desta série). O limiar desceu de 0.7 para 0.5, que é o valor que a
-própria mensagem sempre declarou.
+Finding 1 of that session — the Davies silence band — is **closed** (a commit in
+this series).  The threshold dropped from 0.7 to 0.5, which is the value the
+message itself had always declared.
 
-Impacto medido sobre os 24 casos do corpus que usam Davies: **um** caso muda
-de comportamento, `props/electrolyte/pitzer_calcite_brine` a **I = 0.66** —
-exactamente dentro da banda, exactamente o caso que a objecção previu. Os
-outros dois que já avisavam (`composition01_nacl`, `overlay01_nacl_ksp`, ambos
-a I = 2.00) continuam a avisar. Nenhum golden se moveu: 318 PASS.
+Measured impact across the 24 corpus cases using Davies: **one** case changes
+behaviour, `props/electrolyte/pitzer_calcite_brine` at **I = 0.66** — exactly
+inside the band, exactly the case the objection predicted.  The other two that
+already warned (`composition01_nacl`, `overlay01_nacl_ksp`, both at I = 2.00)
+keep warning.  No golden moved: 318 PASS.
 
-## Ordem proposta
+## Proposed order
 
-1. **Achado 3** — subtração de uma linha em `H2CO3-formation.dat` e
-   `CO2aq-formation.dat` (case-local), ou reescrever a frase. Decisão do
-   Vítor: re-basear os números, ou corrigir só o texto?
-2. **Achado 2** — transformar o aviso em recusa. Uma linha, mas é motor.
-3. **Achado 5** — o README diz o que não está lá. Texto.
-4. **Achado 1** — nomear a fatia "reconstrução geral de sais" no
-   `DESIGN_DECISIONS.md` §5, **antes** da segunda fase líquida.
-5. **Achado 4** — fica nomeado; só se exercita quando o caso correr.
+1. **Finding 3** — a one-line subtraction in `H2CO3-formation.dat` and
+   `CO2aq-formation.dat` (case-local), or rewrite the sentence.  Vitor's
+   decision: re-base the numbers, or fix only the text?
+2. **Finding 2** — turn the warning into a refusal.  One line, but it is engine.
+3. **Finding 5** — the README says what is not there.  Text.
+4. **Finding 1** — name the "general salt reconstruction" slice in
+   `DESIGN_DECISIONS.md` §5, **before** the second liquid phase.
+5. **Finding 4** — it stays named; it is only exercised when the case runs.

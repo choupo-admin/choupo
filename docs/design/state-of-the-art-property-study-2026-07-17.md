@@ -1,79 +1,162 @@
-# Estudo do estado da arte — sistemas de propriedades (Aspen APRSYS 11.1 + DWSIM)
+# State-of-the-art study — property systems (two reference simulators)
 
-**Porquê este documento.** 2026-07-16: um dia inteiro de decisões de arquitetura
-(M1–M6, active-set, `methods/`, `kind`, `assumedIdeal`) foi tomado por duas IAs
-em ciclo de auto-ratificação, sem estudar o estado da arte. O Vítor mandou parar
-e estudar primeiro. Este é o estudo. **Nenhuma decisão aqui é final — é a base
-de evidência para o Vítor julgar.**
+**Why this document exists.**  2026-07-16: a whole day of architecture decisions
+(M1-M6, active-set, `methods/`, `kind`, `assumedIdeal`) was taken by two AIs in a
+self-ratification loop, without studying the state of the art.  Vitor ordered a
+stop and a study first.  This is the study.  **No decision here is final — it is
+the evidence base for Vitor to judge.**
 
-**Fontes estudadas** (leitura dirigida, 4 passagens independentes):
-- *Aspen Physical Property System 11.1 — Physical Property Methods and Models*
-  (extração texto integral, ~21k linhas): a arquitetura método/rota/modelo
-  (cap. 4), os métodos e famílias (cap. 2), eletrólitos (cap. 5 + App. B),
-  Henry (1-10, 3-109), referências de entalpia (3-118), free-water (cap. 6),
-  requisitos de parâmetros (tabelas do cap. 2).
-- **DWSIM** (código fonte real, branch `windows`): `PropertyPackage.vb` (13 940
-  linhas), `Models/NRTL.vb`, `BaseFlashAlgorithm.vb`/`UniversalFlash.vb`,
-  `MaterialStream.vb`, `ConstantProperties`, `Assets/` (bases embebidas),
-  `Databases.vb`, `Inspector.vb`, formulários de configuração, satélites
-  online (Chemeo/KDB/DDBST/ChEDL).
+**Sources studied** (directed reading, 4 independent passes):
+- A leading commercial simulator's *Physical Property System 11.1 — Physical
+  Property Methods and Models* (full text extraction, ~21k lines): the
+  method/route/model architecture (ch. 4), the methods and families (ch. 2),
+  electrolytes (ch. 5 + App. B), Henry (1-10, 3-109), enthalpy references
+  (3-118), free-water (ch. 6), parameter requirements (ch. 2 tables).  Referred
+  to below as **the commercial reference**.
+- An **open-source simulator** (actual source, `windows` branch):
+  `PropertyPackage.vb` (13,940 lines), `Models/NRTL.vb`,
+  `BaseFlashAlgorithm.vb` / `UniversalFlash.vb`, `MaterialStream.vb`,
+  `ConstantProperties`, `Assets/` (embedded databases), `Databases.vb`,
+  `Inspector.vb`, the configuration forms, the online satellites.  Referred to
+  below as **the open-source reference**.
 
 ---
 
-## 1. O mapa conceptual dos três sistemas
+## 1. The conceptual map of the three systems
 
-| Conceito | Aspen APRSYS | DWSIM | Choupo (2026-07-16) |
+| Concept | Commercial reference | Open-source reference | Choupo (2026-07-16) |
 |---|---|---|---|
-| Unidade de cálculo | **Rota** (árvore recursiva com ID único, ex. `HLMX08`): método (equação universal, numerado) → sub-rotas → **modelos** (fitted, folhas) | método hardcoded por classe de pacote; flash como atributo do pacote | hardcoded por ramo do builder; sem conceito de rota |
-| "Property method/package" | coleção NOMEADA de route IDs (uma por propriedade major) | classe VB por pacote (NRTL.vb, PengRobinson.vb...), instância com estado por flowsheet | manifesto inline declara `<família>.<nome>` por fase; builder monta |
-| Taxonomia de propriedades | majors / subordinadas (DHL, HLXS, HNRY, **XTRUE**) / intermédias (GAMMA, PL) | bag de ~71 nullable doubles por fase | KPIs + diagnostics; sem taxonomia formal |
-| Variantes de método | sufixo = EoS do vapor + Poynting (`-RK`,`-HOC`,`-NTH`,`-HF`) ou dataset (`-2`) ou família de rota de entalpia (`WILS-LR/GLR`) | um pacote por modelo; config por instância | slot `vapour` livre, sem acoplamento à proveniência dos pares |
-| Datasets múltiplos | **MDS** por parâmetro; `NRTL-2` = mesmo modelo, data set 2; rota pode fixar dataset só numa propriedade (HLXS10/set2) | edições por instância de pacote (serializadas no XML da simulação) | 1 ficheiro por par; COSMO tem sets nomeados (o único análogo) |
-| Par em falta | defaults documentados inline por método (φᵛ=1, GMELCC=0...) + PCES estima por defeito; sem aviso runtime geral | **τ=0 SILENCIOSO no caminho quente** (`Models/NRTL.vb`, `RET_KIJ→0`); auto-estima UNIFAC (ON por defeito, anuncia quando funciona, **cala quando falha**); v6.5+: erro loud por defeito no flash, com checkbox de escape | recusa/anúncio LOUD; ideal-default anunciado; active-set exige registo |
-| Proveniência | databank de origem + ranges por sistema (no volume Data); regressão assume um vapor declarado | `OriginalDB` por composto; `nrtl.dat` cita página DECHEMA por linha; `UserIPDB.RegressionFile` | **por VALOR** (origin/citation/validity/fitDate) — único dos três |
-| Transparência de cálculo | **estrutural**: árvore de rotas navegável pré-run, IDs únicos, modificações a cor; NÃO narra o run | **Inspector**: relatório HTML pós-run com equações MathJax + link para a linha do código-fonte; opt-in, off por defeito | narrativa viva (verbosity 3, Newton visível, anúncios de consumo) |
-| Eletrólitos | apparent⇄true interconvertíveis; **XTRUE = propriedade subordinada** (HLMX = f(XTRUE) mesmo em base aparente); Chemistry block; wizard; Born p/ mixed-solvent; DHAQFM/CPAQ0 + fallback Criss-Cobble | modesto e honesto ("alpha/testing" SEMPRE anunciado); iões/sais como compostos flag-ados; química em reaction sets | Pitzer HMW especiação + eNRTL single-salt; componente unificado + chemistry/ separado; degrau aquoso com fallback anunciado |
-| Sólidos/streams | substreams MIXED/CISOLID/NC co-desenhados com o método; free-water = 2.º método simultâneo | 8 slots de fase fixos; sólidos: detetados e **descartados por defeito com o aviso comentado no código** | fase é resultado; solidPhases{} no componente; ledger material |
-| Dados no disco | databanks binários proprietários; precedência = ordem da lista + user-entered ganha; THRSWT/TRNSWT (seleção de submodelo É dado no componente) | **recursos embebidos no binário** (não inspecionáveis sem recompilar); semântica dos coeficientes muda com `OriginalDB` em runtime | ficheiros de texto por registo, uma casa por tipo, normalização em curadoria |
-| Validação | (fora do manual; suites internas) | **zero corpus no repo**; social (FOSSEE, 274 flowsheets curados fora) | golden corpus in-repo (284 casos, NaN-guard, gates) |
-| Legal (dados 3.ºs) | licenciamento comercial; PPDS = boundary explícito de licença | ChemSep Artistic-2.0 embebido (IPD DECHEMA-derived redistribuído); resto por satélites online que o UTILIZADOR puxa; sem manifesto | scrub deliberado: standards público limpo + data/local privado + thirdParty/ |
+| Unit of calculation | **Route** (recursive tree with a unique ID, e.g. `HLMX08`): method (universal, numbered equation) -> sub-routes -> **models** (fitted, the leaves) | method hardcoded per package class; flash as a package attribute | hardcoded per builder branch; no route concept |
+| "Property method/package" | a NAMED collection of route IDs (one per major property) | one VB class per package (NRTL.vb, PengRobinson.vb...), a stateful instance per flowsheet | the inline manifest declares `<family>.<name>` per phase; the builder assembles |
+| Property taxonomy | majors / subordinate (DHL, HLXS, HNRY, **XTRUE**) / intermediate (GAMMA, PL) | a bag of ~71 nullable doubles per phase | KPIs + diagnostics; no formal taxonomy |
+| Method variants | suffix = the vapour EoS + Poynting (`-RK`, `-HOC`, `-NTH`, `-HF`) or dataset (`-2`) or enthalpy-route family (`WILS-LR/GLR`) | one package per model; configuration per instance | a free `vapour` slot, with no coupling to the pairs' provenance |
+| Multiple datasets | **MDS** per parameter; `NRTL-2` = same model, data set 2; a route may pin the dataset on one property alone (HLXS10/set2) | edits per package instance (serialised into the simulation XML) | 1 file per pair; COSMO has named sets (the only analogue) |
+| Missing pair | defaults documented inline per method (phi_v = 1, GMELCC = 0...) + PCES estimates by default; no general runtime warning | **tau = 0 SILENTLY on the hot path** (`Models/NRTL.vb`, `RET_KIJ -> 0`); UNIFAC auto-estimation (ON by default, announces when it works, **silent when it fails**); v6.5+: a loud error by default in the flash, with an escape checkbox | LOUD refusal / announcement; the ideal default is announced; the active set demands a record |
+| Provenance | the source databank + per-system ranges (in the Data volume); a regression assumes a declared vapour | `OriginalDB` per compound; `nrtl.dat` cites the DECHEMA page per line; `UserIPDB.RegressionFile` | **per VALUE** (origin / citation / validity / fitDate) — unique among the three |
+| Calculation transparency | **structural**: a navigable route tree before the run, unique IDs, modifications in colour; it does NOT narrate the run | **Inspector**: a post-run HTML report with MathJax equations plus a link to the source line; opt-in, off by default | a live narrative (verbosity 3, Newton visible, consumption announcements) |
+| Electrolytes | apparent <-> true interconvertible; **XTRUE = a subordinate property** (HLMX = f(XTRUE) even on the apparent basis); a Chemistry block; a wizard; Born for mixed solvent; DHAQFM/CPAQ0 + a Criss-Cobble fallback | modest and honest ("alpha/testing" ALWAYS announced); ions/salts as flagged compounds; chemistry in reaction sets | Pitzer HMW speciation + eNRTL single-salt; a unified component plus a separate `chemistry/`; an aqueous rung with an announced fallback |
+| Solids / streams | MIXED/CISOLID/NC substreams co-designed with the method; free-water = a second simultaneous method | 8 fixed phase slots; solids: detected and **discarded by default, with the warning commented out in the source** | the phase is a result; `solidPhases{}` on the component; a material ledger |
+| Data on disk | proprietary binary databanks; precedence = list order, and user-entered wins; THRSWT/TRNSWT (submodel selection IS data on the component) | **resources embedded in the binary** (not inspectable without recompiling); the coefficients' meaning changes with `OriginalDB` at run time | text files per record, one home per type, normalisation at curation time |
+| Validation | (outside the manual; internal suites) | **zero corpus in the repository**; social (274 curated flowsheets, maintained elsewhere) | a golden corpus in-repo (284 cases, a NaN guard, gates) |
+| Legal (third-party data) | commercial licensing; PPDS = an explicit licence boundary | an Artistic-2.0 databank embedded (DECHEMA-derived IPD redistributed); the rest via online satellites the USER pulls; no manifest | a deliberate scrub: a clean public `standards` + a private `data/local` + `thirdParty/` |
 
-## 2. Veredicto sobre as decisões de 2026-07-16, uma a uma
+## 2. Verdict on the 2026-07-16 decisions, one by one
 
-**Confirmadas pelo estado da arte (manter):**
-- **Casas por tipo + normalização em curadoria.** O anti-exemplo é o DWSIM: `Select Case OriginalDB` dentro dos getters — o mesmo campo muda de significado em runtime conforme a base de origem. O Aspen normaliza via THRSWT no componente. A posição do Choupo (resolver na curadoria, ficheiro canónico) é a mais limpa das três.
-- **Loud-gap / no-silent-crutch.** O DWSIM v6.5 moveu-se PARA esta posição (erro por defeito em par em falta, "not a bug"); os silêncios documentados do Aspen (reações "infeasible" ignoradas, Chao-Seader por-avaliação no AMINES, GMELCC=0) e do DWSIM (τ=0 no caminho quente, aviso de sólidos comentado, catch vazios, fallback mudo de pacote) são o catálogo do que o credo evita. Doutrina validada por evolução convergente e por contraexemplo.
-- **Proveniência por valor.** Nenhum dos dois a tem. É a vantagem competitiva real do Choupo, não um capricho.
-- **Golden corpus in-repo.** O DWSIM não tem nada comparável; validação social externa. Manter e reforçar.
-- **Multi-pacote por unidade.** Ambos o têm (Aspen por secção/bloco; DWSIM por objeto). MAS: nenhum tem o model-boundary audit — o DWSIM re-interpreta streams entre pacotes sem aviso; o fallback do `_ppid` inválido é mudo. A decisão hold-T/audit de 2026-06-08 é original e MELHOR que ambos.
-- **`assumedIdeal` como registo** (a receita do Codex): consistente com a filosofia Aspen de que tudo o que o cálculo consome é parâmetro declarado; sem equivalente direto em nenhum, mas na direção certa dos dois.
-- **Eletrólito: papel escolhido pelo pacote, não pela substância.** Literalmente a arquitetura Aspen (o mesmo NH3 é solvente/Henry/eletrólito conforme método+Chemistry). A ratificação 2026-07-01 bate certo com a referência.
+**Confirmed by the state of the art (keep):**
+- **A home per type + normalisation at curation time.**  The counter-example is
+  the open-source reference: `Select Case OriginalDB` inside the getters — the
+  same field changes meaning at run time depending on the source database.  The
+  commercial reference normalises via THRSWT on the component.  Choupo's
+  position (resolve at curation, one canonical file) is the cleanest of the
+  three.
+- **Loud-gap / no-silent-crutch.**  The open-source reference moved TOWARDS this
+  position in v6.5 (a missing pair is an error by default, "not a bug"); the
+  commercial reference's documented silences ("infeasible" reactions ignored,
+  per-evaluation Chao-Seader in AMINES, GMELCC = 0) and the open-source one's
+  (tau = 0 on the hot path, a commented-out solids warning, empty catches, a
+  mute package fallback) are the catalogue of what the credo avoids.  Doctrine
+  validated both by convergent evolution and by counter-example.
+- **Provenance per value.**  Neither of the two has it.  It is Choupo's real
+  competitive advantage, not a whim.
+- **A golden corpus in-repo.**  The open-source reference has nothing
+  comparable; its validation is social and external.  Keep and reinforce.
+- **Multi-package per unit.**  Both have it (the commercial reference per
+  section/block; the open-source one per object).  BUT: neither has the
+  model-boundary audit — the open-source reference re-interprets streams between
+  packages with no warning, and its invalid-`_ppid` fallback is mute.  The
+  2026-06-08 hold-T/audit decision is original and BETTER than both.
+- **`assumedIdeal` as a record**: consistent with the commercial reference's
+  philosophy that everything the calculation consumes is a declared parameter;
+  no direct equivalent in either, but in the right direction for both.
+- **Electrolyte: the role is chosen by the package, not by the substance.**
+  Literally the commercial reference's architecture (the same NH3 is
+  solvent / Henry / electrolyte depending on method + Chemistry).  The
+  2026-07-01 ratification matches the reference.
 
-**A rever (o estudo muda o desenho):**
-1. **Falta o conceito de ROTA.** A peça central do Aspen: como se calcula HLMX (ideal-gás+departure vs Σx·HL+HLXS vs liquid-Cp reference) é *declarável, componível, nomeável e inspecionável* — não hardcoded. O Choupo tem os métodos declaráveis mas as rotas de entalpia/fugacidade são fixas por ramo do builder. Uma versão glass-box mínima: rotas NOMEADAS por propriedade major no propertyMethod (ex. `enthalpyRoute idealGasDeparture | excessGamma | liquidReference;`), anunciadas no assembly, com meia dúzia de rotas — não as centenas do Aspen. Resolve de caminho a assimetria Hfus (WILS-LR/GLR é exatamente "liquid reference como família de rota nomeada") e dá corpo ao route-tracing pedido pelo Codex.
-2. **Consistência vapor↔pares.** Os sufixos -RK/-HOC não são cosmética: os pares foram REGREDIDOS assumindo um modelo de vapor (o manual documenta "regressed using... ideal gas, Redlich-Kwong, and Hayden O'Connell"). O Choupo deixa `vapour` livre sem verificar contra a proveniência do par. Proposta: o registo do par ganha um campo `regressionVapour` (ideal|RK|HOC|...); o builder AVISA quando o vapour selecionado difere (não recusa — anuncia a inconsistência, à Choupo).
-3. **Datasets múltiplos por par.** O MDS/`NRTL-2` (VLE vs LLE do MESMO par) não tem casa: o catálogo tem um ficheiro por par. O mecanismo já existe no COSMO (sets nomeados) — generalizar: um registo de par pode carregar `sets { vle {...} lle {...} }` e o manifesto seleciona (`parameters { binaryPairs { ethanol-water "path" set lle; } }`). Sem isto, binary01_lle vs a destilação do mesmo par estão condenados a partilhar um fit.
-4. **Henry como PAPEL por componente** (Henry-Comps) em vez de mundo separado: no Aspen a declaração troca a convenção simétrica→assimétrica DENTRO do método, consistente em K e entalpia. O `solution.henryDilute` como mundo à parte fragmenta o que devia ser um papel. Rever quando se tocar no Henry (não urgente; o atual funciona e anuncia).
-5. **`XTRUE` como propriedade.** A especiação como *propriedade subordinada* (consumida por HLMX em base aparente) é o desenho que faz a reconciliação geral de bases ([ROADMAP]) tratável: não "carregar iões em todas as correntes", mas "a composição verdadeira é uma propriedade calculável de qualquer corrente aquosa". Guardar para o vertical spike do roadmap.
-6. **Inspector como forma do route-tracing.** O acordado com o Codex (JSON estruturado por rota) deve aprender do DWSIM: relatório navegável por cálculo com equações + link para a fonte, opt-in. A combinação narrativa-viva (que só o Choupo tem) + relatório estruturado (que só o DWSIM tem) + rotas nomeadas (que só o Aspen tem) seria única.
+**To revisit (the study changes the design):**
+1. **The ROUTE concept is missing.**  The commercial reference's central piece:
+   how HLMX is computed (ideal gas + departure vs Sum x.HL + HLXS vs a liquid-Cp
+   reference) is *declarable, composable, nameable and inspectable* — not
+   hardcoded.  Choupo has declarable methods, but the enthalpy/fugacity routes
+   are fixed per builder branch.  A minimal glass-box version: NAMED routes per
+   major property in the propertyMethod (e.g.
+   `enthalpyRoute idealGasDeparture | excessGamma | liquidReference;`),
+   announced at assembly, with half a dozen routes — not the reference's
+   hundreds.  It also resolves the Hfus asymmetry on the way (WILS-LR/GLR is
+   exactly "the liquid reference as a named route family") and gives substance
+   to the requested route tracing.
+2. **Vapour <-> pair consistency.**  The -RK/-HOC suffixes are not cosmetic: the
+   pairs were REGRESSED assuming a vapour model (the manual documents "regressed
+   using... ideal gas, Redlich-Kwong, and Hayden O'Connell").  Choupo leaves
+   `vapour` free without checking it against the pair's provenance.  Proposal:
+   the pair record gains a `regressionVapour` field (ideal | RK | HOC | ...); the
+   builder WARNS when the selected vapour differs (it does not refuse — it
+   announces the inconsistency, the Choupo way).
+3. **Multiple datasets per pair.**  MDS / `NRTL-2` (VLE vs LLE for the SAME
+   pair) has no home: the catalogue has one file per pair.  The mechanism
+   already exists in COSMO (named sets) — generalise it: a pair record may carry
+   `sets { vle {...} lle {...} }` and the manifest selects
+   (`parameters { binaryPairs { ethanol-water "path" set lle; } }`).  Without
+   this, binary01_lle and a distillation of the same pair are condemned to share
+   one fit.
+4. **Henry as a per-component ROLE** (Henry-Comps) rather than a separate world:
+   in the commercial reference the declaration switches the convention
+   symmetric -> asymmetric INSIDE the method, consistently in K and in enthalpy.
+   `solution.henryDilute` as a world apart fragments what ought to be a role.
+   Revisit when Henry is next touched (not urgent; the current one works and
+   announces).
+5. **`XTRUE` as a property.**  Speciation as a *subordinate property* (consumed
+   by HLMX on the apparent basis) is the design that makes general basis
+   reconciliation ([ROADMAP]) tractable: not "carry ions on every stream", but
+   "the true composition is a computable property of any aqueous stream".  Save
+   it for the roadmap's vertical spike.
+6. **An Inspector as the shape of route tracing.**  What was agreed (structured
+   JSON per route) should learn from the open-source reference: a navigable
+   per-calculation report with equations plus a source link, opt-in.  The
+   combination of a live narrative (which only Choupo has) + a structured report
+   (which only the open-source reference has) + named routes (which only the
+   commercial reference has) would be unique.
 
-**Erros/dívidas de ontem confirmados pelo estudo:**
-- `kind` no assets/ vs `recordType` no chemistry/ — a assimetria incomoda menos à luz do THRSWT (o Aspen também tem seletores heterogéneos), mas a lição real é outra: o seletor de submodelo deve ser DADO consistente com os parâmetros disponíveis. Aceitável como está; documentar a regra.
-- O active-set com máscara por unidade não tem análogo direto em nenhum (o Aspen resolve o problema com Henry-Comps + Chemistry scoping; o DWSIM nem o vê). A implementação de ontem é defensável mas é INVENÇÃO nossa sem precedente — tratar como experimental, validar com mais casos antes de a promover a doutrina.
-- O guard advisory-em-transiente (o desvio ao texto do Codex): o Aspen não avalia γ em iterados não-físicos porque as suas rotas são por-avaliação sem guard nenhum; o DWSIM valida inputs no flash mas não domínios. Não há precedente para copiar; a solução convergido-vs-transiente é razoável mas fica marcada como desenho próprio.
+**Yesterday's errors/debts confirmed by the study:**
+- `kind` in `assets/` vs `recordType` in `chemistry/` — the asymmetry grates
+  less in the light of THRSWT (the commercial reference also has heterogeneous
+  selectors), but the real lesson is different: the submodel selector should be
+  DATA, consistent with the available parameters.  Acceptable as it stands;
+  document the rule.
+- The active set with a per-unit mask has no direct analogue in either (the
+  commercial reference solves the problem with Henry-Comps + Chemistry scoping;
+  the open-source one does not even see it).  Yesterday's implementation is
+  defensible but it is OUR INVENTION, without precedent — treat it as
+  experimental, and validate it against more cases before promoting it to
+  doctrine.
+- The advisory-in-transient guard (the departure from the agreed text): the
+  commercial reference does not evaluate gamma on non-physical iterates because
+  its routes are per-evaluation with no guard at all; the open-source one
+  validates flash inputs but not domains.  There is no precedent to copy; the
+  converged-vs-transient solution is reasonable but stands marked as our own
+  design.
 
-## 3. O que NENHUM dos dois tem (e o Choupo deve continuar a ter)
+## 3. What NEITHER of the two has (and Choupo should keep)
 
-Provenance por valor · corpus golden in-repo com gates de doutrina · model-boundary
-audit · verificação dimensional nas entradas (o DWSIM tem cal/mol com R hardcoded;
-o τ do NRTL deles rebenta se alguém der J/mol) · casos self-contained seláveis
-com manifest sha256 · a honestidade narrativa em runtime.
+Provenance per value · a golden corpus in-repo with doctrine gates · the
+model-boundary audit · dimensional verification on the inputs (the open-source
+reference has cal/mol with a hardcoded R; its NRTL tau blows up if anyone
+supplies J/mol) · self-contained, sealable cases with a sha256 manifest · the
+narrative honesty at run time.
 
-## 4. Recomendações operacionais (por ordem; NENHUMA executada sem palavra do Vítor)
+## 4. Operational recommendations (in order; NONE executed without Vitor's word)
 
-1. **Curto**: campo `regressionVapour` nos registos de par + aviso de consistência no builder (pequeno, honesto, fecha o buraco -RK/-HOC).
-2. **Curto**: sets nomeados nos registos de par (generalizar o mecanismo COSMO; VLE vs LLE).
-3. **Médio**: rotas de entalpia NOMEADAS no propertyMethod (3 rotas: idealGasDeparture, excessGamma, liquidReference) — resolve Hfus/WILS-LR e é o esqueleto do route-tracing.
-4. **Médio**: route-tracing = registo estruturado por rota consumida (o acordado) + relatório navegável tipo Inspector (aprender do DWSIM).
-5. **Longo** (vertical spike do roadmap): XTRUE como propriedade subordinada — o caminho para a reconciliação de bases.
-6. **Guardar como está**: active-set (experimental, mais casos antes de doutrina), Henry (rever só quando se mexer), kind/recordType (documentar a regra).
+1. **Short**: a `regressionVapour` field on the pair records plus a consistency
+   warning in the builder (small, honest, closes the -RK/-HOC hole).
+2. **Short**: named sets on the pair records (generalise the COSMO mechanism;
+   VLE vs LLE).
+3. **Medium**: NAMED enthalpy routes in the propertyMethod (3 routes:
+   idealGasDeparture, excessGamma, liquidReference) — resolves Hfus/WILS-LR and
+   is the skeleton of route tracing.
+4. **Medium**: route tracing = a structured record per consumed route (as
+   agreed) plus a navigable Inspector-style report (learning from the
+   open-source reference).
+5. **Long** (the roadmap's vertical spike): XTRUE as a subordinate property —
+   the path to basis reconciliation.
+6. **Leave as is**: the active set (experimental, more cases before doctrine),
+   Henry (revisit only when it is touched), kind/recordType (document the rule).

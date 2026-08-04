@@ -1,8 +1,11 @@
 # Professors' forum — the `role` vocabulary, and what the reference simulators actually do (2026-08-02)
 
 **Convened by:** Vítor, on decision #2 of the DEV.md §4b queue:
-*"cria um forum de um professor top notch de termodinamica do MIT e ve como
-faz o DWSIM e o ASPEN e resolve, porque isso é mesmo importante."*
+*"convene a forum with a top-notch MIT thermodynamics professor, look at how
+the reference commercial simulators do it, and settle it, because this really
+matters."*  (Translated from the Portuguese original: *"cria um forum de um
+professor top notch de termodinamica do MIT e ve como faz o DWSIM e o ASPEN e
+resolve, porque isso é mesmo importante."*)
 
 **Panel.** The chair is an MIT-style molecular/applied-thermodynamics
 professor (the archetype used in the earlier grammar fora); beside her,

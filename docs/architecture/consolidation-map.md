@@ -1,214 +1,212 @@
-# Mapa de consolidação — onde está cada peça
+# Consolidation map — where each piece stands
 
-> **O que este ficheiro é.** Uma VISTA sobre a arquitetura já decidida noutros
-> documentos, com uma marca de estado por bloco.  Não é uma autoridade: cada
-> linha aponta para o documento que decide.  Não carrega contagens — essas são
-> geradas (`generated/releaseInventory.json`), e um número com duas casas é o
-> pecado da aridade.  Mapa de autoridades: [`README.md`](README.md).
+> **What this file is.**  A VIEW over the architecture already decided in other
+> documents, with one status mark per block.  It is not an authority: every row
+> points at the document that decides.  It carries no counts — those are
+> generated (`generated/releaseInventory.json`), and a number with two homes is
+> the arity sin.  Authority map: [`README.md`](README.md).
 
-Um bloco só conta como **consolidado** quando as três coisas existem:
+A block counts as **consolidated** only when all three exist:
 
-1. o contrato está **escrito** num documento;
-2. o motor **recusa** quem o viola, por nome e com remédio;
-3. existe um **caso que dispara essa recusa** — não um caso que descreve a
-   estrutura, um caso que a exercita.
+1. the contract is **written** in a document;
+2. the engine **refuses** violators, by name and with a remedy;
+3. there is a **case that FIRES that refusal** — not a case that describes the
+   structure, a case that exercises it.
 
-A terceira é a que costuma faltar, e é a que apanha a reversão silenciosa: um
-teste de estrutura sobrevive à correção ser desfeita.
+The third is the one that usually goes missing, and it is the one that catches
+silent reversion: a structure test survives the fix being undone.
 
 ---
 
-## As três camadas
+## The three layers
 
 ```mermaid
 flowchart TB
-    subgraph OD["1 · OuterDriver — corre o simulador muitas vezes"]
+    subgraph OD["1 · OuterDriver — runs the simulator many times"]
         direction LR
         SW[SweepDriver] --- OP[OptimizationDriver] --- FB[FitBinaryPair] --- PA[Pareto / GridSweep]
     end
 
-    subgraph CORE["2 · Núcleo — uma passagem: Flowsheet → SimulationResult"]
+    subgraph CORE["2 · Core — one pass: Flowsheet → SimulationResult"]
         direction LR
-        TH["thermo/<br/>pacote inline no caso<br/>regra de um botão"]
-        SO["solver/<br/>Newton 1-D e n-D<br/>Wegstein · Michelsen"]
-        UO["unitOperations/<br/>fábrica explícita<br/>fractal, achatado"]
-        ST["streams/<br/>estado em ficheiros<br/>phases{} decompõe"]
+        TH["thermo/<br/>package inline in the case<br/>the one-knob rule"]
+        SO["solver/<br/>Newton 1-D and n-D<br/>Wegstein · Michelsen"]
+        UO["unitOperations/<br/>explicit factory<br/>fractal, flattened"]
+        ST["streams/<br/>state in files<br/>phases{} decomposes"]
         TH --- SO --- UO --- ST
     end
 
-    subgraph PP["3 · PostProcessor — aumenta e relata"]
+    subgraph PP["3 · PostProcessor — augments and reports"]
         direction LR
-        SZ[SizingPass] --- CO[CostingPass] --- RP["Reports<br/>+ phases.csv"] --- GU["GUI<br/>lê só o JSON"]
+        SZ[SizingPass] --- CO[CostingPass] --- RP["Reports<br/>+ phases.csv"] --- GU["GUI<br/>reads only the JSON"]
     end
 
     OD --> CORE --> PP
 ```
 
-O `main.cpp` é um orquestrador fino.  O simulador é uma **função pura**
-(`runSimulation`) — o caminho directo e todos os *outer drivers* chamam o
-mesmo.
+`main.cpp` is a thin orchestrator.  The simulator is a **pure function**
+(`runSimulation`) — the direct path and every outer driver call the same one.
 
 ---
 
-## Estado por contrato
+## Status per contract
 
-| Contrato | Escrito em | Recusa | Caso que a dispara | Estado |
+| Contract | Written in | Refusal | Case that fires it | Status |
 |---|---|---|---|---|
-| Estado das correntes (`0/`, `converged/`, papéis pela topologia) | [`stream-state-architecture.md`](stream-state-architecture.md) | leitor + `choupo-init0` | completude, `streams{}` refusado | assente |
-| Decomposição por fases (aquosa · orgânica · sólida, especiação na fase, PSD na população) | CLAUDE.md §6 | `StreamStateIO` reader | `check_phase_speciation` (a–i) | assente |
-| Plano sequencial (cortes + ordem) | CLAUDE.md §6 | `validateSequentialPlan` | seis recusas nomeadas | assente |
-| Um só datum de entalpia | [`../ai/energy.md`](../ai/energy.md) | `reactionHeat()` partilhado | estacionário e batch | assente |
-| Sal ion-derivado, nunca bloco de componente | [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md) | `check_ion_pins` | sai 1 se as duas casas existirem | assente |
-| Árvore de eletrólitos, cinco casas | [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md) | loader + gates de identidade | tipos, `aq`, ontologia | assente |
-| Fronteira de modelo (H conservado, T lido) | [`../ai/energy.md`](../ai/energy.md) | auditoria opcional, recusa em mudança de fase | `thermoFor` | assente |
-| Identidade de par de equilíbrio (D2) | [`../design/equilibrium-parameterisation-identity.md`](../design/equilibrium-parameterisation-identity.md) | `check_legacy_schema` | corpus migrado | assente |
-| **Identidade de registo** (dois ficheiros, uma chave) | este mapa + `data-doctrine.md` §1 | `records::ScanGuard` | `check_registry_scan` | **2026-07-30** |
-| **Cobertura de tipos** (uma classe, um caso) | este mapa | — (é coberta, não recusa) | `check_type_coverage` | **2026-07-30** |
-| **Contrato do headline** (aponta para dentro dos diagnósticos) | — | `choupoProps` recusa | qualquer caso da op | **2026-07-30** |
-| **Química declarada pelo caso** (nenhuma unidade a escolhe) | CLAUDE.md §5/§6 | `Flowsheet` recusa a chave ao nível da unidade | `check_no_unit_chemistry` (4) | **2026-07-31** |
-| **Identidade de espécie** (uma casa, coerência verificada) | CLAUDE.md §5 | `SpeciationSolver` recusa `z` incoerente | `check_species_identity` (2 recusas) | **2026-07-31** |
-| **ThermoResolver** (declaração persistida verificada) | CLAUDE.md §5 | 3 recusas no `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
-| **Ponte aquosa** (componente → espécie, só declarada) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
-| **As duas bases em TODA a corrente** (onde o pacote resolve iões, incluindo a entrada) | CLAUDE.md §5 | leitor verifica `m = A n` contra as pontes declaradas | `check_both_bases` (2 recusas + negativo **verificado por sabotagem**) | **2026-07-31** |
-| **Identidade reduzida** (um componente cunhado recebe os factos que declara) | CLAUDE.md §5 | — (é perda de dado, não recusa) | `check_both_bases` (veredicto do balanço) | **2026-07-31** |
-| **Marcador `.cho`** (o que define um caso, não só o que a busca usa) | CLAUDE.md §3 | `check_sealed_corpus` sai 1 | um caso sem marcador é nomeado | **2026-07-31** |
-| Chaves não lidas (`murphreeEficiency` corre em silêncio) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **espera decisão** |
-| Vocabulário do `role` | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **espera decisão** |
-| Termo de transferência (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contrato só | — | por implementar |
+| Stream state (`0/`, `converged/`, roles from topology) | [`stream-state-architecture.md`](stream-state-architecture.md) | reader + `choupo-init0` | completeness, `streams{}` refused | settled |
+| Phase decomposition (aqueous · organic · solid, speciation on the phase, PSD on the population) | CLAUDE.md §6 | `StreamStateIO` reader | `check_phase_speciation` (a-i) | settled |
+| Sequential plan (tears + order) | CLAUDE.md §6 | `validateSequentialPlan` | six named refusals | settled |
+| One enthalpy datum | [`../ai/energy.md`](../ai/energy.md) | shared `reactionHeat()` | steady and batch | settled |
+| Ion-derived salt, never a component block | [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md) | `check_ion_pins` | exits 1 if both homes exist | settled |
+| Electrolyte tree, five homes | [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md) | loader + identity gates | types, `aq`, ontology | settled |
+| Model boundary (H conserved, T a readout) | [`../ai/energy.md`](../ai/energy.md) | optional audit, refusal on a phase change | `thermoFor` | settled |
+| Equilibrium-pair identity (D2) | [`../design/equilibrium-parameterisation-identity.md`](../design/equilibrium-parameterisation-identity.md) | `check_legacy_schema` | migrated corpus | settled |
+| **Record identity** (two files, one key) | this map + `data-doctrine.md` §1 | `records::ScanGuard` | `check_registry_scan` | **2026-07-30** |
+| **Type coverage** (one class, one case) | this map | — (it is coverage, not a refusal) | `check_type_coverage` | **2026-07-30** |
+| **Headline contract** (points into the diagnostics) | — | `choupoProps` refuses | any case of the op | **2026-07-30** |
+| **Chemistry declared by the case** (no unit chooses it) | CLAUDE.md §5/§6 | `Flowsheet` refuses the key at unit level | `check_no_unit_chemistry` (4) | **2026-07-31** |
+| **Species identity** (one home, coherence verified) | CLAUDE.md §5 | `SpeciationSolver` refuses an incoherent `z` | `check_species_identity` (2 refusals) | **2026-07-31** |
+| **ThermoResolver** (persisted declaration verified) | CLAUDE.md §5 | 3 refusals in `ThermoPackageBuilder` | `check_resolver_coherence` (3) | **2026-07-31** |
+| **Aqueous bridge** (component -> species, declared only) | CLAUDE.md §5 (F2) | `AqueousBridge::singleMaster` | `check_typed_identifiers` (membrane08) | **2026-07-31** |
+| **Both bases on EVERY stream** (where the package resolves ions, the inlet included) | CLAUDE.md §5 | the reader verifies `m = A n` against the declared bridges | `check_both_bases` (2 refusals + a negative **sabotage-verified**) | **2026-07-31** |
+| **Reduced identity** (a minted component gets the facts it declares) | CLAUDE.md §5 | — (it is data loss, not a refusal) | `check_both_bases` (the balance verdict) | **2026-07-31** |
+| **The `.cho` marker** (what defines a case, not just what the search uses) | CLAUDE.md §3 | `check_sealed_corpus` exits 1 | a case with no marker is named | **2026-07-31** |
+| **Dynamic initial state in `0/`** (no inline `initial{}` / `inlet{}`) | [`../../DYNAMIC_0_MIGRATION_HANDOFF.md`](../../DYNAMIC_0_MIGRATION_HANDOFF.md) | `choupoCtrl` + `choupoBatch` refuse the inline block by name | 42 dynamic cases seed from `0/` | **2026-07-16** |
+| **Effective stage K** (incipient, defined without vapour) | CLAUDE.md §6 | `stageK` projects onto the simplex and announces | `check_stage_identity`, `check_tray_chemistry` | **2026-08-03** |
+| **Version stamp = the LINE** (`Choupo-dev` on main) | `bin/curate/banner_version.py` header | `banner-version-gate` fails by name | one banner restored to `Choupo-2607` | **2026-08-04** |
+| Unread keys (`murphreeEficiency` runs silently) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **awaiting a decision** |
+| `role` vocabulary | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **awaiting a decision** |
+| Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | to be implemented |
 
 ---
 
-## O padrão, agora com quatro instâncias
+## The pattern, now with four instances
 
-Quatro contratos desta semana tinham **a regra escrita e a recusa no motor**,
-sem nada a ligá-las.  A forma repete-se:
+Four contracts from one week had **the rule written and the refusal in the
+engine**, with nothing tying them together.  The shape repeats:
 
-> *Um gate que lê o corpus prova o corpus, nunca o motor.*
+> *A gate that reads the corpus proves the corpus, never the engine.*
 
-E repete-se por uma razão específica: **um corpus coerente nunca toma o
-caminho da recusa**.  Quanto melhor curada está a árvore, menos exercitada
-fica a defesa que a protege — até que um aluno com um ficheiro fora da árvore
-seja a primeira pessoa a descobrir se ela ainda funciona.
+And it repeats for a specific reason: **a coherent corpus never takes the
+refusal path**.  The better curated the tree, the less exercised the defence
+that protects it — until a student with a file from outside the tree is the
+first person to find out whether it still works.
 
-Um corolário, que custou uma leitura errada antes de ficar claro: **uma
-mutação que não alcança o caminho do código não prova nada, em nenhuma
-direcção.**  Remover a ponte aquosa do `membrane01` não muda um único KPI —
-um módulo de solução-difusão preça o SAL, nunca os iões — e lido à letra isso
-diria «o motor não recusa».  A mesma remoção no `membrane08`, cujo caminho de
-incrustação atravessa a ponte, é recusada pelo nome.
+One corollary, which cost a misreading before it was clear: **a mutation that
+does not reach the code path proves nothing, in either direction.**  Removing
+the aqueous bridge from `membrane01` does not move a single KPI — a
+solution-diffusion module prices the SALT, never the ions — and read literally
+that would say "the engine does not refuse".  The same removal in `membrane08`,
+whose fouling path crosses the bridge, is refused by name.
 
-## Como ler a coluna «caso que a dispara»
+## How to read the "case that fires it" column
 
-O `check_phase_speciation` tem nove casos e **três deles passam com a correção
-desfeita** — testam estrutura, não verificação.  Isso está escrito no cabeçalho
-do próprio gate, e é a razão pela qual esta tabela distingue as duas coisas.  Um
-contrato cuja única prova é estrutural ainda não está consolidado; está
-descrito.
+`check_phase_speciation` has nine cases and **three of them pass with the fix
+reverted** — they test structure, not verification.  That is written in the
+gate's own header, and it is why this table distinguishes the two.  A contract
+whose only proof is structural is not consolidated yet; it is described.
 
-Dois exemplos do mesmo dia, para calibrar:
+Two examples from the same day, to calibrate:
 
-* o leitor recusava um bloco de especiação numa corrente parcialmente vapor, e o
-  gate provava-o — **sobre um ficheiro escrito à mão**.  O ESCRITOR produzia
-  exactamente esse ficheiro, e ninguém notou até a volta completa
-  (escrever → ler) ser testada;
-* a caixa de propriedades da GUI mostrava a semente do `0/` em vez da resposta,
-  ao lado de um nó que mostrava a resposta.  Nenhum teste falhava porque nenhum
-  teste perguntava de onde vinha o número.
+* the reader refused a speciation block on a partially-vapour stream, and the
+  gate proved it — **on a hand-written file**.  The WRITER produced exactly that
+  file, and nobody noticed until the full round trip (write -> read) was tested;
+* the GUI's property box showed the `0/` seed instead of the answer, beside a
+  node showing the answer.  No test failed because no test asked where the
+  number came from.
 
-## A quinta instância, e a que muda o método
+## The fifth instance, and the one that changes the method
 
-As quatro acima foram encontradas a atacar a defesa.  A quinta — **as duas
-bases em toda a corrente** — foi encontrada a fazer uma pergunta ao corpus
-INTEIRO: *«percorre cada caso e confirma se as correntes têm todas, no fim, a
-estrutura da arquitectura que consolidámos; até a entrada tem de ter a
-especiação.»*  Não havia falha a investigar.  A auditoria respondeu com **24
-casos que resolvem iões e 23 com lacuna**, em duas famílias com causas
-opostas:
+The four above were found by attacking the defence.  The fifth — **both bases on
+every stream** — was found by asking a question of the WHOLE corpus: *"walk
+every case and confirm that the streams all end up with the structure of the
+architecture we consolidated; even the inlet must carry the speciation."*  There
+was no failure to investigate.  The audit answered with **24 cases that resolve
+ions and 23 with a gap**, in two families with opposite causes:
 
-* os `flash*` reactivos: só a corrente de vapor sem bloco — **correcto**, uma
-  corrente toda em vapor não tem fase aquosa para decompor;
-* todos os cristalizadores e evaporadores Pitzer/eNRTL: **nem um ião, em
-  corrente nenhuma**, entrada incluída.
+* the reactive `flash*` cases: only the vapour stream lacked a block —
+  **correct**, an all-vapour stream has no aqueous phase to decompose;
+* every Pitzer/eNRTL crystalliser and evaporator: **not one ion, on any
+  stream**, the inlet included.
 
-A causa não era a física.  A passagem pós-solução estava escrita dentro de
-`if (thermo.hasReactiveEquilibrium())`, e um pacote de molalidade **resolve
-iões sem ter rede de equilíbrio** — caiu inteiro fora da guarda.  Por baixo,
-mais duas: o sal chegava ao runtime como componente-identidade reduzido (nome,
-MW, papel), de modo que o `dissociatesTo` declarado no seu próprio registo era
-invisível ao motor que acabara de o ler; e o LEITOR recusava qualquer bloco de
-especiação num caso sem química reactiva — ou seja, o motor teria escrito um
-ficheiro que ele próprio recusava.
+The cause was not the physics.  The post-solve pass was written inside
+`if (thermo.hasReactiveEquilibrium())`, and a molality package **resolves ions
+without carrying an equilibrium network** — it fell entirely outside the guard.
+Underneath, two more: the salt reached the runtime as a reduced identity
+component (name, MW, role), so the `dissociatesTo` declared in its own record
+was invisible to the engine that had just read it; and the READER refused any
+speciation block in a case with no reactive chemistry — meaning the engine would
+have written a file it refused itself.
 
-A lição de método, que vale mais do que a correcção: **atacar a defesa
-encontra a defesa que não dispara; perguntar ao corpus encontra a regra que
-nunca foi aplicada a metade dele.**  São dois exames diferentes, e o segundo
-não estava a ser feito.
+The lesson about method, worth more than the fix: **attacking the defence finds
+the defence that does not fire; asking the corpus finds the rule that was never
+applied to half of it.**  Those are two different examinations, and the second
+was not being done.
 
-### A regra da identidade reduzida (dois erros, um campo de distancia)
+### The reduced-identity rule (two bugs, one field apart)
 
-O `Component::identity()` cunha o sal com nome + MW + papel, e o construtor de
-eletrolitos usava-o e ficava por ali -- portanto **todo o facto que o registo
-declara alem desses tres estava silenciosamente ausente em execucao**.  Dois
-estavam, e os dois apareceram na mesma forma: o motor a dizer que falta um dado
-que o seu proprio ficheiro de entrada declara.
+`Component::identity()` mints the salt with name + MW + role, and the
+electrolyte builder used it and stopped there — so **every fact the record
+declares beyond those three was silently absent at run time**.  Two were, and
+both surfaced in the same form: the engine reporting a datum missing that its
+own input file declares.
 
-* `dissociatesTo` -> nem um iao em corrente nenhuma de salmoura;
-* `formula` -> o balanco de elementos a publicar
-  `refusedSpecies.NaCl,"no molecular formula declared"` sobre um registo que diz
-  `formula NaCl;` **tres linhas acima do MW que a mesma chamada acabara de ler**.
+* `dissociatesTo` -> not one ion on any brine stream;
+* `formula` -> the element balance publishing
+  `refusedSpecies.NaCl,"no molecular formula declared"` about a record that says
+  `formula NaCl;` **three lines above the MW the same call had just read**.
 
-O balanco nunca esteve errado: dizia com fidelidade o que o runtime conseguia
-ver.  A regra que fica: **um componente cunhado por `identity()` tem de receber
-todos os factos declarados que lhe vao ser pedidos**, pelo registo de onde foi
-cunhado -- uma leitura por facto, dois chamadores cada, nunca uma segunda copia
-da analise sintactica.  Ao acrescentar um campo que o runtime le de um
-Component, perguntar se o sal do pacote de eletrolitos lhe chega.
+The balance was never wrong: it faithfully reported what the runtime could see.
+The rule that stands: **a component minted by `identity()` must be handed every
+declared fact it will be asked for**, through the record it was minted FROM —
+one parse per fact, two callers each, never a second copy of the parse.  When
+adding a field the runtime reads off a Component, ask whether the electrolyte
+package's salt can reach it.
 
-Um componente que genuinamente NAO tem o facto -- um corte de petroleo sem
-formula molecular, o dowthermA, o poliestireno -- mantem a sua recusa honesta.
-A regra e sobre factos DECLARADOS que se perdem, nunca sobre inventar um.
+A component that genuinely does NOT have the fact — a petroleum cut with no
+molecular formula, dowthermA, polystyrene — keeps its honest refusal.  The rule
+is about DECLARED facts being dropped, never about inventing one.
 
-### O metodo tambem produz falsos positivos
+### The method also produces false positives
 
-Duas auditorias desta ronda acusaram lacunas que nao existiam, e as duas pela
-mesma razao: **adivinhei a forma do artefacto em vez de a ler**.
+Two audits in that round reported gaps that did not exist, and both for the same
+reason: **I guessed the artifact's shape instead of reading it**.
 
-* o balanco de elementos "faltava" no `ChemicalPlantTutorial` -- que usa a
-  disposicao `reportsLayout postProcessing;`, uma opcao documentada, e o
-  emite em `postProcessing/elementBalance/0/`;
-* os 27 UNAVAILABLE "nao tinham razao nomeada" -- procurei uma chave `reason,`
-  e o motor escreve `refusedSpecies.<nome>,<explicacao>`, uma linha por
-  especie recusada, que e MAIS especifica e nao menos.
+* the element balance was "missing" from `ChemicalPlantTutorial` — which uses
+  the `reportsLayout postProcessing;` arrangement, a documented option, and
+  emits it in `postProcessing/elementBalance/0/`;
+* the 27 UNAVAILABLE entries "had no named reason" — I searched for a `reason,`
+  key, and the engine writes `refusedSpecies.<name>,<explanation>`, one line per
+  refused species, which is MORE specific and not less.
 
-Nos dois casos o corpus estava certo e o palpite errado.  A diferenca face ao
-achado da especiacao e simples e vale como regra: ali foram lidos ficheiros
-`converged/` a serio.  **Perguntar ao corpus so vale se a pergunta for feita ao
-artefacto, nao a ideia que se tem dele.**
+In both cases the corpus was right and the guess was wrong.  The difference from
+the speciation finding is simple and stands as a rule: there, `converged/` files
+were actually read.  **Asking the corpus is only worth anything if the question
+is put to the artifact, not to one's idea of it.**
 
-### A testemunha negativa tem de poder falhar
+### A negative witness must be able to fail
 
-A primeira versão da passagem guardava-se nos COMPONENTES: «algum componente
-declara ponte?».  Sob essa guarda, **51 casos moleculares deste corpus** —
-todos os reactores de ácido acético, as duas fábricas de amoníaco, o absorvedor
-de CO2, a família inteira das membranas — ganhavam uma decomposição iónica
-inventada, porque o registo do NaCl (ou do aceticAcid) declara a ponte mesmo
-quando o mundo em vigor a trata como soluto agregado.  A regra é do **MODELO**,
-não da substância: `hasElectrolyte()` pergunta se o modelo de actividade
-trabalha em molalidade com cargas.
+The first version of the pass guarded on the COMPONENTS: "does any component
+declare a bridge?".  Under that guard, **51 molecular cases in this corpus** —
+every acetic acid reactor, both ammonia plants, the CO2 absorber, the entire
+membrane family — gained an invented ionic decomposition, because the NaCl (or
+aceticAcid) record declares the bridge even when the world in force treats it as
+a lumped solute.  The rule belongs to the **MODEL**, not the substance:
+`hasElectrolyte()` asks whether the activity model works in molality with
+charges.
 
-E o negativo do gate era `flash01` (benzeno/tolueno) — que **também** não ganha
-bloco, e portanto teria passado durante todo esse erro.  Trocado por
-`evaporator01_brine`: NaCl dentro de um pacote `gammaPhi`/ideal, exactamente a
-forma que se estragou.  **Uma testemunha negativa que não pode falhar não é uma
-testemunha.**
+And the gate's negative was `flash01` (benzene/toluene) — which **also** gains
+no block, and so would have passed throughout that entire bug.  Swapped for
+`evaporator01_brine`: NaCl inside a `gammaPhi`/ideal package, exactly the shape
+that broke.  **A negative witness that cannot fail is not a witness.**
 
-O mesmo aconteceu uma linha adiante: a recusa «nomes que não respondem a nada»
-foi enxertada primeiro numa corrente com 30 % de vapor, e disparou a recusa
-*da fracção de vapor* — também correcta, também não a que estava em teste.  Um
-gate que lê só o código de saída teria marcado isso como passagem.  As duas
-recusas verificam agora a MENSAGEM, não o código.
+The same thing happened one line further on: the "names that answer to nothing"
+refusal was first grafted onto a stream with 30 % vapour, and fired the
+*vapour-fraction* refusal — also correct, also not the one under test.  A gate
+reading only the exit code would have marked that a pass.  Both refusals now
+verify the MESSAGE, not the code.
 
 ---
 
-*Vista gerada a partir do repositório.  Para as contagens, ler
-`generated/releaseInventory.json` ou correr `bin/curate/release_inventory.py`.*
+*A view generated from the repository.  For counts, read
+`generated/releaseInventory.json` or run `bin/curate/release_inventory.py`.*

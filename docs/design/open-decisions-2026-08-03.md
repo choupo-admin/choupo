@@ -155,8 +155,10 @@ the canonical diff, which is checkable).
 The counsel answered all four and amended three of them.  What follows is
 the ruling as received, and where each stands.
 
-**A — seal drift: my recommendation was REJECTED.**  "Não re-selar, nem
-sequer selectivamente, apenas porque os goldens não mudam."  The reasoning
+**A — seal drift: my recommendation was REJECTED.**  "Do not re-seal, not
+even selectively, merely because the goldens do not change."  (Translated from
+the Portuguese original: *"Não re-selar, nem sequer selectivamente, apenas
+porque os goldens não mudam."*)  The reasoning
 I could not refute is that `same golden` does not imply `same sealed
 artifact`: the seal asserts *this case contains exactly the data imported
 and accepted at that historical moment*, and refreshing it changes the

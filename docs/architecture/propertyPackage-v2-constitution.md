@@ -50,9 +50,12 @@ viscosity).  No numeric quality scores — false precision (rejected).
 
 ## Axis 10 — ASSERTED VALUES: the dignified home for the hammer (Vítor's law)
 
-> *"Há uma altura em que é 'seja o que Deus quiser'. Mas não se pode esconder
-> isso do utilizador — os meus alunos varrem isto para debaixo do tapete
-> imensas vezes."*
+> *"There comes a point where it is 'whatever God wills'.  But you cannot hide
+> that from the user — my students sweep this under the rug all the time."*
+>
+> — Vitor, translated from the Portuguese original: *"Há uma altura em que é
+> 'seja o que Deus quiser'.  Mas não se pode esconder isso do utilizador — os
+> meus alunos varrem isto para debaixo do tapete imensas vezes."*
 
 The grammar gives the magic number a FIRST-CLASS, announced home:
 
