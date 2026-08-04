@@ -30,6 +30,7 @@ License
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
 #include "solver/NewtonRaphson.H"
+#include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
 #include "thermo/SaturationCurves.H"
 
@@ -37,6 +38,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <stdexcept>
 #include <vector>
@@ -1176,6 +1178,67 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         kpis_["nFeeds"]         = static_cast<scalar>(
             std::count_if(Ffeed.begin(), Ffeed.end(), [](scalar v){ return v > 0.0; }));
         kpis_["nSideDraws"]     = static_cast<scalar>(nDraws);
+    }
+
+    // ---- PER-TRAY CHEMISTRY, when the package resolves one --------------
+    //  A reacting column's profile is incomplete without it.  The whole
+    //  reason the separation and the speciation are the same problem is
+    //  that ammonia's volatility follows the pH -- and a profile that
+    //  prints x, y and T and NOT the pH shows the consequence while hiding
+    //  the cause.  A student cannot check the mechanism they were taught.
+    //
+    //  This is a REPORT, and it costs one reactive flash per stage, ONCE,
+    //  after convergence -- not one per residual.  It is computed on the
+    //  same composition the stage's own K-value was: the tray liquid at the
+    //  tray's (T, P).  The unit implements no chemistry (the ratified
+    //  contract): it asks the package to equilibrate and reads back what
+    //  the package resolved.
+    //
+    //  A stage whose chemistry cannot be resolved leaves NaN in its row
+    //  rather than a plausible zero -- an unsolved pH is not pH 0, and a
+    //  column that quietly printed one would be lying in the one place
+    //  this report exists to tell the truth.
+    if (thermo.hasReactiveEquilibrium())
+    {
+        std::vector<scalar> pHcol(N, std::numeric_limits<scalar>::quiet_NaN());
+        std::map<std::string, std::vector<scalar>> mSpecies;
+        scalar Iany = 0.0;
+        std::vector<scalar> Icol(N, std::numeric_limits<scalar>::quiet_NaN());
+        for (std::size_t j = 0; j < N; ++j)
+        {
+            try
+            {
+                const auto r = thermo.equilibrate(T[j], P, 1.0, x[j], 0);
+                pHcol[j] = r.pH;
+                Icol[j]  = r.trueState.I;
+                Iany     = std::max(Iany, r.trueState.I);
+                for (const auto& row : r.trueState.rows)
+                {
+                    auto& col = mSpecies[row.name];
+                    if (col.empty())
+                        col.assign(N, std::numeric_limits<scalar>::quiet_NaN());
+                    col[j] = row.molality;
+                }
+            }
+            catch (const std::exception&) { /* NaN stands, see above */ }
+        }
+        profile_.columns["pH"]            = pHcol;
+        profile_.columns["ionicStrength"] = Icol;
+        for (auto& kv : mSpecies)
+            profile_.columns["m_" + kv.first] = std::move(kv.second);
+        if (verbosity >= 2)
+        {
+            std::cout << "\n  Per-tray chemistry (the package's own"
+                         " speciation of each tray liquid):\n"
+                      << "    stage      T [K]        pH     I [mol/kg]\n";
+            for (std::size_t j = 0; j < N; ++j)
+                std::cout << "    " << std::setw(4) << (j + 1) << "    "
+                          << std::fixed << std::setprecision(2)
+                          << std::setw(8) << T[j] << "  "
+                          << std::setprecision(4) << std::setw(8) << pHcol[j]
+                          << "  " << std::setw(10) << Icol[j] << "\n";
+            std::cout << "\n";
+        }
     }
 
     // ---- Optional sieve-tray hydraulics ------------------------------

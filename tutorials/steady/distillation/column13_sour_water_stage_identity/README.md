@@ -23,8 +23,12 @@ the physics:
 
 No `gammaPhi` column can produce that profile, because in a molecular world
 ammonia's volatility does not depend on how much carbon dioxide has left
-the liquid.  Here it does: the CO₂ leaving raises the pH, the rising pH
-converts NH₄⁺ back to free NH₃, and the free NH₃ strips.
+the liquid.  Here it does: the carbon dioxide a liquid still carries is
+what holds its ammonia as NH₄⁺, so stripping the CO₂ sets the ammonia free
+and the free ammonia then strips.  (The usual shorthand for that is
+"stripping CO₂ raises the pH" — which is true of a fixed solution and is
+*not* how it reads tray by tray here.  See the per-tray table below: it is
+the carbonate loading that orders cleanly, not the pH.)
 
 ## The identity
 
@@ -43,6 +47,50 @@ about **1e-9 relative**:
 The ion inventories agreeing is the claim that a comparison of apparent
 compositions alone would miss: an effective K could reproduce the apparent
 split while resting on a different chemistry underneath.
+
+## The per-tray chemistry
+
+A profile that prints `x`, `y` and `T` and *not* the pH shows the
+consequence while hiding the cause.  So on a reacting package the column
+speciates each tray liquid once after convergence and writes `pH`,
+`ionicStrength` and every species molality into `profile.csv`:
+
+| stage | T [K] | pH | I [mol/kg] | free-NH₃ fraction | carbonate loading |
+|---|---|---|---|---|---|
+| 1 (top)      | 354.63 | 8.485 | 0.636 | 0.7767 | 0.2120 |
+| 2            | 367.34 | 8.361 | 0.130 | 0.8319 | 0.1627 |
+| 3            | 368.14 | 8.328 | 0.110 | 0.8283 | 0.1670 |
+| 4 (reboiler) | 371.48 | 8.532 | 0.029 | 0.9091 | 0.0872 |
+
+It costs one reactive flash per stage, **once** — not one per residual.
+
+### The check is the mechanism, not a guessed direction
+
+The scope asked for a physics-direction check: *stripping CO₂ must raise
+the liquid pH, and the free-NH₃ fraction must rise with it.*  The first
+half of that is **not true here**, and the table shows why it looked true:
+pH runs 8.485 → 8.361 → 8.328 → 8.532, which is not monotone in either
+direction.
+
+The reason is worth more than the check would have been.  Ionic strength
+varies **22-fold** between the top tray and the reboiler, and a pH is an
+*activity* — it moves with the activity coefficients as well as with the
+inventory.  The carbonate loading is an *inventory*, and only an inventory
+gives a clean ordering variable.
+
+So the gate orders the trays by carbonate loading and requires the
+free-ammonia fraction to order **strictly the other way** — which it does,
+across all four trays.  That is the sour-water mechanism itself: the CO₂ a
+liquid still carries is what holds ammonia as ammonium, and stripping it
+sets the ammonia free.
+
+`bin/curate/check_tray_chemistry.py` also re-derives the per-tray charge
+balance from its own charge table, and checks that every carbonate and
+ammonia species falls down the column.  H⁺ and OH⁻ are excluded from that
+last check on purpose: they are not solutes being stripped, they are
+water's own dissociation products pinned by the pH — `m_OH` rises between
+trays 1 and 2 for exactly that reason.  An earlier draft included them and
+failed, which is how the distinction got written down.
 
 ## What this case cost, and what it found
 
@@ -92,5 +140,6 @@ pretends to have.
 
 ```bash
 runCase tutorials/steady/distillation/column13_sour_water_stage_identity
-bin/curate/check_stage_identity.py
+bin/curate/check_stage_identity.py     # the identity
+bin/curate/check_tray_chemistry.py     # the per-tray chemistry + mechanism
 ```

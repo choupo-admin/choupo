@@ -849,6 +849,24 @@ PYEOF
     fi
     rm -f /tmp/stgid.$$
 
+    # Per-tray chemistry gate (sour-water S2, 2026-08-04): a reacting column
+    # publishes its own chemistry per tray -- pH, ionic strength, every
+    # species molality -- and the gate checks the MECHANISM rather than a
+    # guessed direction: ordering the trays by carbonate loading must order
+    # the free-ammonia fraction strictly the other way.  It deliberately does
+    # NOT assert a monotone pH, because the measurement says pH is not
+    # monotone here (ionic strength varies 22-fold and a pH is an activity).
+    # Sabotage-verified: swapping NH3aq/NH4 in the report fails T2 and T3.
+    if "$ROOT/bin/curate/check_tray_chemistry.py" > /tmp/traych.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "tray-chemistry-gate" "$(tail -1 /tmp/traych.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_tray_chemistry.py)\n" "tray-chemistry-gate"
+        cat /tmp/traych.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/traych.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
