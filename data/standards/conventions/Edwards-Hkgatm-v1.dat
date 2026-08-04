@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  conventions/Edwards-Hkgatm-v1.dat -- a VERSIONED, IMMUTABLE convention
+  profile (equilibrium-parameterisation identity ADR, ratified 2026-07-26).
+
+  The convention of Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):
+  966-976 (1978) for the Henry constants of volatile weak electrolytes in
+  water -- Table 3 / Eq 13.  It is NOT the Sander-Hxp-v1 convention and the
+  two must never be mixed in one calculation:
+
+    * the composition basis is MOLALITY, not liquid mole fraction, so
+      Edwards' H has units of kg-atm/mol.  Its numerical value differs from
+      an H_xp by the factor 1/M_w (about 55.5) plus the activity
+      convention;
+    * the reference pressure is the SATURATION PRESSURE OF WATER at the
+      system temperature, P_w^s -- not 1 atm.  H is tabulated at P_w^s and
+      carried to the system pressure by the Krichevsky-Kasarnovsky term of
+      Eq 11,  ln H^(P) = ln H^(P_w^s) + vbar_a^inf (P - P_w^s)/(R T),
+      with the infinite-dilution partial molar volumes of Table 2;
+    * the temperature form is Eq 13, ln H = B1/T + B2 ln T + B3 T + B4,
+      with T in KELVIN (the paper quotes ranges of validity in degC but
+      writes every correlation in K);
+    * the solute activity coefficient is the UNSYMMETRIC gamma* of Eq 8
+      (Pitzer truncation, Edwards parameterisation), normalised to unity at
+      infinite dilution -- so an H from this profile is only meaningful
+      alongside `activityModel edwardsPitzer`.
+
+  THIS PROFILE DOES NOT REPLACE Sander-Hxp-v1 FOR THE SAME PAIR.  The D2
+  identity contract makes a parameterisation the unit of identity: NH3-water
+  under Sander and NH3-water under Edwards are two curated records that
+  coexist, each naming its own convention, and a case selects one.  Neither
+  is "the" Henry constant for ammonia.
+
+  Once published this profile NEVER changes -- corrections mint a -v2.
+\*-----------------------------------------------------------------------------*/
+recordType    conventionProfile;
+schemaVersion 1;
+
+name                 Edwards-Hkgatm-v1;
+gasStandardState     idealGas;
+compositionBasis     molality;
+referencePressure    waterSaturation;
+pressureCorrection   KrichevskyKasarnovsky;
+temperatureForm      EdwardsEq13;
+soluteReference      infiniteDilutionUnsymmetric;
+solventReference     pureLiquid;
+requiredActivityModel edwardsPitzer;
+source               "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 3 / Eqs 11 and 13";

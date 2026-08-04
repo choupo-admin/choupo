@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Edwards (1978) molecule-ion interaction parameter, CO2 - HCO3.
+
+  Role: the molecule-ion (SALTING-OUT) beta(0) of Table 6, temperature-independent.
+
+  beta1 is NOT stored: for any pair involving a MOLECULAR species the paper
+  sets beta1 = 0 ("because experimental data are inadequate").
+
+  Table 6 is headed "for 0 to 170 degC" and its polynomials are written in
+  T.  **T IS KELVIN.**  The paper settles this itself: Table 7's column II
+  publishes beta0(NH3,NH4+) = 1/2 beta0(NH3,NH3) + 1/2 beta0(CO2,NH4+)
+  - 1/2 beta0(CO2,CO2) = 0.051 at 100 degC, which evaluates to 0.0504 in
+  kelvin and 0.0582 in Celsius.  The degC in the header is the range of
+  validity, exactly as in Tables 1 and 3.
+\*-----------------------------------------------------------------------------*/
+recordType    electrolytePairParameters;
+schemaVersion 1;
+
+model         edwardsPitzer;
+convention    Edwards-Hkgatm-v1;
+
+pair { molecule CO2; ion HCO3; }
+
+parameters
+{
+    beta0  +0;   // kg/mol, T-independent
+}
+
+Trange ( 273.15 443.15 );   // 0-170 degC
+
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 6";

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Henry's constant for CO2 in water -- the EDWARDS (1978) parameterisation.
+
+  THIS IS NOT A REPLACEMENT for parameters/Henry/CO2-water.dat, which
+  carries the Sander-Hxp-v1 parameterisation of the same physical pair.  The
+  D2 identity contract (ADR 2026-07-26) makes a PARAMETERISATION the unit of
+  identity: the two records coexist, each naming its own convention, and a
+  case selects one.  Neither is "the" Henry constant for CO2.
+
+  They are not interconvertible by a units factor alone.  Edwards' H is
+  MOLAL (kg-atm/mol), referenced to the saturation pressure of water rather
+  than 1 atm, and rides an UNSYMMETRIC gamma* from Eq 8 -- so it is only
+  meaningful alongside `activityModel edwardsPitzer`.  Mixing it with a
+  Davies or Sander calculation silently mismatches the standard state.
+
+  Eq 13:  ln H = B1/T + B2 ln T + B3 T + B4     [kg-atm/mol], T in KELVIN.
+  Eq 11 carries it to the system pressure (Krichevsky-Kasarnovsky) using the
+  infinite-dilution partial molar volume of Table 2:
+      32.4 (0 C), 34.0 (50 C), 38.3 (100 C), 45.6 (150 C)  cm3/mol
+\*-----------------------------------------------------------------------------*/
+solute      CO2;
+solvent     water;
+
+gasSpecies        CO2;
+dissolvedSpecies  CO2;
+convention        Edwards-Hkgatm-v1;
+
+model       EdwardsEq13;
+parameters
+{
+    B1  -6789.04;
+    B2  -11.4519;
+    B3  -0.010454;
+    B4  94.4914;
+}
+
+Trange ( 273.15 523.15 );   // 0-250 degC, the paper's stated range
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 3";

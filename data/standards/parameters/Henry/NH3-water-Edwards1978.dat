@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Henry's constant for NH3 in water -- the EDWARDS (1978) parameterisation.
+
+  THIS IS NOT A REPLACEMENT for parameters/Henry/NH3-water.dat, which
+  carries the Sander-Hxp-v1 parameterisation of the same physical pair.  The
+  D2 identity contract (ADR 2026-07-26) makes a PARAMETERISATION the unit of
+  identity: the two records coexist, each naming its own convention, and a
+  case selects one.  Neither is "the" Henry constant for NH3.
+
+  They are not interconvertible by a units factor alone.  Edwards' H is
+  MOLAL (kg-atm/mol), referenced to the saturation pressure of water rather
+  than 1 atm, and rides an UNSYMMETRIC gamma* from Eq 8 -- so it is only
+  meaningful alongside `activityModel edwardsPitzer`.  Mixing it with a
+  Davies or Sander calculation silently mismatches the standard state.
+
+  Eq 13:  ln H = B1/T + B2 ln T + B3 T + B4     [kg-atm/mol], T in KELVIN.
+  Eq 11 carries it to the system pressure (Krichevsky-Kasarnovsky) using the
+  infinite-dilution partial molar volume of Table 2:
+      28.7 (0 C), 30.0 (50 C), 33.9 (100 C), 40.4 (150 C)  cm3/mol
+  MAGNITUDE CROSS-CHECK (2026-08-04), because a units or temperature-scale
+  error here would be silent and catastrophic.  Evaluating Eq 13 at 25 degC
+  gives H = 0.0164 kg-atm/mol; converting to a mole-fraction basis through
+  x ~ m*M_w gives 9.24e4 Pa, against 9.9e4 Pa in the independently curated
+  Sander-Hxp-v1 record for the same pair -- 7 %, which is what two honest
+  curations of one physical quantity look like.  A kelvin/Celsius slip or a
+  molal/mole-fraction slip would have shown up as a factor of tens, not
+  percent.  The check does NOT make the two records interchangeable; it only
+  says this one is on the right rung.
+\*-----------------------------------------------------------------------------*/
+solute      NH3;
+solvent     water;
+
+gasSpecies        NH3;
+dissolvedSpecies  NH3;
+convention        Edwards-Hkgatm-v1;
+
+model       EdwardsEq13;
+parameters
+{
+    B1  -157.552;
+    B2  28.1001;
+    B3  -0.049227;
+    B4  -149.006;
+}
+
+Trange ( 273.15 423.15 );   // 0-150 degC, the paper's stated range
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 3";
