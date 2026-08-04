@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  Edwards (1978) molecule-ion interaction parameter, CO2 - CO3.
+  Edwards (1978) molecule-ion interaction parameter, NH3 - NH4.
 
   Role: the molecule-ion (SALTING-OUT) beta(0) of Table 6, temperature-independent.
 
@@ -19,7 +19,7 @@ schemaVersion 1;
 model         edwardsPitzer;
 convention    Edwards-Hkgatm-v1;
 
-pair { molecule CO2; ion CO3; }
+pair { molecule NH3aq; ion NH4; }
 
 parameters
 {

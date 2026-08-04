@@ -1,0 +1,113 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edwards01_sour_water_activity --- the WITNESS for the `edwardsPitzer`
+  activity model.
+
+  WHAT THIS CASE IS FOR.  Choupo already carries two aqueous activity models,
+  and each fails this fluid in its own way:
+
+    * `davies` is a charge-only correlation.  Every singly-charged ion gets
+      the same gamma and every NEUTRAL solute gets gamma = 1 -- exactly, by
+      construction, at every ionic strength.  A sour-water stripper's whole
+      difficulty is the volatility of dissolved NH3 and CO2, i.e. of two
+      NEUTRAL molecules, and Davies cannot say anything about either.
+    * `pitzerHMW` is the Harvie-Moller-Weare parameterisation: a DIFFERENT
+      truncation, with a different parameter set (beta2, C-phi, theta, psi),
+      fitted to strong electrolytes.  Its numbers are not Edwards' numbers,
+      and Edwards' numbers are not valid inside its equation.
+
+  `edwardsPitzer` is the truncation Edwards, Maurer, Newman & Prausnitz
+  (AIChE J. 24(6):966-976, 1978) REGRESSED HIS NH3/CO2/H2S/SO2 PARAMETERS IN:
+  Pitzer's expansion cut after the second virial coefficient, extended to
+  molecular solutes.  Using his parameters anywhere else would be quoting his
+  numbers under someone else's equation.
+
+  THE COMPOSITION is the sour-water region his Table 7 anchors: ammonia in
+  large excess over carbon dioxide, the carbonate and carbamate networks both
+  live, at an ionic strength around 1 mol/kg where a dilute correlation has
+  no business being trusted.
+
+  WHAT TO READ IN THE OUTPUT.  Run the two operations side by side and
+  compare `gamma_NH3aq` and `gamma_CO2aq`:
+
+    * under `davies` they are 1.000000 and 1.000000.  Not approximately --
+      exactly, because the model's gamma is a function of charge alone and
+      the charge is zero.  A student who has only ever seen Davies may not
+      realise this is a STRUCTURAL silence rather than a small correction.
+    * under `edwardsPitzer` they are 1.0224 and 1.0101: both SALTED OUT,
+      NH3 rather more than CO2.  Both rise because both Table 4 self-terms
+      are positive at 25 C -- Eq 14 gives beta0(NH3,NH3) = 0.01522 and
+      beta0(CO2,CO2) = 0.00822 kg/mol -- and NH3 rises further because it is
+      the more abundant of the two by three orders of magnitude, so its own
+      self-term dominates its Eq 8 sum.
+
+  THE SPECIATION MOVES TOO, and by far more than the gammas: the answer is
+  I = 2.78 against Davies' 1.78, with m_NH3aq 0.41 against 1.01.  That is not
+  a molecular effect at all -- it is the IONIC one.  Davies at I ~ 2 returns
+  gamma_NH4 = 0.956, because its bracket saturates and then turns back up;
+  Edwards' Eq 8 returns 0.301 at the same charge.  The NH4+/NH3aq equilibrium
+  reads those gammas, so the split follows.  The lesson is the one the
+  advisory prints on the Davies run: a dilute correlation used far outside
+  its band does not merely lose accuracy, it changes the answer's SHAPE.
+
+  Neither number here is validated against measurement -- see below.
+
+  WHAT THIS CASE IS *NOT*.  It is not the Table 7 anchor.  Reproducing Table 7
+  needs the vapour side -- Henry's constants on the paper's own convention,
+  the two-phase equilibrium, the total pressure -- and that is the named next
+  slice (docs/design/sour-water-stripper-scope.md).  This case validates the
+  ACTIVITY SURFACE alone, which is the piece the model owns.
+
+  WHAT IS AND IS NOT VALIDATED HERE.  This case is a STRUCTURAL witness: it
+  proves the model is wired, that its five parameter rules fire and are
+  labelled, and that a neutral solute gets a gamma.  It does NOT validate any
+  number against data -- there is no measurement in it.  The kernel itself is
+  separately checked against two closed forms the paper supplies (the Eq 8a
+  low-dissociation limit and the Debye-Huckel limiting law), and the
+  measured-vs-computed comparison is Table 7, which needs the vapour side.
+  A green run here means "the machine is right", never "the answer is right".
+
+  HONESTY ABOUT THE PARAMETERS.  Edwards measured exactly one family: beta0
+  for LIKE molecule pairs (Eq 14, Table 4).  Every other entry in the matrix
+  Eq 8 sums over is ESTIMATED from those by his Eqs 21-24, and the paper calls
+  both of its parameter tables "preliminary results subject to change as more
+  and better data become available".  The engine prints, at verbosity >= 3,
+  WHICH RULE produced each number -- one measured family and four estimation
+  routes -- so nothing here can be mistaken for a measured constant.
+
+  DATA SCOPE: self-DESCRIBING (inline manifest); species, reactions and the
+  EdwardsPitzer parameter records resolve from the curated data/standards/
+  tree at runtime.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- PIN A: the Edwards truncation.  The molecular solutes get a gamma.
+    {
+        name        sourWater_edwards;
+        type        speciate;
+        activityModel edwardsPitzer;
+        analyticalTotals { NH4 2.90 mol/kg; HCO3 1.45 mol/kg; }
+        pH          9.0;                // given, not solved -- see the header
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq );
+        output      { file sourWater_edwards.csv; }
+    }
+
+    // -- PIN B: the SAME feed under Davies.  gamma = 1 on both molecules,
+    //    identically, which is the point of running it.
+    {
+        name        sourWater_davies;
+        type        speciate;
+        activityModel davies;
+        analyticalTotals { NH4 2.90 mol/kg; HCO3 1.45 mol/kg; }
+        pH          9.0;
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq );
+        output      { file sourWater_davies.csv; }
+    }
+);

@@ -11,6 +11,8 @@
 #include "core/Dictionary.H"
 #include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace Choupo { namespace propertyOps {
 
@@ -35,12 +37,28 @@ inline AqueousSurface aqueousSurfaceOf(const DictPtr& authored)
     if (!authored || !authored->found("aqueousProperties")) return out;
     auto aq = authored->subDict("aqueousProperties");
     auto ac = aq->subDict("activityCoefficients");
+    //  ONE table, read twice: it maps the DECLARED name to the factory key AND
+    //  generates the refusal's list of what is implemented.  Written this way
+    //  because the if-chain it replaces had the two facts in two places, and a
+    //  model added to one and not the other refuses by naming itself as
+    //  unimplemented -- the arity sin in its most confusing form.
+    static const std::vector<std::pair<std::string, std::string>> kModels = {
+        {"Davies",        "davies"},
+        {"PitzerHMW",     "pitzerHMW"},
+        {"EdwardsPitzer", "edwardsPitzer"},
+    };
     const std::string m = ac->lookupWord("model");
-    if      (m == "Davies")    out.model = "davies";
-    else if (m == "PitzerHMW") out.model = "pitzerHMW";
-    else throw std::runtime_error("thermophysicalPropertySystem: "
+    for (const auto& [declared, key] : kModels)
+        if (m == declared) { out.model = key; break; }
+    if (out.model.empty())
+    {
+        std::string avail;
+        for (const auto& [declared, key] : kModels)
+        { (void)key; avail += (avail.empty() ? " " : " | ") + declared; }
+        throw std::runtime_error("thermophysicalPropertySystem: "
             "aqueousProperties.activityCoefficients.model '" + m
-            + "' -- implemented: Davies | PitzerHMW.");
+            + "' -- implemented:" + avail + ".");
+    }
     if (ac->found("referenceBasis")
         && ac->lookupWord("referenceBasis") != "aqueousMolality")
         throw std::runtime_error("thermophysicalPropertySystem: the aqueous"

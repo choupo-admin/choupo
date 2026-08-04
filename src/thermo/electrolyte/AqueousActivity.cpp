@@ -30,6 +30,7 @@ License
 
 #include "thermo/electrolyte/SolventProperties.H"
 #include "thermo/electrolyte/PitzerHMW.H"
+#include "thermo/electrolyte/EdwardsCatalogue.H"
 
 #include <cmath>
 #include <map>
@@ -134,6 +135,14 @@ void AqueousActivity::registerBuiltins()
     // S2: the multi-ion Pitzer (Harvie-Moller-Weare) model.  Binaries only --
     // ternary theta/psi land in S3.
     registerType("pitzerHMW", []{ return std::make_unique<PitzerHMW>(); });
+    //  Edwards et al. (1978): a DIFFERENT Pitzer truncation from HMW's, and
+    //  the one his NH3/CO2/H2S/SO2 parameters were regressed in.  It is here
+    //  beside pitzerHMW rather than replacing it because using his numbers
+    //  under HMW's equation would be quoting him under someone else's model.
+    //  Unlike the other two it extends to MOLECULAR solutes, which is what a
+    //  sour-water system needs and what Davies cannot express at all.
+    registerType("edwardsPitzer",
+                 []{ return std::make_unique<EdwardsPitzerModel>(); });
 }
 
 } // namespace electrolyte

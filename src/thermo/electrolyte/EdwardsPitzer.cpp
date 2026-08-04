@@ -135,16 +135,25 @@ ActivityResult EdwardsPitzer::evaluate(const IonState& st, double T) const
     const double thirdCommon = -dsum * hTerm(I);
 
     const double g2 = gTerm(I);
-    //  Copied by value into the closure: the solver may call the accessor
-    //  after this frame is gone.
+    //  ALL THREE copied by value into the closures.  The names and molalities
+    //  always were; `par_` was captured by REFERENCE, and that asymmetry was a
+    //  latent lifetime bug that only fired once a caller built the model as a
+    //  TEMPORARY -- EdwardsPitzerModel does exactly that, assembling a fresh
+    //  parameter set per pass, and the first run segfaulted on lambdas holding
+    //  a dangling &par_.
+    //
+    //  The interface's own contract settles the fix: an ActivityResult outlives
+    //  the frame that made it, so it must be SELF-CONTAINED.  A parameter set is
+    //  two small maps, copied once per gamma-fixed-point pass -- not once per
+    //  gamma -- so the copy is not on any hot path.
     auto names = st.name;
     auto mol   = st.molality;
-    const auto& par = par_;
+    const auto par = par_;
 
     ActivityResult r;
     r.A = A;
 
-    r.gammaNamed = [A, I, g2, thirdCommon, names, mol, &par]
+    r.gammaNamed = [A, I, g2, thirdCommon, names, mol, par]
                    (const std::string& nm, double z) -> double
     {
         //  FIRST term: Debye-Huckel.  Vanishes identically for a neutral
@@ -179,7 +188,7 @@ ActivityResult EdwardsPitzer::evaluate(const IonState& st, double T) const
     //  in g/mol.  So phi is BACK-SOLVED from the paper's own a_w rather than
     //  the paper's equation being rearranged into an osmotic form it never
     //  had -- one conversion, in one place, and Eq 10 stays recognisable.
-    r.osmotic = [A, I, names, mol, &par]() -> double
+    r.osmotic = [A, I, names, mol, par]() -> double
     {
         double mSum = 0.0, pairSum = 0.0;
         for (std::size_t i = 0; i < mol.size(); ++i)

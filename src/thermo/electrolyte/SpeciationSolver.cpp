@@ -1280,6 +1280,27 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             // only (the full-catalogue sweep is verifyGlobal's job).
             if (verbosity >= 3) PitzerHMW::verify(3, &stateIons);
         }
+        else if (activityName_ == "edwardsPitzer")
+            //  A THIRD branch, not the Davies default.  This banner used to be
+            //  a two-way switch on pitzerHMW, so a new model inherited Davies'
+            //  sentence -- and both of its halves were then FALSE: the "I ~ 0.5"
+            //  band is Davies' own, not this model's, and the a_w claim was
+            //  contradicted by the run's own number, because Edwards supplies
+            //  an osmotic coefficient (Eq 10) and the solver uses it.
+            //
+            //  A banner keyed on one model and defaulting for the rest tells a
+            //  student about a model that is not running.  Each model states
+            //  its OWN scope, in its own words.
+            std::cout << "  aqueous activity: Edwards et al. (1978) truncated "
+                         "Pitzer expansion (A_phi = "
+                      << std::setprecision(4) << A
+                      << " at T) -- second-virial, extended to MOLECULAR "
+                         "solutes (a neutral gets a real gamma, unlike Davies);"
+                         " a_w from the Eq 10 osmotic coefficient (NOT phi = 1)."
+                         "  One measured parameter family (Eq 14); the rest "
+                         "ESTIMATED by Eqs 21-24, and the paper calls its own "
+                         "tables preliminary\n"
+                      << std::defaultfloat;
         else
             std::cout << "  aqueous activity: " << actDisp << " (A = "
                       << std::setprecision(4) << A

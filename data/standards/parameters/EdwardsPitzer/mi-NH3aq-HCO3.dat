@@ -19,7 +19,7 @@ schemaVersion 1;
 model         edwardsPitzer;
 convention    Edwards-Hkgatm-v1;
 
-pair { molecule NH3; ion HCO3; }
+pair { molecule NH3aq; ion HCO3; }
 
 parameters
 {

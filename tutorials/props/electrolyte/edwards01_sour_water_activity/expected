@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    sourWater_edwards      I                2.77652            1e-4
+diag    sourWater_edwards      aw               0.954591           1e-4
+diag    sourWater_edwards      gamma_CO2aq      1.01011            1e-4
+diag    sourWater_edwards      gamma_CO3        0.0181147          1e-4
+diag    sourWater_edwards      gamma_HCO3       0.227994           1e-4
+diag    sourWater_edwards      gamma_NH3aq      1.02239            1e-4
+diag    sourWater_edwards      gamma_NH4        0.30091            1e-4
+diag    sourWater_edwards      m_CO2aq          0.000484785        1e-4
+diag    sourWater_edwards      m_CO3            0.537903           1e-4
+diag    sourWater_edwards      m_HCO3           0.911612           1e-4
+diag    sourWater_edwards      m_NH3aq          0.41019            1e-4
+diag    sourWater_edwards      m_NH4            2.48981            1e-4
+diag    sourWater_edwards      pH               9                  1e-4
+diag    sourWater_davies       I                1.77822            1e-4
+diag    sourWater_davies       aw               0.924626           1e-4
+diag    sourWater_davies       gamma_CO2aq      1                  1e-4
+diag    sourWater_davies       gamma_CO3        0.836559           1e-4
+diag    sourWater_davies       gamma_HCO3       0.956366           1e-4
+diag    sourWater_davies       gamma_NH3aq      1                  1e-4
+diag    sourWater_davies       gamma_NH4        0.956366           1e-4
+diag    sourWater_davies       m_CO2aq          0.00319444         1e-4
+diag    sourWater_davies       m_CO3            0.0735977          1e-4
+diag    sourWater_davies       m_HCO3           1.37321            1e-4
+diag    sourWater_davies       m_NH3aq          1.01116            1e-4
+diag    sourWater_davies       m_NH4            1.88884            1e-4
+diag    sourWater_davies       pH               9                  1e-4

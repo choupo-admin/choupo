@@ -1,7 +1,7 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  Edwards (1978) molecule-ion interaction parameter, CO2 - NH4.
+  Edwards (1978) molecule-ion interaction parameter, CO2 - HCO3.
 
-  Role: the molecule-ion (SALTING-OUT) beta(0) of Table 6, a quadratic in T.
+  Role: the molecule-ion (SALTING-OUT) beta(0) of Table 6, temperature-independent.
 
   beta1 is NOT stored: for any pair involving a MOLECULAR species the paper
   sets beta1 = 0 ("because experimental data are inadequate").
@@ -19,14 +19,11 @@ schemaVersion 1;
 model         edwardsPitzer;
 convention    Edwards-Hkgatm-v1;
 
-pair { molecule CO2; ion NH4; }
+pair { molecule CO2aq; ion HCO3; }
 
 parameters
 {
-    //  beta0 = a0 + a1 T + a2 T^2,  T in KELVIN
-    a0  +0.037;
-    a1  -0.000238;
-    a2  +3.83e-07;
+    beta0  +0;   // kg/mol, T-independent
 }
 
 Trange ( 273.15 443.15 );   // 0-170 degC

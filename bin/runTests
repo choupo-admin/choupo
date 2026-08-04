@@ -867,6 +867,29 @@ PYEOF
     fi
     rm -f /tmp/traych.$$
 
+    # Edwards activity-model gate (sour-water S3, 2026-08-04).  The model sat
+    # in the tree for a day as UNREGISTERED DEAD CODE -- it compiled, its two
+    # closed-form self-checks passed, and no case could reach it.  A model
+    # nobody can select is not a capability, so every claim here is checked
+    # THROUGH the engine on a real case: the model is reachable, a NEUTRAL
+    # solute gets a real gamma while the Davies witness beside it returns
+    # exactly 1, all five parameter rules are announced by name (one measured
+    # family, four estimation routes), beta1 reproduces Eq 24 from the printed
+    # beta0 and is zero on every molecular pair, and the banner states THIS
+    # model's scope rather than inheriting the sentence of another.
+    # Sabotage-verified five ways: unregistering the model, forcing gamma = 1
+    # for z == 0, dropping a rule label, changing Eq 24's slope, and removing
+    # the banner branch each fail by name.
+    if "$ROOT/bin/curate/check_edwards_model.py" > /tmp/edwards.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "edwards-model-gate" "$(tail -1 /tmp/edwards.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_edwards_model.py)\n" "edwards-model-gate"
+        cat /tmp/edwards.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/edwards.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

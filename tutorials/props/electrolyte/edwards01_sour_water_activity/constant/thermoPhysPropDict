@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T8: the aqueous activity SURFACE for a sour-water
+  brine.  Ionic AND molecular activities come from the truncated Pitzer
+  expansion of Edwards, Maurer, Newman & Prausnitz (1978) on the molality
+  basis.
+
+  This is a model-CONTRAST case, like pitzer_calcite_brine: the operations
+  carry an explicit per-op `activityModel` so the two models can be read
+  against each other on ONE feed.  The contrast here is not a matter of
+  accuracy -- it is a matter of what each model CAN SAY.  Davies is a
+  charge-only correlation: for a neutral solute it returns exactly 1, always,
+  and therefore cannot express salting-out at all.  Edwards' truncation keeps
+  molecule-molecule and molecule-ion terms, so dissolved NH3 and CO2 get a
+  gamma that moves with the brine around them.
+
+  The analysis lives in the OPERATIONS; the species and reactions live in the
+  curated chemistry tree; the interaction parameters live under
+  parameters/EdwardsPitzer/ with the paper's own caveat on every record
+  ("preliminary results subject to change as more and better data become
+  available").
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    activityCoefficients
+    {
+        model          EdwardsPitzer;
+        referenceBasis aqueousMolality;
+    }
+}
