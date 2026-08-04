@@ -195,7 +195,21 @@ Vítor supplied the paper.  Everything below is transcribed from **Edwards,
 T. J., Maurer, G., Newman, J. & Prausnitz, J. M., "Vapor-liquid equilibria
 in multicomponent aqueous solutions of volatile weak electrolytes", AIChE
 J. 24(6): 966–976 (1978)**, and captured here so the work does not depend
-on holding the PDF again.  Each table keeps its own number so a curated
+on holding the PDF again.
+
+> **WHAT THIS APPENDIX FAILED TO CAPTURE, and the rule that follows.**
+> It transcribed every TABLE and only *labelled* the EQUATIONS —
+> "(8) Pitzer truncation for ln γ_i*" is a caption, not a model.  When the
+> hosted container reverted on 2026-08-04 and took the PDF with it, the
+> parameters survived and the thing that consumes them did not, which
+> stopped the implementation dead.
+>
+> **A transcription is not done until the equations are written out.**
+> Parameters without their functional form are unusable, and they are
+> unusable in the most expensive way: they *look* like a complete record.
+> When Eqs 8–10 and 20–24 are re-read they go in here in full — symbols
+> defined, constants explicit, the Debye–Hückel term and the B_ij(I) form
+> written rather than named.  Each table keeps its own number so a curated
 record can cite it exactly.
 
 ### The model, in the paper's own equations
