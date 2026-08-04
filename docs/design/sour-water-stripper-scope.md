@@ -132,3 +132,145 @@ Approve the effective-K shape (§3) and the two-stage delivery (engine now,
 literature anchor when the tables arrive) — or amend.  If the shape is
 approved I start at S1, whose witness needs nothing that is not already in
 the repository.
+
+---
+
+## Appendix A — the primary source, transcribed (2026-08-04)
+
+Vítor supplied the paper.  Everything below is transcribed from **Edwards,
+T. J., Maurer, G., Newman, J. & Prausnitz, J. M., "Vapor-liquid equilibria
+in multicomponent aqueous solutions of volatile weak electrolytes", AIChE
+J. 24(6): 966–976 (1978)**, and captured here so the work does not depend
+on holding the PDF again.  Each table keeps its own number so a curated
+record can cite it exactly.
+
+### The model, in the paper's own equations
+
+    (5)   y_a φ_a P = m_a γ_a* H^(P)                     molecular solute VLE
+    (6)   (1-y_a) φ_w P = a_w P_w^s φ_w^s exp[v̄_w(P-P_w^s)/RT]     solvent
+    (7)   ln K = A1/T + A2 ln T + A3 T + A4              dissociation, molality
+    (8)   Pitzer truncation for ln γ_i*  (ion-ion, molecule-ion, molecule-molecule)
+    (9)   I = ½ Σ z_j² m_j
+    (10)  ln a_w from Gibbs-Duhem
+    (11)  ln H^(P) = ln H^(Pw_s) + v̄_a^∞ (P - P_w^s)/RT   Krichevsky-Kasarnovsky
+    (13)  ln H = B1/T + B2 ln T + B3 T + B4              H in kg·atm/mol, T in K
+    (14)  β⁰_aa = E + F/T
+    (20)  carbamate  NH3 + HCO3- ⇌ NH2COO- + H2O:  ln K = -8.6 + 2900/T  (20–60 °C)
+    (21)  unlike molecules:  β⁰_ij = ½(β⁰_ii + β⁰_jj)
+    (24)  β⁽¹⁾ = 0.018 + 3.06 β⁰
+
+### Table 1 — dissociation constants (Eq 7), molality units
+
+    species   A1          A2         A3            A4         valid, °C
+    NH3       -3335.7      1.4971    -0.0370566      2.76      0–225
+    CO2      -12092.1    -36.7816     0.0          235.482     0–225
+    HCO3-    -12431.7    -35.4819     0.0          220.067     0–225
+    H2S      -12995.4    -33.5471     0.0          218.599     0–150
+    HS-       K = 0.018 Kw                                     0–150
+    SO2        -637.396    0.0       -0.0151337     -1.96211   0–50
+    HCN       -9945.53     0.0       -0.0495786     26.9191    10–150
+    H2O      -13445.9    -22.4773     0.0          140.932     0–225
+    HSO3-     K = 1.02e-7                                      18
+
+### Table 2 — partial molar volumes at infinite dilution, cm³/mol
+
+    T,°C     NH3    CO2    H2S    SO2
+      0      28.7   32.4   34.8   40.3
+     50      30.0   34.0   36.5   42.3
+    100      33.9   38.3   41.1   47.6
+    150      40.4   45.6   48.8   56.5
+
+### Table 3 — Henry's constants (Eq 13), kg·atm/mol, T in K
+
+    solute   B1          B2         B3           B4          valid, °C
+    NH3       -157.552    28.1001   -0.049227    -149.006     0–150
+    CO2      -6789.04    -11.4519   -0.010454      94.4914    0–250
+    H2S     -13236.8     -55.0551    0.0595651    342.595     0–150
+    SO2      -5578.8      -8.76152   0.0           68.418     0–100
+    HCN     -49068.8    -241.82      0.315014    1446.005     10–140
+
+### Table 4 — molecule-molecule β⁰_aa = E + F/T
+
+    solute   E, kg/mol    F, (kg/mol)·K
+    NH3      -0.0260       12.29
+    CO2      -0.4922      149.20        (* 0–100 °C)
+    H2S      -0.2106       61.56
+    SO2      +0.0275        0
+    HCN      -0.8919      278.86
+
+### Table 5 — ion contribution β(0) = β₊(0) + β₋(0), kg/mol
+
+    NH4+  -0.028 · HCO3- -0.049 · CO3= -0.034 · HS- 0.074 · S= 0.007
+    HSO3- -0.035 · SO3=  -0.017 · CN-  -0.025 · NH2COO- 0.078
+    H+     0.120 · OH-    0.088
+    (interaction parameters between ions of LIKE sign are assumed zero)
+
+### Table 6 — molecule-ion (salting-out) β⁰, kg/mol, 0–170 °C
+NH3/CO2 subset only — the H2S/SO2/HCN rows are deferred with S4.
+
+    NH3-NH4+     0
+    NH3-HCO3-    0.135 - 1.165e-3 T + 2.05e-6 T²
+    NH3-CO3=     0.06
+    NH3-NH2COO-  0
+    NH3-H+       0.015
+    NH3-OH-      0.227 - 1.47e-3 T + 2.6e-6 T²
+    CO2-NH4+     0.037 - 2.38e-4 T + 3.83e-7 T²
+    CO2-HCO3-    0
+    CO2-CO3=     0
+    CO2-NH2COO-  0.017
+    CO2-H+       0.033
+    CO2-OH-      0.26 - 1.62e-3 T + 2.89e-6 T²
+
+**TRANSCRIPTION AMBIGUITY, FLAGGED NOT ASSUMED.**  Table 6's header gives
+the VALIDITY range in °C while the rest of the paper (Eqs 7, 13, 14 and
+Table 3's own header) uses T in kelvin.  The polynomials give different
+values under the two readings, so the case must not guess: the intended
+scale is settled by reproducing Table 7 (below), which is the point of
+having a numeric anchor at all.
+
+### Table 7 — THE ANCHOR.  NH3–CO2–H2O at 100 °C
+Experimental data from Otsuka et al. (1960); columns I and II are the
+paper's own predictions (II re-estimates three β⁰ by Eq 21 as noted).
+
+    total molality      predicted molecular m      y in vapour
+    NH3    CO2          I(NH3)  I(CO2)  II(NH3) II(CO2)   exp NH3  I     II
+    2.90   1.45         1.245   0.014   1.225   0.015     0.066   0.123 0.140
+                                                exp CO2 0.506  I 0.494  II 0.481
+      ionic strength    I 1.50          II 1.55
+      pressure, atm     exp 3.15        I 2.51   II 2.53
+
+    3.71   1.14         2.279   0.0056  2.263   0.0065    0.274   0.293 0.310
+                                                exp CO2 0.202  I 0.230  II 0.242
+      ionic strength    I 1.26          II 1.24
+      pressure, atm     exp 2.08        I 1.98   II 2.10
+
+    4.30   0.907        3.087   0.0030  3.077   0.0038    0.355   0.407 0.419
+                                                exp CO2 0.095  I 0.116  II 0.135
+      ionic strength    I 1.01          II 0.98
+      pressure, atm     exp 2.00        I 1.97   II 2.10
+
+    II differs from I by:  β⁰(NH3,NH4+) = ½β⁰(NH4+,NH4+) + ½β⁰(CO2,NH4+)
+                                        - ½β⁰(CO2,CO2) = 0.051
+                           β⁰(NH3,HCO3-) = β⁰(CO2,HSO3-) = -0.03
+                           β⁰(CO2,CO3=)  = β⁰(CO2,SO3=)  =  0.068
+
+### What the anchor can and cannot claim — read this before locking a golden
+
+Two DIFFERENT comparisons live in Table 7 and conflating them would be
+dishonest:
+
+* **against the paper's PREDICTIONS (columns I/II)** — an exact,
+  code-to-code check.  Choupo implementing the same equations with the
+  same parameters must land on those numbers.  This is the golden.
+* **against the EXPERIMENT** — the paper's own agreement is approximate:
+  y_NH3 0.066 measured against 0.123 predicted in the first row is
+  roughly a factor of two, and total pressure 3.15 atm against 2.51.  The
+  paper says so plainly ("satisfactory agreement with the severely
+  limited experimental data now available") and devotes its Table 9 to a
+  sensitivity analysis showing the liquid-composition error needed to
+  close the gap.  A Choupo case must quote the experiment as CONTEXT, not
+  as a target it hits.
+
+That distinction is the case's whole pedagogical value: the student sees
+a correlation reproduced exactly and its agreement with reality stated
+honestly, which is the opposite of a tool that prints one number.
