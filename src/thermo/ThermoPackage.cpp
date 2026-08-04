@@ -60,6 +60,7 @@ License
 #include "core/Advisory.H"
 #include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 
+#include <limits>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
