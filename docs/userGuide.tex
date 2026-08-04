@@ -3335,6 +3335,67 @@ as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
 
+\subsection{The first law in a dynamic run, and when it refuses}\label{sec:ctrl-energy}
+
+Every accepted step is logged into a balance ledger --- mass, elements and
+energy --- and written to \file{reports/balances/balanceTrajectory.csv}.
+Mass and elements always close.  Energy is the interesting one, because
+whether the run can \emph{claim} closure depends on what the
+thermodynamic package can price, and the vessel decides that by
+\textbf{probing the enthalpy surface}, once, at start-up --- never by
+looking at a component's name.
+
+Three routes, and the run announces which one it took and why:
+
+\begin{center}\small
+\begin{tabular}{@{}p{0.19\linewidth}p{0.50\linewidth}p{0.22\linewidth}@{}}
+\hline
+route & the energy equation & ledger \\
+\hline
+\textbf{canonical} & the vessel stores $H(\mathbf{n},T) = \sum_i n_i h_i(T)$ on the
+elements datum and the ODE is its \emph{exact} derivative & CLAIMS closure \\
+\textbf{mixture-H} & no per-species leg exists, but the mixture surface
+prices the whole holdup: total $H$ becomes a STATE and
+$\mathrm{d}H/\mathrm{d}t = \dot H_{\rm in} - \dot H_{\rm out} + Q$ is
+integrated directly; $T$ is a \emph{readout} & CLAIMS closure \\
+\textbf{Cp/convective} & no elements-datum enthalpy at all --- $T$ is
+integrated from $\sum n_i c_{p,i}$ as it always was & \textbf{REFUSES} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{keyidea}
+The refusal is the feature.  A $c_p$/convective temperature equation is
+\emph{not} the derivative of any stored enthalpy, so a first-law closure
+computed from it would be a number with no theorem behind it.  Choupo
+prints the balance as unavailable and names the components that blocked
+the datum, rather than publishing a residual that means nothing.
+\end{keyidea}
+
+\paragraph{Why probing, and not a list of names.}  A dissolved salt
+\emph{has} an elements datum --- the aqueous ion reference --- but its
+enthalpy lives at the \emph{mixture} level, because it depends on
+molality.  So ``does a datum exist'' is the wrong question; ``can the
+per-species leg serve it'' is the right one, and only the surface itself
+can answer.  The vessel asks by trying, catches the refusal, and moves to
+the next route.  That is why an electrolyte tank gets the mixture-H
+formulation instead of a fabricated per-species leg.
+
+\paragraph{Two structural gifts of the mixture-H form}, worth knowing
+because they look like omissions until you see why they are not: the
+partial-molar terms live implicitly \emph{inside} the state, so no
+$\partial H/\partial n_i$ is ever needed; and reactions drop out of the
+energy equation entirely, because the elements datum already carries the
+heat of reaction inside $H$.
+
+\begin{tutoriallink}
+\file{ctrl11\_esterification\_jacket} --- the canonical route, closing to
+$1.4\times 10^{-7}$ relative.  That residual is not error in the physics:
+it is second order in $\Delta T$, the trapezoid the ledger itself uses.
+\file{ctrl10\_brine\_concentration} --- the mixture-H route on an
+electrolyte tank, closing to $7.9\times 10^{-11}$.
+\end{tutoriallink}
+
 % =====================================================================
 \section{The property workbench: \code{choupoProps}}\label{sec:props}
 
