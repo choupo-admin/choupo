@@ -1148,6 +1148,44 @@ definitive test is moving the case out of the repo and watching it still
 run.  Every shipped tutorial is sealed this way; research cases and
 anything you archive with a thesis should be too.
 
+\paragraph{What the seal claims: the content, not the bytes.}
+A manifest carrying \code{sealSchema computational;} claims the
+\emph{parsed} content of each record --- keys in declaration order, values
+in canonical SI, declared dimensions, lists and sub-dicts --- and not its
+bytes.  The distinction is the whole point.  Re-wrap a comment, re-indent a
+block, or write \code{1 bar} where the catalogue wrote \code{1e5 Pa}, and
+the seal still verifies: the drift is announced as \emph{bytes only} and
+the verdict stands.  Move a value, change a dimension, add or remove a key,
+or break the record so it no longer parses, and it \code{diverges} by name
+--- and \code{onDivergence refuse;} stops the run, exactly as it always
+did.
+
+The exclusion is by \emph{typed fields} --- comments and formatting never
+reach the parser's tree at all --- rather than by stripping comments out of
+the text, which is the version of this idea that goes wrong the first time
+a comment character appears inside a string.
+
+You can see what the seal claims, which is the point of doing it this way:
+
+\begin{lstlisting}
+choupoProps --canonical-dump <record>    # what the seal actually sees
+choupoProps --canonical-hash <record>    # and its hash
+\end{lstlisting}
+
+\begin{pitfall}
+\textbf{A unit spelling is not always cosmetic.}  \code{1 bar} $\leftrightarrow$
+\code{1e5 Pa} is (same SI value, same declared dimensions).  \emph{Dropping}
+the unit --- \code{1 bar} $\to$ a raw \code{100000} --- is not: the declared
+dimensions change, so the dimension-checked lookup that would catch a
+mistake has moved.  The seal is deliberately conservative there and reports
+it as computational drift.
+\end{pitfall}
+
+Manifests without \code{sealSchema computational;} keep the old whole-file
+byte semantics untouched, and every migrated manifest still carries its
+legacy byte hashes as the historical provenance record --- the migration
+changed what the seal \emph{claims}, and re-validated nothing.
+
 % =====================================================================
 \section{Built-in unit operations}\label{sec:units}
 
@@ -3029,6 +3067,70 @@ steam by its latent heat; a 293\,K crystalliser needs chilled water,
 not cooling water), with campaign totals under \code{utility\_*} ---
 energy, mass and cost per utility; a duty no utility can serve is
 listed, never dropped.
+
+\subsection{When the utility is needed, not just how much}\label{sec:utility-demand}
+
+A campaign total sizes nobody's boiler.  Two batches that consume the same
+607\,kJ of low-pressure steam need completely different steam headers if one
+draws it evenly over an hour and the other wants all of it during a
+four-minute bring-to-boil.  So beside the totals, \code{choupoBatch} writes
+the \textbf{demand staircase}:
+
+\begin{lstlisting}
+reports/utilities/utilityDemand.csv
+tStart_s,tEnd_s,unit,eventType,utility,deltaEnergy_kJ,averageRate_kW
+0,1,reactor,reaction,coolingWater,-0.849382680299,-0.849382680299
+...
+400,401,still,reboiler,steamLP,16.9571...,16.9571...
+\end{lstlisting}
+
+One row per accepted driver step per demanding unit.  \code{deltaEnergy\_kJ}
+is the energy in that window; \code{averageRate\_kW} is explicitly a
+\emph{step mean}, not an instantaneous rate --- the column is named for what
+it is so nobody differentiates it twice.
+
+From the staircase come two KPIs per utility that the totals cannot give:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\hline
+\code{utility\_<name>\_peak\_kW} & the largest step-mean rate \\
+\code{utility\_<name>\_t\_peak\_s} & when it happened \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{example}[The number the total hides]
+\file{recipe01\_react\_then\_distill} draws 607.6\,kJ of LP steam over
+800\,s --- a mean of \textbf{0.76\,kW}.  Its peak is \textbf{16.96\,kW}, at
+$t = 400$\,s, when the still is brought to the boil.  A header sized on the
+mean is short by a factor of twenty-two.
+\end{example}
+
+\begin{keyidea}
+\textbf{The ledger stays the authority; the profile is a view of it.}  Each
+record's window sums are checked against the ledger's exact energy to
+$10^{-6}$ relative, and a profile that fails is \emph{refused} --- the
+record still stands and still appears in the totals.  A profile that
+disagrees with the ledger is a bug in the profile, never a correction to
+the ledger, and the two may not silently drift apart.  The
+\file{.meta} beside the CSV counts \code{profiledRows},
+\code{unprofiledRecords} and \code{refusedProfiles}, so a partial
+profile announces itself instead of looking complete.
+\end{keyidea}
+
+\begin{pitfall}
+\textbf{Impulses have no rate.}  An instantaneous energy intervention --- a
+\code{setParameter} temperature jump --- is a genuine energy but not a
+power: dividing it by a zero-width window would invent an arbitrary number.
+Impulses are therefore an explicit class, excluded from the peaks and
+warned about, so a peak is always a rate something actually sustained.
+\end{pitfall}
+
+Records that carry no time profile at all (a duty with no service window)
+are \emph{listed} in the \file{.meta} rather than dropped, on the same
+principle as the unserved duties above: a report that quietly omits what it
+could not do reads as a report that found nothing to omit.
 
 % =====================================================================
 \section{Dynamic simulation and control: \code{choupoCtrl}}\label{sec:ctrl}
