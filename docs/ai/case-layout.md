@@ -305,6 +305,42 @@ approach.  Exemplar: `tutorials/steady/heat/pinch01_four_stream_classic`.
 The `sizing`/`costing`/`economics` chain: `docs/ai/outer-drivers.md` §cost
 objectives and `tutorials/steady/flowsheets/process02_with_design`.
 
+## Where a numerical option lives — the four homes are INTENTIONAL
+
+Settled 2026-08-04 (Vítor, option A of
+`docs/design/solverdict-consolidation-scope.md`).  Numerical settings sit
+in four places, and that is a decision, not fragmentation left unfixed:
+
+| Home | What belongs there | Read by |
+|---|---|---|
+| `system/solverDict` | **steady flowsheet numerics** — recycle solver, tear tolerances, acceleration | `choupoSolve` |
+| a unit's `solver { }` | **that unit's own integrator choice** and its tolerances | every binary, per unit |
+| `system/controlDict` | **time control** — start/end/write, and the adaptive error tolerances that govern stepping | `choupoBatch`, `choupoCtrl` |
+| `system/outerDict` | the **outer driver's** own numerics (sweep, optimiser, estimator) | all four |
+
+The organising idea is *whose* number it is.  A tear tolerance belongs to
+the flowsheet; an integrator belongs to the unit that integrates; a time
+step belongs to the run's clock.  Moving them into one file would put
+three different owners' settings in one place and make the reader ask, of
+every key, which one it governs.
+
+**The trap this leaves, and what the engine does about it.**  A
+`system/solverDict` in a batch or ctrl case is read by nobody — those
+binaries take their numerics from `controlDict` and from each unit's
+`solver { }`.  Silently ignoring it would let an author tune a number that
+never reaches the solver.  So `choupoBatch` and `choupoCtrl` **announce a
+present-but-unread `solverDict` by name**, state what it cost (nothing —
+the run continues on the defaults), and carry on; the steady binary does
+the same for a transient `timeStepping` key it will not use.  Same posture
+as the unread-dict-keys announcement: *a declared value that nothing reads
+is a result you did not compute.*
+
+Alternatives B (one home for all four binaries) and C (move only the
+adaptive error tolerances) were scoped with file-and-line evidence and
+**not** taken — both change the grammar of existing cases to buy tidiness,
+and the four-home story is teachable as long as it is written down, which
+this section is.  Revisit only if a concrete case proves it is not.
+
 ## Materialising `0/` — `bin/choupo-init0`
 
 You author the DOMAIN INLETS (and any recycle-tear seed, `solverDict

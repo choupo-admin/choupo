@@ -193,7 +193,14 @@ ones for day-to-day work:
 5. **New unit operations / catalogue expansion** — the strength area; add with
    KPIs + a golden-master tutorial + the theory-guide section (a feature is
    incomplete without its manual).
-6. **solverDict consolidation** · **speciation aliases** — SCOPED
+6. ~~**solverDict consolidation**~~ — **OPTION A DECIDED + SHIPPED
+   2026-08-04** (lint 08-01, docs 08-04:
+   [`docs/ai/case-layout.md`](docs/ai/case-layout.md) "Where a numerical
+   option lives").  The four homes are INTENTIONAL, organised by *whose*
+   number it is; B and C were scoped with file:line evidence and not
+   taken.  **`speciation aliases` remains OPEN and unapproved** — it
+   touches the settled `pitzer` ≠ `pitzerHMW` contract, so it is Vítor's
+   call, and approving A was not approving it.  Original scope: SCOPED
    2026-08-01, decision now in §4b: the four solver-option homes are
    mapped with file:line evidence and three options posed
    (recommendation: document + lint the silently-ignored solverDict, no

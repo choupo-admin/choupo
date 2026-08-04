@@ -93,7 +93,33 @@ but it TOUCHES a settled naming contract — so it is Vítor's call, not
 an autonomous slice; proposed alias table to be drafted only if he
 wants it at all.
 
-## 5. Decision requested
+## 5. DECIDED 2026-08-04 (Vítor)
+
+**Option A, and no further review round.**  His words: option A is
+"conservative, reversible, and non-blocking"; proceed and revisit only if
+implementation uncovers a genuine architectural conflict.
+
+Both halves are now shipped:
+
+* the **lint** half shipped 2026-08-01 (it was a real bug regardless of
+  the A/B/C choice) — `choupoBatch` / `choupoCtrl` announce a
+  present-but-unread `system/solverDict` by name with the cost stated,
+  the steady binary does the same for a transient `timeStepping` key,
+  gate `check_solverdict_lint`, sabotage-verified;
+* the **documentation** half shipped 2026-08-04 —
+  [`docs/ai/case-layout.md`](../ai/case-layout.md), section *"Where a
+  numerical option lives"*: the four homes as a table, the organising
+  idea (*whose* number it is), the trap and what the engine does about
+  it, and why B and C were not taken.
+
+**The speciation-alias half of the roadmap line is NOT approved and was
+not built.**  It touches the settled `pitzer` ≠ `pitzerHMW` selector
+contract (2026-06-29), so §4 above says it is Vítor's call and not an
+autonomous slice; nothing was asked and nothing was done.  It stays open
+by default rather than being quietly closed alongside the half that was
+decided — approving A is not approving §4.
+
+## 6. Decision requested (superseded by §5)
 
 1. Option A / B / C for the solver-option homes (recommendation: A).
 2. Whether speciation aliases are wanted at all, given the
