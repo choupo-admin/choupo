@@ -55,7 +55,33 @@ BANNER = ROOT / "src" / "core" / "Banner.H"
 #  would have destroyed the sentence explaining what a release is called,
 #  and the first run of this script did exactly that before the rule was
 #  narrowed.  A placeholder is not a version.
+#
+#  A match inside a `backtick code span` is likewise DISCUSSION of the
+#  string, never a banner -- see sub_outside_code() below for the second
+#  time that lesson was paid for.
 PAT = re.compile(r'(Version:\s+)Choupo-(?:dev|[0-9]{4})\b')
+
+
+def sub_outside_code(line: str, version: str) -> str:
+    """Rewrite banners, but never inside a `backtick code span`.
+
+    THE SAME LESSON A SECOND TIME.  `Choupo-YYMM` in RELEASING.md is a
+    template, not a banner; this script's OWN docstring quotes
+    `Version:  Choupo-2607` to explain what a banner is, and the first
+    committed run had the script fail its own --check by eating its tail
+    (it is untracked until committed, so the bug could not appear until
+    then).  RELEASING.md carries the same shape at line 86.
+
+    A string being DISCUSSED is written in code font; a banner never is.
+    So the rewrite skips odd-index segments of a backtick split -- the
+    inline code spans -- and touches only prose and comment boxes.  The
+    .tex guides are unaffected: their flattened case banners use LaTeX
+    escapes, with no backtick anywhere on the line.
+    """
+    parts = line.split("`")
+    for i in range(0, len(parts), 2):          # 0, 2, 4 ... = outside code
+        parts[i] = PAT.sub(lambda m: m.group(1) + version, parts[i])
+    return "`".join(parts)
 
 SKIP_DIRS = ("thirdParty/", "gui/node_modules/", "build/", "data/tmp/")
 SKIP_NAMES = {"LICENSE", "NOTICE", "THIRD_PARTY_NOTICES"}
@@ -86,7 +112,7 @@ def tracked():
 
 def restamp_line(line: str, version: str):
     """-> (newline, changed).  Keeps the line's length when it is a box row."""
-    new = PAT.sub(lambda m: m.group(1) + version, line)
+    new = sub_outside_code(line, version)
     if new == line:
         return line, False
     #  A box row ends with `|` (possibly followed by the newline).  Re-pad
