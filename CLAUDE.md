@@ -579,6 +579,42 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).**
+`ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for
+equilibrium.  Molecular package → forwards to `Kvec`, byte-identical (all 12
+column tutorials unmoved).  Reactive package → solves the stage's own
+equilibrium at its own (T, P, z) and returns an **effective APPARENT** K; the
+apparent components stay the state, the ions stay internal to the stage
+exactly as in a flash, and the Jacobian never sees one.  Nested, not rigorous
+species-basis MESH — one reactive flash per stage per residual, and a case
+that runs it must say so.  **A K-VALUE IS AN INCIPIENT QUANTITY** (paid for
+once): K = y/x off the flash is right only while the stage is two-phase and
+returns a column of ZEROS the moment a trial state is subsaturated — residual
+−1 everywhere, flat in T, singular Jacobian, `Newton iters: 0` over an
+untouched guess.  The subsaturated branch uses the equilibrium partial
+pressures over the fully speciated liquid, K_i = (p_i/P)/x_i (published per
+apparent component as `ReactiveVLE`'s `pEqAtm`; a declared dimer contributes
+on the monomer basis).  The branches agree where they meet.  **A trial
+composition can leave the simplex** — the Newton overshoots the minor
+component first (CO2 at −8.5e-4 against a feed of 8e-3) — so `stageK` projects
+onto the simplex and ANNOUNCES it once: negatives clamped (overshoot), exact
+zeros left alone (absent means absent).  A refusal raised inside a stage now
+names the trial (T, z) that provoked it.  Witnesses: `column12_stage_is_a_flash`
+(molecular CONTROL, adiabatic re-flash so the recovered T is an energy result)
+and `column13_sour_water_stage_identity` (NH3+CO2/water, 7 Newton iters to
+|F| 8e-10, identity closing at 1e-9 **on the ions too**).  Gate:
+`check_stage_identity` (4 identity claims + 2 guards + the off-stage negative;
+R1 speciation, R2 the declared T read back from the column's own profile.csv,
+R3 the twin really reacts), sabotage-verified twice.  Named gap: a reactive
+ADIABATIC flash needs its bracket seeded from the feed, not from 200 K — until
+then the reacting twin claims the equilibrium half of the identity and
+column12 keeps the energy half.  Also fixed on the way: `adiabaticFlash`
+priced EVERY inlet as a sub-cooled liquid regardless of its vapour fraction
+(silent — it converges, to the wrong temperature); it now reads the stream's
+`vf`.  Scope + the record of what the one-stage identity turned into and why:
+[`docs/design/sour-water-stripper-scope.md`](docs/design/sour-water-stripper-scope.md) §6a.
+Theory: `sec:stagek`.
+
 **Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost
 stays UNAUTHORISED).**  A `pinchPass` PostProcessor in the postDict chain:
 Linnhoff-Flower problem table printed cascade by cascade,
