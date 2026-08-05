@@ -890,6 +890,30 @@ PYEOF
     fi
     rm -f /tmp/edwards.$$
 
+    # Validity-window gate (2026-08-05, from the I3 provenance audit).  I4
+    # says a number outside its fitted range is ANNOUNCED, never silently
+    # extrapolated -- and that announcement is driven by a declared interval
+    # that nothing ever checked was one.  Six component records declared
+    # `Trange (hi lo)` with hi <= lo, all liquid-Cp fits under a comment
+    # claiming a real four-term regression; a cubic cannot be fitted over a
+    # 1 K span and cannot be fitted at all over a 0 K one.
+    #
+    # The six are PINNED, not fixed: their true domain is a fact about the
+    # regression that produced them, and inventing one would put a made-up
+    # number where a measured one belongs.  The pin list IS the curation
+    # work-list, and removing a name without fixing the record fails.
+    # Sabotage-verified both ways: a seventh bad window fails by name, and
+    # so does an unpinned-but-unfixed record.
+    if "$ROOT/bin/curate/check_validity_windows.py" > /tmp/vwin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "validity-window-gate" "$(tail -1 /tmp/vwin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_validity_windows.py)\n" "validity-window-gate"
+        cat /tmp/vwin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/vwin.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
