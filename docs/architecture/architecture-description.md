@@ -61,7 +61,7 @@ not a documentation nicety.  It is the reason the constitutional layer exists.
 | **V5 Property / thermodynamic** | curator, researcher | [`property-architecture.md`](property-architecture.md), [`electrolyte-data-architecture.md`](electrolyte-data-architecture.md) |
 | **V6 Solver behaviour** | student, researcher | [`CHOUPO-CONSTITUTION.md`](CHOUPO-CONSTITUTION.md) §6, philosophy §2 |
 | **V7 Validation / credibility** | lecturer, reviewer, maintainer | [`consolidation-map.md`](consolidation-map.md), `bin/runTests` + the gate corpus |
-| **V8 Decisions and rationale** | maintainer, agent | **`decision-records.md` — NOT YET WRITTEN** (gap, §7) |
+| **V8 Decisions and rationale** | maintainer, agent | [`decision-records.md`](decision-records.md) |
 
 ## 4. Model kinds and notation
 
@@ -72,6 +72,7 @@ not a documentation nicety.  It is the reason the constitutional layer exists.
 | Contract-status model | table: contract · refusal · firing case · date | V2, V7 |
 | Case-structure model | annotated directory tree | V4 |
 | Data-home model | prose taxonomy over `data/standards/` | V5 |
+| Decision-index model | table: record · kind · alternative-stated · status | V8 |
 
 Conventions: dictionaries are the file format everywhere; British-influenced
 technical English (US spelling per the language rule); a *refusal* always names
@@ -80,13 +81,19 @@ the violation and states a remedy.
 ## 5. Architecture decisions and rationale
 
 42010:2022 requires that architecture decisions and their rationale be
-recorded.  Choupo records them in three places today, and that plurality is
-itself the gap named in §7:
+recorded.  Choupo records them in three places, and
+[`decision-records.md`](decision-records.md) is the index that makes the three
+askable as one:
 
 - **Closed decisions**, as a list — [`project-philosophy.md`](project-philosophy.md) §5;
-- **Design records with rejected alternatives** — `docs/design/*.md`
-  (23 documents, of which 2 are ADR-shaped and 1 is named `*-adr.md`);
+- **Design records** — `docs/design/*.md`, catalogued by kind (ADR · SCOPE ·
+  FORUM · SPIKE · STUDY) and status in V8;
 - **In-line settlements** — `CLAUDE.md` §5/§10, marked *do NOT relitigate*.
+
+The index does not merely list.  It measures the practice, and reports that a
+majority of records state no rejected alternative — the shape that gets
+re-litigated.  A catalogue that had only counted them would have been the
+structure test that passes with the fix reverted.
 
 ## 6. Correspondences and consistency rules
 
@@ -100,18 +107,23 @@ turns three known problems from folklore into stated inconsistencies.
 | **C2** | V2 ↔ V7 | every invariant shall have an engine refusal and a case that fires it | **INCONSISTENT** — I17, I18, I19 have neither |
 | **C3** | V7 ↔ the corpus | a contract with no firing case is marked *described, not consolidated* | consistent (the map marks them) |
 | **C4** | any view ↔ a generated artefact | a generated number has a generator and a staleness gate, never a copy | consistent (4 gates) |
-| **C5** | V1 §5 ↔ V8 | every CLOSED decision shall point to the record that argued it | **UNVERIFIABLE** — V8 does not exist |
+| **C5** | V1 §5 ↔ V8 | every CLOSED decision shall point to the record that argued it | **INCONSISTENT** — 6 of 11 do; 5 founding decisions have no record (AD1) |
 | **C6** | V4/V5/V6 ↔ the guides | every path and case name in an AI-facing doc shall resolve | consistent (`check_doc_references`, 234 paths) |
 
-Three of six are inconsistent or unverifiable, and they are stated here rather
+Three of six are inconsistent, and they are stated here rather
 than in a footnote.  A correspondence set that reported six greens on a
 codebase with three violated invariants would be a negative witness that cannot
 fail.
 
 ## 7. Known gaps in this description
 
-1. **V8 has no view.**  There is no ADR index, no consistent ADR format, no
-   numbering.  C5 is unverifiable until there is.  *This is the next artefact.*
+1. **V8 has a view, but not a format.**  The index
+   ([`decision-records.md`](decision-records.md), 2026-08-05) closed the
+   "no view" gap and turned C5 from unverifiable into a stated inconsistency —
+   which is the point of writing it.  What is still missing is a *consistent
+   record format*: a record's kind and status are inferred by the index rather
+   than declared in the record's own header, which is a second home for a fact
+   the record should own (action AD3).
 2. **C1 and C2 are inconsistent by construction**, because the invariants they
    check were ratified the same day the violations were measured.  Removal
    conditions: [`module-boundaries.md`](module-boundaries.md) §8, debts D1–D5.

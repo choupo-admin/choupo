@@ -59,7 +59,7 @@ own concepts; the mapping to clause numbers is itself an open action (§4, A3).
 | R8 | Each viewpoint frames one or more identified concerns | §3, "frames the concerns of" column | MET |
 | R9 | Every identified concern is framed by at least one viewpoint | all seven stakeholders' concerns map to V1–V7 | MET |
 | R10 | Each viewpoint identifies its model kinds | §4, five model kinds | MET |
-| R11 | Each view consists of models of its viewpoint's kinds | holds for V1–V7 | **PARTIAL** — V8 has no view at all |
+| R11 | Each view consists of models of its viewpoint's kinds | V1–V7 as before; V8 gained its view 2026-08-05 ([`decision-records.md`](decision-records.md)) and §4 gained the decision-index model kind it is built from | MET |
 | R12 | Viewpoints specify notations / conventions | §4, plus the dictionary-format and refusal-form conventions | MET |
 | R13 | Viewpoint definitions state their source or are newly defined | **not stated**; the viewpoints are defined inline and their provenance is not declared | **NOT MET** |
 
@@ -67,9 +67,9 @@ own concepts; the mapping to clause numbers is itself an open action (§4, A3).
 
 | # | requirement | evidence | status |
 |---|---|---|---|
-| R14 | Record architecture decisions | three plural homes: philosophy §5 (list), `docs/design/*.md` (23), `CLAUDE.md` in-line settlements | **PARTIAL** — recorded, but with no index, no format and no identifiers; only 2 of 23 design records are ADR-shaped |
-| R15 | Record the rationale for decisions, including alternatives considered and rejected | strong where it exists (e.g. the second-liquid record documents three failed designs; the boundary contract records a rejected proposal in full) | **PARTIAL** — coverage is uneven and unenumerated |
-| R16 | Relate decisions to the concerns / views they affect | **absent** — no decision states which view it changes | **NOT MET** |
+| R14 | Record architecture decisions | the three homes (philosophy §5, `docs/design/*.md`, `CLAUDE.md` settlements) are now indexed as one askable set in [`decision-records.md`](decision-records.md), each entry classified by kind and status | **PARTIAL** — indexed and classified, but records carry **no identifiers** and declare neither kind nor status in their own header, so the index infers what the record should own (AD3) |
+| R15 | Record the rationale for decisions, including alternatives considered and rejected | strong where it exists (the second-liquid record documents three failed designs); coverage is now **measured**: 13 records state a rejected alternative, 21 do not, and the index reports the shortfall as temporal — the practice decayed as the work sped up | **PARTIAL** — coverage is uneven, but it is enumerated rather than unknown, and the gap has an owner (AD2) |
+| R16 | Relate decisions to the concerns / views they affect | the index maps each CLOSED decision to *where it was argued* (§4); it does **not** state which view a decision changes | **NOT MET** — the mapping exists for provenance, not for impact |
 
 ### 1.4 Correspondences and consistency
 
@@ -77,7 +77,7 @@ own concepts; the mapping to clause numbers is itself an open action (§4, A3).
 |---|---|---|---|
 | R17 | Identify correspondences between architecture description elements | §6, six declared (C1–C6) | MET |
 | R18 | State correspondence rules where they govern consistency | §6, "rule" column | MET |
-| R19 | Record known inconsistencies | §6 marks C1 and C2 **INCONSISTENT**, C5 **UNVERIFIABLE**; removal conditions in [`module-boundaries.md`](module-boundaries.md) §8 | MET |
+| R19 | Record known inconsistencies | §6 marks C1, C2 and C5 **INCONSISTENT** — C5 was UNVERIFIABLE until V8 existed, and writing the view turned an unknown into a stated defect (5 founding decisions with no recorded reasoning); removal conditions in [`module-boundaries.md`](module-boundaries.md) §8 | MET |
 
 > R19 is the row worth noticing.  The description scores MET here **because**
 > it declares the architecture inconsistent with the code.  A description that
@@ -89,9 +89,15 @@ own concepts; the mapping to clause numbers is itself an open action (§4, A3).
 
 | status | count |
 |---|---:|
-| MET | 13 |
-| PARTIAL | 4 |
+| MET | 14 |
+| PARTIAL | 3 |
 | NOT MET | 2 |
+
+Movement since ratification (2026-08-04 → 2026-08-05): **R11 MET** (V8 gained
+its view and §4 its model kind).  R14 and R15 stayed PARTIAL with narrower,
+better-evidenced shortfalls — writing the index did not close them, and saying
+it did would be claiming conformance because the page exists, which is the
+error this file was separated out to prevent.
 
 **The permitted wording is therefore the weaker sentence**
 ([`architecture-description.md`](architecture-description.md) §10):
@@ -99,7 +105,7 @@ own concepts; the mapping to clause numbers is itself an open action (§4, A3).
 > *Choupo's architecture documentation is structured using the concepts and
 > vocabulary of ISO/IEC/IEEE 42010:2022.*
 
-The stronger claim requires R5, R11, R13, R14, R15 and R16 resolved, and is not
+The stronger claim requires R5, R13, R14, R15 and R16 resolved, and is not
 available.
 
 ## 3. Requirements judged inapplicable
@@ -111,7 +117,10 @@ argued with rather than being invisible in an omitted row.
 
 | id | action | closes |
 |---|---|---|
-| **A1** | Write the ADR index: identifiers, a format, and a decision → view mapping | R11 (V8), R14, R15, R16, and correspondence C5 |
+| **A1** | ~~Write the ADR index~~ — DONE 2026-08-05, [`decision-records.md`](decision-records.md).  Closed R11 and C5.  **What it did not close, and these are now separate actions:** | R11 ✓, C5 ✓ |
+| **A1a** | Give records identifiers and a declared kind/status header, so the index reads them instead of inferring them (= AD3) | R14 |
+| **A1b** | The five founding decisions gain a record of their reasoning, or philosophy §5 says the argument is unrecorded (= AD1) | R15, C5 |
+| **A1c** | A record states which view(s) it changes | R16 |
 | **A2** | Give the architecture description as a whole a version identifier and a change history distinct from git | R5 |
 | **A3** | Obtain a licensed copy of 42010:2022 and map each row to its clause number; correct any row this reveals as misstated | the accuracy of this entire table |
 | **A4** | State the provenance of each viewpoint definition (newly defined here, or drawn from a published catalogue) | R13 |

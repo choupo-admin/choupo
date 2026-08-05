@@ -10,6 +10,7 @@ Who wins when documents disagree (ratified as decision #143, executed
 | 1 | [`architecture-description.md`](architecture-description.md) | the 42010 manifest: entity, scope, stakeholders, concerns, viewpoints, model kinds, decisions, CORRESPONDENCES (three of six inconsistent, declared) — and the wording the project is permitted to use |
 | 1 | [`development-governance.md`](development-governance.md) | how work is organised so the architecture survives: production does not parallelise, verification does; the calibration rule; the rules binding an assisted fleet |
 | 1 | [`project-philosophy.md`](project-philosophy.md) | the binding principles: numerical honesty, declare -> verify -> refuse, the arity doctrine, the NEVER rules, the CLOSED decisions |
+| 1 | [`decision-records.md`](decision-records.md) | the ADR INDEX: which decision is recorded where, its kind and status, and which state a rejected alternative (13 of 34 do) |
 | 1 | [`global-invariants.md`](global-invariants.md) | the nineteen invariants as a SET, each with its written/refused/fired status |
 | 1 | [`module-boundaries.md`](module-boundaries.md) | the layering, record resolution (thermo owns it, through one seam), where shared logic lives — plus the measurement and the five debts ratifying it created |
 | 2 | [`property-architecture.md`](property-architecture.md) | THE property contract (representation + computation), subordinate only to the Constitution |
