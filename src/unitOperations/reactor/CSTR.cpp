@@ -120,7 +120,8 @@ int CSTR::solve(const DictPtr& dict,
     {
         std::size_t i = thermo.indexOf(s->lookupWord("component"));
         nu[i]    = s->lookupScalar("nu");
-        order[i] = s->lookupScalarOrDefault("order", 0.0);
+        order[i] = Reaction::forwardOrder(*s, nu[i],
+            s->lookupWord("component"), "CSTR");
     }
     const std::string limiting = rxnDict->lookupWord("limitingReactant");
     const std::size_t iLim = thermo.indexOf(limiting);

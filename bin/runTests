@@ -937,6 +937,27 @@ PYEOF
     fi
     rm -f /tmp/slic.$$
 
+    # forward-order gate (AS9, 2026-08-05): a REACTANT with no declared
+    # `order` used to get exponent 0 and drop out of the forward rate law
+    # -- exit 0, plausible number, wrong physics.  The reverse order is
+    # entitled to a default (detailed balance fixes it at the product
+    # stoichiometry); the forward one is a fact about the MECHANISM and is
+    # not derivable, so it is REFUSED with its remedy.  One home
+    # (Reaction::forwardOrder) replacing five, which is the arity doctrine
+    # applied to a decision rather than a value.
+    # Sabotage-verified four ways: silent 0 restored (4 reactors accept),
+    # products no longer exempt, an explicit `order 0;` treated as unset,
+    # and the remedy stripped from the message.
+    if "$ROOT/bin/curate/check_forward_order.py" > /tmp/fworder.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "forward-order-gate" "$(tail -1 /tmp/fworder.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_forward_order.py)\n" "forward-order-gate"
+        cat /tmp/fworder.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fworder.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

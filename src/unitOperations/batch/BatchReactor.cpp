@@ -174,11 +174,15 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             const std::string cname = s->lookupWord("component");
             r.comps.push_back(thermo.indexOf(cname));
             r.nu.push_back(s->lookupScalar("nu"));
-            // A species with no `order` does not appear in the forward rate law -- the
-            // steady reactors have always read it that way, and a reaction library is
-            // shared between them.  Requiring it here made the same file legal in a CSTR
-            // and illegal in a batch vessel.
-            r.order.push_back(s->lookupScalarOrDefault("order", 0.0));
+            // This USED to accept a reactant with no `order` and silently give it
+            // exponent 0, and the comment here recorded why: requiring it in the
+            // batch vessel alone made the same shared reaction library legal in a
+            // CSTR and illegal here.  That diagnosis was right and the remedy was
+            // backwards -- it made the LOOSE reading uniform instead of the strict
+            // one.  Now all five readers go through Reaction::forwardOrder, so the
+            // asymmetry that forced the retreat is gone.
+            r.order.push_back(Reaction::forwardOrder(
+                *s, r.nu.back(), s->lookupWord("component"), "batchReactor"));
         }
 
         auto kin = rxn->subDict("kinetics");

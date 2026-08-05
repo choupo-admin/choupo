@@ -78,6 +78,37 @@ Corollaries, each paid for at least once:
   [`module-boundaries.md`](module-boundaries.md) §4: the shared logic goes to
   the lowest **neutral** layer that can own its concepts without acquiring
   upward dependencies.
+- **The doctrine covers DECISIONS, not only values** *(extended 2026-08-05)*.
+  A rule about what an absent input means — a default, a fallback, a
+  substitution — is a derived fact about the contract, and copies of it drift
+  exactly as numbers do.
+
+### 3a. Why the extension was needed
+
+It was not reasoned to; it was measured.  The silent-fallback audit found
+eight cases, and **four of them had a correct sibling already in the tree** —
+the same question answered properly a few lines or a few files away.  The
+sharpest pair sits two lines apart in one function: the *reverse* reaction
+order defaults meaningfully, to the product stoichiometry that detailed
+balance requires, while the *forward* order defaulted to a silent `0` — which
+drops a reactant out of its own rate law.
+
+That is not two bugs.  It is one decision — *what does an absent `order`
+mean?* — living in five places (`RateLaw` and the four reactors), and the
+copies diverging as each was improved separately.
+
+The tree even recorded the moment the diagnosis was made and the wrong remedy
+applied.  A comment in `BatchReactor.cpp` explained that requiring the key in
+the batch vessel alone made the same shared reaction library legal in a CSTR
+and illegal there — so the requirement was **dropped**, making the loose
+reading uniform instead of the strict one.  The inconsistency was real and it
+was resolved downward.  With one home, the asymmetry that forced the retreat
+does not exist.
+
+Corollary, stated so it is checkable: **when the same question is answered in
+more than one place, the answers are not two implementations — they are one
+decision with a second home**, and the fix is to give it a single one, not to
+make the copies agree.
 
 ## 4. Things this project will NEVER do
 

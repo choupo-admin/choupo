@@ -32,8 +32,11 @@ License
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/Component.H"
+#include "core/Dictionary.H"
 
 #include <cmath>
+#include <stdexcept>
+#include <string>
 
 namespace Choupo
 {
@@ -144,6 +147,46 @@ Reaction::Equilibrium Reaction::equilibrium(const ThermoPackage& thermo,
         }
     const scalar Kp = std::exp(-dG / (constant::R * T));
     return { Kp, sumNu, Kp * concentrationFactor(sumNu, T) };
+}
+
+scalar Reaction::forwardOrder(const Dictionary&  entry,
+                              scalar             nu,
+                              const std::string& component,
+                              const std::string& who)
+{
+    if (entry.found("order"))
+        return entry.lookupScalar("order");
+
+    //  A product or a spectator carries no forward order.  Nothing is being
+    //  assumed here -- the species simply does not appear in the forward
+    //  product, which is what the stoichiometry already said.
+    if (nu >= 0.0)
+        return 0.0;
+
+    //  A REACTANT with no declared order.  The old default was 0.0, and 0.0
+    //  is not "no claim": it is the claim that the rate does not depend on
+    //  this reactant at all.  The run converges, the number looks plausible,
+    //  and a reactant has quietly left its own rate law.
+    throw std::runtime_error(
+        who + ": reactant '" + component + "' has nu = "
+        + std::to_string(nu) + " but declares no `order`.\n"
+        "    The forward reaction order is a fact about the MECHANISM and is "
+        "not derivable\n"
+        "    from the stoichiometry -- a species with nu = -1 may be zeroth, "
+        "half, first or\n"
+        "    second order.  Defaulting it to 0 would drop '" + component
+        + "' from the rate law\n"
+        "    entirely and report a rate independent of one of its reactants.\n"
+        "    REMEDY: declare it in the stoichiometry entry, e.g. `order 1;` "
+        "for mass-action\n"
+        "    kinetics at this stoichiometry, or `order 0;` if the rate really "
+        "is zeroth order\n"
+        "    in '" + component + "' (an explicit zeroth-order claim is "
+        "legitimate -- it is the\n"
+        "    silence that was not).\n"
+        "    The REVERSE order is different and is not asked for: detailed "
+        "balance fixes it\n"
+        "    at the product stoichiometry, so `orderRev` defaults on its own.");
 }
 
 } // namespace Choupo

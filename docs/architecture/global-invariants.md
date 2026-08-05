@@ -25,11 +25,14 @@ takes the refusal path.
 
 ## A — Truth and provenance
 
-**I1. A derived fact has exactly one home.**
+**I1. A derived fact has exactly one home — and a DECISION is a derived fact.**
 No value is stored where it can be computed; no number is hand-copied where a
 generator exists.  This includes documentation: a corpus count in prose is a
-second home.
-· W [`project-philosophy.md`](project-philosophy.md) §3 · R `records::ScanGuard`, `check_ion_pins` · C `check_registry_scan`, release-inventory staleness gate
+second home.  Extended 2026-08-05: a rule about what an absent input *means*
+(a default, a fallback, a substitution) is a fact about the contract, and its
+copies drift exactly as numbers do — the forward reaction order had five
+homes, and they had already diverged from the reverse order two lines away.
+· W [`project-philosophy.md`](project-philosophy.md) §3, §3a · R `records::ScanGuard`, `check_ion_pins`, `Reaction::forwardOrder` (one home for five) · C `check_registry_scan`, release-inventory staleness gate, `check_forward_order` (the refusal fires in all four reactors)
 
 **I2. A document never describes machinery that does not exist.**
 A manual naming a release it does not document, a guide referencing an absent

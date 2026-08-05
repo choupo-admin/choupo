@@ -58,12 +58,14 @@ Class
 #include "core/Types.H"
 
 #include <cstddef>
+#include <string>
 #include <vector>
 
 namespace Choupo
 {
 
 class ThermoPackage;
+class Dictionary;
 
 class Reaction
 {
@@ -117,6 +119,37 @@ public:
     static Equilibrium equilibrium(const ThermoPackage& thermo,
                                    const sVector&       nu,
                                    scalar               T);
+
+    // -- The FORWARD reaction order of one stoichiometry entry -------------
+    //
+    //    Read this before changing it.  The forward order is NOT derivable
+    //    from ν.  A species with ν = −1 may enter the rate law to the power
+    //    0, ½, 1 or 2 -- that is a fact about the MECHANISM, and the engine
+    //    has no standing to invent it.  The reverse order IS constrained
+    //    (detailed balance fixes it at the product stoichiometry), which is
+    //    why `orderRev` defaults meaningfully and this one cannot.
+    //
+    //    So the rule is asymmetric, deliberately:
+    //      * `order` declared  -> honoured, including an explicit 0 (a
+    //                             zeroth-order claim is legitimate; it is
+    //                             the SILENCE that was not).
+    //      * ν < 0, undeclared -> REFUSED by name.  A reactant with no order
+    //                             gets exponent 0, vanishes from ∏cⱼ^order,
+    //                             and the reaction proceeds at a rate that
+    //                             does not depend on one of its reactants --
+    //                             exit 0, plausible number, wrong physics.
+    //      * ν >= 0, undeclared -> 0.0.  A product or spectator has no
+    //                             forward order; that is the absence of a
+    //                             claim, not a hidden one.
+    //
+    //    ONE home for this decision.  It previously had five (RateLaw and
+    //    the four reactors each read `order` with its own default), which is
+    //    the arity doctrine applied to a DECISION rather than a value: the
+    //    copies agreed until one of them was fixed.
+    static scalar forwardOrder(const Dictionary&  entry,
+                               scalar             nu,
+                               const std::string& component,
+                               const std::string& who);
 };
 
 } // namespace Choupo

@@ -52,7 +52,8 @@ RateLaw RateLaw::fromDict(const DictPtr&       rxn,
     {
         const std::size_t i = thermo.indexOf(s->lookupWord("component"));
         law.nu_[i]    = s->lookupScalar("nu");
-        law.order_[i] = s->lookupScalarOrDefault("order", 0.0);
+        law.order_[i] = Reaction::forwardOrder(
+            *s, law.nu_[i], s->lookupWord("component"), who);
         // The reverse leg runs on the products; by default at their stoichiometric
         // order, which is what detailed balance requires.  `orderRev` overrides.
         law.orderRev_[i] = s->lookupScalarOrDefault(
