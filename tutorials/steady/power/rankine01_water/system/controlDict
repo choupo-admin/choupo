@@ -16,4 +16,7 @@ reports
     streamTable    { }
     massBalance    { }
     energyBalance  { }
+    //  The computed report is what turns the `variables {}` block into a
+    //  file; without it T_exhaust_C is declared and never evaluated.
+    computed       { }
 }

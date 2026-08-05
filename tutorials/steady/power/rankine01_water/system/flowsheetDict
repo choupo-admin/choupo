@@ -50,6 +50,14 @@ variables
 {
     W_electric { compute "generator.W_electric"; unit kW; }
     eta_cycle  { compute "generator.W_electric / cooler.Q"; }
+    //  WITNESS for the affine display-unit contract (AS1, 2026-08-05).  A
+    //  turbine discharge is quoted in degC by every engineer who reads one,
+    //  and the header of this case hand-converted it -- "530.9 K (258 degC)".
+    //  Asking the ENGINE for it removes that hand conversion AND exercises
+    //  units::fromSI on an affine unit, which is the path that used to print
+    //  the raw kelvin number under this very label.
+    //  If this ever reports ~531 again, the defect is back.
+    T_exhaust_C { compute "exhaust.T"; unit degC; }
 }
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
