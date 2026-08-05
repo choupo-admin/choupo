@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EconomicsPass.H"
+#include "core/Advisory.H"
 
 #include "core/Dictionary.H"
 #include "reporting/OdsWriter.H"
@@ -404,10 +405,39 @@ int EconomicsPass::run(SimulationResult& result)
 
     // ---- 4.  OPEX -- Turton cost-of-manufacture COM_d (Eq. 8.1) ---------
     // C_UT: reuse the already-computed utility allocation (€/h) * annual H.
+    //  SUM THE ALLOCATED ROWS, AND SAY WHAT WAS NOT (AS4).  This loop used
+    //  to sum `eur_h` across EVERY row without consulting `a.allocated`,
+    //  though its own comment said "allocated".  An unallocated row carries
+    //  eur_h = 0, so with no utility catalogue loaded -- a documented, common
+    //  case -- C_UT came out 0 EUR/yr and NPV/IRR printed strongly positive
+    //  for a plant whose steam is free.  The printed line read
+    //  "C_UT (utilities, allocated) = 0 EUR/yr": a zero, not a refusal, and
+    //  the parenthetical actively asserted the completeness it did not have.
+    //
+    //  A number that cannot be computed is not zero.  The allocated rows are
+    //  summed; the unallocated ones are COUNTED and named, and the caller is
+    //  told the utility bill is a LOWER BOUND rather than a cost.
     scalar C_UT = 0.0;
+    std::size_t unpricedDuties = 0;
     for (const auto& a : result.utilityAllocation)
-        C_UT += a.eur_h;          // €/h summed across allocated duties
+    {
+        if (a.allocated) C_UT += a.eur_h;   // €/h, priced against a utility
+        else             ++unpricedDuties;  // a real duty nobody could price
+    }
     C_UT *= H;                    // €/yr
+    if (unpricedDuties)
+    {
+        std::cerr << "[economics] " << unpricedDuties << " heat duty/duties"
+                     " could not be allocated to a catalogue utility, so they"
+                     " are NOT in C_UT.\n            The utility bill below is"
+                     " a LOWER BOUND, and every figure derived from it"
+                     " (COM_d, NPV, IRR) inherits that.\n            Load a"
+                     " utility catalogue, or declare the missing service, to"
+                     " make it a cost.\n";
+        AdvisoryLog::instance().add("economics", "warning", "unpriced-utility",
+                                    std::to_string(unpricedDuties) +
+                                    " duty/duties absent from C_UT");
+    }
 
     // C_OL: operating labour, Turton Eq. 8.3.
     //   N_OL = (6.29 + 0.23*N_np)^0.5  operators per shift;
@@ -691,7 +721,15 @@ int EconomicsPass::run(SimulationResult& result)
     std::cout << "    C_OL (labour)                = " << std::setw(14) << C_OL << " EUR/yr\n";
     std::cout << "    2.73  x C_OL                 = " << std::setw(14) << 2.73 * C_OL << " EUR/yr\n";
     std::cout << "    C_RM (raw materials)         = " << std::setw(14) << C_RM << " EUR/yr\n";
-    std::cout << "    C_UT (utilities, allocated)  = " << std::setw(14) << C_UT << " EUR/yr\n";
+    //  The LABEL must not assert a completeness the number does not have.
+    std::cout << "    "
+              << (unpricedDuties ? "C_UT (utilities, LOWER BOUND)"
+                                 : "C_UT (utilities, allocated)  ")
+              << "= " << std::setw(14) << C_UT << " EUR/yr";
+    if (unpricedDuties)
+        std::cout << "   <-- " << unpricedDuties
+                  << " duty/duties unpriced and NOT included";
+    std::cout << "\n";
     std::cout << "    C_WT (waste)  NOT COSTED     = " << std::setw(14) << C_WT
               << " EUR/yr  (explicit zero -- effluent/solids unpriced)\n";
     std::cout << "    1.23  x (C_RM+C_UT+C_WT)     = " << std::setw(14)

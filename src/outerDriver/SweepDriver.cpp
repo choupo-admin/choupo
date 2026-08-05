@@ -171,17 +171,42 @@ int SweepDriver::run()
         // visible at the end.
         if (postDict_ && result.converged)
         {
+            //  SUPPRESS THE TABLE, NEVER THE DIAGNOSTIC (AS7).
+            //
+            //  This used to redirect `cerr` into the sink as well.  The stated
+            //  intent -- and it is a good one -- is to stop N repetitions of
+            //  the economics table from burying the sweep.  But `cerr` is
+            //  where the post-processing chain reports that a unit could not
+            //  be sized or costed, and it is the ONLY channel it has (the
+            //  passes count their failures and both call sites throw the
+            //  count away, which is AS6).
+            //
+            //  So a sweep could plot NPV against feed rate with half the
+            //  curve costed on a DIFFERENT equipment set -- no nan, no flag,
+            //  nothing to tell the rows apart.  Silencing the one channel
+            //  that says "this point is not comparable" is worse than the
+            //  noise it avoided: noise is read and ignored, silence is read
+            //  as agreement.
+            //
+            //  `cout` only.  And the catch below no longer swallows the
+            //  reason: an exception here means this point's KPIs are absent,
+            //  and the reader is told which point and why.
             std::ostringstream sink;
             auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
-            auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
             try
             {
                 auto chain = PostProcessor::buildChain(postDict_);
                 for (auto& pp : chain) pp->run(result);
             }
-            catch (const std::exception&) { /* leave KPIs unset -> nan response */ }
+            catch (const std::exception& e)
+            {
+                std::cout.rdbuf(coutBuf);
+                std::cerr << "[sweep] post-processing FAILED at this point -- "
+                             "its post KPIs are absent (nan), so any curve"
+                             " drawn through it is comparing points costed"
+                             " differently: " << e.what() << "\n";
+            }
             std::cout.rdbuf(coutBuf);
-            std::cerr.rdbuf(cerrBuf);
         }
 
         // Keep the converged point nearest the range middle as the GUI's

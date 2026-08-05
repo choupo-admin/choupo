@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SizingPass.H"
+#include "core/Advisory.H"
 #include "materials/MaterialRegistry.H"
 #include "sizing/EquipmentSize.H"
 
@@ -60,6 +61,8 @@ int SizingPass::run(SimulationResult& result)
               << "\n  " << std::string(86, '-') << "\n";
 
     int failures = 0;
+
+    std::vector<std::string> notSized;
     for (const auto& u : units)
     {
         const std::string uname    = u->lookupWord("unitName");
@@ -108,7 +111,25 @@ int SizingPass::run(SimulationResult& result)
         {
             std::cerr << "  " << uname << "  FAILED: " << e.what() << "\n";
             ++failures;
+            notSized.push_back(uname);
         }
+    }
+
+    //  AN INCOMPLETE SIZING SET SAYS SO (AS6), and it matters MORE here than
+    //  in costing: `result.sizings` is what the costing pass reads, so a unit
+    //  that fails to size cannot be costed either, and the omission
+    //  propagates silently into FCI / NPV / IRR.  The returned count was
+    //  discarded by both call sites.
+    if (!notSized.empty())
+    {
+        std::cout << "  ^ " << notSized.size()
+                  << " unit(s) could not be SIZED and are therefore absent"
+                     " from `sizings` (and so from costing):";
+        for (const auto& u : notSized) std::cout << " " << u;
+        std::cout << "\n";
+        AdvisoryLog::instance().add("sizing", "warning", "incomplete-sizing",
+                                    "sizing omits " +
+                                    std::to_string(notSized.size()) + " unit(s)");
     }
     std::cout << "=====================================================================\n\n";
     return failures;

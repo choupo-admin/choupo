@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CostingPass.H"
+#include "core/Advisory.H"
 #include "costing/CostingModel.H"
 #include "materials/MaterialRegistry.H"
 
@@ -69,6 +70,7 @@ int CostingPass::run(SimulationResult& result)
     scalar totalBareMod    = 0.0;
     scalar totalModule     = 0.0;
     int    failures = 0;
+    std::vector<std::string> notCosted;
 
     for (const auto& [uname, dim] : result.sizings)
     {
@@ -98,16 +100,42 @@ int CostingPass::run(SimulationResult& result)
         {
             std::cerr << "  " << uname << "  FAILED: " << e.what() << "\n";
             ++failures;
+            notCosted.push_back(uname);
         }
     }
 
     std::cout << "  " << std::string(88, '-') << "\n  "
-              << std::left << std::setw(30) << "TOTALS (EUR)"
+              << std::left << std::setw(30)
+              << (notCosted.empty() ? "TOTALS (EUR)" : "TOTALS (EUR) -- INCOMPLETE")
               << std::setw(16) << " "
               << std::setw(14) << std::fixed << std::setprecision(0) << totalPurchased
               << std::setw(14) << totalBareMod
-              << std::setw(14) << totalModule
-              << "\n=====================================================================\n\n";
+              << std::setw(14) << totalModule << "\n";
+
+    //  A TOTAL OVER AN INCOMPLETE SET SAYS SO (AS6).  The failures were
+    //  counted and returned, and BOTH call sites threw the count away -- so a
+    //  unit whose material is not in the registry simply dropped out of
+    //  TOTALS and costs.csv, and FCI / NPV / IRR were computed as if the most
+    //  expensive item did not exist.  Exit 0, `converged/` written, one
+    //  FAILED: line on stderr that a sweep then discarded (AS7).
+    //
+    //  A returned count nobody reads is not a report.  The label travels with
+    //  the NUMBER instead, because that is what a reader takes away -- and it
+    //  names the units, since "incomplete" without saying what is missing
+    //  cannot be acted on.
+    if (!notCosted.empty())
+    {
+        std::cout << "  ^ this total OMITS " << notCosted.size()
+                  << " unit(s) that could not be costed:";
+        for (const auto& u : notCosted) std::cout << " " << u;
+        std::cout << "\n    Any FCI / NPV / IRR derived from it is computed"
+                     " over an incomplete equipment set.\n";
+        AdvisoryLog::instance().add("costing", "warning", "incomplete-total",
+                                    "costing total omits " +
+                                    std::to_string(notCosted.size()) +
+                                    " unit(s) that could not be costed");
+    }
+    std::cout << "=====================================================================\n\n";
     return failures;
 }
 
