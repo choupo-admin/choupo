@@ -1159,6 +1159,28 @@ PYEOF
     fi
     rm -f /tmp/layer.$$
 
+    # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
+    # the answer to "has this been decided, and where?" -- and its usefulness
+    # rests on COMPLETENESS: an index missing a record answers the question
+    # wrongly with authority, because a silent omission reads as "never
+    # decided" rather than "not indexed".
+    # It is also a hand-maintained list of a derived fact, and it drifted the
+    # same day it was written: a record was added, the table gained its row,
+    # and the prose still said "34" in three places.
+    # Checks coverage AND recounts both prose numbers from the table.  It does
+    # NOT claim an `alt` mark is TRUE -- that is a reading judgement.
+    # Sabotage-verified twice: a record dropped from the index, and a prose
+    # count drifted from the table.
+    if "$ROOT/bin/curate/check_decision_index.py" > /tmp/didx.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "decision-index-gate" "$(tail -1 /tmp/didx.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_decision_index.py)\n" "decision-index-gate"
+        cat /tmp/didx.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/didx.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
