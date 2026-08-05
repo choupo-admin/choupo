@@ -29,7 +29,7 @@ License
 #include "SpreadsheetReport.H"
 #include "BalanceMath.H"
 #include "thermo/ElementComposition.H"
-#include "io/OdsWriter.H"
+#include "core/OdsWriter.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
 

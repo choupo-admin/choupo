@@ -30,7 +30,7 @@ License
 #include "core/Advisory.H"
 
 #include "core/Dictionary.H"
-#include "io/OdsWriter.H"
+#include "core/OdsWriter.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>

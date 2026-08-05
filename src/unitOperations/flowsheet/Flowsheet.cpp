@@ -32,7 +32,7 @@ License
 #include "thermo/ThermoAnnounce.H"
 #include "core/DisplayUnits.H"
 #include "core/ExprEval.H"
-#include "reporting/BalanceMath.H"          // missingEnthalpyData: name no-datum species
+#include "thermo/EnthalpyDatum.H"            // missingEnthalpyData: name no-datum species
 #include "reporting/ModelBoundaryAudit.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "streams/SpeciationBlock.H"
@@ -3399,7 +3399,7 @@ int Flowsheet::solve(const DictPtr& dict,
         // energy plot) can tell a missing-DATA skip (refuse + name it) from a
         // composition skip (z_i = 0, legitimately silent), instead of seeing a
         // bare H_valid = false and quietly dropping the stream.
-        s.H_missing = reporting::missingEnthalpyData(s, thermo);
+        s.H_missing = missingEnthalpyData(s.z, s.s, thermo);
         // Total FLOW enthalpy [kW]: the fluid (F*H) PLUS the crystalline phase
         // (s[] on the solid datum, Σ s[i]*h°(solid,T) -- the SAME leg the energy
         // report's solidH_elements uses).  A solid product (sucrose Powder) keeps

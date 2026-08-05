@@ -52,14 +52,40 @@ SRC = ROOT / "src"
 #  a band is legal; upward (to a SMALLER index) is not.
 BANDS = [
     ["applications"],
-    ["outerDriver", "postProcessing", "reporting", "curation"],
+    ["outerDriver", "postProcessing", "reporting"],
     ["result", "io", "unitOperations", "propertyOps", "control"],
     ["thermo", "streams", "materials", "solver"],
     ["core"],
 ]
+
+#  THE TOOLING PLANE -- beside the runtime stack, not a band inside it.
+#
+#  `curation` (AqueousGraph) was first placed in band 1, beside `reporting`,
+#  on the argument that it has reporting's shape: a consumer of the engine
+#  producing an artefact for a human.  That is true and it is the wrong
+#  conclusion, and an external review is what sharpened it: curation is not
+#  part of the thermodynamic execution stack at all, and forcing it into the
+#  vertical layering invites an artificial dependency later -- a band says
+#  "things at this level may reach sideways to you", which is exactly the
+#  permission a curation tool must never have.
+#
+#  So it is a PLANE with one rule, and the rule is stronger than a band:
+#
+#      a tooling subsystem may read the runtime; NOTHING in the runtime may
+#      read a tooling subsystem, at any band, sideways included.
+#
+#  `applications/` is exempt: a binary's `main` is where a tool is assembled,
+#  and that is the only place the two planes legitimately meet.
+TOOLING = {"curation"}
 BAND = {sub: i for i, row in enumerate(BANDS) for sub in row}
+KNOWN = set(BAND) | TOOLING
 
 INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
+
+#  Every subsystem this gate KNOWS -- runtime bands plus the tooling plane.
+#  `edges()` must walk the tooling plane too, or the runtime-may-not-read-a-tool
+#  rule below would be a check that cannot fire, which is worse than no rule.
+#  (Defined after TOOLING; see the assignment at the end of this block.)
 
 #  WHAT IS LEFT, measured 2026-08-05 AFTER debts D1, D2, D4 and D6 were paid.
 #  Each repayment moved ONE shared concept out of the consumer it had been
@@ -71,14 +97,28 @@ INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 #      unitOperations <-> propertyOps          readExchange moved to thermo
 #      reporting <-> postProcessing            OdsWriter moved to io
 PINNED_UP = {
-    #  `unitOperations/flowsheet/Flowsheet.cpp` -> `reporting/BalanceMath.H`.
-    #  NOT movable by the method that paid the other four, and the reason is
-    #  worth stating rather than retrying: BalanceMath needs a FLASH
-    #  (`IsothermalFlash::solveCore`) to price a two-phase enthalpy, so it
-    #  cannot sit below `unitOperations` -- and putting it beside them turns
-    #  the upward edge straight back into a cycle.  Paying it needs a DECISION
-    #  (move the flash down, or hand BalanceMath an injected enthalpy
-    #  functor), which is design, not a move.  Recorded as D7.
+    #  `unitOperations/flowsheet/Flowsheet.cpp` -> `reporting/ModelBoundaryAudit.H`.
+    #
+    #  HALF OF THIS EDGE WAS PAID 2026-08-05 and the other half is a real
+    #  decision.  `Flowsheet` also reached `reporting/BalanceMath.H` for one
+    #  symbol, `missingEnthalpyData`; §3 had already ruled that one "a thermo
+    #  query wearing a reporting jacket", and it moved to
+    #  `thermo/EnthalpyDatum.H`.  An edge is a dependency on what is USED, not
+    #  on the file it arrived in.
+    #
+    #  What remains is `ModelBoundaryAudit`, and measuring it contradicted the
+    #  assumption §3 was written under.  §3 says it SPLITS -- the dH at one
+    #  state is neutral thermo, the formatting stays in reporting.  But it has
+    #  exactly ONE consumer, `Flowsheet`, for BOTH halves, and none inside
+    #  `reporting` at all.  So it is not a shared helper being pulled two ways;
+    #  it is a file in the wrong subsystem with a single consumer below it.
+    #
+    #  Moving the compute half down is blocked by a second fact: it returns
+    #  `ModelBoundaryFinding`, which is declared in `result/SimulationResult.H`
+    #  (band 2), so nothing in `thermo` (band 3) can name it without that
+    #  struct moving too.  THAT is the decision -- where a finding record
+    #  belongs when the engine produces it and the result carries it -- and it
+    #  is recorded rather than guessed at while a suite is running.  Debt D7.
     ("unitOperations", "reporting"),
 }
 PINNED_CYCLES = {
@@ -120,7 +160,7 @@ def edges():
         if len(rel) < 2:
             continue
         src_sub = rel[0]
-        if src_sub not in BAND:
+        if src_sub not in KNOWN:
             continue          # unplaced subsystem -- excluded, reported below
         for inc in INC.findall(p.read_text(errors="ignore")):
             #  A `../` INCLUDE MUST BE RESOLVED, NOT SKIPPED.  The first
@@ -145,7 +185,7 @@ def edges():
                                       # a different crossing, reported by D4
             else:
                 tgt = inc.split("/")[0]
-            if tgt != src_sub and tgt in BAND:
+            if tgt != src_sub and tgt in KNOWN:
                 g[src_sub].add(tgt)
     return g
 
@@ -172,7 +212,8 @@ def main() -> int:
     #  NAMED, and a subsystem appearing that this list does not know about is
     #  a failure, because placing one is an architecture decision.
     unplaced = sorted({d.name for d in SRC.iterdir()
-                       if d.is_dir() and d.name not in BAND})
+                       if d.is_dir() and d.name not in BAND
+                       and d.name not in TOOLING})
     unexpected = [u for u in unplaced if u not in UNPLACED_KNOWN]
     if unexpected:
         fail.append(f"subsystem(s) with no declared band: {', '.join(unexpected)}"
@@ -182,9 +223,22 @@ def main() -> int:
 
     g = edges()
 
+    #  THE TOOLING RULE.  Checked before the bands, because it is not a band
+    #  question: a runtime subsystem reaching a tool is a violation no matter
+    #  which direction the arrow would point in a layered diagram.
+    for a in sorted(g):
+        if a in TOOLING or a == "applications":
+            continue
+        for b in sorted(g[a] & TOOLING):
+            fail.append(f"RUNTIME -> TOOLING: {a} -> {b}.  A tooling subsystem "
+                        "may read the runtime; the runtime may never read a "
+                        "tool.  Only `applications/` may join the two planes.")
+
     up_seen, up_new = set(), []
     for a in sorted(g):
         for b in sorted(g[a]):
+            if a in TOOLING or b in TOOLING:
+                continue                           # no band; the plane rule
             if BAND[b] < BAND[a]:                  # b is HIGHER than a
                 if (a, b) in PINNED_UP:
                     up_seen.add((a, b))
@@ -231,7 +285,10 @@ def main() -> int:
           "I18; with one edge outstanding it still does not assert them, and "
           "the invariant table must keep saying so.  Nothing is excluded from "
           "the checks any more (D6 paid): a subsystem with no declared band "
-          "FAILS rather than being skipped.")
+          f"FAILS rather than being skipped.  {len(TOOLING)} tooling subsystem"
+          f"(s) ({', '.join(sorted(TOOLING))}) sit BESIDE the stack, not in it, "
+          "under the stronger rule that no runtime subsystem may read them at "
+          "all -- only `applications/` may join the two planes.")
     return 0
 
 

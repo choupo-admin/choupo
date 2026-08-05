@@ -28,6 +28,7 @@ License
 
 #include "EnergyBalanceReport.H"
 #include "BalanceMath.H"
+#include "thermo/EnthalpyDatum.H"
 #include "Topology.H"
 
 #include <algorithm>
@@ -270,8 +271,8 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         {
             auto it = ctx.result.streams.find(name);
             if (it == ctx.result.streams.end()) return;
-            const auto miss = reporting::missingEnthalpyData(it->second,
-                                                             ctx.thermo);
+            const auto miss = missingEnthalpyData(
+                it->second.z, it->second.s, ctx.thermo);
             if (!miss.empty())
             {
                 gapStreams.push_back(name);

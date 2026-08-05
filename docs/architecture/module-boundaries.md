@@ -21,7 +21,7 @@ counts, and self-edges within a subsystem are excluded.
 
 ```
 applications
-   └─ outerDriver ─ postProcessing ─ reporting ─ curation
+   └─ outerDriver ─ postProcessing ─ reporting
         └─ result ─ io ─ unitOperations ─ propertyOps ─ control
              └─ thermo ─ streams ─ materials ─ solver
                   └─ core                       (the bottom: depends on nothing)
@@ -43,12 +43,38 @@ violate.  A band is now declared for each, and `result` is the new home ruling
 * **`result`** (`SimulationResult`, `ResultEmitter`, `UnitProfile`) sits beside
   `unitOperations`.  It names what the pipeline produced, so it reads
   `streams` and `thermo`.
-* **`io`** (`SolutionWriter`, `OdsWriter`) sits beside `result`, because that
-  is the only band left once the graph is measured: it *reads* `result`, and
+* **`io`** (`SolutionWriter`) sits beside `result`, because that is the only
+  band left once the graph is measured: it *reads* `result`, and
   `unitOperations` *reads it*, and those two are the same band.
-* **`curation`** (`AqueousGraph`) sits beside `reporting` because it has
-  reporting's shape — a consumer of the engine that produces an artefact for a
-  human to read.  It is reached only from `applications`.
+* **`curation`** (`AqueousGraph`) is **not in the stack at all** — see the
+  tooling plane below.
+
+**`io` was split, and a single `io` subsystem was the mistake.**  It briefly
+held two unlike things: `SolutionWriter`, which interprets domain meaning (it
+writes stream state per the stream-state contract), and `OdsWriter`, which is
+generic mechanics — a spreadsheet container built on `core/MiniZip.H`, whose
+header includes `<string>` and nothing else.  Generic mechanics sit low:
+`OdsWriter` moved to `core`, beside the zip writer it was already using, and
+`io` keeps only the domain half.  Lumping the two would have pinned a
+filesystem primitive to whatever band the domain reader needed.
+
+**THE TOOLING PLANE — `curation` sits beside the stack, not inside it.**  It
+was first placed in band 1, beside `reporting`, on the argument that it has
+reporting's shape: a consumer of the engine producing an artefact for a human.
+That is true, and it is the wrong conclusion.  `curation` is not part of the
+thermodynamic execution stack, and a *band* grants a permission it must never
+have — "things at this level may reach sideways to you".  So it is a plane
+with a rule strictly stronger than any band:
+
+> **A tooling subsystem may read the runtime.  NOTHING in the runtime may read
+> a tooling subsystem, at any band, sideways included.  Only `applications/`
+> may join the two planes**, because a binary's `main` is where a tool is
+> assembled and that is the only legitimate meeting point.
+
+`check_layering` enforces it, and enforcing it required a fix worth naming: the
+gate skips subsystems it has no band for, so with `curation` outside `BANDS`
+the new rule could never have fired.  A check that cannot run must not pass —
+the edge walk now covers the bands *and* the plane.
 
 Each placement was checked the only way a placement can be: it introduces **no
 new upward edge and no new cycle**, and `check_layering` now measures all
@@ -361,17 +387,35 @@ excluded.  The placements were derived from the graph, not argued from purpose
 — see the note in §1 about the draft that got `io` wrong by reasoning about
 what it is *for*.
 
-**D7 — `unitOperations` → `reporting`, the last upward edge (NEW, 2026-08-05).**
-`Flowsheet.cpp` includes `reporting/BalanceMath.H`, and `BalanceMath` needs a
-FLASH (`IsothermalFlash::solveCore`) to price a two-phase enthalpy.  So it
-cannot sit below `unitOperations`, and putting it *beside* them turns the
-upward edge straight back into a cycle — which is why the method that paid D1,
-D2 and D4 does not reach it.
-*Removal condition:* either the flash moves down, or `BalanceMath` takes an
-injected enthalpy functor instead of constructing its own flash.  **That is a
-design decision, not a move**, and it is recorded as a debt rather than
-guessed at.  It is also the only thing standing between D5 and its asserting
-form.
+**D7 — `unitOperations` → `reporting`, the last upward edge (NEW, 2026-08-05;
+HALF PAID the same day).**  `Flowsheet.cpp` reached into `reporting` for two
+things, and they turned out to be different problems.
+
+*Paid:* `missingEnthalpyData`, one symbol out of `BalanceMath.H`.  This debt
+was first recorded claiming the blocker was that `BalanceMath` needs a flash to
+price a two-phase enthalpy — true of the header, and irrelevant, because
+`Flowsheet` never used that part.  **An edge is a dependency on what is USED,
+not on the file it arrived in.**  §3 had already ruled the function "a thermo
+query wearing a reporting jacket"; it moved to `thermo/EnthalpyDatum.H`.  Its
+first signature took a `ProcessStream&`, which compiled and created a
+`thermo` ↔ `streams` cycle that had never existed — `check_layering` failed on
+the next run, and the fix was to pass the two composition vectors, because a
+thermo query has no business knowing what a stream *is*.
+
+*Outstanding:* `ModelBoundaryAudit`, and measuring it **contradicted the
+assumption §3 was written under**.  §3 says it *splits* — the ΔH at one state
+is neutral thermo, the formatting stays in `reporting`.  But it has exactly
+ONE consumer for both halves, `Flowsheet`, and none inside `reporting` at all.
+It is not a shared helper being pulled two ways; it is a file in the wrong
+subsystem with a single consumer a band below it.
+
+And moving the compute half down is blocked by a second fact: it returns
+`ModelBoundaryFinding`, declared in `result/SimulationResult.H` (band 2), so
+nothing in `thermo` (band 3) can name it unless that struct moves too.
+*Removal condition:* decide where a FINDING record belongs when the engine
+produces it and the result carries it — the same question `FlatUnit` answered
+for topology, asked now about diagnostics.  **That is a decision, not a move**,
+and it is the only thing standing between D5 and its asserting form.
 
 ## 9. Reproducing the measurement
 

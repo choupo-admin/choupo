@@ -265,24 +265,11 @@ inline scalar solidH_elements(const ProcessStream& s, const ThermoPackage& therm
 // The PRESENT components of a stream (z_i > 0 or s_i > 0) that have NO
 // elements-datum enthalpy route -- the genuine missing-DATA gap the energy
 // balance must REFUSE on, named for the student.  Composition-absent species
-// (z_i = 0 AND s_i = 0) are deliberately NOT listed: their skip is legitimate
-// physics (the silent path is correct for them).  Empty result => every
-// present species is placeable on the elements datum, so the stream's
-// enthalpy is trustworthy.  This is the no-silent-crutch boundary: a present
-// species without a datum is a refusal, not a quiet drop.
-inline std::vector<std::string> missingEnthalpyData(const ProcessStream& s,
-                                                    const ThermoPackage& thermo)
-{
-    std::vector<std::string> miss;
-    for (std::size_t i = 0; i < thermo.n(); ++i)
-    {
-        const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
-        const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
-        if (zi <= 0.0 && si <= 0.0) continue;        // absent by composition
-        if (!thermo.hasEnthalpyDatum(i)) miss.push_back(thermo.comp(i).name());
-    }
-    return miss;
-}
+
+//  MOVED to `thermo/EnthalpyDatum.H` (debt D7, 2026-08-05).  It was the
+//  last upward edge in the subsystem graph: `Flowsheet.cpp` included THIS
+//  header to reach that one function.  §3 had already ruled it a thermo
+//  query wearing a reporting jacket.
 
 // ELEMENTS reference (carries Hf -> reaction heat shows up) -- the ONE datum.
 // The fluid phase (s.z) plus the crystalline phase (s.s[]) are BOTH counted so
