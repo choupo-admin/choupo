@@ -264,4 +264,35 @@ scalar affineToK(scalar value, const std::string& suffix)
     return std::nan("");
 }
 
+//  THE INVERSE, and it is here rather than in a caller for a reason.  A
+//  report wanting to SHOW a kelvin value in degC needs the reverse of
+//  affineToK; ComputedReport instead wrote its own conversion, forgot that
+//  an affine unit has no factor, and printed the raw kelvin number under the
+//  user's own label -- `T_out = 373.15 degC` for boiling water, in the CSV
+//  and on the console.  Undetectable: the label is exactly what was asked
+//  for and the number is plausible.
+//
+//  So the conversion has ONE home, both directions, and a caller cannot
+//  half-implement it.
+scalar fromSI(scalar si, const std::string& suffix)
+{
+    auto s = lookupUnit(suffix);
+    if (!s)
+        throw std::runtime_error("units::fromSI: unknown unit '" + suffix
+            + "' -- a value cannot be shown in a unit the catalogue does not"
+              " define (it would print the SI number under that label)");
+    if (s->affine)
+    {
+        if (suffix == "C" || suffix == "degC" || suffix == "Celsius")
+            return K_to_celsius(si);
+        if (suffix == "F" || suffix == "degF" || suffix == "Fahrenheit")
+            return K_to_fahrenheit(si);
+        return std::nan("");
+    }
+    if (s->factor == 0.0)
+        throw std::runtime_error("units::fromSI: unit '" + suffix
+            + "' has a zero factor");
+    return si / s->factor;
+}
+
 } // namespace Choupo::units

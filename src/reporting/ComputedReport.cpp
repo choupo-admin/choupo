@@ -109,12 +109,30 @@ void ComputedReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         const scalar si = evalExpr(expr, resolve);
         result.computed[key] = si;                            // store SI
 
+        //  THE DISPLAY VALUE GOES THROUGH units::fromSI, and nowhere else.
+        //  This block used to convert inline -- `if (us && !us->affine &&
+        //  us->factor != 0.0) disp = si / us->factor;` -- which silently
+        //  fell through for degC/degF (affine, no factor) and for any
+        //  misspelt unit, printing the RAW SI number under the user's own
+        //  label.  A case asking for a boiling-water outlet in degC read
+        //  `T_out = 373.15 degC`, in values.csv and on the console.
+        //
+        //  A second implementation of a conversion is how that happened:
+        //  DisplayUnits already refused affine units by name, ten files
+        //  away.  There is now one conversion with one home, and an unknown
+        //  unit REFUSES with the variable named rather than being shown
+        //  unconverted.
         const std::string unit = sub->lookupWordOrDefault("unit", "");
         scalar disp = si;
         if (!unit.empty())
         {
-            auto us = units::lookupUnit(unit);
-            if (us && !us->affine && us->factor != 0.0) disp = si / us->factor;
+            try { disp = units::fromSI(si, unit); }
+            catch (const std::exception& e)
+            {
+                throw std::runtime_error(
+                    std::string("computed: variable '") + key + "' declares "
+                    "unit '" + unit + "' -- " + e.what());
+            }
         }
         rows.push_back({key, expr, unit, si, disp});
     }

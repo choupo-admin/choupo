@@ -187,4 +187,11 @@ constexpr scalar t_to_kg      = 1.0e3;     // metric tonne
 // is not "degC" / "C" / "Celsius" / "degF" / "F" / "Fahrenheit".
 scalar affineToK(scalar value, const std::string& suffix);
 
+//  The inverse of the whole conversion: a canonical-SI value expressed in a
+//  declared display unit, multiplicative or affine.  THROWS on an unknown
+//  unit rather than returning the SI number -- printing an unconverted value
+//  under a user's label is the one outcome a display helper must never
+//  produce.
+scalar fromSI(scalar si, const std::string& suffix);
+
 } // namespace Choupo::units
