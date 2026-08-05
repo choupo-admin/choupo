@@ -61,7 +61,10 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "result/SimulationResult.H"   // ModelBoundaryFinding (shared with the result JSON)
+#include "core/ResultRecords.H"          // ModelBoundaryFinding -- the neutral
+                                       //   record, NOT the result that carries
+                                       //   it: the audit needs the type, not
+                                       //   the pipeline output (D7)
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"

@@ -33,7 +33,7 @@ License
 #include "core/DisplayUnits.H"
 #include "core/ExprEval.H"
 #include "thermo/EnthalpyDatum.H"            // missingEnthalpyData: name no-datum species
-#include "reporting/ModelBoundaryAudit.H"
+#include "ModelBoundaryAudit.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "streams/SpeciationBlock.H"
 #include "streams/StreamOverrides.H"

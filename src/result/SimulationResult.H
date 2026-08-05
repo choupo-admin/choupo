@@ -47,6 +47,12 @@ Description
 
 #include "core/Advisory.H"
 #include "core/FlatUnit.H"          // topology, not output -- see that header
+#include "core/ResultRecords.H"      // the eight plain records this struct
+                                    //   carries.  They are in `core` because
+                                    //   the ENGINE produces them and the
+                                    //   RESULT carries them -- filed only
+                                    //   here, nothing below band 2 could name
+                                    //   a diagnostic it computes itself (D7).
 #include "core/ThermoResolution.H"
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
@@ -67,155 +73,18 @@ Description
 
 namespace Choupo {
 
-// Geometric / mechanical sizing of a single piece of equipment, as
-// produced by the SizingPass (vessel diameter, height, wall thickness,
-// heat exchanger area, etc.).  Named `EquipmentSizing` rather than
-// `Dimensions` because the latter is a physical-dimensions tag in
-// Choupo (mass / length / time / temperature / amount exponents).
-struct EquipmentSizing
-{
-    std::string                                  unitName;
-    std::string                                  equipmentType;
-    std::string                                  material;
-    std::map<std::string, scalar>                values;   // "D", "H", "A", "t_wall", "weight",...
-};
 
 //  `FlatUnit` used to be declared HERE, and that is what made `core` reach up
 //  into `streams`, `thermo` and `unitOperations`.  It is topology, it reads
 //  nothing, and it now lives in `core/FlatUnit.H` -- which this header
 //  includes, so `result.topology` below is unchanged for every reader.
 
-// Energy wire.  A direct scalar coupling from one unit's
-// `energyOutputs` declaration to another's `energyInputs`: shaft power
-// from a turbine to a compressor, heat from a furnace to a heater, etc.
-// Just-wiring (Option C of the energy-streams design discussion): no new
-// stream type, no new solver, no polymorphism on ProcessStream.  Before
-// the consumer's solve(), Flowsheet evaluates the producer's `expression`
-// against the producer's operation + KPIs and writes the resulting scalar
-// into the consumer's operation block at the `target` key.  The kind
-// (work / heat) is validated to match on both ends.
-struct EnergyWire
-{
-    std::string fromUnit;     // producer unit name
-    std::string fromPort;     // matches a producer's energyOutputs.name
-    std::string toUnit;       // consumer unit name
-    std::string toTarget;     // operation-block key receiving the value
-    std::string kind;         // "work" or "heat"
-    scalar      value = 0.0;  // resolved scalar [W] (canonical SI)
-};
 
-struct CostBreakdown
-{
-    std::string                                  unitName;
-    scalar                                       purchasedCost   = 0.0;  // C_p   [€]
-    scalar                                       bareModuleCost  = 0.0;  // C_BM  [€]
-    scalar                                       totalModuleCost = 0.0;  // C_TM  [€]
-    std::map<std::string, scalar>                factors;                 // F_M, F_P,...
-    std::string                                  currency = "EUR_2026";
-};
 
-// One row of the utility-allocation summary: a unit's heat duty (or a
-// column reboiler / condenser port) sized to a plant utility by temperature
-// level, OR flagged carried (a physical utility stream / a heat-link).
-// Computed once by allocateUtilities() and surfaced BOTH in the
-// utilityAllocation report AND the result JSON, so the GUI can show "which
-// utility, how much, how much €" right next to the duty.
-struct UtilityAllocation
-{
-    std::string unit;
-    std::string port;        // "reboiler" / "condenser" / "" (generic duty)
-    std::string tier;        // "heating" / "cooling"
-    std::string utility;     // catalogue name, or "(carried: ...)" / "(none adequate)"
-    scalar      duty_kW = 0.0;
-    scalar      T       = 0.0;   // process temperature [K] (-1 if unknown)
-    scalar      kg_s    = 0.0;
-    scalar      MW      = 0.0;
-    scalar      eur_h   = 0.0;
-    bool        allocated = false;
-};
 
-// Per-component thermo COVERAGE: which capabilities the loaded component data
-// actually provides, so the GUI can show whether each component is
-// flowsheet-ready or a gap (e.g. a Joback estimate with no Antoine cannot do
-// VLE).  `nonvolatile` solutes legitimately have no Psat (treated as K=0).
-struct ComponentCoverage
-{
-    std::string name;
-    bool criticals   = false;   // Tc, Pc (EoS / corresponding states)
-    bool psat        = false;   // vapour pressure (Antoine) -> VLE / flash
-    bool vliq        = false;   // liquid molar volume -> pump / density
-    bool cpIdealGas  = false;   // ideal-gas Cp -> energy balances
-    bool gibbs       = false;   // formation data -> Gibbs reactor
-    bool nonvolatile = false;   // a dissolved solute (no Psat by design)
-};
 
-// Model-boundary audit finding: one internal stream whose producer and
-// consumer use different thermo models.  `H` is the conserved truth, `T` the
-// model-dependent readout; this carries the enthalpy the two models disagree
-// about at the stream's (T,P,z), so the GUI can show it next to the boundary.
-// `refused` = a speciation change (electrolyte <-> molecular) where a single
-// dH would lie (no common composition basis), so no number is computed.
-struct ModelBoundaryFinding
-{
-    std::string stream;
-    std::string producer;
-    std::string consumer;
-    scalar      dH_kJ_per_mol = 0.0;
-    scalar      dH_kW         = 0.0;
-    scalar      implied_dT_K  = 0.0;
-    bool        refused       = false;
-    std::string reason;          // populated when refused
-};
 
-// One row of the discounted-cash-flow (DCF) appraisal table -- the classic
-// year-by-year income / cash-flow statement (Perry / Turton §10).  Year 0 is
-// construction (the investment outflow); years 1..N are operating years.  All
-// monetary fields in the report currency (EUR); discount factor dimensionless,
-// discounted cash flow in EUR.  Published by EconomicsPass so the GUI / an
-// outer driver can read the FULL table, not just the headline scalars.
-struct CashFlowYear
-{
-    int    year             = 0;    // t = 0..N
-    scalar investment       = 0.0;  // FCI + WC outflow (year 0 only), <0
-    scalar revenue          = 0.0;  // R_t
-    scalar operatingCost    = 0.0;  // COM_d_t (depreciation NOT included)
-    scalar depreciation     = 0.0;  // d_t (straight line)
-    scalar taxableIncome    = 0.0;  // R - COM_d - d
-    scalar tax              = 0.0;  // tau * taxableIncome
-    scalar afterTaxProfit   = 0.0;  // (R - COM_d - d)(1-tau)
-    scalar cashFlow         = 0.0;  // CF_t (after-tax profit + d, + WC/salvage at N)
-    scalar discountFactor   = 0.0;  // 1/(1+i)^t
-    scalar discountedCF     = 0.0;  // CF_t * discountFactor
-    scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
-};
 
-// Headline economic appraisal scalars + the year-by-year DCF table.  Populated
-// by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
-// (the table the .ods / .csv DCF spreadsheet is built from).
-struct EconomicsSummary
-{
-    bool                      present       = false;
-    scalar                    FCI           = 0.0;   // fixed capital investment
-    scalar                    WC            = 0.0;   // working capital
-    scalar                    TCI           = 0.0;   // total capital investment
-    scalar                    COM_d         = 0.0;   // cost of manufacture (no depr.)
-    scalar                    revenue       = 0.0;   // R (annual)
-    scalar                    depreciation  = 0.0;   // d_annual (straight line)
-    scalar                    NPV           = 0.0;
-    scalar                    IRR           = 0.0;   // fraction (NaN if none)
-    bool                      haveIRR       = false;
-    bool                      irrAmbiguous  = false;
-    scalar                    discPayback   = 0.0;   // yr (NaN if never)
-    scalar                    simplePayback = 0.0;   // yr (NaN if never)
-    scalar                    discountRate  = 0.0;
-    scalar                    taxRate       = 0.0;
-    int                       projectLife   = 0;
-    int                       estimateClass = 4;
-    scalar                    accLo         = -30.0; // AACE band low  (%)
-    scalar                    accHi         = +50.0; // AACE band high (%)
-    std::string               currency      = "EUR";
-    std::vector<CashFlowYear> cashFlow;              // rows t = 0..N
-};
 
 struct SimulationResult
 {

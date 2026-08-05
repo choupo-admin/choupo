@@ -96,40 +96,31 @@ INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 #      result <-> unitOperations               UnitProfile moved to result
 #      unitOperations <-> propertyOps          readExchange moved to thermo
 #      reporting <-> postProcessing            OdsWriter moved to io
-PINNED_UP = {
-    #  `unitOperations/flowsheet/Flowsheet.cpp` -> `reporting/ModelBoundaryAudit.H`.
-    #
-    #  HALF OF THIS EDGE WAS PAID 2026-08-05 and the other half is a real
-    #  decision.  `Flowsheet` also reached `reporting/BalanceMath.H` for one
-    #  symbol, `missingEnthalpyData`; §3 had already ruled that one "a thermo
-    #  query wearing a reporting jacket", and it moved to
-    #  `thermo/EnthalpyDatum.H`.  An edge is a dependency on what is USED, not
-    #  on the file it arrived in.
-    #
-    #  What remains is `ModelBoundaryAudit`, and measuring it contradicted the
-    #  assumption §3 was written under.  §3 says it SPLITS -- the dH at one
-    #  state is neutral thermo, the formatting stays in reporting.  But it has
-    #  exactly ONE consumer, `Flowsheet`, for BOTH halves, and none inside
-    #  `reporting` at all.  So it is not a shared helper being pulled two ways;
-    #  it is a file in the wrong subsystem with a single consumer below it.
-    #
-    #  Moving the compute half down is blocked by a second fact: it returns
-    #  `ModelBoundaryFinding`, which is declared in `result/SimulationResult.H`
-    #  (band 2), so nothing in `thermo` (band 3) can name it without that
-    #  struct moving too.  THAT is the decision -- where a finding record
-    #  belongs when the engine produces it and the result carries it -- and it
-    #  is recorded rather than guessed at while a suite is running.  Debt D7.
-    ("unitOperations", "reporting"),
-}
+#  EMPTY -- and that is the point.  I17 is ASSERTED, not bounded: there is no
+#  upward edge anywhere in the runtime graph, and ANY new one fails here.
+#
+#  It took five repayments to get here, each the same defect -- ONE shared
+#  concept filed inside a consumer:
+#
+#      core -> streams/thermo/unitOperations   FlatUnit left SimulationResult
+#      thermo -> propertyOps                   DerivedClosures moved to thermo
+#      result <-> unitOperations               UnitProfile moved to result
+#      unitOperations <-> propertyOps          readExchange moved to thermo
+#      reporting <-> postProcessing            OdsWriter moved to core
+#      unitOperations -> reporting             the finding RECORDS moved to
+#                                              core; the AUDIT moved to the
+#                                              engine (D7)
+PINNED_UP = set()
+#  ONE cycle, ACCEPTED by ruling §7.3 -- not a debt, and not a pin awaiting
+#  work.  Michelsen's stability test is a thermodynamic criterion solved
+#  numerically; `solver` and `thermo` genuinely need each other, and breaking
+#  the dependency would cost a worse abstraction than the cycle.
+#
+#  It is listed rather than silently tolerated so the STALE-PIN arm still
+#  covers it: if the cycle ever disappears, this entry fails and must be
+#  removed.  An acceptance that outlives its subject is a licence.
 PINNED_CYCLES = {
-    #  ACCEPTED, ruling §7.3 -- not a debt.  Michelsen's stability test is a
-    #  thermodynamic criterion solved numerically; the dependency is
-    #  irreducible without a worse abstraction.
     frozenset(("solver", "thermo")),
-    #  The D7 edge above, seen from the other side.  Listed in both places
-    #  because it fails two different invariants (I17 and I18); a gate
-    #  reporting only one would let the other regress unnoticed.
-    frozenset(("reporting", "unitOperations")),
 }
 
 #  EMPTY SINCE 2026-08-05 -- debt D6 is paid.  This gate's first run found that
@@ -266,6 +257,8 @@ def main() -> int:
     for a, b in stale_up:
         fail.append(f"STALE PIN: {a} -> {b} no longer exists -- remove it from "
                     "PINNED_UP (a pin outliving its violation is a licence)")
+    #  With PINNED_UP empty, `up_new` IS the assertion of I17: every upward
+    #  edge is a failure, none is excused.
     for c in stale_cyc:
         fail.append(f"STALE PIN: cycle {' <-> '.join(sorted(c))} is gone -- "
                     "remove it from PINNED_CYCLES")
@@ -277,18 +270,16 @@ def main() -> int:
         return 1
 
     print(f"check_layering: OK -- {sum(len(v) for v in g.values())} subsystem "
-          f"edge(s) measured across all {len(BAND)} declared subsystems; no NEW "
-          f"upward edge and no NEW cycle.  {len(PINNED_UP)} upward edge "
-          f"(`unitOperations` -> `reporting`, debt D7) and {len(PINNED_CYCLES)} "
-          "cycle(s) remain pinned -- one of which (`solver` <-> `thermo`) is "
-          "ACCEPTED by ruling §7.3 and is not a debt.  This gate BOUNDS I17 and "
-          "I18; with one edge outstanding it still does not assert them, and "
-          "the invariant table must keep saying so.  Nothing is excluded from "
-          "the checks any more (D6 paid): a subsystem with no declared band "
-          f"FAILS rather than being skipped.  {len(TOOLING)} tooling subsystem"
-          f"(s) ({', '.join(sorted(TOOLING))}) sit BESIDE the stack, not in it, "
-          "under the stronger rule that no runtime subsystem may read them at "
-          "all -- only `applications/` may join the two planes.")
+          f"edge(s) measured across all {len(BAND)} declared subsystems.\n"
+          "  I17 is ASSERTED: there is NO upward edge in the runtime graph, and "
+          "no pin excusing one.  The gate no longer bounds this invariant, it "
+          "holds it.\n"
+          f"  I18 is asserted up to {len(PINNED_CYCLES)} ACCEPTED cycle "
+          "(`solver` <-> `thermo`, ruling §7.3) -- a thermodynamic criterion "
+          "solved numerically, listed so the stale-pin arm still covers it.\n"
+          f"  {len(TOOLING)} tooling subsystem(s) ({', '.join(sorted(TOOLING))}) "
+          "sit BESIDE the stack under a stronger rule: no runtime subsystem may "
+          "read them at all, and only `applications/` may join the two planes.")
     return 0
 
 

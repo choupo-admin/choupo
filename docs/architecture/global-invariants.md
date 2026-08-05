@@ -119,17 +119,27 @@ declared fact it will be asked for.
 
 ## E — Structure
 
-**I17. `core` depends on nothing above it.**
-Currently VIOLATED at FIVE sites — three from `core` (F1) plus
-`thermo` → `propertyOps` and `unitOperations` → `reporting`, which no hand
-reading had walked to; see
-[`module-boundaries.md`](module-boundaries.md) F1.
-· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (BOUNDS only: 5 pinned, a NEW one fails)  ← **still VIOLATED**
+**I17. `core` depends on nothing above it — and neither does any other layer.**
+**HOLDS as of 2026-08-05.**  It was violated at five sites when the gate first
+measured it (three from `core`, plus `thermo` → `propertyOps` and
+`unitOperations` → `reporting`, neither of which a hand reading had walked to).
+All five are paid — debts D1, D2, D7 in
+[`module-boundaries.md`](module-boundaries.md) §8 — and each was the same
+defect: ONE shared concept filed inside a consumer.  `PINNED_UP` is now empty,
+so the gate ASSERTS the invariant rather than bounding it: any upward edge
+fails, with nothing to excuse it.
+· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (ASSERTS; 4 sabotages)  ← **HOLDS**
 
-**I18. The subsystem graph is acyclic.**
-Currently VIOLATED by EIGHT cycles — F2 hand-counted three; the gate measured
-eight, five of them the I17 edges seen from the other side.
-· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (BOUNDS only: 8 pinned, a NEW one fails)  ← **still VIOLATED**
+**I18. The subsystem graph is acyclic, but for one ACCEPTED cycle.**
+**HOLDS up to a declared exception, as of 2026-08-05.**  F2 hand-counted three
+cycles; the gate measured eight, five of them the I17 edges seen from the other
+side.  Seven are gone.  The one that remains is `solver` ↔ `thermo`, ACCEPTED
+by ruling §7.3 — Michelsen's stability test is a thermodynamic criterion solved
+numerically, and breaking the dependency would cost a worse abstraction than
+the cycle.  It stays in the pin list rather than being silently tolerated, so
+the stale-pin arm still covers it: **an acceptance that outlives its subject is
+a licence.**
+· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (ASSERTS up to 1 accepted cycle)  ← **HOLDS (1 accepted)**
 
 **I19. Shared logic lives in the lowest NEUTRAL layer that can own its concepts
 without acquiring upward dependencies.**
@@ -145,11 +155,19 @@ all — said plainly so it is not counted as covered when I17 and I18 are.
 ## Coverage
 
 Sixteen of nineteen invariants have a written contract, an engine refusal and a
-case that fires it.  **Three do not: I17, I18 and I19 — the structural ones,
-all three ratified today and all three currently violated by measured code.**
-That is not a gap in the invariant; it is the honest state, and it is why
-`module-boundaries.md` carries a debt entry with a removal condition rather
-than a green tick.
+case that fires it.  The three structural ones are a different shape, and were
+all ratified on 2026-08-04 while violated by measured code.
+
+**I17 and I18 now HOLD** (2026-08-05).  They have no *engine* refusal and never
+will — a layering violation is a compile-time fact, not something a running
+case can refuse — but they have the equivalent: a gate that measures the real
+include graph and fails on any new violation, sabotage-verified four ways.
+Getting there took five repayments, and the entry stayed honest at each step:
+the gate said "BOUNDS only" while it bounded, and says "ASSERTS" only now that
+`PINNED_UP` is empty.
+
+**I19 remains uncovered, by its nature rather than by neglect** — see its entry.
+That is not a gap in the invariant; it is the honest state.
 
 An invariant listed here with no R and no C is a **statement of intent**, and
 this file marks it as such rather than letting the reader assume enforcement.

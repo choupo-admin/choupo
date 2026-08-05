@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 35 records already exist
+## 1. Why an index, when 36 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 35 design records, **14 state a rejected alternative and 21 do not** —
+- Of 36 design records, **15 state a rejected alternative and 21 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -80,6 +80,7 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 |---|---|---|---|
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
 | [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **PROPOSAL** — debt D3; two shapes weighed, one recommended, awaiting Vítor |
+| [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-05** — debt D7; records to `core`, audit to the engine; checked against DWSIM, which supplies the pattern (`DWSIM.Interfaces`, zero deps) and the counter-example (its solver's compile path to WinForms) |
 
 ### Awaiting a decision
 
@@ -169,7 +170,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**21 of 35 records state no rejected alternative.**  For a FORUM or a STUDY
+**21 of 36 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

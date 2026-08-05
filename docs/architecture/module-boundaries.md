@@ -369,14 +369,14 @@ simply *no `../` include leaves its own subsystem*, and the four that remain
 (`solver/ODE` → `../LU.H`, `membrane/transport` → `../osmotic/`) stay inside
 one, which is legal and always was.
 
-**D5 — the gate BOUNDS the invariants; it does not yet assert them.**
+**D5 — PAID 2026-08-05: the gate ASSERTS I17.**
 `check_layering` pins the measured violations, so a NEW upward edge or cycle
 fails while the known ones remain declared.  It shipped pinning five upward
 edges and eight cycles; **four of the five and six of the eight are now gone**,
 and the gate's own stale-pin arm is what proved each removal real — deleting a
 pin whose violation still existed would have failed.
-*Removal condition for the asserting form:* D7 paid, then the last pin is
-deleted and the gate asserts instead of bounding.
+D7 was paid the same day, the last upward pin is deleted, and the gate now
+asserts instead of bounding.
 **I19 is a separate case and will not get a gate.**  "The lowest NEUTRAL layer
 that can own its concepts" is a judgement about meaning, not a measurable
 property of an include graph.  Saying so is better than leaving it implied.
@@ -387,35 +387,49 @@ excluded.  The placements were derived from the graph, not argued from purpose
 — see the note in §1 about the draft that got `io` wrong by reasoning about
 what it is *for*.
 
-**D7 — `unitOperations` → `reporting`, the last upward edge (NEW, 2026-08-05;
-HALF PAID the same day).**  `Flowsheet.cpp` reached into `reporting` for two
-things, and they turned out to be different problems.
+**D7 — `unitOperations` → `reporting`, the last upward edge.  PAID
+2026-08-05, in two halves that were different problems.**
 
-*Paid:* `missingEnthalpyData`, one symbol out of `BalanceMath.H`.  This debt
-was first recorded claiming the blocker was that `BalanceMath` needs a flash to
-price a two-phase enthalpy — true of the header, and irrelevant, because
+*First half:* `missingEnthalpyData`, one symbol out of `BalanceMath.H`.  The
+debt was first recorded claiming the blocker was that `BalanceMath` needs a
+flash to price a two-phase enthalpy — true of the header, irrelevant, because
 `Flowsheet` never used that part.  **An edge is a dependency on what is USED,
 not on the file it arrived in.**  §3 had already ruled the function "a thermo
 query wearing a reporting jacket"; it moved to `thermo/EnthalpyDatum.H`.  Its
-first signature took a `ProcessStream&`, which compiled and created a
-`thermo` ↔ `streams` cycle that had never existed — `check_layering` failed on
-the next run, and the fix was to pass the two composition vectors, because a
-thermo query has no business knowing what a stream *is*.
+first signature took a `ProcessStream&`, compiled, and created a `thermo` ↔
+`streams` cycle that had never existed — the gate failed on the next run, and
+the fix was to pass the two composition vectors, because a thermo query has no
+business knowing what a stream *is*.
 
-*Outstanding:* `ModelBoundaryAudit`, and measuring it **contradicted the
-assumption §3 was written under**.  §3 says it *splits* — the ΔH at one state
-is neutral thermo, the formatting stays in `reporting`.  But it has exactly
-ONE consumer for both halves, `Flowsheet`, and none inside `reporting` at all.
-It is not a shared helper being pulled two ways; it is a file in the wrong
-subsystem with a single consumer a band below it.
+*Second half:* `ModelBoundaryAudit`, which needed a **decision about where a
+finding record lives** — the engine produces it, the result carries it, and
+filed only with the result it sat in band 2 where nothing below could name it.
 
-And moving the compute half down is blocked by a second fact: it returns
-`ModelBoundaryFinding`, declared in `result/SimulationResult.H` (band 2), so
-nothing in `thermo` (band 3) can name it unless that struct moves too.
-*Removal condition:* decide where a FINDING record belongs when the engine
-produces it and the result carries it — the same question `FlatUnit` answered
-for topology, asked now about diagnostics.  **That is a decision, not a move**,
-and it is the only thing standing between D5 and its asserting form.
+Settled against DWSIM rather than argued from taste, and that repository gave
+both halves of the answer.  `DWSIM.Interfaces` has **zero** project
+references — a pure contracts assembly at the bottom, which is what `core` is
+here.  And `DWSIM.FlowsheetSolver` references `DWSIM.Inspector`, whose same
+assembly holds `Window.vb` (`Imports System.Windows.Forms`) and references
+`DWSIM.Controls.DockPanel` — so **DWSIM's flowsheet solver has a compile-time
+path to a docking-panel GUI toolkit**, because the diagnostics subsystem was
+allowed to own its own presentation and the solver had to reach it.  That is
+the mature form of the defect Choupo had.
+
+So: the eight plain records moved to `core/ResultRecords.H` (all verified pure
+data), and the AUDIT moved to `unitOperations/flowsheet/` beside its only
+consumer — the engine computes and announces, `reporting` draws afterwards
+from `result.modelBoundaries`.  §3's "it splits" verdict rested on an
+assumption the measurement contradicted: both halves have one caller,
+`Flowsheet`, and none in `reporting` at all.
+Full record: [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md).
+
+**I17 IS NOW ASSERTED, NOT BOUNDED.**  `PINNED_UP` is empty: there is no upward
+edge in the runtime graph and no pin excusing one.  I18 is asserted up to the
+single ACCEPTED `solver` ↔ `thermo` cycle (§7.3), which stays in the pin list
+rather than being silently tolerated, so the stale-pin arm still covers it —
+an acceptance that outlives its subject is a licence.  Four sabotages verify
+it: a new upward edge, a runtime subsystem reading a tool, the accepted cycle
+vanishing, and a new subsystem with no declared band.
 
 ## 9. Reproducing the measurement
 
