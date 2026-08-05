@@ -365,6 +365,24 @@ public:
     scalar K_b_anchor()  const { return K_b_anchor_;  }
     bool   K_b_derived() const { return K_b_derived_; }
 
+    // ---- Review status (AP2, 2026-08-05) --------------------------
+    //  A record's REVIEW STATE is a fact the engine must act on, so it
+    //  lives in a PARSED field -- not in the banner comment.
+    //
+    //  67 records carried "PROPOSAL TIER -- UNVERIFIED" in a comment the
+    //  parser discards, so the announce-or-refuse doctrine could never
+    //  see it.  `interim_review_dossier.py` had already called
+    //  `reviewStatus` the PREFERRED form and free-text markers "a legacy
+    //  fallback" -- yet exactly ONE record used it and NO engine code
+    //  read it.  Written, never consolidated.
+    //
+    //  `interim`  -- imported / unreviewed; announced on consumption.
+    //  `reviewed` -- a human checked it against primary sources.
+    //  ABSENT     -- unmarked.  That is the corpus default and it is NOT
+    //                read as reviewed: an absence is not a claim either way.
+    const std::string& reviewStatus() const { return reviewStatus_; }
+    const std::string& reviewReason() const { return reviewReason_; }
+
     // ---- Enthalpy helpers ---------------------------------------------------
     // Reference state: pure liquid at Tref.
     // H_liq(T)  = ∫_{Tref}^T Cp_liq(T') dT'
@@ -495,6 +513,8 @@ private:
     scalar      Hvap_Tb_ = 0.0;
     scalar      K_b_anchor_ = 0.0;   // declared value, kept as a cross-check
     bool        K_b_derived_ = false; // true when K_b_ came from R Tb^2 M / dHvap
+    std::string reviewStatus_;        // interim | reviewed | (absent = unmarked)
+    std::string reviewReason_;
     scalar      Vliq_    = 0.0;
     scalar      Hf298_   = 0.0;
     scalar      S298_    = 0.0;

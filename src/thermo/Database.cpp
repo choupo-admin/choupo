@@ -342,6 +342,30 @@ Component Database::loadComponent(const std::string& name) const
                          "use; review its gaps (Vliq / Psat / s_298) before trusting the result.\n";
     }
 
+    //  AN UNREVIEWED RECORD SAYS SO AT RUN TIME (AP2, 2026-08-05).
+    //  67 standard records carried "PROPOSAL TIER -- UNVERIFIED" in the
+    //  BANNER COMMENT, which the parser discards -- so the doctrine that
+    //  every substitution is announced could not see them, and a student
+    //  running cavett01 (7 of its 16 records are such imports) was told
+    //  nothing.  `interim_review_dossier.py` had already declared
+    //  `reviewStatus` the PREFERRED form; one record used it and no engine
+    //  code read it.  A field the engine cannot see is a comment.
+    //
+    //  Announced beside [local] and [estimate], because a record's
+    //  trustworthiness is voiced in ONE place.  ABSENT is not "reviewed":
+    //  an unmarked record says nothing and this says nothing about it.
+    if (dict->lookupWordOrDefault("reviewStatus", "") == "interim")
+        if (announceOnce("interim:" + name))
+            std::cerr << "[unreviewed] component '" << name
+                      << "': reviewStatus interim -- imported, not yet checked"
+                         " against primary sources"
+                      << (dict->found("reviewReason")
+                            ? " (" + dict->lookupWordOrDefault("reviewReason", "") + ")"
+                            : std::string())
+                      << ".  The values are usable but UNVERIFIED; review them"
+                         " and mark `reviewStatus reviewed;` before the result"
+                         " is cited.\n";
+
     Component c;
     c.readFromDict(dict);
     return c;

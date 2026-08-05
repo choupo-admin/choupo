@@ -415,6 +415,9 @@ void Component::readFromDict(const DictPtr& d)
     //  must keep meaning what it meant.  So the derivation replaces a
     //  DECLARED K_b -- fixing the stored-derivative sin where the number
     //  actually lives -- and invents nothing where none was declared.
+    reviewStatus_ = d->lookupWordOrDefault("reviewStatus", "");
+    reviewReason_ = d->lookupWordOrDefault("reviewReason", "");
+
     K_b_anchor_ = K_b_;
     if (K_b_anchor_ > 0.0 && Tb_ > 0.0 && MW_ > 0.0 && Hvap_Tb_ > 0.0)
     {

@@ -8,6 +8,12 @@
 \*---------------------------------------------------------------------------*/
 
 name        oXylene;
+
+//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
+//  live only in the banner above, which the parser discards -- so the
+//  engine could not announce it and a run said nothing.
+reviewStatus   interim;
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
 formula     C8H10;
 CAS         95-47-6;
 
