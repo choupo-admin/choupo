@@ -980,6 +980,29 @@ PYEOF
     fi
     rm -f /tmp/gbans.$$
 
+    # ebullioscopic gate (AR3, ruled by Vitor 2026-08-05).  K_b is NOT a
+    # measurement -- it is defined as R.Tb^2.M/dHvap(Tb), and water.dat
+    # already declares all three inputs.  The stored 0.512 sat 0.18 % from
+    # the 0.512942 its own record implies, and that went into every
+    # evaporator BPE.  Derived now; the declared value stays as an ANCHOR
+    # and the run announces the comparison.
+    # The NEGATIVE is the one that matters: the first implementation derived
+    # for every solvent and so gave BPE to evaporator04, which reproduces
+    # MCFT Ex. 10.2 WITHOUT it and says "no K_b (BPE neglected)" in its own
+    # record -- a different model, arrived at silently.  An absence must keep
+    # meaning what it meant, so the derivation is opt-in.
+    # Sabotage-verified twice: derivation made non-opt-in (the negative
+    # fires), and the derivation removed (the recomputed value is absent).
+    if "$ROOT/bin/curate/check_ebullioscopic.py" > /tmp/ebul.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ebullioscopic-gate" "$(tail -1 /tmp/ebul.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ebullioscopic.py)\n" "ebullioscopic-gate"
+        cat /tmp/ebul.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ebul.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

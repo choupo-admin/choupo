@@ -336,9 +336,34 @@ public:
     // and the molal freezing-point depression constant K_f.  Both default
     // to zero when the.dat does not declare them.  Pure-component datum,
     // independent of the dissolved species.
+    //  K_b IS A DERIVATIVE, and since 2026-08-05 it is computed, not stored
+    //  (Vitor's ruling on AR3).  For a dilute ideal solution the molal
+    //  boiling-point elevation constant is DEFINED by
+    //
+    //        K_b = R * Tb^2 * M / dHvap(Tb)
+    //
+    //  and this record already declares all three inputs.  Storing K_b
+    //  beside them was the arity sin in its textbook form -- and the copies
+    //  HAD drifted: water.dat carried the rounded 0.512 against 0.512942
+    //  from its own Tb/MW/HvapTb, 0.18 % apart, feeding straight into every
+    //  evaporator's BPE.  `anchors{}` said so in a comment ("K_b is a
+    //  stored derivative ... not written in new files") and nothing acted
+    //  on it; a described contract is not a consolidated one.
+    //
+    //  A DECLARED K_b IS NOT DELETED -- it becomes what `anchors{}` always
+    //  called it: a measured value that VALIDATES the derivation.  That is
+    //  not a second home for the number, because it is never the answer;
+    //  it is a cross-check, and the run announces the comparison.
+    //  `K_b()` returns the derived value whenever the inputs exist.
     scalar K_b() const { return K_b_; }
     scalar K_f() const { return K_f_; }
     bool   hasEbulioscopic() const { return K_b_ > 0.0 || K_f_ > 0.0; }
+
+    //  The declared anchor, 0 if the record declares none, and whether K_b
+    //  above came from the derivation or fell back to the anchor.  Both are
+    //  for the glass-box report: a student must be able to see which.
+    scalar K_b_anchor()  const { return K_b_anchor_;  }
+    bool   K_b_derived() const { return K_b_derived_; }
 
     // ---- Enthalpy helpers ---------------------------------------------------
     // Reference state: pure liquid at Tref.
@@ -468,6 +493,8 @@ private:
     scalar      omega_   = 0.0;
     scalar      Tb_      = 0.0;
     scalar      Hvap_Tb_ = 0.0;
+    scalar      K_b_anchor_ = 0.0;   // declared value, kept as a cross-check
+    bool        K_b_derived_ = false; // true when K_b_ came from R Tb^2 M / dHvap
     scalar      Vliq_    = 0.0;
     scalar      Hf298_   = 0.0;
     scalar      S298_    = 0.0;

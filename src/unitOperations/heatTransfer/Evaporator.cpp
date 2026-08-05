@@ -433,7 +433,25 @@ int Evaporator::solve(const DictPtr& dict,
                         ? ("  BPE = electrolyte a_w(m=" + std::to_string(awMolality)
                            + ") -> " + std::to_string(BPE) + " K  (electrolyte model)\n")
                         : ("  BPE = K_b · m_solute = " + std::to_string(K_b)
-                           + " · " + std::to_string(molality) + " = " + std::to_string(BPE) + " K\n"))
+                           + " · " + std::to_string(molality) + " = " + std::to_string(BPE) + " K\n"
+                           //  GLASS BOX: say where K_b came from.  It is a
+                           //  DERIVATIVE, R·Tb²·M/ΔHvap(Tb), computed from
+                           //  the solvent's own record -- and where the
+                           //  record also declares one, the declared value
+                           //  is an ANCHOR and the agreement is printed.
+                           //  A student must be able to see which number is
+                           //  the answer and which is the cross-check.
+                           + "        K_b = R·Tb²·M/ΔHvap(Tb) "
+                           + (solv.K_b_derived() ? "(derived from "
+                               : "(NOT derivable -- using the declared value; ")
+                           + solv.name() + ".dat)"
+                           + (solv.K_b_anchor() > 0.0 && solv.K_b_derived()
+                               ? ("; declared anchor " + std::to_string(solv.K_b_anchor())
+                                  + ", agrees to "
+                                  + std::to_string(100.0 * std::fabs(K_b - solv.K_b_anchor())
+                                                   / solv.K_b_anchor()) + " %")
+                               : std::string())
+                           + "\n"))
                   << "  P_op = P_sat,pure(T_boil − BPE) = " << std::fixed
                   << std::setprecision(3) << (P_op / 1000.0) << " kPa  ("
                   << (P_op / 1.0e5) << " bar)\n"

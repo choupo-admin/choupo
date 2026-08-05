@@ -32,6 +32,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 
 #include "thermo/Database.H"
+#include "core/Constants.H"
 
 #include <cmath>
 #include <filesystem>
@@ -384,6 +385,41 @@ void Component::readFromDict(const DictPtr& d)
         auto an = d->subDict("anchors");
         K_b_ = an->lookupScalarOrDefault("K_b", 0.0);
         K_f_ = an->lookupScalarOrDefault("K_f", 0.0);
+    }
+
+    //  K_b IS DERIVED, not read (AR3, ruled 2026-08-05).  Whatever the two
+    //  blocks above supplied is demoted to an ANCHOR -- a measured value
+    //  that validates the derivation -- and the derivation wins:
+    //
+    //        K_b = R * Tb^2 * M / dHvap(Tb)          [K.kg/mol]
+    //
+    //  R in J/(mol.K), Tb in K, MW in kg/kmol (== g/mol, hence /1000 to
+    //  reach kg/mol), Hvap_Tb in J/mol.  The comment in `anchors{}` had
+    //  named K_b a stored derivative for some time; nothing acted on it,
+    //  and water.dat's rounded 0.512 sat 0.18 % from the 0.512942 its OWN
+    //  Tb/MW/HvapTb imply.  That difference went straight into every
+    //  evaporator's boiling-point elevation.
+    //
+    //  When the inputs are absent the declared value is USED and the run
+    //  says so (K_b_derived() == false).  A record that supplies neither
+    //  keeps K_b = 0, exactly as before.
+    //  THE DERIVATION IS OPT-IN, and this cost one wrong answer to learn.
+    //  Deriving whenever Tb/MW/Hvap exist means EVERY solvent acquires a
+    //  boiling-point elevation -- including cases that deliberately model
+    //  without one.  evaporator04 reproduces MCFT Ex. 10.2 "without BPE",
+    //  and its own record says so in words: "no K_b (BPE neglected)".  The
+    //  first draft gave it BPE = 0.41 K and moved its area 4.75 %.  That is
+    //  not a refined constant, it is a DIFFERENT MODEL.
+    //
+    //  An absent `K_b` is the author declaring "no BPE here", and an absence
+    //  must keep meaning what it meant.  So the derivation replaces a
+    //  DECLARED K_b -- fixing the stored-derivative sin where the number
+    //  actually lives -- and invents nothing where none was declared.
+    K_b_anchor_ = K_b_;
+    if (K_b_anchor_ > 0.0 && Tb_ > 0.0 && MW_ > 0.0 && Hvap_Tb_ > 0.0)
+    {
+        K_b_ = constant::R * Tb_ * Tb_ * (MW_ / 1000.0) / Hvap_Tb_;
+        K_b_derived_ = true;
     }
 
     //  THE DISSOLUTION HEAT of this substance's own solid, INDEPENDENT of
