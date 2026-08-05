@@ -1089,6 +1089,27 @@ PYEOF
     fi
     rm -f /tmp/cprange.$$
 
+    # record self-consistency gate (AP4, 2026-08-05).  assets/NF270.dat states
+    # in its header the permeabilities "chosen to reproduce" a cited data
+    # sheet, then ships glucose 40x larger -- MORE permeable than NaCl, which
+    # is backwards for a loose NF membrane, and the inline comment claims a
+    # rejection the number cannot produce.  Three statements, one file, all
+    # disagreeing.  A record that contradicts ITSELF needs no external source
+    # to be recognised, so a gate can catch it without holding the data sheet.
+    # It does NOT choose: the header says what the values were chosen to
+    # reproduce, not what was measured, and picking a side moves goldens.
+    # COVERAGE IS PARTIAL and the OK line says so -- sabotaging SW30HR did not
+    # fail this gate, because its header documents no comparable number.
+    if "$ROOT/bin/curate/check_record_self_consistency.py" > /tmp/rsc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "record-self-consistency-gate" "$(tail -1 /tmp/rsc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_record_self_consistency.py)\n" "record-self-consistency-gate"
+        cat /tmp/rsc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rsc.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
