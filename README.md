@@ -150,7 +150,7 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
 
-## Tutorials (331)
+## Tutorials
 
 Cases live under `tutorials/<category>/<name>/`:
 

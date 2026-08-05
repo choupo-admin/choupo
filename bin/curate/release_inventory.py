@@ -153,15 +153,39 @@ def build() -> dict:
 #  against 247), and on 2026-08-03 the coherence sweep found CLAUDE.md's own
 #  layout block still carrying "318 runnable cases" while the tree held 328.
 #  A rule the file itself breaks is a wish; this makes it a gate.
+#  INVERTED 2026-08-05.  The three revisions above each ADDED one wording
+#  after that wording had already shipped a stale number, and the comment
+#  in the middle states the lesson the next revision then failed to apply:
+#  "A detector that only knows one wording catches only the wording it
+#  knows."  It was proved twice more the same day -- `## Tutorials (194)`
+#  walked through because the digits are AFTER the noun and in parentheses,
+#  and `194 species` walked through because the pattern knew only
+#  `N aqueous species`.  Six documents were carrying stale tallies while
+#  this gate reported clean.
+#
+#  Enumerating surface forms is structurally one form behind.  So the
+#  polarity is reversed: ANY 2-5 digit number within a short window of a
+#  corpus noun is a hit, in either order, and the ways of being legitimate
+#  are enumerated instead -- quoting (below), and nothing else.  The set of
+#  legitimate uses is small, closed and known; the set of English phrasings
+#  is neither.
+CORPUS_NOUN = (r'(?:runnable\s+|curated\s+|tutorial\s+|aqueous\s+|regression\s+)*'
+               r'(?:cases?|tutorials?|components?|species|gates?|'
+               r'checks?|pairs?|records?)')
 DOC_COUNT_PAT = re.compile(
-    r'\b([0-9]{2,5})\s+(?:runnable\s+)?(?:tutorial\s+)?cases?\b|'
-    #  "N tutorials" was the phrasing this pattern did not have, and it is
-    #  the one the user guide used: "Choupo ships about 200 tutorials"
-    #  against a corpus of 330.  A detector that only knows one wording
-    #  catches only the wording it knows.
-    r'\b([0-9]{2,5})\s+(?:runnable\s+)?tutorials?\b|'
-    r'\b([0-9]{2,5})\s+(?:curated\s+)?components?\b|'
-    r'\b([0-9]{2,5})\s+aqueous\s+species\b')
+    #  digits BEFORE the noun ("331 cases"), allowing a few filler words
+    r'\b([0-9]{2,5})\s+(?:\w+\s+){0,2}?' + CORPUS_NOUN + r'\b|'
+    #  digits AFTER the noun, bracketed or not ("Tutorials (331)",
+    #  "components: 247", a markdown table cell) -- the form that walked
+    #  through twice
+    r'\b' + CORPUS_NOUN + r'\b[\s:\-\u2014(\[|]{1,4}([0-9]{2,5})\b',
+    #  CASE-INSENSITIVE, and that is not a detail: the first sabotage of
+    #  this very rewrite failed because `## Tutorials (194)` is CAPITALISED
+    #  and the noun list is lower case.  The fix for the blind spot had
+    #  the blind spot -- caught only because the sabotage probe replays
+    #  the exact string that escaped, not a paraphrase of it.
+    re.IGNORECASE)
+
 #  THE MANUALS ARE NOT EXEMPT.  This list held only the AI-facing docs, so
 #  the four LaTeX guides -- the surface an actual reader meets -- could
 #  carry a stale tally indefinitely, and one did.  Adding them found
@@ -172,6 +196,53 @@ DOC_COUNT_PAT = re.compile(
 DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md",
             "docs/theoryGuide.tex", "docs/userGuide.tex",
             "docs/propsGuide.tex", "docs/developerGuide.tex"]
+
+#  THE CLOSED SET OF LEGITIMATE USES.  Inverting the polarity means the
+#  gate now asks "why is this number here?" instead of "have I seen this
+#  wording?".  A number that is NOT a corpus tally must say so HERE, with a
+#  reason, and the entry is matched on a distinctive substring of the line.
+#
+#  This is deliberately more friction than a regex tweak.  Adding a tally to
+#  prose should cost a justification; that is the whole doctrine.  An entry
+#  whose substring no longer appears FAILS the gate, so the list cannot rot
+#  into a permanent excuse.
+#  KNOWN AND UNCLOSED: README.md's per-category tutorial table (six cells,
+#  one per category) is a hand-carried tally the pattern does NOT catch,
+#  because a markdown cell's neighbouring word is a binary name, not a
+#  corpus noun.  It is left uncaught DELIBERATELY and said so here rather
+#  than being quietly narrowed around: the honest fix is to GENERATE that
+#  table from the inventory, as the site pages already are, and that is a
+#  real change rather than a regex.  Recorded as action AR5.
+#
+#  Saying it here matters because the alternative -- a gate that silently
+#  does not look -- is the exact shape this rewrite exists to end.
+#  A KNOWN GAP, stated so this gate's silence is not read as coverage.
+#  README.md's per-category tutorial table holds six counts in bare markdown
+#  cells (`| `steady/` | `choupoSolve` | 196 |`).  Those ARE corpus tallies
+#  and they ARE a second home -- the inversion does not reach them because
+#  the cell's neighbour is a binary name, not a corpus noun.  Allow-listing
+#  them would be a lie (they are exactly what this gate forbids), so they
+#  are named here instead.  The fix is to GENERATE that table, as the site
+#  pages already are; recorded as AR5.
+DOC_COUNT_ALLOW = [
+    ("CLAUDE.md", "kept 9 of its 28 pair parameters",
+     "a measurement of ONE sealing defect, not a corpus size"),
+    ("CLAUDE.md", "14/14 tear cases already satisfy it",
+     "audit evidence dated in its own sentence, not a live tally"),
+    ("CLAUDE.md", "77 standard components carry",
+     "SUBSET tally -- a real second home; generate it or drop it (AR5)"),
+    ("docs/developerGuide.tex", "kept 9 of its 28 pair parameters",
+     "the same one-defect measurement as CLAUDE.md"),
+]
+
+
+def allowed(rel, line):
+    """-> the reason this line's number is not a corpus tally, or None."""
+    for f, needle, why in DOC_COUNT_ALLOW:
+        if f == rel and needle in line:
+            return why
+    return None
+
 
 QUOTE_SPAN = re.compile(r'"[^"]*"|`[^`]*`|\u201c[^\u201d]*\u201d')
 
@@ -189,6 +260,7 @@ def hand_carried_counts():
     of the corpus belongs in prose; the size lives in
     generated/releaseInventory.json."""
     hits = []
+    seen_allow = set()
     for rel in DOC_SCAN:
         f = ROOT / rel
         if not f.is_file():
@@ -209,6 +281,9 @@ def hand_carried_counts():
             m = DOC_COUNT_PAT.search(line)
             if any(a < m.start() < b for a, b in quoted_spans(line)):
                 continue
+            if allowed(rel, line):
+                seen_allow.add((rel, line))
+                continue
             #  Secondary net: the rule's own paragraph states the drift in
             #  bare numbers, and says so in words a sentence away.
             ctx = " ".join(lines[max(0, i - 4):i + 3]).lower()
@@ -217,6 +292,12 @@ def hand_carried_counts():
                                       "releaseinventory")):
                 continue
             hits.append((rel, i, line.strip()[:90]))
+    #  A stale allowance is a permanent excuse.  If a listed substring no
+    #  longer appears, the justification has outlived its line and must go.
+    for f, needle, why in DOC_COUNT_ALLOW:
+        if not any(f == r and needle in l for r, l in seen_allow):
+            hits.append((f, 0, f"STALE ALLOWANCE: \"{needle}\" no longer "
+                                f"appears -- remove it from DOC_COUNT_ALLOW"))
     return hits
 
 
