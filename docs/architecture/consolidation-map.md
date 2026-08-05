@@ -212,3 +212,31 @@ verify the MESSAGE, not the code.
 
 *A view generated from the repository.  For counts, read
 `generated/releaseInventory.json` or run `bin/curate/release_inventory.py`.*
+
+## The 2026-08-05 silent-fallback slice — consolidated, with its gaps named
+
+Nine audit actions, all executed, four new gates
+(`check_forward_order`, `check_column_datum_downgrade`, `check_review_status`,
+`check_economics_honesty`).  Recorded here because the *pattern* outlives the
+slice:
+
+**Every one of the nine was fixed while the full suite stayed green.**  No
+corpus case took any of those branches.  A green suite was therefore evidence
+of nothing about them, and the audit — not the tests — is what found them.
+
+**Building the witnesses corrected the work more than the fixes did.**  One
+action (AS8) turned out to be *wrong as written*: the failure it named is
+already prevented by alias canonicalisation, and the behaviour it demanded be
+refused is documented in the data records as intended.  It became an
+announcement.  Four probes were themselves defective — damaging a path that
+does not exist, renaming a record that is keyed internally, hiding a record
+the catalogue still supplies, and forcing a solver onto work it cannot do.
+
+> **A finding is a hypothesis until a witness fires.**  Eight of nine survived
+> contact; the ninth was indistinguishable from the rest until it was tested.
+
+**One gate names what it cannot reach.**  `check_economics_honesty` exercises
+a single claim and lists three it cannot probe (they need an edit to the
+shared catalogue, which a gate must never make).  That is the honest shape: a
+gate reporting four greens by probing things it cannot touch would be worse
+than one reporting a single green and listing three gaps.

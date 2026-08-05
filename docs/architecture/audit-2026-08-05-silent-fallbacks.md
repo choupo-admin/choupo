@@ -132,3 +132,74 @@ is taught.
 **AS9, and it outranks all of them: the arity doctrine must extend to
 decisions.** Eight violations, four with a correct sibling in-tree. Patching
 eight sites without fixing that leaves the ninth to be written next week.
+
+---
+
+## Closure, 2026-08-05 — and where this audit was WRONG
+
+All nine actions are executed.  Recording the outcome per action matters more
+than recording that they are done, because **two of the nine were wrong as
+written**, and both were found the same way: by building the witness.
+
+| id | outcome |
+|---|---|
+| **AS1** | done — `units::fromSI` added; the affine path had no inverse |
+| **AS2** | done as part of AS9 — refuses with the remedy, in all four reactors |
+| **AS3** | done — **two sites, not the one named**; Wang-Henke carried the same empty catch |
+| **AS4** | done — `C_UT` filters on `allocated`, relabels to LOWER BOUND |
+| **AS5** | done — refuses by name, offering both remedies |
+| **AS6** | done — the label travels with the NUMBER, naming the omitted units |
+| **AS7** | done — `cout` only; the catch no longer swallows its reason |
+| **AS8** | **AMENDED — see below.  The action as written was wrong.** |
+| **AS9** | done — doctrine extended to decisions (philosophy §3a, I1) |
+
+### AS8 was wrong, and the audit's reasoning was wrong with it
+
+The action said *"PSA/TSATwinBed adopt `BatchAdsorber`'s refusal verbatim."*
+It was implemented, and then the attempt to make it FIRE showed two things
+the audit had not checked:
+
+1. **The motivating failure cannot occur.**  The finding claims *"A component
+   named `H2O` against a record keyed `water` passes 100 % into the light
+   product"*.  The engine canonicalises aliases before the lookup and
+   announces it (`[alias] component 'methane' -> canonical 'CH4'`), so a
+   spelling mismatch never reaches the isotherm test.  The audit asserted a
+   failure mode without constructing it.
+
+2. **The pass-through is a written contract.**  The isotherm records say, in
+   prose: *"a species with no record here adsorbs nothing and reports fully to
+   the raffinate."*  Refusing overturns a settled behaviour recorded in the
+   DATA — a change to be ratified, not slipped in behind an audit item.
+
+The residue is real and narrower: an **inert** that legitimately does not
+adsorb and an **oversight** were indistinguishable, and the purity table reads
+the same either way.  So both units now ANNOUNCE the assumption.  Whether
+absence should have to be *declared* is an open question for Vítor, not a
+conclusion this audit was entitled to draw.
+
+### What the witnesses cost, and what that says about audits
+
+Every action was fixed while the full suite stayed green, because **no corpus
+case takes any of these branches**.  That is the condition under which a fix
+rots: correct, invisible, unprotected.  Four gates now supply firing cases
+(`check_forward_order`, `check_column_datum_downgrade`,
+`check_review_status`, `check_economics_honesty`), and building them produced
+more corrections than the fixes did:
+
+- a probe that **damaged the wrong thing** (deleted a case-local utility
+  directory that does not exist) and reported the engine as broken;
+- a probe that **renamed** a record — which hides nothing, since the file is
+  still loaded and keyed by the species name inside it;
+- a probe **defeated by a catalogue twin**, proving nothing while
+  `data/standards` still supplied the record;
+- a probe that **forced a solver onto work it cannot do** (Wang-Henke on a
+  reactive azeotropic column) and measured the forcing.
+
+**The lesson generalises past this audit: a finding is a hypothesis until a
+witness fires.**  Eight of these nine survived contact; one did not, and the
+one that did not was indistinguishable from the others until it was tested.
+
+`check_economics_honesty` states the three claims it CANNOT reach rather than
+substituting reachable ones — a gate reporting four greens by probing things
+it cannot touch would be worse than one reporting a single green and listing
+three gaps.
