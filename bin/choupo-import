@@ -1164,7 +1164,23 @@ def validate_staged_agrees(staged, out):
         if kind == "diag":
             got = diags.get(name, {}).get(key)
         elif kind == "kpi":
-            got = kpis.get(key)
+            #  KPIs are NESTED BY UNIT -- kpis["FL1"]["F_alpha"] -- and the
+            #  golden's row is `kpi <unit> <key> <value>`.  The first draft of
+            #  this validator (2026-08-05, same day) looked `key` up FLAT, so
+            #  every KPI of every multi-unit flowsheet read back MISSING and
+            #  the importer refused a re-import that was perfectly correct.
+            #
+            #  It passed review because the case that motivated it, edwards01,
+            #  is a single-operation props case whose KPIs happen to sit at
+            #  the top level.  ONE SHAPE OF INPUT IS NOT THE CONTRACT: a guard
+            #  tested only on the case that provoked it is tested on the case
+            #  least able to expose it.
+            #
+            #  A guard that always refuses is not "safe" -- it is broken in
+            #  the direction that merely looks responsible, and it blocks the
+            #  work it was meant to protect.
+            got = kpis.get(name, {}).get(key) if isinstance(kpis.get(name), dict) \
+                  else kpis.get(key)
         else:
             continue                       # stream rows: not in this reader
         if got is None:

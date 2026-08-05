@@ -21,8 +21,8 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-30";
-    importerVersion    "2";
+    importedAt         "2026-08-05";
+    importerVersion    "3";
     records
     {
         "components/nButane.dat"
@@ -46,10 +46,10 @@ propertyManifest
         "components/nPentane.dat"
         {
             type          imported;
-            sha256        "b68da8ba2200eadf565ca6585a16a16bec15a8a33f3b26c903b898e0db4d3f97";
-            computationalSha256 "a401c305b39e1e0551b297a57c31126a9f61650b7361eb6cd4eb80288d3b5346";
+            sha256        "c8d0a4852e5d1aff5404871ddb892368e7a7a08042dc11a95b2a9d35b2078f29";
+            computationalSha256 "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
             origin        "data/standards/components/nPentane.dat";
-            originSha256  "c09bb31254fb78937e4744bbe49da3b01821bf661a9bdde0217761d945efa721";
+            originSha256  "19eb39992e76593ada2014a95ea20e7db26d0c8419f2e3c7ba94a2d516e5fff5";
             release       Choupo-2607;
         }
         "components/propane.dat"

@@ -21,8 +21,8 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-30";
-    importerVersion    "2";
+    importedAt         "2026-08-05";
+    importerVersion    "3";
     records
     {
         "components/benzene.dat"
@@ -37,10 +37,10 @@ propertyManifest
         "components/oXylene.dat"
         {
             type          imported;
-            sha256        "b47573ce9acea54a03a6874bd4e68a4be6ee227583e596ea9f5bd4c9e9c53267";
-            computationalSha256 "d3be46eb48f5762325e304cfb68d2318995679c6d93bb849f6c9ff870961e1b0";
+            sha256        "3560e6019eb1b0fe61545bc6e46427829377169bf067044c3b4faaddc0f41692";
+            computationalSha256 "a4bbb3d6a51d11d0551959ffd829ffe36aec85741152e7d84cd0c6beb68531d1";
             origin        "data/standards/components/oXylene.dat";
-            originSha256  "6ea50f9cfd071666f2da771404f844110e5099713213333494a51568afa607e6";
+            originSha256  "b344160c973f8304f09bbb3a2789fe7942953c0bf94354e9aa79e24d3b3d0114";
             release       Choupo-2607;
         }
         "components/toluene.dat"
