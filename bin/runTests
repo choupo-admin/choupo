@@ -914,6 +914,29 @@ PYEOF
     fi
     rm -f /tmp/vwin.$$
 
+    # Source-licence gate (2026-08-05, AP1).  curation-protocol.md forbids
+    # entering NIST SRD/WebBook, DIPPR, Yaws, CRC-as-a-product, direct
+    # DECHEMA/DDBST or CAS numbers "even cited".  The public tree had a
+    # deliberate legal scrub; records survived it, and nothing had ever
+    # checked -- a one-time sweep with no ratchet.
+    #
+    # THE DISTINCTION IS THE DESIGN: a string match on "NIST" would condemn
+    # ethyleneOxide and cyclopentane, which cite Pell & Pilcher (1965) and
+    # Prosen & Rossini -- real primaries -- with NIST as the ACCESS ROUTE.
+    # Where a number was read is not where it came from.  The violation is
+    # the aggregator standing AS the authority.
+    # Sabotage-verified both ways: the same source name fails as an
+    # authority and passes behind "via".
+    if "$ROOT/bin/curate/check_source_licence.py" > /tmp/slic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "source-licence-gate" "$(tail -1 /tmp/slic.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_source_licence.py)\n" "source-licence-gate"
+        cat /tmp/slic.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/slic.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
