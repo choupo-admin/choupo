@@ -146,7 +146,34 @@ if command -v pdftotext >/dev/null 2>&1; then
     fi
     echo "[buildSite] guide PDFs verified: all four title pages read $_want"
 else
-    echo "[buildSite] WARN: no pdftotext -- the published guide versions were NOT verified"
+    #  A CHECK THAT CANNOT RUN MUST NOT PASS.  This branch used to WARN and
+    #  continue, and on 2026-08-05 that is exactly what happened in CI: the
+    #  GitHub runner has no `pdftotext`, so the very gate written to stop a
+    #  mislabelled guide reaching choupo.org printed one line into a
+    #  900-line log and published anyway.  The guide happened to be correct;
+    #  nothing here established that.
+    #
+    #  A missing tool is not evidence of a good artefact -- it is the absence
+    #  of evidence, and reporting the absence as a pass is the silent
+    #  fallback the project forbids everywhere else (invariant I5).  So the
+    #  publishing path REFUSES.
+    #
+    #  CHOUPO_SKIP_PDF_VERIFY exists for a developer assembling the site
+    #  locally without poppler, and it is deliberately an ACT: you have to
+    #  type it, and it says out loud what it bought.  CI never sets it -- the
+    #  workflow installs poppler-utils instead.
+    if [ -n "${CHOUPO_SKIP_PDF_VERIFY:-}" ]; then
+        echo "[buildSite] WARN: pdftotext absent and CHOUPO_SKIP_PDF_VERIFY set --" >&2
+        echo "[buildSite]       the guide versions in this build are UNVERIFIED." >&2
+        echo "[buildSite]       Do not publish this assembly." >&2
+    else
+        echo "[buildSite] ERROR: pdftotext is not installed, so the guide title pages" >&2
+        echo "[buildSite]        about to be published CANNOT be verified." >&2
+        echo "[buildSite]        Refusing: an unverifiable claim is not a verified one." >&2
+        echo "[buildSite]        REMEDY: install poppler-utils (apt-get install -y poppler-utils)," >&2
+        echo "[buildSite]        or set CHOUPO_SKIP_PDF_VERIFY=1 for a local build you will NOT publish." >&2
+        exit 1
+    fi
 fi
 
 echo "[buildSite] done:  $(du -sh "$dist" | cut -f1)  in  $dist"

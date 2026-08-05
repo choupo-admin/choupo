@@ -83,6 +83,17 @@ jobs:
           cache: npm
           cache-dependency-path: gui/package-lock.json
 
+      #  poppler-utils is NOT optional tooling.  bin/buildSite verifies the
+      #  title page of every guide it is about to publish, and without
+      #  pdftotext that check cannot run.  It used to WARN-and-continue, and
+      #  on 2026-08-05 it did exactly that in this workflow -- the gate
+      #  written to stop a stale guide reaching choupo.org was itself absent
+      #  from the only place that publishes.  buildSite now REFUSES when it
+      #  cannot verify, so this install is load-bearing: drop it and the
+      #  publish fails loudly instead of shipping an unchecked artefact.
+      - name: pdftotext (buildSite verifies the published guide versions)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
       - name: LaTeX (the guides the app's Help links serve)
         run: |
           sudo apt-get update -qq
