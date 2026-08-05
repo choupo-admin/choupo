@@ -58,7 +58,7 @@ Description
 #pragma once
 
 #include "Report.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 
 #include <string>
 #include <vector>

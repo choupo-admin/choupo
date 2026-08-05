@@ -61,7 +61,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"   // ModelBoundaryFinding (shared with the result JSON)
+#include "result/SimulationResult.H"   // ModelBoundaryFinding (shared with the result JSON)
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"

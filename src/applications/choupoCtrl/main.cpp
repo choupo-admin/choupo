@@ -92,7 +92,7 @@ Description
 #include "thermo/ElementComposition.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 
 #include <algorithm>
 #include <filesystem>

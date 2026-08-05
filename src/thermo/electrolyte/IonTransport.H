@@ -42,7 +42,7 @@ Description
 
 #pragma once
 
-#include "../../core/Identifiers.H"
+#include "core/Identifiers.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 
 #include <stdexcept>

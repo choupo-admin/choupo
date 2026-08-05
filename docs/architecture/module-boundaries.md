@@ -21,8 +21,8 @@ counts, and self-edges within a subsystem are excluded.
 
 ```
 applications
-   └─ outerDriver ─ postProcessing ─ reporting
-        └─ unitOperations ─ propertyOps ─ control
+   └─ outerDriver ─ postProcessing ─ reporting ─ curation
+        └─ result ─ io ─ unitOperations ─ propertyOps ─ control
              └─ thermo ─ streams ─ materials ─ solver
                   └─ core                       (the bottom: depends on nothing)
 ```
@@ -32,6 +32,38 @@ depend upward, and the graph must be acyclic.**  These are invariants I17 and
 I18 in [`global-invariants.md`](global-invariants.md), and both are currently
 violated by measured code (§5, §6) — stated as violations with removal
 conditions, never as licence.
+
+**Three placements, 2026-08-05, closing D1 and D6.**  The diagram above drew
+five bands over twelve subsystems while `src/` held fourteen; `io` and
+`curation` were simply absent, and `check_layering` reported them *unchecked,
+not clean* rather than defaulting them into the bottom band where nothing can
+violate.  A band is now declared for each, and `result` is the new home ruling
+§7.2 gave `SimulationResult`:
+
+* **`result`** (`SimulationResult`, `ResultEmitter`, `UnitProfile`) sits beside
+  `unitOperations`.  It names what the pipeline produced, so it reads
+  `streams` and `thermo`.
+* **`io`** (`SolutionWriter`, `OdsWriter`) sits beside `result`, because that
+  is the only band left once the graph is measured: it *reads* `result`, and
+  `unitOperations` *reads it*, and those two are the same band.
+* **`curation`** (`AqueousGraph`) sits beside `reporting` because it has
+  reporting's shape — a consumer of the engine that produces an artefact for a
+  human to read.  It is reached only from `applications`.
+
+Each placement was checked the only way a placement can be: it introduces **no
+new upward edge and no new cycle**, and `check_layering` now measures all
+fifteen subsystems instead of excluding two.
+
+**The first draft of this paragraph put `io` a band lower**, beside `streams`,
+reasoning that `SolutionWriter` is the persistence face of the stream-state
+contract — it writes `0/` and `converged/`.  That reads well and it is wrong:
+the writer also reads the whole `SimulationResult`, so one band lower makes
+`io → result` an upward edge.  Re-running the gate is what caught it, one
+minute after the prose was written.  Worth recording, because the failure mode
+is the one this document exists to prevent — **a placement argued from what a
+subsystem is FOR, rather than measured from what it DEPENDS ON.**  The
+narrative was about persistence; the include graph was about the result
+record, and the include graph is what the compiler obeys.
 
 ## 2. Record resolution belongs to thermo — through ONE seam
 
@@ -250,15 +282,36 @@ All five questions this audit raised were ruled on 2026-08-04.
 Ratifying §1 makes three measured facts into violations.  They are entered
 here with removal conditions rather than being smoothed into the rule.
 
-**D1 — `core` reaches up (F1, THREE sites).**  `SimulationResult` moves to a
-`result/` band above `core`.  *Removal condition:* `core` includes nothing but
-`core/`; invariant I17 gains a gate.
+**D1 — `core` reaches up (F1, THREE sites).  PAID 2026-08-05.**  Measuring the
+header showed *why* it reached up, and it was not the reason the ruling
+assumed.  `core/SimulationResult.H` declared TWO different things: the result
+record — which necessarily reads `streams`, `thermo` and `unitOperations` —
+and `FlatUnit`, four strings of pure topology that read nothing.  Because they
+shared a header, `core` inherited the first one's dependencies, and
+`streams/StreamOwnership.H` was paying that entire bill to obtain four strings.
+`SimulationResult` and `ResultEmitter` moved to the new `result/` band per
+ruling §7.2; `FlatUnit` stayed in `core/FlatUnit.H`, where it always belonged.
+`core` now includes nothing but `core/`.
 
-**D2 — two scheduled cycles (F2).**  `unitOperations` ↔ `propertyOps` and
-`reporting` ↔ `postProcessing`.  *Removal condition:* the shared concept is
-extracted per §3 — `propertyOps::readExchange` to a neutral reader,
-`OdsWriter` below both consumers — and invariant I18 gains a gate.
-`solver` ↔ `thermo` is accepted and stays.
+**D2 — two scheduled cycles (F2).  PAID 2026-08-05, both.**  Each was ONE
+shared concept filed inside one of its two consumers, and each was paid by
+§3's rule — the lowest NEUTRAL layer that can own it:
+
+* `unitOperations` ↔ `propertyOps`: `readExchange` reads the `exchange {}`
+  block into a speciation input, and a props BENCH and a process UNIT both
+  need it.  It was in `namespace propertyOps`; it is now
+  `thermo/electrolyte/ExchangeInput.H`, per §2 (record resolution belongs to
+  thermo).  The extraction *confirmed* neutrality rather than assuming it —
+  the moved code referenced no `propertyOps` symbol at all.
+* `reporting` ↔ `postProcessing`: `OdsWriter` is a spreadsheet serialiser
+  whose header includes `<string>` and whose body includes `core/MiniZip.H`.
+  It moved to `io`, below both consumers.
+
+A third cycle appeared and was paid in the same pass: moving `SimulationResult`
+into `result/` left it including `unitOperations/UnitProfile.H` while
+`unitOperations` included it back.  A profile is something the pipeline
+PRODUCED, so `UnitProfile.H` moved to `result/` too.  `solver` ↔ `thermo`
+stays, ACCEPTED per ruling §7.3.
 
 **D3 — a model cannot declare what it consumes (§2).**  Until it can, the
 sealing closure must be taught each new record home by hand.  *Removal
@@ -275,24 +328,50 @@ same missing link seen from the other end.  The closure is **21 hand-written
 `want(...)` calls** today.  Proposal, awaiting a ruling:
 [`model-declared-record-homes.md`](../design/model-declared-record-homes.md)
 — two shapes weighed, one recommended, and a named half it does NOT solve.
+**This is the one remaining debt in this register that is blocked on a
+decision rather than on work.**
 
-**D4 — NINE boundary-crossing `../` includes (F3 said eight).**  *Removal condition:*
-zero `../` includes crossing a subsystem, so the graph is measurable by the
-obvious method.
+**D4 — NINE boundary-crossing `../` includes (F3 said eight).  PAID
+2026-08-05.**  Eight were rewritten to their subsystem-rooted form
+(`"core/Identifiers.H"`, not `"../../core/Identifiers.H"`), which `-Isrc`
+already made valid.  The ninth was the different animal named below —
+`core/Banner.cpp` reaching into the generated tree — and it is gone too:
+`-I.` puts the project root on the include path, so `generated/gitVersion.H`
+is reachable by its own rooted name.  That mattered more than tidiness: **a
+rule with a named exception is weaker than a rule.**  The contract is now
+simply *no `../` include leaves its own subsystem*, and the four that remain
+(`solver/ODE` → `../LU.H`, `membrane/transport` → `../osmotic/`) stay inside
+one, which is legal and always was.
 
-**D5 — PARTLY PAID 2026-08-05: a BOUNDING gate exists; an ASSERTING one does
-not.**  This debt assumed the only possible gate was one that asserts the
-invariants, which would indeed fail the suite today.  `check_layering` takes
-the other form: it PINS the measured violations, so a NEW upward edge or
-cycle fails while the existing ones remain declared debts.  I17 and I18 are
-therefore *bounded*, not satisfied, and the invariant table still reads them
-as violated.
-*Removal condition for the asserting form:* D1, D2 and D4 paid, then the pins
-are deleted and the gate asserts instead of bounding.
+**D5 — the gate BOUNDS the invariants; it does not yet assert them.**
+`check_layering` pins the measured violations, so a NEW upward edge or cycle
+fails while the known ones remain declared.  It shipped pinning five upward
+edges and eight cycles; **four of the five and six of the eight are now gone**,
+and the gate's own stale-pin arm is what proved each removal real — deleting a
+pin whose violation still existed would have failed.
+*Removal condition for the asserting form:* D7 paid, then the last pin is
+deleted and the gate asserts instead of bounding.
 **I19 is a separate case and will not get a gate.**  "The lowest NEUTRAL layer
 that can own its concepts" is a judgement about meaning, not a measurable
-property of an include graph.  Saying so is better than leaving it implied in
-a list of three where two are now covered.
+property of an include graph.  Saying so is better than leaving it implied.
+
+**D6 — `io` and `curation` have no declared band.  PAID 2026-08-05.**  Both are
+placed in §1, and `check_layering` measures all fifteen subsystems with nothing
+excluded.  The placements were derived from the graph, not argued from purpose
+— see the note in §1 about the draft that got `io` wrong by reasoning about
+what it is *for*.
+
+**D7 — `unitOperations` → `reporting`, the last upward edge (NEW, 2026-08-05).**
+`Flowsheet.cpp` includes `reporting/BalanceMath.H`, and `BalanceMath` needs a
+FLASH (`IsothermalFlash::solveCore`) to price a two-phase enthalpy.  So it
+cannot sit below `unitOperations`, and putting it *beside* them turns the
+upward edge straight back into a cycle — which is why the method that paid D1,
+D2 and D4 does not reach it.
+*Removal condition:* either the flash moves down, or `BalanceMath` takes an
+injected enthalpy functor instead of constructing its own flash.  **That is a
+design decision, not a move**, and it is recorded as a debt rather than
+guessed at.  It is also the only thing standing between D5 and its asserting
+form.
 
 ## 9. Reproducing the measurement
 

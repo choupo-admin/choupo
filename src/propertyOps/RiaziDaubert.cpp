@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "RiaziDaubert.H"
-#include "DerivedClosures.H"
+#include "thermo/DerivedClosures.H"
 
 #include <cmath>
 #include <map>

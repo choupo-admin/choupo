@@ -74,16 +74,9 @@ License
 
 namespace Choupo {
 
-namespace propertyOps {
-// Read the `exchange { resin SAC_Na; CEC ...; }` block off an op dict -- a
-// SEPARATE reader (readAnalysis stays untouched).  Resolves the resin .dat by
-// exact name (data/standards/assets/ or case-local), loads the
-// exchange.dat half-reaction network, converts CEC to eq/kg water (announcing
-// the basis), and fills in.exchange.  Unknown keys / unknown resin / a bound
-// species whose aqueous ion the analysis lacks are REFUSED.
-void readExchange(const DictPtr& dict, electrolyte::SpeciationInput& in,
-                  const electrolyte::SpeciationSolver& solver, int verbosity);
-} // namespace propertyOps
+//  The `exchange {}` READER moved to `thermo/electrolyte/ExchangeInput.H`
+//  (debt D2, cycle A): a unit operation needs it too, and a reader shared by
+//  two consumers belongs below both of them, not inside one.
 
 class Exchange : public PropertyOperation
 {

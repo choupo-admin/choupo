@@ -56,7 +56,8 @@ Namespace
 
 #pragma once
 
-#include "core/SimulationResult.H"   // FlatUnit (name / ins / outs)
+#include "core/FlatUnit.H"            // FlatUnit (name / ins / outs) -- topology
+                                     //   only; the result record is NOT needed
 
 #include <filesystem>
 #include <map>

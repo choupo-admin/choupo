@@ -59,7 +59,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "streams/StreamOverrides.H"
 
 #include <functional>

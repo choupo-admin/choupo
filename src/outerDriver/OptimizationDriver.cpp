@@ -28,7 +28,7 @@ License
 
 #include "OptimizationDriver.H"
 #include "ResponseExtractor.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 #include "postProcessing/PostProcessor.H"
 #include "solver/ActiveSetQP.H"
 #include "solver/NelderMead.H"

@@ -13,16 +13,21 @@ A structural invariant with no check does not hold; it merely has not been
 contradicted where anyone looked.  And the failure mode is silent by
 construction: an upward include compiles exactly as well as a downward one.
 
-WHAT THIS GATE CAN AND CANNOT CLAIM, because the difference matters here more
-than usual.  It CANNOT make I17 or I18 true -- the violations are real, they
-are named in `module-boundaries.md` F1/F2, and removing them is architectural
-work (debts D1 and D2) that changes where code lives.  A gate cannot refactor.
+WHAT THIS GATE CAN AND CANNOT CLAIM.  It cannot make I17 or I18 true; a gate
+cannot refactor.  What it CAN do is make them a RATCHET: the known violations
+are pinned, a NEW upward edge or a NEW cycle fails immediately, and a pin that
+no longer fires fails too.  That is the difference between a debt and a slope.
 
-What it CAN do is make them a RATCHET: the known violations are pinned, a NEW
-upward edge or a NEW cycle fails immediately, and a pin that no longer fires
-fails too.  That is the difference between a debt and a slope.  It moves I17
-and I18 from *"described"* to *"described and bounded"* -- still not
-consolidated, and the invariant table should keep saying so.
+THE RATCHET THEN DID ITS JOB, on 2026-08-05.  It shipped pinning FIVE upward
+edges and EIGHT cycles.  Four of the five and six of the eight are now gone --
+paid, not suppressed -- and the gate's own STALE-PIN arm is what proved each
+removal real: deleting a pin whose violation still existed would have failed,
+and leaving a pin whose violation was gone failed too.  A ratchet that only
+ever tightens is a ledger of defeat; this one recorded the repayments.
+
+ONE upward edge remains (`unitOperations` -> `reporting`, debt D7) and it is
+the only unaccepted cycle.  So I17 and I18 are still *bounded*, not asserted,
+and the invariant table must keep saying so.
 
 HOW IT MEASURES.  `#include "sub/..."` from any file under `src/<sub>/`
 gives an edge <sub> -> <target sub>.  Self-edges are ignored.  A subsystem
@@ -47,8 +52,8 @@ SRC = ROOT / "src"
 #  a band is legal; upward (to a SMALLER index) is not.
 BANDS = [
     ["applications"],
-    ["outerDriver", "postProcessing", "reporting"],
-    ["unitOperations", "propertyOps", "control"],
+    ["outerDriver", "postProcessing", "reporting", "curation"],
+    ["result", "io", "unitOperations", "propertyOps", "control"],
     ["thermo", "streams", "materials", "solver"],
     ["core"],
 ]
@@ -56,46 +61,53 @@ BAND = {sub: i for i, row in enumerate(BANDS) for sub in row}
 
 INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 
-#  KNOWN VIOLATIONS, pinned 2026-08-05 from the 2026-08-04 measurement.
-#  Each is a DEBT with a removal condition in module-boundaries.md §8.
-#  MEASURED 2026-08-05 by this gate.  The hand measurement of 2026-08-04
-#  (module-boundaries.md F1) recorded THREE upward edges from core.  There are
-#  FIVE upward edges: two more, from thermo and from unitOperations, which no
-#  reader had walked to.
+#  WHAT IS LEFT, measured 2026-08-05 AFTER debts D1, D2, D4 and D6 were paid.
+#  Each repayment moved ONE shared concept out of the consumer it had been
+#  filed inside (`module-boundaries.md` §8):
+#
+#      core -> streams/thermo/unitOperations   FlatUnit left SimulationResult
+#      thermo -> propertyOps                   DerivedClosures moved to thermo
+#      result <-> unitOperations               UnitProfile moved to result
+#      unitOperations <-> propertyOps          readExchange moved to thermo
+#      reporting <-> postProcessing            OdsWriter moved to io
 PINNED_UP = {
-    ("core", "streams"), ("core", "thermo"), ("core", "unitOperations"),
-    ("thermo", "propertyOps"), ("unitOperations", "reporting"),
+    #  `unitOperations/flowsheet/Flowsheet.cpp` -> `reporting/BalanceMath.H`.
+    #  NOT movable by the method that paid the other four, and the reason is
+    #  worth stating rather than retrying: BalanceMath needs a FLASH
+    #  (`IsothermalFlash::solveCore`) to price a two-phase enthalpy, so it
+    #  cannot sit below `unitOperations` -- and putting it beside them turns
+    #  the upward edge straight back into a cycle.  Paying it needs a DECISION
+    #  (move the flash down, or hand BalanceMath an injected enthalpy
+    #  functor), which is design, not a move.  Recorded as D7.
+    ("unitOperations", "reporting"),
 }
-#  F2 recorded THREE cycles.  There are EIGHT.  Five of them are the upward
-#  edges above seen from the other side: core includes streams AND streams
-#  includes core, which is one defect describable two ways -- an upward edge
-#  and a 2-cycle.  Listing both is not double-counting, it is the same edge
-#  failing two different invariants (I17 and I18), and a gate that reported
-#  only one would let the other regress unnoticed.
 PINNED_CYCLES = {
+    #  ACCEPTED, ruling §7.3 -- not a debt.  Michelsen's stability test is a
+    #  thermodynamic criterion solved numerically; the dependency is
+    #  irreducible without a worse abstraction.
     frozenset(("solver", "thermo")),
-    frozenset(("unitOperations", "propertyOps")),
-    frozenset(("reporting", "postProcessing")),
-    frozenset(("core", "streams")),
-    frozenset(("core", "thermo")),
-    frozenset(("core", "unitOperations")),
-    frozenset(("propertyOps", "thermo")),
+    #  The D7 edge above, seen from the other side.  Listed in both places
+    #  because it fails two different invariants (I17 and I18); a gate
+    #  reporting only one would let the other regress unnoticed.
     frozenset(("reporting", "unitOperations")),
 }
 
-#  SUBSYSTEMS THE DECLARED LAYERING DOES NOT MENTION.  Found by this gate on
-#  its first run: module-boundaries.md §1 draws five bands over TWELVE
-#  subsystems, and `src/` holds FOURTEEN.  `io` (SolutionWriter) and
-#  `curation` are simply absent from the diagram.
+#  EMPTY SINCE 2026-08-05 -- debt D6 is paid.  This gate's first run found that
+#  `module-boundaries.md` §1 drew five bands over TWELVE subsystems while `src/`
+#  held FOURTEEN: `io` and `curation` were absent from the diagram entirely.
+#  They were excluded and REPORTED as unchecked rather than defaulted into the
+#  bottom band, where nothing can violate.
 #
-#  They are NOT placed here.  Where a subsystem belongs is an architecture
-#  decision -- `io` writes solution state and could sit low or beside
-#  reporting, and that choice constrains what may depend on it.  Guessing it
-#  inside a gate would make the gate the author of the layering it checks.
+#  Both are placed now, and the placement was DERIVED rather than chosen: `io`
+#  reads `result` and is read by `unitOperations`, which leaves exactly ONE
+#  legal band.  A first draft had placed it beside `streams` on the reasoning
+#  that it serialises stream state -- plausible, and wrong; re-measuring is
+#  what caught it.  Guessing would have made the gate the author of the
+#  layering it checks.
 #
-#  So they are excluded from the up/cycle checks and REPORTED as unchecked.
-#  Recorded as debt D6 in module-boundaries.md.
-UNPLACED_KNOWN = {"io", "curation"}
+#  Kept as an empty set rather than deleted, because the check below it is the
+#  one that matters: a NEW subsystem with no declared band still FAILS.
+UNPLACED_KNOWN = set()
 
 
 def edges():
@@ -211,14 +223,15 @@ def main() -> int:
         return 1
 
     print(f"check_layering: OK -- {sum(len(v) for v in g.values())} subsystem "
-          f"edge(s) measured; no NEW upward edge and no NEW cycle.  "
-          f"{len(PINNED_UP)} upward edge(s) and {len(PINNED_CYCLES)} cycle(s) "
-          "remain PINNED as declared debts (module-boundaries.md F1/F2, D1/D2) "
-          "-- this gate BOUNDS I17 and I18, it does not make them true, and "
-          "the invariant table still reads them as violated.  "
-          f"UNCHECKED, not clean: {', '.join(sorted(UNPLACED_KNOWN))} are "
-          "absent from the declared layering (D6) and are excluded from both "
-          "checks.")
+          f"edge(s) measured across all {len(BAND)} declared subsystems; no NEW "
+          f"upward edge and no NEW cycle.  {len(PINNED_UP)} upward edge "
+          f"(`unitOperations` -> `reporting`, debt D7) and {len(PINNED_CYCLES)} "
+          "cycle(s) remain pinned -- one of which (`solver` <-> `thermo`) is "
+          "ACCEPTED by ruling §7.3 and is not a debt.  This gate BOUNDS I17 and "
+          "I18; with one edge outstanding it still does not assert them, and "
+          "the invariant table must keep saying so.  Nothing is excluded from "
+          "the checks any more (D6 paid): a subsystem with no declared band "
+          "FAILS rather than being skipped.")
     return 0
 
 

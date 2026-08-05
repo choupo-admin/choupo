@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Joback.H"
-#include "DerivedClosures.H"
+#include "thermo/DerivedClosures.H"
 
 #include "core/Dictionary.H"
 #include "thermo/Database.H"

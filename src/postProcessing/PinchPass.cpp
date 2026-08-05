@@ -16,7 +16,7 @@ License
 #include "PinchPass.H"
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "core/Units.H"
 
 #include <algorithm>

@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "ResultEmitter.H"
+#include "result/ResultEmitter.H"
 #include "thermo/SealCheck.H"
 
 #include <cmath>

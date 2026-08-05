@@ -55,7 +55,13 @@ ifeq ($(STRICT),1)
     WARN += -Werror
 endif
 
-INCLUDES := -Isrc
+#  `-I.` puts the PROJECT ROOT on the include path so `generated/gitVersion.H`
+#  is reachable by its own rooted name.  Without it, the only way to see the
+#  generated tree from `src/core/` was `"../../generated/gitVersion.H"` -- the
+#  one `../` include that leaves `src/` entirely, and the reason debt D4 had to
+#  carry a named exception.  A rule with an exception is weaker than a rule:
+#  the contract is now simply *no `../` include leaves its own subsystem*.
+INCLUDES := -Isrc -I.
 
 CXXFLAGS := $(CXXSTD) $(OPT) $(WARN) $(INCLUDES) -pthread
 LDFLAGS  := $(LDFLAGS_PLATFORM) -pthread

@@ -65,7 +65,7 @@ Why a hand-rolled emitter
 
 #pragma once
 
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 
 #include <ostream>
 

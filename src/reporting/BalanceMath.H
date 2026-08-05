@@ -36,7 +36,7 @@ Description
 
 #pragma once
 
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "core/Types.H"
 #include "thermo/ElementComposition.H"
 #include "streams/ProcessStream.H"

@@ -47,7 +47,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"   // TimelineEvent (the sequence/Gantt feed)
+#include "result/SimulationResult.H"   // TimelineEvent (the sequence/Gantt feed)
 #include "core/Types.H"
 #include "thermo/ThermoPackage.H"
 

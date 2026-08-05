@@ -28,7 +28,7 @@ License
 
 #include "ParetoSweepDriver.H"
 #include "OptimizationDriver.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 
 #include <fstream>
 #include <iomanip>

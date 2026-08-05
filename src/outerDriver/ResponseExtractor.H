@@ -52,7 +52,7 @@ Description
 #pragma once
 
 #include "core/Dimensions.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 
 #include <string>
 

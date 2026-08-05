@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "OdsWriter.H"
+#include "io/OdsWriter.H"
 #include "core/MiniZip.H"
 
 #include <cstdio>

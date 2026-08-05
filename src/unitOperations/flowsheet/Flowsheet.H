@@ -89,7 +89,7 @@ Dictionary form (topology only -- state in 0/):
 #include "streams/StreamOverrides.H"
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"

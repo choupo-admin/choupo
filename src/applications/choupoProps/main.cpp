@@ -50,7 +50,7 @@ Description
 #include "core/Banner.H"
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
 #include "curation/AqueousGraph.H"

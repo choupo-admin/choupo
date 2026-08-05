@@ -28,7 +28,7 @@ License
 
 #include "EstimateComponent.H"
 #include "ConstantEstimator.H"
-#include "DerivedClosures.H"
+#include "thermo/DerivedClosures.H"
 
 #include "thermo/Database.H"
 #include "thermo/vaporPressure/AmbroseWalton.H"

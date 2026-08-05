@@ -28,7 +28,7 @@ License
 
 #include "SweepDriver.H"
 #include "ResponseExtractor.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 #include "postProcessing/PostProcessor.H"
 #include "streams/StreamOverrides.H"
 

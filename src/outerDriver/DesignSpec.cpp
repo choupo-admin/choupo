@@ -29,7 +29,7 @@ License
 #include "DesignSpec.H"
 #include "ResponseExtractor.H"
 #include "core/Dictionary.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 #include "solver/NewtonND.H"
 #include "streams/StreamOverrides.H"
 

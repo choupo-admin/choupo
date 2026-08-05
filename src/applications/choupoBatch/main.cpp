@@ -81,7 +81,7 @@ Description
 #include "unitOperations/batch/BatchUnitOperation.H"
 #include "io/SolutionWriter.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
-#include "core/ResultEmitter.H"
+#include "result/ResultEmitter.H"
 
 #include <algorithm>
 #include <filesystem>

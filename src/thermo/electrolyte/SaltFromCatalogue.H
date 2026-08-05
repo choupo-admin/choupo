@@ -41,7 +41,7 @@ License
 
 #pragma once
 
-#include "../../core/Identifiers.H"
+#include "core/Identifiers.H"
 #include "thermo/Database.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"

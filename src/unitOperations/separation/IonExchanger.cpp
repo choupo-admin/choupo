@@ -29,7 +29,7 @@ License
 #include "IonExchanger.H"
 
 #include "core/Advisory.H"
-#include "propertyOps/Exchange.H"                     // propertyOps::readExchange
+#include "thermo/electrolyte/ExchangeInput.H"        // electrolyte::readExchange
 #include "thermo/electrolyte/SaltFromCatalogue.H"     // findIon, ionMW
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "thermo/ThermoPackage.H"
@@ -194,7 +194,7 @@ int IonExchanger::solve(const DictPtr& dict,
             "No default is applied.");
     // The package owns the engine; this unit borrows it.
     const electrolyte::SpeciationSolver& solver = thermo.speciator();
-    propertyOps::readExchange(wrap, in, solver, verbosity);
+    electrolyte::readExchange(wrap, in, solver, verbosity);
 
     // bedVolume : optional HARDWARE, the per-litre CEC nameplate then has a
     // physical resin-in-service.  v1 keeps the CEC eq/kg-water basis (the

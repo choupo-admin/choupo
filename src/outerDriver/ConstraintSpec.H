@@ -52,7 +52,7 @@ Struct
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "ResponseExtractor.H"
 
 #include <algorithm>

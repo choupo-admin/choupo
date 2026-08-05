@@ -131,7 +131,7 @@ Description
 #pragma once
 
 #include "streams/ProcessStream.H"
-#include "core/SimulationResult.H"   // FlatUnit (flattened unit interface)
+#include "result/SimulationResult.H"   // FlatUnit (flattened unit interface)
 #include "core/Types.H"
 
 #include <map>

@@ -31,8 +31,8 @@ License
 // Written by the build (`make` -> gitversion rule) with a content-compare,
 // so an unchanged hash never dirties the incremental build; absent in a
 // source tarball, in which case the dev banner simply omits the commit.
-#if __has_include("../../generated/gitVersion.H")
-#include "../../generated/gitVersion.H"
+#if __has_include("generated/gitVersion.H")
+#include "generated/gitVersion.H"
 #endif
 
 #include <iostream>

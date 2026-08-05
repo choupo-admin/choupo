@@ -26,7 +26,7 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 File
-    src/propertyOps/DerivedClosures.H
+    src/thermo/DerivedClosures.H
 
 Description
     THE one home of the derived-closure correlations that the

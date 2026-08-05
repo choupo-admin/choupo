@@ -56,7 +56,7 @@ License
 #include "core/Constants.H"
 #include "henrysLaw/HenrysLawRegistry.H"
 #include "solution/SolutionRegistry.H"
-#include "propertyOps/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
+#include "thermo/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
 #include "core/Advisory.H"
 #include "thermo/RecordResolver.H"   // case-local mirrored constant/mixtures/ (sealing)
 

@@ -46,12 +46,18 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/FlatUnit.H"          // topology, not output -- see that header
 #include "core/ThermoResolution.H"
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/SaturationCurves.H"
-#include "unitOperations/UnitProfile.H"   // profiles only -- never the
-                                          //   unit-op hierarchy (build hygiene)
+#include "result/UnitProfile.H"      // profiles only -- never the unit-op
+                                    //   hierarchy (build hygiene).  Moved out
+                                    //   of `unitOperations/` with this header:
+                                    //   a profile is something the pipeline
+                                    //   PRODUCED, and leaving it there made
+                                    //   `result` and `unitOperations` include
+                                    //   each other (debt D2).
 
 #include <map>
 #include <set>
@@ -74,19 +80,10 @@ struct EquipmentSizing
     std::map<std::string, scalar>                values;   // "D", "H", "A", "t_wall", "weight",...
 };
 
-// One unit's interface after the flowsheet is FLATTENED (fractal):
-// name + equipment type + the resolved (namespaced) inlet / outlet stream
-// names.  Populated by Flowsheet::solve from the post-flatten unit list, so
-// the per-unit reports (mass/energy balance, the per-equipment balance
-// sheet) see the real equipment even when the case is a COMPOSITE plant ---
-// where the flowsheetDict alone only exposes the system boundary.
-struct FlatUnit
-{
-    std::string              name;
-    std::string              type;
-    std::vector<std::string> ins;
-    std::vector<std::string> outs;
-};
+//  `FlatUnit` used to be declared HERE, and that is what made `core` reach up
+//  into `streams`, `thermo` and `unitOperations`.  It is topology, it reads
+//  nothing, and it now lives in `core/FlatUnit.H` -- which this header
+//  includes, so `result.topology` below is unchanged for every reader.
 
 // Energy wire.  A direct scalar coupling from one unit's
 // `energyOutputs` declaration to another's `energyInputs`: shaft power

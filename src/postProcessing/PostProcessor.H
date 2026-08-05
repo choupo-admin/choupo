@@ -54,7 +54,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 
 #include <functional>
 #include <map>

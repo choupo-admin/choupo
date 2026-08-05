@@ -21,9 +21,9 @@ License
 
 #include "AqueousGraph.H"
 
-#include "../thermo/Database.H"
-#include "../thermo/RecordResolver.H"
-#include "../core/Dictionary.H"
+#include "thermo/Database.H"
+#include "thermo/RecordResolver.H"
+#include "core/Dictionary.H"
 
 #include <algorithm>
 #include <cmath>

@@ -40,7 +40,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-#include "core/SimulationResult.H"
+#include "result/SimulationResult.H"
 #include "materials/Material.H"
 
 #include <functional>
