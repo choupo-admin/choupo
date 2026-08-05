@@ -1003,6 +1003,29 @@ PYEOF
     fi
     rm -f /tmp/ebul.$$
 
+    # review-status gate (AP2, 2026-08-05).  67 records carried "PROPOSAL
+    # TIER -- UNVERIFIED" in the BANNER, which the parser discards -- so the
+    # announce-or-refuse doctrine could not see them, including in cavett01,
+    # where 7 of 16 records are such imports and the case carries this
+    # project's strongest external-validation claim.  The status now lives in
+    # a parsed field and the engine voices it.
+    # The gate checks it FROM A SEALED CASE (so the seal is proven to carry
+    # the field), counts one line per record rather than accepting any line,
+    # requires the remedy, and RATCHETS: no record may keep its status in a
+    # comment again.  The negative is the point -- an unmarked case must stay
+    # SILENT, because an announcement that fires on everything is noise.
+    # Sabotage-verified twice: engine silenced (0 of 7), and announcing
+    # unconditionally (16 of 7, and the silent case speaks).
+    if "$ROOT/bin/curate/check_review_status.py" > /tmp/rvst.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "review-status-gate" "$(tail -1 /tmp/rvst.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_review_status.py)\n" "review-status-gate"
+        cat /tmp/rvst.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rvst.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
