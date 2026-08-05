@@ -110,6 +110,27 @@ more than one place, the answers are not two implementations — they are one
 decision with a second home**, and the fix is to give it a single one, not to
 make the copies agree.
 
+### 3b. Two founding decisions are asserted, not argued
+
+Stated here because silence would read as agreement, and because this section
+is where a reader looks for the reasoning behind a CLOSED decision.
+
+**Make + custom rules, no CMake** and **file-first dictionaries, never
+YAML/JSON/TOML** are recorded as settled and are nowhere reasoned — not in
+`CLAUDE.md`, not in `docs/design/`, not here.  They may well be right; the
+point is that a reader who was not present cannot tell why, and *"it was
+decided"* is not an argument.
+
+The other three founding decisions ARE argued, contrary to what the decision
+index first claimed: C++17-without-external-libraries in the licence policy
+and the COSMO reversal, explicit factories in `CLAUDE.md` §5 (pedagogical
+clarity, the static-init order fiasco, pattern consistency), and one-binary-
+per-problem-class at least as to its boundary.
+
+Correcting that overcount is itself the lesson: the index measured the corpus
+once and then remembered its answer.  See
+[`decision-records.md`](decision-records.md) §4.
+
 ## 4. Things this project will NEVER do
 
 *Moved verbatim from `CLAUDE.md` §10, which may no longer define them.*

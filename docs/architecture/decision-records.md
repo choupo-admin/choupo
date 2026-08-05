@@ -133,11 +133,11 @@ predate the design-record practice and their reasoning survives only in
 
 | closed decision | argued in |
 |---|---|
-| C++17, no external libraries | `CLAUDE.md` §10 only — **no record** |
-| Make, no CMake | `CLAUDE.md` §10 only — **no record** |
-| Explicit factory, no auto-registration | `CLAUDE.md` §5 only — **no record** |
-| File-first dictionaries, never YAML/JSON | `CLAUDE.md` §10 only — **no record** |
-| One binary per problem class | `CLAUDE.md` §10 only — **no record** |
+| C++17, no external libraries | **ARGUED** — `CLAUDE.md` §10 licence policy ("favours readable, local C++ over dependency expansion") and the COSMO reversal, which states what the rejection was *against*: bloat — heavy deps, quantum chemistry, bulk imports, a new architecture |
+| Make, no CMake | **UNARGUED** — asserted, never reasoned, anywhere |
+| Explicit factory, no auto-registration | **ARGUED** — `CLAUDE.md` §5 gives three reasons: pedagogical clarity, the static-init order fiasco, and pattern consistency |
+| File-first dictionaries, never YAML/JSON | **UNARGUED** — asserted, never reasoned, anywhere |
+| One binary per problem class | **PARTLY ARGUED** — the *boundary* is argued (do not split within a class; strategies coexist, selected by dict) but not the choice of one-per-class over one-binary-total |
 | GPL-3.0-or-later, no CLA | `CONTRIBUTING.md`, `TRADEMARKS.md` |
 | Brand casing | `CLAUDE.md` §10 |
 | Flat `components/` | `CLAUDE.md` §7 |
@@ -145,9 +145,26 @@ predate the design-record practice and their reasoning survives only in
 | Estimation is a curation problem | [`property-architecture.md`](property-architecture.md) |
 | The repository is English (US) | `CLAUDE.md` §5, [`project-philosophy.md`](project-philosophy.md) §5 |
 
-**Five founding decisions have no record of their reasoning.**  They are the
-oldest and the most likely to be challenged by someone who was not there.
-Writing them is a named action, not a formality.
+**This table was WRONG when first written, and the correction is the point.**
+It claimed all five founding decisions had no record.  Re-reading the sources
+instead of the index found that **two of the five are fully argued** and a
+third is argued in part — the reasoning existed, in `CLAUDE.md` §5 and in the
+licence-policy and COSMO-reversal passages of §10, which is simply not where
+the index looked.
+
+**Exactly two are genuinely unargued: Make-not-CMake, and file-first
+dictionaries.**  Both are asserted and never reasoned, anywhere in the tree.
+
+This is the same defect as the provenance audit's species list, in the
+opposite direction: that one **undercounted** violations (seventeen named,
+eighteen found), this one **overcounted** them (five claimed, two real).  One
+cause — *a hand-compiled list is itself a hand-maintained derived fact*, and
+an index that measures the corpus without re-reading it drifts from the
+corpus.  A gate recounts; a list remembers what it was told once.
+
+The two real gaps stay named.  They are the oldest decisions and the most
+likely to be challenged by someone who was not there, and *"it was decided"*
+is not an argument.
 
 ## 5. What this index shows that no individual record could
 

@@ -115,7 +115,7 @@ turns four known problems from folklore into stated inconsistencies.
 | **C2** | V2 ↔ V7 | every invariant shall have an engine refusal and a case that fires it | **INCONSISTENT** — I17, I18, I19 have neither |
 | **C3** | V7 ↔ the corpus | a contract with no firing case is marked *described, not consolidated* | consistent (the map marks them) |
 | **C4** | any view ↔ a generated artefact | a generated number has a generator and a staleness gate, never a copy | consistent (4 gates) |
-| **C5** | V1 §5 ↔ V8 | every CLOSED decision shall point to the record that argued it | **INCONSISTENT** — 6 of 11 do; 5 founding decisions have no record (AD1) |
+| **C5** | V1 §5 ↔ V8 | every CLOSED decision shall point to the record that argued it | **INCONSISTENT** — 9 of 11 do; **2** founding decisions are genuinely unargued (Make-not-CMake, file-first dicts).  The first count said 5; re-reading the sources rather than the index corrected it (AD1) |
 | **C6** | V4/V5/V6 ↔ the guides | every path and case name in an AI-facing doc shall resolve | consistent (`check_doc_references`, 234 paths) |
 | **C7** | V9 ↔ the tree | a banned wording shall not appear in a live document or identifier | **INCONSISTENT** — one of six bans is gated; and one ban is contradicted by level-1 text and by engine comments (glossary G7) |
 

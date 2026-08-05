@@ -119,7 +119,7 @@ argued with rather than being invisible in an omitted row.
 |---|---|---|
 | **A1** | ~~Write the ADR index~~ — DONE 2026-08-05, [`decision-records.md`](decision-records.md).  Closed R11 and C5.  **What it did not close, and these are now separate actions:** | R11 ✓, C5 ✓ |
 | **A1a** | Give records identifiers and a declared kind/status header, so the index reads them instead of inferring them (= AD3) | R14 |
-| **A1b** | The five founding decisions gain a record of their reasoning, or philosophy §5 says the argument is unrecorded (= AD1) | R15, C5 |
+| **A1b** | ~~The five founding decisions~~ — **TWO**, corrected 2026-08-05 by re-reading the sources instead of the index: Make-not-CMake and file-first dictionaries are genuinely unargued.  The other three are argued in `CLAUDE.md` §5/§10.  Either write the two arguments or state in philosophy §5 that they are unrecorded (= AD1) | R15, C5 |
 | **A1c** | A record states which view(s) it changes | R16 |
 | **A2** | Give the architecture description as a whole a version identifier and a change history distinct from git | R5 |
 | **A3** | Obtain a licensed copy of 42010:2022 and map each row to its clause number; correct any row this reveals as misstated | the accuracy of this entire table |
