@@ -137,3 +137,65 @@ tier boundary is decorative.
 | **AP7** | Machine-readable validity matches the header, or the header is removed. | |
 
 **AP1 and AP2 gate the 2608 release.  The rest are quality.**
+
+---
+
+## Closure, 2026-08-05 — five acted on, two open, and one wrong count
+
+| id | outcome |
+|---|---|
+| **AP1** | done — `check_source_licence` distinguishes a route (`via`) from an authority; 4 pinned, 2 innocent records cleared |
+| **AP2** | done — `reviewStatus` parsed and ANNOUNCED, 67 records migrated, 5 sealed cases re-imported, `check_review_status` fires from a sealed case |
+| **AP3** | done, and **larger than stated** — see below |
+| **AP4** | **OPEN — needs Vítor.** Gated and pinned, not decided |
+| **AP5** | done — `check_species_citation`, and the count was **eighteen, not seventeen** |
+| **AP6/AP7** | not yet acted on |
+
+### AP3 was a symptom; the defect was one layer down
+
+The action asked for "a gate refusing `Trange` with `hi <= lo`". Writing it
+found that `PolynomialCp` — the most common heat-capacity model in the corpus
+— **assigned `Tmin_`/`Tmax_` in its constructor and never read them again**.
+The window was parsed and discarded, so invariant I4 was unimplemented on that
+path entirely.
+
+That is why the six inverted windows did no visible harm: nothing looked at
+them. **Harmless-because-unchecked is not safety.** And the first sweep after
+the fix found two corpus cases already extrapolating in silence
+(`crystalliser09`, `solidDryer01_sugar`) — neither a bug, since extrapolation
+is legitimate, but nobody was being told.
+
+### AP5: the list was already short on the day it was written
+
+The action named seventeen uncited species. `check_species_citation` found
+**eighteen** on its first run — `Acetate.dat`. A hand-compiled list of
+violations is itself a hand-maintained derived fact, which is the arity sin in
+audit form. **The gate recounts; the list remembers.**
+
+### What was deliberately NOT done
+
+Three values were left alone, and in each case writing something would have
+been worse than the gap:
+
+- **AP1's four pinned records** — a substitute datum must come from a primary,
+  and `H3PO4`'s own header records that the primary gives a *different* number
+  from the shipped one, so fixing it is a value change that moves a golden.
+- **AP4's NF270** — the header says what the values were *chosen to
+  reproduce*, not what was measured, and the shipped numbers may have been
+  tuned for the teaching case. Picking a side without the data sheet is a
+  guess wearing a citation.
+- **AP5's eighteen citations** — inventing a plausible reference converts
+  *unsourced* into *falsely sourced*, and the second is undetectable by a
+  reader or a gate.
+
+**A visible gap is strictly better than an invisible falsehood.** Every one of
+these is pinned, and every pin list is a curation work-list that fails if a
+name is removed without the record being fixed.
+
+### The coverage limits, stated
+
+`check_record_self_consistency` compares **1 of 12** asset records — the rest
+document no comparable number in a parseable form, and sabotaging `SW30HR`
+did *not* fail the gate. That limit was found by sabotage, not assumed away,
+and the gate's own OK line reports it: the other eleven are **unchecked, not
+clean**.
