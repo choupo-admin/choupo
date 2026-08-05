@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/InfeasibleTrial.H"
+#include "core/Advisory.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
 #include "solver/NewtonRaphson.H"
@@ -474,7 +475,39 @@ int DistillationColumn::solve(const DictPtr& dict,
         try { thermo.H_stream_formation(Tf, P, 1.0 - q, z);
               thermo.H_stream_formation(T[0], P, 0.0, xD);
               thermo.H_stream_formation(T[N-1], P, 0.0, x[N-1]); }
-        catch (const std::exception&) { elem = false; }
+        catch (const std::exception& e)
+        {
+            elem = false;
+            //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
+            //  REACTIVE column that is not a lost decimal: the elements datum
+            //  is what carries the heat of reaction, so dropping to the
+            //  sensible datum DELETES it from the reboiler duty.  The column
+            //  converged, printed a duty, and exited 0.
+            //
+            //  Flowsheet.cpp answers the identical question correctly, and the
+            //  wording here is deliberately ITS wording -- same channel, same
+            //  once-per-cause suppression -- because the two are ONE decision
+            //  ("what does a missing formation datum mean?") and a reader must
+            //  not have to learn two vocabularies for it.  They still perform
+            //  DIFFERENT fallbacks (blend there, sensible here), so this is an
+            //  announcement made consistent, NOT a shared home; the shared home
+            //  is the open half of AS9 and is recorded rather than pretended.
+            //
+            //  BOTH column paths carry this catch -- Wang-Henke and
+            //  simultaneous.  The audit named one; a fix applied to one would
+            //  have left the other silent and looked complete.
+            if (AdvisoryLog::instance().add("thermo", "warning",
+                                            "enthalpy-gap", e.what()))
+                std::cerr << "[thermo] enthalpy GAP (formation datum): "
+                          << e.what()
+                          << "\n          -> the column's energy items fall back"
+                             " to the SENSIBLE datum (a degraded datum: it"
+                             " drifts from the canonical surface and never"
+                             " enters a closed balance).\n"
+                             "          -> IF THIS COLUMN REACTS, the heat of"
+                             " reaction is NOT in the reboiler duty reported"
+                             " below; fix the species data to close it.\n";
+        }
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
             return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
                       : Fx * thermo.Hliquid(Tx, zx);
@@ -1150,7 +1183,39 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         try { thermo.H_stream_formation(Tf, P, 1.0 - q, z);
               thermo.H_stream_formation(T[0], P, 0.0, xD);
               thermo.H_stream_formation(T[N-1], P, 0.0, x[N-1]); }
-        catch (const std::exception&) { elem = false; }
+        catch (const std::exception& e)
+        {
+            elem = false;
+            //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
+            //  REACTIVE column that is not a lost decimal: the elements datum
+            //  is what carries the heat of reaction, so dropping to the
+            //  sensible datum DELETES it from the reboiler duty.  The column
+            //  converged, printed a duty, and exited 0.
+            //
+            //  Flowsheet.cpp answers the identical question correctly, and the
+            //  wording here is deliberately ITS wording -- same channel, same
+            //  once-per-cause suppression -- because the two are ONE decision
+            //  ("what does a missing formation datum mean?") and a reader must
+            //  not have to learn two vocabularies for it.  They still perform
+            //  DIFFERENT fallbacks (blend there, sensible here), so this is an
+            //  announcement made consistent, NOT a shared home; the shared home
+            //  is the open half of AS9 and is recorded rather than pretended.
+            //
+            //  BOTH column paths carry this catch -- Wang-Henke and
+            //  simultaneous.  The audit named one; a fix applied to one would
+            //  have left the other silent and looked complete.
+            if (AdvisoryLog::instance().add("thermo", "warning",
+                                            "enthalpy-gap", e.what()))
+                std::cerr << "[thermo] enthalpy GAP (formation datum): "
+                          << e.what()
+                          << "\n          -> the column's energy items fall back"
+                             " to the SENSIBLE datum (a degraded datum: it"
+                             " drifts from the canonical surface and never"
+                             " enters a closed balance).\n"
+                             "          -> IF THIS COLUMN REACTS, the heat of"
+                             " reaction is NOT in the reboiler duty reported"
+                             " below; fix the species data to close it.\n";
+        }
         auto H = [&](scalar Fx, scalar Tx, scalar vfx, const sVector& zx) {
             return elem ? Fx * thermo.H_stream_formation(Tx, P, vfx, zx)
                       : Fx * thermo.Hliquid(Tx, zx);
