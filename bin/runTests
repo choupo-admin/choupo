@@ -1110,6 +1110,32 @@ PYEOF
     fi
     rm -f /tmp/rsc.$$
 
+    # species-citation gate (AP5, 2026-08-05).  I3 -- "every value carries its
+    # provenance" -- is the invariant a reader cannot check for himself: an
+    # unsourced number is untraceable and looks exactly like a sourced one.
+    # 18 aqueous species carry hfAq/sAq/cpAq with no source, under a header
+    # that says "citations ride".  Nothing rode.
+    # The audit's hand-compiled list said SEVENTEEN; this gate found Acetate
+    # on its first run.  A hand-maintained list of violations is itself a
+    # hand-maintained derived fact -- the gate recounts, the list remembers.
+    # The missing citations are NOT written: inventing one turns "unsourced"
+    # into "falsely sourced", which no reader and no gate can detect.  The pin
+    # list is the curation work-list.
+    # It claims only that a citation EXISTS, never that it is right -- that
+    # needs a curator reading the primary.
+    # Sabotage-verified twice: strip Cl.dat's source (fails by name), and pin
+    # a record that IS cited (stale-pin failure, so the list cannot decay into
+    # a blanket exemption).
+    if "$ROOT/bin/curate/check_species_citation.py" > /tmp/spcit.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-citation-gate" "$(tail -1 /tmp/spcit.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_citation.py)\n" "species-citation-gate"
+        cat /tmp/spcit.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/spcit.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
