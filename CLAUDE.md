@@ -676,6 +676,58 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building
+them found.**  Three audits (arity, silent fallbacks, provenance) were acted
+on end to end.  The engine changes are small; the pattern is the point, and it
+is now doctrine (`project-philosophy.md` §3a, invariant I1):
+
+* **The arity doctrine covers DECISIONS, not only values.**  The forward
+  reaction `order` had FIVE readers with FIVE defaults, and a reactant with no
+  declared order silently left its own rate law (exponent 0) — exit 0,
+  plausible number.  One home now: `Reaction::forwardOrder`, refusing by name.
+  The *reverse* order defaults meaningfully because detailed balance fixes it;
+  the forward one is a fact about the MECHANISM and is not derivable.
+* **A CHECK THAT CANNOT RUN MUST NOT PASS.**  Found twice in one day:
+  `bin/buildSite` WARNed and published when `pdftotext` was absent (so the
+  guide-version gate never ran in CI, the only place that publishes), and
+  `check_true_ions` reported PASS on every run while both its inputs had been
+  deleted — a permanently-green gate is worse than none.  The first refuses
+  now; the second is retired.
+* **A field the engine cannot see is a comment.**  67 records carried
+  `PROPOSAL TIER -- UNVERIFIED` in a banner the parser discards, including 7
+  of the 16 in `cavett01`, the flagship external-reference case.
+  `reviewStatus` is parsed and ANNOUNCED now (`[unreviewed]`, beside `[local]`
+  and `[estimate]`).
+* **A declared validity window was parsed and DISCARDED.**  `PolynomialCp`
+  assigned `Tmin_`/`Tmax_` and never read them, so I4 was unimplemented on the
+  commonest Cp path — which is why six inverted windows did no visible harm.
+  *Harmless-because-unchecked is not safety.*
+* **K_b is DERIVED, and the derivation is OPT-IN.**  `R·Tb²·M/ΔHvap` from the
+  record's own inputs; the declared value stays as a validating anchor.  The
+  first version derived for every solvent and gave BPE to a case that models
+  without it — an absence must keep meaning what it meant.
+* **FOUR hand-compiled counts were wrong**, in both directions — the uncited-
+  species list was short by one, the unargued-founding-decision list long by
+  three, the upward-edge and cycle counts both short, the crossing-`../` count
+  short by one.  *A measurement taken once and then remembered is a derived
+  fact with a second home.*  The live numbers live in the gates that recount
+  them, and are deliberately not repeated here.
+
+**What was deliberately NOT done, and why it is the substantive half:** four
+NEVER-list records, the NF270 40× contradiction and eighteen missing citations
+are PINNED, not fixed.  Inventing a citation converts *unsourced* into
+*falsely sourced*, which no reader and no gate can detect.  **A visible gap is
+strictly better than an invisible falsehood.**  Every pin list fails if a name
+is removed without the record being fixed.
+
+Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` ·
+`check_cp_range_announced` · `check_column_datum_downgrade` ·
+`check_glossary_bans` · `check_species_citation` · `check_source_licence` ·
+`check_validity_windows` · `check_record_self_consistency` ·
+`check_economics_honesty` · `check_layering`.  All sabotage-verified; three
+state coverage they do NOT have, because a gate that implies more is worse
+than one that reports less.
+
 **A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).**
 `ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for
 equilibrium.  Molecular package → forwards to `Kvec`, byte-identical (all 12

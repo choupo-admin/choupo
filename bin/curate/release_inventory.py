@@ -225,6 +225,10 @@ DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md",
 #  are named here instead.  The fix is to GENERATE that table, as the site
 #  pages already are; recorded as AR5.
 DOC_COUNT_ALLOW = [
+    ("CLAUDE.md", "67 records carried",
+     "a CLOSED migration's size, fixed for ever -- not a corpus tally that "
+     "can drift.  The live count of what remains unreviewed is in "
+     "check_review_status, which recounts it."),
     ("CLAUDE.md", "kept 9 of its 28 pair parameters",
      "a measurement of ONE sealing defect, not a corpus size"),
     ("CLAUDE.md", "14/14 tear cases already satisfy it",
