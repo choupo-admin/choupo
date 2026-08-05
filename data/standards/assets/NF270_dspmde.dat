@@ -65,6 +65,15 @@ kind           NF;
 manufacturer   "DuPont FilmTec";
 
 A_w            1.0e-5  m/s/bar;     // same as NF270.dat
+//  PROVENANCE OF THE TRANSPORT PARAMETERS -- machine-readable, because a
+//  tier that changes how a number should be READ must not live only in a
+//  comment.  The header says these values 'reproduce' a published
+//  rejection; that makes them a FIT to a sourced target, not a vendor
+//  coefficient, and the two must never be read as the same thing.
+provenance     fittedToCase;
+fittedAgainst  membrane10_dspmde_divalent;
+intendedUse    pedagogicalCalibration;
+
 
 permeabilities                       // solution-diffusion B_s (unused by DSPM-DE)
 {

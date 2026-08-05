@@ -302,7 +302,18 @@ anchors.
 Yet [`architecture-description.md`](architecture-description.md) §1 calls the
 corpus "the validation corpus" and V7 is named "Validation / credibility".
 
-> **Recommendation: split the name, do not redefine the word.**  Call the
+> **DECIDED 2026-08-05 (delegated by Vítor).  The recommendation below is
+> adopted, and the corpus is renamed.**  `bin/runTests` is the **verification
+> and regression corpus**, and it contains a small, NAMED validation subset.
+> The reason the stricter reading wins: 421 PASS proves the answers have not
+> moved from what Choupo itself recorded.  It proves nothing about whether
+> NF270's glucose permeability, carbon steel's density or any other physical
+> datum is right — and calling the whole thing "validation" invites exactly
+> that inference from the reader most likely to check it.
+>
+> Recorded in full: [`verification-and-validation.md`](verification-and-validation.md).
+>
+> *Original recommendation, adopted:* **split the name, do not redefine the word.**  Call the
 > corpus what it is — a **regression and validation corpus** — and mark each
 > case as verified-against-golden or validated-against-anchor, which the tree
 > already distinguishes in substance.  Redefining *validation* locally would

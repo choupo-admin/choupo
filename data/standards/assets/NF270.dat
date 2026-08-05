@@ -16,20 +16,39 @@
                    (NF270 is ~10× more permeable to water than SW30HR --- the
                     classic NF vs RO trade-off)
 
-  Solute permeabilities are chosen to reproduce manufacturer-published
-  rejections at typical test conditions:
-      NaCl     ~ 2 × 10⁻⁶  m/s  →  obs rejection ~ 50-70 % at 2 g/L
-      MgSO4    ~ 5 × 10⁻⁸  m/s  →  obs rejection ~ 98 %
-      glucose  ~ 2 × 10⁻⁷  m/s  →  obs rejection ~ 50 %
+  THE PERMEABILITIES BELOW ARE FITTED, NOT MEASURED, and the record now says
+  so in a field the engine reads (`provenance fittedToCase`) rather than only
+  in this comment.  What was published is a REJECTION; what Choupo needs is a
+  solution-diffusion B.  Those are different quantities, and the fit is the
+  bridge between them.
 
-  Source (named public document):
-     DuPont Water Solutions, FilmTec NF270-400 Product Data Sheet
-     (public).  Standard test conditions there: 2000 ppm MgSO4,
-     4.8 bar (70 psi), 25 °C, 15 % recovery — stabilized MgSO4
-     rejection ≥ 97 %.  The permeabilities below are Choupo
-     solution-diffusion fits that reproduce that datasheet
-     performance (plus the typically published NaCl / glucose NF270
-     rejections); they are NOT vendor-tabulated coefficients.
+  TARGET REJECTIONS the fit aims at (these are the sourced quantities):
+      MgSO4    ≥ 97 %   — DuPont FilmTec NF270-400 Product Data Sheet, at its
+                          own standard test: 2000 ppm MgSO4, 4.8 bar (70 psi),
+                          25 °C, 15 % recovery
+      NaCl     ~ 50 %   — same document's stated NaCl performance at 2000 ppm,
+                          70 psi, 25 °C
+      glucose    (no citable figure obtained)
+
+  WHY THIS HEADER WAS REWRITTEN (2026-08-05).  It used to list three
+  PERMEABILITIES "~2e-6 / ~5e-8 / ~2e-7 m/s" beside the three it ships
+  (5.0e-6 / 5.0e-8 / 8.0e-6).  Two of the three disagreed — glucose by 40x —
+  so the file contained two conflicting claims about the same quantity and one
+  of them had to be false.  It is fixed by removing the false KIND of claim,
+  not by picking a number: the datasheet publishes rejections, so rejections
+  are what this header may quote.  The permeabilities have exactly one home,
+  the block below, and they are labelled for what they are.
+
+  A NOTE ON THE PHYSICS, because a previous audit got this wrong and the
+  correction is worth keeping.  Glucose is shipped MORE permeable than NaCl,
+  which was flagged as "backwards for a loose NF membrane".  It is not
+  obviously backwards for NF270 specifically: NaCl gains DONNAN exclusion from
+  a negatively charged membrane, while a neutral sugar at 180 Da against a
+  ~200 Da cutoff has only steric hindrance to rely on.  Low glucose rejection
+  on a loose NF is a reported behaviour, not an obvious error.  What is NOT
+  established is the NUMBER — no citable NF270 glucose rejection was found,
+  which is precisely why the value is marked fitted and the case that uses it
+  is calibration rather than validation.
 \*---------------------------------------------------------------------------*/
 
 name           NF270;
@@ -37,6 +56,13 @@ kind           NF;
 manufacturer   "DuPont FilmTec";
 
 A_w            1.0e-5  m/s/bar;     // much more permeable than RO
+
+//  PROVENANCE OF THE PERMEABILITY SET -- machine-readable, because a tier that
+//  changes how a number should be READ must not live only in a comment.
+provenance     fittedToCase;
+fittedAgainst  membrane02_NF_sugar;
+intendedUse    pedagogicalCalibration;
+
 permeabilities
 {
     NaCl       5.0e-6  m/s;     // R_obs ~ 60-70 % at 2 g/L

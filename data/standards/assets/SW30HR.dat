@@ -38,6 +38,15 @@ kind           RO;
 manufacturer   "DuPont FilmTec";
 
 A_w            1.0e-6  m/s/bar;
+//  PROVENANCE OF THE TRANSPORT PARAMETERS -- machine-readable, because a
+//  tier that changes how a number should be READ must not live only in a
+//  comment.  The header says these values 'reproduce' a published
+//  rejection; that makes them a FIT to a sourced target, not a vendor
+//  coefficient, and the two must never be read as the same thing.
+provenance     fittedToCase;
+fittedAgainst  membrane01_RO_NaCl_seawater;
+intendedUse    pedagogicalCalibration;
+
 permeabilities
 {
     NaCl       2.0e-8  m/s;

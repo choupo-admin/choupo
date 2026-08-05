@@ -27,7 +27,7 @@ corpus and its documentation set.
 
 **In scope:** the four solver binaries and their shared engine
 (`src/`), the curated data tree (`data/standards/`), the case format, the
-validation corpus (`tutorials/` + `bin/runTests`), and the documentation
+verification and regression corpus (`tutorials/` + `bin/runTests`), which carries a named validation subset, and the documentation
 layers.
 
 > *"Validation corpus" is the wording in question at glossary decision
@@ -189,11 +189,14 @@ Related but **not adopted as process**, with reasons:
   written (2026-08-05), so no term is coined against an established meaning.
   It surfaced one collision, and a consequential one: *validation* and
   *verification* are distinct and load-bearing in 24765 and in
-  NASA-STD-7009, and `bin/runTests` is described here as a validation corpus
-  while being almost entirely regression, i.e. verification.  Recorded as
-  glossary decision question **G2**, unresolved — it renames a viewpoint and
-  touches a credibility claim, so it is a ruling, not an edit.  The
-  consultation was working knowledge, not a licensed copy.
+  NASA-STD-7009, and `bin/runTests` was described here as a validation corpus
+  while being almost entirely regression, i.e. verification.  **Resolved
+  2026-08-05 (G2): the corpus is renamed** the verification and regression
+  corpus, with a named validation subset —
+  [`verification-and-validation.md`](verification-and-validation.md).  The
+  standard earned its keep here: consulting it changed a credibility claim
+  the project would otherwise have kept making.  The consultation was working
+  knowledge, not a licensed copy.
 
 ## 10. Permitted wording
 

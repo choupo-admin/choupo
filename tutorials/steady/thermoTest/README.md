@@ -68,4 +68,4 @@ runCase tutorials/props/thermoTest/model4_speciation_scaling      # choupoProps
 runCase tutorials/steady/thermoTest/model5_nrtl_flash
 ```
 
-Each ships a golden `expected`; `bin/runTests` validates all five.
+Each ships a golden `expected`; `bin/runTests` verifies all five against those goldens (regression, not validation -- see docs/architecture/verification-and-validation.md).

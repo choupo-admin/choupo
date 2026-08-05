@@ -662,7 +662,7 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `generated/releaseInventory.json`, or run `bin/curate/release_inventory.py`.
   What is stated below is the SHAPE of the corpus, never its size.
 * **Runnable tutorial cases** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
-  `bin/runTests` validates them via golden-master KPI + NaN/inf guard + the
+  `bin/runTests` VERIFIES them via golden-master KPI + NaN/inf guard + the
   doctrine + release-inventory gates (0 FAIL, 0 KNOWN-BROKEN; deliberate EXPECTED-FAILs).
 * The standard catalogue carries components (incl. the combustion library —
   GRI-Mech 3.0 + Burcat sulfur/chlorine/soot-PAH/low-T/NOx families), aqueous

@@ -2098,6 +2098,16 @@ if [ "$expected_fail" -gt 0 ]; then
     for n in "${EF_NAMES[@]}"; do echo "    - $n"; done
 fi
 echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
+#  WHAT THAT NUMBER MEANS (G2, 2026-08-05).  Almost every case above compares
+#  against a golden Choupo recorded itself, so a PASS proves the answer has NOT
+#  MOVED -- not that it was ever right.  This corpus used to be called "the
+#  validation corpus", which claimed the second thing while doing the first.
+#  Printing the distinction beside the tally is the point: the number is read
+#  far more often than any document about it.
+echo "  ^ verification + regression.  A PASS means the answer has not moved from"
+echo "    a self-recorded golden -- NOT that it is right.  The validation subset"
+echo "    (agreement with independent published results) is small and named in"
+echo "    docs/architecture/verification-and-validation.md"
 # The suite is GREEN iff nothing FAILS.  Known-broken + expected-fail are
 # tracked, visible, and non-gating -- the honest middle ground.
 [ "$fail" -eq 0 ]

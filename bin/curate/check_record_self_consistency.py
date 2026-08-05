@@ -66,16 +66,35 @@ SUP = {"⁰": "0", "¹": "1", "²": "2", "³": "3",
 #  2x is generous: a record rounding "~2e-6" to 2.5e-6 is not a contradiction.
 TOL = 3.0
 
-PINNED = {
-    "data/standards/assets/NF270.dat":
-        "header documents glucose ~2e-7 m/s and the record ships 8.0e-6 (40x), "
-        "so glucose is MORE permeable than NaCl -- backwards for a loose NF "
-        "membrane.  NOT fixed here: the header states what the values were "
-        "CHOSEN TO REPRODUCE, not a measurement, and the shipped numbers may "
-        "have been tuned for the teaching case.  Choosing between them moves "
-        "membrane02_NF_sugar's goldens and needs Vitor.",
-}
+#  NF270 IS NO LONGER PINNED -- the contradiction was resolved 2026-08-05, and
+#  not by choosing between the two numbers.
+#
+#  The header quoted three PERMEABILITIES beside the three the record ships;
+#  two disagreed, glucose by 40x.  But the datasheet does not publish
+#  permeabilities at all -- it publishes REJECTIONS.  So the header was quoting
+#  a kind of quantity its own cited source never stated, which is why it could
+#  drift: nothing anchored it.  The fix removes the false KIND of claim.  The
+#  header now quotes the sourced rejections (MgSO4 >= 97 %, NaCl ~ 50 %, both
+#  at the datasheet's own test condition) and says plainly that no citable
+#  glucose figure was obtained; the permeabilities keep ONE home, the block,
+#  and are labelled `provenance fittedToCase`.
+#
+#  Not a single value moved, so no golden moved.
+#
+#  ALSO CORRECTED: the audit called the shipped glucose value "backwards for a
+#  loose NF membrane" because it is more permeable than NaCl.  That is not
+#  obviously true for NF270 -- NaCl gains DONNAN exclusion from a negatively
+#  charged membrane, while a neutral sugar at 180 Da against a ~200 Da cutoff
+#  has only steric hindrance.  Low glucose rejection on a loose NF is reported
+#  behaviour.  What is unestablished is the NUMBER, which is exactly what
+#  `fittedToCase` now says.
+PINNED = {}
 
+#  A record that SHIPS transport parameters must declare where they came from.
+#  This is the rule that keeps the NF270 fix from decaying: the old header said
+#  "chosen to reproduce" in prose, which no reader and no tool could act on.
+#  A tier that changes how a number should be READ belongs in a field.
+PROVENANCE_VALUES = {"fittedToCase", "primarySource", "estimated"}
 
 def to_float(mant, exp):
     e = "".join(SUP.get(ch, ch) for ch in exp)
@@ -86,11 +105,39 @@ def to_float(mant, exp):
 
 
 def main() -> int:
-    bad, seen, nfiles, ncompared = [], set(), 0, 0
+    bad, seen, nfiles, ncompared, nprov = [], set(), 0, 0, 0
     for p in sorted((ROOT / "data/standards/assets").glob("*.dat")):
         text = p.read_text()
         nfiles += 1
         rel = p.relative_to(ROOT).as_posix()
+
+        #  (b) a shipped permeability set declares its provenance
+        #  MATCH THE KEYWORD, NOT THE WHOLE LINE.  A first version anchored on
+        #  `permeabilities\s*$` or `\s*\{`, so `permeabilities   // comment`
+        #  matched NEITHER -- NF270_dspmde.dat has exactly that, and the gate
+        #  skipped it silently while reporting OK.  A record escaping a check
+        #  because of a trailing comment is the same defect this gate exists to
+        #  catch, one level up.
+        if re.search(r'^\s*permeabilities\b', text, re.M):
+            m = re.search(r'^\s*provenance\s+(\w+)\s*;', text, re.M)
+            if not m:
+                bad.append(f"{rel}: ships a `permeabilities {{}}` block with no "
+                           "`provenance <fittedToCase|primarySource|estimated>;` "
+                           "field.  Prose saying values were 'chosen to "
+                           "reproduce' something is invisible to every reader "
+                           "and every tool; a tier that changes how a number "
+                           "should be READ belongs in a field.")
+            elif m.group(1) not in PROVENANCE_VALUES:
+                bad.append(f"{rel}: provenance '{m.group(1)}' is not one of "
+                           + "|".join(sorted(PROVENANCE_VALUES)))
+            else:
+                nprov += 1
+                if m.group(1) == "fittedToCase" and not re.search(
+                        r'^\s*fittedAgainst\s+\S+\s*;', text, re.M):
+                    bad.append(f"{rel}: `provenance fittedToCase` without "
+                               "`fittedAgainst <case>;` -- a fit that does not "
+                               "name what it was fitted to cannot be checked, "
+                               "and reads like a measurement.")
 
         documented = {}
         for m in DOC.finditer(text):
@@ -133,7 +180,10 @@ def main() -> int:
                   f"from PINNED ({PINNED[s][:60]}...)")
         return 1
 
-    print(f"check_record_self_consistency: OK -- {ncompared} of {nfiles} asset "
+    print(f"check_record_self_consistency: OK -- {nprov} record(s) ship a "
+          f"permeability set and every one declares its provenance (a fitted "
+          f"set must also name the case it was fitted against).  "
+          f"{ncompared} of {nfiles} asset "
           f"record(s) state header values this gate can compare, and every one "
           f"agrees with what is shipped within {TOL:g}x, except {len(PINNED)} "
           f"pinned contradiction(s) awaiting a ruling.  The other "
