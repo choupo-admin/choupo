@@ -121,4 +121,32 @@ cp "$src/CNAME" "$dist/" 2>/dev/null || true
 #  an underscore (the app's chunks can) would be silently dropped otherwise.
 touch "$dist/.nojekyll"
 
+#  THE PUBLISHED ARTEFACT IS THE ONE A READER OPENS.  On 2026-08-05
+#  choupo.org served a Theory Guide title page reading "Version 2607 / 30 June
+#  2026" while the repository's own PDF said Choupo-dev -- the deployed build
+#  was six days old, and nothing anywhere compared the two.  The in-repo half
+#  is now gated (bin/curate/check_guide_pdf_version.py); this is the other
+#  half, and it runs where the staleness actually appears: after assembly,
+#  against what is about to be published.
+if command -v pdftotext >/dev/null 2>&1; then
+    _want=$(sed -n 's/.*CHOUPO_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+            "$root/src/core/Banner.H" | head -1)
+    _bad=0
+    for _g in theoryGuide userGuide propsGuide developerGuide; do
+        [ -f "$dist/docs/$_g.pdf" ] || continue
+        if ! pdftotext -f 1 -l 1 "$dist/docs/$_g.pdf" - 2>/dev/null | grep -qF "$_want"; then
+            echo "[buildSite] ERROR: $_g.pdf about to be PUBLISHED does not carry '$_want' on its title page" >&2
+            _bad=1
+        fi
+    done
+    if [ "$_bad" = 1 ]; then
+        echo "[buildSite]        A guide naming a version it does not describe is worse than an undated one:" >&2
+        echo "[buildSite]        the wrong label is believed.  Run: bin/curate/guide_version.py && make -C docs all" >&2
+        exit 1
+    fi
+    echo "[buildSite] guide PDFs verified: all four title pages read $_want"
+else
+    echo "[buildSite] WARN: no pdftotext -- the published guide versions were NOT verified"
+fi
+
 echo "[buildSite] done:  $(du -sh "$dist" | cut -f1)  in  $dist"

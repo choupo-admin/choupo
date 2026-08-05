@@ -1572,6 +1572,25 @@ PYEOF
     fi
     rm -f /tmp/gver.$$
 
+    # Guide PDF version gate (2026-08-05).  guide_version.py proves the SOURCE
+    # the guides compile from is current; it cannot prove anybody recompiled
+    # them.  A .tex reading Choupo-dev beside a .pdf built last month passes
+    # that gate cleanly -- and the PDF is the artefact a reader opens, so the
+    # only gated link was the one nobody reads.  Found when choupo.org served
+    # a Theory Guide title page reading "Version 2607 / 30 June 2026" while
+    # the repository's own PDF was correct.
+    # Sabotage-verified with the real stale artefact: dropping the deployed
+    # 2607 PDF into docs/ fails by name and reports the version it found.
+    if "$ROOT/bin/curate/check_guide_pdf_version.py" > /tmp/gpdf.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guide-pdf-version-gate" "$(tail -1 /tmp/gpdf.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (rebuild: make -C docs all)\n" "guide-pdf-version-gate"
+        cat /tmp/gpdf.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gpdf.$$
+
     # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
     # arrangement).  Every file in the tree carries the version of the LINE
     # it belongs to: `Choupo-dev` on main, rewritten to `Choupo-YYMM` when a
