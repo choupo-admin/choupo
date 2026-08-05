@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PolynomialCp.H"
+#include <iostream>
 
 #include <cmath>
 #include <stdexcept>
@@ -47,10 +48,63 @@ PolynomialCp::PolynomialCp(const DictPtr& dict)
             throw std::runtime_error("PolynomialCp: 'Trange' must hold (Tmin Tmax)");
         Tmin_ = r[0]; Tmax_ = r[1];
     }
+    owner_ = dict->lookupWordOrDefault("owner", "");
+}
+
+//  THE DECLARED WINDOW IS NOW USED (AP3).  Two distinct things can be wrong,
+//  and they need different sentences:
+//
+//    * the window is NOT A WINDOW (hi <= lo).  Six records in the catalogue
+//      declare one -- CoolProp liquid-Cp fits with a four-term polynomial over
+//      a 1 K or 0 K span, which cannot have been fitted as stated.  Saying
+//      "outside the range" about such a record would be nonsense: EVERY T is
+//      outside an empty interval.  So it gets its own message, and it names
+//      the defect rather than the symptom.
+//
+//    * T is genuinely outside a VALID window.  I4 is explicit that this is
+//      ANNOUNCED, never refused -- "the professor extrapolates on purpose,
+//      but knows he did".
+//
+//  Once per model instance, then a bool test: Cp(T) runs inside the Newton
+//  loop and provenance must not live there.
+void PolynomialCp::noteRange(scalar T) const
+{
+    if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
+
+    if (Tmax_ <= Tmin_)
+    {
+        if (!announcedBadWindow_)
+        {
+            announcedBadWindow_ = true;
+            std::cerr << "[cp] polynomial Cp"
+                      << (owner_.empty() ? std::string()
+                                         : " for '" + owner_ + "'")
+                      << " declares Trange (" << Tmin_ << " " << Tmax_
+                      << "), which is not an interval -- the upper bound does"
+                         " not exceed the lower.\n     The fit's true domain"
+                         " is therefore UNKNOWN, so this Cp is being used with"
+                         " no validity claim at all.  Re-derive the range from"
+                         " the regression that produced the coefficients.\n";
+        }
+        return;
+    }
+
+    if ((T < Tmin_ || T > Tmax_) && !announcedOutside_)
+    {
+        announcedOutside_ = true;
+        std::cerr << "[cp] polynomial Cp"
+                  << (owner_.empty() ? std::string() : " for '" + owner_ + "'")
+                  << " evaluated at T = " << T << " K, OUTSIDE its declared"
+                     " Trange (" << Tmin_ << " " << Tmax_ << ").\n     The"
+                     " value is extrapolated: it is still returned (I4 --"
+                     " extrapolation is a legitimate choice), but it is no"
+                     " longer covered by the fit.\n";
+    }
 }
 
 scalar PolynomialCp::Cp(scalar T) const
 {
+    noteRange(T);
     scalar s = 0.0;
     scalar pwr = 1.0;
     for (scalar a : a_) { s += a * pwr; pwr *= T; }

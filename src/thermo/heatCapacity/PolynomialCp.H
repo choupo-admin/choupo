@@ -53,8 +53,26 @@ public:
     const std::string& modelName() const override { return name_; }
 
 private:
+    //  I4 ("a number outside its fitted range is ANNOUNCED, never silently
+    //  extrapolated and never refused") was NOT implemented here: Tmin_/Tmax_
+    //  were assigned in the constructor and never read again.  The declared
+    //  window was parsed and discarded, for the most common heat-capacity
+    //  model in the corpus.
+    //
+    //  That is also why the six inverted windows the provenance audit found
+    //  (hi <= lo, from CoolProp liquid-Cp fits) did no visible harm: nothing
+    //  looked at them.  Harmless-because-unchecked is not safety.
+    //
+    //  `noteRange` announces ONCE per model instance and then costs a single
+    //  bool test -- deliberate, because Cp(T) is the hot path and I4's own
+    //  rule is that provenance lives at boundaries, never in the inner loop.
+    void noteRange(scalar T) const;
+
     sVector a_;
     scalar Tmin_ = 0.0, Tmax_ = 0.0;
+    mutable bool announcedOutside_ = false;
+    mutable bool announcedBadWindow_ = false;
+    std::string owner_;                 // for a message that names the record
     inline static const std::string name_ = "polynomial";
 };
 
