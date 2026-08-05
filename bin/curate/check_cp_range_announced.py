@@ -48,10 +48,22 @@ PROPS = ROOT / "build" / "linux64Gcc" / "choupoProps"
 SILENT = "tutorials/steady/flash/flash01_benzene_toluene"
 LOUD = "tutorials/steady/drying/solidDryer01_sugar"
 
-#  A record whose liquid-Cp window is inverted (hi <= lo).  Pinned in
-#  check_validity_windows as awaiting re-derivation; used here as the fixture
-#  for the OTHER branch, so the two gates describe one defect from both sides.
-BAD_WINDOW_RECORD = "data/standards/components/neon.dat"
+#  THE NON-INTERVAL BRANCH LEFT THIS GATE (AP3, 2026-08-05).
+#
+#  It used to check that a window with hi <= lo produced its OWN message
+#  rather than being reported as "outside the range".  That behaviour is gone:
+#  an impossible window now REFUSES at construction, and `Trange unknown;` is
+#  the honest way to say a domain could not be recovered.
+#
+#  The refusal is exercised by `check_validity_windows`, which owns the DATA
+#  rule and runs a three-state engine probe (clean / inverted / unknown).
+#  Keeping a copy here would be a second home for one contract -- and the two
+#  copies would drift, which is the failure this project spent the day
+#  removing everywhere else.
+#
+#  What stays here is the ANNOUNCEMENT contract, which is a different claim:
+#  I4 says an evaluation outside a VALID window is announced and never
+#  refused, and an evaluation inside one is silent.
 
 CTRL = 'application   choupoProps;\ndescription   "cp range probe";\nverbosity 3;\n'
 SYS = ('recordType thermophysicalPropertySystem;\nschemaVersion 2;\n'
@@ -77,26 +89,6 @@ def props_probe(comp, T):
     (c / "system" / "controlDict").write_text(CTRL)
     (c / "constant" / "thermoPhysPropDict").write_text(SYS.format(c=comp))
     (c / "system" / "propsDict").write_text(OPS.format(c=comp, T=T))
-    return run(PROPS, c)
-
-
-def bad_window_probe():
-    """A component whose EVALUATED Cp block declares hi <= lo."""
-    td = tempfile.mkdtemp()
-    c = Path(td) / "probe"
-    (c / "system").mkdir(parents=True)
-    (c / "constant" / "components").mkdir(parents=True)
-    src = (ROOT / "data/standards/components/water.dat").read_text()
-    #  Invert the ideal-gas window the same way the pinned records invert
-    #  their liquid one.  Nothing else about the record is touched.
-    out = re.sub(r'(idealGasHeatCapacity\s*\{[^{}]*?Trange\s*\()\s*[\d.]+\s+[\d.]+(\s*\))',
-                 r'\g<1>400 300\g<2>', src, count=1, flags=re.S)
-    if out == src:
-        return 1, "PROBE-STALE: water.dat has no idealGasHeatCapacity Trange"
-    (c / "constant" / "components" / "water.dat").write_text(out)
-    (c / "system" / "controlDict").write_text(CTRL)
-    (c / "constant" / "thermoPhysPropDict").write_text(SYS.format(c="water"))
-    (c / "system" / "propsDict").write_text(OPS.format(c="water", T=350))
     return run(PROPS, c)
 
 
@@ -141,43 +133,6 @@ def main() -> int:
             checked.append(f"extrapolation announced ({Path(LOUD).name}, "
                            f"Trange {m.group(1)}-{m.group(2)})")
 
-    #  (c) A WINDOW THAT IS NOT A WINDOW gets its OWN message.
-    rec = ROOT / BAD_WINDOW_RECORD
-    if not rec.exists():
-        fail.append(f"{BAD_WINDOW_RECORD} is missing -- the fixture is stale")
-    else:
-        liq = re.search(r'liquidHeatCapacity\s*\{.*?Trange\s*\(\s*([\d.]+)\s+([\d.]+)\s*\)',
-                        rec.read_text(), re.S)
-        if not liq:
-            fail.append(f"{rec.name} no longer declares a liquidHeatCapacity "
-                        "Trange -- re-point this fixture at a record that does")
-        elif float(liq.group(2)) > float(liq.group(1)):
-            fail.append(f"{rec.name}'s window has been REPAIRED "
-                        f"({liq.group(1)} {liq.group(2)}) -- good, but this "
-                        "fixture no longer exercises the branch.  Re-point it "
-                        "at another pinned record, or retire the check with "
-                        "the last of them.")
-        else:
-            #  FIXTURE BY CONSTRUCTION, not by finding a case that uses one
-            #  of the six pinned records.  Asking a props op for `cpLiquid`
-            #  does NOT reach the liquid polynomial for those records -- the
-            #  probe came back with the IDEAL-GAS model's message instead,
-            #  and reading that as "the branch fired" would have been the
-            #  witness-that-cannot-fail mistake.  So the fixture puts the
-            #  inverted window on the block that IS evaluated, copying the
-            #  real defect's shape (hi <= lo on a four-term polynomial)
-            #  without depending on which model a props op happens to select.
-            rc, out = bad_window_probe()
-            if "not an interval" not in out:
-                fail.append(
-                    "a Cp whose declared window has hi <= lo produced no "
-                    "message naming that defect.  Reporting it as 'outside "
-                    "the range' would be nonsense (every T is outside an "
-                    "empty interval) and reporting nothing hides a record "
-                    "whose fitted domain is unknown.")
-            else:
-                checked.append(f"non-interval window named ({rec.stem})")
-
     if fail:
         print("check_cp_range_announced: FAILED")
         for f in fail:
@@ -185,8 +140,11 @@ def main() -> int:
         return 1
 
     print("check_cp_range_announced: OK -- " + "; ".join(checked)
-          + ".  The two failures stay distinct, and an in-range case stays "
-            "silent, so the announcement is information rather than decoration.")
+          + ".  An in-range case stays silent and an extrapolating one speaks, "
+            "so the announcement is information rather than decoration.  The "
+            "IMPOSSIBLE-window case is not checked here: it refuses now, and "
+            "`check_validity_windows` owns that contract with its own engine "
+            "probe -- one home, not two.")
     return 0
 
 
