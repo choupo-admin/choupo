@@ -120,14 +120,14 @@ declared fact it will be asked for.
 ## E — Structure
 
 **I17. `core` depends on nothing above it.**
-Currently VIOLATED at four sites; see
+Currently VIOLATED at FIVE sites (F1 hand-counted three); see
 [`module-boundaries.md`](module-boundaries.md) F1.
-· W [`module-boundaries.md`](module-boundaries.md) · R — · C —  ← **W only**
+· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (BOUNDS only: 5 pinned, a NEW one fails)  ← **still VIOLATED**
 
 **I18. The subsystem graph is acyclic.**
-Currently VIOLATED by three cycles; see
-[`module-boundaries.md`](module-boundaries.md) F2.
-· W [`module-boundaries.md`](module-boundaries.md) · R — · C —  ← **W only**
+Currently VIOLATED by EIGHT cycles — F2 hand-counted three; the gate measured
+eight, five of them the I17 edges seen from the other side.
+· W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (BOUNDS only: 8 pinned, a NEW one fails)  ← **still VIOLATED**
 
 **I19. Shared logic lives in the lowest NEUTRAL layer that can own its concepts
 without acquiring upward dependencies.**

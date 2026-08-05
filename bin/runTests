@@ -1136,6 +1136,29 @@ PYEOF
     fi
     rm -f /tmp/spcit.$$
 
+    # layering gate (I17/I18, 2026-08-05).  Both invariants were marked "W
+    # only" -- written, with no refusal and no firing case.  Nothing measured
+    # them except a human reading the include graph once, and an upward
+    # include compiles exactly as well as a downward one.
+    # It CANNOT make them true (that is refactoring, debts D1/D2).  It makes
+    # them a RATCHET: known violations pinned, a NEW upward edge or cycle
+    # fails, a stale pin fails.  The invariant table still reads them as
+    # VIOLATED, and this gate's own line says it only bounds them.
+    # The hand measurement said 3 upward edges and 3 cycles; the gate found
+    # 5 and 8.  It also found `io` and `curation` absent from the declared
+    # layering entirely -- excluded and NAMED, never defaulted into a band
+    # where nothing can violate.
+    # Sabotage-verified twice: a new upward edge, and a pin naming nothing.
+    if "$ROOT/bin/curate/check_layering.py" > /tmp/layer.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "layering-gate" "$(tail -1 /tmp/layer.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_layering.py)\n" "layering-gate"
+        cat /tmp/layer.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/layer.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

@@ -297,3 +297,38 @@ for (a, b), n in sorted(edges.items(), key=lambda x: -x[1]):
 Note what this snippet CANNOT see, per F3: a `../`-relative include that
 crosses a subsystem.  A boundary gate built on this method must resolve those
 first, or it will report a clean graph over a dirty one.
+
+---
+
+## Measured again, by a gate this time (2026-08-05)
+
+`bin/curate/check_layering.py` walks the include graph on every suite run.
+Its first run disagreed with the hand measurement of 2026-08-04 recorded in
+F1/F2 above, and the hand count was the one that was short:
+
+| | hand-counted (F1/F2) | measured by the gate |
+|---|---|---|
+| upward edges | 3 (all from `core`) | **5** — also `thermo` → `propertyOps`, `unitOperations` → `reporting` |
+| cycles | 3 | **8** |
+
+Five of the eight cycles are the upward edges seen from the other side —
+`core` includes `streams` *and* `streams` includes `core`. That is one defect
+describable two ways, and it is listed under both because it violates two
+different invariants (I17 and I18); a gate reporting only one would let the
+other regress unnoticed.
+
+**Two subsystems are absent from the layering in §1 entirely: `io` and
+`curation`.** The diagram draws five bands over twelve subsystems and `src/`
+holds fourteen. They are excluded from both checks and reported as
+**unchecked, not clean** — placing a subsystem is an architecture decision,
+and a gate that guessed would become the author of the layering it checks.
+
+### D6 — `io` and `curation` have no declared band
+
+*Removal condition:* §1 places both, with the same care as the other twelve,
+and `check_layering` moves them from its unplaced list into `BANDS`.
+
+**This is the third hand-compiled count corrected by a gate on 2026-08-05** —
+after the species-citation list (17 named, 18 found) and the founding-decision
+index (5 claimed, 2 real). Same cause each time: *a measurement taken once and
+then remembered is a derived fact with a second home.* A gate recounts.
