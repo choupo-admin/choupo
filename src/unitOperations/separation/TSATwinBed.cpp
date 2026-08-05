@@ -99,11 +99,31 @@ int TSATwinBed::solve(const DictPtr& dict,
         qRegen[i] = ads.loading(name, partialP, Tregen);
         dQ[i] = qAds[i] - qRegen[i];
 
-        if (i == iLight || !ads.has(name))
+        //  AN UNLISTED ADSORBATE IS A REFUSAL, NOT A PASS-THROUGH (AS8).
+        //  The light key legitimately leaves as product.  Any OTHER component
+        //  reaching this branch has no isotherm on this adsorbent, and the
+        //  bare `continue;` re-labelled it as raw product -- silently.
+        if (i == iLight)
         {
             productRaw[i] = z[i] * F;
             continue;
         }
+        if (!ads.has(name))
+                throw std::runtime_error(std::string("tsaTwinBed: component '") + name
+                    + "' has no isotherm record on adsorbent '"
+                    + ads.name() + "'.\n    It was therefore treated as"
+                      " NON-ADSORBING and passed straight into the light"
+                      " product -- so a name that merely fails to MATCH the"
+                      " record (H2O against a record keyed `water`) produces a"
+                      " clean-looking purity table for a separation that never"
+                      " happened.\n    batchAdsorber already refuses exactly"
+                      " this; the three units now agree.\n    REMEDY: add the"
+                      " isotherm to data/standards/parameters/adsorption/"
+                      "equilibria/" + ads.name() + "/, or the case-local"
+                      " constant/parameters/adsorption/equilibria/"
+                    + ads.name() + "/ overlay -- or check the component"
+                      " spelling against the record's key.");
+
         if (dQ[i] <= 0.0)
             throw std::runtime_error("tsaTwinBed: adsorbate '" + name
                 + "' has non-positive thermal working capacity q(T_ads)-q(T_regen);"

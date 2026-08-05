@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "UtilityAllocationReport.H"
+#include <stdexcept>
 #include "thermo/utility/UtilityCatalogue.H"
 
 #include <algorithm>
@@ -209,13 +210,45 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             }
 
             // Explicit per-port utility wins over the auto-pick.
+            //  A DECLARED UTILITY THAT IS ABSENT IS A REFUSAL, NOT A FALLBACK
+            //  (AS5).  The catch here used to erase the lookup failure to
+            //  `nullptr`, which is INDISTINGUISHABLE from "none declared" --
+            //  so control fell straight through to the auto-pick.  A case
+            //  declaring `steamHP` against a catalogue shipping only MP/LP
+            //  was costed at MP and never contradicted, and this function
+            //  feeds the result JSON, so the substitution is what the GUI and
+            //  the economics read.
+            //
+            //  The distinction already mattered to this very function: it
+            //  takes care elsewhere to separate "(none adequate)" from "(no
+            //  catalogue loaded)" precisely so a message never asserts a
+            //  check it did not perform.  The same care, here.
+            //
+            //  Declaring a utility is an INSTRUCTION.  Silently honouring a
+            //  different one is not a degraded answer, it is another
+            //  question's answer.
             const Utility* u = nullptr;
             if (!dty.port.empty())
             {
                 auto pit = portUtility.find(unit + "/" + dty.port);
                 if (pit != portUtility.end())
                     try { u = &UtilityCatalogue::byName(pit->second); }
-                    catch (const std::exception&) { u = nullptr; }
+                    catch (const std::exception& e)
+                    {
+                        throw std::runtime_error(
+                            "utility allocation refused: unit '" + unit
+                            + "' port '" + dty.port + "' declares utility '"
+                            + pit->second + "', which is not in the loaded"
+                            " catalogue.\n    " + e.what()
+                            + "\n    The declared service is an INSTRUCTION, so"
+                              " it is not silently replaced by the"
+                              " temperature auto-pick -- that would cost the"
+                              " duty against a utility nobody asked for and"
+                              " report it as if asked.\n    REMEDY: add '"
+                            + pit->second + "' to the utility catalogue, or"
+                              " remove the declaration to accept the"
+                              " auto-pick.");
+                    }
             }
             if (!u && r.T > 0.0) u = pick(Q > 0.0, r.T);
             if (u)

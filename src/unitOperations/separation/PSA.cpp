@@ -148,6 +148,30 @@ int PSA::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < Ncomp; ++i)
     {
         const std::string nm = thermo.comp(i).name();
+        //  AN UNLISTED ADSORBATE IS A REFUSAL (AS8).  PSA did not test at
+        //  all: `Adsorbent::loading` returns 0.0 for a component with no
+        //  isotherm record, so a name that merely fails to MATCH the record
+        //  (H2O against a record keyed `water`) passed 100 % into the light
+        //  product and the purity table looked fine.
+        //
+        //  batchAdsorber has refused exactly this from the start; tsaTwinBed
+        //  re-labelled it as raw product with a bare `continue;`.  ONE
+        //  question -- "what does a missing isotherm mean?" -- answered three
+        //  different ways in three units, which is AS9's pattern again.  The
+        //  three now agree, and the LIGHT KEY is the one honest exception
+        //  (it is declared, and it is meant to leave unadsorbed).
+        if (nm != lightKey && !ads.has(nm))
+            throw std::runtime_error("psa: component '" + nm
+                + "' has no isotherm record on adsorbent '" + ads.name()
+                + "'.\n    It was therefore treated as NON-ADSORBING, so a"
+                  " component the case expects to be captured passes straight"
+                  " into the light product and the purity table looks"
+                  " correct for a separation that never happened.\n"
+                  "    REMEDY: add the isotherm under"
+                  " data/standards/parameters/adsorption/equilibria/"
+                + ads.name() + "/ (or the case-local"
+                  " constant/parameters/... overlay), or check the component"
+                  " spelling against the record's key.");
         q_high[i] = ads.loading(nm, pHigh, T_bed);
         q_low [i] = ads.loading(nm, pLow,  T_bed);
         // eta applied ONCE, here (the LUB / utilisation derating).  Guard a
