@@ -150,20 +150,21 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
 
-## Tutorials (194)
+## Tutorials (331)
 
 Cases live under `tutorials/<category>/<name>/`:
 
 | Category | Binary | Count |
 |---|---|---|
-| `steady/` | `choupoSolve` | 88 |
-| `batch/`  | `choupoBatch` | 11 |
-| `ctrl/`   | `choupoCtrl`  | 2  |
-| `props/`  | `choupoProps` | 15 |
-| `plant/`  | `choupoSolve` (fractal multi-sector showcase) | 15 |
+| `steady/` | `choupoSolve` | 196 |
+| `batch/`  | `choupoBatch` | 42 |
+| `ctrl/`   | `choupoCtrl`  | 15 |
+| `props/`  | `choupoProps` | 65 |
+| `plant/`  | `choupoSolve` (fractal multi-sector showcase) | 11 |
+| `electrochem/` | `choupoSolve` | 2 |
 
 Browse the full inventory with `listCases`; `bin/runTests` validates
-117 of them via per-case golden-master KPIs (cases without an
+296 of them via per-case golden-master KPIs (cases without an
 `expected` file run end-to-end with a NaN/inf guard only).
 
 See [`docs/userGuide.pdf`](docs/userGuide.pdf) for a one-line summary

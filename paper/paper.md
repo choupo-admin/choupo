@@ -40,7 +40,7 @@ The current release ships four solver binaries by problem class
 recipes, dynamic simulation with feedback control, and a property
 workbench), 49 unit-operation models, a curated thermodynamic catalogue
 (247 components, 205 Henry's-law pairs, Pitzer and electrolyte-NRTL
-parameter sets), and 288 runnable tutorial cases validated by a regression
+parameter sets), and 331 runnable tutorial cases validated by a regression
 suite with golden-master checks on every release.
 
 # Statement of need

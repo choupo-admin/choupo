@@ -22,7 +22,7 @@ description: Use whenever authoring or editing a Choupo data record or case dict
    written from an external proposal's shape and silently reintroduced
    `role`, a second standard state, and six single-valued ceremony fields —
    all of them settled against, none caught, because `docs/design/` sits
-   outside the 25 gates that protect the real corpus.*
+   outside the 84 gates that protect the real corpus.*
 
 3. **Run the gates before claiming done:** `bin/runTests` (or at least
    `bin/curate/check_doctrine.py` and the check_* relevant to what you

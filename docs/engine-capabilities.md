@@ -13,12 +13,12 @@
 
 ## 1. Current state (counts)
 
-* **211 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
-  `bin/runTests` validates **255** checks (golden-master KPI comparison +
+* **331 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
+  `bin/runTests` validates **296** checks (golden-master KPI comparison +
   NaN/inf guard on every case + the doctrine gate; one deliberate
   EXPECTED-FAIL teaching case).  Batch/ctrl cases carry goldens too —
   including the campaign material/energy-ledger KPIs.
-* **194 components** in the standard catalogue (data/standards/components/),
+* **247 components** in the standard catalogue (data/standards/components/),
   plus per-case overlays under `<case>/constant/components/` for
   sample-specific data (sorption isotherms, drying kinetics, …).
 * **205 Henry's-law pairs**, van't Hoff temperature dependence.

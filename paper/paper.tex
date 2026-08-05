@@ -43,7 +43,7 @@ installation catalogue present.  Release Choupo-2607 ships four solver
 binaries by problem class, 49 unit-operation models, a curated
 thermodynamic catalogue (247 components; NRTL, UNIQUAC, Wilson, UNIFAC,
 COSMO-SAC, SRK, Peng--Robinson, a non-associating PC-SAFT core, Pitzer and
-electrolyte-NRTL electrolytes, IAPWS-IF97 steam), and 288 runnable
+electrolyte-NRTL electrolytes, IAPWS-IF97 steam), and 331 runnable
 tutorial cases validated by a golden-master regression suite.  Every
 converged steady run emits a plant-boundary element balance; batch
 campaigns carry material and energy ledgers closing to machine precision
@@ -273,9 +273,9 @@ its own.
 
 \section{Validation and quality gates}
 
-The regression suite runs all 288 tutorial cases on every change: an
+The regression suite runs all 331 tutorial cases on every change: an
 exit-code check alone is banned (a solver can return NaN with exit code
-0), so every case passes a NaN/infinity guard, and 255 cases additionally
+0), so every case passes a NaN/infinity guard, and 296 cases additionally
 pin key performance indicators against golden-master references.
 Doctrine gates enforce structural honesty (retired grammar cannot
 reappear in any document a student reads; sealed copies are audited
