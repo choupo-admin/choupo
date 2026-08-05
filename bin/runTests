@@ -1068,6 +1068,27 @@ PYEOF
     fi
     rm -f /tmp/eco.$$
 
+    # cp-range gate (AP3, 2026-08-05).  PolynomialCp assigned Tmin_/Tmax_ in
+    # its constructor and NEVER read them again -- the declared validity
+    # window was parsed and discarded, so I4 was unimplemented on the most
+    # common heat-capacity path.  It is also why the six inverted windows
+    # pinned in check_validity_windows did no visible harm: nothing looked.
+    # Two failures, two sentences, and the gate checks they stay distinct --
+    # "you extrapolated" must not read the same as "this record is broken".
+    # The in-range NEGATIVE is load-bearing: only 2 of 40 steady cases speak,
+    # and an announcement that fires everywhere is read nowhere.
+    # Sabotage-verified twice: noteRange removed, and the non-interval branch
+    # collapsed into the extrapolation one.
+    if "$ROOT/bin/curate/check_cp_range_announced.py" > /tmp/cprange.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cp-range-gate" "$(tail -1 /tmp/cprange.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cp_range_announced.py)\n" "cp-range-gate"
+        cat /tmp/cprange.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cprange.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
