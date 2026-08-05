@@ -49,6 +49,11 @@ import re
 import sys
 from pathlib import Path
 
+#  THE WAIVERS LIVE IN ONE PLACE -- see `debt_registry.py`.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import SELF_CONTRADICTING_RECORDS
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #  "~ 2 × 10⁻⁶  m/s" / "~2e-6 m/s" in prose, keyed by the solute named first.
@@ -88,7 +93,7 @@ TOL = 3.0
 #  has only steric hindrance.  Low glucose rejection on a loose NF is reported
 #  behaviour.  What is unestablished is the NUMBER, which is exactly what
 #  `fittedToCase` now says.
-PINNED = {}
+PINNED = SELF_CONTRADICTING_RECORDS
 
 #  A record that SHIPS transport parameters must declare where they came from.
 #  This is the rule that keeps the NF270 fix from decaying: the old header said

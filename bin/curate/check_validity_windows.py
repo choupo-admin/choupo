@@ -47,6 +47,13 @@ import re
 import sys
 from pathlib import Path
 
+#  THE WAIVERS LIVE IN ONE PLACE.  See `debt_registry.py` -- a pin is a
+#  decision to tolerate a known violation, and "what are we currently
+#  tolerating?" is a fact with exactly one home.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import INVERTED_VALIDITY_WINDOWS
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #  The interval keys this project uses for a declared validity window.
@@ -57,15 +64,7 @@ PAT = re.compile(r'\b(Trange|pRange)\s*\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)')
 #  whose declared window is inverted or degenerate.  The remedy is to
 #  re-derive the window from the regression that produced the coefficients
 #  -- a CURATION act, not a code change.  Do not "fix" these by guessing.
-PINNED = {
-    "data/standards/components/neon.dat",
-    "data/standards/components/krypton.dat",
-    "data/standards/components/Xe.dat",
-    "data/standards/components/D2.dat",
-    "data/standards/components/OrthoDeuterium.dat",
-    "data/standards/components/ParaDeuterium.dat",
-}
-
+PINNED = INVERTED_VALIDITY_WINDOWS
 SCAN = ["data/standards", "tutorials"]
 
 

@@ -49,6 +49,13 @@ import re
 import sys
 from pathlib import Path
 
+#  THE WAIVERS LIVE IN ONE PLACE.  See `debt_registry.py` -- a pin is a
+#  decision to tolerate a known violation, and "what are we currently
+#  tolerating?" is a fact with exactly one home.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import SOURCE_LICENCE
+
 ROOT = Path(__file__).resolve().parents[2]
 
 #  The protocol's NEVER list, as name patterns.  DECHEMA is handled
@@ -69,30 +76,7 @@ AUTHORITY_FIELD = re.compile(r'\b(source|citation|method|Source|Primary\s+data)\
 #  KNOWN VIOLATIONS, pinned 2026-08-05 with the remedy each needs.  NOT
 #  fixed here: a replacement datum is a curation act requiring a primary
 #  source, and fabricating one is worse than the exposure it hides.
-PINNED = {
-    "data/standards/components/H3PO4.dat":
-        "dHf_298 is taken FROM CRC (-1284.4 kJ/mol).  The file's own header "
-        "names the primary (Wagman et al., NBS Tables 1982) and records that "
-        "it gives -1279.0 -- a DIFFERENT number, so this is not a re-citation "
-        "but a value change, and it moves a golden.  Needs Vitor.",
-    "data/standards/components/methylAcetate.dat":
-        "calls NIST WebBook / DIPPR-class compilations 'Primary data' -- the "
-        "aggregator AS the authority, and no primary is named for Tc/Pc/omega/"
-        "Tb/Hvap/dHf_298.  Either re-source from primaries or demote the "
-        "record to data/local/.",
-    "data/standards/parameters/NRTL/ethanol-water.dat":
-        "'Curated from DECHEMA by V. Geraldes' over the VLE-IG bank -- direct "
-        "transcription, the form the protocol names.  The bulk of the pair "
-        "catalogue already moved to data/local/ in the legal scrub; this one "
-        "survived and should follow.",
-    "data/standards/parameters/SRK/N2-CH4.dat":
-        "BORDERLINE, awaiting a ruling: cites Knapp, Doering, Oellrich, "
-        "Ploecker & Prausnitz (1982) -- named authors of a published monograph "
-        "that happens to appear in the DECHEMA series.  A named monograph is "
-        "arguably a primary publication, not a databank transcription.  Ruled "
-        "either way it should be explicit, not incidental.",
-}
-
+PINNED = SOURCE_LICENCE
 SCAN = ["data/standards"]
 
 

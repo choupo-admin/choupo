@@ -1159,6 +1159,27 @@ PYEOF
     fi
     rm -f /tmp/layer.$$
 
+    # debt-registry gate (2026-08-05).  A pin is a WAIVER -- a decision to
+    # tolerate a known violation -- and "what are we currently tolerating?"
+    # is a fact with exactly one home.  It used to be spread across eight of
+    # the 90 check_* scripts as ad-hoc literal tables: the arity doctrine
+    # violated by the machinery built to enforce it.  This gate keeps
+    # debt_registry.py the ONLY home and refuses an entry nobody reads.
+    # It does NOT check whether a waiver is still true -- that is each owning
+    # gate's stale-pin arm, and duplicating it here would rebuild the second
+    # home the registry removes.
+    # Sabotage-verified twice: a gate re-growing a literal table, and an
+    # orphan registry entry.
+    if "$ROOT/bin/curate/check_debt_registry.py" > /tmp/debtreg.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "debt-registry-gate" "$(head -1 /tmp/debtreg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_debt_registry.py)\n" "debt-registry-gate"
+        cat /tmp/debtreg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/debtreg.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question

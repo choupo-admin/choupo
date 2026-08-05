@@ -39,6 +39,13 @@ import re
 import sys
 from pathlib import Path
 
+#  THE WAIVERS LIVE IN ONE PLACE.  See `debt_registry.py` -- a pin is a
+#  decision to tolerate a known violation, and "what are we currently
+#  tolerating?" is a fact with exactly one home.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import SPECIES_WITHOUT_CITATION
+
 ROOT = Path(__file__).resolve().parents[2]
 SPECIES = ROOT / "data" / "standards" / "species"
 
@@ -51,19 +58,7 @@ CITED = re.compile(r'^\s*(source|citation|origin|reference)\b', re.M | re.I)
 #  KNOWN-UNCITED, pinned 2026-08-05.  NOT fixed by writing a plausible
 #  reference: an invented citation is undetectable, and it would turn a
 #  visible gap into an invisible falsehood.
-PINNED = {
-    "Zn", "Al", "BOH4", "Cd", "CuI", "CuII", "FeII", "FeIII", "H3BO3",
-    "H4SiO4", "HS", "HTart", "MnII", "NH4", "NO2", "Pb", "Tart",
-    #  THE AUDIT NAMED SEVENTEEN.  There are EIGHTEEN: this gate found
-    #  Acetate.dat on its first run.  A hand-compiled list of violations is
-    #  itself a hand-maintained derived fact -- the arity sin in audit form --
-    #  and it was already one short on the day it was written.  That is the
-    #  argument for the gate over the list: the gate recounts, the list
-    #  remembers.
-    "Acetate",
-}
-
-
+PINNED = SPECIES_WITHOUT_CITATION
 def main() -> int:
     missing, seen, nclaim = [], set(), 0
     if not SPECIES.is_dir():

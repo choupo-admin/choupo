@@ -8,12 +8,12 @@
 #
 #      dH_soln(salt, m->0)  =  sum(nu_i * hfAq_i)  -  Hf_298(salt, solid)
 #
-#  Three independent pins cross-validate four ion values + three solid Hf's:
+#  Three independent ANCHORS cross-validate four ion values + three solid Hf's:
 #      NaOH:  Na+ + OH-  - NaOH(s)   ~  -44.51 kJ/mol  (exothermic)
 #      NaCl:  Na+ + Cl-  - NaCl(s)   ~   +3.88 kJ/mol  (endothermic)
 #      KCl:   K+  + Cl-  - KCl(s)    ~  +17.22 kJ/mol  (endothermic)
 #  Solid Hf (Wagman 1982): NaOH -425.61, NaCl -411.15, KCl -436.75 kJ/mol.
-#  Tolerance 0.2 kJ/mol (table rounding).  Exit 1 on any failed pin --
+#  Tolerance 0.2 kJ/mol (table rounding).  Exit 1 on any failed anchor --
 #  reference-state bookkeeping errors look like numerics bugs downstream
 #  (docs/electrolyte-enthalpy-spec.md sec.9), so this gates the L_phi build.
 # -----------------------------------------------------------------------------
@@ -32,9 +32,9 @@ def ion_hf(species):
     # it as the refusal that makes the salt-enthalpy contract settled.  A gate
     # that cannot run guards nothing.
     f = repo / f"data/standards/species/{species}.dat"
-    if not f.exists(): sys.exit(f"PIN FAIL: species/{species}.dat not found")
+    if not f.exists(): sys.exit(f"ANCHOR FAIL: species/{species}.dat not found")
     m = re.search(r"hfAq\s*\{[^}]*?value\s+(-?[\d.eE+]+)", f.read_text(), re.S)
-    if not m: sys.exit(f"PIN FAIL: ion '{species}' has no hfAq in species/{species}.dat")
+    if not m: sys.exit(f"ANCHOR FAIL: ion '{species}' has no hfAq in species/{species}.dat")
     return float(m.group(1))
 
 def salt_anchor(name):
@@ -48,11 +48,26 @@ def salt_anchor(name):
     #  data of its own staleness.
     m = re.search(r"dissolutionEnthalpy\s*\{[^}]*?value\s+(-?[\d.eE+]+)", txt, re.S) \
         or re.search(r"dissolutionEnthalpy\s+(-?[\d.eE+]+)", txt)
-    if not m: sys.exit(f"PIN FAIL: {name}.dat has no dissolutionEnthalpy")
+    if not m: sys.exit(f"ANCHOR FAIL: {name}.dat has no dissolutionEnthalpy")
     return float(m.group(1))
 
-# (salt, [ions], Hf_solid J/mol  -- Wagman 1982, public domain)
-PINS = [
+#  ANCHORS, not waivers -- and the rename matters (2026-08-05).
+#
+#  "Pin" carries TWO meanings in this tooling.  A pinned VIOLATION is a waiver:
+#  a known defect the project has agreed to tolerate, and those now live in
+#  `debt_registry.py` because "what are we tolerating?" has one home.  A pinned
+#  ANCHOR is the opposite: a published value used to VALIDATE the arithmetic,
+#  a positive fixture that must keep passing.
+#
+#  The collision was not theoretical.  `check_debt_registry` matched this table
+#  by NAME on its first run and demanded it move into the waiver registry --
+#  which would have filed three validating anchors as excused defects.  Two
+#  meanings for one word in the same toolchain is the ambiguity the project
+#  already ruled against for `true`/`apparent`; the fix is the same, name the
+#  thing what it is.
+#
+#  (salt, [ions], Hf_solid J/mol  -- Wagman 1982, public domain)
+ANCHORS = [
     ("NaOH", ["Na", "OH"], -425610.0),
     ("NaCl", ["Na", "Cl"], -411150.0),
     ("KCl",  ["K",  "Cl"], -436750.0),
@@ -60,7 +75,7 @@ PINS = [
 TOL = 200.0   # J/mol
 
 fails = 0
-for salt, ions, hf_solid in PINS:
+for salt, ions, hf_solid in ANCHORS:
     pred   = sum(ion_hf(i) for i in ions) - hf_solid
     anchor = salt_anchor(salt)
     ok = abs(pred - anchor) <= TOL
@@ -68,7 +83,7 @@ for salt, ions, hf_solid in PINS:
           f"anchor = {anchor/1000.0:+8.2f}   {'OK' if ok else '** FAIL **'}")
     fails += (not ok)
 
-if fails: sys.exit(f"{fails} pin(s) FAILED -- fix the tier before the L_phi build.")
+if fails: sys.exit(f"{fails} anchor(s) FAILED -- fix the tier before the L_phi build.")
 
 # TEETH (forum 2026-06-29, 'salt-crystallisation-enthalpy'): a component whose
 # formation lives in the ion tier (it carries dissolutionEnthalpy / an
@@ -88,4 +103,4 @@ if sins:
              "DERIVED from ions + dissolutionEnthalpy, never stored):\n  "
              + "\n  ".join(sins))
 
-print("all ion-tier pins consistent + no arity-1 second sources.")
+print("all ion-tier anchors consistent + no arity-1 second sources.")

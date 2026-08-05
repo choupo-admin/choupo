@@ -25,9 +25,11 @@ removal real: deleting a pin whose violation still existed would have failed,
 and leaving a pin whose violation was gone failed too.  A ratchet that only
 ever tightens is a ledger of defeat; this one recorded the repayments.
 
-ONE upward edge remains (`unitOperations` -> `reporting`, debt D7) and it is
-the only unaccepted cycle.  So I17 and I18 are still *bounded*, not asserted,
-and the invariant table must keep saying so.
+D7 was then paid too, so NO upward edge remains and `PINNED_UP` is empty: this
+gate now ASSERTS I17 rather than bounding it.  I18 is asserted up to one
+ACCEPTED cycle.  The waivers themselves live in `debt_registry.py` -- "what are
+we currently tolerating?" is a fact with exactly one home, and it used to be
+spread across eight gate scripts.
 
 HOW IT MEASURES.  `#include "sub/..."` from any file under `src/<sub>/`
 gives an edge <sub> -> <target sub>.  Self-edges are ignored.  A subsystem
@@ -44,6 +46,12 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+#  THE WAIVERS LIVE IN ONE PLACE -- see `debt_registry.py`.
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import (LAYERING_UPWARD_EDGES,
+                           LAYERING_ACCEPTED_CYCLES)
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
@@ -78,24 +86,14 @@ BANDS = [
 #  and that is the only place the two planes legitimately meet.
 TOOLING = {"curation"}
 BAND = {sub: i for i, row in enumerate(BANDS) for sub in row}
+
+#  Every subsystem this gate KNOWS -- the runtime bands PLUS the tooling plane.
+#  `edges()` must walk the plane too, or the runtime-may-not-read-a-tool rule
+#  below could never fire, which is worse than having no rule.
 KNOWN = set(BAND) | TOOLING
 
 INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 
-#  Every subsystem this gate KNOWS -- runtime bands plus the tooling plane.
-#  `edges()` must walk the tooling plane too, or the runtime-may-not-read-a-tool
-#  rule below would be a check that cannot fire, which is worse than no rule.
-#  (Defined after TOOLING; see the assignment at the end of this block.)
-
-#  WHAT IS LEFT, measured 2026-08-05 AFTER debts D1, D2, D4 and D6 were paid.
-#  Each repayment moved ONE shared concept out of the consumer it had been
-#  filed inside (`module-boundaries.md` §8):
-#
-#      core -> streams/thermo/unitOperations   FlatUnit left SimulationResult
-#      thermo -> propertyOps                   DerivedClosures moved to thermo
-#      result <-> unitOperations               UnitProfile moved to result
-#      unitOperations <-> propertyOps          readExchange moved to thermo
-#      reporting <-> postProcessing            OdsWriter moved to io
 #  EMPTY -- and that is the point.  I17 is ASSERTED, not bounded: there is no
 #  upward edge anywhere in the runtime graph, and ANY new one fails here.
 #
@@ -110,18 +108,8 @@ INC = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 #      unitOperations -> reporting             the finding RECORDS moved to
 #                                              core; the AUDIT moved to the
 #                                              engine (D7)
-PINNED_UP = set()
-#  ONE cycle, ACCEPTED by ruling §7.3 -- not a debt, and not a pin awaiting
-#  work.  Michelsen's stability test is a thermodynamic criterion solved
-#  numerically; `solver` and `thermo` genuinely need each other, and breaking
-#  the dependency would cost a worse abstraction than the cycle.
-#
-#  It is listed rather than silently tolerated so the STALE-PIN arm still
-#  covers it: if the cycle ever disappears, this entry fails and must be
-#  removed.  An acceptance that outlives its subject is a licence.
-PINNED_CYCLES = {
-    frozenset(("solver", "thermo")),
-}
+PINNED_UP = LAYERING_UPWARD_EDGES
+PINNED_CYCLES = set(LAYERING_ACCEPTED_CYCLES)
 
 #  EMPTY SINCE 2026-08-05 -- debt D6 is paid.  This gate's first run found that
 #  `module-boundaries.md` §1 drew five bands over TWELVE subsystems while `src/`
