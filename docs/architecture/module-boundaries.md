@@ -267,6 +267,15 @@ enumerates them, and the closure stops being a hand-maintained list.  This is
 the debt that produced the 2026-08-04 sealing defect and will produce the next
 one.
 
+**IT DID, TWICE, ON 2026-08-05.**  Five sealed cases stayed blind to a new
+`reviewStatus` field and two to a corrected `Trange` until a human knew to
+re-import them.  Neither is a defect in the seal — a snapshot is supposed to
+be a snapshot — but both needed someone to know WHICH cases, which is the
+same missing link seen from the other end.  The closure is **21 hand-written
+`want(...)` calls** today.  Proposal, awaiting a ruling:
+[`model-declared-record-homes.md`](../design/model-declared-record-homes.md)
+— two shapes weighed, one recommended, and a named half it does NOT solve.
+
 **D4 — NINE boundary-crossing `../` includes (F3 said eight).**  *Removal condition:*
 zero `../` includes crossing a subsystem, so the graph is measurable by the
 obvious method.

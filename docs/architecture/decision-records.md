@@ -79,6 +79,7 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 | record | kind | alt | status |
 |---|---|---|---|
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
+| [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **PROPOSAL** — debt D3; two shapes weighed, one recommended, awaiting Vítor |
 
 ### Awaiting a decision
 
