@@ -339,7 +339,7 @@ into `result/` left it including `unitOperations/UnitProfile.H` while
 PRODUCED, so `UnitProfile.H` moved to `result/` too.  `solver` ↔ `thermo`
 stays, ACCEPTED per ruling §7.3.
 
-**D3 — a model cannot declare what it consumes (§2).**  Until it can, the
+**D3 — a model cannot declare what it consumes (§2).  HALF PAID 2026-08-05: the resolver seam now carries a CONSUMPTION LEDGER, and `bin/choupo-import` refuses an under-staged seal by name — verified by reproducing the Edwards defect, which it catches earlier than the golden did.  The observation half is done; the DECLARATION half (shape (b)) is not, so the hand-written closure stays.**  Until it can, the
 sealing closure must be taught each new record home by hand.  *Removal
 condition:* a model declares its record dependencies, `bin/choupo-import`
 enumerates them, and the closure stops being a hand-maintained list.  This is

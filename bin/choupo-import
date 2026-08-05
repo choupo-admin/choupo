@@ -1090,6 +1090,11 @@ def validate_staged(root, staged):
         binary = Path(staged) / "code" / ".build" / "choupoCase"
     env = {k: v for k, v in __import__("os").environ.items()
            if k != "CHOUPO_HOME"}
+    #  THE CONSUMPTION LEDGER (debt D3).  The engine records every
+    #  standards-relative subpath it asks its ONE resolution seam for, so the
+    #  closure no longer has to be GUESSED from this script's regexes.
+    ledger = Path(tempfile.mkdtemp(prefix="choupo-ledger-")) / "asked.txt"
+    env["CHOUPO_RECORD_LEDGER"] = str(ledger)
     try:
         # The engine resolves case-local records by walking UP from the CWD
         # (RecordResolver::localScanDir uses fs::current_path()), so the
@@ -1110,7 +1115,61 @@ def validate_staged(root, staged):
         die("validation FAILED: the staged sealed case does not run with the"
             " catalogue hidden (exit %d) -- nothing was installed.\n"
             "--- last lines ---\n%s" % (r.returncode, tail))
+    validate_closure_complete(root, staged, ledger)
     validate_staged_agrees(staged, r.stdout)
+
+
+def validate_closure_complete(root, staged, ledger):
+    """The SEALED run must not have asked for a record the closure left behind.
+
+    THE DEBT THIS PAYS (D3).  This script computes a case's dependency closure
+    from a hand-written list of `want(...)` calls plus regexes over the case
+    dicts.  Nothing connected that list to the models that actually read the
+    records -- a model knows what it consumes, and the importer could not ask.
+
+    It cost twice.  2026-08-04: a new activity model read a new record home
+    this script had never been told about, so the sealed case kept 9 of its 28
+    pair parameters and answered as a DIFFERENT model -- it ran, it converged,
+    and nothing refused.  2026-08-05: `reviewStatus` and two corrected `Trange`
+    fields reached five sealed cases only because a human knew which to
+    re-import.
+
+    THE CHECK.  A sealed run resolves case-local records or nothing at all, so
+    every subpath the engine asked for and did NOT find is a record the closure
+    omitted.  Most such misses are legitimate -- the absence-tolerant probes
+    (`mixtures/<component>.dat` and friends) ask for records that do not exist
+    anywhere.  The ones that matter are the misses that EXIST IN THE
+    CATALOGUE: the engine wanted it, the catalogue has it, the seal does not.
+    That is under-staging, and it is refused by name.
+
+    WHAT THIS IS NOT.  It is an OBSERVATION of one run, not a DECLARATION by
+    each model of everything it could ever need.  A record a model reads only
+    for some component sets is invisible to a run without them.  So the
+    hand-written closure STAYS -- this catches what it missed, it does not yet
+    replace it.  Saying so matters: a check that is described as complete and
+    is not is worse than the gap it hides.
+    """
+    if not ledger.exists():
+        die("validation: the engine wrote no consumption ledger -- the build"
+            " predates CHOUPO_RECORD_LEDGER (rebuild with `make`), or the run"
+            " never reached the resolver.  Nothing was installed.")
+    missing = []
+    for line in ledger.read_text().splitlines():
+        if not line.startswith("- "):
+            continue
+        sub = line[2:].strip()
+        if (Path(root) / "data" / "standards" / sub).exists():
+            missing.append(sub)
+    if missing:
+        die("validation: the sealed run ASKED for %d record(s) the closure did"
+            " not stage, and the catalogue HAS them -- the seal would answer"
+            " with those records missing.  Nothing was installed.\n"
+            "  %s\n"
+            "REMEDY: teach this script's closure the record home(s) above, in"
+            " the same commit that introduced whatever reads them."
+            % (len(missing), "\n  ".join(sorted(missing)[:20])))
+    print("  closure: the sealed run asked for no catalogue record the seal"
+          " omitted (observed at the resolver seam, not inferred)")
 
 
 def validate_staged_agrees(staged, out):

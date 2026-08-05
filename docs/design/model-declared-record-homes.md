@@ -1,7 +1,9 @@
 # A model declares the records it reads — proposal for debt D3
 
-> **KIND: ADR · STATUS: PROPOSAL, awaiting Vítor.** Nothing here is
-> implemented. Written because `module-boundaries.md` D3 says this debt *"will
+> **KIND: ADR · STATUS: DECIDED 2026-08-05, first slice IMPLEMENTED.**
+> Delegated by Vítor. The direction below is adopted; what shipped is the
+> OBSERVATION half, and §6 records why that came first and what it does not
+> cover. Written because `module-boundaries.md` D3 says this debt *"will
 > produce the next one"*, and on 2026-08-04 and again on 2026-08-05 it did.
 >
 > Per `project-philosophy.md` §4: *never skip alignment when proposing
@@ -99,3 +101,56 @@ engine, which the module boundaries would then have to permit.
 3. Is the "nothing watches the origin" half a separate debt, or part of this?
 
 No code will be written against this until it is answered.
+
+
+---
+
+## 6. What shipped, 2026-08-05 — and what did not
+
+**The direction is adopted:** the importer must stop reconstructing a model's
+dependencies and ask an authority instead. Shape **(b)** — a declaration beside
+the factory registration — remains the target.
+
+**What shipped first is the cheaper half of the same idea: OBSERVATION.**
+`module-boundaries.md` §2 already established that record resolution goes
+through exactly ONE seam, `records::resolveRecord`. That is what makes
+observation sufficient rather than approximate: there is no second path a model
+could take to reach a record unobserved.
+
+So the seam now carries a **consumption ledger** — off unless
+`CHOUPO_RECORD_LEDGER` names an output file, no cost and no behaviour change
+otherwise. It records every standards-relative subpath the run asked for, and
+whether it was found.
+
+`bin/choupo-import` sets that variable on the staged validation run and then
+refuses an **under-staged seal**: a sealed run resolves case-local records or
+nothing, so any subpath it asked for and did not find is a record the closure
+omitted. Most such misses are legitimate — the absence-tolerant probes ask for
+records that exist nowhere. The ones that matter are the misses **that exist in
+the catalogue**: the engine wanted it, the catalogue has it, the seal does not.
+
+**Verified by reproducing the original defect.** Blinding the closure to
+`parameters/EdwardsPitzer/` — the exact 2026-08-04 condition — now refuses by
+name, listing all seventeen records, installing nothing. It fires at the
+closure stage, *earlier* than the golden comparison that caught it by luck.
+
+**What this is NOT, stated so it is not assumed.** It is an observation of one
+run, not a declaration of everything a model could need. A record read only for
+some component sets is invisible to a run without them. **So the 21
+hand-written `want(...)` calls stay** — this catches what they miss, it does not
+replace them. A check described as complete and isn't is worse than the gap it
+hides.
+
+**One bug paid for on the way, worth keeping.** The first ledger kept the set
+and its writer in two separate function-local statics. Those are destroyed in
+reverse order of construction, the set was constructed second, so it was
+destroyed first and the writer then iterated an object that no longer existed —
+undefined behaviour that presented as a **hang**, not a crash. A crash names
+itself; a hang does not. One object now owns both, which makes the bad order
+unrepresentable.
+
+**Question 3 (origin-watching) is answered: it is a SEPARATE mechanism.**
+Closure completeness ("did the seal include everything?") and origin divergence
+("has the catalogue changed since?") need different behaviour. A sealed case
+must stay reproducible after the catalogue moves, so divergence announces and
+requires an explicit re-import — never a silent refresh. Not built here.

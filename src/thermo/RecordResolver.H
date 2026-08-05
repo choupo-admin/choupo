@@ -74,8 +74,11 @@ License
 #include "core/Dictionary.H"
 
 #include <algorithm>
+#include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <map>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -158,6 +161,86 @@ inline fs::path standardsRecord(const std::string& sub)
     return fs::path(Database::currentRoot()) / "standards" / sub;
 }
 
+
+// ---------------------------------------------------------------------------
+//  THE CONSUMPTION LEDGER  (debt D3, 2026-08-05)
+//
+//  WHAT PROBLEM.  `bin/choupo-import` seals a case by materialising its
+//  property-data DEPENDENCY CLOSURE, and it computes that closure from a
+//  hand-written list of 21 `want(...)` calls plus regex over the case dicts.
+//  Nothing connects that list to the models that actually read the records.
+//  A model knows what it consumes; the importer did not, and could not ask.
+//
+//  It has cost twice.  2026-08-04: a new activity model read a new record home
+//  the importer had never been told about, so the sealed case kept 9 of its 28
+//  pair parameters and answered AS A DIFFERENT MODEL -- it ran, it converged,
+//  and it printed what a Davies run prints.  2026-08-05: `reviewStatus` and
+//  two corrected `Trange` fields reached five sealed cases only because a
+//  human knew which ones to re-import.
+//
+//  WHAT THIS IS, precisely, because the distinction matters.  It is an
+//  OBSERVATION, not a declaration: every standards-relative subpath the run
+//  actually asked this seam for, recorded as it happens.  §2 of
+//  `module-boundaries.md` already established that record resolution goes
+//  through exactly ONE seam, and that is what makes observation sufficient --
+//  there is no second path a model could use to reach a record unobserved.
+//
+//  An observation cannot drift from behaviour the way a declaration can; a
+//  declaration, in exchange, can name a path this particular run did not take.
+//  THAT IS THE RESIDUAL GAP AND IT IS REAL: a record a model reads only for
+//  some component sets is invisible to a run that lacks them.  So the importer
+//  uses this to REFUSE an under-staged seal -- a record the engine resolved
+//  and the closure omitted -- and keeps its own list for what a single run
+//  cannot see.  Catching the Edwards defect needs only the first.
+//
+//  OFF unless `CHOUPO_RECORD_LEDGER` names an output file: no cost, no
+//  behaviour change, nothing written.
+// ---------------------------------------------------------------------------
+namespace ledger {
+
+inline const char* target()
+{
+    static const char* t = std::getenv("CHOUPO_RECORD_LEDGER");
+    return t;
+}
+
+//  ONE static owns BOTH the set and the writing of it.
+//
+//  The first version kept them apart -- a `static std::set` from one function
+//  and a `static Flusher` from another -- and it HUNG every run with the
+//  ledger enabled.  Function-local statics are destroyed in reverse order of
+//  construction; the set was constructed second, so it was destroyed FIRST,
+//  and `~Flusher` then iterated an object that no longer existed.  Undefined
+//  behaviour that presented as a hang rather than a crash, which is the worse
+//  of the two -- a crash names itself.
+//
+//  Owning both in one object makes the bad order unrepresentable.
+struct Ledger
+{
+    std::set<std::string> asked;
+
+    ~Ledger()
+    {
+        if (!target()) return;
+        std::ofstream o(target());
+        for (const auto& s : asked) o << s << "\n";
+    }
+};
+
+inline Ledger& instance()
+{
+    static Ledger l;
+    return l;
+}
+
+inline void note(const std::string& sub, bool found)
+{
+    if (!target()) return;
+    instance().asked.insert(std::string(found ? "+ " : "- ") + sub);
+}
+
+} // namespace ledger
+
 // The refusal every required consumer of a sealed-missing record throws.
 [[noreturn]] inline void refuseSealed(const std::string& sub,
                                       const std::string& what)
@@ -178,9 +261,11 @@ inline fs::path standardsRecord(const std::string& sub)
 inline fs::path resolveRecord(const std::string& sub)
 {
     fs::path p = localRecord(sub);
-    if (!p.empty()) return p;
-    if (sealedStrict()) return {};
-    return standardsRecord(sub);
+    if (!p.empty()) { ledger::note(sub, true); return p; }
+    if (sealedStrict()) { ledger::note(sub, false); return {}; }
+    p = standardsRecord(sub);
+    ledger::note(sub, fs::exists(p));
+    return p;
 }
 
 // Record resolution for a per-record REQUIRED consumer (Pitzer / eNRTL pair):
@@ -189,9 +274,11 @@ inline fs::path resolveRecord(const std::string& sub)
 inline fs::path resolveRequired(const std::string& sub, const std::string& what)
 {
     fs::path p = localRecord(sub);
-    if (!p.empty()) return p;
-    if (sealed()) refuseSealed(sub, what);
-    return standardsRecord(sub);
+    if (!p.empty()) { ledger::note(sub, true); return p; }
+    if (sealed()) { ledger::note(sub, false); refuseSealed(sub, what); }
+    p = standardsRecord(sub);
+    ledger::note(sub, fs::exists(p));
+    return p;
 }
 
 // Component BASE record (buildElectrolyte's raw salt/identity read; the
@@ -204,8 +291,14 @@ inline fs::path componentBase(const std::string& name)
 {
     const std::string sub = "components/" + name + ".dat";
     if (sealedStrict())
-        return localRecord(sub);              // one home; empty when absent
-    return standardsRecord(sub);
+    {
+        fs::path p = localRecord(sub);        // one home; empty when absent
+        ledger::note(sub, !p.empty());
+        return p;
+    }
+    fs::path p = standardsRecord(sub);
+    ledger::note(sub, fs::exists(p));
+    return p;
 }
 
 // Sorted *.dat listing of one directory (empty when absent).
