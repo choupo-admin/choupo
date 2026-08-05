@@ -634,8 +634,13 @@ one.  (`propertySets/` was deleted 2026-07-01 — zero readers.)  **ONE componen
 = ONE file: `components/apparent/*` is DELETED** (the builder reads salt
 identity+`dissociatesTo` from `components/` and the solid from that component's
 own `solidPhases{}`);
-**"true species" is BANNED** (→ *model/solver species*; `recordType modelSpecies`,
-method `requires.ionSpecies`); **NO top-level `basisMaps/`** (it is the K→∞ limit of
+**"true" is DEPRECATED as a substance or basis name** (ruled 2026-08-05 —
+`apparent` STAYS, it is an accepted architectural term with a precise meaning
+in electrolyte thermodynamics; it is "true" that misleads, because a student
+reads a philosophical claim where the code means *the species the equilibrium
+solver works in*).  Write **species**, or the concrete category — *aqueous
+species* / *gas species* / *solid species* (`recordType modelSpecies`,
+method `requires.ionSpecies`); gate `check_glossary_bans`; **NO top-level `basisMaps/`** (it is the K→∞ limit of
 dissociation + is per-(component,method)).  Rejected: two `NaCl.dat`, per-medium
 species duplication, mixed-solvent as a 5th rung.  Full contract + the 10 validating
 systems + implementation status (F1–F4 done, 202/0 byte-exact):
@@ -1037,8 +1042,9 @@ model species / solid phases (a component's `solidPhases{}`) / chemistry sets /
 property methods / parameter databanks / **the INLINE manifest (the CENTRE — a
 case DECLARES its package, it does not merely list components; the shared
 catalogue + `package <name>;` selector were retired 2026-07-15)**.
-Basis vocabulary: **flowsheet/component basis** vs **aqueous-species basis**
-(the older "apparent/true" wording is banned — see §data tree).  This is the
+Basis vocabulary: **flowsheet/component basis** (equivalently the *apparent*
+basis — that word is accepted) vs **aqueous-species basis**; "true basis" is
+deprecated — see §data tree.  This is the
 DATA-layout half; root `docs/property-architecture.md` is the
 resolution/MODEL half (a deliberate name twin — root = level-3 deep reference);
 the **arity doctrine** (`docs/ai/data-doctrine.md`) is a SLICE under it

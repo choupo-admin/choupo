@@ -265,8 +265,9 @@ its molecular-surrogate approximation), a catalogue of α(T)/Psat variants.
 
 - Multi-ion carried in every stream + report-in-salt aggregation across a general
   flowsheet (the "composition-basis round-trip"). *(Designed as `[ROADMAP]`, not
-  built. Vocabulary: **flowsheet/component basis** vs **aqueous-species basis** —
-  the "apparent/true" naming is rejected; neither basis is more "true".)*
+  built. Vocabulary: **flowsheet/component basis** vs **aqueous-species basis**;
+  *apparent* is an accepted synonym for the first, **"true" is deprecated** —
+  neither basis is more real, and only one of the two words claimed it.)*
 - Runtime estimation / high-T K extrapolation (Helgeson-style): Choupo curates K
   offline (van't Hoff logK25+ΔH); accepts a narrower T-window for glass-box clarity.
 - Inert / non-conventional solids not in phase equilibrium (CISOLID / NC): only

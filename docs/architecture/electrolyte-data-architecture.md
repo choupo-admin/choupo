@@ -28,7 +28,9 @@
 >   the runtime refuses a `package <name>;` selector ("the declared system
 >   selects the role" holds; it lives in the case, not in a catalogue);
 > * basis vocabulary: **flowsheet/component basis** vs **aqueous-species
->   basis** — the older "apparent/true" wording below is retained only as
+>   basis**.  *Apparent* is an accepted synonym for the first and appears
+>   throughout the engine; **"true" is deprecated** (ruled 2026-08-05,
+>   [`domain-glossary.md`](domain-glossary.md) §3) and survives below only as
 >   historical record of the ratification debate.
 
 ## The one idea

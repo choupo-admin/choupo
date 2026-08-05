@@ -61,12 +61,43 @@ gate or a settled note behind it.
 
 | banned | canonical | why |
 |---|---|---|
-| **"true species"** | **model species** / **solver species** (`recordType modelSpecies`) | "true" claims the ions *are* the reality and the components are an artifice.  Both are models; the ion basis is the one the solver works in.  Settled 2026-07-01, and it **holds**: a sweep found the phrase only in the archive, in a superseded document that says so in its header, in a July forum record (a deliberation keeps its own words), and in the developer guide *stating the ban*.  No live document asserts it. |
-| **"true basis"** | **aqueous-species basis** | same defect at the level of the basis.  Zero occurrences outside this entry. |
+| **"true species"** | **species**, or the concrete category — **aqueous species** / **gas species** / **solid species** (`recordType modelSpecies`) | "true" invites the reading *these are the real chemicals*, when the code means only *the species the equilibrium solver works in*.  A student reads a philosophical claim that nobody intended.  Both bases are models. |
+| **"true basis"** | **aqueous-species basis** | same defect at the level of the basis. |
+| **"apparent"** | *(nothing — it is CORRECT)* | listed here because the earlier blanket rule condemned it by accident.  It has a precise meaning in electrolyte thermodynamics and is an accepted architectural term.  See §3a. |
 | **"optimal" (of a heat-exchange match)** | **thermodynamically admissible candidate** | the pinch pass enumerates matches that violate no thermodynamic bound.  It does not rank them, cost them, or rewrite the network.  Calling a candidate optimal claims an optimisation nobody ran.  Gate-enforced. |
 | **`final/`** (a state directory) | **`converged/`** | the name is a contract: the directory is written only when the solver converged, and a non-converged recycle now exits 1 without writing it.  "Final" would be true of a failed run too. |
 | **`ReferenceRung`** (as a type) | *(nothing — do not build one)* | the reference basis is a **consequence** of the declared formulation (the one-knob rule), never an independent selector.  The name appears in old notes as a planned type and was never built. |
 | **"promote" (of a GUI component)** | **activate** | *promote* is reserved for the manual disk step in curation. |
+
+### 3a. The rule, in its objective form (ruled by Vítor, 2026-08-05)
+
+The doctrine used to read *"do not use apparent/true"* — one sentence over two
+words that fail differently.  That made it **unenforceable**, because
+`CLAUDE.md` itself, the level-1 architecture and the engine's own comments all
+use *apparent* as a term of art.  A gate could not be written against a rule
+its own constitution broke.
+
+The ruling narrows it, and the narrowed form is checkable:
+
+> ***apparent*** **is an accepted architectural term.**  ***true*** **is
+> deprecated in user-facing architecture and documentation.  Use *species* —
+> or the concrete category: *aqueous species*, *gas species*, *solid
+> species*.**
+
+Why the halves are not symmetric:
+
+- **apparent** carries a precise, established meaning in electrolyte
+  thermodynamics — apparent components versus species — and Choupo already
+  uses it at the architectural level.  It claims nothing about reality; it
+  says *as it appears in the flowsheet*.
+- **true** means, internally, *the species the equilibrium solver works in*.
+  What a reader takes from it is *these are the real chemicals*.  The gap
+  between those two is the whole defect, and it lands on students first.
+
+**This is what made the wording gate possible.**  Before the ruling, an
+enforcement pass had to decide whether *apparent* was a violation or the
+vocabulary, and no honest gate can be written on that.  `check_glossary_bans`
+exists because the rule became objective.
 
 ## 4. Canonical definitions
 
@@ -330,44 +361,14 @@ simulation.
 > state, and it removes the only ambiguity that can mislead in a
 > credibility discussion.
 
-### G7 — The blanket "apparent/true is banned" is wrong, and the constitution breaks it
+### G7 — RULED 2026-08-05: ban *true*, keep *apparent*
 
-**This is a finding, not a proposal.**  `CLAUDE.md` §5 says *"the older
-'apparent/true' wording is banned"* — one sentence covering both halves.
-Checking the tree against that sentence:
-
-- **"true species" / "true basis": the ban holds.**  No live document asserts
-  either.
-- **"apparent" is everywhere, deliberately, including in the sentence's own
-  document.**  `CLAUDE.md` §phases-decomposition states *"the apparent basis
-  is NEVER disturbed"*; the engine says it in `IsothermalFlash.cpp`,
-  `ReactiveVLE.H` and `ThermoPackageBuilder.cpp`; `stream-state-architecture.md`
-  says *"The APPARENT basis is..."* in capitals.
-
-So a level-4 sentence bans a word that the level-1 architecture and the engine
-use as a term of art.  **A rule the file itself breaks is a wish** — the
-project already learned that from its own corpus tally, and this is the same
-shape in vocabulary.
-
-The two halves are not symmetric, and that is why one ban is right and the
-other is not:
-
-- **"true"** makes a metaphysical claim — that the ions *are* the reality and
-  the components an artifice.  Both are models.  The claim is false, so the
-  word goes.
-- **"apparent"** makes no such claim.  It says *as it appears in the
-  flowsheet*, which is exactly what the basis is.  It is accurate, it is short,
-  and it is what the field says.
-
-> **Recommendation: narrow the ban to the "true" half, and amend `CLAUDE.md`
-> §5 to say so.**  Keep *apparent* as the adjective; keep *flowsheet basis* as
-> the preferred noun phrase in new prose.  The alternative — enforcing the
-> blanket ban — means rewriting engine comments and level-1 architecture text
-> to remove an accurate word, and the sweep would be pure cost.
->
-> This one is cheap to rule and should be ruled first: until it is, a gate on
-> the banned wordings (GA2) cannot be written, because it does not know
-> whether *apparent* is a violation or the vocabulary.
+Approved by Vítor with the wording now in **§3a**, which is the binding text.
+The finding that produced it: `CLAUDE.md` banned both halves in one sentence
+and then used *apparent* four sections later, as did `IsothermalFlash.cpp`,
+`ReactiveVLE.H`, `ThermoPackageBuilder.cpp` and
+`stream-state-architecture.md` in capitals.  A rule the constitution breaks is
+a wish; this one is now a gate.
 
 ---
 
@@ -375,9 +376,9 @@ other is not:
 
 | id | action |
 |---|---|
-| **G0** | Rule on G1–G7.  Until then those entries are drafts and must not be cited as binding.  **G7 first** — it is a stated inconsistency between a level-4 sentence and the level-1 architecture, it is cheap, and GA2 is blocked on it. |
+| **G0** | Rule on G1–G6.  Until then those entries are drafts and must not be cited as binding.  ~~G7~~ RULED 2026-08-05 (§3a). |
 | **GA1** | Consult a licensed copy of ISO/IEC/IEEE 24765 and re-check §4 for coinages against established meanings.  This pass was working knowledge; it found one collision (G2) and cannot claim it found all of them. |
-| **GA2** | Once G1–G6 are ruled, gate the banned wordings of §3 the way `check_doctrine` already gates "optimal" — a banned word with no gate is the same wish `CLAUDE.md`'s tally rule was. |
+| **GA2** | ~~Gate the banned wordings~~ DONE 2026-08-05: `check_glossary_bans` enforces §3 across live documents and the engine, with a stated exemption list (a document that *states* a ban must be able to quote it). |
 
 **GA2 is the honest limit of this document today**, and the number is worse
 than it sounds.  Of the six banned wordings, exactly **one** — *optimal* — is

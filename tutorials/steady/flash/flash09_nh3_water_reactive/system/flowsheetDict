@@ -15,7 +15,7 @@
   flash-once/speciate-once.  The flash unit implements NO chemistry: it
   delegates to the package's reactive equilibrium (unit-local speciation,
   property authority section 6b).  Streams -- including 0/ and converged/ --
-  carry ONLY the apparent components NH3 and water; the true species
+  carry ONLY the apparent components NH3 and water; the aqueous species
   (NH4+, H+, OH-) exist in the internal state and the report.
 \*---------------------------------------------------------------------------*/
 

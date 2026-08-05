@@ -16,7 +16,7 @@
   TOGETHER: the flash unit implements no chemistry, it delegates to the
   package's reactive equilibrium (unit-local speciation, section 6b).
   Streams -- 0/ and converged/ included -- carry ONLY the apparent
-  components aceticAcid and water; the true species (CH3COO-, H+, OH-)
+  components aceticAcid and water; the aqueous species (CH3COO-, H+, OH-)
   exist in the internal state and the report.
 
   THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K,

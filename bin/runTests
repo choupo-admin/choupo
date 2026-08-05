@@ -958,6 +958,28 @@ PYEOF
     fi
     rm -f /tmp/fworder.$$
 
+    # glossary-bans gate (G7, ruled by Vitor 2026-08-05).  The doctrine used
+    # to read "the apparent/true wording is banned" -- one sentence over two
+    # words that fail differently -- and CLAUDE.md itself, the level-1
+    # architecture and the engine all use `apparent` as a term of art.  A
+    # gate could not be written against a rule its own constitution broke.
+    # The narrowed rule IS checkable: `apparent` is accepted, `true` is
+    # deprecated as a substance or basis name (say species, or the concrete
+    # category).  Exemptions are BY NAME with a reason -- a document that
+    # defines a ban must be able to quote it -- and a stale exemption fails.
+    # Sabotage-verified three ways: the wording reintroduced in a tutorial,
+    # an exemption pointed at an innocent file, and six probe strings
+    # confirming `apparent` is never flagged.
+    if "$ROOT/bin/curate/check_glossary_bans.py" > /tmp/gbans.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "glossary-bans-gate" "$(tail -1 /tmp/gbans.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_glossary_bans.py)\n" "glossary-bans-gate"
+        cat /tmp/gbans.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gbans.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays
@@ -1072,7 +1094,7 @@ PYEOF
     # ---- Curation gates that existed but never RAN ----------------------
     # Eleven gates sat in bin/curate/ unwired; seven were not even
     # executable.  Two were stale -- check_ion_pins read the retired
-    # components/true/aqueous/ layout and check_estimates the pre-Migration-2
+    # retired pre-2026-07-01 aqueous layout, check_estimates the pre-Migration-2
     # Joback path -- so the contracts CLAUDE.md calls settled on their
     # strength had been unguarded since those migrations.  A gate that does
     # not run guards nothing.
@@ -1109,17 +1131,21 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/check_speciation.$$
-
-    # the model-species records carry charge + medium-tagged thermo
-    if "$ROOT/bin/curate/check_true_ions.py" > /tmp/check_true_ions.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "ion-records-gate" "$(tail -1 /tmp/check_true_ions.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_true_ions.py)\n" "ion-records-gate"
-        cat /tmp/check_true_ions.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_true_ions.$$
+    #  ion-records-gate RETIRED 2026-08-05.  It was a MIGRATION-time guard:
+    #  it compared the per-ion records of the pre-2026-07-01 aqueous layout
+    #  against electrolyte/ions.dat.  BOTH are gone -- that home was deleted
+    #  and the ion store consolidated -- so its first act was
+    #  `if not ions.exists(): print("... OK."); sys.exit(0)`.
+    #
+    #  It therefore reported PASS on every run while checking nothing, which
+    #  is the same defect buildSite had this morning: A CHECK THAT CANNOT RUN
+    #  MUST NOT PASS.  A permanently-green gate is worse than no gate -- it
+    #  inflates the corpus count and reads, to anyone scanning the output, as
+    #  evidence that ion records are verified.  They are not, by this.
+    #
+    #  Deleted rather than renamed: the honest options were to give it real
+    #  inputs or to remove it, and inventing inputs for a finished migration
+    #  is not curation.
 
     # mineral records and their dissolution reactions
     if "$ROOT/bin/curate/check_minerals.py" > /tmp/check_minerals.$$ 2>&1; then

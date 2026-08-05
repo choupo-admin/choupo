@@ -852,8 +852,8 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         if (!markersSeen.insert(marker).second)
             throw std::runtime_error("ThermoPackage build refused: two"
                 " apparent components share the marker element '" + marker
-                + "' -- the chemistry set cannot map all true species back"
-                " to the declared apparent-component basis.");
+                + "' -- the chemistry set cannot map all aqueous species"
+                " back to the declared apparent-component basis.");
         // The declared master whose species formula carries the marker --
         //  refusing when MORE THAN ONE does (inference may never pick by
         //  declaration order; the typed bridge exists for exactly that case).
@@ -877,7 +877,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         }
         if (carrying.empty())
             throw std::runtime_error("ThermoPackage build refused: chemistry"
-                " set cannot map all true species back to the declared"
+                " set cannot map all aqueous species back to the declared"
                 " apparent-component basis -- no declared master carries the"
                 " marker element '" + marker + "' of apparent component '"
                 + names[i] + "'.");
