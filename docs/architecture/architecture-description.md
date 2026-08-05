@@ -30,6 +30,12 @@ corpus and its documentation set.
 validation corpus (`tutorials/` + `bin/runTests`), and the documentation
 layers.
 
+> *"Validation corpus" is the wording in question at glossary decision
+> question **G2**: the corpus is almost entirely regression against
+> self-recorded goldens, which 24765 and NASA-STD-7009 call **verification**.
+> Left as written until ruled, because renaming it here and not in V7 would
+> put the same name in two states.*
+
 **Out of scope:** the web GUI's internal component architecture (`gui/`, its
 own design record), the landing site, and third-party data under
 `thirdParty/`.
@@ -62,6 +68,7 @@ not a documentation nicety.  It is the reason the constitutional layer exists.
 | **V6 Solver behaviour** | student, researcher | [`CHOUPO-CONSTITUTION.md`](CHOUPO-CONSTITUTION.md) §6, philosophy §2 |
 | **V7 Validation / credibility** | lecturer, reviewer, maintainer | [`consolidation-map.md`](consolidation-map.md), `bin/runTests` + the gate corpus |
 | **V8 Decisions and rationale** | maintainer, agent | [`decision-records.md`](decision-records.md) |
+| **V9 Vocabulary** | all — a contract nobody can read is not a contract | [`domain-glossary.md`](domain-glossary.md) |
 
 ## 4. Model kinds and notation
 
@@ -73,6 +80,7 @@ not a documentation nicety.  It is the reason the constitutional layer exists.
 | Case-structure model | annotated directory tree | V4 |
 | Data-home model | prose taxonomy over `data/standards/` | V5 |
 | Decision-index model | table: record · kind · alternative-stated · status | V8 |
+| Glossary model | table + entries: term · mark (canonical / banned / decision question) · canonical form | V9 |
 
 Conventions: dictionaries are the file format everywhere; British-influenced
 technical English (US spelling per the language rule); a *refusal* always names
@@ -99,7 +107,7 @@ structure test that passes with the fix reverted.
 
 *This is the clause that earns the mapping.*  A correspondence is a declared
 relationship between views, with a rule for when they agree.  Declaring them
-turns three known problems from folklore into stated inconsistencies.
+turns four known problems from folklore into stated inconsistencies.
 
 | # | correspondence | rule | status |
 |---|---|---|---|
@@ -109,9 +117,10 @@ turns three known problems from folklore into stated inconsistencies.
 | **C4** | any view ↔ a generated artefact | a generated number has a generator and a staleness gate, never a copy | consistent (4 gates) |
 | **C5** | V1 §5 ↔ V8 | every CLOSED decision shall point to the record that argued it | **INCONSISTENT** — 6 of 11 do; 5 founding decisions have no record (AD1) |
 | **C6** | V4/V5/V6 ↔ the guides | every path and case name in an AI-facing doc shall resolve | consistent (`check_doc_references`, 234 paths) |
+| **C7** | V9 ↔ the tree | a banned wording shall not appear in a live document or identifier | **INCONSISTENT** — one of six bans is gated; and one ban is contradicted by level-1 text and by engine comments (glossary G7) |
 
-Three of six are inconsistent, and they are stated here rather
-than in a footnote.  A correspondence set that reported six greens on a
+Four of seven are inconsistent, and they are stated here rather
+than in a footnote.  A correspondence set that reported seven greens on a
 codebase with three violated invariants would be a negative witness that cannot
 fail.
 
@@ -176,8 +185,15 @@ Related but **not adopted as process**, with reasons:
 - **ISO/IEC 25010** (SQuaRE) — its maintainability sub-characteristics are
   useful published vocabulary for what V3 buys; used as vocabulary, not
   adopted as a measurement programme.
-- **ISO/IEC/IEEE 24765** (SEVOCAB) — to be consulted when the domain glossary
-  is written, so no term is coined against an established meaning.
+- **ISO/IEC/IEEE 24765** (SEVOCAB) — consulted when the domain glossary was
+  written (2026-08-05), so no term is coined against an established meaning.
+  It surfaced one collision, and a consequential one: *validation* and
+  *verification* are distinct and load-bearing in 24765 and in
+  NASA-STD-7009, and `bin/runTests` is described here as a validation corpus
+  while being almost entirely regression, i.e. verification.  Recorded as
+  glossary decision question **G2**, unresolved — it renames a viewpoint and
+  touches a credibility claim, so it is a ruling, not an edit.  The
+  consultation was working knowledge, not a licensed copy.
 
 ## 10. Permitted wording
 
