@@ -109,20 +109,20 @@ int TSATwinBed::solve(const DictPtr& dict,
             continue;
         }
         if (!ads.has(name))
-                throw std::runtime_error(std::string("tsaTwinBed: component '") + name
-                    + "' has no isotherm record on adsorbent '"
-                    + ads.name() + "'.\n    It was therefore treated as"
-                      " NON-ADSORBING and passed straight into the light"
-                      " product -- so a name that merely fails to MATCH the"
-                      " record (H2O against a record keyed `water`) produces a"
-                      " clean-looking purity table for a separation that never"
-                      " happened.\n    batchAdsorber already refuses exactly"
-                      " this; the three units now agree.\n    REMEDY: add the"
-                      " isotherm to data/standards/parameters/adsorption/"
-                      "equilibria/" + ads.name() + "/, or the case-local"
-                      " constant/parameters/adsorption/equilibria/"
-                    + ads.name() + "/ overlay -- or check the component"
-                      " spelling against the record's key.");
+        {
+            //  ANNOUNCED, NOT REFUSED (AS8, as amended -- see PSA.cpp for the
+            //  full reasoning: alias canonicalisation already prevents the
+            //  spelling mismatch the audit named, and the isotherm records
+            //  document this pass-through as intended).
+            std::cerr << "[tsaTwinBed] component '" << name << "' has no"
+                         " isotherm on adsorbent '" << ads.name() << "' -- it"
+                         " is treated as NON-ADSORBING and leaves as raw"
+                         " product.\n             If that is intended (an"
+                         " inert), nothing is wrong; if it is not, add the"
+                         " isotherm record.\n";
+            productRaw[i] = z[i] * F;
+            continue;
+        }
 
         if (dQ[i] <= 0.0)
             throw std::runtime_error("tsaTwinBed: adsorbate '" + name

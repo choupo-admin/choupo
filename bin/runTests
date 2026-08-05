@@ -1048,6 +1048,26 @@ PYEOF
     fi
     rm -f /tmp/cdd.$$
 
+    # economics-honesty gate (AS5/AS8, 2026-08-05).  The audit's five
+    # sizing/costing/utility defects were all fixed while the suite stayed
+    # green, because NO corpus case takes those branches -- the condition
+    # under which a fix rots.  This supplies firing cases by DAMAGING copies
+    # in a temp dir (never the shared tree).
+    # It states what it CANNOT reach: AS4/AS6/AS7 need a shared-catalogue
+    # edit, and AS8/psa cannot be hidden because the catalogue twins it.
+    # Naming the gap beats inventing a reachable substitute and implying
+    # coverage.  Sabotage-verified: removing the tsaTwinBed announcement
+    # fails the gate.
+    if "$ROOT/bin/curate/check_economics_honesty.py" > /tmp/eco.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "economics-honesty-gate" "$(tail -1 /tmp/eco.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_economics_honesty.py)\n" "economics-honesty-gate"
+        cat /tmp/eco.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/eco.$$
+
     # computationalSeal gate (sealing-schema migration, ratified
     # 2026-08-03): the canonicalization equivalences (comments/spacing/
     # unit spellings cosmetic, values/dims not), cosmetic drift stays

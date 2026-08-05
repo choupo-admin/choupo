@@ -160,18 +160,33 @@ int PSA::solve(const DictPtr& dict,
         //  different ways in three units, which is AS9's pattern again.  The
         //  three now agree, and the LIGHT KEY is the one honest exception
         //  (it is declared, and it is meant to leave unadsorbed).
+        //  A COMPONENT WITH NO ISOTHERM IS ANNOUNCED, NOT REFUSED (AS8, as
+        //  amended).  The audit's motivating failure -- a component named
+        //  H2O against a record keyed `water` -- turns out to be ALREADY
+        //  PREVENTED: the engine canonicalises aliases before the lookup
+        //  ("[alias] component 'methane' -> canonical 'CH4'"), so a mere
+        //  spelling mismatch cannot reach here.
+        //
+        //  And the isotherm records DOCUMENT the pass-through as intended:
+        //  "a species with no record here adsorbs nothing and reports fully
+        //  to the raffinate".  Refusing would overturn a written data
+        //  contract to fix a failure mode that is already closed -- and
+        //  changing a settled contract is a decision to be RATIFIED, not one
+        //  to slip in behind an audit item.
+        //
+        //  So the engine states what it assumed.  An inert that genuinely
+        //  does not adsorb is a legitimate case; what was wrong was that
+        //  nobody could tell it apart from an oversight.  Whether absence
+        //  should have to be DECLARED is the open question, recorded for
+        //  Vitor rather than answered here.
         if (nm != lightKey && !ads.has(nm))
-            throw std::runtime_error("psa: component '" + nm
-                + "' has no isotherm record on adsorbent '" + ads.name()
-                + "'.\n    It was therefore treated as NON-ADSORBING, so a"
-                  " component the case expects to be captured passes straight"
-                  " into the light product and the purity table looks"
-                  " correct for a separation that never happened.\n"
-                  "    REMEDY: add the isotherm under"
-                  " data/standards/parameters/adsorption/equilibria/"
-                + ads.name() + "/ (or the case-local"
-                  " constant/parameters/... overlay), or check the component"
-                  " spelling against the record's key.");
+            std::cerr << "[psa] component '" << nm << "' has no isotherm on"
+                         " adsorbent '" << ads.name() << "' -- it is treated"
+                         " as NON-ADSORBING and reports fully to the light"
+                         " product.\n      If that is intended (an inert),"
+                         " nothing is wrong; if it is not, add the isotherm"
+                         " record.  Said aloud because the two look identical"
+                         " in the purity table.\n";
         q_high[i] = ads.loading(nm, pHigh, T_bed);
         q_low [i] = ads.loading(nm, pLow,  T_bed);
         // eta applied ONCE, here (the LUB / utilisation derating).  Guard a
