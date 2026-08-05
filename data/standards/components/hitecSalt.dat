@@ -42,5 +42,17 @@ liquidHeatCapacity
     //   Cp [J/mol·K] = 507.4 - 0.9468*T + 6.33e-4*T^2
     model         polynomial;
     coefficients  (507.4   -0.9468   6.33e-4);
-    Trange        (415  810);
+    //  NARROWED to the fit this record documents (AP7, 2026-08-05).  The
+    //  field claimed (415 810) while the header above states the Cp fit as
+    //  "range 426-776 K, +/-5 % (Janz 1981 quadratic)" -- a validity claim
+    //  WIDER than the regression that supports it, at both ends.
+    //
+    //  This was inert until the engine began READING the window the same
+    //  day (PolynomialCp had parsed and discarded it), and then it became
+    //  worse than the original defect: a too-wide window keeps the
+    //  extrapolation announcement SILENT exactly where it should fire.
+    //
+    //  Not a new number -- the record's own documented range.  You cannot be
+    //  valid outside your fit, so narrowing is the conservative direction.
+    Trange        (426  776);
 }

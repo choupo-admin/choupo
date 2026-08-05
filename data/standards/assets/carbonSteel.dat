@@ -1,5 +1,29 @@
 /*--------------------------------*- Choupo -*-----------------------*\
   Material: Carbon Steel (ASME SA-516 Gr. 70)  — baseline reference.
+
+  PROVENANCE: THESE SIX NUMBERS ARE UNSOURCED DESIGN ASSERTIONS (AP6,
+  2026-08-05).  Stated plainly because the record's own title names a code
+  — ASME SA-516 Gr. 70 — and `sigma_y 140 MPa @ 250 °C` therefore READS as a
+  code-derived allowable.  It may equally be a round engineering assertion;
+  nothing here could tell you which, and all three sibling asset records
+  carry a source block while this one did not.
+
+  That matters more than for a peripheral record: carbonSteel is the
+  REFERENCE material against which every costing `F_M` is normalised, so
+  `F_M 1.00` is a definition rather than a measurement, while the other five
+  are physical claims about a real alloy.
+
+  A CITATION WAS DELIBERATELY NOT INVENTED.  Writing a plausible ASME clause
+  would convert "unsourced" into "falsely sourced", and no reader and no gate
+  can detect the second.  A visible gap is strictly better than an invisible
+  falsehood — the same rule applied to the eighteen uncited species records
+  the same day.
+
+  CURATION REMEDY: replace this block with the code edition, table and year
+  each value comes from (Sec. II Part D for the allowable stress), or keep
+  this note if they are to remain teaching assertions.  Until then the
+  numbers are usable and UNVERIFIED, and that is now said rather than
+  implied.
 \*---------------------------------------------------------------------------*/
 
 name      carbonSteel;

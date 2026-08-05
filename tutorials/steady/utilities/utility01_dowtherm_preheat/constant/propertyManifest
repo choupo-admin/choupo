@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-08-02";
-    importerVersion    "2";
+    importedAt         "2026-08-05";
+    importerVersion    "3";
     records
     {
         "components/dowthermA.dat"
         {
             type          imported;
-            sha256        "d9619ec07c8046bd696fcafabdf5fff63bdf2021140a1b9d4be2b79cc2d7dc8d";
-            computationalSha256 "ac7ebf51cc14d91661670391cfe1588211871ae24bea5ed62b35c30b58821949";
+            sha256        "a533e1a4ea0b14e70d9ada69c474c6112d9844c11bf021a062f10fbaed598280";
+            computationalSha256 "8c89b51f82fa74449316b2032b968fdc4e1f72f8f12508568e8b3b3e523392c1";
             origin        "data/standards/components/dowthermA.dat";
-            originSha256  "609d64e9bc2156df9b76a4c68ae12229128bd1254073fa2168449e4fa51b82b5";
+            originSha256  "78287367530523bcfce06c633b83679b9e4af58647f327e8b244f2229973b649";
             release       Choupo-2607;
         }
         "components/nHexane.dat"

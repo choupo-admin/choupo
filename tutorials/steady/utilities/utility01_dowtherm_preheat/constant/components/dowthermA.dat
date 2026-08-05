@@ -60,5 +60,15 @@ liquidHeatCapacity
     // Converted to molar: multiply by MW/1000 = 0.1658 kg/mol
     model         polynomial;
     coefficients  (112.9   0.5036);
-    Trange        (285  670);
+    //  NARROWED to the fit this record documents (AP7, 2026-08-05).  The
+    //  header states "Cp polynomial good to ~5 % across 373-673 K (the Dow
+    //  TDS range)" while the field claimed (285 670) -- over-claiming 88 K
+    //  at the bottom.
+    //
+    //  A CATEGORY CONFUSION, not a typo: line 15 gives the fluid's usable
+    //  LIQUID range as 285-650 K, and 285 leaked from there into the Cp
+    //  VALIDITY field.  Two different properties, one number.  Being liquid
+    //  at 285 K says nothing about whether a Cp fitted from 373 K upward
+    //  describes it there.
+    Trange        (373  673);
 }

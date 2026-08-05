@@ -16,6 +16,18 @@ name        water;
 formula     H2O;
 CAS         7732-18-5;
 
+//  The substance-level fact the SystemClassifier contract requires of every
+//  component inside an electrolyte system (settled 2026-07-26; ABSENT is
+//  UNKNOWN and is refused there, with the curation remedy named).  The
+//  solvent takes no part in the speciation NETWORK as a solute: it IS the
+//  medium.  Its autoprotolysis is a network reaction with its own record,
+//  and its VLE is the Raoult leg (p_w = a_w * psat) declared by the phase's
+//  property method -- not an equilibrium constant.
+//  PROMOTED from the flashComplex case 2026-08-02: it was the ONE genuinely
+//  case-carried fact among ten records, and its absence here is why that
+//  case had to mirror water at all.
+aqueousSpeciation  none;
+
 MW          18.015;
 Tc          647.14;
 Pc          220.64;
@@ -81,6 +93,27 @@ uniquac
 {
     r   0.9200;
     q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+pcsaft
+{
+    // Associating (2B: one donor + one acceptor) -- the water set of
+    // Gross & Sadowski 2002, whose Table 1 lists water with TWO
+    // association sites: this parameter set was FITTED AS 2B and is
+    // meaningless under any other scheme (curated first as 4C, which
+    // over-associated so strongly the ethanol/water flash collapsed --
+    // the scheme is part of the fit, not a free choice).  A 4C water
+    // from later literature is a DIFFERENT parameter set; curate it as
+    // its own trio if ever needed.  Known published trade-off of this
+    // set: Psat accurate (about -0.2% at 358 K, +4% at 298 K) while the
+    // ambient liquid density reads about -7.5% (922 kg/m3 vs 997).
+    m           1.0656;
+    sigma       3.0007;
+    epsilonK    366.51;
+    assocScheme 2B;
+    epsAB_K     2500.7;
+    kappaAB     0.034868;
+    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (water, 2 sites)";
 }
 
 cosmo
