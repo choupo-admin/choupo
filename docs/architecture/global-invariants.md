@@ -120,7 +120,9 @@ declared fact it will be asked for.
 ## E — Structure
 
 **I17. `core` depends on nothing above it.**
-Currently VIOLATED at FIVE sites (F1 hand-counted three); see
+Currently VIOLATED at FIVE sites — three from `core` (F1) plus
+`thermo` → `propertyOps` and `unitOperations` → `reporting`, which no hand
+reading had walked to; see
 [`module-boundaries.md`](module-boundaries.md) F1.
 · W [`module-boundaries.md`](module-boundaries.md) · R — · C `check_layering` (BOUNDS only: 5 pinned, a NEW one fails)  ← **still VIOLATED**
 
@@ -131,7 +133,12 @@ eight, five of them the I17 edges seen from the other side.
 
 **I19. Shared logic lives in the lowest NEUTRAL layer that can own its concepts
 without acquiring upward dependencies.**
-· W [`module-boundaries.md`](module-boundaries.md) §4 · R — · C —  ← **W only**
+**This one will not get a gate, and that is a property of the invariant rather
+than a gap in the tooling.**  "The lowest neutral layer that can own its
+concepts" is a judgement about MEANING; an include graph cannot tell whether a
+layer owns a concept or merely holds it.  It is enforced at review, or not at
+all — said plainly so it is not counted as covered when I17 and I18 are.
+· W [`module-boundaries.md`](module-boundaries.md) §4 · R — · C — (not gateable)
 
 ---
 

@@ -250,7 +250,7 @@ All five questions this audit raised were ruled on 2026-08-04.
 Ratifying §1 makes three measured facts into violations.  They are entered
 here with removal conditions rather than being smoothed into the rule.
 
-**D1 — `core` reaches up (F1, 4 sites).**  `SimulationResult` moves to a
+**D1 — `core` reaches up (F1, THREE sites).**  `SimulationResult` moves to a
 `result/` band above `core`.  *Removal condition:* `core` includes nothing but
 `core/`; invariant I17 gains a gate.
 
@@ -267,13 +267,23 @@ enumerates them, and the closure stops being a hand-maintained list.  This is
 the debt that produced the 2026-08-04 sealing defect and will produce the next
 one.
 
-**D4 — F3, eight boundary-crossing `../` includes.**  *Removal condition:*
+**D4 — NINE boundary-crossing `../` includes (F3 said eight).**  *Removal condition:*
 zero `../` includes crossing a subsystem, so the graph is measurable by the
 obvious method.
 
-**D5 — the three structural invariants have no gate.**  I17, I18 and I19 are
-written and violated, so a gate today would fail the suite.  *Removal
-condition:* D1, D2 and D4 paid, then one gate covering all three.
+**D5 — PARTLY PAID 2026-08-05: a BOUNDING gate exists; an ASSERTING one does
+not.**  This debt assumed the only possible gate was one that asserts the
+invariants, which would indeed fail the suite today.  `check_layering` takes
+the other form: it PINS the measured violations, so a NEW upward edge or
+cycle fails while the existing ones remain declared debts.  I17 and I18 are
+therefore *bounded*, not satisfied, and the invariant table still reads them
+as violated.
+*Removal condition for the asserting form:* D1, D2 and D4 paid, then the pins
+are deleted and the gate asserts instead of bounding.
+**I19 is a separate case and will not get a gate.**  "The lowest NEUTRAL layer
+that can own its concepts" is a judgement about meaning, not a measurable
+property of an include graph.  Saying so is better than leaving it implied in
+a list of three where two are now covered.
 
 ## 9. Reproducing the measurement
 
@@ -332,3 +342,24 @@ and `check_layering` moves them from its unplaced list into `BANDS`.
 after the species-citation list (17 named, 18 found) and the founding-decision
 index (5 claimed, 2 real). Same cause each time: *a measurement taken once and
 then remembered is a derived fact with a second home.* A gate recounts.
+
+### The `../` counts, separated (2026-08-05)
+
+D4's number moved because two different things were being counted together.
+Of thirteen `../` includes in `src/`:
+
+- **nine CROSS a subsystem** — the ones D4 is about;
+- **four stay INSIDE one** (`solver/ODE` → `../LU.H`,
+  `unitOperations/membrane/transport` → `../osmotic/`) and are legal.
+
+One of the nine is a different animal again: `core/Banner.cpp` →
+`../../generated/gitVersion.H` leaves `src/` entirely, into the generated
+tree. It is named here rather than folded into the subsystem count.
+
+**`check_layering` shipped with a blind spot and it is now fixed.** The first
+version mapped an include with `inc.split("/")[0]`, which for `"../thermo/..."`
+yields `".."` — not a subsystem, so the edge was silently dropped and all nine
+were invisible. That is exactly the defect D4 exists to remove, committed by
+the gate written to measure it. No upward edge was hidden on the day (the nine
+resolve downward), but a `../` include *can* be upward. Sabotage-verified: a
+`../`-form upward include now fails the gate, and did not before.

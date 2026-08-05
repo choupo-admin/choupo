@@ -111,7 +111,28 @@ def edges():
         if src_sub not in BAND:
             continue          # unplaced subsystem -- excluded, reported below
         for inc in INC.findall(p.read_text(errors="ignore")):
-            tgt = inc.split("/")[0]
+            #  A `../` INCLUDE MUST BE RESOLVED, NOT SKIPPED.  The first
+            #  version of this gate took inc.split("/")[0], which for
+            #  "../thermo/Database.H" yields ".." -- not a subsystem, so the
+            #  edge was silently dropped.  NINE boundary-crossing `../`
+            #  includes were invisible to it.
+            #
+            #  That is precisely the defect D4 exists to remove ("so the
+            #  graph is measurable by the obvious method"), and this gate WAS
+            #  the obvious method, so it missed exactly the includes D4 is
+            #  about.  No upward edge was hidden on the day it shipped -- the
+            #  nine resolve downward -- but a `../` include CAN be upward, and
+            #  a gate that reports OK about a region it never looked at is
+            #  worse than no gate.
+            if inc.startswith("../"):
+                tgt_path = (p.parent / inc).resolve()
+                try:
+                    tgt = tgt_path.relative_to(SRC.resolve()).parts[0]
+                except ValueError:
+                    continue          # leaves src/ entirely (generated/) --
+                                      # a different crossing, reported by D4
+            else:
+                tgt = inc.split("/")[0]
             if tgt != src_sub and tgt in BAND:
                 g[src_sub].add(tgt)
     return g
