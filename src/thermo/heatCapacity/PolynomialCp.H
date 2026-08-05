@@ -70,6 +70,9 @@ private:
 
     sVector a_;
     scalar Tmin_ = 0.0, Tmax_ = 0.0;
+    //  `Trange unknown;` -- a DECLARED absence, distinct from
+    //  both a window and no key at all (AP3).
+    bool   rangeUnknown_ = false;
     mutable bool announcedOutside_ = false;
     mutable bool announcedBadWindow_ = false;
     std::string owner_;                 // for a message that names the record

@@ -521,10 +521,26 @@ void Component::readFromDict(const DictPtr& d)
         dHcrystOrigin_ = sd->lookupWordOrDefault("dHcrystOrigin", "");
     }
 
+    //  STAMP THE OWNER so a Cp warning can name its component.
+    //
+    //  `PolynomialCp` has always read an `owner` key for its announcements,
+    //  and NOTHING EVER SET ONE -- no record declares it and no caller
+    //  injected it, so every validity-window message this engine has printed
+    //  said "polynomial Cp declares ..." with no subject.  In a flowsheet of
+    //  twenty components that is a warning the reader cannot act on, which is
+    //  most of the way to no warning at all.
+    //
+    //  The name is known HERE and nowhere below, so here is where it attaches.
+    auto stampOwner = [&](const std::string& key)
+    {
+        DictPtr sub = d->subDict(key);
+        if (!sub->found("owner")) sub->insert("owner", name_);
+        return sub;
+    };
     if (d->found("liquidHeatCapacity"))
-        cpLiq_ = HeatCapacityModel::New(d->subDict("liquidHeatCapacity"));
+        cpLiq_ = HeatCapacityModel::New(stampOwner("liquidHeatCapacity"));
     if (d->found("idealGasHeatCapacity"))
-        cpGas_ = HeatCapacityModel::New(d->subDict("idealGasHeatCapacity"));
+        cpGas_ = HeatCapacityModel::New(stampOwner("idealGasHeatCapacity"));
     // A REAL solid heat capacity (same HeatCapacityModel factory as the liquid
     // and ideal-gas Cp).  Optional: ABSENT leaves cpSolid_ null and the solid
     // enthalpy path falls back to Cp_liquid (the historical "Cp_solid ~

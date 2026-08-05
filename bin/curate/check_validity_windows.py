@@ -34,7 +34,21 @@ the liquid span, say), because that requires knowing what was fitted and
 this gate does not.  A weak check that cannot be wrong beats a strong one
 that guesses.
 
-SIX RECORDS ARE KNOWN-BAD AND PINNED BELOW.  They are NOT fixed by
+RESOLVED 2026-08-05 -- THE SIX ARE MIGRATED AND THE ENGINE NOW REFUSES.
+The gap was that a curator with no recoverable window had no way to SAY so:
+omitting the key is indistinguishable from never having considered it, so an
+impossible interval was the only way to signal "unknown", and the engine
+merely announced it.  `Trange unknown;` is that missing form.  All six records
+declare it now, `PolynomialCp` REFUSES an inverted interval by name at
+construction, and an `unknown` window announces on every run.
+
+An inverted interval is not extrapolation -- which I4 explicitly permits --
+it is a MALFORMED CLAIM about where a correlation holds, and there is nothing
+to extrapolate from.  That distinction is why refusing here does not
+contradict I4.
+
+The original pin text follows, because the reasoning still binds anyone
+tempted to "fix" the six by guessing:  They are NOT fixed by
 inventing a range: the fit's true domain is a fact about the regression
 that produced it, and fabricating it would put a made-up number where a
 measured one belongs -- the estimate-dressed-as-measurement failure I3
@@ -47,13 +61,6 @@ import re
 import sys
 from pathlib import Path
 
-#  THE WAIVERS LIVE IN ONE PLACE.  See `debt_registry.py` -- a pin is a
-#  decision to tolerate a known violation, and "what are we currently
-#  tolerating?" is a fact with exactly one home.
-import sys as _sys
-_sys.path.insert(0, str(Path(__file__).resolve().parent))
-from debt_registry import INVERTED_VALIDITY_WINDOWS
-
 ROOT = Path(__file__).resolve().parents[2]
 
 #  The interval keys this project uses for a declared validity window.
@@ -64,8 +71,92 @@ PAT = re.compile(r'\b(Trange|pRange)\s*\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)')
 #  whose declared window is inverted or degenerate.  The remedy is to
 #  re-derive the window from the regression that produced the coefficients
 #  -- a CURATION act, not a code change.  Do not "fix" these by guessing.
-PINNED = INVERTED_VALIDITY_WINDOWS
+PINNED = set()
 SCAN = ["data/standards", "tutorials"]
+
+#  A LIVE PROBE, because none of the six records is used by any tutorial.
+#  A refusal no case fires is not a refusal -- the gate would be asserting
+#  engine behaviour it never observed.  So the engine is actually run: once
+#  over a record declaring `Trange unknown;` (must announce, must succeed) and
+#  once over a deliberately inverted one (must refuse by name, must fail).
+PROBE_CASE = "tutorials/electrochem/ed01_nacl_desalination"
+PROBE_RECORD = "constant/components/water.dat"
+
+
+def probe_engine():
+    """RUN the engine.  Three states, three observed outcomes.
+
+    None of the six migrated records is used by any tutorial, so nothing in
+    the corpus would ever have exercised either behaviour -- the gate would be
+    asserting engine conduct it had never seen.  So it uses a case that DOES
+    carry a `liquidHeatCapacity` polynomial and rewrites that one field in a
+    scratch copy.  The standards tree is never touched.
+
+    Two findings came out of building this probe, and both were invisible to a
+    clean build and a green static check:
+
+      * detecting `unknown` via `lookupWordOrDefault` THROWS on a list rather
+        than returning its default, so the first version refused every
+        component in the catalogue that declares a numeric window;
+      * the `unknown` announcement was emitted from inside `Cp(T)`, so a case
+        that loads the component without evaluating its liquid Cp printed
+        nothing.  It is announced at CONSTRUCTION now -- the fact is about the
+        record, not about a temperature.
+    """
+    import shutil, subprocess, tempfile
+    src = ROOT / PROBE_CASE
+    if not src.is_dir():
+        return ["probe case %s is gone -- the probe is stale, not the engine"
+                % PROBE_CASE]
+    exe = ROOT / "choupoSolve"
+    if not exe.exists():
+        return ["choupoSolve is not built -- the probe cannot run, and a check "
+                "that cannot run must not pass"]
+
+    out = []
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-vw-"))
+    try:
+        for label, repl, want_rc, want_text in [
+            ("clean",   None,                    0, None),
+            ("inverted", "Trange        (373  273);", None,
+             "is not an interval"),
+            ("unknown",  "Trange        unknown;",   0,
+             "declares `Trange unknown;`"),
+        ]:
+            d = tmp / label
+            shutil.copytree(src, d)
+            if repl is not None:
+                rec = d / PROBE_RECORD
+                txt = rec.read_text()
+                m = re.search(r'(liquidHeatCapacity\s*\{.*?)Trange\s*\([^)]*\);',
+                              txt, re.S)
+                if not m:
+                    out.append("probe: %s has no liquidHeatCapacity Trange -- "
+                               "the probe is stale" % PROBE_RECORD)
+                    continue
+                rec.write_text(txt[:m.start(0)] + m.group(1) + repl
+                               + txt[m.end(0):])
+            r = subprocess.run([str(exe), "."], cwd=str(d),
+                               capture_output=True, text=True, timeout=300)
+            blob = r.stdout + r.stderr
+            if want_rc is not None and r.returncode != want_rc:
+                out.append("probe[%s]: exit %d, expected %d"
+                           % (label, r.returncode, want_rc))
+            if want_rc is None and r.returncode == 0:
+                out.append("probe[%s]: the engine ACCEPTED an impossible "
+                           "validity window -- an inverted interval is not "
+                           "extrapolation, it is a malformed claim about where "
+                           "a correlation holds" % label)
+            if want_text and want_text not in blob:
+                out.append("probe[%s]: the engine did not say %r"
+                           % (label, want_text))
+            if label == "clean" and "Trange unknown" in blob:
+                out.append("probe[clean]: an untouched record announced an "
+                           "unknown window -- an absence must keep meaning "
+                           "what it meant")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+    return out
 
 
 def main() -> int:
@@ -97,6 +188,8 @@ def main() -> int:
     #  (needs attention).  Either way the pin is stale and must not linger:
     #  a pin list that outlives its reason is a second home for a fact.
     stale = sorted(PINNED - pinned_seen)
+
+    bad.extend(probe_engine())
 
     if bad or stale:
         print("check_validity_windows: FAILED")

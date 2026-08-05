@@ -45,7 +45,14 @@ liquidHeatCapacity
     model         polynomial;
     // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
     coefficients  (-9.84095  3.74245  -0.162912  0.00296184);
-    Trange        (24  24);
+        //  `unknown` is a DECLARED absence, not a guess (AP3, 2026-08-05).
+    //  This window used to read `(24  24)`, which is not an interval --
+    //  a four-term CoolProp liquid-Cp fit cannot have been regressed
+    //  over it.  The true domain was not recoverable from the record,
+    //  and INVENTING a plausible one would be a false claim about
+    //  where the correlation holds.  Declared honestly instead; the
+    //  engine announces it on every run.
+    Trange        unknown;
 }
 
 triplePoint

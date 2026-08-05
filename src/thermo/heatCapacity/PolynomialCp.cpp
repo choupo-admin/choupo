@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PolynomialCp.H"
+
+#include <variant>
 #include <iostream>
 
 #include <cmath>
@@ -43,10 +45,79 @@ PolynomialCp::PolynomialCp(const DictPtr& dict)
         throw std::runtime_error("PolynomialCp: at most 5 coefficients (a0..a4)");
     if (dict->found("Trange"))
     {
-        auto r = dict->lookupList("Trange");
-        if (r.size() != 2)
-            throw std::runtime_error("PolynomialCp: 'Trange' must hold (Tmin Tmax)");
-        Tmin_ = r[0]; Tmax_ = r[1];
+        //  THREE STATES, and the middle one had no way to be written (AP3,
+        //  2026-08-05).  A fit either declares the domain it was regressed
+        //  over, declares that the domain is NOT KNOWN, or declares nothing
+        //  at all -- and those are different facts about the curation, not
+        //  degrees of the same one.
+        //
+        //  `Trange unknown;` is the explicit second state.  Before it existed,
+        //  a curator with no recoverable window had only two options: omit the
+        //  key (indistinguishable from never having thought about it) or write
+        //  an impossible interval.  Six catalogue records took the second
+        //  route -- `(30 27)`, `(24 24)` -- and the engine ANNOUNCED them and
+        //  carried on.
+        //
+        //  It refuses now.  An inverted interval is not extrapolation, which
+        //  I4 explicitly permits; it is a MALFORMED CLAIM about where a
+        //  correlation holds, and a malformed claim cannot be extrapolated
+        //  from.  The remedy is in the message, and it is one word.
+        //  DISCRIMINATE ON THE VARIANT, not by asking for a word.
+        //  `lookupWordOrDefault` THROWS when the entry is a list -- it does
+        //  not fall back to its default -- so asking it first would have
+        //  refused every component in the catalogue that declares a numeric
+        //  window.  Caught by running the engine against a real case; the
+        //  build was clean and the gate was green, because neither looks at
+        //  what happens when a record is actually loaded.
+        const bool isWord =
+            std::holds_alternative<std::string>(dict->entryValue("Trange"));
+        if (isWord && dict->lookupWord("Trange") == "unknown")
+        {
+            rangeUnknown_ = true;
+            //  ANNOUNCED AT CONSTRUCTION, not at evaluation.
+            //
+            //  "This fit's domain is unknown" is a fact about the RECORD, and
+            //  it is knowable the moment the record is read.  The first
+            //  version announced it from `noteRange`, inside `Cp(T)` -- so a
+            //  case that loads the component but never evaluates its liquid
+            //  Cp said nothing at all, and the probe that was meant to
+            //  witness it saw silence.  A warning whose delivery depends on
+            //  whether a hot path happens to run is a warning that can be
+            //  missed exactly when the record matters least visibly.
+            //
+            //  The OUTSIDE-THE-WINDOW announcement stays at evaluation,
+            //  because that one genuinely is a fact about a temperature.
+            std::cerr << "[cp] polynomial Cp"
+                      << (dict->lookupWordOrDefault("owner", "").empty()
+                          ? std::string()
+                          : " for '" + dict->lookupWordOrDefault("owner", "")
+                            + "'")
+                      << " declares `Trange unknown;` -- the record states"
+                         " that the fit's validity domain could not be"
+                         " recovered.\n     Values are still returned, and"
+                         " they carry NO validity claim at any temperature."
+                         "  Re-deriving the window from the regression that"
+                         " produced the coefficients is a curation act.\n";
+        }
+        else
+        {
+            auto r = dict->lookupList("Trange");
+            if (r.size() != 2)
+                throw std::runtime_error("PolynomialCp: 'Trange' must hold "
+                    "(Tmin Tmax), or the word `unknown`");
+            if (r[1] <= r[0])
+                throw std::runtime_error(
+                    "PolynomialCp: 'Trange (" + std::to_string(r[0]) + " "
+                    + std::to_string(r[1]) + ")' is not an interval -- the "
+                    "upper bound does not exceed the lower, so the fit claims "
+                    "a validity domain that cannot exist and EVERY "
+                    "temperature lies outside it.\n  REMEDY: re-derive the "
+                    "window from the regression that produced the "
+                    "coefficients, or, if it cannot be recovered, declare it "
+                    "honestly as `Trange unknown;` -- which is announced on "
+                    "every run and never mistaken for a validated range.");
+            Tmin_ = r[0]; Tmax_ = r[1];
+        }
     }
     owner_ = dict->lookupWordOrDefault("owner", "");
 }
@@ -69,25 +140,11 @@ PolynomialCp::PolynomialCp(const DictPtr& dict)
 //  loop and provenance must not live there.
 void PolynomialCp::noteRange(scalar T) const
 {
-    if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
+    //  `Trange unknown;` is announced at CONSTRUCTION (see above), so
+    //  nothing is due here: the fact does not depend on T.
+    if (rangeUnknown_) return;
 
-    if (Tmax_ <= Tmin_)
-    {
-        if (!announcedBadWindow_)
-        {
-            announcedBadWindow_ = true;
-            std::cerr << "[cp] polynomial Cp"
-                      << (owner_.empty() ? std::string()
-                                         : " for '" + owner_ + "'")
-                      << " declares Trange (" << Tmin_ << " " << Tmax_
-                      << "), which is not an interval -- the upper bound does"
-                         " not exceed the lower.\n     The fit's true domain"
-                         " is therefore UNKNOWN, so this Cp is being used with"
-                         " no validity claim at all.  Re-derive the range from"
-                         " the regression that produced the coefficients.\n";
-        }
-        return;
-    }
+    if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
 
     if ((T < Tmin_ || T > Tmax_) && !announcedOutside_)
     {

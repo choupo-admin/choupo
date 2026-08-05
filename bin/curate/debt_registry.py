@@ -89,21 +89,20 @@ SOURCE_LICENCE = {
         "either way it should be explicit, not incidental.",
 }
 
-#  Declared validity windows that are inverted or degenerate (hi <= lo).
+#  INVERTED_VALIDITY_WINDOWS -- REMOVED 2026-08-05, the waiver is discharged.
 #
-#  Each is a CoolProp-derived liquid-Cp fit.  The remedy is to re-derive the
-#  window from the regression that produced the coefficients -- a curation act,
-#  not a code change.  Do NOT "fix" these by guessing a plausible interval:
-#  a guessed window is a false claim about where a correlation is valid, which
-#  is worse than an obviously broken one.
-INVERTED_VALIDITY_WINDOWS = {
-    "data/standards/components/neon.dat",
-    "data/standards/components/krypton.dat",
-    "data/standards/components/Xe.dat",
-    "data/standards/components/D2.dat",
-    "data/standards/components/OrthoDeuterium.dat",
-    "data/standards/components/ParaDeuterium.dat",
-}
+#  Six records declared `Trange (hi lo)` with hi <= lo and the engine merely
+#  ANNOUNCED them.  The gap underneath was that a curator with no recoverable
+#  window had no way to SAY so: omitting the key is indistinguishable from
+#  never having considered it, so an impossible interval was the only available
+#  signal.  `Trange unknown;` is that missing form.  All six declare it, and
+#  `PolynomialCp` now REFUSES an inverted interval at construction.
+#
+#  Worth recording HOW this entry came out: it was not remembered.  The gate
+#  stopped importing it, and `check_debt_registry`'s orphan arm failed the
+#  build -- "a waiver nobody consults is not a waiver".  A registry that makes
+#  a discharged waiver impossible to leave lying around is doing the job a
+#  scattered pin list could not.
 
 # ---------------------------------------------------------------------------
 #  STRUCTURE
