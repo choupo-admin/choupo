@@ -78,7 +78,7 @@ flowchart TB
 | **Sealing must not change the physics** | CLAUDE.md §5 | `choupo-import` compares the staged sealed run against the case's own golden | the closure disabled -> 12 named row differences, nothing installed | **2026-08-04** |
 | **Subsystem layering** (no upward edge; acyclic but for one accepted cycle) | [`module-boundaries.md`](module-boundaries.md) §1 | `check_layering` (a compile-time fact, so a gate rather than an engine refusal) | 4 sabotages: upward edge · runtime reads a tool · stale accepted cycle · unplaced subsystem | **2026-08-05** |
 | **A finding record is neutral data** (engine produces, result carries) | [`../design/where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | `check_layering` (D7's edge cannot return) | `core/ResultRecords.H`; the audit sits with the engine | **2026-08-05** |
-| Unread keys (`murphreeEficiency` runs silently) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | — | — | **awaiting a decision** |
+| **Unread keys** (a misspelt key ran silently) | [`../design/unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | `core/DictAudit` reports the key BY NAME with what the model looked for | `check_unread_keys` | **2026-08-06 (row corrected)** |
 | `role` vocabulary | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **awaiting a decision** |
 | Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | to be implemented |
 
