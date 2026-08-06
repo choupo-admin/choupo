@@ -98,6 +98,13 @@ public:
     //  components.
     void setOwner(const std::string& owner) { owner_ = owner; }
 
+    //  The component's critical temperature, stamped by the factory from the
+    //  same injected key the corresponding-states models read.  `noteRange`
+    //  needs it to tell two PHYSICALLY DIFFERENT situations apart -- see
+    //  `noteRange` for why that distinction is not optional.  0 means the
+    //  record declares none, and the branch degrades to the plain one.
+    void setCriticalT(scalar Tc) { Tc_declared_ = Tc; }
+
     // ---- Factory -----------------------------------------------------------
     using Factory = std::function<std::unique_ptr<VaporPressureModel>(const DictPtr&)>;
     static void registerModel(const std::string& name, Factory f);
@@ -122,6 +129,7 @@ protected:
     void noteRange(scalar T_K) const;
 
     std::string  owner_;
+    scalar       Tc_declared_ = 0.0;
     mutable bool announcedOutside_ = false;
 
 private:

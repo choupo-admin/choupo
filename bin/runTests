@@ -1258,6 +1258,29 @@ PYEOF
     fi
     rm -f /tmp/refrung.$$
 
+    # psat-range gate (2026-08-06).  All 108 vaporPressure blocks declare a
+    # Trange, range() is a pure virtual every model implements -- and nothing
+    # in the tree had ever CALLED it.  Zero consumers, on the correlation
+    # behind every K-value.  The check now lives on the BASE (Psat_Pa is
+    # non-virtual and delegates to computePsat), so no model can forget it.
+    # The corpus decided the message: 111 of 332 cases evaluate outside a
+    # window, bimodally, and the big tail is combustion -- N2 at 2400 K
+    # against Tc 126.2 K.  Above Tc there is no saturation curve to
+    # extrapolate at all, so that case gets its own sentence; the branch is on
+    # Tc, never on the size of the excursion.
+    # Sabotage-verified twice: drop the noteRange call; collapse the two
+    # branches into one.  A third round is impossible by construction -- a
+    # subclass cannot skip the check, because Psat_Pa is not virtual.
+    if "$ROOT/bin/curate/check_psat_range.py" > /tmp/psatrange.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "psat-range-gate" "$(head -1 /tmp/psatrange.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_psat_range.py)\n" "psat-range-gate"
+        cat /tmp/psatrange.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/psatrange.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question

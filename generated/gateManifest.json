@@ -41,7 +41,7 @@
     },
     "check_caveat_surface": {
       "exit": 0,
-      "claim": "check_caveat_surface: OK -- 2 named extrapolation(s) listed (solidDryer01_sugar); all 4 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
+      "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 5 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
     },
     "check_charge_balance": {
       "exit": 0,
@@ -77,11 +77,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 93 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 94 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 38 design record(s) appear in the index, and its stated counts (16 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 39 design record(s) appear in the index, and its stated counts (17 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40185 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40190 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -238,6 +238,10 @@
     "check_pitzer_pairs": {
       "exit": 0,
       "claim": "electrolyte/pairs.dat ABSENT -- pairs kind consolidated. OK."
+    },
+    "check_psat_range": {
+      "exit": 0,
+      "claim": "check_psat_range: OK -- above Tc gets its own sentence, quoting Tc (6 species at 2400 K); below Tc and outside the window gets the extrapolation sentence, quoting both bounds; a case inside its windows says nothing; every message names its component; Psat_Pa is non-virtual and calls noteRange, so no model can skip the check by overriding.  The gate checks that the reader is TOLD, never whether an extrapolation was JUSTIFIED -- that is a modelling judgement (I4: the professor extrapolates on purpose, but knows he did)."
     },
     "check_pswing": {
       "exit": 0,

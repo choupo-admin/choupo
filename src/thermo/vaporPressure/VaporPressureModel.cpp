@@ -71,6 +71,7 @@ VaporPressureModel::New(const DictPtr& dict)
     //  check itself lives on the base.  `Component::readFromDict` injects
     //  `owner` into the sub-dict before calling here.
     if (m && dict->found("owner")) m->setOwner(dict->lookupWord("owner"));
+    if (m && dict->found("Tc"))    m->setCriticalT(dict->lookupScalar("Tc"));
     return m;
 }
 
@@ -95,6 +96,48 @@ void VaporPressureModel::noteRange(scalar T_K) const
     const std::string who =
         owner_.empty() ? modelName() + " vapour pressure"
                        : "component '" + owner_ + "'";
+
+    //  TWO PHYSICALLY DIFFERENT SITUATIONS, and the corpus made the
+    //  distinction unavoidable rather than nice-to-have (measured 2026-08-06:
+    //  111 of 332 cases evaluate outside a window, and the excursions are
+    //  BIMODAL -- a cluster of a few kelvin, and a cluster of hundreds).
+    //
+    //    * ABOVE Tc there is NO vapour-liquid saturation at all.  N2 in
+    //      `gibbs06_h2_flame_radicals` is asked for a saturation pressure at
+    //      2400 K against a critical temperature of 126.2 K -- nineteen times
+    //      Tc.  Calling that "extrapolated beyond the fit" is not merely
+    //      imprecise, it is WRONG in a way that teaches the wrong physics: it
+    //      implies a curve exists that could be extended further.  None does.
+    //      The substance stopped being a vapour and became a gas 2274 K ago.
+    //
+    //    * BELOW Tc and outside the window is a genuine extrapolation of a
+    //      real curve, and the honest report is exactly that.
+    //
+    //  The branch is on Tc -- a datum every record already carries -- NOT on
+    //  the size of the excursion.  A magnitude threshold was considered and
+    //  rejected: it is an arbitrary constant, and it would hide precisely the
+    //  case where a fit degrades sharply just past its edge.
+    const bool supercritical = (Tc_declared_ > 0.0 && T_K > Tc_declared_);
+
+    if (supercritical)
+    {
+        AdvisoryLog::instance().add(
+            "validity", "warning", who,
+            "vapour pressure requested at T = " + trimNum(T_K) + " K, ABOVE"
+            " its critical temperature Tc = " + trimNum(Tc_declared_)
+            + " K -- there is no saturation state there; the value returned"
+              " is not a vapour pressure");
+        std::cerr << "[psat] " << who << ": vapour pressure requested at T = "
+                  << trimNum(T_K) << " K, ABOVE its critical temperature Tc = "
+                  << trimNum(Tc_declared_) << " K.\n     Above Tc a substance"
+                     " is a GAS, not a vapour: no pressure condenses it and no"
+                     " vapour-liquid saturation curve exists to evaluate.  The"
+                     " number returned by " << modelName() << " there is not a"
+                     " vapour pressure, and anything computed from it (a"
+                     " K-value, a Raoult partial pressure) inherits that.\n";
+        return;
+    }
+
     AdvisoryLog::instance().add(
         "validity", "warning", who,
         "vapour pressure evaluated at T = " + trimNum(T_K) + " K, OUTSIDE its"
