@@ -51,9 +51,11 @@ class Antoine : public VaporPressureModel
 public:
     explicit Antoine(const DictPtr& dict);
 
-    scalar Psat_Pa(scalar T_K) const override;
     std::pair<scalar, scalar> range() const override { return {Tmin_, Tmax_}; }
     const std::string& modelName() const override { return name_; }
+
+protected:
+    scalar computePsat(scalar T_K) const override;
 
 private:
     scalar A_, B_, C_;

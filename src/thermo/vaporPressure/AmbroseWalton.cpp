@@ -73,7 +73,7 @@ scalar AmbroseWalton::psat(scalar T, scalar Tc, scalar Pc, scalar omega)
     return Pc * std::exp(lnPr);
 }
 
-scalar AmbroseWalton::Psat_Pa(scalar T) const
+scalar AmbroseWalton::computePsat(scalar T) const
 {
     return psat(T, Tc_, Pc_, omega_);
 }

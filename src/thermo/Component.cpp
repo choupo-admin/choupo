@@ -361,6 +361,11 @@ void Component::readFromDict(const DictPtr& d)
         if (!vpd->found("Tc"))    vpd->insert("Tc",    Tc_);
         if (!vpd->found("Pc"))    vpd->insert("Pc",    Pc_);
         if (!vpd->found("omega")) vpd->insert("omega", omega_);
+        //  The NAME travels with the model, for the same reason the Cp blocks
+        //  get one: a validity warning that cannot say WHICH component it is
+        //  about is a warning the reader cannot act on.  The name is known
+        //  here and nowhere below, so here is where it attaches.
+        if (!vpd->found("owner")) vpd->insert("owner", name_);
         return VaporPressureModel::New(vpd);
     };
     if (needsVP)

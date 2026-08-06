@@ -57,7 +57,23 @@ SOLVE = ROOT / "choupoSolve"
 #  A case that really evaluates a Cp outside its declared window, and one that
 #  does not.  Both are ordinary corpus cases -- no fixture, no sabotage.
 LOUD = "tutorials/steady/drying/solidDryer01_sugar"
-SILENT = "tutorials/steady/flash/flash01_benzene_toluene"
+#  A case that genuinely raises NOTHING.  It was `flash01_benzene_toluene`
+#  until 2026-08-06, and losing that role is worth recording, because it is
+#  this gate's own thesis turned one level up.
+#
+#  flash01 runs at 370 K.  Benzene's Antoine window ends at 354.07 K.  Every
+#  K-value in the flagship first flash a student meets had been computed
+#  16 K past the correlation's declared validity -- and the case looked CLEAN,
+#  because nothing in the tree had ever compared a temperature against a
+#  `Trange`.  Its empty caveat block was indistinguishable from a caveat block
+#  whose checks were not wired, and it was the second.
+#
+#  So the replacement is not chosen for being quiet.  It is chosen for being
+#  quiet FOR A CHECKED REASON: ethanol/water at 351 K, both components well
+#  inside their declared windows, verified by running it.  If a future check
+#  finds something here too, repoint again and write down what it found --
+#  that is the gate working, not the gate breaking.
+SILENT = "tutorials/steady/flash/flash02_ethanol_water"
 
 HEADER = "ASSUMPTIONS AND CAVEATS"
 NONE_LINE = "ASSUMPTIONS AND CAVEATS: none raised."

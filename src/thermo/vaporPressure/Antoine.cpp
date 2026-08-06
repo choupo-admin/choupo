@@ -54,7 +54,7 @@ Antoine::Antoine(const DictPtr& dict)
     else { Tmin_ = 0.0; Tmax_ = 0.0; }
 }
 
-scalar Antoine::Psat_Pa(scalar T) const
+scalar Antoine::computePsat(scalar T) const
 {
     // Antoine published convention: log10(Psat[bar]) = A − B / (T+C).
     // We multiply by bar→Pa so the rest of the simulator can stay in

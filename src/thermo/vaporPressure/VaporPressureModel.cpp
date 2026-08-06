@@ -30,9 +30,15 @@ License
 #include "Antoine.H"
 #include "AmbroseWalton.H"
 
+#include "core/Advisory.H"
+
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 namespace Choupo {
 
@@ -60,7 +66,47 @@ VaporPressureModel::New(const DictPtr& dict)
                 for (const auto& kv : registry()) s += " " + kv.first;
                 return s.empty() ? std::string(" (none)") : s;
             }());
-    return it->second(dict);
+    auto m = it->second(dict);
+    //  ONE place stamps the owner, for every model -- the same reason the
+    //  check itself lives on the base.  `Component::readFromDict` injects
+    //  `owner` into the sub-dict before calling here.
+    if (m && dict->found("owner")) m->setOwner(dict->lookupWord("owner"));
+    return m;
+}
+
+//  Trim a temperature for a message: 354.07 stays, 354.000000 does not.
+static std::string trimNum(scalar v)
+{
+    std::ostringstream os;
+    os << std::setprecision(6) << v;
+    return os.str();
+}
+
+void VaporPressureModel::noteRange(scalar T_K) const
+{
+    if (announcedOutside_) return;                 // one bool test, hot path
+
+    const auto [lo, hi] = range();
+    if (lo == 0.0 && hi == 0.0) return;            // no window declared
+    if (hi <= lo)               return;            // not a window; not ours to judge
+    if (T_K >= lo && T_K <= hi) return;
+
+    announcedOutside_ = true;
+    const std::string who =
+        owner_.empty() ? modelName() + " vapour pressure"
+                       : "component '" + owner_ + "'";
+    AdvisoryLog::instance().add(
+        "validity", "warning", who,
+        "vapour pressure evaluated at T = " + trimNum(T_K) + " K, OUTSIDE its"
+        " declared Trange (" + trimNum(lo) + " " + trimNum(hi)
+        + ") -- extrapolated, still returned");
+    std::cerr << "[psat] " << who << ": " << modelName()
+              << " evaluated at T = " << trimNum(T_K)
+              << " K, OUTSIDE its declared Trange (" << trimNum(lo) << " "
+              << trimNum(hi) << ").\n     The saturation pressure is"
+                 " extrapolated: it is still returned (I4 -- extrapolation is"
+                 " a legitimate choice), but it is no longer covered by the"
+                 " fit, and every K-value computed from it inherits that.\n";
 }
 
 void VaporPressureModel::registerBuiltins()

@@ -70,8 +70,6 @@ class AmbroseWalton : public VaporPressureModel
 public:
     explicit AmbroseWalton(const DictPtr& dict);
 
-    scalar Psat_Pa(scalar T_K) const override;
-
     // The bare correlation, exposed so other glass-box callers (the
     // estimateComponent props op) reuse the SAME coefficients instead of
     // duplicating them.  T, Tc in K; Pc in Pa; omega dimensionless; returns Pa.
@@ -82,6 +80,9 @@ public:
     // surfaced by the estimate op's data overlay rather than a T window.
     std::pair<scalar, scalar> range() const override { return {0.0, Tc_}; }
     const std::string& modelName() const override { return name_; }
+
+protected:
+    scalar computePsat(scalar T_K) const override;
 
 private:
     scalar Tc_, Pc_, omega_;
