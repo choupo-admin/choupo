@@ -61,23 +61,42 @@ That is not a corner case — it is how every CO2 cylinder works, and it is the
 entire basis of supercritical-CO2 extraction, which is a unit operation this
 corpus is meant to teach.
 
-> **CORRECTION, 2026-08-06, and it is the more useful half.**  This section
-> first claimed that `absorption01_CO2_water` and eight batch adsorber cases
-> run CO2 at 298.15 K *"while the engine announces no pure liquid to reference
-> above Tc"*.  **That was wrong, and measuring it is what showed it.**  Every
-> one of the 332 cases was run and its output searched for either consumer of
-> the flag.  **Exactly one case consults `isNoncondensable()` at all** —
-> `basis01_two_unit_chain`, for N2 at 313.15 K against Tc 126.2 K, where the
-> flag is CORRECT and nothing should fire.  The nine CO2 cases never reach the
-> reactive-electrolyte builder, so the engine makes no such announcement about
-> them; their temperature was measured but their code path was assumed.
+> **CORRECTED TWICE, 2026-08-06, and the method error is the lesson.**
 >
-> The finding survives and changes character.  CO2's flag is still a false
-> claim about a substance below 31 °C — but it is a **latent defect in the
-> data**, not a wrong answer being produced today.  And the second measurement
-> is worth as much as the first: **the flag is declared on three records and
-> exercised by one case in three hundred and thirty-two.**  A field that
-> expensive to reach deserves to be asked whether it earns its place.
+> **First claim (wrong):** that `absorption01_CO2_water` and eight batch
+> adsorber cases run CO2 at 298.15 K *"while the engine announces no pure
+> liquid to reference above Tc"*.  Their TEMPERATURE was measured; their CODE
+> PATH was assumed.  They never reach the reactive-electrolyte builder.
+>
+> **Second claim (also wrong):** that exactly one case in 332 consults the
+> flag.  That came from running every case and grepping for the resolver's
+> announcement — but `thermoAnnounce()` is **gated at verbosity 2**, so the
+> sweep counted cases that PRINT at their configured verbosity, not cases that
+> CONSULT the flag.  Twice in one slice I measured a proxy instead of the
+> thing, which is the exact failure this project keeps paying for.
+>
+> **What is actually true**, from the declarations rather than the console —
+> six cases carry a flagged gas as an apparent component in a reactive
+> package:
+>
+> | case | flagged | min T |
+> |---|---|---|
+> | `column13_sour_water_stage_identity` | CO2 | 350 K |
+> | `flash14_calcite_carbonate_basis` | CO2 | 313.15 K |
+> | `flash16_calcite_precipitation` | CO2 | 313.15 K |
+> | `flash18_water_analysis_basis` | CO2 | 313.15 K |
+> | `flash19_organic_and_precipitate` | CO2 | 313.15 K |
+> | `basis01_two_unit_chain` | CO2, N2 | 313.15 K |
+>
+> **Every one is ABOVE CO2's Tc of 304.13 K**, so the flag is doing correct
+> work everywhere it is used and the announcement correctly stays silent.  The
+> conclusion is unchanged — there is no witness — but it now rests on the
+> right evidence, and the corrected picture is more interesting than the wrong
+> one: five of the six sit at 313.15 K, **nine kelvin above** the critical
+> temperature.  One carbonate case at ambient temperature would cross it.
+>
+> CO2's flag therefore remains a false claim about a substance below 31 °C,
+> but a **latent** one: no shipped case produces a wrong answer from it today.
 
 `N2` and `O2` are not exempt in principle either: in cryogenic air separation
 — a canonical chemical-engineering unit operation — both are condensed on
