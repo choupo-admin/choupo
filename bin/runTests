@@ -1214,6 +1214,26 @@ PYEOF
     fi
     rm -f /tmp/gman.$$
 
+    # size-distribution gate (2026-08-06).  The PSD was the only physical
+    # model in the tree that was a bare struct instead of a registered class,
+    # so no moment was computed anywhere and a continuous law had nowhere to
+    # live.  The family follows OpenFOAM's src/OpenFOAM/distributions/ shape:
+    # tabular forms as PEERS of the analytic laws, and the moment basis
+    # carried by the distribution (their Q_/sampleQ_).  Every arm recomputes a
+    # closed form rather than comparing with a pinned number.
+    # Sabotage-verified three ways: break the basis conversion; drop the Gamma
+    # from a closed-form moment; make both laws declare the same basis so the
+    # conversion arm stops discriminating.
+    if "$ROOT/bin/curate/check_size_distribution.py" > /tmp/sizedist.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "size-distribution-gate" "$(head -1 /tmp/sizedist.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_size_distribution.py)\n" "size-distribution-gate"
+        cat /tmp/sizedist.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sizedist.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question

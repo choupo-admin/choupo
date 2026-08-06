@@ -60,6 +60,7 @@ Description
 #include "control/signal/Signal.H"
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
+#include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "outerDriver/OuterDriver.H"
@@ -186,6 +187,9 @@ try
 {
     printBanner("  ctrl");
 
+    //  Size distributions: tabular AND the continuous laws, explicit as
+    //  every other model family here.
+    SizeDistribution::registerBuiltins();
     VaporPressureModel::registerBuiltins();
     ActivityModel     ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)

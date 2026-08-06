@@ -51,6 +51,7 @@ Description
 
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
+#include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
@@ -138,6 +139,9 @@ try
     printBanner("  batch");
 
     // Registries shared with choupoSolve.
+    //  Size distributions: tabular AND the continuous laws, explicit as
+    //  every other model family here.
+    SizeDistribution::registerBuiltins();
     VaporPressureModel::registerBuiltins();
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)

@@ -49,6 +49,7 @@ Description
     Usage:   choupoSolve [case_dir]
 \*---------------------------------------------------------------------------*/
 
+#include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
@@ -401,6 +402,9 @@ try
 {
     printBanner("");
 
+    //  Size distributions: tabular AND the continuous laws, explicit as
+    //  every other model family here.
+    SizeDistribution::registerBuiltins();
     VaporPressureModel::registerBuiltins();
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)

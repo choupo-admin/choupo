@@ -48,6 +48,7 @@ Description
 
 #include "AadCompare.H"
 #include "core/AdvisorySummary.H"
+#include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
@@ -262,6 +263,9 @@ try
 
     if (!gapReport) printBanner("  props");   // clean stdout for the JSON consumer
 
+    //  Size distributions: tabular AND the continuous laws, explicit as
+    //  every other model family here.
+    SizeDistribution::registerBuiltins();
     VaporPressureModel::registerBuiltins();
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
