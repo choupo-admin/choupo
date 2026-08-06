@@ -58,6 +58,8 @@ Description
 
 #include "control/Controller.H"
 #include "control/signal/Signal.H"
+#include "core/Advisory.H"
+#include "core/AdvisorySummary.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "outerDriver/OuterDriver.H"
@@ -1266,6 +1268,12 @@ try
                                   : ledger.energyReason) << "\n";
             }
         }
+        //  THE END-OF-RUN CAVEAT BLOCK (see core/AdvisorySummary.H).  Every
+        //  binary prints it: a caveat surface that exists in one application
+        //  and not the others teaches the reader that its ABSENCE means
+        //  "nothing to report", which is false in the three that never had it.
+        result.advisories = AdvisoryLog::instance().entries();
+        printAdvisorySummary(result.advisories);
         if (writeOutputs) emitResultJson(std::cout, result);
         return result;
     }

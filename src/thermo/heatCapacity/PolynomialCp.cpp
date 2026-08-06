@@ -28,6 +28,8 @@ License
 
 #include "PolynomialCp.H"
 
+#include "core/Advisory.H"
+
 #include <variant>
 #include <iostream>
 
@@ -35,6 +37,22 @@ License
 #include <stdexcept>
 
 namespace Choupo {
+
+namespace
+{
+//  `std::to_string(375.0)` is "375.000000", and this text is read by students.
+//  Six trailing zeros on a temperature make a caveat look like machine noise,
+//  which is the opposite of what the summary block is for.
+std::string trimNum(scalar v)
+{
+    std::string s = std::to_string(v);
+    if (s.find('.') == std::string::npos) return s;
+    while (!s.empty() && s.back() == '0') s.pop_back();
+    if (!s.empty() && s.back() == '.') s.pop_back();
+    return s;
+}
+}
+
 
 PolynomialCp::PolynomialCp(const DictPtr& dict)
 {
@@ -87,11 +105,15 @@ PolynomialCp::PolynomialCp(const DictPtr& dict)
             //
             //  The OUTSIDE-THE-WINDOW announcement stays at evaluation,
             //  because that one genuinely is a fact about a temperature.
+            const std::string who = dict->lookupWordOrDefault("owner", "");
+            AdvisoryLog::instance().add(
+                "validity", "warning",
+                who.empty() ? "polynomial Cp" : "component '" + who + "'",
+                "declares `Trange unknown;` -- the fit's validity domain could "
+                "not be recovered, so its values carry no validity claim at "
+                "any temperature");
             std::cerr << "[cp] polynomial Cp"
-                      << (dict->lookupWordOrDefault("owner", "").empty()
-                          ? std::string()
-                          : " for '" + dict->lookupWordOrDefault("owner", "")
-                            + "'")
+                      << (who.empty() ? std::string() : " for '" + who + "'")
                       << " declares `Trange unknown;` -- the record states"
                          " that the fit's validity domain could not be"
                          " recovered.\n     Values are still returned, and"
@@ -149,6 +171,12 @@ void PolynomialCp::noteRange(scalar T) const
     if ((T < Tmin_ || T > Tmax_) && !announcedOutside_)
     {
         announcedOutside_ = true;
+        AdvisoryLog::instance().add(
+            "validity", "warning",
+            owner_.empty() ? "polynomial Cp" : "component '" + owner_ + "'",
+            "evaluated at T = " + trimNum(T) + " K, OUTSIDE its declared "
+            "Trange (" + trimNum(Tmin_) + " " + trimNum(Tmax_)
+            + ") -- extrapolated, still returned");
         std::cerr << "[cp] polynomial Cp"
                   << (owner_.empty() ? std::string() : " for '" + owner_ + "'")
                   << " evaluated at T = " << T << " K, OUTSIDE its declared"

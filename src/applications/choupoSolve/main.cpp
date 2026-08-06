@@ -54,6 +54,7 @@ Description
 #include "core/DisplayUnits.H"
 #include "result/ResultEmitter.H"
 #include "core/Advisory.H"
+#include "core/AdvisorySummary.H"
 #include "result/SimulationResult.H"
 #include "streams/StreamOwnership.H"
 #include "streams/StreamStateIO.H"
@@ -973,6 +974,13 @@ try
         // rating warnings AFTER the simulate() pass drained the log.  Re-draining
         // captures the flowsheet advisories + any from the post chain.
         result.advisories = AdvisoryLog::instance().entries();
+
+        //  THE END-OF-RUN CAVEAT BLOCK.  Printed BEFORE the JSON so a reader
+        //  who stops at the human-readable output still meets it, and after
+        //  the reports so it is the last thing on screen.  It reprints what
+        //  the log already holds -- no second source of truth.
+        if (verbosity >= 1)
+            printAdvisorySummary(result.advisories);
 
         // Structured-result emitter: any downstream consumer (the
         // browser GUI; a shell script with `awk`; a Python notebook)

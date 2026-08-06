@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Database.H"
+
+#include "core/Advisory.H"
 #include "RecordResolver.H"
 #include "ThermoAnnounce.H"
 
@@ -227,7 +229,9 @@ Component Database::loadComponent(const std::string& name) const
     // values -- say so unmistakably; and if a verified standard shadowed a proposal
     // of the same name, announce that too.
     if (usingProposed)
-        if (announceOnce("proposed:" + name)) std::cerr << "[local] component '" << name
+        if (announceOnce("proposed:" + name)) AdvisoryLog::instance().add("provenance", "warning", "component '" + name + "'",
+                                        "read from data/local/ -- UNVERIFIED, not part of the curated catalogue");
+            std::cerr << "[local] component '" << name
                   << "': loaded from data/local/ -- UNVERIFIED; a student must review"
                      " and promote it to data/standards/ before the result is trusted.\n";
     if (hasStd && hasProposed)
@@ -337,6 +341,8 @@ Component Database::loadComponent(const std::string& name) const
         const std::string st =
             dict->subDict("provenance")->lookupWordOrDefault("status", "");
         if (st.find("ESTIMATE") != std::string::npos)
+            AdvisoryLog::instance().add("provenance", "info", "component '" + name + "'",
+                                        "carries group-contribution ESTIMATES, not measured values");
             std::cerr << "[estimate] component '" << name
                       << "' carries an ESTIMATE provenance -- an UNVALIDATED estimate is in "
                          "use; review its gaps (Vliq / Psat / s_298) before trusting the result.\n";
@@ -356,6 +362,8 @@ Component Database::loadComponent(const std::string& name) const
     //  an unmarked record says nothing and this says nothing about it.
     if (dict->lookupWordOrDefault("reviewStatus", "") == "interim")
         if (announceOnce("interim:" + name))
+            AdvisoryLog::instance().add("provenance", "warning", "component '" + name + "'",
+                                        "reviewStatus interim -- imported, not yet checked against primary sources");
             std::cerr << "[unreviewed] component '" << name
                       << "': reviewStatus interim -- imported, not yet checked"
                          " against primary sources"

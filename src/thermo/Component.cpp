@@ -69,6 +69,11 @@ Component Component::identity(const std::string& name, scalar MW,
 
 void Component::setLiquidCp(const DictPtr& d)
 {
+    //  Stamp the owner here too -- this setter is the OTHER way a liquid Cp
+    //  reaches a component, and a warning that names its component on one
+    //  path and not the other is worse than one that never names it: the
+    //  reader learns to expect a name and then silently gets none.
+    if (!d->found("owner")) d->insert("owner", name_);
     cpLiq_ = HeatCapacityModel::New(d);
 }
 
@@ -547,7 +552,7 @@ void Component::readFromDict(const DictPtr& d)
     // Cp_liquid" approximation) -- so every existing .dat stays byte-identical.
     // Only a .dat that ADDS `solidHeatCapacity {}` gets the true solid Cp.
     if (d->found("solidHeatCapacity"))
-        cpSolid_ = HeatCapacityModel::New(d->subDict("solidHeatCapacity"));
+        cpSolid_ = HeatCapacityModel::New(stampOwner("solidHeatCapacity"));
 
     // ---- Optional Gibbs-formation block (consumed by the Gibbs reactor) ----
     // standardThermochemistry

@@ -49,6 +49,8 @@ Description
     Usage:  choupoBatch [case_dir]
 \*---------------------------------------------------------------------------*/
 
+#include "core/Advisory.H"
+#include "core/AdvisorySummary.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
@@ -1951,6 +1953,12 @@ if (flowsheetDict->found("cycle"))
             [](const SimulationResult::TimelineEvent& a,
                const SimulationResult::TimelineEvent& b) { return a.t < b.t; });
         result.timeline = std::move(timeline);
+        //  THE END-OF-RUN CAVEAT BLOCK (see core/AdvisorySummary.H).  Every
+        //  binary prints it: a caveat surface that exists in one application
+        //  and not the others teaches the reader that its ABSENCE means
+        //  "nothing to report", which is false in the three that never had it.
+        result.advisories = AdvisoryLog::instance().entries();
+        printAdvisorySummary(result.advisories);
         emitResultJson(std::cout, result);
         // A campaign leak reported non-converged must FAIL the process
         // (forum #99-P1: a LEAK line with exit 0 is not "going red").
