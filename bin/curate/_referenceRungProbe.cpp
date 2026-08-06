@@ -8,6 +8,8 @@
 //  is meant to stop a curator from making).  So the gate builds one.
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -32,10 +34,16 @@ std::string record(const std::string& name, const std::string& refState,
         "omega       0.5;\n"
         "Tb          800.0;\n"
         "HvapTb      60000.0;\n"
-        "liquidHeatCapacity { model polynomial; coeffs ( 400.0 0.0 0.0 0.0 0.0 ); }\n";
+        //  readFromDict refuses a component with no vapour-pressure model at
+        //  all, so the probe supplies one.  Its VALUES are irrelevant here --
+        //  nothing on the rung path evaluates Psat -- but omitting the block
+        //  makes every arm fail with the SAME unrelated message, which is
+        //  exactly the failure mode a gate must not have.
+        "vaporPressure { model Antoine; coefficients ( 4.0 1200.0 -50.0 ); }\n"
+        "liquidHeatCapacity { model polynomial; coefficients ( 400.0 0.0 0.0 0.0 0.0 ); }\n";
     if (withGasCp)
         t += "idealGasHeatCapacity { model polynomial; "
-             "coeffs ( 100.0 0.1 0.0 0.0 0.0 ); }\n";
+             "coefficients ( 100.0 0.1 0.0 0.0 0.0 ); }\n";
     t += "standardThermochemistry\n{\n"
          "    dHf_298   -2226100.0;\n"
          "    s_298      360.2;\n";
@@ -79,11 +87,16 @@ void ask(const std::string& label, const std::string& refState, bool withGasCp,
               << "\", \"h\": " << h << "}";
 }
 
-//  The DERIVED surface: g = h - T*s.  If only h_pure_ig refused and s_pure_ig
-//  did not, a caller reaching straight for the entropy would still cross the
-//  rung silently, so the gate asks for the Gibbs energy too.
-void askGibbs(const std::string& label, const std::string& refState,
-              bool withGasCp, bool& firstOut)
+//  The ENTROPY surface, asked DIRECTLY, and the derived Gibbs one.
+//
+//  These must be separate calls, and a sabotage proved it: removing ONLY
+//  s_pure_ig's guard left the whole gate green, because g = h - T*s evaluates
+//  h_pure_ig first and that refusal fires before the entropy is ever touched.
+//  So an arm that reaches the entropy through g_pure_ig cannot see the
+//  entropy's guard at all -- it was claiming coverage it did not have.
+//  ThermoPackage::S_ig calls s_pure_ig directly, so the gap was real.
+void askSurface(const std::string& label, const std::string& refState,
+                bool withGasCp, bool entropyOnly, bool& firstOut)
 {
     Component c;
     std::string what = "ok";
@@ -91,7 +104,8 @@ void askGibbs(const std::string& label, const std::string& refState,
     {
         c.readFromDict(Dictionary::fromString(record("probe", refState,
                                                      withGasCp), "probe.dat"));
-        (void) c.g_pure_ig(400.0);
+        if (entropyOnly) (void) c.s_pure_ig(400.0);
+        else             (void) c.g_pure_ig(400.0);
     }
     catch (const std::exception& e) { what = e.what(); }
     std::string esc;
@@ -139,6 +153,14 @@ void askFormation(const std::string& label, const std::string& refState,
 
 int main()
 {
+    //  EXPLICIT registration, exactly as a binary's main does it.  Nothing
+    //  self-registers in this tree, so a probe that forgets this gets
+    //  "Unknown vapor-pressure model 'Antoine'.  Available: (none)" from
+    //  every arm at once -- a uniform unrelated failure, which is the one
+    //  failure mode a gate must not have.
+    VaporPressureModel::registerBuiltins();
+    HeatCapacityModel::registerBuiltins();
+
     bool first = true;
     std::cout << "{\n";
 
@@ -163,9 +185,14 @@ int main()
     //  (5) The liquid rung -- H2SO4 and HNO3 in the catalogue.
     ask("liquidRungWithGasCp", "pureLiquid", true, first);
 
-    //  (6) The derived Gibbs surface must refuse too.
-    askGibbs("gibbsSolidRung", "pureSolid", true, first);
-    askGibbs("gibbsDefaultRung", "", true, first);
+    //  (6) The ENTROPY surface, asked directly -- NOT through g_pure_ig,
+    //      which would refuse on the enthalpy leg first and never reach it.
+    askSurface("entropySolidRung", "pureSolid", true, true, first);
+    askSurface("entropyDefaultRung", "", true, true, first);
+
+    //  (6b) The derived Gibbs surface must refuse too.
+    askSurface("gibbsSolidRung", "pureSolid", true, false, first);
+    askSurface("gibbsDefaultRung", "", true, false, first);
 
     //  (7) The REMEDY the refusal names must actually work.
     askFormation("formationSolidToSolid", "pureSolid", "solid", first);

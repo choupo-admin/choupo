@@ -53,9 +53,22 @@ exist in the catalogue and must NOT be added to it) and reads each surface:
 
   (e) THE LIQUID RUNG REFUSES TOO -- H2SO4 and HNO3 are real records.
 
-  (f) THE DERIVED SURFACE REFUSES.  g = h - T*s: if only h_pure_ig were
-      guarded, a caller reaching for the entropy alone would still cross the
-      rung silently.
+  (f) THE ENTROPY SURFACE REFUSES, ASKED DIRECTLY -- and (f2) the derived
+      Gibbs one.  These are two arms because a sabotage proved they had to be.
+      The first version asked only for `g_pure_ig` and claimed that covered
+      the entropy; removing ONLY `s_pure_ig`'s guard left the whole gate
+      GREEN, because g = h - T*s evaluates the enthalpy first and its refusal
+      fires before the entropy is ever touched.  `ThermoPackage::S_ig` calls
+      `s_pure_ig` directly, so the uncovered path was real, not hypothetical.
+      The claim was narrowed by strengthening the arm, not by softening the
+      sentence.
+
+SABOTAGE-VERIFIED three ways, each with a rebuild between rounds: remove the
+rung check from `h_pure_ig` (arms c/d/e fire, and d reproduces the old
+misleading advice verbatim); remove it from `s_pure_ig` alone (arm f -- this
+is the round that found the blind arm above); make `h_formation`'s solid leg
+throw (arm g fires, which is the only thing in the tree that would notice a
+remedy that does not work).
 
   (g) THE REMEDY WORKS.  The refusal tells the reader to use
       `h_formation(T, phase)`.  The gate calls it, on the same record, to
@@ -185,17 +198,35 @@ def main() -> int:
         checked.append("the refusal explicitly warns AGAINST adding a gas Cp "
                        "block, which was the old message's advice")
 
-    # ---- (f) the derived Gibbs surface ------------------------------------
+    # ---- (f) the ENTROPY surface, asked directly --------------------------
+    #  Not through g_pure_ig: a sabotage proved that arm blind.  g = h - T*s
+    #  evaluates h_pure_ig first, so its refusal fires before the entropy is
+    #  touched, and removing ONLY s_pure_ig's guard left the gate green.
+    #  ThermoPackage::S_ig calls s_pure_ig directly, so the gap was real.
+    if res("entropySolidRung") == "ok":
+        fail.append("(f) s_pure_ig accepted a solid-rung record.  Guarding "
+                    "h_pure_ig alone is not enough -- ThermoPackage::S_ig "
+                    "calls the entropy directly and would cross the rung "
+                    "silently.")
+    elif "referenceState" not in res("entropySolidRung"):
+        fail.append("(f) s_pure_ig refused, but not on the rung:\n      "
+                    + res("entropySolidRung"))
+    elif res("entropyDefaultRung") != "ok":
+        fail.append("(f) s_pure_ig refused the DEFAULT rung: "
+                    + res("entropyDefaultRung"))
+    else:
+        checked.append("s_pure_ig refuses the solid rung ON ITS OWN, not only "
+                       "through g_pure_ig")
+
+    # ---- (f2) the derived Gibbs surface ------------------------------------
     if res("gibbsSolidRung") == "ok":
-        fail.append("(f) g_pure_ig accepted a solid-rung record.  h_pure_ig "
-                    "alone is not enough: a caller reaching for the entropy "
-                    "crosses the rung just as silently.")
+        fail.append("(f2) g_pure_ig accepted a solid-rung record")
     elif res("gibbsDefaultRung") != "ok":
-        fail.append("(f) g_pure_ig refused the DEFAULT rung: "
+        fail.append("(f2) g_pure_ig refused the DEFAULT rung: "
                     + res("gibbsDefaultRung"))
     else:
         checked.append("g = h - T*s refuses the solid rung and accepts the "
-                       "default, so the guard covers the derived surface")
+                       "default")
 
     # ---- (g) the named remedy actually works ------------------------------
     for key, target in (("formationSolidToSolid", "solid"),
