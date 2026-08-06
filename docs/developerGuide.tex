@@ -43,6 +43,12 @@ This guide is opinionated on purpose. Read \S\ref{sec:phil} carefully
 --- those three principles override everything else --- and treat
 \S\ref{sec:donts} as the project's only blunt list of don'ts.
 
+If you are about to write a class rather than read one, go straight to
+\S\ref{sec:class-rules}: five rules, each stated with the defect that paid for
+it, because a rule with a scar is remembered and a rule without one is
+negotiated. \S\ref{sec:layering} says where the class may live, and
+\S\ref{sec:gates} says how its contract is made enforceable.
+
 \paragraph{Independence and provenance.}  Choupo is an independent
 project.  Its file-based case organization (\code{controlDict}-style
 dictionaries, \code{constant/} and time directories such as \code{0/})
@@ -1797,7 +1803,7 @@ with $P_i \le 0$ (Antoine outside its valid range) or an empty
 composition (\code{F = 0}). Add asserts where you suspect it.
 
 % =====================================================================
-\section{Architecture deep-dive --- the three layers}
+\section{Architecture deep-dive --- the three layers}\label{sec:threelayers}
 
 \begin{whatyoulllearn}
 The contract between the outer driver, the simulator core, and the
@@ -1851,6 +1857,359 @@ Rule of thumb: if a quantity can be computed from a converged stream
 table plus KPIs, it belongs in a post-processor. If it requires
 re-solving the flowsheet, it belongs in an outer driver.
 \end{keyidea}
+
+% =====================================================================
+\section{Module boundaries --- the layering, and the one rule that keeps it}
+\label{sec:layering}
+
+\begin{whatyoulllearn}
+Which subsystem may include which. The three layers of
+\S\ref{sec:threelayers} are about \emph{control flow}; this section is about
+the \emph{include graph}, and the two are not the same thing.
+\end{whatyoulllearn}
+
+The three-layer picture above tells you who calls whom at run time. It does
+not tell you who may \code{\#include} whom, and a project can obey the first
+while quietly violating the second for years. Choupo did. The layering below
+was declared in 2026-08-04 and is checked on every regression run.
+
+\subsection{The bands}
+
+\code{src/} is divided into subsystems, and the subsystems into five bands.
+A subsystem may depend \textbf{downward} (to a larger index) and
+\textbf{sideways} (within its own band). Upward is a violation.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Band} & \textbf{Subsystems} & \textbf{What lives there} \\
+\midrule
+0 & \code{applications} & the four \code{main.cpp} files; nothing includes them \\
+1 & \code{outerDriver}, \code{postProcessing}, \code{reporting}
+  & things that consume a finished run \\
+2 & \code{result}, \code{io}, \code{unitOperations}, \code{propertyOps},
+    \code{control}
+  & the models and the records a run produces \\
+3 & \code{thermo}, \code{streams}, \code{materials}, \code{solver}
+  & the physics and the numerics \\
+4 & \code{core} & \code{Dictionary}, \code{Types}, \code{Constants}, the plain records \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{The tooling plane}
+
+\code{curation} is \emph{not} a band. It sits beside the stack under a rule
+that is stronger than any band:
+
+\begin{keyidea}
+A tooling subsystem may read the runtime. \textbf{Nothing in the runtime may
+read a tooling subsystem} --- at any band, sideways included. Only
+\code{applications/} may join the two planes, because a binary's \code{main}
+is where a tool is assembled.
+\end{keyidea}
+
+It was first placed in band~1, beside \code{reporting}, on the reasoning that
+it has reporting's shape: a consumer of the engine producing an artefact for a
+human. That is true, and it is the wrong conclusion. A band says ``things at
+this level may reach sideways to you'', which is exactly the permission a
+curation tool must never have.
+
+\subsection{Why it is worth a gate}
+
+DWSIM is the cautionary example, and it is instructive precisely because DWSIM
+is otherwise competently built. Its \code{DWSIM.Interfaces} assembly has
+\emph{zero} project references --- a pure contracts layer at the bottom, which
+is the pattern \code{core} follows here. But its flowsheet solver references
+\code{DWSIM.Inspector} to record diagnostics, and \code{DWSIM.Inspector} holds
+its collector in the same assembly as its window. So DWSIM's flowsheet solver
+has a compile-time path to a docking-panel GUI toolkit. Nobody chose that; it
+arrived by transitivity, one reasonable-looking include at a time.
+
+Choupo had the same edge in miniature: \code{Flowsheet.cpp} included
+\code{reporting/ModelBoundaryAudit.H}, because the audit returned a record
+that lived above it.
+
+\subsection{How to place a new subsystem}
+
+\code{bin/curate/check\_layering.py} refuses a subsystem it has no band for.
+It does \textbf{not} default one into the bottom band --- that would put it
+where nothing can violate, which is a green light disguised as a check. So
+adding a directory under \code{src/} means declaring where it sits, in the
+gate and in \file{docs/architecture/module-boundaries.md}, in the same commit.
+
+\begin{pitfall}
+Ask what the thing \emph{depends on}, not what it is \emph{for}. A draft of
+the boundary document placed \code{io} beside \code{streams} because
+\code{SolutionWriter} ``is the persistence face of the stream-state
+contract''. True, and wrong: it also reads the whole \code{SimulationResult},
+so that band makes \code{io}\,$\to$\,\code{result} an upward edge. The
+narrative was about persistence; the include graph was about the result
+record, and \textbf{the include graph is what the compiler obeys.}
+\end{pitfall}
+
+% =====================================================================
+\section{How a class is shaped --- five rules, and what each one cost}
+\label{sec:class-rules}
+
+\begin{whatyoulllearn}
+The rules every model class in this tree obeys, each with the defect that
+paid for it. If you remember one sentence: \emph{a fact has one home, that
+home is neutral, the engine can read it, derived things are derived, and a
+quantity carries its basis.}
+\end{whatyoulllearn}
+
+These are not five rules. They are one rule seen from five sides, and they are
+stated here with their violations because a rule with a scar is remembered and
+a rule without one is negotiated.
+
+\subsection{Rule 1 --- a fact has ONE home}
+
+A derived quantity is computed, never stored beside its inputs. \emph{Trees
+never store derivatives.}
+
+\paragraph{What it cost.} \code{K\_b}, the boiling-point-elevation constant,
+was stored in \file{water.dat} beside the \code{Tb}, \code{MW} and
+\code{HvapTb} that determine it by $K_b = R T_b^2 M / \Delta H_{\mathrm{vap}}$.
+The copies had drifted: $0.512$ stored against $0.512942$ implied, $0.18\,\%$
+apart, feeding straight into every evaporator's boiling-point elevation. A
+comment in the record said so, and nothing acted on it.
+
+The same shape, four more times in one day: five hand-compiled counts wrong in
+both directions; waivers spread across eight of the gate scripts; the forward
+reaction \code{order} with five readers and five defaults, so a reactant with
+no declared order silently left its own rate law.
+
+\paragraph{How to obey it.} Derive, and keep any declared value as a
+\emph{validating anchor} whose comparison the run announces.
+\code{Component::K\_b()} is the worked example. If two places must know
+something, one of them computes it and the other asks.
+
+\subsection{Rule 2 --- that home is NEUTRAL}
+
+Shared logic goes to the lowest band that can \emph{own} the concept without
+acquiring upward dependencies --- not merely the lowest band that compiles.
+
+\paragraph{What it cost.} Every upward edge in the subsystem graph was the
+same defect: one shared concept filed inside one of its two consumers.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{The edge} & \textbf{The concept, and where it was hiding} \\
+\midrule
+\code{core} $\to$ \code{streams}/\code{thermo}/\code{unitOperations}
+  & \code{FlatUnit} --- four strings of topology --- declared inside
+    \code{SimulationResult}, so \code{core} inherited the result record's
+    whole dependency set \\
+\code{unitOperations} $\leftrightarrow$ \code{propertyOps}
+  & \code{readExchange}, a record reader that both a props bench and a
+    process unit need, living in \code{namespace propertyOps} \\
+\code{reporting} $\leftrightarrow$ \code{postProcessing}
+  & \code{OdsWriter}, a zip-based spreadsheet writer, filed under
+    \code{reporting} \\
+\code{unitOperations} $\to$ \code{reporting}
+  & the finding \emph{records} declared inside the result that carries them \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Rule 3 --- the ENGINE can read it}
+
+A fact that changes behaviour must live in a \textbf{parsed field}, never in a
+comment, a banner or a header.
+
+\paragraph{What it cost.} Three times in three days:
+
+\begin{itemize}[leftmargin=*]
+  \item 67 component records carried \code{PROPOSAL TIER --- UNVERIFIED} in a
+        banner the parser discards --- including 7 of the 16 in
+        \code{cavett01}, the flagship external-reference case. Nothing
+        announced them. \code{reviewStatus} is a parsed field now.
+  \item \code{PolynomialCp} assigned \code{Tmin\_}/\code{Tmax\_} and never
+        read them, so the commonest $C_p$ path made no validity claim at all
+        --- which is why six inverted windows did no visible harm.
+        \emph{Harmless-because-unchecked is not safety.}
+  \item \file{water.dat}'s formation datum is the ideal-gas one, and the fact
+        was stated in a comment. Deriving the water-dissociation equilibrium
+        constant from the records therefore gives $\log K_{25} = -12.4986$
+        against a stored $-14$ --- a factor of 32 in $K$. With the liquid
+        values the same arithmetic gives $-13.998$.
+\end{itemize}
+
+\begin{keyidea}
+If you would write it in a comment to warn a reader, the engine needs it too.
+\end{keyidea}
+
+\subsection{Rule 4 --- DERIVE, don't re-implement}
+
+One place computes each derived quantity, from the fundamental relation, for
+every combination of models --- rather than each model carrying its own copy.
+
+OpenFOAM is the reference implementation of this idea. It composes a thermo
+type from interchangeable layers and then derives everything else once:
+
+\begin{lstlisting}[language=C++]
+g(p, T) { return this->ha(p, T) - T*this->s(p, T); }      // G = H - TS
+K(p, T) { return exp(-this->Y()*this->gStd(T)/(RR*T)); }  // K = exp(-dG0/RT)
+\end{lstlisting}
+
+The equilibrium constant is not a model and not a correlation --- it is an
+identity, computed once, valid for every equation of state crossed with every
+caloric model. That is where OpenFOAM's extensibility actually comes from: a
+new equation of state is a new class, and every derived quantity arrives free.
+
+\begin{pitfall}
+Choupo is not there yet, and the guide says so rather than implying otherwise.
+$K$-values are the \emph{primitive} here (\code{Kvec}, \code{stageK}),
+computed per model, and Gibbs minimisation lives in
+\code{gibbsMethod/\{ElementPotential,DirectMin,ReactiveFlash\}} plus the
+liquid--liquid path in \code{IsothermalFlash}. Phase equilibrium and chemical
+equilibrium are classically \emph{one} condition applied to different degrees
+of freedom; here they are separate solvers. This is a known gap, not a settled
+contract, and its prerequisite is rule 5.
+\end{pitfall}
+
+\subsection{Rule 5 --- a quantity carries its BASIS}
+
+When a value is expressed in one basis and a consumer needs another, the
+\textbf{conversion is an object}, not an assumption.
+
+OpenFOAM solves this twice, identically, in unrelated parts of the code ---
+which is the strongest evidence that it is structural rather than idiomatic.
+In the thermo layer, \code{gStd(T)} is an interface function every caloric
+model must supply, so a potential's reference state is part of the contract.
+In the particle layer, a distribution carries \code{Q\_} (the moment order it
+is \emph{declared} in), \code{sampleQ\_} (what the consumer wants) and
+\code{q() = sampleQ\_ - Q\_}.
+
+Choupo obeys it on the particle side: \file{src/core/distribution/} has
+Rosin--Rammler declaring the \textbf{mass} basis (a sieve), log-normal
+declaring \textbf{number} (a count), and \code{moment(k, basis)} doing the
+conversion in one place. Ask either for \code{d32()} and the answer is right
+without knowing which convention its author used.
+
+On the thermo side it obeys it \emph{at the record}:
+\code{standardThermochemistry \{ dHf\_298; s\_298; referenceState; \}} names
+the standard state the numbers are on, and \code{h\_formation(T, phase)}
+crosses rungs correctly, taking the transition at 298\,K.
+
+\begin{pitfall}
+It did not obey it \emph{at the consumer} until 2026-08-06.
+\code{h\_pure\_ig}, \code{s\_pure\_ig} and therefore \code{g\_pure\_ig} read
+the two numbers straight off the record and integrated the ideal-gas $C_p$
+whatever was declared --- and their callers are both Gibbs reactors,
+\code{Reaction::Kp}, \code{ReactiveFlash} and \code{H\_ig}/\code{S\_ig}. A
+\code{pureSolid} datum read there is wrong by a heat of sublimation: right
+sign, plausible magnitude, no diagnostic.
+
+The catalogue could not reach it --- all 18 non-gas-rung records happen to
+lack a gas $C_p$, so the call threw. But it threw with \emph{``needs
+idealGasHeatCapacity block''}, and a curator following that advice --- which
+is reasonable for H$_3$PO$_4$ or HNO$_3$, both of which have good gas-phase
+data --- would have converted an honest refusal into a silent wrong answer.
+\textbf{The error message was advice that creates the bug.}
+\end{pitfall}
+
+\subsection{The shape of a new class}
+
+Every physical model in this tree is the same shape:
+
+\begin{lstlisting}[language=C++]
+class Thing
+{
+public:
+    using Factory = std::function<std::unique_ptr<Thing>(...)>;
+    static void registerType(const std::string& name, Factory f);
+    static std::unique_ptr<Thing> New(...);
+    static void registerBuiltins();          // called EXPLICITLY from main
+    virtual ~Thing() = default;
+    virtual std::string type() const = 0;
+};
+\end{lstlisting}
+
+\code{ActivityModel}, \code{EquationOfState}, \code{HeatCapacityModel},
+\code{VaporPressureModel}, \code{UnitOperation}, \code{OuterDriver},
+\code{PostProcessor}, \code{CostingModel} --- and \code{SizeDistribution},
+which was a bare \code{struct} of two vectors until it was made to conform.
+That exception is worth noting because of what it cost: while the particle
+size distribution was a struct, no moment was computed anywhere in the tree
+and a continuous law had nowhere to live.
+
+% =====================================================================
+\section{Gates --- how a contract becomes enforceable}
+\label{sec:gates}
+
+\begin{whatyoulllearn}
+What a \code{check\_*} script is, when your change needs one, and the two
+mistakes that make a gate worse than none.
+\end{whatyoulllearn}
+
+A gate is a script under \file{bin/curate/} that \code{bin/runTests} runs and
+that exits non-zero when a structural contract is broken. There are more than
+ninety. They are not unit tests: a unit test checks a computed answer, a gate
+checks that a \emph{rule} still holds across the whole tree.
+
+\subsection{The three-part test for a consolidated contract}
+
+\begin{enumerate}[leftmargin=*]
+  \item the contract is \textbf{written};
+  \item the engine \textbf{refuses} violators, by name, with a remedy;
+  \item a \textbf{case fires that refusal} --- not a case that describes the
+        structure, a case that exercises it.
+\end{enumerate}
+
+The third is the one that usually goes missing, and a contract with only the
+first two is a preference.
+
+\subsection{Then sabotage it}
+
+Write the gate, then break the thing it guards and confirm it fails. This is
+not optional and it is not ceremony. Four times in one week a gate survived a
+sabotage it should have caught, and each time the \emph{claim} was wrong
+rather than the code: an arm that tested a tabular sum while calling it a
+quadrature; a coverage check matching a substring of the very call it was
+meant to detect; an arm that measured truncation and called it discretisation.
+
+\begin{keyidea}
+A sabotage a gate survives is a claim the gate should stop making. Narrow the
+claim to what the sabotage showed it can see --- a gate that reports less than
+it does is a nuisance; a gate that implies more than it checks is a hazard.
+\end{keyidea}
+
+\subsection{A check that cannot run must not pass}
+
+Found twice in one day. \code{bin/buildSite} warned and published when
+\code{pdftotext} was absent, so the guide-version check never ran in CI --- the
+only place that publishes. And a gate reported \code{PASS} on every run while
+both of its inputs had been deleted. A permanently-green gate is worse than no
+gate, because it is counted.
+
+So: if a gate's probe will not compile, or its input is missing, it must
+\textbf{fail}, not skip.
+
+\subsection{Where waivers live}
+
+Nowhere except \file{bin/curate/debt\_registry.py}. Accepted violations were
+once scattered across eight gate scripts --- the arity doctrine broken by the
+machinery built to enforce it. Each entry carries why, the remedy, and the
+blocker. \code{check\_debt\_registry} keeps it the only home and refuses an
+entry no gate reads.
+
+\subsection{Two chores that ride with a gate}
+
+\begin{itemize}[leftmargin=*]
+  \item Adding a gate means regenerating
+        \file{generated/gateManifest.json} (\code{bin/curate/gate\_manifest.py})
+        in the same commit. The manifest records what each gate \emph{claims},
+        derived by running it and capturing its own OK line --- never
+        transcribed from a docstring.
+  \item Adding a tutorial case means regenerating
+        \file{generated/releaseInventory.json}
+        (\code{bin/curate/release\_inventory.py}). Corpus counts are derived
+        facts and have exactly one home --- rule 1, applied to the project's
+        own paperwork.
+\end{itemize}
 
 % =====================================================================
 \section{The fractal flowsheet --- nesting and \code{flattenNode}}
@@ -2519,6 +2878,18 @@ A short list, each item born from a real incident. Memorise it.
         without first reading what's already been discussed and why.
   \item Do \textbf{not} merge code that breaks the regression, even if
         the failure is ``obviously unrelated''.
+  \item Do \textbf{not} add a directory under \file{src/} without declaring
+        its band (\S\ref{sec:layering}). A subsystem with no band fails the
+        layering gate on purpose --- defaulting it to the bottom would put it
+        where nothing can violate.
+  \item Do \textbf{not} store a derived quantity beside its inputs
+        (\S\ref{sec:class-rules}). Compute it; keep any declared value as an
+        anchor the run compares aloud.
+  \item Do \textbf{not} put a behaviour-changing fact in a comment or a
+        banner. If the engine cannot parse it, it does not exist.
+  \item Do \textbf{not} ship a gate you have not sabotaged
+        (\S\ref{sec:gates}). A gate that survives the break it names is
+        making a claim it cannot support.
 \end{itemize}
 
 % =====================================================================
@@ -2543,6 +2914,10 @@ Add a property model (full walkthrough)  & \S\ref{sec:recipe-property} (quick: \
 Add a component / material / reaction    & \S\ref{sec:add-data} \\
 Add an outer driver / post-processor     & --- (see the outer-driver section) \\
 Where does a number live?                & \S\ref{sec:data-cascade} + \file{docs/ai/data-doctrine.md} \\
+Which subsystem may include which?        & \S\ref{sec:layering} + \file{docs/architecture/module-boundaries.md} \\
+How a class is shaped (the five rules)    & \S\ref{sec:class-rules} + \file{docs/architecture/class-structure.md} \\
+Writing and sabotaging a gate             & \S\ref{sec:gates} \\
+Where an accepted violation is recorded   & \file{bin/curate/debt\_registry.py} \\
 Energy datum / balance closure           & \S\ref{sec:energy-datum} \\
 Fractal flowsheet + instants             & \S\ref{sec:fractal}, \S\ref{sec:instants} \\
 Project conventions / AI rules           & \file{CLAUDE.md} \\

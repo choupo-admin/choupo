@@ -1336,6 +1336,15 @@ split below).
   examples included in the guides remain GPL-3.0-or-later. Do not put the
   manuals under GPL wholesale, and do not treat external project contributors
   as guide authors.
+  **Authorship of record is not a drafting prohibition (ruled 2026-08-06,
+  Vítor: "you are fully authorized to make the development guide.  My role is
+  only as a curator").**  An assistant had read the sole-author line as a bar
+  on writing into `developerGuide.tex` and declined to, which is the wrong
+  reading and cost the guide a slice of material it needed: the line records
+  WHO answers for the work, and §1 already states that substantial parts of
+  the documentation were drafted with assistance under human curation.  Draft
+  freely; the attribution line does NOT change, and the model identifier never
+  appears in the tree.
 * **DATA** (`data/standards/` `.dat`, vendored case data): the repo is
   **multi-licensed by component** — each data file/folder may carry **its own open
   licence, INCLUDING copyleft / share-alike** (CC-BY-SA, GPL-as-data, etc.).

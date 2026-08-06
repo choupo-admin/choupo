@@ -10,13 +10,17 @@
 > gives each the **defect that paid for it**.
 >
 > It exists because those rules were spread across five documents and a
-> developer met them one at a time, usually after breaking one.  The
-> Developer Guide (`docs/developerGuide.tex`) teaches the older half well —
-> the explicit factory, the three layers, the data cascade, the elements datum
-> — but predates the layering contract (ratified 2026-08-04) and says nothing
-> about module boundaries, the tooling plane or the standard state.  That
-> guide is Vítor's sole-authored work; this page is the project-owned material
-> it can point at.
+> developer met them one at a time, usually after breaking one.
+>
+> **This page is the CONTRACT; the Developer Guide TEACHES it.**  The guide
+> (`docs/developerGuide.tex`) carries the same five rules as §20, with
+> §19 for the layering and §21 for the gates — written to be read once,
+> start to finish, by someone about to write a class.  That is the ordinary
+> level-2/level-4 relationship (see [`README.md`](README.md)): where the two
+> disagree, this page wins and the guide is the stale copy.  The guide gained
+> that material on 2026-08-06, when Vítor ruled that the sole-author
+> attribution line records who answers for the work and is not a bar on
+> drafting into it.
 
 ---
 
