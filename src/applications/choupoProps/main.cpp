@@ -47,6 +47,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "AadCompare.H"
+#include "core/AdvisorySummary.H"
 #include "core/Banner.H"
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
@@ -959,6 +960,18 @@ try
     }
 
     std::cout << "\n}\n<<<Choupo:result-end>>>\n";
+
+    //  THE END-OF-RUN CAVEAT BLOCK (core/AdvisorySummary.H).
+    //
+    //  This binary was MISSED when the block was wired, and the commit that
+    //  wired the other three said "ALL FOUR BINARIES print it".  That was
+    //  false when written and it had already been published.  The claim is
+    //  made true here rather than quietly softened -- and the gate that
+    //  follows checks all four, so it cannot become false again unnoticed.
+    //
+    //  Printed AFTER the result markers so the JSON block between them stays
+    //  exactly what every downstream consumer already parses.
+    printAdvisorySummary(AdvisoryLog::instance().entries());
 
     return overallRc;
 }

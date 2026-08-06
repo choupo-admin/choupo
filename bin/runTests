@@ -1180,6 +1180,23 @@ PYEOF
     fi
     rm -f /tmp/debtreg.$$
 
+    # caveat-surface gate (2026-08-06).  The end-of-run ASSUMPTIONS AND
+    # CAVEATS block shipped WITHOUT a gate, which by this project's own
+    # three-part criterion left it unconsolidated.  Modelled on
+    # check_review_status, which caught a real regression the same day
+    # precisely because it checks counts and SILENCE rather than presence.
+    # Four sabotages: drop the "none raised" line; un-name the component;
+    # unwire a binary; make the block print an item the JSON does not carry.
+    if "$ROOT/bin/curate/check_caveat_surface.py" > /tmp/caveat.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "caveat-surface-gate" "$(head -1 /tmp/caveat.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_caveat_surface.py)\n" "caveat-surface-gate"
+        cat /tmp/caveat.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/caveat.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question
