@@ -77,11 +77,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 92 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 93 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 37 design record(s) appear in the index, and its stated counts (15 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 38 design record(s) appear in the index, and its stated counts (16 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -89,11 +89,11 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 239 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 240 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 338 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 339 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40171 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40185 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -251,6 +251,10 @@
       "exit": 0,
       "claim": "check_record_self_consistency: OK -- 3 record(s) ship a permeability set and every one declares its provenance (a fitted set must also name the case it was fitted against).  0 of 12 asset record(s) state header values this gate can compare, and every one agrees with what is shipped within 3x, except 0 pinned contradiction(s) awaiting a ruling.  The other 12 document no comparable number, so they are UNCHECKED, not clean.  The gate reports a disagreement; it does not choose which side is right."
     },
+    "check_reference_rung": {
+      "exit": 0,
+      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol"
+    },
     "check_registry_scan": {
       "exit": 0,
       "claim": "ok   (a) two Henry files declaring one pair: refused, naming both files"
@@ -273,7 +277,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 76 registered operations carries a schema (68 exercised by the corpus over 488 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 76 registered operations carries a schema (68 exercised by the corpus over 489 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -289,11 +293,11 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 326 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 327 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
-      "claim": "check_size_distribution: OK -- Rosin-Rammler moments == d63^m*Gamma(1+m/n); log-normal moments == exp(m*mu + m^2 sigma^2/2); basis conversion exact (volume/number = exp(3 sigma^2) = 1.94004); the two laws declare different bases (3 vs 0); the base's own quadrature reproduces the analytic moment to 1e-6 (tested through a subclass with the override removed); tabular round trip agrees to 1.8e-05 (a FLOOR, not convergence -- see the note); third moment exact to 1.8e-05 (the coarse end, where no truncation excuse applies).  Every arm RECOMPUTES the closed form rather than comparing with a pinned number, so the gate proves the moments are right and not merely unchanged.  It does NOT judge whether a given law is the right model for a given powder -- that is a modelling judgement no gate can hold."
+      "claim": "check_size_distribution: OK -- Rosin-Rammler moments == d63^m*Gamma(1+m/n); log-normal moments == exp(m*mu + m^2 sigma^2/2); basis conversion exact (volume/number = exp(3 sigma^2) = 1.94004); the two laws declare different bases (3 vs 0); the base's own quadrature reproduces the analytic moment to 1e-6 (tested through a subclass with the override removed); tabular round trip agrees to 1.8e-05 (a FLOOR, not convergence -- see the note); third moment exact to 1.8e-05 (the coarse end, where no truncation excuse applies); the d32 floor obeys dMin^(n-1): measured 39.8x per 100-fold cut against 39.8x predicted.  Every arm RECOMPUTES the closed form rather than comparing with a pinned number, so the gate proves the moments are right and not merely unchanged.  It does NOT judge whether a given law is the right model for a given powder -- that is a modelling judgement no gate can hold."
     },
     "check_solute_basis": {
       "exit": 0,
@@ -377,7 +381,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2928 declared window(s) across 3557 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2931 declared window(s) across 3559 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,
