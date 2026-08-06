@@ -181,6 +181,29 @@ struct ReactiveVLEConfig
     //  from the typed reference they already carry (2026-07-27).
     std::set<std::size_t>                                 dissolvedGases;
 
+    //  ---- THE CRITICAL TEMPERATURE OF EACH FLAGGED GAS --------------------
+    //  Carried so the SOLVER can check what the BUILDER cannot.
+    //
+    //  `noncondensable true;` is a CASE-level modelling class, not a physical
+    //  fact about a substance: a vapour is a gaseous substance BELOW its
+    //  critical temperature (condensable by pressure alone) and a permanent
+    //  gas is one above it, so "permanent gas" is a RELATION between Tc and
+    //  the local temperature.  No substance IS a gas; a substance is a gas AT
+    //  a temperature.  (OpenFOAM carries no such flag at all -- in
+    //  multiphaseEuler's homogeneousCondensation a species simply never
+    //  condenses when its saturation pressure exceeds the total pressure, so
+    //  the behaviour emerges from the equation.)
+    //
+    //  Both sites that read `isNoncondensable()` are BUILD-time and have no
+    //  temperature, so the contradiction can only be seen here.  Rather than
+    //  re-reading the record in the solver -- a second home for one fact --
+    //  the builder, which already holds the Component, attaches its Tc.
+    //  Absent or 0 means the record declares none and nothing is claimed.
+    //
+    //  Record, with the sources and the rejected alternatives:
+    //  docs/design/vapour-or-gas-is-a-state.md
+    std::map<std::size_t, scalar>                         criticalTOfGas;
+
     //  ---- ADMITTED SOLID PHASES (from constant/chemistryDict) -------------
     //  The minerals this system may PRECIPITATE, passed straight through to
     //  the speciation kernel's `equilibrate` list.  EMPTY = the path this
@@ -384,6 +407,19 @@ private:
     // the same K(T) doctrine as the speciation records, mirrored here).
     scalar gasLogK(const GasEntry& g, scalar T_K) const;
     const GasEntry* gasFor(std::size_t appIdx) const;
+
+    //  Announces, ONCE per instance, every component declared a permanent gas
+    //  that is being solved BELOW its own critical temperature -- where it is
+    //  in fact a condensable vapour.  Never refuses and never re-routes: the
+    //  declaration is a legitimate modelling simplification (a psychrometric
+    //  carrier), and silently deriving the routing instead would change
+    //  answers across the corpus, which is a physics change wearing a
+    //  refactor's clothes.  This is the ratified `role` vs `volatility{}`
+    //  shape one axis over: the flag is the case's modelling class, Tc is the
+    //  substance's physics, and the engine announces the contradiction rather
+    //  than obeying it in silence.
+    void noteSubcriticalGases(scalar T_K) const;
+    mutable bool announcedSubcritical_ = false;
 };
 
 } // namespace electrolyte

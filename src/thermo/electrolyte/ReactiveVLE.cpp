@@ -10,12 +10,23 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include "core/Advisory.H"
+
 #include <iomanip>
+#include <sstream>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 
 namespace Choupo {
+
+//  Trim a temperature for a message: 304.13 stays, 304.130000 does not.
+static std::string trimNumRV(scalar v)
+{
+    std::ostringstream os;
+    os << std::setprecision(6) << v;
+    return os.str();
+}
 namespace electrolyte {
 
 namespace {
@@ -589,9 +600,68 @@ TrueVap trueVapour(const sVector&                  vap,
     return { tm, td, S + tm + td };
 }
 
+//  A VAPOUR IS NOT A GAS, AND WHICH ONE A SUBSTANCE IS DEPENDS ON T.
+//
+//  A vapour is a gaseous substance BELOW its critical temperature: it
+//  condenses under pressure alone, with no cooling.  A permanent gas is one
+//  ABOVE it, where no pressure whatever liquefies it and there is no
+//  gas/liquid distinction left.  So `noncondensable true;` states a RELATION
+//  between the record's Tc and the local temperature, and the record cannot
+//  know the temperature.
+//
+//  Three catalogue records declare it.  N2 (Tc 126.2 K) and O2 (154.58 K)
+//  agree with the flag at any ordinary process temperature.  CO2's Tc is
+//  304.13 K = 31.0 degC -- so below 31 degC carbon dioxide is a VAPOUR, which
+//  is how every CO2 cylinder works and the whole basis of supercritical-CO2
+//  extraction.  absorption01_CO2_water runs at 298.15 K, six kelvin below,
+//  and the engine announces "no pure liquid to reference above Tc" about a
+//  substance that is beneath it.
+//
+//  This ANNOUNCES and changes nothing.  Deleting the flag would lose a
+//  legitimate modelling statement (a psychrometric carrier at 300 K); silently
+//  deriving the routing from T would change answers across the corpus, which
+//  is a physics change wearing a refactor's clothes.  Both are rejected in the
+//  record.  The shape is the ratified `role` vs `volatility{}` split: the flag
+//  is the case's modelling class, Tc is the substance's physics, and the
+//  engine announces the contradiction instead of obeying it in silence.
+void ReactiveVLE::noteSubcriticalGases(scalar T_K) const
+{
+    if (announcedSubcritical_) return;      // one bool test, per solve
+    announcedSubcritical_ = true;
+
+    for (const auto appIdx : cfg_.dissolvedGases)
+    {
+        auto it = cfg_.criticalTOfGas.find(appIdx);
+        if (it == cfg_.criticalTOfGas.end()) continue;
+        const scalar Tc = it->second;
+        if (Tc <= 0.0 || T_K >= Tc) continue;      // absent, or genuinely a gas
+
+        const std::string& nm = cfg_.apparent.at(appIdx);
+        AdvisoryLog::instance().add(
+            "modelling", "warning", "component '" + nm + "'",
+            "declared `noncondensable true;` but solved at T = "
+            + trimNumRV(T_K) + " K, BELOW its own critical temperature Tc = "
+            + trimNumRV(Tc) + " K -- at this temperature it is a condensable"
+              " vapour, not a permanent gas; the Henry routing is a modelling"
+              " choice, not a consequence of the physics");
+        std::cerr << "[gas/vapour] component '" << nm << "': declared"
+                     " `noncondensable true;` and routed on the HENRY rung,"
+                     " but solved at T = " << trimNumRV(T_K)
+                  << " K, BELOW its own critical temperature Tc = "
+                  << trimNumRV(Tc) << " K.\n     Below Tc a substance is a"
+                     " VAPOUR, not a permanent gas: it condenses under pressure"
+                     " alone.  Treating it as a permanent carrier here is a"
+                     " deliberate simplification of the CASE, and a legitimate"
+                     " one -- it is not a property of the substance, and the"
+                     " engine is not deriving it.\n";
+    }
+}
+
 ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                                      const sVector& zApp, int verbosity) const
 {
+    noteSubcriticalGases(T_K);
+
     const std::size_t nApp = cfg_.apparent.size();
     if (zApp.size() != nApp)
         throw std::runtime_error("ReactiveVLE: apparent composition size"

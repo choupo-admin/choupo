@@ -59,9 +59,25 @@ flag it acts on contains no temperature.**
 Below 31 °C carbon dioxide is a **vapour**: it condenses under pressure alone.
 That is not a corner case — it is how every CO2 cylinder works, and it is the
 entire basis of supercritical-CO2 extraction, which is a unit operation this
-corpus is meant to teach. `absorption01_CO2_water` runs at ambient
-temperature, where the engine states "no pure liquid to reference above Tc"
-about a substance **below** its Tc.
+corpus is meant to teach.
+
+> **CORRECTION, 2026-08-06, and it is the more useful half.**  This section
+> first claimed that `absorption01_CO2_water` and eight batch adsorber cases
+> run CO2 at 298.15 K *"while the engine announces no pure liquid to reference
+> above Tc"*.  **That was wrong, and measuring it is what showed it.**  Every
+> one of the 332 cases was run and its output searched for either consumer of
+> the flag.  **Exactly one case consults `isNoncondensable()` at all** —
+> `basis01_two_unit_chain`, for N2 at 313.15 K against Tc 126.2 K, where the
+> flag is CORRECT and nothing should fire.  The nine CO2 cases never reach the
+> reactive-electrolyte builder, so the engine makes no such announcement about
+> them; their temperature was measured but their code path was assumed.
+>
+> The finding survives and changes character.  CO2's flag is still a false
+> claim about a substance below 31 °C — but it is a **latent defect in the
+> data**, not a wrong answer being produced today.  And the second measurement
+> is worth as much as the first: **the flag is declared on three records and
+> exercised by one case in three hundred and thirty-two.**  A field that
+> expensive to reach deserves to be asked whether it earns its place.
 
 `N2` and `O2` are not exempt in principle either: in cryogenic air separation
 — a canonical chemical-engineering unit operation — both are condensed on
@@ -123,6 +139,33 @@ in silence*:
 The run's numbers do not move. What changes is that a student meets the
 gas/vapour distinction at the exact moment it bites, on a real stream, with
 both numbers in front of them.
+
+## 5a. Status: implemented, and NOT yet witnessed
+
+The announcement is built. `ReactiveVLEConfig` carries each flagged
+component's `Tc` (attached by the builder, which holds the `Component` —
+re-reading the record in the solver would be a second home for one fact), and
+`ReactiveVLE::solve` announces once per instance for any flagged component
+solved below it.
+
+**It cannot fire on any case in the corpus, and that is stated rather than
+glossed.** The single case that consults the flag runs N2 at 313.15 K against
+Tc 126.2 K — correctly a permanent gas, correctly silent. So this contract has
+parts one and two of the project's three-part test and **not part three**:
+
+1. the contract is written — yes, here;
+2. the engine announces the violation by name, with both temperatures — yes;
+3. **a case fires it — no.**
+
+The honest options are to build a witness (a reactive aqueous CO2 case at
+ambient temperature; `chemistry/CO2-dissolution.dat` and `CO2aq-formation.dat`
+both exist, so the records are there) or to leave the check unfireable and say
+so. Shipping it silently as though it were consolidated is the one option that
+is not available — an unfireable check is exactly the shape
+`check_true_ions` had when it reported PASS on every run for months with both
+of its inputs deleted.
+
+Recorded as the owed work, not as done.
 
 ## 6. Rejected alternatives
 

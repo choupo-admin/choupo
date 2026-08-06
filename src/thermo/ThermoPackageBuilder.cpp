@@ -762,6 +762,11 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             if (cp->isNoncondensable())
             {
                 cfg.dissolvedGases.insert(i);
+                //  Carry Tc to the solver, which is the only place that also
+                //  has a temperature.  "Permanent gas" is a relation between
+                //  Tc and T, not a property of a substance, and THIS scope
+                //  cannot see T -- see ReactiveVLEConfig::criticalTOfGas.
+                cfg.criticalTOfGas[i] = cp->Tc();
                 if (thermoAnnounce())
                     std::cout << "[resolver] " << names[i] << ": permanent gas"
                                  " (noncondensable) -- HENRY rung through its"
