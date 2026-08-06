@@ -1281,6 +1281,31 @@ PYEOF
     fi
     rm -f /tmp/psatrange.$$
 
+    # logK cross-check gate (2026-08-06).  chemistry/ carries 77 equilibria
+    # with a curated logK25 (mostly USGS PHREEQC); species/ carries the
+    # aqueous species with hfAq/sAq.  The two describe the SAME
+    # thermodynamics and nothing had ever compared them.  For a balanced
+    # reaction the element terms cancel, so dG0 = SUM nu*(hfAq - T*sAq) and
+    # logK follows exactly -- the same cancellation the electrolyte builder
+    # already relies on.
+    # First run: 2 of 77 derivable, BOTH agreeing to better than 0.01 log
+    # units, and 75 not derivable with the reason named (48 reference a
+    # species with no hfAq/sAq).  So it ships as a COVERAGE gate: the method
+    # is right and the gap is coverage, not correctness.
+    # Sabotage-verified three ways: perturb a species hfAq (disagreement);
+    # comment out a species datum (coverage falls -- and this round found a
+    # real bug, the reader was matching inside comments); reshape a record so
+    # it cannot be parsed (unparsed must be 0, never silently skipped).
+    if "$ROOT/bin/curate/check_logk_crosscheck.py" > /tmp/logkx.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "logk-crosscheck-gate" "$(head -1 /tmp/logkx.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_logk_crosscheck.py)\n" "logk-crosscheck-gate"
+        cat /tmp/logkx.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/logkx.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question

@@ -77,7 +77,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 94 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 95 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40190 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40191 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -206,6 +206,10 @@
     "check_lithium_routes": {
       "exit": 0,
       "claim": "lithium gate: 5 tuned pairs via perNode (sector mirrored home); organic loaded (x_LiCl ok, water excluded)"
+    },
+    "check_logk_crosscheck": {
+      "exit": 0,
+      "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 2 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 75 not derivable, each with its reason named (48 no hfAq/sAq for; 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
     },
     "check_minerals": {
       "exit": 0,
