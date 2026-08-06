@@ -313,8 +313,15 @@ corpus "the validation corpus" and V7 is named "Validation / credibility".
 >
 > Recorded in full: [`verification-and-validation.md`](verification-and-validation.md).
 >
-> *Original recommendation, adopted:* **split the name, do not redefine the word.**  Call the
-> corpus what it is — a **regression and validation corpus** — and mark each
+> *Original recommendation, adopted in PRINCIPLE and sharpened in wording.*
+> It proposed "a **regression and validation corpus**"; what was adopted is
+> stricter — **the verification and regression corpus, with a named validation
+> subset** — because "regression and validation" still reads as though the two
+> were comparable halves, and they are not: the validation subset is seven
+> cases out of several hundred.  The principle below is what carried:
+>
+> **split the name, do not redefine the word.**  Call the
+> corpus what it is, and mark each
 > case as verified-against-golden or validated-against-anchor, which the tree
 > already distinguishes in substance.  Redefining *validation* locally would
 > be coining against an established meaning in the exact standard the project

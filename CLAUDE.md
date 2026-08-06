@@ -728,6 +728,68 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the
+machinery that enforces it got its own arity treatment.**
+
+* **I17 and I18 are ASSERTED, not bounded** (`global-invariants.md`).  The
+  layering gate shipped pinning FIVE upward edges and EIGHT cycles; all five
+  and seven of the eight are paid.  Every one was the same defect — ONE shared
+  concept filed inside a consumer: `FlatUnit` left `SimulationResult` (which
+  is *why* `core` reached up — a header declaring both a topology record and
+  an output record), `DerivedClosures` and `readExchange` moved to `thermo`,
+  `UnitProfile` to the new `result/`, `OdsWriter` to `core`.  `PINNED_UP` is
+  empty; the only cycle left is the ACCEPTED `solver ↔ thermo` (§7.3).  Debts
+  D1/D2/D4/D6/D7 in [`docs/architecture/module-boundaries.md`](docs/architecture/module-boundaries.md).
+* **`result/` and the tooling plane.**  Two new subsystems in the layering:
+  `result` (the pipeline's output records) and `io` (domain serialisation);
+  `curation` sits BESIDE the stack under a stronger rule — *a tool may read
+  the runtime, nothing in the runtime may read a tool, only `applications/`
+  joins the planes.*  A finding record is neutral data and belongs at the
+  bottom: [`docs/design/where-a-finding-record-lives.md`](docs/design/where-a-finding-record-lives.md),
+  settled against DWSIM, whose `Interfaces` assembly has zero dependencies
+  (the pattern) while its solver reaches a diagnostics subsystem that owns a
+  WinForms window (the warning).
+* **`bin/curate/debt_registry.py` — ONE home for every accepted violation.**
+  Waivers were scattered across eight of the 92 `check_*` scripts: the arity
+  doctrine broken by the machinery built to enforce it.  Each entry carries
+  why / remedy / blocker.  `check_debt_registry` keeps it the only home and
+  refuses an entry no gate reads; it does NOT judge whether a waiver is still
+  true — that is each gate's stale-pin arm.  (`check_ion_pins.PINS` was
+  renamed `ANCHORS`: a pinned *violation* and a pinned *anchor* are opposites.)
+* **`generated/gateManifest.json` — what each gate CLAIMS, derived by running
+  it** and capturing its own OK line, never transcribed from a docstring.  It
+  records the claim and stated blind spots; it does NOT record sabotages or
+  retirement conditions, because those are not visible in a gate's output.
+* **A DURABLE CAVEAT SURFACE.**  Extrapolations, unverified records and
+  estimates now ride `AdvisoryLog` into the result JSON AND are replayed once
+  at the end of every run, grouped (`core/AdvisorySummary.H`).  A run with
+  nothing to say says so — silence must mean "nothing raised", never "the
+  block did not run".  All four binaries emit it.
+* **`Trange unknown;` (AP3).**  Three states, not two: a declared window, a
+  DECLARED absence, or no key at all.  An impossible interval (`hi <= lo`)
+  now REFUSES at construction — extrapolation needs a real domain to
+  extrapolate from.  Six records migrated.
+* **`provenance fittedToCase;` (AP4).**  A record shipping transport
+  parameters must say where they came from, and a fitted set must NAME the
+  case it was fitted against.  NF270's header quoted permeabilities its cited
+  datasheet never published (it publishes rejections); the false KIND of claim
+  was removed rather than a number chosen, so no value and no golden moved.
+* **`bin/runTests` is the VERIFICATION AND REGRESSION corpus (G2)**, with a
+  named validation subset of seven cases —
+  [`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md).
+  A PASS proves an answer has not moved from a self-recorded golden, never
+  that it is right.
+* **The sealing closure is OBSERVED, not guessed (D3, first slice).**  The
+  resolver seam carries an opt-in consumption ledger, and `bin/choupo-import`
+  REFUSES an under-staged seal — verified by reproducing the 2026-08-04
+  Edwards defect, which it catches earlier than the golden did.  The
+  hand-written `want()` list STAYS: one run cannot see a record a model reads
+  only for other component sets.
+
+Gates added: `check_debt_registry` · `check_caveat_surface` · `gate_manifest
+--check`.  All sabotage-verified, and three sabotages found defects in the
+gates themselves rather than in the engine.
+
 **A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).**
 `ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for
 equilibrium.  Molecular package → forwards to `Kvec`, byte-identical (all 12
@@ -1454,20 +1516,23 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-08-03 — COHERENCE SWEEP after the week's seven
-doctrine slices, read end to end rather than patched paragraph by
-paragraph.  What it found is the argument for doing it: four dangling
-pointers into a session `memory/` that was never in the repository (a
-reader would go looking and find nothing); this file's own layout block
-still carrying "318 runnable cases" against a tree of 328 — the exact
-hand-maintained tally §6 forbids, committed by the file that states the
-rule; the same defect in the public README (284); and
-`docs/design/unread-dict-keys-proposal.md` still headed "Nothing
-implemented" three days after it shipped as `core/DictAudit`.  A rule the
-file itself breaks is a wish, so the tally rule is now a GATE
-(`release_inventory.py --check`, sabotage-verified).  Verified clean in
-both directions: every `check_*` gate this file names exists, and every
-gate that exists is wired into `bin/runTests`.
+*Last reviewed: 2026-08-06 — COHERENCE SWEEP after the structural slice, read
+end to end rather than patched paragraph by paragraph.  Verified in both
+directions: every `check_*` this file names exists and is wired into
+`bin/runTests` (the one apparent miss, `check_true_ions`, is named only as the
+permanently-green gate that was RETIRED — history, not a dangling pointer),
+the §1 layering diagram matches `check_layering`'s BANDS plus its tooling
+plane, and `global-invariants.md` reads I17/I18 as HOLDS because they do.
+One real drift found and fixed: `domain-glossary.md` quoted the G2
+recommendation verbatim under "adopted", but what was adopted is STRICTER than
+what was proposed — "verification and regression corpus with a named
+validation subset", not "regression and validation corpus", because the second
+reads as though the two were comparable halves and the validation subset is
+seven cases out of several hundred.  A recommendation quoted as adopted must
+be the wording that carried.
+Earlier (2026-08-03): the sweep that found four dangling pointers into a
+session `memory/` never in the repository, and two hand-maintained tallies
+that had drifted — which is why the tally is now a gate.
 Earlier (2026-06-06): trimmed to its session-load essentials; the
 capabilities narrative, tutorials index, GUI internals + WASM quirks moved
 to `docs/engine-capabilities.md`, `docs/tutorials-catalogue.md`,
