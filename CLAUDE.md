@@ -728,6 +728,33 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**THE REFERENCE RUNG — a declared field the hot path did not honour
+(2026-08-06).**  `standardThermochemistry.referenceState` (`idealGas` default ·
+`pureLiquid` · `pureSolid`) says which standard state `dHf_298` / `s_298` are
+tabulated on, and `h_formation(T, phase)` honours it.  **`h_pure_ig` /
+`s_pure_ig` / `g_pure_ig` did not** — they read the two numbers straight off
+the record and integrate the ideal-gas Cp whatever it declares, which is every
+Gibbs reactor, `Reaction::Kp`, `ReactiveFlash` and `H_ig`/`S_ig`.  A
+`pureSolid` datum read there is wrong by a heat of sublimation, silently.
+Measured: 247 records, 160 with the block, 142 on the (correct) default, 18
+declaring a non-gas rung, **0 of those 18 carrying a gas Cp** — so the
+catalogue could not reach it, and the refusal it got instead said *"needs
+idealGasHeatCapacity block"*.  **The error message was advice that creates the
+bug.**  They refuse on the rung now, before the Cp check, quoting the record's
+own word and naming `h_formation` as the remedy; `ThermoPackage`'s nonvolatile
+guard gained `datumOnIdealGasRung()` beside `hasCpIdealGas()` (kept SEPARATE —
+folding in `hasGibbsData_` would have rerouted the 87 records with a gas Cp and
+no datum).  A generic remedy stapled to a specific diagnosis contradicts it:
+the energy-balance refusal appended *"add standardThermochemistry{ … phase; }"*
+to every gap — to a record that already has the block, naming a key that has
+never existed — and is now conditional on the generic branch.  NOT closed, and
+said so: `water.dat` carries only the ideal-gas datum, so an aqueous reaction
+wanting the LIQUID one derives `water-dissociation` at logK25 **−12.4986
+against a stored −14**; that is a MISSING SECOND DATUM, a data-layer change,
+and it gates `gStd`.  Gate: `check_reference_rung` (probe-built defective
+record — it must never enter the catalogue).  Record:
+[`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
+
 **THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the
 machinery that enforces it got its own arity treatment.**
 

@@ -111,6 +111,19 @@ public:
     // Determines the reference path h_formation() walks to reach a
     // stream's (T, target_phase).
     const std::string& naturalPhase() const { return naturalPhase_; }
+    //  The word the RECORD wrote, verbatim ("idealGas" when it wrote nothing
+    //  and took the default).  A refusal quotes what the curator typed, not
+    //  the engine's internal phase word -- otherwise the reader is told about
+    //  a key they cannot find in their own file.
+    const std::string& referenceStateWord() const { return refStateWord_; }
+    //  Is this record's formation datum ON the ideal-gas rung?
+    //
+    //  Deliberately SEPARATE from `hasCpIdealGas()`, which answers a question
+    //  about the Cp block alone.  A router needs both, and conflating them
+    //  would have changed the routing of the 87 records that carry a gas Cp
+    //  and no `standardThermochemistry{}` at all.  True when the record
+    //  declares no rung, because the default IS idealGas.
+    bool datumOnIdealGasRung() const { return naturalPhase_ == "gas"; }
 
     //  The DISSOLUTION enthalpy of this substance's own solid phase [J/mol],
     //  read from its `solidPhases { <phase> { equilibrium { dH ... } } }` --
@@ -535,6 +548,10 @@ public:
     }
 
 private:
+    //  Refuses when the formation datum is NOT on the ideal-gas rung; `fn` is
+    //  the caller's name, so the message says which surface was asked for.
+    void requireIdealGasRung(const char* fn) const;
+
     std::string name_, formula_, cas_;
     std::vector<std::string> aliases_;   // friendly aliases (C4H10 for nButane, ...)
     scalar      MW_      = 0.0;
@@ -552,6 +569,7 @@ private:
     scalar      S298_    = 0.0;
     bool        hasGibbsData_ = false;
     std::string naturalPhase_ = "gas";   // gas | liquid | solid (default IG/NIST/JANAF)
+    std::string refStateWord_ = "idealGas";   // the record's own word, verbatim
     std::map<std::string, scalar> dHdissByPhase_;   // phase -> dH [J/mol]
 
     // Solute support

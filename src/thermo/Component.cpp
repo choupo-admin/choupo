@@ -580,6 +580,7 @@ void Component::readFromDict(const DictPtr& d)
         Hf298_         = g->lookupScalar("dHf_298");
         S298_          = g->lookupScalar("s_298");
         const std::string ref = g->lookupWordOrDefault("referenceState", "idealGas");
+        refStateWord_ = ref;
         if      (ref == "idealGas")   naturalPhase_ = "gas";
         else if (ref == "pureLiquid") naturalPhase_ = "liquid";
         else if (ref == "pureSolid")  naturalPhase_ = "solid";
@@ -1011,11 +1012,42 @@ scalar Component::Hvap_pure(scalar T, scalar Tref) const
     return Hliq_pure(T, Tref) + Hvap_latent(T);
 }
 
+//  A rung is not a preference -- it is what the tabulated numbers MEAN.
+//
+//  h_pure_ig / s_pure_ig read Hf298_ and S298_ straight off the record and
+//  integrate the ideal-gas Cp on top.  That is only arithmetic if the record's
+//  datum is on the ideal-gas rung.  When it declares `pureSolid` or
+//  `pureLiquid`, the same arithmetic returns a number wrong by a heat of
+//  sublimation or vaporisation -- silently, with the right sign and a
+//  plausible magnitude, which is the worst way to be wrong.
+//
+//  The refusal exists because the OLD one pointed the wrong way.  A pureSolid
+//  record without an `idealGasHeatCapacity{}` block used to fail with "needs
+//  idealGasHeatCapacity block in .dat" -- advice which, if followed, produces
+//  exactly the silent error above.  Measured 2026-08-06: 18 catalogue records
+//  declare a non-gas rung and none carries a gas Cp, so the corpus is clean
+//  today by coincidence, not by construction.
+void Component::requireIdealGasRung(const char* fn) const
+{
+    if (naturalPhase_ == "gas") return;
+    const std::string crossing =
+        (naturalPhase_ == "solid") ? "sublimation" : "vaporisation";
+    throw std::runtime_error("Component '" + name_ + "': " + fn +
+        "(T) evaluates the IDEAL-GAS rung, but this record declares"
+        " standardThermochemistry.referenceState " + refStateWord_ +
+        " -- dHf_298 and s_298 are tabulated on the " + naturalPhase_ +
+        " standard state, so reading them here would be wrong by a heat of "
+        + crossing + ".  Use h_formation(T, phase), which takes the"
+        " transition at 298 K.  Do NOT 'fix' this by adding an"
+        " idealGasHeatCapacity{} block: the Cp is not what is missing.");
+}
+
 scalar Component::h_pure_ig(scalar T) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
             "': h_pure_ig(T) needs standardThermochemistry block in.dat");
+    requireIdealGasRung("h_pure_ig");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': h_pure_ig(T) needs idealGasHeatCapacity block in.dat");
@@ -1027,6 +1059,7 @@ scalar Component::s_pure_ig(scalar T) const
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
             "': s_pure_ig(T) needs standardThermochemistry block in.dat");
+    requireIdealGasRung("s_pure_ig");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': s_pure_ig(T) needs idealGasHeatCapacity block in.dat");

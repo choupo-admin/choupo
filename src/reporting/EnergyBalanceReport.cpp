@@ -316,11 +316,22 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             else
                 msg << join(gapOther, "; ");
             msg << " -- present in boundary stream(s) '"
-                << join(gapStreams, "', '") << "'.  "
-                << "Add standardThermochemistry{ dHf_298; s_298; phase; } to the "
-                   "component .dat, or configure it as an electrolyte "
-                   "(electrolyte{ cation; anion; } + ions in the catalogue).  "
-                << "The ENERGY balance is REFUSED; the mass balance is "
+                << join(gapStreams, "', '") << "'.  ";
+            //  The generic remedy belongs ONLY to the generic diagnosis.
+            //  When the gap came from a thrown reason (gapOther), that
+            //  exception carries its OWN remedy, and stapling this sentence
+            //  after it CONTRADICTED it: flash14 refused because CaCO3's
+            //  datum is not on the ideal-gas rung and was then told to "add
+            //  standardThermochemistry{}" -- a block CaCO3 already has -- with
+            //  a key named `phase` that has never existed (it is
+            //  `referenceState`).  Two wrong instructions in one sentence,
+            //  both invisible because the sentence was unconditional.
+            if (!gapComponents.empty())
+                msg << "Add standardThermochemistry{ dHf_298; s_298; "
+                       "referenceState; } to the component .dat, or configure "
+                       "it as an electrolyte (electrolyte{ cation; anion; } + "
+                       "ions in the catalogue).  ";
+            msg << "The ENERGY balance is REFUSED; the mass balance is "
                    "unaffected (it needs no enthalpy datum).";
 
             //  Refusal POSTURE follows provenance (2026-08-02, the

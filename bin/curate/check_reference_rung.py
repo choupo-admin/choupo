@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""Gate: a formation datum is read on the rung it DECLARES, or not at all.
+
+    bin/curate/check_reference_rung.py
+
+WHY THIS EXISTS.  `standardThermochemistry { dHf_298; s_298; referenceState; }`
+names the thermodynamic standard state its two numbers are tabulated on --
+`idealGas` (the default, NIST/JANAF), `pureLiquid`, or `pureSolid`.  The field
+has been parsed since long before this gate, and `h_formation(T, phase)`
+honours it correctly, taking the transition at 298 K.
+
+But `h_pure_ig(T)` and `s_pure_ig(T)` -- and therefore `g_pure_ig`, and
+therefore every equilibrium constant the Gibbs reactors and `Reaction::Kp`
+compute -- read `Hf298_` and `S298_` straight off the record and integrate the
+IDEAL-GAS Cp on top.  Until 2026-08-06 they did that whatever the record
+declared.  A `pureSolid` datum read there comes back wrong by a heat of
+sublimation: right sign, plausible magnitude, no diagnostic.
+
+MEASURED BEFORE THE FIX (2026-08-06), because the size of the hole is the
+argument for closing it:
+
+    247 component records; 160 carry standardThermochemistry
+    142 take the DEFAULT idealGas rung  -- correct for every one of them
+     16 declare pureSolid, 2 declare pureLiquid
+      0 of those 18 carry an idealGasHeatCapacity{} block
+
+So the catalogue could not reach the defect -- not because anything checked,
+but because those 18 records happen to lack a gas Cp.  `h_pure_ig` refused
+them with "needs idealGasHeatCapacity block in .dat", and THAT is the part
+worth the gate: the message named the wrong cause and its advice was the bug.
+A curator who added the gas Cp it asked for -- a reasonable thing to do for
+H3PO4 or HNO3, which have perfectly good gas-phase data -- would have turned
+an honest refusal into a silent wrong answer.
+
+WHAT IS CHECKED.  A probe builds synthetic records (the defective one does not
+exist in the catalogue and must NOT be added to it) and reads each surface:
+
+  (a) THE DEFAULT RUNG STILL WORKS.  A record writing no `referenceState`
+      must evaluate exactly as before -- 142 records depend on it, and a
+      refusal that also catches them would be a 142-record regression wearing
+      a safety argument.
+
+  (b) WRITTEN idealGas == OMITTED.  If the parser treated the two
+      differently, a curator making the rung explicit would change the answer.
+
+  (c) THE SOLID RUNG REFUSES, WITH THE GAS Cp PRESENT.  This is the case the
+      catalogue cannot currently reach and the whole reason for the slice.
+
+  (d) THE SOLID RUNG REFUSES FOR THE RIGHT REASON, WITHOUT THE GAS Cp.  The
+      18 real records.  They refused before; the gate checks the message now
+      names the RUNG and no longer advises adding a Cp block.  A refusal that
+      fires for the wrong reason is not the refusal being claimed.
+
+  (e) THE LIQUID RUNG REFUSES TOO -- H2SO4 and HNO3 are real records.
+
+  (f) THE DERIVED SURFACE REFUSES.  g = h - T*s: if only h_pure_ig were
+      guarded, a caller reaching for the entropy alone would still cross the
+      rung silently.
+
+  (g) THE REMEDY WORKS.  The refusal tells the reader to use
+      `h_formation(T, phase)`.  The gate calls it, on the same record, to
+      both `solid` and `liquid` targets, and requires a finite answer.  Advice
+      that does not work is worse than no advice, and nothing else in the tree
+      would have caught it.
+
+WHAT IS NOT CHECKED, deliberately:
+
+  * whether a record's DECLARED rung is the right one for its numbers.  That
+    is a curation judgement against a primary source.  `water.dat` is the
+    known live example -- its datum is the ideal-gas one and its rung is
+    (correctly) the default, but an aqueous reaction wanting the LIQUID datum
+    has nowhere to read one from, which is why deriving `water-dissociation`'s
+    logK from the records gives -12.4986 against a stored -14.  That is a
+    MISSING SECOND DATUM, not a mislabelled one, and this gate does not claim
+    to see it.
+
+  * the 87 records carrying no `standardThermochemistry` at all.  They have no
+    rung to be wrong about.
+
+Exit 1 naming the arm that failed.
+"""
+import json
+import math
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+PROBE = ROOT / "build" / "linux64Gcc" / "referenceRungProbe"
+SRC = ROOT / "bin" / "curate" / "_referenceRungProbe.cpp"
+
+
+def build_probe():
+    cmd = ["g++", "-std=c++17", "-O2", f"-I{ROOT / 'src'}", f"-I{ROOT}",
+           str(SRC),
+           str(ROOT / "build" / "linux64Gcc" / "libchoupo.so"),
+           "-Wl,-rpath," + str(ROOT / "build" / "linux64Gcc"),
+           "-o", str(PROBE)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    return r.returncode, r.stderr[-1200:]
+
+
+def main() -> int:
+    fail, checked = [], []
+
+    if not SRC.exists():
+        print("check_reference_rung: FAILED\n  the probe source is missing")
+        return 1
+
+    rc, err = build_probe()
+    if rc != 0:
+        print("check_reference_rung: FAILED\n  probe did not compile -- the "
+              "Component surface or the library moved.  A check that cannot "
+              "build must not pass.\n" + err)
+        return 1
+
+    r = subprocess.run([str(PROBE)], capture_output=True, text=True, timeout=300)
+    if r.returncode != 0:
+        print(f"check_reference_rung: FAILED\n  probe exited {r.returncode}\n"
+              + r.stdout[-800:] + r.stderr[-800:])
+        return 1
+    try:
+        got = json.loads(r.stdout)
+    except json.JSONDecodeError:
+        print("check_reference_rung: FAILED\n  probe output is not JSON:\n"
+              + r.stdout[-600:])
+        return 1
+
+    def res(key):
+        return got.get(key, {}).get("result", "<missing>")
+
+    # ---- (a) the default rung still evaluates ------------------------------
+    if res("defaultRung") != "ok":
+        fail.append("(a) a record declaring NO referenceState was refused: "
+                    + res("defaultRung")
+                    + "\n      142 catalogue records take that default.")
+    elif not math.isfinite(got["defaultRung"]["h"]):
+        fail.append("(a) the default rung returned a non-finite enthalpy")
+    else:
+        checked.append("the default (idealGas) rung evaluates, h(400 K) = "
+                       f"{got['defaultRung']['h']:.1f} J/mol")
+
+    # ---- (b) written idealGas behaves as omitted ---------------------------
+    if res("explicitIdealGas") != "ok":
+        fail.append("(b) `referenceState idealGas;` written explicitly was "
+                    "refused: " + res("explicitIdealGas"))
+    elif got["explicitIdealGas"]["h"] != got["defaultRung"]["h"]:
+        fail.append("(b) writing `referenceState idealGas;` CHANGED the answer "
+                    f"({got['explicitIdealGas']['h']} vs "
+                    f"{got['defaultRung']['h']}) -- making a default explicit "
+                    "must never move a number.")
+    else:
+        checked.append("an explicit `idealGas` is byte-identical to omitting it")
+
+    # ---- (c)(d)(e) the non-gas rungs refuse, and say why -------------------
+    for key, rung, arm in (("solidRungWithGasCp", "pureSolid", "c"),
+                           ("solidRungNoGasCp", "pureSolid", "d"),
+                           ("liquidRungWithGasCp", "pureLiquid", "e")):
+        msg = res(key)
+        if msg == "ok":
+            fail.append(f"({arm}) h_pure_ig accepted a record declaring "
+                        f"`referenceState {rung};` -- the datum is not on the "
+                        "ideal-gas rung and reading it there is wrong by a "
+                        "heat of sublimation or vaporisation.")
+            continue
+        if "referenceState" not in msg or rung not in msg:
+            fail.append(f"({arm}) the refusal for `{rung}` does not quote the "
+                        "record's own key and word, so the reader cannot find "
+                        "it in their file:\n      " + msg)
+        elif "h_formation" not in msg:
+            fail.append(f"({arm}) the refusal for `{rung}` names no remedy:\n"
+                        "      " + msg)
+        else:
+            checked.append(f"`{rung}` is refused by name, quoting the record's "
+                           "own key, with h_formation named as the remedy")
+
+    # ---- (d) extra: the message must NOT advise adding a gas Cp ------------
+    msg = res("solidRungNoGasCp")
+    if msg != "ok" and "idealGasHeatCapacity" in msg and "NOT" not in msg:
+        fail.append("(d) the refusal still advises adding an "
+                    "idealGasHeatCapacity{} block.  That advice IS the defect: "
+                    "adding one converts an honest refusal into a silent wrong "
+                    "answer.\n      " + msg)
+    elif msg != "ok":
+        checked.append("the refusal explicitly warns AGAINST adding a gas Cp "
+                       "block, which was the old message's advice")
+
+    # ---- (f) the derived Gibbs surface ------------------------------------
+    if res("gibbsSolidRung") == "ok":
+        fail.append("(f) g_pure_ig accepted a solid-rung record.  h_pure_ig "
+                    "alone is not enough: a caller reaching for the entropy "
+                    "crosses the rung just as silently.")
+    elif res("gibbsDefaultRung") != "ok":
+        fail.append("(f) g_pure_ig refused the DEFAULT rung: "
+                    + res("gibbsDefaultRung"))
+    else:
+        checked.append("g = h - T*s refuses the solid rung and accepts the "
+                       "default, so the guard covers the derived surface")
+
+    # ---- (g) the named remedy actually works ------------------------------
+    for key, target in (("formationSolidToSolid", "solid"),
+                        ("formationSolidToLiquid", "liquid")):
+        if res(key) != "ok":
+            fail.append(f"(g) the REMEDY the refusal names does not work: "
+                        f"h_formation(T, \"{target}\") on the same solid-rung "
+                        "record returned: " + res(key)
+                        + "\n      A refusal whose advice fails is worse than "
+                          "no refusal.")
+        elif not math.isfinite(got[key]["h"]):
+            fail.append(f"(g) h_formation(T, \"{target}\") returned a "
+                        "non-finite value on a solid-rung record")
+        else:
+            checked.append(f"the named remedy works: h_formation(400 K, "
+                           f"\"{target}\") = {got[key]['h']:.1f} J/mol")
+
+    if fail:
+        print("check_reference_rung: FAILED")
+        for f in fail:
+            print("  * " + f)
+        return 1
+
+    print("check_reference_rung: OK -- " + "; ".join(checked))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

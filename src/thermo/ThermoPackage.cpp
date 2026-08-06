@@ -1415,7 +1415,15 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
     for (std::size_t i = 0; i < n() && i < z.size(); ++i)
     {
         if (z[i] <= 0.0) continue;
-        if (!components_[i].hasCpIdealGas())
+        //  The rung joins the Cp block here: a component whose datum is
+        //  declared solid or liquid has no ideal-gas leg to price even when a
+        //  Cp block is present, and routing it through the vapour half would
+        //  hit h_pure_ig's rung refusal mid-solve.  Byte-identical on today's
+        //  catalogue -- no record declares a non-gas rung AND carries an
+        //  idealGasHeatCapacity{} block (measured 2026-08-06) -- so the second
+        //  clause is the routing a FUTURE such record will need.
+        if (!components_[i].hasCpIdealGas()
+            || !components_[i].datumOnIdealGasRung())
         {
             hNonvol += z[i] * speciesPhaseEnthalpy(
                 i, T, P_Pa, "liquid", ReferenceContext::StandardPhase);

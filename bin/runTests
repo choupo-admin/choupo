@@ -1234,6 +1234,30 @@ PYEOF
     fi
     rm -f /tmp/sizedist.$$
 
+    # reference-rung gate (2026-08-06).  standardThermochemistry declares the
+    # standard state its dHf_298 / s_298 are tabulated on, and h_formation
+    # honours it -- but h_pure_ig / s_pure_ig / g_pure_ig read those numbers
+    # straight off the record and integrate the IDEAL-GAS Cp on top, whatever
+    # was declared.  A pureSolid datum read there is wrong by a heat of
+    # sublimation, silently.
+    # The catalogue could not reach it: all 18 non-gas-rung records happen to
+    # lack a gas Cp, so h_pure_ig refused them -- with a message that named
+    # the missing Cp as the cause and whose advice, if followed, WOULD have
+    # created the silent error.  Harmless-because-unchecked is not safety.
+    # The probe builds the defective record (it must never enter the
+    # catalogue) and checks the default rung is untouched, the non-gas rungs
+    # refuse quoting the record's own key, the derived Gibbs surface refuses
+    # too, and the remedy the refusal names actually runs.
+    if "$ROOT/bin/curate/check_reference_rung.py" > /tmp/refrung.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reference-rung-gate" "$(head -1 /tmp/refrung.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reference_rung.py)\n" "reference-rung-gate"
+        cat /tmp/refrung.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/refrung.$$
+
     # decision-index gate (2026-08-05).  decision-records.md is the V8 view --
     # the answer to "has this been decided, and where?" -- and its usefulness
     # rests on COMPLETENESS: an index missing a record answers the question
