@@ -61,6 +61,9 @@ Description
 
 #include "core/distribution/SizeDistribution.H"
 
+#include <memory>
+#include <string>
+
 namespace Choupo {
 
 class LogNormalSize : public SizeDistribution

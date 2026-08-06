@@ -34,6 +34,10 @@ License
 
 #include <cmath>
 #include <stdexcept>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 

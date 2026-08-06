@@ -30,6 +30,7 @@ License
 
 #include <cmath>
 #include <stdexcept>
+#include <memory>
 
 namespace Choupo {
 

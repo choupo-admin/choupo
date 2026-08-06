@@ -56,6 +56,10 @@ Description
 
 #include "core/distribution/SizeDistribution.H"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 namespace Choupo {
 
 class TabularSizeDistribution : public SizeDistribution

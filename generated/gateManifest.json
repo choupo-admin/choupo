@@ -77,11 +77,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 91 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 92 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 36 design record(s) appear in the index, and its stated counts (15 state a rejected alternative, 21 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 37 design record(s) appear in the index, and its stated counts (15 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -89,7 +89,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 235 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 239 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
@@ -105,7 +105,7 @@
     },
     "check_ebullioscopic": {
       "exit": 0,
-      "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE"
+      "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE.  K_f is REFERENCE-ONLY and verified unconsumed: it cannot be derived (no record declares a heat of fusion) and no unit operation models freezing-point depression, so it is a curated datum awaiting a consumer -- not a capability.  Wiring it up FAILS this gate until the note is rewritten."
     },
     "check_economics_honesty": {
       "exit": 0,
@@ -169,11 +169,11 @@
     },
     "check_git_visibility": {
       "exit": 0,
-      "claim": "git visibility: 68 source directories, each can hold a new file."
+      "claim": "git visibility: 69 source directories, each can hold a new file."
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40160 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40171 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -291,6 +291,10 @@
       "exit": 0,
       "claim": "sealed-corpus gate: 326 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
+    "check_size_distribution": {
+      "exit": 0,
+      "claim": "check_size_distribution: OK -- Rosin-Rammler moments == d63^m*Gamma(1+m/n); log-normal moments == exp(m*mu + m^2 sigma^2/2); basis conversion exact (volume/number = exp(3 sigma^2) = 1.94004); the two laws declare different bases (3 vs 0); the base's own quadrature reproduces the analytic moment to 1e-6 (tested through a subclass with the override removed); tabular round trip agrees to 1.8e-05 (a FLOOR, not convergence -- see the note); third moment exact to 1.8e-05 (the coarse end, where no truncation excuse applies).  Every arm RECOMPUTES the closed form rather than comparing with a pinned number, so the gate proves the moments are right and not merely unchanged.  It does NOT judge whether a given law is the right model for a given powder -- that is a modelling judgement no gate can hold."
+    },
     "check_solute_basis": {
       "exit": 0,
       "claim": "check_solute_basis: ok  (single-salt models asked about their own salt; what they omit is named, sized, and only when it is there)"
@@ -325,7 +329,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 595 source files, each includes what it uses."
+      "claim": "std includes: 603 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
