@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "streams/StreamStateIO.H"
+#include "core/distribution/SizeDistribution.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
@@ -1046,8 +1047,41 @@ ProcessStream readStreamState(const fs::path&       file,
         psdDict = d->subDict("particleSizeDistribution");
     if (psdDict)
     {
-        if (psdDict->found("diameter")) s.psd.diameter = psdDict->lookupList("diameter");
-        if (psdDict->found("massFrac")) s.psd.massFrac = psdDict->lookupList("massFrac");
+        //  A MEASUREMENT OR A MODEL, and never both.
+        //
+        //  `diameter`/`massFrac` is a sieve analysis transcribed.  `model` is
+        //  a fitted law -- Rosin-Rammler for a milled powder, log-normal for a
+        //  grown one -- which the engine discretises here onto the bins every
+        //  consumer already reads.  Before the SizeDistribution family existed
+        //  only the first form was possible, so an author with a fitted RRSB
+        //  had to expand it into bins by hand: the MODEL lived in the case
+        //  file, where nothing could check it and no moment could be taken.
+        //
+        //  Declaring both is REFUSED rather than resolved by precedence.  They
+        //  are two different claims about one powder, and silently preferring
+        //  either is how a case comes to mean something its author did not
+        //  write.
+        const bool hasTable = psdDict->found("diameter");
+        const bool hasModel = psdDict->found("model");
+        if (hasTable && hasModel)
+            throw std::runtime_error("stream state '" + name + "': the"
+                " particleSizeDistribution declares BOTH an explicit"
+                " `diameter`/`massFrac` table and a `model`.  A measured"
+                " table and a fitted law are two different claims about one"
+                " powder -- keep exactly one; the reader will not choose.");
+
+        if (hasModel)
+        {
+            auto law = SizeDistribution::New(psdDict);
+            const int nBins = static_cast<int>(
+                psdDict->lookupScalarOrDefault("bins", 20));
+            law->toTabular(nBins, s.psd.diameter, s.psd.massFrac);
+        }
+        else
+        {
+            if (psdDict->found("diameter")) s.psd.diameter = psdDict->lookupList("diameter");
+            if (psdDict->found("massFrac")) s.psd.massFrac = psdDict->lookupList("massFrac");
+        }
     }
     return s;
 }

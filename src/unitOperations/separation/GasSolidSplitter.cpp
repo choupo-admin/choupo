@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GasSolidSplitter.H"
+
+#include "core/distribution/SizeDistribution.H"
 #include "thermo/ThermoPackage.H"
 
 #include <cmath>
@@ -74,10 +76,48 @@ int GasSolidSplitter::solve(const DictPtr& dict,
         auto sol = dict->subDict("solids");
         auto sf  = sol->subDict("solidMolarFlows");
         for (const auto& k : sf->keys()) sin[thermo.indexOf(k)] = sf->lookupScalar(k);
-        if (sol->found("diameters"))
+        //  TWO WAYS TO STATE A SIZE DISTRIBUTION, and they are not
+        //  equivalent claims.  `diameters`/`massFractions` is a MEASUREMENT --
+        //  a sieve analysis, transcribed.  `sizeDistribution { model ...; }`
+        //  is a MODEL -- Rosin-Rammler for a milled powder, log-normal for a
+        //  grown one -- which the engine discretises here.
+        //
+        //  Before the SizeDistribution family existed only the first form
+        //  was possible, so an author with a fitted RRSB had to expand it into
+        //  bins by hand: the MODEL ended up in the case file, where nothing
+        //  could check it and no moment could be taken from it.
+        //
+        //  Declaring both is REFUSED rather than resolved by precedence.  A
+        //  measured table and a fitted law are two different claims about the
+        //  same powder, and silently preferring one is the shape this project
+        //  removes everywhere else.
+        const bool hasTable = sol->found("diameters");
+        const bool hasModel = sol->found("sizeDistribution");
+        if (hasTable && hasModel)
+            throw std::runtime_error("gasSolidSplitter: `solids` declares BOTH "
+                "an explicit `diameters`/`massFractions` table AND a "
+                "`sizeDistribution { model ...; }`.  Those are two different "
+                "claims about one powder -- a measurement and a fit.  Keep "
+                "exactly one; the engine will not choose for you.");
+        if (hasTable)
         {
             psd.diameter = sol->lookupList("diameters");
             psd.massFrac = sol->lookupList("massFractions");
+        }
+        else if (hasModel)
+        {
+            auto sd  = sol->subDict("sizeDistribution");
+            auto law = SizeDistribution::New(sd);
+            const int nBins = static_cast<int>(
+                sd->lookupScalarOrDefault("bins", 20));
+            law->toTabular(nBins, psd.diameter, psd.massFrac);
+            if (verbosity >= 2)
+                std::cout << "  [psd] " << law->type() << " discretised onto "
+                          << nBins << " bins over ["
+                          << law->dMin() << ", " << law->dMax() << "] m; "
+                          << "d32 = " << law->d32() << " m, d50(vol) = "
+                          << law->dPercentile(0.5, momentBasis::volume)
+                          << " m\n";
         }
         for (std::size_t i = 0; i < n; ++i)
             if (sin[i] > 0.0) sMassTot += sin[i] * thermo.comp(i).MW();   // kg/s

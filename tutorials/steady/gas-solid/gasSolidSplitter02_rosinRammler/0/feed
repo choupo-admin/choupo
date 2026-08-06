@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    N2    150 kmol/h;
+    silica    0.8322237017 kmol/h;
+}
+
+T               300 K;
+P               101325 Pa;
+
+phases
+{
+    vapour
+    {
+        componentMolarFlows
+        {
+            N2    150 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            silica    0.8322237017 kmol/h;
+        }
+    }
+}
+
+particleSizeDistribution
+{
+    //  A FITTED LAW, not a transcribed sieve analysis.
+    //
+    //  The sibling case gasSolidSplitter01_ideal declares six explicit bins.
+    //  That is what every Choupo case had to do before the SizeDistribution
+    //  family existed -- expand a Rosin-Rammler by hand and put the MODEL in
+    //  the case file, where nothing could check it and no moment could be
+    //  taken from it.
+    //
+    //  Here the model is DECLARED and the engine discretises it.  d63 is the
+    //  size below which 63.2 % (= 1 - 1/e) of the MASS lies -- the
+    //  parameter's actual meaning, routinely mistaken for a mean -- and n is
+    //  the spread, ~1 being a very broad cut and large n a narrow one.  RRSB
+    //  is declared on the MASS basis, which the engine carries with the
+    //  numbers, so a consumer asking for a number-weighted mean gets the
+    //  conversion done rather than done wrongly.
+    model     RosinRammler;
+    d63       2.0e-05;      // m
+    n         1.8;          // spread [-]
+    bins      24;
+}
