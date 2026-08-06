@@ -237,3 +237,70 @@ prose and D3 becomes implementable.
 **What this study deliberately does not do** is estimate effort, propose a
 migration order, or recommend a shape. Vítor asked for a learning process
 before changes; this is that, and the next act is his.
+
+
+---
+
+## 8. Addendum, measured 2026-08-06: the thesis, reproduced by accident
+
+§6 argued that Choupo's missing abstraction is the standard state. While
+looking for the smallest honest spike, I produced the error it invites — by
+hand, in three lines of arithmetic — which is better evidence than the
+argument.
+
+**The test.** OpenFOAM derives `K = exp(−Y·gStd(T)/(R·T))`. Choupo instead
+STORES equilibrium constants: `chemistry/water-dissociation.dat` carries
+`logK25 -14; dH 56400;`. Since 42 species carry `hfAq` and 39 carry `sAq`,
+ΔG° = ΔH° − TΔS° should reproduce that stored logK — and if it does, the
+stored value is a second home for something derivable.
+
+**Done with the record's own numbers, it gives logK25 = −12.4986 against the
+stored −14** — 10.7 % in log space, a factor of ~32 in K — **and dH = 11836
+J/mol against 56400, 79 % apart.**
+
+**The cause is not a bug in Choupo. It is the missing abstraction, exactly.**
+`water.dat` declares
+
+```
+standardThermochemistry
+{
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;          // J/(mol·K)  -- third-law absolute
+}
+```
+
+Those are the **ideal-gas** values. The aqueous reaction needs **liquid**
+water (−285830 J/mol, 69.95 J/mol/K), and with those the same arithmetic
+gives **logK25 = −13.998 against a stored −14** — agreement to 1.4 × 10⁻⁴.
+
+So the record is right, the stored constant is right, and the derivation is
+right. What is missing is any machine-readable statement of **which reference
+state the datum belongs to**. The block says "ideal-gas reference" in a
+COMMENT — the parser discards it — and carries no `phase` field. That is the
+same defect class already closed twice this week for `reviewStatus` (a tier in
+a banner) and `Trange` (a window parsed and never read): *a field the engine
+cannot see is a comment.*
+
+**Three consequences, and they are the argument for the next slice:**
+
+1. **A reaction ΔG° cannot be assembled across the two conventions** —
+   ideal-gas `standardThermochemistry` and aqueous-infinite-dilution
+   `hfAq`/`sAq` — without a conversion nobody has written. That conversion is
+   D3's transfer term, and this is why D3 has stayed contract-only.
+2. **The stored `logK25` is NOT redundant today** — it cannot be derived,
+   because the derivation crosses a rung. It would become derivable the moment
+   the rung were declared, and then the K_b treatment applies: derive, keep the
+   declared value as a validating anchor, announce the comparison.
+3. **`dH` is 79 % from a naive derivation and 1.0 % from a correct one.** The
+   1.0 % is a real curation question; the 79 % is what a student gets for using
+   the datum the record hands them without knowing which state it is on.
+
+**The smallest honest first step is therefore NOT `gStd` yet.** It is to make
+the reference state of `standardThermochemistry` a DECLARED, parsed field
+rather than a comment, and to refuse mixing rungs rather than compute across
+them silently. `gStd` as an interface function follows naturally once a datum
+knows what it is referenced to — but declaring the state is the prerequisite,
+and it is the part that stops a wrong number being produced today.
+
+Recorded as a measurement, not a proposal: no code has changed on the strength
+of this.
