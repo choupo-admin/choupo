@@ -90,6 +90,23 @@ int main()
     rrWide.toTabular(4000, d3, f3);
     TabularSizeDistribution tabCoarse(d2, f2, momentBasis::volume);
     TabularSizeDistribution tabFine  (d3, f3, momentBasis::volume);
+    //  THE TRUNCATION LAW, measured rather than asserted.  Reported at three
+    //  support cutoffs so the gate can verify the exponent instead of pinning
+    //  a tolerance around a number nobody explained.
+    std::cout << "  \"truncation\": [";
+    bool first = true;
+    for (scalar frac : {1.0e-4, 1.0e-6, 1.0e-8})
+    {
+        RosinRammler rrT(d63, nRR, frac * d63, 2.0e1 * d63);
+        std::vector<scalar> dT, fT; rrT.toTabular(1000, dT, fT);
+        TabularSizeDistribution tbT(dT, fT, momentBasis::volume);
+        std::cout << (first ? "" : ", ") << "{ \"frac\": " << frac
+                  << ", \"err\": "
+                  << std::abs(tbT.d32() - rrT.d32()) / rrT.d32() << " }";
+        first = false;
+    }
+    std::cout << "],\n";
+
     std::cout << "  \"roundTrip\": { \"d32_analytic\": " << rrWide.d32()
               << ", \"d32_coarse\": " << tabCoarse.d32()
               << ", \"d32_fine\": "   << tabFine.d32()

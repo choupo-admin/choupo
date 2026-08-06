@@ -47,20 +47,43 @@ pinned number:
       d32 is the demanding case ON PURPOSE: for a mass-declared table it needs
       the -1 moment, which weights the SMALL-diameter tail.
 
-      A MEASURED LIMIT, STATED RATHER THAN DRESSED UP.  Discretising the
-      DEFAULT support put the d32 error at 0.45 % and it would not fall with
-      refinement -- that was the small-diameter tail being TRUNCATED, not
-      under-resolved, and refining bins cannot restore a missing tail.
-      Widening the support drops it to ~2e-5.
+      THE FLOOR IS NOT A DEFECT, AND THE CAUSE IS NOW MEASURED (arm e).  The
+      d32 round trip does not converge with bin count -- 500 and 4000 bins
+      agree to four digits -- which looked like a bug and was recorded as an
+      unexplained floor with the extrapolated end-bin edges as the suspect.
 
-      But it is STILL flat between 500 and 4000 bins.  So a floor of about
-      2e-5 remains and its cause is NOT established -- the end-bin edges are
-      extrapolated (`edge_.front()` from the first two representative
-      diameters), which is the obvious suspect, but that is a hypothesis and
-      not a measurement.  The gate therefore asserts AGREEMENT TO A STATED
-      FLOOR and does not claim convergence, because the numbers do not show
-      convergence.  Calling a plateau "converged" is exactly the kind of claim
-      this project spends its time removing.
+      That suspect is REFUTED.  Varying the support cutoff while holding the
+      bin count fixed gives
+
+          dMin/d63    d32 relative error
+            1e-4          7.13e-4
+            1e-6          1.79e-5
+            1e-8          4.48e-7
+
+      Each 100-fold reduction in dMin divides the error by 39.8, and for a
+      Rosin-Rammler the density goes as d^(n-1) at small d, so the truncated
+      part of the MINUS-ONE moment scales as dMin^(n-1) = dMin^0.8, i.e. by
+      100^0.8 = 39.81 per decade pair.  Measured 39.8 against predicted 39.81.
+
+      So `toTabular` on a finite support simply cannot reproduce an
+      infinite-support Sauter mean, and the discrepancy is governed by where
+      the fines are cut off -- which is a fact about the physics, not about
+      the code.  It is also worth a student's attention: the Sauter mean of a
+      milled powder is sensitive to the fines cutoff by a known power law,
+      while the mass-weighted moments are not.
+
+      Arm (e) VERIFIES that exponent, so this is a checked law rather than a
+      tolerance wrapped around an unexplained number.
+
+      WHAT ARM (e) DOES AND DOES NOT SEE, established by sabotage rather than
+      assumed.  Altering Rosin-Rammler's small-d density (n-1 -> n) breaks the
+      exponent immediately: the ratio collapses to 1x against 39.8x predicted.
+      But ZEROING THE FIRST BIN'S WEIGHT in `toTabular` does NOT fail it --
+      one bin out of a thousand log-spaced ones carries too little mass to
+      move the ratio by 2 %.  So this arm watches the MODEL'S small-d law, not
+      the discretiser's treatment of individual fine bins.  The first draft of
+      the failure message claimed both; it now claims only what the sabotage
+      showed it can see.
 
 WHAT IS NOT CHECKED: whether a distribution is the RIGHT model for a given
 powder.  That is a modelling judgement and no gate can hold it.
@@ -200,6 +223,29 @@ def main() -> int:
     else:
         checked.append(f"third moment exact to {e3:.1e} (the coarse end, where "
                        "no truncation excuse applies)")
+
+    # ---- (e) THE TRUNCATION LAW ----------------------------------------
+    #  The d32 error must scale as dMin^(n-1).  Verifying the EXPONENT turns
+    #  a floor nobody could explain into a checked consequence of the model.
+    tr = got.get("truncation", [])
+    if len(tr) < 3:
+        fail.append("the probe reported no truncation series -- arm (e) "
+                    "cannot run, and a check that cannot run must not pass")
+    else:
+        expect = 100.0 ** (n - 1.0)          # per 100-fold cut in dMin
+        for a_, b_ in zip(tr, tr[1:]):
+            ratio = a_["err"] / b_["err"]
+            if abs(ratio - expect) / expect > 0.02:
+                fail.append(
+                    f"cutting dMin from {a_['frac']:g} to {b_['frac']:g} d63 "
+                    f"changed the d32 error by {ratio:.3g}x; the Rosin-Rammler "
+                    f"small-d density d^(n-1) predicts {expect:.3g}x.  The "
+                    "law that governs this floor has changed -- most likely "
+                    "the model's small-d density itself.")
+        else:
+            checked.append(f"the d32 floor obeys dMin^(n-1): measured "
+                           f"{tr[0]['err']/tr[1]['err']:.1f}x per 100-fold cut "
+                           f"against {expect:.1f}x predicted")
 
     if fail:
         print("check_size_distribution: FAILED")
