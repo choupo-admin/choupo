@@ -237,6 +237,10 @@ DOC_COUNT_ALLOW = [
      "SUBSET tally -- a real second home; generate it or drop it (AR5)"),
     ("docs/developerGuide.tex", "kept 9 of its 28 pair parameters",
      "the same one-defect measurement as CLAUDE.md"),
+    ("docs/developerGuide.tex", "67 component records carried",
+     "the same CLOSED migration size CLAUDE.md is allowed to state -- fixed "
+     "for ever, not a corpus tally that can drift.  The LIVE count of what "
+     "remains unreviewed is in check_review_status, which recounts it."),
 ]
 
 

@@ -736,15 +736,16 @@ tabulated on, and `h_formation(T, phase)` honours it.  **`h_pure_ig` /
 the record and integrate the ideal-gas Cp whatever it declares, which is every
 Gibbs reactor, `Reaction::Kp`, `ReactiveFlash` and `H_ig`/`S_ig`.  A
 `pureSolid` datum read there is wrong by a heat of sublimation, silently.
-Measured: 247 records, 160 with the block, 142 on the (correct) default, 18
-declaring a non-gas rung, **0 of those 18 carrying a gas Cp** — so the
-catalogue could not reach it, and the refusal it got instead said *"needs
-idealGasHeatCapacity block"*.  **The error message was advice that creates the
-bug.**  They refuse on the rung now, before the Cp check, quoting the record's
-own word and naming `h_formation` as the remedy; `ThermoPackage`'s nonvolatile
-guard gained `datumOnIdealGasRung()` beside `hasCpIdealGas()` (kept SEPARATE —
-folding in `hasGibbsData_` would have rerouted the 87 records with a gas Cp and
-no datum).  A generic remedy stapled to a specific diagnosis contradicts it:
+The catalogue was measured before the fix and the numbers live in the ADR
+(dated, one home): most records take the default rung and it is correct for
+every one of them, a small minority declare a non-gas rung, and **NONE of
+those carries a gas Cp** — so the catalogue could not reach the defect, and
+the refusal it got instead said *"needs idealGasHeatCapacity block"*.  **The
+error message was advice that creates the bug.**  They refuse on the rung now,
+before the Cp check, quoting the record's own word and naming `h_formation` as
+the remedy; `ThermoPackage`'s nonvolatile guard gained `datumOnIdealGasRung()`
+beside `hasCpIdealGas()` (kept SEPARATE — folding in `hasGibbsData_` would have
+rerouted every record that carries a gas Cp and no datum).  A generic remedy stapled to a specific diagnosis contradicts it:
 the energy-balance refusal appended *"add standardThermochemistry{ … phase; }"*
 to every gap — to a record that already has the block, naming a key that has
 never existed — and is now conditional on the generic branch.  NOT closed, and
