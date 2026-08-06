@@ -134,6 +134,50 @@ def main() -> int:
                 "elevation where the author declared none, which changes the "
                 "MODEL, not a constant.")
 
+    # ---- K_f: REFERENCE-ONLY, and it must stay that way or say otherwise --
+    #
+    #  The cryoscopic constant is parsed into `Component` and consumed by
+    #  NOTHING, while its twin K_b feeds every evaporator's BPE.  That is the
+    #  parsed-and-never-read shape closed twice in two days (PolynomialCp's
+    #  Tmin_/Tmax_; `reviewStatus` in a discarded banner).  It is not derived,
+    #  because the parallel formula K_f = R*Tf^2*M/dHfus needs a heat of fusion
+    #  that NO record in the tree declares -- and supplying one from memory
+    #  would put an uncited number where a curated one belongs.
+    #
+    #  So the value stays and its STATUS is declared.  This arm makes the
+    #  declaration enforceable: the day something consumes K_f, the gate fails
+    #  and the note must be rewritten rather than quietly outlived.  That is
+    #  the difference between a documented limitation and a forgotten one.
+    hdr = ROOT / "src/thermo/Component.H"
+    consumers = []
+    for src in ROOT.joinpath("src").rglob("*"):
+        if src.suffix not in (".cpp", ".H") or src == hdr:
+            continue
+        if re.search(r'\bK_f\s*\(\s*\)', src.read_text(errors="ignore")):
+            consumers.append(src.relative_to(ROOT).as_posix())
+    if consumers:
+        fail.append("K_f() is now READ by " + ", ".join(consumers)
+                    + " -- it is documented as reference-only in Component.H "
+                      "and water.dat, and that documentation is now false.  "
+                      "Either revert the consumer or rewrite both notes: a "
+                      "status nobody maintains is worse than none.")
+    #  CASE-INSENSITIVE: the header writes REFERENCE-ONLY in caps for
+    #  emphasis and the record writes it in lower case.  A gate that
+    #  keys on letter case is checking prose styling, not the claim.
+    if "reference-only" not in hdr.read_text().lower():
+        fail.append("Component.H no longer states that K_f is reference-only. "
+                    " A parsed field with no consumer and no declared status "
+                    "reads as a capability the engine does not have.")
+    if "reference-only" not in wt.lower():
+        fail.append("water.dat no longer marks K_f reference-only -- the "
+                    "record is where a curator looks first.")
+    if re.search(r'\bhasEbulioscopic\b', "".join(
+            q.read_text(errors="ignore") for q in ROOT.joinpath("src").rglob("*.H"))):
+        fail.append("hasEbulioscopic() is back.  It returned true when ONLY "
+                    "K_f was declared, so a caller asking 'does this solvent "
+                    "have ebullioscopic data?' would take the BPE path with "
+                    "K_b = 0.  Two constants, two questions.")
+
     if fail:
         print("check_ebullioscopic: FAILED")
         for f in fail:
@@ -144,7 +188,12 @@ def main() -> int:
           f"Tb/MW/HvapTb ({Kb:.6f} K.kg/mol, recomputed here, not pinned), the "
           f"derivation and its declared anchor {anchor} are both announced and "
           f"agree to {abs(Kb - anchor) / anchor * 100:.3f} %, and a case that "
-          "declares no K_b still gets no BPE")
+          "declares no K_b still gets no BPE.  K_f is REFERENCE-ONLY and "
+          "verified unconsumed: it cannot be derived (no record declares a "
+          "heat of fusion) and no unit operation models freezing-point "
+          "depression, so it is a curated datum awaiting a consumer -- not a "
+          "capability.  Wiring it up FAILS this gate until the note is "
+          "rewritten.")
     return 0
 
 

@@ -356,8 +356,40 @@ public:
     //  it is a cross-check, and the run announces the comparison.
     //  `K_b()` returns the derived value whenever the inputs exist.
     scalar K_b() const { return K_b_; }
+
+    //  K_f IS REFERENCE-ONLY, and saying so is the point (2026-08-06).
+    //
+    //  The molal FREEZING-POINT DEPRESSION constant is parsed, exposed here,
+    //  and consumed by NOTHING -- while its twin K_b feeds every evaporator's
+    //  BPE.  That is the parsed-and-never-read shape this project closed twice
+    //  in two days (PolynomialCp's Tmin_/Tmax_, assigned and never compared;
+    //  `reviewStatus`, sitting in a banner the parser discards).  A datum the
+    //  engine reads and never uses is a promise the record makes and the
+    //  engine breaks.
+    //
+    //  IT IS NOT DERIVED, and the reason is a measurement rather than a
+    //  preference.  The twin derivation would be
+    //
+    //        K_f = R * Tf^2 * M / dHfus(Tf)
+    //
+    //  exactly parallel to K_b -- but NO record in the tree declares a heat of
+    //  fusion.  `Hfus` is parsed only inside a `sublimation {}` block, and
+    //  water declares no such block.  Supplying 6.01 kJ/mol from memory would
+    //  put an uncited number where a curated one belongs, which is the one
+    //  thing this project refuses outright: a visible gap beats an invisible
+    //  falsehood.
+    //
+    //  SO THE VALUE STAYS AND ITS STATUS IS DECLARED.  It is a curated datum
+    //  waiting for a consumer, not a capability.  `check_ebullioscopic`
+    //  asserts that it remains unconsumed, so the day something DOES read it,
+    //  the gate fails and this comment must be rewritten rather than quietly
+    //  outlived.
+    //
+    //  THE CONDITION FOR PROMOTING IT: a record declaring `Hfus` with a
+    //  primary citation, and a unit operation that needs freezing-point
+    //  depression.  Both are absent; neither should be invented to make a
+    //  field look alive.
     scalar K_f() const { return K_f_; }
-    bool   hasEbulioscopic() const { return K_b_ > 0.0 || K_f_ > 0.0; }
 
     //  The declared anchor, 0 if the record declares none, and whether K_b
     //  above came from the derivation or fell back to the anchor.  Both are

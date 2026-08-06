@@ -67,10 +67,25 @@ liquidHeatCapacity
 //   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
 //   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
 // Reference: individual literature values -- primary re-citation pending (IST review).
+//
+// K_b IS AN ANCHOR, NOT THE ANSWER (2026-08-05).  The engine DERIVES it from
+// this record's own Tb / MW / HvapTb -- K_b = R*Tb^2*M/dHvap -- and uses the
+// value below only to validate that derivation, announcing the comparison.
+// The two had drifted 0.18 % apart, which fed straight into every BPE.
+//
+// K_f IS REFERENCE-ONLY (2026-08-06).  It is parsed and NOTHING CONSUMES IT:
+// no unit operation in Choupo models freezing-point depression, and the
+// parallel derivation K_f = R*Tf^2*M/dHfus cannot run because no record in
+// the tree declares a heat of fusion (`Hfus` is parsed only inside a
+// `sublimation {}` block, which water does not carry).  The number is kept
+// because it is right and curated; its STATUS is written down because a datum
+// the engine reads and never uses is otherwise indistinguishable from a
+// capability.  `check_ebullioscopic` asserts it stays unconsumed, so wiring it
+// up forces this note to be rewritten rather than quietly outlived.
 ebulioscopic
 {
     K_b   0.512;
-    K_f   1.853;
+    K_f   1.853;    // reference-only -- see the note above
 }
 
 // Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
