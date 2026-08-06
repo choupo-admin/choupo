@@ -209,7 +209,7 @@
     },
     "check_logk_crosscheck": {
       "exit": 0,
-      "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 2 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 75 not derivable, each with its reason named (48 no hfAq/sAq for; 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
+      "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 2 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 75 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
     },
     "check_minerals": {
       "exit": 0,

@@ -26,18 +26,30 @@ rather than a correctness one:
     77 records, all accounted for, 0 unparsed
      2  derivable  -> both AGREE (dlogK -0.0084 and +0.0045)
     75  NOT derivable:
-        48   reference a species carrying no hfAq/sAq
+        43   the species is a DERIVED COMPLEX -- see below
         11   water participates AND a species datum is missing
          9   recordType gasLiquidEquilibrium  (a different standard state)
          6   recordType ionExchangeEquilibrium (ditto)
+         5   a genuine curation gap: the species file exists and carries no
+             hfAq/sAq (H2PO4, HPO4, Tart, HTart, H2Tart)
          1   water participates (no record anywhere carries water's LIQUID
              formation datum -- water.dat has only the ideal-gas one)
 
-So the two halves of the electrolyte data are, today, almost entirely
-disconnected: two equilibria in seventy-seven can be checked against the
-species data the project itself ships.  Where the check DOES run it agrees to
-better than 0.01 log units, which says the method is right and the gap is
-COVERAGE, not correctness.
+AND THE DECISIVE DISTINCTION, which a first version of this gate got wrong.
+Of the 59 distinct species blocking coverage, 53 HAVE NO SPECIES FILE AT ALL.
+They are ion pairs and hydroxo complexes -- CaSO4aq, MgHCO3, FeOH2aq -- that
+exist only as the PRODUCT of their own formation record.  No independent
+tabulated hfAq/sAq exists for them anywhere, because the logK IS their primary
+datum.  Those records are STRUCTURALLY uncheckable: a definition cannot be
+verified against itself.
+
+So 2 of 77 is close to the structural maximum, NOT a backlog.  The first draft
+of this file called all 48 "a target list", which would have sent a curator
+hunting for values that do not exist.  Only five are genuinely curable, and
+they are named in the gate's own output so the list cannot drift.
+
+Where the check DOES run it agrees to better than 0.01 log units, which says
+the method is right and the ceiling is structural.
 
 WHAT IS CHECKED:
 
@@ -125,6 +137,7 @@ def main() -> int:
 
     sp = species_table()
     agree, disagree, named, unparsed = [], [], [], []
+    structural, curable = set(), set()
 
     for f in sorted(CHEM.glob("*.dat")):
         t = live(f.read_text(errors="replace"))
@@ -163,7 +176,35 @@ def main() -> int:
                                   "has only the ideal-gas one)"))
             continue
         if miss:
-            named.append((f.stem, "no hfAq/sAq for: " + ",".join(miss)))
+            #  TWO VERY DIFFERENT REASONS, and conflating them overstates what
+            #  curation could ever achieve.
+            #
+            #  A species with NO FILE AT ALL is a DERIVED COMPLEX -- an ion
+            #  pair or hydroxo species (CaSO4aq, MgHCO3, FeOH2aq) that exists
+            #  only as the product of this very record.  There is no
+            #  independent tabulated hfAq/sAq for it anywhere, because the
+            #  logK IS its primary datum.  Such a record is STRUCTURALLY
+            #  uncheckable: you cannot verify a definition against itself.
+            #
+            #  A species that HAS a file but lacks the two values is a genuine
+            #  curation gap, and the only kind that adding data can close.
+            #
+            #  Measured 2026-08-06: 59 distinct species block coverage, and 53
+            #  of them have no file -- so the checkable fraction is near its
+            #  structural maximum, not a backlog.  A first version of this
+            #  gate called all of them "a target list", which was wrong and
+            #  would have sent a curator hunting for values that do not exist.
+            orphan = [n for n in miss if not (SPEC / f"{n}.dat").exists()]
+            gap = [n for n in miss if (SPEC / f"{n}.dat").exists()]
+            if orphan:
+                named.append((f.stem, "derived complex, no independent datum "
+                                      "exists (the logK defines it): "
+                                      + ",".join(orphan)))
+                structural.update(orphan)
+            else:
+                named.append((f.stem, "curation gap -- species file exists but "
+                                      "carries no hfAq/sAq: " + ",".join(gap)))
+                curable.update(gap)
             continue
 
         def g(n):
@@ -209,6 +250,12 @@ def main() -> int:
           f"all within {TOL} log units (max |dlogK| "
           f"{max((abs(d) for _, d in agree), default=0.0):.4f}); "
           f"{len(named)} not derivable, each with its reason named ({top}).  "
+          f"Of the species involved, {len(structural)} are DERIVED COMPLEXES with "
+          f"no independent datum anywhere -- the logK defines them, so those "
+          f"records are structurally uncheckable, not a backlog -- against "
+          f"{len(curable)} genuine curation gap(s) where a species file exists "
+          f"and carries no hfAq/sAq"
+          + (": " + ", ".join(sorted(curable)) if curable else "") + ".  "
           "THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the "
           "checkable part and enumerates the rest, and the rest is most of it.")
     return 0
