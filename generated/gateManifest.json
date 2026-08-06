@@ -1,0 +1,383 @@
+{
+  "note": "DERIVED by running each gate and capturing the one-line claim it prints.  Never transcribed from a docstring -- a transcription is a second home and drifts.  Regenerate with bin/curate/gate_manifest.py.",
+  "captures": [
+    "claim (the gate's own OK line, verbatim)"
+  ],
+  "doesNotCapture": [
+    "positiveWitness",
+    "negativeWitness",
+    "acceptedDebt",
+    "retirementCondition",
+    "-- a gate's sabotages are not visible in its output, and inferring them would be guessing"
+  ],
+  "gates": {
+    "check_adsorption_tree": {
+      "exit": 0,
+      "claim": "checked 12 adsorbent identity file(s), 15 equilibrium record(s)"
+    },
+    "check_aq_disambiguation": {
+      "exit": 0,
+      "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases)"
+    },
+    "check_aqueous_navigation": {
+      "exit": 0,
+      "claim": "navigation gate: 52 species -> 34 families, 8 topics, 2 mediators; no runtime reader"
+    },
+    "check_asset_homes": {
+      "exit": 0,
+      "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs"
+    },
+    "check_basis_rank": {
+      "exit": 0,
+      "claim": "basis-rank gate: rank-deficient basis refused with (c-1)(a-1) = 1 named and a remedy; full-rank multi-master basis runs and announces rank 2"
+    },
+    "check_basis_spike": {
+      "exit": 0,
+      "claim": "check_basis_spike: OK -- elements+charge close on both bases, the block transports unchanged (origin+solvedAtT), is deletable, deterministic and canonically ordered, 5 refusals fire, a molecular case stays single-basis, and the intermediate stream is untouched by what the downstream unit is"
+    },
+    "check_both_bases": {
+      "exit": 0,
+      "claim": "ok   every liquid-bearing stream of crystalliser06 carries a speciation block"
+    },
+    "check_caveat_surface": {
+      "exit": 0,
+      "claim": "check_caveat_surface: OK -- 2 named extrapolation(s) listed (solidDryer01_sugar); all 4 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
+    },
+    "check_charge_balance": {
+      "exit": 0,
+      "claim": "charge balance: 23 imposed row(s) at <= 1e-12, 3 given-pH row(s) reported (max |q| 1.2e-06), 6 solid amount(s) > 0 on the precipitation path, over 8 cases"
+    },
+    "check_column_datum_downgrade": {
+      "exit": 0,
+      "claim": "check_column_datum_downgrade: OK -- both column solver paths announce the formation-datum downgrade with its consequence named (simultaneous via column05_reactive_methylacetate/aceticAcid; WangHenke via column01_benzene_toluene/benzene), and an intact case stays silent"
+    },
+    "check_composite_limits": {
+      "exit": 0,
+      "claim": "composite-limits gate: L1 (x_co->0 = aqueous electrolyte), L2 (I->0 = molecular NRTL), L3 (NRTL->0 = authorised ideal) all recovered on live solver runs"
+    },
+    "check_composite_reports": {
+      "exit": 0,
+      "claim": "composite-report gate: boundary roles + global balance real (closure ~100%)"
+    },
+    "check_cosmo_scrub": {
+      "exit": 0,
+      "claim": "cosmo-scrub gate: 584 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+    },
+    "check_cp_range_announced": {
+      "exit": 0,
+      "claim": "check_cp_range_announced: OK -- silent in-range control; extrapolation announced (solidDryer01_sugar, Trange 280-330).  An in-range case stays silent and an extrapolating one speaks, so the announcement is information rather than decoration.  The IMPOSSIBLE-window case is not checked here: it refuses now, and `check_validity_windows` owns that contract with its own engine probe -- one home, not two."
+    },
+    "check_ctrl_balance": {
+      "exit": 0,
+      "claim": "ctrl-balance gate: accepted-state ledger closes mass+atoms (washout, dn!=0 reaction, adaptive rtol-insensitive); claims honest (elements withheld on toys, energy refused without a datum and CLAIMED with one -- residual second-order in deltaT)"
+    },
+    "check_cycle_css": {
+      "exit": 0,
+      "claim": "check_cycle_css: OK -- a declared cycle reproduces the unrolled recipe KPI for KPI (structure, never physics); the CSS verdict is announced and measured, and UNAVAILABLE when the case declares no tolerance; 4 refusals fire named (step outside the period, when{} in a step, fractional repeat, zero tolerance)"
+    },
+    "check_debt_registry": {
+      "exit": 0,
+      "claim": "check_debt_registry: OK -- 91 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+    },
+    "check_decision_index": {
+      "exit": 0,
+      "claim": "check_decision_index: OK -- all 36 design record(s) appear in the index, and its stated counts (15 state a rejected alternative, 21 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+    },
+    "check_default_reports": {
+      "exit": 0,
+      "claim": "check_default_reports: OK -- a no-reports steady case writes the three balances by default with no ERROR/WARNING noise; a missing enthalpy datum is UNAVAILABLE (with its curation remedy and the REFUSED artefact) under the default and a hard ERROR when declared; `enabled false;` opts out per report, independently"
+    },
+    "check_doc_references": {
+      "exit": 0,
+      "claim": "check_doc_references: OK -- 235 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+    },
+    "check_doctrine": {
+      "exit": 0,
+      "claim": "check_doctrine: 338 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+    },
+    "check_drill_in": {
+      "exit": 0,
+      "claim": "ok   ChemicalPlantTutorial/DRYING (sector directly under the plant): 3 stream(s) flipped to INLET and each has state"
+    },
+    "check_duplicate_keys": {
+      "exit": 0,
+      "claim": "duplicate-key gate: every dict on disk declares each key once (standards, local, tutorials, design drafts)"
+    },
+    "check_ebullioscopic": {
+      "exit": 0,
+      "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE"
+    },
+    "check_economics_honesty": {
+      "exit": 0,
+      "claim": "check_economics_honesty: OK -- AS8/tsa (CO2 hidden).  Each undamaged case was silent first, so the checks tell a real announcement from one that always fires.  NOT PROBED, and named so the silence is not read as coverage: AS4/AS6/AS7 (need a shared-catalogue edit; not probed); AS8/psa (every case-local isotherm is also in the catalogue, so hiding one changes nothing)"
+    },
+    "check_edwards_model": {
+      "exit": 0,
+      "claim": "check_edwards_model: OK -- the model is reachable through the engine, a neutral solute gets a real gamma where Davies returns exactly 1, all 5 parameter rules are announced by name across 28 pairs, beta1 reproduces Eq 24 on every ion-ion pair and is zero on every molecular one, and the banner states this model's own scope"
+    },
+    "check_electrolyte_sidecars": {
+      "exit": 0,
+      "claim": "check_electrolyte_sidecars: OK -- constant/electrolyte/ is fully retired: every leg refuses by name with its canonical remedy (species -> constant/species/, reactions -> constant/chemistry/, restriction -> networkScope restricted), the tartrate case builds its 9-activated network canonically, and the converted seawater case ships no sidecar"
+    },
+    "check_element_balance": {
+      "exit": 0,
+      "claim": "element-balance gate: reactive boundary closes per atom; an impossible formula refuses ONLY the elemental claim"
+    },
+    "check_element_composition": {
+      "exit": 0,
+      "claim": "element-composition gate: 13 formulas decompose/refuse exactly as the grammar promises"
+    },
+    "check_empty_dirs": {
+      "exit": 0,
+      "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/"
+    },
+    "check_enrtl": {
+      "exit": 0,
+      "claim": "electrolyte/enrtl.dat ABSENT -- eNRTL kind consolidated. OK."
+    },
+    "check_equilibrium_families": {
+      "exit": 0,
+      "claim": "equilibrium-family gate: 3 convention profiles, 214 migrated parameterisations, 7 cross-convention diagnostics"
+    },
+    "check_estimates": {
+      "exit": 0,
+      "claim": "check_estimates: 40 structured Joback estimate(s) verified against the recipe"
+    },
+    "check_family_outliers": {
+      "exit": 0,
+      "claim": "family-outlier gate: 62 constants over 3 declared families"
+    },
+    "check_feed_switch": {
+      "exit": 0,
+      "claim": "check_feed_switch: OK -- A5 isothermal feed switch: positive witness runs + amendments ledgered (equal kmol both ways); 6 refusals fired and named (T/u/P swing, carrier, y-range, unknown component)"
+    },
+    "check_flash_complex": {
+      "exit": 0,
+      "claim": "ok   flashComplex runs (exit 0 -- a reactive non-convergence throws, so this is a statement about the joint Newton, not about not crashing)"
+    },
+    "check_flash_model": {
+      "exit": 0,
+      "claim": "flash model: 4 refusal(s) fire with their reasons, 2 case(s) exercise the declared branch, the reactive path announces no unit-level model; `phaseSet auto` reproduces the declared set AND the answer on 4/4 cases (VL, LL, VLLE)"
+    },
+    "check_forward_order": {
+      "exit": 0,
+      "claim": "check_forward_order: OK -- an undeclared forward order on a reactant is refused with its remedy in all 4 reactor kinds (cstr (ethanol), pfr (aceticAcid), batchReactor (aceticAcid), dynamicCSTR (compA)); an explicit `order 0;` is still honoured and a product with no order is still accepted"
+    },
+    "check_gases": {
+      "exit": 0,
+      "claim": "electrolyte/gases.dat ABSENT -- gasLiquid kind consolidated. OK."
+    },
+    "check_git_visibility": {
+      "exit": 0,
+      "claim": "git visibility: 68 source directories, each can hold a new file."
+    },
+    "check_glossary_bans": {
+      "exit": 0,
+      "claim": "check_glossary_bans: OK -- 40160 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+    },
+    "check_groups": {
+      "exit": 0,
+      "claim": "[check_groups] tree: /home/user/choupo/data/standards/components"
+    },
+    "check_guide_pdf_version": {
+      "exit": 0,
+      "claim": "check_guide_pdf_version: OK -- all 4 guide PDFs render 'Choupo-dev' on their title page (the artefact a reader opens, not just the source it compiles from)"
+    },
+    "check_h_surface": {
+      "exit": 0,
+      "claim": "check_h_surface: 3 authorized blend locus/loci:"
+    },
+    "check_ion_pins": {
+      "exit": 0,
+      "claim": "NaOH   ions-solid =   -44.50 kJ/mol   anchor =   -44.51   OK"
+    },
+    "check_ionexchange": {
+      "exit": 0,
+      "claim": "electrolyte/exchange.dat ABSENT -- ionExchange consolidated. OK."
+    },
+    "check_layering": {
+      "exit": 0,
+      "claim": "check_layering: OK -- 58 subsystem edge(s) measured across all 14 declared subsystems."
+    },
+    "check_legacy_schema": {
+      "exit": 0,
+      "claim": "legacy-schema gate: dev corpus fully canonical (standards chemistry + Henry pairs + sealed tutorial mirrors)"
+    },
+    "check_lithium_routes": {
+      "exit": 0,
+      "claim": "lithium gate: 5 tuned pairs via perNode (sector mirrored home); organic loaded (x_LiCl ok, water excluded)"
+    },
+    "check_minerals": {
+      "exit": 0,
+      "claim": "electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK."
+    },
+    "check_mixing": {
+      "exit": 0,
+      "claim": "electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK."
+    },
+    "check_no_unit_chemistry": {
+      "exit": 0,
+      "claim": "ok   engine refuses `activityModel` written at unit level"
+    },
+    "check_pcsaft_association": {
+      "exit": 0,
+      "claim": "check_pcsaft_association: OK -- engine X^D/X^A equal the independent closed form (1e-6), densities on the per-set anchors (water: the 2-site fit's own published trade-off), partial trio + unknown scheme refuse by name, non-associating corpus numerically untouched (1e-10)"
+    },
+    "check_phase_speciation": {
+      "exit": 0,
+      "claim": "ok   flash17: nested form, aqueous + organic, closes (worst benzene 1.9e-10 kmol/h)"
+    },
+    "check_pinch_p1": {
+      "exit": 0,
+      "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused"
+    },
+    "check_pinch_p2": {
+      "exit": 0,
+      "claim": "check_pinch_p2: OK -- 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target"
+    },
+    "check_pitzer_pairs": {
+      "exit": 0,
+      "claim": "electrolyte/pairs.dat ABSENT -- pairs kind consolidated. OK."
+    },
+    "check_pswing": {
+      "exit": 0,
+      "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with the energy residual at integration order (B), throttle/negative-P/feed-P refuse by name"
+    },
+    "check_record_form": {
+      "exit": 0,
+      "claim": "record-form gate: 91 record(s) still carry `role` -- the named migration (property-architecture 6b.3) has not run.  Counted, not failed: the field is live in the engine."
+    },
+    "check_record_self_consistency": {
+      "exit": 0,
+      "claim": "check_record_self_consistency: OK -- 3 record(s) ship a permeability set and every one declares its provenance (a fitted set must also name the case it was fitted against).  0 of 12 asset record(s) state header values this gate can compare, and every one agrees with what is shipped within 3x, except 0 pinned contradiction(s) awaiting a ruling.  The other 12 document no comparable number, so they are UNCHECKED, not clean.  The gate reports a disagreement; it does not choose which side is right."
+    },
+    "check_registry_scan": {
+      "exit": 0,
+      "claim": "ok   (a) two Henry files declaring one pair: refused, naming both files"
+    },
+    "check_resolver_coherence": {
+      "exit": 0,
+      "claim": "resolver-coherence gate: 12 aqueousSpeciation facts (4 sets, 8 none), bridges + chemistry coverage coherent; vapour reactions clean of aqueous records"
+    },
+    "check_restricted_network": {
+      "exit": 0,
+      "claim": "check_restricted_network: OK -- the declared restricted network announces itself and quotes its reason, labels its results (networkRestricted), and refuses the five dishonest shapes (no list / no reason / unknown record / two authorities / unreachable admission); a full-scope case stays silent"
+    },
+    "check_retired_names": {
+      "exit": 0,
+      "claim": "retired-name gate: component corpus flat, tutorial sources clean, src/ clean, aggregated snapshot speaks streamFaces, doc surfaces (guides incl. tutorialsGuide-* + docs/ai + the operation schemas the GUI and the generated reference both read) free of v1 grammar, bin/ writers + src/ messages emit v2 (only refusals name the old file)"
+    },
+    "check_review_status": {
+      "exit": 0,
+      "claim": "check_review_status: OK -- 67 standard record(s) declare `reviewStatus interim` in a PARSED field (none in a banner only); the sealed cavett01_recycle_train voices all 7 of the ones it mirrors, with the remedy named, and a case with no interim record stays silent"
+    },
+    "check_schema_coverage": {
+      "exit": 0,
+      "claim": "check_schema_coverage: OK -- every one of the 76 registered operations carries a schema (68 exercised by the corpus over 488 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+    },
+    "check_seal_drift": {
+      "exit": 0,
+      "claim": "SEALED CATALOGUE DRIFT SUMMARY"
+    },
+    "check_seal_schema": {
+      "exit": 0,
+      "claim": "check_seal_schema: OK -- canonicalization equivalences hold (unit spellings yes, dropped dims no), cosmetic drift stays verified + announced, moved values diverge/refuse by name, migration idempotent + fail-closed"
+    },
+    "check_seal_verdict": {
+      "exit": 0,
+      "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named"
+    },
+    "check_sealed_corpus": {
+      "exit": 0,
+      "claim": "sealed-corpus gate: 326 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+    },
+    "check_solute_basis": {
+      "exit": 0,
+      "claim": "check_solute_basis: ok  (single-salt models asked about their own salt; what they omit is named, sized, and only when it is there)"
+    },
+    "check_solverdict_lint": {
+      "exit": 0,
+      "claim": "check_solverdict_lint: OK -- an ignored system/solverDict is announced by name in batch, ctrl AND props, a transient timeStepping key is announced by the steady binary (runs continue; cost stated), and the clean cases stay silent"
+    },
+    "check_source_licence": {
+      "exit": 0,
+      "claim": "check_source_licence: OK -- 782 record(s) scanned; no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted."
+    },
+    "check_speciation": {
+      "exit": 0,
+      "claim": "electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK."
+    },
+    "check_species_citation": {
+      "exit": 0,
+      "claim": "check_species_citation: OK -- 36 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids."
+    },
+    "check_species_identity": {
+      "exit": 0,
+      "claim": "species identity gate: 52 species + 53 inline identities; single-home enforced (0 standards duplicates); 30 historical keys pinned, 0 new"
+    },
+    "check_species_ontology": {
+      "exit": 0,
+      "claim": "species ontology: 52 modelSpecies files, formula-typed, neutrals not mislabelled as ions"
+    },
+    "check_stage_identity": {
+      "exit": 0,
+      "claim": "check_stage_identity: OK -- a stage's own two products, recombined and re-flashed, come back as the same stage (T, x, y, V/F all within 1e-06 relative); the off-stage negative does not"
+    },
+    "check_std_includes": {
+      "exit": 0,
+      "claim": "std includes: 595 source files, each includes what it uses."
+    },
+    "check_stream_basis": {
+      "exit": 0,
+      "claim": "stream-basis gate: species basis == component basis; charge, network and basis refusals fire; the written speciation closes, refuses when broken, and is deletable without moving the answer"
+    },
+    "check_stream_faces": {
+      "exit": 0,
+      "claim": "stream-face gate: migrator + writer speak streamFaces/faces{} (no retired spelling)"
+    },
+    "check_temporal_utilities": {
+      "exit": 0,
+      "claim": "check_temporal_utilities: profile==ledger + peaks + impulse exclusion + 3 sabotages refused + unprofiled listing OK"
+    },
+    "check_thermal_bed": {
+      "exit": 0,
+      "claim": "check_thermal_bed: OK -- 3 positives (T1 anchors u_th/DT_ad bound, T1.5 hot-purge retire+declare, T2 wall NTU + Q_wall state row) and 9 refusals fire named (A3 pin, fixed stepping, missing/undocumented cp_s, adiabatic+wall contradiction, unknown word, wallCooled w/o block, zero h, feed.T while isothermal)"
+    },
+    "check_tray_chemistry": {
+      "exit": 0,
+      "claim": "check_tray_chemistry: OK -- every tray reports its own pH, ionic strength and species; charge closes per tray on an independent table; and ordering the trays by carbonate loading orders the free-ammonia fraction strictly the other way (the sour-water mechanism, measured rather than assumed)"
+    },
+    "check_tree_gate": {
+      "exit": 0,
+      "claim": "tree gate: retired homes stay retired (src clean, 10 top-level homes)"
+    },
+    "check_two_liquids": {
+      "exit": 0,
+      "claim": "second-liquid gate: three phases with chemistry; organic phase real, activities equal to machine zero, pre-check on the declared phases"
+    },
+    "check_type_coverage": {
+      "exit": 0,
+      "claim": "ok   unit operation: 49 names -> 40 classes, every class built by a case"
+    },
+    "check_typed_identifiers": {
+      "exit": 0,
+      "claim": "typed-identifier gate: no laundered crossings in unit ops; 6 bridge-unit case(s) declare their component->species mappings"
+    },
+    "check_unread_keys": {
+      "exit": 0,
+      "claim": "ok   a misspelt key is reported BY NAME, with the key the model looked for offered as the correction"
+    },
+    "check_v2_refusals": {
+      "exit": 0,
+      "claim": "v2 negative-parity gate: 16 refusals verified with their named messages"
+    },
+    "check_validity_windows": {
+      "exit": 0,
+      "claim": "check_validity_windows: OK -- 2928 declared window(s) across 3557 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+    },
+    "check_volatility_declaration": {
+      "exit": 0,
+      "claim": "check_volatility_declaration: OK -- the modelled/declared contradiction is announced with its own Tb and the run continues; absence stays UNKNOWN (never a claim); 3 refusals fire named (junk class, unfalsifiable claim, restated Tb)"
+    }
+  }
+}
