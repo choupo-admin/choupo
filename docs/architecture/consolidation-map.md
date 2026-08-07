@@ -83,6 +83,10 @@ flowchart TB
 | **Vapour-pressure validity window** (a declared `Trange` has a consumer) | CLAUDE.md §6 | ANNOUNCES, per I4 — two sentences branched on Tc, since above Tc no saturation curve exists to extrapolate | `check_psat_range` (both branches + the silent negative) | **2026-08-06** |
 | **logK cross-check** (chemistry vs species, the two halves compared) | the gate's own header | — (it is COVERAGE, not a refusal) | `check_logk_crosscheck`: 2 of 77 derivable and both agree; 43 structurally uncheckable, 5 curable, named | **2026-08-06** |
 | **Gas vs vapour** (`noncondensable` is the case's modelling class, Tc is the substance's physics) | [`../design/vapour-or-gas-is-a-state.md`](../design/vapour-or-gas-is-a-state.md) | `ReactiveVLE::solve` announces below the declared Tc | — **NO CASE FIRES IT**: all six cases using the flag run above Tc | **implemented, NOT witnessed** |
+| **Multi-rung grammar** (a record may declare a SECOND standard state; a duplicate of its own is two homes) | [`../design/reference-rung-refusal.md`](../design/reference-rung-refusal.md) | `Component::readFromDict` refuses a sub-block naming the rung `referenceState` already names | `check_reference_rung` (probe: second rung accepted, duplicate refused) | **2026-08-07** |
+| **The POTENTIAL is the interface, not the enthalpy** (`h_formation`/`s_formation`/`g_formation`; `h_pure_ig` delegates) | [`../design/reference-rung-refusal.md`](../design/reference-rung-refusal.md) | the rung guard sits AHEAD of the Cp guard on every ideal-gas surface | `check_reference_rung` (water gas→liquid: both legs visibly off CODATA in OPPOSITE directions, `g` closes far tighter than either) | **2026-08-07** |
+| **Ice is a PHASE of the solvent, not a special case** (`SolidPhase::fEffective`; freezing-point depression falls out of K = 1) | [`../design/ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | five named refusals, each carrying its remedy | `check_ice_freezing` (**4 sabotages**; the crossing, the slope's sign AND magnitude, and the purity claim no balance check could catch) — **NO CASE FIRES IT**: the witness tutorial waits for a published anchor | **implemented + gated, NOT witnessed** |
+| **K_f derived** (promoted by the condition its own header set: a cited `Hfus` and a consumer) | CLAUDE.md §6 | — (it is a derivation, not a refusal); the declared 1.853 becomes the anchor against 1.8603 | `check_ice_freezing`, incl. **both** negatives, synthesised because no catalogue record has either shape | **2026-08-07** |
 | `role` vocabulary | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **awaiting a decision** |
 | Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | to be implemented |
 
@@ -106,6 +110,45 @@ the aqueous bridge from `membrane01` does not move a single KPI — a
 solution-diffusion module prices the SALT, never the ions — and read literally
 that would say "the engine does not refuse".  The same removal in `membrane08`,
 whose fouling path crosses the bridge, is refused by name.
+
+## A status guard armed on one of two routes guards neither (2026-08-07)
+
+A variant of the same shape, found by promoting `K_f` from reference-only to
+derived.
+
+`K_f` was a parsed field with no consumer, and the project does not tolerate
+those silently: the status was **written down** and made enforceable.
+`check_ebullioscopic` failed the day anything called `K_f()`, so the note would
+have to be rewritten rather than quietly outlived.  That is the right instinct,
+and it still did not work.
+
+**Nothing ever called `K_f()`.**  The consumer that arrived — `SolidPhase`'s
+pure-crystal fugacity — reads the *inputs*, `subHfus()` and `subTripleT()`.  The
+promotion walked straight past the trip-wire, and the gate went on printing
+
+> *"K_f is REFERENCE-ONLY and verified unconsumed: it cannot be derived (no
+> record declares a heat of fusion)"*
+
+while a record declared one, the engine derived from it, and a phase consumed
+it.  Four clauses, all false, exit 0.  This is the `check_true_ions` pathology —
+a permanently-green gate — reached by a different road: not by losing its
+inputs, but by watching **one of the two doors into the room**.
+
+The remedy is not a second trip-wire on the other accessor; that only moves the
+question to the third door.  It is to put the check where the *coverage* is:
+`K_f`'s derivation, anchor and negatives now live in `check_ice_freezing`,
+beside the phase that consumes them, and what stays behind is a **handover**
+arm — the owning gate must exist and be in the suite.  Two things had to be
+sabotage-hardened before that arm meant anything: it first matched the owning
+gate's name in a *comment* rather than its invocation, and a companion arm that
+tried to police the prose notes failed three different ways (a single search
+missed the stale note; an every-occurrence search fired on the *corrected* ones,
+which recount the old status to explain the promotion; a proximity search
+survived a sabotage by reading the neighbouring `K_b` paragraph).
+
+**Prose staleness is therefore not gated, and the gate says so.**  A text search
+cannot tell a live claim from a recorded one, and a fourth tuning of a window
+size would have been a coverage claim rather than coverage.
 
 ## How to read the "case that fires it" column
 

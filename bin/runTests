@@ -1258,6 +1258,39 @@ PYEOF
     fi
     rm -f /tmp/refrung.$$
 
+    # ice-freezing gate (2026-08-07).  Vitor's instruction was that classical
+    # thermodynamics already handles a freezing solvent, so the architecture
+    # must express it NATURALLY rather than by a special case.  The whole
+    # implementation is one virtual -- SolidPhase::fEffective returns
+    # Psat(T)*exp(-dG_fus/RT) at the crystal's index and ZERO elsewhere -- and
+    # Kvec_phases already derives K from fEffective, so freezing-point
+    # depression falls out of K = 1 with no new code.  That elegance is
+    # exactly why it needs a gate: a model with no code of its own has no
+    # obvious place to look when it goes wrong.
+    # The probe recomputes every claim from water.dat's own Hfus/Tfus: the
+    # crystal crosses its liquid twin AT the melting point, the 1e-4 residual
+    # is the DECLARED triple-vs-melting approximation (pinned both ways, so it
+    # can be neither hidden nor exceeded), the slope has the right sign and
+    # magnitude, and a non-crystallising component's fugacity is exactly 0 --
+    # a non-zero one would let solute into the lattice and the concentrate's
+    # balance would be wrong WHILE STILL CLOSING.  It also owns K_f, promoted
+    # here from reference-only to derived.
+    # Sabotage-verified four times: drop the fusion factor; leak fugacity to
+    # non-crystallising components; flip the sign of dG_fus; derive K_f
+    # without a heat of fusion.  The fourth SURVIVED the first time and that
+    # is why the negatives are synthesised -- the fixture had been ethanol,
+    # which declares neither constant, so the arm was blocked by the anchor
+    # guard and never reached the one it claimed to test.
+    if "$ROOT/bin/curate/check_ice_freezing.py" > /tmp/icefreeze.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ice-freezing-gate" "$(head -1 /tmp/icefreeze.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ice_freezing.py)\n" "ice-freezing-gate"
+        cat /tmp/icefreeze.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/icefreeze.$$
+
     # psat-range gate (2026-08-06).  All 108 vaporPressure blocks declare a
     # Trange, range() is a pure virtual every model implements -- and nothing
     # in the tree had ever CALLED it.  Zero consumers, on the correlation

@@ -29,20 +29,36 @@ Class
     Choupo::SolidPhase
 
 Description
-    Stub for the solid phase.  Two modes are anticipated:
+    The solid phase.  Two modes:
 
         type solid;
         mode inert;            -- inert solid (filtration, separators);
                                   does NOT participate in equilibrium.
-        mode crystallizing;    -- solid in SLE with a liquid (e.g. salt
-                                  precipitation, sugar crystallisation);
-                                  participates in equilibrium via a pure-
-                                  component reference fugacity f_i^{0,S}(T). only declares the interface and parses the dictionary; both
-    modes throw at run-time.  Concrete implementations land 
-    (inert solids: filter, dryer, cyclone) and (crystallisation:
-    PSD-aware crystallizer).  The point is that the rest of the codebase
-    is already structured around the Phase abstraction, so no further
-    refactor will be needed when the time comes.
+                                  STILL A STUB: fEffective() refuses, because
+                                  an inert solid must be propagated as a phase
+                                  of the Stream while the flash SKIPS it, and
+                                  that skipping is not built.
+        mode crystallizing;    -- ONE component's pure crystal, in SLE with
+                                  the liquid.  IMPLEMENTED 2026-08-07.
+
+    The crystallising mode is the whole model, and it is one expression:
+
+        f_solid(T) = Psat(T) * exp(-dG_fus(T) / (R T))
+        dG_fus(T)  = dHfus * (1 - T/Tfus)
+
+    at the crystal's index, and ZERO at every other -- the purity claim.
+    Psat comes from the SAME components_[i].vp().Psat_Pa(T) call
+    LiquidPhase::fEffective uses, so the two phases cannot drift onto
+    different references, and Kvec_phases already derives K from fEffective.
+    Freezing-point depression therefore falls out of K = 1 as
+    ln a_w = -dG_fus/(R T) with no code of its own: nothing above this class
+    knows a solid is present.  That was the point -- the rest of the codebase
+    was already structured around the Phase abstraction.
+
+    Design record: docs/design/ice-as-a-solid-phase-of-the-solvent.md.
+    Gate: bin/curate/check_ice_freezing.py.  What is NOT modelled: solute
+    inclusion in the lattice, solid solutions (multi-component crystals), and
+    the inert path above.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

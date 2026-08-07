@@ -161,10 +161,14 @@ home.
    precondition for ice that this file claimed.
 3. **`h_pure_ig`/`s_pure_ig` delegate to the general form** — DONE 2026-08-07,
    bit-identical over 426 comparisons.
-4. **`SolidPhase::fEffective` for a pure crystal** — the remaining work, and
-   now visibly small.  The refusal it replaces already names the model wanted.
+4. **`SolidPhase::fEffective` for a pure crystal** — DONE 2026-08-07, and it
+   was as small as predicted: one expression, five named refusals, no new
+   concept.  Gated by `check_ice_freezing` (§6b), four sabotages.
 5. **A witness case**: freeze a brine, get pure ice and a speciated
    concentrate, check the freezing-point depression against tabulated data.
+   **STILL OPEN, deliberately.**  A tutorial whose answer cannot be checked
+   against a published anchor would freeze a wrong number into a golden, and
+   the anchor has to come first.
 
 Steps 2 and 3 stand on their own merits.  Step 4 is what was actually asked
 for, and it turns out not to have needed them.
@@ -218,6 +222,51 @@ refusal, but a worse one, naming a modelling gap where the reader's actual
 problem is a mislabelled rung.  The rung check comes first and the delegation
 after, or the unification costs a diagnostic.
 
+## 6b. The gate, and the four sabotages (2026-08-07)
+
+`bin/curate/check_ice_freezing.py`, driven by `_freezingProbe.cpp`.
+
+The model is one expression with no code of its own, which is precisely why it
+needs a gate: **a model with no obvious place to go wrong has no obvious place
+to look when it does.**  Every claim is recomputed in the gate from
+`water.dat`'s own `Hfus` and `triplePoint.T` — pinning a literal would be a
+second home for the numbers the promotion just removed.
+
+| Sabotage | Caught by |
+|---|---|
+| Drop the `exp(-dG_fus/RT)` factor (K = 1 everywhere) | the crossing, the exact-1 arm, and the slope arm — three independently |
+| Leak fugacity to non-crystallising components | the purity arm |
+| Flip the sign of `dG_fus` (freezes on heating) | the slope arm; the crossing arm sees the 2e-4 shift too |
+| Derive `K_f` with no heat of fusion | the anchor-without-`Hfus` negative — **only after it was fixed** |
+
+**The fourth survived the first time, and that is the finding worth keeping.**
+The negative had been *ethanol*, described in the gate's own prose as "declares
+a K_f and no heat of fusion".  Ethanol declares **neither** — and no catalogue
+record has that shape at all, water being the only record carrying a `K_f`.  So
+the arm was blocked by the *anchor* guard and never reached the `Hfus` guard it
+claimed to test.  Deleting that guard entirely left the gate green.
+
+*A negative whose subject does not exist tests nothing while reading as though
+it tests everything.*  Both negatives are now built inside the probe.  A record
+is never curated into existence to make a gate reachable — that would put an
+uncited number in the catalogue to serve a test, which is the inversion this
+project exists to avoid.
+
+Two further points the gate states rather than hides:
+
+* **The 1e-4 residual is pinned BOTH ways.**  K at the melting point is
+  0.999903, not 1.  That is exactly `exp(-ΔG_fus(273.15)/RT)` with `Tfus` = the
+  **triple** point, 0.01 K higher.  A tolerance loose enough to call it "1"
+  would hide a declared approximation; one tight enough to fail it would demand
+  a number the record does not claim.  So the gate fails if the residual
+  *vanishes* and fails if it *grows*.
+* **The liquid reference below 273 K is an extrapolation, by construction.**
+  `water.dat`'s Antoine range *starts* at the melting point, so every
+  sub-freezing point is outside the fit.  The engine raises its `[psat]`
+  advisory and the gate asserts that it does.  It does not judge the
+  extrapolation's accuracy — that would need sub-freezing `Psat` data the
+  catalogue does not carry, and is a named gap rather than a silent one.
+
 ## 7. What is NOT claimed, in any step
 
 * **No nucleation, no kinetics, no crystal habit.**  A thermodynamic ceiling,
@@ -236,6 +285,20 @@ after, or the unification costs a diagnostic.
 * **Drive freezing from `K_f`.**  Rejected: `K_f` is the dilute limit, so it is
   accurate only where the answer is uninteresting — and a freeze concentrate is
   by definition concentrated.  It stays the anchor, never the driver.
+
+  It did, however, become a *derived* anchor on the same day, by the condition
+  `Component.H` had set for itself one day earlier: "a record declaring `Hfus`
+  with a primary citation, and a unit operation that needs freezing-point
+  depression".  Both arrived together.  `K_f = R·Tf²·M/ΔHfus` gives 1.8603
+  against the declared 1.853 — 0.39 % apart, two independent primaries, a
+  finding and not an error, and the calorimetric datum is the one that wins.
+  A record with no `Hfus` keeps its declared `K_f` untouched: an absence must
+  go on meaning what it meant.
+
+  **The status guard that was supposed to force this rewrite did not fire.**
+  It watched the accessor `K_f()`; the consumer reads `subHfus()` and
+  `subTripleT()`.  See `consolidation-map.md`, *"A status guard armed on one of
+  two routes guards neither"*.
 * **A `freezingModel` selector.**  Rejected by the one-knob rule: the
   formulation already fixes the activity model, and ice is a phase, not a
   method.

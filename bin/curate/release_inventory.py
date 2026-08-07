@@ -254,6 +254,25 @@ def allowed(rel, line):
 
 QUOTE_SPAN = re.compile(r'"[^"]*"|`[^`]*`|\u201c[^\u201d]*\u201d')
 
+#  AN ISO DATE IS NOT A TALLY.  The inverted polarity above is right, and this
+#  is the one exception it has to make: `... SPECIAL CASE (2026-08-07) ...`
+#  puts a four-digit number immediately after a corpus noun, in parentheses,
+#  which is exactly the shape that walked through twice and is now caught.
+#  Here the digits are a YEAR.
+#
+#  This is a narrow exclusion and deliberately not a general one: it fires
+#  only on a FULL ISO date -- (19|20)\d\d-\d\d-\d\d -- because no corpus
+#  tally is ever written that way.  A bare `(2026)` is NOT excused, and
+#  neither is `(247)`.  Widening it to "any number that looks like a year"
+#  would excuse a count of 1998 records, which is the kind of narrowing-around
+#  this gate's own header warns against.  Sabotage-verified: `(247)`,
+#  `(2026)` and `247 cases` all still fire in the same position.
+ISO_DATE = re.compile(r'\b(?:19|20)\d\d-\d\d-\d\d\b')
+
+
+def date_spans(line):
+    return [(m.start(), m.end()) for m in ISO_DATE.finditer(line)]
+
 
 def quoted_spans(line):
     """(start, end) of every quoted run on the line -- straight, backtick and
@@ -289,6 +308,15 @@ def hand_carried_counts():
             m = DOC_COUNT_PAT.search(line)
             if any(a < m.start() < b for a, b in quoted_spans(line)):
                 continue
+            #  The digits the pattern latched onto sit inside an ISO date.
+            #  Matched on the DIGITS' position, not the match's start, because
+            #  the match begins at the noun and the year is several characters
+            #  later.
+            digits = re.search(r'[0-9]{2,5}', m.group(0))
+            if digits is not None:
+                at = m.start() + digits.start()
+                if any(a <= at < b for a, b in date_spans(line)):
+                    continue
             if allowed(rel, line):
                 seen_allow.add((rel, line))
                 continue

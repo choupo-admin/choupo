@@ -509,6 +509,22 @@ void Component::readFromDict(const DictPtr& d)
         subHsub_    = sb->lookupScalarOrDefault("Hsub", 0.0);
     }
 
+    //  K_f, by the condition its own header set: a cited Hfus and a consumer.
+    //  Same shape as K_b -- the derivation replaces a DECLARED value and
+    //  invents nothing where none was declared.
+    //
+    //  IT MUST SIT AFTER THE `sublimation {}` PARSE, and the first draft did
+    //  not: placed beside K_b's derivation it read subHfus_ = 0 and the
+    //  condition was never true, so the promotion would have been a no-op
+    //  that looked like working code.
+    K_f_anchor_ = K_f_;
+    if (K_f_anchor_ > 0.0 && subTripleT_ > 0.0 && MW_ > 0.0 && subHfus_ > 0.0)
+    {
+        K_f_ = constant::R * subTripleT_ * subTripleT_
+             * (MW_ / 1000.0) / subHfus_;
+        K_f_derived_ = true;
+    }
+
     if (d->found("sorption"))
     {
         auto sd = d->subDict("sorption");

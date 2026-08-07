@@ -134,43 +134,74 @@ def main() -> int:
                 "elevation where the author declared none, which changes the "
                 "MODEL, not a constant.")
 
-    # ---- K_f: REFERENCE-ONLY, and it must stay that way or say otherwise --
+    # ---- K_f: PROMOTED 2026-08-07, and this gate hands it over ------------
     #
-    #  The cryoscopic constant is parsed into `Component` and consumed by
-    #  NOTHING, while its twin K_b feeds every evaporator's BPE.  That is the
-    #  parsed-and-never-read shape closed twice in two days (PolynomialCp's
-    #  Tmin_/Tmax_; `reviewStatus` in a discarded banner).  It is not derived,
-    #  because the parallel formula K_f = R*Tf^2*M/dHfus needs a heat of fusion
-    #  that NO record in the tree declares -- and supplying one from memory
-    #  would put an uncited number where a curated one belongs.
+    #  K_f used to be REFERENCE-ONLY here, and this arm enforced that status:
+    #  it failed the day anything consumed K_f, so the note would be rewritten
+    #  rather than quietly outlived.  The condition Component.H set for
+    #  promoting it -- "a record declaring Hfus with a primary citation, and a
+    #  unit operation that needs freezing-point depression" -- was met when
+    #  water.dat gained an IAPWS `sublimation { Hfus }` and SolidPhase gained
+    #  its pure-crystal fugacity.  K_f is now DERIVED, exactly like K_b.
     #
-    #  So the value stays and its STATUS is declared.  This arm makes the
-    #  declaration enforceable: the day something consumes K_f, the gate fails
-    #  and the note must be rewritten rather than quietly outlived.  That is
-    #  the difference between a documented limitation and a forgotten one.
-    hdr = ROOT / "src/thermo/Component.H"
-    consumers = []
-    for src in ROOT.joinpath("src").rglob("*"):
-        if src.suffix not in (".cpp", ".H") or src == hdr:
-            continue
-        if re.search(r'\bK_f\s*\(\s*\)', src.read_text(errors="ignore")):
-            consumers.append(src.relative_to(ROOT).as_posix())
-    if consumers:
-        fail.append("K_f() is now READ by " + ", ".join(consumers)
-                    + " -- it is documented as reference-only in Component.H "
-                      "and water.dat, and that documentation is now false.  "
-                      "Either revert the consumer or rewrite both notes: a "
-                      "status nobody maintains is worse than none.")
-    #  CASE-INSENSITIVE: the header writes REFERENCE-ONLY in caps for
-    #  emphasis and the record writes it in lower case.  A gate that
-    #  keys on letter case is checking prose styling, not the claim.
-    if "reference-only" not in hdr.read_text().lower():
-        fail.append("Component.H no longer states that K_f is reference-only. "
-                    " A parsed field with no consumer and no declared status "
-                    "reads as a capability the engine does not have.")
-    if "reference-only" not in wt.lower():
-        fail.append("water.dat no longer marks K_f reference-only -- the "
-                    "record is where a curator looks first.")
+    #  THE TRIP-WIRE DID NOT FIRE, AND THAT IS THE LESSON WORTH KEEPING.
+    #  It was keyed on the ACCESSOR `K_f()`, and the promotion arrived through
+    #  the INPUTS -- SolidPhase reads subHfus()/subTripleT() directly and never
+    #  touches K_f().  So this gate went on printing "K_f is REFERENCE-ONLY and
+    #  verified unconsumed: it cannot be derived (no record declares a heat of
+    #  fusion)" while a record declared one, the engine derived from it, and a
+    #  phase consumed it.  Every clause false, exit 0.  A status trip-wire
+    #  keyed on ONE of two routes is a trip-wire that can be walked around
+    #  without touching it -- the same shape as check_true_ions, which reported
+    #  PASS on every run after both its inputs were deleted.
+    #
+    #  So K_f leaves this gate rather than being re-armed here.  Its home is
+    #  check_ice_freezing, beside the phase that consumes it, where the
+    #  derivation, its anchor and BOTH negatives are checked against
+    #  arithmetic recomputed from the record.  What stays here is the HANDOVER
+    #  itself: if that gate disappears or drops out of the suite, K_f silently
+    #  becomes unchecked by anybody, and this arm says so.
+    owner = ROOT / "bin/curate/check_ice_freezing.py"
+    if not owner.exists():
+        fail.append(
+            "check_ice_freezing.py is gone.  K_f's derivation, its declared "
+            "anchor and its two negatives moved there when K_f was promoted "
+            "on 2026-08-07; with that gate absent, nothing checks the "
+            "cryoscopic constant at all and this gate no longer covers it.")
+    else:
+        #  THE INVOCATION, not the name.  A bare substring search matched the
+        #  gate's own FAIL-branch message and its explanatory comment, so a
+        #  sabotage that renamed only the `if` line left this arm green -- the
+        #  gate was unwired and the check still said it was in the suite.
+        suite = (ROOT / "bin/runTests").read_text(errors="ignore")
+        if not re.search(r'if\s+"\$ROOT/bin/curate/check_ice_freezing\.py"',
+                         suite):
+            fail.append(
+                "check_ice_freezing.py exists but is NOT wired into "
+                "bin/runTests.  A gate nobody runs is not coverage, and K_f's "
+                "derivation is unchecked in every place that matters.")
+
+    #  PROSE STALENESS IS NOT GATED, and that is a decision rather than an
+    #  oversight.  Three attempts, each unsound in a different way:
+    #
+    #    1. Search "reference-only" ONCE.  water.dat's first mention of K_f is
+    #       in its sources header, twelve lines above the note that mattered,
+    #       so the arm read a clean window and passed over the stale claim.
+    #    2. Search EVERY occurrence and fail on any.  That fires on the
+    #       CORRECTED notes too: both recount the old status in order to
+    #       explain the promotion, and deleting that history to satisfy a grep
+    #       would be the gate rewriting the record rather than checking it.
+    #    3. Require the word "derived" near the phrase.  A sabotage -- replace
+    #       water.dat's whole paragraph with a bare "K_f IS REFERENCE-ONLY" --
+    #       SURVIVED, because K_b's own paragraph sits immediately above and
+    #       says "the engine DERIVES it".  Word proximity measures layout.
+    #
+    #  A text search cannot tell a LIVE claim from a RECORDED one.  Rather
+    #  than ship a fourth tuning of a window size and call it coverage, this
+    #  gate says plainly that it does not check the notes.  The notes WERE
+    #  rewritten in the same commit as the promotion; nothing here guarantees
+    #  the next one will be.  The guard belongs where the coverage is, not
+    #  where the prose is.
     if re.search(r'\bhasEbulioscopic\b', "".join(
             q.read_text(errors="ignore") for q in ROOT.joinpath("src").rglob("*.H"))):
         fail.append("hasEbulioscopic() is back.  It returned true when ONLY "
@@ -188,12 +219,22 @@ def main() -> int:
           f"Tb/MW/HvapTb ({Kb:.6f} K.kg/mol, recomputed here, not pinned), the "
           f"derivation and its declared anchor {anchor} are both announced and "
           f"agree to {abs(Kb - anchor) / anchor * 100:.3f} %, and a case that "
-          "declares no K_b still gets no BPE.  K_f is REFERENCE-ONLY and "
-          "verified unconsumed: it cannot be derived (no record declares a "
-          "heat of fusion) and no unit operation models freezing-point "
-          "depression, so it is a curated datum awaiting a consumer -- not a "
-          "capability.  Wiring it up FAILS this gate until the note is "
-          "rewritten.")
+          "declares no K_b still gets no BPE.  K_f is NO LONGER THIS GATE'S "
+          "SUBJECT: it was promoted from reference-only to derived on "
+          "2026-08-07 (water.dat gained an IAPWS heat of fusion and "
+          "SolidPhase became its consumer), and its derivation, anchor and "
+          "negatives are checked by check_ice_freezing, which this gate "
+          "verifies exists and is in the suite.  All that is asserted here is "
+          "the HANDOVER.  NOT CHECKED: whether Component.H's and water.dat's "
+          "K_f notes are still accurate -- they were rewritten with the "
+          "promotion, but a text search cannot tell a live claim from a "
+          "recorded one, and three attempts to gate it failed in three "
+          "different directions (missed a stale note; fired on a corrected "
+          "one; survived a sabotage by reading the K_b paragraph above).  "
+          "Worth recording: the old trip-wire did NOT fire on the promotion "
+          "-- it watched the accessor K_f(), and the consumer reads "
+          "subHfus()/subTripleT() instead, so this gate printed four false "
+          "clauses and exited 0.")
     return 0
 
 

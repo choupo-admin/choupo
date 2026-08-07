@@ -77,7 +77,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 95 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 96 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -89,7 +89,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 240 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 241 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
@@ -105,7 +105,7 @@
     },
     "check_ebullioscopic": {
       "exit": 0,
-      "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE.  K_f is REFERENCE-ONLY and verified unconsumed: it cannot be derived (no record declares a heat of fusion) and no unit operation models freezing-point depression, so it is a curated datum awaiting a consumer -- not a capability.  Wiring it up FAILS this gate until the note is rewritten."
+      "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE.  K_f is NO LONGER THIS GATE'S SUBJECT: it was promoted from reference-only to derived on 2026-08-07 (water.dat gained an IAPWS heat of fusion and SolidPhase became its consumer), and its derivation, anchor and negatives are checked by check_ice_freezing, which this gate verifies exists and is in the suite.  All that is asserted here is the HANDOVER.  NOT CHECKED: whether Component.H's and water.dat's K_f notes are still accurate -- they were rewritten with the promotion, but a text search cannot tell a live claim from a recorded one, and three attempts to gate it failed in three different directions (missed a stale note; fired on a corrected one; survived a sabotage by reading the K_b paragraph above).  Worth recording: the old trip-wire did NOT fire on the promotion -- it watched the accessor K_f(), and the consumer reads subHfus()/subTripleT() instead, so this gate printed four false clauses and exited 0."
     },
     "check_economics_honesty": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40192 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40194 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -186,6 +186,10 @@
     "check_h_surface": {
       "exit": 0,
       "claim": "check_h_surface: 3 authorized blend locus/loci:"
+    },
+    "check_ice_freezing": {
+      "exit": 0,
+      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, and the sub-freezing Psat extrapolation is announced.  NOT COVERED: no case runs here (no tutorial declares a crystallising solid yet, and the witness case waits for a published anchor); the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here."
     },
     "check_ion_pins": {
       "exit": 0,

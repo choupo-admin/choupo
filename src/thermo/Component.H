@@ -417,38 +417,51 @@ public:
     //  `K_b()` returns the derived value whenever the inputs exist.
     scalar K_b() const { return K_b_; }
 
-    //  K_f IS REFERENCE-ONLY, and saying so is the point (2026-08-06).
+    //  K_f IS DERIVED (2026-08-07), by the condition this comment set for
+    //  itself one day earlier.
     //
-    //  The molal FREEZING-POINT DEPRESSION constant is parsed, exposed here,
-    //  and consumed by NOTHING -- while its twin K_b feeds every evaporator's
-    //  BPE.  That is the parsed-and-never-read shape this project closed twice
-    //  in two days (PolynomialCp's Tmin_/Tmax_, assigned and never compared;
+    //  It was written on 2026-08-06 to say the opposite: the molal
+    //  FREEZING-POINT DEPRESSION constant was parsed, exposed here, and
+    //  consumed by NOTHING, while its twin K_b fed every evaporator's BPE --
+    //  the parsed-and-never-read shape this project closed twice in two days
+    //  (PolynomialCp's Tmin_/Tmax_, assigned and never compared;
     //  `reviewStatus`, sitting in a banner the parser discards).  A datum the
     //  engine reads and never uses is a promise the record makes and the
-    //  engine breaks.
+    //  engine breaks, so the STATUS was written down rather than the gap
+    //  papered over.
     //
-    //  IT IS NOT DERIVED, and the reason is a measurement rather than a
-    //  preference.  The twin derivation would be
+    //  THE PROMOTION HAPPENED BY THAT CONDITION, verbatim:
     //
     //        K_f = R * Tf^2 * M / dHfus(Tf)
     //
-    //  exactly parallel to K_b -- but NO record in the tree declares a heat of
-    //  fusion.  `Hfus` is parsed only inside a `sublimation {}` block, and
-    //  water declares no such block.  Supplying 6.01 kJ/mol from memory would
-    //  put an uncited number where a curated one belongs, which is the one
-    //  thing this project refuses outright: a visible gap beats an invisible
-    //  falsehood.
+    //  exactly parallel to K_b.  When the old note was written, NO record in
+    //  the tree declared a heat of fusion, and it said so and refused to
+    //  supply 6.01 kJ/mol from memory -- a visible gap beats an invisible
+    //  falsehood.  Its stated condition for promotion was "a record declaring
+    //  `Hfus` with a primary citation, and a unit operation that needs
+    //  freezing-point depression".  BOTH now hold: water.dat carries an
+    //  IAPWS-cited `sublimation { Hfus 6008.0; }` and
+    //  `triplePoint { T 273.16; }`, and SolidPhase's pure-crystal fugacity is
+    //  the consumer.
     //
-    //  SO THE VALUE STAYS AND ITS STATUS IS DECLARED.  It is a curated datum
-    //  waiting for a consumer, not a capability.  `check_ebullioscopic`
-    //  asserts that it remains unconsumed, so the day something DOES read it,
-    //  the gate fails and this comment must be rewritten rather than quietly
-    //  outlived.
+    //  So K_f follows K_b's shape: the DERIVATION is the value, the declared
+    //  number becomes the validating anchor, and both are announced.  For
+    //  water they differ by 0.39 % (1.8603 derived against 1.853 declared) --
+    //  two independent primaries disagreeing, which is a finding and not an
+    //  error, and the calorimetric datum is the one that wins.
     //
-    //  THE CONDITION FOR PROMOTING IT: a record declaring `Hfus` with a
-    //  primary citation, and a unit operation that needs freezing-point
-    //  depression.  Both are absent; neither should be invented to make a
-    //  field look alive.
+    //  A record with no Hfus keeps its declared K_f untouched: an absence
+    //  must go on meaning what it meant.
+    //
+    //  ONE THING THE PROMOTION EXPOSED, worth carrying forward.  The gate
+    //  guarding the old status was armed on THIS ACCESSOR -- it failed the
+    //  day anything called `K_f()`.  Nothing ever did: SolidPhase consumes
+    //  the INPUTS, `subHfus()` and `subTripleT()`, so the promotion walked
+    //  straight past the trip-wire and `check_ebullioscopic` went on printing
+    //  "K_f is REFERENCE-ONLY ... it cannot be derived" while the engine
+    //  derived it.  A status guard armed on one of two routes guards neither.
+    //  K_f's checks now live in `check_ice_freezing`, beside the phase that
+    //  consumes it.
     scalar K_f() const { return K_f_; }
 
     //  The declared anchor, 0 if the record declares none, and whether K_b
@@ -456,6 +469,8 @@ public:
     //  for the glass-box report: a student must be able to see which.
     scalar K_b_anchor()  const { return K_b_anchor_;  }
     bool   K_b_derived() const { return K_b_derived_; }
+    scalar K_f_anchor()  const { return K_f_anchor_;  }
+    bool   K_f_derived() const { return K_f_derived_; }
 
     // ---- Review status (AP2, 2026-08-05) --------------------------
     //  A record's REVIEW STATE is a fact the engine must act on, so it
@@ -608,6 +623,8 @@ private:
     scalar      Tb_      = 0.0;
     scalar      Hvap_Tb_ = 0.0;
     scalar      K_b_anchor_ = 0.0;   // declared value, kept as a cross-check
+    scalar      K_f_anchor_  = 0.0;  // ditto for the cryoscopic twin
+    bool        K_f_derived_ = false;
     bool        K_b_derived_ = false; // true when K_b_ came from R Tb^2 M / dHvap
     std::string reviewStatus_;        // interim | reviewed | (absent = unmarked)
     std::string reviewReason_;

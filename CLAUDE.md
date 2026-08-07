@@ -756,6 +756,44 @@ and it gates `gStd`.  Gate: `check_reference_rung` (probe-built defective
 record — it must never enter the catalogue).  Record:
 [`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
 
+**ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07) — and the whole model is one
+virtual.**  Vítor's instruction was that classical thermodynamics already
+handles a freezing solvent, so the class architecture must express it NATURALLY
+(the OpenFOAM posture) rather than by a grammar bolted onto the mineral path.
+It does: `Phase::fEffective` was already the ONE interface and `Kvec_phases`
+already DERIVES K from it, so `SolidPhase::fEffective` returning
+`Psat(T)·exp(−ΔG_fus/RT)` at the crystal's index — and ZERO at every other —
+is the entire implementation.  Freezing-point depression then falls out of
+K = 1 as `ln a_w = −ΔG_fus/(R T)`, derived and never declared; nothing above
+`SolidPhase` knows a solid is present.  `component <name>;` is REQUIRED (a
+pure crystal is ONE component's solid, and the zero at every other index is a
+CLAIM — solute inclusion is not modelled, which is exactly what makes the
+concentrate's balance exact); four more refusals name their remedy.  Psat comes
+from the SAME `components_[i].vp().Psat_Pa(T)` call `LiquidPhase` uses, so the
+two phases cannot drift onto different references.  `K_f` was PROMOTED from
+reference-only to derived by the condition `Component.H` set for itself (a
+cited `Hfus` and a consumer): 1.8603 derived against the declared 1.853, two
+independent primaries 0.39 % apart — a finding, not an error — while a record
+with no `Hfus` keeps its declared value, because an absence must go on meaning
+what it meant.  **Three things this slice paid for.**  (1) The pure-water
+crossing is 0.999903 and NOT 1: `Tfus` in the record is the TRIPLE point, and
+the gate pins the residual BOTH ways so a declared approximation can neither be
+hidden by a loose tolerance nor exceeded by real error.  (2) Below 273 K the
+liquid reference is an EXTRAPOLATED Antoine by construction — water's fit
+*starts* at the melting point — announced, never judged.  (3) **A status guard
+armed on one of two routes guards neither**: `check_ebullioscopic` failed the
+day anything called `K_f()`, the consumer reads `subHfus()`/`subTripleT()`
+instead, and the gate went on printing four false clauses at exit 0 (the
+`check_true_ions` shape by a different road).  `K_f` moved to the gate beside
+its consumer; what stays is a HANDOVER arm.  Prose staleness is deliberately
+NOT gated — three attempts failed three ways, and a text search cannot tell a
+live claim from a recorded one.  Gate: `check_ice_freezing` (4 sabotages; the
+fourth SURVIVED first time because its negative's subject did not exist in the
+catalogue, so both negatives are now synthesised in the probe).  NOT witnessed
+by a case: the freeze-concentration tutorial waits for a published anchor.
+Record:
+[`docs/design/ice-as-a-solid-phase-of-the-solvent.md`](docs/design/ice-as-a-solid-phase-of-the-solvent.md).
+
 **THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the
 machinery that enforces it got its own arity treatment.**
 
@@ -1553,7 +1591,11 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-08-06 — COHERENCE SWEEP after the structural slice, read
+*Last reviewed: 2026-08-07 — the ice slice landed (§6): the crystal is a
+Phase, `K_f` became a derived anchor, and a status guard that watched one of
+two routes was found to have been silently green through its own subject's
+promotion.  Nothing in §5's settled contracts moved.
+Earlier (2026-08-06): COHERENCE SWEEP after the structural slice, read
 end to end rather than patched paragraph by paragraph.  Verified in both
 directions: every `check_*` this file names exists and is wired into
 `bin/runTests` (the one apparent miss, `check_true_ions`, is named only as the
