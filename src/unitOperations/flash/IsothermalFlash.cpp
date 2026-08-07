@@ -190,11 +190,77 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     sVector x = in.z;
     sVector y = in.z;
 
-    // Identify which two phases the flash equilibrates.
-    std::size_t phaseAlpha = 0, phaseBeta = 1;
+    //  Identify which two phases the flash equilibrates.
+    //
+    //  BY TYPE, NEVER BY POSITION (2026-08-07).  This used to default to
+    //  `phaseAlpha = 0, phaseBeta = 1` -- the first two phases in DECLARATION
+    //  ORDER -- and only the LL and VLLE branches asked what type they had
+    //  got.  For the flat reader that was invisibly correct, because it builds
+    //  liquid then vapour itself.  The `gammaGamma` reader pushes whatever the
+    //  case declares, in the case's order, so
+    //
+    //      phases ( liquid solid vapour )
+    //
+    //  gave a VL flash that equilibrated the liquid against the SOLID and
+    //  reported it as the vapour.  It converges, it closes, it exits 0.  The
+    //  same class of defect as reading a datum on the wrong reference rung:
+    //  the arithmetic is fine and the answer is about something else.
+    //
+    //  Selecting by type is byte-identical for every package whose order was
+    //  already (liquid, vapour), which is the whole corpus -- the point is
+    //  that it now cannot stop being true without saying so.
+    const auto liqAll = thermo.phasesOfType("liquid");
+    const auto vapAll = thermo.phasesOfType("vapor");
+    const auto solAll = thermo.phasesOfType("solid");
+
+    //  A DECLARED PHASE THAT NO FLASH CONSUMES MUST NOT BE SILENTLY DROPPED.
+    //
+    //  UNREACHABLE TODAY, AND SAID SO RATHER THAN CLAIMED.  No case grammar
+    //  emits a phaseConfig of type `solid`: the flat reader builds liquid then
+    //  vapour itself, and the gammaGamma reader builds `liquidPhases` then an
+    //  optional `vapour`.  `solid` is registered in the Phase factory and
+    //  reached only by the gate's probe.  So this guard cannot fire from a
+    //  case as the tree stands -- it is the guard that makes ADDING that
+    //  grammar safe, not evidence that the grammar exists.  Anyone adding a
+    //  solid declaration should expect this refusal first, and should treat
+    //  reaching it as the design question it is, not as an obstacle.
+    //  check_ice_freezing reports this unreachability instead of counting it
+    //  as coverage -- the same posture as the no-vapour-pressure guard.
+    //  SolidPhase computes a real crystal/liquid K through Kvec_phases, but no
+    //  unit operation asks for one yet: the solid route reachable from a case
+    //  today is the CHEMISTRY one (chemistryDict `solidPhases` + the component's
+    //  own `solidPhases{}` dissolution K, resolved inside the speciation).  So a
+    //  case declaring a crystallising solid here would have had its declaration
+    //  quietly ignored and got a plain VLE back.  Refuse instead, and name both
+    //  routes -- an author who declared a solid meant to model one, and needs to
+    //  know which mechanism their system actually belongs to.
+    //  Contract: docs/architecture/solid-formation-routes.md.
+    if (!solAll.empty())
+        throw std::runtime_error(
+            "IsothermalFlash: this package declares a solid phase ('"
+            + thermo.phase(solAll[0]).name() + "'), and the flash has no solid "
+            "path -- it equilibrates a liquid against a vapour or a second "
+            "liquid, nothing else.  Running anyway would return a plain VLE "
+            "result computed as though the declared phase were absent.\n"
+            "  If the solid PRECIPITATES FROM SOLUTION (a mineral -- calcite, "
+            "gypsum), it is not a Phase here at all: declare it in "
+            "constant/chemistryDict `equilibria { solidPhases ( ... ); }` and "
+            "give the owning component its own `solidPhases{}` dissolution "
+            "equilibrium.  That route is live and flash19 exercises it.\n"
+            "  If the solid is a PURE CRYSTAL OF ONE COMPONENT freezing out of "
+            "its own liquid (ice), SolidPhase models it and its fugacity is "
+            "verified, but no unit operation consumes it yet.  That gap is "
+            "named in docs/architecture/solid-formation-routes.md; it is not "
+            "something to work around by removing this refusal.");
+
+    //  The VL default, now stated as what it means rather than as 0 and 1.
+    //  Where a type is absent the old index survives, so a package with an
+    //  unusual phase set behaves exactly as it did before this change.
+    std::size_t phaseAlpha = liqAll.empty() ? 0 : liqAll[0];
+    std::size_t phaseBeta  = vapAll.empty() ? 1 : vapAll[0];
     if (opts.phaseSet == PhaseSet::LL)
     {
-        auto liqs = thermo.phasesOfType("liquid");
+        const auto& liqs = liqAll;
         if (liqs.size() < 2)
             throw std::runtime_error("LL flash needs >= 2 liquid phases in "
                 "the thermoPackage (got " + std::to_string(liqs.size()) + ")");
@@ -477,8 +543,8 @@ IsothermalFlash::solveCore(const FlashInput&    in,
     // ============================================================
     if (opts.phaseSet == PhaseSet::VLLE)
     {
-        auto vaps = thermo.phasesOfType("vapor");
-        auto liqs = thermo.phasesOfType("liquid");
+        const auto& vaps = vapAll;
+        const auto& liqs = liqAll;
         if (vaps.empty())
             throw std::runtime_error("VLLE flash needs >= 1 vapor phase "
                 "in the thermoPackage (got 0)");
