@@ -81,7 +81,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 39 design record(s) appear in the index, and its stated counts (17 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 40 design record(s) appear in the index, and its stated counts (18 state a rejected alternative, 22 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40191 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40192 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -209,7 +209,7 @@
     },
     "check_logk_crosscheck": {
       "exit": 0,
-      "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 2 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 75 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
+      "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 3 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 74 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
     },
     "check_minerals": {
       "exit": 0,
@@ -261,7 +261,7 @@
     },
     "check_reference_rung": {
       "exit": 0,
-      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol"
+      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol"
     },
     "check_registry_scan": {
       "exit": 0,
