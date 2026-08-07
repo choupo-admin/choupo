@@ -84,6 +84,7 @@ WHAT IS NOT CHECKED, said plainly rather than implied:
 Exit 1 on an unparsed record, a disagreement beyond tolerance, or a fall in
 coverage.
 """
+import math
 import re
 import sys
 from collections import Counter
@@ -119,25 +120,43 @@ def live(text):
 
 
 def water_liquid_rung():
-    """water's LIQUID standard-state datum, or None.
+    """water's LIQUID standard state, DERIVED -- never stored.
 
-    The reaction records carry `nuWater`, so water is a REACTANT in twelve of
-    them -- and until 2026-08-07 no record anywhere carried its liquid datum,
-    only the ideal-gas one.  Reading the gas numbers here would be the exact
-    error this whole slice exists to stop: right number, wrong rung, wrong by
-    a heat of vaporisation.  So it reads the `pureLiquid {}` sub-block or
-    nothing at all.
+    `check_record_form` states the contract: ONE formation datum per
+    component, in its natural phase; the others derive through hvap/hfus.  It
+    caught a violation here on 2026-08-07 -- a `pureLiquid {}` block added to
+    water.dat -- and it was right to.  Measured against CODATA:
+
+        enthalpy  derived -286391 vs -285830   (-561 J/mol)
+        entropy   derived   68.06 vs   69.95   (-1.89 J/mol/K)
+        logK25    derived -13.9975 vs -13.9980 from the stored pair
+
+    The two errors CANCEL in G = H - TS to +2 J/mol, so the derived route
+    reproduces the stored one to 0.0005 log units.  The datum was never
+    missing; nothing had ever walked the path to it.
+
+    Enthalpy crosses by Watson Hvap.  Entropy CANNOT cross by Hvap/T -- at
+    298 K liquid water and its 1-bar vapour are not in equilibrium (Psat =
+    0.0317 bar) -- so it crosses by dS = (Hvap - dG_vap)/T with
+    dG_vap = -RT ln(Psat/P0).  That second leg is the piece the engine does
+    not yet implement; `h_formation` crosses enthalpy and there is no
+    `s_formation`.
     """
     f = ROOT / "data" / "standards" / "components" / "water.dat"
     if not f.exists():
         return None
     t = live(f.read_text(errors="replace"))
-    m = re.search(r"pureLiquid\s*\{(.*?)\}", t, re.S)
-    if not m:
+    def num(k):
+        m = re.search(k + r"\s+(-?[\d.eE+]+)", t, re.M)
+        return float(m.group(1)) if m else None
+    hg, sg = num(r"dHf_298"), num(r"s_298")
+    Tb, Tc, HvapTb = num(r"^Tb"), num(r"^Tc"), num(r"HvapTb")
+    if None in (hg, sg, Tb, Tc, HvapTb):
         return None
-    h = re.search(r"dHf_298\s+(-?[\d.eE+]+)", m.group(1))
-    s = re.search(r"s_298\s+(-?[\d.eE+]+)", m.group(1))
-    return (float(h.group(1)), float(s.group(1))) if h and s else None
+    Hvap = HvapTb * ((Tc - T) / (Tc - Tb)) ** 0.38          # Watson
+    PSAT_298_BAR = 0.0317                                    # water at 25 C
+    dG_vap = -R * T * math.log(PSAT_298_BAR)
+    return (hg - Hvap, sg - (Hvap - dG_vap) / T)
 
 
 def species_table():
