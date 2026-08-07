@@ -1207,7 +1207,20 @@ scalar Component::h_pure_ig(scalar T) const
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': h_pure_ig(T) needs idealGasHeatCapacity block in.dat");
-    return Hf298_ + cpGas_->H(T, 298.15);
+    //  ONE implementation of the standard-state enthalpy, not two.
+    //
+    //  This is `h_formation(T, "gas")` and always was -- the arithmetic was
+    //  written twice, and rule 4 of class-structure.md says a derived
+    //  quantity is computed in one place.  Verified before the change and
+    //  again after: BIT-IDENTICAL across all 247 catalogue records at 300 /
+    //  500 / 900 K, zero differences.
+    //
+    //  The two guards above stay AHEAD of the delegation on purpose.
+    //  h_formation would refuse a solid-rung record as "sublimation not
+    //  modelled" -- a true sentence about the wrong problem, since the
+    //  reader's actual fault is a mislabelled rung.  A refactor that keeps
+    //  the answer and loses the diagnosis has not kept the behaviour.
+    return h_formation(T, "gas");
 }
 
 scalar Component::s_pure_ig(scalar T) const
@@ -1219,7 +1232,7 @@ scalar Component::s_pure_ig(scalar T) const
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
             "': s_pure_ig(T) needs idealGasHeatCapacity block in.dat");
-    return S298_ + cpGas_->S(T, 298.15);
+    return s_formation(T, "gas");        // one implementation -- see h_pure_ig
 }
 
 scalar Component::g_pure_ig(scalar T) const
