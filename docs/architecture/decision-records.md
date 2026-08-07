@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 42 records already exist
+## 1. Why an index, when 43 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 42 design records, **18 state a rejected alternative and 24 do not** —
+- Of 43 design records, **18 state a rejected alternative and 25 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -122,6 +122,7 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 | [`audit-2026-08-05-arity.md`](audit-2026-08-05-arity.md) | STUDY | fleet audit, I1 |
 | [`audit-2026-08-05-silent-fallbacks.md`](audit-2026-08-05-silent-fallbacks.md) | STUDY | fleet audit, I5 |
 | [`audit-2026-08-05-provenance.md`](audit-2026-08-05-provenance.md) | STUDY | fleet audit, I3 |
+| [`dwsim-architecture-manual.md`](../design/dwsim-architecture-manual.md) | STUDY | a consultable dev manual: 5 patterns to copy, 6 to avoid, each measured from source.  Rejects DWSIM's presentation-first object base (6 of 9 mandatory members are GUI; `Calculate` is optional) |
 | [`dwsim-solids-study.md`](../design/dwsim-solids-study.md) | STUDY | ordered "if openfoam is not the way, try dwsim"; DWSIM has ONE solid mechanism (fusion K, chemistry entering via gamma) and corroborates Choupo's crystal equation; decides nothing |
 | [`openfoam-study.md`](../design/openfoam-study.md) | STUDY | ordered "go and learn first, no deliverable"; proposes a uniform `phases ( … )` list and one shared unknown-type refusal, decides neither |
 
@@ -176,7 +177,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**24 of 42 records state no rejected alternative.**  For a FORUM or a STUDY
+**25 of 43 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
