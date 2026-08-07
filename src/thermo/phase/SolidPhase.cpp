@@ -27,6 +27,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SolidPhase.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
+#include "core/Constants.H"
+#include <cmath>
 #include "thermo/Component.H"
 
 #include <stdexcept>
@@ -34,18 +37,55 @@ License
 namespace Choupo {
 
 SolidPhase::SolidPhase(const DictPtr& d,
-                       const std::vector<std::string>& /*names*/,
-                       const std::vector<Component>& /*comps*/)
-:   name_(d->lookupWordOrDefault("name", "solid"))
+                       const std::vector<std::string>& names,
+                       const std::vector<Component>& comps)
+:   name_(d->lookupWordOrDefault("name", "solid")),
+    components_(&comps)
 {
     const std::string m = d->lookupWordOrDefault("mode", "inert");
     if      (m == "inert")         mode_ = Mode::Inert;
     else if (m == "crystallizing") mode_ = Mode::Crystallizing;
     else throw std::runtime_error(
         "SolidPhase: unknown mode '" + m + "' (expected 'inert' or 'crystallizing')");
+
+    if (mode_ != Mode::Crystallizing) return;
+
+    //  WHICH component crystallises.  Refused rather than guessed: with one
+    //  component it would be inferable, but a rule that works only for the
+    //  simplest case teaches the wrong thing about what the phase IS.
+    if (!d->found("component"))
+        throw std::runtime_error("SolidPhase[crystallizing] '" + name_ +
+            "': declare `component <name>;` -- a pure crystal is ONE"
+            " component's solid, and the fugacity of every other component in"
+            " it is zero, which is a claim rather than a default.");
+    crystalName_ = d->lookupWord("component");
+    bool found = false;
+    for (std::size_t i = 0; i < names.size(); ++i)
+        if (names[i] == crystalName_) { crystalIdx_ = i; found = true; break; }
+    if (!found)
+        throw std::runtime_error("SolidPhase[crystallizing] '" + name_ +
+            "': component '" + crystalName_ + "' is not in this package.");
 }
 
-sVector SolidPhase::fEffective(scalar, scalar, const sVector&) const
+//  THE PURE-CRYSTAL REFERENCE FUGACITY -- the model the old refusal named.
+//
+//  For a pure solid in equilibrium with its own liquid,
+//
+//      f_solid(T) = f_pureLiquid(T) * exp(-dG_fus(T) / (R T))
+//      dG_fus(T)  = dHfus (1 - T/Tfus)
+//
+//  and f_pureLiquid is Psat(T) -- the SAME reference LiquidPhase::fEffective
+//  uses (gamma_i * Psat_i), reached by the same call, so the two phases cannot
+//  drift onto different references.
+//
+//  Everything else follows from Kvec_phases without a line of new code:
+//  K = f_solid/f_liquid = exp(-dG_fus/(RT)) / (gamma_w x_w), so K = 1 gives
+//
+//      ln a_w = -dG_fus(T) / (R T)
+//
+//  which IS freezing-point depression -- derived, not declared.  See
+//  docs/design/ice-as-a-solid-phase-of-the-solvent.md.
+sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
 {
     if (mode_ == Mode::Inert)
         throw std::runtime_error(
@@ -53,10 +93,35 @@ sVector SolidPhase::fEffective(scalar, scalar, const sVector&) const
             "phase equilibrium.  Inert solids are propagated as a phase of "
             "the Stream, but the flash must skip them.  This path will be "
             "implemented.");
-    throw std::runtime_error(
-        "SolidPhase[crystallizing] '" + name_ + "': SLE is scheduled "
-        "for.  The Phase abstraction is in place; only fEffective() "
-        "needs a concrete model (e.g. pure-crystal reference fugacity).");
+
+    const Component& c = (*components_)[crystalIdx_];
+
+    if (!(c.subHfus() > 0.0))
+        throw std::runtime_error("SolidPhase[crystallizing] '" + name_ +
+            "': component '" + crystalName_ + "' declares no enthalpy of"
+            " fusion.  Add `sublimation { Hfus <J/mol>; }` to its record,"
+            " with a citation -- the pure-crystal reference fugacity cannot"
+            " be formed without it, and no value may be assumed.");
+    if (!(c.subTripleT() > 0.0))
+        throw std::runtime_error("SolidPhase[crystallizing] '" + name_ +
+            "': component '" + crystalName_ + "' declares no fusion"
+            " temperature.  Add `triplePoint { T <K>; }` to its record."
+            "  (The triple point stands in for the melting point; they differ"
+            " by 0.01 K for water and the record says so.)");
+    if (!c.hasVaporPressure())
+        throw std::runtime_error("SolidPhase[crystallizing] '" + name_ +
+            "': component '" + crystalName_ + "' has no vapour-pressure"
+            " model, so the liquid reference fugacity this is measured"
+            " against does not exist.");
+
+    const scalar Tfus  = c.subTripleT();
+    const scalar dGfus = c.subHfus() * (1.0 - T / Tfus);
+
+    sVector f(x.size(), 0.0);     // every other component: zero, by the
+                                  // purity claim declared in the header
+    f[crystalIdx_] = c.vp().Psat_Pa(T)
+                   * std::exp(-dGfus / (constant::R * T));
+    return f;
 }
 
 } // namespace Choupo

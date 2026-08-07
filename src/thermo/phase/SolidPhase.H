@@ -48,6 +48,9 @@ Description
 #pragma once
 
 #include "Phase.H"
+#include "thermo/Component.H"
+
+#include <vector>
 
 namespace Choupo {
 
@@ -84,6 +87,24 @@ private:
     std::string name_;
     inline static const std::string typeName_ = "solid";
     Mode        mode_ = Mode::Inert;
+
+    //  ---- The PURE crystal (2026-08-07) ----------------------------------
+    //  A crystallising solid here is ONE component's pure crystal.  It must
+    //  say which -- `component water;` -- because the fugacity of every OTHER
+    //  component in it is zero, and zero is a CLAIM (they cannot enter the
+    //  lattice), not a default.  Solute inclusion is real and is NOT
+    //  modelled; that is exactly what makes the concentrate's balance exact.
+    std::string                   crystalName_;
+    std::size_t                   crystalIdx_ = 0;
+
+    //  BORROWED, and re-pointable for the same reason LiquidPhase is: a
+    //  default-moved ThermoPackage leaves its phases pointing at the emptied
+    //  SOURCE vector, which is a dangling read inside fEffective.
+    const std::vector<Component>* components_ = nullptr;
+
+public:
+    void rebindComponents(const std::vector<Component>* comps) override
+    { components_ = comps; }
 };
 
 } // namespace Choupo

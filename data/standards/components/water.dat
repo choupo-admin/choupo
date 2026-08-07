@@ -84,6 +84,44 @@ liquidHeatCapacity
 // the engine reads and never uses is otherwise indistinguishable from a
 // capability.  `check_ebullioscopic` asserts it stays unconsumed, so wiring it
 // up forces this note to be rewritten rather than quietly outlived.
+//  ---- FUSION: the datum the freezing model needs -------------------------
+//  Added 2026-08-07 for SolidPhase's pure-crystal reference fugacity.  Before
+//  this, ZERO of the 247 component records carried a fusion enthalpy -- the
+//  two apparent matches in the tree were both COMMENTS explaining its absence,
+//  including the one twelve lines above.
+//
+//  CROSS-CHECKED AGAINST THIS RECORD'S OWN K_f, which is the point of putting
+//  them in the same file:
+//
+//      K_f = R Tf^2 M / dHfus = 8.3145 x 273.15^2 x 0.0180153 / 6008
+//          = 1.8602        against the declared K_f 1.853
+//
+//  0.4 % apart.  Two independent primaries disagreeing is a FINDING, not an
+//  error, and the direction is settled by the K_b precedent (2026-08-05):
+//  dHfus is the MEASURED calorimetric datum and K_f is the DERIVED dilute
+//  limit, so K_f becomes the validating anchor and stops being reference-only.
+triplePoint
+{
+    T    273.16;        // K
+    P    611.657;       // Pa
+    //  source: IAPWS, the triple point of ordinary water; T is the pre-2019
+    //  defining fixed point of the kelvin and is still the accepted value.
+}
+
+sublimation
+{
+    Hfus   6008.0;      // J/mol at the melting point
+    //  source: IAPWS -- enthalpy of fusion of ice Ih, 333.4 J/g x 18.0153
+    //  g/mol.  Quoted as 6.01 kJ/mol in the usual handbooks.
+    //
+    //  NOTE THE 0.01 K APPROXIMATION, since nothing else will say it: the
+    //  fusion model uses `triplePoint.T` (273.16 K) as the melting
+    //  temperature, while fusion at 1 bar is at 273.15 K.  There is no Tfus
+    //  field in the grammar.  The error in dG_fus is under 0.3 J/mol and is
+    //  announced here rather than hidden; if a case ever needs better, the
+    //  remedy is a Tfus field, not a fudged Hfus.
+}
+
 ebulioscopic
 {
     K_b   0.512;
