@@ -125,6 +125,21 @@ public:
     //  declares no rung, because the default IS idealGas.
     bool datumOnIdealGasRung() const { return naturalPhase_ == "gas"; }
 
+    //  ---- THE RUNGS THIS RECORD KNOWS ------------------------------------
+    //  A substance has one standard state per phase and a record may declare
+    //  more than one.  Keyed by the DECLARED word (`idealGas` / `pureLiquid`
+    //  / `pureSolid`), so a caller asks for the rung it needs rather than
+    //  crossing to it and hoping.
+    //
+    //  This is what lets a potential become an INTERFACE rather than a
+    //  primitive (`ice-as-a-solid-phase-of-the-solvent.md` step 2): you
+    //  cannot ask a species for mu0 on a phase until its record can answer
+    //  for that phase.
+    struct Rung { scalar Hf298 = 0.0; scalar S298 = 0.0; };
+    bool hasRung(const std::string& r) const { return rungs_.count(r) != 0; }
+    const Rung& rung(const std::string& r) const;   // .cpp -- throws by name
+    std::vector<std::string> declaredRungs() const;  // .cpp
+
     //  The DISSOLUTION enthalpy of this substance's own solid phase [J/mol],
     //  read from its `solidPhases { <phase> { equilibrium { dH ... } } }` --
     //  the SAME curated number the speciation solver uses for K(T), never a
@@ -570,6 +585,7 @@ private:
     bool        hasGibbsData_ = false;
     std::string naturalPhase_ = "gas";   // gas | liquid | solid (default IG/NIST/JANAF)
     std::string refStateWord_ = "idealGas";   // the record's own word, verbatim
+    std::map<std::string, Rung> rungs_;   // every standard state the record declares
     std::map<std::string, scalar> dHdissByPhase_;   // phase -> dH [J/mol]
 
     // Solute support

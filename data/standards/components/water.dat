@@ -41,6 +41,25 @@ standardThermochemistry
 {
     dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
     s_298     188.834;         // J/(mol·K)  -- third-law absolute
+    referenceState idealGas;   // explicit: these two are the GAS-phase datum
+
+    //  THE LIQUID RUNG.  Water is the one substance in this tree that is
+    //  routinely needed on two standard states at once: the ideal-gas datum
+    //  above serves every combustion and Gibbs-reactor path, while EVERY
+    //  aqueous equilibrium in which water participates needs the liquid one.
+    //  Until this block existed there was no liquid datum on any record, and
+    //  deriving `water-dissociation` from the tree gave logK25 = -12.4986
+    //  against its stored -14 -- a factor of 32 in K, produced by reading the
+    //  right number off the wrong rung.  Twelve of the seventy-seven
+    //  chemistry records were blocked by exactly this.
+    pureLiquid
+    {
+        dHf_298  -285830.0;     // J/mol
+        s_298      69.95;       // J/(mol·K)  third-law absolute
+        source "CODATA Key Values for Thermodynamics (Cox, Wagman & Medvedev
+                1989) -- the same compilation this tree already cites for
+                CaCO3 and CaO.  Public domain / freely redistributable.";
+    }
 }
 vaporPressure
 {

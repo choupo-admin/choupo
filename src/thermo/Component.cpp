@@ -593,6 +593,45 @@ void Component::readFromDict(const DictPtr& d)
                 "': standardThermochemistry.referenceState must be idealGas / "
                 "pureLiquid / pureSolid, got '" + ref + "'");
         hasGibbsData_  = true;
+        rungs_[ref] = { Hf298_, S298_ };
+
+        //  ---- ADDITIONAL RUNGS (2026-08-07) ---------------------------------
+        //  A substance has ONE standard state per phase, and there is nothing
+        //  odd about a record knowing more than one of them.  Water is the
+        //  case that forced it: `water.dat` carries only the IDEAL-GAS datum,
+        //  so an aqueous reaction wanting the LIQUID one has nowhere to read
+        //  it, and `water-dissociation` derives logK25 -12.4986 against a
+        //  stored -14 -- a factor of 32 in K, from reading the right number
+        //  off the wrong rung.  Twelve of the seventy-seven chemistry records
+        //  are blocked by exactly that.
+        //
+        //  The grammar is the tree's existing named-sub-block shape (as
+        //  `solidPhases { calcite {...} }` and `cosmo { VT2005 {...} }` are),
+        //  so nothing already written changes:
+        //
+        //      standardThermochemistry
+        //      {
+        //          dHf_298  -241826.0;      // the DECLARED referenceState
+        //          s_298     188.834;
+        //          referenceState idealGas;
+        //          pureLiquid { dHf_298 -285830.0; s_298 69.95; source "..."; }
+        //      }
+        //
+        //  ARITY: each rung's pair has exactly ONE home.  A sub-block naming
+        //  the SAME rung as the top level is a second home for one fact and is
+        //  refused, rather than silently preferred in one direction.
+        for (const char* r : { "idealGas", "pureLiquid", "pureSolid" })
+        {
+            if (!g->found(r)) continue;
+            if (std::string(r) == ref)
+                throw std::runtime_error("Component '" + name_ +
+                    "': standardThermochemistry declares referenceState " + ref +
+                    " AND a `" + r + "{}` sub-block -- that is two homes for one"
+                    " datum.  Put the values at the top level (they are the"
+                    " declared rung) or change referenceState.");
+            auto rd = g->subDict(r);
+            rungs_[r] = { rd->lookupScalar("dHf_298"), rd->lookupScalar("s_298") };
+        }
     }
 
 
@@ -1032,6 +1071,32 @@ scalar Component::Hvap_pure(scalar T, scalar Tref) const
 //  exactly the silent error above.  Measured 2026-08-06: 18 catalogue records
 //  declare a non-gas rung and none carries a gas Cp, so the corpus is clean
 //  today by coincidence, not by construction.
+const Component::Rung& Component::rung(const std::string& r) const
+{
+    auto it = rungs_.find(r);
+    if (it == rungs_.end())
+    {
+        std::string have;
+        for (const auto& kv : rungs_) have += (have.empty() ? "" : ", ") + kv.first;
+        throw std::runtime_error("Component '" + name_ + "': no standard-state"
+            " datum on the '" + r + "' rung.  This record declares: "
+            + (have.empty() ? std::string("none") : have)
+            + ".  Add a `" + r + " { dHf_298 ...; s_298 ...; }` sub-block to"
+              " standardThermochemistry, with its citation -- do NOT reach for"
+              " another rung's numbers, which is wrong by a heat of phase"
+              " change.");
+    }
+    return it->second;
+}
+
+std::vector<std::string> Component::declaredRungs() const
+{
+    std::vector<std::string> out;
+    out.reserve(rungs_.size());
+    for (const auto& kv : rungs_) out.push_back(kv.first);
+    return out;
+}
+
 void Component::requireIdealGasRung(const char* fn) const
 {
     if (naturalPhase_ == "gas") return;

@@ -118,6 +118,28 @@ def live(text):
     return re.sub(r"//[^\n]*", " ", text)
 
 
+def water_liquid_rung():
+    """water's LIQUID standard-state datum, or None.
+
+    The reaction records carry `nuWater`, so water is a REACTANT in twelve of
+    them -- and until 2026-08-07 no record anywhere carried its liquid datum,
+    only the ideal-gas one.  Reading the gas numbers here would be the exact
+    error this whole slice exists to stop: right number, wrong rung, wrong by
+    a heat of vaporisation.  So it reads the `pureLiquid {}` sub-block or
+    nothing at all.
+    """
+    f = ROOT / "data" / "standards" / "components" / "water.dat"
+    if not f.exists():
+        return None
+    t = live(f.read_text(errors="replace"))
+    m = re.search(r"pureLiquid\s*\{(.*?)\}", t, re.S)
+    if not m:
+        return None
+    h = re.search(r"dHf_298\s+(-?[\d.eE+]+)", m.group(1))
+    s = re.search(r"s_298\s+(-?[\d.eE+]+)", m.group(1))
+    return (float(h.group(1)), float(s.group(1))) if h and s else None
+
+
 def species_table():
     out = {}
     for f in sorted(SPEC.glob("*.dat")):
@@ -136,6 +158,7 @@ def main() -> int:
         return 1
 
     sp = species_table()
+    wliq = water_liquid_rung()
     agree, disagree, named, unparsed = [], [], [], []
     structural, curable = set(), set()
 
@@ -170,7 +193,7 @@ def main() -> int:
             named.append((f.stem, "water participates AND species datum "
                                   "missing: " + ",".join(miss)))
             continue
-        if nuW != 0.0:
+        if nuW != 0.0 and wliq is None:
             named.append((f.stem, "water participates -- no record carries "
                                   "water's LIQUID formation datum (water.dat "
                                   "has only the ideal-gas one)"))
@@ -212,6 +235,10 @@ def main() -> int:
             return h - T * s
 
         dG = g(prod.group(1)) - sum(float(nu) * g(n) for n, nu in terms)
+        if nuW != 0.0:
+            #  Water is a reactant here, on its LIQUID rung -- the datum added
+            #  to water.dat on 2026-08-07.  Same sign convention as the ions.
+            dG -= nuW * (wliq[0] - T * wliq[1])
         d = -dG / (LN10 * R * T) - float(lk.group(1))
         (agree if abs(d) < TOL else disagree).append((f.stem, d))
 
