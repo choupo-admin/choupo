@@ -28,8 +28,10 @@ License
 
 #include "SolidPhase.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include <cmath>
+#include <iostream>
 #include "thermo/Component.H"
 
 #include <stdexcept>
@@ -116,6 +118,25 @@ sVector SolidPhase::fEffective(scalar T, scalar, const sVector& x) const
 
     const scalar Tfus  = c.subTripleT();
     const scalar dGfus = c.subHfus() * (1.0 - T / Tfus);
+
+    //  Say what is NOT in dGfus, once, and quote the distance it depends on.
+    //  A silently-omitted correction is indistinguishable from one nobody
+    //  knew about; this is the same posture the psat window takes.
+    if (!announcedNoDeltaCp_)
+    {
+        announcedNoDeltaCp_ = true;
+        const scalar gap = std::fabs(T - Tfus);
+        AdvisoryLog::instance().add(
+            "thermo", "info", "solid phase '" + name_ + "'",
+            "dG_fus uses dHfus alone; the liquid/solid heat-capacity term "
+            "-dCp/R*((T-Tfus)/T + ln(Tfus/T)) is NOT modelled.  dHfus is "
+            "measured at Tfus, so the approximation degrades with distance "
+            "from it -- here |T - Tfus| = " + std::to_string(gap) + " K.");
+        std::cerr << "  [solid] '" << name_ << "': dG_fus omits the "
+                     "liquid/solid heat-capacity term (dHfus is measured AT "
+                     "Tfus); |T - Tfus| = " << gap << " K here.  The crystal "
+                     "is exact at Tfus and degrades away from it.\n";
+    }
 
     sVector f(x.size(), 0.0);     // every other component: zero, by the
                                   // purity claim declared in the header

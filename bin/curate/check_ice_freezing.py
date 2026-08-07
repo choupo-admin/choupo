@@ -418,6 +418,23 @@ def main() -> int:
             "CONSTRUCTION -- if the engine has stopped saying so, a caveat "
             "that rides every freezing calculation has gone silent.")
 
+    #  THE NEGLECTED HEAT-CAPACITY TERM MUST BE ANNOUNCED (2026-08-07).
+    #  dHfus is measured AT Tfus, so dG_fus = dHfus(1 - T/Tfus) drops the
+    #  liquid/solid Cp difference and degrades away from the melting point.
+    #  DWSIM writes that term and disables it with a stated data reason
+    #  (docs/design/dwsim-solids-study.md §3); Choupo omits it too, and the
+    #  difference worth having is that Choupo says so at the point of use.
+    #  An unannounced approximation is indistinguishable from one nobody knew
+    #  about.
+    if "heat-capacity term" not in raw or "[solid]" not in raw:
+        fail.append(
+            "the crystal does not announce that dG_fus omits the liquid/solid "
+            "heat-capacity term.  The omission is legitimate and shared with "
+            "DWSIM, which disables the same term for a data reason -- but a "
+            "silent approximation is one no student can weigh, and this "
+            "project's own doctrine is that a declared approximation must be "
+            "visible where it is used.")
+
     if fail:
         print("check_ice_freezing: FAILED")
         for f in fail:
@@ -443,8 +460,10 @@ def main() -> int:
         "apart, two independent primaries, a finding and not an error), while "
         "a record with a K_f and no Hfus, one with an Hfus and no K_f, and "
         "ethanol (neither) all come back UNDERIVED and untouched.  Five "
-        "refusals fire by name, each carrying a remedy, and the sub-freezing "
-        "Psat extrapolation is announced.  NOT COVERED: no case runs here (no "
+        "refusals fire by name, each carrying a remedy, the sub-freezing "
+        "Psat extrapolation is announced, and the crystal states that its "
+        "dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; "
+        "DWSIM disables the same term for a data reason).  NOT COVERED: no case runs here (no "
         "tutorial declares a crystallising solid yet, and the witness case "
         "waits for a published anchor); the solute side belongs to the "
         "activity model and is not gated; "

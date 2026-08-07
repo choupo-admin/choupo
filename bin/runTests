@@ -1311,6 +1311,24 @@ PYEOF
     fi
     rm -f /tmp/gateself.$$
 
+    # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
+    # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
+    # preserves whatever error it was recorded with; Gibbs-Duhem is a
+    # constraint on any model derived from an excess Gibbs energy and needs no
+    # data at all.  Carries its own synthetic negative (gamma_2 := gamma_1 ->
+    # R = 1.0) and REFUSES a vacuous run, because gammas that do not vary with
+    # composition pass 0/0 -- which is how two probe bugs each produced a
+    # clean sheet of zeros during development.
+    if "$ROOT/bin/curate/check_gibbs_duhem.py" > /tmp/gibbsduhem.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gibbs-duhem-gate" "$(head -1 /tmp/gibbsduhem.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gibbs_duhem.py)\n" "gibbs-duhem-gate"
+        cat /tmp/gibbsduhem.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gibbsduhem.$$
+
     # psat-range gate (2026-08-06).  All 108 vaporPressure blocks declare a
     # Trange, range() is a pure virtual every model implements -- and nothing
     # in the tree had ever CALLED it.  Zero consumers, on the correlation

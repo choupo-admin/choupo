@@ -113,6 +113,19 @@ private:
     std::string                   crystalName_;
     std::size_t                   crystalIdx_ = 0;
 
+    //  THE NEGLECTED HEAT-CAPACITY TERM, announced once per phase.
+    //  dHfus is measured AT the melting point, so using it at T far from Tfus
+    //  drops  -dCp/R * ((T-Tfus)/T + ln(Tfus/T)),  with dCp = Cp_liquid -
+    //  Cp_solid.  DWSIM's NestedLoopsSLE writes that term and then sets it to
+    //  zero, saying why: "ignoring heat capacity difference due to issues with
+    //  DWSIM characterization" -- a DATA judgement, not a theory one, from a
+    //  project with a far larger compound database.  Choupo omits it too, and
+    //  the difference worth having is that Choupo SAYS SO at the point of use.
+    //  No threshold is invented: the error grows smoothly with |T - Tfus| and
+    //  there is no principled band, so the advisory reports the distance and
+    //  lets the reader judge.  Record: docs/design/dwsim-solids-study.md §3.
+    mutable bool announcedNoDeltaCp_ = false;
+
     //  BORROWED, and re-pointable for the same reason LiquidPhase is: a
     //  default-moved ThermoPackage leaves its phases pointing at the emptied
     //  SOURCE vector, which is a dangling read inside fEffective.
