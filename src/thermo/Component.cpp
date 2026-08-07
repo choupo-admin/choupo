@@ -1032,6 +1032,92 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
         + "', target='" + targetPhase + "'");
 }
 
+//  The ENTROPY crossing -- h_formation's missing companion.
+//
+//  Written 2026-08-07, after check_record_form caught a second formation
+//  datum being stored on water.dat.  The datum was not missing; the PATH to
+//  it was.  Enthalpy had a crossing (Watson Hvap) and entropy had none, so
+//  anything needing a standard-state POTENTIAL on a phase other than the
+//  record's own had nowhere to go.
+scalar Component::s_formation(scalar T_K, const std::string& targetPhase) const
+{
+    if (!hasGibbsData_)
+        throw std::runtime_error("Component '" + name_ +
+            "': s_formation needs a standardThermochemistry block");
+
+    auto sLiqIntegral = [&](scalar Tend) -> scalar {
+        if (!cpLiq_)
+            throw std::runtime_error("Component '" + name_ +
+                "': s_formation liquid leg needs liquidHeatCapacity");
+        return cpLiq_->S(Tend, 298.15);
+    };
+    auto sGasIntegral = [&](scalar Tend) -> scalar {
+        if (!cpGas_)
+            throw std::runtime_error("Component '" + name_ +
+                "': s_formation gas leg needs idealGasHeatCapacity");
+        return cpGas_->S(Tend, 298.15);
+    };
+    auto sSolidIntegral = [&](scalar Tend) -> scalar {
+        if (cpSolid_) return cpSolid_->S(Tend, 298.15);
+        return sLiqIntegral(Tend);            // the same legacy fallback as h
+    };
+
+    //  dS of vaporisation at 298 K.  NOT Hvap/T -- see the header: the two
+    //  standard states are not in equilibrium there, so the transfer does
+    //  work against the pressure difference and the Gibbs term must be
+    //  carried explicitly.
+    auto sVap298 = [&]() -> scalar {
+        if (!vp_)
+            throw std::runtime_error("Component '" + name_ +
+                "': s_formation crosses a vaporisation leg, which needs a"
+                " vaporPressure model -- a nonvolatile has no such leg and"
+                " must be asked for its own phase instead.");
+        const scalar Psat = vp().Psat_Pa(298.15);
+        if (!(Psat > 0.0))
+            throw std::runtime_error("Component '" + name_ +
+                "': non-positive Psat(298.15 K); the vaporisation entropy"
+                " leg cannot be taken.");
+        const scalar dG = -constant::R * 298.15
+                        * std::log(Psat / constant::Pref);
+        return (Hvap_latent(298.15) - dG) / 298.15;
+    };
+
+    if (naturalPhase_ == targetPhase)
+    {
+        if (naturalPhase_ == "gas")    return S298_ + sGasIntegral(T_K);
+        if (naturalPhase_ == "liquid") return S298_ + sLiqIntegral(T_K);
+        if (naturalPhase_ == "solid")  return S298_ + sSolidIntegral(T_K);
+    }
+    if (naturalPhase_ == "gas" && targetPhase == "liquid")
+        return S298_ - sVap298() + sLiqIntegral(T_K);
+    if (naturalPhase_ == "liquid" && targetPhase == "gas")
+        return S298_ + sVap298() + sGasIntegral(T_K);
+    //  Solid <-> liquid mirrors h_formation's DISSOLVED default: a solute
+    //  goes into solution rather than melting, so no fusion entropy is
+    //  released.  A record that opts in to real melting (a solid Cp AND a
+    //  fusion enthalpy) gets the fusion term at 298 K.
+    if (naturalPhase_ == "solid" && targetPhase == "liquid")
+    {
+        const bool melting = (cpSolid_ != nullptr) && (subHfus_ > 0.0);
+        return S298_ + (melting ? subHfus_ / 298.15 : 0.0) + sLiqIntegral(T_K);
+    }
+    if (naturalPhase_ == "liquid" && targetPhase == "solid")
+        return S298_ + sLiqIntegral(T_K);
+    if (naturalPhase_ == "solid" && targetPhase == "gas")
+        throw std::runtime_error("Component '" + name_ +
+            "': s_formation solid -> gas (sublimation) is not modelled, as in"
+            " h_formation");
+
+    throw std::runtime_error("Component '" + name_ +
+        "': s_formation unhandled phase combination natural='" + naturalPhase_
+        + "', target='" + targetPhase + "'");
+}
+
+scalar Component::g_formation(scalar T_K, const std::string& targetPhase) const
+{
+    return h_formation(T_K, targetPhase) - T_K * s_formation(T_K, targetPhase);
+}
+
 scalar Component::Hvap_latent(scalar T) const
 {
     if (Tc_ <= 0.0 || Tb_ <= 0.0 || Hvap_Tb_ <= 0.0)

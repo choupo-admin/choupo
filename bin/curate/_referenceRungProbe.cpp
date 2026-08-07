@@ -10,6 +10,7 @@
 #include "thermo/Component.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
+#include <cstdlib>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -237,6 +238,38 @@ int main()
         if (!first) std::cout << ",\n";
         first = false;
         std::cout << "  \"duplicateRungRefused\": {\"result\": \"" << esc << "\"}";
+    }
+
+    //  (9) THE POTENTIAL IS RIGHT WHERE BOTH ITS HALVES ARE WRONG.
+    //      Real water, from the catalogue, crossed gas -> liquid at 298.15 K.
+    //      The enthalpy leg (Watson Hvap) and the entropy leg
+    //      (dS = (Hvap - dG_vap)/T) are each visibly off CODATA, in OPPOSITE
+    //      directions, so g = h - T*s closes far tighter than either.  That
+    //      cancellation is not a coincidence to be tolerated -- it is why a
+    //      POTENTIAL is the right interface and a raw enthalpy is not.
+    {
+        const char* home = std::getenv("CHOUPO_HOME");
+        std::string path = std::string(home ? home : ".")
+                         + "/data/standards/components/water.dat";
+        std::string what = "ok";
+        double h = 0.0, s = 0.0, g = 0.0;
+        try
+        {
+            Component w;
+            w.readFromDict(Dictionary::fromFile(path));
+            h = w.h_formation(298.15, "liquid");
+            s = w.s_formation(298.15, "liquid");
+            g = w.g_formation(298.15, "liquid");
+        }
+        catch (const std::exception& e) { what = e.what(); }
+        std::string esc;
+        for (char ch : what) { if (ch=='"'||ch=='\\') { esc+='\\'; esc+=ch; }
+                               else if (ch=='\n') esc += "\\n"; else esc += ch; }
+        if (!first) std::cout << ",\n";
+        first = false;
+        std::cout << "  \"waterLiquidCrossing\": {\"result\": \"" << esc
+                  << "\", \"h\": " << h << ", \"s\": " << s
+                  << ", \"g\": " << g << "}";
     }
 
     //  (7) The REMEDY the refusal names must actually work.

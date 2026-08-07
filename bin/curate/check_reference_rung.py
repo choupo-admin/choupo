@@ -96,6 +96,7 @@ WHAT IS NOT CHECKED, deliberately:
 Exit 1 naming the arm that failed.
 """
 import json
+import os
 import math
 import subprocess
 import sys
@@ -130,7 +131,14 @@ def main() -> int:
               "build must not pass.\n" + err)
         return 1
 
-    r = subprocess.run([str(PROBE)], capture_output=True, text=True, timeout=300)
+    #  CHOUPO_HOME is passed EXPLICITLY: arm (i) reads the real water.dat,
+    #  and the probe falls back to "." when the variable is unset -- which
+    #  would silently resolve against whatever directory the caller
+    #  happened to be in.  A gate must not depend on the environment it is
+    #  invoked from.
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    r = subprocess.run([str(PROBE)], capture_output=True, text=True,
+                       timeout=300, env=env)
     if r.returncode != 0:
         print(f"check_reference_rung: FAILED\n  probe exited {r.returncode}\n"
               + r.stdout[-800:] + r.stderr[-800:])
@@ -253,6 +261,40 @@ def main() -> int:
     else:
         checked.append("a duplicate of the declared rung is refused as two "
                        "homes for one datum")
+
+    # ---- (i) the POTENTIAL closes where its halves do not -----------------
+    #  CODATA for liquid water: dHf -285830 J/mol, S 69.95 J/(mol K), so
+    #  g = -306685.6 J/mol.  The engine reaches the same liquid state from the
+    #  GAS datum by Watson Hvap and dS = (Hvap - dG_vap)/T -- an independent
+    #  route, so this is a real comparison and not a restatement.
+    CODATA_H, CODATA_S = -285830.0, 69.95
+    CODATA_G = CODATA_H - 298.15 * CODATA_S
+    w = got.get("waterLiquidCrossing", {})
+    if w.get("result") != "ok":
+        fail.append("(i) water could not be crossed gas -> liquid: "
+                    + str(w.get("result")))
+    else:
+        dh, ds, dg = w["h"] - CODATA_H, w["s"] - CODATA_S, w["g"] - CODATA_G
+        if abs(dg) > 50.0:
+            fail.append(f"(i) the derived liquid POTENTIAL is {dg:+.1f} J/mol "
+                        f"from CODATA (h {dh:+.0f}, s {ds:+.2f}).  The two legs "
+                        "are each approximate and their errors cancel in "
+                        "g = h - T*s; a potential this far out means the "
+                        "cancellation broke, and the usual cause is the "
+                        "vaporisation entropy being taken as Hvap/T -- which "
+                        "holds only at equilibrium, and water at 298 K is not "
+                        "(Psat = 0.0317 bar).")
+        elif abs(dh) < 100.0:
+            fail.append(f"(i) the enthalpy leg is only {dh:+.1f} J/mol from "
+                        "CODATA, which is TOO GOOD for a Watson extrapolation "
+                        "-- this arm exists to prove the potential closes "
+                        "DESPITE approximate legs, and if the leg became exact "
+                        "the arm is no longer testing what it claims.")
+        else:
+            checked.append(f"the derived liquid potential closes to {dg:+.2f} "
+                           f"J/mol of CODATA while its legs are {dh:+.0f} J/mol "
+                           f"and {ds:+.2f} J/(mol K) out -- the cancellation "
+                           "that makes a potential the right interface")
 
     # ---- (g) the named remedy actually works ------------------------------
     for key, target in (("formationSolidToSolid", "solid"),

@@ -160,6 +160,38 @@ public:
     // the .dat does not provide.
     scalar h_formation(scalar T_K, const std::string& targetPhase) const;
 
+    //  The ABSOLUTE entropy at (T, targetPhase), the companion h_formation
+    //  never had -- and its absence is what made water's liquid datum look
+    //  MISSING when it was merely underived (2026-08-07).
+    //
+    //  THE VAPORISATION LEG IS NOT Hvap/T, and that is the whole difficulty.
+    //  dS = Hvap/Tb holds only where the two states are in EQUILIBRIUM.  At
+    //  298 K liquid water and its 1-bar standard-state vapour are not: the
+    //  vapour pressure is 0.0317 bar, so the transfer does work against the
+    //  pressure difference and
+    //
+    //      dG_vap(T) = -R T ln(Psat(T)/P0)
+    //      dS_vap(T) = (Hvap(T) - dG_vap(T)) / T
+    //
+    //  Measured on water at 298.15 K: this route gives S(liquid) = 68.06
+    //  against CODATA's 69.95, while the enthalpy leg gives -286391 against
+    //  -285830.  Both are off, and they are off in OPPOSITE directions, so
+    //  G = H - TS closes to +2 J/mol and the derived logK25 of
+    //  water-dissociation lands at -13.9975 against -13.9980 from the stored
+    //  pair.  A potential is what the equilibrium needs, and the potential is
+    //  right even where its two halves are each a little wrong.
+    //
+    //  Throws when the path needs a Psat the record does not carry -- a
+    //  nonvolatile has no vaporisation leg and must not be given a fabricated
+    //  one.
+    scalar s_formation(scalar T_K, const std::string& targetPhase) const;
+
+    //  g = h - T*s on ONE phase, from ONE datum: OpenFOAM's identity, and the
+    //  surface a standard-state potential must present before it can be an
+    //  interface rather than a primitive.  See
+    //  docs/design/ice-as-a-solid-phase-of-the-solvent.md.
+    scalar g_formation(scalar T_K, const std::string& targetPhase) const;
+
     // ---- Pure-component models ---------------------------------------------
     bool   hasVaporPressure() const { return vp_ != nullptr; }
     const VaporPressureModel& vp() const;              // .cpp (fwd-decl model)
