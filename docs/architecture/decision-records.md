@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 40 records already exist
+## 1. Why an index, when 41 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 40 design records, **18 state a rejected alternative and 22 do not** —
+- Of 41 design records, **18 state a rejected alternative and 23 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -122,6 +122,7 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 | [`audit-2026-08-05-arity.md`](audit-2026-08-05-arity.md) | STUDY | fleet audit, I1 |
 | [`audit-2026-08-05-silent-fallbacks.md`](audit-2026-08-05-silent-fallbacks.md) | STUDY | fleet audit, I5 |
 | [`audit-2026-08-05-provenance.md`](audit-2026-08-05-provenance.md) | STUDY | fleet audit, I3 |
+| [`openfoam-study.md`](../design/openfoam-study.md) | STUDY | ordered "go and learn first, no deliverable"; proposes a uniform `phases ( … )` list and one shared unknown-type refusal, decides neither |
 
 ### Historical
 
@@ -174,7 +175,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**22 of 40 records state no rejected alternative.**  For a FORUM or a STUDY
+**23 of 41 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
