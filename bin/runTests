@@ -1291,6 +1291,26 @@ PYEOF
     fi
     rm -f /tmp/icefreeze.$$
 
+    # gate self-test (2026-08-07, ordered by Vitor).  The meta-gate: it
+    # sabotages the tree on purpose and demands the covered gates exit
+    # non-zero, then restores every byte.  Aimed at the failure mode found
+    # twice this week -- check_true_ions reporting PASS after both its inputs
+    # were deleted, and check_ebullioscopic's K_f arm printing a sentence in
+    # which every clause was false.  Neither is visible by reading the gate;
+    # the only question that separates a live gate from a dead one is whether
+    # it still fails when it should, and that has to be asked empirically.
+    # It prints its own coverage (a small minority of the gates) and names the
+    # rest UNAUDITED rather than letting a green line imply the whole set.
+    if "$ROOT/bin/curate/check_gate_selftest.py" > /tmp/gateself.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "gate-selftest" "$(head -1 /tmp/gateself.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_gate_selftest.py)\n" "gate-selftest"
+        cat /tmp/gateself.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gateself.$$
+
     # psat-range gate (2026-08-06).  All 108 vaporPressure blocks declare a
     # Trange, range() is a pure virtual every model implements -- and nothing
     # in the tree had ever CALLED it.  Zero consumers, on the correlation
