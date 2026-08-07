@@ -147,6 +147,55 @@ Step 4 is what was asked for; steps 2 and 3 are why it is not a two-line
 change.  Doing 4 alone would mean a seventh special case, which is the thing
 this record exists to refuse.
 
+## 6a. Step 3, measured before touching a solver (2026-08-07)
+
+The six sites were read rather than assumed, and the result is smaller than
+the count suggested.  **Four of the six ask a potential for exactly one
+thing** — `g_pure_ig(T)`, the standard-state Gibbs energy:
+
+| site | what it asks a potential for |
+|---|---|
+| `gibbsMethod/ElementPotential` | `g_pure_ig` |
+| `gibbsMethod/DirectMin` | `g_pure_ig`, then an activity |
+| `gibbsMethod/ReactiveFlash` | `g_pure_ig`, then an activity |
+| `thermo/reaction/Reaction::Kp` | `g_pure_ig` |
+
+That IS `gStd(T)` under another name.  The gap was never that these four
+disagreed about what a potential is — it is that `g_pure_ig` is **ideal-gas
+only**, so nothing could ask for the same quantity on a liquid or a solid.
+`g_formation(T, phase)` is that quantity generalised, and the two agree
+exactly where they overlap:
+
+> **All 247 catalogue records, at 300 / 500 / 900 K: `g_formation(T,"gas")` is
+> BIT-IDENTICAL to `g_pure_ig(T)`.  Zero differences.**
+
+So unifying them is a rename with a proof, not a numerical risk — and once
+unified, four of the six sites are already consumers of the general
+interface, pinned to the gas phase by their callers rather than by their own
+code.
+
+**The two that remain are the real work**, and they are the two that do not
+ask for a potential at all:
+
+* **`Kvec` / `stageK`** — K is the PRIMITIVE here, computed per model rather
+  than derived from `exp(-dG0/RT)`.
+* **the mineral saturation index** in `SpeciationSolver` — driven by a curated
+  `logK`, which `check_logk_crosscheck` can now derive for exactly 3 of 77
+  records, 43 of them being ion pairs whose `logK` IS their primary datum.
+
+That second bullet is the honest limit on how far step 3 can go: for a derived
+complex there is no independent potential to derive K from, so its curated
+`logK` remains the primary. **Unifying does not mean deleting the curated
+route; it means the DERIVED route exists beside it and they can be compared.**
+
+**One refusal must survive the unification.**  `g_pure_ig` refuses a non-gas
+rung, by name, with the remedy — that is `check_reference_rung`'s arms (c)-(f).
+Delegating naively to `g_formation(T,"gas")` would instead attempt a
+solid -> gas crossing and refuse as *"sublimation not modelled"*: still a
+refusal, but a worse one, naming a modelling gap where the reader's actual
+problem is a mislabelled rung.  The rung check comes first and the delegation
+after, or the unification costs a diagnostic.
+
 ## 7. What is NOT claimed, in any step
 
 * **No nucleation, no kinetics, no crystal habit.**  A thermodynamic ceiling,
