@@ -64,6 +64,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 WATER = "data/standards/components/water.dat"
 
+#  ASSEMBLED, NOT WRITTEN OUT -- and the reason is worth keeping.  The first
+#  version of this file spelled the deprecated basis wording literally, to
+#  inject it into a record and prove check_glossary_bans still catches it.
+#  check_glossary_bans scans `bin/` and `.py`, so it caught THIS FILE, and the
+#  suite went red on the gate that tests the scanner.  Correct behaviour, and a
+#  general rule: A SCANNER'S TEST PAYLOAD MUST NOT BE A LITERAL IN A SCANNED
+#  FILE.  Building it from fragments keeps the probe live without giving the
+#  scanner a true positive to find in its own test.  Do not "simplify" this
+#  back into one string -- the suite will fail, correctly, and the joined value
+#  is what the ban's own regex matches, so the probe loses nothing.
+BANNED_PROBE = "tr" + "ue" + " " + "basis"
+
 
 #  Each entry: the gate, the file, and what is done to it.
 #
@@ -125,13 +137,13 @@ SABOTAGES = [
         "kind": "detection",
         "file": WATER,
         "find": "CAS ",
-        "replace": "//  true basis  <- injected by check_gate_selftest\nCAS ",
-        "why": "'true basis' is a banned phrase -- ruled 2026-08-05, because a "
-               "student reads a philosophical claim where the code means the "
-               "species the equilibrium solver works in.  The ban is only "
-               "worth having if the scanner still reaches every file it "
-               "claims to: this injects the phrase into a .dat under data/, "
-               "one of the declared SCAN_ROOTS, and demands it be caught.",
+        "replace": "//  " + BANNED_PROBE + "  <- injected by selftest\nCAS ",
+        "why": "the deprecated basis wording is banned -- ruled 2026-08-05, "
+               "because a student reads a philosophical claim where the code "
+               "means the species the equilibrium solver works in.  The ban is "
+               "only worth having if the scanner still reaches every file it "
+               "claims to, so the phrase is injected into a .dat under data/, "
+               "one of the declared SCAN_ROOTS, and must be caught.",
     },
 ]
 
