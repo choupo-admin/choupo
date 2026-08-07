@@ -30,23 +30,54 @@ freedom.  A K-value, a solubility product, a saturation index and a reaction
 equilibrium constant are not four physical laws; they are four *algebraic
 rearrangements* of one.
 
-## 2. What Choupo does instead, measured
+## 2. What Choupo does instead — CORRECTED 2026-08-07
 
-| equilibrium | how it is solved | where |
+> **The first version of this section was wrong, and the error was mine
+> twice over: I asserted an architecture without reading it, then built two
+> slices on the assertion.**  It claimed Choupo writes the one condition SIX
+> times with "K-values as the PRIMITIVE".  That is not what the code does.
+
+`ThermoPackage::Kvec_phases(alpha, beta, T, P, xA, xB)` is:
+
+```cpp
+const auto fA = phases_.at(alpha)->fEffective(T, P, xA);
+const auto fB = phases_.at(beta) ->fEffective(T, P, xB);
+for (i) K[i] = fA[i] / fB[i];
+```
+
+K is **derived from a per-phase interface function**, not computed per model.
+And `Phase::fEffective(T, P, x)` is a pure virtual on a `Phase` base with a
+factory and three implementations — `VaporPhase`, `LiquidPhase`, `SolidPhase`.
+
+**Fugacity equality IS chemical-potential equality** — the same condition in
+different coordinates, since mu_i = mu_i^0 + RT ln(f_i/f_i^0).  So the
+architecture is ALREADY in the shape section 3 describes: one interface
+function per phase, the equilibrium relation derived from it once.  What I
+called six competing solvers is one condition with several *consumers*, plus
+genuinely separate machinery for chemical equilibrium (the Gibbs paths) and
+for minerals (curated logK).
+
+**And the solid slot already exists, with the gap named in its own refusal:**
+
+```
+SolidPhase[crystallizing]: SLE is scheduled for.  The Phase abstraction is
+in place; only fEffective() needs a concrete model (e.g. pure-crystal
+reference fugacity).
+```
+
+Someone built the abstraction and left a labelled hole exactly where ice
+goes.  The honest conclusion is the opposite of what this file first said:
+**the architecture Vítor asked for is largely already there, and ice is one
+unimplemented virtual rather than a new spine.**
+
+What the corrected picture leaves genuinely separate:
+
+| condition | how it is solved | is it the same interface? |
 |---|---|---|
-| vapour–liquid | **K-values as the PRIMITIVE**, computed per model | `Kvec`, `stageK` |
-| chemical | Gibbs minimisation | `gibbsMethod/ElementPotential`, `DirectMin` |
-| reactive flash | a third Gibbs path | `gibbsMethod/ReactiveFlash` |
-| liquid–liquid | direct Gibbs minimisation, Nelder–Mead | `IsothermalFlash` LL |
-| mineral–liquid | saturation index on a curated logK | `SpeciationSolver` |
-| **ice–water** | **does not exist** | — |
-
-Six ways of writing one condition, and the seventh could not be added without
-inventing a seventh.  That is the actual finding, and it was already named as a
-known gap in [`../architecture/class-structure.md`](../architecture/class-structure.md)
-rule 4 — *"phase equilibrium and chemical equilibrium are classically one
-condition applied to different degrees of freedom; here they are separate
-solvers."*  Ice is the case that makes the cost of that concrete.
+| vapour–liquid, liquid–liquid | `Kvec_phases` from `fEffective` | **yes** |
+| solid–liquid (crystallising) | `SolidPhase::fEffective` **throws** | yes, once implemented |
+| chemical equilibrium | Gibbs minimisation, three entry points | no — a different surface |
+| mineral–liquid | saturation index on a curated logK | no — and see section 6a |
 
 ## 3. What OpenFOAM does, and why it can add a model for free
 
@@ -69,47 +100,37 @@ cannot.**  The difference is not effort; it is that one project made the
 standard-state potential an interface and the other made the K-value a
 primitive.
 
-## 4. The design: make the potential the interface
+## 4. The design — corrected: IMPLEMENT the interface, do not invent it
+
+The original text here proposed making the potential an interface, as though
+none existed.  One does.  The design is therefore much smaller:
+
+**Ice is a `SolidPhase` in crystallising mode whose `fEffective` returns the
+pure-crystal reference fugacity.**  Nothing else.
+
+For a pure solid in equilibrium with its own liquid,
 
 ```
-             mu_i^0(T, P, phase)        <- ONE interface function per species
-                      |                    per phase.  Everything below derives.
-      +---------------+---------------+
-      |               |               |
-   K = exp(-dG0/RT)   a_i = ...    SI = log a - log K
-   (VLE, chemical)    (activity)   (solid-liquid, INCLUDING ice)
+f_solid(T) = f_pureLiquid(T) * exp(-dG_fus(T) / (R T)),
+dG_fus(T)  = dHfus (1 - T/Tfus)
 ```
 
-A phase is then a **named carrier of standard potentials**, exactly as
-OpenFOAM's `thermophysicalProperties.<phase>` is, and the equality condition is
-written once.
-
-**Ice under this design requires no new grammar at all.**  It is water, in a
-solid phase, whose standard potential differs from the liquid's by the Gibbs
-energy of fusion:
+and the existing `Kvec_phases` then does the rest.  Work it through for water
+in a solution: `LiquidPhase::fEffective` gives `gamma_w x_w f_pureLiq`, so
+K = 1 at equilibrium yields
 
 ```
-mu_ice^0(T) = mu_water,liq^0(T) - dG_fus(T),    dG_fus(T) = dHfus (1 - T/Tfus)
+gamma_w x_w = exp(-dG_fus/(R T))      i.e.   ln a_w = -dG_fus(T)/(R T)
 ```
 
-Apply the one condition, `mu_ice^0(T) = mu_water^0(T) + RT ln a_w`, and it
-rearranges to
+— which is freezing-point depression, **derived**, exactly as section 1
+claimed, but now falling out of machinery that already exists rather than
+machinery to be built.  The activity a_w is already computed on the same
+virial parameters as the gammas (`AqueousActivity.H`, the HMW osmotic sum),
+and the freeze concentrate speciates through the path it always used.
 
-```
-ln a_w = -dG_fus(T) / (R T)
-```
-
-which is freezing-point depression — **derived, not declared**.  No
-`fusionReaction`, no ice-specific branch, no new selector.  The same
-rearrangement with a solute's potentials gives the solubility product; with a
-vapour's, the K-value.
-
-**And the water activity is already there**, on the same virial parameters as
-the gammas: `AqueousActivity.H` computes `ln a_w = −(M_w/1000) φ Σ m_i`, with
-PitzerHMW returning the rigorous HMW osmotic sum — already used for the gypsum
-a_w² leg and the boiling-point elevation.  The freeze concentrate then
-speciates through the machinery that already exists, because nothing about it
-is special either.
+That is what "in a natural way, like OpenFOAM" means here, and the measure of
+it is that ice adds **one function and no new concept**.
 
 ## 5. The validating anchor
 
@@ -126,26 +147,27 @@ record's own inputs, keep any declared value as a validating anchor the run
 announces.  A quantity with no reader acquires one without becoming a second
 home.
 
-## 6. The order of work, and why it is this order
-
-This is a programme, and pretending otherwise would be the dishonest part.
+## 6. The order of work — re-scoped after the correction
 
 1. **`referenceState` declared and honoured** — DONE 2026-08-06
-   (`check_reference_rung`).  A potential cannot be an interface until a datum
-   can say which standard state it is on.
-2. **`gStd(T)` as an interface function**, in OpenFOAM's shape, with `K`
-   derived from it.  Blocked on ONE thing, already measured: `water.dat`
-   carries only the ideal-gas datum, so 12 of the 77 chemistry records cannot
-   close (`water-dissociation` derives logK25 −12.4986 against a stored −14;
-   with the liquid datum, −13.998).  **That is the next slice.**
-3. **The equality condition written once**, with the existing solvers
-   re-expressed against it — K-values become derived, not primitive.
-4. **Ice, and freeze concentration, as a consequence** — a phase declaring a
-   potential, with no code of its own.
+   (`check_reference_rung`).
+2. **`s_formation` / `g_formation`, so a potential can be asked for on ANY
+   phase from ONE datum** — DONE 2026-08-07.  Validated on water: the
+   potential closes to +0.23 J/mol of CODATA while its legs are -572 J/mol
+   and -1.92 J/(mol K) out.
+   **Still worth having after the correction**, and this is not
+   self-justification: the Gibbs paths and `Reaction::Kp` DO consume a
+   potential directly, and they were ideal-gas-only.  It just was not the
+   precondition for ice that this file claimed.
+3. **`h_pure_ig`/`s_pure_ig` delegate to the general form** — DONE 2026-08-07,
+   bit-identical over 426 comparisons.
+4. **`SolidPhase::fEffective` for a pure crystal** — the remaining work, and
+   now visibly small.  The refusal it replaces already names the model wanted.
+5. **A witness case**: freeze a brine, get pure ice and a speciated
+   concentrate, check the freezing-point depression against tabulated data.
 
-Step 4 is what was asked for; steps 2 and 3 are why it is not a two-line
-change.  Doing 4 alone would mean a seventh special case, which is the thing
-this record exists to refuse.
+Steps 2 and 3 stand on their own merits.  Step 4 is what was actually asked
+for, and it turns out not to have needed them.
 
 ## 6a. Step 3, measured before touching a solver (2026-08-07)
 
