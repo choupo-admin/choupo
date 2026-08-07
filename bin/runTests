@@ -94,6 +94,29 @@ set -uo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 
+# --- PREFLIGHT: is the build a build OF this tree? ------------------------
+#
+# ABORTS rather than counting a FAIL, and the distinction is the whole point.
+# Every case, every golden and every gate that links a probe runs against
+# build/<platform>/.  If that tree predates the sources, none of the results
+# below are about the code in the repository, so producing a tally of them
+# would be reporting on the wrong binary with a straight face.
+#
+# Paid for 2026-08-07: a rolled-back working directory left a stale build, a
+# docs-only commit came back PASS 286 / FAIL 135, and the first reading blamed
+# the commit.  A rebuild -- same commit, not one file edited -- gave
+# PASS 432 / FAIL 0.  The suite had every symptom and named no cause.
+#
+# The opposite error is the reason this aborts instead of warning: a stale
+# library whose goldens were recorded against it produces a CLEAN PASS, which
+# looks exactly like a real one.
+if ! "$ROOT/bin/curate/check_build_fresh.py"; then
+    printf "\nABORTED before running anything -- see above.\n"
+    printf "This is not a test failure.  No case was run, and no result here "
+    printf "would have described the current source.\n"
+    exit 1
+fi
+
 # --- locate the binary for a case (by controlDict application; code/ -> buildCode)
 binary_for() {
     local case_dir="$1"
