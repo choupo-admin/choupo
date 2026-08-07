@@ -194,6 +194,51 @@ int main()
     askSurface("gibbsSolidRung", "pureSolid", true, false, first);
     askSurface("gibbsDefaultRung", "", true, false, first);
 
+    //  (8) MULTI-RUNG: a record may declare a SECOND standard state, and a
+    //      DUPLICATE of its own declared one must be refused as two homes for
+    //      one datum.  Tested here rather than through a case, because every
+    //      corpus case is SEALED with its own mirrored records -- editing
+    //      data/standards/components/water.dat does not reach a sealed case's
+    //      parser at all, and a sabotage that never reaches the code path
+    //      proves nothing in either direction.
+    {
+        bool ok = true; std::string what = "ok";
+        Component c;
+        try
+        {
+            std::string r = record("probe", "idealGas", true);
+            //  a legitimate SECOND rung
+            r.replace(r.rfind("}"), 1,
+                      "    pureLiquid { dHf_298 -285830.0; s_298 69.95; }\n}");
+            c.readFromDict(Dictionary::fromString(r, "probe.dat"));
+            ok = c.hasRung("pureLiquid") && c.hasRung("idealGas");
+        }
+        catch (const std::exception& e) { what = e.what(); ok = false; }
+        if (!first) std::cout << ",\n";
+        first = false;
+        std::cout << "  \"secondRungAccepted\": {\"result\": \""
+                  << (ok ? "ok" : what) << "\"}";
+    }
+    {
+        std::string what = "ok";
+        Component c;
+        try
+        {
+            std::string r = record("probe", "idealGas", true);
+            //  a DUPLICATE of the declared rung -- must refuse
+            r.replace(r.rfind("}"), 1,
+                      "    idealGas { dHf_298 -1.0; s_298 1.0; }\n}");
+            c.readFromDict(Dictionary::fromString(r, "probe.dat"));
+        }
+        catch (const std::exception& e) { what = e.what(); }
+        std::string esc;
+        for (char ch : what) { if (ch=='"'||ch=='\\') { esc+='\\'; esc+=ch; }
+                               else if (ch=='\n') esc += "\\n"; else esc += ch; }
+        if (!first) std::cout << ",\n";
+        first = false;
+        std::cout << "  \"duplicateRungRefused\": {\"result\": \"" << esc << "\"}";
+    }
+
     //  (7) The REMEDY the refusal names must actually work.
     askFormation("formationSolidToSolid", "pureSolid", "solid", first);
     askFormation("formationSolidToLiquid", "pureSolid", "liquid", first);

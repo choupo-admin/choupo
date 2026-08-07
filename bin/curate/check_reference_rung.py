@@ -79,13 +79,16 @@ remedy that does not work).
 WHAT IS NOT CHECKED, deliberately:
 
   * whether a record's DECLARED rung is the right one for its numbers.  That
-    is a curation judgement against a primary source.  `water.dat` is the
-    known live example -- its datum is the ideal-gas one and its rung is
-    (correctly) the default, but an aqueous reaction wanting the LIQUID datum
-    has nowhere to read one from, which is why deriving `water-dissociation`'s
-    logK from the records gives -12.4986 against a stored -14.  That is a
-    MISSING SECOND DATUM, not a mislabelled one, and this gate does not claim
-    to see it.
+    is a curation judgement against a primary source.
+
+    (The `water.dat` example this paragraph used to end on is CLOSED as of
+    2026-08-07: a record may now declare additional rungs as named sub-blocks,
+    water carries its `pureLiquid` datum beside the ideal-gas one, and
+    `water-dissociation` derives -13.9980 against its stored -14.000.  Arm (h)
+    below guards the grammar; `check_logk_crosscheck` measures the arithmetic.
+    The paragraph is kept, shortened, because the DISTINCTION it drew --
+    a missing second datum is not a mislabelled one -- is what made the fix a
+    data-layer change rather than a guard.)
 
   * the 87 records carrying no `standardThermochemistry` at all.  They have no
     rung to be wrong about.
@@ -227,6 +230,29 @@ def main() -> int:
     else:
         checked.append("g = h - T*s refuses the solid rung and accepts the "
                        "default")
+
+    # ---- (h) multi-rung: a second rung is accepted, a duplicate refused ----
+    if res("secondRungAccepted") != "ok":
+        fail.append("(h) a record declaring a LEGITIMATE second rung "
+                    "(`pureLiquid{}` beside an idealGas referenceState) was "
+                    "refused: " + res("secondRungAccepted")
+                    + "\n      Water needs exactly this: the gas datum for "
+                      "combustion, the liquid one for every aqueous "
+                      "equilibrium it takes part in.")
+    else:
+        checked.append("a second rung is accepted and both are reachable")
+
+    msg = res("duplicateRungRefused")
+    if msg == "ok":
+        fail.append("(h) a record declaring `referenceState idealGas` AND an "
+                    "`idealGas{}` sub-block was ACCEPTED -- that is two homes "
+                    "for one datum, and one of them would silently win.")
+    elif "two homes" not in msg:
+        fail.append("(h) the duplicate-rung refusal does not say WHY:\n      "
+                    + msg)
+    else:
+        checked.append("a duplicate of the declared rung is refused as two "
+                       "homes for one datum")
 
     # ---- (g) the named remedy actually works ------------------------------
     for key, target in (("formationSolidToSolid", "solid"),
