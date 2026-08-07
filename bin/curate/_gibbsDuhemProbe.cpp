@@ -73,6 +73,8 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
 #include "thermo/Database.H"
+#include "thermo/electrolyte/PitzerSingleSalt.H"
+#include "thermo/electrolyte/ENRTLSingleSalt.H"
 #include "thermo/phase/LiquidPhase.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
@@ -136,8 +138,13 @@ std::string testPair(const std::string& modelName,
                      double T,
                      bool sabotage = false)
 {
+    //  MARKED, not positional.  The gate used to find this row as rows[-1],
+    //  and appending the electrolyte cases after it silently made the gate
+    //  read a real model as its own negative -- the same defect as a flash
+    //  selecting phases by declaration order.  A row says what it IS.
     std::string head = "{\"model\": \"" + esc(modelName) + "\", \"pair\": \""
-                     + esc(a + "/" + b) + "\", \"T\": " + num(T);
+                     + esc(a + "/" + b) + "\", \"negative\": "
+                     + (sabotage ? "true" : "false") + ", \"T\": " + num(T);
     try
     {
         std::vector<std::string> names{a, b};
@@ -229,6 +236,63 @@ std::string testPair(const std::string& modelName,
     }
 }
 
+//  THE ELECTROLYTE FORM OF GIBBS-DUHEM, and it is a STRONGER statement.
+//
+//  For a single salt in water the solvent and solute activities are not
+//  independent.  With phi the osmotic coefficient and g the mean ionic
+//  activity coefficient,
+//
+//      ln g(m) = (phi - 1) + INT_0^m (phi - 1)/m' dm'
+//
+//  so, differentiating,
+//
+//      dln(g)/dm  =  dphi/dm  +  (phi - 1)/m
+//
+//  The molecular test ties two gammas to each other.  This ties the WATER side
+//  of the model to the ION side.  A package computing phi from one expression
+//  and g from another -- rather than both from one excess Gibbs energy -- fails
+//  here while every golden it ever recorded stays green.
+//
+//  DELIBERATELY NOT TESTED: a_w against phi.  PitzerSingleSalt DEFINES
+//  ln a_w = -phi*nu*m*M_w/1000, so comparing them checks an identity the code
+//  asserts, not a constraint physics imposes.  Reported, never counted -- the
+//  same rule that makes gamma = 1 a vacuous pass above.
+template <class Kernel>
+std::string testElectrolyte(const std::string& label, const Kernel& k, double T)
+{
+    std::string head = "{\"model\": \"" + esc(label)
+                     + "\", \"pair\": \"single salt in water\""
+                       ", \"negative\": false, \"T\": " + num(T);
+    try
+    {
+        const double h = 1.0e-6;
+        double worst = 0.0, worstM = 0.0;
+        const double spread = std::fabs(k.gammaPM(0.5, T) - k.gammaPM(2.0, T));
+
+        for (double m = 0.2; m <= 3.01; m += 0.2)
+        {
+            const double dlng = (std::log(k.gammaPM(m + h, T))
+                               - std::log(k.gammaPM(m - h, T))) / (2.0 * h);
+            const double dphi = (k.osmoticCoefficient(m + h, T)
+                               - k.osmoticCoefficient(m - h, T)) / (2.0 * h);
+            const double phi  = k.osmoticCoefficient(m, T);
+
+            const double raw   = dlng - dphi - (phi - 1.0) / m;
+            const double scale = std::fabs(dlng) + std::fabs(dphi)
+                               + std::fabs((phi - 1.0) / m);
+            const double R     = std::fabs(raw) / (scale + 1e-30);
+            if (R > worst) { worst = R; worstM = m; }
+        }
+        return head + ", \"result\": \"ok\", \"spread\": " + num(spread)
+             + ", \"worstR\": " + num(worst) + ", \"worstX1\": " + num(worstM)
+             + ", \"g1_mid\": " + num(k.gammaPM(1.0, T))
+             + ", \"g2_mid\": " + num(k.osmoticCoefficient(1.0, T))
+             + ", \"rows\": []}";
+    }
+    catch (const std::exception& e)
+    { return head + ", \"result\": \"" + esc(e.what()) + "\"}"; }
+}
+
 int main()
 {
     //  EXPLICIT, as the project requires -- no auto-registration.  A probe
@@ -274,6 +338,16 @@ int main()
     //  The negative: the SAME model and pair, with gamma_2 replaced by
     //  gamma_1.  Must come back O(1), or this whole probe proves nothing.
     add(testPair("NRTL", "ethanol", "water", 328.15, true));
+
+    //  The electrolyte kernels on their own DEFAULT parameters.  A structural
+    //  test of the EQUATIONS' mutual consistency; it says nothing about any
+    //  particular salt's fitted numbers, and the gate says so.
+    {
+        PitzerSingleSalt salt;
+        add(testElectrolyte("pitzerSalt", salt, 298.15));
+        ENRTLSingleSalt en;
+        add(testElectrolyte("eNRTLsalt", en, 298.15));
+    }
 
     std::cout << "<<<JSON\n[\n  " << out << "\n]\nJSON>>>\n";
     return 0;

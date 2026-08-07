@@ -51,9 +51,11 @@ WHAT THIS DOES NOT CHECK, stated plainly:
     six-case validation subset by one.
   * ONLY BINARIES, and only the curated pairs.  Multicomponent Gibbs-Duhem is
     a stronger statement and is not tested.
-  * NOT the electrolyte models.  Davies, PitzerHMW and EdwardsPitzer work on
-    molality with a charge basis; the same constraint applies in a different
-    form and is the obvious next slice.
+  * THE SALT-LEVEL electrolyte kernels ARE covered, by the stronger form
+    dln(gamma_pm)/dm = dphi/dm + (phi - 1)/m -- the molecular test ties two
+    gammas to each other, this one ties the SOLVENT side to the ION side.  The
+    PER-ION models (Davies, PitzerHMW, EdwardsPitzer) are NOT: they work on a
+    molality-and-charge basis this probe does not reach.
   * `Wilson` IS REGISTERED AND CANNOT BE TESTED -- there is no
     data/standards/parameters/Wilson/ directory, so it always returns ideal.
     The gate reports that rather than silently passing it.
@@ -113,7 +115,20 @@ def main() -> int:
     fail, tested, vacuous, refused = [], [], [], []
     negative = None
 
-    for r in rows[:-1]:                       # the last row is the negative
+    #  BY MARKER, never by position.  This gate originally took rows[-1] as
+    #  the synthetic negative; adding the electrolyte cases after it would
+    #  have made a real model be read as the negative and the negative be
+    #  checked as a model -- both passing, both meaningless.  Same defect as
+    #  selecting a flash phase by declaration order, found the same day.
+    negatives = [r for r in rows if r.get("negative")]
+    if len(negatives) != 1:
+        print("check_gibbs_duhem: FAILED\n  expected exactly one row marked "
+              f"`negative`, found {len(negatives)}.  The probe's synthetic "
+              "negative is what proves the residual can detect an "
+              "inconsistent pair; without exactly one, every pass is unbacked.")
+        return 1
+
+    for r in [r for r in rows if not r.get("negative")]:
         tag = f"{r['model']}/{r['pair']}"
         if r["result"] != "ok":
             refused.append(f"{tag} ({r['result'][:60]})")
@@ -131,7 +146,7 @@ def main() -> int:
                 "Gibbs energy -- check the pair indexing and the derivative.")
 
     #  THE NEGATIVE.  Without it, every arm above could be measuring nothing.
-    negative = rows[-1]
+    negative = negatives[0]
     if negative["result"] != "ok":
         fail.append("the synthetic negative did not run: " + negative["result"])
     elif negative["worstR"] < 0.1:
@@ -169,10 +184,15 @@ def main() -> int:
         + (f"UNTESTABLE: {'; '.join(refused)}.  " if refused else "")
         + "THIS IS CONSISTENCY, NOT ACCURACY: a model can satisfy "
         "Gibbs-Duhem exactly and still disagree with every measurement ever "
-        "made.  It does not enlarge the validation subset.  Not covered: "
-        "multicomponent Gibbs-Duhem, and the electrolyte models (Davies, "
-        "PitzerHMW, EdwardsPitzer), whose molality-and-charge form is the "
-        "named next slice.")
+        "made.  It does not enlarge the validation subset.  THE SALT-LEVEL "
+        "electrolyte kernels are covered by the STRONGER form "
+        "dln(g)/dm = dphi/dm + (phi-1)/m, which ties the water side of the "
+        "model to the ion side -- on their DEFAULT parameters, so it tests the "
+        "equations and not any curated salt.  Not covered: multicomponent "
+        "Gibbs-Duhem; a_w against phi (PitzerSingleSalt DEFINES one from the "
+        "other, so comparing them checks an identity the code asserts); and "
+        "the PER-ION aqueous models (Davies, PitzerHMW, EdwardsPitzer), which "
+        "work on a molality-and-charge basis this probe does not reach.")
     return 0
 
 
