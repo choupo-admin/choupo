@@ -136,13 +136,16 @@ std::string testPair(const std::string& modelName,
                      const std::string& a,
                      const std::string& b,
                      double T,
-                     bool sabotage = false)
+                     bool sabotage = false,
+                     const std::string& inlinePairs = "",
+                     const std::string& label = "")
 {
     //  MARKED, not positional.  The gate used to find this row as rows[-1],
     //  and appending the electrolyte cases after it silently made the gate
     //  read a real model as its own negative -- the same defect as a flash
     //  selecting phases by declaration order.  A row says what it IS.
-    std::string head = "{\"model\": \"" + esc(modelName) + "\", \"pair\": \""
+    std::string head = "{\"model\": \""
+                     + esc(label.empty() ? modelName : label) + "\", \"pair\": \""
                      + esc(a + "/" + b) + "\", \"negative\": "
                      + (sabotage ? "true" : "false") + ", \"T\": " + num(T);
     try
@@ -161,8 +164,8 @@ std::string testPair(const std::string& modelName,
             //  A consistency test run against gamma = 1 is vacuous: the
             //  residual is 0/0 and passes whatever the model does.
             "name liquid; binaryPairsBase \"" + home() + "/data\";"
-            " activity { model " + modelName + "; binaryPairsBase \""
-            + home() + "/data\"; }",
+            " activity { model " + modelName + "; " + inlinePairs
+            + " binaryPairsBase \"" + home() + "/data\"; }",
             "probe.dict"), names, comps);
 
         //  h chosen near eps^(1/3) for a central difference on a quantity of
@@ -333,6 +336,16 @@ int main()
     //  Wilson and cosmoSAC are attempted so the probe REPORTS why they are
     //  absent rather than leaving a reader to assume they were covered.
     add(testPair("Wilson",   "ethanol", "water", 328.15));
+
+    //  Wilson WITH the inline pair flash03_wilson_ethanol_water carries --
+    //  the numbers three passing tutorials actually run on (queue ruling
+    //  2026-08-08 D1: the catalogue tier is empty, the INLINE tier is not,
+    //  and the model the corpus relies on deserves the same consistency
+    //  check as the rest).  The parameters are quoted from the case, which
+    //  owns them; this probe curates nothing.
+    add(testPair("Wilson", "ethanol", "water", 328.15, false,
+                 "pairs ( { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; } );",
+                 "Wilson[inline flash03]"));
     add(testPair("cosmoSAC", "ethanol", "water", 328.15));
 
     //  The negative: the SAME model and pair, with gamma_2 replaced by

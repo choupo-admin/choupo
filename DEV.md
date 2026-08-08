@@ -278,11 +278,12 @@ ones for day-to-day work:
 > mechanism, reserved list), C2 one solid-equilibrium architecture with
 > class-appropriate solid models + mandatory 3-case spike, C3 uniform
 > `phases ( … )` direction approved (no mass migration), D2–D4 defaults
-> approved, N1–N5 closed as deferred with named triggers.  **Open for Vítor:
-> ONE item — the escalated D1** (curate a cited Wilson standards pair, or
-> decline; the withdrawal as ruled would have broken three passing tutorials
-> that carry inline Wilson pairs — the premise given to the ruling was wrong,
-> and the record says whose error that was).  Items below are kept as history;
+> approved, N1–N5 closed as deferred with named triggers.  **Open for Vítor: NONE**
+> (same-day addendum: the escalated D1 resolved into the standing curation
+> ledger — a cited Wilson standards pair is explicitly owed until a primary
+> source is verified, blocking nothing; the withdrawal as first ruled would
+> have broken three passing tutorials carrying inline pairs, and the record
+> says whose error the premise was).  Items below are kept as history;
 > none is awaiting a ruling unless marked.
 
 **DECISIONS 2026-08-02 (Vítor, after an external second opinion).**  The

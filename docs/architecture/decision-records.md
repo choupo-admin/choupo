@@ -88,10 +88,12 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 
 ### Awaiting a decision
 
-**EMPTY as of 2026-08-08, but for ONE escalated item** — the queue was cleared
-in one pass by [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md);
-the open item is its §D1 escalation (a cited Wilson standards pair: curate or
-decline — new-data curation, reserved to Vítor).  The five rows this section
+**EMPTY as of 2026-08-08** — cleared in one pass by
+[`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md), whose
+same-day addendum resolved the one escalated item (the Wilson standards pair
+joins the standing curation ledger: explicitly owed until a primary source is
+verified, blocking nothing).  One scheduled future entry by C2's own design:
+the solid-equilibrium spike returns for review when it exists.  The five rows this section
 used to hold were STALE — each already decided when it was listed here, which
 is this index failing its own purpose; they move below with their rulings.
 
