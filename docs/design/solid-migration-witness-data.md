@@ -115,3 +115,16 @@ the primary.)
 Staged 2026-08-08.  No case in this record's §2 exists yet; no golden moved;
 no standards record was touched.  The migration campaign picks anchors from
 here and cites the PRIMARIES (this file is a locator, never a source).
+
+## 4. Ott 1986 — BLOCKED on re-upload (recorded 2026-08-08)
+
+The ethanol–water Hᴱ anchor (Ott, Stouffer, Cornett, Woodfield, Wirthlin,
+Christensen & Deiters, *J. Chem. Thermodyn.* **18** (1986) 1–12 — the
+reference-system excess enthalpies at 298.15 K, 0.4–15 MPa) was provided
+as a PDF but the session container recycled before its data table was
+transcribed.  Curated data is never reconstructed from memory: the anchor
+case (an `excessEnthalpy` bench op — Hᴱ = −RT²Σxᵢ∂lnγᵢ/∂T over the
+NRTL/Wilson/UNIFAC surfaces beside the measured curve, the
+Gibbs–Helmholtz test) waits for the paper to be supplied again.  The op
+design is scoped (`MolecularActivity` is single-point; the new op sweeps
+composition with a validation dataset, FD in T announced).
