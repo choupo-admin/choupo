@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 43 records already exist
+## 1. Why an index, when 44 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 43 design records, **18 state a rejected alternative and 25 do not** —
+- Of 44 design records, **19 state a rejected alternative and 25 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -79,7 +79,7 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 | record | kind | alt | status |
 |---|---|---|---|
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
-| [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **PROPOSAL** — debt D3; two shapes weighed, one recommended, awaiting Vítor |
+| [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **RATIFIED 2026-08-08** (queue ruling D2) — direction + recommended shape approved; build sequenced after the validation work |
 | [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-05** — debt D7; records to `core`, audit to the engine; checked against DWSIM, which supplies the pattern (`DWSIM.Interfaces`, zero deps) and the counter-example (its solver's compile path to WinForms) |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
 | [`reference-rung-refusal.md`](../design/reference-rung-refusal.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-06** — `h_pure_ig`/`s_pure_ig`/`g_pure_ig` refuse a non-gas `referenceState`; revised its own plan on the first measurement (the field was already parsed), and names the water-liquid-datum gap as NOT closed |
@@ -88,13 +88,23 @@ built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 
 ### Awaiting a decision
 
-| record | kind | alt | what is blocked |
+**EMPTY as of 2026-08-08, but for ONE escalated item** — the queue was cleared
+in one pass by [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md);
+the open item is its §D1 escalation (a cited Wilson standards pair: curate or
+decline — new-data curation, reserved to Vítor).  The five rows this section
+used to hold were STALE — each already decided when it was listed here, which
+is this index failing its own purpose; they move below with their rulings.
+
+### Decided — rows formerly (and wrongly) listed as awaiting
+
+| record | kind | alt | ruling |
 |---|---|---|---|
-| [`open-decisions-2026-08-03.md`](../design/open-decisions-2026-08-03.md) | ADR | yes | the standing queue |
-| [`role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | FORUM | yes | the `role` vocabulary |
-| [`unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | ADR | no | a misspelt key runs silently |
-| [`solverdict-consolidation-scope.md`](../design/solverdict-consolidation-scope.md) | SCOPE | no | Option A, non-blocking |
-| [`seal-divergence-forum-2026-08-02.md`](../design/seal-divergence-forum-2026-08-02.md) | FORUM | no | the 435 pinned sealed cases |
+| [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) | ADR | yes | **RULED 2026-08-08** — C1 delegation (amended: immediate ship, silence is not a mechanism, reserved list), C2 one solid-equilibrium architecture with class-appropriate solid models + mandatory 3-case spike, C3 uniform `phases` direction (no mass migration), D2–D4, N1–N5 deferred-with-trigger; D1 escalated back on a failed premise |
+| [`open-decisions-2026-08-03.md`](../design/open-decisions-2026-08-03.md) | ADR | yes | RESOLVED 2026-08-03 in its own §Resolution — A no-reseal (report restructure to build), B built, C splitter capability to build, D stamp refinement |
+| [`role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | FORUM | yes | DECIDED + BUILT 2026-08-02 — panel option C (DEV.md §4b item 2) |
+| [`unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | ADR | no | v1 DECIDED + BUILT 2026-07-31; end state RULED 2026-08-08 (queue ruling D3: warning stays, `strictKeys` opt-in on demand) |
+| [`solverdict-consolidation-scope.md`](../design/solverdict-consolidation-scope.md) | SCOPE | no | DECIDED 2026-08-04 by Vítor — Option A, recorded in its own §5 |
+| [`seal-divergence-forum-2026-08-02.md`](../design/seal-divergence-forum-2026-08-02.md) | FORUM | no | DECIDED 2026-08-03 — no re-seal (counsel ruling in open-decisions §Resolution); report restructure is implementation |
 
 ### Deliberations (the decision is the conclusion)
 
@@ -177,7 +187,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**25 of 43 records state no rejected alternative.**  For a FORUM or a STUDY
+**25 of 44 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

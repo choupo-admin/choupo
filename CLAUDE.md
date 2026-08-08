@@ -1487,7 +1487,9 @@ philosophy wins and this list is the stale copy.
 * **Never** import a heavy CFD framework or any heavy dep.
 * **Never** joke about "$N in tokens replacing commercial software".
 * **Never** skip alignment when proposing architecture changes — propose, wait
-  for confirmation, then code.
+  for confirmation, then code.  Amended 2026-08-08: DELEGATE-WITH-DEFAULT items
+  ship on a stated, recorded default (philosophy §4 carries the rule and the
+  reserved list; `docs/design/queue-ruling-2026-08-08.md` is the ruling).
 * **Never name a commercial competitor in the USER-FACING MANUALS** (settled
   2026-07-03).  Scope, phrasing and the tolerated developer-facing exception:
   philosophy §4.  Enforced by `check_doctrine`.

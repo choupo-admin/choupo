@@ -87,8 +87,8 @@ flowchart TB
 | **The POTENTIAL is the interface, not the enthalpy** (`h_formation`/`s_formation`/`g_formation`; `h_pure_ig` delegates) | [`../design/reference-rung-refusal.md`](../design/reference-rung-refusal.md) | the rung guard sits AHEAD of the Cp guard on every ideal-gas surface | `check_reference_rung` (water gas→liquid: both legs visibly off CODATA in OPPOSITE directions, `g` closes far tighter than either) | **2026-08-07** |
 | **Ice is a PHASE of the solvent, not a special case** (`SolidPhase::fEffective`; freezing-point depression falls out of K = 1) | [`../design/ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | five named refusals, each carrying its remedy | `check_ice_freezing` (**4 sabotages**; the crossing, the slope's sign AND magnitude, and the purity claim no balance check could catch) — **NO CASE FIRES IT**: the witness tutorial waits for a published anchor | **implemented + gated, NOT witnessed** |
 | **K_f derived** (promoted by the condition its own header set: a cited `Hfus` and a consumer) | CLAUDE.md §6 | — (it is a derivation, not a refusal); the declared 1.853 becomes the anchor against 1.8603 | `check_ice_freezing`, incl. **both** negatives, synthesised because no catalogue record has either shape | **2026-08-07** |
-| `role` vocabulary | `data/tmp/_ROLE_VOCABULARY_GAP.md` | — | — | **awaiting a decision** |
-| Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | to be implemented |
+| `role` vocabulary | [`../design/role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | the classifier refuses an undeclared fact | corpus migrated | decided + built 2026-08-02 (panel option C; this row was STALE — [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) D4) |
+| Transfer term (D3) | [`../design/standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | contract only | — | DEFERRED by ruling 2026-08-08 (queue ruling N1) — reopens when a mixed-solvent case needs the rigor; not awaiting anyone |
 
 ---
 

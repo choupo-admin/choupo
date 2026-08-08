@@ -141,7 +141,17 @@ once and then remembered its answer.  See
 - **Never** joke about "$N in tokens replacing commercial software" — it reads
   as a flippant signal about work that is neither.
 - **Never** skip alignment when proposing architecture changes: make a
-  proposal, wait for confirmation, then code.
+  proposal, wait for confirmation, then code.  **Amended 2026-08-08 (Vítor,
+  [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) C1):**
+  an item classified DELEGATE-WITH-DEFAULT may ship immediately once the
+  default is stated and the decision recorded, provided it is reversible,
+  gate/regression-guarded, and non-constitutional.  Reserved to Vítor
+  regardless: licence, authorship, trademarks, new data curation, public
+  compatibility commitments, and the fundamental thermo/case-format
+  architecture.  Silence is NOT a decision mechanism — an item needing an
+  objection window was misclassified and is CONSTITUTIONAL; and if
+  implementation reveals a delegated item crosses a reserved boundary, stop
+  and escalate (this clause fired on its first day: the D1 Wilson item).
 - **Never name a commercial competitor in the USER-FACING MANUALS** (settled
   2026-07-03).  This covers everything a user reads: the `docs/` guides,
   tutorial `controlDict` / `flowsheetDict` header comments and `description`

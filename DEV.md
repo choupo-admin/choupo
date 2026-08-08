@@ -272,6 +272,19 @@ ones for day-to-day work:
 
 ## 4b. Waiting on Vítor (not blocked — each CHANGES WHAT THE ENGINE REFUSES)
 
+> **2026-08-08 — THE QUEUE WAS CLEARED IN ONE PASS**
+> ([`queue-ruling-2026-08-08.md`](docs/design/queue-ruling-2026-08-08.md)):
+> C1 delegation mechanism ratified (amended: immediate ship, no silence
+> mechanism, reserved list), C2 one solid-equilibrium architecture with
+> class-appropriate solid models + mandatory 3-case spike, C3 uniform
+> `phases ( … )` direction approved (no mass migration), D2–D4 defaults
+> approved, N1–N5 closed as deferred with named triggers.  **Open for Vítor:
+> ONE item — the escalated D1** (curate a cited Wilson standards pair, or
+> decline; the withdrawal as ruled would have broken three passing tutorials
+> that carry inline Wilson pairs — the premise given to the ruling was wrong,
+> and the record says whose error that was).  Items below are kept as history;
+> none is awaiting a ruling unless marked.
+
 **DECISIONS 2026-08-02 (Vítor, after an external second opinion).**  The
 rulings, verbatim in spirit; each item below is annotated where it lives:
 
