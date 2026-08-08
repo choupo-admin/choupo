@@ -45,35 +45,52 @@ uncited aqueous species). A green suite must not be read as covering those.
 | **expected refusal** | the engine refuses what the doctrine says it must | 5 named + the refusal gates |
 | **validation** | agreement with an **independent published result the model was not fitted to** | **a small named subset** |
 
-## 3. The validation subset, named
+## 3. The validation subset, named — and recounted (2026-08-08)
 
-These are the cases pinned on primary published anchors that Choupo did **not**
-fit. Each states its provenance in its own header.
+> **This section undercounted, in exactly the way §1 warns about.**  It named
+> seven system-level cases and called the subset "small and named" while the
+> props corpus carried a property-surface validation battery nobody had
+> enumerated — six 1-1 salts against the Hamer & Wu NBS tables among them.
+> Found on the validation loop's first iteration, whose planned first case
+> turned out to already exist.  The list below is now recounted by
+> `check_validation_subset` every suite run; a validation-op case missing
+> from it fails the gate.
+
+**A — system-level anchors** (a flowsheet or trajectory against an
+independent published result):
 
 | case | anchor |
 |---|---|
-| `steady/flowsheets/cavett01_recycle_train` | Rosen & Pauls specification verbatim; products shown beside the published APR/FLOWTRAN tables |
+| `steady/flowsheets/cavett01_recycle_train` | Rosen & Pauls specification verbatim; products beside the published APR/FLOWTRAN tables |
 | `ctrl/ctrl12_williams_otto` | Williams & Otto published x\* to all digits |
 | `ctrl/ctrl13_williams_otto_step` | the paper's Fig. 2 step response |
 | `ctrl/ctrl14_williams_otto_pi` | the paper's Fig. 4 PI shape |
-| `ctrl/ctrl16_williams_otto_optimal` | §5.3 optimum, reached to 99.1 % of the published collocation value — **the gap is stated and measured, which is what a validation case owes the reader** |
+| `ctrl/ctrl16_williams_otto_optimal` | §5.3 optimum at 99.1 % of the published collocation value — the gap stated and measured |
 | `props/steam/steam01_if97_verification` | the IAPWS IF-97 release's own verification tables |
-| `props/molecular/pcsaft03_association_pure` | Gross & Sadowski 2002 parameter set, with its published anchors |
+| `plant/lithiumBrinePlant` | element closure across four thermo worlds (structural anchor) |
 
-Everything else in `tutorials/` is regression, verification, an architectural
-gate, or a deliberate refusal.
+**B — property-surface anchors** (a model surface against measured data), with
+the INDEPENDENCE each case's own header claims — fit-consistency is a real
+check but it is NOT validation, and conflating them inflates exactly the
+credibility claim this document exists to deflate:
 
-**Three cases are explicitly NOT validation, and say so**, because the
-temptation to count them would be strong:
+| case | anchor | independence |
+|---|---|---|
+| `props/electrolyte/pitzer_gamma_hamer_wu` | Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) — six 1-1 salts, γ± AAD 0.1–0.7 % | **independent** for five salts; the Li–Cl pair was refit to this table — that arm is fit-consistency, per the case's own header |
+| `props/electrolyte/enthalpy_naoh_water` | Parker (1965) measured Φ_L, calorimetric | independent |
+| `props/electrolyte/enrtl_mixed_nacl_ethanol_esteso` | Esteso — NaCl γ± in ethanol–water, predictive | independent |
+| `props/electrolyte/pitzer_seawater_verify` | published seawater benchmarks (the S3 forum's own no-go gate) | independent |
+| `props/electrolyte/farelo_nacl_nh4cl` | Farelo saturation data | independent |
+| `props/electrolyte/farelo_licl_range` | Hamer & Wu range for LiCl | **fit-consistency** — the pair was refit to it |
+| `props/electrolyte/pitzer_nacl_sp77_hot` | Silvester & Pitzer (1977) Table V, 25–200 °C | **fit-consistency** — the coefficients are the same paper's Table IV, verbatim |
+| `props/electrolyte/pitzer01_nacl` | Parker (1965) Φ_L, NaCl series | **fit-consistency** — the op's own prose pins the AAD against "the same curated Parker series"; found by the gate's first run, then re-verified against the case rather than my first guess (which had the wrong anchor AND the wrong class) |
+| `props/compare/compare_vle_etoh_water` | measured ethanol–water VLE at 1 atm | independent |
 
-* `props/electrolyte/edwards01_sour_water_activity` — a **structural** witness.
-  No number in it is checked against measurement. The measured comparison is
-  the paper's Table 7, which needs the vapour side.
-* `steady/membranes/membrane02_NF_sugar` — its membrane parameters are
-  `provenance fittedToCase`. A case cannot validate a parameter fitted to it.
-* `props/molecular/cosmoSAC01_water_ethanol` — cross-checked bit-for-bit
-  against an independent implementation of the *same equations and profiles*.
-  That is verification of an implementation, not agreement with reality.
+Synthetic datasets (`*synthetic*.dat`) are teaching surrogates and may never
+appear in this section; the gate refuses them by name.  The corrected axis
+reading: the subset is materially larger than the seven this section carried,
+still a small minority of the corpus, and now recounted rather than
+remembered.
 
 ## 4. What this changes, and what it does not
 

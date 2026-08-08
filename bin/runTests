@@ -2088,6 +2088,22 @@ PYEOF
     fi
     rm -f /tmp/relid.$$
 
+    # Validation-subset gate (2026-08-08, the validation loop's first find).
+    # The V&V doc's "named subset" had seven rows while the props corpus held
+    # a battery of eight more -- the governing list undercounted, and every
+    # project-level "validation deficit" number inherited it.  Recounts the
+    # validation-op cases, refuses synthetic anchors, and refuses independence
+    # claimed where a case's own header says fit-consistency.
+    if "$ROOT/bin/curate/check_validation_subset.py" > /tmp/valsub.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "validation-subset-gate" "$(head -1 /tmp/valsub.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_validation_subset.py)\n" "validation-subset-gate"
+        cat /tmp/valsub.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/valsub.$$
+
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op
     # schema must not leave the manual describing the previous one.  The
