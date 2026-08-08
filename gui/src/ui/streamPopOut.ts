@@ -58,8 +58,9 @@ export function popOutSingleStream(args: {
   prefs: DisplayPrefs;
   runStream?: StreamResult;
   /** result.componentMolarMass — needed only to convert a solid phase's
-   *  kg/s into the molar column; without it the solid row is dropped by
-   *  streamPhases() rather than shown in the wrong unit. */
+   *  kg/s into the molar column; without it the solid stays visible in its
+   *  native kg/s with the reason stated (never the wrong unit, never a
+   *  silent disappearance). */
   molarMass?: { [component: string]: number };
 }): void {
   const massBasis = flowBasis(args.prefs.flow) === "mass";
@@ -146,7 +147,20 @@ ${phases.length === 0 ? "" : `
   <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">a decomposition of
      the overall material above among the physical phases — the aqueous side
      is the fluid minus the organic, so the two close by subtraction.</p>
-  ${phases.map((ph) => `<table>
+  ${phases.map((ph) => ph.unavailable
+    //  The molar conversion failed for this phase: it stays VISIBLE, in its
+    //  native kg/s, with the reason -- never the wrong unit, never a silent
+    //  disappearance.
+    ? `<table>
+    <tr><th>${esc(ph.name)}</th><th style="text-align:right;">${
+      Object.values(ph.massFlowsKg ?? {}).reduce((a, b) => a + b, 0).toPrecision(6)} kg/s</th></tr>
+    ${Object.entries(ph.massFlowsKg ?? {}).sort((a, b) => b[1] - a[1]).map(([c, kg]) => `<tr>
+      <td>${esc(c)}</td>
+      <td class="right">${kg.toPrecision(6)} kg/s</td>
+    </tr>`).join("")}
+  </table>
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">${esc(ph.unavailable)}</p>`
+    : `<table>
     <tr><th>${esc(ph.name)}</th><th style="text-align:right;">${esc(formatFlow(ph.total, specUnit, 6))} ${esc(specUnit)}</th></tr>
     ${Object.entries(ph.flows).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<tr>
       <td>${esc(c)}</td>

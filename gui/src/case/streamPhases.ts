@@ -52,10 +52,19 @@ import type { StreamResult } from "../adapters/SolverAdapter.js";
 export interface StreamPhase {
   /** aqueous | organic | solid -- the names the stream file uses */
   name: string;
-  /** per-component molar flow [kmol/s] */
+  /** per-component molar flow [kmol/s]; EMPTY when `unavailable` is set */
   flows: { [component: string]: number };
-  /** total molar flow [kmol/s] */
+  /** total molar flow [kmol/s]; 0 when `unavailable` is set */
   total: number;
+  /** Set when the molar conversion could not be performed.  The phase is
+   *  still ACCOUNTED FOR, in its native mass basis below, and this string
+   *  says why the molar column cannot be filled.  The rule (Vítor,
+   *  2026-08-08): never show the wrong unit -- and never silently hide the
+   *  phase either. */
+  unavailable?: string;
+  /** the phase's native per-component mass flow [kg/s], carried only when
+   *  `unavailable` is set so a renderer can still show the material */
+  massFlowsKg?: { [component: string]: number };
 }
 
 export function streamPhases(
@@ -100,16 +109,26 @@ export function streamPhases(
 
   if (sol) {
     const solid: { [k: string]: number } = {};
-    let converted = true;
+    const missing: string[] = [];
     for (const [c, kg] of Object.entries(sol)) {
       const mw = molarMass?.[c];
-      if (!mw || mw <= 0) { converted = false; break; }
-      solid[c] = kg / mw;            // kg/s / (kg/kmol) = kmol/s
+      if (!mw || mw <= 0) missing.push(c);
+      else solid[c] = kg / mw;       // kg/s / (kg/kmol) = kmol/s
     }
-    //  No molar mass, no molar flow.  Dropping the phase is better than
-    //  showing a kg/s in a kmol/s column, which is how a table starts
-    //  lying.
-    if (converted) out.push({ name: "solid", flows: solid, total: totalOf(solid) });
+    //  No molar mass, no molar flow -- but the PHASE does not vanish with
+    //  the conversion.  Showing kg/s in a kmol/s column is how a table
+    //  starts lying; silently dropping the solid is how a stream starts
+    //  lying about what it carries.  Neither: the phase stays, in its
+    //  native mass basis, with the reason stated.
+    if (missing.length === 0)
+      out.push({ name: "solid", flows: solid, total: totalOf(solid) });
+    else
+      out.push({
+        name: "solid", flows: {}, total: 0,
+        unavailable: "molar flow unavailable -- the result carries no molar "
+          + "mass for " + missing.join(", ") + "; shown in kg/s instead",
+        massFlowsKg: { ...sol },
+      });
   }
   return out;
 }

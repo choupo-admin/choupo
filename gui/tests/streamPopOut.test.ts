@@ -58,4 +58,18 @@ describe("popOutSingleStream — the phases section", () => {
     popOutSingleStream({ name: "liquid", prefs: DEFAULT_PREFS, runStream: rest });
     expect(opened[0]!).not.toContain("Phases (molar flow)");
   });
+
+  it("keeps a solid with no molar mass VISIBLE, in kg/s, with the reason stated", () => {
+    //  Never the wrong unit; never a silent disappearance (Vítor,
+    //  2026-08-08).  No molarMass is passed, so the conversion must fail --
+    //  and the phase must survive it.
+    const { organicLiquid: _o, speciation: _s, ...rest } = twoLiquids;
+    const s = { ...rest, solids: { CaCO3: 2.0 } };
+    popOutSingleStream({ name: "liquid", prefs: DEFAULT_PREFS, runStream: s });
+    const html = opened[0]!;
+    expect(html).toContain("solid");
+    expect(html).toContain("kg/s");
+    expect(html).toContain("molar flow unavailable");
+    expect(html).toContain("CaCO3");
+  });
 });

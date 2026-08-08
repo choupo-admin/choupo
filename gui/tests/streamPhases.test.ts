@@ -46,9 +46,18 @@ describe("streamPhases", () => {
     expect(ph[1]!.flows.CaCO3).toBeCloseTo(2.0 / 100.0869, 12);
   });
 
-  it("DROPS the solid rather than show a kg/s in a kmol/s column", () => {
+  it("KEEPS a solid whose molar mass is missing -- visible in kg/s with the reason, never dropped, never the wrong unit", () => {
+    //  The rule (Vítor, 2026-08-08): a kg/s must never appear in a kmol/s
+    //  column, and the phase must never silently disappear either.
     const s: StreamResult = { ...base, solids: { CaCO3: 2.0 } };
-    expect(streamPhases(s, {}).map((p) => p.name)).toEqual(["aqueous"]);
+    const ph = streamPhases(s, {});
+    expect(ph.map((p) => p.name)).toEqual(["aqueous", "solid"]);
+    const solid = ph[1]!;
+    expect(solid.flows).toEqual({});                  // no fake molar value
+    expect(solid.total).toBe(0);
+    expect(solid.massFlowsKg).toEqual({ CaCO3: 2.0 }); // the material, kg/s
+    expect(solid.unavailable).toContain("CaCO3");      // the reason, by name
+    expect(solid.unavailable).toContain("kg/s");
   });
 
   it("names all three when a stream carries all three", () => {

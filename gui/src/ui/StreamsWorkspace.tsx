@@ -577,12 +577,22 @@ function Detail({
               {phases.map((ph) => (
                 <Stack key={ph.name} gap={4}>
                   <Text size="xs" ff="monospace" fw={600}>
-                    {ph.name} — {formatFlow(ph.total, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
-                    {" "}{prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                    {ph.name} — {ph.unavailable
+                      ? `${Object.values(ph.massFlowsKg ?? {})
+                            .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s`
+                      : `${formatFlow(ph.total, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")
+                        } ${prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}`}
                   </Text>
+                  {/* Molar conversion failed: the phase stays VISIBLE in its
+                      native kg/s with the reason -- never the wrong unit,
+                      never a silent disappearance (Vítor, 2026-08-08). */}
+                  {ph.unavailable && (
+                    <Text size="xs" c="dimmed">{ph.unavailable}</Text>
+                  )}
                   <Table verticalSpacing={4} fz="sm">
                     <Table.Tbody>
-                      {Object.entries(ph.flows).sort((a, b) => b[1] - a[1]).map(([c, n]) => (
+                      {Object.entries(ph.unavailable ? (ph.massFlowsKg ?? {}) : ph.flows)
+                        .sort((a, b) => b[1] - a[1]).map(([c, n]) => (
                         <Table.Tr key={c}>
                           <Table.Td style={{ color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))" }}>
                             {c}
@@ -592,7 +602,9 @@ function Detail({
                             fontFamily: "JetBrains Mono, monospace",
                             textAlign: "right",
                           }}>
-                            {formatFlow(n, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                            {ph.unavailable
+                              ? `${n.toPrecision(4)} kg/s`
+                              : formatFlow(n, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
                           </Table.Td>
                         </Table.Tr>
                       ))}

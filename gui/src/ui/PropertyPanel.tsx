@@ -732,8 +732,15 @@ function StreamDetails({
                     <Text size="xs" ff="monospace">{ph.name}</Text>
                   </Table.Td>
                   <Table.Td>
+                    {/* A phase whose molar conversion failed stays VISIBLE
+                        in its native kg/s (never the wrong unit, never a
+                        silent disappearance); the full reason is in the
+                        Streams workspace and the pop-out. */}
                     <Text size="xs" ff="monospace" c="dimmed">
-                      {formatFlow(ph.total, phaseFlowUnit)} {phaseFlowUnit}
+                      {ph.unavailable
+                        ? `${Object.values(ph.massFlowsKg ?? {})
+                              .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s (molar n/a)`
+                        : `${formatFlow(ph.total, phaseFlowUnit)} ${phaseFlowUnit}`}
                     </Text>
                   </Table.Td>
                 </Table.Tr>
