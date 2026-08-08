@@ -31,10 +31,40 @@
 | slice | content | status |
 |---|---|---|
 | **S1** | **The production solver** in `src/thermo/solidEquilibrium/SolidEquilibrium.H`: the spike's damped-sequential secant replaced by R1's active-set + simultaneous damped Newton (probed Jacobian, partial-pivot solve, damped clamp at n ≥ 0, singular-coupling refusal naming the banned duplicated-mechanism shape) with appearance/redissolution narration through a caller event sink.  Model contract unchanged (`lnSI` + `remove` + `n`).  Acceptance: the spike gate D1–D5 + purity, UNCHANGED — same physics, ratified solver form (D1 7.0e-9 K, D2 exact m_sat / 1e-15 ledger, D3 3.0e-10 vs the untouched oracle, D4 1e-16, D5 −30 % seen) | **SHIPPED 2026-08-08** |
-| **S2** | The service seam: candidate assembly (a solid the DATA defines and the CASE admits becomes a `SolidCandidate` with its model behind the closure), exposed through the phase-equilibrium layer per R4; announcements ride the run header/AdvisoryLog | not started |
+| **S2** | The service seam: candidate assembly (a solid the DATA defines and the CASE admits becomes a `SolidCandidate` with its model behind the closure), exposed through the phase-equilibrium layer per R4; announcements ride the run header/AdvisoryLog | **design recorded 2026-08-08, build next** |
 | **S3** | `SpeciationSolver` becomes provider/client: its internal mineral transfer replaced by the common closure — after this slice there is ONE transfer mechanism in the engine, which is R2's architectural point.  The existing mineral answers are the regression harness (crystallisers, flash16, pitzer_calcite_brine goldens must not move) | not started |
 | **S4** | Flash/crystalliser integration + the C3 uniform `phases ( … )` grammar (approved, coexisting, no mass migration) | not started |
 | **S5** | Witnesses: the Marcilla LLS tie-triangle (aqueous + organic + solid NaCl at once — the flagship; anchors staged in [`solid-migration-witness-data.md`](solid-migration-witness-data.md)); the ice + dihydrate eutectic once the dihydrate is curated (Vítor's, non-blocking per R3) | not started |
+
+## S2 design (recorded 2026-08-08, after reading the provider)
+
+The provider surface is already public where it matters:
+`SpeciationSolver::minerals()` (the `MineralEntry` records the DATA defined),
+`solve()` (speciation, activities, `SI` per available mineral), and the
+case's admission is `chemistryDict equilibria.solidPhases` /
+`equilibrate { minerals (…) }`.  ONE thing the service needs is not yet on
+that surface: the mineral→master SINK RESOLUTION (`Allowed::nuPj` — a
+mineral referencing a computed species chains through its mass action onto
+the MASTER balances; built inside `solve()` as a local).  The service must
+not re-derive it — a second copy of the stoichiometry resolution is the
+arity sin, and R1 assigns "transfer stoichiometry" to the MODEL/provider
+side anyway.  So:
+
+* **S2a** — extract the sink-resolution into a shared private helper and
+  expose it as a public provider method (`mineralMasterSinks`), `solve()`
+  byte-identical (the whole corpus is the harness).
+* **S2b** — `SolidEquilibriumService` in `thermo/solidEquilibrium/`:
+  verifies each ADMITTED name against the provider's minerals (refusing by
+  name with the curation remedy), builds `SolidCandidate`s whose `lnSI`
+  prices through `provider.solve()` (no equilibrate set) and whose
+  `remove` sinks master totals through the S2a stoichiometry, runs the
+  common `equilibrate()`, announces appearance/redissolution via
+  AdvisoryLog, returns formed amounts + the final aqueous state.  Gate:
+  assembly from flash16's own declarations reproduces the
+  `SpeciationSolver` internal-equilibrate oracle (the spike's D3, now
+  through the ASSEMBLY path, not hand-built closures).  The internal
+  augmented-Newton mineral path stays untouched — it dies in S3, when the
+  service becomes the ONE mechanism.
 
 ## Slice discipline
 
