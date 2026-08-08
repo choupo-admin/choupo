@@ -135,9 +135,17 @@ def main() -> int:
               "binary looks exactly like a green run.")
         return 1
 
+    #  THE SUCCESS LINE NAMES NO FILE, and that is deliberate.  The first
+    #  version printed which source was newest; that filename changes with
+    #  almost every build, so the claim recorded in generated/gateManifest.json
+    #  churned on every run and produced a diff that meant nothing.  A manifest
+    #  whose entries move constantly teaches its readers to skip the diff,
+    #  which is precisely how a real drift gets waved through -- the file
+    #  exists to make drift visible.  The newest source IS named in the failure
+    #  message, where it is the diagnosis and the reader needs it.
     print("check_build_fresh: OK -- " + bdir.name + " carries all "
           + str(len(ARTEFACTS)) + " artefact(s), each newer than the newest "
-          "source (" + str(newest_path.relative_to(ROOT)) + ").  The suite is "
+          "source under src/ and make/.  The suite is "
           "therefore testing a build OF this tree.  NOT CHECKED: content -- "
           "this compares modification times, not hashes, so a `touch` or a "
           "`git checkout` that changes no byte can still trip it (the remedy "
