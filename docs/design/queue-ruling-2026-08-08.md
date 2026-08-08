@@ -90,9 +90,15 @@ untestable.  **Escalated back to Vítor (it is new-data curation, reserved):**
 whether the standards tier should gain a cited Wilson pair.  Until then the
 model stays registered and the ideal-default announcement stands.
 
-## D2 — model-declared record homes: direction and recommended shape RATIFIED
+## D2 — model-declared record homes: three states, deliberately separate
 
-Build sequenced after the validation work; no code against it yet.
+**DECIDED** (2026-08-08): the direction — a model declares the records it
+reads — and the proposal's recommended shape are ratified.
+**BUILD AUTHORISED**: under C1, no further ruling is needed to implement.
+**NOT BUILT**: no code exists against this, and none is scheduled before the
+validation work.  The three states are recorded separately so nobody later
+infers from "ratified" that the implementation exists (Vítor's bookkeeping
+clarification, same day).
 
 ## D3 — unread keys, end state: RULED
 
@@ -124,3 +130,32 @@ escalation (curate a cited Wilson pair for the standards tier, or decline).**
 Everything else is closed, delegated, or deferred-with-trigger.  Per the
 ruling, the queue is not to be repopulated with ordinary implementation
 choices that fall under DELEGATE-WITH-DEFAULT.
+
+
+## Addendum 2, same day — the four axes, and the reopening rule
+
+A completion table presented to Vítor mixed four registers into one
+percentage column, and he corrected the frame before it could mislead:
+architecture, implementation of already-ratified architecture, data
+curation, and external validation are DIFFERENT AXES, and "~80% overall"
+reads as ~80% of the current project target — not 80% architectural
+consolidation.  His axis readings, recorded as given: constitutional /
+governing architecture ~95% · core software architecture ~90–95% ·
+thermodynamic architecture ~90% (electrolyte/speciation ~90–95%
+architecturally, ~80% in completeness) · implementation of ratified
+architecture ~80% · data curation ~60% · external validation ~15–20% ·
+the whole against its current settled target ~80%.
+
+The conclusion, rephrased as ruled: **the remaining architectural deficit is
+primarily solids, with the phase grammar as the associated implementation
+boundary; the dominant project-level deficit is external validation.**  On
+solids the question is no longer "how should it work" — the principle is
+ruled (§C2) — and **if the C2 spike succeeds across its three representative
+cases, the solids architecture counts as consolidated even before every
+implementation path is complete.**
+
+The standing rule this produced lives in
+[`verification-and-validation.md`](../architecture/verification-and-validation.md)
+§6, with a binding pointer in philosophy §4: validation gaps are not
+architectural incompleteness, and settled architecture reopens only on
+demonstrated duplication, exception, or silent fallback.

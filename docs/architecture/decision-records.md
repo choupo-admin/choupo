@@ -51,6 +51,14 @@ that is the shape that gets re-litigated.
 **Status** — `SHIPPED` (in the engine, with a gate), `CONTRACT` (written, not
 built), `OPEN` (awaiting a decision), `HISTORICAL` (superseded or a snapshot).
 
+**OWED ≠ AWAITING** (standing distinction, ruled 2026-08-08).  An item on the
+curation ledger — a citation, a primary-source datum, an INTERIM promotion —
+is OWED: reserved to Vítor, standing, blocking nothing, with no deadline and
+no queue entry.  Only an item that blocks work pending an architectural
+ruling is AWAITING.  Listing an owed item as awaiting recreates the
+over-capacity queue this index was just cleared of; conflating them in either
+direction is an error.
+
 ---
 
 ## 3. The records

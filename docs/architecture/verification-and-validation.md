@@ -90,3 +90,31 @@ be a 421-case migration whose only consumer is this table, and the table is
 short because the validation subset is genuinely short. If the subset grows past
 what a reader can hold, revisit it — that is the condition, stated so the
 absence is a decision and not an oversight.
+
+
+---
+
+## 6. The reopening rule (ruled by Vítor, 2026-08-08)
+
+**Low external-validation coverage is not architectural incompleteness.
+Architectural decisions are reopened only when an external-validation failure
+demonstrates that the settled architecture cannot represent the required
+physics without duplication, exception, or silent fallback.**
+
+Two separate questions, never to be conflated:
+
+* **ARCHITECTURE** — do we know how the pieces fit together?  As of
+  2026-08-08: yes, almost completely; the remaining architectural deficit is
+  primarily solids (target ruled, C2 spike pending), with the phase grammar
+  as its implementation boundary.
+* **VALIDATION** — have we independently demonstrated the pieces produce the
+  right physical answers?  Still very incompletely (§3's named subset).
+
+The trigger clause is deliberately stated in this project's own DETECTABLE
+vocabulary: duplication is what the arity doctrine hunts, exception is what
+the special-case bans hunt, silent fallback is what the no-silent-crutch
+gates hunt.  A claimed architectural failure must therefore present evidence
+of a kind the machinery can recognise — a disagreement with experiment, by
+itself, is a MODEL or DATA finding, and reopens nothing.  This rule exists so
+that low validation coverage can never become psychological evidence that the
+simulator needs redesign.

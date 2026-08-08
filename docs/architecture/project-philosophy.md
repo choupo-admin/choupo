@@ -152,6 +152,10 @@ once and then remembered its answer.  See
   objection window was misclassified and is CONSTITUTIONAL; and if
   implementation reveals a delegated item crosses a reserved boundary, stop
   and escalate (this clause fired on its first day: the D1 Wilson item).
+  **Companion rule, same day:** low external-validation coverage is NOT
+  architectural incompleteness; settled architecture reopens only on the
+  conditions in
+  [`verification-and-validation.md`](verification-and-validation.md) §6.
 - **Never name a commercial competitor in the USER-FACING MANUALS** (settled
   2026-07-03).  This covers everything a user reads: the `docs/` guides,
   tutorial `controlDict` / `flowsheetDict` header comments and `description`
