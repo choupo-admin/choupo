@@ -716,40 +716,58 @@ function StreamDetails({
         </Stack>
       </Stack>
       {phases.length > 0 && (
-        //  The sidebar is narrow, so it carries the HEADLINE -- which phases
-        //  exist and how much is in each.  The per-component breakdown lives
-        //  in the Streams workspace, which has the width for it.  Without
-        //  this, a four-phase stream looked exactly like a one-phase one.
-        <Stack gap={4}>
+        //  The FULL decomposition, per phase and per component.  This card
+        //  used to carry only the headline totals and point at the Streams
+        //  workspace for the breakdown -- a width argument the speciation
+        //  table below disproved by listing nine species in the same
+        //  column: a student read the aqueous ions here and never learned
+        //  that most of the benzene sits in an organic phase (found on
+        //  flash19, 2026-08-08).  The same rows the workspace draws, in
+        //  the same compact name/value shape the speciation already uses.
+        <Stack gap={6}>
           <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
             Phases
           </Text>
-          <Table withRowBorders={false} striped="even" verticalSpacing={4}>
-            <Table.Tbody>
-              {phases.map((ph) => (
-                <Table.Tr key={ph.name}>
-                  <Table.Td style={{ width: "45%" }}>
-                    <Text size="xs" ff="monospace">{ph.name}</Text>
-                  </Table.Td>
-                  <Table.Td>
-                    {/* A phase whose molar conversion failed stays VISIBLE
-                        in its native kg/s (never the wrong unit, never a
-                        silent disappearance); the full reason is in the
-                        Streams workspace and the pop-out. */}
-                    <Text size="xs" ff="monospace" c="dimmed">
-                      {ph.unavailable
-                        ? `${Object.values(ph.massFlowsKg ?? {})
-                              .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s (molar n/a)`
-                        : `${formatFlow(ph.total, phaseFlowUnit)} ${phaseFlowUnit}`}
-                    </Text>
-                  </Table.Td>
-                </Table.Tr>
-              ))}
-            </Table.Tbody>
-          </Table>
           <Text size="xs" c="dimmed">
-            per-component breakdown in the Streams workspace
+            a decomposition of the overall composition above among the
+            physical phases — the sides close by subtraction
           </Text>
+          {phases.map((ph) => (
+            <Stack key={ph.name} gap={2}>
+              <Text size="xs" ff="monospace" fw={600}>
+                {ph.name} —{" "}
+                {ph.unavailable
+                  ? `${Object.values(ph.massFlowsKg ?? {})
+                        .reduce((a, b) => a + b, 0).toPrecision(4)} kg/s (molar n/a)`
+                  : `${formatFlow(ph.total, phaseFlowUnit)} ${phaseFlowUnit}`}
+              </Text>
+              {/* A phase whose molar conversion failed stays VISIBLE in its
+                  native kg/s with the reason -- never the wrong unit, never
+                  a silent disappearance. */}
+              {ph.unavailable && (
+                <Text size="xs" c="dimmed">{ph.unavailable}</Text>
+              )}
+              <Table withRowBorders={false} striped="even" verticalSpacing={4}>
+                <Table.Tbody>
+                  {Object.entries(ph.unavailable ? (ph.massFlowsKg ?? {}) : ph.flows)
+                    .sort((a, b) => b[1] - a[1]).map(([c, n]) => (
+                    <Table.Tr key={c}>
+                      <Table.Td style={{ width: "55%" }}>
+                        <Text size="xs" ff="monospace">{c}</Text>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="xs" ff="monospace" c="dimmed">
+                          {ph.unavailable
+                            ? `${n.toPrecision(4)} kg/s`
+                            : `${formatFlow(n, phaseFlowUnit)} ${phaseFlowUnit}`}
+                        </Text>
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Stack>
+          ))}
         </Stack>
       )}
       {runStream?.speciation && (
@@ -773,8 +791,9 @@ function StreamDetails({
             )}
           </Group>
           <Text size="xs" c="dimmed">
-            aqueous phase, {runStream.speciation.basis} basis — a
-            decomposition of the composition above, never a second state
+            {phases.length > 0
+              ? <>a decomposition of the AQUEOUS phase above ({runStream.speciation.basis} basis), never a second state</>
+              : <>aqueous phase, {runStream.speciation.basis} basis — a decomposition of the composition above, never a second state</>}
           </Text>
           <Table withRowBorders={false} striped="even" verticalSpacing={4}>
             <Table.Tbody>
