@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    txy_ideal              n_failures       0                  1e-4
+diag    txy_ideal              n_points         51                 1e-4
+diag    txy_nrtl               n_failures       0                  1e-4
+diag    txy_nrtl               n_points         51                 1e-4
+diag    txy_unifac             n_failures       0                  1e-4
+diag    txy_unifac             n_points         51                 1e-4
+diag    consistency_etoh_water gamma1_inf       4.68506            1e-4
+diag    consistency_etoh_water gamma2_inf       2.27627            1e-4
+diag    consistency_etoh_water gd_max_resid     0.0964023          1e-4
+diag    consistency_etoh_water gd_mean_resid    0.05208            1e-4
+diag    consistency_etoh_water herington_D      12.0482            1e-4
+diag    consistency_etoh_water herington_J      7.4082             1e-4
+diag    consistency_etoh_water herington_pass   1                  1e-4
+diag    consistency_etoh_water n_points         10                 1e-4
+diag    txy_wilson             n_failures       0                  1e-4
+diag    txy_wilson             n_points         51                 1e-4

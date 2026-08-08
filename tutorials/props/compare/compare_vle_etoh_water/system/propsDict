@@ -103,6 +103,32 @@ operations
         dataset     "constant/experiments/etoh_water_vle_1atm.dat";
         output      { file consistency.csv; }
     }
+    {
+        // WILSON, on the SAME inline pair flash03_wilson_ethanol_water runs on
+        // (A_ij 1157.95 / A_ji 4081.65 -- quoted from that case, which owns
+        // them; this op curates nothing).  Wilson's FIRST measured-data
+        // anchor: until now the model was Gibbs-Duhem-consistent (internal)
+        // and exercised by three tutorials, but never held against a lab
+        // point.  Expect fitted-Wilson quality close to fitted-NRTL; a large
+        // gap here would be a FINDING about the pair, reported, never tuned.
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel
+            {
+                model Wilson;
+                binaryParameters
+            {
+                ethanol-water { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; }
+            }
+            } } }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_wilson.csv; }
+    }
 );
 
 experimental
@@ -111,7 +137,7 @@ experimental
         name      etoh_water_1atm;
         component ethanol;
         kind      txy;
-        models    ( txy_ideal  txy_nrtl  txy_unifac );
+        models    ( txy_ideal  txy_nrtl  txy_unifac  txy_wilson );
         dataset   "constant/experiments/etoh_water_vle_1atm.dat";
         source    "Carey & Lewis 1932 (ethanol-water VLE, 101.3 kPa)";
     }

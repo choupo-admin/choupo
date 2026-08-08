@@ -84,7 +84,7 @@ credibility claim this document exists to deflate:
 | `props/electrolyte/farelo_licl_range` | Hamer & Wu range for LiCl | **fit-consistency** — the pair was refit to it |
 | `props/electrolyte/pitzer_nacl_sp77_hot` | Silvester & Pitzer (1977) Table V, 25–200 °C | **fit-consistency** — the coefficients are the same paper's Table IV, verbatim |
 | `props/electrolyte/pitzer01_nacl` | Parker (1965) Φ_L, NaCl series | **fit-consistency** — the op's own prose pins the AAD against "the same curated Parker series"; found by the gate's first run, then re-verified against the case rather than my first guess (which had the wrong anchor AND the wrong class) |
-| `props/compare/compare_vle_etoh_water` | measured ethanol–water VLE at 1 atm | independent |
+| `props/compare/compare_vle_etoh_water` | Carey & Lewis (1932) ethanol–water VLE at 101.3 kPa, 12 points | independent — ideal / NRTL / UNIFAC / **Wilson** (on flash03's inline pair, its first measured anchor: T_bubble AAD 0.28 K vs NRTL's 0.35 K) |
 | `props/electrolyte/fpd01_nacl_freezing` | one tabulated FPD point at 1 mol/kg (interim citation, Scatchard–Prentiss candidate) + dilute-limit slope vs the derived K_f | independent but THIN — one point, said plainly; also the ice witness: the depression agrees to 0.05 % with a_w evaluated at T_f, where the 25 °C surface leaves a 1.8 % gap |
 
 Synthetic datasets (`*synthetic*.dat`) are teaching surrogates and may never
