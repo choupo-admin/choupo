@@ -276,7 +276,10 @@ ones for day-to-day work:
 > ([`queue-ruling-2026-08-08.md`](docs/design/queue-ruling-2026-08-08.md)):
 > C1 delegation mechanism ratified (amended: immediate ship, no silence
 > mechanism, reserved list), C2 one solid-equilibrium architecture with
-> class-appropriate solid models + mandatory 3-case spike, C3 uniform
+> class-appropriate solid models + mandatory 3-case spike — **built,
+> reviewed and PASSED the same day; target RATIFIED, migration AUTHORISED
+> under [`solid-equilibrium-spike.md`](docs/design/solid-equilibrium-spike.md)
+> §7's four boundaries**, C3 uniform
 > `phases ( … )` direction approved (no mass migration), D2–D4 defaults
 > approved, N1–N5 closed as deferred with named triggers.  **Open for Vítor: NONE**
 > (same-day addendum: the escalated D1 resolved into the standing curation

@@ -122,9 +122,13 @@ physics without duplication, exception, or silent fallback.**
 Two separate questions, never to be conflated:
 
 * **ARCHITECTURE** — do we know how the pieces fit together?  As of
-  2026-08-08: yes, almost completely; the remaining architectural deficit is
-  primarily solids (target ruled, C2 spike pending), with the phase grammar
-  as its implementation boundary.
+  2026-08-08: yes.  The last open deficit — solids — closed the same day the
+  rule was written: the C2 spike PASSED review and the target
+  solid-equilibrium architecture was RATIFIED
+  ([`solid-equilibrium-spike.md`](../design/solid-equilibrium-spike.md) §7),
+  with the ruling's own words: **the Choupo architecture is consolidated** —
+  what remains is implementation (flash integration, the C3 grammar, the
+  authorised migration), curation and external validation.
 * **VALIDATION** — have we independently demonstrated the pieces produce the
   right physical answers?  Still very incompletely (§3's named subset).
 

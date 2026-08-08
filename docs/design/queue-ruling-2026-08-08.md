@@ -54,6 +54,15 @@ physically different solids into an inappropriate fusion-K form.  **No
 migration of the existing speciation path is authorised until that spike is
 reviewed.**
 
+> **Same-day outcome (2026-08-08):** the spike was built, returned, and
+> REVIEWED THE SAME DAY — **PASSED**; the target architecture is RATIFIED and
+> the migration AUTHORISED under four boundary rulings (production solver =
+> active-set complementarity + simultaneous damped Newton; data defines /
+> case admits / service decides; sub-zero Ksp(T) is a curation gap, not a
+> blocker; the interface lives in the phase-equilibrium layer).  The
+> authoritative record of the verdict and its boundaries is
+> [`solid-equilibrium-spike.md`](solid-equilibrium-spike.md) §7.
+
 ## C3 — uniform `phases ( … )` direction: APPROVED, no mass migration
 
 The uniform declaration with explicit per-phase `type` may be built and may

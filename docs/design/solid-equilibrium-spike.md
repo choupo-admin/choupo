@@ -6,9 +6,11 @@
 > falsify that proposition; stop at the architectural evidence and return for
 > review before migration."*  Ruling: `queue-ruling-2026-08-08.md` §C2.
 >
-> **Status: RETURNED FOR REVIEW.  Migration stays unauthorised.**  Gate:
-> `check_solid_equilibrium_spike` (live evidence, sabotage-verified;
-> the purity arm is falsification clause (a) made executable).
+> **Status: REVIEWED AND PASSED — Vítor, 2026-08-08, same day.  The target
+> solid-equilibrium architecture is RATIFIED; migration is AUTHORISED under
+> the four boundary rulings of §7.**  Gate: `check_solid_equilibrium_spike`
+> (live evidence, sabotage-verified; the purity arm is falsification clause
+> (a) made executable).
 
 ---
 
@@ -90,3 +92,67 @@ production form is a review question, below.
 `solid-formation-routes.md` (the two-route problem this dissolves) ·
 `ice-as-a-solid-phase-of-the-solvent.md` · `check_solid_equilibrium_spike.py`
 (the live evidence) · `check_ice_freezing.py` (the crystal's own gate).
+
+---
+
+## 7. The review verdict (Vítor, 2026-08-08) — PASSED, and the four boundaries
+
+**"C2 SPIKE: PASSED.  TARGET SOLID-EQUILIBRIUM ARCHITECTURE: RATIFIED.  The
+migration may proceed under the boundaries above.  No additional
+architectural spike is required."**  The reviewer named the NEGATIVE CONTROL
+as the strongest result — the deliberately reconstructed two-route shape
+letting both mechanisms "converge" while violating the common ledger by
+30 % is direct evidence of the defect the migration eliminates — beside the
+untouched reproduction of the reactive path.
+
+**R1 — production solver.**  Neither pure simultaneous Newton nor pure
+damped sequential is ratified as exclusive.  The target: **active-set
+complementarity + simultaneous damped Newton on the active equilibrium
+set** — the complementarity stays EXPLICIT (never hidden in a smooth
+surrogate; pedagogically deliberate), the active-set logic decides presence,
+and the coupled state of the active set solves simultaneously so that
+solid ORDERING never becomes part of the physics.
+Appearance/disappearance announcements ("undersaturated — absent",
+"solid phase appeared/disappeared") are SOLVER/SERVICE behaviour; a solid
+model supplies thermodynamics (residual/lnSI, derivatives where available,
+transfer stoichiometry, validity) and never emits policy or narrative.
+
+**R2 — candidate ownership.**  `chemistryDict` and the C3 grammar are NOT
+co-owners of one candidate.  The rule: **DATA defines what a solid IS · the
+CASE declares whether it is ADMITTED · the equilibrium SERVICE decides
+whether it is PRESENT.**  After migration `SpeciationSolver` no longer
+removes precipitated material independently — it becomes a provider/client
+service (aqueous state in; speciation, activities, IAP out) for the solid
+machinery.  **The ONLY mechanism authorised to transfer material from the
+fluid inventory into a solid phase is the common solid phase-equilibrium
+closure.**  That single-transfer rule is the architectural point.
+
+**R3 — the sub-zero Ksp(T) gap** is a CURATION/VALIDATION gap, not a
+migration blocker.  Migration does not wait for richer sub-zero NaCl data.
+The validity boundary stays explicit: a first-order van 't Hoff
+extrapolation must never silently become a curated fact — outside the
+evidence envelope the engine announces or refuses per existing doctrine.
+The both-active eutectic remains a NAMED gap, not evidence against the
+architecture.
+
+**R4 — interface home.**  The common interface belongs to the
+PHASE-EQUILIBRIUM LAYER, exposed through the existing ThermoPackage /
+phase-equilibrium service architecture — NOT inside SpeciationSolver, a
+crystalliser, a flash, the chemistry parser, or a concrete SolidPhase.
+Conceptually (boundaries, not mandated class names): the phase-equilibrium
+service owns VLE · LLE · solid equilibrium, and under solid equilibrium sit
+the fusion-based, dissolution/Ksp, mineral/reactive, and future
+hydrate/solid-solution models.  The model contract stays SMALL (residual,
+derivatives, stoichiometry, validity); the solver owns active-set logic,
+appearance/disappearance, the coupled solve, ledger closure, announcements
+and refusals.  *The model knows the physics; the solver knows how phases
+coexist and how material moves.*
+
+**Project-level consequence, as ruled:** the solids ARCHITECTURE is now
+~90–95 % consolidated (implementation — flash integration, C3 grammar,
+migration, witnesses, broader validation — remains), the largest remaining
+uncertainty in the thermodynamic architecture has disappeared, and **THE
+CHOUPO ARCHITECTURE IS CONSOLIDATED**: what remains is predominantly
+implementation, curation and external validation.  Architecture reopens
+only under the reopening rule (`verification-and-validation.md` §6) —
+never merely because an implementation or validation item is incomplete.

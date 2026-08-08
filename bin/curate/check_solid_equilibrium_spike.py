@@ -8,8 +8,11 @@ presence decided by the complementarity  n = 0 & lnSI <= 0  XOR  n > 0 &
 lnSI = 0  -- serving MULTIPLE explicit solid thermodynamic models, with NO
 independent removal mechanisms on the same equilibrium.  The spike exists to
 demonstrate or falsify it across the ruling's three classes; this gate keeps
-the demonstrations true after the spike, so the review that authorises (or
-refuses) migration reads live evidence, not a remembered run.
+the demonstrations true after the spike.  The review has since happened:
+PASSED (Vitor, 2026-08-08) -- the target architecture is RATIFIED and the
+migration AUTHORISED under the four boundary rulings recorded in
+docs/design/solid-equilibrium-spike.md section 7.  The evidence stays pinned
+live here until the migration's own gates supersede it.
 
 WHAT THIS CHECKS -- each arm is one of the ruling's demands:
 
@@ -52,8 +55,8 @@ WHAT THIS DOES NOT CHECK, said plainly: the spike proves the ARCHITECTURE
 can host the three classes without double counting.  It does NOT validate
 any number against measurement beyond the anchors its inputs already carry,
 does NOT integrate the interface into any flash or unit operation, and does
-NOT touch the speciation path -- migration is EXPLICITLY unauthorised until
-Vitor reviews this evidence (queue-ruling C2).
+NOT touch the speciation path -- the AUTHORISED migration is future work
+under the section-7 boundaries, and none of it exists yet.
 """
 import json
 import os
@@ -224,8 +227,12 @@ def main() -> int:
         "both-active eutectic is undemonstrated with current data (D4b -- "
         "SP77 extrapolated below 0 C, first-order van 't Hoff Ksp; the named "
         "gap is a curated sub-zero Ksp(T)); nothing is integrated into any "
-        "flash; the speciation path is untouched; MIGRATION STAYS "
-        "UNAUTHORISED pending Vitor's review of the spike record.")
+        "flash; the speciation path is untouched.  The review PASSED "
+        "(Vitor, 2026-08-08): the target architecture is RATIFIED and "
+        "migration is AUTHORISED under the spike record's section-7 "
+        "boundaries (one transfer mechanism; the solver owns policy, the "
+        "models own physics).  This gate keeps the spike's evidence true "
+        "until the migration's own gates supersede it.")
     return 0
 
 

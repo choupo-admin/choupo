@@ -100,8 +100,9 @@ direction is an error.
 [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md), whose
 same-day addendum resolved the one escalated item (the Wilson standards pair
 joins the standing curation ledger: explicitly owed until a primary source is
-verified, blocking nothing).  One scheduled future entry by C2's own design:
-the solid-equilibrium spike returns for review when it exists.  The five rows this section
+verified, blocking nothing).  The one scheduled future entry (C2's spike
+returning for review) was DISCHARGED the same day: reviewed and PASSED,
+ruling in the spike record's §7.  The five rows this section
 used to hold were STALE — each already decided when it was listed here, which
 is this index failing its own purpose; they move below with their rulings.
 
@@ -109,7 +110,7 @@ is this index failing its own purpose; they move below with their rulings.
 
 | record | kind | alt | ruling |
 |---|---|---|---|
-| [`solid-equilibrium-spike.md`](../design/solid-equilibrium-spike.md) | SPIKE | yes | **RETURNED FOR REVIEW 2026-08-08** — C2's proposition demonstrated across the three classes (falsification clauses named, none fired; the reactive oracle reproduced untouched to 3e-10); the both-active eutectic honestly undemonstrated with current data; **migration stays unauthorised** |
+| [`solid-equilibrium-spike.md`](../design/solid-equilibrium-spike.md) | SPIKE | yes | **REVIEWED AND PASSED 2026-08-08 (same day)** — the three classes demonstrated, no falsification clause fired, the reactive oracle reproduced untouched to 3e-10; target architecture **RATIFIED**, migration **AUTHORISED** under the four boundary rulings of the record's §7 (one transfer mechanism; solver owns policy, models own physics); the both-active eutectic stays a named curation gap |
 | [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) | ADR | yes | **RULED 2026-08-08** — C1 delegation (amended: immediate ship, silence is not a mechanism, reserved list), C2 one solid-equilibrium architecture with class-appropriate solid models + mandatory 3-case spike, C3 uniform `phases` direction (no mass migration), D2–D4, N1–N5 deferred-with-trigger; D1 escalated back on a failed premise |
 | [`open-decisions-2026-08-03.md`](../design/open-decisions-2026-08-03.md) | ADR | yes | RESOLVED 2026-08-03 in its own §Resolution — A no-reseal (report restructure to build), B built, C splitter capability to build, D stamp refinement |
 | [`role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | FORUM | yes | DECIDED + BUILT 2026-08-02 — panel option C (DEV.md §4b item 2) |
