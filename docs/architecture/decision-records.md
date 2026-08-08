@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 44 records already exist
+## 1. Why an index, when 45 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 44 design records, **19 state a rejected alternative and 25 do not** —
+- Of 45 design records, **20 state a rejected alternative and 25 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -109,6 +109,7 @@ is this index failing its own purpose; they move below with their rulings.
 
 | record | kind | alt | ruling |
 |---|---|---|---|
+| [`solid-equilibrium-spike.md`](../design/solid-equilibrium-spike.md) | SPIKE | yes | **RETURNED FOR REVIEW 2026-08-08** — C2's proposition demonstrated across the three classes (falsification clauses named, none fired; the reactive oracle reproduced untouched to 3e-10); the both-active eutectic honestly undemonstrated with current data; **migration stays unauthorised** |
 | [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) | ADR | yes | **RULED 2026-08-08** — C1 delegation (amended: immediate ship, silence is not a mechanism, reserved list), C2 one solid-equilibrium architecture with class-appropriate solid models + mandatory 3-case spike, C3 uniform `phases` direction (no mass migration), D2–D4, N1–N5 deferred-with-trigger; D1 escalated back on a failed premise |
 | [`open-decisions-2026-08-03.md`](../design/open-decisions-2026-08-03.md) | ADR | yes | RESOLVED 2026-08-03 in its own §Resolution — A no-reseal (report restructure to build), B built, C splitter capability to build, D stamp refinement |
 | [`role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | FORUM | yes | DECIDED + BUILT 2026-08-02 — panel option C (DEV.md §4b item 2) |
@@ -197,7 +198,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**25 of 44 records state no rejected alternative.**  For a FORUM or a STUDY
+**25 of 45 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

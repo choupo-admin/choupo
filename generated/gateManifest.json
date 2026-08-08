@@ -40,8 +40,8 @@
       "claim": "ok   every liquid-bearing stream of crystalliser06 carries a speciation block"
     },
     "check_build_fresh": {
-      "exit": 0,
-      "claim": "check_build_fresh: OK -- linux64Gcc carries all 5 artefact(s), each newer than the newest source under src/ and make/.  The suite is therefore testing a build OF this tree.  NOT CHECKED: content -- this compares modification times, not hashes, so a `touch` or a `git checkout` that changes no byte can still trip it (the remedy is one idempotent `make all`), and a library built from these files can still be wrong.  The WASM build is separate and not covered."
+      "exit": 1,
+      "claim": "check_build_fresh: FAILED"
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -81,11 +81,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 102 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 103 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 44 design record(s) appear in the index, and its stated counts (19 state a rejected alternative, 25 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 45 design record(s) appear in the index, and its stated counts (20 state a rejected alternative, 25 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 103 gates, and the other 99 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 104 gates, and the other 100 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -181,11 +181,11 @@
     },
     "check_git_visibility": {
       "exit": 0,
-      "claim": "git visibility: 69 source directories, each can hold a new file."
+      "claim": "git visibility: 70 source directories, each can hold a new file."
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40218 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40223 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -309,7 +309,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 490 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 491 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -330,6 +330,10 @@
     "check_size_distribution": {
       "exit": 0,
       "claim": "check_size_distribution: OK -- Rosin-Rammler moments == d63^m*Gamma(1+m/n); log-normal moments == exp(m*mu + m^2 sigma^2/2); basis conversion exact (volume/number = exp(3 sigma^2) = 1.94004); the two laws declare different bases (3 vs 0); the base's own quadrature reproduces the analytic moment to 1e-6 (tested through a subclass with the override removed); tabular round trip agrees to 1.8e-05 (a FLOOR, not convergence -- see the note); third moment exact to 1.8e-05 (the coarse end, where no truncation excuse applies); the d32 floor obeys dMin^(n-1): measured 39.8x per 100-fold cut against 39.8x predicted.  Every arm RECOMPUTES the closed form rather than comparing with a pinned number, so the gate proves the moments are right and not merely unchanged.  It does NOT judge whether a given law is the right model for a given powder -- that is a modelling judgement no gate can hold."
+    },
+    "check_solid_equilibrium_spike": {
+      "exit": 0,
+      "claim": "check_solid_equilibrium_spike: OK -- the C2 proposition's evidence holds live: the fusion-model crystal (D1, inverts the freezing curve to 7.0e-09 K; absent above it), the dissolution-model salt (D2, relaxes to the cited m_sat exactly, ledger 1e-15), and the speciated mineral (D3, reproduces the UNTOUCHED SpeciationSolver oracle: n to 3.0e-10 rel, same pH) all sit behind ONE complementarity whose code names no solid (purity arm).  Two solids in one solve: active-at-zero + registered-but-absent, one ledger closed to 1e-16 (D4).  The banned two-blind-mechanisms shape, rebuilt by hand, leaves a 30 % ledger violation the closure metric SEES (D5).  RECORDED LIMITS: the both-active eutectic is undemonstrated with current data (D4b -- SP77 extrapolated below 0 C, first-order van 't Hoff Ksp; the named gap is a curated sub-zero Ksp(T)); nothing is integrated into any flash; the speciation path is untouched; MIGRATION STAYS UNAUTHORISED pending Vitor's review of the spike record."
     },
     "check_solute_basis": {
       "exit": 0,
@@ -365,7 +369,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 605 source files, each includes what it uses."
+      "claim": "std includes: 606 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
