@@ -1355,7 +1355,9 @@ PYEOF
     # names no solid (the purity arm IS falsification clause (a)); the
     # reactive oracle reproduced without touching SpeciationSolver; the
     # banned two-mechanisms shape rebuilt by hand and its 30% ledger
-    # violation measured.  Migration stays unauthorised pending review.
+    # violation measured.  The review PASSED (2026-08-08); the migration
+    # runs under its four boundaries, and this gate keeps the spike's
+    # evidence true until the migration's own gates supersede it.
     if "$ROOT/bin/curate/check_solid_equilibrium_spike.py" > /tmp/solideq.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "solid-equilibrium-spike-gate" "$(head -1 /tmp/solideq.$$)"
         pass=$((pass+1))
@@ -1365,6 +1367,21 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/solideq.$$
+
+    # Migration S2 seam (2026-08-08, boundaries R1-R4): flash16's own
+    # chemistryDict declaration assembles SolidCandidates through the
+    # provider-resolved sinks (the CO3 leg CHAINED onto the carbonate
+    # master, never copied), and the SolidEquilibriumService reproduces
+    # the internal equilibrate oracle it will replace in S3.
+    if "$ROOT/bin/curate/check_solid_service.py" > /tmp/solidsvc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "solid-service-gate" "$(head -1 /tmp/solidsvc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_solid_service.py)\n" "solid-service-gate"
+        cat /tmp/solidsvc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/solidsvc.$$
 
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden

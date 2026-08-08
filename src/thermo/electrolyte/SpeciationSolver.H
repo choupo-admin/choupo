@@ -217,6 +217,24 @@ struct MineralEntry
     std::string source;
 };
 
+//  The resolved TRANSFER STOICHIOMETRY of one mineral (migration S2a, ruled
+//  2026-08-08): its formation legs distributed onto the MASTER mole
+//  balances -- a leg naming a computed species (CO3) chains through that
+//  species' mass action onto the masters, exactly as the internal
+//  equilibrate path resolves it, from the SAME code (one home; the
+//  SolidEquilibriumService consumes this rather than re-deriving the
+//  chaining, which would be a second copy of the stoichiometry
+//  resolution).  `masterNu` is the net moles of each master RELEASED per
+//  mol dissolved; precipitation SINKS -nu * n from the master total.
+struct MineralSinks
+{
+    std::string mineral;
+    std::vector<std::pair<std::string, double>> masterNu;
+    double nuH     = 0.0;    // net H+ released per mol dissolved
+    bool   hasHleg = false;  // a { ion H; nu -1; } formation leg present
+    double logK    = 0.0;    // dissolution logK at the run T
+};
+
 // ---- cation-exchange (ion-exchange softener) -------------------------------
 // A Gaines-Thomas exchange half-reaction  Me(z+) + z X- = MeX(z) read from
 // exchange.dat.  `ion` is the aqueous cation master that binds (Na, Ca, ...);
@@ -292,6 +310,15 @@ struct SpeciationInput
     // prediction (see SpeciationResult::precipitated + the honesty banner).
     std::vector<std::string> equilibrate;
 
+    //  Report-only PROVIDER surface (migration S2a): minerals whose resolved
+    //  master-sink stoichiometry the caller wants on
+    //  SpeciationResult::sinks.  NO equilibration, NO transfer, NO change to
+    //  the solve -- pure resolution through the same code the internal
+    //  equilibrate path uses, so a client (SolidEquilibriumService) can
+    //  build its `remove` closures without a second copy of the chaining.
+    //  Empty = today's path, byte-identical BY CONSTRUCTION.
+    std::vector<std::string> sinksFor;
+
     // `exchange { resin SAC_Na; CEC ...; }` -- a fixed-capacity cation
     // exchanger the water equilibrates with (Gaines-Thomas).  EMPTY = today's
     // path, byte-identical BY CONSTRUCTION; every new code branch is gated on
@@ -362,6 +389,9 @@ struct SpeciationResult
     // mineral -> n_p [mol transferred to the solid per kg water]; an ALLOWED
     // mineral that stayed dissolved (evicted, n < 0 -> 0) reports 0.0.
     std::map<std::string, double> precipitated;
+    //  The resolved sinks requested via SpeciationInput::sinksFor (S2a) --
+    //  report-only, in request order; empty unless asked for.
+    std::vector<MineralSinks>     sinks;
     int                           activeSetPasses = 0;  // admit/evict outer iterations
     std::map<std::string, double> totalsBefore;  // master -> dissolved total BEFORE (mol/kg)
     std::map<std::string, double> totalsAfter;   // master -> dissolved total AFTER  (mol/kg)

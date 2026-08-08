@@ -81,7 +81,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 104 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 105 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 105 gates, and the other 101 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 106 gates, and the other 102 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -185,7 +185,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40237 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40241 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -335,6 +335,10 @@
       "exit": 0,
       "claim": "check_solid_equilibrium_spike: OK -- the C2 proposition's evidence holds live: the fusion-model crystal (D1, inverts the freezing curve to 7.0e-09 K; absent above it), the dissolution-model salt (D2, relaxes to the cited m_sat exactly, ledger 1e-15), and the speciated mineral (D3, reproduces the UNTOUCHED SpeciationSolver oracle: n to 3.0e-10 rel, same pH) all sit behind ONE complementarity whose code names no solid (purity arm).  Two solids in one solve: active-at-zero + registered-but-absent, one ledger closed to 1e-16 (D4).  The banned two-blind-mechanisms shape, rebuilt by hand, leaves a 30 % ledger violation the closure metric SEES (D5).  RECORDED LIMITS: the both-active eutectic is undemonstrated with current data (D4b -- SP77 extrapolated below 0 C, first-order van 't Hoff Ksp; the named gap is a curated sub-zero Ksp(T)); nothing is integrated into any flash; the speciation path is untouched.  The review PASSED (Vitor, 2026-08-08): the target architecture is RATIFIED and migration is AUTHORISED under the spike record's section-7 boundaries (one transfer mechanism; the solver owns policy, the models own physics).  This gate keeps the spike's evidence true until the migration's own gates supersede it."
     },
+    "check_solid_service": {
+      "exit": 0,
+      "claim": "check_solid_service: OK -- the S2 seam holds live: flash16's own chemistryDict declaration assembles through the provider-resolved sinks (Ca:1.000000 HCO3:1.000000 -- the CO3 leg chained onto the carbonate master, not copied), the service reproduces the internal equilibrate oracle (n rel 5.3e-11, SI 2.6e-11, same pH), the appearance is narrated, an undefined mineral refuses with the available list, and the service code names no solid.  NOT CHECKED: no unit consumes the seam yet (S3); fusion-class candidates still ride the spike gate."
+    },
     "check_solute_basis": {
       "exit": 0,
       "claim": "check_solute_basis: ok  (single-salt models asked about their own salt; what they omit is named, sized, and only when it is there)"
@@ -369,7 +373,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 606 source files, each includes what it uses."
+      "claim": "std includes: 608 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,

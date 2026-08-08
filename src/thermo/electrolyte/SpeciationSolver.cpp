@@ -1176,7 +1176,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         bool   hasHleg = false;            // carbonate { ion H; nu -1; } leg present
     };
     std::vector<Allowed> allowed;
-    if (!in.equilibrate.empty())
+    if (!in.equilibrate.empty() || !in.sinksFor.empty())
     {
         // map species name -> the Active reaction that computes it (for chaining
         // a mineral that references a computed species, e.g. CO3).
@@ -1185,7 +1185,11 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             for (const auto& a : act) if (a.species() == nm) return &a;
             return nullptr;
         };
-        for (const auto& nm : in.equilibrate)
+        //  ONE resolution for both consumers (S2a): the internal equilibrate
+        //  path below AND the report-only `sinksFor` provider surface the
+        //  SolidEquilibriumService reads.  Two copies of this chaining would
+        //  be two authorities on the transfer stoichiometry.
+        auto resolveOne = [&](const std::string& nm) -> Allowed
         {
             const MineralEntry* me = nullptr;
             for (const auto& m : minerals_) if (m.mineral == nm) { me = &m; break; }
@@ -1233,7 +1237,24 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             // in the final SI loop (which covers ALL minerals); here we only need
             // the value, so call the pure overload (no double-bucketing).
             al.logK = logK_T(me->logK25, me->hasDH, me->dH, me->kt, T);
-            allowed.push_back(std::move(al));
+            return al;
+        };
+        for (const auto& nm : in.equilibrate)
+            allowed.push_back(resolveOne(nm));
+        //  The report-only surface: same resolution, master NAMES instead of
+        //  indices, no Allowed pushed -- nothing downstream of here changes.
+        for (const auto& nm : in.sinksFor)
+        {
+            const Allowed al = resolveOne(nm);
+            MineralSinks ms;
+            ms.mineral = nm;
+            ms.nuH     = al.nuH;
+            ms.hasHleg = al.hasHleg;
+            ms.logK    = al.logK;
+            for (std::size_t j = 0; j < al.nuPj.size(); ++j)
+                if (al.nuPj[j] != 0.0)
+                    ms.masterNu.emplace_back(mast[j], al.nuPj[j]);
+            out.sinks.push_back(std::move(ms));
         }
     }
     const bool doEquil = !allowed.empty();
