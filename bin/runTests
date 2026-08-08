@@ -1352,6 +1352,25 @@ PYEOF
     fi
     rm -f /tmp/gibbsduhem.$$
 
+    # multi-ion Gibbs-Duhem (2026-08-08).  Ties the SOLVENT activity to the ION
+    # activities: (1000/Mw)dln(a_w) + SUM m_i dln(g_i) + SUM dm_i = 0.  Two
+    # kinds of model and two questions -- PitzerHMW and EdwardsPitzer supply an
+    # osmotic coefficient on the same parameters as their gammas and are held
+    # to the finite-difference floor; Davies supplies none (the solver holds
+    # phi = 1), so its solvent side is fixed at ideal and it CANNOT satisfy the
+    # constraint.  The gate MEASURES that departure rather than failing it, and
+    # requires it to grow with ionic strength: a Davies that came back
+    # consistent would have silently stopped being Davies.
+    if "$ROOT/bin/curate/check_ion_gibbs_duhem.py" > /tmp/iongd.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ion-gibbs-duhem-gate" "$(head -1 /tmp/iongd.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ion_gibbs_duhem.py)\n" "ion-gibbs-duhem-gate"
+        cat /tmp/iongd.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/iongd.$$
+
     # psat-range gate (2026-08-06).  All 108 vaporPressure blocks declare a
     # Trange, range() is a pure virtual every model implements -- and nothing
     # in the tree had ever CALLED it.  Zero consumers, on the correlation
