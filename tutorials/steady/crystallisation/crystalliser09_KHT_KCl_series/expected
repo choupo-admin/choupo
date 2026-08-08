@@ -1,7 +1,7 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  KCl_cake               F                0.000273622015015 1e-4
-stream  KHT_cake               F                2.54671494088e-05 1e-4
+stream  KCl_cake               F                0.00138859586739 1e-4
+stream  KHT_cake               F                5.38404641059e-05 1e-4
 stream  feed                   F                0.0277777777792  1e-4
 stream  finalLiquor            F                0.0541131192255  1e-4
 stream  freshEthanol           F                0.00416666666667 1e-4

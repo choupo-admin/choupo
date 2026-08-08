@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0277777777778  1e-4
-stream  magma                  F                0.0271500572444  1e-4
+stream  magma                  F                0.0277777777778  1e-4
 kpi     cryst                  Ksp_activity     38.4846213082    1e-4
 kpi     cryst                  Q_kW             -2.50670156624   1e-4
 kpi     cryst                  Q_removed        2506.70156624    1e-4

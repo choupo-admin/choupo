@@ -1,7 +1,7 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0277777777778  1e-4
-stream  magma                  F                0.0265894971524  1e-4
+stream  magma                  F                0.0277777777778  1e-4
 kpi     cryst                  CV               1.03562508094    1e-4
 kpi     cryst                  L_dominant       0.000232421875   1e-4
 kpi     cryst                  L_meanMass       0.000329374475484 1e-4

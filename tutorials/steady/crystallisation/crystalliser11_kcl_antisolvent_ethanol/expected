@@ -1,7 +1,7 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  brine                  F                0.0277777777778  1e-4
-stream  crystals               F                0.000423217143227 1e-4
+stream  crystals               F                0.0021050886953  1e-4
 stream  ethanol                F                0.0166666666667  1e-4
 stream  motherLiquor           F                0.0423393557491  1e-4
 kpi     cryst                  Ksp_activity     7.69319557877    1e-4

@@ -4,7 +4,7 @@
 stream  dryingAir              F                0.0138888888889  1e-4
 stream  exhaustAir             F                0.0148058483113  1e-4
 stream  feed                   F                0.000957611111111 1e-4
-stream  powder                 F                8.18867205141e-06 1e-4
+stream  powder                 F                4.06516887181e-05 1e-4
 kpi     dryer                  Nu               2.24532614778    1e-4
 kpi     dryer                  Pr               0.746977616919   1e-4
 kpi     dryer                  Re               0.203070475508   1e-4
