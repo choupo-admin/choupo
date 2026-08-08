@@ -43,6 +43,7 @@ License
 #include "PsychrometricChart.H"
 #include "HConsistency.H"
 #include "IsothermEval.H"
+#include "FreezingPoint.H"
 #include "PitzerActivity.H"
 #include "ENRTLMixedSolventOp.H"
 #include "ENRTLMultiSaltOp.H"
@@ -141,6 +142,9 @@ void PropertyOperation::registerBuiltins()
     reg("purePhaseDiagram", []{ return std::make_unique<PurePhaseDiagram>(); });
     reg("psychrometricChart", []{ return std::make_unique<PsychrometricChart>(); });
     reg("pitzerActivity", []{ return std::make_unique<PitzerActivity>(); });
+    //  The ice witness: the freezing-point curve solved THROUGH SolidPhase,
+    //  making the crystallising phase case-reachable for the first time.
+    reg("freezingPoint", []{ return std::make_unique<FreezingPoint>(); });
     // The PHYSICAL gate of the one-enthalpy-surface contract (#106):
     // state identities (dh/dT == Cp_phase, the 298 K anchor, Kirchhoff),
     // not just loci.

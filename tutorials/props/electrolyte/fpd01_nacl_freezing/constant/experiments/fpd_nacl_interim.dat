@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Freezing-point depression of NaCl(aq) -- INTERIM anchor, ONE point.
+  theta = T_fus(water) - T_f(solution), in kelvin, at molality m [mol/kg].
+
+  reviewStatus interim.  The 1.000 mol/kg value (theta = 3.37 K) is the
+  tabulated number recorded in-tree during the ice slice's development
+  (bin/curate/check_ice_freezing.py's own notes); its PRIMARY citation is
+  PENDING verification -- candidate source: Scatchard & Prentiss,
+  J. Am. Chem. Soc. 55 (1933) 4355 (freezing points of aqueous NaCl), to be
+  read and confirmed at review.  ONE point is a THIN anchor, said plainly:
+  this dataset exists to hold the witness case's comparison honest, not to
+  claim curve-level validation.  Enrichment (the full primary table) is a
+  standing curation-ledger item.
+\*-----------------------------------------------------------------------------*/
+recordType    experimentSeries;
+schemaVersion 1;
+reviewStatus  interim;
+
+nacl
+(
+    { m 1.000; theta 3.37; }
+);

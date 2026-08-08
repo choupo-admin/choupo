@@ -536,3 +536,24 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 \file{tutorials/props/thermoTest/atoms01\_formula\_parser}
 \end{tutoriallink}
 
+\subsection{Other}
+
+\paragraph{\code{freezingPoint}}
+Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f\_solid(T) = a\_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T\_f and depression at the grid end, the dilute-limit slope against nu*K\_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{anion}\textbf{*} & Anion species \\
+\code{cation}\textbf{*} & Cation species \\
+\code{molality} & Molality scan \\
+\code{output} & CSV output \\
+\code{temperature} & Temperature [K] \\
+\code{validation} & Reference points \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/electrolyte/fpd01\_nacl\_freezing}
+\end{tutoriallink}
+

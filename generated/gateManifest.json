@@ -185,7 +185,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40206 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40212 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -201,7 +201,7 @@
     },
     "check_ice_freezing": {
       "exit": 0,
-      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; DWSIM disables the same term for a data reason).  NOT COVERED: no case runs here (no tutorial declares a crystallising solid yet, and the witness case waits for a published anchor); the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here."
+      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; DWSIM disables the same term for a data reason).  The phase's case consumer is fpd01_nacl_freezing (the freezingPoint op, 2026-08-08); still NOT COVERED: no FLASH converges onto the crystal -- no solid path until the C2 spike is built and reviewed; the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here."
     },
     "check_ion_gibbs_duhem": {
       "exit": 0,
@@ -309,7 +309,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 76 registered operations carries a schema (68 exercised by the corpus over 489 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 490 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -324,8 +324,8 @@
       "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named"
     },
     "check_sealed_corpus": {
-      "exit": 0,
-      "claim": "sealed-corpus gate: 327 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "exit": 1,
+      "claim": "sealed-corpus gate FAILED:"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -365,7 +365,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 603 source files, each includes what it uses."
+      "claim": "std includes: 605 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
@@ -413,11 +413,11 @@
     },
     "check_validation_subset": {
       "exit": 0,
-      "claim": "check_validation_subset: OK -- all 4 validation-op case(s) with measured datasets are named in V&V SS3, every named case exists on disk, no synthetic dataset is cited as an anchor, and the known fit-consistency cases (farelo_licl_range, pitzer_nacl_sp77_hot, pitzer01_nacl, plus the hamer_wu LiCl arm in its row) are labelled as such rather than counted as independent.  NOT CHECKED: whether any anchor is RIGHT (that is each case's own AAD and golden), and anchored-golden cases without a validation op are visible to this gate only through their hand-listed rows."
+      "claim": "check_validation_subset: OK -- all 5 validation-op case(s) with measured datasets are named in V&V SS3, every named case exists on disk, no synthetic dataset is cited as an anchor, and the known fit-consistency cases (farelo_licl_range, pitzer_nacl_sp77_hot, pitzer01_nacl, plus the hamer_wu LiCl arm in its row) are labelled as such rather than counted as independent.  NOT CHECKED: whether any anchor is RIGHT (that is each case's own AAD and golden), and anchored-golden cases without a validation op are visible to this gate only through their hand-listed rows."
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2931 declared window(s) across 3559 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2931 declared window(s) across 3560 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,

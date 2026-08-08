@@ -1,0 +1,9 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    fpd_nacl               Tf_lastM_K       266.325            1e-4
+diag    fpd_nacl               depression_lastM_K 6.83528            1e-4
+diag    fpd_nacl               slope_dilute_K_kg_mol 3.46546            1e-4
+diag    fpd_nacl               slope_over_nuKf  0.931447           1e-4
+diag    fpd_nacl               theta_AAD_pct    0.0460433          1e-4
+diag    fpd_nacl               theta_nMeas      1                  1e-4

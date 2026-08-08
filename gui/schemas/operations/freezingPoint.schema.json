@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pitzerActivity.schema.json",
+  "title": "Freezing-point curve (ice witness)",
+  "description": "Freezing-point curve T_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f_solid(T) = a_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T_f and depression at the grid end, the dilute-limit slope against nu*K_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.",
+  "type": "object",
+  "properties": {
+    "cation": {
+      "type": "string",
+      "title": "Cation species",
+      "description": "Species key of the cation, e.g. Na. Its charge comes from its own species record."
+    },
+    "anion": {
+      "type": "string",
+      "title": "Anion species",
+      "description": "Species key of the anion, e.g. Cl."
+    },
+    "molality": {
+      "type": "object",
+      "title": "Molality scan",
+      "description": "`{ from ...; to ...; n ...; }` \u2014 the molality range to sweep. Absent, a default scan is used.",
+      "properties": {
+        "from": {
+          "type": "number",
+          "minimum": 0,
+          "title": "First molality",
+          "unit": "mol/kg"
+        },
+        "to": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Last molality",
+          "unit": "mol/kg"
+        },
+        "n": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Number of points",
+          "unit": "-"
+        }
+      }
+    },
+    "temperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Defaults to 298.15 K. Whether the parameters actually vary with T depends on the pair record's declared temperature form.",
+      "unit": "K"
+    },
+    "validation": {
+      "type": "object",
+      "title": "Reference points",
+      "description": "Published values to compare against, so the run reports a deviation rather than a bare curve."
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` \u2014 where the per-row results are written, relative to the case directory.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "cation",
+    "anion"
+  ],
+  "additionalProperties": false
+}

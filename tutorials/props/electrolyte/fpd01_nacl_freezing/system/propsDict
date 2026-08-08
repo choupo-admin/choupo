@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  fpd01_nacl_freezing -- THE ICE WITNESS.
+  The freezing-point curve of NaCl(aq), solved as chemical-potential equality
+  between an ACTUAL SolidPhase (the crystallising mode, its first
+  case-reachable consumer) and the Pitzer surface's water activity:
+
+      f_solid(T) = a_w(m, T) * Psat(T)
+
+  Until this case the crystal was exercised only by check_ice_freezing's
+  probe; here its refusals and announced approximations (the neglected
+  liquid/solid heat-capacity term, the sub-freezing Psat extrapolation) all
+  fire on a real run.  The dilute-limit KPI closes the K_f loop: the derived
+  cryoscopic constant against the slope this same phase produces.
+  ANCHOR HONESTY: the validation dataset carries ONE measured point with an
+  INTERIM citation (see its header) -- a thin anchor, said plainly, and the
+  enrichment path (a primary FPD table read) is on the curation ledger.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      fpd_nacl;
+        type      freezingPoint;
+        cation    Na;   anion Cl;
+        molality  { from 0.1; to 2.0; n 20; }
+        validation { dataset "constant/experiments/fpd_nacl_interim.dat"; series nacl; }
+        output    { file fpd_nacl.csv; }
+    }
+);

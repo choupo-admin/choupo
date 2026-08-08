@@ -82,11 +82,11 @@ WHAT THIS GATE CHECKS.
 WHAT THIS GATE DOES NOT CHECK, said plainly because a gate that implies more
 coverage than it has is worse than one that reports less:
 
-  * NO CASE RUNS HERE.  No tutorial declares a crystallising solid yet.  The
-    witness case is deliberately last and only against a published anchor -- a
-    tutorial whose answer cannot be validated would freeze a wrong number into
-    a golden.  So this gate proves the PHASE is right; it does not prove any
-    flash converges onto it.
+  * THE PHASE'S CASE CONSUMER IS fpd01_nacl_freezing (2026-08-08), via the
+    `freezingPoint` props op -- the witness this section used to say was
+    deliberately last, landed against an interim one-point anchor (AAD
+    0.05 %).  What is STILL not covered: no FLASH converges onto the crystal
+    -- the flash has no solid path until the C2 spike is built and reviewed.
 
   * THE SOLUTE SIDE IS UNCHECKED.  The freezing-point depression of a real
     solution is K = 1 solved against gamma_w x_w, and its accuracy is the
@@ -463,9 +463,11 @@ def main() -> int:
         "refusals fire by name, each carrying a remedy, the sub-freezing "
         "Psat extrapolation is announced, and the crystal states that its "
         "dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; "
-        "DWSIM disables the same term for a data reason).  NOT COVERED: no case runs here (no "
-        "tutorial declares a crystallising solid yet, and the witness case "
-        "waits for a published anchor); the solute side belongs to the "
+        "DWSIM disables the same term for a data reason).  The phase's case "
+        "consumer is fpd01_nacl_freezing (the freezingPoint op, 2026-08-08); "
+        "still NOT COVERED: no FLASH converges onto the crystal -- no solid "
+        "path until the C2 spike is built and reviewed; the solute side "
+        "belongs to the "
         "activity model and is not gated; "
         + ("; ".join(notes) if notes else "no further caveats") + ".")
     return 0
