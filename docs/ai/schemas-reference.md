@@ -5,7 +5,7 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
-*76 of 76 registered operations carry a schema and are documented below.*
+*77 of 77 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -397,6 +397,19 @@ Two-phase (or three-phase) equilibrium flash at a declared temperature and press
 | `phaseSet` |   | string | - | Which phases the flash is allowed to find. `auto` makes the phase set a RESULT rather than an input — the engine decides from what it alr… |
 | `alphaRich` |   | string | — | Labels which of two liquids is which, for a liquid-liquid split. A label, not a constraint: it names the phases in the report without ste… |
 | `betaRich` |   | string | — | The counterpart of alphaRich. |
+
+## `freezingPoint`  (Freezing-point curve (ice witness))
+
+Freezing-point curve T_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f_solid(T) = a_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T_f and depression at the grid end, the dilute-limit slope against nu*K_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `cation` | ✓ | string | — | Species key of the cation, e.g. Na. Its charge comes from its own species record. |
+| `anion` | ✓ | string | — | Species key of the anion, e.g. Cl. |
+| `molality` |   | object | — | `{ from ...; to ...; n ...; }` — the molality range to sweep. Absent, a default scan is used. |
+| `temperature` |   | number | K | Defaults to 298.15 K. Whether the parameters actually vary with T depends on the pair record's declared temperature form. |
+| `validation` |   | object | — | Published values to compare against, so the run reports a deviation rather than a bare curve. |
+| `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 

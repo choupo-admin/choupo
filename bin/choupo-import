@@ -648,6 +648,12 @@ def closure_of(pp_path, caseDir, std, AQ):
         ions.add(m.group(1))
     op_types = set(re.findall(r'\btype\s+([A-Za-z]+)\s*;', props_ops))
     speciates = bool(op_types & SPECIATION_OP_TYPES)
+    #  freezingPoint consumes the SOLVENT'S OWN RECORD (SolidPhase reads
+    #  water.dat's Hfus / triple point / Psat) beside its ions' Pitzer pair --
+    #  taught to this closure IN THE SAME COMMIT as the op, which is the rule
+    #  the Edwards defect paid for (a seal must never change the physics).
+    if "freezingPoint" in op_types:
+        want("components/water.dat")
 
     # A flowsheet unit may speciate INTERNALLY: the membrane / electrodialysis
     # scaling audit (`scaling {}` block) runs the SpeciationSolver on the module
@@ -677,7 +683,7 @@ def closure_of(pp_path, caseDir, std, AQ):
         re.search(r'\belectrolyte\.[A-Za-z]+', t_nc)
         or re.search(r'\bformulation\s+electrolyteGammaPhi\s*;', t_nc)
         or re.search(r'\b(?:pitzerActivity|electrolyteActivity|enrtlMultiSalt|'
-                     r'enrtlMixedSolvent)\b', props_ops))
+                     r'enrtlMixedSolvent|freezingPoint)\b', props_ops))
     aqueous_context = (speciates or nonlocal_flags["speciates"]
                        or nonlocal_flags.get("exchange", False)
                        or nonlocal_flags.get("ionBasis", False)
@@ -815,7 +821,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     # a single-salt/flowsheet electrolyte world pulls its own family only.
     uses_pitzer = bool(re.search(r'\belectrolyte\.pitzer\b', t_nc)
                        or re.search(r'\bmodel\s+Pitzer\s*;', t_nc)
-                       or re.search(r'\bpitzerActivity\b', props_ops))
+                       or re.search(r'\b(?:pitzerActivity|freezingPoint)\b', props_ops))
     uses_enrtl  = bool(re.search(r'\belectrolyte\.eNRTL\b', t_nc)
                        or re.search(r'\bmodel\s+eNRTL\s*;', t_nc)
                        or re.search(r'\b(?:enrtlMultiSalt|enrtlMixedSolvent)\b',

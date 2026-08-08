@@ -65,7 +65,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 584 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 585 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -185,7 +185,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40212 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40218 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -324,8 +324,8 @@
       "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named"
     },
     "check_sealed_corpus": {
-      "exit": 1,
-      "claim": "sealed-corpus gate FAILED:"
+      "exit": 0,
+      "claim": "sealed-corpus gate: 328 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -417,7 +417,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2931 declared window(s) across 3560 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2934 declared window(s) across 3564 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,
