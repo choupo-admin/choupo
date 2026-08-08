@@ -33,6 +33,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { StreamResult } from "../adapters/SolverAdapter.js";
+import { streamPhases } from "../case/streamPhases.js";
 import {
   flowBasis,
   formatFlow,
@@ -56,6 +57,10 @@ export function popOutSingleStream(args: {
   composition?: { [c: string]: number };
   prefs: DisplayPrefs;
   runStream?: StreamResult;
+  /** result.componentMolarMass — needed only to convert a solid phase's
+   *  kg/s into the molar column; without it the solid row is dropped by
+   *  streamPhases() rather than shown in the wrong unit. */
+  molarMass?: { [component: string]: number };
 }): void {
   const massBasis = flowBasis(args.prefs.flow) === "mass";
 
@@ -74,6 +79,13 @@ export function popOutSingleStream(args: {
   const spec = args.runStream?.speciation;
   const specRows = spec ? Object.entries(spec.flows).sort((a, b) => b[1] - a[1]) : [];
   const specUnit = args.prefs.flow.includes("mol") ? args.prefs.flow : "kmol/h";
+  //  The phase decomposition, when the stream carries more than one phase.
+  //  Same helper and same semantics as the Streams workspace: the composition
+  //  above is the OVERALL material; phases{} decomposes it, the aqueous side
+  //  derived by subtraction so the two close exactly.  Empty for a
+  //  single-fluid-phase stream — nothing is drawn rather than a one-row
+  //  "decomposition" of what the composition table already shows.
+  const phases = args.runStream ? streamPhases(args.runStream, args.molarMass) : [];
 
   const C = popoutColors();
   const html = `<!doctype html><html lang="en"><head>
@@ -128,12 +140,29 @@ export function popOutSingleStream(args: {
     </tr>`).join("")}
   </table>`}
 </section>
+${phases.length === 0 ? "" : `
+<section>
+  <h3>Phases (molar flow)</h3>
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">a decomposition of
+     the overall material above among the physical phases — the aqueous side
+     is the fluid minus the organic, so the two close by subtraction.</p>
+  ${phases.map((ph) => `<table>
+    <tr><th>${esc(ph.name)}</th><th style="text-align:right;">${esc(formatFlow(ph.total, specUnit, 6))} ${esc(specUnit)}</th></tr>
+    ${Object.entries(ph.flows).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<tr>
+      <td>${esc(c)}</td>
+      <td class="right">${esc(formatFlow(n, specUnit, 6))}</td>
+    </tr>`).join("")}
+  </table>`).join("")}
+</section>`}
 ${specRows.length === 0 ? "" : `
 <section>
   <h3>Speciation — ${esc(spec!.network)} network, ${esc(spec!.basis)} basis${
     spec!.pH !== undefined ? ` &middot; pH ${spec!.pH.toFixed(3)}` : ""}</h3>
-  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">aqueous phase — a
-     decomposition of the composition above, never a second state.  In FLOWS: a
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">${
+    phases.length === 0
+      ? "aqueous phase — a decomposition of the composition above, never a second state."
+      : "a decomposition of the AQUEOUS phase above, never a second state."
+  }  In FLOWS: a
      stoichiometric set excludes H/OH as mediators and does not close to 1.</p>
   <table>
     <tr><th>species</th><th style="text-align:right;">${esc(specUnit)}</th></tr>
@@ -175,6 +204,7 @@ export function popOutStreamByName(name: string): void {
       composition: declared?.composition,
       prefs: state.displayPrefs,
       runStream,
+      molarMass: state.runResult?.componentMolarMass,
     });
   });
 }

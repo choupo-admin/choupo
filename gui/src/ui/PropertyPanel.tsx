@@ -581,6 +581,7 @@ function StreamDetails({
                 composition: stream!.composition,
                 prefs,
                 runStream,
+                molarMass,
               })}>
               <IconExternalLink size={14} />
             </ActionIcon>

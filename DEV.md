@@ -787,6 +787,20 @@ accepts today, and that is a policy call.
    `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
    390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
    a check).  The adsorption debt is roadmap #7 above.
+9. **Phase-absence ambiguity in the stream contract** (semantic, raised by
+   Vítor 2026-08-08, deliberately NOT patched with the pop-out fix it was
+   found beside).  A stream file with no `phases {}` block currently covers
+   two different claims: "this stream has one fluid phase" and "this stream
+   is physically multiphase but no unit on its path solved the split".  The
+   live witness is `lithiumBrinePlant`'s `emulsion` (mixer outlet, brine +
+   kerosene/extractant): the mixer merges without phase equilibrium, the
+   settler downstream does the split into separate streams, so the emulsion
+   is written as one apparent liquid with no decomposition — defensible
+   (absence = "no solved decomposition", and inventing an unsolved split
+   would be worse), but a student cannot distinguish the two cases from the
+   file alone.  Review belongs with the C3 uniform-`phases` grammar work /
+   the solid-equilibrium migration, where phase declaration is already on
+   the table; do not add a new stream field ad hoc for it.
 
 ## 5b. If you are working in a HOSTED session, read this first
 
