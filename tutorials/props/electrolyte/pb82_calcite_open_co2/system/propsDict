@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pb82_calcite_open_co2
+  =====================
+
+  THE PLUMMER & BUSENBERG (1982) EXPERIMENT, as the engine models it:
+  calcite at equilibrium with CO2-saturated water -- an OPEN system at
+  pCO2 = 0.956 atm, 25 C (their electrode runs' mean CO2 pressure), the
+  gas pin, the full carbonate speciation, the CaHCO3+/CaCO3(aq) ion pairs
+  and the mineral ceiling all engaged at once.
+
+  PRIMARY: L. N. Plummer & E. Busenberg, Geochim. Cosmochim. Acta 46
+  (1982) 1011-1040, DOI 10.1016/0016-7037(82)90056-4.  Owner-provided PDF.
+
+  THE ANCHOR, and what it independently tests: their MEASURED pH at
+  calcite equilibrium under exactly these conditions, corrected for
+  liquid-junction potential, is 6.004 +/- 0.005 (4 M KCl filling, p. 1022;
+  uncorrected Orion runs read near 5.984); their own aqueous model puts
+  the thermodynamic pH at 6.011.  The engine's number below comes out of
+  Henry + K1/K2 + the ion pairs + Davies + electroneutrality + the SI = 0
+  ceiling END TO END -- none of which was fitted to this pH.
+
+  LINEAGE, stated honestly: the calcite log K(T), K_H, K1, K2 and ion-pair
+  constants in our curated records descend from the USGS PHREEQC database,
+  whose carbonate block IS this paper's Table 3 and Eqs -- so agreement in
+  the CONSTANTS is lineage consistency, not validation.  What the measured
+  pH tests independently is the ASSEMBLY: that the engine composes those
+  constants (gas pin, chained carbonate master, ion pairs, activity model,
+  charge balance, mineral ceiling) into the same physical answer the
+  electrode saw.  A wrong composition would not land within 0.01 pH.
+
+  APPROACH FROM ABOVE: the engine's equilibrate is a precipitation
+  CEILING (SI -> 0 from supersaturation; it does not dissolve a solid it
+  was never given).  The seed is therefore a SUPERSATURATED Ca(HCO3)2
+  solution under the pin; the ceiling relaxes it down to the same calcite
+  saturation P&B's dissolution runs approached from below -- one fixed
+  point at (T, pCO2), whichever side you arrive from.  The HCO3 seed is an
+  initial guess only: the CO2 pin REPLACES the carbonate mole balance, so
+  dissolved carbonate is a solved outcome (announced by the run).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        calciteEq_25C;
+        type        speciate;
+        analyticalTotals { Ca 0.015 mol/kg; HCO3 0.030 mol/kg; }
+        pH          solve;
+        temperature 298.15;
+        atmosphere  { pCO2 0.956 atm; }
+        equilibrate { minerals ( calcite ); }
+        output      { file calciteEq_25C.csv; }
+    }
+);

@@ -889,7 +889,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                               "\n  (pinned-by-atmosphere guesses excluded:"
                               + pinnedNote + ")")
                           << "\n" << std::defaultfloat;
-            if (out.imbalancePct > 5.0)
+            if (out.imbalancePct > 5.0 && pinnedNote.empty())
             {
                 std::ostringstream msg;
                 msg << "feed charge imbalance " << std::fixed
@@ -900,6 +900,30 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 if (AdvisoryLog::instance().add("model", "warning", "speciation",
                                                 msg.str())
                     && verbosity >= 1)
+                    std::cout << "  [advisory] " << msg.str() << "\n";
+            }
+            else if (out.imbalancePct > 5.0)
+            {
+                //  A CHARGED master left the sums because the atmosphere pin
+                //  replaced its balance -- the remainder's imbalance is then
+                //  NOT evidence of lab error: the pinned family's dissolved
+                //  charge is an open-system OUTCOME that supplies the
+                //  counter-ions (pb82_calcite_open_co2: a perfectly balanced
+                //  Ca(HCO3)2 seed read as "200% imbalanced, pH NOT
+                //  trustworthy" because its only anion was the pinned
+                //  carbonate).  A false distrust label is as wrong as false
+                //  trust, so this branch INFORMS instead of warning.
+                std::ostringstream msg;
+                msg << "feed imbalance check not applicable: the charged "
+                       "master(s)" << pinnedNote << " are pinned by the "
+                       "atmosphere, so their dissolved charge is an "
+                       "open-system outcome, not analysis -- the remainder's "
+                    << std::fixed << std::setprecision(1) << out.imbalancePct
+                    << "% is expected, and the solved pH stands on "
+                       "electroneutrality as usual";
+                if (AdvisoryLog::instance().add("model", "info", "speciation",
+                                                msg.str())
+                    && verbosity >= 2)
                     std::cout << "  [advisory] " << msg.str() << "\n";
             }
         }

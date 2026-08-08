@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Calcite in CO2-saturated water (Plummer & Busenberg 1982): open pCO2 0.956 atm + equilibrate calcite at 25 C -- the engine's pH at calcite equilibrium beside the paper's junction-corrected 6.004 +/- 0.005 and its model value 6.011";
+verbosity     2;

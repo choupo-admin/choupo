@@ -1,0 +1,10 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    calciteEq_25C          I                0.0265778        1e-4
+diag    calciteEq_25C          SI_aragonite     -0.114           1e-4
+diag    calciteEq_25C          SI_calcite       3.22147e-11      1e-4
+diag    calciteEq_25C          SI_portlandite   -13.0919         1e-4
+diag    calciteEq_25C          aw               0.998916         1e-4
+diag    calciteEq_25C          n_calcite        0.00543277       1e-4
+diag    calciteEq_25C          pH               6.02946          1e-4
