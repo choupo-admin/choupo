@@ -62,6 +62,17 @@ the same loop that served D4; the gate's D4b arm fails-forward if richer data
 ever activates both, so the record cannot silently understate improved
 evidence.
 
+*Addendum, same day, after review:* the primary source arrived (Archer 1992,
+DOI 10.1063/1.555915, owner-provided).  Its Table 5 sharpens this gap: the
+solid at the physical eutectic (252.15 K, m = 5.138) is the **dihydrate
+NaCl·2H₂O**, not anhydrous NaCl — anhydrous leaves the stage at the
+273.28 K peritectic, so D4b's subsaturated anhydrous candidate was
+qualitatively right physics on the wrong candidate list.  The both-active
+witness is ice + NaCl·2H₂O under the same complementarity; the dihydrate's
+formation properties are staged in
+[`solid-migration-witness-data.md`](solid-migration-witness-data.md) §1,
+its curation reserved to Vítor (non-blocking, per R3).
+
 ## 4. What was deliberately NOT built
 
 No flash integration; no unit operation; no case grammar; no change to

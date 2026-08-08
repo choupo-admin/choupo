@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the SOLVENT basis (water, ideal gamma-phi).  The
+  electrolyte model this case teaches is Pitzer (NaCl at high T, Silvester & Pitzer 1977): it is selected in the
+  propsDict OPERATIONS (the ion-activity op), which override this ideal basis
+  with the real activity coefficients.  The T-dependence lives in the Pitzer parameters' temperature slots.
+  The species and their parameters live in the curated constant/species/ +
+  constant/parameters/ tree, sealed into this case.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

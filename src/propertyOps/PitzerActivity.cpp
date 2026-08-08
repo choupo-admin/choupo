@@ -236,9 +236,11 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
 
     if (verbosity >= 2)
         std::cout << "pitzerActivity: " << cation << "/" << anion
-                  << " (nu " << model.nu_c << ":" << model.nu_a << ", 25 C), m = "
+                  << " (nu " << model.nu_c << ":" << model.nu_a << ", "
+                  << std::fixed << std::setprecision(1) << (T - 273.15)
+                  << " C), m = " << std::setprecision(2)
                   << mFrom << "-" << mTo << " mol/kg, " << n << " pts.  gamma_pm(1.0) = "
-                  << std::fixed << std::setprecision(4) << model.gammaPM(1.0) << "\n";
+                  << std::setprecision(4) << model.gammaPM(1.0, T) << "\n";
     return 0;
 }
 

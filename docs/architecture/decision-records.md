@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 45 records already exist
+## 1. Why an index, when 46 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 45 design records, **20 state a rejected alternative and 25 do not** —
+- Of 46 design records, **20 state a rejected alternative and 26 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -140,6 +140,7 @@ is this index failing its own purpose; they move below with their rulings.
 
 | record | kind | note |
 |---|---|---|
+| [`solid-migration-witness-data.md`](../design/solid-migration-witness-data.md) | SCOPE | staged 2026-08-08, reviewStatus interim — the authorised migration's validation targets, transcribed from the two owner-provided primaries (Archer 1992: invariant points + dihydrate formation props; Marcilla 1995: LLE tie-lines + the LLS tie-triangles); locates anchors, curates nothing |
 | [`state-of-the-art-property-study-2026-07-17.md`](../design/state-of-the-art-property-study-2026-07-17.md) | STUDY | ordered after two AIs decided a day's architecture in a self-ratification loop without studying the field |
 | [`audit-2026-08-05-arity.md`](audit-2026-08-05-arity.md) | STUDY | fleet audit, I1 |
 | [`audit-2026-08-05-silent-fallbacks.md`](audit-2026-08-05-silent-fallbacks.md) | STUDY | fleet audit, I5 |
@@ -199,7 +200,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**25 of 45 records state no rejected alternative.**  For a FORUM or a STUDY
+**26 of 46 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

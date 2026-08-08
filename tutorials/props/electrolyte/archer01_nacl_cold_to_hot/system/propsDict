@@ -1,0 +1,87 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  archer01_nacl_cold_to_hot
+  =========================
+
+  The catalogue's NaCl Pitzer surface (Appelo 25 C parameters + SP77
+  T-functions) against Archer, J. Phys. Chem. Ref. Data 21 (1992) 793,
+  DOI 10.1063/1.555915, Tables 9 (phi) and 10 (gamma_pm) -- HIS fitted
+  equation's check values ("presented only as a means to test the validity
+  of coding", the paper's own words), at 273, 298, 323 and 373 K.
+
+  WHY THE 273 K ROW IS THE POINT: the SP77 temperature extension was fitted
+  ABOVE 25 C, and the freezing-point curve (fpd01_nacl_freezing) leans on
+  that surface BELOW 0 C as an announced extrapolation.  This case measures
+  what the extrapolation costs at the last anchor before the ice field --
+  the op announces the T-window violation at 273 K, and the AAD against
+  Archer says whether the announced risk is a real one at the cold edge.
+
+  WHAT THIS COMPARISON IS, said precisely: Archer's tables are values of an
+  independent CRITICAL FIT (his global equation, 250-600 K), not raw
+  measurements, and his database overlaps the corpora SP77 drew on.
+  Agreement here is CROSS-EVALUATION CONSISTENCY between two independent
+  fits of overlapping data -- stronger than fit-consistency (our parameters
+  never saw Archer's equation), weaker than agreement with an independent
+  measurement.  The Hamer & Wu case (pitzer_gamma_hamer_wu) plays the same
+  role at 25 C; this case extends it across T.
+
+  Temperatures are the table's printed values (273 K, not 273.15).  If
+  Archer meant T+0.15 K the shift in gamma_pm is below 2e-4 -- inside the
+  quoted AADs either way, and stated here so the reading is a recorded
+  choice, not an accident.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      nacl_0C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 273;
+        // PRIMARY the comparison is against; the parameters this op consumes
+        // declare their own sources in constant/parameters (Appelo 25 C +
+        // SP77 dX/dT slots).  273 K is BELOW the SP77 fit window -- the
+        // announced extrapolation this case exists to measure.
+        source    "Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9-10";
+        molality  { from 0.1; to 6.0; n 30; }
+        validation { dataset "constant/experiments/archer92_tables9_10.dat"; series nacl273; }
+        output    { file pitzer_nacl_0C.csv; }
+    }
+    {
+        name      nacl_25C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 298;
+        source    "Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9-10";
+        molality  { from 0.1; to 6.0; n 30; }
+        validation { dataset "constant/experiments/archer92_tables9_10.dat"; series nacl298; }
+        output    { file pitzer_nacl_25C.csv; }
+    }
+    {
+        name      nacl_50C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 323;
+        source    "Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9-10";
+        molality  { from 0.1; to 6.0; n 30; }
+        validation { dataset "constant/experiments/archer92_tables9_10.dat"; series nacl323; }
+        output    { file pitzer_nacl_50C.csv; }
+    }
+    {
+        name      nacl_100C;
+        type      pitzerActivity;
+        cation    Na;   anion Cl;
+        temperature 373;
+        source    "Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9-10";
+        molality  { from 0.1; to 6.0; n 30; }
+        validation { dataset "constant/experiments/archer92_tables9_10.dat"; series nacl373; }
+        output    { file pitzer_nacl_100C.csv; }
+    }
+);

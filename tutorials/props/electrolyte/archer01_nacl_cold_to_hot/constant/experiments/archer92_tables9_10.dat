@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  NaCl(aq) osmotic coefficient phi and stoichiometric mean activity
+  coefficient gamma_pm, 0.1 MPa, at 273 / 298 / 323 / 373 K.
+
+  PRIMARY: D. G. Archer, J. Phys. Chem. Ref. Data 21 (1992) 793,
+  DOI 10.1063/1.555915 -- Table 9 (phi) and Table 10 (gamma_pm).
+  These are CALCULATED values of Archer's own fitted equation, published
+  "only as a means to test the validity of coding" -- i.e. smoothed
+  check-values of an independent critical evaluation (his fit spans
+  250-600 K), NOT raw measurements.  Transcribed 2026-08-08 from the
+  paper's PDF, provided by the project owner.
+
+  reviewStatus interim -- pending Vitor's primary review of the
+  transcription (the standing batch-review pattern for staged anchors).
+
+  Temperatures are the printed table values (273 K etc., not 273.15);
+  the reading ambiguity is worth < 2e-4 in gamma_pm and is stated in the
+  propsDict header.
+\*---------------------------------------------------------------------------*/
+
+reviewStatus interim;
+
+nacl273
+(
+    { m 0.1; gamma 0.7796; phi 0.9316; }
+    { m 0.5; gamma 0.6706; phi 0.9108; }
+    { m 1.0; gamma 0.6340; phi 0.9157; }
+    { m 3.0; gamma 0.6585; phi 1.0107; }
+    { m 6.0; gamma 0.8990; phi 1.2466; }
+);
+
+nacl298
+(
+    { m 0.1; gamma 0.7771; phi 0.9322; }
+    { m 0.5; gamma 0.6805; phi 0.9218; }
+    { m 1.0; gamma 0.6572; phi 0.9371; }
+    { m 3.0; gamma 0.7177; phi 1.0486; }
+    { m 6.0; gamma 0.9885; phi 1.2694; }
+);
+
+nacl323
+(
+    { m 0.1; gamma 0.7697; phi 0.9302; }
+    { m 0.5; gamma 0.6755; phi 0.9234; }
+    { m 1.0; gamma 0.6569; phi 0.9431; }
+    { m 3.0; gamma 0.7299; phi 1.0609; }
+    { m 6.0; gamma 0.9933; phi 1.2648; }
+);
+
+nacl373
+(
+    { m 0.1; gamma 0.7459; phi 0.9219; }
+    { m 0.5; gamma 0.6443; phi 0.9139; }
+    { m 1.0; gamma 0.6228; phi 0.9340; }
+    { m 3.0; gamma 0.6801; phi 1.0459; }
+    { m 6.0; gamma 0.8727; phi 1.2111; }
+);
