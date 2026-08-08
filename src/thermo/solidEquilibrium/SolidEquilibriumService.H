@@ -88,6 +88,21 @@ public:
         std::vector<electrolyte::MineralSinks> sinks;
     };
 
+    //  TWO IMPLEMENTATIONS of the one complementarity, ONE entry (S3):
+    //    coupled -- the provider's own simultaneous augmented Newton (n_p
+    //              unknowns beside the ln-block): R1's ratified shape, the
+    //              efficient route when every candidate is one provider's
+    //              mineral.  The service owns the door, the formed ledger
+    //              and the narration; the provider supplies the math.
+    //    general -- the probed-Jacobian outer solver (solidEq::equilibrate)
+    //              that serves candidate sets mixing MODELS (S4: an ice
+    //              crystal beside a mineral) -- nothing there knows what a
+    //              candidate is.
+    //  The gate pins their AGREEMENT on the same state -- the executable
+    //  claim that these are one mechanism twice implemented, never two
+    //  mechanisms.
+    enum class Route { coupled, general };
+
     //  Equilibrate the ADMITTED minerals against one aqueous state.  Refuses
     //  (via the provider's own resolution) an admitted name the data does
     //  not define, naming what is available.  `state` is taken by value:
@@ -96,7 +111,8 @@ public:
         const electrolyte::SpeciationSolver& provider,
         electrolyte::SpeciationInput state,
         const std::vector<std::string>& admitted,
-        int verbosity);
+        int verbosity,
+        Route route = Route::coupled);
 };
 
 } // namespace solidEq

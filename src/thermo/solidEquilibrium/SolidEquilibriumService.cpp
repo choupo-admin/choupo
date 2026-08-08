@@ -40,14 +40,46 @@ SolidEquilibriumService::equilibrateMinerals(
     const electrolyte::SpeciationSolver& provider,
     electrolyte::SpeciationInput state,
     const std::vector<std::string>& admitted,
-    int verbosity)
+    int verbosity,
+    Route route)
 {
     Outcome out;
 
-    //  1. THE PROVIDER RESOLVES the admitted set: existence (refusing an
-    //  unknown name with the available list -- the provider's own message)
-    //  and the transfer stoichiometry onto the master balances (S2a's ONE
-    //  home for the chaining).  Report-only: this solve moves nothing.
+    //  THE COUPLED ROUTE (S3): every candidate is one provider's mineral,
+    //  so the simultaneous solve R1 names is the provider's own augmented
+    //  Newton -- invoked through THIS one door, with the service owning
+    //  the admitted list, the formed ledger and the narration.  Numbers
+    //  are byte-identical to the pre-migration path by construction: the
+    //  math did not move, the ENTRY did.
+    if (route == Route::coupled)
+    {
+        state.sinksFor    = admitted;   // the ledger echo rides along
+        state.equilibrate = admitted;
+        out.aqueous = provider.solve(state, verbosity);
+        out.sinks   = out.aqueous.sinks;
+        out.outerIters = out.aqueous.activeSetPasses;
+        for (const auto& nm : admitted)
+        {
+            const double n = out.aqueous.precipitated.count(nm)
+                           ? out.aqueous.precipitated.at(nm) : 0.0;
+            out.formed[nm] = n;
+            out.events.push_back(n > 0.0
+                ? "solid '" + nm + "' present (n = " + std::to_string(n)
+                  + " mol/kg water, SI = 0 ceiling)"
+                : "solid '" + nm + "' admitted but subsaturated (stays "
+                  "dissolved; n = 0)");
+        }
+        for (const auto& ev : out.events)
+            AdvisoryLog::instance().add("solids", "info",
+                                        "solidEquilibrium", ev);
+        return out;
+    }
+
+    //  1. THE GENERAL ROUTE: the provider RESOLVES the admitted set --
+    //  existence (refusing an unknown name with the available list, the
+    //  provider's own message) and the transfer stoichiometry onto the
+    //  master balances (S2a's ONE home for the chaining).  Report-only:
+    //  this solve moves nothing.
     state.sinksFor = admitted;
     state.equilibrate.clear();
     electrolyte::SpeciationResult probe = provider.solve(state, 0);

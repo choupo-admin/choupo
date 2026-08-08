@@ -80,9 +80,19 @@ int main(int argc, char** argv)
     const double nOracle = oracle.precipitated.count(admitted)
                          ? oracle.precipitated.at(admitted) : -1.0;
 
-    //  THE SERVICE: same state, the admitted list from the case declaration.
+    //  THE SERVICE, general route: same state, the admitted list from the
+    //  case declaration, the probed-Jacobian solver.
     const auto svc = solidEq::SolidEquilibriumService::equilibrateMinerals(
-        provider, mkIn(), { admitted }, 0);
+        provider, mkIn(), { admitted }, 0,
+        solidEq::SolidEquilibriumService::Route::general);
+
+    //  THE SERVICE, coupled route (S3): the same door invoking the
+    //  provider's own simultaneous solve -- must equal the oracle exactly.
+    const auto svcC = solidEq::SolidEquilibriumService::equilibrateMinerals(
+        provider, mkIn(), { admitted }, 0,
+        solidEq::SolidEquilibriumService::Route::coupled);
+    const double nCoupled = svcC.formed.count(admitted)
+                          ? svcC.formed.at(admitted) : -1.0;
     const double nSvc = svc.formed.count(admitted)
                       ? svc.formed.at(admitted) : -1.0;
     const double siSvc = svc.aqueous.SI.count(admitted)
@@ -95,12 +105,14 @@ int main(int argc, char** argv)
 
     std::printf("<<<JSON\n{\"admitted\": \"%s\", "
                 "\"nOracle\": %.17g, \"nService\": %.17g, "
+                "\"nCoupled\": %.17g, "
                 "\"siService\": %.17g, "
                 "\"pHOracle\": %.17g, \"pHService\": %.17g, "
+                "\"pHCoupled\": %.17g, "
                 "\"outerIters\": %d, \"events\": %zu, "
                 "\"sinkLegs\": \"%s\"}\nJSON>>>\n",
-                admitted.c_str(), nOracle, nSvc, siSvc,
-                oracle.pH, svc.aqueous.pH,
+                admitted.c_str(), nOracle, nSvc, nCoupled, siSvc,
+                oracle.pH, svc.aqueous.pH, svcC.aqueous.pH,
                 svc.outerIters, svc.events.size(), legs.c_str());
     return 0;
 }

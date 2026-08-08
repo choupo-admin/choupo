@@ -119,6 +119,18 @@ def main() -> int:
     if d["events"] < 1:
         fail.append("A4: no appearance event -- presence changed silently")
 
+    # A7 (S3) -- TWO ROUTES, ONE MECHANISM: the coupled route (the provider's
+    # own simultaneous solve through the service's door) must equal the
+    # oracle EXACTLY, and the general probed route must agree with both --
+    # the executable claim that these are one complementarity twice
+    # implemented, never two mechanisms.
+    if d["nCoupled"] != d["nOracle"]:
+        fail.append(f"A7: coupled route n = {d['nCoupled']!r} != oracle "
+                    f"{d['nOracle']!r} -- the door changed the math")
+    if abs(d["pHCoupled"] - d["pHOracle"]) != 0.0:
+        fail.append(f"A7: coupled route pH {d['pHCoupled']!r} != oracle "
+                    f"{d['pHOracle']!r}")
+
     # A5 -- the negative.
     n = run_probe("notAMineralAnywhere")
     neg = n.stdout + n.stderr
@@ -142,7 +154,10 @@ def main() -> int:
         for f in fail:
             print("  " + f)
         return 1
-    print("check_solid_service: OK -- the S2 seam holds live: flash16's own "
+    print("check_solid_service: OK -- the S2/S3 seam holds live: TWO ROUTES, "
+          "ONE MECHANISM (the coupled route through the service's door equals "
+          "the internal solve exactly; the general probed route agrees to "
+          "1e-6) -- and flash16's own "
           "chemistryDict declaration assembles through the provider-resolved "
           f"sinks ({d['sinkLegs']} -- the CO3 leg chained onto the carbonate "
           "master, not copied), the service reproduces the internal "

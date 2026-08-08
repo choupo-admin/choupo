@@ -34,6 +34,7 @@ License
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "thermo/electrolyte/PitzerHMW.H"
+#include "thermo/solidEquilibrium/SolidEquilibriumService.H"
 
 #include <fstream>
 #include <iomanip>
@@ -316,7 +317,19 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     //  parse, in the solver -- the reactive builder routes through the
     //  same method.
     solver.applyNetworkScope(dict);
-    const auto res = solver.solve(in, verbosity);
+    //  MIGRATION S3a: a mineral set goes through the ONE door -- the
+    //  SolidEquilibriumService (coupled route: the provider's own
+    //  simultaneous solve, numbers unchanged; the service owns the entry,
+    //  the formed ledger and the narration).  An SI-only analysis solves
+    //  directly, as ever -- no solid may form there.
+    const auto res = in.equilibrate.empty()
+        ? solver.solve(in, verbosity)
+        : [&]{
+              auto admitted = in.equilibrate;
+              in.equilibrate.clear();
+              return solidEq::SolidEquilibriumService::equilibrateMinerals(
+                  solver, in, admitted, verbosity).aqueous;
+          }();
 
     // -- species table CSV ------------------------------------------------------
     std::ofstream csv(dict->subDict("output")->lookupWord("file"));
