@@ -136,13 +136,17 @@ def build() -> dict:
     tutorials = count_runnable_cases()
     regression = len(list((ROOT / "tutorials").rglob("expected")))
     #  THE IDENTITY IS THE TREE'S OWN, never borrowed.  The dev artefact names
-    #  the LINE and its commit; `latestRelease` is a clearly-labelled pointer
-    #  (a fact about the CHANGELOG), never the identity of these counts.
-    head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
-                          capture_output=True, text=True).stdout.strip()
+    #  the LINE; `latestRelease` is a clearly-labelled pointer (a fact about
+    #  the CHANGELOG), never the identity of these counts.  Deliberately NO
+    #  commit field: the first version embedded HEAD, and an artefact that
+    #  records the commit it was generated at is STALE THE MOMENT IT IS
+    #  COMMITTED -- the commit that carries it changes the answer.  It failed
+    #  the staleness gate on its very first suite run, which is that gate
+    #  doing its job.  A MOVING line's artefact is tied to the tree by
+    #  regeneration plus that gate; only an IMMUTABLE release artefact may
+    #  carry its commit, because there the commit is the tag's, not "now".
     inv = {
         "line": "Choupo-dev",
-        "commit": head,
         "latestRelease": release_id(),
         "latestReleasedAt": released_at(),
         "catalogue": {
