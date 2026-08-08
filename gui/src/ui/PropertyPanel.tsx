@@ -560,11 +560,6 @@ function StreamDetails({
   //  there is only one fluid phase and no crystals.
   const phases = runStream ? streamPhases(runStream, molarMass) : [];
   const phaseFlowUnit = prefs.flow.includes("mol") ? prefs.flow : "kmol/h";
-  //  The engine's F is the FLUID molar flow; a solid rides beside it on its
-  //  own mass basis.  When a solid is present the F label must say so, or
-  //  the Phases totals (which include the converted solid) read as failing
-  //  to close against a number that never contained it.
-  const hasSolids = Object.keys(runStream?.solids ?? {}).length > 0;
   return (
     <Stack gap="md">
       <Stack gap={4}>
@@ -630,9 +625,7 @@ function StreamDetails({
                 return (
                   <Table.Tr key={k}>
                     <Table.Td style={{ width: "30%" }}>
-                      <Text size="sm" ff="monospace">
-                        {k === "F" && hasSolids ? "F (fluid)" : k}
-                      </Text>
+                      <Text size="sm" ff="monospace">{k}</Text>
                     </Table.Td>
                     <Table.Td>
                       {tinkerable
@@ -673,7 +666,7 @@ function StreamDetails({
         <KeyValueTable
           title="Conditions"
           rows={[
-            { k: hasSolids ? "F (fluid)" : "F", v: flowStr },
+            { k: "F", v: flowStr },
             {
               k: "T",
               v: `${formatTemperature(scalarToSI(stream.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
@@ -747,9 +740,9 @@ function StreamDetails({
             Phases
           </Text>
           <Text size="xs" c="dimmed">
-            where the overall material physically is — the fluid phases close
-            on F by subtraction; a solid is converted from its own mass basis
-            and rides beside the fluid
+            where the overall material above physically is — the phases sum
+            back to it component by component (the aqueous side derived by
+            subtraction, so the closure holds by construction)
           </Text>
           {phases.map((ph) => (
             <Stack key={ph.name} gap={2}>

@@ -40,41 +40,47 @@ import type { DynamicInstants } from "../case/dynamicInstants.js";
 export interface StreamResult {
   name: string;
   role: "feed" | "intermediate" | "product";
-  /** Molar flow in canonical SI: kmol/s */
+  /** OVERALL molar flow in canonical SI: kmol/s -- the stream's whole
+   *  material inventory, solids included, exactly what converged/<stream>
+   *  stores as componentMolarFlows.  ONE STREAM, ONE SEMANTICS (ruled
+   *  2026-08-08): this field used to carry the engine-internal fluid-only
+   *  flow, which made the phase decomposition read as failing to close. */
   F: number;
   /** Temperature in canonical SI: K */
   T: number;
   /** Pressure in canonical SI: Pa */
   P: number;
-  /** Fluid-phase vapour fraction (0 = pure liquid, 1 = pure vapour,
-   *  0..1 = two-phase).  Authoritative -- written by every flash /
-   *  saturation / column unit.  Absent only for very old run logs
-   *  produced before the C++ emitter started carrying it. */
+  /** Vapour fraction OF THE FLUID PORTION (0 = pure liquid, 1 = pure
+   *  vapour, 0..1 = two-phase).  It deliberately says nothing about a
+   *  solid the stream also carries -- the phase decomposition owns the
+   *  physical state; vf answers only the vapour question.  Authoritative
+   *  -- written by every flash / saturation / column unit. */
   vf?: number;
-  /** Specific molar enthalpy at the sensible+latent reference
-   *  (per-component zero datum at 298.15 K).  J/mol.  Computed by
-   *  Flowsheet::solve once the case converges.  Heat-flow rate is
-   *  F * H * 1000 W (F kmol/s × 1000 mol/kmol × J/mol).  Absent for
-   *  streams whose thermo blocks can't be evaluated (e.g. a
-   *  nonvolatile component appearing at vf > 0). */
+  /** OVERALL molar enthalpy [J/mol] on the elements/formation datum:
+   *  total enthalpy flow over total molar flow, so H and H_kW are one
+   *  consistent pair (H_kW = F*H) rather than a fluid-only H beside an
+   *  overall H_kW.  Absent for streams whose thermo blocks can't be
+   *  evaluated. */
   H?: number;
-  /** Total FLOW enthalpy [kW] = F*H (fluid) + Σ s[i]*h°(solid,T) (crystals).
-   *  Counts a solid product's crystals that F*H alone misses; the boundary
-   *  energy balance prefers this.  Absent => fall back to F*H. */
+  /** Total FLOW enthalpy [kW] over the OVERALL material (a solid
+   *  product's crystals included).  = F*H.  The boundary energy balance
+   *  reads this.  Absent => fall back to F*H. */
   H_kW?: number;
-  /** Mass flow in canonical SI: kg/s.  Optional --- only present when
-   *  the solver emitted `F_mass`.  Equals F * MW_mix. */
+  /** OVERALL mass flow in canonical SI: kg/s (fluid + solid).  Optional
+   *  --- only present when the solver emitted `F_mass`. */
   F_mass?: number;
   /** Utility category (populated by `utility <name>;` in a stream block).
    *  Non-empty means this stream is a plant utility -- the GUI uses it
    *  to differentiate visually (dashed grey edge, chama/floco terminal
    *  icon) and to populate the utility-consumption report. */
   category?: string;
+  /** OVERALL mole fractions -- the whole material inventory, a
+   *  precipitated crystal's share included (flash19: the stream's CaCO3
+   *  is dissolved + crystal, and this says so).  Sums to 1. */
   composition: { [component: string]: number };
-  /** Total solid-phase mass flow in canonical SI: kg/s.  Particulate
-   *  solids travel in s[] alongside the fluid; F / composition
-   *  describe the FLUID only.  A solids-only stream has F = 0 but
-   *  F_solid_mass > 0.  Per-component solid mass [kg/s] in `solids`. */
+  /** Total solid-phase mass flow in canonical SI: kg/s -- an explicitly
+   *  named PART of the overall material above, never a second inventory.
+   *  Per-component solid mass [kg/s] in `solids`. */
   F_solid_mass?: number;
   solids?: { [component: string]: number };
   /** Particle-size distribution of the solid phase.  Populated by
@@ -104,9 +110,10 @@ export interface StreamResult {
     flows: { [species: string]: number };
   };
   /** The SECOND LIQUID, per component [kmol/s] -- the ORGANIC side ONLY,
-   *  exactly as the engine stores it.  The aqueous side is the fluid MINUS
-   *  this (F*z - organicLiquid), so the pair closes by subtraction instead of
-   *  by two independently-rounded vectors agreeing: one home, no drift.
+   *  exactly as the engine stores it.  The aqueous side is derived by
+   *  subtraction (overall F*z minus the solid's molar share minus this),
+   *  so the decomposition closes by construction instead of by
+   *  independently-rounded vectors agreeing: one home, no drift.
    *  Absent when the package declares no second liquid, or declares one that
    *  is not PRESENT -- the absence of a phase, never a phase of zero. */
   organicLiquid?: { [component: string]: number };

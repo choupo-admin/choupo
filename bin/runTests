@@ -630,6 +630,21 @@ PYEOF
     fi
     rm -f /tmp/bothbases.$$
 
+    # Stream-transport closure: ONE STREAM, ONE SEMANTICS (ruled 2026-08-08).
+    # The result JSON's F/composition/H are the OVERALL material, equal to
+    # converged/<stream> component by component, whose phases{} blocks sum
+    # back to it; H_kW = F*H as one pair.  The JSON leaked the engine's
+    # fluid-only internals for months and the GUI exposed it on flash19.
+    if "$ROOT/bin/curate/check_stream_transport_closure.py" > /tmp/strclose.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "stream-transport-gate" "$(tail -1 /tmp/strclose.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_stream_transport_closure.py)\n" "stream-transport-gate"
+        cat /tmp/strclose.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/strclose.$$
+
     # Solute-basis gate: a single-salt electrolyte model answers about its
     # own salt, and the run names what else is dissolved.  Every failure it
     # guards produced a plausible number -- the boiling-point rise of a

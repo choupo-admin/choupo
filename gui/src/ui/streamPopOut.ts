@@ -149,8 +149,9 @@ ${phases.length === 0 ? "" : `
 <section>
   <h3>Phases (molar flow)</h3>
   <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">where the overall
-     material physically is — the fluid phases close on F by subtraction; a
-     solid is converted from its own mass basis and rides beside the fluid.</p>
+     material above physically is — the phases sum back to it component by
+     component (the aqueous side derived by subtraction, so the closure
+     holds by construction).</p>
   ${phases.map((ph) => ph.unavailable
     //  The molar conversion failed for this phase: it stays VISIBLE, in its
     //  native kg/s, with the reason -- never the wrong unit, never a silent

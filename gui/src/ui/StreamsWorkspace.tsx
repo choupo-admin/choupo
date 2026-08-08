@@ -570,9 +570,9 @@ function Detail({
               Phases (molar flow)
             </Text>
             <Text size="xs" c="dimmed">
-              where the overall material physically is — the fluid phases
-              close on F by subtraction; a solid is converted from its own
-              mass basis and rides beside the fluid
+              where the overall material above physically is — the phases sum
+              back to it component by component (the aqueous side derived by
+              subtraction, so the closure holds by construction)
             </Text>
             <SimpleGrid cols={{ base: 1, md: Math.min(3, phases.length) }} spacing="xl">
               {phases.map((ph) => (

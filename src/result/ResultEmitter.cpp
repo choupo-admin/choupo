@@ -139,12 +139,22 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     //   kg/s, mol/h,...) without dragging MWs through the JSON
     //   bridge.
     // One-line legend emitted once above the table (JSON has no comments, so
-    // it rides as a string key): a solids-carrying stream shows H = 0 (no
-    // fluid) next to a large H_kW (the crystals' formation enthalpy), and
-    // without the legend the pair reads as a contradiction.
-    os << "  \"streamsNote\": \"H = molar fluid-phase enthalpy [J/mol]; "
-          "H_kW = total stream enthalpy flow [kW] incl. solids, both on the "
-          "elements/formation datum\",\n";
+    // it rides as a string key).  THE PUBLIC CONTRACT (one stream, one
+    // semantics, ruled 2026-08-08): F, composition, F_mass and H describe
+    // the OVERALL stream material -- solids included -- exactly as
+    // converged/<stream> stores componentMolarFlows; the explicitly named
+    // extras (F_solid_mass, solids{}, organicLiquid{}, speciation{}) locate
+    // parts of that same material, and vf is the vapour fraction of the
+    // FLUID portion.  This payload used to leak the engine's INTERNAL
+    // fluid+solid split (F/composition/H fluid-only beside an overall
+    // H_kW), so the same field name meant different things on different
+    // surfaces -- the transport-contract defect flash19 exposed.
+    os << "  \"streamsNote\": \"F/composition/F_mass/H = the OVERALL stream "
+          "material incl. solids (as converged/<stream>); H [J/mol] overall "
+          "molar enthalpy, H_kW = F*H the total enthalpy flow, elements "
+          "datum; vf = vapour fraction of the FLUID portion; F_solid_mass/"
+          "solids/organicLiquid/speciation locate parts of the same "
+          "material\",\n";
     os << "  \"streams\": {";
     bool firstS = true;
     const bool haveMW = !r.componentMolarMass.empty();
@@ -152,6 +162,14 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     {
         os << (firstS ? "\n" : ",\n");
         firstS = false;
+        //  The OVERALL molar flow: the engine carries F/z for the FLUID and
+        //  s[] (kmol/s) for the solid; the stream's material is their sum,
+        //  and that is what the public F/composition state -- the internal
+        //  split must not leak (it did, and the phase totals then read as
+        //  failing to close against an F that never contained the solid).
+        scalar F_solid_molar = 0.0;
+        for (std::size_t i = 0; i < s.s.size(); ++i) F_solid_molar += s.s[i];
+        const scalar F_overall = s.F + F_solid_molar;
         scalar F_mass = 0.0;
         if (haveMW)
         {
@@ -160,9 +178,9 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 auto it = r.componentMolarMass.find(names[i]);
                 if (it == r.componentMolarMass.end()) continue;
                 const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
-                F_mass += zi * it->second;
+                const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
+                F_mass += (s.F * zi + si) * it->second;   // kmol/s * kg/kmol
             }
-            F_mass *= s.F;          // kmol/s * kg/kmol = kg/s
         }
         // Solid phase: total solid mass flow [kg/s] + per-component
         // solid mass, so the GUI can show the particulate a stream carries
@@ -179,21 +197,28 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                 F_solid += si * it->second;     // kmol/s * kg/kmol = kg/s
             }
         os << "    " << esc(name) << ": { "
-           << "\"F\": " << num(s.F)
+           << "\"F\": " << num(F_overall)
            << ", \"T\": " << num(s.T)
            << ", \"P\": " << num(s.P)
-           // vf is the fluid-phase vapour fraction set by every flash /
-           // saturation unit: 0 = pure liquid, 1 = pure vapour, 0..1 =
-           // two-phase.  Authoritative -- the GUI uses it directly to
-           // colour edges by phase (no heuristic from T / composition).
+           // vf is the vapour fraction OF THE FLUID PORTION, set by every
+           // flash / saturation unit: 0 = pure liquid, 1 = pure vapour,
+           // 0..1 = two-phase.  It deliberately says nothing about a solid
+           // the stream also carries -- the phases{} decomposition owns the
+           // physical state; vf answers only the vapour question.
            << ", \"vf\": " << num(s.vf);
-        // Specific molar enthalpy at the ELEMENTS reference (formation
-        // datum) when the thermo package can compute it.  J/mol.  Energy
-        // flow rate is F * H * 1000 W; computed in the GUI on the fly.
-        if (s.H_valid) os << ", \"H\": " << num(s.H);
+        // Overall molar enthalpy [J/mol] on the ELEMENTS reference
+        // (formation datum): the total enthalpy flow over the total molar
+        // flow, so H and H_kW are ONE consistent pair (H_kW = F*H) instead
+        // of a fluid-only H beside an overall H_kW -- the mixed-basis pair
+        // the 2026-08-08 transport audit banned.  kJ/s over kmol/s is
+        // J/mol.  A stream with no solid keeps its old value exactly.
+        if (s.H_flow_valid && F_overall > 0.0)
+            os << ", \"H\": " << num(s.H_flow_kW / F_overall);
+        else if (s.H_valid && F_solid_molar == 0.0)
+            os << ", \"H\": " << num(s.H);
         // Total FLOW enthalpy [kW] = F*H (fluid) + Σ s[i]*h°(solid,T) (crystals).
         // The boundary energy balance reads THIS (counts a solid product's
-        // crystals), not F*H -- so the GUI plot closes on the same elements
+        // crystals) -- so the GUI plot closes on the same elements
         // datum as the report.  Absent => fall back to F*H in the GUI.
         if (s.H_flow_valid) os << ", \"H_kW\": " << num(s.H_flow_kW);
         // Present species with NO elements-datum enthalpy (missing data, not
@@ -216,12 +241,18 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         // block).  Non-empty means this is a utility stream; the GUI uses
         // it for visual differentiation (dashed grey, chama/floco icon).
         if (!s.category.empty()) os << ", \"category\": " << esc(s.category);
+        //  OVERALL mole fractions: (fluid + solid) material per component
+        //  over the overall flow, so a precipitated crystal's material is
+        //  IN the composition it belongs to (flash19: the stream's CaCO3 is
+        //  0.03 kmol/h = dissolved + crystal, and the composition says so).
         os << ", \"composition\": {";
         for (std::size_t i = 0; i < names.size(); ++i)
         {
+            const scalar zi = (i < s.z.size()) ? s.z[i] : 0.0;
+            const scalar si = (i < s.s.size()) ? s.s[i] : 0.0;
             if (i) os << ", ";
             os << esc(names[i]) << ": "
-               << num(i < s.z.size() ? s.z[i] : 0.0);
+               << num(F_overall > 0.0 ? (s.F * zi + si) / F_overall : 0.0);
         }
         os << "}";
         if (anySolid)

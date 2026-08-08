@@ -32,12 +32,21 @@ Description
     The phase decomposition of one stream, in molar flows [kmol/s], from what
     the engine publishes -- and ONLY from what it publishes.
 
-    The engine stores the ORGANIC side of a liquid-liquid split and nothing
-    else: the aqueous side is the fluid minus it.  That is deliberate (the
-    stream file does the same), and it is why this module SUBTRACTS instead of
-    reading a second vector: two independently-rounded vectors agreeing is not
-    the same thing as a decomposition that closes, and the moment both are
-    stored they can drift.
+    THE CONTRACT (one stream, one semantics; ruled 2026-08-08): the payload's
+    F and composition are the OVERALL material, solids included -- exactly
+    what converged/<stream> stores as componentMolarFlows.  The named parts
+    (solids{} in kg/s, organicLiquid{} in kmol/s) locate portions of that
+    same material, so the decomposition here is pure subtraction:
+
+        solid_i   = solids_i / MW_i
+        fluid_i   = F*x_i - solid_i
+        organic_i = organicLiquid_i
+        aqueous_i = fluid_i - organic_i
+
+    and Sigma(phases) == F*x_i component by component BY CONSTRUCTION.  That
+    is deliberate (the stream file closes the same way): two independently-
+    rounded vectors agreeing is not the same thing as a decomposition that
+    closes, and the moment both are stored they can drift.
 
     The solid arrives as MASS (kg/s, the basis a particulate stream is
     weighed in) and is converted here with the molar masses the payload
@@ -81,11 +90,23 @@ export function streamPhases(
   const totalOf = (f: { [k: string]: number }) =>
     Object.values(f).reduce((a, b) => a + b, 0);
 
-  //  The FLUID, per component, from the two numbers that describe it.
+  //  The solid, converted to the molar basis FIRST -- the payload's
+  //  F/composition are the OVERALL material, so the fluid is what remains
+  //  after the solid is taken out, not the other way round.
+  const solidMolar: { [k: string]: number } = {};
+  const missing: string[] = [];
+  if (sol)
+    for (const [c, kg] of Object.entries(sol)) {
+      const mw = molarMass?.[c];
+      if (!mw || mw <= 0) missing.push(c);
+      else solidMolar[c] = kg / mw;   // kg/s / (kg/kmol) = kmol/s
+    }
+
+  //  The FLUID, per component: overall minus the solid's share.
   const fluid: { [k: string]: number } = {};
   for (const [c, x] of Object.entries(s.composition ?? {})) {
-    const n = s.F * x;
-    if (n !== 0) fluid[c] = n;
+    const n = s.F * x - (solidMolar[c] ?? 0);
+    if (Math.abs(n) > 1e-15 * Math.max(1, s.F * x)) fluid[c] = n;
   }
 
   if (org) {
@@ -108,25 +129,21 @@ export function streamPhases(
   }
 
   if (sol) {
-    const solid: { [k: string]: number } = {};
-    const missing: string[] = [];
-    for (const [c, kg] of Object.entries(sol)) {
-      const mw = molarMass?.[c];
-      if (!mw || mw <= 0) missing.push(c);
-      else solid[c] = kg / mw;       // kg/s / (kg/kmol) = kmol/s
-    }
     //  No molar mass, no molar flow -- but the PHASE does not vanish with
     //  the conversion.  Showing kg/s in a kmol/s column is how a table
     //  starts lying; silently dropping the solid is how a stream starts
     //  lying about what it carries.  Neither: the phase stays, in its
-    //  native mass basis, with the reason stated.
+    //  native mass basis, with the reason stated -- including that the
+    //  fluid rows above could not have this material subtracted from them.
     if (missing.length === 0)
-      out.push({ name: "solid", flows: solid, total: totalOf(solid) });
+      out.push({ name: "solid", flows: solidMolar, total: totalOf(solidMolar) });
     else
       out.push({
         name: "solid", flows: {}, total: 0,
         unavailable: "molar flow unavailable -- the result carries no molar "
-          + "mass for " + missing.join(", ") + "; shown in kg/s instead",
+          + "mass for " + missing.join(", ") + "; shown in kg/s instead, and "
+          + "the fluid rows above still contain this material (it could not "
+          + "be converted for subtraction)",
         massFlowsKg: { ...sol },
       });
   }
