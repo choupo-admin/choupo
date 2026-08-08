@@ -118,6 +118,7 @@ type WorkerMessage =
   | { type: "error"; message: string }
   | { type: "trajectory"; csv: string }
   | { type: "csvFiles"; files: { [relPath: string]: string } }
+  | { type: "convergedFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } };
 
@@ -131,6 +132,7 @@ export class WasmAdapter implements SolverAdapter {
       let log = "";
       let trajectoryCsv: string | null = null;
       let csvFiles: { [relPath: string]: string } | null = null;
+      let convergedFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
@@ -178,6 +180,9 @@ export class WasmAdapter implements SolverAdapter {
         if (csvFiles && Object.keys(csvFiles).length > 0) {
           result.csvFiles = csvFiles;
         }
+        if (convergedFiles && Object.keys(convergedFiles).length > 0) {
+          result.convergedFiles = convergedFiles;
+        }
         if (instantFiles && Object.keys(instantFiles).length > 0) {
           const parsed = parseDynamicInstants(instantFiles);
           if (parsed) result.instants = parsed;
@@ -209,6 +214,8 @@ export class WasmAdapter implements SolverAdapter {
           trajectoryCsv = msg.csv;
         } else if (msg.type === "csvFiles") {
           csvFiles = msg.files;
+        } else if (msg.type === "convergedFiles") {
+          convergedFiles = msg.files;
         } else if (msg.type === "instants") {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {

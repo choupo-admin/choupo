@@ -203,6 +203,13 @@ self.addEventListener("message", async (e) => {
               // the GUI can offer a TIME SCRUBBER over the transient (read-only
               // harvest of a run output; the GUI never writes).
               const instants = {};
+              // converged/ stream-state files -- the SOLVED state the C++
+              // writes beside 0/ (stream-state architecture: 0/ is the
+              // initial state, converged/ the answer).  Harvested so the
+              // Case tab can show the solution files a native run leaves on
+              // disk; without this a browser run ended with the answer
+              // written into MEMFS and thrown away with it.
+              const convergedFiles = {};
               const isNumericDir = (n) => /^[0-9]+(\.[0-9]+)?$/.test(n);
               const walk = (dir, parentName) => {
                 const entries = Module.FS.readdir(dir);
@@ -213,6 +220,13 @@ self.addEventListener("message", async (e) => {
                   try { st = Module.FS.stat(path); } catch (_) { continue; }
                   if (Module.FS.isDir(st.mode)) {
                     walk(path, name);
+                  } else if (path.startsWith("/case/converged/")) {
+                    try {
+                      convergedFiles[path.substring("/case/".length)] =
+                        Module.FS.readFile(path, { encoding: "utf8" });
+                    } catch (_) {
+                      /* ignore individual file failures */
+                    }
                   } else if (name.endsWith(".csv") || name === "balanceTrajectory.meta" || name === "elementBalance.meta" || /\.(estimate-.*|estimated)\.dat$/.test(name)) {
                     try {
                       const body = Module.FS.readFile(path, { encoding: "utf8" });
@@ -238,6 +252,13 @@ self.addEventListener("message", async (e) => {
                 }
               };
               walk("/case", null);
+
+              // The solved stream state -> the Case tab, read-only.
+              if (Object.keys(convergedFiles).length > 0) {
+                log("[worker] collected " + Object.keys(convergedFiles).length
+                    + " converged/ stream file(s)");
+                self.postMessage({ type: "convergedFiles", files: convergedFiles });
+              }
 
               // Real-time instant files -> the time scrubber.  Carried on their
               // own channel (not csvFiles) so the adapter parses them once.

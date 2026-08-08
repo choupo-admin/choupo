@@ -66,7 +66,6 @@ import {
 import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tabler/icons-react";
 
 import { popOutFileHtml } from "./filePopOut.js";
-import { classifyPhase, PHASE_LABEL } from "./plotting/palette.js";
 import { findRunStream, popOutSingleStream } from "./streamPopOut.js";
 import { HeatExchangerDatasheet } from "./HeatExchangerDatasheet.js";
 import { theoryLink } from "../case/modelDocs.js";
@@ -561,6 +560,11 @@ function StreamDetails({
   //  there is only one fluid phase and no crystals.
   const phases = runStream ? streamPhases(runStream, molarMass) : [];
   const phaseFlowUnit = prefs.flow.includes("mol") ? prefs.flow : "kmol/h";
+  //  The engine's F is the FLUID molar flow; a solid rides beside it on its
+  //  own mass basis.  When a solid is present the F label must say so, or
+  //  the Phases totals (which include the converted solid) read as failing
+  //  to close against a number that never contained it.
+  const hasSolids = Object.keys(runStream?.solids ?? {}).length > 0;
   return (
     <Stack gap="md">
       <Stack gap={4}>
@@ -588,6 +592,16 @@ function StreamDetails({
           </Tooltip>
         </Group>
         <Text fw={600}>{name}</Text>
+        {/* The stream NAME is the case author's; the PHYSICAL STATE is the
+            solver's.  Without this line a multiphase stream named "liquid"
+            with vf = 0 reads as a single liquid phase, which is false --
+            the hierarchy taught here is OVERALL MATERIAL, then PHYSICAL
+            PHASES, then AQUEOUS SPECIES. */}
+        {phases.length > 0 && (
+          <Text size="xs" c="dimmed" ff="monospace">
+            multiphase — {phases.map((p) => p.name).join(" + ")}
+          </Text>
+        )}
         {!runStream && !isAuthoredFeed && (
           //  Pre-run, the only numbers there are come from 0/ -- which for a
           //  computed stream is the choupo-init0 ESTIMATE the solver
@@ -616,7 +630,9 @@ function StreamDetails({
                 return (
                   <Table.Tr key={k}>
                     <Table.Td style={{ width: "30%" }}>
-                      <Text size="sm" ff="monospace">{k}</Text>
+                      <Text size="sm" ff="monospace">
+                        {k === "F" && hasSolids ? "F (fluid)" : k}
+                      </Text>
                     </Table.Td>
                     <Table.Td>
                       {tinkerable
@@ -627,12 +643,14 @@ function StreamDetails({
                 );
               })}
               {runStream && vf !== undefined && (
+                //  vf answers exactly one question -- how much VAPOUR -- and
+                //  carries no phase-state word: "(slurry)" beside vf = 0 was
+                //  incomplete for a two-liquid + solid stream, and the
+                //  Phases section below is where the physical state lives.
                 <Table.Tr>
                   <Table.Td><Text size="sm" ff="monospace">vf</Text></Table.Td>
                   <Table.Td>
-                    <Text size="sm" ff="monospace">
-                      {formatSig(vf)}  ({PHASE_LABEL[classifyPhase(runStream)]})
-                    </Text>
+                    <Text size="sm" ff="monospace">{formatSig(vf)}</Text>
                   </Table.Td>
                 </Table.Tr>
               )}
@@ -655,7 +673,7 @@ function StreamDetails({
         <KeyValueTable
           title="Conditions"
           rows={[
-            { k: "F", v: flowStr },
+            { k: hasSolids ? "F (fluid)" : "F", v: flowStr },
             {
               k: "T",
               v: `${formatTemperature(scalarToSI(stream.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
@@ -665,7 +683,7 @@ function StreamDetails({
               v: `${formatPressure(scalarToSI(stream.P), prefs.pressure)} ${prefs.pressure}`,
             },
             ...(runStream && vf !== undefined
-              ? [{ k: "vf", v: `${formatSig(vf)}  (${PHASE_LABEL[classifyPhase(runStream)]})` }]
+              ? [{ k: "vf", v: formatSig(vf) }]
               : []),
             // Stream enthalpy at the elements/formation datum: H specific
             // [kJ/mol] and the flow rate Ḣ = F·H [kW] the energy balance reads.
@@ -729,8 +747,9 @@ function StreamDetails({
             Phases
           </Text>
           <Text size="xs" c="dimmed">
-            a decomposition of the overall composition above among the
-            physical phases — the sides close by subtraction
+            where the overall material physically is — the fluid phases close
+            on F by subtraction; a solid is converted from its own mass basis
+            and rides beside the fluid
           </Text>
           {phases.map((ph) => (
             <Stack key={ph.name} gap={2}>
@@ -782,7 +801,7 @@ function StreamDetails({
         <Stack gap={6}>
           <Group gap="xs" align="baseline">
             <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-              Speciation ({runStream.speciation.network})
+              Aqueous speciation ({runStream.speciation.network})
             </Text>
             {runStream.speciation.pH !== undefined && (
               <Text size="xs" ff="monospace" c="dimmed">
@@ -790,10 +809,15 @@ function StreamDetails({
               </Text>
             )}
           </Group>
+          {/* The hierarchy this card teaches: OVERALL MATERIAL says how much,
+              PHASES say where it physically is, SPECIATION says which
+              chemical species carry the aqueous-phase material.  The
+              speciation attaches to the aqueous PHASE -- never to the
+              overall stream (ruled 2026-08-08). */}
           <Text size="xs" c="dimmed">
-            {phases.length > 0
-              ? <>a decomposition of the AQUEOUS phase above ({runStream.speciation.basis} basis), never a second state</>
-              : <>aqueous phase, {runStream.speciation.basis} basis — a decomposition of the composition above, never a second state</>}
+            the aqueous-phase material expressed on a{" "}
+            {runStream.speciation.basis} species basis; not a second material
+            inventory
           </Text>
           <Table withRowBorders={false} striped="even" verticalSpacing={4}>
             <Table.Tbody>

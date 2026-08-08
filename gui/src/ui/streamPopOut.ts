@@ -120,6 +120,10 @@ export function popOutSingleStream(args: {
 </head><body>
 <h1>${esc(args.name)}</h1>
 <div class="role role-${esc(role)}">${esc(role)}</div>
+${phases.length === 0 ? "" : `
+<div style="color:${C.dim};font-family:'JetBrains Mono',monospace;font-size:12px;margin:0 0 16px;">
+  multiphase — ${phases.map((p) => esc(p.name)).join(" + ")}
+</div>`}
 
 <section>
   <h3>Conditions</h3>
@@ -144,9 +148,9 @@ export function popOutSingleStream(args: {
 ${phases.length === 0 ? "" : `
 <section>
   <h3>Phases (molar flow)</h3>
-  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">a decomposition of
-     the overall material above among the physical phases — the aqueous side
-     is the fluid minus the organic, so the two close by subtraction.</p>
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">where the overall
+     material physically is — the fluid phases close on F by subtraction; a
+     solid is converted from its own mass basis and rides beside the fluid.</p>
   ${phases.map((ph) => ph.unavailable
     //  The molar conversion failed for this phase: it stays VISIBLE, in its
     //  native kg/s, with the reason -- never the wrong unit, never a silent
@@ -170,14 +174,12 @@ ${phases.length === 0 ? "" : `
 </section>`}
 ${specRows.length === 0 ? "" : `
 <section>
-  <h3>Speciation — ${esc(spec!.network)} network, ${esc(spec!.basis)} basis${
+  <h3>Aqueous speciation — ${esc(spec!.network)} network${
     spec!.pH !== undefined ? ` &middot; pH ${spec!.pH.toFixed(3)}` : ""}</h3>
-  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">${
-    phases.length === 0
-      ? "aqueous phase — a decomposition of the composition above, never a second state."
-      : "a decomposition of the AQUEOUS phase above, never a second state."
-  }  In FLOWS: a
-     stoichiometric set excludes H/OH as mediators and does not close to 1.</p>
+  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">the aqueous-phase
+     material expressed on a ${esc(spec!.basis)} species basis;
+     not a second material inventory.  In FLOWS: a stoichiometric set
+     excludes H/OH as mediators and does not close to 1.</p>
   <table>
     <tr><th>species</th><th style="text-align:right;">${esc(specUnit)}</th></tr>
     ${specRows.map(([s, f]) => `<tr>

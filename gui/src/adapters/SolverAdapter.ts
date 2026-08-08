@@ -320,6 +320,13 @@ export interface RunResult {
    *  scans + fits; also redundantly carries trajectory.csv
    *  for the dynamic binaries. */
   csvFiles?: { [relPath: string]: string };
+  /** The SOLVED stream-state files the run wrote under converged/ (one per
+   *  stream, exactly what a native run leaves on disk beside 0/).  Keys are
+   *  case-root-relative ("converged/liquid").  The Case tab shows them
+   *  read-only so a browser run's answer is inspectable file-by-file, the
+   *  glass-box way -- without this the WASM run wrote the solution into
+   *  MEMFS and discarded it with the worker. */
+  convergedFiles?: { [relPath: string]: string };
   /** Per-duty utility allocation from the solver: each heat duty (a unit's
    *  Q, or a column reboiler/condenser port) sized to a plant utility by
    *  temperature level, or flagged carried.  Lets the GUI show "which

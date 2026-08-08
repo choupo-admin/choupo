@@ -177,7 +177,16 @@ function parseOutline(text: string): OutlineKey[] {
 
 export function CaseWorkspace() {
   const caseFiles = useStore((s) => s.caseFiles);
-  const raw = caseFiles.rawFiles ?? {};
+  //  The solved stream state a run wrote (converged/<stream>, harvested from
+  //  the worker's MEMFS) is shown BESIDE the authored files, read-only --
+  //  merged for display only, never into caseFiles, so the dirty-tracking
+  //  that compares caseFiles against its pristine snapshot cannot mistake a
+  //  run output for a user edit.  Before the first run the tree is exactly
+  //  the authored case, as before.
+  const convergedOut = useStore((s) => s.runResult?.convergedFiles);
+  const raw = useMemo(
+    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}) }),
+    [caseFiles.rawFiles, convergedOut]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
 

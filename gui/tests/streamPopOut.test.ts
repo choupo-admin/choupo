@@ -46,11 +46,15 @@ describe("popOutSingleStream — the phases section", () => {
     expect(html).toContain("Phases (molar flow)");
     expect(html).toContain("aqueous");
     expect(html).toContain("organic");
-    //  The speciation stays, and its blurb now names WHICH material it
-    //  decomposes -- the aqueous phase, not "the composition above" that a
-    //  phases section has just been inserted after.
-    expect(html).toContain("Speciation");
-    expect(html).toContain("AQUEOUS phase above");
+    //  The speciation stays, retitled to name WHICH material it expresses:
+    //  the aqueous phase's, never the overall stream's (the ruled hierarchy
+    //  is OVERALL MATERIAL -> PHYSICAL PHASES -> AQUEOUS SPECIES).
+    expect(html).toContain("Aqueous speciation");
+    expect(html).toContain("not a second material inventory");
+    //  And the physical state is stated beside the stream's name, so a
+    //  multiphase stream the author happened to call "liquid" cannot be
+    //  read as one liquid phase.
+    expect(html).toContain("multiphase — aqueous + organic");
   });
 
   it("draws NO phases section for a single-fluid-phase stream", () => {

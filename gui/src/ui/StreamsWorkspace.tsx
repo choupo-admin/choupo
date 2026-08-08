@@ -570,8 +570,9 @@ function Detail({
               Phases (molar flow)
             </Text>
             <Text size="xs" c="dimmed">
-              a decomposition of the material above — the aqueous side is the
-              fluid minus the organic, so the two close by subtraction
+              where the overall material physically is — the fluid phases
+              close on F by subtraction; a solid is converted from its own
+              mass basis and rides beside the fluid
             </Text>
             <SimpleGrid cols={{ base: 1, md: Math.min(3, phases.length) }} spacing="xl">
               {phases.map((ph) => (
@@ -629,8 +630,7 @@ function Detail({
           <Group gap="xs" align="baseline">
             <Text size="xs" c="dimmed" tt="uppercase" fw={600}
               style={{ letterSpacing: 0.5 }}>
-              Speciation — {stream.speciation.network} network,
-              {" "}{stream.speciation.basis} basis
+              Aqueous speciation — {stream.speciation.network} network
             </Text>
             {stream.speciation.pH !== undefined && (
               <Text size="xs" ff="monospace" c="dimmed">
@@ -639,8 +639,9 @@ function Detail({
             )}
           </Group>
           <Text size="xs" c="dimmed">
-            aqueous phase — a decomposition of the composition above, never a
-            second state
+            the aqueous-phase material expressed on a{" "}
+            {stream.speciation.basis} species basis; not a second material
+            inventory
           </Text>
           <Table verticalSpacing={4} fz="sm">
             <Table.Tbody>
