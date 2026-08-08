@@ -182,6 +182,11 @@ def main() -> int:
            "carrying zero binary energies), so the residual is 0/0 and proves "
            "nothing.  " if vacuous else "")
         + (f"UNTESTABLE: {'; '.join(refused)}.  " if refused else "")
+        + "The Wilson[inline flash03] row is INTERNAL CONSISTENCY "
+        "VERIFICATION only (ruled 2026-08-08): it proves the implemented "
+        "Wilson equations satisfy Gibbs-Duhem under the pair flash03 carries "
+        "-- it curates nothing, validates nothing against experiment, and "
+        "does NOT satisfy the owed standards-tier Wilson pair.  "
         + "THIS IS CONSISTENCY, NOT ACCURACY: a model can satisfy "
         "Gibbs-Duhem exactly and still disagree with every measurement ever "
         "made.  It does not enlarge the validation subset.  THE SALT-LEVEL "
