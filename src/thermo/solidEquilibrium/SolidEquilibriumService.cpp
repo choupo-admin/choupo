@@ -41,7 +41,8 @@ SolidEquilibriumService::equilibrateMinerals(
     electrolyte::SpeciationInput state,
     const std::vector<std::string>& admitted,
     int verbosity,
-    Route route)
+    Route route,
+    bool narrate)
 {
     Outcome out;
 
@@ -69,9 +70,10 @@ SolidEquilibriumService::equilibrateMinerals(
                 : "solid '" + nm + "' admitted but subsaturated (stays "
                   "dissolved; n = 0)");
         }
-        for (const auto& ev : out.events)
-            AdvisoryLog::instance().add("solids", "info",
-                                        "solidEquilibrium", ev);
+        if (narrate)
+            for (const auto& ev : out.events)
+                AdvisoryLog::instance().add("solids", "info",
+                                            "solidEquilibrium", ev);
         return out;
     }
 

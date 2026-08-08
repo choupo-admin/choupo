@@ -91,7 +91,12 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict);
 // SI-only behaviour, byte-identical by construction).  Unknown keys inside
 // equilibrate{} are REFUSED naming the v1 grammar (seed{}/targetSI{} reserved,
 // not implemented).
-void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in);
+//  Returns the ADMITTED mineral list (empty = no block, SI-only).  Since S3b
+//  it RETURNS rather than filling SpeciationInput::equilibrate: that channel
+//  is the SolidEquilibriumService's private one -- the one door material
+//  takes into a solid phase -- and no reader hands anyone a filled key to
+//  walk around it with.
+std::vector<std::string> readEquilibrate(const DictPtr& dict);
 } // namespace propertyOps
 
 class Speciate : public PropertyOperation

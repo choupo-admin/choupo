@@ -29,6 +29,7 @@ License
 #include "ScalingScan.H"
 
 #include "Speciate.H"   // propertyOps::readAnalysis / readEquilibrate
+#include "thermo/solidEquilibrium/SolidEquilibriumService.H"
 #include "core/Dimensions.H"
 #include "thermo/electrolyte/ScalingIndices.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
@@ -58,11 +59,13 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
 
     diag_.clear();
     auto feed = propertyOps::readAnalysis(dict);
-    propertyOps::readEquilibrate(dict, feed);   // optional equilibrate { minerals ( ... ); }
+    //  S3b: the admitted minerals are a LIST the SolidEquilibriumService
+    //  consumes, never a filled input channel (one door).
+    const auto admitted = propertyOps::readEquilibrate(dict);
     if (feed.totals.empty())
         throw std::runtime_error("scalingScan: `totals` is empty -- a scaling "
             "scan needs a water analysis to concentrate");
-    const bool doEquil = !feed.equilibrate.empty();
+    const bool doEquil = !admitted.empty();
 
     // feedFlow [volumetric] -> enables the kg/day scale curve.  REFUSED without
     // equilibrate{} -- a SI-only scan has no precipitated amount to rate, so a
@@ -134,7 +137,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         if (doEquil)
         {
             std::cout << "  EQUILIBRATE allowed:";
-            for (const auto& m : feed.equilibrate) std::cout << " " << m;
+            for (const auto& m : admitted) std::cout << " " << m;
             std::cout << " -- SI_<m> stays RAW free-water; new columns SIeq_<m>, "
                          "n_<m> (mol/kg concentrate water),\n  scale_<m> = "
                          "n*(1-r) (mol/kg FEED water)";
@@ -181,7 +184,7 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     // changes); read it off the first point and freeze the CSV columns.
     std::vector<std::string> siCols;          // RAW free-water SI (unchanged)
     std::vector<std::string> eqCols;          // ALLOWED minerals (equilibrated)
-    if (doEquil) eqCols = feed.equilibrate;
+    if (doEquil) eqCols = admitted;
 
     // Industry calcite indices (LSI / Stiff-Davis / Ryznar) ride alongside the
     // rigorous SI_calcite when calcite is in the catalogue and the analysis
@@ -217,17 +220,22 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
         // RAW free-water speciation (NO equilibrate) -- keeps SI_<m> columns
         // their original meaning, byte-compatible with pre-feature scans.
         electrolyte::SpeciationInput inRaw = feed;
-        inRaw.equilibrate.clear();
         for (auto& [name, tot] : inRaw.totals) tot = tot / (1.0 - r);
         const auto raw = solver.solve(inRaw, k == 0 ? verbosity : std::min(verbosity, 1));
 
-        // EQUILIBRATED speciation (precipitation to SI = 0) -- only when asked.
+        // EQUILIBRATED speciation (precipitation to SI = 0) -- only when
+        // asked, through the ONE door (S3b; coupled route, narration off:
+        // this scan prints its own tables, and a per-grid-point advisory
+        // would flood the log with moving numbers).
         electrolyte::SpeciationResult eq;
         if (doEquil)
         {
             electrolyte::SpeciationInput inEq = feed;
             for (auto& [name, tot] : inEq.totals) tot = tot / (1.0 - r);
-            eq = solver.solve(inEq, k == 0 ? std::min(verbosity, 2) : 0);
+            eq = solidEq::SolidEquilibriumService::equilibrateMinerals(
+                solver, inEq, admitted, k == 0 ? std::min(verbosity, 2) : 0,
+                solidEq::SolidEquilibriumService::Route::coupled,
+                /*narrate*/ false).aqueous;
         }
 
         if (k == 0)

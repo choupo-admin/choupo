@@ -235,9 +235,14 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
 // reader (readAnalysis stays untouched).  Absent = empty allowed set (today's
 // behaviour).  `minerals` is REQUIRED inside the block; unknown keys are refused
 // naming the v1 grammar (seed{}/targetSI{} are reserved slots, not implemented).
-void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in)
+//  Since S3b it RETURNS the admitted list rather than filling
+//  SpeciationInput::equilibrate: that channel is the
+//  SolidEquilibriumService's private one -- the one door material takes
+//  into a solid phase -- and no reader hands anyone a filled key to walk
+//  around it with.
+std::vector<std::string> readEquilibrate(const DictPtr& dict)
 {
-    if (!dict->found("equilibrate")) return;          // absent: SI-only, as today
+    if (!dict->found("equilibrate")) return {};       // absent: SI-only, as today
     auto eq = dict->subDict("equilibrate");
     for (const auto& k : eq->keys())
         if (k != "minerals")
@@ -249,10 +254,11 @@ void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in)
         throw std::runtime_error("equilibrate{}: needs `minerals ( calcite "
             "gypsum ... );` -- the allowed solid set that may precipitate to "
             "its SI = 0 ceiling");
-    in.equilibrate = eq->lookupWordList("minerals");
-    if (in.equilibrate.empty())
+    auto admitted = eq->lookupWordList("minerals");
+    if (admitted.empty())
         throw std::runtime_error("equilibrate{}: the minerals list is empty -- "
             "name at least one allowed solid, or drop the block for SI-only");
+    return admitted;
 }
 
 } // namespace propertyOps
@@ -291,7 +297,7 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     if (model.empty()) model = "davies";   // no package, no op override -> S1 default
 
     auto in = propertyOps::readAnalysis(dict);
-    propertyOps::readEquilibrate(dict, in);
+    const auto admitted = propertyOps::readEquilibrate(dict);
 
     // verifyGlobal: the FULL-catalogue Pitzer
     // single-salt oracle -- every binary in the pairs home vs the closed
@@ -317,19 +323,15 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     //  parse, in the solver -- the reactive builder routes through the
     //  same method.
     solver.applyNetworkScope(dict);
-    //  MIGRATION S3a: a mineral set goes through the ONE door -- the
+    //  MIGRATION S3: a mineral set goes through the ONE door -- the
     //  SolidEquilibriumService (coupled route: the provider's own
     //  simultaneous solve, numbers unchanged; the service owns the entry,
     //  the formed ledger and the narration).  An SI-only analysis solves
     //  directly, as ever -- no solid may form there.
-    const auto res = in.equilibrate.empty()
+    const auto res = admitted.empty()
         ? solver.solve(in, verbosity)
-        : [&]{
-              auto admitted = in.equilibrate;
-              in.equilibrate.clear();
-              return solidEq::SolidEquilibriumService::equilibrateMinerals(
-                  solver, in, admitted, verbosity).aqueous;
-          }();
+        : solidEq::SolidEquilibriumService::equilibrateMinerals(
+              solver, in, admitted, verbosity).aqueous;
 
     // -- species table CSV ------------------------------------------------------
     std::ofstream csv(dict->subDict("output")->lookupWord("file"));

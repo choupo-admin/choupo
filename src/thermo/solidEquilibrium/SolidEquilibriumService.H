@@ -107,12 +107,19 @@ public:
     //  (via the provider's own resolution) an admitted name the data does
     //  not define, naming what is available.  `state` is taken by value:
     //  its totals are the fluid inventory the one ledger moves.
+    //  `narrate` gates ONLY the AdvisoryLog emission (events are always
+    //  built and returned): an iterative caller (ReactiveVLE's FD-Jacobian
+    //  loop, a scan's grid) would flood the durable caveat surface with
+    //  near-duplicate lines whose moving n defeats deduplication -- such a
+    //  caller narrates its CONVERGED state itself, or passes true only on
+    //  the call whose answer the run reports.
     static Outcome equilibrateMinerals(
         const electrolyte::SpeciationSolver& provider,
         electrolyte::SpeciationInput state,
         const std::vector<std::string>& admitted,
         int verbosity,
-        Route route = Route::coupled);
+        Route route = Route::coupled,
+        bool narrate = true);
 };
 
 } // namespace solidEq

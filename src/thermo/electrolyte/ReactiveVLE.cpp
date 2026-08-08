@@ -6,6 +6,7 @@
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
+#include "thermo/solidEquilibrium/SolidEquilibriumService.H"
 
 #include <algorithm>
 #include <cmath>
@@ -200,7 +201,6 @@ ReactiveVLE::speciateAsLiquid(scalar T_K, const sVector& nApp) const
     in.solvePH = true;                     // electroneutrality closes it
     in.stoichiometricTotals = true;        // bridge-derived, not an analysis
     in.announceClosure = false;
-    in.equilibrate = cfg_.admittedSolids;
     for (const auto& fam : cfg_.families)
     {
         const scalar q = (fam.apparentIdx < nApp.size())
@@ -208,7 +208,14 @@ ReactiveVLE::speciateAsLiquid(scalar T_K, const sVector& nApp) const
         for (const auto& [master, nu] : fam.mapping)
             in.totals[master] += nu * q / kgw;
     }
-    return spec_->solve(in, 0);
+    //  S3b: an admitted solid set goes through the ONE door (coupled route,
+    //  numbers unchanged; narration off -- this is a report utility whose
+    //  caller owns the stream's own narration).
+    if (cfg_.admittedSolids.empty()) return spec_->solve(in, 0);
+    return solidEq::SolidEquilibriumService::equilibrateMinerals(
+        *spec_, in, cfg_.admittedSolids, 0,
+        solidEq::SolidEquilibriumService::Route::coupled,
+        /*narrate*/ false).aqueous;
 }
 
 std::vector<std::pair<std::string, scalar>>
@@ -730,11 +737,19 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         //  verbosity so the closure can print its ACTIVATION TRACE once: the
         //  student sees which equilibria the assembly put in the problem and
         //  why, instead of a bare count.
-        //  Ask for precipitation when the case admits solids.  Empty list =
+        //  Ask for precipitation when the case admits solids -- through the
+        //  ONE door (S3b; coupled route, numbers unchanged).  Narration off:
+        //  this kernel runs hundreds of times inside the Newton, and the
+        //  post-solve reporting owns the converged narration.  Empty list =
         //  the kernel's phase-free path, untouched.
-        in.equilibrate = cfg_.admittedSolids;
         in.announceClosure = announceClosure;
-        out = spec_->solve(in, innerVerbosity);
+        if (cfg_.admittedSolids.empty())
+            out = spec_->solve(in, innerVerbosity);
+        else
+            out = solidEq::SolidEquilibriumService::equilibrateMinerals(
+                *spec_, in, cfg_.admittedSolids, innerVerbosity,
+                solidEq::SolidEquilibriumService::Route::coupled,
+                /*narrate*/ false).aqueous;
         if (!traced) { traced = true; innerVerbosity = 0; announceClosure = false; }
     };
 

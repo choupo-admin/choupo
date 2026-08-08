@@ -131,6 +131,25 @@ def main() -> int:
         fail.append(f"A7: coupled route pH {d['pHCoupled']!r} != oracle "
                     f"{d['pHOracle']!r}")
 
+    # A8 (S3b) -- THE ONE-ENTRY LOCKDOWN: no code outside the service fills
+    # SpeciationInput::equilibrate.  R2's sentence made a compile fact
+    # (check_layering-style): material enters a solid phase through ONE door,
+    # and this arm is what makes a second door a FAILING build instead of a
+    # code-review hope.  Readers (.equilibrate.empty(), .clear()) stay free.
+    writers = []
+    for ext in ("*.cpp", "*.H"):
+        for f in (ROOT / "src").rglob(ext):
+            if f.name == "SolidEquilibriumService.cpp":
+                continue
+            body = re.sub(r"/\*.*?\*/", "", f.read_text(), flags=re.S)
+            body = re.sub(r"//[^\n]*", "", body)
+            for i, line in enumerate(body.splitlines(), 1):
+                if re.search(r"\.equilibrate\s*=", line):
+                    writers.append(f"{f.relative_to(ROOT)}:{i}")
+    if writers:
+        fail.append("A8: SpeciationInput::equilibrate is filled outside the "
+                    "service door: " + ", ".join(writers))
+
     # A5 -- the negative.
     n = run_probe("notAMineralAnywhere")
     neg = n.stdout + n.stderr
@@ -164,8 +183,11 @@ def main() -> int:
           f"equilibrate oracle (n rel {abs(d['nService']-d['nOracle'])/d['nOracle']:.1e}, "
           f"SI {d['siService']:.1e}, same pH), the appearance is narrated, an "
           "undefined mineral refuses with the available list, and the service "
-          "code names no solid.  NOT CHECKED: no unit consumes the seam yet "
-          "(S3); fusion-class candidates still ride the spike gate.")
+          "code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the "
+          "engine's ONLY writer of the equilibrate channel -- Speciate, "
+          "ScalingScan and ReactiveVLE all walk through the door.  NOT "
+          "CHECKED: fusion-class candidates still ride the spike gate; the "
+          "flash's own solid path arrives with S4.")
     return 0
 
 
