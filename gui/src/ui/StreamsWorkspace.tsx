@@ -75,6 +75,11 @@ import { useStore } from "../state/store.js";
 import { parse, toJson, type JsonDict, type JsonValue } from "../dict/index.js";
 import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { findRunStream } from "./streamPopOut.js";
+import {
+  aqueousMolalityBasis,
+  declaredAqueousSolvent,
+  molality,
+} from "../case/speciationMolality.js";
 import { streamPhases } from "../case/streamPhases.js";
 import { StreamsSummary } from "./StreamsSummary.js";
 import { StreamsTable } from "./StreamsTable.js";
@@ -418,6 +423,7 @@ function Detail({
   //  Molar masses come from the run payload, and are what turns the solid's
   //  kg/s into the kmol/s the other phases are in.
   const molarMass = useStore((s) => s.runResult?.componentMolarMass);
+  const caseThermoPackage = useStore((s) => s.caseFiles.thermoPackage);
 
   if (!name) {
     return (
@@ -638,32 +644,55 @@ function Detail({
               </Text>
             )}
           </Group>
-          <Text size="xs" c="dimmed">
-            the aqueous-phase material expressed on a{" "}
-            {stream.speciation.basis} species basis; not a second material
-            inventory
-          </Text>
-          <Table verticalSpacing={4} fz="sm">
-            <Table.Tbody>
-              {Object.entries(stream.speciation.flows)
-                .sort((a, b) => b[1] - a[1])
-                .map(([sp, f]) => (
-                  <Table.Tr key={sp}>
-                    <Table.Td style={{ color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))", width: 180 }}>
-                      {sp}
-                    </Table.Td>
-                    <Table.Td style={{
-                      color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
-                      fontFamily: "JetBrains Mono, monospace",
-                      textAlign: "right",
-                    }}>
-                      {formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
-                      {" "}{prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-            </Table.Tbody>
-          </Table>
+          {/* MOLALITY primary, flows secondary (ruled 2026-08-08):
+              equilibrium constants are activity-based, and molality is the
+              composition scale underlying the molal standard state and the
+              electrolyte activity models; the flows stay the canonical
+              closure representation.  The denominator is the DECLARED
+              aqueous solvent -- never a hard-coded "water". */}
+          {(() => {
+            const basis = aqueousMolalityBasis(
+              stream, declaredAqueousSolvent(caseThermoPackage), molarMass);
+            return (
+              <>
+                <Text size="xs" c="dimmed">
+                  {basis.unavailable
+                    ? `${stream.speciation!.basis} species basis — ${basis.unavailable}`
+                    : `the aqueous-phase material in mol/kg ${basis.solvent} (${stream.speciation!.basis} species basis) — the composition scale of the molal standard state; flows beside it are the canonical closure representation`}
+                </Text>
+                <Table verticalSpacing={4} fz="sm">
+                  <Table.Tbody>
+                    {Object.entries(stream.speciation!.flows)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([sp, f]) => (
+                        <Table.Tr key={sp}>
+                          <Table.Td style={{ color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))", width: 180 }}>
+                            {sp}
+                          </Table.Td>
+                          {!basis.unavailable && (
+                            <Table.Td style={{
+                              color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
+                              fontFamily: "JetBrains Mono, monospace",
+                              textAlign: "right",
+                            }}>
+                              {molality(f, basis).toPrecision(4)} mol/kg
+                            </Table.Td>
+                          )}
+                          <Table.Td style={{
+                            color: "light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))",
+                            fontFamily: "JetBrains Mono, monospace",
+                            textAlign: "right",
+                          }}>
+                            {formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
+                            {" "}{prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                  </Table.Tbody>
+                </Table>
+              </>
+            );
+          })()}
         </Stack>
       )}
 

@@ -40,9 +40,14 @@ describe("popOutSingleStream — the phases section", () => {
   beforeEach(() => { opened.length = 0; });
 
   it("renders aqueous AND organic beside the speciation on a two-liquid stream", () => {
-    popOutSingleStream({ name: "liquid", prefs: DEFAULT_PREFS, runStream: twoLiquids });
+    popOutSingleStream({
+      name: "liquid", prefs: DEFAULT_PREFS, runStream: twoLiquids,
+      molarMass: { water: 18.015 }, aqueousSolvent: "water",
+    });
     expect(opened).toHaveLength(1);
     const html = opened[0]!;
+    //  MOLALITY primary (mol/kg of the DECLARED solvent), flows beside it.
+    expect(html).toContain("mol/kg water");
     expect(html).toContain("Phases (molar flow)");
     expect(html).toContain("aqueous");
     expect(html).toContain("organic");

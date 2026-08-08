@@ -73,6 +73,11 @@ import { useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { streamCardSource } from "../case/streamCardState.js";
+import {
+  aqueousMolalityBasis,
+  declaredAqueousSolvent,
+  molality,
+} from "../case/speciationMolality.js";
 import { streamPhases } from "../case/streamPhases.js";
 import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText, topologyFeedNames } from "../case/toGraph.js";
 import {
@@ -477,6 +482,7 @@ function StreamDetails({
   //  Molar masses from the run payload -- what turns the solid phase's kg/s
   //  into the kmol/s the other phases are in.
   const molarMass = useStore((s) => s.runResult?.componentMolarMass);
+  const caseThermoPackage = useStore((s) => s.caseFiles.thermoPackage);
   // Model-boundary audit entry for this stream (producer/consumer on
   // different thermo models): shown as one row so the audit is visible at
   // the stream it names, not only in the summary band.
@@ -581,6 +587,7 @@ function StreamDetails({
                 prefs,
                 runStream,
                 molarMass,
+                aqueousSolvent: declaredAqueousSolvent(caseThermoPackage),
               })}>
               <IconExternalLink size={14} />
             </ActionIcon>
@@ -804,17 +811,28 @@ function StreamDetails({
           </Group>
           {/* The hierarchy this card teaches: OVERALL MATERIAL says how much,
               PHASES say where it physically is, SPECIATION says which
-              chemical species carry the aqueous-phase material.  The
-              speciation attaches to the aqueous PHASE -- never to the
-              overall stream (ruled 2026-08-08). */}
-          <Text size="xs" c="dimmed">
-            the aqueous-phase material expressed on a{" "}
-            {runStream.speciation.basis} species basis; not a second material
-            inventory
-          </Text>
+              chemical species carry the aqueous-phase material.  MOLALITY
+              is the primary display basis (ruled 2026-08-08): equilibrium
+              constants are activity-based, and molality is the composition
+              scale underlying the molal standard state and the electrolyte
+              activity models.  The flows stay the canonical closure
+              representation (the pop-out shows both); normalized species
+              fractions are banned -- a stoichiometric set does not close
+              to 1.  The denominator is the DECLARED aqueous solvent, never
+              a hard-coded "water". */}
+          {(() => {
+            const basis = aqueousMolalityBasis(
+              runStream, declaredAqueousSolvent(caseThermoPackage), molarMass);
+            return (
+              <>
+                <Text size="xs" c="dimmed">
+                  {basis.unavailable
+                    ? `${runStream.speciation!.basis} species basis — ${basis.unavailable}`
+                    : `the aqueous-phase material in mol/kg ${basis.solvent} (${runStream.speciation!.basis} species basis) — the composition scale of the molal standard state; not a second material inventory`}
+                </Text>
           <Table withRowBorders={false} striped="even" verticalSpacing={4}>
             <Table.Tbody>
-              {Object.entries(runStream.speciation.flows)
+              {Object.entries(runStream.speciation!.flows)
                 .sort((a, b) => b[1] - a[1])
                 .map(([sp, f]) => (
                   <Table.Tr key={sp}>
@@ -823,15 +841,18 @@ function StreamDetails({
                     </Table.Td>
                     <Table.Td>
                       <Text size="xs" ff="monospace" c="dimmed">
-                        {formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")}
-                        {" "}
-                        {prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}
+                        {basis.unavailable
+                          ? `${formatFlow(f, prefs.flow.includes("mol") ? prefs.flow : "kmol/h")} ${prefs.flow.includes("mol") ? prefs.flow : "kmol/h"}`
+                          : `${molality(f, basis).toPrecision(4)} mol/kg`}
                       </Text>
                     </Table.Td>
                   </Table.Tr>
                 ))}
             </Table.Tbody>
           </Table>
+              </>
+            );
+          })()}
         </Stack>
       )}
     </Stack>

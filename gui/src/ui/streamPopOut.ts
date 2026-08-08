@@ -35,6 +35,11 @@ License
 import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { streamPhases } from "../case/streamPhases.js";
 import {
+  aqueousMolalityBasis,
+  declaredAqueousSolvent,
+  molality,
+} from "../case/speciationMolality.js";
+import {
   flowBasis,
   formatFlow,
   formatPressure,
@@ -62,6 +67,10 @@ export function popOutSingleStream(args: {
    *  native kg/s with the reason stated (never the wrong unit, never a
    *  silent disappearance). */
   molarMass?: { [component: string]: number };
+  /** the case's DECLARED aqueous solvent (thermoPhysPropDict), for the
+   *  speciation's molality basis; callers resolve it via
+   *  declaredAqueousSolvent() so no surface assumes "water". */
+  aqueousSolvent?: string;
 }): void {
   const massBasis = flowBasis(args.prefs.flow) === "mass";
 
@@ -177,17 +186,39 @@ ${specRows.length === 0 ? "" : `
 <section>
   <h3>Aqueous speciation — ${esc(spec!.network)} network${
     spec!.pH !== undefined ? ` &middot; pH ${spec!.pH.toFixed(3)}` : ""}</h3>
-  <p style="color:${C.dim};font-size:12px;margin:0 0 8px;">the aqueous-phase
-     material expressed on a ${esc(spec!.basis)} species basis;
-     not a second material inventory.  In FLOWS: a stoichiometric set
-     excludes H/OH as mediators and does not close to 1.</p>
+  ${(() => {
+    //  MOLALITY is the primary display basis (ruled 2026-08-08):
+    //  equilibrium constants are activity-based, and molality is the
+    //  composition scale underlying the molal standard state and the
+    //  electrolyte activity models.  The flows stay beside it -- they are
+    //  the canonical closure representation.  Normalized species
+    //  fractions are banned: a stoichiometric set does not close to 1.
+    const basis = aqueousMolalityBasis(
+      args.runStream!, args.aqueousSolvent ?? "water", args.molarMass);
+    const blurb = `<p style="color:${C.dim};font-size:12px;margin:0 0 8px;">`
+      + `the aqueous-phase material on a ${esc(spec!.basis)} species basis; `
+      + `not a second material inventory.  Equilibrium constants are `
+      + `activity-based, and molality is the composition scale underlying `
+      + `the molal standard state and the electrolyte activity models.</p>`;
+    if (basis.unavailable)
+      return blurb
+        + `<p style="color:${C.dim};font-size:12px;margin:0 0 8px;">${esc(basis.unavailable)}</p>
   <table>
     <tr><th>species</th><th style="text-align:right;">${esc(specUnit)}</th></tr>
-    ${specRows.map(([s, f]) => `<tr>
-      <td>${esc(s)}</td>
+    ${specRows.map(([sn, f]) => `<tr>
+      <td>${esc(sn)}</td>
       <td class="right">${esc(formatFlow(f, specUnit, 6))}</td>
     </tr>`).join("")}
-  </table>
+  </table>`;
+    return blurb + `<table>
+    <tr><th>species</th><th style="text-align:right;">mol/kg ${esc(basis.solvent)}</th><th style="text-align:right;">${esc(specUnit)}</th></tr>
+    ${specRows.map(([sn, f]) => `<tr>
+      <td>${esc(sn)}</td>
+      <td class="right">${molality(f, basis).toPrecision(4)}</td>
+      <td class="right">${esc(formatFlow(f, specUnit, 6))}</td>
+    </tr>`).join("")}
+  </table>`;
+  })()}
 </section>`}
 </body></html>`;
   openHtmlInNewTab(html);
@@ -222,6 +253,7 @@ export function popOutStreamByName(name: string): void {
       prefs: state.displayPrefs,
       runStream,
       molarMass: state.runResult?.componentMolarMass,
+      aqueousSolvent: declaredAqueousSolvent(state.caseFiles.thermoPackage),
     });
   });
 }
