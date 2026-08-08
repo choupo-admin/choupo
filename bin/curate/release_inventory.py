@@ -10,6 +10,16 @@ re-run; the numbers follow.
 
 Usage:  bin/curate/release_inventory.py            # writes generated/releaseInventory.json
         bin/curate/release_inventory.py --check    # exit 1 if the file is stale
+        bin/curate/release_inventory.py --release vYYMM
+            # writes generated/releases/<tag>.json, counted from a WORKTREE of
+            # that tag -- never from the current tree.  A release's numbers
+            # belong to the release (ruled 2026-08-08, website audit item 1):
+            # the old single artefact carried the LAST RELEASE'S NAME over the
+            # CURRENT TREE'S COUNTS, by its own docstring -- one artefact, two
+            # identities, and every public surface that consumed it inherited
+            # the conflation.  Now: the DEV artefact says `line: Choupo-dev`
+            # and claims no release; a release artefact is generated once from
+            # its tag and is immutable (check_release_identity recounts it).
 """
 import json
 import re, re, subprocess, sys
@@ -106,12 +116,35 @@ def released_at() -> str:
     return m.group(1) if m else ""
 
 
+def parse_cff(text: str) -> dict:
+    """The citation fields, from CITATION.cff -- minimal, field-anchored.
+    Not a YAML parser on purpose: the four fields it needs are flat."""
+    g = lambda k: (re.search(r'^%s:\s*"?([^"\n]+)"?\s*$' % k, text, re.M) or [None, ""])[1]
+    fam = re.search(r'family-names:\s*(\S+)', text)
+    giv = re.search(r'given-names:\s*(\S+)', text)
+    ver, date, url = g("version"), g("date-released"), g("url")
+    title = g("title").strip()
+    author = (fam.group(1) if fam else "") + ", " + (giv.group(1)[0] + "." if giv else "")
+    year = date[:4] if date else ""
+    rendered = ("%s (%s). %s (version %s) [Computer software]. %s"
+                % (author, year, title, ver, url))
+    return {"author": author, "year": year, "title": title, "version": ver,
+            "dateReleased": date, "url": url, "rendered": rendered}
+
+
 def build() -> dict:
     tutorials = count_runnable_cases()
     regression = len(list((ROOT / "tutorials").rglob("expected")))
+    #  THE IDENTITY IS THE TREE'S OWN, never borrowed.  The dev artefact names
+    #  the LINE and its commit; `latestRelease` is a clearly-labelled pointer
+    #  (a fact about the CHANGELOG), never the identity of these counts.
+    head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
+                          capture_output=True, text=True).stdout.strip()
     inv = {
-        "release": release_id(),
-        "releasedAt": released_at(),
+        "line": "Choupo-dev",
+        "commit": head,
+        "latestRelease": release_id(),
+        "latestReleasedAt": released_at(),
         "catalogue": {
             "components":        count_dat("components"),
             "aqueousSpecies":    count_model_species(),
@@ -121,7 +154,6 @@ def build() -> dict:
             "henryPairs":        count_dat("parameters/Henry"),
             "pitzerPairs":       count_dat("parameters/Pitzer/pairs"),
             "enrtlPairs":        count_dat("parameters/eNRTL"),
-            "propertyMethods":   count_dat_recursive("methods"),
             "materials":         count_assets_kind({"constructionMaterial"}),
             "membranes":         count_assets_kind({"RO", "NF", "IEM"}),
             "adsorbents":        count_assets_kind({"adsorbent"}),
@@ -337,7 +369,64 @@ def hand_carried_counts():
     return hits
 
 
+def build_release(tag: str) -> dict:
+    """Counts from a WORKTREE of the tag.  The worktree is sparse (the trees
+    the counters read) and removed afterwards; the artefact records the tag
+    and its commit so check_release_identity can verify it was never edited."""
+    global ROOT, STD
+    import tempfile, shutil
+    commit = subprocess.run(["git", "rev-parse", tag + "^{}"],
+                            capture_output=True, text=True).stdout.strip()
+    if not commit:
+        raise SystemExit("release_inventory: unknown tag " + tag)
+    wt = Path(tempfile.mkdtemp(prefix="relinv-" + tag + "-"))
+    old_root, old_std = ROOT, STD
+    try:
+        subprocess.run(["git", "worktree", "add", "--detach", str(wt), tag],
+                       capture_output=True, text=True, check=True)
+        ROOT, STD = wt, wt / "data" / "standards"
+        inv = build()
+        cff = (wt / "CITATION.cff").read_text()
+    finally:
+        ROOT, STD = old_root, old_std
+        subprocess.run(["git", "worktree", "remove", "--force", str(wt)],
+                       capture_output=True, text=True)
+        shutil.rmtree(wt, ignore_errors=True)
+    #  the dev-line keys do not belong on a release artefact
+    for k in ("line", "commit", "latestRelease", "latestReleasedAt"):
+        inv.pop(k, None)
+    rel = "Choupo-" + tag.lstrip("v")
+    c = parse_cff(cff)
+    out = {"release": rel, "tag": tag, "commit": commit,
+           "releasedAt": c["dateReleased"], "citation": c,
+           "citationRendered": c["rendered"], **inv}
+    return out
+
+
 def main():
+    if "--check-release" in sys.argv:
+        tag = sys.argv[sys.argv.index("--check-release") + 1]
+        dest = ROOT / "generated" / "releases" / (tag + ".json")
+        if not dest.is_file():
+            print("no committed artefact for %s -- run --release %s" % (tag, tag),
+                  file=sys.stderr)
+            sys.exit(1)
+        fresh = json.dumps(build_release(tag), indent=2, sort_keys=False) + "\n"
+        if dest.read_text() != fresh:
+            print("release artefact %s DIVERGES from a recount of its own tag --"
+                  " an immutable release's numbers moved, or the artefact was"
+                  " edited by hand" % dest.name, file=sys.stderr)
+            sys.exit(1)
+        print("release artefact %s matches a fresh recount of tag %s" % (dest.name, tag))
+        return
+    if "--release" in sys.argv:
+        tag = sys.argv[sys.argv.index("--release") + 1]
+        out = build_release(tag)
+        dest = ROOT / "generated" / "releases" / (tag + ".json")
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(json.dumps(out, indent=2, sort_keys=False) + "\n")
+        print("wrote", dest)
+        return
     inv = build()
     payload = json.dumps(inv, indent=2, sort_keys=False) + "\n"
     if "--check" in sys.argv:

@@ -158,7 +158,7 @@
     });
   }
 
-  fetch("/releaseInventory.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;})
+  fetch("/releases/v2607.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;})
     .then(function(inv){ if(!inv) return;
       document.querySelectorAll('[data-inv="release"]').forEach(function(e){ e.textContent = inv.release; });
     }).catch(function(){});
@@ -173,6 +173,5 @@
       document.getElementById("loading").textContent =
         "The model catalogue could not be loaded. Browse the source on GitHub instead.";
     });
-</script>
-</body>
+</script>Choupo-2607</body>
 </html>

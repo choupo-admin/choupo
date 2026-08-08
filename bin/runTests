@@ -2070,6 +2070,24 @@ PYEOF
     fi
     rm -f /tmp/inventory.$$
 
+    # Release-identity gate (2026-08-08, website audit).  The dev inventory
+    # above answers for the CURRENT tree; this one answers for the IMMUTABLE
+    # releases: each generated/releases/<tag>.json must record the commit its
+    # tag resolves to, survive a fresh recount from a worktree of that tag,
+    # carry a citation equal to a render of the tag's own CITATION.cff, and
+    # every data-inv fallback literal in the site sources must equal its
+    # artefact value -- the homepage said 284, the releases page said 331,
+    # and the tag says 288; neither public number was ever right.
+    if "$ROOT/bin/curate/check_release_identity.py" > /tmp/relid.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "release-identity-gate" "$(head -1 /tmp/relid.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_release_identity.py)\n" "release-identity-gate"
+        cat /tmp/relid.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/relid.$$
+
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op
     # schema must not leave the manual describing the previous one.  The
