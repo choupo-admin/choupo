@@ -26,6 +26,7 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
+#include "core/Advisory.H"
 #include "MassBalanceReport.H"
 #include "BalanceMath.H"
 #include "Topology.H"
@@ -108,17 +109,40 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
             {
                 auto it = ctx.result.streams.find(s);
                 if (it != ctx.result.streams.end())
-                    uin += F_mass(it->second, ctx.thermo) * 3600.0;
+                    uin += F_massTotal(it->second, ctx.thermo) * 3600.0;
             }
             for (const auto& s : u.outs)
             {
                 auto it = ctx.result.streams.find(s);
                 if (it != ctx.result.streams.end())
-                    uout += F_mass(it->second, ctx.thermo) * 3600.0;
+                    uout += F_massTotal(it->second, ctx.thermo) * 3600.0;
             }
+            const scalar pct = closurePct(uin, uout);
             f << u.name << "," << std::fixed << std::setprecision(4)
               << uin << "," << uout << "," << (uout - uin)
-              << "," << std::setprecision(4) << closurePct(uin, uout) << "\n";
+              << "," << std::setprecision(4) << pct << "\n";
+
+            //  A BALANCE THAT DOES NOT CLOSE MUST NOT FINISH QUIETLY.
+            //  This row was written and nothing else happened: flash21's
+            //  freezer reported 58.8 % -- 857 kg/h of ice unaccounted -- and
+            //  the run exited 0 with no warning anywhere, which is how it
+            //  reached the owner instead of the engine.  Mass conservation is
+            //  the curriculum; a unit that breaks it is the loudest thing a
+            //  run can have to say.  0.1 % is the numerical band (recycles
+            //  and stream-file rounding), not a physics judgement.
+            if (uin > 0.0 && std::fabs(pct - 100.0) > 0.1)
+            {
+                const std::string msg =
+                    "unit '" + u.name + "' does not close on MASS: in "
+                    + std::to_string(uin) + " kg/h, out " + std::to_string(uout)
+                    + " kg/h (" + std::to_string(pct) + " %).  Matter is not "
+                    "created or destroyed by a unit operation -- this is a "
+                    "defect in the unit, in its stream assembly, or in a "
+                    "phase the report is not counting.";
+                AdvisoryLog::instance().add("massBalance", "warning",
+                                            "unit '" + u.name + "'", msg);
+                std::cerr << "WARNING: massBalance: " << msg << "\n";
+            }
         }
         f.close();
         if (ctx.verbosity >= 2)

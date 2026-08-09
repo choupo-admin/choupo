@@ -74,4 +74,27 @@ inline scalar F_mass(const ProcessStream& s, const ThermoPackage& thermo)
     return s.F * MWmix(s.z, thermo);
 }
 
+//  THE STREAM'S WHOLE MASS [kg/s] -- fluid PLUS crystals.
+//
+//  `F_mass` above is the FLUID mass, and its name says so: `F`/`z` describe
+//  the fluid phases and the solid rides in `s.s[]` (ProcessStream.H).  That
+//  is the right quantity for a pump, a utility flow or a recycle residual.
+//  It is the WRONG quantity for a MASS BALANCE, and using it there made
+//  flash21's freezer report a per-unit closure of 58.8 % -- the missing
+//  41.2 % being precisely the ice -- while the GLOBAL balance, which reads
+//  `componentMassFlow` (solids included), closed at 100.000 %.  Two mass
+//  surfaces disagreeing about whether a crystal is matter: the arity sin,
+//  and the same "one stream, one semantics" contract the result JSON was
+//  put under on 2026-08-08.
+//
+//  Balance and stream-table surfaces call THIS one.  Reported 2026-08-09 by
+//  Vítor, who ran flash21 and got a non-closure with no warning at all.
+inline scalar F_massTotal(const ProcessStream& s, const ThermoPackage& thermo)
+{
+    scalar m = F_mass(s, thermo);
+    for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+        if (s.s[i] > 0.0) m += s.s[i] * thermo.comp(i).MW();
+    return m;
+}
+
 } // namespace Choupo

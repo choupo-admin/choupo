@@ -114,7 +114,7 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     {
         const auto& s = ctx.result.streams.at(name);
         const scalar F_kmol_h = s.F * 3600.0;                  // kmol/s -> kmol/h
-        const scalar Fm_kg_h  = F_mass(s, ctx.thermo) * 3600.0; // kg/s  -> kg/h
+        const scalar Fm_kg_h  = F_massTotal(s, ctx.thermo) * 3600.0; // kg/s  -> kg/h
         f << name << "," << roleOf(name)
           << "," << std::fixed << std::setprecision(6) << F_kmol_h
           << "," << Fm_kg_h

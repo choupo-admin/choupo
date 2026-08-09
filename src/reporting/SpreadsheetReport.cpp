@@ -103,7 +103,7 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         ods.textCell(nm, st);
         ods.textCell(roleOf(nm), st);
         ods.numberCell(s.F * 3600.0, 4, st);
-        ods.numberCell(F_mass(s, ctx.thermo) * 3600.0, 4, st);
+        ods.numberCell(F_massTotal(s, ctx.thermo) * 3600.0, 4, st);
         ods.numberCell(s.T, 2, st);
         ods.numberCell(s.P / 1.0e5, 4, st);
         ods.numberCell(s.vf, 4, st);
@@ -299,13 +299,13 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         {
             auto it = ctx.result.streams.find(s);
             if (it != ctx.result.streams.end())
-                uin += F_mass(it->second, ctx.thermo) * 3600.0;
+                uin += F_massTotal(it->second, ctx.thermo) * 3600.0;
         }
         for (const auto& s : u.outs)
         {
             auto it = ctx.result.streams.find(s);
             if (it != ctx.result.streams.end())
-                uout += F_mass(it->second, ctx.thermo) * 3600.0;
+                uout += F_massTotal(it->second, ctx.thermo) * 3600.0;
         }
         const scalar cl = closurePct(uin, uout);
         const OdsWriter::Style st =
