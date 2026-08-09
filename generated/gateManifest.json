@@ -300,8 +300,8 @@
       "claim": "ok   (a) two Henry files declaring one pair: refused, naming both files"
     },
     "check_release_identity": {
-      "exit": 1,
-      "claim": "check_release_identity: FAILED"
+      "exit": 0,
+      "claim": "check_release_identity: OK -- v2607.json each records the commit its tag resolves to, survives a fresh recount from a worktree of that tag, and carries a citation equal to a fresh render of the tag's own CITATION.cff through the generator's parser (imported, not copied).  Every data-inv fallback literal in 3 site source pages equals its artefact value, and no bare hand count sits beside 'runnable tutorials' in prose.  NOT CHECKED, said plainly: the PRODUCTION HOST (this gate reads repo sources; choupo.org may differ), and /v2607/app/ -- the frozen-app URL the pages promise -- has NO PRODUCER in bin/buildSite, so whether it exists depends on a hand-uploaded archive this gate cannot see.  That finding is escalated, not covered."
     },
     "check_resolver_coherence": {
       "exit": 0,

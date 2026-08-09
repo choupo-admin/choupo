@@ -446,13 +446,51 @@ def main():
             print("no committed artefact for %s -- run --release %s" % (tag, tag),
                   file=sys.stderr)
             sys.exit(1)
-        fresh = json.dumps(build_release(tag), indent=2, sort_keys=False) + "\n"
-        if dest.read_text() != fresh:
+        #  COMPARE WHAT THE ARTEFACT CLAIMS, not the generator's current shape.
+        #  This was byte equality over the whole JSON, and it therefore read a
+        #  NEW measurement as an old release's numbers moving: adding `byTier`
+        #  (the corpus-doctrine split, 2026-08-09) failed the recount of tag
+        #  v2607 without a single stored number changing.  That is a false
+        #  alarm of the worst kind -- it accuses an immutable record of drift
+        #  when the generator merely learned to measure something else.
+        #
+        #  So: every key the artefact RECORDS must recount to the same value,
+        #  and a key that DISAPPEARED from the recount is still a failure (the
+        #  release measured something the generator can no longer produce).
+        #  A key the recount has and the artefact does not is reported as NEW
+        #  and tolerated -- announced, never silent, because a reader should
+        #  know the artefact predates that measurement.
+        fresh = build_release(tag)
+        stored = json.loads(dest.read_text())
+        moved, missing, added = [], [], []
+
+        def walk(a, b, path=""):
+            if isinstance(a, dict):
+                if not isinstance(b, dict):
+                    moved.append(path or "(root)"); return
+                for k, v in a.items():
+                    if k not in b: missing.append(path + "/" + k)
+                    else: walk(v, b[k], path + "/" + k)
+                for k in b:
+                    if k not in a: added.append(path + "/" + k)
+                return
+            if a != b:
+                moved.append("%s: %r -> %r" % (path or "(root)", a, b))
+
+        walk(stored, fresh)
+        if moved or missing:
             print("release artefact %s DIVERGES from a recount of its own tag --"
                   " an immutable release's numbers moved, or the artefact was"
                   " edited by hand" % dest.name, file=sys.stderr)
+            for m in moved:   print("  moved:   " + m, file=sys.stderr)
+            for m in missing: print("  missing: " + m, file=sys.stderr)
             sys.exit(1)
-        print("release artefact %s matches a fresh recount of tag %s" % (dest.name, tag))
+        print("release artefact %s matches a fresh recount of tag %s"
+              % (dest.name, tag)
+              + ("" if not added else
+                 "  (the recount also carries %d measurement(s) the artefact "
+                 "predates: %s -- new fields, not moved numbers)"
+                 % (len(added), ", ".join(added))))
         return
     if "--release" in sys.argv:
         tag = sys.argv[sys.argv.index("--release") + 1]
