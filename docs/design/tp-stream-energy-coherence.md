@@ -150,3 +150,41 @@ general rule instead of a special one.
 * **O3 — pure-component TP degeneracy**: a pure feed ON its coexistence
   manifold stays the constitution's named FATAL (no silent split); the
   re-flash must preserve that refusal.
+
+## Blast radius, MEASURED (2026-08-09, pre-implementation — the sweep the ruling required)
+
+Sweep: all 44 flash-bearing cases with an `expected` file, classified by
+(feed T,P vs operating T,P) × (Q golden present) × (solid outputs) ×
+(class-3 records in the catalogue).
+
+**Definite Q-golden movers (class 1 — the flash19 signature: Q ≠ 0 at
+identical feed/operating conditions, which R-E1 prices to ~0):**
+`flash09_nh3_water_reactive` (196.1 kW) · `flash10_ch4propane_pcsaft`
+(0.63) · `flash13_acetic_ethanol_vacuum_flash` (669.3) ·
+`flash17_two_liquids_reactive` (288.1) · `flash20_ethanol_water_pcsaft`
+(733) · `basis01_two_unit_chain` (40, first unit) — six goldens, each to be
+re-recorded citing this record.
+
+**Stay-zero (no move):** `flash08`, `flash09_n2ch4`, `flash10_acetic`,
+`flash12`, `model5_nrtl_flash` — Q = 0 goldens on single-phase-at-feed
+cases; R-E1 reprices nothing.
+
+**Needs-probe at implementation (operating ≠ feed conditions — moves only
+if the feed is multiphase at its OWN conditions):** `cavett01` (multi-unit,
+per-unit conditions), `hda`, `polycaprolactonePlant`, `ammonia01/02`,
+`process02` (×2), `proxy01_gas_loop`, `recycle_autoinit_tear`,
+`optim02/05`, `column13`.  Slice 2 lands with a comparison probe that
+reports each feed's own-condition split before goldens move.
+
+**Class 2 (solid rung): ZERO golden movers** — flash16 and flash19 pin no
+Q KPI (verified), crystalliser duties price through the shared
+`CrystallisationHeat` (ion-derived, not the flash rung), and
+`energy_closure_pct` lives in report CSVs, not goldens.  The rung fix
+moves REPORTED numbers (flash19's JSON Q and its 101.17 % closure), not
+recorded ones.  **Class 3: ZERO records** carry
+pureLiquid-reference + Hfus + solidHeatCapacity together, so the
+liquid→solid fusion view has no silent consumer to move.
+
+Net: SIX golden re-records, all class 1, all semantic corrections; the
+rung slice (1) moves no golden at all; `flash21` gains its first real duty
+golden when slice 1 lands.
