@@ -1198,6 +1198,12 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         double nuH = 0.0;                   // net H+ released per mol dissolved
         double logK = 0.0;                  // at the run T
         bool   hasHleg = false;            // carbonate { ion H; nu -1; } leg present
+        //  STRUCTURALLY IMPOSSIBLE on THIS stream: a formation leg needs a
+        //  conserved quantity whose total inventory is exactly zero, so the
+        //  mineral is dropped from the active set (announced) rather than
+        //  refused.  `impossibleWhy` names the ion, for the announcement.
+        bool        impossible = false;
+        std::string impossibleWhy;
     };
     std::vector<Allowed> allowed;
     if (!in.equilibrate.empty() || !in.sinksFor.empty())
@@ -1226,21 +1232,39 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             }
             Allowed al; al.min = me;
             al.nuPj.assign(n, 0.0);
-            // FIRST refuse, naming the ion: a mineral cannot precipitate ions
-            // the water does not contain.  A formation leg's ion must resolve
-            // to either a PRESENT master OR a computed species (which itself
-            // exists only when ITS masters are present, since `act` is built
-            // from present-master reactions).
+            //  STRUCTURALLY IMPOSSIBLE IS NOT AN ERROR -- IT IS AN EMPTY SET.
+            //  (Vítor's correction, 2026-08-09: distinguish PHYSICAL INVENTORY
+            //  from NUMERICAL INITIALISATION.)  A mineral whose formation needs
+            //  a conserved quantity of which the stream holds EXACTLY ZERO
+            //  cannot form, at any temperature, by any path: it is removed from
+            //  the active equilibrium problem, ANNOUNCED, and the solve
+            //  proceeds on the rest.  Refusing instead made a declared mineral
+            //  set unusable on any stream that legitimately lacks one of its
+            //  ions -- flash19's vapour outlet carries no Ca, and calcite in
+            //  the case's chemistry killed the whole speciation of a stream
+            //  whose answer is simply "no calcite here".
+            //
+            //  ZERO INVENTORY, not "absent from the inlet": a species the
+            //  stream could FORM from quantities it does hold stays an unknown
+            //  (the seeding of such an unknown is the solver's business, and
+            //  must never be a literal zero -- see the ln-domain unknowns
+            //  below, which cannot represent one).
+            al.impossible = false;
             for (const auto& [ion, nu] : me->masters)
             {
                 if (ion == "H") continue;
                 (void)nu;
-                if (masterIndex(ion) < 0 && !activeForSpecies(ion))
-                    throw std::runtime_error("equilibrate: " + nm + " needs "
-                        + ion + " but the analysis carries no " + ion + " total"
-                        " -- a mineral cannot precipitate ions the water does"
-                        " not contain");
+                const int j = masterIndex(ion);
+                const bool noRoute = (j < 0 && !activeForSpecies(ion));
+                const bool zeroTot = (j >= 0 && !(mtot[std::size_t(j)] > 0.0));
+                if (noRoute || zeroTot)
+                {
+                    al.impossible = true;
+                    al.impossibleWhy = ion;
+                    break;
+                }
             }
+            if (al.impossible) return al;
             // distribute each formation leg onto the master balances
             auto addLeg = [&](const std::string& ion, double nu)
             {
@@ -1264,12 +1288,39 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             return al;
         };
         for (const auto& nm : in.equilibrate)
-            allowed.push_back(resolveOne(nm));
+        {
+            Allowed al = resolveOne(nm);
+            if (al.impossible)
+            {
+                //  DIAGNOSTIC-VISIBLE, never silent: the case declared this
+                //  mineral and the engine is telling the reader why it is not
+                //  in the answer.  A dropped candidate is a CONCLUSION about
+                //  the stream, not a defect in the declaration.
+                if (verbosity >= 1)
+                    std::cout << "  [solids] '" << nm << "' is structurally "
+                                 "impossible on this stream: its formation "
+                                 "needs " << al.impossibleWhy << ", whose "
+                                 "total inventory here is exactly zero.  "
+                                 "Removed from the active equilibrium set "
+                                 "(the declaration stands; this stream simply "
+                                 "cannot form it).\n";
+                AdvisoryLog::instance().add(
+                    "solids", "info", "mineral '" + nm + "'",
+                    "structurally impossible on this stream (no "
+                    + al.impossibleWhy + " inventory) -- removed from the "
+                    "active equilibrium set, not refused");
+                continue;
+            }
+            allowed.push_back(std::move(al));
+        }
         //  The report-only surface: same resolution, master NAMES instead of
         //  indices, no Allowed pushed -- nothing downstream of here changes.
         for (const auto& nm : in.sinksFor)
         {
             const Allowed al = resolveOne(nm);
+            //  The report-only surface reports what EXISTS: a structurally
+            //  impossible mineral has no transfer stoichiometry to echo.
+            if (al.impossible) continue;
             MineralSinks ms;
             ms.mineral = nm;
             ms.nuH     = al.nuH;
@@ -1799,9 +1850,28 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     };
 
     // ---- the solve: plain free-water, then (if doEquil) the active-set loop ----
+    //  A NON-FINITE IONIC STRENGTH IS NOT A CONVERGENCE FAILURE -- it is the
+    //  arithmetic saying the aqueous problem is EMPTY.  (Vítor's correction,
+    //  2026-08-09, rule 1 applied to the solvent: a quantity whose total
+    //  inventory is exactly zero removes what depends on it from the problem
+    //  instead of poisoning it.)  Every molality here is moles per kg of
+    //  SOLVENT, so a stream carrying no liquid water -- flash19's vapour
+    //  outlet -- divides by zero and the fixed point iterates on NaN,
+    //  reporting "did not converge in 60 passes (I = -nan)" as though the
+    //  numerics had struggled.  They did not: there is nothing to solve, and
+    //  saying so is the honest diagnosis.  This does NOT invent a solvent
+    //  floor: no seed, no material, nothing added to any balance.
     if (!solvePass({}))
+    {
+        if (!std::isfinite(I))
+            throw std::runtime_error("speciation: this stream has no aqueous "
+                "phase to speciate -- ionic strength is not a finite number "
+                "because the solvent inventory is zero (every molality is per "
+                "kg of solvent).  An aqueous equilibrium over no solvent is an "
+                "empty problem, not a failed solve.");
         throw std::runtime_error("speciation: ionic-strength fixed point did not "
             "converge in 60 passes (I = " + std::to_string(I) + " mol/kg)");
+    }
 
     // glass-box parameter dump (verbosity >= 3, once): which model parameters are
     // ACTIVE for the present ion set.  Davies overrides this to a no-op; PitzerHMW
