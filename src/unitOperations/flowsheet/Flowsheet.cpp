@@ -1020,6 +1020,10 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         out->insert("feed", feed);
 
         feed->insert("vf", s.vf);
+        //  Whether that vf is an AUTHORED pin or this unit's upstream answer
+        //  (R-E2): a duty may price a declared constraint, never an inferred
+        //  one.  Carried as a scalar because the feed dict is scalar-valued.
+        feed->insert("phasePinned", s.phasePinned ? 1.0 : 0.0);
 
         auto comp = std::make_shared<Dictionary>("composition");
         for (std::size_t i = 0; i < thermo.n(); ++i)

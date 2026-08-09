@@ -995,12 +995,20 @@ ProcessStream readStreamState(const fs::path&       file,
     //      saturation), where T and P alone do not fix the split.
     // Absent -> the resolver decides (Tc screen, then flash) in the unit context.
     s.vf = d->lookupScalarOrDefault("vaporFraction", 0.0);
+    //  THE PIN IS THE DECLARATION, not the number (R-E2, 2026-08-09).  Only a
+    //  file that actually says `vaporFraction` or `phase` pins the stream; the
+    //  0.0 default above is a starting value, and reading it as "liquid" is
+    //  precisely the implicit pin the constitution bans and the flash19 duty
+    //  was paying for.  Consumers that price energy ask `phasePinned`, never
+    //  `vf == 0`.
+    if (d->found("vaporFraction")) s.phasePinned = true;
     if (d->found("phase"))
     {
         const std::string ph = d->lookupWord("phase");
         if      (ph == "gas" || ph == "vapor" || ph == "vapour") s.vf = 1.0;
         else if (ph == "liquid")                                 s.vf = 0.0;
         // `solid` is carried by the solids block, not by vf.
+        s.phasePinned = true;
     }
     if (d->found("derived"))
     {

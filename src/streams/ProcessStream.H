@@ -80,6 +80,18 @@ struct ProcessStream
     scalar      P  = 0.0;        // pressure              [Pa]
     sVector     z;               // mole fractions       (Σ z = 1)
     scalar      vf = 0.0;        // vapour fraction       [-]
+
+    //  Was `vf` AUTHORED as a pin, or merely CARRIED?  (R-E2, 2026-08-09.)
+    //  The constitution's pins -- `vaporFraction q;` and `phase gas|liquid;`
+    //  -- are physical CONSTRAINTS a case declares on a boundary stream, and
+    //  a constraint may legitimately cost energy even at unchanged (T, P).
+    //  A vf a producing unit wrote is not a constraint: it is that unit's
+    //  answer.  The two are indistinguishable in `vf` alone, which is why
+    //  the flag exists -- the file reader sets it, nothing else does, and
+    //  ABSENCE OF A PIN IS NEVER A PIN (an unpinned stream's phase is the
+    //  result of equilibrium at its own T, P, z).
+    //  Record: docs/design/tp-stream-energy-coherence.md R-E1/R-E2, caveat C1.
+    bool        phasePinned = false;
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when

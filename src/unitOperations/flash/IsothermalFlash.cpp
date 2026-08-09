@@ -1549,22 +1549,56 @@ int IsothermalFlash::solve(const DictPtr& dict,
         const scalar T_feed  = feedDict->lookupScalar("T", Dims::temperature);
         const scalar P_feed  = feedDict->lookupScalarOrDefault("P", in.P, Dims::pressure);
         const scalar vf_feed = feedDict->lookupScalarOrDefault("vf", 0.0);
+        const bool   pinned  =
+            feedDict->lookupScalarOrDefault("phasePinned", 0.0) > 0.5;
 
-        // A genuinely two-phase feed (0 < vf < 1) carries the enthalpy of its
-        // SPLIT equilibrium phases, not H_stream's blend-by-z (which omits the
-        // latent heat of separation).  Flash the feed at its OWN (T_feed,P_feed)
-        // to recover x/y, mirroring H_out below; without it a feed already at the
-        // drum's conditions reads a phantom duty (the flash01 bug).  A
-        // single-phase feed (vf <= 0 or >= 1, incl. a deliberate state override)
-        // keeps the cheap pure-phase enthalpy.
-        bool feedSplit = (vf_feed > 1.0e-9 && vf_feed < 1.0 - 1.0e-9)
-                      && !thermo.phasesOfType("vapor").empty();
+        //  ---- R-E1: AN UNPINNED FEED *IS* ITS OWN EQUILIBRIUM ---------------
+        //  (docs/design/tp-stream-energy-coherence.md, ratified 2026-08-09.)
+        //  The constitution already says an unpinned TP stream's phase is a
+        //  RESULT of equilibrium at (T, P, z); the MATERIAL side has always
+        //  honoured that, and the duty did not -- it priced whatever `vf`
+        //  happened to hold, which for an unpinned stream is the struct's 0.0,
+        //  i.e. an undeclared `phase liquid;`.  flash19 paid +13.3 kW for
+        //  "vaporising" a liquid that was never declared liquid.
+        //
+        //  So the re-flash runs whenever the feed is NOT pinned: the feed's
+        //  own (T_feed, P_feed, z) resolved by the SAME solveCore this unit
+        //  uses, which is what makes the identity operation cost zero (feed at
+        //  the drum's own conditions => H_in == H_out, exactly).  A converged
+        //  single-phase answer changes nothing (idempotent), so the cost of
+        //  the extra solve buys coherence and never a different number where
+        //  the old one was already right.
+        //
+        //  R-E2: a PINNED feed keeps its declared reading.  `vaporFraction q`
+        //  still splits at q (the saturation pin), `phase liquid|gas` prices
+        //  that phase -- and if that costs energy at unchanged (T, P), the
+        //  case DECLARED a constrained/metastable inlet and the price is
+        //  announced below rather than hidden.
+        const bool wantSplit = pinned
+            ? (vf_feed > 1.0e-9 && vf_feed < 1.0 - 1.0e-9)
+            : true;
+        bool feedSplit = wantSplit && !thermo.phasesOfType("vapor").empty();
         FlashSolution feedSol;
         if (feedSplit)
         {
             FlashInput fin; fin.F = 1.0; fin.T = T_feed; fin.P = P_feed; fin.z = in.z;
             FlashOptions fopts; fopts.verbosity = 0; fopts.phaseSet = opts.phaseSet;
-            feedSol = solveCore(fin, thermo, fopts);
+            //  A feed state the package cannot resolve is a NAMED gap, never a
+            //  crashed case and never a silent fall-back to the old pricing:
+            //  the duty would then be a number about a state the engine just
+            //  said it could not compute.  (Caveat C2 -- column13's stage-mix
+            //  state refuses under the reactive package.)
+            try
+            {
+                feedSol = solveCore(fin, thermo, fopts);
+            }
+            catch (const std::exception& fe)
+            {
+                throw std::runtime_error(
+                    std::string("the feed's own equilibrium state could not be"
+                    " resolved at its (T, P, z), so its enthalpy has no"
+                    " defined value: ") + fe.what());
+            }
             feedSplit = feedSol.converged
                      && feedSol.V_over_F > 1.0e-9
                      && feedSol.V_over_F < 1.0 - 1.0e-9;
@@ -1576,6 +1610,16 @@ int IsothermalFlash::solve(const DictPtr& dict,
         // phantom latent heat to the β fraction (a large spurious duty for an
         // otherwise isothermal, equal-T liquid split).
         const scalar betaVf = (opts.phaseSet == PhaseSet::LL) ? 0.0 : 1.0;
+
+        //  The vf the SINGLE-PHASE branch prices on.  Pinned: the declaration.
+        //  Unpinned: what the feed's own equilibrium resolved to -- an
+        //  all-vapour feed must not be priced as liquid merely because the
+        //  struct's default said 0 (the same defect one branch further down).
+        scalar vf_priced = vf_feed;
+        if (!pinned && feedSol.converged)
+            vf_priced = (feedSol.V_over_F >= 1.0 - 1.0e-9) ? 1.0
+                      : (feedSol.V_over_F <= 1.0e-9)       ? 0.0
+                                                           : feedSol.V_over_F;
 
         bool useForm = true;
         for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -1602,7 +1646,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
                      +        bF  * thermo.H_stream_formation(T_feed, P_feed, betaVf, feedSol.y);
             }
             else
-                H_in = thermo.H_stream_formation(T_feed, P_feed, vf_feed, in.z);
+                H_in = thermo.H_stream_formation(T_feed, P_feed, vf_priced, in.z);
             H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
                   +        bV  * thermo.H_stream_formation(in.T, in.P, betaVf, sol.y);
         }
@@ -1646,22 +1690,63 @@ int IsothermalFlash::solve(const DictPtr& dict,
         //  the unit duty and the report agree on solids by construction.
         //  A missing transition datum throws into the catch below: a NAMED
         //  gap, never a fake number.
-        if (!sol.solidFlows.empty())
+        //  BOTH SIDES, or the rung itself becomes a phantom duty (R-E5,
+        //  measured 2026-08-09).  H_out gains the crystal's rung correction;
+        //  so must H_in when the FEED's own resolved state carries crystals --
+        //  otherwise an unpinned feed already at the drum's conditions reads
+        //  exactly the rung difference as its duty (flash19: 0.156 kW, the
+        //  same number the report's closure gap used to be) and the R-E1
+        //  identity misses zero by the width of slice 1.  The feed's solids
+        //  come from the SAME re-flash that priced its phases; per mole the
+        //  correction is identical, so at identical (T, P, z) the two sides
+        //  cancel exactly and the identity operation costs nothing.
+        const auto rungCorrection =
+            [&](const sVector& solids, scalar T_at) -> scalar
         {
+            scalar acc = 0.0;
             sVector e(thermo.n(), 0.0);
-            for (std::size_t i = 0; i < sol.solidFlows.size(); ++i)
+            for (std::size_t i = 0; i < solids.size() && i < thermo.n(); ++i)
             {
-                const scalar s_i = sol.solidFlows[i];     // kmol/s, absolute
+                const scalar s_i = solids[i];             // kmol/s, absolute
                 if (s_i <= 0.0) continue;
                 e.assign(thermo.n(), 0.0);
                 e[i] = 1.0;
-                Q_W += 1000.0 * s_i                       // kmol/s -> mol/s
-                     * (thermo.comp(i).h_formation(in.T, "solid")
-                        - thermo.H_liquid_formation(in.T, e));
+                acc += 1000.0 * s_i                       // kmol/s -> mol/s
+                     * (thermo.comp(i).h_formation(T_at, "solid")
+                        - thermo.H_liquid_formation(T_at, e));
             }
+            return acc;
+        };
+        if (!sol.solidFlows.empty())
+            Q_W += rungCorrection(sol.solidFlows, in.T);
+        //  The feed's crystals are per mole of FEED inside feedSol (F = 1),
+        //  so they scale by in.F to reach the same kmol/s basis as sol's.
+        if (!feedSol.solidFlows.empty())
+        {
+            sVector fs = feedSol.solidFlows;
+            for (auto& v : fs) v *= in.F;
+            Q_W -= rungCorrection(fs, T_feed);
         }
         Q_valid = std::isfinite(Q_W);
         if (!Q_valid) Q_gap = "enthalpy evaluated non-finite";
+
+        //  R-E2: A DECLARED CONSTRAINT MAY COST ENERGY, AND SAYS SO.  At
+        //  unchanged (T, P) an UNPINNED feed now prices to Q = 0 by
+        //  construction (it is its own equilibrium), so a duty surviving here
+        //  is the price of the case's own pin -- a constrained or metastable
+        //  inlet relaxing to equilibrium.  That is legitimate physics and
+        //  legitimate teaching; what it may never be is invisible.
+        if (Q_valid && pinned && std::fabs(Q_W) > 1.0
+            && std::fabs(in.T - T_feed) < 1.0e-9
+            && std::fabs(in.P - P_feed) < 1.0e-6
+            && opts.verbosity >= 1)
+            std::cout << "  [duty] the feed is PINNED (vf = " << vf_feed
+                      << ") and the flash operates at the feed's own T and P,"
+                         " so this duty is priced as declared: the "
+                         "constrained inlet relaxing to equilibrium ("
+                      << Q_W / 1000.0 << " kW).  An UNPINNED feed at these "
+                         "conditions would read 0 -- the pin is the physics "
+                         "here, not the operation.\n";
     }
     catch (const std::exception& e) { Q_valid = false; Q_gap = e.what(); }
 
