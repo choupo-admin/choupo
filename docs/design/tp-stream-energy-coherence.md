@@ -350,6 +350,30 @@ through a heater, because the heater now writes the vapour fraction it
 resolved — but a producer that writes a `vf` its own state contradicts
 would reopen it.
 
+**A THIRD thing it uncovered, NAMED and not fixed: the balance report has no
+notion of a per-unit thermo world.**  R-E1 says an unpinned stream means the
+equilibrium of (T, P, z) *in the consuming unit's* world, and the heater now
+obeys that — so `basis01_two_unit_chain`'s transporter, which declares a
+local molecular-ideal `thermo {}`, finds its brine 1.3 % vapour near 331 K
+and reaches 330.81 K on 40 kW.  The global electrolyte package holds the same
+volatiles as ions, finds essentially no vapour, and the same 40 kW reaches
+332.23 K — verified by deleting the local block, which reproduces the old
+number exactly.  Same enthalpy, two temperatures: the settled rule that H is
+the conserved truth and T is the model-dependent readout, working as
+designed.  But `unitEnergyBalance` prices EVERY stream in `ctx.thermo`, the
+global package, so that legitimate difference lands in this unit's closure —
+**92.54 %, announced in RED as "an UNEXPLAINED first-law residual"**, which
+is precisely what it is not.  Before the fix the sensible inversion happened
+to track the global datum closely enough that the same gap read 100.00 %;
+that was luck, not agreement, and every unit carrying a `thermo {}` override
+has been mispriced by the report for as long as the override has existed.
+The remedy is a model-boundary line in the energy report (the settled
+`ModelBoundaryAudit` shape: print ΔH at fixed (T, P, z) and sum it into a
+model-inconsistency row) rather than anything in the heater, and it is an
+architecture change needing its own ruling.  It is pinned here and in
+`basis01`'s own header; nothing has been suppressed to make the number look
+better.
+
 Gate: `check_duty_inversion` (witness process02 with the dome-crossing arm,
 the second publication path, the single-phase no-overreach control, and the
 sensible path's named gap), sabotage-verified against the reverted fix at
