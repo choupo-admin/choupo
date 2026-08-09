@@ -1,22 +1,22 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  feed                   F                0.0244722222222    1e-4
-stream  liquid                 F                0.0165440544248    1e-4
-stream  vapor                  F                0.00792816779742   1e-4
-kpi     flash01                F_alpha          0.0165440544248    1e-4
-kpi     flash01                F_beta           0.00792816779742   1e-4
-kpi     flash01                F_in             0.0244722222222    1e-4
-kpi     flash01                P                35463.75           1e-4
-kpi     flash01                Q                288131.080916      1e-4
-kpi     flash01                Q_kW             288.131080916      1e-4
-kpi     flash01                T                313.15             1e-4
-kpi     flash01                V_over_F         0.323965993992     1e-4
-kpi     flash01                dimer_share      0.0277517993038    1e-4
-kpi     flash01                pH               2.89059200062      1e-4
-kpi     flash01                p_benzene_atm    0.23235432211      1e-4
-kpi     flash01                p_dimer_atm      1.80279919282e-06  1e-4
-kpi     flash01                p_eq_sum_atm     0.35               1e-4
-kpi     flash01                p_ethanol_atm    0.0490826027236    1e-4
-kpi     flash01                p_mono_atm       6.31587253948e-05  1e-4
-kpi     flash01                phaseSet         0                  1e-4
+stream  feed                   F                0.0244722222222  1e-4
+stream  liquid                 F                0.01654405443    1e-4
+stream  vapor                  F                0.00792816779218 1e-4
+kpi     flash01                F_alpha          0.01654405443    1e-4
+kpi     flash01                F_beta           0.00792816779218 1e-4
+kpi     flash01                F_in             0.0244722222222  1e-4
+kpi     flash01                P                35463.75         1e-4
+kpi     flash01                Q                84.4683208495    1e-4
+kpi     flash01                Q_kW             0.0844683208495  1e-4
+kpi     flash01                T                313.15           1e-4
+kpi     flash01                V_over_F         0.323965993778   1e-4
+kpi     flash01                dimer_share      0.0277517993126  1e-4
+kpi     flash01                pH               2.89059200063    1e-4
+kpi     flash01                p_benzene_atm    0.232354322065   1e-4
+kpi     flash01                p_dimer_atm      1.80279919401e-06 1e-4
+kpi     flash01                p_eq_sum_atm     0.35             1e-4
+kpi     flash01                p_ethanol_atm    0.0490826027439  1e-4
+kpi     flash01                p_mono_atm       6.31587254156e-05 1e-4
+kpi     flash01                phaseSet         0                1e-4

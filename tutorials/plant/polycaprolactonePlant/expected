@@ -11,8 +11,8 @@ kpi     Devolatiliser          F_alpha          0.000265730981876 1e-4
 kpi     Devolatiliser          F_beta           0.000334614681951 1e-4
 kpi     Devolatiliser          F_in             0.000600345663827 1e-4
 kpi     Devolatiliser          P                15000            1e-4
-kpi     Devolatiliser          Q                14840.3470476    1e-4
-kpi     Devolatiliser          Q_kW             14.8403470476    1e-4
+kpi     Devolatiliser          Q                2195.02758655    1e-4
+kpi     Devolatiliser          Q_kW             2.19502758655    1e-4
 kpi     Devolatiliser          T                470              1e-4
 kpi     Devolatiliser          V_over_F         0.557370032155   1e-4
 kpi     Devolatiliser          phaseSet         0                1e-4

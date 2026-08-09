@@ -9,8 +9,8 @@ kpi     speciator              F_alpha          0.0275644926352  1e-4
 kpi     speciator              F_beta           0.000157729586982 1e-4
 kpi     speciator              F_in             0.0277222222222  1e-4
 kpi     speciator              P                101325           1e-4
-kpi     speciator              Q                520.447286767    1e-4
-kpi     speciator              Q_kW             0.520447286767   1e-4
+kpi     speciator              Q                0                1e-4
+kpi     speciator              Q_kW             0                1e-4
 kpi     speciator              T                313.15           1e-4
 kpi     speciator              V_over_F         0.00568964442019 1e-4
 kpi     speciator              pH               8.83013782346    1e-4

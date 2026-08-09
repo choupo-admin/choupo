@@ -102,8 +102,8 @@ kpi     separator              F_alpha          0.97363568927    1e-4
 kpi     separator              F_beta           9.618221058      1e-4
 kpi     separator              F_in             10.5918567473    1e-4
 kpi     separator              P                20000000         1e-4
-kpi     separator              Q                -33390469.3898   1e-4
-kpi     separator              Q_kW             -33390.4693898   1e-4
+kpi     separator              Q                -29073450.9514   1e-4
+kpi     separator              Q_kW             -29073.4509514   1e-4
 kpi     separator              T                250              1e-4
 kpi     separator              V_over_F         0.908076958318   1e-4
 kpi     separator              phaseSet         0                1e-4

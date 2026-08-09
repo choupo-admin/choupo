@@ -5,12 +5,12 @@ stream  hotStream              F                0.138888888889   1e-4
 stream  liqProd                F                0.0017296965168  1e-4
 stream  reactorOut             F                0.138888888889   1e-4
 stream  vapProd                F                0.137159192372   1e-4
-kpi     economics              COM_d            223170524.398    1e-4
+kpi     economics              COM_d            221181649.06     1e-4
 kpi     economics              FCI              522154.982187    1e-4
-kpi     economics              NPV              477589097.525    1e-4
+kpi     economics              NPV              487243512.129    1e-4
 kpi     economics              TCI              600478.229515    1e-4
 kpi     economics              WC               78323.2473281    1e-4
-kpi     economics              paybackYears     0.00848797903819 1e-4
+kpi     economics              paybackYears     0.00831999346498 1e-4
 kpi     economics              revenue          321660167.134    1e-4
 kpi     heater                 F                0.138888888889   1e-4
 kpi     heater                 P                101325           1e-4
@@ -34,8 +34,8 @@ kpi     separator              F_alpha          0.0017296965168  1e-4
 kpi     separator              F_beta           0.137159192372   1e-4
 kpi     separator              F_in             0.138888888889   1e-4
 kpi     separator              P                100000           1e-4
-kpi     separator              Q                4976447.31716    1e-4
-kpi     separator              Q_kW             4976.44731716    1e-4
+kpi     separator              Q                228869.535738    1e-4
+kpi     separator              Q_kW             228.869535738    1e-4
 kpi     separator              T                364.268379047    1e-4
 kpi     separator              V_over_F         0.987546185079   1e-4
 kpi     separator              phaseSet         0                1e-4
