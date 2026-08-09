@@ -191,6 +191,90 @@ The full rationale for each lives in `CLAUDE.md` §10 and in the design records
 indexed by [`decision-records.md`](decision-records.md).  This table is the
 list; those are the arguments.
 
+## 5a. WHEN THE ARCHITECTURE IS CONSOLIDATED (ruled by Vítor, 2026-08-09)
+
+**This is a project-management constraint as much as an architectural one.**
+It exists because roughly eight weeks went into "finishing the last 10 %" of
+the architecture and there was always another 10 % — because every newly
+discovered defect was read as evidence that the architecture was still
+incomplete.  That reading is wrong, and it is now banned.
+
+**THE CRITERION.**
+
+> The architecture is consolidated when new failures can be fixed by
+> implementing, extending or validating existing abstractions **without**
+> introducing a new architectural boundary, a duplicated source of truth, or
+> a special-case path.
+
+**THE OPERATIONAL STOPPING RULE.**
+
+> Three consecutive substantial slices that fit inside the existing
+> architecture without reopening a Level-1 or Level-2 boundary are evidence
+> that the architecture is FROZEN.
+
+**AFTER THAT POINT, A NEW FINDING DEFAULTS TO ONE OF FIVE CATEGORIES** — and
+"architectural incompleteness" is NOT among them:
+
+    bug · missing implementation · data gap · validation gap ·
+    documentation gap
+
+**REOPENING THE ARCHITECTURE** requires concrete evidence that a required
+PHYSICAL CAPABILITY cannot be represented within the existing boundaries
+without one of:
+
+* duplicated machinery or a duplicated source of truth;
+* a special-case path;
+* a silent fallback;
+* a contradiction between existing architectural contracts;
+* or an essential physical state the current abstractions genuinely cannot
+  represent.
+
+**A disagreement with experiment, a missing model, a missing property datum,
+a missing unit-operation branch, or a bug does NOT by itself reopen the
+architecture.**  Say which of the five categories it is, and fix it there.
+
+### 5a.1 The evidence that the condition is already met
+
+Vítor's own reading of the 2026-08-09 work, recorded because the stopping
+rule is an evidentiary test and this is the evidence:
+
+* the TP/enthalpy incoherence was resolved by ENFORCING one existing stream
+  meaning — no new boundary;
+* SLE fitted inside the existing solid-equilibrium architecture with no
+  freezer-specific solver;
+* the seal machinery found a missing dependency THROUGH the existing
+  provenance architecture;
+* the model-boundary ledger found the same phenomenon in a second case
+  (flash20, 42.86 kW) without a special-case repair;
+* A1/A2 fit the already-declared inlet-analysis / reconciliation separation.
+
+*"Those are not examples of new architecture being invented.  They are
+examples of the existing architecture being exercised and completed."*
+
+### 5a.2 The mode change
+
+After A2 ships: **for at least two weeks of project work, assume the
+architecture is consolidated and do not initiate architecture redesign
+unless a finding explicitly passes the reopening test above.**  The focus
+moves OUTWARD — implement capabilities already implied by the architecture;
+external scientific validation; improve and promote the strongest tutorials;
+strengthen a small number of plant/showcase cases; fix bugs; close
+data/provenance gaps.
+
+If during that period no required capability demonstrates that a genuinely
+new architectural boundary is necessary, the project **stops describing the
+architecture as "90 % complete"**.  It is CONSOLIDATED, and the remaining
+work is engineering, science, validation and product development —
+categories that will never reach a meaningful 100 %.
+
+### 5a.3 Why this is not gated
+
+A text search cannot tell a live claim from a recorded one — the lesson the
+prose-staleness attempts already paid for three times.  This rule binds
+JUDGEMENT, and the honest enforcement is that every reported finding names
+its category.  A finding claimed as architectural must show which of the
+five reopening conditions it meets, in the same breath.
+
 ## 6. How this document is amended
 
 By the architect, explicitly, in a commit that says so.  A contradiction
