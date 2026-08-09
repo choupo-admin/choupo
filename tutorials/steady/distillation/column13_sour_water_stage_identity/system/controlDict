@@ -7,6 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
+tier         tutorial;
 description   "The stage identity under CHEMISTRY: a sour-water tray's own two products, recombined and re-flashed, must come back as the same tray";
 
 verbosity     3;

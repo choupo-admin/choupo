@@ -43,6 +43,10 @@
       "exit": 0,
       "claim": "check_build_fresh: OK -- linux64Gcc carries all 5 artefact(s), each newer than the newest source under src/ and make/.  The suite is therefore testing a build OF this tree.  NOT CHECKED: content -- this compares modification times, not hashes, so a `touch` or a `git checkout` that changes no byte can still trip it (the remedy is one idempotent `make all`), and a library built from these files can still be wrong.  The WASM build is separate and not covered."
     },
+    "check_case_tiers": {
+      "exit": 0,
+      "claim": "check_case_tiers: OK -- 325 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+    },
     "check_caveat_surface": {
       "exit": 0,
       "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 8 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
@@ -81,11 +85,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 107 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 108 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 49 design record(s) appear in the index, and its stated counts (22 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 50 design record(s) appear in the index, and its stated counts (22 state a rejected alternative, 28 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -173,7 +177,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 108 gates, and the other 104 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 109 gates, and the other 105 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -185,7 +189,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40280 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40282 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -296,8 +300,8 @@
       "claim": "ok   (a) two Henry files declaring one pair: refused, naming both files"
     },
     "check_release_identity": {
-      "exit": 0,
-      "claim": "check_release_identity: OK -- v2607.json each records the commit its tag resolves to, survives a fresh recount from a worktree of that tag, and carries a citation equal to a fresh render of the tag's own CITATION.cff through the generator's parser (imported, not copied).  Every data-inv fallback literal in 3 site source pages equals its artefact value, and no bare hand count sits beside 'runnable tutorials' in prose.  NOT CHECKED, said plainly: the PRODUCTION HOST (this gate reads repo sources; choupo.org may differ), and /v2607/app/ -- the frozen-app URL the pages promise -- has NO PRODUCER in bin/buildSite, so whether it exists depends on a hand-uploaded archive this gate cannot see.  That finding is escalated, not covered."
+      "exit": 1,
+      "claim": "check_release_identity: FAILED"
     },
     "check_resolver_coherence": {
       "exit": 0,

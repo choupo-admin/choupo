@@ -1418,6 +1418,20 @@ PYEOF
     fi
     rm -f /tmp/inletres.$$
 
+    # Case-tier gate (doctrine ratified 2026-08-09): tests isolate features,
+    # tutorials compose features, showcases compose engineering -- classified
+    # IN PLACE by a `tier` word, absence meaning WITNESS.  Until this split
+    # the release inventory called all 336 cases tutorials.
+    if "$ROOT/bin/curate/check_case_tiers.py" > /tmp/casetier.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "case-tier-gate" "$(head -1 /tmp/casetier.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_case_tiers.py)\n" "case-tier-gate"
+        cat /tmp/casetier.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/casetier.$$
+
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
     # preserves whatever error it was recorded with; Gibbs-Duhem is a

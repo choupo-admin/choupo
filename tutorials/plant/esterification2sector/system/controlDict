@@ -7,5 +7,6 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
+tier         showcase;
 description   "Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library";
 verbosity     3;

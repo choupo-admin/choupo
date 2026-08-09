@@ -6,6 +6,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
+tier         tutorial;
 description   "FOUR phases at once: vapour + speciated aqueous + benzene-rich organic + solid calcite.  flash16's feed plus benzene and ethanol, nothing else changed -- the co-solvent moves the precipitation from 729 to 1096 mg/kg";
 verbosity     3;
 

@@ -100,11 +100,37 @@ def count_runnable_cases() -> int:
     """A runnable case = a `system/controlDict` that declares an `application`
     (the binary to dispatch).  This excludes fractal sub-unit / sector folders
     (which inherit and carry no application) so we count TOP-LEVEL cases only."""
-    n = 0
+    return sum(count_cases_by_tier().values())
+
+
+def count_cases_by_tier() -> dict:
+    """The corpus by AUDIENCE, not by count (doctrine ratified 2026-08-09):
+
+        tests isolate features · tutorials compose features ·
+        showcases compose engineering
+
+    A case declares `tier tutorial;` or `tier showcase;` in its controlDict.
+    ABSENCE MEANS WITNESS -- which is why this migration is ~a dozen edits
+    and not 335: a slice's witness is born correctly classified by its author
+    doing nothing, and the learning surface grows only by deliberate act.
+
+    Until this split, `releaseInventory.json` published `runnableCases` for
+    every case in the tree -- the key literally called all 335 tutorials,
+    which is the conflation the doctrine names: case count and tutorial count
+    had become synonyms, and a corpus of hundreds of narrow witnesses was
+    presented to the public as a learning surface."""
+    tiers = {"witness": 0, "tutorial": 0, "showcase": 0}
     for cd in (ROOT / "tutorials").rglob("system/controlDict"):
-        if re.search(r"^\s*application\b", cd.read_text(), re.M):
-            n += 1
-    return n
+        txt = cd.read_text()
+        if not re.search(r"^\s*application\b", txt, re.M):
+            continue
+        m = re.search(r"^\s*tier\s+([A-Za-z]+)\s*;", txt, re.M)
+        t = m.group(1) if m else "witness"
+        if t not in tiers:
+            raise SystemExit("release_inventory: %s declares `tier %s;` -- the "
+                             "tiers are witness / tutorial / showcase" % (cd, t))
+        tiers[t] += 1
+    return tiers
 
 
 def released_at() -> str:
@@ -170,6 +196,11 @@ def build() -> dict:
         "tutorials": {
             "runnableCases":     tutorials,
             "regressionChecks":  regression,
+            #  BY AUDIENCE (doctrine 2026-08-09).  `runnableCases` stays as the
+            #  total -- it is referenced by the site and by older artefacts --
+            #  but it is no longer the number that describes the LEARNING
+            #  surface, and these three are.
+            "byTier":            count_cases_by_tier(),
         },
     }
     c = inv["catalogue"]

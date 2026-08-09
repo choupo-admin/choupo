@@ -15,6 +15,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;        // the recursive plant solver will live here
+tier         showcase;
 description   "Sugar plant ECONOMICS SWEEP -- IRR / payback / NPV vs RawJuice sucrose content (Phase-2 SweepDriver post-chain differentiator)";
 
 verbosity     3;

@@ -3,6 +3,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
+tier         showcase;
 description   "HDA plant -- toluene + H2 -> benzene + CH4.  A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it is not fractal.  Furnace lumped into the isothermal reactor; light-gas K-values rest on Antoine extrapolation (see thermoPhysPropDict).";
 
 verbosity     3;

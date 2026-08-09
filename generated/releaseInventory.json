@@ -22,7 +22,12 @@
   },
   "tutorials": {
     "runnableCases": 336,
-    "regressionChecks": 302
+    "regressionChecks": 302,
+    "byTier": {
+      "witness": 325,
+      "tutorial": 3,
+      "showcase": 8
+    }
   },
   "totals": {
     "mixtureParameterRecords": 268

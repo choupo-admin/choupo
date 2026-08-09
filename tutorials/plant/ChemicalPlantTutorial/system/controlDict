@@ -15,6 +15,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;        // the recursive plant solver will live here
+tier         showcase;
 description   "Sugar plant -- fractal multi-sector proxy: a JuiceSplitter feeding three sectors (CONCENTRATION + DRYING + FERMENTATION)";
 
 verbosity     3;

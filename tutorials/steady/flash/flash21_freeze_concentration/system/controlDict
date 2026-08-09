@@ -2,5 +2,6 @@
 |  flash21 -- freeze concentration: water + ethanol liquor against ice        |
 \*-----------------------------------------------------------------------------*/
 application  choupoSolve;
+tier         tutorial;
 description  "Freeze-concentration SLE flash: ice crystallises from a water/ethanol liquor at -15 C; the liquor concentrates until gamma_w * x_w = exp(-dG_fus/RT)";
 verbosity    3;
