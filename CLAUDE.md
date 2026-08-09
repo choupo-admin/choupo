@@ -1233,18 +1233,63 @@ leaves that hydrogen unowned.  ONE inverter: `collectBridges` /
 `requireDeclaredNetwork` / `invertMastersOntoComponents` were extracted and
 BOTH forms call them.  Reconciliation is `adjustSingleSpecies` (with
 `adjustChloride` as sugar, expanded aloud) under a MANDATORY
-`maximumCorrection`; `weightedLeastSquares` is the named next slice (A2) and
-refuses by name, as does naming `pH` the balancing variable.  With no rule
-declared: inside `closureTolerance` (0.5 %, a NAMED DEFAULT, announced when
-it defaults) it passes through ANNOUNCED; outside it, it REFUSES naming the
-two remedies — **never a silent adjustment**.  Witness
-`analysis01_water_analysis_inlet` (+0.7813 % → 0, chloride +5.1208 %); gate
-`check_aqueous_analysis` (the balance recomputed independently from the
-authored mg/L; the charge-weighted adjustment identity, because moles and
-equivalents coincide only for a monovalent ion; eight refusals; the
-negative), sabotage-verified — with the correction disabled the gate fails
-and **the witness's own golden does not move**.  Record:
-[`docs/design/aqueous-analysis-inlet-scope.md`](docs/design/aqueous-analysis-inlet-scope.md) §8.
+`maximumCorrection`.  With no rule declared: inside `closureTolerance`
+(0.5 %, a NAMED DEFAULT, announced when it defaults) it passes through
+ANNOUNCED; outside it, it REFUSES naming the two remedies — **never a silent
+adjustment**.  Witness `analysis01_water_analysis_inlet` (+0.7813 % → 0,
+chloride +5.1208 %); gate `check_aqueous_analysis` (the balance recomputed
+independently from the authored mg/L; the charge-weighted adjustment
+identity, because moles and equivalents coincide only for a monovalent ion;
+nine refusals; the negative), sabotage-verified.  **Correction, 2026-08-09:
+this paragraph used to say the witness's own golden does NOT move under that
+sabotage.  It does** — pH 8.1349 against the recorded 7.9077 — and both the
+gate's docstring and the scope doc had recorded so from the day the sabotage
+was performed, while this copy said the opposite.  A doc is not exempt from
+arity: the observation has ONE home, and it is beside the gate that made it.
+
+**A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's
+one-way arrow made STRUCTURAL.**  Minimise `Σ ((x−m)/σ)²` over the measured
+quantities subject to the laws the case DECLARES in
+`enforce ( electroneutrality elementalConservation )` plus non-negativity,
+solved as a convex QP by the existing hand-rolled `solver/ActiveSetQP`.
+Vítor's boundary — *analysis → reconciliation → ONE admissible composition →
+equilibrium, never a coupled loop* — is enforced by a translation unit rather
+than a comment: `src/streams/AnalysisReconciler.{H,cpp}` includes NOTHING
+from `thermo/`, so it cannot NAME a speciation solver or an activity model,
+and its object references exactly ONE Choupo symbol (`solver::activeSetQP`) —
+a compile fact the gate reads off `nm`, whitelist not blacklist.  Posed in
+SIGMA UNITS, so the objective Hessian is the identity and the number the
+solver works in is the number the report publishes.  **The per-law
+attribution of every correction is a KKT identity** (`u_r = −Σ λ_k A_{k,r} +
+μ_r`), asserted to reconstruct the correction before it is published.  New:
+the ELEMENT-TOTAL row (`element Ca;` — a redundant determination carrying NO
+material, which is what makes `elementalConservation` real; unenforced it
+refuses as a measured number nothing reads), and the rule that **an element
+row's surrogate ratio is ARITHMETIC where a species row's is a CONVENTION**
+(declaring `perFormulaUnit` on an element row refuses — the formula already
+says how many Ca are in a CaCO3).  `maximumCorrection { value 3; in sigma; }`
+beside the per-cent form — two limits, not two spellings; the sub-dict
+spelling exists because a sigma is not a unit of measure and teaching the
+global unit table the word would make `T 3 sigma;` parse.
+**`genericWaterAnalysis-v1` was REFUSED, not shipped**: an uncertainty
+belongs to a laboratory and a method, not to an analyte, so a versioned table
+would be invented and would look authoritative *because* it carried a
+version; a missing σ refuses naming both one-line remedies (a per-row
+`uncertainty`, or `uncertainties { default … }` — equal weights, stated).
+**pH stays refused and A2 found the REASON**: adjusting it needs an activity
+coefficient, hence an ionic strength, hence the speciation — it is not
+deferred, it is on the other side of the boundary.  The record separates a
+MEASUREMENT-correction from a CHEMISTRY result by marks that survive being
+read out of order (`reportedValue` exists only on the measurement side,
+corrections are in SIGMA, the two use disjoint key spaces, the measured pH is
+`pHReported`).  Witness `analysis02_weighted_least_squares` — the same water
+plus an EDTA hardness that disagrees with the ICP calcium by 0.84 %; four
+quantities move, worst 0.2813 σ, against A1's single 5.12 % shove.  Gate
+`check_aqueous_reconciliation` (an independent KKT oracle; four sabotages,
+one of which showed the OBJECT-level boundary reading is blind to
+header-inline reach — stated in the gate rather than discovered later).
+ZERO existing goldens moved.  Record:
+[`docs/design/aqueous-analysis-inlet-scope.md`](docs/design/aqueous-analysis-inlet-scope.md) §8 (A1) and §9 (A2).
 
 **Three-axiom property layout** (referenced by `docs/ai/overview.md`):
 (1) INTRINSIC pure-compound props → `data/standards/components/<name>.dat`;
