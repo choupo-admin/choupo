@@ -867,6 +867,30 @@ PYEOF
     fi
     rm -f /tmp/bspk.$$
 
+    # Model-boundary ledger gate (ruling 2026-08-09).  basis01's heater
+    # carried a 2.985 kW "UNEXPLAINED first-law residual" and the RED
+    # conservation alarm with it.  The energy was never missing: the unit
+    # solves in its own declared world while the report prices its streams
+    # in the case's, and the difference is the enthalpy STEP at a model
+    # boundary.  Three quantities now travel apart -- the raw imbalance,
+    # the declared step, what remains -- and the verdict is taken on the
+    # third.  The audit is INDEPENDENT: it assembles the unit's declared
+    # world itself and must reproduce the imbalance, or nothing is
+    # credited.  Sabotage-verified three times (credit whatever the audit
+    # concluded; collapse the three quantities; suppress the alarm wherever
+    # an entry exists) -- observed output in the gate's docstring.
+    if "$ROOT/bin/curate/check_model_boundary_ledger.py" > /tmp/mbl.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "model-boundary-ledger-gate" \
+            "$(tail -1 /tmp/mbl.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_model_boundary_ledger.py)\n" \
+            "model-boundary-ledger-gate"
+        cat /tmp/mbl.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/mbl.$$
+
     # Stage-identity gate (2026-08-04): an equilibrium stage IS a flash.
     # The witness draws BOTH phases off one stage, recombines them and
     # re-flashes the mixture adiabatically; T, x, y and V/F must all come
