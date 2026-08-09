@@ -1544,20 +1544,6 @@ int IsothermalFlash::solve(const DictPtr& dict,
     scalar Q_W = 0.0;
     bool   Q_valid = false;
     std::string Q_gap;                    // why the duty is unavailable
-    //  SLE with a crystal formed: the duty MUST price the crystal on the
-    //  SOLID formation rung, and h_formation has no gas-natural -> solid leg
-    //  yet -- while the generic path below would price sol.x (crystal
-    //  included) as LIQUID, returning a number that silently omits the heat
-    //  of fusion: the whole duty of a freezer, missing without a trace.  The
-    //  caloric contract (see the LL branch note below) says a missing
-    //  enthalpy route is a NAMED gap, never a fake number.  The rung
-    //  question is one decision with the flash19 inlet-pricing finding
-    //  (2026-08-09) and waits for that ratification.
-    if (sol.sleBranch && !sol.solidFlows.empty())
-        Q_gap = "SLE duty needs the crystal priced on the solid formation"
-                " rung (h_formation has no gas-natural -> solid leg yet); a"
-                " fluid-only Q would silently omit the heat of fusion";
-    else
     try
     {
         const scalar T_feed  = feedDict->lookupScalar("T", Dims::temperature);
@@ -1648,6 +1634,31 @@ int IsothermalFlash::solve(const DictPtr& dict,
                              " included: "
                           << in.F * sol.dimerHeat_J_per_molFeed
                           << " kW (h_dim = 2 h_mono + dH, exact)\n";
+        }
+        //  R-E3 (docs/design/tp-stream-energy-coherence.md): ONE solid rung
+        //  everywhere.  H_out above priced sol.x with any crystallised
+        //  share still inside as APPARENT dissolved/liquid material (the
+        //  chemistry-route convention; the SLE branch keeps the same
+        //  shape), while the balance report prices the same crystal on the
+        //  solid formation rung (solidH_elements).  Re-price each
+        //  crystallised mole from the liquid formation rung onto
+        //  h_formation(T,"solid") -- the SAME leg the report reads -- so
+        //  the unit duty and the report agree on solids by construction.
+        //  A missing transition datum throws into the catch below: a NAMED
+        //  gap, never a fake number.
+        if (!sol.solidFlows.empty())
+        {
+            sVector e(thermo.n(), 0.0);
+            for (std::size_t i = 0; i < sol.solidFlows.size(); ++i)
+            {
+                const scalar s_i = sol.solidFlows[i];     // kmol/s, absolute
+                if (s_i <= 0.0) continue;
+                e.assign(thermo.n(), 0.0);
+                e[i] = 1.0;
+                Q_W += 1000.0 * s_i                       // kmol/s -> mol/s
+                     * (thermo.comp(i).h_formation(in.T, "solid")
+                        - thermo.H_liquid_formation(in.T, e));
+            }
         }
         Q_valid = std::isfinite(Q_W);
         if (!Q_valid) Q_gap = "enthalpy evaluated non-finite";

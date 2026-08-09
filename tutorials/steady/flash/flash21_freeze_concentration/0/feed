@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-|  flash21/0/feed -- the authored inlet: 10 mol% ethanol in water             |
+|  flash21/0/feed -- the authored inlet: warm (298 K) 10 mol% ethanol liquor  |
 \*-----------------------------------------------------------------------------*/
 componentMolarFlows
 {
     water     90.0  kmol/h;
     ethanol   10.0  kmol/h;
 }
-T               258.15 K;
+T               298.15 K;
 P               101325 Pa;

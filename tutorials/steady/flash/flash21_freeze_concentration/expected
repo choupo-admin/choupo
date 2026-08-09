@@ -8,6 +8,8 @@ kpi     freezer01              F_alpha          0.0277777777778    1e-4
 kpi     freezer01              F_beta           0                  1e-4
 kpi     freezer01              F_in             0.0277777777778    1e-4
 kpi     freezer01              P                101325             1e-4
+kpi     freezer01              Q                -167415.991569     1e-4
+kpi     freezer01              Q_kW             -167.415991569     1e-4
 kpi     freezer01              T                258.15             1e-4
 kpi     freezer01              V_over_F         0                  1e-4
 kpi     freezer01              aEq_water        0.857434120855     1e-4

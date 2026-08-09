@@ -125,9 +125,21 @@ general rule instead of a special one.
 
 ## Implementation slices (after ratification, one per beat)
 
-1. **Rung slice (R-E3/R-E4)**: the two `h_formation` legs + the flash
-   H_out solid term + gate arms (closed-form fusion-heat check on flash21;
-   flash19 closure → 100 % assertion); goldens re-recorded with reasons.
+1. **Rung slice (R-E3/R-E4)** — **SHIPPED 2026-08-09**: the two
+   `h_formation` legs (gas-natural → solid refusing without a declared
+   `sublimation { Hfus }`; liquid-natural → solid gaining −Hfus + ∫cp_solid
+   behind the existing (b)-discriminator, dissolved solutes byte-identical)
+   + the flash duty's solid-rung term (every crystallised mole re-priced
+   from the liquid formation rung onto `h_formation(T,"solid")`, chemistry
+   route and SLE branch alike) + gate arms (`check_solid_service` A10:
+   flash21's published negative duty beside the closed-form identity; A11:
+   flash19's live `energy_closure_pct` within 100 ± 0.5).  As measured, NO
+   existing golden moved; flash21 gained its first duty golden (Q −167.4 kW
+   = sensible + fusion on a 298.15 K feed, re-recorded and resealed with
+   this record as the reason; its solidFraction 0.475994623251 unchanged —
+   the split depends on the operating T only).  flash19's reported Q is now
+   13.4913 kW against the report's dH 13.4913 (closure 100.00 %, was
+   101.17 %).
 2. **Inlet-resolution slice (R-E1/R-E2)**: the unpinned-feed re-flash in
    the duty path + the `phase` pin honoured in pricing + the announced
    metastable-inlet duty; idempotency gate (a converged outlet re-fed at

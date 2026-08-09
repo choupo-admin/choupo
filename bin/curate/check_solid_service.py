@@ -220,13 +220,15 @@ def main() -> int:
             if "two authorities on one phase set" not in log:
                 fail.append("A9c: phases beside liquidPhases did not refuse")
 
-    # A10 (S4b) -- THE SERVED SHAPE: one liquid + one crystallizing solid,
-    # no vapour, run live from a copy of the flash21 witness.  Three claims:
-    # the SLE branch (not a refusal) answers; the answer satisfies the
-    # closed-form freezing-point-depression identity gamma_w * x_w =
-    # exp(-dG_fus/RT), recomputed HERE from the record's own Hfus/Tfus
-    # (never from the engine's aEq echo alone); and the duty is withheld as
-    # the NAMED rung gap, not published as a fluid-only number.
+    # A10 (S4b, amended by tp-stream-energy-coherence slice 1, 2026-08-09) --
+    # THE SERVED SHAPE: one liquid + one crystallizing solid, no vapour, run
+    # live from a copy of the flash21 witness.  Three claims: the SLE branch
+    # (not a refusal) answers; the answer satisfies the closed-form
+    # freezing-point-depression identity gamma_w * x_w = exp(-dG_fus/RT),
+    # recomputed HERE from the record's own Hfus/Tfus (never from the
+    # engine's aEq echo alone); and the duty IS published, finite and
+    # NEGATIVE (warm feed frozen = cooling: sensible + fusion, priced on
+    # the solid formation rung -- the S4b withhold is CLOSED by R-E3/R-E4).
     with tempfile.TemporaryDirectory() as td:
         base = pathlib.Path(td) / "sle"
         shutil.copytree(
@@ -256,13 +258,62 @@ def main() -> int:
                 fail.append("A10: the SLE answer is off the closed-form "
                             "identity: a_water=%s vs exp(-dG_fus/RT)=%.9f"
                             % (ma.group(1), a_eq))
-            if '"Q"' in log.split("freezer01", 1)[-1].split("}", 1)[0]:
-                fail.append("A10: an SLE duty was PUBLISHED -- the rung gap "
-                            "must withhold Q, never price the crystal as "
-                            "fluid")
-            if "duty UNAVAILABLE" not in log:
-                fail.append("A10: the withheld duty did not announce its "
-                            "named gap")
+            #  Parse the unit's OWN KPI dict ('"freezer01": { ... }').  The
+            #  old withhold arm sliced from the first 'freezer01' mention to
+            #  the first '}' -- which lands in the result JSON's seal block,
+            #  BEFORE any KPI, so its absence assertion could never have
+            #  seen a published Q at all (the permanently-green shape).
+            mk = re.search(r'"freezer01":\s*\{([^}]*)\}', log)
+            mq = (re.search(r'"Q_kW":\s*(-?[0-9.eE+]+)', mk.group(1))
+                  if mk else None)
+            if not mq:
+                fail.append("A10: the SLE run published no Q_kW -- the solid "
+                            "rung (tp-stream-energy-coherence slice 1) must "
+                            "price the crystal, never withhold the duty")
+            else:
+                q = float(mq.group(1))
+                if not math.isfinite(q):
+                    fail.append(f"A10: Q_kW = {q!r} is not finite")
+                elif q >= 0.0:
+                    fail.append(f"A10: Q_kW = {q!r} is not negative -- "
+                                "freezing a warm feed is COOLING (sensible "
+                                "+ fusion); a non-negative duty prices the "
+                                "wrong rung")
+
+    # A11 (tp-stream-energy-coherence slice 1, R-E3) -- ONE SOLID RUNG
+    # everywhere, executable: the flash's reported duty and the balance
+    # report's dH price flash19's precipitate on the SAME solid formation
+    # rung, so the by-unit energy closure sits at 100 % (it read 101.17 %
+    # while the duty priced the crystal as apparent dissolved salt).  Run
+    # live from a fresh copy; the CSV is the report's own artefact.
+    with tempfile.TemporaryDirectory() as td:
+        base = pathlib.Path(td) / "rung"
+        shutil.copytree(
+            ROOT / "tutorials/steady/flash/flash19_organic_and_precipitate",
+            base)
+        for junk in base.glob("log.*"):
+            junk.unlink()
+        r = subprocess.run(
+            [str(ROOT / "bin" / "runCase"), "-f", str(base)],
+            capture_output=True, text=True, timeout=600,
+            env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+        csvf = base / "reports" / "balances" / "energyBalance_byUnit.csv"
+        if r.returncode != 0 or not csvf.exists():
+            fail.append("A11: the flash19 witness did not produce its "
+                        "energy balance report (rc=%d)" % r.returncode)
+        else:
+            rows = [ln.split(",") for ln in csvf.read_text().splitlines()
+                    if ln.startswith("flash01,")]
+            if not rows or len(rows[0]) < 6:
+                fail.append("A11: flash19's energyBalance_byUnit.csv has no "
+                            "flash01 row -- the report's shape moved")
+            else:
+                closure = float(rows[0][5])
+                if abs(closure - 100.0) > 0.5:
+                    fail.append(f"A11: flash19 energy_closure_pct = "
+                                f"{closure} -- outside 100 +/- 0.5: the "
+                                "unit duty and the balance report no longer "
+                                "share one solid rung (R-E3)")
 
     # A5 -- the negative.
     n = run_probe("notAMineralAnywhere")
@@ -306,10 +357,14 @@ def main() -> int:
           "authorities refuse.  THE SLE BRANCH SERVES (A10): flash21's "
           "liquid+crystal answer sits on the closed-form identity gamma_w * "
           "x_w = exp(-dG_fus/RT) recomputed here from water.dat's own "
-          "Hfus/Tfus, and the duty is WITHHELD as the named rung gap (never "
-          "a fluid-only Q).  NOT CHECKED: the SLE duty itself (waits on the "
-          "enthalpy-rung ratification); solid beside vapour or a second "
-          "liquid (S4c, refused); inert solids (stub, refused).")
+          "Hfus/Tfus, and the warm feed's duty is PUBLISHED, finite and "
+          "negative (sensible + fusion on the solid formation rung -- the "
+          "S4b withhold closed by tp-stream-energy-coherence slice 1).  "
+          "ONE SOLID RUNG (A11): flash19's by-unit energy closure sits at "
+          "100 +/- 0.5 % run live -- the flash duty and the balance report "
+          "price the crystal on the same h_formation(T,\"solid\") leg.  "
+          "NOT CHECKED: solid beside vapour or a second liquid (S4c, "
+          "refused); inert solids (stub, refused).")
     return 0
 
 

@@ -960,9 +960,14 @@ void Component::readFromDict(const DictPtr& d)
 // implementation honest with the data Choupo carries (every component
 // has Hvap_Tb + Watson for the latent at any T).  Cp_solid is now a REAL
 // model when the .dat carries a solidHeatCapacity{} block (else it falls
-// back to Cp_liquid -- legacy-identical); and the solid->liquid leg applies
+// back to Cp_liquid -- legacy-identical); and the solid<->liquid legs apply
 // the genuine enthalpy of fusion (subHfus_) for a MELTING solid, while a
 // DISSOLVED solute keeps Hfus ~ 0 (it goes into solution, never melts).
+// ONE thermochemical definition per substance -- every phase enthalpy is a
+// consistent VIEW of the record's single datum plus its declared transition
+// data, never a separately curated route; a leg whose transition datum is
+// absent REFUSES naming the remedy (R-E3/R-E4,
+// docs/design/tp-stream-energy-coherence.md).
 scalar Component::h_formation(scalar T, const std::string& targetPhase) const
 {
     if (!hasGibbsData_)
@@ -1040,8 +1045,34 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
         throw std::runtime_error("Component '" + name_ +
             "': sublimation (solid -> gas) not modelled; the solute should"
             " not appear in a vapour stream");
+    if (naturalPhase_ == "gas" && targetPhase == "solid")
+    {
+        // Gas-natural -> solid VIEW of the one datum (R-E4,
+        // docs/design/tp-stream-energy-coherence.md): condense (-Hvap) and
+        // freeze (-Hfus) at 298 K, then integrate Cp_solid up to T.  The
+        // fusion heat is DECLARED transition data, never manufactured: a
+        // record without it has no crossing here, and a silent Hfus = 0
+        // would omit the whole duty of a freezer.
+        if (subHfus_ <= 0.0)
+            throw std::runtime_error("Component '" + name_ +
+                "': h_formation gas-natural -> solid needs the enthalpy of"
+                " fusion -- declare sublimation { Hfus <J/mol>; } (with a"
+                " citation) in the component .dat");
+        return Hf298_ - hvap298() - subHfus_ + cpSolidIntegral(T);
+    }
     if (naturalPhase_ == "liquid" && targetPhase == "solid")
-        return Hf298_ + cpLiqIntegral(T);                     // melts back as liquid
+    {
+        // Mirror of the solid -> liquid leg above, SAME (b)-discriminator:
+        // a record that opts into melting data (real solidHeatCapacity{}
+        // AND real Hfus) freezes at 298 K and integrates the solid Cp; a
+        // record declaring neither keeps the legacy dissolved-solute
+        // reading byte-identically -- an absence keeps meaning what it
+        // meant (R-E4).
+        const bool meltingSolid = (cpSolid_ != nullptr) && (subHfus_ > 0.0);
+        if (meltingSolid)
+            return Hf298_ - subHfus_ + cpSolidIntegral(T);    // freezes: -Hfus
+        return Hf298_ + cpLiqIntegral(T);                     // dissolved: Hfus ≈ 0
+    }
 
     throw std::runtime_error("Component '" + name_ +
         "': unhandled phase combination natural='" + naturalPhase_

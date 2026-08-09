@@ -20,19 +20,28 @@ run publishes the liquor's activity as KPI `a_water` = 0.857434120931 —
 agreement to 9e-11.  `check_solid_service` arm A10 recomputes the closed
 form independently in Python on every suite run.
 
-**The numbers:** feed 90/10 water/ethanol (mol) at −15 °C, 1 atm.  Ice
-forms at `solidFraction` 0.476 mol per mol of feed; the liquor concentrates
-to x_ethanol ≈ 0.19, exactly where the NRTL water activity meets the
-saturation value.  The liquor and crystal leave through ONE outlet
-(`liquor`): its overall material equals the feed and the `phases {}` block
-decomposes it; `vent` is the structurally-required second outlet and
-carries F = 0 (no vapour phase is declared).
+**The numbers:** feed 90/10 water/ethanol (mol) at 25 °C, 1 atm; the
+freezer operates at −15 °C.  Ice forms at `solidFraction` 0.476 mol per mol
+of feed — a function of the operating (T, P) alone, not of the feed
+temperature; the liquor concentrates to x_ethanol ≈ 0.19, exactly where the
+NRTL water activity meets the saturation value.  The liquor and crystal
+leave through ONE outlet (`liquor`): its overall material equals the feed
+and the `phases {}` block decomposes it; `vent` is the
+structurally-required second outlet and carries F = 0 (no vapour phase is
+declared).
+
+**The duty (gap closed 2026-08-09 by
+`docs/design/tp-stream-energy-coherence.md` slice 1, R-E3/R-E4):**
+`h_formation` gained its gas-natural → solid view (Hf − Hvap(298) −
+Hfus + ∫cp_solid, from the record's own declared transition data), and the
+flash prices every crystallised mole on that solid formation rung — the
+SAME leg the balance report reads.  The warm feed makes the duty visible
+as physics: Q ≈ −167.4 kW = sensible cooling of 100 kmol/h by 40 K
+(≈ −88 kW) + fusion of 47.6 kmol/h of ice (≈ −79 kW).  Cooling is
+negative by the sign convention; gate arm A10 asserts the published Q is
+finite and negative.
 
 **Honest gaps, stated:**
-* The DUTY is withheld as a named gap — pricing the crystal needs the solid
-  formation rung (`h_formation` has no gas-natural → solid leg), and a
-  fluid-only Q would silently omit the heat of fusion, which is the whole
-  duty of a freezer.  One decision with the flash19 inlet-pricing finding.
 * Both Antoine fits are extrapolated below 273 K (announced); the
   extrapolation CANCELS in the SLE identity (both phases share the same
   Psat call), so the equilibrium is exact in the model even where Psat is
