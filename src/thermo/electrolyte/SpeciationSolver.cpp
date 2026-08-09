@@ -1430,7 +1430,41 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // -- log-space Newton inside an ionic-strength fixed point -------------------
     constexpr double ln10 = 2.302585092994046;
     std::vector<double> x(nUnk);               // x_j = ln m_j (positivity built in)
-    for (std::size_t j = 0; j < n; ++j) x[j] = std::log(mtot[j]);
+    //  THE SEED IS NUMERICS, NOT MATTER (Vítor's ruling 2, 2026-08-09).
+    //  `x_j = ln(mtot_j)` is -inf for a master whose analytical total is
+    //  exactly zero, and the Newton then starts outside the number line: every
+    //  activity, every residual and the whole Jacobian come back NaN.  A
+    //  declared-but-empty master is legal input (an analysis that lists Ca and
+    //  measures none), and it must not poison the solve.
+    //
+    //  So an empty master gets a STRICTLY POSITIVE numerical start, and three
+    //  things are true of it by construction: (1) it is an initial GUESS, not
+    //  inventory -- the mole balance for that master still says total = 0, so
+    //  the converged answer goes to zero and nothing is added to any element
+    //  balance, inlet composition or reported stream; (2) it is ANNOUNCED, so
+    //  the policy is diagnostic-visible rather than a silent composition
+    //  floor; (3) it is far below any physical molality, so it cannot compete
+    //  with a real one.  A species that is structurally impossible has already
+    //  left the problem upstream (rule 1); this branch serves the ones that
+    //  merely start empty.
+    constexpr double emptyMasterSeed = 1.0e-30;    // mol/kg, numerical only
+    for (std::size_t j = 0; j < n; ++j)
+    {
+        if (mtot[j] > 0.0) { x[j] = std::log(mtot[j]); continue; }
+        x[j] = std::log(emptyMasterSeed);
+        if (verbosity >= 2)
+            std::cout << "  [seed] master '" << mast[j] << "' has a total of "
+                         "exactly zero: the ln-unknown starts at "
+                      << emptyMasterSeed << " mol/kg -- a NUMERICAL seed (ln 0 "
+                         "is not a number), never inventory.  Its mole balance "
+                         "still reads zero, so the answer returns to zero and "
+                         "nothing enters the element balance or the stream.\n";
+        AdvisoryLog::instance().add(
+            "seed", "info", "master '" + mast[j] + "'",
+            "declared with a total of exactly zero -- seeded at "
+            + std::to_string(emptyMasterSeed) + " mol/kg for the ln-domain "
+            "Newton (numerical initialisation, not material)");
+    }
     if (solveH) x[iH] = std::log(1.0e-7);      // neutral-water start for the free H+
     // free-site start: assume the resin begins mostly empty of divalents so a
     // sizeable fraction of CEC is free X- (a robust, honest seed; the Newton
