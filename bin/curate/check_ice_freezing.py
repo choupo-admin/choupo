@@ -85,8 +85,10 @@ coverage than it has is worse than one that reports less:
   * THE PHASE'S CASE CONSUMER IS fpd01_nacl_freezing (2026-08-08), via the
     `freezingPoint` props op -- the witness this section used to say was
     deliberately last, landed against an interim one-point anchor (AAD
-    0.05 %).  What is STILL not covered: no FLASH converges onto the crystal
-    -- the flash has no solid path until the C2 spike is built and reviewed.
+    0.05 %).  What is STILL not covered: no FLASH converges onto the crystal.
+    Since S4a (C3 uniform `phases` grammar) a case CAN declare the solid and
+    REACHES the flash's named refusal -- reachable-and-refusing, no longer
+    unreachable-by-construction; the consuming path is migration S4b.
 
   * THE SOLUTE SIDE IS UNCHECKED.  The freezing-point depression of a real
     solution is K = 1 solved against gamma_w x_w, and its accuracy is the

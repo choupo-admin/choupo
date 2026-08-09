@@ -150,6 +150,68 @@ def main() -> int:
         fail.append("A8: SpeciationInput::equilibrate is filled outside the "
                     "service door: " + ", ".join(writers))
 
+    # A9 (S4a) -- THE C3 UNIFORM GRAMMAR, three claims run live from a
+    # synthesized case (vlle01's dict rewritten to `phases ( ... )`):
+    #   (a) COEXISTENCE: the uniform two-liquid declaration reproduces
+    #       vlle01's own split (the grammar changes nothing it does not say);
+    #   (b) REACHABLE-AND-REFUSING: adding `{ name ice; type solid;
+    #       component water; }` BUILDS the package and reaches the flash's
+    #       named solid refusal -- previously unreachable-by-construction,
+    #       now the S4b design question fired from a real case;
+    #   (c) TWO AUTHORITIES: `phases` beside `liquidPhases` refuses.
+    import shutil, tempfile
+    with tempfile.TemporaryDirectory() as td:
+        base = pathlib.Path(td) / "c3"
+        shutil.copytree(ROOT / "tutorials/steady/flash/vlle01_waterButanol", base)
+        tp = base / "constant" / "thermoPhysPropDict"
+        s0 = tp.read_text()
+        m = re.search(r"liquidPhases\s*\((.*?)\);", s0, re.S)
+        entries = re.findall(r"\{[^}]*\}", m.group(1)) if m else []
+        if not m or len(entries) < 2:
+            fail.append("A9: vlle01's liquidPhases form moved -- resynthesize "
+                        "this probe against the new grammar")
+        else:
+            uni = "phases\n    (\n" + "".join(
+                "        " + e.replace("{", "{ type liquid; ", 1) + "\n"
+                for e in entries)
+            solid_row = "        { name ice; type solid; component water; }\n"
+
+            def run_case():
+                for junk in base.glob("log.*"):
+                    junk.unlink()
+                return subprocess.run(
+                    [str(ROOT / "bin" / "runCase"), "-f", str(base)],
+                    capture_output=True, text=True, timeout=600,
+                    env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+
+            # (a) coexistence
+            tp.write_text(s0[:m.start()] + uni + "    );" + s0[m.end():])
+            run_case()
+            logf = base / "log.choupoSolve"
+            log = logf.read_text() if logf.exists() else ""
+            if "UNIFORM" not in log:
+                fail.append("A9a: the uniform-phases announce did not fire")
+            if '"water": 0.98299754' not in log:
+                fail.append("A9a: the uniform two-liquid case does not "
+                            "reproduce vlle01's split (waterRich x_water "
+                            "0.98299754...) -- the grammar changed physics")
+            # (b) reachable refusal
+            tp.write_text(s0[:m.start()] + uni + solid_row + "    );"
+                          + s0[m.end():])
+            run_case()
+            log = logf.read_text() if logf.exists() else ""
+            if "flash has no solid path" not in log:
+                fail.append("A9b: the declared solid did not reach the "
+                            "flash's named refusal -- either the grammar "
+                            "dropped it silently or the refusal moved")
+            # (c) two authorities
+            tp.write_text(s0[:m.start()] + "liquidPhases ( { name x; } );\n    "
+                          + uni + "    );" + s0[m.end():])
+            run_case()
+            log = logf.read_text() if logf.exists() else ""
+            if "two authorities on one phase set" not in log:
+                fail.append("A9c: phases beside liquidPhases did not refuse")
+
     # A5 -- the negative.
     n = run_probe("notAMineralAnywhere")
     neg = n.stdout + n.stderr
@@ -187,7 +249,7 @@ def main() -> int:
           "engine's ONLY writer of the equilibrate channel -- Speciate, "
           "ScalingScan and ReactiveVLE all walk through the door.  NOT "
           "CHECKED: fusion-class candidates still ride the spike gate; the "
-          "flash's own solid path arrives with S4.")
+          "flash's own solid path arrives with S4b.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a declared solid REACHES the flash's named refusal (previously unreachable-by-construction), and two authorities refuse.")
     return 0
 
 

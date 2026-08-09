@@ -1563,9 +1563,26 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
     if (form == "gammaGamma")
     {
-        if (!eq->found("liquidPhases"))
+        //  C3 (ruled 2026-08-08, migration S4a): the UNIFORM declaration --
+        //  `equilibrium.phases ( { name ...; type liquid|vapor|solid; ... } )`
+        //  -- COEXISTS with the liquidPhases/vapour form; declaring both is
+        //  two authorities on one phase set and refuses.  A `solid` entry
+        //  carries `component <name>;` (+ optional `mode`) to the Phase
+        //  factory's SolidPhase, whose own refusals name any missing datum.
+        //  What CONSUMES a declared solid is the flash's business (S4b) --
+        //  today it refuses with both routes named, and that refusal
+        //  becoming REACHABLE from a case is exactly this slice's point.
+        const bool uniform = eq->found("phases");
+        if (uniform && (eq->found("liquidPhases") || eq->found("vapour")))
+            throw std::runtime_error("thermophysicalPropertySystem: "
+                "equilibrium declares BOTH the uniform `phases ( ... )` list "
+                "and the liquidPhases/vapour form -- two authorities on one "
+                "phase set.  Keep exactly one.");
+        if (!uniform && !eq->found("liquidPhases"))
             throw std::runtime_error("thermophysicalPropertySystem: required"
-                " key 'equilibrium.liquidPhases ( { name } ... )' is absent");
+                " key 'equilibrium.liquidPhases ( { name } ... )' is absent"
+                " (or declare the uniform `phases ( { name; type; ... } ... )`"
+                " list)");
         // ONE fact in ONE home: coexisting liquids share the activity model
         // declared at equilibrium.liquid; a phase overrides only when its
         // model is intentionally different.
@@ -1574,6 +1591,68 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             shared = eq->subDict("liquid")->subDict("activityModel");
         std::vector<DictPtr> phaseConfigs;
         std::string phaseNames;
+        if (uniform)
+        {
+            for (const auto& ph : eq->lookupDictList("phases"))
+            {
+                const std::string pname = ph->lookupWord("name");
+                const std::string ptype = ph->lookupWord("type");
+                phaseNames += (phaseNames.empty() ? "" : ", ") + pname
+                            + " (" + ptype + ")";
+                auto pc = std::make_shared<Dictionary>(pname);
+                pc->insert("name", pname);
+                pc->insert("type", ptype);
+                if (ptype == "liquid")
+                {
+                    DictPtr am = ph->found("activityModel")
+                               ? ph->subDict("activityModel") : shared;
+                    if (!am)
+                        throw std::runtime_error("thermophysicalPropertySystem:"
+                            " phases entry '" + pname + "' (liquid) has no"
+                            " activityModel and equilibrium.liquid declares no"
+                            " shared one.");
+                    auto act = resolveActivity(am);
+                    if (v2->found("activeComponents"))
+                        act->insert("activeComponents",
+                                    v2->entryValue("activeComponents"));
+                    if (v2->found("binaryPairsBase"))
+                        act->insert("binaryPairsBase",
+                                    v2->entryValue("binaryPairsBase"));
+                    pc->insert("activity", EntryValue(act));
+                }
+                else if (ptype == "vapor" || ptype == "vapour")
+                {
+                    pc->insert("type", std::string("vapor"));
+                    auto ed = std::make_shared<Dictionary>("eos");
+                    ed->insert("model", ph->lookupWord("fugacityModel"));
+                    pc->insert("eos", EntryValue(ed));
+                }
+                else if (ptype == "solid")
+                {
+                    //  The crystal's identity travels; SolidPhase itself
+                    //  refuses a missing `component` with the remedy.
+                    if (ph->found("component"))
+                        pc->insert("component", ph->entryValue("component"));
+                    pc->insert("mode", ph->found("mode")
+                        ? ph->entryValue("mode")
+                        : EntryValue(std::string("crystallizing")));
+                }
+                else
+                    throw std::runtime_error("thermophysicalPropertySystem: "
+                        "phases entry '" + pname + "' declares type '" + ptype
+                        + "' -- the uniform list knows liquid, vapor and "
+                        "solid.");
+                phaseConfigs.push_back(pc);
+            }
+            if (thermoAnnounce())
+                std::cout << "[v2 native] equilibrium gammaGamma, UNIFORM "
+                             "phases list: " << phaseNames
+                          << " -- ONE Gibbs surface per phase (C3 grammar).\n";
+            ThermoPackage out;
+            out.assembleNamedPhases(v2->lookupWordList("components"),
+                                    phaseConfigs, db);
+            return out;
+        }
         for (const auto& ph : eq->lookupDictList("liquidPhases"))
         {
             const std::string pname = ph->lookupWord("name");
