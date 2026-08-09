@@ -19,6 +19,10 @@
       "exit": 0,
       "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases)"
     },
+    "check_aqueous_analysis": {
+      "exit": 0,
+      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative density, correction over the limit, pH as the balancing variable, weightedLeastSquares, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
+    },
     "check_aqueous_navigation": {
       "exit": 0,
       "claim": "navigation gate: 52 species -> 34 families, 8 topics, 2 mediators; no runtime reader"
@@ -45,7 +49,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 325 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 326 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -73,7 +77,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 589 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 590 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -89,11 +93,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 108 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 111 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 50 design record(s) appear in the index, and its stated counts (22 state a rejected alternative, 28 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 51 design record(s) appear in the index, and its stated counts (24 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -101,11 +105,11 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 244 path mention(s) and 106 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 247 path mention(s) and 107 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 340 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 341 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -168,7 +172,7 @@
       "claim": "check_feed_switch: OK -- A5 isothermal feed switch: positive witness runs + amendments ledgered (equal kmol both ways); 6 refusals fired and named (T/u/P swing, carrier, y-range, unknown component)"
     },
     "check_flash_complex": {
-      "exit": 0,
+      "exit": 1,
       "claim": "ok   flashComplex runs (exit 0 -- a reactive non-convergence throws, so this is a statement about the joint Newton, not about not crashing)"
     },
     "check_flash_model": {
@@ -185,7 +189,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 109 gates, and the other 105 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 112 gates, and the other 108 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -197,7 +201,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40282 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40320 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -329,7 +333,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 497 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 498 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -345,7 +349,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 331 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 332 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -393,7 +397,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 609 source files, each includes what it uses."
+      "claim": "std includes: 611 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
@@ -449,7 +453,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2949 declared window(s) across 3587 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2957 declared window(s) across 3607 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,
