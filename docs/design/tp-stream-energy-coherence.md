@@ -308,13 +308,33 @@ plus the solid rung, R-E3) — read by the report and by the heater.  A rule
 enforced by repetition has an arity equal to the number of its copies.
 
 **What moved, measured on all 19 corpus cases carrying a `heater`:**
-four heater outlet states, and nothing else.  process02 and
+seven heater outlet states, and nothing else.  process02 and
 process02_with_design 361.95 → 359.28 K (vf 0 → 0.0090), optim02
-364.86 → 358.50 K, optim05 364.27 → 356.55 K, economics01 367.79 →
-358.09 K, economics02 367.72 → 357.33 K.  Every one of them is the same
-correction: the old temperature was bought with latent heat the case never
-paid.  Fifteen heaters did not move beyond the Newton tolerance, because
-their outlets are genuinely single-phase.
+364.86 → 358.40 K (vf 0.022), optim05 364.27 → 356.55 K, economics01
+367.79 → 358.09 K, economics02 367.72 → 357.33 K, basis01 332.23 →
+330.81 K.  Every one of them is the same correction: the old temperature
+was bought with latent heat the case never paid.  Twelve heaters moved
+only in their last digits or not at all, because their outlets are
+genuinely single-phase.
+
+**AND A DERIVATIVE THAT STRADDLED THE KINK MOVED AN OPTIMISER.**  The first
+version of this fix kept the Newton's existing 0.5 K central difference.
+dH/dT jumps from 120 to 4300 J·mol⁻¹·K⁻¹ across the bubble point, so a step
+that wide returns the average of two regimes — a slope belonging to neither.
+Newton then converges LINEARLY, oscillating either side of the answer with a
+ratio near 0.73: 27 iterations on process02 to reach a root it had bracketed
+by the third, ending 1.3e-2 J/mol out instead of 2e-6.  That was visible as
+slow convergence and dismissed as cost.  It was not only cost: `optim02`'s
+Nelder-Mead read the last-digit wobble as landscape and reported a NEW
+interior optimum (V_R 0.007011, Q 285.83 W, objective 1.370023e+06) which
+does not exist — the case header was rewritten to explain it before the
+cause was found.  A 0.01 K step, which stays inside one phase and is still
+1e5 times a converged flash's noise, gives 7 iterations, quadratic
+termination, and puts optim02 back on its original optimum (V_R 0.008070,
+Q 500 W at its upper bound, 9.346728e+05 EUR) with only its outlet state
+changed.  **A derivative evaluated across a discontinuity in the derivative
+does not merely converge slowly; it can move an optimiser sitting above
+it.**
 
 **And a SECOND defect fell out of it, which is the part worth remembering.**
 `economics01`'s heater had exactly the same disease and its closure read

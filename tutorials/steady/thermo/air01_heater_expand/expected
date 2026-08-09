@@ -8,5 +8,5 @@ kpi     airHeater              Q                5000             1e-4
 kpi     airHeater              Q_kW             5                1e-4
 kpi     airHeater              Q_per_mol        5000             1e-4
 kpi     airHeater              T_in             298.15           1e-4
-kpi     airHeater              T_out            468.478847996    1e-4
-kpi     airHeater              dT               170.328847996    1e-4
+kpi     airHeater              T_out            468.478847995    1e-4
+kpi     airHeater              dT               170.328847995    1e-4

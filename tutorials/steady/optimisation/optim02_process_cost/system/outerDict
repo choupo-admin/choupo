@@ -17,33 +17,36 @@
 
   Pedagogical note: this case uses only CAPEX (purchased + bare-module
   + total-module cost via Guthrie correlations).  The optimum is NOT the
-  lower corner one might naively expect.  Nelder-Mead lands at:
+  lower corner one might naively expect.  Nelder-Mead (8 moves) lands at:
 
-      reactor.V_R = 0.007011 m^3   (INTERIOR, not on a bound)
-      heater.Q    = 285.83 W       (INTERIOR -- see the note below)
-      objective   = 1.370023e+06 EUR
+      reactor.V_R = 0.008070 m^3   (INTERIOR, not on a bound)
+      heater.Q    = 500 W          (driven hard to its UPPER bound)
+      objective   = 9.346728e+05 EUR
 
-  The dominant cost is the heat exchanger (whose area A = Q/(U*LMTD) is
-  ~0.05 m^2 here -- two orders of magnitude BELOW the Turton correlation's
-  valid range, A in [10, 1000] m^2).  In that extrapolated tail the
-  quadratic K3*(log10 A)^2 term makes a SMALLER area MORE expensive, which
-  is the deliberate teaching point: cost models bite outside their validity
-  range, and both the sizing and the optimum here are partly an artifact of
-  reading one below its Smin.
+  Why higher duty is cheaper here: the dominant cost is the heat exchanger
+  (~916 k of ~935 k total), whose area A = Q/(U*LMTD) = Q/6000 gives only
+  ~0.083 m^2 at Q = 500 W -- two orders of magnitude BELOW the Turton
+  correlation's valid range (A in [10, 1000] m^2).  In that extrapolated
+  tail the quadratic K3*(log10 A)^2 term makes a SMALLER area MORE
+  expensive, so the simplex pushes Q up to grow A and slide down the cost
+  curve.  This optimum is therefore partly an artifact of extrapolating the
+  HX correlation below Smin -- a deliberate teaching point: cost models bite
+  outside their validity range.
 
-  MOVED 2026-08-09, and the earlier numbers are worth knowing.  This
-  optimum used to sit at V_R = 0.008070, Q = 500 W (hard against its UPPER
-  bound), objective 9.346728e+05 -- and the story told here was that the
-  simplex pushed Q up to grow the area.  It did, and it could do so freely
-  because the `heater` inverted its duty on a SENSIBLE enthalpy relation:
-  every extra watt bought temperature, and therefore LMTD, and therefore
-  area, with no latent heat ever paid.  The heater now solves for the
-  outlet STATE whose enthalpy is H_in + Q, so past the bubble point the
-  temperature STOPS and the duty vaporises instead -- LMTD stops growing
-  with Q, the upper corner stops paying, and the simplex settles in the
-  interior.  (docs/design/tp-stream-energy-coherence.md.)  The mechanism
-  sentence above has been trimmed to what is measured; the FULL why of the
-  new interior optimum has not been re-derived and is not claimed here.  The exercise verifies:
+  The OPTIMUM ABOVE IS UNCHANGED by the 2026-08-09 heater fix, and the detour
+  is worth one paragraph.  The heater now solves for the outlet STATE whose
+  enthalpy is H_in + Q rather than inverting a sensible Cp relation, so at
+  this optimum the stream leaves at 358.40 K and 2.2 % vapour instead of a
+  reported 364.86 K single-phase -- the same 500 W, an outlet that is
+  genuinely past its bubble point.  The first version of that fix carried a
+  0.5 K central difference through the bubble-point kink, which made the
+  unit's own Newton converge LINEARLY and oscillate in its last digits; the
+  simplex read those wobbles as landscape and parked at V_R = 0.007011,
+  Q = 285.83 W, objective 1.370023e+06, and this header was rewritten to
+  explain an interior optimum that did not exist.  Narrowing the difference
+  step to 0.01 K put the optimum back exactly where it always was.
+  A derivative that straddles a kink does not merely converge slowly -- it
+  can move an optimiser sitting above it.  The exercise verifies:
 
       1. the OptimizationDriver wires correctly to the post-processing
          chain (sizing + costing) so that result.costs is populated

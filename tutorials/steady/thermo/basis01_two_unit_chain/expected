@@ -23,5 +23,5 @@ kpi     transporter            Q                40000            1e-4
 kpi     transporter            Q_kW             40               1e-4
 kpi     transporter            Q_per_mol        1451.14225498    1e-4
 kpi     transporter            T_in             313.15           1e-4
-kpi     transporter            T_out            330.806555244    1e-4
-kpi     transporter            dT               17.6565552441    1e-4
+kpi     transporter            T_out            330.806555217    1e-4
+kpi     transporter            dT               17.6565552166    1e-4

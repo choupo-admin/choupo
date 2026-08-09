@@ -11,4 +11,4 @@ kpi     h                      Q_kW             2                1e-4
 kpi     h                      Q_per_mol        1999.99999997    1e-4
 kpi     h                      T_in             298.15           1e-4
 kpi     h                      T_out            366.647115308    1e-4
-kpi     h                      dT               68.4971153085    1e-4
+kpi     h                      dT               68.497115308     1e-4

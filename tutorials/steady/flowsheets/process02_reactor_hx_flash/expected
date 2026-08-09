@@ -2,17 +2,17 @@
 # kind   name      key         expected        reltol
 stream  feed                   F                0.000277777777778 1e-4
 stream  hotStream              F                0.000277777777778 1e-4
-stream  liqProd                F                0.000263048636995 1e-4
+stream  liqProd                F                0.00026304873427 1e-4
 stream  reactorOut             F                0.000277777777778 1e-4
-stream  vapProd                F                1.47291407831e-05 1e-4
+stream  vapProd                F                1.47290435083e-05 1e-4
 kpi     heater                 F                0.000277777777778 1e-4
 kpi     heater                 P                101325           1e-4
 kpi     heater                 Q                400              1e-4
 kpi     heater                 Q_kW             0.4              1e-4
 kpi     heater                 Q_per_mol        1440             1e-4
 kpi     heater                 T_in             350              1e-4
-kpi     heater                 T_out            359.280309795    1e-4
-kpi     heater                 dT               9.28030979489    1e-4
+kpi     heater                 T_out            359.280306702    1e-4
+kpi     heater                 dT               9.28030670231    1e-4
 kpi     reactor                Da_kTau          1.10929132154    1e-4
 kpi     reactor                F_in_kmol_h      1                1e-4
 kpi     reactor                F_out_kmol_h     1                1e-4
@@ -22,10 +22,10 @@ kpi     reactor                X_limiting       0.52590711876    1e-4
 kpi     reactor                k                0.00357499942014 1e-4
 kpi     reactor                tau_s            310.291329081    1e-4
 kpi     reactor                xi_mol_per_s     0.0730426553834  1e-4
-kpi     separator              F_alpha          0.000263048636995 1e-4
-kpi     separator              F_beta           1.47291407831e-05 1e-4
+kpi     separator              F_alpha          0.00026304873427 1e-4
+kpi     separator              F_beta           1.47290435083e-05 1e-4
 kpi     separator              F_in             0.000277777777778 1e-4
 kpi     separator              P                100000           1e-4
-kpi     separator              T                359.280309795    1e-4
-kpi     separator              V_over_F         0.0530249068192  1e-4
+kpi     separator              T                359.280306702    1e-4
+kpi     separator              V_over_F         0.0530245566297  1e-4
 kpi     separator              phaseSet         0                1e-4

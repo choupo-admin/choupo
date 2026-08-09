@@ -147,7 +147,8 @@ int Heater::solve(const DictPtr& dict,
     const std::string locus = "heater (Q -> outlet state)";
 
     //  The resolved outlet vapour fraction at the answer -- a RESULT, exactly
-    //  as T_out is.  Written back by the residual whenever it is evaluated.
+    //  as T_out is.  Filled in ONCE, after the Newton converges (see below);
+    //  the initialiser is what the sensible path leaves it at.
     scalar vf_out = useGas ? 1.0 : 0.0;
 
     auto Hresolved = [&](scalar T, bool pinnedHere, scalar vfCarried,
@@ -187,8 +188,18 @@ int Heater::solve(const DictPtr& dict,
     const scalar H_target = H_in + Q_per_mol;
 
     auto f  = [&](scalar T) { return Hfun(T) - H_target; };
+    //  THE STEP HAS TO FIT INSIDE THE PHASE IT IS MEASURING.  dH/dT jumps by
+    //  more than an order of magnitude at the bubble point (120 -> 4300
+    //  J/(mol.K) on process02), so a central difference wide enough to
+    //  straddle that kink returns the AVERAGE of two regimes -- a derivative
+    //  belonging to neither.  Newton then converges LINEARLY, oscillating
+    //  either side of the answer with a ratio of about 0.73 and eating 27
+    //  iterations to reach a root it had bracketed by the third: measured,
+    //  with the 0.5 K step this used to carry.  0.01 K stays inside the phase
+    //  wherever the answer lands more than a hundredth of a kelvin from
+    //  saturation, and it is still 1e5 times the noise of a converged flash.
     auto df = [&](scalar T) {
-        const scalar dT = 0.5;
+        const scalar dT = useFormation ? 0.01 : 0.5;
         return (f(T + dT) - f(T - dT)) / (2.0 * dT);
     };
 
