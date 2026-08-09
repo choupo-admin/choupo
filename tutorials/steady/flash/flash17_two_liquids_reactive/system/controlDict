@@ -41,6 +41,34 @@
   This case sits between those, in the window where all three phases exist.
   Move P and the phase set follows -- announced, both ways.
 
+  THE 0.0845 kW, AND WHY IT IS NOT ZERO.  This flash is ISOTHERMAL, so the
+  duty that holds 313.15 K is a real, computed quantity: Q = 0.0845 kW.  It
+  is small because the feed enters at the flash temperature and the vapour it
+  makes is mostly benzene, whose latent load is nearly paid for by the acetic
+  dimer association (-0.0024 kW, priced exactly) and by the mixing terms --
+  not because the case is thermally neutral.  The by-unit energy ledger then
+  reports dH = 0.0869 kW against declared items of 0.0845 kW, a 0.0024 kW
+  gap, and it is REPORTED rather than rounded away.
+
+  What that gap is NOT: it is not the convergence residual of the flash.  The
+  two are different quantities and the case prints both, which is the point.
+  The equilibrium solve is judged on a NORMALIZED residual (system/solverDict
+  declares the contract; `src/solver/Convergence.H` defines it), and the run
+  prints five numbers for it -- the raw residual at the seed and at the
+  answer, the normalized residual at both, and the achieved reduction --
+  followed by the criterion that decided.  For this case:
+
+      raw   |r|1   6.79e-02  ->  1.28e-09     (log-form, dimensionless)
+      normalized   9.18e-03  ->  1.66e-10
+      reduction    1.81e-08
+      criterion    absolute tolerance (normalized residual <= tolerance)
+
+  So the flash is converged on a stated criterion, and the 0.0845 kW duty
+  beside it is physics, not slack.  A dimensional number is never a verdict
+  on its own -- it is a magnitude, and a magnitude means nothing until it is
+  compared with the magnitude of what is being balanced.  Ruling:
+  `docs/design/normalized-residual-convergence.md`.
+
   THE APPROXIMATION, declared and announced every run: the organic phase's
   membership is DECLARED, not computed.  What is excluded is not the ~0.2
   mol% of water benzene really holds; it is that the water-benzene

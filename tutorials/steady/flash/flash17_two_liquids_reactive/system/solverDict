@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE CONVERGENCE CONTRACT, DECLARED.
+
+  This case declares the numbers its reactive-equilibrium solve is judged by
+  instead of inheriting them.  They are exactly the documented defaults, and
+  declaring them is still not redundant: a case that names its tolerance says
+  the author chose it, and the run reports `(system/solverDict)` instead of
+  `(defaults)` so a reader can tell the two apart.
+
+      tolerance   absolute test on the NORMALIZED residual
+      relTol      relative-reduction test; 0 DISABLES it (OpenFOAM's own
+                  convention -- it does not mean "require exact zero")
+      maxIter     iteration cap; reaching it with neither test satisfied is
+                  NOT convergence, and the refusal names the criterion
+
+  WHAT IS NORMALIZED, AND AGAINST WHAT.  The outer Newton balances, per
+  volatile, ln a_i(liquid) against ln(K_i p_i).  The residual is the
+  difference; the NORMALIZATION divides the summed residual by the spread of
+  those terms about their own mean -- OpenFOAM's `normFactor` with cells
+  replaced by equations.  For this case the factor is about 7.4, so the
+  reported normalized residual is roughly an eighth of the raw one.  Both are
+  printed, every run.  Contract and its honest limits: `src/solver/
+  Convergence.H`; the ruling: `docs/design/normalized-residual-convergence.md`.
+
+  An unknown key inside the block is REFUSED by name.  A declared control the
+  solver does not implement is not a decoration; it is an instruction the
+  author believes is in force.
+\*---------------------------------------------------------------------------*/
+
+reactiveEquilibrium
+{
+    tolerance   1e-9;
+    relTol      0;
+    maxIter     60;
+}
