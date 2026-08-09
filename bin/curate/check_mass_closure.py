@@ -31,11 +31,25 @@ WHAT THIS CHECKS.
 WHAT THIS DOES NOT CHECK, said plainly:
   * That the warning FIRES.  It cannot be provoked from a case file -- a
     non-closing unit is an engine defect, not something a dict can declare
-    -- so it was verified by hand ONCE, by reverting `F_massTotal` to
-    `F_mass` in MassBalanceReport.cpp, rebuilding, and observing flash21
-    print "does not close on MASS ... 58.8" on stderr; the observation is
-    recorded here rather than claimed by the gate.  If that sabotage is
-    ever repeated and does NOT fire, this gate is lying by omission.
+    -- so it was SABOTAGE-VERIFIED by hand on 2026-08-09: reverting
+    `F_massTotal` to `F_mass` in MassBalanceReport.cpp and rebuilding
+    reproduced, with the warning firing on each:
+
+        flash21 freezer01     58.8142 %   (-857.5 kg/h, the ice)
+        crystalliser01 cryst  69.5143 %   (-2032.1 kg/h of sugar crystals)
+        crystalliser05 cryst  94.2245 %   (-132.1 kg/h of NaCl)
+        flash19 flash01       99.9063 %   (-1.9 kg/h; INSIDE the 0.1 % band,
+                                           so no warning -- the same defect
+                                           too small to be seen, which is
+                                           why the band is a numerical
+                                           tolerance and never a licence)
+
+    THE CRYSTALLISERS WERE WRONG ALL ALONG.  This was never a flash21 bug:
+    the per-unit surface has been dropping crystal product since crystal
+    streams existed, and flash21 merely made the error large enough
+    (41 %) for a human to notice.  Restoring `F_massTotal` returns all
+    three to exactly 100.0000 %.  If that sabotage is ever repeated and
+    does NOT fire, this gate is lying by omission.
   * Whether a closing balance is RIGHT: closure is conservation, not
     correctness.  A unit can conserve mass perfectly while computing the
     wrong split.

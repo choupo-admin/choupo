@@ -1383,6 +1383,24 @@ PYEOF
     fi
     rm -f /tmp/solidsvc.$$
 
+    # Mass-closure gate (2026-08-09, reported by Vitor).  A crystal is
+    # matter on EVERY mass surface: the per-unit balance used FLUID mass
+    # and had been dropping crystal product for as long as crystal streams
+    # existed (crystalliser01 at 69.5 %, two tonnes an hour of its own
+    # sugar, silently green).  Asserts closure on five solid-bearing
+    # witnesses AND that the two surfaces AGREE -- plus that the
+    # non-closure warning stays wired, since the silence is what let the
+    # arithmetic travel.
+    if "$ROOT/bin/curate/check_mass_closure.py" > /tmp/massclose.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "mass-closure-gate" "$(head -1 /tmp/massclose.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_mass_closure.py)\n" "mass-closure-gate"
+        cat /tmp/massclose.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/massclose.$$
+
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
     # preserves whatever error it was recorded with; Gibbs-Duhem is a
