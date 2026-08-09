@@ -2079,6 +2079,22 @@ PYEOF
     fi
     rm -f /tmp/sbgate.$$
 
+    # Aqueous-analysis gate (A1): a laboratory ANALYSIS as an inlet resolves
+    # through three separately recorded layers, the authored 0/ file is never
+    # rewritten, the ion balance is recomputed independently from the authored
+    # mg/L, and eight refusals fire by name.  Invisible to a golden master:
+    # the reconciliation happens on READ, so a correction that silently
+    # stopped being applied leaves the KPIs where they were.
+    if "$ROOT/bin/curate/check_aqueous_analysis.py" > /tmp/aqagate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-analysis-gate" "$(head -1 /tmp/aqagate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_analysis.py)\n" "aqueous-analysis-gate"
+        cat /tmp/aqagate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/aqagate.$$
+
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))

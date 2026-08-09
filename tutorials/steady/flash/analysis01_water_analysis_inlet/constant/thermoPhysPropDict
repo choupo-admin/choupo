@@ -1,0 +1,56 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE COMPONENT BASIS the analysis is FORMULATED ONTO -- and why it is these
+  four and not any four.
+
+  The sheet names three masters (Ca, Cl, HCO3).  The components must carry all
+  three, and the map from components to masters must be FULL COLUMN RANK, or
+  reading the answer back would be a choice of labels rather than a result:
+
+                CO2   CaCO3   CaCl2
+        HCO3  [  1      1       0   ]
+        Ca    [  0      1       1   ]      m = A n,  rank 3
+        Cl    [  0      0       2   ]
+
+  Read the matrix upwards and the inversion is visible: chloride fixes CaCl2,
+  what calcium is left fixes CaCO3, what alkalinity is left fixes CO2.  That
+  chain is also why CHLORIDE CAN BE THE ADJUSTED SPECIES here -- every mole
+  moved into Cl is absorbed by a component that exists, and the two behind it
+  follow.  Adjust chloride in a system whose only chloride component is NaCl
+  and the reachability check refuses: sodium would have to move with it.
+
+  (The failure mode this rank test exists for is
+  flash15_refused_salt_basis_rank: two cations against two anions loses exactly
+  (c-1)(a-1) = 1 degree of freedom and the labels stop meaning anything.)
+
+  The reference formulation and the equilibrium model are flash18's, unchanged
+  -- an aqueous gamma-phi electrolyte on the carbonate network with Davies
+  activities.  This case changes what the INLET may be written as, and nothing
+  about the thermodynamics that then reads it.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CO2  CaCO3  CaCl2  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( CO2  water );
+}

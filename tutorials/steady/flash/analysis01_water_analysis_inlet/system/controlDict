@@ -1,0 +1,76 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  analysis01_water_analysis_inlet -- A LABORATORY ANALYSIS AS AN INLET.
+
+  The inlet of this flash is not a composition somebody worked out: it is a
+  water analysis as a laboratory sends it -- mg/L, alkalinity reported as
+  CaCO3, a measured density, per-line uncertainties, and an ion balance that
+  is off by 0.78 %.
+
+  THREE LAYERS, SEPARATELY RECORDED, and the separation is the whole point:
+
+    1  0/feed                     the MEASUREMENT.  Never rewritten by a run
+                                  (ratified 2026-08-09, O1) -- a reconciliation
+                                  that edited it would destroy the thing it was
+                                  reconciling, and the next run would reconcile
+                                  the reconciliation.
+    2  converged/feed
+         calculated { analysisReconciliation { … } conservedInventory { … } }
+                                  the RECONCILED conserved inventory, with the
+                                  imbalance before, the imbalance after, and
+                                  every correction that was applied.  This is
+                                  the layer the engine did not have: an answer
+                                  never says what it was corrected from.
+    3  the flash                  the EQUILIBRIUM solved from layer 2.
+
+  WHAT IS MEASURED HERE (the numbers the gate re-derives independently):
+
+      ion balance BEFORE   +0.7813 %      (cations minus anions, over the sum)
+      ion balance AFTER     0.0000 %
+      chloride adjusted    +5.1208 %      of the measured 45.0 mg/L
+      limit declared       10 %           -- exceeded, it REFUSES with the numbers
+
+  FIVE REFUSALS GUARD IT, each by name, and check_aqueous_analysis.py fires
+  every one through the real reader:
+    * no DENSITY ROUTE            -- mg/L is per volume, a stream is a flow;
+                                     an ITERATIVE density is a declared A1 gap,
+                                     refused rather than done silently;
+    * a correction OVER THE LIMIT -- past the declared bound it stops being a
+                                     reconciliation and becomes the analysis
+                                     rewritten to fit;
+    * pH NAMED AS THE BALANCING VARIABLE -- pH may participate only under an
+                                     explicit declared rule, and that grammar
+                                     is A2's;
+    * `method weightedLeastSquares;` -- THE NAMED NEXT SLICE.  Refused by name
+                                     rather than silently approximated by the
+                                     one method A1 has;
+    * TWO MATERIAL FORMS in one file -- the seventh canonical form is exclusive
+                                     with the other six, same as they are with
+                                     each other.
+
+  And with no `reconciliation {}` block at all: an analysis already closing
+  within the tolerance passes through with an announcement stating what was
+  measured; one that does not REFUSES, naming the two legal remedies.  What
+  never happens is an adjustment nobody asked for.
+
+  Contract: docs/design/aqueous-analysis-inlet-scope.md (slice A1).
+  Compare:  flash18_water_analysis_basis -- the same water as an INVENTORY,
+            where charge closure is a contract and a violation is refused.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "A laboratory water analysis as a first-class inlet: mg/L with alkalinity as CaCO3, a measured density, and a +0.78 % ion imbalance reconciled onto chloride within a declared 10 % limit -- measurement, reconciled inventory and equilibrium recorded as three separate layers";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

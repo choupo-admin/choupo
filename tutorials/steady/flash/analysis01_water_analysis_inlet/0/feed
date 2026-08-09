@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE FEED IS A LABORATORY ANALYSIS -- a MEASUREMENT, not an inventory.
+
+  flash18 already lets a stream be written in the aqueous SPECIES a laboratory
+  measures.  What it cannot be written in is what a laboratory actually SENDS:
+  milligrams per litre, with uncertainties, reported partly on surrogate
+  formulae -- and NOT closing in charge, because every number on the sheet
+  carries measurement error.
+
+      speciesMolarFlows … basis analytical;   an INVENTORY, already reconciled.
+                                              Charge closure is a CONTRACT and
+                                              a violation is REFUSED.
+
+      aqueousAnalysis { … }                   a MEASUREMENT.  Charge closure is
+                                              the thing to be RECONCILED, in
+                                              the open, within a declared limit.
+
+  INVENTORY IS NOT MEASUREMENT -- which is why this is a SEVENTH canonical
+  form and not a new mood of an existing one.  Nothing in the corpus moved.
+
+  WHAT THE SHEET SAYS, and what the engine does with each line.
+
+    Ca          84.0 mg/L            -> 84.0 / 40.078            = 2.0959 mmol/L
+    Cl          45.0 mg/L            -> 45.0 / 35.453            = 1.2693 mmol/L
+    alkalinity 143.0 mg/L as CaCO3   -> 143.0 / 100.086 x 2      = 2.8575 mmol/L HCO3
+
+  The alkalinity line is the one a simulator normally cannot read.  It is
+  reported on a SURROGATE formula -- the mass of calcium carbonate that would
+  carry the same titratable base -- and `as CaCO3` says so.  The MW comes from
+  the one elemental-formula parser the whole engine shares (no second table of
+  molar masses); the 2 is `perFormulaUnit`, the alkalinity convention that one
+  carbonate unit answers for two bicarbonate, and it is DECLARED because it is
+  a convention, not arithmetic the engine may invent.
+
+  THE CHARGE RESIDUE, measured before anything is touched:
+
+      cations  2 x 2.0959                       = 4.1918 meq/L
+      anions   2.8575 + 1.2693                  = 4.1268 meq/L
+      CBE %    100 (cat - ani) / (cat + ani)    = +0.78 %
+
+  0.78 % is a good analysis and a bad zero.  With NO `reconciliation {}` block
+  the engine would REFUSE here, because 0.78 exceeds the 0.5 % closure
+  tolerance and the two legal remedies -- declare a rule, or fix the analysis
+  -- are the author's to choose, never the engine's.  This case declares the
+  rule: chloride absorbs the residue (it is the least selectively measured ion
+  of the set), and `maximumCorrection` bounds how far that may go.  The
+  correction lands at 5.12 %, inside the declared 10 %.
+
+  THE DENSITY ROUTE IS REQUIRED AND EXPLICIT.  mg/L is per VOLUME and a stream
+  carries a FLOW; two facts close the gap and A1 will invent neither -- the
+  measured density, and one flow anchor.  Solving the density FROM the analysis
+  is an ITERATION, and an iteration whose convergence a student must be able to
+  watch is its own slice: `provenance` accepts only `measured` here, by name.
+
+  THREE LAYERS, THREE HOMES.  This file is layer 1 and is NEVER rewritten --
+  reconciling into the measurement would destroy the measurement, and the next
+  run would reconcile the reconciliation.  Layer 2 (the reconciled conserved
+  inventory, with every correction recorded) and layer 3 (the equilibrium) are
+  written to `converged/feed` under `calculated {}`.
+
+  Provenance of the numbers: a REPRESENTATIVE calcium-bicarbonate groundwater,
+  composed for this witness -- not a transcription of a published analysis.
+  The imbalance is deliberate and is what the case exists to exercise.
+
+  Contract: docs/design/aqueous-analysis-inlet-scope.md (slice A1).
+\*---------------------------------------------------------------------------*/
+aqueousAnalysis
+{
+    network            carbonate;    // WHICH chemistry set these names belong to
+    basis              mg/L;         // ...and what KIND of quantity they are
+
+    sampleTemperature  293.15 K;
+
+    //  THE DENSITY ROUTE -- required, explicit, and measured.
+    density   { value 998.4 kg/m3;  provenance measured; }
+    volumetricFlow     2.0 m3/h;     // the flow anchor (one, never two)
+
+    pH                 7.6;          // MEASURED -- carried, never a balancing
+                                     // variable (that needs A2's rule grammar)
+
+    closureTolerance   0.5 percent;  // declared here rather than defaulted
+
+    reconciliation
+    {
+        //  Sugar for `method adjustSingleSpecies; species Cl;` -- the engine
+        //  expands it aloud rather than leaving the reader to infer the ion.
+        method             adjustChloride;
+        maximumCorrection  10 percent;
+    }
+
+    analytes
+    {
+        Ca    { value  84.0 mg/L;  uncertainty 2 percent; }
+        Cl    { value  45.0 mg/L;  uncertainty 5 percent; }
+
+        alkalinity
+        {
+            species         HCO3;      // what the row actually reports
+            value          143.0 mg/L;
+            as             CaCO3;      // ...on the CaCO3 mass basis
+            perFormulaUnit   2;        // 2 HCO3 per CaCO3 (the convention)
+            uncertainty      4 percent;
+        }
+    }
+}
+T               313.15 K;
+P               101325 Pa;
