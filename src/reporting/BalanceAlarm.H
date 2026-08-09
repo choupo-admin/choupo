@@ -60,6 +60,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/Types.H"
 
 #include <cstdlib>
 #include <iostream>

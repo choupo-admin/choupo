@@ -40,12 +40,12 @@
       "claim": "ok   every liquid-bearing stream of crystalliser06 carries a speciation block"
     },
     "check_build_fresh": {
-      "exit": 0,
-      "claim": "check_build_fresh: OK -- linux64Gcc carries all 5 artefact(s), each newer than the newest source under src/ and make/.  The suite is therefore testing a build OF this tree.  NOT CHECKED: content -- this compares modification times, not hashes, so a `touch` or a `git checkout` that changes no byte can still trip it (the remedy is one idempotent `make all`), and a library built from these files can still be wrong.  The WASM build is separate and not covered."
+      "exit": 1,
+      "claim": "check_build_fresh: FAILED"
     },
     "check_caveat_surface": {
       "exit": 0,
-      "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 5 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
+      "claim": "check_caveat_surface: OK -- 3 named extrapolation(s) listed (solidDryer01_sugar); all 8 block item(s) present in the result JSON; clean run states 'none raised' explicitly; all 4 binaries CALL the summary (source check, not an observed run).  The gate checks the SURFACE (named, silent when empty, agreeing with the JSON, present in every binary), never whether an advisory is JUSTIFIED -- that is curation, and check_cp_range_announced and check_review_status own those judgements."
     },
     "check_charge_balance": {
       "exit": 0,
@@ -65,7 +65,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 587 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 589 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -81,11 +81,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 105 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 106 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 48 design record(s) appear in the index, and its stated counts (21 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 49 design record(s) appear in the index, and its stated counts (22 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -173,7 +173,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 106 gates, and the other 102 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 107 gates, and the other 103 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -185,7 +185,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40271 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40279 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -231,6 +231,10 @@
       "exit": 0,
       "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 3 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 74 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
     },
+    "check_mass_closure": {
+      "exit": 0,
+      "claim": "check_mass_closure: OK -- 5 unit(s) across 5 solid-bearing case(s) close on MASS within 0.1 %, the per-unit and global surfaces agree (both count the crystal), and the non-closure warning is wired to stderr AND the durable advisory surface.  NOT CHECKED: that the warning FIRES (not provokable from a case file; verified by hand once by reverting F_massTotal -> F_mass, which reproduced flash21 at 58.8 % WITH the warning), and whether a closing balance is right -- closure is conservation, never correctness."
+    },
     "check_minerals": {
       "exit": 0,
       "claim": "electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK."
@@ -265,7 +269,7 @@
     },
     "check_psat_range": {
       "exit": 0,
-      "claim": "check_psat_range: OK -- above Tc gets its own sentence, quoting Tc (6 species at 2400 K); below Tc and outside the window gets the extrapolation sentence, quoting both bounds; a case inside its windows says nothing; every message names its component; Psat_Pa is non-virtual and calls noteRange, so no model can skip the check by overriding.  The gate checks that the reader is TOLD, never whether an extrapolation was JUSTIFIED -- that is a modelling judgement (I4: the professor extrapolates on purpose, but knows he did)."
+      "claim": "check_psat_range: OK -- above Tc gets its own sentence, quoting Tc (12 species at 2400 K); below Tc and outside the window gets the extrapolation sentence, quoting both bounds; a case inside its windows says nothing; every message names its component; Psat_Pa is non-virtual and calls noteRange, so no model can skip the check by overriding.  The gate checks that the reader is TOLD, never whether an extrapolation was JUSTIFIED -- that is a modelling judgement (I4: the professor extrapolates on purpose, but knows he did)."
     },
     "check_pswing": {
       "exit": 0,
@@ -324,8 +328,8 @@
       "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named"
     },
     "check_sealed_corpus": {
-      "exit": 1,
-      "claim": "sealed-corpus gate FAILED:"
+      "exit": 0,
+      "claim": "sealed-corpus gate: 331 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -337,7 +341,7 @@
     },
     "check_solid_service": {
       "exit": 0,
-      "claim": "check_solid_service: OK -- the S2/S3 seam holds live: TWO ROUTES, ONE MECHANISM (the coupled route through the service's door equals the internal solve exactly; the general probed route agrees to 1e-6) -- and flash16's own chemistryDict declaration assembles through the provider-resolved sinks (Ca:1.000000 HCO3:1.000000 -- the CO3 leg chained onto the carbonate master, not copied), the service reproduces the internal equilibrate oracle (n rel 5.3e-11, SI 2.6e-11, same pH), the appearance is narrated, an undefined mineral refuses with the available list, and the service code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the engine's ONLY writer of the equilibrate channel -- Speciate, ScalingScan and ReactiveVLE all walk through the door.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a solid declared in an UNSERVED shape (beside a vapour and two liquids) refuses by name as the S4c gap, and two authorities refuse.  THE SLE BRANCH SERVES (A10): flash21's liquid+crystal answer sits on the closed-form identity gamma_w * x_w = exp(-dG_fus/RT) recomputed here from water.dat's own Hfus/Tfus, and the duty is WITHHELD as the named rung gap (never a fluid-only Q).  NOT CHECKED: the SLE duty itself (waits on the enthalpy-rung ratification); solid beside vapour or a second liquid (S4c, refused); inert solids (stub, refused)."
+      "claim": "check_solid_service: OK -- the S2/S3 seam holds live: TWO ROUTES, ONE MECHANISM (the coupled route through the service's door equals the internal solve exactly; the general probed route agrees to 1e-6) -- and flash16's own chemistryDict declaration assembles through the provider-resolved sinks (Ca:1.000000 HCO3:1.000000 -- the CO3 leg chained onto the carbonate master, not copied), the service reproduces the internal equilibrate oracle (n rel 5.3e-11, SI 2.6e-11, same pH), the appearance is narrated, an undefined mineral refuses with the available list, and the service code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the engine's ONLY writer of the equilibrate channel -- Speciate, ScalingScan and ReactiveVLE all walk through the door.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a solid declared in an UNSERVED shape (beside a vapour and two liquids) refuses by name as the S4c gap, and two authorities refuse.  THE SLE BRANCH SERVES (A10): flash21's liquid+crystal answer sits on the closed-form identity gamma_w * x_w = exp(-dG_fus/RT) recomputed here from water.dat's own Hfus/Tfus, and the warm feed's duty is PUBLISHED, finite and negative (sensible + fusion on the solid formation rung -- the S4b withhold closed by tp-stream-energy-coherence slice 1).  ONE SOLID RUNG (A11): flash19's by-unit energy closure sits at 100 +/- 0.5 % run live -- the flash duty and the balance report price the crystal on the same h_formation(T,\"solid\") leg.  NOT CHECKED: solid beside vapour or a second liquid (S4c, refused); inert solids (stub, refused)."
     },
     "check_solute_basis": {
       "exit": 0,
@@ -373,7 +377,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 608 source files, each includes what it uses."
+      "claim": "std includes: 609 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
@@ -429,7 +433,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2943 declared window(s) across 3584 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2949 declared window(s) across 3587 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,
