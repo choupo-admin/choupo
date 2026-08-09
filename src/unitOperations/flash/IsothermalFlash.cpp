@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "IsothermalFlash.H"
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/phase/SolidPhase.H"
 #include "thermo/solidEquilibrium/SolidEquilibrium.H"
@@ -1594,10 +1595,21 @@ int IsothermalFlash::solve(const DictPtr& dict,
             }
             catch (const std::exception& fe)
             {
-                throw std::runtime_error(
-                    std::string("the feed's own equilibrium state could not be"
-                    " resolved at its (T, P, z), so its enthalpy has no"
-                    " defined value: ") + fe.what());
+                //  ONE CONVENTION IN THE REFUSAL CASE TOO (R-E5).  The balance
+                //  report prices a stream whose own equilibrium will not
+                //  resolve on the state it CARRIES and announces that; a duty
+                //  that instead withheld itself would put the two surfaces
+                //  back into disagreement on exactly the states where a reader
+                //  most needs them to agree.  So: price the carried state, say
+                //  so, and let the advisory carry the refusal verbatim.
+                //  (Caveat C2 -- column13's stage-mix state under the reactive
+                //  package is the corpus witness.)
+                AdvisoryLog::instance().add(
+                    "duty", "info", "feed of an isothermalFlash",
+                    std::string("priced on the state it CARRIES (vf = ")
+                    + std::to_string(vf_feed) + "): its own equilibrium at "
+                    "(T, P, z) could not be resolved -- " + fe.what());
+                feedSplit = false;
             }
             feedSplit = feedSol.converged
                      && feedSol.V_over_F > 1.0e-9
