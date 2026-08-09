@@ -27,7 +27,11 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "streams/StreamStateIO.H"
+#include "core/Advisory.H"
 #include "core/distribution/SizeDistribution.H"
+#include "thermo/AtomicWeights.H"
+#include "thermo/ElementComposition.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
@@ -53,6 +57,225 @@ namespace StreamStateIO
 
 namespace fs = std::filesystem;
 
+//  ===================================================================
+//   THE COMPONENT <-> AQUEOUS-MASTER CROSSING, in ONE place
+//  ===================================================================
+//   Two canonical forms reach the components through the SAME bridges:
+//   `speciesMolarFlows` (an INVENTORY the author already reconciled) and
+//   `aqueousAnalysis` (a MEASUREMENT the reader reconciles here).  The
+//   inversion m = A n is the SAME arithmetic and the same refusals, so it
+//   lives once and both call it.  A second inverter would be a second
+//   place for the rank test to be right in, and the two would drift the
+//   first time either was corrected.
+namespace
+{
+
+//  One component's declared crossing to the aqueous species, normalised
+//  out of the two shapes the package can supply it in: a reactive family
+//  (pair<SpeciesId,scalar>) or a component's own bridge (SpeciesStoich).
+struct Bridge
+{
+    std::size_t apparentIdx;
+    std::vector<std::pair<SpeciesId, scalar>> mapping;
+};
+
+struct BridgeSet
+{
+    std::vector<Bridge> bridges;
+    std::size_t         solventIdx  = 0;
+    bool                haveNetwork = false;
+};
+
+//  Columns of A are the components that DECLARE a bridge, in package order;
+//  the solvent is the package's declared one (never inferred from a name --
+//  SystemClassifier settled that).
+//
+//  A reactive package carries the bridges in its families; a MOLALITY
+//  package (Pitzer / eNRTL) resolves ions with no equilibrium NETWORK at
+//  all, and its bridges live on the components.  Both are read here, so a
+//  form the engine can WRITE is never a form it refuses to READ.
+BridgeSet collectBridges(const ThermoPackage& thermo,
+                         const std::string&   name,
+                         const char*          form)
+{
+    BridgeSet bs;
+    bs.solventIdx = thermo.n();
+    const auto* cfg = thermo.reactiveConfig();
+    if (cfg)
+    {
+        bs.haveNetwork = true;
+        bs.solventIdx  = cfg->solventIdx;
+        for (const auto& fam : cfg->families)
+        {
+            Bridge b; b.apparentIdx = fam.apparentIdx; b.mapping = fam.mapping;
+            bs.bridges.push_back(std::move(b));
+        }
+    }
+    else if (thermo.hasElectrolyte())
+    {
+        bs.solventIdx = thermo.electrolyte().solventIndex();
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).hasAqueousMapping())
+            {
+                Bridge b; b.apparentIdx = i;
+                for (const auto& ms : thermo.comp(i).aqueousMapping())
+                    b.mapping.emplace_back(ms.species, ms.nu);
+                bs.bridges.push_back(std::move(b));
+            }
+    }
+
+    if (bs.bridges.empty() || bs.solventIdx >= thermo.n())
+        throw std::runtime_error("stream state '" + name + "': `"
+            + std::string(form) + "` needs a package that RESOLVES IONS --"
+            " either a reactive equilibrium (formulation"
+            " electrolyteGammaPhi with a chemistry network) or a molality"
+            " model (Pitzer / eNRTL) whose components declare their"
+            " bridges.  This case declares neither, so the species names"
+            " answer to nothing here.  Write the stream in"
+            " `componentMolarFlows`.");
+    return bs;
+}
+
+//  The NETWORK is mandatory.  A species name is meaningful only relative to
+//  a declared chemistry set: an `NH4` written by one network is not the
+//  `NH4` of another, and a stream file that does not say which one it
+//  belongs to cannot be read anywhere else.  `network` is a WORD or a LIST
+//  (an analysis may span two declared sets -- a carbonate water that also
+//  carries ammonia -- and forcing one name would make the author pick a
+//  half-truth).
+void requireDeclaredNetwork(const DictPtr&       blk,
+                            const ThermoPackage& thermo,
+                            const std::string&   name,
+                            bool                 haveNetwork,
+                            const char*          form)
+{
+    if (!blk->found("network") && haveNetwork)
+        throw std::runtime_error("stream state '" + name + "': `"
+            + std::string(form) + "` carries no `network <setName>;`.  A"
+            " species basis is relative to the chemistry set that defines"
+            " those names -- without it the block is unreadable outside"
+            " the case that wrote it.");
+    if (!blk->found("network")) return;
+
+    std::vector<std::string> nets;
+    const EntryValue& ev = blk->entryValue("network");
+    if (std::holds_alternative<std::string>(ev))
+        nets.push_back(std::get<std::string>(ev));
+    else
+        nets = blk->lookupWordList("network");
+
+    //  ...and it must be a set THIS case's components declare.  A network
+    //  name nobody in the system speaks is a typo that would otherwise pass
+    //  silently and make the file look authoritative.
+    std::string declared;
+    for (std::size_t i = 0; i < thermo.n(); ++i)
+    {
+        const std::string& sp = thermo.comp(i).aqueousSpeciation();
+        if (sp.empty() || sp == "none") continue;
+        if (declared.find(sp) == std::string::npos)
+            declared += (declared.empty() ? "" : " ") + sp;
+    }
+    for (const auto& nm : nets)
+    {
+        bool known = false;
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).aqueousSpeciation() == nm) known = true;
+        if (!known)
+            throw std::runtime_error("stream state '" + name + "': `network "
+                + nm + ";` is not a chemistry set this system declares (its"
+                " components declare: "
+                + (declared.empty() ? "none" : declared) + ").");
+    }
+}
+
+//  The species record, or a refusal that names the file it looked for.
+DictPtr requireSpeciesRecord(const std::string& sp, const std::string& name)
+{
+    DictPtr rec = electrolyte::findAqueousSpecies(sp);
+    if (!rec)
+        throw std::runtime_error("stream state '" + name + "': species '"
+            + sp + "' has no record (species/" + sp + ".dat) -- it is"
+            " not a species of any declared network.");
+    return rec;
+}
+
+//  m = A n.  Columns are the components' DECLARED bridges (never name
+//  identity); rows are the masters the caller names.  Solved by Gaussian
+//  elimination with partial pivoting; a rank short of the column count is
+//  the SAME refusal the basis-rank test raises, reached from the input side.
+//  Adds into `out` (per-component, in whatever unit `mTot` was stated in).
+void invertMastersOntoComponents(const std::string&                   name,
+                                 const BridgeSet&                     bs,
+                                 const std::map<std::string, scalar>& mTot,
+                                 std::vector<scalar>&                 out)
+{
+    std::vector<std::string> rows;
+    for (const auto& [sp, v] : mTot) { (void)v; rows.push_back(sp); }
+    const std::size_t nr = rows.size();
+    std::vector<std::size_t> cols;
+    for (const auto& br : bs.bridges) cols.push_back(br.apparentIdx);
+    const std::size_t nc = cols.size();
+    std::vector<sVector> A(nr, sVector(nc, 0.0));
+    for (std::size_t c = 0; c < nc; ++c)
+        for (const auto& [master, nu] : bs.bridges[c].mapping)
+            for (std::size_t r = 0; r < nr; ++r)
+                if (rows[r] == master.key) A[r][c] += nu;
+
+    sVector nSol(nc, 0.0);
+    std::vector<sVector> M = A;
+    sVector b(nr);
+    for (std::size_t r = 0; r < nr; ++r) b[r] = mTot.at(rows[r]);
+    std::vector<std::size_t> pivRow(nc, nr);
+    std::size_t rank = 0;
+    for (std::size_t c = 0; c < nc && rank < nr; ++c)
+    {
+        std::size_t piv = rank;
+        for (std::size_t r = rank; r < nr; ++r)
+            if (std::abs(M[r][c]) > std::abs(M[piv][c])) piv = r;
+        if (std::abs(M[piv][c]) < 1.0e-12) continue;
+        std::swap(M[rank], M[piv]); std::swap(b[rank], b[piv]);
+        for (std::size_t r = 0; r < nr; ++r)
+        {
+            if (r == rank) continue;
+            const scalar f = M[r][c] / M[rank][c];
+            for (std::size_t cc = 0; cc < nc; ++cc) M[r][cc] -= f*M[rank][cc];
+            b[r] -= f * b[rank];
+        }
+        pivRow[c] = rank;
+        ++rank;
+    }
+    if (rank < nc)
+        throw std::runtime_error("stream state '" + name + "': the"
+            " species analysis cannot be stated on this component"
+            " basis -- the map has rank " + std::to_string(rank)
+            + " for " + std::to_string(nc) + " components, so several"
+              " different component vectors give these same species"
+              " totals and any one of them would be an arbitrary"
+              " choice of LABELS.  Remedy: drop a redundant component"
+              " from the case's basis (the same deficiency"
+              " flash15_refused_salt_basis_rank refuses).");
+    for (std::size_t c = 0; c < nc; ++c)
+        if (pivRow[c] < nr) nSol[c] = b[pivRow[c]] / M[pivRow[c]][c];
+    //  Rows the components cannot reach at all: the analysis names a
+    //  master no component in this case bridges to.
+    for (std::size_t r = 0; r < nr; ++r)
+    {
+        scalar recon = 0.0;
+        for (std::size_t c = 0; c < nc; ++c) recon += A[r][c] * nSol[c];
+        const scalar want = mTot.at(rows[r]);
+        if (std::abs(recon - want) > 1.0e-6*std::max(1.0, std::abs(want)))
+            throw std::runtime_error("stream state '" + name + "':"
+                " species '" + rows[r] + "' cannot be carried by this"
+                " case's components (declared " + std::to_string(want)
+                + ", reachable " + std::to_string(recon)
+                + ") -- add a component whose bridge names it, or drop"
+                  " it from the analysis.");
+    }
+    for (std::size_t c = 0; c < nc; ++c) out[cols[c]] += nSol[c];
+}
+
+}  // anonymous namespace
+
 bool looksLikeStreamState(const std::string& body)
 {
     auto has = [&](const char* k){ return body.find(k) != std::string::npos; };
@@ -66,6 +289,9 @@ bool looksLikeStreamState(const std::string& body)
     // The AQUEOUS-SPECIES basis is self-identifying too (a water analysis
     // written in ions -- aqueous-stream-basis, 2026-07-27).
     if (has("speciesMolarFlows")) return true;
+    //  ...and so is a laboratory ANALYSIS (mg/L off a lab sheet, reconciled
+    //  on read -- the seventh canonical form, 2026-08-09).
+    if (has("aqueousAnalysis")) return true;
     if (has("moleFractions") && has("molarFlow")) return true;
     if (has("massFractions") && has("massFlow")) return true;
     return false;
@@ -276,6 +502,114 @@ void writeStreamState(const ProcessStream&  s,
         out << "}\n";
     }
 
+    //  ---- THE ANALYSIS RECONCILIATION RECORD (LAYER 2) --------------------
+    //
+    //  Written ONLY into a resolved snapshot, and only for a stream whose
+    //  authored file declared an `aqueousAnalysis {}`.  The separation is the
+    //  point (O1, ratified 2026-08-09): `0/<stream>` is what the user
+    //  DECLARED and is never rewritten; `converged/<stream>` is what that
+    //  declaration RESOLVES to.  A reconciliation that edited the authored
+    //  file would destroy the measurement it was reconciling -- and the next
+    //  run would reconcile the reconciliation.
+    //
+    //  `calculated {}` names what it is.  Everything inside is engine output:
+    //  the reader ignores the block entirely, so feeding this file back as
+    //  state gives the same case (the same deletability test the `speciation`
+    //  block passes).  What it carries that nothing else can recover is the
+    //  ADJUSTMENT -- an answer never says what it was corrected from.
+    if (s.analysis)
+    {
+        const auto& a = *s.analysis;
+        out << "\ncalculated\n{\n"
+               "    //  ENGINE OUTPUT, not state.  The authored 0/ file holds the\n"
+               "    //  MEASUREMENT and is never rewritten; this is what it resolved to.\n"
+               "    analysisReconciliation\n    {\n";
+        out << "        basis                  " << a.basis << ";\n";
+        if (a.sampleT > 0.0)
+            out << "        sampleTemperature      " << a.sampleT << " K;\n";
+        if (a.density > 0.0)
+            out << "        density                " << a.density << " kg/m3;    // "
+                << a.densityProvenance << "\n"
+                << "        volumetricFlow         " << a.volumetricFlow * 3600.0
+                << " m3/h;\n";
+        if (a.solventMassFlow > 0.0)
+            out << "        solventMassFlow        " << a.solventMassFlow * 3600.0
+                << " kg/h;\n";
+        if (a.pH_valid)
+            out << "        pH                     " << a.pH
+                << ";    // MEASURED -- never a balancing variable (A1)\n";
+        out << "        closureTolerance       " << a.closureTolerancePct
+            << " percent;    //  "
+            << (a.closureToleranceDefaulted ? "NAMED DEFAULT" : "declared") << "\n";
+        out << "        method                 "
+            << (a.method.empty() ? std::string("none") : a.method) << ";\n";
+        if (!a.methodAsWritten.empty() && a.methodAsWritten != a.method)
+            out << "        methodAsWritten        " << a.methodAsWritten
+                << ";    //  sugar, expanded above\n";
+        if (!a.adjustedSpecies.empty())
+        {
+            out << "        adjustedSpecies        " << a.adjustedSpecies << ";\n";
+            out << "        maximumCorrection      " << a.maximumCorrectionPct
+                << " percent;\n";
+        }
+        //  BOTH spellings of the residue: the signed EQUIVALENT flow (what
+        //  was actually moved) and the ion-balance percentage (what a limit
+        //  is declared in).  Neither is derivable from the answer.
+        out << "        chargeImbalanceBefore  " << a.imbalancePctBefore
+            << " percent;\n"
+               "        chargeImbalanceAfter   " << a.imbalancePctAfter
+            << " percent;\n"
+               "        chargeResidueBefore    " << a.imbalanceBefore * 3600.0
+            << " kmol/h;    //  SUM z_i n_i, equivalents\n"
+               "        chargeResidueAfter     " << a.imbalanceAfter * 3600.0
+            << " kmol/h;\n";
+        out << "\n        adjustments\n        {\n";
+        bool anyAdj = false;
+        for (const auto& an : a.analytes)
+        {
+            const scalar d = an.reconciled - an.measured;
+            if (std::abs(d) <= 0.0) continue;
+            anyAdj = true;
+            out << "            " << an.species
+                << " { measured " << an.measured * 3600.0
+                << " kmol/h; reconciled " << an.reconciled * 3600.0
+                << " kmol/h; correction " << d * 3600.0 << " kmol/h; "
+                << "correctionPct "
+                << (an.measured != 0.0 ? 100.0 * d / an.measured : 0.0)
+                << " percent; }\n";
+        }
+        if (!anyAdj)
+            out << "            //  none -- the analysis closed within the"
+                   " tolerance as measured\n";
+        out << "        }\n";
+        out << "\n        measured\n        {\n";
+        for (const auto& an : a.analytes)
+        {
+            out << "            " << an.species << " { amount "
+                << an.measured * 3600.0 << " kmol/h;";
+            if (!an.asFormula.empty())
+                out << " as " << an.asFormula
+                    << "; perFormulaUnit " << an.perFormulaUnit << ";";
+            if (an.uncertaintyPct > 0.0)
+                out << " uncertainty " << an.uncertaintyPct << " percent;";
+            out << " }\n";
+        }
+        out << "        }\n    }\n";
+        //  LAYER 2 ITSELF: the reconciled conserved inventory, on the
+        //  aqueous-MASTER basis -- the object that sits between the
+        //  measurement and the equilibrium.  It is stated in masters and not
+        //  in components on purpose: the components above are one FORMULATION
+        //  of this inventory (the one the rank test proved unique), and the
+        //  masters are what actually crossed the boundary.
+        out << "\n    conservedInventory\n    {\n"
+               "        //  RECONCILED aqueous-master totals -- what the"
+               " measurement resolved to,\n"
+               "        //  before any formulation onto components.\n";
+        for (const auto& [sp, v] : a.conservedInventory)
+            out << "        " << sp << "    " << v * 3600.0 << " kmol/h;\n";
+        out << "    }\n}\n";
+    }
+
     // Particle-size distribution: diameter [m] + the mass fraction per bin
     // (Sigma = 1).  Part of a solid stream's STATE -- persisted so a drilled
     // crystalliser / dryer sub-case keeps the PSD it was fed.
@@ -339,11 +673,28 @@ ProcessStream readStreamState(const fs::path&       file,
     //     rest -- two material blocks in one file cannot say which one the
     //     author meant.  See docs/design/aqueous-stream-basis-proposal.md.
     const bool hasSMF  = d->found("speciesMolarFlows");
-    const int  forms   = hasCMF + hasCF + hasMolF + hasCmMF + hasMasF + hasSMF;
+    //  F  aqueousAnalysis { basis mg/L; density {...}; analytes { ... } }
+    //     A laboratory MEASUREMENT, not an inventory -- a SEVENTH canonical
+    //     form, exclusive with the rest for exactly the same reason.
+    //
+    //     WHY A NEW FORM RATHER THAN AN EXTENSION OF speciesMolarFlows
+    //     (Q1, ruled 2026-08-09): INVENTORY IS NOT MEASUREMENT.  A
+    //     `speciesMolarFlows … basis analytical;` block declares flows the
+    //     author has ALREADY reconciled, and charge closure is a CONTRACT on
+    //     that declaration -- refusing a violation is right there.  An
+    //     analysis is mg/L with uncertainties, which is precisely the thing
+    //     that does NOT close and is supposed to be reconciled.  Folding the
+    //     two would have made one block mean two different things about the
+    //     same numbers; keeping them apart made this an ADDITION, and the
+    //     corpus blast radius zero.
+    const bool hasAQA  = d->found("aqueousAnalysis");
+    const int  forms   = hasCMF + hasCF + hasMolF + hasCmMF + hasMasF + hasSMF
+                       + hasAQA;
     if (forms == 0)
         throw std::runtime_error("stream state '" + name + "': no material-flow "
             "specification (need componentMolarFlows, molarFlow+moleFractions, "
-            "componentMassFlows, massFlow+massFractions, or speciesMolarFlows)");
+            "componentMassFlows, massFlow+massFractions, speciesMolarFlows, "
+            "or aqueousAnalysis)");
     if (forms > 1)
         throw std::runtime_error("stream state '" + name + "': FATAL conflicting "
             "material-flow specifications -- choose exactly ONE canonical form");
@@ -409,114 +760,14 @@ ProcessStream readStreamState(const fs::path&       file,
     //  the same rank condition applies.  m = A n, solved here for n.
     auto readSpecies = [&](const DictPtr& blk)
     {
-        const auto* cfg = thermo.reactiveConfig();
-
-        //  ---- THE SAME TWO PATHS THE OUTPUT SIDE ALREADY HAS -------------
-        //
-        //  A reactive package carries the bridges in its families; a MOLALITY
-        //  package (Pitzer / eNRTL) resolves ions with no equilibrium NETWORK
-        //  at all, and its bridges live on the components.  The output side
-        //  was taught both earlier today -- a brine now writes
-        //  `speciation { network ( completeDissociation ); ... }`.  The INPUT
-        //  side still demanded a network, so the engine would write a form it
-        //  refused to read back: 10 of the corpus's electrolyte cases failed
-        //  exactly there when the two bases were measured against each other.
-        //
-        //  Columns of A are the components that DECLARE a bridge, in package
-        //  order; the solvent is the package's declared one (never inferred
-        //  from a name -- SystemClassifier settled that).
-        //  One shape for both sources: the reactive families carry
-        //  pair<SpeciesId,scalar>, a component's own bridge carries
-        //  SpeciesStoich.  Same fact, two spellings -- normalised here so the
-        //  projection below does not have to know which path it came from.
-        struct Bridge
-        {
-            std::size_t apparentIdx;
-            std::vector<std::pair<SpeciesId, scalar>> mapping;
-        };
-        std::vector<Bridge> bridges;
-        std::size_t solventIdx = thermo.n();
-        bool haveNetwork = false;
-
-        if (cfg)
-        {
-            haveNetwork = true;
-            solventIdx  = cfg->solventIdx;
-            for (const auto& fam : cfg->families)
-            {
-                Bridge b; b.apparentIdx = fam.apparentIdx; b.mapping = fam.mapping;
-                bridges.push_back(std::move(b));
-            }
-        }
-        else if (thermo.hasElectrolyte())
-        {
-            solventIdx = thermo.electrolyte().solventIndex();
-            for (std::size_t i = 0; i < thermo.n(); ++i)
-                if (thermo.comp(i).hasAqueousMapping())
-                {
-                    Bridge b; b.apparentIdx = i;
-                    for (const auto& ms : thermo.comp(i).aqueousMapping())
-                        b.mapping.emplace_back(ms.species, ms.nu);
-                    bridges.push_back(std::move(b));
-                }
-        }
-
-        if (bridges.empty() || solventIdx >= thermo.n())
-            throw std::runtime_error("stream state '" + name + "':"
-                " `speciesMolarFlows` needs a package that RESOLVES IONS --"
-                " either a reactive equilibrium (formulation"
-                " electrolyteGammaPhi with a chemistry network) or a molality"
-                " model (Pitzer / eNRTL) whose components declare their"
-                " bridges.  This case declares neither, so the species names"
-                " answer to nothing here.  Write the stream in"
-                " `componentMolarFlows`.");
-        //  The NETWORK is mandatory.  A species name is meaningful only
-        //  relative to a declared chemistry set: an `NH4` written by one
-        //  network is not the `NH4` of another, and a stream file that does
-        //  not say which one it belongs to cannot be read anywhere else.
-        if (!blk->found("network") && haveNetwork)
-            throw std::runtime_error("stream state '" + name + "':"
-                " `speciesMolarFlows` carries no `network <setName>;`.  A"
-                " species basis is relative to the chemistry set that defines"
-                " those names -- without it the block is unreadable outside"
-                " the case that wrote it.");
-        //  `network` is a WORD or a LIST: an analysis may span two declared
-        //  sets (a carbonate water that also carries ammonia), and forcing one
-        //  name would make the author pick a half-truth.
-        std::vector<std::string> nets;
-        if (blk->found("network"))
-        {
-            const EntryValue& ev = blk->entryValue("network");
-            if (std::holds_alternative<std::string>(ev))
-                nets.push_back(std::get<std::string>(ev));
-            else
-                nets = blk->lookupWordList("network");
-        }
-        const std::string net = nets.empty() ? std::string() : nets.front();
-        //  ...and it must be a set THIS case's components declare.  A network
-        //  name nobody in the system speaks is a typo that would otherwise
-        //  pass silently and make the file look authoritative.
-        {
-            std::string declared;
-            for (std::size_t i = 0; i < thermo.n(); ++i)
-            {
-                const std::string& s = thermo.comp(i).aqueousSpeciation();
-                if (s.empty() || s == "none") continue;
-                if (declared.find(s) == std::string::npos)
-                    declared += (declared.empty() ? "" : " ") + s;
-            }
-            for (const auto& nm : nets)
-            {
-                bool known = false;
-                for (std::size_t i = 0; i < thermo.n(); ++i)
-                    if (thermo.comp(i).aqueousSpeciation() == nm) known = true;
-                if (!known)
-                    throw std::runtime_error("stream state '" + name + "':"
-                        " `network " + nm + ";` is not a chemistry set this"
-                        " system declares (its components declare: "
-                        + (declared.empty() ? "none" : declared) + ").");
-            }
-        }
+        //  The bridges, the solvent and the network check are SHARED with
+        //  `aqueousAnalysis` (collectBridges / requireDeclaredNetwork above):
+        //  the same crossing, read from the same declarations, so the two
+        //  forms cannot come to disagree about what a species name means.
+        const BridgeSet bs = collectBridges(thermo, name, "speciesMolarFlows");
+        requireDeclaredNetwork(blk, thermo, name, bs.haveNetwork,
+                               "speciesMolarFlows");
+        const std::size_t solventIdx = bs.solventIdx;
         //  ANALYTICAL vs STOICHIOMETRIC -- and this is not bookkeeping, it
         //  decides whether charge must close.  An ANALYTICAL set is a water
         //  measured in ions and it balances: that is what makes it a good
@@ -601,21 +852,12 @@ ProcessStream readStreamState(const fs::path&       file,
         //  a formulated-salts `composition`: an analysis that does not balance
         //  charge is an error IN THE ANALYSIS, and absorbing it into the
         //  solved pH would hide a measurement fault inside a result.
-        scalar netCharge = 0.0;
+        scalar netCharge = 0.0, absCharge = 0.0;
         for (const auto& [sp, v] : mTot)
         {
-            DictPtr rec = electrolyte::findAqueousSpecies(sp);
-            if (!rec)
-                throw std::runtime_error("stream state '" + name + "': species '"
-                    + sp + "' has no record (species/" + sp + ".dat) -- it is"
-                    " not a species of any declared network.");
-            netCharge += rec->lookupScalar("z") * v;
-        }
-        scalar absCharge = 0.0;
-        for (const auto& [sp, v] : mTot)
-        {
-            DictPtr rec = electrolyte::findAqueousSpecies(sp);
-            absCharge += std::abs(rec->lookupScalar("z") * v);
+            const scalar q = requireSpeciesRecord(sp, name)->lookupScalar("z") * v;
+            netCharge += q;
+            absCharge += std::abs(q);
         }
         if (basis == "analytical" && absCharge > 0.0
             && std::abs(netCharge) > 1.0e-6 * absCharge)
@@ -631,86 +873,534 @@ ProcessStream readStreamState(const fs::path&       file,
             throw std::runtime_error(os.str());
         }
 
-        //  m = A n.  Columns are the components' DECLARED bridges (never name
-        //  identity); rows are the masters the analysis names.
-        std::vector<std::string> rows;
-        for (const auto& [sp, v] : mTot) { (void)v; rows.push_back(sp); }
-        const std::size_t nr = rows.size();
-        std::vector<std::size_t> cols;              // component indices
-        for (const auto& br : bridges) cols.push_back(br.apparentIdx);
-        const std::size_t nc = cols.size();
-        std::vector<sVector> A(nr, sVector(nc, 0.0));
-        for (std::size_t c = 0; c < nc; ++c)
-            for (const auto& [master, nu] : bridges[c].mapping)
-                for (std::size_t r = 0; r < nr; ++r)
-                    if (rows[r] == master.key) A[r][c] += nu;
-
-        //  Solve by Gaussian elimination with partial pivoting on the square
-        //  part; a rank short of nc is the SAME refusal the basis-rank test
-        //  raises, reached from the input side.
-        sVector nSol(nc, 0.0);
-        {
-            std::vector<sVector> M = A;
-            sVector b(nr);
-            for (std::size_t r = 0; r < nr; ++r) b[r] = mTot[rows[r]];
-            std::vector<std::size_t> pivRow(nc, nr);
-            std::size_t rank = 0;
-            for (std::size_t c = 0; c < nc && rank < nr; ++c)
-            {
-                std::size_t piv = rank;
-                for (std::size_t r = rank; r < nr; ++r)
-                    if (std::abs(M[r][c]) > std::abs(M[piv][c])) piv = r;
-                if (std::abs(M[piv][c]) < 1.0e-12) continue;
-                std::swap(M[rank], M[piv]); std::swap(b[rank], b[piv]);
-                for (std::size_t r = 0; r < nr; ++r)
-                {
-                    if (r == rank) continue;
-                    const scalar f = M[r][c] / M[rank][c];
-                    for (std::size_t cc = 0; cc < nc; ++cc) M[r][cc] -= f*M[rank][cc];
-                    b[r] -= f * b[rank];
-                }
-                pivRow[c] = rank;
-                ++rank;
-            }
-            if (rank < nc)
-                throw std::runtime_error("stream state '" + name + "': the"
-                    " species analysis cannot be stated on this component"
-                    " basis -- the map has rank " + std::to_string(rank)
-                    + " for " + std::to_string(nc) + " components, so several"
-                      " different component vectors give these same species"
-                      " totals and any one of them would be an arbitrary"
-                      " choice of LABELS.  Remedy: drop a redundant component"
-                      " from the case's basis (the same deficiency"
-                      " flash15_refused_salt_basis_rank refuses).");
-            for (std::size_t c = 0; c < nc; ++c)
-                if (pivRow[c] < nr) nSol[c] = b[pivRow[c]] / M[pivRow[c]][c];
-            //  Rows the components cannot reach at all: the analysis names a
-            //  master no component in this case bridges to.
-            for (std::size_t r = 0; r < nr; ++r)
-            {
-                scalar recon = 0.0;
-                for (std::size_t c = 0; c < nc; ++c) recon += A[r][c] * nSol[c];
-                const scalar want = mTot[rows[r]];
-                if (std::abs(recon - want) > 1.0e-6*std::max(1.0, std::abs(want)))
-                    throw std::runtime_error("stream state '" + name + "':"
-                        " species '" + rows[r] + "' cannot be carried by this"
-                        " case's components (declared " + std::to_string(want)
-                        + " kmol/s, reachable " + std::to_string(recon)
-                        + ") -- add a component whose bridge names it, or drop"
-                          " it from the analysis.");
-            }
-        }
-        for (std::size_t c = 0; c < nc; ++c) overall[cols[c]] += nSol[c];
+        //  m = A n -- the SHARED inversion (see invertMastersOntoComponents).
+        invertMastersOntoComponents(name, bs, mTot, overall);
         overall[solventIdx] += solventFlow;
         //  ...and the non-bridging components, carried as themselves.
         for (const auto& [ci, v] : compTot) overall[ci] += v;
-        (void)net;
+    };
+
+    //  ---- THE AQUEOUS ANALYSIS (the SEVENTH canonical form) ----------------
+    //
+    //  A laboratory reports mg/L, not kmol/h -- and it reports numbers that
+    //  do NOT close in charge, because every one of them carries measurement
+    //  error.  `speciesMolarFlows` cannot express that: charge closure is a
+    //  CONTRACT there, and rightly so, because what it declares is an
+    //  inventory somebody has already reconciled.  This block declares the
+    //  MEASUREMENT, and the reconciliation happens HERE, in the open, with
+    //  every correction recorded on the resolved snapshot.
+    //
+    //  THE THREE LAYERS the ruling asks for, and where each lives:
+    //    1  the MEASUREMENT   -- this block, in the authored 0/ file, which
+    //                            is NEVER rewritten (O1);
+    //    2  the RECONCILED conserved inventory -- computed here, carried on
+    //                            the stream, written to converged/<stream>
+    //                            under `calculated {}`;
+    //    3  the EQUILIBRIUM   -- whatever the unit solves from layer 2.
+    //
+    //  THE ROUTE, in order, because the order is the physics:
+    //    (a) each analyte -> a MOLAR amount per unit volume (or per kg of
+    //        solvent), via its own species MW or the `as <formula>` surrogate;
+    //    (b) the charge residue is MEASURED and, if a rule is declared,
+    //        absorbed by ONE named species;
+    //    (c) m = A n -> component amounts per unit volume (the SAME inversion
+    //        and the SAME rank refusal `speciesMolarFlows` uses);
+    //    (d) the SOLVENT is closed by the measured DENSITY -- water is what
+    //        the density has room for after the dissolved components.  Doing
+    //        it after (c) rather than on the ion masses is what makes the
+    //        total mass exactly rho * Q: the component bridges are not mass
+    //        conserving on their own (CaCO3 -> Ca + HCO3 borrows an H from
+    //        the water), so closing on the ions would leave that H unowned.
+    //    (e) scale by the flow anchor.
+    auto readAnalysis = [&](const DictPtr& blk)
+    {
+        const BridgeSet bs = collectBridges(thermo, name, "aqueousAnalysis");
+        requireDeclaredNetwork(blk, thermo, name, bs.haveNetwork,
+                               "aqueousAnalysis");
+        const std::size_t solventIdx = bs.solventIdx;
+
+        auto rec = std::make_shared<ProcessStream::AnalysisReconciliation>();
+
+        //  ---- (0) THE REPORTING BASIS -------------------------------------
+        //  Declared, and then VERIFIED against every entry's own unit.  It is
+        //  not a duplicate of those units: it selects the CONVERSION ROUTE (a
+        //  per-volume basis needs a volume; a molality needs a solvent mass),
+        //  and an entry whose dimensions contradict it is a transcription
+        //  error nothing else would catch.
+        if (!blk->found("basis"))
+            throw std::runtime_error("stream state '" + name + "':"
+                " `aqueousAnalysis` carries no `basis mg/L|mmol/L|mol/kg;`."
+                "  The basis decides how the sheet becomes a flow: a"
+                " per-VOLUME basis is closed by a volume (the density route),"
+                " a MOLALITY by the mass of solvent.  There is no safe"
+                " default -- the two routes need different declarations.");
+        const std::string basis = blk->lookupWord("basis");
+        enum class Route { massPerVolume, molePerVolume, molality };
+        Route route;
+        Dimensions wantDims;
+        if      (basis == "mg/L" || basis == "g/L" || basis == "ppm")
+        { route = Route::massPerVolume;  wantDims = Dims::density; }
+        else if (basis == "mmol/L" || basis == "mol/L" || basis == "mol/m3")
+        { route = Route::molePerVolume;  wantDims = Dims::concentration; }
+        else if (basis == "mol/kg" || basis == "mmol/kg")
+        { route = Route::molality;       wantDims = Dims::molality; }
+        else
+            throw std::runtime_error("stream state '" + name + "': basis '"
+                + basis + "' is not an analytical reporting basis this reader"
+                " knows.  A1 reads mass per volume (mg/L, g/L, ppm), moles per"
+                " volume (mmol/L, mol/L, mol/m3) or molality (mol/kg,"
+                " mmol/kg).");
+        rec->basis = basis;
+
+        //  ---- (0b) THE DENSITY ROUTE, REQUIRED and EXPLICIT ---------------
+        //  mg/L is per VOLUME; a stream carries a FLOW.  Two facts close the
+        //  gap -- how much solution per unit time, and how much of it is
+        //  solvent -- and A1 refuses to invent either.
+        const bool perVolume = (route != Route::molality);
+        scalar Q = 0.0;                       // [m3/s]
+        if (perVolume)
+        {
+            if (!blk->found("density"))
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `aqueousAnalysis` declares no DENSITY ROUTE.  A basis of"
+                    " '" + basis + "' states the analytes per unit VOLUME, and"
+                    " a stream carries a molar FLOW -- nothing converts between"
+                    " them without the solution's density.  Declare"
+                    " `density { value <rho> kg/m3; provenance measured; }`"
+                    " beside a flow anchor (`volumetricFlow` or"
+                    " `totalMassFlow`).  Computing the density FROM the"
+                    " analysis is an ITERATION, and an iteration whose"
+                    " convergence must be visible is its own slice -- A1 will"
+                    " not do it silently.");
+            auto dd = blk->subDict("density");
+            rec->density = dd->lookupScalar("value", Dims::density);
+            rec->densityProvenance = dd->lookupWordOrDefault("provenance", "");
+            if (rec->densityProvenance != "measured")
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " density declares `provenance "
+                    + (rec->densityProvenance.empty()
+                          ? std::string("<absent>") : rec->densityProvenance)
+                    + "`.  A1 accepts ONE provenance, `measured`: an ITERATIVE"
+                      " density (solved from the analysis it is used to"
+                      " convert) is a DECLARED GAP -- the ruling permits it"
+                      " only with explicit authorisation, and an iteration"
+                      " whose convergence a student must be able to watch is"
+                      " its own slice, not a default.");
+            if (rec->density <= 0.0)
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " declared density is not positive.");
+
+            const bool hasQ  = blk->found("volumetricFlow");
+            const bool hasMd = blk->found("totalMassFlow");
+            if (hasQ == hasMd)
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `aqueousAnalysis` declares "
+                    + std::string(hasQ ? "BOTH `volumetricFlow` and"
+                                         " `totalMassFlow`"
+                                       : "no FLOW ANCHOR")
+                    + ".  An analysis fixes the COMPOSITION of the solution and"
+                      " nothing about how much of it flows; declare exactly"
+                      " ONE of `volumetricFlow <Q> m3/h;` or `totalMassFlow"
+                      " <m> kg/h;` (with the density, either fixes the other).");
+            Q = hasQ ? blk->lookupScalar("volumetricFlow", Dims::volumetricFlow)
+                     : blk->lookupScalar("totalMassFlow", Dims::massFlow)
+                       / rec->density;
+            rec->volumetricFlow = Q;
+        }
+        else
+        {
+            if (!blk->found("solventMassFlow"))
+                throw std::runtime_error("stream state '" + name + "': a"
+                    " MOLALITY basis ('" + basis + "') states the analytes per"
+                    " kg of SOLVENT, so the anchor is the solvent mass, not a"
+                    " density.  Declare `solventMassFlow <m> kg/h;`.");
+            rec->solventMassFlow =
+                blk->lookupScalar("solventMassFlow", Dims::massFlow);
+        }
+
+        rec->sampleT = blk->lookupScalarOrDefault("sampleTemperature", 0.0,
+                                                  Dims::temperature);
+        //  pH is CARRIED as a measurement and is never a balancing variable
+        //  in A1 (see the reconciliation block below).
+        if (blk->found("pH"))
+        {
+            rec->pH = blk->lookupScalar("pH");
+            rec->pH_valid = true;
+        }
+
+        //  ---- (a) THE ANALYTES --------------------------------------------
+        //  Two spellings, one meaning: a bare `Ca 84 mg/L;` for a row that
+        //  needs nothing said about it, and a sub-dict when it does (a
+        //  surrogate reporting formula, an uncertainty, a species name that
+        //  is not the key).
+        if (!blk->found("analytes"))
+            throw std::runtime_error("stream state '" + name + "': the"
+                " `aqueousAnalysis` carries no `analytes { ... }` block --"
+                " the measurement itself.");
+        auto an = blk->subDict("analytes");
+        std::map<std::string, scalar> mTot;      // master -> per-volume amount
+        for (const auto& key : an->keys())
+        {
+            ProcessStream::AnalysisReconciliation::Analyte a;
+            a.species = key;
+            scalar value = 0.0;
+            bool   dimsDeclared = false;
+            Dimensions gotDims;
+
+            const EntryValue& ev = an->entryValue(key);
+            if (std::holds_alternative<DictPtr>(ev))
+            {
+                auto e = an->subDict(key);
+                if (!e->found("value"))
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' declares no `value`.");
+                value = e->lookupScalar("value");
+                dimsDeclared = e->hasDimensions("value");
+                if (dimsDeclared) gotDims = e->dimensionsOf("value");
+                a.species = e->lookupWordOrDefault("species", key);
+                a.asFormula = e->lookupWordOrDefault("as", "");
+                a.perFormulaUnit = e->lookupScalarOrDefault("perFormulaUnit", 1.0);
+                if (e->found("uncertainty"))
+                    a.uncertaintyPct =
+                        100.0 * e->lookupScalar("uncertainty", Dims::dimensionless);
+            }
+            else
+            {
+                value = an->lookupScalar(key);
+                dimsDeclared = an->hasDimensions(key);
+                if (dimsDeclared) gotDims = an->dimensionsOf(key);
+            }
+
+            //  DECLARED AND VERIFIED: the block said what kind of quantity
+            //  these are; the entry's own unit must agree.
+            if (dimsDeclared && !(gotDims == wantDims))
+                throw std::runtime_error("stream state '" + name
+                    + "': analyte '" + key + "' carries a unit whose"
+                      " dimensions contradict the declared `basis " + basis
+                    + ";`.  The basis is not decoration -- it selects the"
+                      " conversion route, and a row stated in another kind of"
+                      " quantity would be converted by the wrong one.");
+
+            //  MASS -> MOLES.  A reported-as surrogate (`as CaCO3`) is
+            //  weighed on ITS formula, so its MW is the divisor, and the
+            //  number of species per surrogate unit is DECLARED
+            //  (`perFormulaUnit`) -- alkalinity as CaCO3 is 2 bicarbonate per
+            //  carbonate unit, and that 2 is a convention, not arithmetic the
+            //  engine may invent.  The formula's MW comes from the ONE
+            //  elemental-formula parser (thermo/ElementComposition), never a
+            //  second table of molar masses.
+            scalar amount = value;      // per volume / per kg solvent
+            if (route == Route::massPerVolume)
+            {
+                scalar MW = 0.0;
+                if (!a.asFormula.empty())
+                {
+                    const ElementComposition ec =
+                        parseElementalFormula(a.asFormula);
+                    if (!ec.available)
+                        throw std::runtime_error("stream state '" + name
+                            + "': analyte '" + key + "' is reported `as "
+                            + a.asFormula + "`, which is not a parseable"
+                              " elemental formula -- " + ec.reason);
+                    for (const auto& [sym, cnt] : ec.atoms)
+                        MW += cnt * atomicWeight(sym);
+                }
+                else
+                {
+                    DictPtr sr = requireSpeciesRecord(a.species, name);
+                    if (!sr->found("MW"))
+                        throw std::runtime_error("stream state '" + name
+                            + "': species '" + a.species + "' declares no MW,"
+                              " so a mass concentration cannot be turned into"
+                              " an amount.  Report it on a molar basis, or"
+                              " curate the MW into species/" + a.species
+                            + ".dat.");
+                    MW = sr->lookupScalar("MW");
+                }
+                if (MW <= 0.0)
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' resolves to a"
+                          " non-positive molar mass.");
+                amount = value / MW;            // kg/m3 / (kg/kmol) = kmol/m3
+            }
+            amount *= a.perFormulaUnit;
+
+            //  The species must be a MASTER of this system, checked by asking
+            //  for its record -- a name that answers to nothing would
+            //  otherwise ride the whole route and fail as an unreachable row.
+            requireSpeciesRecord(a.species, name);
+            a.measured = amount;
+            a.reconciled = amount;
+            rec->analytes.push_back(a);
+            mTot[a.species] += amount;
+        }
+        if (mTot.empty())
+            throw std::runtime_error("stream state '" + name + "': the"
+                " `analytes` block is empty.");
+
+        //  ---- (b) THE CHARGE RESIDUE, MEASURED then (maybe) ABSORBED ------
+        auto chargeOf = [&](const std::string& sp)
+        { return requireSpeciesRecord(sp, name)->lookupScalar("z"); };
+        auto balance = [&](const std::map<std::string, scalar>& m,
+                           scalar& net, scalar& pct)
+        {
+            scalar cat = 0.0, ani = 0.0;
+            for (const auto& [sp, v] : m)
+            {
+                const scalar q = chargeOf(sp) * v;
+                if (q > 0.0) cat += q; else ani -= q;
+            }
+            net = cat - ani;
+            //  The ion-balance error the water industry quotes:
+            //      CBE % = 100 (cations - anions) / (cations + anions),
+            //  both on the EQUIVALENT basis.  A percentage is what a limit is
+            //  declared in, so it is the number the tolerance is compared to.
+            pct = (cat + ani > 0.0) ? 100.0 * net / (cat + ani) : 0.0;
+        };
+        balance(mTot, rec->imbalanceBefore, rec->imbalancePctBefore);
+        rec->imbalanceAfter    = rec->imbalanceBefore;
+        rec->imbalancePctAfter = rec->imbalancePctBefore;
+
+        //  THE CLOSURE TOLERANCE is a NAMED DEFAULT: 0.5 % is the band a
+        //  routine water analysis is expected to close in, and a case may
+        //  declare its own.  Defaulting is announced, because a band nobody
+        //  chose is still a band the answer depends on.
+        constexpr scalar kDefaultClosurePct = 0.5;
+        rec->closureToleranceDefaulted = !blk->found("closureTolerance");
+        rec->closureTolerancePct =
+            rec->closureToleranceDefaulted
+                ? kDefaultClosurePct
+                : 100.0 * blk->lookupScalar("closureTolerance",
+                                            Dims::dimensionless);
+
+        std::ostringstream ann;
+        ann << std::fixed << std::setprecision(4);
+
+        if (blk->found("reconciliation"))
+        {
+            auto rc = blk->subDict("reconciliation");
+            if (!rc->found("method"))
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `reconciliation` block names no `method`.");
+            const std::string m = rc->lookupWord("method");
+            rec->methodAsWritten = m;
+
+            if (m == "weightedLeastSquares")
+                throw std::runtime_error("stream state '" + name + "': `method"
+                    " weightedLeastSquares;` is THE NAMED NEXT SLICE (A2) and"
+                    " is not built.  A1 ships the contract -- the record, the"
+                    " limit, the per-quantity uncertainties, the resolved"
+                    " snapshot -- with ONE method behind it"
+                    " (`adjustSingleSpecies`), because shipping the contract"
+                    " first is what makes the least-squares arithmetic cheap."
+                    "  Declaring it now would name a method nothing"
+                    " implements.");
+
+            std::string target;
+            if (m == "adjustSingleSpecies")
+            {
+                if (!rc->found("species"))
+                    throw std::runtime_error("stream state '" + name + "':"
+                        " `method adjustSingleSpecies;` names no `species` to"
+                        " adjust.  Which quantity absorbs the residue is the"
+                        " whole content of the rule.");
+                target = rc->lookupWord("species");
+                rec->method = m;
+            }
+            else if (m == "adjustChloride")
+            {
+                //  The ruling's own spelling, kept as SUGAR and expanded
+                //  aloud: chloride is the classic absorber (it is measured by
+                //  the least selective method of the set), and naming it
+                //  directly is how a water chemist writes the rule.  The
+                //  runtime species id of chloride is `Cl` -- the expansion
+                //  says so rather than leaving the reader to infer it.
+                target = "Cl";
+                rec->method = "adjustSingleSpecies";
+                ann << "[analysis] stream '" << name << "': `method"
+                       " adjustChloride;` is sugar for `method"
+                       " adjustSingleSpecies; species Cl;` (chloride)\n";
+            }
+            else
+                throw std::runtime_error("stream state '" + name + "': `method "
+                    + m + ";` is not a reconciliation method A1 knows"
+                    " (adjustSingleSpecies, or its sugar adjustChloride;"
+                    " weightedLeastSquares is the named next slice).");
+
+            //  pH IS NOT A BALANCING VARIABLE in A1.  It may participate only
+            //  under an explicit declared rule, and that rule grammar is what
+            //  A2 brings -- so naming it here is refused rather than silently
+            //  reinterpreted as an ion.
+            if (target == "pH" || target == "H" || target == "OH")
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " reconciliation rule names '" + target + "' as the"
+                    " balancing variable.  pH (and the H+/OH- mediators it is"
+                    " read from) may participate in a reconciliation only"
+                    " under an EXPLICIT declared rule, and that rule grammar"
+                    " is A2's.  In A1 the measured pH is carried as a"
+                    " measurement and the residue is absorbed by a measured"
+                    " ION -- name one of the analytes instead.");
+
+            if (!mTot.count(target))
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " reconciliation adjusts '" + target + "', which this"
+                    " analysis does not report.  A rule can only move a"
+                    " quantity that was measured.");
+
+            if (!rc->found("maximumCorrection"))
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `reconciliation` declares no `maximumCorrection <x>"
+                    " percent;`.  A rule with no limit will absorb any"
+                    " residue, however large -- which turns a broken analysis"
+                    " into a plausible one.  The limit is what makes the"
+                    " difference between reconciling a measurement and"
+                    " manufacturing it.");
+            rec->maximumCorrectionPct =
+                100.0 * rc->lookupScalar("maximumCorrection", Dims::dimensionless);
+
+            //  ONE species absorbs the residue: delta(z_t n_t) = -net, so
+            //  delta n_t = -net / z_t.
+            const scalar zt = chargeOf(target);
+            if (zt == 0.0)
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " reconciliation adjusts '" + target + "', which is"
+                    " NEUTRAL.  A neutral species carries no charge, so"
+                    " moving it cannot change the charge residue by any"
+                    " amount.");
+            const scalar before = mTot[target];
+            const scalar delta  = -rec->imbalanceBefore / zt;
+            const scalar after  = before + delta;
+            const scalar corrPct = (before != 0.0)
+                                 ? 100.0 * std::abs(delta / before) : 1.0e30;
+            if (corrPct > rec->maximumCorrectionPct)
+            {
+                std::ostringstream os;
+                os << std::fixed << std::setprecision(4);
+                os << "stream state '" << name << "': closing the charge"
+                      " balance on '" << target << "' needs a "
+                   << corrPct << " % correction, and the case declares"
+                      " `maximumCorrection " << rec->maximumCorrectionPct
+                   << " percent;`.  The measured ion balance is off by "
+                   << rec->imbalancePctBefore << " % (cations minus anions,"
+                      " over their sum).  A correction beyond the declared"
+                      " limit is not a reconciliation -- it is the analysis"
+                      " being overwritten to fit.  Remedies: widen the limit"
+                      " deliberately, adjust a different measured ion, or fix"
+                      " the analysis.";
+                throw std::runtime_error(os.str());
+            }
+            if (after < 0.0)
+                throw std::runtime_error("stream state '" + name + "':"
+                    " closing the charge balance on '" + target + "' drives it"
+                    " NEGATIVE.  A measured amount cannot be reconciled below"
+                    " zero -- adjust a different ion, or fix the analysis.");
+
+            mTot[target] = after;
+            rec->adjustedSpecies = target;
+            for (auto& a : rec->analytes)
+                if (a.species == target) a.reconciled = after;
+
+            balance(mTot, rec->imbalanceAfter, rec->imbalancePctAfter);
+
+            ann << "[analysis] stream '" << name << "': ion balance "
+                << rec->imbalancePctBefore << " % before -> "
+                << rec->imbalancePctAfter << " % after; '" << target
+                << "' adjusted by " << corrPct << " % (limit "
+                << rec->maximumCorrectionPct << " %)\n";
+        }
+        else
+        {
+            //  NO RULE DECLARED (Q3, ruled 2026-08-09).  An analysis that
+            //  ALREADY closes within the band passes through UNTOUCHED and
+            //  says so, quoting what it measured -- silence would leave a
+            //  reader unable to tell "balanced" from "nobody looked".  One
+            //  that does NOT close is refused, naming the two legal remedies.
+            //  What never happens is an adjustment nobody asked for.
+            if (std::abs(rec->imbalancePctBefore) > rec->closureTolerancePct)
+            {
+                std::ostringstream os;
+                os << std::fixed << std::setprecision(4);
+                os << "stream state '" << name << "': the analysis is off in"
+                      " charge by " << rec->imbalancePctBefore
+                   << " % (cations minus anions, over their sum) and the case"
+                      " declares no `reconciliation {}` rule.  The closure"
+                      " tolerance is " << rec->closureTolerancePct << " %"
+                   << (rec->closureToleranceDefaulted
+                          ? " (the named default -- declare"
+                            " `closureTolerance <x> percent;` to choose your"
+                            " own)" : " (declared)")
+                   << ".  There are exactly two legal remedies and the engine"
+                      " will not pick one: DECLARE a reconciliation rule"
+                      " (`reconciliation { method adjustSingleSpecies; species"
+                      " <ion>; maximumCorrection <x> percent; }`), or FIX the"
+                      " analysis.  Adjusting it silently would hide a"
+                      " laboratory fault inside a result.";
+                throw std::runtime_error(os.str());
+            }
+            ann << "[analysis] stream '" << name << "': ion balance "
+                << rec->imbalancePctBefore << " %, within the "
+                << rec->closureTolerancePct << " % closure tolerance"
+                << (rec->closureToleranceDefaulted ? " (named default)"
+                                                   : " (declared)")
+                << " -- passed through, NO adjustment applied\n";
+        }
+
+        //  ---- (c) m = A n, the SHARED inversion ---------------------------
+        std::vector<scalar> perUnit(n, 0.0);    // component amount per m3 / kg
+        invertMastersOntoComponents(name, bs, mTot, perUnit);
+
+        //  ---- (d) THE SOLVENT, closed by the measured density -------------
+        if (perVolume)
+        {
+            scalar soluteMass = 0.0;            // kg per m3 of solution
+            for (std::size_t i = 0; i < n; ++i)
+                if (i != solventIdx) soluteMass += perUnit[i] * thermo.comp(i).MW();
+            const scalar solventMass = rec->density - soluteMass;
+            if (solventMass <= 0.0)
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " dissolved components weigh more than the declared"
+                    " density allows, so there is no solvent left to hold"
+                    " them.  Check the density and the analyte units.");
+            perUnit[solventIdx] += solventMass / thermo.comp(solventIdx).MW();
+            for (std::size_t i = 0; i < n; ++i) overall[i] += perUnit[i] * Q;
+        }
+        else
+        {
+            const scalar mSolv = rec->solventMassFlow;     // kg/s
+            for (std::size_t i = 0; i < n; ++i)
+                if (i != solventIdx) overall[i] += perUnit[i] * mSolv;
+            overall[solventIdx] += mSolv / thermo.comp(solventIdx).MW();
+        }
+
+        //  ---- The RECORD, on the same flow basis as the stream ------------
+        const scalar scaleToFlow = perVolume ? Q : rec->solventMassFlow;
+        for (auto& a : rec->analytes)
+        { a.measured *= scaleToFlow; a.reconciled *= scaleToFlow; }
+        rec->imbalanceBefore *= scaleToFlow;
+        rec->imbalanceAfter  *= scaleToFlow;
+        rec->conservedInventory.assign(mTot.begin(), mTot.end());
+        for (auto& [sp, v] : rec->conservedInventory)
+        { (void)sp; v *= scaleToFlow; }
+
+        if (thermoAnnounce(2) && !ann.str().empty()) std::cout << ann.str();
+        AdvisoryLog::instance().add("analysis", "info",
+            "stream '" + name + "'",
+            rec->adjustedSpecies.empty()
+                ? "declared as a laboratory analysis; measured ion balance "
+                  + std::to_string(rec->imbalancePctBefore)
+                  + " % within the closure tolerance -- no adjustment applied"
+                : "declared as a laboratory analysis; ion balance "
+                  + std::to_string(rec->imbalancePctBefore) + " % -> "
+                  + std::to_string(rec->imbalancePctAfter)
+                  + " % by adjusting '" + rec->adjustedSpecies + "'");
+        s.analysis = rec;
     };
 
     if      (hasCMF)  readMolar(d->subDict("componentMolarFlows"), false);
     else if (hasCF)   readMolar(d->subDict("componentFlows"),      false);
     else if (hasCmMF) readMolar(d->subDict("componentMassFlows"),  true);
     else if (hasSMF)  readSpecies(d->subDict("speciesMolarFlows"));
+    else if (hasAQA)  readAnalysis(d->subDict("aqueousAnalysis"));
     else if (hasMolF) readFractions("moleFractions", d->lookupScalar("molarFlow"), false);
     else if (hasMasF) readFractions("massFractions", d->lookupScalar("massFlow"),  true);
 

@@ -212,6 +212,72 @@ struct ProcessStream
     };
     std::shared_ptr<const Speciation> speciation;   // null = none, the default
 
+    // ---- The AQUEOUS ANALYSIS this stream was DECLARED as -----------------
+    //  INVENTORY IS NOT MEASUREMENT.  `speciesMolarFlows` declares an
+    //  inventory -- flows the author has already reconciled, on which charge
+    //  closure is a CONTRACT and a violation is refused.  `aqueousAnalysis`
+    //  declares a MEASUREMENT: mg/L off a laboratory sheet, with
+    //  uncertainties, which is exactly the thing that does not close and is
+    //  supposed to be reconciled.  Keeping them apart is what let the seventh
+    //  canonical form be ADDED rather than an existing one CHANGED.
+    //
+    //  What is held here is LAYER 2: the reconciliation the reader performed
+    //  between the measurement (layer 1, the authored `0/` file, which is
+    //  never rewritten -- O1) and the equilibrium (layer 3).  It is
+    //  report-only in exactly the sense `speciation` is: the material is
+    //  F/z/s on the component basis, and deleting this record changes no
+    //  answer.  It exists so the resolved snapshot can say WHAT WAS ADJUSTED
+    //  and BY HOW MUCH -- the one fact no arithmetic on the answer recovers.
+    //
+    //  Set by the stream-file READER only, on the stream whose `0/` file
+    //  carried the analysis; written into `converged/<stream>` under
+    //  `calculated {}`.  Null on every other stream, which is the negative
+    //  the gate pins: the machinery does not switch itself on.
+    struct AnalysisReconciliation
+    {
+        struct Analyte
+        {
+            std::string species;          // the MASTER this row reports
+            std::string asFormula;        // reported-as surrogate ("" = none)
+            scalar      perFormulaUnit = 1.0;   // species per surrogate unit
+            scalar      uncertaintyPct = 0.0;   // 0 = not declared (A2 uses it)
+            scalar      measured   = 0.0; // [kmol/s] as measured
+            scalar      reconciled = 0.0; // [kmol/s] after the rule
+        };
+
+        std::string basis;             // the declared reporting basis
+        std::string method;            // "" = none declared (pass-through)
+        std::string methodAsWritten;   // the author's spelling (sugar kept)
+        std::string adjustedSpecies;   // "" = nothing adjusted
+        std::string densityProvenance; // "measured" (A1 accepts no other)
+
+        scalar sampleT              = 0.0;   // [K]   0 = not declared
+        scalar density              = 0.0;   // [kg/m3]
+        scalar volumetricFlow       = 0.0;   // [m3/s]
+        scalar solventMassFlow      = 0.0;   // [kg/s] (the molality route)
+        scalar closureTolerancePct  = 0.0;   // the band, as applied
+        bool   closureToleranceDefaulted = false;   // announced when true
+        scalar maximumCorrectionPct = 0.0;   // 0 = no rule declared
+
+        //  The charge residue, both as a signed EQUIVALENT flow [kmol/s of
+        //  charge] and as the ion-balance error the water industry quotes,
+        //      CBE % = 100 (Sum cations - Sum anions) / (Sum cations + Sum anions),
+        //  both taken on the equivalent basis.  Two spellings of one fact,
+        //  and the percentage is what a limit is declared in.
+        scalar imbalanceBefore    = 0.0;
+        scalar imbalanceAfter     = 0.0;
+        scalar imbalancePctBefore = 0.0;
+        scalar imbalancePctAfter  = 0.0;
+
+        scalar pH        = 0.0;
+        bool   pH_valid  = false;   // a MEASURED pH, never a balancing variable
+
+        std::vector<Analyte> analytes;      // in declared order
+        //  The reconciled conserved inventory: master -> [kmol/s], sorted.
+        std::vector<std::pair<std::string, scalar>> conservedInventory;
+    };
+    std::shared_ptr<const AnalysisReconciliation> analysis;
+
     //  The SECOND LIQUID, per component [kmol/s], when the package declares
     //  one and it is PRESENT.  Null = one liquid -- the absence of a phase,
     //  never a phase of zero.

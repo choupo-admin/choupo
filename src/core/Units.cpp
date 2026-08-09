@@ -234,6 +234,11 @@ const std::map<std::string, UnitSpec>& table()
         // ----- dimensionless / percent ----------------------------------
         { "-",       UnitSpec{ 1.0,         Dims::dimensionless } },
         { "%",       UnitSpec{ 1.0e-2,      Dims::dimensionless } },
+        //  The SPELLED-OUT twin.  A laboratory sheet writes "+/- 2 percent"
+        //  and a tolerance reads better spelled than punctuated
+        //  (`closureTolerance 0.5 percent;`); same factor, same dimensions,
+        //  so the two can never mean different things.
+        { "percent", UnitSpec{ 1.0e-2,      Dims::dimensionless } },
         { "kg/kg",   UnitSpec{ 1.0,         Dims::dimensionless } },   // mass ratio (e.g. dry resin per kg water)
     };
     return t;
