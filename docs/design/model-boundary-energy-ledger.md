@@ -138,6 +138,46 @@ from the second is precisely what the ruling forbids.
 
 ### 4a. What "a phase/vf flip" means here, and why
 
+> **RATIFIED by Vítor, 2026-08-09, in his own wording** — the interpretation
+> below is confirmed, with the rule narrowed so it does not become broader
+> than intended:
+>
+> > *Phase-fraction disagreement between two independently converged
+> > equilibrium resolutions is admissible evidence of a model-boundary step.
+> > A difference in declared physical constraints or in the conserved/chemical
+> > problem being solved is not.*
+>
+> His reasoning, recorded because it is the load-bearing part: if the same
+> conserved stream at the same T, P and overall composition is independently
+> and successfully resolved in two declared thermo worlds, then
+> `world A -> V/F = 0.23` against `world B -> V/F = 0.31` **is precisely part
+> of the physical consequence of crossing that model boundary**.  Refusing the
+> comparison because the phase fraction changed *"would make the ledger least
+> useful exactly where model choice matters most."*
+>
+> HARD REFUSAL IS RETAINED wherever the comparison itself stops being
+> well-defined — the five cases, verbatim:
+>
+> * one thermo world does not converge or cannot resolve the state;
+> * the two sides use different physical **pins** rather than two free
+>   equilibrium resolutions;
+> * the conserved **basis** or declared **chemistry** changes across the
+>   boundary;
+> * a **solid phase** appears/disappears and the enthalpic comparison is not
+>   yet unambiguously supported by the declared thermochemistry;
+> * or the report **cannot independently reproduce** the boundary step and is
+>   only inferring it from coincident numbers.
+>
+> And the distinction that explains `perUnitThermo01` staying red: *"merely
+> finding a thermo-world difference is not enough.  The independently
+> reconstructed step must actually explain the raw imbalance."*
+>
+> On the `flash20` finding (a 42.86 kW PC-SAFT↔NRTL step nobody had
+> connected): *"especially valuable.  Discovering a 42.86 kW step in another
+> case is evidence that the model-boundary ledger is capturing a general
+> phenomenon rather than repairing basis01 specifically."*
+
+
 The doctrine's shipped hard refusals
 (`src/unitOperations/flowsheet/ModelBoundaryAudit.H`) are the **speciation**
 flip (electrolyte ↔ molecular with a species that actually speciates
