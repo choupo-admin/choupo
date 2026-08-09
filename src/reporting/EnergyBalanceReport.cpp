@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EnergyBalanceReport.H"
+#include "BalanceAlarm.H"
 #include "BalanceMath.H"
 #include "thermo/EnthalpyDatum.H"
 #include "Topology.H"
@@ -215,13 +216,20 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // pass-12 (student): a ~1% first-law gap sat silently in the CSV while
         // every default announces aloud -- the ledger now SPEAKS when a unit's
         // closure leaves 100 +- 0.5%.
-        if (declares && std::abs(closure - 100.0) > 0.5)
-            std::cout << "  [energy] " << u.name << ": closure "
-                      << std::fixed << std::setprecision(2) << closure
-                      << "% (dH = " << std::setprecision(2) << dH
-                      << " kW vs declared items " << items << " kW) -- an"
-                         " UNEXPLAINED first-law residual; inspect the unit's"
-                         " enthalpy paths (reports/balances has the ledger).\n";
+        //  RED, on stderr, like the other two laws (Vítor 2026-08-09).  This
+        //  used to whisper to stdout -- the same event class that the mass
+        //  balance warned about and the element balance did not mention at
+        //  all: three registers for three conservation laws, which is not a
+        //  convention a reader can learn.
+        if (declares && std::abs(closure - 100.0) > reporting::energyBandPct)
+            reporting::balanceAlarm(
+                "ENERGY", "unit '" + u.name + "'",
+                "dH = " + std::to_string(dH) + " kW vs declared items "
+                + std::to_string(items) + " kW  ("
+                + std::to_string(closure) + " % closure)",
+                "An UNEXPLAINED first-law residual: inspect the unit's "
+                "enthalpy paths.  Ledger: "
+                "reports/balances/energyBalance_byUnit.csv");
     }
 
     // Breakdown: each unit's individual declared energy items.

@@ -28,6 +28,7 @@ License
 
 #include "reporting/ElementBalanceReport.H"
 
+#include "reporting/BalanceAlarm.H"
 #include "reporting/BalanceMath.H"
 #include "reporting/Topology.H"
 #include "thermo/ElementComposition.H"
@@ -114,17 +115,33 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
     }
 
     scalar worst = 0.0;
+    std::string worstSym;
+    scalar worstIn = 0.0, worstOut = 0.0;
     for (const auto& [sym, ain] : eb.elemIn)
     {
         const scalar aInH  = ain * 3600.0;
         const scalar aOutH = eb.elemOut.at(sym) * 3600.0;
         const scalar cl = reporting::closurePct(aInH, aOutH);
+        if (std::abs(cl - 100.0) > worst)
+        { worstSym = sym; worstIn = aInH; worstOut = aOutH; }
         worst = std::max(worst, std::abs(cl - 100.0));
         f << sym << "," << std::scientific << std::setprecision(6)
           << aInH << "," << aOutH << "," << (aOutH - aInH) << ","
           << std::fixed << std::setprecision(4) << cl << "\n";
     }
     f.close();
+    //  ATOMS ARE NOT CREATED.  An element that does not close is the gravest
+    //  error this diagnostic exists to catch (a chemically wrong operation),
+    //  and until now it was reported as an informational aside on stdout.
+    if (worst > reporting::elementBandPct)
+        reporting::balanceAlarm(
+            "ELEMENT", "the plant boundary, element " + worstSym,
+            "in " + std::to_string(worstIn) + " kmol-atom/h, out "
+            + std::to_string(worstOut) + " kmol-atom/h  (off by "
+            + std::to_string(worst) + " %)",
+            "Atoms are conserved by every operation: an element that does not "
+            "close means a reaction stoichiometry, a stream assembly or a "
+            "formula is wrong.  Ledger: reports/balances/elementBalance.csv");
     if (ctx.verbosity >= 2)
     {
         std::cout << "  [report] elementBalance -> " << path.string()
