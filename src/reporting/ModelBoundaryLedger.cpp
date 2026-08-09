@@ -38,8 +38,12 @@ License
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 namespace reporting {
@@ -357,7 +361,14 @@ std::vector<EnergyClosureRecord> ModelBoundaryLedger::audit(
         auto crossing = [&](const ProcessStream* s, scalar sgn)
         {
             if (refused || !s) return;
-            if (!s->category.empty()) return;      // utility medium, not process
+            //  PROCESS streams only -- `dH` is over the process side and the
+            //  step must be the same difference or it cannot reproduce it.
+            //  A utility medium crossing the same boundary would carry its
+            //  own step, and this omits it: no corpus case has both, and the
+            //  omission FAILS SAFE, because a step that leaves the utility
+            //  side out cannot reproduce the imbalance and is therefore not
+            //  credited.  Named in the design record's gap list.
+            if (!s->category.empty()) return;
 
             //  Doctrine refusal 1 -- SPECIATION flip.
             if (reportPackage_.hasElectrolyte() != local->hasElectrolyte())

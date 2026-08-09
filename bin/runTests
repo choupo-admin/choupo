@@ -2511,7 +2511,12 @@ if [ "$#" -eq 0 ]; then
     # T1
     t1_bad=""
     if [ -f "$eb" ]; then
-        while IFS=, read -r unit hin hout dH items closure ref; do
+        # `rest` swallows the model-boundary accounting columns added
+        # 2026-08-09 (raw / step / remaining / adjusted / boundary).  Without
+        # it `ref` would absorb the whole tail and the `!= elements` arm below
+        # would fail on EVERY row -- a reader that must be told when its file
+        # grows, told here.
+        while IFS=, read -r unit hin hout dH items closure ref rest; do
             case "$unit" in unit|''|\#*) continue;; esac
             [ -z "$ref" ] && continue
             if [ "$ref" != "elements" ]; then

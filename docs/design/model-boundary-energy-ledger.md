@@ -284,6 +284,13 @@ Rejected with its reasoning stated in §4a rather than quietly reinterpreted.
   an adiabatic unit is invisible to this ledger.  The plant-level
   model-inconsistency total in `ModelBoundaryAudit.H` remains the surface
   for that.
+* **A UTILITY medium crossing the same boundary is not stepped.**  The step
+  is taken over the process streams, because `dH` is, and the two must be
+  the same difference or the reproduction test could never pass.  A unit
+  with both a utility medium and a `thermo {}` override would have the
+  medium's own step omitted — no corpus case has both, and the omission
+  fails safe: an incomplete step cannot reproduce the imbalance, so it is
+  reported `unconfirmed` and credited nothing.
 * **The two audits are not yet one.**  `ModelBoundaryAudit.H` (stream-wise,
   at fixed vf, in the solver) and this ledger (unit-wise, over resolved
   states, in the report) answer different questions and agree where they
