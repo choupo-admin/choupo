@@ -75,6 +75,9 @@ Description
 
 namespace Choupo {
 
+class Database;
+struct ChemistrySystem;
+
 // Everything a report needs, gathered once by the application main.
 //
 // `result` is mutable: most reports only read it, but `design` and
@@ -102,6 +105,24 @@ struct ReportContext
     //  postProcessing/streamTable/<n>/streamTable.csv, never a `streams/` dir).
     bool                     postProcessing = false;
     int                      instant        = 0;   // the solved pseudo-time <n>
+
+    // ---- The AUDITOR's own reach into the case's DECLARED thermo ----------
+    //  Added 2026-08-09 for the model-boundary ledger.  A report that audits
+    //  a per-unit thermo world may NOT accept the package the unit (or
+    //  `Flowsheet::thermoFor`) built -- an auditor that reuses the auditee's
+    //  arithmetic checks nothing.  It must assemble that world itself, and
+    //  that needs the three things `thermo` alone cannot supply: the record
+    //  Database, the AUTHORED system dict a per-unit `thermo {}` fragment
+    //  merges onto, and the case's active chemistry selection.  `solverDict`
+    //  carries the declared convergence controls for the closure test.
+    //
+    //  All four are OPTIONAL.  A context without them cannot audit, and the
+    //  ledger says so (`status unavailable`) with the RED alarm standing --
+    //  it never falls back to a package somebody else built.
+    Database*                db = nullptr;
+    DictPtr                  packageDict;    // the authored v2 system
+    const ChemistrySystem*   chemistry = nullptr;
+    DictPtr                  solverDict;
 
     // Resolve a report's output directory.  `report` is the report's canonical
     // name (e.g. "streamTable", "massBalance"); `legacySub` is the historical

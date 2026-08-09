@@ -231,6 +231,13 @@ struct SimulationResult
     // the enthalpy they disagree about (or a refusal across a speciation
     // change).  Populated by the Flowsheet; surfaced in the run log AND here.
     std::vector<ModelBoundaryFinding>                             modelBoundaries;
+    // Per-unit ENERGY CLOSURE with the model-boundary step accounted
+    // separately: the raw imbalance, the declared step, and what remains.
+    // Populated by the energyBalance report (which computes the step from
+    // the unit's DECLARED thermo world, assembled by the report itself --
+    // see reporting/ModelBoundaryLedger.H on why that duplication is
+    // deliberate).  Emitted as `energyClosures` in the result JSON.
+    std::vector<EnergyClosureRecord>                              energyClosures;
     // Economic appraisal: the headline scalars + the full year-by-year DCF
     // table, populated by EconomicsPass.  `present` is false until the pass
     // runs.  The .ods / .csv cash-flow spreadsheet is built from this.

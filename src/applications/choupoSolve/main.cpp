@@ -819,9 +819,15 @@ try
                 catch (const std::exception&) {}
             }
         }
+        //  The last four members are the model-boundary auditor's own reach
+        //  into the DECLARED thermo (Report.H): the record home, the authored
+        //  system a per-unit `thermo {}` fragment merges onto, the active
+        //  chemistry, and the declared closure controls.  Handed over as
+        //  DICTS and a Database -- never as an assembled package -- so the
+        //  audit builds its own world instead of borrowing the one it audits.
         ReportContext rctx{
             result, thermoForReports, flowsheetDict, reportsDir, verbosity,
-            postProc, instant
+            postProc, instant, &db, packageDict, chemPtr, solverDict
         };
         if (verbosity >= 2)
             std::cout << "\nReports (-> " << reportsDir.string() << "):\n";

@@ -29,6 +29,7 @@ License
 #include "EnergyBalanceReport.H"
 #include "BalanceAlarm.H"
 #include "BalanceMath.H"
+#include "ModelBoundaryLedger.H"
 #include "thermo/EnthalpyDatum.H"
 #include "Topology.H"
 
@@ -37,6 +38,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -66,7 +68,19 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     // column's reboiler+condenser, a heater's Q, a compressor's shaft work),
     // and the closure (declared items vs dH).  The `reference` column says
     // which datum dH used (elements carries the reaction heat).
-    f << "unit,H_in_kW,H_out_kW,dH_kW,energy_items_kW,energy_closure_pct,reference\n";
+    //
+    //  THE LAST FIVE COLUMNS ARE THE MODEL-BOUNDARY ACCOUNTING (2026-08-09).
+    //  The first six are UNCHANGED and keep their meaning exactly:
+    //  `energy_closure_pct` is still the RAW closure, so nothing that reads
+    //  this file loses the number it used to read.  `raw_imbalance_kW` is
+    //  that same raw discrepancy in kW; `boundary_step_kW` is the enthalpy
+    //  step credited to an identified model transition; `remaining_kW` is
+    //  what is still unexplained, and `adjusted_closure_pct` is the VERDICT
+    //  column -- the one the conservation alarm is taken on.  Three
+    //  quantities, never collapsed: see reporting/ModelBoundaryLedger.H.
+    f << "unit,H_in_kW,H_out_kW,dH_kW,energy_items_kW,energy_closure_pct,"
+         "reference,raw_imbalance_kW,boundary_step_kW,remaining_kW,"
+         "adjusted_closure_pct,boundary\n";
 
     auto lookup = [&](const std::vector<std::string>& names) {
         std::vector<const ProcessStream*> v;
@@ -97,6 +111,25 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 
     const auto units = reporting::resolveUnits(topo, ctx.result);
     int naCount = 0, gapCount = 0;
+    //  TWO PASSES, and the reason is the ledger's, not this report's: the
+    //  model-boundary verdict is taken on ONE normalization over the whole
+    //  residual system (solver/Convergence.H sec.2), so no unit's row can be
+    //  written before every unit's residual is known.  Pass 1 measures, pass
+    //  2 writes and alarms; the console messages of pass 1 (curation gaps)
+    //  keep the order they always had.
+    struct UnitRow
+    {
+        std::string name;
+        int         kind = 0;              // 0 normal, 1 curation gap, 2 n/a
+        scalar      hIn = 0.0, hOut = 0.0, dH = 0.0, items = 0.0;
+        scalar      closure = 0.0;         // the RAW closure, as always
+        scalar      sumExternal = 0.0;
+        int         nItems = 0;
+        bool        declares = false;
+        std::vector<const ProcessStream*> ins, outs;
+    };
+    std::vector<UnitRow> rows;
+    rows.reserve(units.size());
     // Σ of each unit's genuine STREAM-boundary energy (heat/work crossing the
     // boundary INTO that unit's process streams), accumulated with EXACTLY the
     // same exclusions the per-unit closure uses: internal process-to-process
@@ -132,7 +165,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                       << "  (curate the standardThermochemistry block; the per-unit "
                          "closure is reported as a gap, not a sensible "
                          "fallback)\n";
-            f << u.name << ",n/a,n/a,n/a,n/a,n/a,gap\n";
+            rows.push_back(UnitRow{ u.name, 1 });
             ++gapCount;
             // A GAPPED unit still has process streams (the datum is missing,
             // not the topology), so its real boundary duty crosses the boundary
@@ -149,9 +182,10 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             // conversion node (the electricLoad generator) -- its KPI is energy
             // that already crossed at the upstream unit, so it is NOT added to
             // the plant-boundary sum (it would double-count).
-            f << u.name << ",n/a,n/a,n/a,";
-            if (nItems > 0) f << std::fixed << std::setprecision(4) << sumExternal;
-            f << ",n/a,n/a\n";
+            UnitRow r{ u.name, 2 };
+            r.nItems      = nItems;
+            r.sumExternal = sumExternal;
+            rows.push_back(std::move(r));
             ++naCount;
             continue;
         }
@@ -209,10 +243,117 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             items   = dH;
         }
 
-        f << u.name << "," << std::fixed << std::setprecision(4)
-          << e.hIn << "," << e.hOut << "," << dH << ","
-          << items << "," << std::setprecision(2) << closure << ","
-          << "elements" << "\n";
+        UnitRow r{ u.name, 0 };
+        r.hIn = e.hIn; r.hOut = e.hOut; r.dH = dH; r.items = items;
+        r.closure = closure; r.declares = declares;
+        r.nItems = nItems;  r.sumExternal = sumExternal;
+        r.ins  = lookup(u.ins);
+        r.outs = lookup(u.outs);
+        rows.push_back(std::move(r));
+    }
+
+    // ---- PASS 2: the model-boundary ledger, then the rows and the alarms --
+    //  THE AUDIT IS INDEPENDENT BY CONSTRUCTION.  It is handed the case's
+    //  DICTS and the record Database -- never `Flowsheet::thermoFor`, never a
+    //  package the unit built, never a dH the unit computed.  It reads each
+    //  unit's declared `thermo {}` out of the flowsheetDict, assembles that
+    //  world itself through the public ThermoPackageBuilder, prices the same
+    //  streams in both packages at the same (T, P, z), and then checks that
+    //  its own step reproduces the raw imbalance measured above.  See
+    //  reporting/ModelBoundaryLedger.H sec.3 for why that duplication is
+    //  deliberate despite the arity doctrine.
+    std::vector<reporting::ClosureInputs> auditIn;
+    std::map<std::string, std::size_t>    auditOf;   // unit -> index in ledger
+    for (const auto& r : rows)
+    {
+        //  Only a unit whose closure is actually RECONCILED against declared
+        //  heat has an imbalance to explain.  A unit that declares none has
+        //  dH as its net duty by definition -- there is no residual, so
+        //  there is nothing for a boundary step to account for.
+        if (r.kind != 0 || !r.declares) continue;
+        reporting::ClosureInputs ci;
+        ci.unit = r.name; ci.dH_kW = r.dH; ci.items_kW = r.items;
+        ci.declaresItems = true;
+        ci.ins = r.ins; ci.outs = r.outs;
+        auditOf[r.name] = auditIn.size();
+        auditIn.push_back(std::move(ci));
+    }
+
+    std::vector<EnergyClosureRecord> ledger;
+    if (!auditIn.empty())
+    {
+        try
+        {
+            reporting::ModelBoundaryLedger audit(
+                ctx.flowsheetDict, ctx.thermo, ctx.packageDict, ctx.db,
+                ctx.chemistry, ctx.solverDict, ctx.verbosity);
+            ledger = audit.audit(auditIn);
+        }
+        catch (const std::exception& ex)
+        {
+            //  The auditor itself failed.  Every audited unit keeps its RAW
+            //  imbalance and its alarm; nothing is credited on a broken
+            //  audit, and the reason is named.
+            ledger.clear();
+            for (const auto& ci : auditIn)
+            {
+                EnergyClosureRecord e;
+                e.unit   = ci.unit;
+                e.status = "unavailable";
+                e.reason = std::string("the model-boundary audit could not"
+                                       " run -- ") + ex.what();
+                e.raw_kW = ci.dH_kW - ci.items_kW;
+                e.remaining_kW = e.raw_kW;
+                e.rule   = "UNAVAILABLE -- no independent evaluation possible";
+                ledger.push_back(std::move(e));
+            }
+            std::cerr << "WARNING: energyBalance: model-boundary audit"
+                         " unavailable -- " << ex.what() << "\n";
+        }
+    }
+
+    for (const auto& r : rows)
+    {
+        if (r.kind == 1) { f << r.name << ",n/a,n/a,n/a,n/a,n/a,gap,"
+                                "n/a,n/a,n/a,n/a,n/a\n"; continue; }
+        if (r.kind == 2)
+        {
+            f << r.name << ",n/a,n/a,n/a,";
+            if (r.nItems > 0)
+                f << std::fixed << std::setprecision(4) << r.sumExternal;
+            f << ",n/a,n/a,n/a,n/a,n/a,n/a,n/a\n";
+            continue;
+        }
+
+        const EnergyClosureRecord* le = nullptr;
+        auto ai = auditOf.find(r.name);
+        if (ai != auditOf.end() && ai->second < ledger.size())
+            le = &ledger[ai->second];
+
+        //  The step is credited ONLY when the audit reproduced it.  Any
+        //  other status leaves the adjusted closure equal to the raw one --
+        //  and therefore leaves the alarm exactly where it was.
+        const bool credited = le && le->status == "accounted";
+        const scalar step   = credited ? le->step_kW : 0.0;
+        const scalar adjDH  = r.dH - step;
+        scalar adjClosure   = r.closure;
+        if (r.declares)
+            adjClosure = (std::abs(r.items) > 1.0e-9)
+                ? 100.0 * adjDH / r.items
+                : (std::abs(adjDH) < 1.0e-6 ? 100.0 : 0.0);
+
+        f << r.name << "," << std::fixed << std::setprecision(4)
+          << r.hIn << "," << r.hOut << "," << r.dH << ","
+          << r.items << "," << std::setprecision(2) << r.closure << ","
+          << "elements" << ",";
+        if (le)
+            f << std::fixed << std::setprecision(4)
+              << le->raw_kW << "," << le->step_kW << ","
+              << le->remaining_kW << "," << std::setprecision(2)
+              << adjClosure << "," << le->status << "\n";
+        else
+            f << "n/a,n/a,n/a,n/a,n/a\n";
+
         // pass-12 (student): a ~1% first-law gap sat silently in the CSV while
         // every default announces aloud -- the ledger now SPEAKS when a unit's
         // closure leaves 100 +- 0.5%.
@@ -221,16 +362,71 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  balance warned about and the element balance did not mention at
         //  all: three registers for three conservation laws, which is not a
         //  convention a reader can learn.
-        if (declares && std::abs(closure - 100.0) > reporting::energyBandPct)
-            reporting::balanceAlarm(
-                "ENERGY", "unit '" + u.name + "'",
-                "dH = " + std::to_string(dH) + " kW vs declared items "
-                + std::to_string(items) + " kW  ("
-                + std::to_string(closure) + " % closure)",
+        //  THE VERDICT IS NOW TAKEN ON THE *REMAINING* RESIDUAL -- what is
+        //  left once an identified, independently reproduced model-boundary
+        //  step is accounted for.  A unit with no such boundary has step 0,
+        //  so its verdict, its band and its message are byte-identical to
+        //  what they were before this existed.
+        if (r.declares && std::abs(adjClosure - 100.0) > reporting::energyBandPct)
+        {
+            std::string remedy =
                 "An UNEXPLAINED first-law residual: inspect the unit's "
                 "enthalpy paths.  Ledger: "
-                "reports/balances/energyBalance_byUnit.csv");
+                "reports/balances/energyBalance_byUnit.csv";
+            if (le && le->status != "none")
+                remedy = "The model-boundary audit did NOT account for this "
+                         "residual (" + le->status + "): " + le->reason
+                       + ".  Nothing was credited.  Ledger: "
+                         "reports/balances/energyBalance_byUnit.csv";
+            reporting::balanceAlarm(
+                "ENERGY", "unit '" + r.name + "'",
+                "dH = " + std::to_string(r.dH) + " kW vs declared items "
+                + std::to_string(r.items) + " kW  ("
+                + std::to_string(adjClosure) + " % closure)",
+                remedy);
+        }
+        else if (credited && ctx.verbosity >= 2)
+            std::cout << "  [report] energyBalance: unit '" << r.name
+                      << "' -- raw imbalance " << std::fixed
+                      << std::setprecision(4) << le->raw_kW
+                      << " kW EXPLAINED by a model-boundary step of "
+                      << le->step_kW << " kW ("
+                      << le->upstreamWorld << "  ->  " << le->downstreamWorld
+                      << "); remaining " << le->remaining_kW << " kW, "
+                      << le->criterion << "\n";
     }
+
+    //  The ledger itself, with everything a reader needs to check the claim:
+    //  BOTH sides of the boundary by their declared model names, the rule
+    //  that authorises the transition, and the step's sign, units and
+    //  magnitude -- beside the three quantities, kept apart.
+    if (!ledger.empty())
+    {
+        f << "\n# model-boundary ledger (H is the conserved truth; T is the "
+             "model-dependent readout)\n"
+             "unit,status,upstream_world,downstream_world,rule,sign,units,"
+             "magnitude,raw_imbalance_kW,boundary_step_kW,remaining_kW,"
+             "norm_residual,criterion,per_stream_step_kW,reason\n";
+        auto clean = [](std::string s)
+        {
+            std::replace(s.begin(), s.end(), ',', ';');
+            std::replace(s.begin(), s.end(), '\n', ' ');
+            return s;
+        };
+        for (const auto& e : ledger)
+            f << e.unit << "," << e.status << "," << clean(e.upstreamWorld)
+              << "," << clean(e.downstreamWorld) << "," << clean(e.rule)
+              << "," << e.sign << "," << e.units << ","
+              << std::fixed << std::setprecision(4) << e.magnitude << ","
+              << e.raw_kW << "," << e.step_kW << "," << e.remaining_kW << ","
+              << std::scientific << std::setprecision(6) << e.normResidual
+              << "," << clean(e.criterion) << "," << clean(e.detail)
+              << "," << clean(e.reason) << "\n";
+        f << std::fixed;
+    }
+    //  Same three quantities into the result JSON, through the existing
+    //  emitter path (result/ResultEmitter.cpp reads `energyClosures`).
+    ctx.result.energyClosures = ledger;
 
     // Breakdown: each unit's individual declared energy items.
     f << "\n# declared energy items (kW)\nunit,item,value\n";

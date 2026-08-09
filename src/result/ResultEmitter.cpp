@@ -433,6 +433,42 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << " ]";
     }
 
+    // ---- per-unit energy closure with the model-boundary step accounted --
+    //   THREE QUANTITIES, NEVER COLLAPSED (ruling 2026-08-09): the RAW
+    //   physical imbalance, the enthalpy STEP attributed to an identified
+    //   model transition, and what REMAINS unexplained after it.  The entry
+    //   names both sides of the boundary by their declared models, the rule
+    //   that authorises the transition, and the step's sign / units /
+    //   magnitude, so a reader of the JSON can check the claim without the
+    //   CSV.  Only `status: accounted` credited the step.
+    if (!r.energyClosures.empty())
+    {
+        os << ",\n  \"energyClosures\": [";
+        bool firstE = true;
+        for (const auto& e : r.energyClosures)
+        {
+            os << (firstE ? " " : ", ");
+            firstE = false;
+            os << "{ \"unit\": " << esc(e.unit)
+               << ", \"status\": " << esc(e.status)
+               << ", \"raw_kW\": " << num(e.raw_kW)
+               << ", \"step_kW\": " << num(e.step_kW)
+               << ", \"remaining_kW\": " << num(e.remaining_kW)
+               << ", \"upstreamWorld\": " << esc(e.upstreamWorld)
+               << ", \"downstreamWorld\": " << esc(e.downstreamWorld)
+               << ", \"rule\": " << esc(e.rule)
+               << ", \"sign\": " << esc(e.sign)
+               << ", \"units\": " << esc(e.units)
+               << ", \"magnitude\": " << num(e.magnitude)
+               << ", \"normResidual\": " << num(e.normResidual)
+               << ", \"criterion\": " << esc(e.criterion);
+            if (!e.detail.empty()) os << ", \"perStream\": " << esc(e.detail);
+            if (!e.reason.empty()) os << ", \"reason\": " << esc(e.reason);
+            os << " }";
+        }
+        os << " ]";
+    }
+
     // ---- utility allocation (per-duty utility sizing) ------------
     //   Each heat duty (a unit's Q, or a column reboiler/condenser port)
     //   sized to a plant utility by temperature level --- or flagged

@@ -174,6 +174,54 @@ struct ModelBoundaryFinding
     std::string reason;          // populated when refused
 };
 
+// THE PER-UNIT ENERGY CLOSURE, with the model-boundary step kept SEPARATE
+// from the imbalance it explains (ruling 2026-08-09).
+//
+// Three quantities, never collapsed into one:
+//   (a) `raw_kW`        the physical imbalance BEFORE any model-boundary
+//                       accounting -- dH over the unit's process streams,
+//                       priced in the REPORT's package, minus the unit's
+//                       declared energy items;
+//   (b) `step_kW`       the enthalpy STEP attributed to an identified
+//                       model/basis transition, computed INDEPENDENTLY of
+//                       the unit that provoked it;
+//   (c) `remaining_kW`  what is still unexplained once (b) is credited.
+//
+// `status` says what happened to the boundary, in one word a reader can
+// sort on: `none` (no declared per-unit world -- (b) is 0 and (c) == (a)),
+// `accounted` (a declared world whose step reproduced (a) within the
+// declared criteria), `unconfirmed` (a declared world whose step did NOT
+// reproduce (a) -- NOT credited), `refused` (a transition the doctrine
+// forbids pricing: a speciation or datum flip), `ambiguous` (more than one
+// declaration answers to the unit's name), `unavailable` (the auditor could
+// not reach the case's declared thermo at all).  Only `accounted` credits
+// the step; every other value leaves (c) == (a) and the RED alarm standing.
+struct EnergyClosureRecord
+{
+    std::string unit;
+    std::string status = "none";
+    std::string reason;              // populated unless status == accounted
+
+    // Both sides of the boundary, BY THEIR DECLARED MODEL NAMES, plus the
+    // rule that authorises the transition and the step's sign / units /
+    // magnitude.  An entry that cannot name all of these is not an entry.
+    std::string upstreamWorld;
+    std::string downstreamWorld;
+    std::string rule;
+    std::string sign;                // "+" | "-" | "0"
+    std::string units = "kW";
+    scalar      magnitude = 0.0;     // |step_kW|
+
+    scalar raw_kW       = 0.0;       // (a)
+    scalar step_kW      = 0.0;       // (b)
+    scalar remaining_kW = 0.0;       // (c)
+
+    // The verdict machinery: solver/Convergence.H's ONE normalization.
+    scalar      normResidual = 0.0;
+    std::string criterion;
+    std::string detail;              // per-stream steps, ';' separated
+};
+
 // One row of the discounted-cash-flow (DCF) appraisal table -- the classic
 // year-by-year income / cash-flow statement (Perry / Turton §10).  Year 0 is
 // construction (the investment outflow); years 1..N are operating years.  All
