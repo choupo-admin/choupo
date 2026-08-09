@@ -328,6 +328,119 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                    << num(sp.flows[k].second);
             os << "} }";
         }
+
+        //  THE ANALYSIS RECONCILIATION -- a MEASUREMENT record, and it is
+        //  deliberately NOT mixed into anything above.  `speciation` beside
+        //  it is what the chemistry CALCULATED; this is what a laboratory
+        //  REPORTED and how far it had to be moved to give the chemistry an
+        //  admissible inlet.  The two are different kinds of number and a
+        //  reader must not have to remember which is which, so they are kept
+        //  apart by three marks that survive being read out of order:
+        //    * these rows carry `reportedValue`; nothing calculated has one;
+        //    * corrections are quoted in SIGMA, which is meaningless for a
+        //      calculated quantity;
+        //    * these rows are keyed by the author's SHEET LABEL, `speciation`
+        //      by SPECIES ID -- two different key spaces.
+        //  `note` says it in words for a consumer that shows the payload raw.
+        if (s.analysis)
+        {
+            const auto& a = *s.analysis;
+            os << ", \"analysisReconciliation\": { \"note\": \"MEASUREMENTS and"
+                  " the distance each was moved to obtain a physically"
+                  " admissible inlet -- NOT chemistry results (those are in"
+                  " speciation{}).  Rows are keyed by the author's sheet"
+                  " label and carry reportedValue; corrections are in"
+                  " sigma.\"";
+            os << ", \"method\": "
+               << esc(a.method.empty() ? std::string("none") : a.method);
+            os << ", \"basis\": " << esc(a.basis);
+            if (!a.enforced.empty())
+            {
+                os << ", \"enforce\": [";
+                for (std::size_t k = 0; k < a.enforced.size(); ++k)
+                    os << (k ? ", " : "") << esc(a.enforced[k]);
+                os << "]";
+            }
+            if (a.pH_valid) os << ", \"pHReported\": " << num(a.pH);
+            os << ", \"chargeImbalanceBeforePct\": " << num(a.imbalancePctBefore)
+               << ", \"chargeImbalanceAfterPct\": "  << num(a.imbalancePctAfter)
+               << ", \"chargeResidueBefore\": "      << num(a.imbalanceBefore)
+               << ", \"chargeResidueAfter\": "       << num(a.imbalanceAfter);
+            if (!a.constraints.empty())
+            {
+                os << ", \"objective\": " << num(a.objective)
+                   << ", \"workingSetChanges\": " << a.qpIterations;
+                if (a.maxCorrectionSigma > 0.0)
+                    os << ", \"maximumCorrectionSigma\": "
+                       << num(a.maxCorrectionSigma);
+                os << ", \"constraints\": [";
+                for (std::size_t k = 0; k < a.constraints.size(); ++k)
+                {
+                    const auto& c = a.constraints[k];
+                    os << (k ? ", " : "") << "{ \"name\": " << esc(c.name)
+                       << ", \"family\": " << esc(c.family)
+                       << ", \"meaning\": " << esc(c.meaning)
+                       << ", \"residualBefore\": " << num(c.residualBefore)
+                       << ", \"residualAfter\": "  << num(c.residualAfter)
+                       << ", \"multiplier\": "     << num(c.multiplier)
+                       << ", \"binding\": " << (c.binding ? "true" : "false")
+                       << " }";
+                }
+                os << "]";
+            }
+            os << ", \"adjustments\": [";
+            bool firstA = true;
+            for (const auto& an : a.analytes)
+            {
+                const scalar d = an.reconciled - an.measured;
+                if (a.constraints.empty() && d == 0.0) continue;
+                os << (firstA ? "" : ", ");
+                firstA = false;
+                os << "{ \"label\": "
+                   << esc(an.label.empty() ? an.species : an.label);
+                if (!an.species.empty()) os << ", \"species\": " << esc(an.species);
+                if (!an.element.empty()) os << ", \"element\": " << esc(an.element);
+                os << ", \"reportedValue\": " << num(an.measured)
+                   << ", \"adjustedValue\": "  << num(an.reconciled)
+                   << ", \"correction\": "     << num(d)
+                   << ", \"sigma\": "          << num(an.sigma)
+                   << ", \"uncertaintyPct\": " << num(an.uncertaintyPct)
+                   << ", \"uncertaintyOrigin\": " << esc(an.uncertaintyOrigin)
+                   << ", \"weight\": "
+                   << num(an.sigma > 0.0 ? 1.0/(an.sigma*an.sigma) : 0.0)
+                   << ", \"correctionSigma\": " << num(an.correctionSigma)
+                   << ", \"constraintResponsible\": "
+                   << esc(an.responsibleConstraint.empty()
+                              ? std::string("none") : an.responsibleConstraint)
+                   << ", \"responsibleShare\": " << num(an.responsibleShare)
+                   << ", \"atNonNegativityBound\": "
+                   << (an.atNonNegativityBound ? "true" : "false");
+                if (!an.roles.empty())
+                {
+                    os << ", \"causedBy\": {";
+                    for (std::size_t k = 0; k < an.roles.size(); ++k)
+                        os << (k ? ", " : "") << esc(an.roles[k].constraint)
+                           << ": " << num(an.roles[k].causedSigma);
+                    os << "}, \"closure\": {";
+                    bool f2 = true;
+                    for (const auto& ro : an.roles)
+                    {
+                        if (ro.constraint == "nonNegativity") continue;
+                        os << (f2 ? "" : ", ") << esc(ro.constraint) << ": "
+                           << num(ro.closure);
+                        f2 = false;
+                    }
+                    os << "}";
+                }
+                os << " }";
+            }
+            os << "]";
+            os << ", \"conservedInventory\": {";
+            for (std::size_t k = 0; k < a.conservedInventory.size(); ++k)
+                os << (k ? ", " : "") << esc(a.conservedInventory[k].first)
+                   << ": " << num(a.conservedInventory[k].second);
+            os << "} }";
+        }
         os << " }";
     }
     os << "\n  },\n";
