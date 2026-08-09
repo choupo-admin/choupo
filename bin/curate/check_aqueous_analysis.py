@@ -41,8 +41,10 @@ WHAT THIS CHECKS -- the six arms of the scope doc, section 6.
 
   4. FIVE REFUSALS, EACH BY NAME, fired through the real reader: no density
      route; a correction beyond the declared limit; pH named as the balancing
-     variable; `weightedLeastSquares` declared with no `enforce ( ... )`; two
-     material forms in one file.  Plus the two halves of the no-rule posture
+     variable; `weightedLeastSquares` declared with no `enforce ( ... )`; the
+     least-squares-only `maximumCorrection { ... in sigma; }` spelling met on a
+     single-species rule; two material forms in one file.
+     Plus the two halves of the no-rule posture
      (Q3): an analysis that does NOT close and declares no rule REFUSES naming
      both legal remedies, and one that DOES close passes through with the
      imbalance announced.
@@ -368,6 +370,20 @@ refuses("wls", analysis(method="weightedLeastSquares;"),
         "reconciliation -- the unconstrained minimum is the measurement "
         "itself, so the record would claim a correction that never happened")
 
+#  A2 added `maximumCorrection { value 3; in sigma; }`, and it belongs to the
+#  least squares alone: a single-species rule has only the measured value to
+#  bound against, because it does not require the ion it moves to declare an
+#  uncertainty at all.  Pinned here so the sigma spelling meeting the wrong
+#  method says which method it belongs to, instead of the parser's honest but
+#  unhelpful "entry 'maximumCorrection' is not a scalar".
+refuses("sigmalimitonrule",
+        analysis(recon=RECON.format(method="adjustChloride;", limit="10")
+                 .replace("maximumCorrection  10 percent;",
+                          "maximumCorrection { value 3; in sigma; }")),
+        "is the WEIGHTED-LEAST-SQUARES form",
+        "the sigma form bounds a correction against a declared uncertainty, "
+        "and a single-species rule may be moving an ion that declares none")
+
 refuses("twoforms",
         analysis() + "componentMolarFlows\n{\n    water 100 kmol/h;\n}\n",
         "conflicting material-flow specifications",
@@ -445,7 +461,7 @@ print("check_aqueous_analysis: OK -- the analysis inlet resolves through its "
       "and the charge the listed adjustments move equals the residue they "
       "cancel; eight refusals fire BY NAME (no density route, iterative "
       "density, correction over the limit, pH as the balancing variable, "
-      "weightedLeastSquares without an enforce list, two material forms, no rule on a non-closing "
+      "weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing "
       "analysis) and a closing analysis passes through ANNOUNCED; a plain "
       "componentMolarFlows stream produces no record at all.  NOT CHECKED: "
       "whether the reconciled water is RIGHT (absorbing a residue into one "

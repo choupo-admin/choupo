@@ -21,7 +21,7 @@
     },
     "check_aqueous_analysis": {
       "exit": 0,
-      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative density, correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
+      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative density, correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
     },
     "check_aqueous_navigation": {
       "exit": 0,
@@ -205,7 +205,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40355 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40358 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,

@@ -2074,6 +2074,22 @@ ProcessStream readStreamState(const fs::path&       file,
                     " into a plausible one.  The limit is what makes the"
                     " difference between reconciling a measurement and"
                     " manufacturing it.");
+            //  The SIGMA form belongs to the least squares, and saying so
+            //  beats the parser's honest but unhelpful "entry
+            //  'maximumCorrection' is not a scalar" -- a reader who met the
+            //  sigma spelling in the A2 section would otherwise have to guess
+            //  which of the two methods it belonged to.
+            if (std::holds_alternative<DictPtr>(rc->entryValue("maximumCorrection")))
+                throw std::runtime_error("stream state '" + name + "':"
+                    " `maximumCorrection { ... in sigma; }` is the"
+                    " WEIGHTED-LEAST-SQUARES form, and this rule is `method "
+                    + m + ";`.  A single-species rule bounds its correction"
+                    " against the MEASURED VALUE, which is the only scale it"
+                    " has -- it does not require the ion it moves to declare"
+                    " an uncertainty at all, so there may be no sigma to bound"
+                    " against.  Write `maximumCorrection <x> percent;` here,"
+                    " or declare `method weightedLeastSquares;`, where every"
+                    " quantity carries a sigma by construction.");
             rec->maximumCorrectionPct =
                 100.0 * rc->lookupScalar("maximumCorrection", Dims::dimensionless);
 
