@@ -237,3 +237,57 @@ freezer duty golden (−167.4 kW = sensible + fusion), and exactly one
 golden moved — the measured blast radius held live.  One more
 permanently-green-gate specimen fell on the way: the old A10 withhold arm's
 parse could never have seen a published Q (recorded in the gate).
+
+## Slices 2 and 3 SHIPPED (2026-08-09) — what was measured, not predicted
+
+**Slice 2 (R-E1/R-E2).**  The flash re-flashes every UNPINNED feed at its
+own (T, P, z) through the same `solveCore` the unit uses and prices H_in on
+that resolved state; a PINNED feed keeps its declared reading and, where
+that costs energy at unchanged (T, P), the duty is ANNOUNCED as the price
+of the pin.  `ProcessStream::phasePinned` carries the authored-vs-carried
+distinction (caveat C1) — set by the file reader alone, never by a
+producing unit.
+
+**Slice 3 (R-E5).**  `streamH_elements` obtains H the way the duty does.
+Two things the measurement forced, neither in the plan: a stream whose own
+equilibrium the package REFUSES to resolve is priced on the state it
+carries and says so (flash19's vapour outlet has no Ca, and the first
+version turned a 101 % closure into a REFUSED balance); and the resolved
+state's crystals needed the solid rung too — the third time that same
+asymmetry appeared in this campaign, each occurrence visible only once the
+previous fix removed the noise hiding it.
+
+**flash19, the case that started this**: `H_in = H_out = −7953.9193 kW`,
+`dH = 0.0000`, closure **100.00 %**, unit `Q = 0`.  The identity operation
+costs nothing, on every surface.
+
+**The blast radius, measured: ONLY DUTIES MOVED.**  Across 442 cases not
+one composition, vapour fraction, pH or material flow changed; the three
+non-duty rows are optim05's NPV/COM/payback, computed from a duty.  Ten
+goldens re-recorded, each with its old→new value in the commit.  Two
+corrections to the earlier prediction, both from measurement: **flash13
+does NOT move** (my sweep compared feed vs operating TEMPERATURE only, and
+flash13 is a vacuum flash — 1 atm feed, 0.65 atm operation — so its 669 kW
+is genuine pressure-drop duty), and **column13 does NOT move** (the duty
+now prices a carried state and announces it, matching the report, instead
+of withholding itself).
+
+**cavett01 CHANGED SIGN**: FL2 +125 080 → −237 665 kW, FL3 +45 785 →
+−150 873 kW.  Their feeds are 95 % and 89 % vapour at their own recorded
+states and the old duty priced them as liquid, so the case asserted those
+drums must be HEATED when the physics says COOLED.  The published anchor
+(Rosen & Pauls) is on COMPOSITIONS, none of which moved.
+
+**A defect the coherence exposed, NOT fixed here** (a unit's physics is not
+a reporting slice's business): `process02`'s heater declares Q = 0.40 kW
+and writes an outlet at 362 K which, resolved at its own (T, P, z), is
+TWO-PHASE and costs 3.31 kW — 827 % closure.  It heats sensibly straight
+past the bubble point; pricing that outlet as liquid had hidden it.
+
+**Also on this day, from Vítor's own run of flash21**: the per-unit MASS
+surface used FLUID mass, so crystalliser01 had been losing two tonnes an
+hour of its own sugar product, silently, in a green suite, for as long as
+the case existed (`F_massTotal`, `check_mass_closure`); and the three
+conservation laws now fail in RED from one home
+(`src/reporting/BalanceAlarm.H`), TTY-guarded, advisory-backed, each
+branch watched firing before being trusted.
