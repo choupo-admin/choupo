@@ -115,6 +115,10 @@
       "exit": 0,
       "claim": "duplicate-key gate: every dict on disk declares each key once (standards, local, tutorials, design drafts)"
     },
+    "check_duty_inversion": {
+      "exit": 0,
+      "claim": "check_duty_inversion: OK -- a Q-specified heater's outlet state satisfies H_out - H_in = Q within 0.5 percentage points of closure on process02 (whose outlet genuinely crosses the saturation dome, vf strictly inside (0,1)), the result JSON's own stream enthalpies agree with the unit's declared Q, a single-phase gas heater is left exactly single-phase, and a case with no elements-datum enthalpy ANNOUNCES that its sensible inversion cannot see a phase change.  NOT CHECKED: whether T_out is right in absolute terms (the first law fixes the outlet ENTHALPY, not the records behind the temperature), and no unit other than `heater`."
+    },
     "check_ebullioscopic": {
       "exit": 0,
       "claim": "check_ebullioscopic: OK -- K_b is derived from water.dat's own Tb/MW/HvapTb (0.512942 K.kg/mol, recomputed here, not pinned), the derivation and its declared anchor 0.512 are both announced and agree to 0.184 %, and a case that declares no K_b still gets no BPE.  K_f is NO LONGER THIS GATE'S SUBJECT: it was promoted from reference-only to derived on 2026-08-07 (water.dat gained an IAPWS heat of fusion and SolidPhase became its consumer), and its derivation, anchor and negatives are checked by check_ice_freezing, which this gate verifies exists and is in the suite.  All that is asserted here is the HANDOVER.  NOT CHECKED: whether Component.H's and water.dat's K_f notes are still accurate -- they were rewritten with the promotion, but a text search cannot tell a live claim from a recorded one, and three attempts to gate it failed in three different directions (missed a stale note; fired on a corrected one; survived a sabotage by reading the K_b paragraph above).  Worth recording: the old trip-wire did NOT fire on the promotion -- it watched the accessor K_f(), and the consumer reads subHfus()/subTripleT() instead, so this gate printed four false clauses and exited 0."
