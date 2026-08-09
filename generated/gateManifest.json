@@ -93,11 +93,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 111 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 112 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 51 design record(s) appear in the index, and its stated counts (24 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 52 design record(s) appear in the index, and its stated counts (25 state a rejected alternative, 27 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -105,7 +105,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 247 path mention(s) and 107 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 248 path mention(s) and 107 case name(s) across 19 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
@@ -189,7 +189,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 112 gates, and the other 108 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 113 gates, and the other 109 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -201,7 +201,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40320 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40324 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -237,7 +237,7 @@
     },
     "check_layering": {
       "exit": 0,
-      "claim": "check_layering: OK -- 58 subsystem edge(s) measured across all 14 declared subsystems."
+      "claim": "check_layering: OK -- 59 subsystem edge(s) measured across all 14 declared subsystems."
     },
     "check_legacy_schema": {
       "exit": 0,
@@ -262,6 +262,10 @@
     "check_mixing": {
       "exit": 0,
       "claim": "electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK."
+    },
+    "check_model_boundary_ledger": {
+      "exit": 0,
+      "claim": "check_model_boundary_ledger: OK -- the raw imbalance, the declared model-boundary step and the remaining residual are three distinct fields in both the CSV and the result JSON and they agree; the entry names both worlds by their declared models plus the rule, sign, units and magnitude; the verdict is taken on the REMAINING residual under the declared normalized criteria (an unmeetable tolerance refuses the same step and the alarm returns); an imbalance with no declared override is credited nothing and still alarms; and a step that does not reproduce its imbalance is printed but not credited.  NOT claimed: that any step is physically correct, nor any coverage of the speciation / datum / reading refusals, which no corpus case exercises."
     },
     "check_no_unit_chemistry": {
       "exit": 0,
@@ -397,7 +401,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 611 source files, each includes what it uses."
+      "claim": "std includes: 613 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,
