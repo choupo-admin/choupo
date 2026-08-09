@@ -134,12 +134,28 @@ Description
     mean "require exact zero".
 
     DEFAULTS.  `ConvergenceControls` is default-constructed to
-    `tolerance 1e-9`, `relTol 0`, `maxIter 60`, which are the numbers the
-    reactive-equilibrium outer Newton carried hard-coded before this header
-    existed.  They are documented here, they are the same for every solver
-    that adopts this contract unless it overrides them at its own call site,
-    and `describe()` exists so a run can ANNOUNCE them: a default that is
-    never printed is indistinguishable from a number nobody chose.
+    `tolerance 1e-12`, `relTol 0`, `maxIter 60`.  They are documented here,
+    they are the same for every solver that adopts this contract unless it
+    overrides them at its own call site, and `describe()` exists so a run can
+    ANNOUNCE them: a default that is never printed is indistinguishable from
+    a number nobody chose.
+
+    WHY 1e-12 AND NOT THE 1e-9 THIS REPLACED -- measured, not chosen.  The
+    outer Newton previously tested a RAW residual against 1e-9.  The same
+    number applied to a NORMALIZED residual is a LOOSER test by exactly the
+    normalization factor (r_norm = r_raw / normFactor, and normFactor > 1 on
+    every case measured -- 7.40 on flash17).  So carrying `1e-9` across the
+    change silently loosened every adopting solver, and one case proved it:
+    `check_flash_complex` exists precisely to catch a slack tolerance that
+    degrades an answer WITHOUT failing anything, and it fired -- flashComplex's
+    joint residual went 4.6e-13 -> 1.41e-08 while every golden still passed.
+    That gate was written for this defect and caught it on the first run.
+
+    1e-12 restores flashComplex to its recorded residual.  It is a DEFAULT,
+    not a floor: a case that wants a looser stop declares one in its own
+    solverDict, where a reader can see it.  What may not happen is a solver
+    quietly converging less than it used to because a number kept its digits
+    while changing its meaning.
 
 \*---------------------------------------------------------------------------*/
 
@@ -162,7 +178,7 @@ namespace Choupo::solver {
 struct ConvergenceControls
 {
     //- Absolute test on the NORMALIZED residual.
-    scalar tolerance = 1.0e-9;
+    scalar tolerance = 1.0e-12;
 
     //- Relative-reduction test, normFinal/normInitial.  0 disables it.
     scalar relTol = 0.0;
