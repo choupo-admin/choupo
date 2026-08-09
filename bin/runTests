@@ -2135,6 +2135,24 @@ PYEOF
     fi
     rm -f /tmp/aqagate.$$
 
+    # Aqueous-reconciliation gate (A2): constrained WEIGHTED LEAST SQUARES
+    # over the measured analytical quantities, recomputed independently here
+    # (its own KKT elimination from the authored mg/L); the six inspectable
+    # fields per adjusted quantity; the two published identities; and the
+    # ONE-WAY BOUNDARY as a COMPILE FACT -- the reconciler's object references
+    # exactly one Choupo symbol, so it cannot reach the equilibrium it feeds.
+    # A golden cannot see any of it: the fit happens on read, and an
+    # UNWEIGHTED fit passes the corpus at 1e-4 (measured, not assumed).
+    if "$ROOT/bin/curate/check_aqueous_reconciliation.py" > /tmp/aqrgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "aqueous-reconciliation-gate" "$(head -1 /tmp/aqrgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_aqueous_reconciliation.py)\n" "aqueous-reconciliation-gate"
+        cat /tmp/aqrgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/aqrgate.$$
+
     if "$ROOT/bin/curate/check_element_balance.py" > /tmp/ebgate.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "element-balance-gate" "$(head -1 /tmp/ebgate.$$)"
         pass=$((pass+1))
