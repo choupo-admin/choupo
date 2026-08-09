@@ -1,8 +1,9 @@
 # Aqueous analysis as a first-class inlet — inspection and proposed slice
 
-> **KIND: SCOPE.  Status: A1 SHIPPED 2026-08-09.**  §8 records what was
-> built, what was measured, and the three answers that made it buildable.
-> A2 (weighted least squares) is NOT built and is refused BY NAME.
+> **KIND: SCOPE.  Status: A1 SHIPPED 2026-08-09 · A2 SHIPPED 2026-08-09.**
+> §8 records A1; **§9 records A2** — constrained weighted least squares, what
+> was measured, the boundary that was made structural, and the two things
+> that were deliberately NOT built.
 >
 > The inspection below is kept as written — it is the record of what the
 > engine had before the slice, and §1's finding (that layers 1 and 3 already
@@ -268,3 +269,256 @@ now records what was observed rather than what was expected.
   wrong answer — the charge-weighted adjustment identity does not close —
   and it is named here rather than guarded, because A1's budget was the
   contract and adding refusals outside it is how a slice stops being one.
+
+---
+
+## 9. A2 as SHIPPED (2026-08-09) — constrained weighted least squares
+
+### 9.1 Vítor's ruling, and the one line that shaped the build
+
+> laboratory analysis → reconciliation → ONE conserved admissible
+> composition → aqueous equilibrium / speciation
+>
+> "Weighted least squares should reconcile the authored laboratory analysis
+> into one physically admissible inlet specification.  It must NOT become
+> part of the aqueous-equilibrium solver itself … not a coupled loop in which
+> equilibrium starts modifying measurements to make the chemistry easier to
+> satisfy."
+
+**The arrow is one-way, and A2 makes that STRUCTURAL rather than incidental.**
+The reconciler is its own translation unit, `src/streams/AnalysisReconciler.{H,cpp}`,
+whose entire include list is `core/Types.H`, `solver/ActiveSetQP.H` and the
+standard library.  It cannot NAME `ThermoPackage`, `SpeciationSolver`,
+`ReactiveVLE`, `ElectrolyteModel` or an activity model, so it cannot call one
+— not by accident, not after a refactor that "just needs gamma here".  Its
+interface is POD: labels, numbers, charges, atom counts and linear rows, all
+of them facts the caller resolved from declared records before the call.
+There is no seam through which an equilibrium result could be passed in even
+if a caller wanted to.  The reconciler runs to completion and hands back one
+composition; only then does any unit see the stream.
+
+`check_aqueous_reconciliation.py` arm A7 makes it a COMPILE FACT on two
+independent readings: the source includes nothing from `thermo/` and names no
+chemistry type, **and** the compiled `AnalysisReconciler.o` references exactly
+ONE Choupo symbol, `Choupo::solver::activeSetQP` — a whitelist one name long
+rather than a blacklist that ages.  Same posture as the one-entry lockdown in
+`check_solid_service` A8.
+
+### 9.2 What was built
+
+* **`method weightedLeastSquares;`** — minimise `Σ ((x−m)/σ)²` over the
+  measured analytical quantities, subject to the laws the case DECLARES plus
+  non-negativity, which is not in the list because it is not optional.  Solved
+  as a convex QP by the project's existing hand-rolled active-set solver
+  (`solver/ActiveSetQP`, Nocedal & Wright Alg. 16.3).  No new dependency.
+* **The problem is posed in SIGMA UNITS** (`u = (x−m)/σ`), for two reasons and
+  both matter: the objective Hessian becomes the identity, so a sheet mixing
+  millimolar calcium with micromolar iron is as well conditioned as one that
+  does not; and `u` IS the normalized correction the report publishes, so the
+  number the solver works in is the number the reader sees.
+* **`enforce ( electroneutrality elementalConservation );`** — DECLARED, never
+  assumed.  A1's single-species rule enforced charge implicitly; with a second
+  law available the engine must not pick.  An unknown word refuses; a family
+  that expands to ZERO constraints refuses (a declared law that generates
+  nothing would pass silently while claiming to have been enforced — the
+  permanently-green-gate shape, inside the engine).
+* **The ELEMENT ROW**, which is what makes `elementalConservation` real.  A row
+  may declare `element <symbol>;` instead of a species: it carries NO material
+  (that would count the same matter twice), it is a REDUNDANT determination of
+  material other rows carry, and its only effect is the law tying it to them.
+  That redundancy is what makes this a least-squares problem rather than one
+  equation.  An element row with the family unenforced refuses — a measured
+  number nothing reads.
+* **A SPECIES row's surrogate ratio is a CONVENTION; an ELEMENT row's is
+  ARITHMETIC.**  `alkalinity … as CaCO3` needs `perFormulaUnit 2` because
+  nothing in the formula says a titration counts two bicarbonate per unit.
+  `totalHardness { element Ca; as CaCO3; }` needs no such key **and is refused
+  if it carries one**: how many Ca there are in a CaCO3 is stated by the
+  formula, and a declared number beside a derived one is a second home free to
+  drift.
+* **Uncertainties, three declared sources and no silent fourth** (§9.4).
+* **`maximumCorrection` in sigma as well as per cent** — two limits, not two
+  spellings of one.  Per cent bounds the correction against the MEASURED
+  VALUE; sigma bounds it against the DECLARED UNCERTAINTY, and only the second
+  can tell a nudge from an overrule.  Both may be declared; each refuses on its
+  own, naming the quantity and both numbers.
+* **The inspectable record** — §9.3 — into `converged/<stream>` under
+  `calculated { analysisReconciliation { … } }` (A1's home, extended) **and**
+  into the result JSON, which is the only surface the GUI reads.
+
+### 9.3 The record, and why the attribution is exact
+
+Every measured quantity — moved or not, because "this one was left where it
+was" is a result of the fit and not an absence — states:
+
+| field | what it is |
+|---|---|
+| `reportedValue` | what the laboratory sent |
+| `adjustedValue` | what the equilibrium was fed |
+| `sigma` + `weight` + `uncertaintyPct` + origin | the declared uncertainty, `1/σ²`, and WHERE the σ came from |
+| `correctionSigma` | THE normalized correction |
+| `constraintResponsible` + `responsibleShare` + `causedBy {}` | which law caused it, and the exact per-law parts |
+| `closure {}` | how much of each law's OWN residue this row removed |
+
+plus, per law, `residualBefore` / `residualAfter` / `multiplier` / `binding`,
+and the run's `objective` and `workingSetChanges`.
+
+**`causedBy` is a KKT identity, not a share invented afterwards.**  At the
+optimum `u + Aᵀλ + Aᵢₙₑqᵀμ = 0`, so `u_r = −Σ_k λ_k A_{k,r} + μ_r`: each law
+contributes exactly `−λ_k A_{k,r}` standard deviations to row *r*, and the
+parts SUM to the whole correction.  The reconciler **asserts the
+reconstruction before publishing it** and refuses otherwise — a published
+explanation that does not reconstruct its own answer is worse than none.  (A
+sabotage confirmed that guard fires; see §9.6.)
+
+### 9.4 THE DEFAULT PROFILE WAS REFUSED, and that is the answer
+
+`genericWaterAnalysis-v1` was reserved for the analyte with no declared
+uncertainty.  **It is deliberately NOT shipped**, and the absence refuses BY
+NAME with the reason and the remedy.
+
+A per-analyte uncertainty is a property of a LABORATORY and a METHOD, not of
+an analyte.  Standard Methods and ISO/IEC 17025 publish how a laboratory
+ESTIMATES its own uncertainty; neither publishes a universal table of one.
+Numbers invented here would look authoritative *precisely because* they
+carried a version, and neither a reader nor a gate could tell.  **A visible
+gap is strictly better than an invisible falsehood.**
+
+Nothing is lost by refusing, because equal weights are one declared line away.
+The three sources that DO exist, in precedence:
+
+1. the row's own `uncertainty <x> percent;` — A1's field, at last consumed;
+2. `uncertainties { <rowKey> <x> percent; }` — the author's own row label,
+   matched inside the same block that defines it.  (Not the name-identity the
+   F2 contract bans: that ban is about reaching a species record by
+   resemblance; this matches a label to itself three lines away.)
+3. `uncertainties { <class> … }` selected by an explicit `uncertaintyClass`
+   on the row, plus an optional `default`.  **The class is DECLARED, never
+   inferred** — the ruling spells classes "majorIons / minorIons /
+   alkalinity", and deciding from a name which ions are major would be the
+   engine classifying the author's chemistry for him.
+
+Every row ANNOUNCES which source its σ came from; an `uncertainties` entry no
+row consumed REFUSES (a declared uncertainty nobody reads is a comment, and
+the run would report a weighting the author did not get).
+
+### 9.5 pH: THE REFUSAL IS KEPT, and A2 found the REASON
+
+A1 deferred pH to "the rule grammar A2 brings".  A2 has that grammar, and pH
+still does not qualify — on three grounds, the first of which decides it
+alone:
+
+1. **A pH is not an amount.**  Turning it into the [H⁺] a charge balance needs
+   takes an activity coefficient, hence an ionic strength, hence the
+   speciation.  A reconciler that could do that would have to call the
+   equilibrium solver it exists to run BEFORE — exactly the coupled loop the
+   ruling forbids, and exactly what §9.1's translation unit is built unable to
+   do.  **It is not deferred; it is on the other side of the boundary.**
+2. It could not close anything anyway: at pH 7–8 the free H⁺/OH⁻ contribution
+   to the charge balance is ~1e-7 eq/L against a residue of ~1e-3.
+3. What pH actually governs is how alkalinity is SHARED between HCO₃⁻, CO₃²⁻
+   and dissolved CO₂ — chemistry, layer 3, downstream of here by construction.
+
+So the measured pH is carried as a measurement and the residue is absorbed by
+measured IONS.  The refusal message now states this instead of promising a
+later slice.
+
+### 9.6 What was measured
+
+Witness `tutorials/steady/flash/analysis02_weighted_least_squares` — the SAME
+groundwater as `analysis01`, plus the line a real laboratory almost always also
+sends: an EDTA total hardness that measures the same calcium the ICP measured,
+by a different method, and disagrees with it by 0.84 %.
+
+| quantity | reported | σ | adjusted | correction | in σ |
+|---|---|---|---|---|---|
+| Ca (ICP-OES) | 2.09591 mmol/L | 2 % | 2.08445 | −0.547 % | **−0.2735** |
+| Cl (IC) | 1.26929 mmol/L | 5 % | 1.27920 | +0.781 % | **+0.1562** |
+| alkalinity (as CaCO₃) | 2.85754 mmol/L | 4 % | 2.88969 | +1.125 % | **+0.2813** |
+| totalHardness (element Ca, as CaCO₃) | 2.07821 mmol/L | 3 % | 2.08445 | +0.300 % | **+0.1000** |
+
+* ion balance **+0.7813 % → 0.0000 %**; calcium redundancy **+0.01770 mmol/L → 0**
+* `Σ ((x−m)/σ)² = 0.18834`, ONE working-set change, no row on its bound
+* declared limit **3 σ**; worst correction **0.2813 σ**
+* per-law parts, e.g. calcium: electroneutrality −0.2063 σ + elemental
+  −0.0672 σ = −0.2735 σ (the identity, exactly)
+
+**The contrast is the pedagogy.**  A1 shoves 5.12 % into one ion and cannot
+touch the calcium disagreement at all — no amount of chloride makes two calcium
+measurements agree.  A2 answers both at once and spends the residue where the
+uncertainty is: four quantities move, none by a third of its own σ.
+
+**Blast radius: ZERO existing goldens moved.**  A2 adds a method behind A1's
+contract and a case beside A1's; `analysis01` is byte-identical in answer and
+keeps its own gate.
+
+### 9.7 The pedagogical separation, and how it is achieved
+
+A measurement-correction and a chemistry result are different KINDS of claim.
+They are kept apart by marks that survive being read out of order, so telling
+them apart never depends on remembering a paragraph:
+
+* **a field only one side can have** — every correction row carries
+  `reportedValue`; nothing in `speciation {}` has one and nothing ever can (a
+  laboratory reported it, or it was calculated, never both);
+* **a unit only one side can be in** — corrections are quoted in SIGMA, which
+  is meaningless for a calculated quantity;
+* **disjoint KEY SPACES** — corrections are keyed by the author's sheet labels
+  (`alkalinity`, `totalHardness`), the chemistry by species ids (`HCO3`,
+  `CaCO3aq`).  A label is not a species;
+* **no shared key for the two pHs** — the flash SOLVES a pH into the same
+  file, so the measured one is `pHReported`.  A comment saying "measured" is
+  no defence against a reader who greps;
+* a LEGEND at the head of the block, and a `note` in the JSON for a consumer
+  that shows the payload raw;
+* on the console, the corrections print under their own banner: *MEASUREMENT
+  CORRECTIONS (layer 2 — nothing below is a calculated chemistry quantity)*.
+
+Gate arm A8 checks all of it, including the negative: if `reportedValue` or
+`correctionSigma` ever appears in the speciation block, the mark means nothing
+and the arm fails.
+
+### 9.8 The gate, and what the sabotage found
+
+`bin/curate/check_aqueous_reconciliation.py`, wired into `bin/runTests`.  Ten
+arms; the fit is re-solved by the gate's OWN KKT elimination from the authored
+mg/L and compared row by row to 1e-9.  Four sabotages, and two surprised:
+
+* **The first attempt never reached the gate.**  Breaking the row scaling also
+  breaks the change of variables, so the reconciler's own guard refused before
+  writing anything.  That locates the defence: damage inside the solver is
+  caught by the solver, and the gate's job is damage that produces a VALID
+  answer.
+* **Ignoring the declared uncertainties** (every row forced to a flat 3 %)
+  fires arm A1 on all four rows — *and* moves the corpus golden
+  (`p_eq_sum_atm` 0.0747853 against 0.0747977).  Measured, not assumed.
+* **Decoupling the closure from its law's coefficient** fires A3b and NOTHING
+  else: answer untouched, golden green, all six fields present, every number
+  plausible.  A3b is the sole defence for the sixth field.
+* **The boundary sabotage disagrees with itself.**  A header-INLINE reach into
+  `ThermoPackage` leaves no undefined symbol, so the OBJECT reading did not
+  fire while the SOURCE reading did; an out-of-line reach fires both.  **A7b
+  sees out-of-line reach only**, and that blind spot is stated in the gate
+  rather than waiting to be discovered.
+
+**A real bug the gate found before any sabotage**, and it belongs to A1: the
+`measured {}` writer emitted a trailing `// sigma …` note BEFORE the row's
+closing brace, so the comment swallowed the `}` and `converged/<stream>`
+stopped parsing.  A1 shipped the claim *"the reader ignores the block, so the
+file stays feedable as state"* with nothing checking it.  Fixed; arm A10 now
+feeds every resolved snapshot back.
+
+### 9.9 Named, NOT built
+
+* **The iterative density.**  Still refused by name — unchanged from A1.
+* **`genericWaterAnalysis-v1`.**  Refused, with the reason (§9.4).  If a
+  citable, method-specific source is ever adopted, this is where it lands.
+* **GROSS ERROR DETECTION.**  A large `objective` says the measurements and
+  the laws disagree; nothing decides WHICH measurement is at fault.  A2 does
+  none and claims none — the gate says so in its own not-checked list.
+* **TWO INDEPENDENT TOTALS OF ONE ELEMENT.**  A real laboratory situation, and
+  it refuses: reconciling them needs a declaration of which one the species
+  rows are tied to, and nobody has made it.
+* **A ROW REPORTED AS ZERO.**  Refused: relative uncertainty has no scale to
+  be relative to.  An absent analyte is not a measured zero — drop the row, or
+  report it at its detection limit.
