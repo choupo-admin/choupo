@@ -113,62 +113,110 @@ WHAT THIS DOES NOT CHECK, said plainly:
     A2 does not claim to.
   * THE OTHER BINARIES.  Only choupoSolve reads this form.
 
-SABOTAGE, PERFORMED AND OBSERVED (2026-08-09, isolated worktree, rebuilt each
-time).  Three, because two of them found something.
+SABOTAGE, PERFORMED AND OBSERVED (2026-08-09, isolated git worktree, full
+rebuild for each).  Four, and the two that surprised me are the ones worth
+reading.
 
-  S1  THE WEIGHTS REMOVED.  In AnalysisReconciler.cpp the sigma scaling of the
-      constraint rows was replaced by 1.0 (`row[r] = c.coeff[r] * 1.0;`), i.e.
-      the fit made unweighted while still calling itself weighted.  Observed:
+  S0  THE FIRST ATTEMPT NEVER REACHED THE GATE, and that is a result.  The
+      sigma scaling of the constraint rows was replaced by 1.0
+      (`row[r] = c.coeff[r] * 1.0;`), meaning to make the fit unweighted.  It
+      also breaks the change of variables, so the answer no longer satisfies
+      the law it was solved under, and the RECONCILER'S OWN guard refused
+      before anything was written:
 
-        A1: row 'Ca' adjusted 2.0942735 mmol/L, independent KKT says
-          2.0844465 (diff 9.83e-03, tol 1e-09)
-        A1: row 'alkalinity' adjusted 2.9061778 mmol/L, independent KKT says
-          2.8896948 (diff 1.65e-02, tol 1e-09)
-        A1: row 'totalHardness' adjusted 2.0942735 mmol/L, independent KKT
-          says 2.0844465 (diff 1.61e-02, tol 1e-09)
-        A3a: row 'Ca' causedBy parts sum to -0.1130651 sigma, correctionSigma
-          is -0.0410476
+        ERROR: analysis reconciliation: constraint 'electroneutrality' is
+        still violated at the answer (residual 6.49935e-05, was 6.49973e-05).
 
-      Note WHICH arms fired and which did not: the ION BALANCE STILL CLOSED
-      (an unweighted fit is still a fit), the six fields were still all
-      present, and the corpus golden STILL PASSED at 1e-4 -- pH 7.9086 either
-      way, because the composition moved by less than the tolerance.  So arm
-      A1's independent recomputation is the ONLY thing standing between this
-      slice and a fit that silently ignores the uncertainties it publishes.
+      Recorded because it locates the defence: most arithmetic damage inside
+      the solver is caught by the solver, and the gate's job is the damage
+      that produces a VALID answer.  S1 and S2 below are that kind.
 
-  S2  THE ATTRIBUTION DECOUPLED.  The published part was changed from
-      `-lambda_k * Anorm[k][r]` to `-lambda_k * Anorm[k][r] * 1.05` -- a
-      plausible-looking explanation that no longer adds up.  The engine's own
-      internal identity check caught it first and REFUSED the run:
+  S1  THE DECLARED UNCERTAINTIES IGNORED.  In StreamStateIO the per-row sigma
+      was made a flat 3 % of each measurement
+      (`q.sigma = 0.03 * std::abs(a.measured);`) instead of the row's own
+      declared percentage -- the fit stops honouring the uncertainties while
+      the record still publishes them.  Internally consistent, so no engine
+      guard fires.  Observed:
 
-        ERROR: analysis reconciliation: the per-constraint attribution of
-        quantity 'Ca' does not reconstruct its own correction (parts sum to
-        -0.287221 sigma, the correction is -0.273544 sigma).
+        A1: row 'Ca' adjusted 2.0758803 mmol/L, independent KKT says
+          2.0844465 (diff 1.71e-05, tol 1e-09)
+        A1: row 'Cl' adjusted 1.2733946 mmol/L, independent KKT says
+          1.2791982 (diff 1.16e-05, tol 1e-09)
+        A1: row 'alkalinity' adjusted 2.8783660 mmol/L, independent KKT says
+          2.8896948 (diff 2.27e-05, tol 1e-09)
+        A1: row 'totalHardness' adjusted 2.0758803 mmol/L, independent KKT
+          says 2.0844465 (diff 1.71e-05, tol 1e-09)
 
-      so the gate failed at arm A1's "the witness must solve".  That is the
-      right order -- the engine refusing beats the gate reporting -- and it is
-      recorded here because it means A3a is checking a claim the engine also
-      guards, deliberately, at both ends.
+      MEASURED, not assumed: the corpus golden ALSO caught this one --
+      `kpi.flash01.p_eq_sum_atm: got 0.0747853124141 expected 0.074797651023
+      (reltol 1e-4)`.  On THIS witness the weighting reaches the answer far
+      enough to move a KPI.  That is a property of the witness (the calcium
+      the fit moves is the calcium the carbonate equilibrium is built on), not
+      a general guarantee, and the arm is kept because it names WHAT broke --
+      four rows, each with the number it should have had -- where the golden
+      says only that one pressure sum differs in the fifth digit.
 
-  S3  THE BOUNDARY BREACHED.  `#include "thermo/ThermoPackage.H"` added to
-      AnalysisReconciler.cpp with a call to `ThermoPackage::n()` behind a
-      never-taken branch.  Observed:
+  S2  THE CLOSURE DECOUPLED FROM ITS LAW.  The per-row contribution was
+      changed from `cons[k].coeff[r] * o.correction` to `o.correction`, i.e.
+      the report credits each row with moving MOLES where the law counts
+      EQUIVALENTS -- the exact confusion that hides on a monovalent ion and
+      surfaces on a divalent one.  Observed:
 
-        A7a: src/streams/AnalysisReconciler.cpp includes thermo/ThermoPackage.H
-          -- the reconciler must not be able to reach the equilibrium surface
-        A7a: src/streams/AnalysisReconciler.cpp names ThermoPackage
-        A7b: AnalysisReconciler.o references Choupo symbols beyond the one
-          allowed (Choupo::solver::activeSetQP): Choupo::ThermoPackage::n() const
+        A3b: law 'electroneutrality' had residual 3.610963e-08 and the
+          corrections credited with closing it sum to 1.699882e-08 -- the
+          report says the residue was removed by rows that did not remove it
+        A3b: law 'elementalConservation:Ca' had residual 9.833463e-09 and the
+          corrections credited with closing it sum to -2.907078e-09
 
-      Both readings fired independently, which is the point of having two.
+      NOTHING ELSE FIRED.  The answer is untouched (closure is report-only),
+      the corpus golden PASSED, every one of the six fields was still present
+      and every number in the record still looked reasonable.  A3b is the sole
+      defence for the sixth inspectable field, which is the one that ties a
+      measurement correction to the balance it exists to close.
 
-A REAL BUG THIS GATE FOUND WHILE BEING WRITTEN, before any sabotage.  Arm A10
-(feed the resolved snapshot back) failed on the FIRST run, and on analysis01
-too: the `measured {}` writer emitted a trailing `// sigma ...` note BEFORE
-the row's closing brace, so the comment swallowed the `}` and
-`converged/<stream>` stopped parsing -- three unclosed braces.  A1 had shipped
-the claim "the reader IGNORES the block, so the file stays feedable as state"
-with nothing checking it.  Fixed in the same commit; the arm stays.
+  S3  THE BOUNDARY BREACHED, twice, and the two attempts do not agree -- which
+      is why arm A7 has two readings and why its blind spot is stated here
+      rather than discovered later.
+
+      S3a  `#include "thermo/ThermoPackage.H"` plus a call to
+           `ThermoPackage::n()` behind a never-taken branch.  Observed:
+
+             A7a: src/streams/AnalysisReconciler.cpp includes
+               thermo/ThermoPackage.H -- the reconciler must not be able to
+               reach the equilibrium surface [...]
+             A7a: src/streams/AnalysisReconciler.cpp names ThermoPackage
+
+           **A7b DID NOT FIRE.**  `n()` is defined inline in the header, so
+           the compiler emitted no undefined symbol and the object file still
+           referenced exactly one Choupo name.  THE OBJECT READING SEES
+           OUT-OF-LINE REACH ONLY.  That is A7b's stated blind spot, it is why
+           A7a exists beside it, and a gate claiming more than it has is worse
+           than one that reports less.
+
+      S3b  `#include "thermo/ElementComposition.H"` plus a call to
+           `parseElementalFormula` (out-of-line).  BOTH readings fired:
+
+             A7a: src/streams/AnalysisReconciler.cpp includes
+               thermo/ElementComposition.H [...]
+             A7b: AnalysisReconciler.o references Choupo symbols beyond the
+               one allowed (Choupo::solver::activeSetQP):
+               Choupo::parseElementalFormula(std::__cxx11::basic_string<...>)
+
+TWO REAL BUGS THIS GATE FOUND WHILE BEING WRITTEN, before any sabotage.
+
+  * ARM A10 FAILED ON ITS FIRST RUN, and on analysis01 too: the `measured {}`
+    writer emitted a trailing `// sigma ...` note BEFORE the row's closing
+    brace, so the comment swallowed the `}` and `converged/<stream>` stopped
+    parsing -- three unclosed braces.  A1 had shipped the claim "the reader
+    IGNORES the block, so the file stays feedable as state" with nothing
+    checking it.  Fixed in the same commit; the arm stays.
+  * AND TWO IN THE GATE ITSELF, both the shape of a check that reads the
+    wrong thing and passes: a find-then-brace-match locked onto the empty
+    braces inside the legend that talks ABOUT `analysisReconciliation`
+    (reported as "no record") -- hence uncomment(); and one shared
+    record-field reader walked to the next `{` in a species file and returned
+    calcium's MOLAR MASS as its charge, so the oracle was solving a different
+    problem from the engine.  Both are named at their sites.
 """
 import json
 import pathlib
