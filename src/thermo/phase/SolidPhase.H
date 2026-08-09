@@ -99,6 +99,12 @@ public:
     enum class Mode { Inert, Crystallizing };
     Mode mode() const { return mode_; }
 
+    //  The crystal's identity, for the flash's SLE branch (migration S4b):
+    //  WHICH component this phase is a pure crystal of.  Meaningful only in
+    //  crystallizing mode (inert declares no component).
+    const std::string& crystalComponent() const { return crystalName_; }
+    std::size_t        crystalIndex()     const { return crystalIdx_; }
+
 private:
     std::string name_;
     inline static const std::string typeName_ = "solid";

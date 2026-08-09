@@ -109,6 +109,16 @@ struct FlashSolution
     // nothing precipitated, or when no component declares the mineral's
     // owning solid phase (that mineral stays in the speciation report).
     sVector solidFlows;
+
+    // TRUE on the LIQUID+SOLID (SLE) branch (migration S4b): the answer came
+    // from the crystallizing-solid complementarity, not from a fluid-fluid
+    // split.  The duty block reads it: an SLE duty must price the crystal on
+    // the SOLID formation rung, which h_formation cannot yet serve for a
+    // gas-natural record (no gas -> solid leg) -- so when a crystal formed,
+    // Q is withheld as a NAMED gap, never computed fluid-only (a fluid-only
+    // number silently omits the heat of fusion, which is the whole duty of
+    // a freezer).
+    bool sleBranch = false;
 };
 
 enum class OuterAccelerator { DirectSubstitution, Wegstein };

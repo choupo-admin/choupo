@@ -27,6 +27,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "IsothermalFlash.H"
+#include "core/Constants.H"
+#include "thermo/phase/SolidPhase.H"
+#include "thermo/solidEquilibrium/SolidEquilibrium.H"
 #include "solver/NelderMead.H"
 #include "solver/NewtonND.H"
 #include "solver/NewtonRaphson.H"
@@ -66,6 +69,172 @@ scalar dRR_dV(const sVector& z, const sVector& K, scalar V)
         s -= z[i] * (K[i] - 1.0) * (K[i] - 1.0) / (d * d);
     }
     return s;
+}
+
+//  ---- The LIQUID+SOLID (SLE) branch -- migration S4b (2026-08-09) --------
+//
+//  A declared crystallizing SolidPhase beside ONE liquid and NO vapour is a
+//  freeze-concentration problem: the liquid concentrates until the crystal
+//  component's activity satisfies  gamma_c x_c = exp(-dG_fus/(R T))  --
+//  the K = 1 identity SolidPhase::fEffective derives (and check_ice_freezing
+//  pins in closed form).  Presence is decided by THE ONE solid-equilibrium
+//  mechanism (solidEq::equilibrate, ruling R1's active-set + simultaneous
+//  damped Newton): each solid phase becomes a SolidCandidate whose lnSI is
+//  ln(f_liquid_c / f_solid_c) at the CURRENT liquid inventory and whose
+//  `remove` pulls the owning component out of that inventory -- the one
+//  ledger.  Nothing here knows what the crystal is; the model lives entirely
+//  behind the two fEffective calls, which share the SAME Psat reference by
+//  construction.
+//
+//  The solve runs on a per-MOLE-OF-FEED basis: the solver's Jacobian probes
+//  are ABSOLUTE transfers (1e-8..1e-4 mol), so a normalised inventory keeps
+//  them well-scaled whatever the case's F.
+FlashSolution solveSLE(const FlashInput&    in,
+                       const ThermoPackage& thermo,
+                       const FlashOptions&  opts,
+                       std::size_t          liqIdx,
+                       const std::vector<std::size_t>& solidIdxs)
+{
+    const std::size_t n = in.z.size();
+    sVector nLiq = in.z;                     // liquid inventory, mol / mol feed
+
+    std::vector<solidEq::SolidCandidate> cands;
+    std::vector<std::size_t> crystalOf;      // candidate -> component index
+    for (auto si : solidIdxs)
+    {
+        const auto& sp = dynamic_cast<const SolidPhase&>(thermo.phase(si));
+        const std::size_t c = sp.crystalIndex();
+        //  A crystal of a component the feed does not carry: absent means
+        //  absent -- no candidate, no announcement (the same posture stageK
+        //  takes for an exact zero).
+        if (!(in.z[c] > 0.0)) continue;
+
+        solidEq::SolidCandidate cd;
+        cd.name = sp.name();
+        cd.lnSI = [&thermo, &nLiq, &in, liqIdx, si, c](scalar T) -> scalar
+        {
+            scalar tot = 0.0;
+            for (auto v : nLiq) tot += v;
+            if (!(nLiq[c] > 0.0) || !(tot > 0.0))
+                throw std::runtime_error("IsothermalFlash[SLE]: the liquid's "
+                    "inventory of '" + thermo.comp(c).name() + "' is exhausted "
+                    "-- complete solidification leaves no liquid phase, and a "
+                    "LIQUID+SOLID equilibrium needs both.  A pure (or nearly "
+                    "pure) feed below its melting point freezes entirely; that "
+                    "answer is outside this phase set.  Raise T, or add "
+                    "solute.");
+            sVector x(nLiq);
+            for (auto& v : x) v /= tot;
+            //  fEffective is the X-FREE effective fugacity (the K-value
+            //  convention: gamma_i * Psat_i for a liquid), so the liquid's
+            //  actual fugacity needs the mole fraction back:
+            //  f_liq_c = x_c * gamma_c * Psat_c.  The solid side is a PURE
+            //  crystal (activity 1) and stays as returned.  Getting this
+            //  wrong reads as d lnSI/dn = +d ln(gamma)/dn and the solver's
+            //  own consistency guard refuses -- which is how this line was
+            //  first written wrong and caught in the same minute.
+            const scalar fL = x[c]
+                * thermo.phase(liqIdx).fEffective(T, in.P, x)[c];
+            const scalar fS = thermo.phase(si).fEffective(T, in.P, x)[c];
+            return std::log(fL / fS);
+        };
+        cd.remove = [&nLiq, c](scalar dn) { nLiq[c] -= dn; };
+        cands.push_back(std::move(cd));
+        crystalOf.push_back(c);
+    }
+
+    //  Glass-box: at verbosity 4 show each candidate's opening state -- the
+    //  two fugacities and the lnSI the complementarity starts from.
+    if (opts.verbosity >= 4)
+        for (std::size_t j = 0; j < cands.size(); ++j)
+        {
+            const std::size_t c = crystalOf[j];
+            sVector x(nLiq);
+            scalar tot = 0.0; for (auto v : x) tot += v;
+            for (auto& v : x) v /= tot;
+            const scalar fL = x[c]
+                * thermo.phase(liqIdx).fEffective(in.T, in.P, x)[c];
+            const scalar fS = thermo.phase(solidIdxs[j]).fEffective(in.T, in.P, x)[c];
+            std::cout << "  [sle:debug] candidate '" << cands[j].name
+                      << "' (crystal of " << thermo.comp(c).name() << "): "
+                      << "f_liquid = x*gamma*Psat = " << fL
+                      << " Pa, f_solid = " << fS
+                      << " Pa, lnSI = " << std::log(fL / fS) << "\n";
+        }
+
+    std::vector<std::string> events;
+    int iters = 0;
+    try
+    {
+        iters = solidEq::equilibrate(cands, in.T, 400, 1.0e-10, &events);
+    }
+    catch (...)
+    {
+        //  The narration up to the failure is evidence; a throw must not
+        //  swallow it (and the buffer must not either -- hence the flush).
+        if (opts.verbosity >= 2)
+            for (const auto& e : events)
+                std::cout << "  [sle] " << e << "\n";
+        std::cout.flush();
+        throw;
+    }
+    if (opts.verbosity >= 2)
+        for (const auto& e : events)
+            std::cout << "  [sle] " << e << "\n";
+
+    FlashSolution sol;
+    sol.sleBranch  = true;
+    sol.converged  = true;                   // equilibrate throws otherwise
+    sol.iterations = iters;
+    sol.V_over_F   = 0.0;
+    //  The chemistry-route convention, kept deliberately: sol.x is the
+    //  apparent LIQUID+SOLID material (the crystal still inside), and the
+    //  stream assembly subtracts solidFlows to leave the fluid -- so the
+    //  outlet's overall material equals the feed exactly, by construction.
+    sol.x = in.z;
+    sol.y.assign(n, 0.0);
+    sol.K.assign(n, 0.0);
+
+    sVector s(n, 0.0);
+    scalar  nSolid = 0.0, rMax = 0.0;
+    bool    any = false;
+    for (std::size_t j = 0; j < cands.size(); ++j)
+        if (cands[j].n > 0.0)
+        {
+            s[crystalOf[j]] += cands[j].n * in.F;
+            nSolid += cands[j].n;
+            rMax = std::max(rMax, std::fabs(cands[j].lnSI(in.T)));
+            any = true;
+        }
+    sol.residual = rMax;
+    if (any) sol.solidFlows = s;
+    sol.regime = any
+        ? "liquid + solid (SLE: crystallizing solid at equilibrium)"
+        : "subcooled liquid (declared solid stays subsaturated)";
+
+    //  Glass-box observables: the crystal component's ACTIVITY in the liquor
+    //  beside the closed-form saturation value it must equal when the solid
+    //  is present -- the freezing-point-depression identity, published so a
+    //  reader (and the gate) can check K = 1 without rerunning anything.
+    sol.extraKpis["solidFraction"] = nSolid;         // mol solid / mol feed
+    {
+        scalar tot = 0.0;
+        for (auto v : nLiq) tot += v;
+        sVector x(nLiq);
+        if (tot > 0.0) for (auto& v : x) v /= tot;
+        const auto gamma = thermo.phase(liqIdx).activityCoefficients(in.T, x);
+        for (std::size_t j = 0; j < cands.size(); ++j)
+        {
+            const std::size_t c = crystalOf[j];
+            const Component& comp = thermo.comp(c);
+            sol.extraKpis["a_" + comp.name()] = gamma[c] * x[c];
+            const scalar dGfus = comp.subHfus()
+                               * (1.0 - in.T / comp.subTripleT());
+            sol.extraKpis["aEq_" + comp.name()] =
+                std::exp(-dGfus / (constant::R * in.T));
+        }
+    }
+    return sol;
 }
 
 } // anonymous namespace
@@ -215,43 +384,56 @@ IsothermalFlash::solveCore(const FlashInput&    in,
 
     //  A DECLARED PHASE THAT NO FLASH CONSUMES MUST NOT BE SILENTLY DROPPED.
     //
-    //  UNREACHABLE TODAY, AND SAID SO RATHER THAN CLAIMED.  No case grammar
-    //  emits a phaseConfig of type `solid`: the flat reader builds liquid then
-    //  vapour itself, and the gammaGamma reader builds `liquidPhases` then an
-    //  optional `vapour`.  `solid` is registered in the Phase factory and
-    //  reached only by the gate's probe.  So this guard cannot fire from a
-    //  case as the tree stands -- it is the guard that makes ADDING that
-    //  grammar safe, not evidence that the grammar exists.  Anyone adding a
-    //  solid declaration should expect this refusal first, and should treat
-    //  reaching it as the design question it is, not as an obstacle.
-    //  check_ice_freezing reports this unreachability instead of counting it
-    //  as coverage -- the same posture as the no-vapour-pressure guard.
-    //  SolidPhase computes a real crystal/liquid K through Kvec_phases, but no
-    //  unit operation asks for one yet: the solid route reachable from a case
-    //  today is the CHEMISTRY one (chemistryDict `solidPhases` + the component's
-    //  own `solidPhases{}` dissolution K, resolved inside the speciation).  So a
-    //  case declaring a crystallising solid here would have had its declaration
-    //  quietly ignored and got a plain VLE back.  Refuse instead, and name both
-    //  routes -- an author who declared a solid meant to model one, and needs to
-    //  know which mechanism their system actually belongs to.
+    //  SERVED SINCE S4b (2026-08-09), for exactly ONE shape: crystallizing
+    //  solid(s) beside ONE liquid with NO vapour phase and the default VL
+    //  phase set -- the freeze-concentration (SLE) flash, solveSLE above,
+    //  presence decided by THE ONE solid-equilibrium mechanism.  Every other
+    //  solid-bearing shape still refuses below with its route named:
+    //    * solid BESIDE a vapour (a triple-point / sublimation-adjacent
+    //      problem: which fluid the crystal equilibrates against is a design
+    //      question) -- the NAMED S4c gap, not an oversight;
+    //    * solid beside TWO liquids (LL/VLLE phase sets) -- same gap family;
+    //    * `mode inert` -- the stub SolidPhase::fEffective itself refuses
+    //      (propagate-but-skip is not built);
+    //    * a mineral precipitating FROM SOLUTION -- the CHEMISTRY route
+    //      (chemistryDict solidPhases + the component's own solidPhases{}
+    //      dissolution K), live since flash16/flash19, NOT this Phase.
     //  Contract: docs/architecture/solid-formation-routes.md.
     if (!solAll.empty())
+    {
+        bool allCryst = true;
+        for (auto si : solAll)
+        {
+            const auto* sp = dynamic_cast<const SolidPhase*>(&thermo.phase(si));
+            if (!sp || sp->mode() != SolidPhase::Mode::Crystallizing)
+            { allCryst = false; break; }
+        }
+        if (allCryst && vapAll.empty() && liqAll.size() == 1
+            && opts.phaseSet == PhaseSet::VL)
+        {
+            sol = solveSLE(in, thermo, opts, liqAll[0], solAll);
+            return sol;
+        }
         throw std::runtime_error(
             "IsothermalFlash: this package declares a solid phase ('"
-            + thermo.phase(solAll[0]).name() + "'), and the flash has no solid "
-            "path -- it equilibrates a liquid against a vapour or a second "
-            "liquid, nothing else.  Running anyway would return a plain VLE "
-            "result computed as though the declared phase were absent.\n"
+            + thermo.phase(solAll[0]).name() + "') in a shape the flash does "
+            "not serve.  The LIQUID+SOLID (SLE) branch serves crystallizing "
+            "solid(s) beside ONE liquid with NO vapour phase; here the "
+            "package has " + std::to_string(liqAll.size()) + " liquid(s), "
+            + std::to_string(vapAll.size()) + " vapour phase(s), and "
+            "phaseSet " + std::to_string(static_cast<int>(opts.phaseSet))
+            + " (0 = VL).\n"
+            "  A solid BESIDE a vapour or a second liquid is the NAMED S4c "
+            "gap (docs/design/solid-equilibrium-migration.md): which fluid "
+            "the crystal equilibrates against is a design question, not a "
+            "default.  An `inert` solid is a separate unbuilt stub.\n"
             "  If the solid PRECIPITATES FROM SOLUTION (a mineral -- calcite, "
             "gypsum), it is not a Phase here at all: declare it in "
             "constant/chemistryDict `equilibria { solidPhases ( ... ); }` and "
             "give the owning component its own `solidPhases{}` dissolution "
             "equilibrium.  That route is live and flash19 exercises it.\n"
-            "  If the solid is a PURE CRYSTAL OF ONE COMPONENT freezing out of "
-            "its own liquid (ice), SolidPhase models it and its fugacity is "
-            "verified, but no unit operation consumes it yet.  That gap is "
-            "named in docs/architecture/solid-formation-routes.md; it is not "
-            "something to work around by removing this refusal.");
+            "  Contract: docs/architecture/solid-formation-routes.md.");
+    }
 
     //  The VL default, now stated as what it means rather than as 0 and 1.
     //  Where a type is absent the old index survives, so a package with an
@@ -1362,6 +1544,20 @@ int IsothermalFlash::solve(const DictPtr& dict,
     scalar Q_W = 0.0;
     bool   Q_valid = false;
     std::string Q_gap;                    // why the duty is unavailable
+    //  SLE with a crystal formed: the duty MUST price the crystal on the
+    //  SOLID formation rung, and h_formation has no gas-natural -> solid leg
+    //  yet -- while the generic path below would price sol.x (crystal
+    //  included) as LIQUID, returning a number that silently omits the heat
+    //  of fusion: the whole duty of a freezer, missing without a trace.  The
+    //  caloric contract (see the LL branch note below) says a missing
+    //  enthalpy route is a NAMED gap, never a fake number.  The rung
+    //  question is one decision with the flash19 inlet-pricing finding
+    //  (2026-08-09) and waits for that ratification.
+    if (sol.sleBranch && !sol.solidFlows.empty())
+        Q_gap = "SLE duty needs the crystal priced on the solid formation"
+                " rung (h_formation has no gas-natural -> solid leg yet); a"
+                " fluid-only Q would silently omit the heat of fusion";
+    else
     try
     {
         const scalar T_feed  = feedDict->lookupScalar("T", Dims::temperature);

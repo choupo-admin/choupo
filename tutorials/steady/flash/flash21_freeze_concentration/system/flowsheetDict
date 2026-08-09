@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  flash21 -- topology only (state lives in 0/)                                |
+\*-----------------------------------------------------------------------------*/
+units
+(
+    {
+        name        freezer01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquor vent );
+
+        //  -15 C: below the liquor's freezing curve (a 10 mol% ethanol
+        //  solution freezes near -7.5 C), so ice must form and the liquor
+        //  concentrates along the freezing-point-depression identity.
+        operation   { T 258.15 K;  P 1.0 atm; }
+    }
+);

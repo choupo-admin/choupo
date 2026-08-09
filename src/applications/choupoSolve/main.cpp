@@ -997,6 +997,12 @@ try
 }
 catch (const std::exception& e)
 {
+    //  Flush the narration BEFORE the error line: the buffered cout tail is
+    //  exactly the glass-box evidence leading up to a refusal, and losing it
+    //  on the one path where the reader needs it most turned out to be the
+    //  default behaviour (found 2026-08-09 debugging the SLE flash -- the
+    //  run's own [sle] lines died in the buffer while the ERROR printed).
+    std::cout.flush();
     std::cerr << "\nERROR: " << e.what() << "\n";
     return 2;
 }
