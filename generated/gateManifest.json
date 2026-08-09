@@ -67,6 +67,10 @@
       "exit": 0,
       "claim": "composite-report gate: boundary roles + global balance real (closure ~100%)"
     },
+    "check_convergence_residual": {
+      "exit": 0,
+      "claim": "check_convergence_residual: OK -- flash17 reports all five convergence numbers (raw initial/final, normalized initial/final, reduction) plus the criterion that decided; the reduction agrees with its own inputs; the normalization is defined in exactly one place (src/solver/Convergence.H); an unmeetable declared tolerance fails NAMING its criterion and writes no converged/; an unimplemented control refuses by name; and a run on the DEFAULT controls announces them.  NOT claimed: that the normalization is the right one, or that any solver beyond ReactiveVLE's outer Newton has adopted it."
+    },
     "check_cosmo_scrub": {
       "exit": 0,
       "claim": "cosmo-scrub gate: 589 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"

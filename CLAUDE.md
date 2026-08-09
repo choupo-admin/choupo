@@ -535,6 +535,34 @@ The molality+charge surface is a PURE INTERFACE (`ElectrolyteModel`) reached via
 construction-time configure downcasts were removed in A1; the engine query is the
 `asElectrolyte()` virtual, A2).
 
+### NORMALIZED RESIDUAL — one convergence home (ruled 2026-08-09, do NOT relitigate)
+
+A dimensional residual is a MAGNITUDE, not a verdict: `1e-9` on a raw `||r||`
+is a number compared with nothing.  `src/solver/Convergence.H` is the ONE
+home — the OpenFOAM triple (`tolerance` · `relTol` · `maxIter`, declared per
+solver in `system/solverDict`, e.g. `reactiveEquilibrium { … }`), the ONE
+normalization, and the ONE decision (`normFinal <= tolerance` OR
+`normFinal/normInitial <= relTol`, subject to `maxIter`).  The normalization
+is OpenFOAM's `normFactor` with **cells → equations** and **{Ax, b} → the
+terms the equation balances**: `normFactor = Σ|t − mean(t)| + floor`,
+`normalized = Σ|r_k| / normFactor`.  Same structure, same intent, **NOT the
+same theorem** — the header states three limits rather than claiming identity,
+and the one that bites is that a SINGLE-equation system degenerates
+(`normFactor ≡ |r|`), which is DETECTED and falls back to the raw residual
+naming the criterion.  A solve reports FIVE numbers (raw initial/final,
+normalized initial/final, reduction) plus the criterion that decided;
+defaults are ANNOUNCED when used, and an unimplemented declared control
+REFUSES by name.  Two things paid for: acceptance now requires the
+convergence verdict (the per-leg joint check alone would wave a run that
+never met its DECLARED tolerance through as a silent pass), and a golden that
+pinned a **one-nanowatt** re-flash duty at 1e-4 relative was pinning
+cancellation round-off (`column13`, re-recorded with the measurement that
+shows it).  Wired: `ReactiveVLE`'s outer Newton.  NOT wired, each with its
+reason (§4 of the ADR): `IsothermalFlash`, `SpeciationSolver`'s inner Newton,
+`DistillationColumn`'s MESH.  Gate: `check_convergence_residual`
+(sabotage-verified twice).  Record:
+[`docs/design/normalized-residual-convergence.md`](docs/design/normalized-residual-convergence.md).
+
 ### A THIRD aqueous activity engine: `edwardsPitzer` (2026-08-04)
 
 Beside `davies` and `pitzerHMW` sits **`edwardsPitzer`** — the truncated Pitzer
@@ -1148,6 +1176,45 @@ phases at once).  Gate: `check_phase_speciation` — seven refusals fired
 through the real reader, and **three of them passed with the fix reverted**
 (they test structure, not the check), which is worth knowing before trusting
 a green run.
+
+**A LABORATORY ANALYSIS IS AN INLET — `aqueousAnalysis {}`, the SEVENTH
+canonical form (A1 shipped 2026-08-09; do NOT fold it into
+`speciesMolarFlows`).**  *Inventory is not measurement.*  A
+`speciesMolarFlows … basis analytical;` block declares flows the author has
+ALREADY reconciled, and charge closure is a CONTRACT there — refusing a
+violation is right.  A lab sheet is mg/L with uncertainties, reported partly
+on surrogate formulae, and it does NOT close; that is what is to be
+RECONCILED.  Keeping them apart made this an ADDITION and the corpus blast
+radius ZERO.  THREE LAYERS, THREE HOMES: the MEASUREMENT in `0/<stream>`,
+**never rewritten** (O1 — reconciling into the measurement destroys it and
+the next run reconciles the reconciliation); the RECONCILED conserved
+inventory in `converged/<stream>` under `calculated { analysisReconciliation
+{…} conservedInventory {…} }`, report-only and ignored by the reader (the
+same deletability test `speciation` passes); the EQUILIBRIUM in the answer.
+`as <formula>` resolves its MW through the ONE elemental-formula parser
+(`thermo/ElementComposition`) and its `perFormulaUnit` is DECLARED —
+"alkalinity as CaCO3 is 2 HCO3 per CaCO3" is a convention, not arithmetic to
+invent.  The DENSITY ROUTE is required and explicit (`provenance measured;`
+plus exactly one flow anchor); an ITERATIVE density is refused BY NAME as the
+declared gap.  The solvent is closed by the density AFTER the m = A n
+inversion, never on the ion masses — the bridges are not mass-conserving
+(CaCO3 → Ca + HCO3 borrows an H from the water), so closing on the ions
+leaves that hydrogen unowned.  ONE inverter: `collectBridges` /
+`requireDeclaredNetwork` / `invertMastersOntoComponents` were extracted and
+BOTH forms call them.  Reconciliation is `adjustSingleSpecies` (with
+`adjustChloride` as sugar, expanded aloud) under a MANDATORY
+`maximumCorrection`; `weightedLeastSquares` is the named next slice (A2) and
+refuses by name, as does naming `pH` the balancing variable.  With no rule
+declared: inside `closureTolerance` (0.5 %, a NAMED DEFAULT, announced when
+it defaults) it passes through ANNOUNCED; outside it, it REFUSES naming the
+two remedies — **never a silent adjustment**.  Witness
+`analysis01_water_analysis_inlet` (+0.7813 % → 0, chloride +5.1208 %); gate
+`check_aqueous_analysis` (the balance recomputed independently from the
+authored mg/L; the charge-weighted adjustment identity, because moles and
+equivalents coincide only for a monovalent ion; eight refusals; the
+negative), sabotage-verified — with the correction disabled the gate fails
+and **the witness's own golden does not move**.  Record:
+[`docs/design/aqueous-analysis-inlet-scope.md`](docs/design/aqueous-analysis-inlet-scope.md) §8.
 
 **Three-axiom property layout** (referenced by `docs/ai/overview.md`):
 (1) INTRINSIC pure-compound props → `data/standards/components/<name>.dat`;

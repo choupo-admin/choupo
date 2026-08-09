@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 50 records already exist
+## 1. Why an index, when 51 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 50 design records, **22 state a rejected alternative and 28 do not** —
+- Of 51 design records, **24 state a rejected alternative and 27 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -79,6 +79,7 @@ direction is an error.
 | [`restricted-speciation-network.md`](../design/restricted-speciation-network.md) | ADR | yes | SHIPPED |
 | [`general-salt-reconstruction-proposal.md`](../design/general-salt-reconstruction-proposal.md) | ADR | yes | SHIPPED — slice 1 |
 | [`aqueous-stream-basis-proposal.md`](../design/aqueous-stream-basis-proposal.md) | ADR | yes | SHIPPED |
+| [`normalized-residual-convergence.md`](../design/normalized-residual-convergence.md) | ADR | yes | SHIPPED 2026-08-09 — OpenFOAM-style normalized residual, ONE home (`src/solver/Convergence.H`); wired to `ReactiveVLE`'s outer Newton, §4 records what is NOT wired and why; rounding, a case-specific tolerance and a second bare threshold are the recorded rejected alternatives |
 | [`sour-water-stripper-scope.md`](../design/sour-water-stripper-scope.md) | SCOPE | no | PARTIAL — S1–S3 shipped; Table 7 needs the vapour side |
 | [`curation-backlog-estimated-records.md`](../design/curation-backlog-estimated-records.md) | SCOPE | no | ONGOING |
 
@@ -118,7 +119,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`solid-equilibrium-migration.md`](../design/solid-equilibrium-migration.md) | SCOPE | no | **CAMPAIGN OPENED 2026-08-08** under the C2 review's four boundaries (spike record §7 is the authority) — S1 production solver + S2 service seam SHIPPED (active-set + simultaneous Newton; provider-resolved sinks, `check_solid_service` sabotage-verified); S3–S5 sequenced, one slice per suite cycle |
 | [`stream-transport-reconciliation.md`](../design/stream-transport-reconciliation.md) | ADR | yes | **RULED + EXECUTED 2026-08-08** — the result JSON's F/composition/H become the OVERALL material (one stream, one semantics, equal to `converged/` component by component); the "F (fluid)" relabel is the recorded rejected alternative; gate `check_stream_transport_closure`, sabotage-verified; goldens that pinned the fluid-only rows re-recorded |
 | [`tp-stream-energy-coherence.md`](../design/tp-stream-energy-coherence.md) | ADR | yes | **RATIFIED 2026-08-09** (Vítor) — R-E1..R-E5 + O1: an unpinned TP inlet's ENERGY means its equilibrium state (as material already does); a pin is a declared constraint with a visible price; ONE solid rung on every surface; phase enthalpies are consistent VIEWS of one thermochemical definition (the binding precision — never pairwise-curated routes, refuse on missing transition data); one stream-H convention.  Implementation sliced (rung → inlet resolution → coherence); blast radius MEASURED before any golden moved.  **ALL THREE SLICES SHIPPED 2026-08-09** — flash19 closes at 100.00 % with Q = 0, only duties moved corpus-wide (ten goldens, each with its reason; cavett01 changed SIGN on two drums), gates `check_inlet_resolution` + `check_mass_closure`, both sabotage-verified |
-| [`aqueous-analysis-inlet-scope.md`](../design/aqueous-analysis-inlet-scope.md) | SCOPE | no | **PROPOSED 2026-08-09, nothing built** — Vítor's ruling that a laboratory aqueous analysis becomes a first-class inlet with three separately recorded layers (declared / reconciled / calculated).  Inspection found layers 1 and 3 already housed (`speciesMolarFlows basis analytical`, and O1's 0-vs-converged separation) and RECONCILIATION entirely absent.  Slice A1 + exact blast radius (ZERO corpus cases: it adds a form rather than changing one, because INVENTORY is not MEASUREMENT) + six tests; three questions await Vítor |
+| [`aqueous-analysis-inlet-scope.md`](../design/aqueous-analysis-inlet-scope.md) | SCOPE | yes | **A1 SHIPPED 2026-08-09** — a laboratory aqueous analysis is a first-class inlet with three separately recorded layers (measurement in `0/`, reconciled inventory in `converged/` under `calculated {}`, equilibrium in the answer).  Vítor ruled the three open questions: `aqueousAnalysis` is a SEVENTH exclusive canonical form (*inventory is not measurement* — the recorded rejected alternative was extending `speciesMolarFlows`, which would have made one block mean two things about the same numbers); the record goes to `converged/` only, never back into the authored file (O1); with no rule declared, an analysis inside the closure tolerance passes through ANNOUNCED and one outside it REFUSES naming both remedies — never a silent adjustment.  Ships `as <formula>` reporting bases through the shared `ElementComposition` parser, carried per-entry uncertainties, an explicit density route (iterative density refused BY NAME as the declared gap), and one reconciliation method (`adjustSingleSpecies` + its `adjustChloride` sugar) under a mandatory `maximumCorrection`.  Blast radius as predicted: ZERO corpus goldens moved.  Witness `analysis01_water_analysis_inlet` (+0.7813 % ion balance → 0, chloride +5.1208 %); gate `check_aqueous_analysis`, sabotage-verified.  **A2 (weighted least squares) is refused by name until built** |
 | [`solverdict-consolidation-scope.md`](../design/solverdict-consolidation-scope.md) | SCOPE | no | DECIDED 2026-08-04 by Vítor — Option A, recorded in its own §5 |
 | [`seal-divergence-forum-2026-08-02.md`](../design/seal-divergence-forum-2026-08-02.md) | FORUM | no | DECIDED 2026-08-03 — no re-seal (counsel ruling in open-decisions §Resolution); report restructure is implementation |
 
@@ -204,7 +205,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**28 of 50 records state no rejected alternative.**  For a FORUM or a STUDY
+**27 of 51 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
