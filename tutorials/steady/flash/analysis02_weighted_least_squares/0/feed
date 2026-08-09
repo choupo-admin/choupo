@@ -1,0 +1,127 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE MEASUREMENT (layer 1).  Never rewritten by a run.
+
+  Four numbers, four uncertainties, and no way for all four to be right.
+
+    Ca             84.0 mg/L   +/- 2 %   ->  84.0/40.078          = 2.09591 mmol/L
+    Cl             45.0 mg/L   +/- 5 %   ->  45.0/35.453          = 1.26929 mmol/L
+    alkalinity    143.0 mg/L   +/- 4 %   ->  143.0/100.086 x 2    = 2.85754 mmol/L HCO3
+    totalHardness 208.0 mg/L   +/- 3 %   ->  208.0/100.086 x 1    = 2.07821 mmol/L Ca
+
+  TWO THINGS DO NOT ADD UP, and each is a different kind of disagreement:
+
+    charge     2 x 2.09591 - 1.26929 - 2.85754 = +0.06500 meq/L   (+0.7813 %)
+    calcium        2.09591 - 2.07821           = +0.01770 mmol/L  (+0.8445 %)
+
+  The first is the classic ion-balance error.  The second is a REDUNDANCY:
+  the EDTA hardness titration and the ICP determination are two independent
+  measurements of the same calcium, and they disagree by less than either
+  method's own uncertainty -- ordinary, and unresolvable by inspection.
+
+  WHY WEIGHTED LEAST SQUARES AND NOT A RULE.  analysis01 declares that
+  chloride absorbs the charge residue, and chloride moves 5.12 %.  That
+  answers the charge question and cannot answer the calcium one at all -- no
+  amount of chloride makes two calcium measurements agree.  Least squares
+  answers both at once, and it answers them by asking each measurement how
+  sure it is: the correction lands where the uncertainty is, not where a rule
+  points.
+
+  `element Ca;` on the hardness row is what stops the calcium being counted
+  twice.  A species row is MATERIAL this stream carries; an element row is a
+  redundant DETERMINATION of material another row carries.  It contributes to
+  the elemental-conservation law and to nothing else -- not to the inventory,
+  not to the charge balance, not to the flash.
+
+  THE LIMIT IS IN SIGMA.  `maximumCorrection { value 3; in sigma; }` bounds
+  every correction against its own declared uncertainty, which a per-cent
+  limit cannot do: 5 % of a well-measured ion is a scandal and 5 % of a
+  poorly-measured one is nothing.  (The sub-dict spelling is deliberate -- a
+  sigma is not a unit of measure but a scale belonging to one particular
+  measurement, and teaching the dictionary's global unit table the word would
+  make `T 3 sigma;` parse as 3 K.)
+
+  Contract: docs/design/aqueous-analysis-inlet-scope.md (slice A2).
+\*---------------------------------------------------------------------------*/
+aqueousAnalysis
+{
+    network            carbonate;
+    basis              mg/L;
+
+    sampleTemperature  293.15 K;
+
+    density   { value 998.4 kg/m3;  provenance measured; }
+    volumetricFlow     2.0 m3/h;
+
+    pH                 7.6;          // MEASURED at the bench.  Carried, never
+                                     // a balancing variable -- see the refusal
+                                     // in StreamStateIO: adjusting a pH needs
+                                     // an activity coefficient, hence the
+                                     // speciation, which is the coupled loop
+                                     // the ruling forbids.
+
+    closureTolerance   0.5 percent;
+
+    //  Uncertainties may be declared per row (below) or here by the row's own
+    //  label / by a class a row selects with `uncertaintyClass`.  This sheet
+    //  declares them per row because each came off a different instrument;
+    //  the block form earns its keep on a sheet with twenty ions.
+    //
+    //  There is NO silent default.  A named, versioned profile
+    //  (`genericWaterAnalysis-v1`) was reserved for the absent case and is
+    //  deliberately not shipped -- an uncertainty is a property of a
+    //  laboratory and a method, not of an analyte, so a universal table would
+    //  be invented and would look authoritative because it carried a version.
+    //  An analyte with no sigma REFUSES, naming the two one-line remedies.
+
+    reconciliation
+    {
+        method   weightedLeastSquares;
+
+        //  WHICH conservation laws the reconciled composition must satisfy.
+        //  Declared, because the engine must not pick: `elementalConservation`
+        //  exists now, and a reconciliation that quietly enforced only charge
+        //  would leave the hardness row doing nothing.
+        //  Non-negativity is absent from the list because it is not optional.
+        enforce  ( electroneutrality  elementalConservation );
+
+        maximumCorrection { value 3; in sigma; }
+    }
+
+    analytes
+    {
+        Ca            { value  84.0 mg/L;  uncertainty 2 percent; }   // ICP-OES
+        Cl            { value  45.0 mg/L;  uncertainty 5 percent; }   // IC
+
+        alkalinity
+        {
+            species         HCO3;      // what the row actually reports
+            value          143.0 mg/L;
+            as             CaCO3;      // ...on the CaCO3 mass basis
+            perFormulaUnit   2;        // 2 HCO3 per CaCO3 -- a CONVENTION, and
+                                       // that is why it must be declared
+            uncertainty      4 percent;
+        }
+
+        totalHardness
+        {
+            element         Ca;        // an ELEMENT total: a redundant
+                                       // determination, NOT material
+            value          208.0 mg/L;
+            as             CaCO3;      // the EDTA reporting convention
+                                       // (no perFormulaUnit: 1 Ca per CaCO3 is
+                                       //  arithmetic, and declaring it would
+                                       //  be a second home for the formula)
+            uncertainty      3 percent;
+        }
+    }
+}
+T               313.15 K;
+P               101325 Pa;

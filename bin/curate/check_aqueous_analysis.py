@@ -41,11 +41,20 @@ WHAT THIS CHECKS -- the six arms of the scope doc, section 6.
 
   4. FIVE REFUSALS, EACH BY NAME, fired through the real reader: no density
      route; a correction beyond the declared limit; pH named as the balancing
-     variable; `weightedLeastSquares` (the named next slice); two material
-     forms in one file.  Plus the two halves of the no-rule posture (Q3): an
-     analysis that does NOT close and declares no rule REFUSES naming both
-     legal remedies, and one that DOES close passes through with the
+     variable; `weightedLeastSquares` declared with no `enforce ( ... )`; two
+     material forms in one file.  Plus the two halves of the no-rule posture
+     (Q3): an analysis that does NOT close and declares no rule REFUSES naming
+     both legal remedies, and one that DOES close passes through with the
      imbalance announced.
+
+     AMENDED 2026-08-09 WHEN A2 SHIPPED.  The `weightedLeastSquares` arm used
+     to pin the refusal "THE NAMED NEXT SLICE", and A2 built the method, so
+     the arm follows the CLAIM rather than the wording: WLS with no declared
+     conservation law still refuses, because the unconstrained minimum of
+     Sum((x-m)/sigma)^2 is the measurement itself and the record would then
+     claim a reconciliation that never happened.  Everything ABOUT the least
+     squares belongs to check_aqueous_reconciliation.py; this file keeps the
+     A1 grammar's edge only.
 
   5. THE NEGATIVE.  The same case with an ordinary `componentMolarFlows` feed
      produces NO reconciliation record.  The machinery does not switch itself
@@ -57,9 +66,11 @@ WHAT THIS DOES NOT CHECK, said plainly:
     never the true one.  Nothing here can tell a well-chosen absorber from a
     badly-chosen one -- that judgement is the author's, which is exactly why
     the rule must be declared and the correction bounded.
-  * THE UNCERTAINTIES.  A1 parses and carries them; only A2's weighted least
-    squares consumes them.  A gate asserting they are USED would be claiming
-    coverage that does not exist.
+  * THE UNCERTAINTIES.  A1's witness parses and carries them and its
+    single-species rule does not read them.  That they are CONSUMED is A2's
+    claim and is checked in check_aqueous_reconciliation.py, on A2's witness;
+    asserting it here would claim coverage of a case that does not exercise
+    it.
   * THE ITERATIVE DENSITY.  Refused by name here; nothing checks that an
     iteration, once built, converges.
 
@@ -345,10 +356,17 @@ refuses("phbalance",
         "pH may participate in a reconciliation only under an explicit "
         "declared rule, and that rule grammar is A2's")
 
+#  A2 SHIPPED weightedLeastSquares, so the "named next slice" refusal is gone
+#  and this arm follows the claim rather than the wording: WLS declared with
+#  no `enforce ( ... )` still refuses, because least squares with no
+#  constraint returns the measurement unchanged while the record claims a
+#  reconciliation happened.  (check_aqueous_reconciliation.py owns everything
+#  ABOUT the least squares; this arm only holds the A1 grammar's edge.)
 refuses("wls", analysis(method="weightedLeastSquares;"),
-        "THE NAMED NEXT SLICE",
-        "weighted least squares is A2.  Silently approximating it with the "
-        "one method A1 has would answer a question nobody asked")
+        "declares no `enforce",
+        "weighted least squares with no declared conservation law is not a "
+        "reconciliation -- the unconstrained minimum is the measurement "
+        "itself, so the record would claim a correction that never happened")
 
 refuses("twoforms",
         analysis() + "componentMolarFlows\n{\n    water 100 kmol/h;\n}\n",
@@ -427,7 +445,7 @@ print("check_aqueous_analysis: OK -- the analysis inlet resolves through its "
       "and the charge the listed adjustments move equals the residue they "
       "cancel; eight refusals fire BY NAME (no density route, iterative "
       "density, correction over the limit, pH as the balancing variable, "
-      "weightedLeastSquares, two material forms, no rule on a non-closing "
+      "weightedLeastSquares without an enforce list, two material forms, no rule on a non-closing "
       "analysis) and a closing analysis passes through ANNOUNCED; a plain "
       "componentMolarFlows stream produces no record at all.  NOT CHECKED: "
       "whether the reconciled water is RIGHT (absorbing a residue into one "

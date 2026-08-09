@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  analysis02 -- topology only (state lives in 0/)                             |
+\*-----------------------------------------------------------------------------*/
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 313.15 K;  P 1.0 atm; }
+    }
+);

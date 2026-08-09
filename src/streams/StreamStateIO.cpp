@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "streams/StreamStateIO.H"
+#include "streams/AnalysisReconciler.H"
 #include "core/Advisory.H"
 #include "core/distribution/SizeDistribution.H"
 #include "thermo/AtomicWeights.H"
@@ -523,6 +524,36 @@ void writeStreamState(const ProcessStream&  s,
         out << "\ncalculated\n{\n"
                "    //  ENGINE OUTPUT, not state.  The authored 0/ file holds the\n"
                "    //  MEASUREMENT and is never rewritten; this is what it resolved to.\n"
+               "\n"
+               "    //  ===============================================================\n"
+               "    //   READ THIS BEFORE READING A NUMBER BELOW.\n"
+               "    //\n"
+               "    //   EVERY quantity inside `analysisReconciliation` is a\n"
+               "    //   MEASUREMENT, or the distance a measurement had to be moved\n"
+               "    //   to obtain a physically admissible inlet.  NOT ONE OF THEM IS\n"
+               "    //   A CHEMISTRY RESULT.  The chemistry this stream resolves to --\n"
+               "    //   the ions, the solved pH, the phase split -- is in the\n"
+               "    //   `speciation {}` and `phases {}` blocks of this same file, and\n"
+               "    //   the two must never be read as one list.\n"
+               "    //\n"
+               "    //   Three structural marks keep them apart, so telling them apart\n"
+               "    //   does not depend on remembering this paragraph:\n"
+               "    //     * every corrected row carries `reportedValue`.  Nothing in\n"
+               "    //       `speciation {}` has one and nothing ever can -- a\n"
+               "    //       laboratory reported it, or it was calculated; not both;\n"
+               "    //     * corrections are quoted in SIGMA (`correctionSigma`), a\n"
+               "    //       measurement-quality unit that is meaningless for a\n"
+               "    //       calculated quantity, and nothing calculated is ever in it;\n"
+               "    //     * the two use different KEY SPACES.  Rows here are keyed by\n"
+               "    //       the author's own sheet labels (`alkalinity`,\n"
+               "    //       `totalHardness`); `speciation {}` is keyed by species ids\n"
+               "    //       (`HCO3`, `CaCO3aq`).  A label is not a species.\n"
+               "    //\n"
+               "    //   Why it matters: \"the model says the water holds 2.86 mmol/L of\n"
+               "    //   bicarbonate\" and \"the reconciliation moved the reported\n"
+               "    //   alkalinity by 0.31 of its own standard uncertainty\" are\n"
+               "    //   different KINDS of claim, and only the first is a result.\n"
+               "    //  ===============================================================\n"
                "    analysisReconciliation\n    {\n";
         out << "        basis                  " << a.basis << ";\n";
         if (a.sampleT > 0.0)
@@ -536,8 +567,15 @@ void writeStreamState(const ProcessStream&  s,
             out << "        solventMassFlow        " << a.solventMassFlow * 3600.0
                 << " kg/h;\n";
         if (a.pH_valid)
-            out << "        pH                     " << a.pH
-                << ";    // MEASURED -- never a balancing variable (A1)\n";
+            //  `pHReported`, not `pH`.  The flash SOLVES a pH and writes it
+            //  into this same file; two different numbers under one key is
+            //  precisely the confusion this block is designed to prevent, and
+            //  a comment saying "measured" is not a defence against a reader
+            //  who greps.
+            out << "        //  MEASURED at the bench -- NOT the solved pH,"
+                   " which is a chemistry\n"
+                   "        //  result and lives in the speciation block.\n"
+                   "        pHReported             " << a.pH << ";\n";
         out << "        closureTolerance       " << a.closureTolerancePct
             << " percent;    //  "
             << (a.closureToleranceDefaulted ? "NAMED DEFAULT" : "declared") << "\n";
@@ -552,6 +590,24 @@ void writeStreamState(const ProcessStream&  s,
             out << "        maximumCorrection      " << a.maximumCorrectionPct
                 << " percent;\n";
         }
+        if (!a.enforced.empty())
+        {
+            out << "        enforce                (";
+            for (const auto& f : a.enforced) out << " " << f;
+            out << " );    //  + non-negativity, which is not optional\n";
+            if (a.maximumCorrectionPct > 0.0)
+                out << "        maximumCorrection      "
+                    << a.maximumCorrectionPct << " percent;\n";
+            if (a.maxCorrectionSigma > 0.0)
+                out << "        maximumCorrectionSigma " << a.maxCorrectionSigma
+                    << ";    //  declared `maximumCorrection { value ...;"
+                       " in sigma; }`\n";
+            out << "        uncertaintyPolicy      \"" << a.uncertaintyPolicy
+                << "\";\n"
+                   "        objective              " << a.objective
+                << ";    //  Sum ((x-m)/sigma)^2 at the answer\n"
+                   "        workingSetChanges      " << a.qpIterations << ";\n";
+        }
         //  BOTH spellings of the residue: the signed EQUIVALENT flow (what
         //  was actually moved) and the ion-balance percentage (what a limit
         //  is declared in).  Neither is derivable from the answer.
@@ -563,20 +619,121 @@ void writeStreamState(const ProcessStream&  s,
             << " kmol/h;    //  SUM z_i n_i, equivalents\n"
                "        chargeResidueAfter     " << a.imbalanceAfter * 3600.0
             << " kmol/h;\n";
+        //  THE ACTIVE CONSTRAINTS, and what each one was still off by.  An
+        //  enforced law that turns out NOT to bind is reported too: "it did
+        //  not need to move anything" and "it was never applied" are
+        //  different facts and only one of them is good news.
+        if (!a.constraints.empty())
+        {
+            out << "\n        constraints\n        {\n";
+            for (const auto& c : a.constraints)
+            {
+                out << "            " << c.name << "\n            {\n"
+                    << "                family          " << c.family << ";\n"
+                    << "                meaning         \"" << c.meaning
+                    << "\";\n"
+                    << "                residualBefore  " << c.residualBefore * 3600.0
+                    << ";    //  in the law's own units, per hour\n"
+                    << "                residualAfter   " << c.residualAfter * 3600.0
+                    << ";\n"
+                    << "                multiplier      " << c.multiplier
+                    << ";    //  Lagrange, in sigma units\n"
+                    << "                binding         "
+                    << (c.binding ? "true" : "false") << ";\n"
+                    << "            }\n";
+            }
+            out << "        }\n";
+        }
+
         out << "\n        adjustments\n        {\n";
+        if (!a.constraints.empty())
+            out << "            //  ONE ROW PER MEASURED QUANTITY -- each is a\n"
+                   "            //  MEASUREMENT and the distance it was moved, never a\n"
+                   "            //  chemistry result (see the legend above).\n"
+                   "            //    reportedValue     what the laboratory sent\n"
+                   "            //    adjustedValue     what the equilibrium was fed\n"
+                   "            //    sigma / weight    the declared uncertainty, and\n"
+                   "            //                      1/sigma^2 -- why the split fell\n"
+                   "            //                      where it did\n"
+                   "            //    correctionSigma   THE normalized correction\n"
+                   "            //    causedBy          the exact per-law parts; they\n"
+                   "            //                      SUM to correctionSigma\n"
+                   "            //    closure           how much of each law's own\n"
+                   "            //                      residue this row removed\n";
         bool anyAdj = false;
         for (const auto& an : a.analytes)
         {
             const scalar d = an.reconciled - an.measured;
-            if (std::abs(d) <= 0.0) continue;
+            //  Under a single-species rule only the moved row is listed; under
+            //  least squares EVERY row is, because "this measurement was left
+            //  where it was" is a result of the fit and not an absence.
+            if (a.constraints.empty() && std::abs(d) <= 0.0) continue;
             anyAdj = true;
-            out << "            " << an.species
-                << " { measured " << an.measured * 3600.0
-                << " kmol/h; reconciled " << an.reconciled * 3600.0
-                << " kmol/h; correction " << d * 3600.0 << " kmol/h; "
-                << "correctionPct "
+            const std::string key = an.label.empty() ? an.species : an.label;
+            if (a.constraints.empty())
+            {
+                out << "            " << an.species
+                    << " { measured " << an.measured * 3600.0
+                    << " kmol/h; reconciled " << an.reconciled * 3600.0
+                    << " kmol/h; correction " << d * 3600.0 << " kmol/h; "
+                    << "correctionPct "
+                    << (an.measured != 0.0 ? 100.0 * d / an.measured : 0.0)
+                    << " percent; }\n";
+                continue;
+            }
+            out << "            " << key << "\n            {\n";
+            if (!an.species.empty())
+                out << "                species              " << an.species
+                    << ";\n";
+            if (!an.element.empty())
+                out << "                element              " << an.element
+                    << ";    //  a redundant TOTAL, carries no material\n";
+            out << "                reportedValue        " << an.measured * 3600.0
+                << " kmol/h;\n"
+                << "                adjustedValue        " << an.reconciled * 3600.0
+                << " kmol/h;\n"
+                << "                correction           " << d * 3600.0
+                << " kmol/h;\n"
+                << "                correctionPct        "
                 << (an.measured != 0.0 ? 100.0 * d / an.measured : 0.0)
-                << " percent; }\n";
+                << " percent;\n"
+                << "                sigma                " << an.sigma * 3600.0
+                << " kmol/h;    //  " << an.uncertaintyPct << " percent, "
+                << an.uncertaintyOrigin << "\n"
+                << "                weight               "
+                << (an.sigma > 0.0 ? 1.0 / (an.sigma * an.sigma * 3600.0 * 3600.0)
+                                   : 0.0)
+                << ";    //  1/sigma^2\n"
+                << "                correctionSigma      " << an.correctionSigma
+                << ";\n"
+                << "                constraintResponsible "
+                << (an.responsibleConstraint.empty() ? std::string("none")
+                                                     : an.responsibleConstraint)
+                << ";\n"
+                << "                responsibleShare     "
+                << 100.0 * an.responsibleShare << " percent;\n"
+                << "                atNonNegativityBound "
+                << (an.atNonNegativityBound ? "true" : "false") << ";\n";
+            out << "                causedBy\n                {\n";
+            if (an.roles.empty())
+                out << "                    //  nothing moved this row\n";
+            for (const auto& ro : an.roles)
+                out << "                    " << ro.constraint << "    "
+                    << ro.causedSigma << ";    //  sigma\n";
+            out << "                }\n";
+            out << "                closure\n                {\n";
+            bool anyClosure = false;
+            for (const auto& ro : an.roles)
+            {
+                if (ro.constraint == "nonNegativity") continue;
+                anyClosure = true;
+                out << "                    " << ro.constraint << "    "
+                    << ro.closure * 3600.0
+                    << ";    //  of that law's residue, per hour\n";
+            }
+            if (!anyClosure)
+                out << "                    //  this row closed no law\n";
+            out << "                }\n            }\n";
         }
         if (!anyAdj)
             out << "            //  none -- the analysis closed within the"
@@ -585,14 +742,31 @@ void writeStreamState(const ProcessStream&  s,
         out << "\n        measured\n        {\n";
         for (const auto& an : a.analytes)
         {
-            out << "            " << an.species << " { amount "
-                << an.measured * 3600.0 << " kmol/h;";
+            //  Keyed by the AUTHOR'S OWN LABEL, which is what a sheet is
+            //  keyed by -- and which is also what keeps this table out of
+            //  the species key space the chemistry uses.
+            out << "            " << (an.label.empty() ? an.species : an.label)
+                << " { amount " << an.measured * 3600.0 << " kmol/h;";
+            if (!an.species.empty()) out << " species " << an.species << ";";
+            if (!an.element.empty()) out << " element " << an.element << ";";
             if (!an.asFormula.empty())
-                out << " as " << an.asFormula
-                    << "; perFormulaUnit " << an.perFormulaUnit << ";";
+            {
+                out << " as " << an.asFormula << ";";
+                if (an.element.empty())
+                    out << " perFormulaUnit " << an.perFormulaUnit << ";";
+            }
             if (an.uncertaintyPct > 0.0)
                 out << " uncertainty " << an.uncertaintyPct << " percent;";
-            out << " }\n";
+            //  The trailing note goes AFTER the brace, never before it: a
+            //  `//` comment opened inside the row would swallow the closing
+            //  `}` and the file would stop parsing.  It did, for exactly as
+            //  long as nothing fed a resolved snapshot back -- which is the
+            //  claim `calculated {}` makes ("the reader ignores the block, so
+            //  the file stays feedable as state") and which nothing checked.
+            out << " }";
+            if (!an.uncertaintyOrigin.empty())
+                out << "    // sigma " << an.uncertaintyOrigin;
+            out << "\n";
         }
         out << "        }\n    }\n";
         //  LAYER 2 ITSELF: the reconciled conserved inventory, on the
@@ -1028,6 +1202,47 @@ ProcessStream readStreamState(const fs::path&       file,
             rec->pH_valid = true;
         }
 
+        //  ---- (a0) THE UNCERTAINTY POLICY (A2) ----------------------------
+        //  sigma is the whole content of the word WEIGHTED, so where each one
+        //  came from is part of the answer and is announced per row.
+        //
+        //  THREE declared sources, in precedence order, and NO fourth:
+        //    1  the row's own `uncertainty <x> percent;`  (A1's field, at
+        //       last consumed);
+        //    2  `uncertainties { <rowKey> <x> percent; }` -- the author's own
+        //       row label, matched inside the SAME block that defines it.
+        //       (This is not the name-identity crossing the F2 contract bans:
+        //       that ban is about reaching a species record by resemblance.
+        //       Here a label three lines above is being matched to itself.)
+        //    3  `uncertainties { <class> <x> percent; }` selected by the row's
+        //       explicit `uncertaintyClass <class>;`, plus an optional
+        //       `default`.  The CLASS IS DECLARED, never inferred: the ruling
+        //       spells classes "majorIons / minorIons / alkalinity", and
+        //       deciding from a name which ions are major would be the engine
+        //       classifying the author's chemistry for him.
+        //
+        //  AND NO SILENT FOURTH.  `genericWaterAnalysis-v1` -- a named,
+        //  versioned default profile -- is deliberately NOT shipped; see the
+        //  refusal below for why.
+        std::map<std::string, scalar> uncTable;      // key -> percent
+        std::map<std::string, bool>   uncUsed;
+        if (blk->found("uncertainties"))
+        {
+            auto ub = blk->subDict("uncertainties");
+            for (const auto& k : ub->keys())
+            {
+                uncTable[k] = 100.0 * ub->lookupScalar(k, Dims::dimensionless);
+                uncUsed[k]  = false;
+                if (!(uncTable[k] > 0.0))
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `uncertainties` block declares '" + k + "' as "
+                        + std::to_string(uncTable[k]) + " percent.  A"
+                        " non-positive uncertainty is an INFINITE weight: the"
+                        " rows it covers would be pinned and every other"
+                        " correction silently inflated to pay for them.");
+            }
+        }
+
         //  ---- (a) THE ANALYTES --------------------------------------------
         //  Two spellings, one meaning: a bare `Ca 84 mg/L;` for a row that
         //  needs nothing said about it, and a sub-dict when it does (a
@@ -1043,8 +1258,11 @@ ProcessStream readStreamState(const fs::path&       file,
         {
             ProcessStream::AnalysisReconciliation::Analyte a;
             a.species = key;
+            a.label   = key;
             scalar value = 0.0;
             bool   dimsDeclared = false;
+            bool   perFormulaDeclared = false;
+            std::string uncClass;
             Dimensions gotDims;
 
             const EntryValue& ev = an->entryValue(key);
@@ -1057,18 +1275,70 @@ ProcessStream readStreamState(const fs::path&       file,
                 value = e->lookupScalar("value");
                 dimsDeclared = e->hasDimensions("value");
                 if (dimsDeclared) gotDims = e->dimensionsOf("value");
-                a.species = e->lookupWordOrDefault("species", key);
+                //  A row reports EITHER a species amount OR an element total.
+                //  The two are different KINDS of measurement -- one is
+                //  material this stream carries, the other is a REDUNDANT
+                //  determination of material some other row already carries --
+                //  and a row claiming both would be counted twice.
+                if (e->found("element") && e->found("species"))
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' declares BOTH `species`"
+                          " and `element`.  A row reports one measured"
+                          " SPECIES amount, or one measured ELEMENT total --"
+                          " the first is material this stream carries, the"
+                          " second is a redundant determination of material"
+                          " another row already carries, and a row that is"
+                          " both would be counted twice.");
+                a.element = e->lookupWordOrDefault("element", "");
+                a.species = a.element.empty()
+                          ? e->lookupWordOrDefault("species", key)
+                          : std::string();
                 a.asFormula = e->lookupWordOrDefault("as", "");
+                perFormulaDeclared = e->found("perFormulaUnit");
                 a.perFormulaUnit = e->lookupScalarOrDefault("perFormulaUnit", 1.0);
+                uncClass = e->lookupWordOrDefault("uncertaintyClass", "");
                 if (e->found("uncertainty"))
+                {
                     a.uncertaintyPct =
                         100.0 * e->lookupScalar("uncertainty", Dims::dimensionless);
+                    a.uncertaintyOrigin = "declared on the row";
+                }
             }
             else
             {
                 value = an->lookupScalar(key);
                 dimsDeclared = an->hasDimensions(key);
                 if (dimsDeclared) gotDims = an->dimensionsOf(key);
+            }
+
+            //  THE SIGMA, and WHERE IT CAME FROM.  Resolved here so the
+            //  origin travels with the number: a reader who cannot tell a
+            //  declared uncertainty from an inherited one cannot tell a
+            //  weighted least squares from an unweighted one.
+            if (a.uncertaintyPct <= 0.0 && uncTable.count(key))
+            {
+                a.uncertaintyPct = uncTable[key];
+                a.uncertaintyOrigin = "uncertainties{} entry '" + key + "'";
+                uncUsed[key] = true;
+            }
+            if (a.uncertaintyPct <= 0.0 && !uncClass.empty())
+            {
+                if (!uncTable.count(uncClass))
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' declares"
+                          " `uncertaintyClass " + uncClass + ";`, and the"
+                          " `uncertainties` block defines no such class.  A"
+                          " class that resolves to nothing would leave the"
+                          " row weightless.");
+                a.uncertaintyPct = uncTable[uncClass];
+                a.uncertaintyOrigin = "uncertainties{} class '" + uncClass + "'";
+                uncUsed[uncClass] = true;
+            }
+            if (a.uncertaintyPct <= 0.0 && uncTable.count("default"))
+            {
+                a.uncertaintyPct = uncTable["default"];
+                a.uncertaintyOrigin = "uncertainties{} `default`";
+                uncUsed["default"] = true;
             }
 
             //  DECLARED AND VERIFIED: the block said what kind of quantity
@@ -1089,7 +1359,62 @@ ProcessStream readStreamState(const fs::path&       file,
             //  engine may invent.  The formula's MW comes from the ONE
             //  elemental-formula parser (thermo/ElementComposition), never a
             //  second table of molar masses.
+            //  AN ELEMENT ROW'S SURROGATE RATIO IS ARITHMETIC; A SPECIES
+            //  ROW'S IS A CONVENTION.  `alkalinity ... as CaCO3` needs
+            //  `perFormulaUnit 2` because NOTHING in the formula CaCO3 says
+            //  that one carbonate unit answers for two bicarbonate -- that is
+            //  a titration convention.  `totalHardness { element Ca; as
+            //  CaCO3; }` needs no such declaration and must not carry one:
+            //  the formula says exactly how many Ca there are in a CaCO3, and
+            //  a declared number beside a derived one is a second home free
+            //  to drift from it.
+            if (!a.element.empty() && perFormulaDeclared)
+                throw std::runtime_error("stream state '" + name
+                    + "': analyte '" + key + "' totals element '" + a.element
+                    + "' and also declares `perFormulaUnit`.  For an ELEMENT"
+                      " row the atoms per reported formula unit are"
+                      " ARITHMETIC -- the formula '"
+                    + (a.asFormula.empty() ? a.element : a.asFormula)
+                    + "' states them -- so declaring the number puts a second"
+                      " home beside a derived one.  (A SPECIES row is"
+                      " different and keeps the key: nothing in the formula"
+                      " CaCO3 says an alkalinity titration counts two"
+                      " bicarbonate per unit; that is a convention.)");
+
             scalar amount = value;      // per volume / per kg solvent
+            scalar atomsPerUnit = 1.0;  // element atoms per reported unit
+            if (!a.element.empty())
+            {
+                //  The element must be a real one, checked through the SAME
+                //  parser every other elemental reader uses.
+                const ElementComposition es = parseElementalFormula(a.element);
+                if (!es.available || es.atoms.size() != 1
+                    || es.atoms.begin()->second != 1.0)
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' declares `element "
+                        + a.element + ";`, which is not a single chemical"
+                          " element symbol.");
+                if (!a.asFormula.empty())
+                {
+                    const ElementComposition ec =
+                        parseElementalFormula(a.asFormula);
+                    if (!ec.available)
+                        throw std::runtime_error("stream state '" + name
+                            + "': analyte '" + key + "' is reported `as "
+                            + a.asFormula + "`, which is not a parseable"
+                              " elemental formula -- " + ec.reason);
+                    auto it = ec.atoms.find(a.element);
+                    if (it == ec.atoms.end())
+                        throw std::runtime_error("stream state '" + name
+                            + "': analyte '" + key + "' totals element '"
+                            + a.element + "' but is reported `as "
+                            + a.asFormula + "`, whose formula contains no "
+                            + a.element + ".  The surrogate cannot weigh an"
+                              " element it does not contain.");
+                    atomsPerUnit = it->second;
+                }
+            }
+
             if (route == Route::massPerVolume)
             {
                 scalar MW = 0.0;
@@ -1104,6 +1429,12 @@ ProcessStream readStreamState(const fs::path&       file,
                               " elemental formula -- " + ec.reason);
                     for (const auto& [sym, cnt] : ec.atoms)
                         MW += cnt * atomicWeight(sym);
+                }
+                else if (!a.element.empty())
+                {
+                    //  An element total reported as the element's OWN mass
+                    //  (total sulfur in mg S/L) weighs one atom.
+                    MW = atomicWeight(a.element);
                 }
                 else
                 {
@@ -1123,20 +1454,51 @@ ProcessStream readStreamState(const fs::path&       file,
                           " non-positive molar mass.");
                 amount = value / MW;            // kg/m3 / (kg/kmol) = kmol/m3
             }
-            amount *= a.perFormulaUnit;
+            amount *= a.element.empty() ? a.perFormulaUnit : atomsPerUnit;
 
-            //  The species must be a MASTER of this system, checked by asking
-            //  for its record -- a name that answers to nothing would
+            //  A SPECIES row must name a MASTER of this system, checked by
+            //  asking for its record -- a name that answers to nothing would
             //  otherwise ride the whole route and fail as an unreachable row.
-            requireSpeciesRecord(a.species, name);
+            //  An ELEMENT row names no species and carries no material: it is
+            //  a redundant determination of material other rows carry, so it
+            //  enters the CONSTRAINTS and never the inventory.
+            if (a.element.empty()) requireSpeciesRecord(a.species, name);
             a.measured = amount;
             a.reconciled = amount;
             rec->analytes.push_back(a);
-            mTot[a.species] += amount;
+            if (a.element.empty()) mTot[a.species] += amount;
         }
         if (mTot.empty())
             throw std::runtime_error("stream state '" + name + "': the"
-                " `analytes` block is empty.");
+                " `analytes` block reports no SPECIES amount -- an element"
+                " total is a redundant determination of material other rows"
+                " carry, and a sheet made only of totals carries nothing.");
+
+        //  A DECLARED UNCERTAINTY NOBODY READS IS A COMMENT.  An entry that
+        //  matches no row key and no row's declared class silently does
+        //  nothing, and the run then reports a weighting the author did not
+        //  get -- the same defect shape as a gate that cannot run.
+        {
+            std::string orphan;
+            for (const auto& [k, used] : uncUsed)
+                if (!used) orphan += (orphan.empty() ? "" : ", ") + k;
+            if (!orphan.empty())
+                throw std::runtime_error("stream state '" + name + "': the"
+                    " `uncertainties` block declares " + orphan + ", which"
+                    " no analyte used.  An entry is consumed when it matches"
+                    " a row's own key, or a class a row declares with"
+                    " `uncertaintyClass`, or is the `default`.  One that"
+                    " matches nothing is a comment the parser cannot see --"
+                    " and the run would report a weighting nobody applied.");
+            if (!uncUsed.empty())
+            {
+                rec->uncertaintyPolicy = "declared: uncertainties{} +"
+                                         " per-row `uncertainty`";
+            }
+            else
+                rec->uncertaintyPolicy = "declared: per-row `uncertainty`"
+                                         " only";
+        }
 
         //  ---- (b) THE CHARGE RESIDUE, MEASURED then (maybe) ABSORBED ------
         auto chargeOf = [&](const std::string& sp)
@@ -1185,16 +1547,443 @@ ProcessStream readStreamState(const fs::path&       file,
             const std::string m = rc->lookupWord("method");
             rec->methodAsWritten = m;
 
+            //  ---- THE LIMIT, in PER CENT or in SIGMA (A2) ------------------
+            //  Two limits, not two spellings of one.  `10 percent` bounds the
+            //  correction against the MEASURED VALUE; `3 sigma` bounds it
+            //  against the DECLARED UNCERTAINTY, and only the second can tell
+            //  a nudge from an overrule -- 5 % of a well-measured ion is a
+            //  scandal and 5 % of a poorly-measured one is nothing.  Both may
+            //  be declared; each refuses on its own.
+            //
+            //  SPELLING, and why it is a sub-dict.  The ruling writes
+            //  `maximumCorrection 3 sigma;`.  A sigma is NOT a unit of
+            //  measure -- it is a scale reference belonging to one particular
+            //  measurement -- and teaching the dictionary's global unit table
+            //  the word would make `T 3 sigma;` parse as 3 K.  So the sigma
+            //  form takes the sub-dict spelling the analytes block already
+            //  establishes for a row that needs something said about it, and
+            //  A1's `maximumCorrection <x> percent;` is untouched.
+            auto readLimits = [&](const DictPtr& r)
+            {
+                if (!r->found("maximumCorrection")) return false;
+                const EntryValue& mv = r->entryValue("maximumCorrection");
+                if (!std::holds_alternative<DictPtr>(mv))
+                {
+                    rec->maximumCorrectionPct = 100.0
+                        * r->lookupScalar("maximumCorrection",
+                                          Dims::dimensionless);
+                    return true;
+                }
+                auto md = r->subDict("maximumCorrection");
+                if (!md->found("value") || !md->found("in"))
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `maximumCorrection { ... }` block needs both a"
+                        " `value` and an `in sigma;` or `in percent;` -- the"
+                        " scale is what the number means.");
+                if (md->hasDimensions("value"))
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `maximumCorrection { value ...; }` carries a unit."
+                        "  In this form the scale is stated by `in`, so a"
+                        " unit on the value would be a second, silently"
+                        " disagreeing answer to the same question.");
+                const scalar v = md->lookupScalar("value");
+                const std::string in = md->lookupWord("in");
+                if (in == "sigma")        rec->maxCorrectionSigma   = v;
+                else if (in == "percent") rec->maximumCorrectionPct = v;
+                else
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `maximumCorrection` is declared `in " + in + ";`."
+                        "  A correction limit is stated either `in sigma`"
+                        " (against the declared uncertainty) or `in percent`"
+                        " (against the measured value).");
+                if (!(v > 0.0))
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `maximumCorrection` is not positive.");
+                return true;
+            };
+
+            //  =====================================================
+            //   CONSTRAINED WEIGHTED LEAST SQUARES  (slice A2)
+            //  =====================================================
+            //
+            //  THE BOUNDARY IS THE POINT, and it runs through this call.
+            //  Everything below assembles a PROBLEM STATEMENT out of facts
+            //  the case already declared -- a charge off a species record, an
+            //  atom count off a formula, a sigma off the sheet -- hands it to
+            //  `Choupo::analysis::reconcileWeightedLeastSquares`, and takes
+            //  back one admissible composition.  That function lives in a
+            //  translation unit that includes NOTHING from `thermo/`: it
+            //  cannot name ThermoPackage, a speciation solver or an activity
+            //  model, so the equilibrium cannot reach back into the
+            //  measurements even by mistake.  The reconciliation runs to
+            //  COMPLETION here, before any unit sees the stream.
             if (m == "weightedLeastSquares")
-                throw std::runtime_error("stream state '" + name + "': `method"
-                    " weightedLeastSquares;` is THE NAMED NEXT SLICE (A2) and"
-                    " is not built.  A1 ships the contract -- the record, the"
-                    " limit, the per-quantity uncertainties, the resolved"
-                    " snapshot -- with ONE method behind it"
-                    " (`adjustSingleSpecies`), because shipping the contract"
-                    " first is what makes the least-squares arithmetic cheap."
-                    "  Declaring it now would name a method nothing"
-                    " implements.");
+            {
+                rec->method = m;
+                if (!readLimits(rc))
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " `reconciliation` declares no `maximumCorrection`."
+                        "  A rule with no limit will absorb any residue,"
+                        " however large -- which turns a broken analysis into"
+                        " a plausible one.  Declare"
+                        " `maximumCorrection { value 3; in sigma; }` (against"
+                        " the declared uncertainties) or"
+                        " `maximumCorrection <x> percent;` (against the"
+                        " measured values), or both.");
+
+                //  ---- THE ENFORCED LAWS, DECLARED -------------------------
+                if (!rc->found("enforce"))
+                    throw std::runtime_error("stream state '" + name + "':"
+                        " `method weightedLeastSquares;` declares no"
+                        " `enforce ( ... );`.  Least squares with no"
+                        " constraint returns the measurement unchanged, so"
+                        " WHICH conservation laws the reconciled composition"
+                        " must satisfy is the entire content of the method."
+                        "  A1's single-species rule enforced electroneutrality"
+                        " implicitly; A2 makes it a declaration, because a"
+                        " second law (`elementalConservation`) is now"
+                        " available and the engine must not pick.");
+                rec->enforced = rc->lookupWordList("enforce");
+                bool wantCharge = false, wantElements = false;
+                for (const auto& f : rec->enforced)
+                {
+                    if (f == "electroneutrality")        wantCharge   = true;
+                    else if (f == "elementalConservation") wantElements = true;
+                    else
+                        throw std::runtime_error("stream state '" + name
+                            + "': `enforce ( ... )` names '" + f + "', which"
+                              " is not a conservation law this reconciler"
+                              " knows.  A2 enforces `electroneutrality` (a"
+                              " solution carries no net charge) and"
+                              " `elementalConservation` (a measured element"
+                              " total must equal the element the species rows"
+                              " carry).  Non-negativity is not listed: it is"
+                              " not optional.");
+                }
+
+                //  ---- THE SIGMAS, EACH WITH ITS ORIGIN --------------------
+                for (const auto& a : rec->analytes)
+                {
+                    if (a.uncertaintyPct > 0.0 && a.measured != 0.0) continue;
+                    if (a.measured == 0.0)
+                        throw std::runtime_error("stream state '" + name
+                            + "': analyte '" + a.label + "' is reported as"
+                              " ZERO and weighted least squares weights each"
+                              " measurement by 1/sigma^2 of a RELATIVE"
+                              " uncertainty -- a zero has no scale to be"
+                              " relative to.  Drop the row (an absent analyte"
+                              " is not a measured zero), or report it at its"
+                              " detection limit.");
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + a.label + "' declares no"
+                          " uncertainty, and `method weightedLeastSquares;`"
+                          " weights every measurement by 1/sigma^2 -- without"
+                          " a sigma the row has no weight and the word"
+                          " WEIGHTED means nothing.\n"
+                          "        A named, versioned default profile"
+                          " (`genericWaterAnalysis-v1`) was reserved for"
+                          " exactly this gap and is DELIBERATELY NOT SHIPPED."
+                          "  A per-analyte uncertainty is a property of a"
+                          " LABORATORY and a METHOD, not of an analyte:"
+                          " Standard Methods and ISO/IEC 17025 publish how a"
+                          " laboratory ESTIMATES its own uncertainty, not a"
+                          " universal table of it.  Numbers invented here"
+                          " would look authoritative precisely because they"
+                          " carried a version, and no reader and no gate"
+                          " could tell.  A visible gap is strictly better"
+                          " than an invisible falsehood.\n"
+                          "        Two one-line remedies: `uncertainty <x>"
+                          " percent;` on the row, or"
+                          " `uncertainties { default <x> percent; }` beside"
+                          " the analytes -- which is how you declare EQUAL"
+                          " WEIGHTS out loud.");
+                }
+
+                //  ---- ATOMS, through the ONE elemental parser -------------
+                auto atomsOfSpecies = [&](const std::string& sp)
+                {
+                    DictPtr sr = requireSpeciesRecord(sp, name);
+                    //  The record's DATA key is `formula`; the bridge that
+                    //  every consumer reaches a species through
+                    //  (`bridgeTrueIon`) publishes it under the flat key
+                    //  `ion`, which it kept for its older consumers.  Reading
+                    //  `formula` here silently found nothing -- the
+                    //  reduced-identity shape CLAUDE.md names, one door
+                    //  further along -- so this reads the key the bridge
+                    //  actually emits, through the same door as `z` and `MW`.
+                    const std::string f = sr->lookupWordOrDefault("ion", "");
+                    if (f.empty())
+                        throw std::runtime_error("stream state '" + name
+                            + "': species '" + sp + "' declares no `formula`,"
+                              " so an `elementalConservation` law cannot be"
+                              " written over it -- there is no way to say how"
+                              " many atoms of anything it carries.  Curate"
+                              " the formula into species/" + sp + ".dat, or"
+                              " drop elementalConservation from"
+                              " `enforce ( ... )`.");
+                    const ElementComposition ec = parseElementalFormula(f);
+                    if (!ec.available)
+                        throw std::runtime_error("stream state '" + name
+                            + "': species '" + sp + "' declares `formula "
+                            + f + "`, which does not parse -- " + ec.reason);
+                    return ec.atoms;
+                };
+
+                const std::size_t nR = rec->analytes.size();
+                std::vector<analysis::ConservationConstraint> cons;
+
+                if (wantCharge)
+                {
+                    analysis::ConservationConstraint c;
+                    c.name   = "electroneutrality";
+                    c.family = "electroneutrality";
+                    c.meaning = "Sum z_i n_i = 0 -- an aqueous solution"
+                                " carries no net charge";
+                    c.coeff.assign(nR, 0.0);
+                    c.target = 0.0;
+                    bool any = false;
+                    for (std::size_t r = 0; r < nR; ++r)
+                        if (rec->analytes[r].element.empty())
+                        {
+                            c.coeff[r] = chargeOf(rec->analytes[r].species);
+                            if (c.coeff[r] != 0.0) any = true;
+                        }
+                    if (!any)
+                        throw std::runtime_error("stream state '" + name
+                            + "': `enforce ( electroneutrality )` is declared"
+                              " and no measured row carries any charge, so the"
+                              " law can neither bind nor be violated.  An"
+                              " enforced constraint that cannot fire is a"
+                              " claim of coverage this run does not have.");
+                    cons.push_back(std::move(c));
+                }
+
+                //  An ELEMENT row is a redundant determination: it measures
+                //  something the species rows already carry.  That redundancy
+                //  is what makes this a least-squares problem rather than one
+                //  equation -- and it is worth nothing unless the law that
+                //  ties the two together is enforced.
+                std::map<std::string, std::size_t> elemRow;
+                for (std::size_t r = 0; r < nR; ++r)
+                    if (!rec->analytes[r].element.empty())
+                    {
+                        const std::string& E = rec->analytes[r].element;
+                        if (elemRow.count(E))
+                            throw std::runtime_error("stream state '" + name
+                                + "': two rows ('"
+                                + rec->analytes[elemRow[E]].label + "' and '"
+                                + rec->analytes[r].label + "') both total"
+                                  " element '" + E + "'.  Two independent"
+                                  " determinations of one element are a real"
+                                  " laboratory situation and A2 does not"
+                                  " reconcile them: it would need to say"
+                                  " which of the two the species rows are"
+                                  " being tied to, and that is a declaration"
+                                  " nobody has made.");
+                        elemRow[E] = r;
+                        if (!wantElements)
+                            throw std::runtime_error("stream state '" + name
+                                + "': analyte '" + rec->analytes[r].label
+                                + "' totals element '" + E + "', and"
+                                  " `enforce ( ... )` does not list"
+                                  " `elementalConservation`.  An element total"
+                                  " carries no material of its own -- its"
+                                  " ONLY effect is the law that ties it to the"
+                                  " species rows -- so unenforced it is a"
+                                  " measured number nothing reads.");
+                    }
+                if (wantElements)
+                {
+                    if (elemRow.empty())
+                        throw std::runtime_error("stream state '" + name
+                            + "': `enforce ( elementalConservation )` is"
+                              " declared and no analyte row totals an element"
+                              " (`element <symbol>;`), so the family expands"
+                              " to ZERO constraints.  A declared law that"
+                              " generates nothing would pass silently while"
+                              " claiming to have been enforced.");
+                    for (const auto& [E, tRow] : elemRow)
+                    {
+                        analysis::ConservationConstraint c;
+                        c.name   = "elementalConservation:" + E;
+                        c.family = "elementalConservation";
+                        c.meaning = "the measured total of element " + E
+                                  + " equals the " + E + " carried by the"
+                                    " species rows";
+                        c.coeff.assign(nR, 0.0);
+                        c.target = 0.0;
+                        bool anySpecies = false;
+                        for (std::size_t r = 0; r < nR; ++r)
+                        {
+                            if (!rec->analytes[r].element.empty()) continue;
+                            const auto at = atomsOfSpecies(rec->analytes[r].species);
+                            auto it = at.find(E);
+                            if (it == at.end()) continue;
+                            c.coeff[r] = it->second;
+                            anySpecies = true;
+                        }
+                        if (!anySpecies)
+                            throw std::runtime_error("stream state '" + name
+                                + "': analyte '" + rec->analytes[tRow].label
+                                + "' totals element '" + E + "' and NO"
+                                  " measured species carries that element."
+                                  "  The law would say the total must equal"
+                                  " zero, which is not a redundancy -- it is"
+                                  " a contradiction with the sheet.");
+                        c.coeff[tRow] = -1.0;
+                        cons.push_back(std::move(c));
+                    }
+                }
+
+                //  ---- THE PROBLEM, HANDED OVER ---------------------------
+                analysis::ReconciliationRequest req;
+                req.maxCorrectionSigma   = rec->maxCorrectionSigma;
+                req.maxCorrectionPercent = rec->maximumCorrectionPct;
+                req.constraints = cons;
+                for (const auto& a : rec->analytes)
+                {
+                    analysis::MeasuredQuantity q;
+                    q.label       = a.label;
+                    q.species     = a.species;
+                    q.element     = a.element;
+                    q.measured    = a.measured;
+                    q.sigma       = 0.01 * a.uncertaintyPct * std::abs(a.measured);
+                    q.sigmaOrigin = a.uncertaintyOrigin;
+                    req.rows.push_back(std::move(q));
+                }
+
+                const analysis::ReconciliationOutcome sol =
+                    analysis::reconcileWeightedLeastSquares(req);
+
+                //  ---- THE DECLARED LIMITS ---------------------------------
+                if (!sol.violations.empty())
+                {
+                    std::ostringstream os;
+                    os << std::fixed << std::setprecision(4);
+                    os << "stream state '" << name << "': the reconciliation"
+                          " moves a measured quantity beyond the declared"
+                          " limit.";
+                    for (const auto& v : sol.violations)
+                        os << "\n        '" << v.label << "' would move "
+                           << v.value << (v.limit == "sigma" ? " sigma"
+                                                             : " percent")
+                           << ", and the case declares `maximumCorrection "
+                           << v.allowed
+                           << (v.limit == "sigma" ? " in sigma`" : " percent`")
+                           << ".";
+                    os << "\n        The measured ion balance is off by "
+                       << rec->imbalancePctBefore << " % (cations minus"
+                          " anions, over their sum).  A correction beyond the"
+                          " declared limit is not a reconciliation -- it is"
+                          " the analysis being overwritten to fit.  Remedies:"
+                          " widen the limit deliberately, widen the"
+                          " uncertainty of the quantity that is actually"
+                          " uncertain, or fix the analysis.";
+                    throw std::runtime_error(os.str());
+                }
+
+                //  ---- THE RECORD, and the answer ---------------------------
+                rec->objective    = sol.objective;
+                rec->qpIterations = sol.iterations;
+                for (const auto& c : sol.constraints)
+                {
+                    ProcessStream::AnalysisReconciliation::Constraint cc;
+                    cc.name = c.name; cc.family = c.family;
+                    cc.meaning = c.meaning;
+                    cc.residualBefore = c.residualBefore;
+                    cc.residualAfter  = c.residualAfter;
+                    cc.multiplier     = c.multiplier;
+                    cc.binding        = c.binding;
+                    rec->constraints.push_back(std::move(cc));
+                }
+                for (std::size_t r = 0; r < nR; ++r)
+                {
+                    auto& a = rec->analytes[r];
+                    const auto& o = sol.rows[r];
+                    a.sigma                = req.rows[r].sigma;
+                    a.reconciled           = o.adjusted;
+                    a.correctionSigma      = o.correctionSigma;
+                    a.responsibleConstraint = o.responsibleConstraint;
+                    a.responsibleShare     = o.responsibleShare;
+                    a.atNonNegativityBound = o.atNonNegativityBound;
+                    for (const auto& at : o.attribution)
+                    {
+                        ProcessStream::AnalysisReconciliation::ConstraintRole ro;
+                        ro.constraint  = at.constraint;
+                        ro.causedSigma = at.deltaSigma;
+                        //  ...and the OTHER direction: how much of that law's
+                        //  own residue this row's correction removed.
+                        ro.closure = 0.0;
+                        for (std::size_t k = 0; k < cons.size(); ++k)
+                            if (cons[k].name == at.constraint)
+                                ro.closure = cons[k].coeff[r] * o.correction;
+                        a.roles.push_back(std::move(ro));
+                    }
+                }
+
+                //  The inventory is REBUILT from the reconciled rows, so two
+                //  rows reporting one master accumulate correctly -- the
+                //  per-row record and the totals cannot disagree because the
+                //  totals are derived from the record.  (That is also the A1
+                //  gap closed: A1 adjusted a TOTAL and credited each row with
+                //  it.)
+                mTot.clear();
+                for (const auto& a : rec->analytes)
+                    if (a.element.empty()) mTot[a.species] += a.reconciled;
+
+                balance(mTot, rec->imbalanceAfter, rec->imbalancePctAfter);
+
+                ann << "[analysis] stream '" << name << "': constrained"
+                       " WEIGHTED LEAST SQUARES over " << nR
+                    << " measured quantities, " << cons.size()
+                    << " enforced law(s) + non-negativity; ion balance "
+                    << rec->imbalancePctBefore << " % -> "
+                    << rec->imbalancePctAfter << " %; Sum((x-m)/sigma)^2 = "
+                    << sol.objective << " in " << sol.iterations
+                    << " working-set change(s)\n";
+                //  THE MEASUREMENT SIDE, ANNOUNCED AS SUCH.  Every line here
+                //  says what was MEASURED and how far the reconciliation had
+                //  to move it; not one of them is a chemistry result, and the
+                //  banner says so rather than trusting the reader to know.
+                ann << "[analysis] stream '" << name << "': MEASUREMENT"
+                       " CORRECTIONS (layer 2 -- nothing below is a"
+                       " calculated chemistry quantity)\n";
+                //  The row values are still per unit volume here (the scaling
+                //  to a flow happens below), so they are announced in
+                //  mmol/L -- the unit the sheet was written in, which is what
+                //  a reader comparing against it needs.
+                for (std::size_t r = 0; r < nR; ++r)
+                {
+                    const auto& a = rec->analytes[r];
+                    std::ostringstream row;
+                    row << std::fixed << std::setprecision(5)
+                        << "[analysis]     " << a.label << ": reported "
+                        << a.measured * 1.0e3 << " -> adjusted "
+                        << a.reconciled * 1.0e3 << " mmol/L  ("
+                        << std::showpos << std::setprecision(4)
+                        << a.correctionSigma << std::noshowpos
+                        << " sigma; sigma = " << std::setprecision(2)
+                        << a.uncertaintyPct << " %, " << a.uncertaintyOrigin
+                        << "); " << (a.responsibleConstraint.empty()
+                                        ? std::string("none")
+                                        : a.responsibleConstraint)
+                        << " accounts for " << std::setprecision(1)
+                        << 100.0 * a.responsibleShare << " % of it\n";
+                    ann << row.str();
+                }
+                for (const auto& c : rec->constraints)
+                {
+                    std::ostringstream row;
+                    row << std::scientific << std::setprecision(3)
+                        << "[analysis]     law " << c.name << ": residual "
+                        << c.residualBefore * 1.0e3 << " -> "
+                        << c.residualAfter * 1.0e3 << " (per L)"
+                        << (c.binding ? "  BINDING" : "  not binding") << "\n";
+                    ann << row.str();
+                }
+            }
+            else
+            {
 
             std::string target;
             if (m == "adjustSingleSpecies")
@@ -1227,19 +2016,49 @@ ProcessStream readStreamState(const fs::path&       file,
                     " (adjustSingleSpecies, or its sugar adjustChloride;"
                     " weightedLeastSquares is the named next slice).");
 
-            //  pH IS NOT A BALANCING VARIABLE in A1.  It may participate only
-            //  under an explicit declared rule, and that rule grammar is what
-            //  A2 brings -- so naming it here is refused rather than silently
-            //  reinterpreted as an ion.
+            //  pH IS NOT A BALANCING VARIABLE, and A2 did not lift the
+            //  refusal -- it found the REASON.  A1 deferred it to "the rule
+            //  grammar A2 brings"; A2 has that grammar (`enforce ( ... )`,
+            //  per-quantity sigmas, a sigma limit) and pH still does not
+            //  qualify, on three grounds, the first of which is structural
+            //  and decides it alone:
+            //
+            //    1  A pH is not an amount.  Turning it into the [H+] a charge
+            //       balance needs takes an ACTIVITY COEFFICIENT, which takes
+            //       an ionic strength, which takes the speciation.  A
+            //       reconciler that could do that would have to call the
+            //       equilibrium solver -- exactly the coupled loop the ruling
+            //       forbids, and exactly what this reconciler is built unable
+            //       to do (see AnalysisReconciler.H).  It is not deferred; it
+            //       is on the other side of the boundary.
+            //    2  It could not close anything anyway.  At pH 7-8 the free
+            //       H+/OH- contribution to the charge balance is ~1e-7 eq/L
+            //       against a residue of ~1e-3: five orders of magnitude
+            //       short.
+            //    3  What pH actually governs is how the alkalinity is SHARED
+            //       between HCO3, CO3 and dissolved CO2 -- chemistry, layer
+            //       3, downstream of here by construction.
+            //
+            //  So the measured pH is carried as a measurement, and the
+            //  residue is absorbed by measured IONS.
             if (target == "pH" || target == "H" || target == "OH")
                 throw std::runtime_error("stream state '" + name + "': the"
                     " reconciliation rule names '" + target + "' as the"
-                    " balancing variable.  pH (and the H+/OH- mediators it is"
-                    " read from) may participate in a reconciliation only"
-                    " under an EXPLICIT declared rule, and that rule grammar"
-                    " is A2's.  In A1 the measured pH is carried as a"
-                    " measurement and the residue is absorbed by a measured"
-                    " ION -- name one of the analytes instead.");
+                    " balancing variable.  A pH is not an amount: converting"
+                    " it to the [H+] a charge balance needs takes an activity"
+                    " coefficient, hence an ionic strength, hence the"
+                    " speciation -- so a reconciliation that adjusted pH"
+                    " would have to call the equilibrium solver it exists to"
+                    " run BEFORE.  That is the coupled loop the ruling"
+                    " forbids (analysis -> reconciliation -> one admissible"
+                    " composition -> equilibrium, one way), and the"
+                    " reconciler is built unable to reach it.  Two further"
+                    " facts point the same way: at pH 7-8 free H+/OH- is"
+                    " ~1e-7 eq/L against a residue of ~1e-3, so it could not"
+                    " close the balance even if it were allowed to; and what"
+                    " pH governs is how alkalinity is shared between HCO3,"
+                    " CO3 and CO2, which is chemistry and belongs downstream."
+                    "  Name a measured ION instead.");
 
             if (!mTot.count(target))
                 throw std::runtime_error("stream state '" + name + "': the"
@@ -1307,6 +2126,7 @@ ProcessStream readStreamState(const fs::path&       file,
                 << rec->imbalancePctAfter << " % after; '" << target
                 << "' adjusted by " << corrPct << " % (limit "
                 << rec->maximumCorrectionPct << " %)\n";
+            }   //  end of the single-species (A1) branch
         }
         else
         {
@@ -1373,9 +2193,20 @@ ProcessStream readStreamState(const fs::path&       file,
         }
 
         //  ---- The RECORD, on the same flow basis as the stream ------------
+        //  EXTENSIVE quantities scale; NORMALIZED ones must not.  A
+        //  correction in sigma is a ratio of two things that scale together,
+        //  so multiplying it here would make the report depend on the flow
+        //  anchor -- the same measurement, "1.8 sigma" at 2 m3/h and
+        //  something else at 4.
         const scalar scaleToFlow = perVolume ? Q : rec->solventMassFlow;
         for (auto& a : rec->analytes)
-        { a.measured *= scaleToFlow; a.reconciled *= scaleToFlow; }
+        {
+            a.measured *= scaleToFlow; a.reconciled *= scaleToFlow;
+            a.sigma    *= scaleToFlow;
+            for (auto& ro : a.roles) ro.closure *= scaleToFlow;
+        }
+        for (auto& c : rec->constraints)
+        { c.residualBefore *= scaleToFlow; c.residualAfter *= scaleToFlow; }
         rec->imbalanceBefore *= scaleToFlow;
         rec->imbalanceAfter  *= scaleToFlow;
         rec->conservedInventory.assign(mTot.begin(), mTot.end());

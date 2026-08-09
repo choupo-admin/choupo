@@ -235,14 +235,55 @@ struct ProcessStream
     //  the gate pins: the machinery does not switch itself on.
     struct AnalysisReconciliation
     {
+        //  What one CONSTRAINT did to one measured quantity -- two different
+        //  numbers that are easy to confuse and must not be:
+        //    causedSigma  how much of THIS ROW's correction that law caused
+        //                 (the exact KKT part -- they sum to the correction);
+        //    closure      how much of THAT LAW's own residue this row's
+        //                 correction removed (coeff * correction, e.g.
+        //                 equivalents of charge for electroneutrality).
+        struct ConstraintRole
+        {
+            std::string constraint;
+            scalar      causedSigma = 0.0;
+            scalar      closure     = 0.0;
+        };
+
         struct Analyte
         {
             std::string species;          // the MASTER this row reports
+            std::string label;            // the author's own row key
+            std::string element;          // set => the row totals an ELEMENT
             std::string asFormula;        // reported-as surrogate ("" = none)
             scalar      perFormulaUnit = 1.0;   // species per surrogate unit
-            scalar      uncertaintyPct = 0.0;   // 0 = not declared (A2 uses it)
+            scalar      uncertaintyPct = 0.0;   // 0 = not declared
+            std::string uncertaintyOrigin;      // HOW that sigma was arrived at
             scalar      measured   = 0.0; // [kmol/s] as measured
             scalar      reconciled = 0.0; // [kmol/s] after the rule
+            scalar      sigma      = 0.0; // [kmol/s] absolute uncertainty
+
+            //  THE NORMALIZED CORRECTION -- the number that says whether a
+            //  measurement was nudged or overruled.  A per-cent correction
+            //  cannot say that: 5 % of a well-measured ion is a scandal and
+            //  5 % of a poorly-measured one is nothing.
+            scalar      correctionSigma = 0.0;
+            std::string responsibleConstraint;   // the largest part
+            scalar      responsibleShare  = 0.0; // |largest| / Sum|parts|
+            bool        atNonNegativityBound = false;
+
+            std::vector<ConstraintRole> roles;
+        };
+
+        //  ONE enforced conservation law, as it was applied.
+        struct Constraint
+        {
+            std::string name;      // "electroneutrality", "elemental...:Ca"
+            std::string family;    // the `enforce ( ... )` word
+            std::string meaning;   // one sentence, for the reader
+            scalar      residualBefore = 0.0;
+            scalar      residualAfter  = 0.0;
+            scalar      multiplier     = 0.0;
+            bool        binding        = false;
         };
 
         std::string basis;             // the declared reporting basis
@@ -271,6 +312,17 @@ struct ProcessStream
 
         scalar pH        = 0.0;
         bool   pH_valid  = false;   // a MEASURED pH, never a balancing variable
+
+        //  ---- WEIGHTED LEAST SQUARES (A2) ---------------------------------
+        //  Empty when the method is not WLS.  `enforced` is what the case
+        //  DECLARED in `enforce ( ... )`; `constraints` is what that expanded
+        //  to, one row per law actually applied.
+        std::vector<std::string> enforced;
+        std::vector<Constraint>  constraints;
+        scalar objective            = 0.0;   // Sum ((x-m)/sigma)^2 at the answer
+        int    qpIterations         = 0;
+        scalar maxCorrectionSigma   = 0.0;   // 0 = no sigma limit declared
+        std::string uncertaintyPolicy;       // how sigmas were resolved, named
 
         std::vector<Analyte> analytes;      // in declared order
         //  The reconciled conserved inventory: master -> [kmol/s], sorted.

@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  analysis02_weighted_least_squares -- THE SAME WATER, RECONCILED PROPERLY.
+
+  analysis01 closes a +0.78 % ion balance by moving ONE ion: chloride absorbs
+  the whole residue and shifts 5.12 %.  That is a legitimate convention and it
+  is what a water chemist does by hand -- but it is a CHOICE dressed as an
+  answer.  Nothing about the analysis says chloride was the wrong number; what
+  the sheet actually says is that FOUR quantities were measured, each with its
+  own uncertainty, and that they cannot all be right at once.
+
+  A2 asks the question the uncertainties make askable:
+
+      what is the composition CLOSEST to what was measured -- measuring
+      closeness in each quantity's OWN declared uncertainty -- that satisfies
+      the conservation laws exactly?
+
+  That is constrained weighted least squares, and it is a one-way PRE-STEP:
+
+      laboratory analysis -> reconciliation -> ONE conserved admissible
+      composition -> aqueous equilibrium / speciation
+
+  The arrow never reverses.  The reconciler lives in its own translation unit
+  (src/streams/AnalysisReconciler.{H,cpp}) which includes NOTHING from thermo/,
+  so it cannot name a speciation solver, an activity model or a thermodynamic
+  package -- the equilibrium is structurally unable to reach back into the
+  measurements and make the chemistry easier to satisfy.
+
+  THE SHEET.  A calcium bicarbonate groundwater, the same water analysis01
+  carries, plus one line a real laboratory almost always also sends:
+
+      Ca             84.0 mg/L                 ICP-OES        2 %
+      Cl             45.0 mg/L                 IC             5 %
+      alkalinity    143.0 mg/L as CaCO3        titration      4 %
+      totalHardness 208.0 mg/L as CaCO3        EDTA titration 3 %   <-- NEW
+
+  The hardness line is the interesting one.  It measures the SAME CALCIUM the
+  ICP measured, by a completely different method, and the two disagree by
+  0.84 % -- which is unremarkable laboratory life and exactly why nobody can
+  say which is right.  It is declared `element Ca;`: it carries NO material of
+  its own (that would count the calcium twice), it is a REDUNDANT
+  determination, and its only effect is the law that ties it to the Ca row.
+
+  Note what is NOT declared on it.  `alkalinity ... as CaCO3` needs
+  `perFormulaUnit 2` because nothing in the formula CaCO3 says a titration
+  counts two bicarbonate per unit -- that is a CONVENTION.  `totalHardness
+  { element Ca; as CaCO3; }` needs no such key and is refused if it carries
+  one: how many Ca there are in a CaCO3 is ARITHMETIC, and the formula
+  already says it.
+
+  TWO LAWS ARE ENFORCED, and both are declared rather than assumed:
+
+      electroneutrality        Sum z_i n_i = 0
+      elementalConservation    the measured Ca total = the Ca the species
+                               rows carry
+
+  ...plus non-negativity, which is not in the list because it is not optional.
+
+  WHAT THE FIT DOES.  Two residues have to disappear -- +0.0650 meq/L of
+  charge and +0.0177 mmol/L of calcium disagreement -- and the fit spends them
+  where the measurements are weakest:
+
+      Ca             -0.2735 sigma   (-0.547 %)
+      Cl             +0.1562 sigma   (+0.781 %)
+      alkalinity     +0.2813 sigma   (+1.125 %)
+      totalHardness  +0.1000 sigma   (+0.300 %)
+                     Sum ((x-m)/sigma)^2 = 0.1883
+
+  FOUR quantities move, none by a third of its own uncertainty, against
+  analysis01's single 5.12 % shove.  The declared limit is 3 sigma and the
+  worst correction is 0.28 -- and the run REFUSES with the numbers if any
+  quantity would go past it.
+
+  READ `converged/feed` FOR THE POINT OF THE SLICE.  Every corrected quantity
+  states what was reported, what it became, its sigma and weight, its
+  correction IN SIGMA, which law caused it (exactly -- the per-law parts sum
+  to the correction, they are not shares invented afterwards), and how much of
+  that law's own residue it removed.  And the block opens with a legend saying
+  that NOTHING in it is a chemistry result: the ions and the solved pH are in
+  `speciation {}`, keyed by species rather than by the author's sheet labels,
+  and carrying no `reportedValue` because nothing in them was reported.
+
+  Provenance: a REPRESENTATIVE analysis composed for this witness, not a
+  transcription of a published one.  The disagreements are deliberate and are
+  what the case exists to exercise.
+
+  Contract: docs/design/aqueous-analysis-inlet-scope.md (slice A2).
+  Compare:  analysis01_water_analysis_inlet -- the same water, one ion moved;
+            flash18_water_analysis_basis    -- the same water as an INVENTORY,
+            where charge closure is a contract and a violation is refused.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description  "The same laboratory water as analysis01, reconciled by constrained weighted least squares over four measured quantities under electroneutrality plus an elemental-conservation redundancy: the correction spreads across all four at under 0.29 sigma each instead of shoving 5.12 % into chloride";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}
