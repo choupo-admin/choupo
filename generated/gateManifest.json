@@ -172,7 +172,7 @@
       "claim": "check_feed_switch: OK -- A5 isothermal feed switch: positive witness runs + amendments ledgered (equal kmol both ways); 6 refusals fired and named (T/u/P swing, carrier, y-range, unknown component)"
     },
     "check_flash_complex": {
-      "exit": 1,
+      "exit": 0,
       "claim": "ok   flashComplex runs (exit 0 -- a reactive non-convergence throws, so this is a statement about the joint Newton, not about not crashing)"
     },
     "check_flash_model": {
