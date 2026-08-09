@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 48 records already exist
+## 1. Why an index, when 49 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 48 design records, **21 state a rejected alternative and 27 do not** —
+- Of 49 design records, **22 state a rejected alternative and 27 do not** —
   so for most, the reasoning that would prevent re-litigation is absent, and
   nothing said so.
 
@@ -117,6 +117,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`unread-dict-keys-proposal.md`](../design/unread-dict-keys-proposal.md) | ADR | no | v1 DECIDED + BUILT 2026-07-31; end state RULED 2026-08-08 (queue ruling D3: warning stays, `strictKeys` opt-in on demand) |
 | [`solid-equilibrium-migration.md`](../design/solid-equilibrium-migration.md) | SCOPE | no | **CAMPAIGN OPENED 2026-08-08** under the C2 review's four boundaries (spike record §7 is the authority) — S1 production solver + S2 service seam SHIPPED (active-set + simultaneous Newton; provider-resolved sinks, `check_solid_service` sabotage-verified); S3–S5 sequenced, one slice per suite cycle |
 | [`stream-transport-reconciliation.md`](../design/stream-transport-reconciliation.md) | ADR | yes | **RULED + EXECUTED 2026-08-08** — the result JSON's F/composition/H become the OVERALL material (one stream, one semantics, equal to `converged/` component by component); the "F (fluid)" relabel is the recorded rejected alternative; gate `check_stream_transport_closure`, sabotage-verified; goldens that pinned the fluid-only rows re-recorded |
+| [`tp-stream-energy-coherence.md`](../design/tp-stream-energy-coherence.md) | ADR | yes | **RATIFIED 2026-08-09** (Vítor) — R-E1..R-E5 + O1: an unpinned TP inlet's ENERGY means its equilibrium state (as material already does); a pin is a declared constraint with a visible price; ONE solid rung on every surface; phase enthalpies are consistent VIEWS of one thermochemical definition (the binding precision — never pairwise-curated routes, refuse on missing transition data); one stream-H convention.  Implementation sliced (rung → inlet resolution → coherence), blast radius measured before any golden moves; not yet implemented |
 | [`solverdict-consolidation-scope.md`](../design/solverdict-consolidation-scope.md) | SCOPE | no | DECIDED 2026-08-04 by Vítor — Option A, recorded in its own §5 |
 | [`seal-divergence-forum-2026-08-02.md`](../design/seal-divergence-forum-2026-08-02.md) | FORUM | no | DECIDED 2026-08-03 — no re-seal (counsel ruling in open-decisions §Resolution); report restructure is implementation |
 
@@ -202,7 +203,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**27 of 48 records state no rejected alternative.**  For a FORUM or a STUDY
+**27 of 49 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
