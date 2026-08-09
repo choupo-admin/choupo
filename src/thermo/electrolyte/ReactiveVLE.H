@@ -102,6 +102,7 @@ Description
 
 #include "core/Identifiers.H"
 #include "core/Types.H"
+#include "solver/Convergence.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 
 #include <functional>
@@ -298,6 +299,14 @@ struct ReactiveVLEResult
     std::string diagnostic;
     int    iterations = 0;
 
+    //  THE CONVERGENCE VERDICT OF THE OUTER NEWTON, in full: the raw
+    //  (dimensional) residual at the seed and at the answer, the NORMALIZED
+    //  residual at both, the achieved reduction, and the criterion that
+    //  decided.  The raw number is kept because it is the physically
+    //  interpretable one; the normalized number is the one the verdict is
+    //  taken on.  Contract: solver/Convergence.H.
+    solver::ResidualReport outerResidual;
+
     // The (T,P)-ACTING observables of the saturation pre-check, [atm]: the
     // sum of equilibrium partial pressures over the fully speciated liquid,
     // and -- when a volatile declares vapour dimerisation -- its
@@ -379,6 +388,18 @@ public:
 
     const ReactiveVLEConfig& config() const { return cfg_; }
 
+    //  THE CONVERGENCE CONTRACT of the outer phase-equilibrium Newton --
+    //  the OpenFOAM triple, normalized residual, one shared implementation
+    //  (solver/Convergence.H).  Installed by whoever holds the case's
+    //  system/solverDict (choupoSolve's runSimulation for the global
+    //  package, Flowsheet::thermoFor for a per-unit thermo{} world).  Never
+    //  called => the documented defaults, which are ANNOUNCED on first use
+    //  so a default is never mistaken for a number nobody chose.
+    void setConvergence(const solver::ConvergenceControls& c, bool defaulted)
+    { conv_ = c; convDefaulted_ = defaulted; }
+
+    const solver::ConvergenceControls& convergence() const { return conv_; }
+
     // A species' composition in MASTERS -- the NETWORK's own stoichiometry,
     // which is the only thing that can collapse a speciation back onto the
     // component basis.  A master returns itself with nu = 1; a derived species
@@ -420,6 +441,11 @@ private:
     //  than obeying it in silence.
     void noteSubcriticalGases(scalar T_K) const;
     mutable bool announcedSubcritical_ = false;
+
+    //  The outer Newton's convergence controls (see setConvergence).
+    solver::ConvergenceControls conv_{};
+    bool                        convDefaulted_ = true;
+    mutable bool                convAnnounced_ = false;
 };
 
 } // namespace electrolyte

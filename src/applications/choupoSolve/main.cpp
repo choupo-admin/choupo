@@ -73,6 +73,7 @@ Description
 #include "reporting/UtilityAllocationReport.H"
 #include "thermo/PropertyContext.H"
 #include "io/SolutionWriter.H"
+#include "solver/Convergence.H"
 #include "thermo/Database.H"
 #include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
@@ -157,6 +158,20 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // REQUIRED property unless the package opts in with `acceptUnverified true;`.
     requireVerifiedOrThrow(thermo.auditFindings(),
         packageDict->lookupWordOrDefault("acceptUnverified", "false") == "true");
+
+    //  THE CONVERGENCE CONTRACT, declared by the case and installed here --
+    //  the one place that holds both the built package and system/solverDict.
+    //  Absent block => the documented defaults, announced by the solver on
+    //  first use.  An unknown key inside the block REFUSES by name (a
+    //  declared control the solver does not implement is not a decoration).
+    //  Contract: solver/Convergence.H.
+    {
+        bool convDefaulted = true;
+        const auto conv = solver::readConvergenceControls(solverDict,
+            "reactiveEquilibrium", solver::ConvergenceControls{},
+            convDefaulted);
+        thermo.setReactiveConvergence(conv, convDefaulted);
+    }
 
     Flowsheet flowsheet;
     flowsheet.setStreamOverrides(overrides);

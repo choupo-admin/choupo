@@ -264,6 +264,12 @@ private:
                                    const DictPtr&       udict,
                                    const ThermoPackage& global);
 
+    // Installs the case's declared convergence contract (system/solverDict
+    // `reactiveEquilibrium { ... }`) on a package this class just BUILT --
+    // the per-unit thermo{} worlds.  The global package is served by
+    // choupoSolve's runSimulation, which is where solverDict is read for it.
+    void applyReactiveConvergence(ThermoPackage& pkg) const;
+
     // The init0 pass itself (called from solve() at the seam where the flat
     // unit list, the seeded streams_ and the tear list all exist).
     int runInit0(const std::vector<DictPtr>&   units,

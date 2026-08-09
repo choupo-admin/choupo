@@ -69,6 +69,7 @@ Description
 #include "PackageAudit.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "solver/Convergence.H"
 
 #include <map>
 #include <memory>
@@ -465,6 +466,13 @@ public:
     //  species live only in the result's internal state (report-only).
     void adoptReactiveEngine(std::unique_ptr<electrolyte::ReactiveVLE> e);
     bool hasReactiveEquilibrium() const { return reactive_ != nullptr; }
+
+    //  Install the case's declared convergence contract on the reactive
+    //  engine (system/solverDict `reactiveEquilibrium { ... }`).  A no-op on
+    //  a non-reactive package -- the DECLARATION is refused at read time, in
+    //  the one place that reads it, not here.  See solver/Convergence.H.
+    void setReactiveConvergence(const solver::ConvergenceControls& c,
+                                bool defaulted);                    // .cpp
     electrolyte::ReactiveVLEResult equilibrate(scalar T_K, scalar P_Pa,
         scalar F, const sVector& zApparent, int verbosity) const;   // .cpp
 

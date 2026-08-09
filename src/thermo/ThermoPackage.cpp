@@ -162,6 +162,10 @@ void ThermoPackage::adoptReactiveEngine(
     std::unique_ptr<electrolyte::ReactiveVLE> e)
 { reactive_ = std::move(e); }
 
+void ThermoPackage::setReactiveConvergence(
+    const solver::ConvergenceControls& c, bool defaulted)
+{ if (reactive_) reactive_->setConvergence(c, defaulted); }
+
 electrolyte::ReactiveVLEResult ThermoPackage::equilibrate(scalar T_K,
     scalar P_Pa, scalar F, const sVector& zApparent, int verbosity) const
 { return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }

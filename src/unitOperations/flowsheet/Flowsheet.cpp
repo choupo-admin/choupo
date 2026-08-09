@@ -43,6 +43,7 @@ License
 #include <functional>   // model-boundary audit (H conserved, T is the readout)
 
 #include <cstdio>   // snprintf for advisory message formatting (no ostringstream)
+#include "solver/Convergence.H"
 #include "solver/NewtonRaphson.H"
 #include "solver/NewtonND.H"
 #include "solver/Wegstein.H"
@@ -2108,6 +2109,20 @@ TearImbalance computeTearImbalance(
 //   NRTL).  We rebuild a ThermoPackage = the global COMPONENTS + the unit's
 //   override MODELS, build it once, and cache it.  Units without an override
 //   (the overwhelming majority) keep using the global thermo unchanged.
+//  A per-unit thermo{} world builds its OWN ThermoPackage, so it also needs
+//  the case's declared convergence contract -- otherwise a case that declares
+//  `reactiveEquilibrium { ... }` in system/solverDict would have it honoured
+//  by the global package and silently ignored by the unit that overrides the
+//  world, which is the same defect as ignoring the declaration outright.
+//  One reader, one home: solver/Convergence.H.
+void Flowsheet::applyReactiveConvergence(ThermoPackage& pkg) const
+{
+    bool defaulted = true;
+    const auto conv = solver::readConvergenceControls(solverDict_,
+        "reactiveEquilibrium", solver::ConvergenceControls{}, defaulted);
+    pkg.setReactiveConvergence(conv, defaulted);
+}
+
 const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                                           const DictPtr&       udict,
                                           const ThermoPackage& global)
@@ -2174,6 +2189,7 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
             auto tpn = std::make_unique<ThermoPackage>(
                 ThermoPackageBuilder::build(mergedV2, *db_,
                     nodeChem.present ? &nodeChem : nullptr));
+            applyReactiveConvergence(*tpn);
             const ThermoPackage& refn = *tpn;
             unitThermo_[uname] = std::move(tpn);
             return refn;
@@ -2204,6 +2220,7 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
             auto tpn = std::make_unique<ThermoPackage>(
                 ThermoPackageBuilder::build(pkg, *db_,
                     nodeChem.present ? &nodeChem : nullptr));
+            applyReactiveConvergence(*tpn);
             const ThermoPackage& refn = *tpn;
             unitThermo_[uname] = std::move(tpn);
             if (thermoAnnounce())

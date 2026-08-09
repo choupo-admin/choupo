@@ -86,8 +86,17 @@ constexpr scalar pTiny          = 1.0e-300;     // pressure-sum divide guard
 constexpr scalar psiFloor       = 1.0e-12;      // RR root worth seeding from
 
 //  The OUTER Newton on the vaporised moles.
-constexpr int    outerMaxIt     = 60;
-constexpr scalar outerTol       = 1.0e-9;       // ||r||
+//
+//  ITS CONVERGENCE TEST NO LONGER LIVES HERE.  `outerMaxIt 60` and
+//  `outerTol 1e-9` used to be two constants in this block, and `1e-9` was a
+//  BARE number on a raw ||r||_2 -- a magnitude compared with nothing.  Both
+//  moved to the project's one convergence home, solver/Convergence.H, where
+//  they are the documented DEFAULTS of ConvergenceControls, the verdict is
+//  taken on a NORMALIZED residual, and a case may declare its own triple in
+//  system/solverDict (`reactiveEquilibrium { tolerance; relTol; maxIter; }`).
+//  The two numbers below are what remains here, and neither is a convergence
+//  test: `outerLineSteps` is the damping budget and `outerTiny` is the
+//  line-search acceptance floor for a step that is already at round-off.
 constexpr int    outerLineSteps = 12;           // halvings per step
 constexpr scalar armijo         = 1.0e-4;       // sufficient-decrease factor
 constexpr scalar outerTiny      = 1.0e-12;      // accept an already-tiny ||r||
@@ -669,6 +678,20 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
 {
     noteSubcriticalGases(T_K);
 
+    //  ---- THE CONVERGENCE CONTRACT (solver/Convergence.H) -------------------
+    //  Announced ONCE per engine instance, defaults included: a default that
+    //  is never printed is indistinguishable from a number nobody chose.
+    //  HERE and not beside the outer Newton -- a SUBSATURATED feed returns
+    //  from the saturation pre-check and never reaches it, and a case whose
+    //  contract is announced only when the solver happens to iterate is a
+    //  status guard armed on one of two routes (the K_f lesson, 2026-08-07).
+    if (verbosity >= 2 && !convAnnounced_)
+    {
+        std::cout << "  " << conv_.describe("reactiveEquilibrium",
+                                            convDefaulted_) << "\n";
+        convAnnounced_ = true;
+    }
+
     const std::size_t nApp = cfg_.apparent.size();
     if (zApp.size() != nApp)
         throw std::runtime_error("ReactiveVLE: apparent composition size"
@@ -1081,8 +1104,19 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     { return trueVapour(vap, act, dimIdx, nApp, Kd, dimPatm); };
 
 
+    //  THE TERMS each equation balances, filled by every residual evaluation
+    //  and read by the NORMALIZATION (solver/Convergence.H section 2).  Two
+    //  per equation, equation-major:  [ ln(liquid side), ln(vapour side) ],
+    //  whose difference IS r_k.  They are what the residual is measured
+    //  against; without them 1e-9 is a magnitude compared with nothing.
+    //  An UNPHYSICAL trial leaves them empty -- there is no balance to
+    //  normalize against at a point that is not a state, and an empty term
+    //  set is the degenerate branch, which is the honest verdict there.
+    sVector termsLast;
+
     auto residual = [&](const sVector& u) -> sVector
     {
+        termsLast.clear();
         sVector vap; unpack(u, vap);
         // A TRIAL point may be unphysical (a step that nearly dries the
         // solvent sends molalities -> infinity and the Davies fixed point
@@ -1109,6 +1143,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         LiquidState ls;
         if (!liquidState(vap, ls)) return sVector(nV, 1.0e6);
         sVector r(nV);
+        termsLast.assign(2*nV, 0.0);
         for (std::size_t k = 0; k < nV; ++k)
         {
             const std::size_t idx = act[k];
@@ -1126,19 +1161,21 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                 //  split makes that the same number, computed well.
                 const scalar pR = molecularActivity(idx, ls)
                                 * cfg_.psatOf.at(idx)(T_K) / kAtm;
-                r[k] = std::log(std::max(pR, 1.0e-300))
-                     - std::log(std::max(pA, 1.0e-300));
+                termsLast[2*k]   = std::log(std::max(pR, 1.0e-300));
+                termsLast[2*k+1] = std::log(std::max(pA, 1.0e-300));
+                r[k] = termsLast[2*k] - termsLast[2*k+1];
                 continue;
             }
             const scalar K  = std::pow(10.0, gasLogK(*gasFor(idx), T_K));
-            r[k] = std::log(std::max(
-                       dissolvedActivity(idx, srLast, ls), 1.0e-300))
-                 - std::log(std::max(K * pA, 1.0e-300));
+            termsLast[2*k]   = std::log(std::max(
+                                   dissolvedActivity(idx, srLast, ls), 1.0e-300));
+            termsLast[2*k+1] = std::log(std::max(K * pA, 1.0e-300));
+            r[k] = termsLast[2*k] - termsLast[2*k+1];
         }
         return r;
         }
         catch (const std::exception&)
-        { return sVector(nV, 1.0e6); }
+        { termsLast.clear(); return sVector(nV, 1.0e6); }
     };
 
     // Seed: V = 2 % of the feed, vapour ratio from the feed ratio of the
@@ -1152,6 +1189,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     sVector r;
     scalar  rn = 0.0;
     int     it = 0;
+
+    //  The verdict carrier: raw AND normalized, seed AND answer, plus the
+    //  criterion that decided.  Seeded at the FIRST residual evaluation of
+    //  the whole solve (phase pass 0), so `reduction()` measures the solve.
+    solver::ResidualReport conv;
+    bool    convSeeded = false;
+    sVector terms;                 // the term set at the CURRENT accepted u
 
     //  ---- THE PHASE-CONFIGURATION LOOP -------------------------------------
     //  A phase set decided on the FEED can be wrong at the ANSWER: this flash
@@ -1370,17 +1414,38 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  start on the wall; it can start just inside it.
     for (int b = 0; b < 80 && !r.empty() && r[0] >= 1.0e5; ++b)
     { u[0] -= 0.25; r = residual(u); }
+    terms = termsLast;
     rn = norm2(r);
     bool convergedOuter = false;
+    conv.criterion.clear();      // this pass's verdict, not the last one's
     it = 0;
-    const int maxIt = num::outerMaxIt;
+    const int maxIt = conv_.maxIter;
     for (; it < maxIt && !convergedOuter; ++it)
     {
+        //  THE VERDICT, on the normalized residual (solver/Convergence.H).
+        //  `rn` (the L2 norm) stays exactly what it was -- it is the LINE
+        //  SEARCH's descent measure, not the convergence test, and the two
+        //  were only ever the same number by accident.
+        const solver::Normalization nz = solver::normalizeResidual(r, terms);
+        if (!convSeeded)
+        {
+            conv.rawInitial  = nz.rawL1;
+            conv.normInitial = nz.normalized;
+            convSeeded = true;
+        }
+        conv.rawFinal  = nz.rawL1;
+        conv.normFinal = nz.normalized;
         if (verbosity >= 3)
             std::cout << "  [reactive] outer " << std::setw(2) << it
                       << "   |r|2 = " << std::scientific
-                      << std::setprecision(3) << rn << "\n";
-        if (rn < num::outerTol) { convergedOuter = true; break; }
+                      << std::setprecision(3) << rn
+                      << "   |r|1 = " << nz.rawL1
+                      << "   normalized = " << nz.normalized
+                      << (nz.degenerate ? "  (normalization degenerate)" : "")
+                      << "\n";
+        if (solver::convergedNow(conv_, conv.normInitial, nz.normalized,
+                                 nz.rawL1, nz.degenerate, conv.criterion))
+        { convergedOuter = true; break; }
         // FD Jacobian (nV x nV)
         std::vector<sVector> J(nV, sVector(nV, 0.0));
         for (std::size_t j = 0; j < nV; ++j)
@@ -1468,11 +1533,22 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             const sVector rt = residual(ut);
             const scalar rtn = norm2(rt);
             if (rtn < rn * (1.0 - num::armijo) || rtn < num::outerTiny)
-            { u = ut; r = rt; rn = rtn; accepted = true; break; }
+            { u = ut; r = rt; rn = rtn; terms = termsLast; accepted = true;
+              break; }
         }
         if (!accepted)
             break;                       // stalled -- joint check decides
     }
+
+    //  The pass's verdict, named.  "Not converged" is a verdict too, and the
+    //  two ways of failing (the cap, and a line search with no decreasing
+    //  step left) are different facts about the solve, so they get different
+    //  sentences.
+    if (!convergedOuter)
+        conv.criterion = (it >= maxIt) ? solver::exhaustedCriterion(conv_)
+                                       : solver::stalledCriterion();
+    conv.converged  = convergedOuter;
+    conv.iterations = it;
 
     //  ---- Is the phase set still the right one HERE? -----------------------
     //  Two ways a pass can be wrong about its own phase set.  It can CONVERGE
@@ -1527,8 +1603,23 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     sVector vap; unpack(u, vap);
     const sVector rFin = residual(u);                // also refreshes srLast
     innerVerbosity = 0;
+    //  The five numbers, taken at the ACCEPTED state -- the same evaluation
+    //  the answer itself comes from, so the reported residual is the answer's
+    //  residual and not the last trial's.
+    {
+        const solver::Normalization nzF =
+            solver::normalizeResidual(rFin, termsLast);
+        conv.rawFinal  = nzF.rawL1;
+        conv.normFinal = nzF.normalized;
+    }
     scalar rMax = 0.0; for (auto rv : rFin) rMax = std::max(rMax, std::abs(rv));
-    const bool jointOK = rMax < 1.0e-7;
+    //  ACCEPTANCE = the per-leg joint check AND the declared convergence
+    //  contract.  Both, and the second half is new: before it, an outer
+    //  Newton that ran out of iterations could still be waved through by the
+    //  per-leg check, so a tolerance a case DECLARED and the solve never met
+    //  came out as a silent pass.  A declared control that cannot decide
+    //  anything is a comment (Convergence.H).
+    const bool jointOK = rMax < 1.0e-7 && conv.converged;
     struct { int iterations; } sol{ it };
 
     scalar vTot = 0.0, lTot = 0.0;
@@ -1583,15 +1674,35 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     res.pH           = srLast.pH;
     res.resPhaseMax  = rMax;
     res.iterations   = sol.iterations;
+    res.outerResidual = conv;
     res.converged    = jointOK;
     res.diagnostic   = jointOK ? "coupled speciation + VLE converged (joint"
                                  " residual check passed)"
                                : "JOINT residuals NOT satisfied";
     if (!jointOK)
+    {
+        auto sci = [](scalar v)
+        {
+            std::ostringstream os;
+            os << std::scientific << std::setprecision(4) << v;
+            return os.str();
+        };
         throw std::runtime_error("ReactiveVLE: coupled speciation + phase"
             " equilibrium did NOT converge (|r|max = " + std::to_string(rMax)
             + " after " + std::to_string(sol.iterations) + " outer"
-            " iterations) -- no partial answer is returned.");
+            " iterations) -- no partial answer is returned."
+            "\n  raw   |r|1   initial " + sci(conv.rawInitial)
+            + "  ->  final " + sci(conv.rawFinal)
+            + "\n  normalized   initial " + sci(conv.normInitial)
+            + "  ->  final " + sci(conv.normFinal)
+            + "\n  reduction    normFinal/normInitial = "
+            + sci(conv.reduction())
+            + "\n  tolerance    " + sci(conv_.tolerance)
+            + "   relTol " + sci(conv_.relTol)
+            + "   maxIter " + std::to_string(conv_.maxIter)
+            + (convDefaulted_ ? "   (defaults)" : "   (system/solverDict)")
+            + "\n  criterion    " + conv.criterion);
+    }
 
     // ---- The announce block (the glass-box contract of this feature) ------
     if (verbosity >= 1)
@@ -1609,6 +1720,37 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                   << "\n  electroneutrality: enforced (pH solved = "
                   << std::fixed << std::setprecision(3) << srLast.pH << ")"
                   << "\n  representation written to streams: apparent\n";
+        //  THE CONVERGENCE VERDICT, in full.  Five numbers and the criterion
+        //  that decided, because a residual quoted alone is a magnitude
+        //  compared with nothing.  The RAW residual is this solver's own
+        //  (sum of |ln(a_liquid) - ln(K p)| over the volatiles -- log-form,
+        //  therefore dimensionless); it is kept because it is the number a
+        //  reader can trace back to a partial pressure.  The NORMALIZED one
+        //  is what the verdict is taken on.  Contract + the honest limits of
+        //  the OpenFOAM analogy: solver/Convergence.H.
+        {
+            const auto& c = res.outerResidual;
+            std::cout << "  outer-Newton convergence (normalized residual,"
+                         " solver/Convergence.H):\n"
+                      << std::scientific << std::setprecision(4)
+                      << "    raw   |r|1   initial " << c.rawInitial
+                      << "  ->  final " << c.rawFinal
+                      << "   (log-form, dimensionless)\n"
+                      << "    normalized   initial " << c.normInitial
+                      << "  ->  final " << c.normFinal << "\n"
+                      << "    reduction    normFinal/normInitial = "
+                      << c.reduction() << "\n"
+                      << "    tolerance    " << conv_.tolerance
+                      << "   relTol " << conv_.relTol
+                      << "   maxIter " << conv_.maxIter
+                      << (convDefaulted_ ? "   (defaults)"
+                                         : "   (system/solverDict)") << "\n"
+                      << "    criterion    " << c.criterion << "\n"
+                      << "    verdict      "
+                      << (c.converged ? "CONVERGED" : "NOT converged")
+                      << " after " << c.iterations << " outer iterations\n"
+                      << std::defaultfloat;
+        }
         if (twoLiquids)
         {
             //  The second liquid at the ANSWER, not at the feed: how much of
