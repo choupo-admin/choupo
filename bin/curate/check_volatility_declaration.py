@@ -57,8 +57,18 @@ def make_case(tmp: Path, tag: str, rec_edit=None) -> Path:
 
 
 def run(case: Path):
+    #  env PINNED, CHOUPO_HOME deliberately ABSENT (found 2026-08-09): the
+    #  probes strip fields from the CASE-LOCAL record, but the overlay is
+    #  field-by-field, so with a reachable standards catalogue the stripped
+    #  block silently backfills from data/standards/ and every "absence"
+    #  scenario evaporates -- the gate then fails in any shell that exports
+    #  CHOUPO_HOME while passing in one that does not.  A gate whose verdict
+    #  depends on the caller's environment is the permanently-green-gate
+    #  defect wearing its inverse; the probe's real scenario is the sealed
+    #  case running on its own mirrors, so pin exactly that.
     p = subprocess.run([str(SOLVE), "."], cwd=case,
-                       capture_output=True, text=True, timeout=600)
+                       capture_output=True, text=True, timeout=600,
+                       env={"PATH": "/usr/bin:/bin"})
     return p.returncode, p.stdout + p.stderr
 
 

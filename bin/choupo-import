@@ -567,6 +567,28 @@ def closure_of(pp_path, caseDir, std, AQ):
                 a, b = sorted((comps[i], comps[j]))
                 want("parameters/NRTL/" + a + "-" + b + ".dat")
 
+    # ---- v2 activityModel WITHOUT inline binaryParameters --------------------
+    # The v2 `activityModel { model NRTL; }` form (shared or per-phase, incl.
+    # the S4a uniform `phases ( ... )` grammar) resolves its pairs from the
+    # catalogue whenever the dict carries NO `binaryParameters` block -- the
+    # dict owns the numbers ONLY when it inlines them.  Found 2026-08-09 by
+    # validate_staged_agrees on the first such sealed case
+    # (flash21_freeze_concentration): every earlier sealed molecular case
+    # either inlined its parameters or carried per-node records, so this trace
+    # had never been needed -- the staged seal ran IDEAL (announced, legal,
+    # and the wrong physics: solidFraction 0.299 vs the golden 0.476) and the
+    # agreement check refused to install it.  The Edwards rule, applied again:
+    # when a grammar makes a record home reachable, the closure learns it in
+    # the same commit.  Existence-guarded, so only real catalogue pairs seal;
+    # Wilson and UNIQUAC share the same resolution machinery and ride along.
+    if not re.search(r'\bbinaryParameters\b', t_nc):
+        for mdl in ("NRTL", "Wilson", "UNIQUAC"):
+            if re.search(r'\bmodel\s+' + mdl + r'\s*;', t_nc):
+                for i in range(len(comps)):
+                    for j in range(i + 1, len(comps)):
+                        a, b = sorted((comps[i], comps[j]))
+                        want("parameters/" + mdl + "/" + a + "-" + b + ".dat")
+
     # ---- per-unit thermo{} overrides in system/flowsheetDict -----------------
     # A unit's `thermo { equilibrium { ... activityModel NRTL; } }` selects a
     # model the GLOBAL package never names (flash20's fitted-vs-predictive

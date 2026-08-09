@@ -32,6 +32,7 @@ internal equilibrate path is untouched until S3); ice/fusion candidates
 ride the spike gate until the service grows their assembly.
 """
 import json
+import math
 import pathlib
 import re
 import subprocess
@@ -150,14 +151,19 @@ def main() -> int:
         fail.append("A8: SpeciationInput::equilibrate is filled outside the "
                     "service door: " + ", ".join(writers))
 
-    # A9 (S4a) -- THE C3 UNIFORM GRAMMAR, three claims run live from a
-    # synthesized case (vlle01's dict rewritten to `phases ( ... )`):
+    # A9 (S4a, amended S4b 2026-08-09) -- THE C3 UNIFORM GRAMMAR, three
+    # claims run live from a synthesized case (vlle01's dict rewritten to
+    # `phases ( ... )`):
     #   (a) COEXISTENCE: the uniform two-liquid declaration reproduces
     #       vlle01's own split (the grammar changes nothing it does not say);
-    #   (b) REACHABLE-AND-REFUSING: adding `{ name ice; type solid;
-    #       component water; }` BUILDS the package and reaches the flash's
-    #       named solid refusal -- previously unreachable-by-construction,
-    #       now the S4b design question fired from a real case;
+    #   (b) REFUSED-BY-SHAPE: adding `{ name ice; type solid; component
+    #       water; }` BESIDE vlle01's two liquids and vapour BUILDS the
+    #       package and reaches the flash's S4c refusal -- the SERVED shape
+    #       (one liquid, no vapour) is the SLE branch, witnessed by
+    #       flash21_freeze_concentration and asserted in A10 below; every
+    #       OTHER shape must refuse by name, never run as a plain VLE with
+    #       the declaration dropped.  (Until S4b this arm asserted the old
+    #       unconditional refusal; the claim moved with the architecture.)
     #   (c) TWO AUTHORITIES: `phases` beside `liquidPhases` refuses.
     import shutil, tempfile
     with tempfile.TemporaryDirectory() as td:
@@ -195,15 +201,17 @@ def main() -> int:
                 fail.append("A9a: the uniform two-liquid case does not "
                             "reproduce vlle01's split (waterRich x_water "
                             "0.98299754...) -- the grammar changed physics")
-            # (b) reachable refusal
+            # (b) refused by shape (solid beside vapour + two liquids = S4c)
             tp.write_text(s0[:m.start()] + uni + solid_row + "    );"
                           + s0[m.end():])
             run_case()
             log = logf.read_text() if logf.exists() else ""
-            if "flash has no solid path" not in log:
-                fail.append("A9b: the declared solid did not reach the "
-                            "flash's named refusal -- either the grammar "
-                            "dropped it silently or the refusal moved")
+            if "in a shape the flash does not serve" not in log:
+                fail.append("A9b: a solid declared beside a vapour and two "
+                            "liquids did not reach the flash's S4c refusal "
+                            "-- either the grammar dropped it silently, the "
+                            "refusal moved, or the flash ran a shape it "
+                            "does not serve")
             # (c) two authorities
             tp.write_text(s0[:m.start()] + "liquidPhases ( { name x; } );\n    "
                           + uni + "    );" + s0[m.end():])
@@ -211,6 +219,50 @@ def main() -> int:
             log = logf.read_text() if logf.exists() else ""
             if "two authorities on one phase set" not in log:
                 fail.append("A9c: phases beside liquidPhases did not refuse")
+
+    # A10 (S4b) -- THE SERVED SHAPE: one liquid + one crystallizing solid,
+    # no vapour, run live from a copy of the flash21 witness.  Three claims:
+    # the SLE branch (not a refusal) answers; the answer satisfies the
+    # closed-form freezing-point-depression identity gamma_w * x_w =
+    # exp(-dG_fus/RT), recomputed HERE from the record's own Hfus/Tfus
+    # (never from the engine's aEq echo alone); and the duty is withheld as
+    # the NAMED rung gap, not published as a fluid-only number.
+    with tempfile.TemporaryDirectory() as td:
+        base = pathlib.Path(td) / "sle"
+        shutil.copytree(
+            ROOT / "tutorials/steady/flash/flash21_freeze_concentration", base)
+        for junk in base.glob("log.*"):
+            junk.unlink()
+        r = subprocess.run(
+            [str(ROOT / "bin" / "runCase"), "-f", str(base)],
+            capture_output=True, text=True, timeout=600,
+            env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+        logf = base / "log.choupoSolve"
+        log = logf.read_text() if logf.exists() else ""
+        if r.returncode != 0 or "liquid + solid (SLE" not in log:
+            fail.append("A10: the flash21 SLE witness did not run the "
+                        "LIQUID+SOLID branch (rc=%d)" % r.returncode)
+        else:
+            ma = re.search(r'"a_water":\s*([0-9.eE+-]+)', log)
+            wat = (ROOT / "data/standards/components/water.dat").read_text()
+            hfus = float(re.search(r"Hfus\s+([0-9.]+)", wat).group(1))
+            tfus = float(re.search(r"triplePoint\s*\{[^}]*?\bT\s+([0-9.]+)",
+                                   wat, re.S).group(1))
+            T = 258.15
+            a_eq = math.exp(-hfus * (1.0 - T / tfus) / (8.31446 * T))
+            if not ma:
+                fail.append("A10: flash21 published no a_water KPI")
+            elif abs(float(ma.group(1)) - a_eq) > 1e-6:
+                fail.append("A10: the SLE answer is off the closed-form "
+                            "identity: a_water=%s vs exp(-dG_fus/RT)=%.9f"
+                            % (ma.group(1), a_eq))
+            if '"Q"' in log.split("freezer01", 1)[-1].split("}", 1)[0]:
+                fail.append("A10: an SLE duty was PUBLISHED -- the rung gap "
+                            "must withhold Q, never price the crystal as "
+                            "fluid")
+            if "duty UNAVAILABLE" not in log:
+                fail.append("A10: the withheld duty did not announce its "
+                            "named gap")
 
     # A5 -- the negative.
     n = run_probe("notAMineralAnywhere")
@@ -247,9 +299,17 @@ def main() -> int:
           "undefined mineral refuses with the available list, and the service "
           "code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the "
           "engine's ONLY writer of the equilibrate channel -- Speciate, "
-          "ScalingScan and ReactiveVLE all walk through the door.  NOT "
-          "CHECKED: fusion-class candidates still ride the spike gate; the "
-          "flash's own solid path arrives with S4b.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a declared solid REACHES the flash's named refusal (previously unreachable-by-construction), and two authorities refuse.")
+          "ScalingScan and ReactiveVLE all walk through the door.  THE C3 "
+          "GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's "
+          "split unchanged, a solid declared in an UNSERVED shape (beside a "
+          "vapour and two liquids) refuses by name as the S4c gap, and two "
+          "authorities refuse.  THE SLE BRANCH SERVES (A10): flash21's "
+          "liquid+crystal answer sits on the closed-form identity gamma_w * "
+          "x_w = exp(-dG_fus/RT) recomputed here from water.dat's own "
+          "Hfus/Tfus, and the duty is WITHHELD as the named rung gap (never "
+          "a fluid-only Q).  NOT CHECKED: the SLE duty itself (waits on the "
+          "enthalpy-rung ratification); solid beside vapour or a second "
+          "liquid (S4c, refused); inert solids (stub, refused).")
     return 0
 
 

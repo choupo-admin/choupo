@@ -82,13 +82,13 @@ WHAT THIS GATE CHECKS.
 WHAT THIS GATE DOES NOT CHECK, said plainly because a gate that implies more
 coverage than it has is worse than one that reports less:
 
-  * THE PHASE'S CASE CONSUMER IS fpd01_nacl_freezing (2026-08-08), via the
-    `freezingPoint` props op -- the witness this section used to say was
-    deliberately last, landed against an interim one-point anchor (AAD
-    0.05 %).  What is STILL not covered: no FLASH converges onto the crystal.
-    Since S4a (C3 uniform `phases` grammar) a case CAN declare the solid and
-    REACHES the flash's named refusal -- reachable-and-refusing, no longer
-    unreachable-by-construction; the consuming path is migration S4b.
+  * THE PHASE'S CASE CONSUMERS are fpd01_nacl_freezing (2026-08-08, the
+    `freezingPoint` props op against an interim one-point anchor, AAD
+    0.05 %) and -- since S4b (2026-08-09) -- the FLASH: the SLE branch of
+    isothermalFlash converges onto the crystal from the C3 `phases`
+    declaration (witness flash21_freeze_concentration; the identity is
+    asserted by check_solid_service A10, not here).  This gate stays the
+    PHASE-LEVEL closed-form check; the flash-level consumption is A10's.
 
   * THE SOLUTE SIDE IS UNCHECKED.  The freezing-point depression of a real
     solution is K = 1 solved against gamma_w x_w, and its accuracy is the
@@ -466,9 +466,9 @@ def main() -> int:
         "Psat extrapolation is announced, and the crystal states that its "
         "dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; "
         "DWSIM disables the same term for a data reason).  The phase's case "
-        "consumer is fpd01_nacl_freezing (the freezingPoint op, 2026-08-08); "
-        "still NOT COVERED: no FLASH converges onto the crystal -- no solid "
-        "path until the C2 spike is built and reviewed; the solute side "
+        "consumers are fpd01_nacl_freezing (the freezingPoint op, 2026-08-08) "
+        "and the flash's SLE branch since S4b (flash21, whose identity is "
+        "asserted by check_solid_service A10, not here); the solute side "
         "belongs to the "
         "activity model and is not gated; "
         + ("; ".join(notes) if notes else "no further caveats") + ".")

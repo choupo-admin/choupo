@@ -97,7 +97,7 @@
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 339 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 340 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -185,7 +185,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40261 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40271 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -201,7 +201,7 @@
     },
     "check_ice_freezing": {
       "exit": 0,
-      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; DWSIM disables the same term for a data reason).  The phase's case consumer is fpd01_nacl_freezing (the freezingPoint op, 2026-08-08); still NOT COVERED: no FLASH converges onto the crystal -- no solid path until the C2 spike is built and reviewed; the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here."
+      "claim": "check_ice_freezing: OK -- the pure crystal is a Phase and nothing else changed.  f_solid/f_liquid for pure water is 0.951777 / 0.999903 / 1.048601 at 268.15 / 273.15 / 278.15 K -- it crosses 1 AT the melting point, and the 1e-4 residual is EXACTLY the declared approximation (Tfus in the record is the TRIPLE point 273.16 K, so dG_fus(273.15) = 0.22 J/mol), not slop; each of the three K's is recomputed here from the record's own Hfus and Tfus, so the two phases are provably reaching Psat by the same call.  A non-crystallising component has fugacity exactly 0 (solute inclusion is not modelled, and the zero is a claim).  K_f = 1.860256 is now DERIVED from water's own triplePoint/MW/Hfus against its declared anchor 1.853 (0.39 % apart, two independent primaries, a finding and not an error), while a record with a K_f and no Hfus, one with an Hfus and no K_f, and ethanol (neither) all come back UNDERIVED and untouched.  Five refusals fire by name, each carrying a remedy, the sub-freezing Psat extrapolation is announced, and the crystal states that its dG_fus omits the liquid/solid heat-capacity term (quoting |T - Tfus|; DWSIM disables the same term for a data reason).  The phase's case consumers are fpd01_nacl_freezing (the freezingPoint op, 2026-08-08) and the flash's SLE branch since S4b (flash21, whose identity is asserted by check_solid_service A10, not here); the solute side belongs to the activity model and is not gated; the no-vapour-pressure guard is unreachable from a parsed record (readFromDict refuses first) and is NOT exercised here."
     },
     "check_ion_gibbs_duhem": {
       "exit": 0,
@@ -309,7 +309,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 496 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 497 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -324,8 +324,8 @@
       "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named"
     },
     "check_sealed_corpus": {
-      "exit": 0,
-      "claim": "sealed-corpus gate: 330 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "exit": 1,
+      "claim": "sealed-corpus gate FAILED:"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -337,7 +337,7 @@
     },
     "check_solid_service": {
       "exit": 0,
-      "claim": "check_solid_service: OK -- the S2/S3 seam holds live: TWO ROUTES, ONE MECHANISM (the coupled route through the service's door equals the internal solve exactly; the general probed route agrees to 1e-6) -- and flash16's own chemistryDict declaration assembles through the provider-resolved sinks (Ca:1.000000 HCO3:1.000000 -- the CO3 leg chained onto the carbonate master, not copied), the service reproduces the internal equilibrate oracle (n rel 5.3e-11, SI 2.6e-11, same pH), the appearance is narrated, an undefined mineral refuses with the available list, and the service code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the engine's ONLY writer of the equilibrate channel -- Speciate, ScalingScan and ReactiveVLE all walk through the door.  NOT CHECKED: fusion-class candidates still ride the spike gate; the flash's own solid path arrives with S4b.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a declared solid REACHES the flash's named refusal (previously unreachable-by-construction), and two authorities refuse."
+      "claim": "check_solid_service: OK -- the S2/S3 seam holds live: TWO ROUTES, ONE MECHANISM (the coupled route through the service's door equals the internal solve exactly; the general probed route agrees to 1e-6) -- and flash16's own chemistryDict declaration assembles through the provider-resolved sinks (Ca:1.000000 HCO3:1.000000 -- the CO3 leg chained onto the carbonate master, not copied), the service reproduces the internal equilibrate oracle (n rel 5.3e-11, SI 2.6e-11, same pH), the appearance is narrated, an undefined mineral refuses with the available list, and the service code names no solid.  THE LOCKDOWN HOLDS (A8): the service is the engine's ONLY writer of the equilibrate channel -- Speciate, ScalingScan and ReactiveVLE all walk through the door.  THE C3 GRAMMAR HOLDS (A9): the uniform phases list reproduces vlle01's split unchanged, a solid declared in an UNSERVED shape (beside a vapour and two liquids) refuses by name as the S4c gap, and two authorities refuse.  THE SLE BRANCH SERVES (A10): flash21's liquid+crystal answer sits on the closed-form identity gamma_w * x_w = exp(-dG_fus/RT) recomputed here from water.dat's own Hfus/Tfus, and the duty is WITHHELD as the named rung gap (never a fluid-only Q).  NOT CHECKED: the SLE duty itself (waits on the enthalpy-rung ratification); solid beside vapour or a second liquid (S4c, refused); inert solids (stub, refused)."
     },
     "check_solute_basis": {
       "exit": 0,

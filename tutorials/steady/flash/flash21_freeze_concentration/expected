@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778    1e-4
+stream  liquor                 F                0.0277777777778    1e-4
+stream  vent                   F                0                  1e-4
+kpi     freezer01              F_alpha          0.0277777777778    1e-4
+kpi     freezer01              F_beta           0                  1e-4
+kpi     freezer01              F_in             0.0277777777778    1e-4
+kpi     freezer01              P                101325             1e-4
+kpi     freezer01              T                258.15             1e-4
+kpi     freezer01              V_over_F         0                  1e-4
+kpi     freezer01              aEq_water        0.857434120855     1e-4
+kpi     freezer01              a_water          0.857434120931     1e-4
+kpi     freezer01              phaseSet         0                  1e-4
+kpi     freezer01              solidFraction    0.475994623251     1e-4
