@@ -43,6 +43,7 @@ Description
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // solveCore: two-phase split enthalpy
+#include "unitOperations/flash/StreamEquilibrium.H" // the ONE resolve-and-price home
 
 #include <cmath>
 #include <map>
@@ -245,35 +246,17 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
     //  state, so the split comes back as the unit left it.  A PINNED stream
     //  keeps its declared reading, split only where the pin is a saturation
     //  quality (0 < q < 1).
-    const bool resolvable = s.phasePinned
-        ? (s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9)
-        : true;
-    if (!resolvable)                             return std::nullopt;
-    if (thermo.phasesOfType("vapor").empty())    return std::nullopt;
-    FlashInput fin; fin.F = 1.0; fin.T = s.T; fin.P = s.P; fin.z = s.z;
-    FlashOptions fopts; fopts.verbosity = 0;
-    FlashSolution fs;
-    try
-    {
-        fs = IsothermalFlash::solveCore(fin, thermo, fopts);
-    }
-    catch (const std::exception& ex)
-    {
-        //  A STREAM WHOSE OWN EQUILIBRIUM THE PACKAGE WILL NOT RESOLVE still
-        //  has a defined enthalpy under the state it carries -- and refusing
-        //  the whole balance over it would report NOTHING about a unit whose
-        //  energy is perfectly computable (flash19's vapour outlet carries no
-        //  Ca, so the reactive package refuses to speciate it at all).  Price
-        //  what the stream carries, and SAY SO: an announced fall-back is a
-        //  reading the student can check, a silent one is the crutch.
-        AdvisoryLog::instance().add(
-            "energyBalance", "info", "stream '" + s.name + "'",
-            "priced on the state it CARRIES (vf = " + std::to_string(s.vf)
-            + "): its own equilibrium at (T, P, z) could not be resolved -- "
-            + ex.what());
-        return std::nullopt;
-    }
-    if (fs.converged && fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
+    //
+    //  The RESOLUTION itself moved to `unitOperations/flash/StreamEquilibrium.H`
+    //  (2026-08-09) when a third surface -- the heater's Q -> T_out inversion --
+    //  was found pricing states on a fourth convention.  What stays here is the
+    //  report's own reading of the answer: a converged SINGLE-PHASE resolution
+    //  is not a split, so this report keeps pricing that stream on the state it
+    //  carries, exactly as before.
+    auto fs = flashState::equilibriumAt(s.T, s.P, s.z, s.phasePinned, s.vf,
+                                        thermo, "stream '" + s.name + "'",
+                                        "energyBalance");
+    if (fs && fs->V_over_F > 1.0e-9 && fs->V_over_F < 1.0 - 1.0e-9)
         return fs;
     return std::nullopt;
 }
@@ -320,31 +303,16 @@ inline scalar streamH_elements(const ProcessStream& s,
 {
     scalar H;
     if (auto sp = streamSplit(s, thermo))
-    {
-        const scalar h =
-            (1.0 - sp->V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, sp->x)
-          +        sp->V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, sp->y);
-        H = s.F * h;
-        //  A RESOLVED STATE MAY CARRY CRYSTALS THE STREAM FILE DOES NOT.
-        //  `sp->x` is the APPARENT liquid -- any precipitate resolved here is
-        //  still inside it, priced as dissolved -- so each such mole moves onto
-        //  the solid formation rung, exactly as the unit duty does (R-E3/R-E5).
-        //  Without it, an unpinned feed whose own equilibrium precipitates is
-        //  priced dissolved while the outlet is priced crystalline, and the
-        //  balance reads the RUNG DIFFERENCE as a duty (flash19: 0.1557 kW,
-        //  against a unit that now correctly reports zero).  Amounts are on
-        //  the resolution's F = 1 basis, so they scale by s.F.
-        sVector e(thermo.n(), 0.0);
-        for (std::size_t i = 0; i < sp->solidFlows.size() && i < thermo.n(); ++i)
-        {
-            const scalar s_i = s.F * sp->solidFlows[i];
-            if (s_i <= 0.0) continue;
-            e.assign(thermo.n(), 0.0);
-            e[i] = 1.0;
-            H += s_i * (thermo.comp(i).h_formation(s.T, "solid")
-                        - thermo.H_liquid_formation(s.T, e));
-        }
-    }
+        //  A RESOLVED STATE MAY CARRY CRYSTALS THE STREAM FILE DOES NOT --
+        //  `sp->x` is the APPARENT liquid, any precipitate resolved here still
+        //  inside it, priced as dissolved -- so `hOfState` moves each such mole
+        //  onto the solid formation rung, exactly as the unit duty does
+        //  (R-E3/R-E5).  Without it, an unpinned feed whose own equilibrium
+        //  precipitates is priced dissolved while the outlet is priced
+        //  crystalline, and the balance reads the RUNG DIFFERENCE as a duty
+        //  (flash19: 0.1557 kW, against a unit that correctly reports zero).
+        //  Amounts are on the resolution's F = 1 basis, so they scale by s.F.
+        H = s.F * flashState::hOfState(*sp, s.T, s.P, s.z, thermo);
     else
         H = s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
     return H + solidH_elements(s, thermo);

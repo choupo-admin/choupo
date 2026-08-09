@@ -1418,6 +1418,23 @@ PYEOF
     fi
     rm -f /tmp/inletres.$$
 
+    # Duty-inversion gate (2026-08-09): the OTHER half of the same first law.
+    # R-E1/R-E5 fixed how a stream is PRICED; this pins how a Q-specified
+    # heater is INVERTED -- the outlet state (T and, where it splits, the
+    # vapour fraction) must satisfy H_out - H_in = Q on the elements datum
+    # over the resolved state.  process02's heater used to walk 12 K past the
+    # bubble point on a sensible Cp relation, paying no latent heat: 827.62 %
+    # closure on a 0.40 kW declaration.
+    if "$ROOT/bin/curate/check_duty_inversion.py" > /tmp/dutyinv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "duty-inversion-gate" "$(head -1 /tmp/dutyinv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_duty_inversion.py)\n" "duty-inversion-gate"
+        cat /tmp/dutyinv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dutyinv.$$
+
     # Case-tier gate (doctrine ratified 2026-08-09): tests isolate features,
     # tutorials compose features, showcases compose engineering -- classified
     # IN PLACE by a `tier` word, absence meaning WITNESS.  Until this split

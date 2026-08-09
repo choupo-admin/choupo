@@ -278,11 +278,62 @@ states and the old duty priced them as liquid, so the case asserted those
 drums must be HEATED when the physics says COOLED.  The published anchor
 (Rosen & Pauls) is on COMPOSITIONS, none of which moved.
 
-**A defect the coherence exposed, NOT fixed here** (a unit's physics is not
-a reporting slice's business): `process02`'s heater declares Q = 0.40 kW
-and writes an outlet at 362 K which, resolved at its own (T, P, z), is
-TWO-PHASE and costs 3.31 kW — 827 % closure.  It heats sensibly straight
-past the bubble point; pricing that outlet as liquid had hidden it.
+**A defect the coherence exposed, and FIXED the same day on Vítor's ruling**
+(it was first recorded here as out of scope — a unit's physics is not a
+reporting slice's business — and the ruling was: fix it).
+
+The finding: `process02`'s heater declares Q = 0.40 kW and writes an outlet
+at 362 K which, resolved at its own (T, P, z), is TWO-PHASE and costs
+3.31 kW — **827.62 % closure**.  It heated sensibly straight past the
+bubble point; pricing that outlet as liquid had hidden it.
+
+**The fix is R-E5 applied to an INVERSION rather than to a pricing.**  The
+outlet of a Q-specified heater is not "the temperature a sensible Cp
+relation reaches with that much heat" — it is *the state whose enthalpy is
+H_in + Q*, on the same elements-datum-over-the-resolved-state surface the
+balance report reads.  Where the stream reaches saturation the temperature
+STOPS and the vapour fraction RISES, and both now fall out of the same
+Newton: `vf_out` is published beside `T_out` as the other half of one
+result.  The saturation-dome guard — which used to refuse the crossing and
+point at `phaseChanger` — stays only on the sensible fall-back path, where
+it is the only thing standing between that path and heat it never spent.
+
+**One home, not a fourth copy.**  R-E5 was implemented twice (the flash's
+duty block, `reporting/BalanceMath.H`); the heater would have been a third,
+and the day after the first two agreed they were found disagreeing with it.
+The resolve-and-price pair now lives in
+`src/unitOperations/flash/StreamEquilibrium.H` — `equilibriumAt` (the
+constitution's unpinned reading, R-E1/R-E2) and `hOfState` (the phase blend
+plus the solid rung, R-E3) — read by the report and by the heater.  A rule
+enforced by repetition has an arity equal to the number of its copies.
+
+**What moved, measured on all 19 corpus cases carrying a `heater`:**
+four heater outlet states, and nothing else.  process02 and
+process02_with_design 361.95 → 359.28 K (vf 0 → 0.0090), optim02
+364.86 → 358.50 K, optim05 364.27 → 356.55 K, economics01 367.79 →
+358.09 K, economics02 367.72 → 357.33 K.  Every one of them is the same
+correction: the old temperature was bought with latent heat the case never
+paid.  Fifteen heaters did not move beyond the Newton tolerance, because
+their outlets are genuinely single-phase.
+
+**And a SECOND defect fell out of it, which is the part worth remembering.**
+`economics01`'s heater had exactly the same disease and its closure read
+**100.00 %**.  Its outlet at 367.79 K is not two-phase — it is *entirely
+vapour*, and `streamSplit` returns nothing for a single-phase resolution, so
+the report fell back to pricing the stream on the `vf = 0` it CARRIED: a
+subcooled liquid at 367.79 K.  Two wrongs read as one right.  The louder
+case (process02, 33 % vapour) was the only one visible, and it was visible
+only because its resolution happened to land *between* the two phases.
+The residual asymmetry is named here rather than fixed: `streamSplit` still
+prices a single-phase resolution on the carried `vf`.  It no longer bites
+through a heater, because the heater now writes the vapour fraction it
+resolved — but a producer that writes a `vf` its own state contradicts
+would reopen it.
+
+Gate: `check_duty_inversion` (witness process02 with the dome-crossing arm,
+the second publication path, the single-phase no-overreach control, and the
+sensible path's named gap), sabotage-verified against the reverted fix at
+the 827.62 % signature.
 
 **Also on this day, from Vítor's own run of flash21**: the per-unit MASS
 surface used FLUID mass, so crystalliser01 had been losing two tonnes an

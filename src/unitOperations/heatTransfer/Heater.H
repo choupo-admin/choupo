@@ -41,12 +41,28 @@ Description
 
     Inputs:    one process stream (T, P, F, z).
     Outputs:   one process stream of identical composition and total flow,
-               with T_out computed from the enthalpy balance
+               whose STATE (T_out and, where it splits, the vapour fraction)
+               is the one satisfying
 
-                   H_out(T_out, z) - H_in(T_in, z) = Q / F_mol_s
+                   H_out(state) - H_in(inlet state) = Q / F_mol_s
 
-               where F_mol_s is the feed in mol/s and H_* are per-mol
-               liquid enthalpies relative to Tref.
+               where F_mol_s is the feed in mol/s and H is the per-mole
+               ELEMENTS-datum enthalpy of the state (T, P, z) resolves to --
+               the same surface the energy-balance report reads (R-E5,
+               docs/design/tp-stream-energy-coherence.md).
+
+               That is not a formality.  Inverting Q on a sensible Cp
+               relation instead walks the temperature straight past the
+               bubble point without paying any latent heat; when the stream
+               reaches saturation the temperature must STOP and the vapour
+               fraction RISE.  A heater is therefore not sensible-only any
+               more -- it heats through the dome, and `vf_out` is a result
+               beside `T_out`.
+
+               Where a present species has no elements-datum enthalpy the
+               sensible path remains -- announced as a named gap, because it
+               cannot see a phase change -- and the saturation-dome guard
+               refuses a crossing it would otherwise misprice.
 
     Design questions ("I need T_out = 360 K") move to a DesignSpec outer
     driver that manipulates $Q with a target on `out.T`.  This is the

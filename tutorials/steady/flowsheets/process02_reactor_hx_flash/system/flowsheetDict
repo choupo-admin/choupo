@@ -9,7 +9,7 @@
 /*---------------------------------------------------------------------------*\
   Three-unit flowsheet — physically realistic operation:
 
-       feed (350 K)                       hotStream (~362 K)
+       feed (350 K)                       hotStream (~359 K, 0.9 % vap)
            │              reactorOut          │
            ▼     CSTR     350 K, X=52%        ▼      flash
        [reactor] ────► [heater] ────► [separator] ──┬─► vapProd
@@ -41,9 +41,17 @@ units
 
         // Credo-pure: hardware = Q.  T_out is a RESULT.  With reactorOut
         // at ~350 K, F ~ 1 kmol/h, Cp_mix ~ 110 J/(mol*K), Q = 0.40 kW
-        // delivers ~ 12 K of heating (hotStream ~ 362 K), landing the
-        // stream mid-envelope for the downstream flash (~64 % liquid /
-        // 36 % vapour).  If the design required a specific T_out, a
+        // carries the stream to its BUBBLE POINT and a little past it:
+        // ~9.3 K of sensible heating to ~359.1 K, then the temperature
+        // STOPS and the rest of the duty vaporises 0.9 % of the stream
+        // (hotStream ~ 359.28 K, vf 0.0090).  That is the whole point of
+        // specifying Q rather than T_out -- the outlet state, temperature
+        // AND vapour fraction, is what the first law says it is.  Until
+        // 2026-08-09 this unit inverted Q on a sensible Cp relation and
+        // reported 361.95 K single-phase, an outlet that really cost
+        // 3.31 kW (827 % energy closure); the fix is recorded in
+        // docs/design/tp-stream-energy-coherence.md.  If the design
+        // required a specific T_out, a
         // DesignSpec on $Q with target hotStream.T would replace this.
         operation   { Q  0.40 kW; }
     }
@@ -54,6 +62,6 @@ units
         in          hotStream;
         outputs     ( liqProd  vapProd );
 
-        operation   { P 1.0 bar; }           // no T → inherits ~362 K from hotStream
+        operation   { P 1.0 bar; }           // no T → inherits ~359 K from hotStream
     }
 );

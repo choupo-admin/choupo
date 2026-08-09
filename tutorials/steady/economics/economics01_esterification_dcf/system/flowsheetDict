@@ -45,7 +45,16 @@ units
         in          reactorOut;
         outputs     ( hotStream );
 
-        operation   { Q  3.0e5 W; }       // 0.3 MW process heat (sensible, stays below the dome)
+        //  0.3 MW of process heat.  It does NOT stay below the dome, which
+        //  is what the comment here claimed until 2026-08-09: the stream
+        //  reaches its bubble point around 357.5 K and the rest of the duty
+        //  vaporises ~3.3 % of it (outlet 358.09 K, vf 0.0332).  The old
+        //  sensible inversion reported 367.79 K single-phase -- a state that
+        //  is in fact ENTIRELY vapour, and cost ~5 MW to reach.  Nothing
+        //  refused, and the energy closure read 100 %, because the report
+        //  priced that outlet on the `vf = 0` it carried.  Two wrongs read as
+        //  one right; see docs/design/tp-stream-energy-coherence.md.
+        operation   { Q  3.0e5 W; }
     }
 
     {

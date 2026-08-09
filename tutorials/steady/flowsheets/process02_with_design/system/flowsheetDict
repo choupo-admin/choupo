@@ -9,7 +9,7 @@
 /*---------------------------------------------------------------------------*\
   Three-unit flowsheet — physically realistic operation:
 
-       feed (350 K)                       hotStream (~362 K)
+       feed (350 K)                       hotStream (~359 K, 0.9 % vap)
            │              reactorOut          │
            ▼     CSTR     350 K, X=52%        ▼      flash
        [reactor] ────► [heater] ────► [separator] ──┬─► vapProd
@@ -50,6 +50,6 @@ units
         in          hotStream;
         outputs     ( liqProd  vapProd );
 
-        operation   { P 1.0 bar; }           // no T → inherits ~362 K from hotStream
+        operation   { P 1.0 bar; }           // no T → inherits ~359 K from hotStream
     }
 );

@@ -75,6 +75,32 @@
 
   The two design variables are case-level $references so the SQP can drive them
   through `variables.<name>` and the trace shows their canonical-SI values.
+
+  ------------------------------------------------------------------------------
+  THE ECONOMICS INVERTED ON 2026-08-09, AND THE OPTIMISER DID NOT
+  ------------------------------------------------------------------------------
+  Everything above about the SQP is unchanged and still true: the run converges,
+  the reactor-size cap is ACTIVE with a positive multiplier, the FCI cap stays
+  SLACK, and the KKT certificate closes.  What changed is the SIGN of the money.
+
+  The `heater` used to invert its fixed 200 kW on a SENSIBLE enthalpy relation,
+  which walked the stream 11.8 K to 364.27 K without paying any latent heat.
+  The flash then found 98.8 % vapour, and the ethyl-acetate-rich overhead --
+  the whole revenue of this case -- existed because the heater had crossed the
+  bubble point for free.  The heater now solves for the outlet STATE whose
+  enthalpy is H_in + Q: 200 kW reaches 356.55 K and 7.7 % vapour, the flash
+  splits V/F 0.077, revenue falls 321.7 -> 88.2 M EUR against an essentially
+  unchanged 221 M EUR cost of manufacture, and the optimum NPV is
+  -646 M EUR (IRR and payback are UNDEFINED and published as null -- the
+  project never breaks even).
+
+  So this case still demonstrates constrained SQP, shadow prices and a KKT
+  certificate, and it now demonstrates them on a project that loses money.
+  Restoring the intended economics is a DESIGN decision, not a code fix: the
+  duty (or the pressure, or the product spec) has to be chosen so the overhead
+  is actually made.  It is deliberately NOT chosen here -- picking a number to
+  make the old answer come back would be fitting the case to a result nobody
+  re-derived.  Record: docs/design/tp-stream-energy-coherence.md.
 \*---------------------------------------------------------------------------*/
 
 variables
