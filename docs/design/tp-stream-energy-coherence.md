@@ -200,3 +200,40 @@ liquid→solid fusion view has no silent consumer to move.
 Net: SIX golden re-records, all class 1, all semantic corrections; the
 rung slice (1) moves no golden at all; `flash21` gains its first real duty
 golden when slice 1 lands.
+
+## Needs-probe cases, RESOLVED (2026-08-09, parallel probe survey — full report + probe cases in the session scratchpad)
+
+Every flash-feed in the twelve multi-condition cases was mapped and, where
+not single-phase by construction, probed with a minimal single-flash case at
+the stream's own recorded (T,P,z) under the case's own `constant/`.  17
+flash-feed rows: 8 multiphase, 9 single-phase, 0 undecidable.  **Slice 2
+should expect FIVE of the twelve to move:** `cavett01_recycle_train` (FL2
+V/F 0.954, FL3 0.885 at their feeds' own state), `polycaprolactonePlant`
+(devolatiliser feed V/F 0.540), `ammonia02_full_plant` (separator feed V/F
+0.973), `proxy01_gas_loop` (feed split ≡ unit split — the flash19
+signature; Q −2.195 → ~0), `optim05_reactor_npv` (plus a flagged cascade
+into its `economics.*` goldens through the utility-cost pass).  NOT moving,
+each for a verified reason: hda + ammonia01 (single-phase feeds),
+recycle_autoinit_tear (subcooled), process02 ×2 + optim02 (multiphase feeds
+but NO pinned flash-Q golden), column13 (single-phase vapour at its own
+recorded state).
+
+Three caveats binding on the slice-2 build: **(C1)** ammonia02/proxy01
+feeds carry a producer-written `phase gas` that is HX vf pass-through, not
+an authored pin (both 0/ trees are pin-free) — pin detection must
+distinguish AUTHORED pins from carried state or those two movers silently
+drop off.  **(C2)** column13's recorded stage-mix state (483 K,
+liquid-priced) REFUSES to re-flash under the reactive package today — the
+inlet resolution will hit that refusal on a currently-green case and must
+surface it honestly, never crash or silently skip.  **(C3)** the
+"single-phase ⇒ no move" reading holds only where carried vf matches the
+resolved phase — verified row by row; column13 is the one mismatch.
+
+**Slice 1 is SHIPPED (2026-08-09, suite 442/0):** the rung views live in
+`h_formation` per the one-construction precision, the flash prices every
+crystallised mole on the solid rung on BOTH routes, flash19's duty equals
+its report (closure 100.00 %, was 101.17), flash21 carries the first real
+freezer duty golden (−167.4 kW = sensible + fusion), and exactly one
+golden moved — the measured blast radius held live.  One more
+permanently-green-gate specimen fell on the way: the old A10 withhold arm's
+parse could never have seen a published Q (recorded in the gate).
