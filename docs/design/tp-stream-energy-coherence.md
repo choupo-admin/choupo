@@ -374,6 +374,19 @@ architecture change needing its own ruling.  It is pinned here and in
 `basis01`'s own header; nothing has been suppressed to make the number look
 better.
 
+> **CLOSED the same day (2026-08-09), under Vítor's ruling, and stricter
+> than the shape sketched above.**  The remedy shipped as
+> [`model-boundary-energy-ledger.md`](model-boundary-energy-ledger.md): the
+> raw imbalance, the enthalpy step and the remaining residual are three
+> quantities kept apart on both surfaces, the verdict is taken on the third,
+> and the step is credited only when the report — which assembles the unit's
+> declared world **itself**, never borrowing the one the unit built —
+> reproduces the imbalance under `solver/Convergence.H`'s declared criteria.
+> basis01's transporter now reads raw −2.9851 kW, step −2.9851 kW, remaining
+> 9.4e-9 kW, adjusted closure 100.00 %, and no alarm; its raw 92.54 % is
+> still printed beside it.  Gate `check_model_boundary_ledger`.  The
+> sentence above stands as the record of what was known when it was written.
+
 Gate: `check_duty_inversion` (witness process02 with the dome-crossing arm,
 the second publication path, the single-phase no-overreach control, and the
 sensible path's named gap), sabotage-verified against the reverted fix at

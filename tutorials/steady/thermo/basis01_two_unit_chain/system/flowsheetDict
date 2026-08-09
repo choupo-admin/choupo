@@ -97,13 +97,27 @@
   332.23 K.  Same enthalpy, two temperatures -- exactly the settled rule
   that H is the conserved truth and T is the model-dependent readout.
   The consequence a reader will meet: the energy-balance report prices EVERY
-  stream in the GLOBAL package, so this unit's closure reads ~92.5 % rather
-  than 100 %.  That residual is the model boundary, not a first-law error,
-  and the report cannot yet say so -- a NAMED GAP (the report has no notion
-  of a per-unit thermo world), recorded in
-  docs/design/tp-stream-energy-coherence.md.  Before the fix the sensible
-  inversion happened to track the global datum and the gap read 100 %, which
-  was luck, not agreement.
+  stream in the GLOBAL package, so this unit's RAW closure reads 92.54 %
+  rather than 100 %.  That residual is the model boundary, not a first-law
+  error -- and SINCE THE SAME DAY THE REPORT SAYS SO.  It was a named gap
+  for exactly one afternoon (the report had no notion of a per-unit thermo
+  world, recorded in docs/design/tp-stream-energy-coherence.md), and it was
+  closed by the model-boundary LEDGER:
+
+      raw imbalance   -2.9851 kW    (dH 37.0149 vs 40.0000 kW of duty)
+      boundary step   -2.9851 kW    (independently computed, see below)
+      remaining        9.4e-9 kW    -> adjusted closure 100.00 %, no alarm
+
+  reports/balances/energyBalance_byUnit.csv carries all three, side by side
+  and never collapsed, plus a ledger row naming BOTH worlds by their
+  declared models.  The step is not taken on trust: the report assembles
+  this unit's declared world ITSELF, prices both streams in both packages at
+  the same (T, P, z), and credits the step only if its own number reproduces
+  the imbalance -- an auditor that reuses the auditee's arithmetic checks
+  nothing.  See docs/design/model-boundary-energy-ledger.md.
+
+  Before the 2026-08-09 heater fix the sensible inversion happened to track
+  the global datum and the gap read 100 %, which was luck, not agreement.
 \*---------------------------------------------------------------------------*/
 
 units

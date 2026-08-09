@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 51 records already exist
+## 1. Why an index, when 52 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,9 +27,9 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 51 design records, **24 state a rejected alternative and 27 do not** —
-  so for most, the reasoning that would prevent re-litigation is absent, and
-  nothing said so.
+- Of 52 design records, **25 state a rejected alternative and 27 do not** —
+  so for more than half, the reasoning that would prevent re-litigation is
+  absent, and nothing said so.
 
 ## 2. How to read the table
 
@@ -80,6 +80,7 @@ direction is an error.
 | [`general-salt-reconstruction-proposal.md`](../design/general-salt-reconstruction-proposal.md) | ADR | yes | SHIPPED — slice 1 |
 | [`aqueous-stream-basis-proposal.md`](../design/aqueous-stream-basis-proposal.md) | ADR | yes | SHIPPED |
 | [`normalized-residual-convergence.md`](../design/normalized-residual-convergence.md) | ADR | yes | SHIPPED 2026-08-09 — OpenFOAM-style normalized residual, ONE home (`src/solver/Convergence.H`); wired to `ReactiveVLE`'s outer Newton, §4 records what is NOT wired and why; rounding, a case-specific tolerance and a second bare threshold are the recorded rejected alternatives |
+| [`model-boundary-energy-ledger.md`](../design/model-boundary-energy-ledger.md) | ADR | yes | SHIPPED 2026-08-09 — the enthalpy STEP at a per-unit `thermo {}` boundary is ACCOUNTED, not charged to the unit: three quantities (raw imbalance / declared step / remaining) kept apart on both surfaces, the verdict taken on the third, the step credited only when an INDEPENDENTLY assembled package reproduces it under `solver/Convergence.H`'s declared criteria; absorbing the step into T, pricing the report in each unit's world, and letting the report ask the auditee for its own dH are the recorded rejected alternatives |
 | [`sour-water-stripper-scope.md`](../design/sour-water-stripper-scope.md) | SCOPE | no | PARTIAL — S1–S3 shipped; Table 7 needs the vapour side |
 | [`curation-backlog-estimated-records.md`](../design/curation-backlog-estimated-records.md) | SCOPE | no | ONGOING |
 
@@ -205,7 +206,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**27 of 51 records state no rejected alternative.**  For a FORUM or a STUDY
+**27 of 52 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

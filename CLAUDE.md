@@ -956,6 +956,36 @@ guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
 importer's dependency closure since flash20 (a sealed case must never change
 physics on sealing).
 
+**THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT
+(2026-08-09).**  A unit carrying a per-unit `thermo {}` override solves in
+ITS OWN world while the energy report prices every stream in the CASE's, and
+the difference is the enthalpy STEP the settled architecture predicts (hold
+(T,P,z), let H jump).  It was being charged to the unit as "an UNEXPLAINED
+first-law residual" under the RED alarm — 2.9851 kW on `basis01`, and the
+same defect one field away on `flash20`'s NRTL flash at 42.86 kW, which
+nobody had connected.  **Three quantities now travel apart and are never
+collapsed**: the RAW imbalance · the declared STEP · what REMAINS.  The
+verdict is taken on the third; the raw stays on every surface that showed it
+(the six original CSV columns are unchanged, `energy_closure_pct` still
+means the raw closure).  **The audit is INDEPENDENT, deliberately, against
+the arity doctrine**: it accepts no dH from the unit and never calls
+`Flowsheet::thermoFor` — it reads the unit's `thermo{}` from the
+flowsheetDict, assembles that world itself through the public
+`ThermoPackageBuilder`, prices both streams in both packages at the same
+(T,P,z), and credits the step ONLY if its own number reproduces the
+imbalance.  *An auditor that reuses the auditee's arithmetic checks
+nothing.*  A step is credited only when DECLARED (never inferred from
+coincident numbers) · UNAMBIGUOUS · PRICEABLE (the doctrine's speciation and
+datum refusals) · READABLE · REPRODUCED under `solver/Convergence.H`
+(`modelBoundaryClosure { tolerance; relTol; }`, ONE normalization, `maxIter`
+refused because a closure is not an iteration); every other outcome leaves
+the remaining equal to the raw and the alarm standing, saying which
+condition failed.  Two deviations stated rather than forked: three terms
+instead of the degenerate pair, and the pre-existing closure band is NOT
+retro-judged over the corpus.  Gate: `check_model_boundary_ledger` (3
+sabotages, observed output in the docstring).  Record:
+[`docs/design/model-boundary-energy-ledger.md`](docs/design/model-boundary-energy-ledger.md).
+
 **Balance diagnostics, three levels (2026-07-19): total mass · per-element
 atoms · energy — engine-owned, GUI only draws.  ALL THREE run by DEFAULT on
 every converged steady run (2026-08-02, roadmap #7):** conservation is the
