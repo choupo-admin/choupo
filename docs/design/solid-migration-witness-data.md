@@ -128,3 +128,24 @@ NRTL/Wilson/UNIFAC surfaces beside the measured curve, the
 Gibbs–Helmholtz test) waits for the paper to be supplied again.  The op
 design is scoped (`MolecularActivity` is single-point; the new op sweeps
 composition with a validation dataset, FD in T announced).
+
+## 5. Paper intake 2026-08-09 — CITATIONS ONLY (ruled: no PDFs in the repo tree, ever — extract data + cite)
+
+Sixteen method-primary papers received (session uploads; PDFs deliberately
+NOT stored — the repo's relationship to a paper is a citation plus
+extracted, cited data).  PARKED by ruling until the TP-energy architecture
+(tp-stream-energy-coherence.md) stops asking them to make design
+decisions.  The list, so a container loss costs a re-upload and not an
+identification: Rachford & Rice, Pet. Trans. AIME 195:327 (1952) · Michelsen,
+Fluid Phase Equilib. 9:21 (1982) Part II · White, Johnson & Dantzig,
+J. Chem. Phys. 28:751 (1958), DOI 10.1063/1.1744264 · Peng & Robinson,
+IEC Fundam. 15:59 (1976) · Soave, Chem. Eng. Sci. 27:1197 (1972) · Renon &
+Prausnitz, AIChE J. 14:135 (1968) · Abrams & Prausnitz, AIChE J. 21:116
+(1975) · Gross & Sadowski, IEC Res. 40:1244 (2001) · Lin & Sandler, IEC
+Res. 41:899 (2002) · Pitzer & Mayorga, J. Phys. Chem. 77:2300 (1973) ·
+Pitzer & Kim, JACS 96:5701 (1974) · Chen et al. eNRTL Part I, AIChE J.
+(1982) · Johnson, Oelkers & Helgeson, SUPCRT92, Comput. Geosci. 18:899
+(1992) · Naphtali & Sandholm, AIChE J. 17:148 (1971) · Boston, inside-out
+multistage methods · one AIChE J. 21(6) (1975) liquid-liquid extraction
+holdup paper, exact identity pending.  (A "b12" was never received —
+flagged to the owner.)

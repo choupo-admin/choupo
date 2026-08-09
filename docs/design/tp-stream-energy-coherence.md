@@ -1,8 +1,38 @@
 # TP-stream energy coherence — the inlet state, the enthalpy rungs, and the duty
 
-**Status: PROPOSED 2026-08-09 — awaiting Vítor's ratification.  Nothing in
-this record is implemented; the flash19 duty, the balance report, and the
-SLE duty gap all stand as shipped until the ruling lands.**
+**Status: RATIFIED 2026-08-09 (Vítor), R-E1..R-E5 + O1, with ONE PRECISION
+on R-E3/R-E4 — folded into the text below and binding on the
+implementation:**
+
+> A substance has ONE thermochemical definition; liquid, vapour and solid
+> enthalpies are consistent VIEWS of it, not separately curated energies.
+> If the required fusion/vaporisation data are absent, refuse rather than
+> manufacture a crossing.
+
+The "crossing table" wording in the original proposal is therefore to be read as
+the CALLABLE TRANSITIONS of one canonical construction — the record's
+single datum (`standardThermochemistry` on its declared reference state)
+plus its declared transition data (Hvap model, `sublimation.Hfus`,
+per-phase Cp) deriving `h(T, phase)` — never as independently authored
+pairwise routes.  `h_formation` stays that one construction's single
+implementation home; adding a reachable phase means adding a VIEW derived
+from declared data, with a named refusal where the data is absent.
+
+Further ratified with O1: the authored inlet and the resolved inlet stay
+conceptually distinct — `0/feed` is what the user DECLARED, `converged/feed`
+is what that declaration RESOLVES TO physically; the resolved snapshot's
+report-only decomposition describes the equilibrium state, and `0/feed` is
+never modified to make that happen.  Two executable invariants ride along:
+**reflash idempotency** (identical (T,P,z,world) re-flashed prices Q = 0)
+and **report-only neutrality** (deleting a report-only decomposition may
+not change the calculation; regenerating it must reproduce the resolved
+state the calculation used).
+
+Implementation order confirmed: (1) canonical solid rung, (2) TP
+inlet-state resolution for energy, (3) report/stream-H coherence.  The
+Q-golden blast radius is MEASURED before anything is re-recorded, and
+every moved golden cites this record as a semantic correction, never
+routine churn.  Papers stay parked throughout.
 
 The finding this record answers (diagnosed 2026-08-09, reported in-session):
 `flash19_organic_and_precipitate` reports **Q = +13.34 kW** across an
