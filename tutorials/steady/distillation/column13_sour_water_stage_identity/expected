@@ -18,8 +18,8 @@ kpi     restage                F_alpha          0.000416666666622  1e-4
 kpi     restage                F_beta           0.000138888888934  1e-4
 kpi     restage                F_in             0.000555555555556  1e-4
 kpi     restage                P                101325             1e-4
-kpi     restage                Q                1.03920077284e-06  1e-4
-kpi     restage                Q_kW             1.03920077284e-09  1e-4
+kpi     restage                Q                9.11014568475e-07  1e-4
+kpi     restage                Q_kW             9.11014568475e-10  1e-4
 kpi     restage                T                367.3397849        1e-4
 kpi     restage                V_over_F         0.250000000081     1e-4
 kpi     restage                pH               8.36128444355      1e-4
