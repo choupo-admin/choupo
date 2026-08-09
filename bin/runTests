@@ -1401,6 +1401,23 @@ PYEOF
     fi
     rm -f /tmp/massclose.$$
 
+    # Inlet-resolution gate (2026-08-09, ratified ADR R-E1/R-E2/R-E5).  A
+    # flash at its feed's OWN (T, P) is the identity operation and costs
+    # NOTHING -- flash19 used to charge 13.34 kW to vaporise a liquid
+    # nobody declared.  Also pins that a `phase` PIN is priced AND
+    # announced, and that the vacuum-flash control keeps its genuine
+    # pressure-drop duty (a gate that zeroed every flash would be
+    # measuring its own wish).
+    if "$ROOT/bin/curate/check_inlet_resolution.py" > /tmp/inletres.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "inlet-resolution-gate" "$(head -1 /tmp/inletres.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_inlet_resolution.py)\n" "inlet-resolution-gate"
+        cat /tmp/inletres.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/inletres.$$
+
     # Gibbs-Duhem gate (2026-08-07).  The first check in the tree that asks
     # whether a thermodynamic model is RIGHT rather than UNCHANGED.  A golden
     # preserves whatever error it was recorded with; Gibbs-Duhem is a
