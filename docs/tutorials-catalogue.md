@@ -11,8 +11,17 @@
 # Tutorials catalogue
 
 `listCases` lists every bundled tutorial; `runCase tutorials/<category>/<name>`
-runs one (auto-dispatching by `controlDict.application`).  This table is the
-annotated index of what each one demonstrates.
+runs one (auto-dispatching by `controlDict.application`).
+
+**This table annotates a SUBSET, and says so** (correction 2026-08-10: it
+used to read as the index of the whole corpus while covering roughly half —
+161 annotated rows against the case count in
+`generated/releaseInventory.json`, which is the authority on the size).
+The enumeration is `listCases`; the machine-readable per-case facts (roles,
+unit types, models, ops) are `generated/caseManifest.json`; each case's
+one-line label is its own `controlDict.description`.  A row is added here
+when a case has something to TEACH beyond its description — annotating all
+of them for completeness' sake would bury the ones worth reading.
 
 | Tutorial | Demonstrates |
 |---|---|

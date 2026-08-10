@@ -11,20 +11,27 @@
 
 # Engine capabilities
 
-## 1. Current state (counts)
+## 1. Current state (the counts are GENERATED — do not copy them here)
 
-* **331 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
-  `bin/runTests` validates **296** checks (golden-master KPI comparison +
-  NaN/inf guard on every case + the doctrine gate; one deliberate
-  EXPECTED-FAIL teaching case).  Batch/ctrl cases carry goldens too —
+**Every count lives in `generated/releaseInventory.json`**
+(`bin/curate/release_inventory.py`; a `runTests` gate fails when it is
+stale).  This section used to carry its own copy of the tally and it
+drifted in every field it named — 331 tutorials against 341 on the day of
+the correction (2026-08-10), 296 checks against 307, "one deliberate
+EXPECTED-FAIL" against five — the same second-home defect CLAUDE.md §6
+records for itself.  What belongs here is the SHAPE, never the size:
+
+* **Runnable tutorials** under
+  `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`; `bin/runTests`
+  verifies golden-master KPIs + a NaN/inf guard on every case + the
+  architectural gates; deliberate EXPECTED-FAIL teaching refusals are
+  counted and named, never skipped.  Batch/ctrl cases carry goldens too —
   including the campaign material/energy-ledger KPIs.
-* **247 components** in the standard catalogue (data/standards/components/),
-  plus per-case overlays under `<case>/constant/components/` for
-  sample-specific data (sorption isotherms, drying kinetics, …).
-* **205 Henry's-law pairs**, van't Hoff temperature dependence.
-* **4 materials** (carbonSteel / SS304 / SS316 / aluminium) and **4
-  membranes** (SW30HR seawater RO, NF270 loose NF, NF270_dspmde, CMX_AMX
-  ion-exchange) in the catalogue.
+* **Standard catalogue** (`data/standards/`): components (with per-case
+  overlays under `<case>/constant/components/` for sample-specific data),
+  aqueous species, Henry pairs (van't Hoff), NRTL/UNIQUAC/Pitzer/eNRTL
+  pair tables, materials, membranes, adsorbents, utilities — the per-kind
+  tallies are in the inventory JSON.
 
 ### Three-axiom property layout
 
@@ -186,9 +193,18 @@ cascade row by row — the glass-box heart of the method — and reports
 `pinch.Q_H_min_kW` / `Q_C_min_kW` / `T_pinch_K` (+hot/cold ends) beside
 the honest current-vs-target line (what the unintegrated duties actually
 consume).  `reports/pinch/compositeCurves.csv` carries the hot/cold and
-shifted composite polylines for plotting.  The pass TARGETS only — it
-never rewrites the network (P2 match recommendations and P3 area/cost
-targets are deliberately not built; `docs/design/pinch-programme-scope.md`).
+shifted composite polylines for plotting.  **P2 (ratified + built
+2026-08-03)** adds the candidate-match ANALYSIS table
+`reports/pinch/candidateMatches.csv` — exhaustive hot×cold pairs per
+region, the exact counter-current end-approach bound, the CP rule binding
+only AT the pinch — plus the coursework violation diagnostics (heater
+below / cooler above the pinch).  Every feasible row is a
+"thermodynamically admissible candidate"; the word "optimal" never appears
+(gate-enforced).  The pass ANALYSES only — it never rewrites the network
+(P3 area/cost targets stay deliberately not built;
+`docs/design/pinch-programme-scope.md`).  (This paragraph said "P2 …
+deliberately not built" until 2026-08-10 — written before P2 shipped and
+never updated, the exact staleness this audit hunts.)
 Its method hypotheses (constant CP per segment, the latent slice, first
 non-utility stream pairing) are stated in `PinchPass.H`.  Witness:
 `tutorials/steady/heat/pinch01_four_stream_classic` (107.5 kW / 40 kW /
