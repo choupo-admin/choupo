@@ -1,0 +1,45 @@
+# The ARCHITECTURAL WITNESS TIER -- one representative case per execution
+# class (declared 2026-08-10, Vitor's testing-hierarchy ruling).
+#
+# WHAT THIS IS.  `bin/runTests --witnesses` runs exactly these cases through
+# the SAME checks as the full sweep (NaN/inf guard, golden-master KPIs,
+# anchor rows) and answers, in minutes:
+#
+#     does each major simulator class still traverse the architecture?
+#
+# The FULL 459-case regression answers a different question -- "did we break
+# any historical case?" -- and is reserved for campaign closure, releases and
+# genuinely cross-cutting changes.  Using it as the routine feedback loop was
+# the defect this tier exists to end.  The ladder is recorded in
+# docs/architecture/verification-and-validation.md.
+#
+# A WITNESS IS A ROLE, NOT A MORADA.  These cases stay where they live; the
+# tier is this declaration, exactly as a component's category lives inside
+# its record (components/ stays flat) and a stream's role is inferred from
+# topology.  A case may be a teaching tutorial AND a witness -- what is
+# refused is complicating a tutorial to serve witnessing, or minting a
+# duplicate case for a role an existing case already carries.
+#
+# EACH LINE: <class>  <case path>.  One class, one case.  The tier is kept
+# SMALL on purpose -- a witness earns its line by traversing the full
+# architectural route its class depends on, never by ticking boxes with
+# physically irrelevant machinery.  Gate: check_witness_tier (existence,
+# golden, class uniqueness; it does NOT judge representativeness -- that is
+# an architect's call, made here, in review).
+#
+# class                     case
+molecularFlash              tutorials/steady/flash/flash09_n2ch4_stryjek
+reactiveMultiphaseFlash     tutorials/steady/flash/flash19_organic_and_precipitate
+aqueousAnalysisInlet        tutorials/steady/flash/analysis02_weighted_least_squares
+kineticReactor              tutorials/steady/reactors/cstr04_adiabatic
+gibbsReactor                tutorials/steady/gibbs/gibbs05_adiabatic_flame
+heatWithPhaseChange         tutorials/steady/heat/heatlink01_condenser_to_heater
+stagedColumn                tutorials/steady/distillation/column13_sour_water_stage_identity
+electrolyteCrystalliser     tutorials/steady/crystallisation/crystalliser05_nacl_pitzer
+membrane                    tutorials/steady/membranes/membrane06_pitzer
+recycleFlowsheet            tutorials/steady/flowsheets/cavett01_recycle_train
+sealedFractalPlant          tutorials/plant/lithiumBrinePlant
+batchRecipe                 tutorials/batch/recipes/recipe01_react_then_distill
+dynamicControl              tutorials/ctrl/ctrl11_esterification_jacket
+propsBench                  tutorials/props/electrolyte/pitzer_gamma_hamer_wu
+designEconomics             tutorials/steady/flowsheets/process02_with_design

@@ -278,6 +278,28 @@ within_tol() {
 RECORD=
 if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 
+#  --witnesses: the ARCHITECTURAL WITNESS TIER (tutorials/WITNESSES) -- one
+#  representative case per execution class, run through the SAME per-case
+#  checks as the full sweep.  Implemented by expanding the declared list into
+#  the positional args, so the gate arms guarded by `$# -eq 0` are skipped
+#  exactly as they are for any explicit case selection: the tier answers
+#  "does each class still traverse the architecture?", not "does every gate
+#  and historical case still hold?" -- that second question is the full
+#  sweep's, at campaign closure.  Ladder: verification-and-validation.md.
+if [ "${1:-}" = "--witnesses" ]; then
+    shift
+    [ "$#" -eq 0 ] || { echo "usage: runTests --witnesses  (takes no cases; the list is tutorials/WITNESSES)"; exit 2; }
+    [ -f "$ROOT/tutorials/WITNESSES" ] || { echo "ERROR: tutorials/WITNESSES missing -- the witness tier is a declared list, and it is gone"; exit 1; }
+    WLIST=()
+    while read -r wclass wpath _; do
+        case "$wclass" in ''|\#*) continue;; esac
+        WLIST+=("$ROOT/$wpath")
+    done < "$ROOT/tutorials/WITNESSES"
+    [ "${#WLIST[@]}" -gt 0 ] || { echo "ERROR: tutorials/WITNESSES declares no witnesses"; exit 1; }
+    echo "[witness tier] ${#WLIST[@]} class witness(es) from tutorials/WITNESSES (gates skipped -- this is the class-traversal check, not the full sweep)"
+    set -- "${WLIST[@]}"
+fi
+
 # --- gather cases ---------------------------------------------------------
 CASES=()
 if [ "$#" -gt 0 ]; then
@@ -485,6 +507,19 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/meanionic.$$
+
+    #  The witness tier's declared list stays resolvable (2026-08-10): every
+    #  line an existing case with a golden, classes unique.  The tier itself
+    #  is `runTests --witnesses`; this arm only keeps its declaration honest.
+    if "$ROOT/bin/curate/check_witness_tier.py" > /tmp/witness.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "witness-tier-gate" "$(head -1 /tmp/witness.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_witness_tier.py)\n" "witness-tier-gate"
+        cat /tmp/witness.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/witness.$$
 
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing

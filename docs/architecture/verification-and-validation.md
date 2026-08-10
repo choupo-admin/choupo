@@ -110,6 +110,45 @@ reading: the subset is materially larger than the seven this section carried,
 still a small minority of the corpus, and now recounted rather than
 remembered.
 
+## 3a. The architectural witness tier, and the testing ladder (ruled 2026-08-10)
+
+The full corpus answers *"did we break any historical case?"*.  For months it
+was also being used to answer a different question — *"does each simulator
+class still traverse the architecture?"* — after every local edit, which
+turned prudence into a trial-and-error loop (small change → full regression →
+small correction → full regression).  Vítor's ruling ended that: the second
+question gets its own machinery, and the full regression returns to being a
+**confirmation at closure, never a discovery tool**.
+
+**The tier**: `tutorials/WITNESSES` declares one representative case per
+execution class — fifteen today — and `bin/runTests --witnesses` runs exactly
+those through the same per-case checks as the full sweep (NaN/inf guard,
+goldens, anchors; the full-sweep-only gate arms are skipped, as for any
+explicit case selection).  Minutes, not three quarters of an hour.
+Gate `check_witness_tier` keeps the declaration resolvable (existing case,
+golden present, classes and cases unique); representativeness is an
+architect's review call and deliberately not gated.
+
+**The ladder**:
+
+1. **While editing** — only the directly affected tests: the touched case,
+   the relevant `check_*` contract/refusal gates.
+2. **A coherent change closed** — the witness of the affected class.
+3. **A bounded slice closed** — `runTests --witnesses` across all classes.
+4. **Campaign closure, release, or a genuinely cross-cutting change** — the
+   full regression, once; `main` advances once if green.
+
+**Two deviations from the ruling's text, stated rather than silent.**
+(a) There is no `validation/` directory and none was created: a witness is a
+ROLE, not an address — the same decision the tree made when `components/`
+stayed physically flat and when stream roles became topology-inferred.
+Migrating fifteen cases would have broken paths, goldens, seals and
+`listCases` for zero physics.  (b) A case may be a teaching tutorial AND a
+witness (`column13` is both); what the ruling's separation actually forbids —
+complicating a tutorial into an "everything case", or minting a duplicate
+case for a role an existing one carries — is enforced by review, and the
+refusal of duplication is the arity doctrine applied to cases.
+
 ## 4. What this changes, and what it does not
 
 Changed: the corpus is named the **verification and regression corpus**, with a
