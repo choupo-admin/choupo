@@ -1,0 +1,6536 @@
+{
+ "_generated_by": "bin/curate/case_manifest.py -- DO NOT EDIT",
+ "limitations": {
+  "scan": "textual dict scan; absence of a token is weak evidence, presence is strong -- live example: pitzer_hmw_hot_agreement exercises pitzerHMW through the speciate op's engine selection without declaring the token in any dict, so byModel[pitzerHMW] does not list it",
+  "indices": "membership = the case DECLARES the token; candidates to consider, never completeness -- runtime dispatch can reach further (witness tier + closure regression cover that)",
+  "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
+ },
+ "counts": {
+  "cases": 341,
+  "witnesses": 15,
+  "validationOp": 6,
+  "anchored": 3
+ },
+ "cases": {
+  "tutorials/batch/adsorber/batch09_adsorber_co2": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch10_adsorber_co2_n2": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch11_adsorber_henry": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch12_adsorber_refused_P": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/batch/adsorber/batch13_breakthrough_co2": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch14_transport_only": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch15_mesh_study": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch16_ergun_profile": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch17_dilute_ergun_limit": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch18_ergun_conservation": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch19_feed_switch_purge": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch20_thermal_breakthrough": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch21_tsa_hot_purge": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch22_wall_cooled": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch23_tsa_cycles": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch24_blowdown_inert": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch25_blowdown_thermal": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/ignition01_h2o2": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/ignition01_h2o2_rk4": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/batch/combustion/ignition02_h2air_slack": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/combustion/nox01_zeldovich_postflame": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/crystallisation/batch13_nacl_pitzer": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchCrystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchCrystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch01_first_order": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch02_adiabatic": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch03_consecutive": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch04_reversible_wgs": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch04_transient_dirs": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch05_crystalliser": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchCrystalliser"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch06_adaptive_runaway": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch07_lhhw_methylAcetate": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIQUAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch08_isothermal_duty": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/recipes/recipe01_react_then_distill": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchReactor",
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "batchRecipe",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/batch/recipes/recipe02_setpoint_ramp": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/recipes/recipe03_conditional_partial": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor",
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/recipes/recipe04_charge_enthalpy": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still01_benzene_toluene": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still02_ethanol_water_azeo": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still03_with_receiver": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still04_rectifier_benzene_toluene": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchStill"
+   ],
+   "unitModels": [
+    "rectifier"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still05_rectifier_constant_xD": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchStill"
+   ],
+   "unitModels": [
+    "rectifier"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/still/still06_ledger_mixed_validity": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchAccumulator",
+    "batchStill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl01_cstr_temp_control": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl02_disturbance_rejection": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Schedule",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl03_adaptive_disturbance": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Schedule",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl03_startup_transient": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl05_disturbance_transient": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Schedule",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl06_sine_disturbance": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Signal",
+    "dynamicCSTR",
+    "sinusoidal"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl07_lhhw_inhibition": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl08_prbs_ident": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Signal",
+    "dynamicCSTR",
+    "prbs"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl09_stream_disturbance": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Signal",
+    "dynamicCSTR",
+    "step"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl10_brine_concentration": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl11_esterification_jacket": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "dynamicControl",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl12_williams_otto": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl13_williams_otto_step": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Schedule",
+    "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl14_williams_otto_pi": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl16_williams_otto_optimal": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Schedule",
+    "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed01_nacl_desalination": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/electrochem/ed02_over_limiting_current": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "electrodialysisStack"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/ChemicalPlantTutorial": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/esterification2sector": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/hda": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/lithiumBrinePlant": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "sealedFractalPlant",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/plant/polycaprolactonePlant": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "mixer",
+    "pfr",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/polycaprolactonePlant/properties": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/sugarPlantEconomicsSweep": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/plant/tartaricAcid": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/twoSectorDemo": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/plant/twoSectorDemo/SECTOR_R": {
+   "application": "choupoSolve",
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/plant/twoSectorDemo/SECTOR_S": {
+   "application": "choupoSolve",
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/adsorption/isotherm01_eval_13x_co2": {
+   "application": "choupoProps",
+   "ops": [
+    "isothermEval"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/adsorption/isotherm02_fit_jaschik": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/adsorption/isotherm03_fit_refusals": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_activity_etoh_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_eos_co2": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_kinetics_order": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_psat_ambrose_walton": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_transport_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/compare_visc_liquid_ammonia": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_visc_liquid_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/compare/compare_vle_etoh_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D",
+    "vleConsistency"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/archer01_nacl_cold_to_hot": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "validationOp"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/composition01_nacl": {
+   "application": "choupoProps",
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/davies01_band_edge": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies",
+     "pitzerHMW"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/edwards01_sour_water_activity": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "thermo": {
+    "activityModels": [
+     "davies",
+     "edwardsPitzer"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso": {
+   "application": "choupoProps",
+   "ops": [
+    "enrtlMixedSolvent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl": {
+   "application": "choupoProps",
+   "ops": [
+    "enrtlMultiSalt"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/enthalpy_naoh_water": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "validationOp"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/farelo_licl_range": {
+   "application": "choupoProps",
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/farelo_nacl_nh4cl": {
+   "application": "choupoProps",
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/fpd01_nacl_freezing": {
+   "application": "choupoProps",
+   "ops": [
+    "freezingPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "validationOp"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/ksp_temperature": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/overlay01_nacl_ksp": {
+   "application": "choupoProps",
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pb82_calcite_open_co2": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer01_nacl": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "validationOp"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer02_cacl2": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer02_nacl_package": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteActivity"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_calcite_brine": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "thermo": {
+    "activityModels": [
+     "davies",
+     "pitzerHMW"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_gamma_hamer_wu": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "propsBench",
+   "roles": [
+    "witness",
+    "validationOp",
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_hmw_hot_agreement": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity",
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_nacl_sp77_hot": {
+   "application": "choupoProps",
+   "ops": [
+    "pitzerActivity"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "validationOp"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_seawater_verify": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate": {
+   "application": "choupoProps",
+   "ops": [
+    "scalingScan"
+   ],
+   "thermo": {
+    "activityModels": [
+     "davies",
+     "pitzerHMW"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/precipitation_ro_brackish": {
+   "application": "choupoProps",
+   "ops": [
+    "scalingScan",
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/rainwater_air": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/scaling_ro_brackish": {
+   "application": "choupoProps",
+   "ops": [
+    "scalingScan",
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/softener_brackish": {
+   "application": "choupoProps",
+   "ops": [
+    "exchange",
+    "scalingScan"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/tartaricAcid_acidulation": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies",
+     "pitzerHMW"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/estimate_acetone": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/estimate_ethanol_benzene": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/estimate_petroleum_cut": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/userEstimate01_linear_tb": {
+   "application": "choupoProps",
+   "ops": [
+    "linearTbEstimate"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/vanKrevelen01_polystyrene_density": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/yang2020_Tg_polystyrene": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/estimate/yang2020_Tg_pvc": {
+   "application": "choupoProps",
+   "ops": [
+    "estimateComponent"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/fit/cp01_polynomial_recovery": {
+   "application": "choupoProps",
+   "ops": [
+    "heatCapacityFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/fit/psat01_antoine_recovery": {
+   "application": "choupoProps",
+   "ops": [
+    "vaporPressureFit"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/gibbs/nh3_equilibrium_map": {
+   "application": "choupoProps",
+   "ops": [
+    "gibbsMap"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/heat/htbench01_correlations": {
+   "application": "choupoProps",
+   "ops": [
+    "heatTransferBench"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/heat/psychro01_n2_water": {
+   "application": "choupoProps",
+   "ops": [
+    "psychrometricChart"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/kinetics/rate01_arrhenius_recovery": {
+   "application": "choupoProps",
+   "ops": [
+    "kinetics1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/cosmoSAC01_water_ethanol": {
+   "application": "choupoProps",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "cosmoSAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/eval_nrtl_catalogue": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/eval_nrtl_pinned": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/nrtl01_ethanol_water_package": {
+   "application": "choupoProps",
+   "ops": [
+    "activityCoefficients"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/pcsaft01_pure_nhexane": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/pcsaft02_states_crosscheck": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/pcsaft03_association_pure": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/scan/binary01_lle_water_nbutanol": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanBinary"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIQUAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/scan/phase01_water_full": {
+   "application": "choupoProps",
+   "ops": [
+    "purePhaseDiagram"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/scan/scan2d01_co2_compressibility": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan2D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/scan/ternary01_audit_vlle": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanTernary"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanTernary"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/scan/ternary03_lle_water_ethanol_benzene": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScanTernary"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/props/steam/steam01_if97_verification": {
+   "application": "choupoProps",
+   "ops": [
+    "steamTables"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/steam/steam02_water_transport": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermoTest/atoms01_formula_parser": {
+   "application": "choupoProps",
+   "ops": [
+    "elementalComposition"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermoTest/h_surface_identity": {
+   "application": "choupoProps",
+   "ops": [
+    "hConsistency"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermoTest/model4_speciation_scaling": {
+   "application": "choupoProps",
+   "ops": [
+    "scalingScan",
+    "speciate"
+   ],
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/absorber01_NH3_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "absorber"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/absorption01_CO2_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/extract01_ethanol_water_benzene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "extractor"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/extraction01_waterButanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/stripper01_NH3_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "stripper"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser01_sugar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser02_msmpr": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "unitModels": [
+    "MSMPR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser03_pbe_size_independent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "unitModels": [
+    "FVM"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser04_size_dependent_growth": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "unitModels": [
+    "FVM"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser05_nacl_pitzer": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "electrolyteCrystalliser",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser06_nacl_antisolvent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser07_nacl_antisolvent_cooled": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "unitModels": [
+    "MSMPR"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser",
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser10_naoh_antisolvent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/crystallisation/overlay02_nacl_calorimetric": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column01_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column02_simultaneous": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column03_azeotrope_mesh": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column04_multifeed_sidedraw": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column05_reactive_methylacetate": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column06_fullMESH": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column07_naphtaliSandholm": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column08_radfrac_multidraw": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "fullMESH"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column09_tray_hydraulics": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column10_flooding": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column11_murphree": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column12_stage_is_a_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "adiabaticFlash",
+    "distillationColumn",
+    "mixer"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column13_sour_water_stage_identity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn",
+    "isothermalFlash",
+    "mixer"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "stagedColumn",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/shortcut01_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "shortcutColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/evapDryer01_nacl": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporativeDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/evapDryer02_energy_limited": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporativeDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/solidDryer01_sugar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "solidDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer01_sugar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer02_residence_sweep": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/drying/sprayDryer03_pressure_nozzle": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "unitModels": [
+    "pressureNozzle"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer04_profiles": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "unitModels": [
+    "langrishKockel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer05_whey": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer06_rea": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "unitModels": [
+    "chen"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/drying/sprayDryer07_design": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "sprayDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/economics/economics01_esterification_dcf": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/economics/economics02_irr_sweep": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/evaporation/evaporator01_brine": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator02_triple_effect_sugar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator03_co_current": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator04_orange_juice_simple": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator05_counter_current": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator06_nacl_pitzer": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator07_nacl_enrtl": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/adiabaticFlash01_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "adiabaticFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/analysis01_water_analysis_inlet": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/analysis02_weighted_least_squares": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "aqueousAnalysisInlet",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/bubbleT01_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "bubbleT"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "bubbleT"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIQUAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/dewT01_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "dewT"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash01_benzene_toluene": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "rachfordRice"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash02_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash03_wilson_ethanol_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "Wilson"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash04_molarFlows_input": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash05_ternary_massFlows": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash06_sweep_T": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/flash07_gridsweep_TP": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/flash08_co2_water_package": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash09_n2ch4_stryjek": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "witnessClass": "molecularFlash",
+   "roles": [
+    "witness",
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash09_nh3_water_reactive": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash10_acetic_water_reactive": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash10_ch4propane_pcsaft": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash11_acetic_T_sweep": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "NRTL",
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash14_calcite_carbonate_basis": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash15_refused_salt_basis_rank": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/flash16_calcite_precipitation": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash17_two_liquids_reactive": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "UNIFAC",
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash18_water_analysis_basis": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash19_organic_and_precipitate": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "UNIFAC",
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "reactiveMultiphaseFlash",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash20_ethanol_water_pcsaft": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash21_freeze_concentration": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/flash_polymer_devolatilisation": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/flash_pseudoComponent_petCut": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/flash/leaf01_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/marcilla01_lls_tie_triangle": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "UNIFAC",
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/marcilla02_lls_ternary_invariant": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "UNIQUAC",
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/vlle01_waterButanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIQUAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flash/vlle03_audit_artificial": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "unitModels": [
+    "gibbsMinimisation"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/ammonia01_synthesis_loop": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/ammonia02_full_plant": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "diluteSolution",
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/cavett01_recycle_train": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "phiPhi",
+    "equilibrium": true
+   },
+   "witnessClass": "recycleFlowsheet",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/composite01_two_flashes": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/credo01_valve_heater_drum": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater",
+    "isothermalFlash",
+    "valve"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/plant01_two_sectors": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/plant02_basename_twins": {
+   "application": "choupoSolve",
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process01_reactor_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process02_reactor_hx_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process02_with_design": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "designEconomics",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process03_recycle": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process04_research_workflow": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/process05_isomerization_recycle": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "distillationColumn",
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/proxy01_gas_loop": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "gibbsReactor",
+    "heatExchanger",
+    "isothermalFlash",
+    "mixer",
+    "splitter",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/recycle_autoinit_tear": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "isothermalFlash",
+    "mixer",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/bagFilter01_dust": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "bagFilter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/cyclone01_dust_removal": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "Lapple"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/cyclone02_leith_licht": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "LeithLicht"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/cyclone03_iozia_leith": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "IoziaLeith"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/cyclone04_high_loading": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "Muschelknautz"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "IoziaLeith"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/gasSolidSplitter01_ideal": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gasSolidSplitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gasSolidSplitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs01_water_gas_shift": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs02_steam_reforming": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs03_methane_combustion": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/gibbs/gibbs05_adiabatic_flame": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "gibbsReactor",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs06_h2_flame_radicals": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs06_thermal_nox": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs07_wgs_cooled": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "unitModels": [
+    "elementPotential"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "unitModels": [
+    "reactiveFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "unitModels": [
+    "directMin"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gibbs/gibbs10_ammonia_fugacity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/condenser01_film_nusselt": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "condenser"
+   ],
+   "unitModels": [
+    "NusseltFilm",
+    "geometry"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/heatExchanger01_water_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/heatExchanger02_geometry_U": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "unitModels": [
+    "geometry"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/heatlink01_condenser_to_heater": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn",
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "heatWithPhaseChange",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/heatlink02_condenser_feed_preheat": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn",
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/hx01_heater": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/hxWorkflow1_design_from_duty": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "unitModels": [
+    "design"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/hxWorkflow2_rate_designed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "unitModels": [
+    "geometry"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/mheatx01_two_hot_one_cold": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "multiStreamHX"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/phasechange01_partial_condenser": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "condenser"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/pinch01_four_stream_classic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/heat/reboiler_water_copper": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "boiler"
+   ],
+   "unitModels": [
+    "Rohsenow",
+    "geometry"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe01_water_line": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "unitModels": [
+    "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/hydraulics/pipe02_airwater_twophase": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe"
+   ],
+   "unitModels": [
+    "Churchill",
+    "LockhartMartinelli"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane01_RO_NaCl_seawater": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane02_NF_sugar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane03_concentration_polarization": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/membranes/membrane04_spacer_schock_miquel": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane05_train": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "SchockMiquel"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane06_pitzer": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "unitModels": [
+    "Pitzer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "membrane",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane07_scaling_si": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane08_softened_scaling": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "ionExchanger",
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane09_index_vs_rigorous": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane10_dspmde_divalent": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/membranes/membrane11_dspmde_born_toggle": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/designSpec01_triple_equal_areas": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/fitNRTL01_ethanol_water": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim01_column_reflux": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim02_process_cost": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim04_membrane_recovery_scaling": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "spiralWoundModule"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "davies",
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim05_reactor_npv": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "heater",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/optim06_integer_stages": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/pareto01_purity_energy": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/optimisation/sensitivity01_column_reflux": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/optimisation/sensitivity02_feasibility_map": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/power/brayton01_gas_turbine": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor",
+    "heater",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/power/combined01_brayton_rankine": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "gibbsReactor",
+    "heatExchanger",
+    "heater",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/power/combined02_brayton_rankine_shaft": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor",
+    "electricLoad",
+    "gibbsReactor",
+    "heatExchanger",
+    "heater",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/power/rankine01_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "electricLoad",
+    "heater",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/power/rankine02_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "boiler",
+    "condenser",
+    "pump",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/chlorophenol01_chlorination": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/conversion01_hda": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/conversion02_parallel_selectivity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr01_first_order": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr02_reversible_wgs": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr03_series_selectivity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr04_adiabatic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "witnessClass": "kineticReactor",
+   "roles": [
+    "witness"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr05_multiplicity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr06_jacketed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/cstr07_lhhw_methylAcetate": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIQUAC"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/equil01_reforming": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "equilibriumReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr01_first_order": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr02_reversible_wgs": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr03_series_selectivity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr04_adiabatic": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/reactors/pfr_polyesterification": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pfr"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/compressor01_air": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/compressor02_designspec_pout": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/compressorTurbine01_turbo_booster": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "compressor",
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/pump01_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/pump02_pressure_spec": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/rotating/turbine01_air": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "turbine"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/separation/psa01_h2_psa": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "psa"
+   ],
+   "unitModels": [
+    "langmuir"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/separation/tsa01_co2_twin_bed": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "tsaTwinBed"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/separation/tsa02_refused_capacity": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "tsaTwinBed"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/solids/pneumaticConveyor01_sand": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pneumaticConveyor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/pneumaticConveyor02_bends": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pneumaticConveyor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/air01_heater_expand": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/basis01_two_unit_chain": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heater",
+    "isothermalFlash",
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/perUnitThermo01_srk_nrtl": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash",
+    "turbine"
+   ],
+   "unitModels": [
+    "NRTL"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermoTest/model1_lumped_evaporator": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermoTest/model2_pitzer_evaporator": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermoTest/model3_enrtl_antisolvent_crystalliser": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "crystalliser"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "eNRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermoTest/model5_nrtl_flash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/userops/userOp01_yield_reactor": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "yieldReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/userops/userOp02_component_splitter": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "componentSplitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/utilities/utility01_dowtherm_preheat": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  },
+  "tutorials/steady/utilities/utility02_hitec_csp_heater": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/utilities/utility03_glycol_brine_chiller": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ],
+    "equilibrium": true
+   },
+   "roles": [],
+   "hasGolden": false
+  }
+ },
+ "indices": {
+  "byApplication": {
+   "choupoBatch": [
+    "tutorials/batch/adsorber/batch09_adsorber_co2",
+    "tutorials/batch/adsorber/batch10_adsorber_co2_n2",
+    "tutorials/batch/adsorber/batch11_adsorber_henry",
+    "tutorials/batch/adsorber/batch12_adsorber_refused_P",
+    "tutorials/batch/adsorber/batch13_breakthrough_co2",
+    "tutorials/batch/adsorber/batch14_transport_only",
+    "tutorials/batch/adsorber/batch15_mesh_study",
+    "tutorials/batch/adsorber/batch16_ergun_profile",
+    "tutorials/batch/adsorber/batch17_dilute_ergun_limit",
+    "tutorials/batch/adsorber/batch18_ergun_conservation",
+    "tutorials/batch/adsorber/batch19_feed_switch_purge",
+    "tutorials/batch/adsorber/batch20_thermal_breakthrough",
+    "tutorials/batch/adsorber/batch21_tsa_hot_purge",
+    "tutorials/batch/adsorber/batch22_wall_cooled",
+    "tutorials/batch/adsorber/batch23_tsa_cycles",
+    "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch25_blowdown_thermal",
+    "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/nox01_zeldovich_postflame",
+    "tutorials/batch/crystallisation/batch13_nacl_pitzer",
+    "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
+    "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch02_adiabatic",
+    "tutorials/batch/reactor/batch03_consecutive",
+    "tutorials/batch/reactor/batch04_reversible_wgs",
+    "tutorials/batch/reactor/batch04_transient_dirs",
+    "tutorials/batch/reactor/batch05_crystalliser",
+    "tutorials/batch/reactor/batch06_adaptive_runaway",
+    "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
+    "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/recipes/recipe01_react_then_distill",
+    "tutorials/batch/recipes/recipe02_setpoint_ramp",
+    "tutorials/batch/recipes/recipe03_conditional_partial",
+    "tutorials/batch/recipes/recipe04_charge_enthalpy",
+    "tutorials/batch/still/still01_benzene_toluene",
+    "tutorials/batch/still/still02_ethanol_water_azeo",
+    "tutorials/batch/still/still03_with_receiver",
+    "tutorials/batch/still/still04_rectifier_benzene_toluene",
+    "tutorials/batch/still/still05_rectifier_constant_xD",
+    "tutorials/batch/still/still06_ledger_mixed_validity"
+   ],
+   "choupoCtrl": [
+    "tutorials/ctrl/ctrl01_cstr_temp_control",
+    "tutorials/ctrl/ctrl02_disturbance_rejection",
+    "tutorials/ctrl/ctrl03_adaptive_disturbance",
+    "tutorials/ctrl/ctrl03_startup_transient",
+    "tutorials/ctrl/ctrl05_disturbance_transient",
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl07_lhhw_inhibition",
+    "tutorials/ctrl/ctrl08_prbs_ident",
+    "tutorials/ctrl/ctrl09_stream_disturbance",
+    "tutorials/ctrl/ctrl10_brine_concentration",
+    "tutorials/ctrl/ctrl11_esterification_jacket",
+    "tutorials/ctrl/ctrl12_williams_otto",
+    "tutorials/ctrl/ctrl13_williams_otto_step",
+    "tutorials/ctrl/ctrl14_williams_otto_pi",
+    "tutorials/ctrl/ctrl16_williams_otto_optimal"
+   ],
+   "choupoProps": [
+    "tutorials/plant/polycaprolactonePlant/properties",
+    "tutorials/props/adsorption/isotherm01_eval_13x_co2",
+    "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/compare_activity_etoh_water",
+    "tutorials/props/compare/compare_eos_co2",
+    "tutorials/props/compare/compare_kinetics_order",
+    "tutorials/props/compare/compare_psat_ambrose_walton",
+    "tutorials/props/compare/compare_transport_water",
+    "tutorials/props/compare/compare_visc_liquid_ammonia",
+    "tutorials/props/compare/compare_visc_liquid_water",
+    "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/composition01_nacl",
+    "tutorials/props/electrolyte/davies01_band_edge",
+    "tutorials/props/electrolyte/edwards01_sour_water_activity",
+    "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
+    "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
+    "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/farelo_licl_range",
+    "tutorials/props/electrolyte/farelo_nacl_nh4cl",
+    "tutorials/props/electrolyte/fpd01_nacl_freezing",
+    "tutorials/props/electrolyte/ksp_temperature",
+    "tutorials/props/electrolyte/overlay01_nacl_ksp",
+    "tutorials/props/electrolyte/pb82_calcite_open_co2",
+    "tutorials/props/electrolyte/pitzer01_nacl",
+    "tutorials/props/electrolyte/pitzer02_cacl2",
+    "tutorials/props/electrolyte/pitzer02_nacl_package",
+    "tutorials/props/electrolyte/pitzer_calcite_brine",
+    "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
+    "tutorials/props/electrolyte/pitzer_nacl_sp77_hot",
+    "tutorials/props/electrolyte/pitzer_seawater_verify",
+    "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
+    "tutorials/props/electrolyte/precipitation_ro_brackish",
+    "tutorials/props/electrolyte/rainwater_air",
+    "tutorials/props/electrolyte/scaling_ro_brackish",
+    "tutorials/props/electrolyte/softener_brackish",
+    "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/props/estimate/estimate_acetone",
+    "tutorials/props/estimate/estimate_ethanol_benzene",
+    "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/userEstimate01_linear_tb",
+    "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
+    "tutorials/props/estimate/yang2020_Tg_polystyrene",
+    "tutorials/props/estimate/yang2020_Tg_pvc",
+    "tutorials/props/fit/cp01_polynomial_recovery",
+    "tutorials/props/fit/psat01_antoine_recovery",
+    "tutorials/props/gibbs/nh3_equilibrium_map",
+    "tutorials/props/heat/htbench01_correlations",
+    "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/eval_nrtl_catalogue",
+    "tutorials/props/molecular/eval_nrtl_pinned",
+    "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    "tutorials/props/molecular/pcsaft01_pure_nhexane",
+    "tutorials/props/molecular/pcsaft02_states_crosscheck",
+    "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/phase01_water_full",
+    "tutorials/props/scan/scan2d01_co2_compressibility",
+    "tutorials/props/scan/ternary01_audit_vlle",
+    "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
+    "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
+    "tutorials/props/steam/steam01_if97_verification",
+    "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermoTest/atoms01_formula_parser",
+    "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/steady/optimisation/fitNRTL01_ethanol_water"
+   ],
+   "choupoSolve": [
+    "tutorials/electrochem/ed01_nacl_desalination",
+    "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/esterification2sector",
+    "tutorials/plant/hda",
+    "tutorials/plant/lithiumBrinePlant",
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/plant/sugarPlantEconomicsSweep",
+    "tutorials/plant/tartaricAcid",
+    "tutorials/plant/twoSectorDemo",
+    "tutorials/plant/twoSectorDemo/SECTOR_R",
+    "tutorials/plant/twoSectorDemo/SECTOR_S",
+    "tutorials/steady/absorption/absorber01_NH3_water",
+    "tutorials/steady/absorption/absorption01_CO2_water",
+    "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/absorption/extraction01_waterButanol",
+    "tutorials/steady/absorption/stripper01_NH3_water",
+    "tutorials/steady/crystallisation/crystalliser01_sugar",
+    "tutorials/steady/crystallisation/crystalliser02_msmpr",
+    "tutorials/steady/crystallisation/crystalliser03_pbe_size_independent",
+    "tutorials/steady/crystallisation/crystalliser04_size_dependent_growth",
+    "tutorials/steady/crystallisation/crystalliser05_nacl_pitzer",
+    "tutorials/steady/crystallisation/crystalliser06_nacl_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser07_nacl_antisolvent_cooled",
+    "tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr",
+    "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
+    "tutorials/steady/crystallisation/crystalliser10_naoh_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol",
+    "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent",
+    "tutorials/steady/crystallisation/overlay02_nacl_calorimetric",
+    "tutorials/steady/distillation/column01_benzene_toluene",
+    "tutorials/steady/distillation/column02_simultaneous",
+    "tutorials/steady/distillation/column03_azeotrope_mesh",
+    "tutorials/steady/distillation/column04_multifeed_sidedraw",
+    "tutorials/steady/distillation/column05_reactive_methylacetate",
+    "tutorials/steady/distillation/column06_fullMESH",
+    "tutorials/steady/distillation/column07_naphtaliSandholm",
+    "tutorials/steady/distillation/column08_radfrac_multidraw",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "tutorials/steady/distillation/column10_flooding",
+    "tutorials/steady/distillation/column11_murphree",
+    "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/distillation/shortcut01_benzene_toluene",
+    "tutorials/steady/drying/evapDryer01_nacl",
+    "tutorials/steady/drying/evapDryer02_energy_limited",
+    "tutorials/steady/drying/solidDryer01_sugar",
+    "tutorials/steady/drying/sprayDryer01_sugar",
+    "tutorials/steady/drying/sprayDryer02_residence_sweep",
+    "tutorials/steady/drying/sprayDryer03_pressure_nozzle",
+    "tutorials/steady/drying/sprayDryer04_profiles",
+    "tutorials/steady/drying/sprayDryer05_whey",
+    "tutorials/steady/drying/sprayDryer06_rea",
+    "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/economics/economics01_esterification_dcf",
+    "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/evaporation/evaporator01_brine",
+    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
+    "tutorials/steady/evaporation/evaporator03_co_current",
+    "tutorials/steady/evaporation/evaporator04_orange_juice_simple",
+    "tutorials/steady/evaporation/evaporator05_counter_current",
+    "tutorials/steady/evaporation/evaporator06_nacl_pitzer",
+    "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
+    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
+    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
+    "tutorials/steady/flash/analysis01_water_analysis_inlet",
+    "tutorials/steady/flash/analysis02_weighted_least_squares",
+    "tutorials/steady/flash/bubbleT01_ethanol_water",
+    "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water",
+    "tutorials/steady/flash/dewT01_ethanol_water",
+    "tutorials/steady/flash/flash01_benzene_toluene",
+    "tutorials/steady/flash/flash02_ethanol_water",
+    "tutorials/steady/flash/flash03_wilson_ethanol_water",
+    "tutorials/steady/flash/flash04_molarFlows_input",
+    "tutorials/steady/flash/flash05_ternary_massFlows",
+    "tutorials/steady/flash/flash06_sweep_T",
+    "tutorials/steady/flash/flash07_gridsweep_TP",
+    "tutorials/steady/flash/flash08_co2_water_package",
+    "tutorials/steady/flash/flash09_n2ch4_stryjek",
+    "tutorials/steady/flash/flash09_nh3_water_reactive",
+    "tutorials/steady/flash/flash10_acetic_water_reactive",
+    "tutorials/steady/flash/flash10_ch4propane_pcsaft",
+    "tutorials/steady/flash/flash11_acetic_T_sweep",
+    "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive",
+    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash",
+    "tutorials/steady/flash/flash14_calcite_carbonate_basis",
+    "tutorials/steady/flash/flash15_refused_salt_basis_rank",
+    "tutorials/steady/flash/flash16_calcite_precipitation",
+    "tutorials/steady/flash/flash17_two_liquids_reactive",
+    "tutorials/steady/flash/flash18_water_analysis_basis",
+    "tutorials/steady/flash/flash19_organic_and_precipitate",
+    "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
+    "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash_polymer_devolatilisation",
+    "tutorials/steady/flash/flash_pseudoComponent_petCut",
+    "tutorials/steady/flash/leaf01_flash",
+    "tutorials/steady/flash/marcilla01_lls_tie_triangle",
+    "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/flash/vlle01_waterButanol",
+    "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/ammonia02_full_plant",
+    "tutorials/steady/flowsheets/cavett01_recycle_train",
+    "tutorials/steady/flowsheets/composite01_two_flashes",
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/plant01_two_sectors",
+    "tutorials/steady/flowsheets/plant02_basename_twins",
+    "tutorials/steady/flowsheets/process01_reactor_flash",
+    "tutorials/steady/flowsheets/process02_reactor_hx_flash",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/process04_research_workflow",
+    "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/gas-solid/bagFilter01_dust",
+    "tutorials/steady/gas-solid/cyclone01_dust_removal",
+    "tutorials/steady/gas-solid/cyclone02_leith_licht",
+    "tutorials/steady/gas-solid/cyclone03_iozia_leith",
+    "tutorials/steady/gas-solid/cyclone04_high_loading",
+    "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation",
+    "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
+    "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
+    "tutorials/steady/gibbs/gibbs01_water_gas_shift",
+    "tutorials/steady/gibbs/gibbs02_steam_reforming",
+    "tutorials/steady/gibbs/gibbs03_methane_combustion",
+    "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep",
+    "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
+    "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
+    "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs07_wgs_cooled",
+    "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
+    "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/heat/condenser01_film_nusselt",
+    "tutorials/steady/heat/heatExchanger01_water_water",
+    "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/heatlink01_condenser_to_heater",
+    "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/heat/hx01_heater",
+    "tutorials/steady/heat/hxWorkflow1_design_from_duty",
+    "tutorials/steady/heat/hxWorkflow2_rate_designed",
+    "tutorials/steady/heat/mheatx01_two_hot_one_cold",
+    "tutorials/steady/heat/phasechange01_partial_condenser",
+    "tutorials/steady/heat/pinch01_four_stream_classic",
+    "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/hydraulics/pipe01_water_line",
+    "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
+    "tutorials/steady/membranes/membrane02_NF_sugar",
+    "tutorials/steady/membranes/membrane03_concentration_polarization",
+    "tutorials/steady/membranes/membrane04_spacer_schock_miquel",
+    "tutorials/steady/membranes/membrane05_train",
+    "tutorials/steady/membranes/membrane06_pitzer",
+    "tutorials/steady/membranes/membrane07_scaling_si",
+    "tutorials/steady/membranes/membrane08_softened_scaling",
+    "tutorials/steady/membranes/membrane09_index_vs_rigorous",
+    "tutorials/steady/membranes/membrane10_dspmde_divalent",
+    "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
+    "tutorials/steady/optimisation/optim01_column_reflux",
+    "tutorials/steady/optimisation/optim02_process_cost",
+    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/optimisation/optim06_integer_stages",
+    "tutorials/steady/optimisation/pareto01_purity_energy",
+    "tutorials/steady/optimisation/sensitivity01_column_reflux",
+    "tutorials/steady/optimisation/sensitivity02_feasibility_map",
+    "tutorials/steady/power/brayton01_gas_turbine",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/power/rankine01_water",
+    "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/chlorophenol01_chlorination",
+    "tutorials/steady/reactors/conversion01_hda",
+    "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cstr01_first_order",
+    "tutorials/steady/reactors/cstr02_reversible_wgs",
+    "tutorials/steady/reactors/cstr03_series_selectivity",
+    "tutorials/steady/reactors/cstr04_adiabatic",
+    "tutorials/steady/reactors/cstr05_multiplicity",
+    "tutorials/steady/reactors/cstr06_jacketed",
+    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
+    "tutorials/steady/reactors/equil01_reforming",
+    "tutorials/steady/reactors/pfr01_first_order",
+    "tutorials/steady/reactors/pfr02_reversible_wgs",
+    "tutorials/steady/reactors/pfr03_series_selectivity",
+    "tutorials/steady/reactors/pfr04_adiabatic",
+    "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/rotating/compressor01_air",
+    "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
+    "tutorials/steady/rotating/pump01_water",
+    "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/separation/psa01_h2_psa",
+    "tutorials/steady/separation/tsa01_co2_twin_bed",
+    "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/pneumaticConveyor01_sand",
+    "tutorials/steady/solids/pneumaticConveyor02_bends",
+    "tutorials/steady/thermo/air01_heater_expand",
+    "tutorials/steady/thermo/basis01_two_unit_chain",
+    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
+    "tutorials/steady/thermoTest/model1_lumped_evaporator",
+    "tutorials/steady/thermoTest/model2_pitzer_evaporator",
+    "tutorials/steady/thermoTest/model3_enrtl_antisolvent_crystalliser",
+    "tutorials/steady/thermoTest/model5_nrtl_flash",
+    "tutorials/steady/userops/userOp01_yield_reactor",
+    "tutorials/steady/userops/userOp02_component_splitter",
+    "tutorials/steady/utilities/utility01_dowtherm_preheat",
+    "tutorials/steady/utilities/utility02_hitec_csp_heater",
+    "tutorials/steady/utilities/utility03_glycol_brine_chiller"
+   ]
+  },
+  "byUnitType": {
+   "PID": [
+    "tutorials/ctrl/ctrl01_cstr_temp_control",
+    "tutorials/ctrl/ctrl02_disturbance_rejection",
+    "tutorials/ctrl/ctrl03_adaptive_disturbance",
+    "tutorials/ctrl/ctrl05_disturbance_transient",
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl07_lhhw_inhibition",
+    "tutorials/ctrl/ctrl08_prbs_ident",
+    "tutorials/ctrl/ctrl09_stream_disturbance",
+    "tutorials/ctrl/ctrl10_brine_concentration",
+    "tutorials/ctrl/ctrl11_esterification_jacket",
+    "tutorials/ctrl/ctrl14_williams_otto_pi"
+   ],
+   "Schedule": [
+    "tutorials/ctrl/ctrl02_disturbance_rejection",
+    "tutorials/ctrl/ctrl03_adaptive_disturbance",
+    "tutorials/ctrl/ctrl05_disturbance_transient",
+    "tutorials/ctrl/ctrl13_williams_otto_step",
+    "tutorials/ctrl/ctrl16_williams_otto_optimal"
+   ],
+   "Signal": [
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl08_prbs_ident",
+    "tutorials/ctrl/ctrl09_stream_disturbance"
+   ],
+   "absorber": [
+    "tutorials/steady/absorption/absorber01_NH3_water"
+   ],
+   "adiabaticFlash": [
+    "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/flash/adiabaticFlash01_benzene_toluene"
+   ],
+   "bagFilter": [
+    "tutorials/steady/gas-solid/bagFilter01_dust"
+   ],
+   "batchAccumulator": [
+    "tutorials/batch/recipes/recipe01_react_then_distill",
+    "tutorials/batch/recipes/recipe04_charge_enthalpy",
+    "tutorials/batch/still/still03_with_receiver",
+    "tutorials/batch/still/still04_rectifier_benzene_toluene",
+    "tutorials/batch/still/still05_rectifier_constant_xD",
+    "tutorials/batch/still/still06_ledger_mixed_validity"
+   ],
+   "batchAdsorber": [
+    "tutorials/batch/adsorber/batch09_adsorber_co2",
+    "tutorials/batch/adsorber/batch10_adsorber_co2_n2",
+    "tutorials/batch/adsorber/batch11_adsorber_henry",
+    "tutorials/batch/adsorber/batch12_adsorber_refused_P"
+   ],
+   "batchCrystalliser": [
+    "tutorials/batch/crystallisation/batch13_nacl_pitzer",
+    "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
+    "tutorials/batch/reactor/batch05_crystalliser"
+   ],
+   "batchReactor": [
+    "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/nox01_zeldovich_postflame",
+    "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch02_adiabatic",
+    "tutorials/batch/reactor/batch03_consecutive",
+    "tutorials/batch/reactor/batch04_reversible_wgs",
+    "tutorials/batch/reactor/batch04_transient_dirs",
+    "tutorials/batch/reactor/batch06_adaptive_runaway",
+    "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
+    "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/recipes/recipe01_react_then_distill",
+    "tutorials/batch/recipes/recipe02_setpoint_ramp",
+    "tutorials/batch/recipes/recipe03_conditional_partial"
+   ],
+   "batchStill": [
+    "tutorials/batch/recipes/recipe01_react_then_distill",
+    "tutorials/batch/recipes/recipe03_conditional_partial",
+    "tutorials/batch/still/still01_benzene_toluene",
+    "tutorials/batch/still/still02_ethanol_water_azeo",
+    "tutorials/batch/still/still03_with_receiver",
+    "tutorials/batch/still/still04_rectifier_benzene_toluene",
+    "tutorials/batch/still/still05_rectifier_constant_xD",
+    "tutorials/batch/still/still06_ledger_mixed_validity"
+   ],
+   "boiler": [
+    "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/power/rankine02_water"
+   ],
+   "bubbleT": [
+    "tutorials/steady/flash/bubbleT01_ethanol_water",
+    "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water"
+   ],
+   "componentSplitter": [
+    "tutorials/steady/userops/userOp02_component_splitter"
+   ],
+   "compressor": [
+    "tutorials/steady/power/brayton01_gas_turbine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/rotating/compressor01_air",
+    "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressorTurbine01_turbo_booster"
+   ],
+   "condenser": [
+    "tutorials/steady/heat/condenser01_film_nusselt",
+    "tutorials/steady/heat/phasechange01_partial_condenser",
+    "tutorials/steady/power/rankine02_water"
+   ],
+   "conversionReactor": [
+    "tutorials/steady/reactors/chlorophenol01_chlorination",
+    "tutorials/steady/reactors/conversion01_hda",
+    "tutorials/steady/reactors/conversion02_parallel_selectivity"
+   ],
+   "crystalliser": [
+    "tutorials/steady/crystallisation/crystalliser01_sugar",
+    "tutorials/steady/crystallisation/crystalliser02_msmpr",
+    "tutorials/steady/crystallisation/crystalliser03_pbe_size_independent",
+    "tutorials/steady/crystallisation/crystalliser04_size_dependent_growth",
+    "tutorials/steady/crystallisation/crystalliser05_nacl_pitzer",
+    "tutorials/steady/crystallisation/crystalliser06_nacl_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser07_nacl_antisolvent_cooled",
+    "tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr",
+    "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
+    "tutorials/steady/crystallisation/crystalliser10_naoh_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol",
+    "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent",
+    "tutorials/steady/crystallisation/overlay02_nacl_calorimetric",
+    "tutorials/steady/thermoTest/model3_enrtl_antisolvent_crystalliser"
+   ],
+   "cstr": [
+    "tutorials/steady/economics/economics01_esterification_dcf",
+    "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/flowsheets/process01_reactor_flash",
+    "tutorials/steady/flowsheets/process02_reactor_hx_flash",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/optimisation/optim02_process_cost",
+    "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/reactors/cstr01_first_order",
+    "tutorials/steady/reactors/cstr02_reversible_wgs",
+    "tutorials/steady/reactors/cstr03_series_selectivity",
+    "tutorials/steady/reactors/cstr04_adiabatic",
+    "tutorials/steady/reactors/cstr05_multiplicity",
+    "tutorials/steady/reactors/cstr06_jacketed",
+    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate"
+   ],
+   "cyclone": [
+    "tutorials/steady/gas-solid/cyclone01_dust_removal",
+    "tutorials/steady/gas-solid/cyclone02_leith_licht",
+    "tutorials/steady/gas-solid/cyclone03_iozia_leith",
+    "tutorials/steady/gas-solid/cyclone04_high_loading",
+    "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation"
+   ],
+   "dewT": [
+    "tutorials/steady/flash/dewT01_ethanol_water"
+   ],
+   "distillationColumn": [
+    "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
+    "tutorials/steady/distillation/column01_benzene_toluene",
+    "tutorials/steady/distillation/column02_simultaneous",
+    "tutorials/steady/distillation/column03_azeotrope_mesh",
+    "tutorials/steady/distillation/column04_multifeed_sidedraw",
+    "tutorials/steady/distillation/column05_reactive_methylacetate",
+    "tutorials/steady/distillation/column06_fullMESH",
+    "tutorials/steady/distillation/column07_naphtaliSandholm",
+    "tutorials/steady/distillation/column08_radfrac_multidraw",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "tutorials/steady/distillation/column10_flooding",
+    "tutorials/steady/distillation/column11_murphree",
+    "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/heat/heatlink01_condenser_to_heater",
+    "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/optimisation/optim01_column_reflux",
+    "tutorials/steady/optimisation/optim06_integer_stages",
+    "tutorials/steady/optimisation/pareto01_purity_energy",
+    "tutorials/steady/optimisation/sensitivity01_column_reflux",
+    "tutorials/steady/optimisation/sensitivity02_feasibility_map"
+   ],
+   "dynamicCSTR": [
+    "tutorials/ctrl/ctrl01_cstr_temp_control",
+    "tutorials/ctrl/ctrl02_disturbance_rejection",
+    "tutorials/ctrl/ctrl03_adaptive_disturbance",
+    "tutorials/ctrl/ctrl03_startup_transient",
+    "tutorials/ctrl/ctrl05_disturbance_transient",
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl07_lhhw_inhibition",
+    "tutorials/ctrl/ctrl08_prbs_ident",
+    "tutorials/ctrl/ctrl09_stream_disturbance",
+    "tutorials/ctrl/ctrl10_brine_concentration",
+    "tutorials/ctrl/ctrl11_esterification_jacket"
+   ],
+   "electricLoad": [
+    "tutorials/electrochem/ed01_nacl_desalination",
+    "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/power/rankine01_water"
+   ],
+   "electrodialysisStack": [
+    "tutorials/electrochem/ed01_nacl_desalination",
+    "tutorials/electrochem/ed02_over_limiting_current"
+   ],
+   "equilibriumReactor": [
+    "tutorials/steady/reactors/equil01_reforming"
+   ],
+   "evaporativeDryer": [
+    "tutorials/steady/drying/evapDryer01_nacl",
+    "tutorials/steady/drying/evapDryer02_energy_limited"
+   ],
+   "evaporator": [
+    "tutorials/steady/evaporation/evaporator01_brine",
+    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
+    "tutorials/steady/evaporation/evaporator03_co_current",
+    "tutorials/steady/evaporation/evaporator04_orange_juice_simple",
+    "tutorials/steady/evaporation/evaporator05_counter_current",
+    "tutorials/steady/evaporation/evaporator06_nacl_pitzer",
+    "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
+    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
+    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
+    "tutorials/steady/thermoTest/model1_lumped_evaporator",
+    "tutorials/steady/thermoTest/model2_pitzer_evaporator"
+   ],
+   "extractor": [
+    "tutorials/steady/absorption/extract01_ethanol_water_benzene"
+   ],
+   "fixedBedAdsorber": [
+    "tutorials/batch/adsorber/batch13_breakthrough_co2",
+    "tutorials/batch/adsorber/batch14_transport_only",
+    "tutorials/batch/adsorber/batch15_mesh_study",
+    "tutorials/batch/adsorber/batch16_ergun_profile",
+    "tutorials/batch/adsorber/batch17_dilute_ergun_limit",
+    "tutorials/batch/adsorber/batch18_ergun_conservation",
+    "tutorials/batch/adsorber/batch19_feed_switch_purge",
+    "tutorials/batch/adsorber/batch20_thermal_breakthrough",
+    "tutorials/batch/adsorber/batch21_tsa_hot_purge",
+    "tutorials/batch/adsorber/batch22_wall_cooled",
+    "tutorials/batch/adsorber/batch23_tsa_cycles",
+    "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch25_blowdown_thermal"
+   ],
+   "gasSolidSplitter": [
+    "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
+    "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler"
+   ],
+   "gibbsReactor": [
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/gibbs/gibbs01_water_gas_shift",
+    "tutorials/steady/gibbs/gibbs02_steam_reforming",
+    "tutorials/steady/gibbs/gibbs03_methane_combustion",
+    "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep",
+    "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
+    "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
+    "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs07_wgs_cooled",
+    "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
+    "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft"
+   ],
+   "heatExchanger": [
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/heat/heatExchanger01_water_water",
+    "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/hxWorkflow1_design_from_duty",
+    "tutorials/steady/heat/hxWorkflow2_rate_designed",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/utilities/utility01_dowtherm_preheat",
+    "tutorials/steady/utilities/utility02_hitec_csp_heater",
+    "tutorials/steady/utilities/utility03_glycol_brine_chiller"
+   ],
+   "heater": [
+    "tutorials/steady/economics/economics01_esterification_dcf",
+    "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/flash/flash_pseudoComponent_petCut",
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/process02_reactor_hx_flash",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/heat/heatlink01_condenser_to_heater",
+    "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/heat/hx01_heater",
+    "tutorials/steady/heat/pinch01_four_stream_classic",
+    "tutorials/steady/optimisation/optim02_process_cost",
+    "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/power/brayton01_gas_turbine",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/power/rankine01_water",
+    "tutorials/steady/thermo/air01_heater_expand",
+    "tutorials/steady/thermo/basis01_two_unit_chain"
+   ],
+   "ionExchanger": [
+    "tutorials/steady/membranes/membrane08_softened_scaling"
+   ],
+   "isothermalFlash": [
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/absorption/absorption01_CO2_water",
+    "tutorials/steady/absorption/extraction01_waterButanol",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/economics/economics01_esterification_dcf",
+    "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/flash/analysis01_water_analysis_inlet",
+    "tutorials/steady/flash/analysis02_weighted_least_squares",
+    "tutorials/steady/flash/flash01_benzene_toluene",
+    "tutorials/steady/flash/flash02_ethanol_water",
+    "tutorials/steady/flash/flash03_wilson_ethanol_water",
+    "tutorials/steady/flash/flash04_molarFlows_input",
+    "tutorials/steady/flash/flash05_ternary_massFlows",
+    "tutorials/steady/flash/flash06_sweep_T",
+    "tutorials/steady/flash/flash07_gridsweep_TP",
+    "tutorials/steady/flash/flash08_co2_water_package",
+    "tutorials/steady/flash/flash09_n2ch4_stryjek",
+    "tutorials/steady/flash/flash09_nh3_water_reactive",
+    "tutorials/steady/flash/flash10_acetic_water_reactive",
+    "tutorials/steady/flash/flash10_ch4propane_pcsaft",
+    "tutorials/steady/flash/flash11_acetic_T_sweep",
+    "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive",
+    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash",
+    "tutorials/steady/flash/flash14_calcite_carbonate_basis",
+    "tutorials/steady/flash/flash15_refused_salt_basis_rank",
+    "tutorials/steady/flash/flash16_calcite_precipitation",
+    "tutorials/steady/flash/flash17_two_liquids_reactive",
+    "tutorials/steady/flash/flash18_water_analysis_basis",
+    "tutorials/steady/flash/flash19_organic_and_precipitate",
+    "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
+    "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/flash_polymer_devolatilisation",
+    "tutorials/steady/flash/flash_pseudoComponent_petCut",
+    "tutorials/steady/flash/leaf01_flash",
+    "tutorials/steady/flash/marcilla01_lls_tie_triangle",
+    "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/flash/vlle01_waterButanol",
+    "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/cavett01_recycle_train",
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/process01_reactor_flash",
+    "tutorials/steady/flowsheets/process02_reactor_hx_flash",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/process04_research_workflow",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/optimisation/optim02_process_cost",
+    "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/reactors/chlorophenol01_chlorination",
+    "tutorials/steady/thermo/basis01_two_unit_chain",
+    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
+    "tutorials/steady/thermoTest/model5_nrtl_flash"
+   ],
+   "mixer": [
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/cavett01_recycle_train",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear"
+   ],
+   "multiStreamHX": [
+    "tutorials/steady/heat/mheatx01_two_hot_one_cold"
+   ],
+   "pfr": [
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/reactors/pfr01_first_order",
+    "tutorials/steady/reactors/pfr02_reversible_wgs",
+    "tutorials/steady/reactors/pfr03_series_selectivity",
+    "tutorials/steady/reactors/pfr04_adiabatic",
+    "tutorials/steady/reactors/pfr_polyesterification"
+   ],
+   "pipe": [
+    "tutorials/steady/hydraulics/pipe01_water_line",
+    "tutorials/steady/hydraulics/pipe02_airwater_twophase"
+   ],
+   "pneumaticConveyor": [
+    "tutorials/steady/solids/pneumaticConveyor01_sand",
+    "tutorials/steady/solids/pneumaticConveyor02_bends"
+   ],
+   "prbs": [
+    "tutorials/ctrl/ctrl08_prbs_ident"
+   ],
+   "psa": [
+    "tutorials/steady/separation/psa01_h2_psa"
+   ],
+   "pump": [
+    "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/rotating/pump01_water",
+    "tutorials/steady/rotating/pump02_pressure_spec"
+   ],
+   "shortcutColumn": [
+    "tutorials/steady/distillation/shortcut01_benzene_toluene"
+   ],
+   "sinusoidal": [
+    "tutorials/ctrl/ctrl06_sine_disturbance"
+   ],
+   "solidDryer": [
+    "tutorials/steady/drying/solidDryer01_sugar"
+   ],
+   "spiralWoundModule": [
+    "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
+    "tutorials/steady/membranes/membrane02_NF_sugar",
+    "tutorials/steady/membranes/membrane03_concentration_polarization",
+    "tutorials/steady/membranes/membrane04_spacer_schock_miquel",
+    "tutorials/steady/membranes/membrane05_train",
+    "tutorials/steady/membranes/membrane06_pitzer",
+    "tutorials/steady/membranes/membrane07_scaling_si",
+    "tutorials/steady/membranes/membrane08_softened_scaling",
+    "tutorials/steady/membranes/membrane09_index_vs_rigorous",
+    "tutorials/steady/membranes/membrane10_dspmde_divalent",
+    "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling"
+   ],
+   "splitter": [
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/thermo/basis01_two_unit_chain"
+   ],
+   "sprayDryer": [
+    "tutorials/steady/drying/sprayDryer01_sugar",
+    "tutorials/steady/drying/sprayDryer02_residence_sweep",
+    "tutorials/steady/drying/sprayDryer03_pressure_nozzle",
+    "tutorials/steady/drying/sprayDryer04_profiles",
+    "tutorials/steady/drying/sprayDryer05_whey",
+    "tutorials/steady/drying/sprayDryer06_rea",
+    "tutorials/steady/drying/sprayDryer07_design"
+   ],
+   "step": [
+    "tutorials/ctrl/ctrl09_stream_disturbance"
+   ],
+   "stripper": [
+    "tutorials/steady/absorption/stripper01_NH3_water"
+   ],
+   "tsaTwinBed": [
+    "tutorials/steady/separation/tsa01_co2_twin_bed",
+    "tutorials/steady/separation/tsa02_refused_capacity"
+   ],
+   "turbine": [
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/power/brayton01_gas_turbine",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/power/rankine01_water",
+    "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
+    "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl"
+   ],
+   "valve": [
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum"
+   ],
+   "williamsOttoPlant": [
+    "tutorials/ctrl/ctrl12_williams_otto",
+    "tutorials/ctrl/ctrl13_williams_otto_step",
+    "tutorials/ctrl/ctrl14_williams_otto_pi",
+    "tutorials/ctrl/ctrl16_williams_otto_optimal"
+   ],
+   "yieldReactor": [
+    "tutorials/steady/userops/userOp01_yield_reactor"
+   ]
+  },
+  "byModel": {
+   "NRTL": [
+    "tutorials/batch/still/still02_ethanol_water_azeo",
+    "tutorials/plant/twoSectorDemo",
+    "tutorials/props/molecular/eval_nrtl_catalogue",
+    "tutorials/props/molecular/eval_nrtl_pinned",
+    "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    "tutorials/props/scan/ternary01_audit_vlle",
+    "tutorials/steady/absorption/extraction01_waterButanol",
+    "tutorials/steady/distillation/column03_azeotrope_mesh",
+    "tutorials/steady/flash/bubbleT01_ethanol_water",
+    "tutorials/steady/flash/dewT01_ethanol_water",
+    "tutorials/steady/flash/flash02_ethanol_water",
+    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash",
+    "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
+    "tutorials/steady/flash/flash21_freeze_concentration",
+    "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flowsheets/process04_research_workflow",
+    "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
+    "tutorials/steady/thermoTest/model5_nrtl_flash"
+   ],
+   "Pitzer": [
+    "tutorials/batch/crystallisation/batch13_nacl_pitzer",
+    "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
+    "tutorials/ctrl/ctrl10_brine_concentration",
+    "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/pitzer02_nacl_package",
+    "tutorials/steady/crystallisation/crystalliser05_nacl_pitzer",
+    "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent",
+    "tutorials/steady/crystallisation/overlay02_nacl_calorimetric",
+    "tutorials/steady/evaporation/evaporator06_nacl_pitzer",
+    "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
+    "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/thermoTest/model2_pitzer_evaporator"
+   ],
+   "UNIFAC": [
+    "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
+    "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/distillation/column05_reactive_methylacetate",
+    "tutorials/steady/flash/flash17_two_liquids_reactive",
+    "tutorials/steady/flash/flash19_organic_and_precipitate",
+    "tutorials/steady/flash/marcilla01_lls_tie_triangle"
+   ],
+   "UNIQUAC": [
+    "tutorials/batch/reactor/batch07_lhhw_methylAcetate",
+    "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/steady/flash/bubbleT02_uniquac_ethanol_water",
+    "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/flash/vlle01_waterButanol",
+    "tutorials/steady/reactors/cstr07_lhhw_methylAcetate"
+   ],
+   "Wilson": [
+    "tutorials/steady/flash/flash03_wilson_ethanol_water"
+   ],
+   "cosmoSAC": [
+    "tutorials/props/molecular/cosmoSAC01_water_ethanol"
+   ],
+   "davies": [
+    "tutorials/electrochem/ed01_nacl_desalination",
+    "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/props/electrolyte/davies01_band_edge",
+    "tutorials/props/electrolyte/edwards01_sour_water_activity",
+    "tutorials/props/electrolyte/pitzer_calcite_brine",
+    "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
+    "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/flash/analysis01_water_analysis_inlet",
+    "tutorials/steady/flash/analysis02_weighted_least_squares",
+    "tutorials/steady/flash/flash09_nh3_water_reactive",
+    "tutorials/steady/flash/flash10_acetic_water_reactive",
+    "tutorials/steady/flash/flash11_acetic_T_sweep",
+    "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive",
+    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash",
+    "tutorials/steady/flash/flash14_calcite_carbonate_basis",
+    "tutorials/steady/flash/flash15_refused_salt_basis_rank",
+    "tutorials/steady/flash/flash16_calcite_precipitation",
+    "tutorials/steady/flash/flash17_two_liquids_reactive",
+    "tutorials/steady/flash/flash18_water_analysis_basis",
+    "tutorials/steady/flash/flash19_organic_and_precipitate",
+    "tutorials/steady/flash/marcilla01_lls_tie_triangle",
+    "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
+    "tutorials/steady/membranes/membrane07_scaling_si",
+    "tutorials/steady/membranes/membrane08_softened_scaling",
+    "tutorials/steady/membranes/membrane09_index_vs_rigorous",
+    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/thermo/basis01_two_unit_chain"
+   ],
+   "eNRTL": [
+    "tutorials/steady/crystallisation/crystalliser06_nacl_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser07_nacl_antisolvent_cooled",
+    "tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr",
+    "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
+    "tutorials/steady/crystallisation/crystalliser10_naoh_antisolvent",
+    "tutorials/steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol",
+    "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
+    "tutorials/steady/thermoTest/model3_enrtl_antisolvent_crystalliser"
+   ],
+   "edwardsPitzer": [
+    "tutorials/props/electrolyte/edwards01_sour_water_activity"
+   ],
+   "ideal": [
+    "tutorials/batch/adsorber/batch09_adsorber_co2",
+    "tutorials/batch/adsorber/batch10_adsorber_co2_n2",
+    "tutorials/batch/adsorber/batch11_adsorber_henry",
+    "tutorials/batch/adsorber/batch12_adsorber_refused_P",
+    "tutorials/batch/adsorber/batch13_breakthrough_co2",
+    "tutorials/batch/adsorber/batch14_transport_only",
+    "tutorials/batch/adsorber/batch15_mesh_study",
+    "tutorials/batch/adsorber/batch16_ergun_profile",
+    "tutorials/batch/adsorber/batch17_dilute_ergun_limit",
+    "tutorials/batch/adsorber/batch18_ergun_conservation",
+    "tutorials/batch/adsorber/batch19_feed_switch_purge",
+    "tutorials/batch/adsorber/batch20_thermal_breakthrough",
+    "tutorials/batch/adsorber/batch21_tsa_hot_purge",
+    "tutorials/batch/adsorber/batch22_wall_cooled",
+    "tutorials/batch/adsorber/batch23_tsa_cycles",
+    "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch25_blowdown_thermal",
+    "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_rk4",
+    "tutorials/batch/combustion/ignition02_h2air_slack",
+    "tutorials/batch/combustion/nox01_zeldovich_postflame",
+    "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch02_adiabatic",
+    "tutorials/batch/reactor/batch03_consecutive",
+    "tutorials/batch/reactor/batch04_reversible_wgs",
+    "tutorials/batch/reactor/batch04_transient_dirs",
+    "tutorials/batch/reactor/batch05_crystalliser",
+    "tutorials/batch/reactor/batch06_adaptive_runaway",
+    "tutorials/batch/reactor/batch08_isothermal_duty",
+    "tutorials/batch/recipes/recipe01_react_then_distill",
+    "tutorials/batch/recipes/recipe02_setpoint_ramp",
+    "tutorials/batch/recipes/recipe03_conditional_partial",
+    "tutorials/batch/recipes/recipe04_charge_enthalpy",
+    "tutorials/batch/still/still01_benzene_toluene",
+    "tutorials/batch/still/still03_with_receiver",
+    "tutorials/batch/still/still04_rectifier_benzene_toluene",
+    "tutorials/batch/still/still05_rectifier_constant_xD",
+    "tutorials/batch/still/still06_ledger_mixed_validity",
+    "tutorials/ctrl/ctrl01_cstr_temp_control",
+    "tutorials/ctrl/ctrl02_disturbance_rejection",
+    "tutorials/ctrl/ctrl03_adaptive_disturbance",
+    "tutorials/ctrl/ctrl03_startup_transient",
+    "tutorials/ctrl/ctrl05_disturbance_transient",
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl07_lhhw_inhibition",
+    "tutorials/ctrl/ctrl08_prbs_ident",
+    "tutorials/ctrl/ctrl09_stream_disturbance",
+    "tutorials/ctrl/ctrl11_esterification_jacket",
+    "tutorials/ctrl/ctrl12_williams_otto",
+    "tutorials/ctrl/ctrl13_williams_otto_step",
+    "tutorials/ctrl/ctrl14_williams_otto_pi",
+    "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/electrochem/ed01_nacl_desalination",
+    "tutorials/electrochem/ed02_over_limiting_current",
+    "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/esterification2sector",
+    "tutorials/plant/hda",
+    "tutorials/plant/lithiumBrinePlant",
+    "tutorials/plant/polycaprolactonePlant",
+    "tutorials/plant/polycaprolactonePlant/properties",
+    "tutorials/plant/sugarPlantEconomicsSweep",
+    "tutorials/plant/tartaricAcid",
+    "tutorials/props/adsorption/isotherm01_eval_13x_co2",
+    "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/compare_activity_etoh_water",
+    "tutorials/props/compare/compare_eos_co2",
+    "tutorials/props/compare/compare_kinetics_order",
+    "tutorials/props/compare/compare_psat_ambrose_walton",
+    "tutorials/props/compare/compare_transport_water",
+    "tutorials/props/compare/compare_visc_liquid_ammonia",
+    "tutorials/props/compare/compare_visc_liquid_water",
+    "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
+    "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
+    "tutorials/props/electrolyte/fpd01_nacl_freezing",
+    "tutorials/props/electrolyte/pitzer01_nacl",
+    "tutorials/props/electrolyte/pitzer02_cacl2",
+    "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    "tutorials/props/electrolyte/pitzer_nacl_sp77_hot",
+    "tutorials/props/estimate/estimate_acetone",
+    "tutorials/props/estimate/estimate_ethanol_benzene",
+    "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/userEstimate01_linear_tb",
+    "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
+    "tutorials/props/estimate/yang2020_Tg_polystyrene",
+    "tutorials/props/estimate/yang2020_Tg_pvc",
+    "tutorials/props/fit/cp01_polynomial_recovery",
+    "tutorials/props/fit/psat01_antoine_recovery",
+    "tutorials/props/gibbs/nh3_equilibrium_map",
+    "tutorials/props/heat/htbench01_correlations",
+    "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/scan/phase01_water_full",
+    "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
+    "tutorials/props/steam/steam01_if97_verification",
+    "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermoTest/atoms01_formula_parser",
+    "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/steady/crystallisation/crystalliser01_sugar",
+    "tutorials/steady/crystallisation/crystalliser02_msmpr",
+    "tutorials/steady/crystallisation/crystalliser03_pbe_size_independent",
+    "tutorials/steady/crystallisation/crystalliser04_size_dependent_growth",
+    "tutorials/steady/distillation/column01_benzene_toluene",
+    "tutorials/steady/distillation/column02_simultaneous",
+    "tutorials/steady/distillation/column04_multifeed_sidedraw",
+    "tutorials/steady/distillation/column06_fullMESH",
+    "tutorials/steady/distillation/column07_naphtaliSandholm",
+    "tutorials/steady/distillation/column08_radfrac_multidraw",
+    "tutorials/steady/distillation/column09_tray_hydraulics",
+    "tutorials/steady/distillation/column10_flooding",
+    "tutorials/steady/distillation/column11_murphree",
+    "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/shortcut01_benzene_toluene",
+    "tutorials/steady/drying/evapDryer01_nacl",
+    "tutorials/steady/drying/evapDryer02_energy_limited",
+    "tutorials/steady/drying/solidDryer01_sugar",
+    "tutorials/steady/drying/sprayDryer01_sugar",
+    "tutorials/steady/drying/sprayDryer02_residence_sweep",
+    "tutorials/steady/drying/sprayDryer03_pressure_nozzle",
+    "tutorials/steady/drying/sprayDryer04_profiles",
+    "tutorials/steady/drying/sprayDryer05_whey",
+    "tutorials/steady/drying/sprayDryer06_rea",
+    "tutorials/steady/drying/sprayDryer07_design",
+    "tutorials/steady/economics/economics01_esterification_dcf",
+    "tutorials/steady/economics/economics02_irr_sweep",
+    "tutorials/steady/evaporation/evaporator01_brine",
+    "tutorials/steady/evaporation/evaporator02_triple_effect_sugar",
+    "tutorials/steady/evaporation/evaporator03_co_current",
+    "tutorials/steady/evaporation/evaporator04_orange_juice_simple",
+    "tutorials/steady/evaporation/evaporator05_counter_current",
+    "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
+    "tutorials/steady/flash/flash01_benzene_toluene",
+    "tutorials/steady/flash/flash04_molarFlows_input",
+    "tutorials/steady/flash/flash05_ternary_massFlows",
+    "tutorials/steady/flash/flash06_sweep_T",
+    "tutorials/steady/flash/flash07_gridsweep_TP",
+    "tutorials/steady/flash/flash_polymer_devolatilisation",
+    "tutorials/steady/flash/flash_pseudoComponent_petCut",
+    "tutorials/steady/flash/leaf01_flash",
+    "tutorials/steady/flowsheets/composite01_two_flashes",
+    "tutorials/steady/flowsheets/credo01_valve_heater_drum",
+    "tutorials/steady/flowsheets/plant01_two_sectors",
+    "tutorials/steady/flowsheets/plant02_basename_twins",
+    "tutorials/steady/flowsheets/process01_reactor_flash",
+    "tutorials/steady/flowsheets/process02_reactor_hx_flash",
+    "tutorials/steady/flowsheets/process02_with_design",
+    "tutorials/steady/flowsheets/process03_recycle",
+    "tutorials/steady/flowsheets/process05_isomerization_recycle",
+    "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/gas-solid/bagFilter01_dust",
+    "tutorials/steady/gas-solid/cyclone01_dust_removal",
+    "tutorials/steady/gas-solid/cyclone02_leith_licht",
+    "tutorials/steady/gas-solid/cyclone03_iozia_leith",
+    "tutorials/steady/gas-solid/cyclone04_high_loading",
+    "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation",
+    "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
+    "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
+    "tutorials/steady/gibbs/gibbs01_water_gas_shift",
+    "tutorials/steady/gibbs/gibbs02_steam_reforming",
+    "tutorials/steady/gibbs/gibbs03_methane_combustion",
+    "tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep",
+    "tutorials/steady/gibbs/gibbs05_adiabatic_flame",
+    "tutorials/steady/gibbs/gibbs06_h2_flame_radicals",
+    "tutorials/steady/gibbs/gibbs06_thermal_nox",
+    "tutorials/steady/gibbs/gibbs07_wgs_cooled",
+    "tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash",
+    "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
+    "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
+    "tutorials/steady/heat/condenser01_film_nusselt",
+    "tutorials/steady/heat/heatExchanger01_water_water",
+    "tutorials/steady/heat/heatExchanger02_geometry_U",
+    "tutorials/steady/heat/heatlink01_condenser_to_heater",
+    "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
+    "tutorials/steady/heat/hx01_heater",
+    "tutorials/steady/heat/hxWorkflow1_design_from_duty",
+    "tutorials/steady/heat/hxWorkflow2_rate_designed",
+    "tutorials/steady/heat/mheatx01_two_hot_one_cold",
+    "tutorials/steady/heat/phasechange01_partial_condenser",
+    "tutorials/steady/heat/pinch01_four_stream_classic",
+    "tutorials/steady/heat/reboiler_water_copper",
+    "tutorials/steady/hydraulics/pipe01_water_line",
+    "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
+    "tutorials/steady/membranes/membrane02_NF_sugar",
+    "tutorials/steady/membranes/membrane03_concentration_polarization",
+    "tutorials/steady/membranes/membrane04_spacer_schock_miquel",
+    "tutorials/steady/membranes/membrane05_train",
+    "tutorials/steady/membranes/membrane06_pitzer",
+    "tutorials/steady/membranes/membrane07_scaling_si",
+    "tutorials/steady/membranes/membrane08_softened_scaling",
+    "tutorials/steady/membranes/membrane09_index_vs_rigorous",
+    "tutorials/steady/membranes/membrane10_dspmde_divalent",
+    "tutorials/steady/membranes/membrane11_dspmde_born_toggle",
+    "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
+    "tutorials/steady/optimisation/optim01_column_reflux",
+    "tutorials/steady/optimisation/optim02_process_cost",
+    "tutorials/steady/optimisation/optim04_membrane_recovery_scaling",
+    "tutorials/steady/optimisation/optim05_reactor_npv",
+    "tutorials/steady/optimisation/optim06_integer_stages",
+    "tutorials/steady/optimisation/pareto01_purity_energy",
+    "tutorials/steady/optimisation/sensitivity01_column_reflux",
+    "tutorials/steady/optimisation/sensitivity02_feasibility_map",
+    "tutorials/steady/power/brayton01_gas_turbine",
+    "tutorials/steady/power/combined01_brayton_rankine",
+    "tutorials/steady/power/combined02_brayton_rankine_shaft",
+    "tutorials/steady/power/rankine01_water",
+    "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/chlorophenol01_chlorination",
+    "tutorials/steady/reactors/conversion01_hda",
+    "tutorials/steady/reactors/conversion02_parallel_selectivity",
+    "tutorials/steady/reactors/cstr01_first_order",
+    "tutorials/steady/reactors/cstr02_reversible_wgs",
+    "tutorials/steady/reactors/cstr03_series_selectivity",
+    "tutorials/steady/reactors/cstr04_adiabatic",
+    "tutorials/steady/reactors/cstr05_multiplicity",
+    "tutorials/steady/reactors/cstr06_jacketed",
+    "tutorials/steady/reactors/equil01_reforming",
+    "tutorials/steady/reactors/pfr01_first_order",
+    "tutorials/steady/reactors/pfr02_reversible_wgs",
+    "tutorials/steady/reactors/pfr03_series_selectivity",
+    "tutorials/steady/reactors/pfr04_adiabatic",
+    "tutorials/steady/reactors/pfr_polyesterification",
+    "tutorials/steady/rotating/compressor01_air",
+    "tutorials/steady/rotating/compressor02_designspec_pout",
+    "tutorials/steady/rotating/compressorTurbine01_turbo_booster",
+    "tutorials/steady/rotating/pump01_water",
+    "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/rotating/turbine01_air",
+    "tutorials/steady/separation/psa01_h2_psa",
+    "tutorials/steady/separation/tsa01_co2_twin_bed",
+    "tutorials/steady/separation/tsa02_refused_capacity",
+    "tutorials/steady/solids/pneumaticConveyor01_sand",
+    "tutorials/steady/solids/pneumaticConveyor02_bends",
+    "tutorials/steady/thermo/air01_heater_expand",
+    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
+    "tutorials/steady/thermoTest/model1_lumped_evaporator",
+    "tutorials/steady/userops/userOp01_yield_reactor",
+    "tutorials/steady/userops/userOp02_component_splitter",
+    "tutorials/steady/utilities/utility01_dowtherm_preheat",
+    "tutorials/steady/utilities/utility02_hitec_csp_heater",
+    "tutorials/steady/utilities/utility03_glycol_brine_chiller"
+   ],
+   "pitzerHMW": [
+    "tutorials/props/electrolyte/davies01_band_edge",
+    "tutorials/props/electrolyte/pitzer_calcite_brine",
+    "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
+    "tutorials/props/electrolyte/tartaricAcid_acidulation"
+   ]
+  },
+  "byOp": {
+   "activityCoefficients": [
+    "tutorials/props/molecular/nrtl01_ethanol_water_package"
+   ],
+   "electrolyteActivity": [
+    "tutorials/props/electrolyte/pitzer02_nacl_package"
+   ],
+   "elementalComposition": [
+    "tutorials/props/thermoTest/atoms01_formula_parser"
+   ],
+   "enrtlMixedSolvent": [
+    "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso"
+   ],
+   "enrtlMultiSalt": [
+    "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl"
+   ],
+   "estimateComponent": [
+    "tutorials/plant/polycaprolactonePlant/properties",
+    "tutorials/props/estimate/estimate_acetone",
+    "tutorials/props/estimate/estimate_ethanol_benzene",
+    "tutorials/props/estimate/estimate_petroleum_cut",
+    "tutorials/props/estimate/vanKrevelen01_polystyrene_density",
+    "tutorials/props/estimate/yang2020_Tg_polystyrene",
+    "tutorials/props/estimate/yang2020_Tg_pvc"
+   ],
+   "exchange": [
+    "tutorials/props/electrolyte/softener_brackish"
+   ],
+   "fitParameters": [
+    "tutorials/props/adsorption/isotherm02_fit_jaschik",
+    "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/molecular/eval_nrtl_catalogue",
+    "tutorials/props/molecular/eval_nrtl_pinned",
+    "tutorials/steady/optimisation/fitNRTL01_ethanol_water"
+   ],
+   "freezingPoint": [
+    "tutorials/props/electrolyte/fpd01_nacl_freezing"
+   ],
+   "gibbsMap": [
+    "tutorials/props/gibbs/nh3_equilibrium_map"
+   ],
+   "hConsistency": [
+    "tutorials/props/thermoTest/h_surface_identity"
+   ],
+   "heatCapacityFit": [
+    "tutorials/props/fit/cp01_polynomial_recovery"
+   ],
+   "heatTransferBench": [
+    "tutorials/props/heat/htbench01_correlations"
+   ],
+   "isothermEval": [
+    "tutorials/props/adsorption/isotherm01_eval_13x_co2"
+   ],
+   "kinetics1D": [
+    "tutorials/props/kinetics/rate01_arrhenius_recovery"
+   ],
+   "linearTbEstimate": [
+    "tutorials/props/estimate/userEstimate01_linear_tb"
+   ],
+   "pitzerActivity": [
+    "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/pitzer01_nacl",
+    "tutorials/props/electrolyte/pitzer02_cacl2",
+    "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
+    "tutorials/props/electrolyte/pitzer_nacl_sp77_hot"
+   ],
+   "propertyPoint": [
+    "tutorials/props/molecular/pcsaft01_pure_nhexane",
+    "tutorials/props/molecular/pcsaft02_states_crosscheck",
+    "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/steam/steam02_water_transport"
+   ],
+   "propertyScan1D": [
+    "tutorials/props/compare/compare_activity_etoh_water",
+    "tutorials/props/compare/compare_eos_co2",
+    "tutorials/props/compare/compare_psat_ambrose_walton",
+    "tutorials/props/compare/compare_transport_water",
+    "tutorials/props/compare/compare_visc_liquid_ammonia",
+    "tutorials/props/compare/compare_visc_liquid_water",
+    "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/steam/steam02_water_transport"
+   ],
+   "propertyScan2D": [
+    "tutorials/props/scan/scan2d01_co2_compressibility"
+   ],
+   "propertyScanBinary": [
+    "tutorials/props/scan/binary01_lle_water_nbutanol"
+   ],
+   "propertyScanTernary": [
+    "tutorials/props/scan/ternary01_audit_vlle",
+    "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
+    "tutorials/props/scan/ternary03_lle_water_ethanol_benzene"
+   ],
+   "psychrometricChart": [
+    "tutorials/props/heat/psychro01_n2_water"
+   ],
+   "purePhaseDiagram": [
+    "tutorials/props/scan/phase01_water_full"
+   ],
+   "scalingScan": [
+    "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
+    "tutorials/props/electrolyte/precipitation_ro_brackish",
+    "tutorials/props/electrolyte/scaling_ro_brackish",
+    "tutorials/props/electrolyte/softener_brackish",
+    "tutorials/props/thermoTest/model4_speciation_scaling"
+   ],
+   "speciate": [
+    "tutorials/props/electrolyte/edwards01_sour_water_activity",
+    "tutorials/props/electrolyte/ksp_temperature",
+    "tutorials/props/electrolyte/pb82_calcite_open_co2",
+    "tutorials/props/electrolyte/pitzer_calcite_brine",
+    "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
+    "tutorials/props/electrolyte/pitzer_seawater_verify",
+    "tutorials/props/electrolyte/precipitation_ro_brackish",
+    "tutorials/props/electrolyte/rainwater_air",
+    "tutorials/props/electrolyte/scaling_ro_brackish",
+    "tutorials/props/thermoTest/model4_speciation_scaling"
+   ],
+   "steamTables": [
+    "tutorials/props/steam/steam01_if97_verification"
+   ],
+   "vaporPressureFit": [
+    "tutorials/props/fit/psat01_antoine_recovery"
+   ],
+   "vleConsistency": [
+    "tutorials/props/compare/compare_vle_etoh_water"
+   ]
+  }
+ }
+}
