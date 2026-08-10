@@ -59,8 +59,18 @@ export interface MassBalance {
   closureErr: number;
 }
 
-/** Per-component mass flow of one stream [kg/s].  Fluid = F·x·MW; solid is
- *  already kg/s.  Missing MW falls back to 0 (honest: shows what was emitted). */
+/** Per-component mass flow of one stream [kg/s]: F·x·MW.
+ *
+ *  F and composition are the OVERALL stream material INCLUDING any
+ *  crystalline solid -- the solver's own streamsNote states this
+ *  convention, and `solids`/`F_solid_mass` merely LOCATE part of that same
+ *  material.  Adding `solids[c]` on top of F·x·MW therefore counted every
+ *  crystal twice, and the Mass Balance plot reported out > in on exactly
+ *  the freeze/crystalliser cases whose STREAM table (reading the solver's
+ *  F_mass) closed -- found by Vitor on flash21_freeze_concentration,
+ *  2026-08-10.  The engine owns the balance; this function only converts
+ *  the engine's published material to kg/s, once.
+ *  Missing MW falls back to 0 (honest: shows what was emitted). */
 export function massPerComponent(
   s: StreamResult,
   components: string[],
@@ -70,9 +80,7 @@ export function massPerComponent(
   for (const c of components) {
     const m = mw?.[c] ?? 0;
     const x = s.composition[c] ?? 0;
-    const fluid = (s.F ?? 0) * x * m; // kg/s
-    const solid = s.solids?.[c] ?? 0; // kg/s
-    out[c] = fluid + solid;
+    out[c] = (s.F ?? 0) * x * m; // kg/s -- overall material, solids included
   }
   return out;
 }
