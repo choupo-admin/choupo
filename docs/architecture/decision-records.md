@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 56 records already exist
+## 1. Why an index, when 57 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 56 design records, **28 state a rejected alternative and 28 do not** —
+- Of 57 design records, **28 state a rejected alternative and 29 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -117,6 +117,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`property-evidence-taxonomy.md`](../design/property-evidence-taxonomy.md) | ADR | yes | **CONTRACT DECIDED 2026-08-10** — downloaded is not curated, fitted is not measured, generated is not authoritative: `origin` ∈ curatedMeasured/importedMeasured/fitted/estimated + orthogonal `reviewStatus`, solver REFUSES unreviewed candidates absent a case opt-in, `choupoProps acquire` mints candidates that never self-promote.  Rejects: a `trusted` boolean (cannot separate unchecked-measurement from known-estimate, so the remedy becomes unguessable), trust-by-location (today's rule, and why unsourced values sat inside standards/), a numeric confidence score as primary tag, and tagging only at import (`fitted` is minted internally).  Implementation UNAUTHORISED |
 | [`reproducible-permalink-sealing.md`](../design/reproducible-permalink-sealing.md) | ADR | yes | **SEALING DECIDED 2026-08-10** (surface is roadmap) — the hash seals CODE + DATA: engine version + the case's full dependency closure as addressed content; the promise is **same result within the declared residual, NOT bit-for-bit**; the released `.wasm` is archived because permanent executability is part of the product promise.  Rejects: hashing case files only (same dict over a different catalogue is a different calculation), data-by-version-tag (a mutable pointer breaks every minted link), bit-exact determinism (unachievable, and buys a property nobody needs at accuracy's expense), re-run-at-current-version (answers a different question), rebuild-from-source (depends on a toolchain surviving) |
 | [`post-consolidation-roadmap.md`](../design/post-consolidation-roadmap.md) | SCOPE | n/a | **RECORDED 2026-08-10** — positioning (reproducibility infrastructure; the opponent is the black box in the Methods section), the non-negotiable sequence, the ThermoML pilot's machine-enforced fit/held-out split, the anchor assessment taxonomy with the anti-rationalisation rule (MODEL-LIMITED requires a PRE-DECLARED envelope; otherwise UNEXPLAINED, which is a CI failure).  Authorises nothing |
+| [`operational-memory-stopping-proof.md`](../design/operational-memory-stopping-proof.md) | RECORD | n/a | **CAMPAIGN CLOSED 2026-08-10** (Vítor's operational-memory ruling) — the four artefacts (ownership index · codeMap · caseManifest · impact brief §6b of DEV.md) with their gates, the five construction-time finds, and the stopping proof: two impact briefs filled by artefact lookup alone and verified against the tree.  Future gaps are fixed by the change that finds them; no enrichment campaign |
 | [`queue-ruling-2026-08-08.md`](../design/queue-ruling-2026-08-08.md) | ADR | yes | **RULED 2026-08-08** — C1 delegation (amended: immediate ship, silence is not a mechanism, reserved list), C2 one solid-equilibrium architecture with class-appropriate solid models + mandatory 3-case spike, C3 uniform `phases` direction (no mass migration), D2–D4, N1–N5 deferred-with-trigger; D1 escalated back on a failed premise |
 | [`open-decisions-2026-08-03.md`](../design/open-decisions-2026-08-03.md) | ADR | yes | RESOLVED 2026-08-03 in its own §Resolution — A no-reseal (report restructure to build), B built, C splitter capability to build, D stamp refinement |
 | [`role-vocabulary-forum-2026-08-02.md`](../design/role-vocabulary-forum-2026-08-02.md) | FORUM | yes | DECIDED + BUILT 2026-08-02 — panel option C (DEV.md §4b item 2) |
@@ -210,7 +211,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**28 of 56 records state no rejected alternative.**  For a FORUM or a STUDY
+**29 of 57 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

@@ -125,8 +125,12 @@ def scan_case(case_dir, wmap):
                              pblk.group(1)))
     if am:
         tp["activityModels"] = sorted(am)
-    if "equilibrium" in thermo:
-        tp["equilibrium"] = True
+    #  `equilibrium {}` is the standard wrapper in EVERY thermo dict (the
+    #  formulation lives inside it), so flagging it discriminated nothing --
+    #  321 of 341 cases, found by M5's cold-brief query.  What discriminates
+    #  is declared AQUEOUS CHEMISTRY.
+    if re.search(r"\baqueous\s*\{", thermo):
+        tp["aqueousChemistry"] = True
     if tp:
         entry["thermo"] = tp
 
