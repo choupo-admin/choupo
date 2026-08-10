@@ -67,7 +67,21 @@
         "type": "string"
       },
       "title": "Species to pin as diagnostics",
-      "description": "Their activity coefficients are emitted as named KPIs, so a golden test can lock them."
+      "description": "Their activity coefficients are emitted as named KPIs, so a golden test can lock them. These are SINGLE-ION coefficients, which are convention-dependent and not measurable -- for the measurable quantity see diagMeanIonic."
+    },
+    "diagMeanIonic": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cation": { "type": "string", "title": "Positively charged species" },
+          "anion":  { "type": "string", "title": "Negatively charged species" }
+        },
+        "required": ["cation", "anion"],
+        "additionalProperties": false
+      },
+      "title": "Cation/anion pairs to publish a mean ionic activity coefficient for",
+      "description": "Emits gamma_pm_<cation>_<anion> = (gamma_+^nu+ * gamma_-^nu-)^(1/(nu+ + nu-)), the coefficient experiment actually reports. The stoichiometry is DERIVED from the species charges (smallest integers with nu+*z+ = nu-*|z-|) and announced at verbosity >= 2 -- it is never declared here and never read off a salt name. Naming a negative species as the cation, or a species absent from the computed table, refuses."
     },
     "verifyGlobal": {
       "type": "string",
