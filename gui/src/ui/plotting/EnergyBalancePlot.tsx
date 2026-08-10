@@ -164,6 +164,31 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   const pct    = 100 * Math.abs(gap) / scaleE;
   const closes = Math.abs(gap) < 0.01 * scaleE;
 
+  //  MIXED SIGNS ON A SIDE -- say so, because the bar cannot (2026-08-10,
+  //  Vitor reading flash21_freeze_concentration as an energy IMBALANCE while
+  //  the title said Δ 0.00 kW).  Segments are sized by |term| / Σ|terms|, and
+  //  a stack sized by magnitudes reads as ADDITION.  When a side carries terms
+  //  of opposite sign that is exactly wrong: flash21's outlet side holds the
+  //  liquor at -8099.4 kW and a +167.4 kW cooling duty, which CANCEL to the
+  //  -7932 kW the title reports.  The eye compares -8099 with the -7932 feed,
+  //  finds 167 kW unaccounted for, and concludes the balance is broken -- when
+  //  it closes to 0.00e+00 kW exactly.  The chart may not resize (equal bars
+  //  are the deliberate metaphor, and formation-datum enthalpies make a raw-kW
+  //  stack unequalisable), so it must ANNOUNCE instead of letting the reader
+  //  infer addition from a picture.
+  //  Below this a term is numerical dust, not a sign (an exactly-zero vent
+  //  must not make a side "mixed").
+  const EPS_MIX = 1e-6;   // kW
+  const mixedSide = (i: 0 | 1) => {
+    const v = data.map((t) => (t.y as number[])[i] ?? 0).filter((x) => Math.abs(x) > EPS_MIX);
+    return v.some((x) => x > 0) && v.some((x) => x < 0);
+  };
+  const mixedIn = mixedSide(0), mixedOut = mixedSide(1);
+  const mixedNote = (mixedIn || mixedOut)
+    ? `  ·  ${mixedIn && mixedOut ? "both sides" : mixedIn ? "IN" : "OUT"} mix signs:`
+      + ` segments are MAGNITUDES that partly cancel, not additive parts`
+    : "";
+
   // Honest title: NEVER print "IN = OUT" with two different rounded numbers
   // (that reads as a lie).  Show both nets, the residual gap and its %, and one
   // verdict marker -- the gap IS the closure quality.
@@ -171,7 +196,8 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
     `Energy balance — plant boundary (kW)`
     + `  ·  IN ${fmtKw(netIn)} · OUT ${fmtKw(netOut)} · Δ ${fmtKw(gap)} kW (${pct.toFixed(1)}%) `
     + (closes ? "✓ closes" : "⚠ does NOT close")
-    + (skipped > 0 ? `  ·  ${skipped} skipped (no H)` : "");
+    + (skipped > 0 ? `  ·  ${skipped} skipped (no H)` : "")
+    + mixedNote;
 
   // EQUAL bars, divided by stream SHARE (the chosen layout).  Both columns are
   // drawn to the same height (100%); each is split into its streams/duties sized
