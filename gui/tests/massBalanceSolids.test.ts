@@ -14,7 +14,12 @@
 
 import { describe, expect, it } from "vitest";
 import { massBalance } from "../src/case/balances";
-import type { StreamResult } from "../src/case/balances";
+//  StreamResult's ONE home is the adapter that mints it; `balances` imports
+//  the type, it does not own or re-export it.  (Importing it from `balances`
+//  typechecks nowhere and was caught by bin/buildSite, which runs tsc over
+//  the tests -- `npm test` does not typecheck, so vitest was green on a file
+//  that could not compile.)
+import type { StreamResult } from "../src/adapters/SolverAdapter.js";
 
 const MW = { water: 18.015, NaCl: 58.44 };
 
