@@ -723,33 +723,48 @@ output in the docstring).  NOT in this slice, by ruling: any semantics for
 `total`/`freeIon` — when a future slice defines them, the gate's Q4/Q5
 arms are rewritten, not deleted.
 
-### 10.6 Slice B as BUILT (2026-08-10)
+### 10.6 Slice B — BLOCKED by missing numerical machinery (corrected 2026-08-10)
 
-The ruled contract, verbatim: **user-authorised only** (`density {
-provenance iterative; }` — a provenance-less block refuses naming both
-explicit provenances; iterative beside a `value` refuses as two sources);
-**the complete iteration record visible** (`densityIteration {}` in the
-resolved snapshot: initial estimate = `rhoWaterKell(T_sample)`, criterion,
-tolerance and maxIterations each marked NAMED DEFAULT or declared, count,
-every value, every residual, final density); **non-convergence refuses**
-with the full record printed inside the refusal; **invalid thermodynamic
-domain refuses** (no `sampleTemperature`; T outside Kell's 0–100 °C).  A
-molality-basis density block refuses — no volume to close.  A mass-flow
-anchor under the iterative route is deferred to the closure, never guessed.
+**The first build was REJECTED, and the rejection is the record's most
+important content.**  It implemented `provenance iterative;` as a loop over
 
-**The map is `rho_{k+1} = rhoWaterKell(T) + soluteMass` — constant in ρ,
-and the record says so**: the dilute-volume closure the per-volume route
-already stands on makes convergence immediate BY CONSTRUCTION, and
-presenting the closure's property as the solver's virtue would be a lie of
-emphasis.  The map gains a real ρ-dependence only when a
-composition-dependent volume model exists — a **named non-goal**
-(density-model improvement out of scope by ruling).  On the witness sheet
-the route lands at 998.484 kg/m³ against the laboratory's 998.4 (0.008 %).
+    rho_{k+1} = rhoWaterKell(T_sample) + soluteMass
 
-The corpus case stays MEASURED; the authorised route is exercised on
-staged copies.  Gate: `check_iterative_density` (B1 recomputes the closure
-independently in python, post-reconciliation chloride included, agreement
-to 0.1 kg/m³; B2–B7 the six refusals by name; sabotage-verified twice,
-observed output in the docstring).  The A1 gate's old `iterative` refusal
-arm was REWRITTEN, not deleted — Q4/Q5's own rule applied to a sibling.
-**The aqueousAnalysis programme (A → C → B) is complete.**
+— whose right-hand side does not depend on rho_k.  Vítor's rejection,
+verbatim in substance: immediate convergence was not a property demonstrated
+by an iterative solver but evidence that **no iterative problem exists**;
+tolerance and maxIterations governed nothing; physical non-convergence could
+not occur; the iteration history was ceremonial; and the 0.008 % laboratory
+agreement validated the dilute-volume closure, not an iterative route.  Under
+project doctrine a declared machinery gap must not be closed by constructing
+an iteration whose update is independent of the iterate.
+
+**What ships instead — the honest correction:**
+
+* the calculation survives under its honest name:
+  `density { provenance derivedDiluteVolume; }` computes the DIRECT closure
+  `rho = rhoWaterKell(T_sample) + soluteMass` and records **both terms**
+  (`densityDerivation {}`: closure · rhoWater · soluteMass · final — a
+  reader re-derives the sum by hand).  The domain refusals are real and
+  stay: `sampleTemperature` required; Kell valid 0–100 °C; a molality-basis
+  density block refuses (no volume to close); `derivedDiluteVolume` beside
+  a `value` refuses (two sources); an `iteration {}` block on the direct
+  closure refuses (a declaration nothing reads);
+* **`provenance iterative` is REFUSED**, stating that no
+  composition-dependent volume closure currently exists to define the
+  iteration — the refusal is the honest state of the machinery;
+* the non-convergence refusal and its probe are REMOVED: they were
+  reachable only against the loop that should not exist, so they tested
+  the ceremony, not the physics.
+
+**Slice B status: BLOCKED, not completed.**  The blocker is a
+composition-dependent volume model (apparent molar volumes or equivalent),
+which is out of this slice's scope by the same ruling that rejected the
+ceremony.  When such a model exists, the fixed point becomes real and the
+authorised iterative route can be built against it — with the record
+machinery this correction deliberately did not keep.
+
+Gate: `check_derived_density` (D1 independent python recomputation of the
+closure + term-sum identity; D2–D8 refusals by name, `iterative` among
+them; a non-convergence probe DELIBERATELY ABSENT, and the docstring says
+why).  The corpus case stays MEASURED.

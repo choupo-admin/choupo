@@ -298,17 +298,18 @@ struct ProcessStream
         std::string basis;             // the declared reporting basis
         std::string defaultQualifier;  // block-level analytical qualifier ("" = none declared)
 
-        //  SLICE B (ruled 2026-08-10): the AUTHORISED iterative density.
-        //  Nothing here exists unless the author declared `provenance
-        //  iterative;` -- there is no automatic or silent route.  The
-        //  complete record is kept because an iteration whose convergence a
-        //  student cannot watch is exactly what the ruling forbids.
-        std::vector<scalar> densityIterates;   // rho_0 (initial estimate) .. rho_N [kg/m3]
-        std::vector<scalar> densityResiduals;  // relative |rho_k - rho_{k-1}|/rho_k, size N
-        scalar densityTol = 0.0;               // convergence tolerance (relative)
-        bool   densityTolDefaulted = false;
-        int    densityMaxIter = 0;
-        bool   densityMaxIterDefaulted = false;
+        //  SLICE B, as CORRECTED (2026-08-10): the honest DIRECT closure.
+        //  `provenance derivedDiluteVolume;` computes
+        //      rho = rhoWaterKell(T_sample) + soluteMass
+        //  and records BOTH terms -- a derivation, named as one.  The first
+        //  build wrapped this constant-in-rho formula in an "iteration" and
+        //  was REJECTED: an update independent of the iterate is a direct
+        //  calculation wearing a loop.  `provenance iterative` stays REFUSED
+        //  until a composition-dependent volume closure exists to define a
+        //  real fixed point -- slice B is BLOCKED on that machinery, not
+        //  completed (scope doc 10.6).
+        scalar densityRhoWater   = 0.0;        // rhoWaterKell(T_sample) [kg/m3]
+        scalar densitySoluteMass = 0.0;        // Sum solutes [kg per m3 of solution]
         std::string method;            // "" = none declared (pass-through)
         std::string methodAsWritten;   // the author's spelling (sugar kept)
         std::string adjustedSpecies;   // "" = nothing adjusted

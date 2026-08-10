@@ -21,7 +21,7 @@
     },
     "check_aqueous_analysis": {
       "exit": 0,
-      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative-plus-value (the AUTHORISED iterative route has its own gate, check_iterative_density), correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
+      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative (REFUSED outright -- no composition-dependent volume closure exists; the honest direct closure is derivedDiluteVolume, gate check_derived_density), correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
     },
     "check_aqueous_navigation": {
       "exit": 0,
@@ -110,6 +110,10 @@
     "check_default_reports": {
       "exit": 0,
       "claim": "check_default_reports: OK -- a no-reports steady case writes the three balances by default with no ERROR/WARNING noise; a missing enthalpy datum is UNAVAILABLE (with its curation remedy and the REFUSED artefact) under the default and a hard ERROR when declared; `enabled false;` opts out per report, independently"
+    },
+    "check_derived_density": {
+      "exit": 0,
+      "claim": "check_derived_density: OK -- the authorised derivedDiluteVolume closure runs with both terms recorded (they sum to the final, and the final agrees with an independent python recomputation to 0.1 kg/m3); provenance-less, two-sources, missing sample temperature, out-of-domain (Kell 0-100 degC), molality-basis and iteration{}-on-a-direct-closure all refuse by name; and `provenance iterative` refuses stating the missing machinery -- slice B is BLOCKED on a composition-dependent volume model, not completed.  DELIBERATELY ABSENT: a non-convergence probe (only reachable against machinery that should not exist).  NOT COVERED: the closure's ACCURACY (an announced approximation, not a validated density model) and the reconciliation/inversion arithmetic (their own gates)."
     },
     "check_doc_references": {
       "exit": 0,
@@ -213,7 +217,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40447 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40438 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -246,10 +250,6 @@
     "check_ionexchange": {
       "exit": 0,
       "claim": "electrolyte/exchange.dat ABSENT -- ionExchange consolidated. OK."
-    },
-    "check_iterative_density": {
-      "exit": 0,
-      "claim": "check_iterative_density: OK -- the authorised route runs with the COMPLETE record (initial estimate, values, residuals, criterion, counts, final; defaults marked NAMED DEFAULT) and its final rho agrees with an independent python recomputation of the closure to 0.1 kg/m3; a provenance-less density, iterative-plus-value, a missing sample temperature, an out-of-domain temperature (Kell 0-100 degC), a non-converging declaration (record printed in the refusal) and a molality-basis density all refuse by name.  NOT COVERED: the dilute-volume closure's ACCURACY (an announced approximation, not a validated density model -- improving it is a named non-goal), and the reconciliation/inversion arithmetic (their own gates)."
     },
     "check_layering": {
       "exit": 0,

@@ -640,34 +640,27 @@ void writeStreamState(const ProcessStream&  s,
                 << a.densityProvenance << "\n"
                 << "        volumetricFlow         " << a.volumetricFlow * 3600.0
                 << " m3/h;\n";
-        //  SLICE B: the COMPLETE iteration record, visible by ruling -- the
-        //  initial estimate, every value, every residual, the criterion,
-        //  the count, the final density.  Exists only under the authorised
-        //  `provenance iterative;` -- a measured density writes nothing here.
-        if (a.densityProvenance == "iterative" && !a.densityIterates.empty())
+        //  SLICE B as CORRECTED: the DERIVATION record, both terms visible.
+        //  Exists only under the authorised `provenance derivedDiluteVolume;`
+        //  -- a measured density writes nothing here.  There is no
+        //  iteration block anywhere, because there is no iteration: the
+        //  first build's `densityIteration {}` record was rejected as
+        //  ceremony over a constant-in-rho map.
+        if (a.densityProvenance == "derivedDiluteVolume"
+            && a.densityRhoWater > 0.0)
         {
-            out << "        densityIteration\n        {\n"
-                   "            //  AUTHORISED (provenance iterative).  The map is\n"
-                   "            //  rhoWaterKell(T_sample) + soluteMass -- the dilute-volume\n"
-                   "            //  closure, constant in rho, so convergence is immediate BY\n"
-                   "            //  CONSTRUCTION; the record is kept because an iteration a\n"
-                   "            //  student cannot watch is what the ruling forbids.\n"
-                   "            initialEstimate    " << a.densityIterates.front()
+            out << "        densityDerivation\n        {\n"
+                   "            //  AUTHORISED direct closure: rho = rhoWaterKell(T_sample)\n"
+                   "            //  + soluteMass.  An APPROXIMATION -- solutes add mass, not\n"
+                   "            //  volume -- recorded term by term so the reader can see\n"
+                   "            //  exactly what was assumed and re-derive the sum by hand.\n"
+                   "            closure            diluteVolume;\n"
+                   "            rhoWater           " << a.densityRhoWater
                 << " kg/m3;    // rhoWaterKell at sampleTemperature\n"
-                   "            criterion          \"|rho_k - rho_km1| / rho_k <= tolerance\";\n"
-                   "            tolerance          " << a.densityTol << ";"
-                << (a.densityTolDefaulted ? "    // NAMED DEFAULT" : "    // declared")
-                << "\n            maxIterations      " << a.densityMaxIter << ";"
-                << (a.densityMaxIterDefaulted ? "    // NAMED DEFAULT" : "    // declared")
-                << "\n            iterations         " << a.densityResiduals.size()
-                << ";\n            values             (";
-            for (const auto v : a.densityIterates) out << " " << v;
-            out << " );    // kg/m3, rho_0 first\n"
-                   "            residuals          (";
-            for (const auto r : a.densityResiduals) out << " " << r;
-            out << " );    // relative\n"
+                   "            soluteMass         " << a.densitySoluteMass
+                << " kg/m3;    // Sum of dissolved components per m3 of solution\n"
                    "            final              " << a.density
-                << " kg/m3;\n        }\n";
+                << " kg/m3;    // the sum of the two terms above\n        }\n";
         }
         if (a.solventMassFlow > 0.0)
             out << "        solventMassFlow        " << a.solventMassFlow * 3600.0
@@ -1322,18 +1315,20 @@ ProcessStream readStreamState(const fs::path&       file,
                     " them without the solution's density.  Declare"
                     " `density { value <rho> kg/m3; provenance measured; }`"
                     " beside a flow anchor (`volumetricFlow` or"
-                    " `totalMassFlow`) -- or AUTHORISE the engine to solve"
-                    " it: `density { provenance iterative; }` runs the"
-                    " fixed point with the complete iteration record kept"
-                    " (slice B, 2026-08-10).  Nothing runs silently.");
+                    " `totalMassFlow`) -- or AUTHORISE the direct closure:"
+                    " `density { provenance derivedDiluteVolume; }` derives"
+                    " rho = rhoWaterKell(T_sample) + soluteMass with both"
+                    " terms recorded (an announced approximation, not an"
+                    " iteration).  Nothing runs silently.");
             auto dd = blk->subDict("density");
             rec->densityProvenance = dd->lookupWordOrDefault("provenance", "");
-            //  TWO provenances, both EXPLICIT, and no silent third (slice B,
-            //  ruled 2026-08-10): `measured` (the laboratory's number), or
-            //  `iterative` (the USER-AUTHORISED fixed point, solved at the
-            //  solvent closure below, complete record kept).  An absent or
-            //  other word refuses -- authorisation is a declaration, never
-            //  an inference.
+            //  TWO provenances, both EXPLICIT, and no silent third (slice B
+            //  as CORRECTED, 2026-08-10): `measured` (the laboratory's
+            //  number), or `derivedDiluteVolume` (the DIRECT closure
+            //  rho = rhoWaterKell(T_sample) + soluteMass, computed at the
+            //  solvent closure below with BOTH terms recorded).  An absent
+            //  or other word refuses -- authorisation is a declaration,
+            //  never an inference.
             if (rec->densityProvenance == "measured")
             {
                 rec->density = dd->lookupScalar("value", Dims::density);
@@ -1341,34 +1336,46 @@ ProcessStream readStreamState(const fs::path&       file,
                     throw std::runtime_error("stream state '" + name + "':"
                         " the declared density is not positive.");
             }
-            else if (rec->densityProvenance == "iterative")
+            else if (rec->densityProvenance == "derivedDiluteVolume")
             {
                 if (dd->found("value"))
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the density declares `provenance iterative` AND a"
-                        " `value`.  Two sources for one number: either the"
-                        " laboratory measured it (provenance measured) or"
-                        " the engine iterates it under your authorisation --"
-                        " not both.");
-                rec->density = 0.0;              // solved at the closure
-                DictPtr it = dd->found("iteration") ? dd->subDict("iteration")
-                                                    : nullptr;
-                rec->densityTol =
-                    it && it->found("tolerance")
-                        ? it->lookupScalar("tolerance") : 1.0e-8;
-                rec->densityTolDefaulted = !(it && it->found("tolerance"));
-                rec->densityMaxIter =
-                    it && it->found("maxIterations")
-                        ? static_cast<int>(it->lookupScalar("maxIterations"))
-                        : 50;
-                rec->densityMaxIterDefaulted =
-                    !(it && it->found("maxIterations"));
-                if (rec->densityTol <= 0.0 || rec->densityMaxIter < 1)
+                        " the density declares `provenance"
+                        " derivedDiluteVolume` AND a `value`.  Two sources"
+                        " for one number: either the laboratory measured it"
+                        " (provenance measured) or the engine derives it"
+                        " under your authorisation -- not both.");
+                if (dd->found("iteration"))
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the density iteration declares a non-positive"
-                        " tolerance or fewer than one iteration -- there is"
-                        " no domain to converge in.");
+                        " the density declares an `iteration {}` block on"
+                        " the derivedDiluteVolume closure, which is a DIRECT"
+                        " calculation -- there is nothing for a tolerance or"
+                        " an iteration count to govern, and a declaration"
+                        " nothing reads is refused rather than ignored.");
+                rec->density = 0.0;              // derived at the closure
             }
+            else if (rec->densityProvenance == "iterative")
+                //  REFUSED, and the refusal is the honest state of the
+                //  machinery: slice B is BLOCKED here, not completed.  The
+                //  only closure the engine owns -- rhoWaterKell + soluteMass
+                //  -- is INDEPENDENT of rho, so an "iteration" over it would
+                //  be a direct calculation wearing a loop.  The first build
+                //  of this slice did exactly that and was rejected: its
+                //  tolerance and maxIterations governed nothing, physical
+                //  non-convergence could not occur, and its history was
+                //  ceremony.  A real fixed point needs a composition-
+                //  dependent volume model, which does not exist and is out
+                //  of this slice's scope by ruling.
+                throw std::runtime_error("stream state '" + name + "':"
+                    " `provenance iterative` is REFUSED: no composition-"
+                    "dependent volume closure currently exists to define the"
+                    " iteration -- the only closure the engine owns"
+                    " (rhoWaterKell(T) + soluteMass) is independent of rho,"
+                    " and an iteration whose update ignores the iterate is a"
+                    " direct calculation wearing a loop.  Use `provenance"
+                    " measured` (the laboratory's number) or `provenance"
+                    " derivedDiluteVolume` (the direct closure, both terms"
+                    " recorded).");
             else
                 throw std::runtime_error("stream state '" + name + "': the"
                     " density declares `provenance "
@@ -1376,11 +1383,12 @@ ProcessStream readStreamState(const fs::path&       file,
                           ? std::string("<absent>") : rec->densityProvenance)
                     + "`.  Two provenances exist, both explicit: `measured`"
                       " (the laboratory's number, with `value`), or"
-                      " `iterative` (the engine solves it as an authorised"
-                      " fixed point with the COMPLETE iteration record kept"
-                      " -- initial estimate, every value, every residual,"
-                      " the criterion, the count, the final density)."
-                      "  Nothing is inferred and nothing runs silently.");
+                      " `derivedDiluteVolume` (the direct closure"
+                      " rho = rhoWaterKell(T_sample) + soluteMass, both"
+                      " terms recorded).  `iterative` is refused by name --"
+                      " no composition-dependent volume closure exists to"
+                      " define one.  Nothing is inferred and nothing runs"
+                      " silently.");
 
             const bool hasQ  = blk->found("volumetricFlow");
             const bool hasMd = blk->found("totalMassFlow");
@@ -1399,7 +1407,7 @@ ProcessStream readStreamState(const fs::path&       file,
             //  it -- so the conversion is DEFERRED there, never guessed.
             if (hasQ)
                 Q = blk->lookupScalar("volumetricFlow", Dims::volumetricFlow);
-            else if (rec->densityProvenance == "iterative")
+            else if (rec->densityProvenance == "derivedDiluteVolume")
                 pendingMassAnchor =
                     blk->lookupScalar("totalMassFlow", Dims::massFlow);
             else
@@ -2505,90 +2513,50 @@ ProcessStream readStreamState(const fs::path&       file,
             for (std::size_t i = 0; i < n; ++i)
                 if (i != solventIdx) soluteMass += perUnit[i] * thermo.comp(i).MW();
 
-            //  ---- (d0) THE AUTHORISED ITERATIVE DENSITY (slice B) ---------
-            //  rho was declared `provenance iterative;`, so it is solved
-            //  HERE, where the solute mass it closes against exists.  The
-            //  map is
-            //      rho_{k+1} = rhoWaterKell(T_sample) + soluteMass ,
-            //  i.e. the DILUTE-VOLUME closure the per-volume route already
-            //  stands on (solutes add mass, not volume -- the same
-            //  approximation the props bench announces for /L bases).  That
-            //  closure makes the map CONSTANT in rho, so convergence is
-            //  immediate BY CONSTRUCTION today; the loop, the record and
-            //  the refusals are the slice's contract, and the map acquires
-            //  a real rho-dependence only when a composition-dependent
-            //  volume model exists -- a NAMED non-goal here (density-model
-            //  improvement is out of scope by ruling).  Every step is kept:
-            //  an iteration whose convergence a student cannot watch is
-            //  exactly what the ruling forbids.
-            if (rec->densityProvenance == "iterative")
+            //  ---- (d0) THE DERIVED DENSITY (slice B as CORRECTED) ---------
+            //  `provenance derivedDiluteVolume;`: the DIRECT closure
+            //      rho = rhoWaterKell(T_sample) + soluteMass ,
+            //  computed here, where the solute mass it needs exists, with
+            //  BOTH terms recorded.  It is the dilute-volume approximation
+            //  the per-volume route already stands on -- solutes add mass,
+            //  not volume -- announced as an approximation and named as a
+            //  DERIVATION: the first build wrapped exactly this formula in
+            //  an "iteration" whose update ignored the iterate, and was
+            //  rejected for it.  Nothing iterates here, and nothing claims
+            //  to.
+            if (rec->densityProvenance == "derivedDiluteVolume")
             {
                 if (rec->sampleT <= 0.0)
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the iterative density needs `sampleTemperature` --"
-                        " its initial estimate is the pure-water density AT"
-                        " THE SAMPLE'S TEMPERATURE, and there is nothing to"
-                        " evaluate it at.");
+                        " the derived density needs `sampleTemperature` --"
+                        " the pure-water term is evaluated AT THE SAMPLE'S"
+                        " TEMPERATURE, and there is nothing to evaluate it"
+                        " at.");
                 const scalar tC = rec->sampleT - 273.15;
                 if (tC < 0.0 || tC > 100.0)
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the iterative density is REFUSED at sampleTemperature "
+                        " the derived density is REFUSED at sampleTemperature "
                         + std::to_string(rec->sampleT) + " K: the pure-water"
                         " density correlation (Kell) is valid 0-100 degC at"
                         " 1 atm, and outside that thermodynamic domain the"
-                        " initial estimate would be an extrapolation nothing"
-                        " here has validated.  Measure the density instead.");
-                scalar rho = SolventProperties::rhoWaterKell(tC);
-                rec->densityIterates.push_back(rho);
-                bool converged = false;
-                for (int k = 0; k < rec->densityMaxIter && !converged; ++k)
-                {
-                    const scalar next =
-                        SolventProperties::rhoWaterKell(tC)
-                        + soluteMass;
-                    const scalar res = std::abs(next - rho)
-                                     / std::max(next, scalar(1));
-                    rec->densityIterates.push_back(next);
-                    rec->densityResiduals.push_back(res);
-                    rho = next;
-                    converged = (res <= rec->densityTol);
-                }
-                if (!converged)
-                {
-                    std::ostringstream os;
-                    os << "stream state '" << name << "': the authorised"
-                          " iterative density did NOT converge in "
-                       << rec->densityMaxIter << " iteration(s) (tolerance "
-                       << rec->densityTol << ", last residual "
-                       << rec->densityResiduals.back()
-                       << ").  The complete record:";
-                    for (std::size_t k = 0; k < rec->densityResiduals.size(); ++k)
-                        os << "\n    iter " << (k + 1) << ": rho = "
-                           << rec->densityIterates[k + 1] << " kg/m3, residual "
-                           << rec->densityResiduals[k];
-                    os << "\nA non-converged density is not a density --"
-                          " raise maxIterations, loosen the declared"
-                          " tolerance, or measure it.";
-                    throw std::runtime_error(os.str());
-                }
-                rec->density = rho;
+                        " water term would be an extrapolation nothing here"
+                        " has validated.  Measure the density instead.");
+                rec->densityRhoWater   = SolventProperties::rhoWaterKell(tC);
+                rec->densitySoluteMass = soluteMass;
+                rec->density = rec->densityRhoWater + soluteMass;
                 if (pendingMassAnchor > 0.0)
                 {
                     Q = pendingMassAnchor / rec->density;   // the deferred anchor
                     rec->volumetricFlow = Q;
                 }
-                ann << "[analysis] stream '" << name << "': density ITERATIVE"
-                       " (authorised): rho_0 = rhoWaterKell("
-                    << tC << " degC) = " << rec->densityIterates.front()
-                    << " kg/m3, converged in " << rec->densityResiduals.size()
-                    << " iteration(s) to " << rec->density
-                    << " kg/m3 (residual " << rec->densityResiduals.back()
-                    << ", tolerance " << rec->densityTol
-                    << (rec->densityTolDefaulted ? " [named default]"
-                                                 : " [declared]")
-                    << ").  The map is constant in rho under the"
-                       " dilute-volume closure -- immediate convergence is"
-                       " the closure's property, not the solver's virtue.\n";
+                ann << "[analysis] stream '" << name << "': density DERIVED"
+                       " (diluteVolume closure, authorised): rho ="
+                       " rhoWaterKell(" << tC << " degC) "
+                    << rec->densityRhoWater << " + solutes " << soluteMass
+                    << " = " << rec->density << " kg/m3.  The closure is an"
+                       " APPROXIMATION -- solutes add mass, not volume --"
+                       " and a DIRECT calculation: nothing iterates here,"
+                       " and nothing claims to.\n";
             }
 
             const scalar solventMass = rec->density - soluteMass;

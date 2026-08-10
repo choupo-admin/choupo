@@ -339,16 +339,17 @@ refuses("nodensity", analysis(density=""), "declares no DENSITY ROUTE",
         "density the reader would have to invent one, and inventing it from "
         "the analysis is the ITERATION A1 declares as a gap")
 
-#  REWRITTEN 2026-08-10 (slice B): `provenance iterative` is no longer the
-#  declared gap -- it is the AUTHORISED route, with its own gate
-#  (check_iterative_density).  What still refuses here is the AMBIGUOUS
-#  declaration: iterative AND a value is two sources for one number.
-refuses("iterative-plus-value",
-        analysis(density="    density { value 998.4 kg/m3; "
-                         "provenance iterative; }\n"),
-        "Two sources for one number",
-        "`provenance iterative` beside a `value` is ambiguous: the "
-        "laboratory measured it, or the engine solves it -- not both")
+#  REWRITTEN TWICE (slice B, 2026-08-10).  First rewrite made `iterative`
+#  the authorised route; Vitor REJECTED that build (the map was constant in
+#  rho -- an iteration in name only), so `iterative` now refuses OUTRIGHT,
+#  stating the missing machinery, and the honest direct closure lives under
+#  `derivedDiluteVolume` (its own gate: check_derived_density).
+refuses("iterative",
+        analysis(density="    density { provenance iterative; }\n"),
+        "no composition-dependent volume closure",
+        "`provenance iterative` names machinery that is not numerically "
+        "present -- it must refuse until a composition-dependent volume "
+        "model defines a real fixed point (slice B: BLOCKED)")
 
 refuses("overlimit", analysis(limit="2"), "maximumCorrection",
         "a 5.12 % correction against a declared 2 % limit stops being a "
@@ -463,9 +464,10 @@ print("check_aqueous_analysis: OK -- the analysis inlet resolves through its "
       "balance recomputed here from the authored mg/L (with the `as CaCO3` "
       "surrogate) agrees with the engine's, is non-zero before, zero after, "
       "and the charge the listed adjustments move equals the residue they "
-      "cancel; eight refusals fire BY NAME (no density route, iterative-"
-      "plus-value (the AUTHORISED iterative route has its own gate, "
-      "check_iterative_density), correction over the limit, pH as the "
+      "cancel; eight refusals fire BY NAME (no density route, iterative "
+      "(REFUSED outright -- no composition-dependent volume closure exists; "
+      "the honest direct closure is derivedDiluteVolume, gate "
+      "check_derived_density), correction over the limit, pH as the "
       "balancing variable, "
       "weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing "
       "analysis) and a closing analysis passes through ANNOUNCED; a plain "

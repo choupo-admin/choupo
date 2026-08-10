@@ -535,7 +535,7 @@ if [ "$#" -eq 0 ]; then
                    "case-manifest-gate case_manifest.py --check" \
                    "equilibrium-state-ref-gate check_equilibrium_state_ref.py" \
                    "aqueous-qualifier-gate check_aqueous_qualifier.py" \
-                   "iterative-density-gate check_iterative_density.py"; do
+                   "derived-density-gate check_derived_density.py"; do
         read -r om_name om_script om_arg <<< "$om_gate"
         if "$ROOT/bin/curate/$om_script" ${om_arg:-} > /tmp/opmem.$$ 2>&1; then
             printf "PASS  %-40s  (%s)\n" "$om_name" "$(head -1 /tmp/opmem.$$)"
