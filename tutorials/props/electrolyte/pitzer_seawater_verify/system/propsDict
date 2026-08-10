@@ -51,6 +51,47 @@
   no pin -- the numbers here are pinned to the model's own reproducible output
   and CROSS-CHECKED against the published seawater range.
 
+  ---------------------------------------------------------------------------
+  FINDING, 2026-08-10: "ALL PINS STILL IN BAND" WAS CHECKED ON TWO OF SIX.
+
+  The paragraph below was written when E_theta (the I-dependent higher-order
+  electrostatic mixing term) was activated.  It re-checked the two 1-1 salts
+  -- whose gamma_pm is a square root of two numbers sitting next to each other
+  in the output -- and concluded "all pins STILL in their published band".
+  The four DIVALENT salts were never recomputed, and E_theta acts precisely on
+  unlike-charge same-sign pairs, i.e. on exactly those four.
+
+  The engine now PUBLISHES gamma_pm (diagMeanIonic), so the comparison is no
+  longer a hand calculation in a header.  Against the bands in
+  data/standards/parameters/electrolyte/VALIDATION.md:
+
+      NaCl    0.6646   band 0.66-0.69   IN
+      KCl     0.6381   band 0.62-0.65   IN
+      MgCl2   0.4608   band 0.47-0.50   BELOW
+      CaCl2   0.4459   band 0.46-0.50   BELOW
+      Na2SO4  0.3489   band 0.36-0.40   BELOW
+      MgSO4   0.1460   band 0.15-0.20   BELOW
+
+  Four of six are outside, by 2-4 %.  VALIDATION.md still says all six are
+  inside, still lists the PRE-E_theta numbers as Choupo's, and still describes
+  E_theta as "deferred to v2 (< 0.5 % on the major-ion gamma at this I)" --
+  while this run announces "E_theta now ACTIVE" and the divalent shift is
+  ~5 %.  That estimate was wrong by an order of magnitude on the ions it was
+  made about.
+
+  NOT RESOLVED, and deliberately NOT TUNED.  Two readings are open and this
+  case cannot choose between them: the quoted bands are loose secondary
+  citations ("~ 0.47-0.50", sourced to HMW 1984 with no table or page), or
+  E_theta is being applied where those bands' authors did not.  Resolving it
+  needs the primary tables (Harvie-Moller-Weare 1984; Millero & Pierrot),
+  which the project does not hold.  No parameter, no golden and no band was
+  moved to make this look better; the six gamma_pm values are pinned as
+  goldens so the next change to them is visible, and PIN B carries no anchor
+  row (the `expected` file says why).
+
+  The paragraph as originally written, kept because it is the record of what
+  was checked:
+
   E_theta(I) BEFORE -> AFTER (constant-theta -> higher-order mixing active),
   all pins STILL in their published band:
     gamma_pm(NaCl)  0.6714 -> 0.6646   (band 0.66-0.68; 1:1, E_theta=0 for Na-Cl,
@@ -89,6 +130,9 @@ operations
         network      ( water-dissociation );
         reason       "HMW theta/psi were fitted to a NON-pairing major-ion treatment; admitting the sulfate ion pairs would double-count what the Pitzer virial and ternary terms already carry";
         diagSpecies ( Na Cl );          // gamma_Na, gamma_Cl pinned
+        // The MEASURABLE coefficient, published rather than hand-combined in
+        // this header.  nu+/nu- are derived from the species charges.
+        diagMeanIonic ( { cation Na; anion Cl; } );
         output      { file reduction_nacl.csv; }
     }
 
@@ -103,6 +147,17 @@ operations
         network      ( water-dissociation );
         reason       "HMW theta/psi were fitted to a NON-pairing major-ion treatment; admitting the sulfate ion pairs would double-count what the Pitzer virial and ternary terms already carry";
         diagSpecies ( Na Cl K Mg Ca SO4 );
+        // ALL SIX salts VALIDATION.md compares, not the two that are easy to
+        // eyeball -- see the E_theta finding in this case's header.
+        diagMeanIonic
+        (
+            { cation Na; anion Cl;  }
+            { cation K;  anion Cl;  }
+            { cation Mg; anion Cl;  }
+            { cation Ca; anion Cl;  }
+            { cation Na; anion SO4; }
+            { cation Mg; anion SO4; }
+        );
         output      { file seawater.csv; }
     }
 );

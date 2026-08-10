@@ -37,6 +37,7 @@ License
 #include "thermo/solidEquilibrium/SolidEquilibriumService.H"
 
 #include <fstream>
+#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -366,6 +367,71 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
                     + "' is not in the computed species table");
             diag_["m_" + name]     = r->molality;
             diag_["gamma_" + name] = r->gamma;   // per-ion activity coefficient
+        }
+
+    //  THE MEASURABLE ONE.  Every key above is a SINGLE-ION activity
+    //  coefficient, and a single-ion gamma is not measurable: it depends on
+    //  the convention that splits a neutral combination into charged halves.
+    //  What experiment reports -- and what every published seawater or
+    //  single-salt table quotes -- is the MEAN IONIC coefficient
+    //
+    //      gamma_pm = ( gamma_+^nu+ * gamma_-^nu- )^(1/(nu+ + nu-)) ,
+    //
+    //  which is convention-free.  Until now the engine published only the
+    //  unmeasurable half, so a case comparing against a published table had
+    //  to combine the ions BY HAND in a header comment.  That is a derived
+    //  number with no home in the result, and it went stale exactly as such
+    //  numbers do: `pitzer_seawater_verify`'s header claimed "all pins STILL
+    //  in their published band" after E_theta was activated, having actually
+    //  re-checked the two 1-1 salts whose gamma_pm is easy to eyeball.  The
+    //  four divalent salts were never recomputed (see the case header).
+    //
+    //  The STOICHIOMETRY IS DERIVED, never declared and never read off a
+    //  name: nu+ and nu- are the smallest integers with nu+*z+ = nu-*|z-|,
+    //  from the charges the species records already carry.  Deriving it from
+    //  a salt name would be the name-identity crossing the F2 contract bans.
+    if (dict->found("diagMeanIonic"))
+        for (const auto& e : dict->lookupDictList("diagMeanIonic"))
+        {
+            const std::string cat = e->lookupWord("cation");
+            const std::string ani = e->lookupWord("anion");
+            const auto* rc = res.find(cat);
+            const auto* ra = res.find(ani);
+            if (!rc || !ra)
+                throw std::runtime_error("speciate: diagMeanIonic '"
+                    + cat + "'/'" + ani + "': '" + (rc ? ani : cat)
+                    + "' is not in the computed species table");
+            if (rc->z <= 0.0 || ra->z >= 0.0)
+                throw std::runtime_error("speciate: diagMeanIonic names '"
+                    + cat + "' as the cation and '" + ani + "' as the anion, "
+                    "but their charges are " + std::to_string(rc->z) + " and "
+                    + std::to_string(ra->z) + " -- a mean ionic coefficient "
+                    "is defined for one POSITIVE and one NEGATIVE species");
+
+            const double zp = std::round(rc->z), zm = std::round(-ra->z);
+            if (std::fabs(zp - rc->z) > 1e-9 || std::fabs(zm + ra->z) > 1e-9)
+                throw std::runtime_error("speciate: diagMeanIonic '" + cat
+                    + "'/'" + ani + "': non-integer charge -- the "
+                    "stoichiometry nu+*z+ = nu-*|z-| has no integer solution");
+
+            //  smallest integers: divide both charges by their gcd
+            long a = static_cast<long>(zm), b = static_cast<long>(zp);
+            while (b != 0) { const long t = a % b; a = b; b = t; }
+            const double g   = static_cast<double>(a > 0 ? a : -a);
+            const double nup = zm / g, num = zp / g;
+
+            diag_["gamma_pm_" + cat + "_" + ani] =
+                std::pow(std::pow(rc->gamma, nup) * std::pow(ra->gamma, num),
+                         1.0 / (nup + num));
+
+            //  Announce the DERIVATION, not just the answer: a reader must be
+            //  able to see which stoichiometry produced the number without
+            //  re-deriving it from the charges themselves.
+            if (verbosity >= 2)
+                std::cout << "    gamma_pm(" << cat << "," << ani << "): nu+ "
+                          << nup << ", nu- " << num << " derived from z("
+                          << cat << ") = " << rc->z << ", z(" << ani << ") = "
+                          << ra->z << "\n";
         }
 
     if (verbosity >= 2)

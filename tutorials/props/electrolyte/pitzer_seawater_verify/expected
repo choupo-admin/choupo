@@ -5,6 +5,7 @@ diag    reduction_nacl         SI_halite        -1.93464         1e-4
 diag    reduction_nacl         aw               0.966826         1e-4
 diag    reduction_nacl         gamma_Cl         0.657172         1e-4
 diag    reduction_nacl         gamma_Na         0.657172         1e-4
+diag    reduction_nacl         gamma_pm_Na_Cl   0.657172         1e-4
 diag    reduction_nacl         m_Cl             1                1e-4
 diag    reduction_nacl         m_Na             1                1e-4
 diag    reduction_nacl         pH               7                1e-4
@@ -20,6 +21,12 @@ diag    seawater               gamma_K          0.589047         1e-4
 diag    seawater               gamma_Mg         0.204857         1e-4
 diag    seawater               gamma_Na         0.639032         1e-4
 diag    seawater               gamma_SO4        0.104021         1e-4
+diag    seawater               gamma_pm_Ca_Cl   0.445898         1e-4
+diag    seawater               gamma_pm_K_Cl    0.638056         1e-4
+diag    seawater               gamma_pm_Mg_Cl   0.460817         1e-4
+diag    seawater               gamma_pm_Mg_SO4  0.145978         1e-4
+diag    seawater               gamma_pm_Na_Cl   0.664577         1e-4
+diag    seawater               gamma_pm_Na_SO4  0.348917         1e-4
 diag    seawater               m_Ca             0.01065          1e-4
 diag    seawater               m_Cl             0.5658           1e-4
 diag    seawater               m_K              0.01058          1e-4
@@ -27,3 +34,27 @@ diag    seawater               m_Mg             0.0547           1e-4
 diag    seawater               m_Na             0.4861           1e-4
 diag    seawater               m_SO4            0.02926          1e-4
 diag    seawater               pH               8.1              1e-4
+
+# --- ANCHOR row (6th column): a PUBLISHED value, never refreshed by --record -
+# PIN A only.  gamma_pm(NaCl) at 1.0 mol/kg, 25 C = 0.657 -- Hamer & Wu,
+# J. Phys. Chem. Ref. Data 1 (1972) 1047, Table 16.  The row above pins the
+# same number at 1e-4 against Choupo's own last answer; this one pins it
+# against the measurement.  Two claims about one number, deliberately.
+diag    reduction_nacl         gamma_pm_Na_Cl   0.657            2e-2     anchor
+
+# --- WHY PIN B (seawater) CARRIES NO ANCHOR ROW ------------------------------
+# Four of its six mean ionic coefficients currently sit BELOW the published
+# seawater-Pitzer bands quoted in data/standards/parameters/electrolyte/
+# VALIDATION.md (measured 2026-08-10, engine values above):
+#     NaCl    0.6646   band 0.66-0.69   IN
+#     KCl     0.6381   band 0.62-0.65   IN
+#     MgCl2   0.4608   band 0.47-0.50   BELOW
+#     CaCl2   0.4459   band 0.46-0.50   BELOW
+#     Na2SO4  0.3489   band 0.36-0.40   BELOW
+#     MgSO4   0.1460   band 0.15-0.20   BELOW
+# Anchoring only the two that agree would be selection, and anchoring all six
+# would knowingly commit a red suite over a disagreement nobody has diagnosed
+# yet.  So: none, and the reason is written here rather than left to be
+# inferred from an absence.  The finding is in the case header; resolving it
+# needs the primary tables (HMW 1984; Millero & Pierrot), which the project
+# does not hold.

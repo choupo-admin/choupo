@@ -54,17 +54,39 @@ case: `tutorials/props/electrolyte/pitzer_seawater_verify`.
 **Mean ionic activity coefficients** (computed from the per-ion γ in the golden
 master `seawater.csv`) vs the published seawater Pitzer range:
 
-| salt | Choupo γ± (seawater, I≈0.72) | published seawater Pitzer | source |
-|------|------|------|------|
-| NaCl  | 0.671 | ≈ 0.66–0.69 | Pitzer (1991) ch. 3; Millero & Pierrot seawater model |
-| KCl   | 0.645 | ≈ 0.62–0.65 | HMW (1984); Pitzer (1991) |
-| MgCl₂ | 0.485 | ≈ 0.47–0.50 | HMW (1984) |
-| CaCl₂ | 0.469 | ≈ 0.46–0.50 | HMW (1984) |
-| Na₂SO₄| 0.373 | ≈ 0.36–0.40 | HMW (1984) |
-| MgSO₄ | 0.170 | ≈ 0.15–0.20 | Pitzer & Mayorga (1973); HMW (1984) — the low 2:2 value |
+> **CORRECTED 2026-08-10 — THIS SECTION ASSERTED SIX AGREEMENTS AND HAD
+> CHECKED TWO.**  The Choupo column below was recorded before the E_theta
+> higher-order electrostatic mixing term was activated.  When it was, the two
+> 1-1 salts were re-checked in the case header and the four divalent ones were
+> not — and E_theta acts precisely on unlike-charge same-sign pairs, so those
+> four are exactly the ones it moves.  The engine now **publishes** γ±
+> (`diagMeanIonic`) instead of leaving it to be combined by hand, and the
+> current numbers are in the second column.  Four of six are **outside** the
+> quoted bands.  Nothing was tuned and no band was widened: the disagreement
+> is the finding.
 
-All six land inside the published seawater Pitzer band. The 2:2 MgSO₄ landing
-at **0.17** (the famously low value) is the strongest qualitative check.
+| salt | Choupo γ± NOW (E_theta active) | Choupo γ± BEFORE (constant-theta) | published seawater Pitzer | verdict | source |
+|------|------|------|------|------|------|
+| NaCl  | **0.6646** | 0.671 | ≈ 0.66–0.69 | IN | Pitzer (1991) ch. 3; Millero & Pierrot seawater model |
+| KCl   | **0.6381** | 0.645 | ≈ 0.62–0.65 | IN | HMW (1984); Pitzer (1991) |
+| MgCl₂ | **0.4608** | 0.485 | ≈ 0.47–0.50 | **BELOW** | HMW (1984) |
+| CaCl₂ | **0.4459** | 0.469 | ≈ 0.46–0.50 | **BELOW** | HMW (1984) |
+| Na₂SO₄| **0.3489** | 0.373 | ≈ 0.36–0.40 | **BELOW** | HMW (1984) |
+| MgSO₄ | **0.1460** | 0.170 | ≈ 0.15–0.20 | **BELOW** | Pitzer & Mayorga (1973); HMW (1984) — the low 2:2 value |
+
+**Two readings are open, and this document does not pick one.** Either the
+quoted bands are loose secondary citations — every divalent one is an "≈ x–y"
+against "HMW (1984)" with no table or page — or E_theta is being applied where
+those bands' authors did not apply it. Deciding needs the primary tables
+(Harvie, Møller & Weare 1984; Millero & Pierrot), which the project does not
+hold. Until then the six values are pinned as goldens in
+`pitzer_seawater_verify/expected` so the next change to them is visible, and
+the case carries **no anchor row** for them: anchoring only the two that agree
+would be selection.
+
+The 2:2 MgSO₄ landing near **0.15** (the famously low value) remains the
+strongest *qualitative* check — the order of magnitude is the physics, and it
+survives; the band membership is what did not.
 
 **Single-salt reduction pin** (the skeptic's gate, in the same case). The HMW
 model on a **NaCl-only** composition (every ternary sum empty) reproduces the
@@ -80,7 +102,15 @@ slightly ABOVE the single-salt γ±(NaCl, 0.7 m) = 0.667 — the cation-cation /
 anion-anion mixing (Mg/Ca/SO₄ present) raises it, the documented seawater
 behaviour.
 
-_Approximations (announced at run time): **constant-theta** — the I-dependent
+_Approximations — **the sentence below is HISTORICAL and was wrong twice**
+(corrected 2026-08-10): E_theta is no longer deferred (the run announces
+"E_theta now ACTIVE", J(x) kernel accurate to 1.1e-4 against Pitzer's 1975
+tabulation), and its effect on the divalent γ± is ~5 %, not "< 0.5 %" — an
+order of magnitude out on exactly the ions the estimate was about. Kept
+verbatim because it is the record of what was believed when the numbers above
+were first recorded._
+
+_**constant-theta** — the I-dependent
 E_theta(I) higher-order electrostatic mixing term is deferred to v2 (< 0.5 % on
 the major-ion γ at this I); Pitzer-HMW is trustworthy to I ≈ 6 for this
 seawater/brine system. Mixing params: Harvie, Moller & Weare, Geochim.
