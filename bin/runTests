@@ -425,6 +425,24 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/doctrine.$$
 
+    #  README CAPABILITY MATRIX vs the engine's registries (2026-08-10).  An
+    #  outside reviewer found the public README claiming four binaries, SRK
+    #  and Peng-Robinson in its prose while its own tables still said three
+    #  binaries, `Equation of state: idealGas` and `solid (stub)`.  Six rows
+    #  were stale.  Their objection is the reason this runs on every sweep:
+    #  "if the EOS line is stale, how many other capability claims are stale
+    #  too?"  General prose staleness stays UNGATED by ruling; a capability
+    #  TABLE is the tractable exception -- fixed rows, machine-readable keys.
+    if "$ROOT/bin/curate/check_readme_capabilities.py" > /tmp/readmecap.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "readme-capabilities" "$(head -1 /tmp/readmecap.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (stale public claim -- run bin/curate/check_readme_capabilities.py)\n" "readme-capabilities"
+        cat /tmp/readmecap.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/readmecap.$$
+
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
     #  a type from a module that only re-imports it passed `npm test` and was

@@ -114,20 +114,22 @@ no special "standalone" mode.
 | `choupoSolve` | Steady-state simulation                | `F(x) = 0` (root finding) | flash, bubble-T, distillation, CSTR steady, recycle flowsheets, sweeps, optimisation, parameter estimation |
 | `choupoBatch` | Batch / time-dependent simulation       | `dY/dt = f(Y, t)` with recipe events | batch reactor (isothermal / adiabatic / multi-reaction), Rayleigh distillation, recipe-driven multi-vessel sequences |
 | `choupoCtrl`  | Dynamic continuous + control loops      | `dY/dt = f(Y, u(t), t)`  | continuous CSTR with PID temperature control, disturbance-rejection studies |
+| `choupoProps` | Property evaluation (the PROPS BENCH)   | direct model evaluation — no flowsheet | γ / φ / Psat / Cp scans, T-x-y and binary-LLE sweeps, aqueous speciation + scaling, parameter fits, thermodynamic-consistency tests |
 
-The three binaries share `src/{core,thermo,solver,materials,unitOperations,control}`; `make all` builds all three.  Pick the one your case needs by setting `application` in `controlDict` --- `runCase` then dispatches automatically.
+The four binaries share `src/{core,thermo,solver,materials,unitOperations,control}`; `make all` builds all four.  Pick the one your case needs by setting `application` in `controlDict` --- `runCase` then dispatches automatically.
 
 ## Capability matrix
 
 | Layer | Capability |
 |---|---|
-| Activity coefficients γ_i(T, x) | `ideal`, `NRTL`, `Wilson` |
-| Equation of state φ_i(T, P, y)  | `idealGas` |
-| Vapour pressure Psat_i(T)       | `Antoine` |
-| Heat capacity Cp(T)             | `polynomial` (liquid + ideal gas) |
+| Activity coefficients γ_i(T, x) | `ideal`, `NRTL`, `Wilson`, `UNIQUAC`, `UNIFAC` (predictive, group contribution), `cosmoSAC` (2002 variant; surface data per component, VT-2005 sets referenced not shipped) |
+| Aqueous (electrolyte) activity  | `davies` (teaching rung, charge-only), `pitzerHMW` (per-ion virials), `edwardsPitzer` (Edwards et al. 1978 truncation, sour-water), eNRTL + single-salt Pitzer adapters |
+| Equation of state φ_i(T, P, y)  | `idealGas`, `SRK`, `PengRobinson` (alias `PR`), `PCSAFT` (incl. association, 2B/3B/4C schemes) |
+| Vapour pressure Psat_i(T)       | `Antoine`, `AmbroseWalton` |
+| Heat capacity Cp(T)             | `polynomial` (liquid + ideal gas), `NASA7` |
 | Latent heat ΔHvap(T)            | Watson correlation |
-| Pure-component Gibbs energy     | `standardThermochemistry { dHf_298; s_298; }` block + Kirchhoff via Cp |
-| Phases                          | vapor, liquid, solid (stub) |
+| Pure-component Gibbs energy     | `standardThermochemistry { dHf_298; s_298; referenceState; }` block + Kirchhoff via Cp |
+| Phases                          | vapour, liquid, solid.  The solid's **crystallising** mode is implemented (one component's pure crystal in SLE — ice and minerals, `f_solid = Psat·exp(−ΔG_fus/RT)`); its **inert** mode (propagated but skipped by the flash) is still a stub and refuses by name |
 | Reactors                        | `cstr`, `pfr`, `gibbsReactor` (multi-phase, 3 selectable methods) |
 | Separation flash / saturation   | `isothermalFlash` (alias `flash`; VL / LL / VLLE), `adiabaticFlash`, `bubbleT`, `dewT` |
 | Distillation                    | `distillationColumn` (alias `column`; Wang-Henke or simultaneous MESH), `shortcutColumn` (alias `FUG`), `absorber`, `stripper` |
@@ -145,7 +147,7 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 | n-D solvers                     | NewtonND with Gauss elimination |
 | Direct minimisation             | Nelder-Mead simplex (relative-per-axis tolerance) |
 | Phase stability                 | Michelsen TPD detector; LL + VLLE flash via Gibbs-energy minimisation on the simplex with multi-start |
-| Outer drivers                   | `sweep` (sensitivity), `fitBinaryPair` (LM regression of NRTL/Wilson pairs), `optimization` (Nelder-Mead minimisation of KPI / cost / `costTotal`) |
+| Outer drivers                   | `sweep` (sensitivity), `gridSweep`, `paretoSweep` (multi-objective front), `fitBinaryPair` (LM regression of NRTL/Wilson pairs), `optimization` (Nelder-Mead minimisation of KPI / cost / `costTotal`), `designSpec` |
 | Post-processing                 | sizing (`stirredTank`, `shellTubeHX`), Guthrie costing (`method guthrie`), Materials registry (`carbonSteel` / `SS304` / `SS316` / `aluminium`) |
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
@@ -154,18 +156,28 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 
 Cases live under `tutorials/<category>/<name>/`:
 
-| Category | Binary | Count |
-|---|---|---|
-| `steady/` | `choupoSolve` | 196 |
-| `batch/`  | `choupoBatch` | 42 |
-| `ctrl/`   | `choupoCtrl`  | 15 |
-| `props/`  | `choupoProps` | 65 |
-| `plant/`  | `choupoSolve` (fractal multi-sector showcase) | 11 |
-| `electrochem/` | `choupoSolve` | 2 |
+| Category | Binary |
+|---|---|
+| `steady/` | `choupoSolve` |
+| `batch/`  | `choupoBatch` |
+| `ctrl/`   | `choupoCtrl`  |
+| `props/`  | `choupoProps` |
+| `plant/`  | `choupoSolve` (fractal multi-sector showcase) |
+| `electrochem/` | `choupoSolve` |
 
-Browse the full inventory with `listCases`; `bin/runTests` validates
-296 of them via per-case golden-master KPIs (cases without an
-`expected` file run end-to-end with a NaN/inf guard only).
+**Counts are generated, never written here.**  The single source of truth
+is [`generated/releaseInventory.json`](generated/releaseInventory.json)
+(produced by `bin/curate/release_inventory.py`, with a `runTests` gate that
+fails when it goes stale) — a tally copied into prose is a second home for
+a derived number, and this table used to carry one that had drifted.
+
+Browse the full inventory with `listCases`.  `bin/runTests` checks each
+case that ships an `expected` file against per-case golden-master KPIs;
+cases without one run end-to-end under a NaN/inf guard only.  A golden
+PASS means the answer has not MOVED — agreement with published
+measurement is a separate claim, carried by `anchor` rows and the named
+validation subset in
+[`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md).
 
 See [`docs/userGuide.pdf`](docs/userGuide.pdf) for a one-line summary
 of what each one teaches.
