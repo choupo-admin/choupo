@@ -66,9 +66,10 @@ Sabotage 1 -- the reader's fingerprint verification removed (stale accepted):
 Sabotage 2 -- the writer emits the reference with no fingerprint:
 
     check_equilibrium_state_ref: FAILED
-      E2: it refused, but not as STALE -- the refusal must name the
-      fingerprint mismatch so the reader knows the state moved under the
-      reference
+      E1: converged/feed fed back as 0/feed was refused -- ... 'The
+      canonical state was changed under the reference ...'
+    (the missing fingerprint reads as STALE at the ROUND TRIP -- the E1 arm
+    catches it before E2 even runs, which is stricter than predicted)
 """
 
 import os

@@ -116,7 +116,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: solving/transporting unit (`origin` stamped) → stream files, downstream units, students comparing inlet vs outlet
 - Never: re-speciation across a model boundary (silent); a precipitate listed as a dissolved species; a size distribution outside its population; a copy of the equilibrium state under `calculated{}` (ruled 2026-08-10: cross-reference only)
 - Contract: CLAUDE.md §5 (2026-07-30/31); `docs/design/basis-reconciliation-spike.md`
-- Witness: `reactiveMultiphaseFlash` · Gates: `check_both_bases`, `check_phase_speciation`, `check_basis_spike`
+- Witness: `reactiveMultiphaseFlash` · Gates: `check_both_bases`, `check_phase_speciation`, `check_basis_spike`, `check_equilibrium_state_ref`
 
 **S3 — Aqueous analysis inlet (measurement ≠ inventory)**
 - Owner: `src/streams/AnalysisReconciler.cpp` (QP reconciliation; includes NOTHING from thermo/ — boundary is a translation unit) + the `aqueousAnalysis{}` reader in `src/streams/StreamStateIO.cpp`

@@ -664,3 +664,34 @@ separate (declared measurements preserved per row as `reportedValue`;
 reconciled totals in `conservedInventory`; equilibrium in `speciation {}`).
 What is missing is only that `calculated {}` does not NAME where layer 3
 lives.  **Recommendation: a cross-reference, not a copy.**  Vítor's call.
+
+## 10. The `equilibriumState` cross-reference (ruled + shipped 2026-08-10)
+
+The slice-A escalation — whether `calculated {}` should group an
+`equilibriumState` — was ruled by Vítor: **a cross-reference, never a
+copy**.  The canonical home stays THE TWO BASES; `calculated {
+equilibriumState { target speciation; fingerprint "<fnv1a-64>"; } }` is
+written beside every speciation-bearing stream, and the reader recomputes
+the fingerprint from the block actually in the file.  Stale (a
+closure-invisible edit — pH, solvedAtT, origin, network — under the
+reference), missing target and incompatible target all refuse by name;
+deleting the whole `calculated {}` block still runs, so the O1
+deletability separation survives.  Numbers enter the canonical string
+exactly as the writer prints them (`setprecision(10)`), making
+write → parse → recompute the identity; FNV-1a is drift detection, not
+cryptography, and the writer says so.
+
+Convergence and evidence fields are ALLOWED by the ruling and deliberately
+NOT emitted yet — they arrive with the slice that needs them (C/B), and a
+fabricated convergence record would be worse than an absent one.
+
+The round trip caught a real pre-existing defect on first contact: the
+reader's carriage kept only the FIRST network name, so
+`network ( ammonia carbonate );` was carried as `ammonia` and the second
+chemistry set silently vanished on every write→read→write — the spike's
+byte-stability criterion was already broken for multi-network blocks.
+Fixed with the slice.  Gate: `check_equilibrium_state_ref`
+(sabotage-verified twice; the second sabotage fired STRICTER than
+predicted — a missing fingerprint reads as STALE at the round trip, and
+the observed output is what the docstring records).  **Slices C and B are
+now unblocked.**

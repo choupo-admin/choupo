@@ -37,11 +37,12 @@ WHAT THIS DOES **NOT** COVER, stated so the green line cannot imply it:
     "writer emits only the canonical form" clause of the ruling has no
     subject for this form, and inventing a writer to satisfy a clause
     would be worse than reporting that.
-  * it does not check `equilibriumState`.  That grouping is NOT built:
-    the equilibrium state already has a settled home (THE TWO BASES:
-    top-level `speciation {}`, or `phases.aqueous.speciation` when a
-    second liquid or a solid is named), and a copy under `calculated {}`
-    would be a third home for one truth.  Escalated, not decided here.
+  * it does not check `equilibriumState`.  RESOLVED 2026-08-10 (this
+    note used to say "escalated, not decided here"): Vitor ruled it a
+    CROSS-REFERENCE, never a copy -- the canonical home stays THE TWO
+    BASES, and `calculated { equilibriumState }` carries only a target +
+    fingerprint the reader re-verifies.  Its own gate is
+    check_equilibrium_state_ref.
   * it does not check the analytical qualifier (slice C) or calculated
     density (slice B).
 
@@ -217,6 +218,5 @@ print("check_material_wrapper: OK -- the `material { ... }` wrapper resolves"
       "  NOT COVERED: the writer (the analysis form is author-only input;"
       " converged/ emits the resolved material, so the ruling's"
       " writer-emits-canonical clause has no subject here), the"
-      " `equilibriumState` grouping (NOT built -- it would be a third home"
-      " for a state THE TWO BASES already places; escalated), and slices"
-      " C/B.")
+      " `equilibriumState` cross-reference (its own gate:"
+      " check_equilibrium_state_ref), and slices C/B.")

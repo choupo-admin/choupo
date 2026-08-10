@@ -97,11 +97,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 119 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 120 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 56 design record(s) appear in the index, and its stated counts (28 state a rejected alternative, 28 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 57 design record(s) appear in the index, and its stated counts (28 state a rejected alternative, 29 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -163,6 +163,10 @@
       "exit": 0,
       "claim": "equilibrium-family gate: 3 convention profiles, 214 migrated parameterisations, 7 cross-convention diagnostics"
     },
+    "check_equilibrium_state_ref": {
+      "exit": 0,
+      "claim": "check_equilibrium_state_ref: OK -- the cross-reference verifies on its own round trip, a closure-invisible state edit (pH) under it refuses as STALE naming both fingerprints, an incompatible target and a missing target refuse by name, deleting calculated{} entirely still runs (deletability), and the block carries no state values.  NOT COVERED: convergence/evidence fields (not emitted yet -- they arrive with the slice that needs them), and hash strength (FNV-1a is drift detection, not cryptography)."
+    },
     "check_estimates": {
       "exit": 0,
       "claim": "check_estimates: 40 structured Joback estimate(s) verified against the recipe"
@@ -193,7 +197,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 120 gates, and the other 116 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 121 gates, and the other 117 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -205,7 +209,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40443 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40445 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -265,7 +269,7 @@
     },
     "check_material_wrapper": {
       "exit": 0,
-      "claim": "check_material_wrapper: OK -- the `material { ... }` wrapper resolves identically to the bare form (analysis AND componentMolarFlows: one rule), and a wrapper beside a top-level form is refused by name.  NOT COVERED: the writer (the analysis form is author-only input; converged/ emits the resolved material, so the ruling's writer-emits-canonical clause has no subject here), the `equilibriumState` grouping (NOT built -- it would be a third home for a state THE TWO BASES already places; escalated), and slices C/B."
+      "claim": "check_material_wrapper: OK -- the `material { ... }` wrapper resolves identically to the bare form (analysis AND componentMolarFlows: one rule), and a wrapper beside a top-level form is refused by name.  NOT COVERED: the writer (the analysis form is author-only input; converged/ emits the resolved material, so the ruling's writer-emits-canonical clause has no subject here), the `equilibriumState` cross-reference (its own gate: check_equilibrium_state_ref), and slices C/B."
     },
     "check_mean_ionic": {
       "exit": 0,
@@ -428,8 +432,8 @@
       "claim": "std includes: 615 source files, each includes what it uses."
     },
     "check_stream_basis": {
-      "exit": 0,
-      "claim": "stream-basis gate: species basis == component basis; charge, network and basis refusals fire; the written speciation closes, refuses when broken, and is deletable without moving the answer"
+      "exit": 1,
+      "claim": "stream-basis gate FAILED:"
     },
     "check_stream_faces": {
       "exit": 0,
