@@ -67,9 +67,12 @@ Sabotage 2 -- the soluteMass term dropped from the closure (rho = rhoWater
 alone):
 
     check_derived_density: FAILED
-      D1: final rho 998.2041 disagrees with the independently recomputed
-      closure 998.4841 kg/m3 (Kell + the sheet's own solutes)
       D1: the record's terms do not sum to its final
+      D1: final rho 998.2041 disagrees with the independently recomputed
+      closure 998.4756 kg/m3 (Kell + the sheet's own solutes)
+    (998.4756, not the authored run's 998.4841: with the water term short
+    the reconciliation's chloride adjustment lands slightly differently,
+    and the oracle recomputes from THAT run's own record)
 """
 
 import os
@@ -177,7 +180,7 @@ PROBES = [
                          "sampleTemperature  380.15 K;"),
      "0-100 degC", "380 K (outside Kell) was ACCEPTED"),
     ("D6", "density   { provenance iterative; }", None,
-     "no composition-dependent volume closure",
+     "direct calculation wearing a loop",
      "`provenance iterative` was ACCEPTED -- it must refuse, stating that "
      "no composition-dependent volume closure exists to define an "
      "iteration (slice B is BLOCKED, not completed)"),
