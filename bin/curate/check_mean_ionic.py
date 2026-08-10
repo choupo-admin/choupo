@@ -28,8 +28,10 @@ WHAT THIS CHECKS, all from fresh runs of the corpus witness:
        back.  The tolerance is 1e-5 and not machine epsilon because the
        result JSON prints six significant figures, so this comparison is
        between two numbers each rounded there; it is still four orders of
-       magnitude tighter than the smallest exponent error possible (swapping
-       nu+ and nu- on the 2:1 pairs moves gamma_pm by 18 %).
+       magnitude tighter than the smallest exponent error possible
+       (swapping nu+ and nu- moves the divalent gamma_pm by 33-45 %, and
+       the 1-1 pairs not at all -- which is the whole reason R2 insists the
+       witness keeps covering unsymmetrical salts).
   (R2) THE STOICHIOMETRY IS DERIVED FROM CHARGE, not from a name: the 2:1,
        1:2 and 2:2 pairs must come out with nu+/nu- = 1/2, 2/1 and 1/1, and
        the announcement must say so with the charges it used.  A gate that
@@ -59,15 +61,18 @@ Sabotage 1 -- exponents swapped (nu+ <-> nu-), which is invisible on every
 1-1 salt and wrong on all four divalent ones:
 
     check_mean_ionic: FAILED
-      R1: seawater gamma_pm_Mg_Cl = 0.5453 but (g_Mg^1 * g_Cl^2)^(1/3) over
-      the run's own per-ion gammas is 0.4608 (rel 1.8e-01)
+      R1: seawater gamma_pm_Ca_Cl = 0.2877 but (g_Ca^1 * g_Cl^2)^(1/3) over
+      the run's own per-ion gammas is 0.4459 (rel 3.5e-01)
+      R1: seawater gamma_pm_Mg_Cl = 0.3072 ... (rel 3.3e-01)
+      R1: seawater gamma_pm_Na_SO4 = 0.1905 ... (rel 4.5e-01)
+    (the three 1-1 pairs pass unchanged -- the defect is invisible on them)
 
 Sabotage 2 -- the charge sign check removed:
 
     check_mean_ionic: FAILED
-      R4: `cation Cl; anion Na;` was ACCEPTED (gamma_pm_Cl_Na published) --
-      a mean ionic coefficient is defined for one positive and one negative
-      species, and naming them backwards must refuse, not compute
+      R4: `cation Cl; anion Na;` was ACCEPTED -- a mean ionic coefficient
+      is defined for one positive and one negative species, and naming them
+      backwards must refuse, not compute
 """
 
 import json

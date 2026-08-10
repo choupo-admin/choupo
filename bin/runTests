@@ -468,6 +468,24 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/matwrap.$$
 
+    #  gamma_pm, the MEASURABLE activity coefficient (2026-08-10).  Every
+    #  gamma the speciation published before this was a single-ion one, which
+    #  is not measurable, so a case comparing against a published table
+    #  combined the ions BY HAND in a header comment -- and that hand
+    #  calculation went stale unnoticed on the four divalent seawater salts.
+    #  The gate recomputes every published gamma_pm from the run's own
+    #  per-ion gammas and the species charges, and requires the derived
+    #  stoichiometry to be announced.
+    if "$ROOT/bin/curate/check_mean_ionic.py" > /tmp/meanionic.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "mean-ionic-gate" "$(head -1 /tmp/meanionic.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_mean_ionic.py)\n" "mean-ionic-gate"
+        cat /tmp/meanionic.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/meanionic.$$
+
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
     #  a type from a module that only re-imports it passed `npm test` and was
