@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The aqueous surface this bench compares FROM: Davies on the molality
+  basis is the case default; half the operations OVERRIDE it per-op with
+  `activityModel pitzerHMW;` -- the comparison IS the case, so the model
+  name appears in the op (the experiment's subject), exactly the second
+  legal home the three-places rule allows.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( water NaCl );
+aqueousProperties
+{
+    activityCoefficients
+    {
+        model          Davies;
+        referenceBasis aqueousMolality;
+    }
+}
