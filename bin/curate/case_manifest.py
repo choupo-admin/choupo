@@ -9,7 +9,10 @@ WHAT THIS IS.  The third artefact of the operational memory (Vitor's ruling,
 inverted indices that answer "which cases use X" -- the question a developer
 needs BEFORE editing, and used to need the full regression to answer after.
 
-ROLES (a case may hold several; tutorial is the default and not a flag):
+ROLES (a case may hold several -- the list is NON-EXCLUSIVE, and every flag
+derives from an explicit, auditable repository fact; `roles: []` means "no
+special-role marker detected", it is NOT an affirmative "tutorial"
+classification -- pedagogical intent is not a marker this scan can audit):
   * witness     -- declared in tutorials/WITNESSES (the class rides along);
   * validationOp-- the case runs a `validation {}` op against a measured
                    dataset (the V&V SS3 battery);
@@ -148,7 +151,9 @@ def scan_case(case_dir, wmap):
         roles.append("expectedFail")
     if os.path.isfile(os.path.join(case_dir, ".known-broken")):
         roles.append("knownBroken")
-    entry["roles"] = roles                        # [] = plain tutorial
+    #  [] = no special-role marker detected (auditable markers only);
+    #  NOT an affirmative "tutorial" classification.
+    entry["roles"] = roles
     entry["hasGolden"] = bool(exp)
     return entry
 

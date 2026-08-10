@@ -159,6 +159,14 @@ def build_map():
     classes = scan_classes()
     return {
         "_generated_by": "bin/curate/code_map.py -- DO NOT EDIT (regenerate)",
+        "provenance": {
+            "classes": "textual declaration scan (src/**/*.H)",
+            "includes": "compiler dependency (-MMD .d files)",
+            "includesReverse": "derived inversion of `includes`",
+            "factories": "explicit registration sites (textual scan of "
+                         "registerBuiltins bodies)",
+            "binaries": "filesystem entry points (src/applications/*/main.cpp)",
+        },
         "limitations": {
             "classes": "line-anchored textual scan of src/**/*.H; not a C++ "
                        "parse (templates/nested/macro declarations unseen -- "

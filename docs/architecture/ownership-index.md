@@ -62,7 +62,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 
 **T5 — Mean ionic γ publication (the measurable one)**
 - Owner: `src/propertyOps/Speciate.cpp` (`diagMeanIonic`)
-- Prod → Cons: `SpeciationSolver` per-ion rows (γ, z) → result diagnostics, goldens/anchors, `gui/schemas/operations/speciate.schema.json`, generated docs (`docs/propsGuide-operations.tex`, `docs/ai/schemas-reference.md`)
+- Prod → Cons: `SpeciationSolver` per-ion rows (γ, z) → result diagnostics, goldens/anchors, `gui/schemas/operations/speciate.schema.json`, generated docs (`docs/propsGuide-operations.tex`, `docs/ai/schemas-reference.md`), the V&V §3 rows quoting γ± agreements (a prose consumer — the M5 brief's one recorded false negative)
 - Never: stoichiometry from a salt NAME (F2); γ± hand-combined in case headers
 - Contract: commit 6b999215; F2 in CLAUDE.md §5
 - Witness: `propsBench` · Gates: `check_mean_ionic`, `check_schema_coverage`

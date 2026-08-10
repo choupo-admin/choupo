@@ -26,30 +26,63 @@ the artefact, a class-scan assumption disproved (below), and a
 discriminates-nothing flag (below).  Every one was caught by an artefact's
 own gate or by the cold queries, none by a regression.
 
-## Brief A (cold): "add the osmotic coefficient to `diagMeanIonic`"
+## Brief A: the LITERAL completed diagMeanIonic brief (ChatGPT correction 1)
 
-Filled from the artefacts alone:
+The demanded form — every field filled, written as it should have existed
+before the 2026-08-10 `diagMeanIonic` edit, from the artefacts:
 
 ```
-CANONICAL OWNER:      ownership-index T5 -> src/propertyOps/Speciate.cpp
-PRODUCERS:            SpeciationSolver rows (codeMap: Speciate.cpp reaches
-                      src/thermo/electrolyte/SpeciationSolver.H)
-CONSUMERS:            T5 row: speciate.schema.json (additionalProperties
-                      false), generated docs (propsGuide-operations.tex,
-                      schemas-reference.md), goldens/anchors of declaring
-                      cases; caseManifest: byOp[speciate] = 10 cases,
-                      anchored = {hamer_wu, seawater, flash09}
-INVARIANTS AT RISK:   T5 Never: stoichiometry from a salt name (F2)
-FOCUSED TESTS:        check_mean_ionic, check_schema_coverage,
-                      gate_manifest --check
-WITNESS:              propsBench
-FULL REGRESSION?      no — additive diagnostics key
+INTENDED CHANGE:   Publish gamma_pm as a speciate-op diagnostic
+                   (diagMeanIonic pairs -> gamma_pm_X_Y): the engine
+                   publishes only single-ion gammas, and published-table
+                   comparisons are hand-combined in headers, where one has
+                   already gone stale.
+CANONICAL OWNER:   src/propertyOps/Speciate.cpp (index T5, the op's
+                   diagnostics surface).
+WHY THIS OWNER:    Diagnostics keys are minted where the op assembles its
+                   result; the kernel (SpeciationSolver) must not learn
+                   about publication surfaces (layering).
+EXPECTED FILES:    src/propertyOps/Speciate.cpp;
+                   gui/schemas/operations/speciate.schema.json (new key --
+                     additionalProperties FALSE, omission REFUSES);
+                   docs/propsGuide-operations.tex + docs/ai/
+                     schemas-reference.md (GENERATED from the schema);
+                   bin/curate/check_mean_ionic.py (new gate);
+                   generated/gateManifest.json;
+                   pitzer_seawater_verify/system/propsDict + expected.
+KNOWN PRODUCERS:   SpeciationSolver::SpeciesRow (gamma, z) -- public.
+KNOWN CONSUMERS:   result-JSON diagnostics -> runTests get_diag (goldens +
+                   anchors); the schema; the two generated docs; the V&V §3
+                   rows quoting gamma_pm agreements.
+INVARIANTS AT RISK: F2 (stoichiometry from CHARGES, never a salt name);
+                   arity (gamma_pm computed in ONE place).
+PROHIBITED:        a second stoichiometry parser; a name->nu lookup.
+APPLICABLE ADRS:   CLAUDE.md §5 (F2; A3 selector keys).
+FOCUSED TESTS:     check_mean_ionic, check_schema_coverage,
+                   gate_manifest --check, runTests on declaring cases.
+REPRESENTATIVE WITNESS: propsBench (pitzer_gamma_hamer_wu).
+POSSIBLE DOWNSTREAM: caseManifest byOp[speciate] = 10 candidates; only
+                   declaring cases gain golden rows.
+FULL REGRESSION?   NO -- additive optional key.  (The anchor-claim-column
+                   runTests edit beside it IS cross-cutting and rides the
+                   declared batch-closure regression.)
+DEFINITION OF DONE: engine + schema + regenerated docs + sabotaged gate +
+                   declaring-case goldens + witness green, ONE commit.
 ```
 
-Verified: those are exactly the consumers the real `diagMeanIonic` change
-(commits 6b999215..b4885b64) hit — and yesterday they were discovered by
-three sequential gate FAILURES instead of one lookup.  The brief converts
-three commits into one.
+**Verification against the real change (commits 6b999215..b4885b64), with
+the accounting the correction demands:**
+
+* **Captured**: the three consumers discovered on the day by three
+  sequential gate FAILURES (schema-coverage → generated-docs →
+  gate-manifest) all appear above by lookup.  Three commits become one.
+* **False negative (1)**: the V&V §3 row quoting the seawater agreement —
+  a prose consumer the T5 index row did not name.  Fixed: the row now
+  names it.
+* **False positives (by design, declared)**: `byOp[speciate]` lists 10
+  candidate cases; 2 were touched.  Candidates are published as
+  candidates, never as "affected" — the manifest's own limitation states
+  this.
 
 ## Brief B (cold): "the `equilibriumState` cross-reference in `calculated{}`" (the next real slice)
 
@@ -82,6 +115,23 @@ functions — the map knew, session memory did not), and the first
 `equilibrium` flag in the manifest matched 321/341 cases because
 `equilibrium {}` is the standard grammar wrapper — replaced by
 `aqueousChemistry` (43/341), which discriminates.
+
+## The four corrections (ChatGPT via Vítor, post-approval), reconciled
+
+1. **Literal brief** — delivered above, all fields, verified with FN/FP
+   accounting.  2. **Non-exclusive roles** — already built as `roles[]`
+   (a case holds several); the `[] = tutorial` default was the one
+   violation and is corrected: an empty list now means "no special-role
+   marker detected (auditable markers only)", never an affirmative
+   pedagogical classification.  3. **codeMap strictly factual** — the
+   sections were never merged into one dependency relation; a per-section
+   `provenance` object now states how each was obtained (compiler
+   dependency · textual declaration · explicit registration · filesystem),
+   distinct from `limitations` (what each cannot claim).  Ownership and
+   consumer SEMANTICS stay in the human index (A2), never inferred here.
+   4. **Independently runnable gates** — already true by construction:
+   `check_ownership_index.py`, `code_map.py --check`,
+   `case_manifest.py --check` each run standalone in seconds, no corpus.
 
 ## The stopping condition, exercised
 
