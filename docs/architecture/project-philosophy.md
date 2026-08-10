@@ -267,6 +267,41 @@ architecture as "90 % complete"**.  It is CONSOLIDATED, and the remaining
 work is engineering, science, validation and product development —
 categories that will never reach a meaningful 100 %.
 
+### 5a.4 The line to keep watching (second opinion, 2026-08-09)
+
+"Missing implementation" is the category most at risk of becoming a
+convenient label for anything difficult.  The distinction that keeps it
+honest, applied explicitly in review:
+
+* the existing contract EXPRESSES the required behaviour and the machinery
+  is absent -> **missing implementation**;
+* the existing contract CANNOT express the required state or behaviour
+  WITHOUT DISTORTION -> **potentially architectural**, and only then subject
+  to the five reopening conditions.
+
+`elementalConservation` is the worked example of the first: the grammar and
+the contract already declared it; what was missing was the mechanism turning
+it into constraints.  A future case needing a conservation state the grammar
+cannot express at all would be the second, under "a physical state the
+current abstractions genuinely cannot represent".
+
+No mechanism is added -- a distinction to preserve in review, not a rule to
+automate.
+
+### 5a.5 A validation lesson the A1 parser bug taught
+
+A1 shipped the claim that its written state stayed re-readable while a
+writer comment swallowed a closing brace and broke parsing.  The general
+rule is worth more than the fix:
+
+> **A claim about a round-trip state format deserves an EXECUTABLE witness.**
+> Where a writer asserts that what it emits can be read back, a write -> read
+> (or write -> parse) check is worth more than any prose assertion, and
+> belongs with the writer.
+
+This strengthens validation INSIDE the existing architecture; it is not a
+reason for another subsystem.
+
 ### 5a.3 Why this is not gated
 
 A text search cannot tell a live claim from a recorded one — the lesson the
