@@ -1,0 +1,75 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE DAVIES BAND EDGE, measured instead of remembered.
+
+  Same NaCl brine, same totals, same solved pH -- speciated twice per rung:
+  once under Davies (charge-only, the teaching rung; phi = 1 water activity)
+  and once under PitzerHMW (per-ion virials; rigorous phi).  What this
+  measures is CROSS-MODEL divergence between two of Choupo's own engines --
+  weaker than agreement with an independent measurement, and said so; the
+  Pitzer surface itself is anchored elsewhere (pitzer01_nacl,
+  archer01_nacl_cold_to_hot, pitzer_gamma_hamer_wu).
+
+  WHY IT EXISTS: every electrolyte run above I ~ 0.5 mol/kg carries the
+  advisory "Davies ... INDICATIVE"; the marcilla01/02 anchor contacts put
+  numbers on what that costs at saturation (halite at 3.65 vs the measured
+  6.14 mol/kg).  This case turns the advisory into a CURVE -- per rung,
+  gamma_Na, gamma_Cl and a_w under both closures, side by side.  No
+  threshold is invented: the divergence grows smoothly and there is no
+  principled cut, so the table reports and the reader judges (the same
+  posture as the neglected-dCp advisory in SolidPhase).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name davies_m0p05; type speciate; activityModel davies;
+      composition { NaCl 0.05 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m0p05.csv; } }
+    { name hmw_m0p05; type speciate; activityModel pitzerHMW;
+      composition { NaCl 0.05 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m0p05.csv; } }
+    { name davies_m0p1; type speciate; activityModel davies;
+      composition { NaCl 0.1 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m0p1.csv; } }
+    { name hmw_m0p1; type speciate; activityModel pitzerHMW;
+      composition { NaCl 0.1 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m0p1.csv; } }
+    { name davies_m0p25; type speciate; activityModel davies;
+      composition { NaCl 0.25 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m0p25.csv; } }
+    { name hmw_m0p25; type speciate; activityModel pitzerHMW;
+      composition { NaCl 0.25 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m0p25.csv; } }
+    { name davies_m0p5; type speciate; activityModel davies;
+      composition { NaCl 0.5 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m0p5.csv; } }
+    { name hmw_m0p5; type speciate; activityModel pitzerHMW;
+      composition { NaCl 0.5 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m0p5.csv; } }
+    { name davies_m1p0; type speciate; activityModel davies;
+      composition { NaCl 1.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m1p0.csv; } }
+    { name hmw_m1p0; type speciate; activityModel pitzerHMW;
+      composition { NaCl 1.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m1p0.csv; } }
+    { name davies_m2p0; type speciate; activityModel davies;
+      composition { NaCl 2.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m2p0.csv; } }
+    { name hmw_m2p0; type speciate; activityModel pitzerHMW;
+      composition { NaCl 2.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m2p0.csv; } }
+    { name davies_m4p0; type speciate; activityModel davies;
+      composition { NaCl 4.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m4p0.csv; } }
+    { name hmw_m4p0; type speciate; activityModel pitzerHMW;
+      composition { NaCl 4.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m4p0.csv; } }
+    { name davies_m6p0; type speciate; activityModel davies;
+      composition { NaCl 6.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file davies_m6p0.csv; } }
+    { name hmw_m6p0; type speciate; activityModel pitzerHMW;
+      composition { NaCl 6.0 mol/kg; } pH solve;
+      diagSpecies ( Na Cl ); output { file hmw_m6p0.csv; } }
+);
