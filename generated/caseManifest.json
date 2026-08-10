@@ -9,7 +9,7 @@
   "cases": 341,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 3
+  "anchored": 4
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -810,7 +810,9 @@
      "ideal"
     ]
    },
-   "roles": [],
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/ctrl/ctrl13_williams_otto_step": {

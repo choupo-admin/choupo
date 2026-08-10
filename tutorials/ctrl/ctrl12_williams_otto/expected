@@ -22,3 +22,26 @@ kpi     plant                  wo_E_final       9.8141821039       1e-4
 kpi     plant                  wo_G_final       0.22288935632      1e-4
 kpi     plant                  wo_P_final       1.6922563266       1e-4
 kpi     plant                  yield_klb_final  1552.80660251      1e-4
+
+# --- ANCHOR rows (6th column): PUBLISHED values, never refreshed by --record -
+# The Williams-Otto steady state x* = (3.27, 7.47, 1.12, 9.81, 1.69, 0.22)
+# klb -- Schindler & Bortz, arXiv:2004.07614v1 (2020), the restatement of
+# T. J. Williams & R. E. Otto (1960) this case implements verbatim (eqs
+# 3.6-3.11), under the nominal controls u* = (10, 20, 580 degR, 129.5, 0.2).
+# The wo_*_final rows above pin the SAME six numbers at 1e-4 against Choupo's
+# own last answer; these rows pin them against the publication, so a model
+# that drifted off the paper fails as a DISAGREEMENT, not as a moved golden.
+#
+# THE BAND IS 3 % ON ALL SIX ROWS, ONE band, and it is set by the CITATION'S
+# OWN PRECISION, not by model error: the published values carry two decimals,
+# so the smallest component (m_G = 0.22) has a rounding quantization of
+# +-0.005/0.22 = +-2.3 % before any physics is compared.  Observed agreement
+# when authored (2026-08-10): A +0.08 %, B +0.07 %, C -0.30 %, E +0.04 %,
+# P +0.13 %, G +1.31 % -- all inside the citation's own rounding.  A tighter
+# claim than the source's printed precision would be manufactured accuracy.
+kpi     plant                  wo_A_final       3.27             3e-2     anchor
+kpi     plant                  wo_B_final       7.47             3e-2     anchor
+kpi     plant                  wo_C_final       1.12             3e-2     anchor
+kpi     plant                  wo_E_final       9.81             3e-2     anchor
+kpi     plant                  wo_P_final       1.69             3e-2     anchor
+kpi     plant                  wo_G_final       0.22             3e-2     anchor

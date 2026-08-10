@@ -62,7 +62,7 @@ independent published result):
 | case | anchor |
 |---|---|
 | `steady/flowsheets/cavett01_recycle_train` | Rosen & Pauls **specification** verbatim, plus solver behaviour on it (Wegstein defeated, Newton 7 iterations). **SPECIFICATION-ONLY, corrected 2026-08-10:** this row used to read "products beside the published APR/FLOWTRAN tables", and the case carries no such table and nothing that compares against one — the claim lived in the case's `controlDict` description, was copied here, and went stale in both homes at once. The missing anchor is now named in the case's own header |
-| `ctrl/ctrl12_williams_otto` | Williams & Otto published x\* to all digits |
+| `ctrl/ctrl12_williams_otto` | Williams & Otto published x\* — **CHECKED since 2026-08-10**: six `anchor` rows carry the published steady state (Schindler & Bortz arXiv:2004.07614 restating Williams & Otto 1960), band 3 % set by the citation's own two-decimal rounding on m_G = 0.22; observed agreement ≤ 1.31 % |
 | `ctrl/ctrl13_williams_otto_step` | the paper's Fig. 2 step response |
 | `ctrl/ctrl14_williams_otto_pi` | the paper's Fig. 4 PI shape |
 | `ctrl/ctrl16_williams_otto_optimal` | §5.3 optimum at 99.1 % of the published collocation value — the gap stated and measured |
@@ -96,9 +96,14 @@ and cannot check the *claims* in the right-hand columns — those are prose, and
 prose about a number goes stale silently, which is precisely how the cavett01
 row above came to assert a comparison that does not exist in the case.  The
 `anchor` row (2026-08-10) is the mechanism that converts one of these claims
-into something the suite falsifies, and today exactly three cases use it:
-`pitzer_gamma_hamer_wu` (15 rows), `flash09_n2ch4_stryjek` (2) and
-`pitzer_seawater_verify` (1).  **Every other row here is still a claim in
+into something the suite falsifies, and today exactly four cases use it:
+`pitzer_gamma_hamer_wu` (15 rows), `ctrl12_williams_otto` (6),
+`flash09_n2ch4_stryjek` (2) and `pitzer_seawater_verify` (1).  The
+Wiebe-Henry candidate from the same queue resolved the OTHER way, and the
+resolution is the record: the `H2-NH3` Henry pair is FITTED to Wiebe &
+Tremearne's Table I — the only dataset — so a Wiebe anchor would claim
+validation from the fit's own training data (the LiCl circularity); no row
+was authored, and no document claimed otherwise (checked).  **Every other row here is still a claim in
 prose** — and the very first attempt to anchor one of them found it false
 (the seawater row above), which is the argument for anchoring the rest.  Anchoring the rest is worth doing
 and is not a campaign to start unasked; what is recorded here is the honest
