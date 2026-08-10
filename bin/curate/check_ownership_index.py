@@ -49,7 +49,7 @@ Sabotage 1 -- an owner path renamed to a file that does not exist:
 Sabotage 2 -- a witness class not declared in tutorials/WITNESSES:
 
     check_ownership_index: FAILED
-      O3: feature T5 names witness class 'propsBenchX' -- not declared in
+      O3: feature T4 names witness class 'propsBenchX' -- not declared in
       tutorials/WITNESSES
 """
 
