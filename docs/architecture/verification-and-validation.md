@@ -79,7 +79,7 @@ credibility claim this document exists to deflate:
 | `props/electrolyte/pitzer_gamma_hamer_wu` | Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) — six 1-1 salts, γ± AAD 0.1–0.7 %. **Since 2026-08-10 the agreement is CHECKED, not asserted:** 15 `anchor` rows carry the paper's own γ±(1 m), γ±(3 m) and φ(1 m) for the five independent salts, so a model that drifted off the table now fails the suite instead of leaving the header's claim standing | **independent** for five salts; the Li–Cl pair was refit to this table — that arm is fit-consistency, per the case's own header, and it is deliberately given **no anchor row**: anchoring it would claim validation from the data the parameters already saw |
 | `props/electrolyte/enthalpy_naoh_water` | Parker (1965) measured Φ_L, calorimetric | independent |
 | `props/electrolyte/enrtl_mixed_nacl_ethanol_esteso` | Esteso — NaCl γ± in ethanol–water, predictive | independent |
-| `props/electrolyte/pitzer_seawater_verify` | published seawater benchmarks (the S3 forum's own no-go gate) | independent |
+| `props/electrolyte/pitzer_seawater_verify` | published seawater benchmarks (the S3 forum's own no-go gate). **DISAGREES, found 2026-08-10:** with γ± now published rather than hand-combined in a header, four of the six salts (MgCl₂, CaCl₂, Na₂SO₄, MgSO₄) sit 2–4 % **below** their quoted bands — the E_theta term was activated and only the two 1-1 salts were re-checked. Unresolved and untuned; the case header and `VALIDATION.md` carry it. The single-salt PIN A does agree, and carries the anchor row | independent |
 | `props/electrolyte/farelo_nacl_nh4cl` | Farelo saturation data | independent |
 | `props/electrolyte/farelo_licl_range` | Hamer & Wu range for LiCl | **fit-consistency** — the pair was refit to it |
 | `props/electrolyte/pitzer_nacl_sp77_hot` | Silvester & Pitzer (1977) Table V, 25–200 °C | **fit-consistency** — the coefficients are the same paper's Table IV, verbatim |
@@ -96,9 +96,11 @@ and cannot check the *claims* in the right-hand columns — those are prose, and
 prose about a number goes stale silently, which is precisely how the cavett01
 row above came to assert a comparison that does not exist in the case.  The
 `anchor` row (2026-08-10) is the mechanism that converts one of these claims
-into something the suite falsifies, and today exactly two cases use it:
-`pitzer_gamma_hamer_wu` (15 rows) and `flash09_n2ch4_stryjek` (2).  **Every
-other row here is still a claim in prose.**  Anchoring the rest is worth doing
+into something the suite falsifies, and today exactly three cases use it:
+`pitzer_gamma_hamer_wu` (15 rows), `flash09_n2ch4_stryjek` (2) and
+`pitzer_seawater_verify` (1).  **Every other row here is still a claim in
+prose** — and the very first attempt to anchor one of them found it false
+(the seawater row above), which is the argument for anchoring the rest.  Anchoring the rest is worth doing
 and is not a campaign to start unasked; what is recorded here is the honest
 count, so nobody reads this table as machine-verified.
 
