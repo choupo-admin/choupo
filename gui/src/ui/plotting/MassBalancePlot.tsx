@@ -33,22 +33,26 @@ License
   boundary --- tonnes per hour, not mole fractions.
 
   Two bars:
-    INPUTS   = sum over feed streams    of (fluid_per_component + solid)
-    OUTPUTS  = sum over product streams of (fluid_per_component + solid)
+    INPUTS   = sum over feed streams    of mass_per_component
+    OUTPUTS  = sum over product streams of mass_per_component
   Intermediate streams (unit-to-unit) are deliberately excluded;
   they cancel out at the plant boundary.
 
-  Per-component fluid mass is derived from the molar flow + mole
-  fraction + per-component MW:
-       m_dot_fluid[c] = F * x[c] * MW[c]                [kg/s]
-  Solid mass per component is already in kg/s:
-       m_dot_solid[c] = s.solids[c]                     [kg/s]
+  Per-component mass comes from `case/balances.massPerComponent` -- the
+  ONE home -- as F * x[c] * MW[c] [kg/s].  F and composition are the
+  OVERALL stream material INCLUDING any crystal (the solver's own
+  streamsNote states that convention); `solids` merely LOCATES part of
+  that same material, so adding it here would count every crystal twice.
+  This block used to say "+ solid" and do it, which is exactly what made
+  flash21_freeze_concentration draw water OUT 2479 against IN 1621 kg/h
+  -- the difference 858 kg/h being precisely its 47.6 kmol/h of ice.
 
   The chart's title shows the closure error |IN - OUT| / IN; a
   well-converged steady-state run closes to << 0.1 %.
 \*---------------------------------------------------------------------------*/
 
 import type { StreamResult } from "../../adapters/SolverAdapter.js";
+import { massPerComponent } from "../../case/balances.js";
 import {
   flowBasis,
   type FlowUnit,
@@ -83,22 +87,16 @@ export function MassBalancePlot({
   }
   const components = [...componentSet];
 
-  // Per-stream per-component mass flow [kg/s].  Fluid uses MW;
-  // solid is already in kg/s.  When MW is missing for a component
-  // (e.g. an old log without componentMolarMass), the fluid term
-  // for that component falls back to zero -- the chart honestly
-  // shows what data was emitted, no fudging.
-  const massPerComp = (s: StreamResult): { [c: string]: number } => {
-    const out: { [c: string]: number } = {};
-    for (const c of components) {
-      const mw = componentMolarMass?.[c] ?? 0;
-      const x = s.composition[c] ?? 0;
-      const fluid = (s.F ?? 0) * x * mw;                  // kg/s
-      const solid = s.solids?.[c] ?? 0;                   // kg/s
-      out[c] = fluid + solid;
-    }
-    return out;
-  };
+  //  Per-stream per-component mass flow [kg/s] -- from the ONE home,
+  //  `case/balances.massPerComponent`.  This plot used to carry its own
+  //  copy of that arithmetic, and the copy is exactly why the chart went
+  //  on showing out > in after the shared function was corrected: two
+  //  homes for one computation, and the fix reached only one of them
+  //  (2026-08-10, found by Vitor on flash21 AFTER a pull and a rebuild --
+  //  the second sighting of the same wrong bars).  A chart must not own
+  //  physics; it draws what the balance says.
+  const massPerComp = (s: StreamResult) =>
+    massPerComponent(s, components, componentMolarMass);
 
   const feeds    = streams.filter((s) => s.role === "feed");
   const products = streams.filter((s) => s.role === "product");

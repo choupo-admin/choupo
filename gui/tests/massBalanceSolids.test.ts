@@ -67,3 +67,31 @@ describe("mass balance over a crystal-carrying product", () => {
     expect(mb.closureErr).toBeLessThan(1e-12);
   });
 });
+
+/*---------------------------------------------------------------------------*\
+  THE PLOT'S OWN PATH.  The test above pinned `massBalance` and passed while
+  the Mass Balance CHART was still wrong, because the chart carried a private
+  copy of the arithmetic -- so the fix reached the shared function and not the
+  pixels Vitor was looking at.  A test of the shared home does not test a
+  caller that declined to use it.  This one asserts the property structurally:
+  MassBalancePlot must not compute mass itself.
+\*---------------------------------------------------------------------------*/
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
+describe("the Mass Balance chart does not own the arithmetic", () => {
+  it("has no private F*x*MW + solids computation", () => {
+    const src = readFileSync(
+      fileURLToPath(new URL("../src/ui/plotting/MassBalancePlot.tsx", import.meta.url)),
+      "utf8",
+    );
+    //  The chart must import the one home...
+    expect(src).toContain("massPerComponent");
+    //  ...and must not re-derive mass from solids itself.  `solids` may
+    //  still be READ to enumerate components; what is banned is adding it
+    //  to a fluid term (the double count).
+    const addsSolid = /const\s+solid\s*=\s*s\.solids/.test(src)
+      || /fluid\s*\+\s*solid/.test(src);
+    expect(addsSolid).toBe(false);
+  });
+});
