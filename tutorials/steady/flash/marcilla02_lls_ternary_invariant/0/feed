@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  A charge INSIDE the three-phase region: 45 wt% of the anchor's aqueous
+  vertex + 45 wt% of its organic vertex + 10 wt% extra solid NaCl
+  (Marcilla 1995 Table 4B; any charge in the region answers with the SAME
+  invariant tie-triangle, which is the point of comparing against it).
+  wt%: water 36.30 / nButanol 41.85 / NaCl 21.85, on a 100 kg/h basis;
+  moles = mass / MW (18.015, 74.122, 58.44 g/mol).
+\*---------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    water      2.014988  kmol/h;
+    nButanol   0.564610  kmol/h;
+    NaCl       0.373889  kmol/h;
+}
+T               298.15 K;
+P               101325 Pa;

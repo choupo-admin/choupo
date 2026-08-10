@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  WHICH solid phases exist in this case's world: halite, NaCl's own crystal.
+  The feed charges more NaCl than the brine can hold, so the equilibrium
+  answer PRECIPITATES -- the solid vertex of the invariant tie-triangle.
+\*---------------------------------------------------------------------------*/
+recordType    chemistrySystem;
+schemaVersion 1;
+
+equilibria
+{
+    solidPhases ( halite );
+}

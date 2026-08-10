@@ -1313,6 +1313,60 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             res.converged = true;
             res.diagnostic = "single liquid (sum of equilibrium partial"
                 " pressures " + std::to_string(pSum) + " atm below P)";
+            //  THE SECOND LIQUID OF A SUBSATURATED ANSWER (2026-08-10,
+            //  found by marcilla02, the first case whose organic is PRESENT
+            //  with no vapour): v0 IS the answer here, ls0 already carries
+            //  the converged split, and this early return used to walk past
+            //  the finalisation block that publishes it -- so the stream
+            //  left as one liquid while the run's own narration said
+            //  PRESENT.  Publish it; and a decided-present organic whose
+            //  split did not resolve is refused exactly as the two-phase
+            //  finalisation refuses it (a one-liquid answer under a
+            //  two-liquid declaration is no answer at all).
+            if (twoLiquids)
+            {
+                if (!ls0.split)
+                    throw std::runtime_error("ReactiveVLE: the declared"
+                        " second liquid was PRESENT on the feed but its"
+                        " split does not converge at the (subsaturated)"
+                        " answer -- the answer would be a one-liquid answer"
+                        " reported under a two-liquid declaration.  No"
+                        " partial answer is returned.");
+                res.nOrgApp.assign(nApp, 0.0);
+                for (std::size_t b = 0; b < cfg_.backbone.size(); ++b)
+                    res.nOrgApp[cfg_.backbone[b]] = ls0.nOrg[b];
+                if (verbosity >= 2)
+                {
+                    scalar sA = 0.0, sO = 0.0;
+                    for (std::size_t b = 0; b < nBk; ++b)
+                    { sA += ls0.nAq[b]; sO += ls0.nOrg[b]; }
+                    std::cout << "  second liquid (organic): " << std::fixed
+                              << std::setprecision(4)
+                              << (sO / std::max(sA + sO, 1.0e-300) * 100.0)
+                              << " % of the backbone liquid moles\n"
+                                 "    component      x_org      x_aq     "
+                                 " ln(a_org/a_aq)\n";
+                    for (const auto b : orgPos)
+                        std::cout << "    " << std::left << std::setw(12)
+                                  << cfg_.apparent[cfg_.backbone[b]]
+                                  << std::right << std::setw(10)
+                                  << std::setprecision(6) << ls0.xOrg[b]
+                                  << std::setw(10) << ls0.xAq[b]
+                                  << std::setw(14) << std::scientific
+                                  << std::setprecision(2)
+                                  << (std::log(std::max(
+                                          ls0.gOrg[b]*ls0.xOrg[b], 1e-300))
+                                    - std::log(std::max(
+                                          ls0.gAq[b]*ls0.xAq[b], 1e-300))
+                                    - (wetOrganic && b == solventBk
+                                       ? std::log(std::max(awFrozen, 1e-300))
+                                       : 0.0))
+                                  << std::fixed << "\n";
+                    std::cout << "    (both liquids leave as ONE apparent"
+                                 " liquid stream -- the split is internal"
+                                 " state, like the speciation)\n";
+                }
+            }
             if (verbosity >= 2)
             {
                 //  The dimer observables above belong to the INCIPIENT

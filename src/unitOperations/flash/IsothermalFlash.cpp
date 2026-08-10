@@ -303,8 +303,18 @@ IsothermalFlash::solveCore(const FlashInput&    in,
         {
             const std::size_t wi = cfg->solventIdx;
             const scalar Fliq = in.F * (1.0 - r.V_over_F);
-            const scalar kgw  = (wi < r.xApp.size())
+            scalar kgw  = (wi < r.xApp.size())
                 ? Fliq * r.xApp[wi] * thermo.comp(wi).MW() : 0.0;
+            //  WET organic (marcilla02, 2026-08-10): the kernel's molalities
+            //  are per kg of the AQUEOUS liquid's water ALONE -- water held
+            //  by the organic liquid dissolves no ions -- so the conversion
+            //  basis excludes it.  On the total-water basis the crystal was
+            //  overstated by exactly the organic water's share (0.317 vs
+            //  0.264 kmol/h on the first three-phase answer), and the
+            //  dissolved salt correspondingly halved, while every closure
+            //  still balanced -- a wrong basis conserves mass perfectly.
+            if (!r.nOrgApp.empty() && wi < r.nOrgApp.size())
+                kgw -= r.nOrgApp[wi] * in.F * thermo.comp(wi).MW();
             //  THE PRECIPITATE IS A PHASE, not an aqueous species.  Each
             //  mineral whose OWNING component the package declares moves into
             //  the stream's solid material -- "dissolved CaCO3 and solid

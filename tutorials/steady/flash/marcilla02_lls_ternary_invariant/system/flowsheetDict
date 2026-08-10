@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE TERNARY LLS INVARIANT (solid-equilibrium migration S5b).
+
+  Water + 1-butanol + NaCl at 25.0 C, 1 atm: with solid NaCl present the
+  two-liquid tie-line is INVARIANT (F = 0 at fixed T, P), so the paper
+  reports ONE tie-triangle for the whole three-phase region -- Table 4B:
+      aqueous  73.14 / 0.72 / 26.14   (W / B / NaCl, wt%)
+      organic   7.53 / 92.28 / 0.19
+      solid    NaCl
+  PRIMARY: A. Marcilla, F. Ruiz, M. M. Olaya, Fluid Phase Equilibria 105
+  (1995) 71-91, DOI 10.1016/0378-3812(94)02595-R.
+
+  This is the state marcilla01 could not reach: there the UNIFAC (VLE)
+  backbone kept water/1-butanol miscible.  Here the backbone is UNIQUAC on
+  the CITED Winkelman 2009 water/1-butanol set -- the same values vlle01
+  consumes inline, where they demonstrably open the gap -- so the wet
+  organic (water a declared member) is PRESENT, and all three phases
+  coexist through their one mechanism each: the halite complementarity,
+  the activity-equality split with the ionic a_w factor on water, and the
+  Davies speciation of the brine.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 298.15 K;  P 1.0 atm; }
+    }
+);

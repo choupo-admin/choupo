@@ -53,7 +53,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 328 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 329 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -81,7 +81,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 594 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 596 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -113,7 +113,7 @@
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 343 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 344 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -205,7 +205,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40382 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40403 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -345,7 +345,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 500 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 501 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -361,7 +361,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 334 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 335 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -465,7 +465,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2974 declared window(s) across 3640 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2980 declared window(s) across 3651 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,

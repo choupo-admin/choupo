@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- nButanol-water
+  Delta u_ij(T) = a_ij + b_ij*T + c_ij*T^2  [a in K, b dimensionless, c in K^-1];
+  tau_ij = exp(-Delta u_ij / T).
+
+  STAGED CASE-LOCALLY (reviewStatus interim, 2026-08-10): the SAME cited
+  values the corpus already consumes inline in
+  tutorials/steady/flash/vlle01_waterButanol (where this set demonstrably
+  opens the water/1-butanol miscibility gap the UNIFAC VLE table misses).
+  Staged here so the REACTIVE backbone can read it as a pair record; not
+  curated into data/standards/ -- promotion is the maintainer's batch
+  review, per the standing pattern.
+\*---------------------------------------------------------------------------*/
+
+components ( nButanol water );
+model       UNIQUAC;
+
+parameters
+{
+    i      nButanol;
+    j      water;
+    a_ij   155.31;    a_ji   -579.36;     // K
+    b_ij   1.0822;    b_ji   2.7517;
+    c_ij   -43.711e-4;    c_ji   -6.7700e-4;
+}
+
+provenance
+{
+    origin       literature;
+    reviewStatus interim;
+    citation     "J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Ind. Eng. Chem. Res. 48 (2009), LLE regression for water/1-butanol (A_13/A_31 = a + b*T + c*T^2); the same set vlle01_waterButanol consumes inline";
+}

@@ -31,6 +31,7 @@
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
+#include "thermo/activityCoefficient/UNIQUAC.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
 namespace fs = std::filesystem;
@@ -511,18 +512,25 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " electrolyteGammaPhi slice serves ionic davies (the"
             " speciation kernel's rung); '" + actModel + "' joins in a later"
             " slice -- declare davies or drop the speciation block.");
-    //  The backbone serves the models it can actually WIRE.  NRTL needs a
-    //  curated record per pair; UNIFAC needs none at all -- it is predictive
-    //  from the group decomposition each component already carries.  The
-    //  guard that admitted only NRTL gave its own reason as "the curated pair
-    //  records live in parameters/NRTL/", which is a DATA-availability
-    //  argument and simply does not apply to a group-contribution method
-    //  (2026-07-27).  Anything else still refuses by name.
+    //  The backbone serves the models it can actually WIRE.  NRTL and
+    //  UNIQUAC need a curated record per pair (parameters/NRTL/ and
+    //  parameters/UNIQUAC/ -- UNIQUAC added 2026-08-10 for the Marcilla S5b
+    //  witness: the corpus carries a CITED Winkelman 2009 water/1-butanol
+    //  UNIQUAC set that opens the LLE gap the UNIFAC VLE table misses);
+    //  UNIFAC needs none at all -- it is predictive from the group
+    //  decomposition each component already carries.  The guard that
+    //  admitted only NRTL gave its own reason as "the curated pair records
+    //  live in parameters/NRTL/", which is a DATA-availability argument and
+    //  simply does not apply to a group-contribution method (2026-07-27).
+    //  Anything else still refuses by name.
     if (!molecularModel.empty()
-        && molecularModel != "NRTL" && molecularModel != "UNIFAC")
+        && molecularModel != "NRTL" && molecularModel != "UNIFAC"
+        && molecularModel != "UNIQUAC")
         throw std::runtime_error("thermophysicalPropertySystem: the molecular"
             " backbone of the reactive slice serves NRTL (curated pairs in"
-            " parameters/NRTL/) or UNIFAC (predictive, from each component's"
+            " parameters/NRTL/), UNIQUAC (curated pairs in"
+            " parameters/UNIQUAC/ + each component's `uniquac { r; q; }`)"
+            " or UNIFAC (predictive, from each component's"
             " declared `groups { unifac ( ... ) }`) -- '"
             + molecularModel + "' declared.");
     const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
@@ -605,11 +613,11 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 " '" + w + "', which the classifier did not find to be a"
                 " molecular nonionising component of this system -- the"
                 " authorisation is delimited and may not reclassify.");
-        if (molecularModel == "NRTL")
+        if (!molecularModel.empty())
             throw std::runtime_error("approximations.idealMolecularVLE lists"
-                " '" + w + "' while the case ALSO declares `molecular NRTL;`"
-                " -- an authorisation may not shadow a declared model; drop"
-                " one of the two.");
+                " '" + w + "' while the case ALSO declares `molecular "
+                + molecularModel + ";` -- an authorisation may not shadow a"
+                " declared model; drop one of the two.");
     }
     if (molecularModel.empty())
         for (const auto& cc : sysc.components)
@@ -1311,6 +1319,73 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     std::cout << "[resolver] p_" << cc.name << " = gamma_NRTL"
                               << " * x_" << cc.name << " * psat_" << cc.name
                               << "(T)\n";
+        }
+    }
+
+    //  UNIQUAC backbone (2026-08-10, the Marcilla S5b remedy): the same
+    //  record-per-pair posture as NRTL -- parameters/UNIQUAC/<a>-<b>.dat,
+    //  case-local overlay honoured through the same resolveRecord seam --
+    //  plus each component's own `uniquac { r; q; }` structural constants,
+    //  injected by the ONE helper every other UNIQUAC consumer uses.  The
+    //  tau form is Winkelman's a + b*T + c*T^2 (the UNIQUAC.cpp contract).
+    if (molecularModel == "UNIQUAC")
+    {
+        std::vector<std::string> bNames;
+        for (auto b : cfg.backbone) bNames.push_back(names[b]);
+        auto bComps = std::make_shared<std::vector<Component>>();
+        for (const auto& bn : bNames)
+            bComps->push_back(db.loadComponent(bn));
+        auto activityDict = std::make_shared<Dictionary>("activity");
+        activityDict->insert("model", std::string("UNIQUAC"));
+        std::vector<DictPtr> pairDicts;
+        for (std::size_t bi = 0; bi < bNames.size(); ++bi)
+            for (std::size_t bj = bi + 1; bj < bNames.size(); ++bj)
+            {
+                std::string a = bNames[bi], b = bNames[bj];
+                if (b < a) std::swap(a, b);
+                const std::string rel = "parameters/UNIQUAC/" + a + "-" + b
+                                        + ".dat";
+                fs::path rec = records::resolveRecord(rel);
+                if (rec.empty() || !fs::exists(rec))
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " `molecular UNIQUAC;` declared, but the backbone"
+                        " pair record data/standards/" + rel + " (or the"
+                        " sealed case-local constant/" + rel + ") does not"
+                        " exist -- curate the pair or drop the molecular"
+                        " model.");
+                DictPtr r = Dictionary::fromFile(rec.string());
+                DictPtr coef = r->found("parameters") ? r->subDict("parameters")
+                                                      : r;
+                auto p = std::make_shared<Dictionary>(a + "-" + b);
+                for (const auto& k : coef->keys())
+                {
+                    const EntryValue& ev2 = coef->entryValue(k);
+                    if (std::holds_alternative<scalar>(ev2)
+                        || std::holds_alternative<std::string>(ev2))
+                        p->insert(k, ev2);
+                }
+                pairDicts.push_back(p);
+                if (thermoAnnounce())
+                    std::cout << "[builder] molecular backbone pair " << a
+                              << "-" << b << "  --- " << rec.string() << "\n";
+            }
+        activityDict->insert("pairs", EntryValue(pairDicts));
+        injectUniquacRQ(activityDict, bNames, *bComps);
+        std::shared_ptr<ActivityModel> mm(
+            ActivityModel::New(activityDict, *bComps));
+        cfg.molecularGamma =
+            [mm, bComps](scalar T, const sVector& x) -> sVector
+            { return mm->gamma(T, x); };
+        if (thermoAnnounce())
+        {
+            std::cout << "[resolver] liquid molecular backbone: UNIQUAC (";
+            for (std::size_t bi = 0; bi < bNames.size(); ++bi)
+                std::cout << (bi ? " " : "") << bNames[bi];
+            std::cout << ") -- curated pair records, tau = exp(-(a + b T +"
+                         " c T^2)/T), r/q from each component's own record\n"
+                         "[resolver] ions: Davies on water-referenced"
+                         " molality (mixed-solvent transfer term: named"
+                         " gap)\n";
         }
     }
 

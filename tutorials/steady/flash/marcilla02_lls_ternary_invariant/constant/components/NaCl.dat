@@ -1,0 +1,88 @@
+/*----------------------------------------------------------*\
+  constant/components/NaCl.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+/*  CASE-LOCAL OVERLAY: the declared bridge of NaCl onto the ion families.
+    Additive to data/standards/components/NaCl.dat -- everything else (MW, the
+    solid datum, solidPhases) comes from the curated record.
+
+    These four bridges together are what make the basis matrix rank 3.  Each
+    one on its own is unremarkable; it is the SET that is degenerate.  */
+
+name        NaCl;
+
+formula        NaCl;
+
+CAS            7647-14-5;
+
+MW             58.44;
+
+role        nonvolatile;
+
+dissociation   2;
+
+dissociatesTo  { Na 1; Cl 1; }
+
+solidPhases
+{
+    halite
+    {
+        
+        dissolutionReaction { masters ( { ion Na; nu 1; } { ion Cl; nu 1; } ); }
+
+        
+        
+        equilibrium
+        {
+            logK25 1.57;
+            dH     3841;        
+            source "USGS PHREEQC phreeqc.dat (public domain; Halite delta_h 0.918 kcal/mol = 3841 J/mol)";
+        }
+
+        
+        calorimetric
+        {
+            solubility
+            {
+                value 6.144;
+                unit  mol/kgWater;
+                T     298.15;
+                origin "data/standards/components/NaCl.dat electrolyte block";
+                source "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)";
+            }
+            dissolutionEnthalpy
+            {
+                value 3880;
+                unit  J/mol;
+                basis "NaCl(s) -> Na+(aq) + Cl-(aq)";
+                origin "data/standards/components/NaCl.dat electrolyte block";
+            }
+        }
+
+        
+        
+        crystal
+        {
+            rho_p 2165.0;       
+            k_v   1.0;          
+            habit cube;
+            provenance
+            {
+                rho_p
+                {
+                    basis  "halite crystallographic density 2.165 g/cm3 (NaCl rock-salt unit cell, a = 5.640 A)";
+                    source "public domain crystallographic density; primary re-citation pending (IST review)";
+                }
+                k_v { basis "cube, V = k_v L^3 (no external source needed)"; }
+            }
+        }
+    }
+}
+
+aqueousSpeciation  NaClSalt;
+
+aqueousMapping ( { species Na; nu 1; } { species Cl; nu 1; } );

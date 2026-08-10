@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Classification (from canonical component FACTS, never from names):
+      water     declared aqueous solvent          (a_w-based VLE)
+      NaCl      apparent electrolyte              (dissociatesTo Na 1, Cl 1;
+                                                   solidPhases.halite admitted
+                                                   by chemistryDict)
+      nButanol  molecular condensable, nonionising (aqueousSpeciation none)
+
+  THE MODEL, stated up front because the anchor comparison depends on it:
+
+  * Molecular backbone: UNIQUAC (water + nButanol) on the CITED Winkelman
+    2009 water/1-butanol LLE set (case-local record, staged interim -- the
+    same values vlle01 consumes inline).  ONE surface prices both liquids;
+    the split is an equality of activity.
+
+  * The organic is WET: water is a declared member, its equality carrying
+    the ionic a_w factor; the molality basis is the aqueous water alone.
+
+  * Ions: Davies on water-referenced molality, FAR out of band at the
+    saturated brine (announced).  Davies' phi = 1 water activity and its
+    gamma = 1 for neutral solutes mean the SALT'S pull on both water and
+    butanol is priced crudely: the model's aqueous salt fraction and the
+    organic's butanol purity will disagree with the anchor, and that
+    disagreement is reported, never tuned.
+
+  * NO NaCl in the organic (anchor: 0.19 wt%) -- the declared refusal.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( NaCl  nButanol  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { ionic davies;  molecular UNIQUAC; }
+    }
+
+    organic
+    {
+        solvent  nButanol;
+        members  ( nButanol  water );
+        activityModel UNIQUAC;
+
+        reason
+            "Marcilla 1995 Table 4B: with solid NaCl present the water-
+             butanol split is invariant -- the butanol-rich liquid is the
+             organic vertex of the published tie-triangle.";
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( water  nButanol );
+}
