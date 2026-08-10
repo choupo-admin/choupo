@@ -975,6 +975,19 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
         //  the aqueous speciation network.  Silently dropping an ionising
         //  member would give the author an organic phase missing the very
         //  component they thought they put in it.
+        //
+        //  THE AQUEOUS SOLVENT IS ADMISSIBLE (2026-08-10, the marcilla01
+        //  finding): a butanol-rich organic liquid is ~50 mol% water, and
+        //  with the organic DRY by construction the butanol/water activity
+        //  equality has NO root -- the split the paper measured was
+        //  unrepresentable, not merely inaccurate.  Declaring the solvent a
+        //  member prices the WET organic: its equality carries the ionic
+        //  a_w factor (the multiplicative decomposition this formulation
+        //  already states), and the speciation's molality basis is the
+        //  aqueous liquid's water alone.  Ions still refuse -- ion
+        //  partitioning into a low-permittivity solvent is different
+        //  physics; water crossing is the same physics both sides already
+        //  price.
         for (const auto& mn : organicMembers)
         {
             auto it = std::find(names.begin(), names.end(), mn);
@@ -983,8 +996,20 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                     " organic phase lists member '" + mn + "', which is not a"
                     " component of this system.");
             const std::size_t mi = std::size_t(it - names.begin());
-            if (sysc.components[mi].kind
-                != ComponentClassification::Kind::MolecularNonionising)
+            const auto kind = sysc.components[mi].kind;
+            if (kind == ComponentClassification::Kind::AqueousSolvent)
+            {
+                if (mn == organicSolvent)
+                    throw std::runtime_error("thermophysicalPropertySystem:"
+                        " the organic phase declares the AQUEOUS solvent '"
+                        + mn + "' as its own solvent -- a second liquid whose"
+                        " solvent is the aqueous solvent is the aqueous phase"
+                        " wearing another name.  Declare the organic-majority"
+                        " member as `solvent` and list '" + mn + "' as a"
+                        " member.");
+                continue;                      // wet organic: admissible
+            }
+            if (kind != ComponentClassification::Kind::MolecularNonionising)
                 throw std::runtime_error("thermophysicalPropertySystem:"
                     " organic-phase member '" + mn + "' takes part in the"
                     " aqueous speciation network (aqueousSpeciation is not"
@@ -1016,6 +1041,13 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                          " DECLARATION.  The immiscibility that would cause"
                          " the split is not computed, so what partitions here"
                          " rests on binaries with no ternary term.\n";
+            if (std::find(organicMembers.begin(), organicMembers.end(),
+                          solventName) != organicMembers.end())
+                std::cout << "[resolver] WET organic: the aqueous solvent '"
+                          << solventName << "' is a declared member --"
+                             " its cross-liquid equality carries the ionic"
+                             " a_w factor, and the speciation's molality"
+                             " basis is the aqueous liquid's solvent alone\n";
             if (!organicReason.empty())
                 std::cout << "[resolver] reason: " << organicReason << "\n";
         }

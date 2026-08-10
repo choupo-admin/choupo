@@ -1459,6 +1459,22 @@ PYEOF
     fi
     rm -f /tmp/dutyinv.$$
 
+    # Marcilla LLS anchor contact (2026-08-10): brine + solid halite
+    # reproduced under Davies+UNIFAC (announced out-of-band), the wet-organic
+    # contract announced, and the water/1-butanol MISCIBILITY verdict of the
+    # corpus UNIFAC (VLE) table pinned in BOTH directions -- the stale-pin arm
+    # fires the day a curated LLE set opens the gap, demanding the witness be
+    # upgraded to the full tie-triangle.
+    if "$ROOT/bin/curate/check_marcilla_lls.py" > /tmp/marcilla.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "marcilla-lls-gate" "$(head -1 /tmp/marcilla.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_marcilla_lls.py)\n" "marcilla-lls-gate"
+        cat /tmp/marcilla.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/marcilla.$$
+
     # Normalized-residual convergence contract (2026-08-09, Vitor's ruling).
     # A dimensional residual is a magnitude, not a verdict: the pass/fail
     # decision uses the ONE normalized residual, while the report keeps the

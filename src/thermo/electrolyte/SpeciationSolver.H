@@ -443,6 +443,15 @@ public:
     const std::vector<MineralEntry>&       minerals()  const { return minerals_;  }
     const std::vector<GasEntry>&           gases()     const { return gases_;     }
 
+    //  The charge of a master's model-species record (case overlay /
+    //  standards species/<name>.dat), cached; THROWS when no record
+    //  resolves.  PUBLIC because it doubles as the provider-side existence
+    //  test a client may need: a SPECTATOR master (a fully dissociated
+    //  salt's free ion, referenced by no equilibrium at all) is legitimate
+    //  exactly when this call resolves -- the same condition solve()
+    //  enforces (promoted from private 2026-08-10, sealing marcilla01).
+    double chargeOf(const std::string& master) const;
+
     // D-R1 (approved 2026-08-02): a case may declare its speciation network
     // DELIBERATELY SMALLER than the reachable curated closure --
     //     speciation { networkScope restricted;
@@ -511,8 +520,6 @@ private:
     mutable std::map<std::string, double> masterCharge_;  // ions.dat cache (lazy)
     std::shared_ptr<AqueousActivity> activity_;  // per-ion aqueous gamma model
     std::string                     activityName_;  // its registered name (announce)
-
-    double chargeOf(const std::string& master) const;
 };
 
 } // namespace electrolyte

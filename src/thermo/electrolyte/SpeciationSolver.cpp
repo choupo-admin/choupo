@@ -46,6 +46,7 @@ License
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -1567,6 +1568,13 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             xa[nUnk + p] = npVal[std::size_t(activeMin[p])];   // raw n_p
 
         bool converged = false;
+        //  Oscillation guard state (see the guard at the loop tail): the I of
+        //  TWO passes ago, and the substitution damping factor -- 1.0 (plain
+        //  substitution, the historical behaviour) until a limit cycle is
+        //  detected.  Per-solvePass locals: every active-set change starts
+        //  undamped.
+        double Ipp     = std::numeric_limits<double>::quiet_NaN();
+        double lambdaI = 1.0;
         for (int g = 0; g < maxGamma && !converged; ++g)
         {
             out.gammaIters = g + 1;
@@ -1873,8 +1881,38 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                           << " mol/kg\n";
             if (std::fabs(Inew - I) <= 1.0e-12 + 1.0e-9 * Inew
                 && std::fabs(awNew - aw) <= 1.0e-12) converged = true;
-            I  = Inew;
-            aw = awNew;
+            //  OSCILLATION GUARD (first exercised by marcilla01, 2026-08-10).
+            //  Out of its validity band Davies' gamma rises so steeply with I
+            //  that the plain substitution I <- I(solve(gamma(I))) has a map
+            //  slope below -1, and the pass sequence settles into a PERIOD-2
+            //  LIMIT CYCLE instead of diverging to infinity or converging
+            //  (marcilla01's saturated brine: I = 0.914 <-> 7.84 mol/kg,
+            //  every pass, while a genuine fixed point sits between them at
+            //  I ~ 3.6).  Detection: the new I lands back on the value of two
+            //  passes ago while still far from the last one.  Remedy: damped
+            //  substitution, I <- I + lambda (Inew - I) -- lambda = 1/2
+            //  cancels a map slope of exactly -1, and is halved again on
+            //  every re-detection (floored so the guard cannot stall the loop
+            //  into its own non-convergence).  a_w rides the same damping: it
+            //  is frozen WITH the gammas, so it must move with them.  The aid
+            //  is ANNOUNCED, per the no-silent-crutch doctrine, and the
+            //  converged answer is the same fixed point the undamped map
+            //  defines -- at convergence Inew == I and the damping is inert.
+            if (!converged && g >= 2
+                && std::fabs(Inew - Ipp) < 0.1 * std::fabs(Inew - I))
+            {
+                lambdaI = std::max(0.5 * lambdaI, 1.0 / 64.0);
+                if (verbosity >= 2)
+                    std::cout << "    [guard] ionic-strength fixed point"
+                                 " oscillating (I = " << std::scientific
+                              << std::setprecision(3) << I << " <-> " << Inew
+                              << std::defaultfloat << " mol/kg): damped"
+                                 " substitution engaged (lambda = "
+                              << lambdaI << ")\n";
+            }
+            Ipp = I;
+            I  += lambdaI * (Inew - I);
+            aw += lambdaI * (awNew - aw);
         }
         // write the iterate back to the shared state
         for (std::size_t j = 0; j < nUnk; ++j) x[j] = xa[j];

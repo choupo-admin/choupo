@@ -87,15 +87,24 @@ phase, an organic phase, and solid NaCl, all simultaneously at equilibrium.
 | aqueous W/E/B/SC | organic W/E/B/SC | solid |
 |---|---|---|
 | 71.80 / 1.44 / 1.26 / 25.50 | 8.84 / 6.00 / 85.10 / 0.06 | NaCl 100 |
+| 71.12 / 2.72 / 1.31 / 24.85 | 10.05 / 10.99 / 78.80 / 0.16 | NaCl 100 |
+| 70.79 / 3.36 / 1.38 / 24.47 | 11.21 / 15.03 / 73.32 / 0.44 | NaCl 100 |
 | 70.13 / 4.92 / 1.45 / 23.50 | 13.39 / 21.93 / 64.12 / 0.56 | NaCl 100 |
+| 69.49 / 6.11 / 1.59 / 22.81 | 16.78 / 27.70 / 54.44 / 1.08 | NaCl 100 |
 | 68.71 / 7.51 / 1.98 / 21.80 | 19.06 / 32.74 / 46.80 / 1.40 | NaCl 100 |
+| 67.51 / 9.51 / 2.01 / 20.97 | 22.18 / 36.76 / 38.69 / 2.37 | NaCl 100 |
 | 62.94 / 14.32 / 3.41 / 19.33 | 26.33 / 38.10 / 31.67 / 3.90 | NaCl 100 |
 | 57.99 / 18.92 / 6.20 / 16.89 | 36.56 / 36.50 / 20.19 / 6.75 | NaCl 100 |
 
-(Table 10B carries nine rows; the four omitted here interpolate between
-these five.  Transcribe the rest when the witness case is built — from the
-paper, not from this file: this record locates the anchor, the case cites
-the primary.)
+(All nine rows, completed 2026-08-10 from the paper's Table 10B — the
+surviving session PDF, re-read at transcription time; this record locates
+the anchor, the case cites the primary.)
+
+Table 10A gives the nine INITIAL MIXTURES that produced these
+tie-triangles — a witness feed can therefore be one of the paper's own
+experimental charges.  Row 4 (pairs with tie-triangle row 4 above; the
+lever-rule check closes to Σλ = 1.010): W/E/B/SC = 36.04 / 10.01 /
+22.49 / 31.46 wt%.
 
 ### 2c. Which witness consumes what
 

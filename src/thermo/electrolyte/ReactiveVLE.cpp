@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <functional>
+#include <limits>
 #include "core/Advisory.H"
 
 #include <iomanip>
@@ -184,6 +185,24 @@ ReactiveVLE::ReactiveVLE(ReactiveVLEConfig cfg)
             if (!masterKnown && cfg_.dissolvedGases.count(fam.apparentIdx))
                 for (const auto& g : spec_->gases())
                     if (g.species == master.key) { masterKnown = true; break; }
+            //  A SPECTATOR master -- a fully dissociated salt's free ion
+            //  (NaCl -> Na+, Cl-) -- may be referenced by NO equilibrium at
+            //  all: its entire aqueous story is the free master balance the
+            //  m = A n map targets DIRECTLY, so there is nothing to "map
+            //  back" through.  It is legitimate exactly when the species
+            //  catalogue resolves it (record + charge), the same condition
+            //  solve() itself enforces.  Found sealing marcilla01
+            //  (2026-08-10): the UNSEALED run passed only because an
+            //  unrelated databank record (NaSO4-formation) happened to
+            //  reference Na, and the sealed frontier -- correctly -- did
+            //  not stage it.  A verification that depends on records the
+            //  case does not use is a verification of the databank, not of
+            //  the case.
+            if (!masterKnown)
+            {
+                try { (void)spec_->chargeOf(master.key); masterKnown = true; }
+                catch (const std::exception&) {}
+            }
             if (!masterKnown)
                 throw std::runtime_error("ReactiveVLE: apparent component '"
                     + cfg_.apparent.at(fam.apparentIdx) + "' maps to master '"
@@ -329,6 +348,19 @@ struct TwoLiquidSplit
     std::vector<std::size_t>               orgPos;    // admitted positions
     std::function<sVector(const sVector&)> gammaOf;   // the shared model
 
+    //  THE WET ORGANIC (2026-08-10, the marcilla01 finding).  When the case
+    //  declares the AQUEOUS SOLVENT a member, its cross-liquid equality is
+    //      gamma_org x_org  =  gamma_aq x_aq * a_w,ionic
+    //  -- the multiplicative decomposition the formulation already states
+    //  (a_w = gamma_w x_w * aw_ionic), applied across the split.  The ionic
+    //  factor is FROZEN during this Newton (it comes from the speciation of
+    //  the aqueous liquid) and iterated to self-consistency by the caller;
+    //  at convergence the frozen state is the current state, the same
+    //  discipline the gamma fixed point uses.  solventPos = SIZE_MAX (dry
+    //  organic) leaves every path below byte-identical to what it was.
+    std::size_t                            solventPos = SIZE_MAX;
+    std::function<scalar()>                awIonic;   // frozen factor; null = 1
+
     //  ONE liquid: the whole backbone in the aqueous phase.
     void single(const sVector& nBl, LiquidState& ls) const
     {
@@ -350,12 +382,20 @@ struct TwoLiquidSplit
     //  root of the equality equations without being the equilibrium.
     scalar gibbs(const LiquidState& ls) const
     {
+        //  The solvent's AQUEOUS chemical potential carries the ionic a_w
+        //  factor (wet organic only): both configurations -- single liquid
+        //  and split -- price it on the SAME frozen factor, so the
+        //  comparison is consistent and the dry-organic path (solventPos ==
+        //  SIZE_MAX) is byte-identical.
+        const scalar lnAw = (solventPos != SIZE_MAX && awIonic)
+                          ? std::log(std::max(awIonic(), 1.0e-300)) : 0.0;
         scalar g = 0.0;
         for (std::size_t b = 0; b < nBk; ++b)
         {
             if (ls.nAq[b] > 0.0)
                 g += ls.nAq[b]
-                   * std::log(std::max(ls.gAq[b]*ls.xAq[b], 1.0e-300));
+                   * (std::log(std::max(ls.gAq[b]*ls.xAq[b], 1.0e-300))
+                      + (b == solventPos ? lnAw : 0.0));
             if (ls.split && !ls.nOrg.empty() && ls.nOrg[b] > 0.0)
                 g += ls.nOrg[b]
                    * std::log(std::max(ls.gOrg[b]*ls.xOrg[b], 1.0e-300));
@@ -405,6 +445,10 @@ struct TwoLiquidSplit
                 const std::size_t b = orgPos[j];
                 f[j] = std::log(std::max(ls.gOrg[b]*ls.xOrg[b], 1.0e-300))
                      - std::log(std::max(ls.gAq [b]*ls.xAq [b], 1.0e-300));
+                //  Wet organic: the solvent's aqueous activity carries the
+                //  frozen ionic a_w factor (see the struct comment).
+                if (b == solventPos && awIonic)
+                    f[j] -= std::log(std::max(awIonic(), 1.0e-300));
             }
             return true;
         };
@@ -481,6 +525,118 @@ struct TwoLiquidSplit
         return true;
     }
 
+    //  The liquid state at explicit organic amounts -- the same arithmetic
+    //  eval() uses, without the equality residual.  Serves the Gibbs
+    //  machinery below.
+    bool stateAt(const sVector& nBl, const sVector& org, LiquidState& ls) const
+    {
+        ls = LiquidState{};
+        ls.nOrg.assign(nBk, 0.0);
+        ls.nAq = nBl;
+        for (std::size_t j = 0; j < orgPos.size(); ++j)
+        {
+            const std::size_t b = orgPos[j];
+            ls.nOrg[b] = std::min(std::max(org[j], 0.0), 0.999999*nBl[b]);
+            ls.nAq[b]  = nBl[b] - ls.nOrg[b];
+        }
+        scalar sA = 0.0, sO = 0.0;
+        for (std::size_t b = 0; b < nBk; ++b)
+        { sA += ls.nAq[b]; sO += ls.nOrg[b]; }
+        if (sA <= 1.0e-300 || sO <= 1.0e-300) return false;
+        ls.xAq.assign(nBk, 0.0); ls.xOrg.assign(nBk, 0.0);
+        for (std::size_t b = 0; b < nBk; ++b)
+        { ls.xAq[b] = ls.nAq[b]/sA; ls.xOrg[b] = ls.nOrg[b]/sO; }
+        ls.gAq  = gammaOf(ls.xAq);
+        ls.gOrg = gammaOf(ls.xOrg);
+        ls.split = true;
+        return true;
+    }
+
+    //  Direct GIBBS DESCENT in the split's own ln-moles space (Nelder-Mead,
+    //  deterministic simplex), refining a seed before the Newton runs.  The
+    //  wet organic needs it: with the solvent a member, |f| carries a
+    //  1-parameter STATIONARY FAMILY (the organic as a scaled clone of the
+    //  mixture, Jacobian singular along it, |f| = |ln a_w| but never zero)
+    //  and an |f|-descent Newton funnels into that family from almost any
+    //  seed -- the K=1 saddle this repository already documents for
+    //  symmetric molecular LL splits, whose cure there is the same: minimise
+    //  G directly, then solve.  The equalities are the stationarity of G,
+    //  so a strict G-minimiser hands the Newton a nonsingular basin.
+    sVector gibbsDescent(const sVector& nBl, const sVector& seed) const
+    {
+        const std::size_t M = orgPos.size();
+        auto G = [&](const sVector& tv) -> scalar
+        {
+            sVector org(M);
+            for (std::size_t j = 0; j < M; ++j) org[j] = std::exp(tv[j]);
+            LiquidState ls;
+            if (!stateAt(nBl, org, ls)) return 1.0e30;
+            return gibbs(ls);
+        };
+        std::vector<sVector> S(M + 1, sVector(M));
+        for (std::size_t j = 0; j < M; ++j)
+            S[0][j] = std::log(std::max(seed[j], num::orgSeedFloor));
+        for (std::size_t v = 1; v <= M; ++v)
+        { S[v] = S[0]; S[v][v-1] += 0.4; }
+        sVector gv(M + 1);
+        for (std::size_t v = 0; v <= M; ++v) gv[v] = G(S[v]);
+        for (int itNM = 0; itNM < 200; ++itNM)
+        {
+            //  order: lo = best, hi = worst
+            std::size_t lo = 0, hi = 0;
+            for (std::size_t v = 1; v <= M; ++v)
+            {
+                if (gv[v] < gv[lo]) lo = v;
+                if (gv[v] > gv[hi]) hi = v;
+            }
+            if (std::abs(gv[hi] - gv[lo])
+                <= 1.0e-13 * std::max(1.0, std::abs(gv[lo]))) break;
+            sVector cen(M, 0.0);
+            for (std::size_t v = 0; v <= M; ++v)
+                if (v != hi)
+                    for (std::size_t j = 0; j < M; ++j)
+                        cen[j] += S[v][j] / scalar(M);
+            auto lerp = [&](scalar a) {
+                sVector p(M);
+                for (std::size_t j = 0; j < M; ++j)
+                    p[j] = cen[j] + a * (S[hi][j] - cen[j]);
+                return p;
+            };
+            sVector pr = lerp(-1.0);           // reflect
+            scalar gr = G(pr);
+            if (gr < gv[lo])
+            {
+                sVector pe = lerp(-2.0);       // expand
+                scalar ge = G(pe);
+                if (ge < gr) { S[hi] = pe; gv[hi] = ge; }
+                else         { S[hi] = pr; gv[hi] = gr; }
+            }
+            else if (gr < gv[hi]) { S[hi] = pr; gv[hi] = gr; }
+            else
+            {
+                sVector pc = lerp(0.5);        // contract
+                scalar gc = G(pc);
+                if (gc < gv[hi]) { S[hi] = pc; gv[hi] = gc; }
+                else
+                {
+                    for (std::size_t v = 0; v <= M; ++v)   // shrink to best
+                        if (v != lo)
+                        {
+                            for (std::size_t j = 0; j < M; ++j)
+                                S[v][j] = S[lo][j]
+                                        + 0.5*(S[v][j] - S[lo][j]);
+                            gv[v] = G(S[v]);
+                        }
+                }
+            }
+        }
+        std::size_t lo = 0;
+        for (std::size_t v = 1; v <= M; ++v) if (gv[v] < gv[lo]) lo = v;
+        sVector out(M);
+        for (std::size_t j = 0; j < M; ++j) out[j] = std::exp(S[lo][j]);
+        return out;
+    }
+
     //  The seeds.  DETERMINISTIC, and deliberately not warm-started from the
     //  previous outer trial: a residual that remembers where the solver came
     //  from is path-dependent, and a path-dependent residual has no finite-
@@ -489,15 +645,52 @@ struct TwoLiquidSplit
     {
         bool found = false;
         LiquidState bestLs; scalar gBest = 0.0;
+        auto trySeed = [&](const sVector& seed)
+        {
+            LiquidState ls;
+            if (!from(nBl, seed, ls)) return;
+            const scalar g = gibbs(ls);
+            if (!found || g < gBest) { found = true; bestLs = ls; gBest = g; }
+        };
         for (const scalar frac : { 0.99, 0.90, 0.50, 0.10 })
         {
             sVector seed(orgPos.size());
             for (std::size_t j = 0; j < orgPos.size(); ++j)
                 seed[j] = frac * nBl[orgPos[j]];
-            LiquidState ls;
-            if (!from(nBl, seed, ls)) continue;
-            const scalar g = gibbs(ls);
-            if (!found || g < gBest) { found = true; bestLs = ls; gBest = g; }
+            trySeed(seed);
+        }
+        //  The Newton descends |f|, and with the solvent a member |f| has a
+        //  SECOND trivial attractor beside the clone manifold: the
+        //  all-organic cap corner, where every member rides its 0.999999
+        //  cap, both phases hold the feed composition, and |f| bottoms out
+        //  at |ln a_w| without ever reaching zero.  An |f| descent cannot
+        //  tell that pit from a basin.  GIBBS CAN -- the corner prices the
+        //  solvent without its ionic a_w term, so it sits ABOVE the single
+        //  liquid, while the true split sits below it.  So the seed is
+        //  chosen by a deterministic Gibbs GRID over (solvent fraction,
+        //  member fraction), refined by the Nelder-Mead descent above, and
+        //  the Newton polishes from the refined minimum: Gibbs decides, the
+        //  Newton solves -- the same division of labour this file already
+        //  states.  (A uniform-fraction seed sits EXACTLY on the clone
+        //  manifold when the solvent is a member, so the four seeds above
+        //  stop being seeds at all for the wet organic.)
+        if (solventPos != SIZE_MAX)
+        {
+            scalar gMin = 0.0; sVector seedMin;
+            for (const scalar fOrg : { 0.50, 0.70, 0.85, 0.95, 0.99 })
+                for (const scalar fW : { 0.02, 0.05, 0.10, 0.20, 0.30, 0.45 })
+                {
+                    sVector seed(orgPos.size());
+                    for (std::size_t j = 0; j < orgPos.size(); ++j)
+                        seed[j] = (orgPos[j] == solventPos ? fW : fOrg)
+                                * nBl[orgPos[j]];
+                    LiquidState ls;
+                    if (!stateAt(nBl, seed, ls)) continue;
+                    const scalar g = gibbs(ls);
+                    if (seedMin.empty() || g < gMin) { gMin = g; seedMin = seed; }
+                }
+            if (!seedMin.empty())
+                trySeed(gibbsDescent(nBl, seedMin));
         }
         if (found) lsOut = bestLs;
         return found;
@@ -727,10 +920,14 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     int  innerVerbosity = verbosity;      // first call: trace + diagnostics
     bool announceClosure = true;
     bool traced = false;                      // the activation trace prints ONCE
-    auto speciate = [&](const sVector& vap, SpeciationResult& out) -> void
+    //  `orgW` [mol, feed basis] = solvent held by the ORGANIC liquid (wet
+    //  organic only; 0 everywhere else).  The molality basis is the AQUEOUS
+    //  liquid's water alone -- water in the organic phase dissolves no ions.
+    auto speciate = [&](const sVector& vap, scalar orgW,
+                        SpeciationResult& out) -> void
     {
         const scalar liqW = nW - (cfg_.gasOf.count(cfg_.solventIdx)
-                                  ? vap[cfg_.solventIdx] : 0.0);
+                                  ? vap[cfg_.solventIdx] : 0.0) - orgW;
         const scalar kgw  = liqW * cfg_.solventMW;   // mol * kg/mol = kg water
         if (kgw <= num::kgwFloor)
             throw std::runtime_error("ReactiveVLE: the liquid solvent"
@@ -809,7 +1006,20 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         if (b < nBk) orgPos.push_back(b);
     }
     const std::size_t nOrgM = orgPos.size();
-    const TwoLiquidSplit split{ nBk, orgPos, gammaOf };
+
+    //  WET ORGANIC wiring: when the aqueous solvent is a declared member,
+    //  the split's water equality reads the ionic a_w factor FROZEN from the
+    //  latest speciation, and the split<->speciation pair is brought to a
+    //  joint fixed point by resolveLiquid below.  Dry organic: solventPos
+    //  stays SIZE_MAX, awFrozen is never read, every path byte-identical.
+    const std::size_t solventBk = backbonePos(cfg_.solventIdx);
+    bool wetOrganic = false;
+    for (const auto m : cfg_.organic.members)
+        if (m == cfg_.solventIdx) wetOrganic = true;
+    scalar awFrozen = 1.0;
+    const TwoLiquidSplit split{ nBk, orgPos, gammaOf,
+                                wetOrganic ? solventBk : SIZE_MAX,
+                                [&awFrozen]() -> scalar { return awFrozen; } };
 
 
     //  ---- THE LIQUID STATE, one phase or two -------------------------------
@@ -840,6 +1050,18 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     {
         got = false; g1 = 0.0; g2 = 0.0;
         if (nOrgM == 0) return false;
+        //  The phase DECISION freezes the ionic a_w at the single-liquid
+        //  speciation of this trial: both configurations are then compared
+        //  on the same factor (consistent), and the SOLVE afterwards
+        //  iterates the pair to self-consistency.  A trial the speciation
+        //  cannot price keeps the last frozen factor -- the decision is a
+        //  comparison, not the answer.
+        if (wetOrganic)
+        {
+            try { SpeciationResult srD; speciate(vap, 0.0, srD);
+                  awFrozen = srD.aw; }
+            catch (const std::exception&) {}
+        }
         const sVector nBl = backboneMoles(vap);
         LiquidState one; split.single(nBl, one);
         g1 = split.gibbs(one);
@@ -900,6 +1122,59 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         return true;
     };
 
+    //  ---- THE JOINT LIQUID RESOLUTION (speciation + split, one entry) ------
+    //  Dry organic (or none): exactly the historical sequence -- one
+    //  speciation, one split -- byte-identical numbers.  Wet organic: the two
+    //  share the water, so they are brought to a joint fixed point --
+    //  speciate the aqueous liquid (molality on ITS water), freeze a_w,
+    //  split, hand the organic water back to the speciation, repeat.  The
+    //  update is damped on a detected oscillation exactly as the speciation's
+    //  own I fixed point is (announced there; this loop is inside the outer
+    //  Newton's residual, so it must stay quiet and simply converge -- the
+    //  converged state is announced once at the answer).  DETERMINISTIC:
+    //  every evaluation starts from orgW = 0, never from the previous trial
+    //  (a residual that remembers where the solver came from is
+    //  path-dependent, and its FD Jacobian is worth nothing).
+    auto resolveLiquid = [&](const sVector& vap, SpeciationResult& sr,
+                             LiquidState& ls) -> bool
+    {
+        if (!wetOrganic || !twoLiquids)
+        {
+            speciate(vap, 0.0, sr);
+            if (wetOrganic) awFrozen = sr.aw;
+            return liquidState(vap, ls);
+        }
+        scalar orgW = 0.0;
+        scalar orgWpp = std::numeric_limits<scalar>::quiet_NaN();
+        scalar lam = 1.0;
+        const sVector nBl = backboneMoles(vap);
+        for (int itW = 0; itW < 40; ++itW)
+        {
+            speciate(vap, orgW, sr);
+            awFrozen = sr.aw;
+            if (!split.best(nBl, ls))
+            {
+                //  The trial does not admit the two-liquid set: report it
+                //  exactly as liquidState does, with the speciation at the
+                //  single-liquid basis so the caller's fallback is coherent.
+                speciate(vap, 0.0, sr);
+                split.single(nBl, ls);
+                return false;
+            }
+            const scalar orgWnew = ls.nOrg[solventBk];
+            if (std::abs(orgWnew - orgW) <= 1.0e-12 * std::max(1.0, nW))
+                return true;
+            if (itW >= 2 && std::abs(orgWnew - orgWpp)
+                              < 0.1 * std::abs(orgWnew - orgW))
+                lam = std::max(0.5 * lam, 1.0/64.0);
+            orgWpp = orgW;
+            orgW  += lam * (orgWnew - orgW);
+        }
+        throw std::runtime_error("ReactiveVLE: the organic-water /"
+            " speciation joint fixed point did not converge in 40 rounds"
+            " (wet organic) -- the trial is reported unphysical.");
+    };
+
     // Activity of the DISSOLVED counterpart of a volatile: the solvent reads
     // its TOTAL activity -- the multiplicative decomposition
     //     a_w = gamma_w(x_backbone) * x_w(backbone) * aw_ionic(speciation)
@@ -918,7 +1193,12 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     {
         const std::size_t b = backbonePos(appIdx);
         if (b >= nBk) return 1.0;
-        if (ls.split)
+        //  The SOLVENT always prices on the aqueous side: its VLE consumer
+        //  multiplies by the speciation's a_w (the multiplicative
+        //  decomposition), and the organic-side number ALREADY contains that
+        //  factor through the wet-organic equality -- routing the solvent
+        //  through the organic side would count a_w twice.
+        if (ls.split && b != solventBk)
             for (const auto ob : orgPos)
                 if (ob == b) return ls.gOrg[b] * ls.xOrg[b];
         return ls.gAq[b] * ls.xAq[b];
@@ -948,7 +1228,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     {
         sVector v0(nApp, 0.0);
         SpeciationResult sr;
-        speciate(v0, sr);
+        LiquidState ls0;
+        (void)resolveLiquid(v0, sr, ls0);
         //  THE PHASES DECLARED, not the phases convenient.  This sum decides
         //  whether a vapour exists at all, and computing it on a SINGLE liquid
         //  when the case declares two is not a small error: benzene held in a
@@ -957,7 +1238,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         //  atmospheres for a liquid whose real benzene pressure is a fifth of
         //  one.  Such a pre-check waves every case through into a Newton
         //  hunting a vapour that is not there (2026-07-27).
-        LiquidState ls0; (void)liquidState(v0, ls0);
+        //  ls0 resolved jointly with the speciation above (wet organic:
+        //  the pair shares the water; dry: the historical sequence).
         scalar pSum = 0.0;
         //  Kept component by component as well as summed: a stage K-value is
         //  an incipient quantity and needs the parts, not the total.
@@ -1132,16 +1414,16 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         //  (2026-07-27).
         try
         {
-        speciate(vap, srLast);
+        LiquidState ls;
+        if (!resolveLiquid(vap, srLast, ls)) return sVector(nV, 1.0e6);
         const TrueVap tv = trueVapourOf(vap);
         const scalar tau = std::max(tv.tau, 1.0e-300);
         //  A trial that does not admit the phase set being solved is reported
         //  unphysical, exactly as a diverging speciation is: the damped outer
         //  Newton backtracks away from it, and if the ANSWER lies on the other
         //  side of the phase boundary the outer phase loop -- not a branch in
-        //  here -- moves the whole configuration there.
-        LiquidState ls;
-        if (!liquidState(vap, ls)) return sVector(nV, 1.0e6);
+        //  here -- moves the whole configuration there.  (The liquid state
+        //  above is resolved JOINTLY with the speciation -- one entry.)
         sVector r(nV);
         termsLast.assign(2*nV, 0.0);
         for (std::size_t k = 0; k < nV; ++k)
@@ -1249,9 +1531,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             try
             {
                 SpeciationResult sr;
-                speciate(vap, sr);
                 LiquidState ls;
-                if (!liquidState(vap, ls)) return false;
+                if (!resolveLiquid(vap, sr, ls)) return false;
                 p.assign(nV, 0.0);
                 for (std::size_t k = 0; k < nV; ++k)
                 {
@@ -1659,7 +1940,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  loudly the run was asked to talk.
     if (twoLiquids)
     {
-        LiquidState lsF; (void)liquidState(vap, lsF);
+        SpeciationResult srF; LiquidState lsF;
+        (void)resolveLiquid(vap, srF, lsF);
         if (lsF.split && !lsF.nOrg.empty())
         {
             res.nOrgApp.assign(nApp, 0.0);
@@ -1758,7 +2040,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             //  ties it to the aqueous phase.  That last column is the one to
             //  read -- it is the equilibrium itself, printed, and if it is not
             //  zero the split is not converged whatever the outer residual says.
-            LiquidState lsA; (void)liquidState(vap, lsA);
+            SpeciationResult srA; LiquidState lsA;
+            (void)resolveLiquid(vap, srA, lsA);
             if (!lsA.split)
                 throw std::runtime_error("ReactiveVLE: the declared second"
                     " liquid was PRESENT on the feed but its split does not"
@@ -1781,8 +2064,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                           << lsA.xOrg[b] << std::setw(10) << lsA.xAq[b]
                           << std::setw(14) << std::scientific
                           << std::setprecision(2)
+                          //  The solvent's aqueous activity carries the
+                          //  ionic a_w factor (wet organic) -- the printed
+                          //  residual is the equality actually solved.
                           << (std::log(std::max(lsA.gOrg[b]*lsA.xOrg[b],1e-300))
-                            - std::log(std::max(lsA.gAq [b]*lsA.xAq [b],1e-300)))
+                            - std::log(std::max(lsA.gAq [b]*lsA.xAq [b],1e-300))
+                            - (wetOrganic && b == solventBk
+                               ? std::log(std::max(awFrozen, 1e-300)) : 0.0))
                           << std::fixed << "\n";
             std::cout << "    (both liquids leave as ONE apparent liquid"
                          " stream -- the split is internal state, like the"

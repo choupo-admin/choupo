@@ -485,6 +485,26 @@ starts the Newton** (neither dominates).  Reference case:
 `flash17_two_liquids_reactive` (V/F 0.324, organic 1.68 % of the backbone
 liquid at 96 % benzene, pH 2.89, |r| 2e-15).  Full record incl. the three
 failed designs: [`docs/design/reactive-second-liquid-proposal.md`](docs/design/reactive-second-liquid-proposal.md) §14.
+**The organic may be WET (2026-08-10, §15 of the same record):** the aqueous
+solvent may be a declared member — its equality carries the ionic a_w factor
+(γ_org·x_org = γ_aq·x_aq·a_w,ionic, the multiplicative decomposition across
+the split), molality stays on the aqueous water alone, and the split ⇄
+speciation pair is resolved jointly inside each residual (dry paths
+byte-identical).  With the solvent a member, |f| gains two trivial
+attractors (clone manifold + all-organic cap corner, both at |f| = |ln a_w|
+with singular Jacobian), so the seed comes from a Gibbs grid + Nelder-Mead
+descent — Gibbs decides, the Newton solves.  Witness
+`marcilla01_lls_tie_triangle` (primary-anchor contact, Marcilla 1995): brine
++ solid halite reproduce; the organic vertex does NOT — the corpus UNIFAC is
+the VLE table and keeps water/1-butanol miscible at 25 °C — a recorded,
+never-tuned finding pinned both ways by `check_marcilla_lls` (its stale-pin
+arm fires the day a curated LLE set opens the gap).  Also paid for there:
+the speciation γ fixed point gained an announced oscillation guard (Davies
+out-of-band drives a period-2 I limit cycle around a genuine fixed point),
+and a SPECTATOR master (a fully dissociated salt's free ion, referenced by
+no equilibrium) is verified against the species catalogue
+(`SpeciationSolver::chargeOf`, now on the provider surface) — the old check
+passed only while an unrelated databank record happened to reference Na.
 
 ### Equilibrium-parameterisation identity — D2 migration EXECUTED 2026-07-26 (do NOT relitigate)
 

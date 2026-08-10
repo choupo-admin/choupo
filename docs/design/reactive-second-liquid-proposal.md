@@ -665,3 +665,68 @@ green.
   (This is the "refuses to re-seal" symptom named earlier and left unchased.)
 * **The backbone announced "NRTL backbone" whatever the model was.** A
   hardcoded string, printed while a UNIFAC γ did the work.
+
+## 15. The WET organic: the aqueous solvent as a member (2026-08-10)
+
+Built against `marcilla01_lls_tie_triangle` (Marcilla, Ruíz & Olaya 1995 —
+water/ethanol/1-butanol/NaCl, the solid-equilibrium migration's S5 anchor),
+where the §4.1 approximation stopped being an approximation and became an
+impossibility: a butanol-rich organic is ~50 mol% water, and with the
+organic DRY by construction the butanol/water activity equalities have NO
+root (a dry butanol liquid holds a_B ≳ 0.93 while the aqueous branch tops
+out near 0.85).  The split the paper measured was unrepresentable, not
+merely inaccurate — so the member rule widened, inside the settled shape.
+
+**The contract.**  A case may list the declared aqueous solvent among the
+organic `members`.  Its cross-liquid equality carries the ionic factor of
+the multiplicative decomposition this formulation already states:
+
+    gamma_org x_org  =  gamma_aq x_aq * a_w,ionic
+
+frozen during the split Newton and iterated to self-consistency by
+`resolveLiquid` — the ONE entry that resolves speciation + split jointly
+(the two share the water: the molality basis is the AQUEOUS liquid's
+solvent alone, so `speciate()` subtracts the organic water).  Every dry
+path is byte-identical (solventPos = SIZE_MAX; the joint loop degenerates
+to the historical sequence).  The solvent's own VLE stays priced on the
+aqueous side — the organic-side number already contains a_w through the
+equality, and routing it there would count a_w twice.  Ions still refuse.
+The aqueous solvent may not be the organic *solvent* (that phase would be
+the aqueous wearing another name).
+
+**Two numerical traps, both paid for on first contact.**  With the solvent
+a member, |f| gains TWO trivial attractors the dry organic never had: the
+CLONE manifold (organic = a scaled clone of the mixture — uniform-fraction
+seeds now sit exactly ON it) and the all-organic CAP corner (every member
+riding its 0.999999 cap, both phases at feed composition).  Both are
+1-parameter stationary families with singular Jacobian at |f| = |ln a_w|,
+never zero, and an |f|-descent Newton funnels into them from essentially
+any seed.  GIBBS tells them apart — both price the solvent without its
+ionic a_w term, so both sit ABOVE the single liquid while a true split
+sits below — so the seed is now chosen by a deterministic Gibbs grid over
+(solvent fraction, member fraction) refined by a small Nelder-Mead descent
+in the split's own ln-moles space, and the Newton polishes from that
+basin: *Gibbs decides, the Newton solves*, the same division of labour
+§14 already settled and the molecular LL path settled before it.
+
+**What the anchor then said.**  With the machinery correct, the Gibbs
+descent drives the organic to zero: under the corpus UNIFAC — the **VLE**
+table (Hansen 1991) — water/1-butanol is fully miscible at 25 °C (binary
+g_mix convex, confirmed independently with a two-liquid
+`propertyScanBinary` probe; the same table splits water/benzene, which is
+why flash17 never met this).  The engine's one-liquid verdict is the
+correct answer on the declared surface, and the disagreement with the
+measured tie-triangle is the case's recorded finding — model/data gap,
+never tuned, pinned executably in both directions by
+`check_marcilla_lls`.  Remedies in the case README (UNIQUAC on the
+backbone — vlle01's fitted pair is already in-tree — or UNIFAC-LLE /
+NRTL curation, reserved).
+
+**A verification of the databank is not a verification of the case.**
+Sealing the witness exposed that `ReactiveVLE`'s map-back check accepted
+master Na only because an UNRELATED standards record (NaSO4-formation)
+referenced it; the sealed frontier — correctly — did not stage that
+record, and the staged run refused a legitimate SPECTATOR master.  A
+fully dissociated salt's free ion is referenced by no equilibrium; it is
+legitimate exactly when the species catalogue resolves it, so the check
+now asks `SpeciationSolver::chargeOf` (promoted to the provider surface).

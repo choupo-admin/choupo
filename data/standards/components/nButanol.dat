@@ -61,6 +61,14 @@ groups
     unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );
 }
 
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: 1-butanol does NOT participate in the aqueous speciation
+// network at this thermodynamic level (alcohol pKa ~ 16 -- negligible,
+// the same class of fact ethanol.dat records).  This says nothing about
+// aqueous reactions in general; those belong to reaction sets, not to
+// equilibrium speciation.
+aqueousSpeciation  none;
+
 cosmo
 {
     VT2005
