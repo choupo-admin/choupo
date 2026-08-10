@@ -298,6 +298,62 @@ bool looksLikeStreamState(const std::string& body)
     return false;
 }
 
+//  ---- The equilibriumState CROSS-REFERENCE fingerprint --------------------
+//
+//  Ruled 2026-08-10 (Vitor): `calculated {}` may IDENTIFY the equilibrium
+//  calculation that produced a stream's state -- provenance, diagnostics,
+//  convergence -- but must never REPRODUCE species amounts or phase
+//  compositions: the canonical state has one home (the `speciation {}` /
+//  `phases {}` blocks), and a copy is a second home that drifts.  What the
+//  cross-reference carries instead is this FINGERPRINT of the canonical
+//  block's computational content, so a reader can PROVE the reference still
+//  names the state actually in the file: change one molality and the stored
+//  fingerprint no longer reproduces -- a stale reference REFUSES rather than
+//  standing beside the new state as a second, apparently valid account.
+//
+//  Numbers enter the canonical string EXACTLY as the writer prints them
+//  (setprecision(10), the stream writer's own setting), so
+//  write -> parse -> recompute is the identity: both sides format the same
+//  double the same way.  The hash is FNV-1a 64 -- DRIFT DETECTION, not
+//  cryptography; nothing here defends against an adversary, only against an
+//  edit nobody re-ran the case after.
+//
+//  `currentT` is deliberately OUTSIDE the fingerprint: it echoes the
+//  stream's own T (state that moves legitimately when a carried block rides
+//  a heated stream), not the equilibrium content the reference names.
+static std::string equilibriumFingerprint(const ProcessStream::Speciation& sp)
+{
+    auto fmt = [](double v)
+    {
+        std::ostringstream os;
+        os << std::setprecision(10) << v;
+        return os.str();
+    };
+    std::ostringstream canon;
+    canon << sp.network << '|' << sp.basis << '|' << sp.origin << '|';
+    if (sp.solvedT > 0.0) canon << fmt(sp.solvedT);
+    canon << '|' << (sp.equilibriumValidHere ? '1' : '0') << '|';
+    if (sp.pH_valid) canon << fmt(sp.pH);
+    canon << '|';
+    std::vector<std::pair<std::string, scalar>> rows(sp.flows.begin(),
+                                                     sp.flows.end());
+    std::sort(rows.begin(), rows.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+    for (const auto& [nm, v] : rows)
+        if (std::abs(v) > 0.0)
+            canon << nm << '=' << fmt(v * 3600.0) << ';';   // as printed (kmol/h)
+
+    unsigned long long h = 1469598103934665603ULL;           // FNV offset basis
+    for (const unsigned char c : canon.str())
+    {
+        h ^= c;
+        h *= 1099511628211ULL;                               // FNV prime
+    }
+    std::ostringstream hex;
+    hex << std::hex << std::setfill('0') << std::setw(16) << h;
+    return hex.str();
+}
+
 void writeStreamState(const ProcessStream&  s,
                       const ThermoPackage&  thermo,
                       const fs::path&       file)
@@ -518,6 +574,23 @@ void writeStreamState(const ProcessStream&  s,
     //  state gives the same case (the same deletability test the `speciation`
     //  block passes).  What it carries that nothing else can recover is the
     //  ADJUSTMENT -- an answer never says what it was corrected from.
+    //  The equilibriumState CROSS-REFERENCE (ruled 2026-08-10): identifies
+    //  the calculation whose state the speciation/phases blocks carry,
+    //  WITHOUT copying one number of it.  See equilibriumFingerprint above.
+    auto writeEquilibriumStateRef = [&]()
+    {
+        out << "\n    equilibriumState\n    {\n"
+               "        //  CROSS-REFERENCE, not a copy: the canonical state is the\n"
+               "        //  `speciation {}` block of THIS file (its `origin` says who\n"
+               "        //  solved it, `solvedAtT` at what state).  The fingerprint is\n"
+               "        //  recomputed from that block on every read; if the state was\n"
+               "        //  edited under this reference, the mismatch REFUSES -- a\n"
+               "        //  reference must never outlive what it references.\n"
+               "        target       speciation;\n"
+               "        fingerprint  \"" << equilibriumFingerprint(*s.speciation)
+            << "\";\n    }\n";
+    };
+
     if (s.analysis)
     {
         const auto& a = *s.analysis;
@@ -781,7 +854,18 @@ void writeStreamState(const ProcessStream&  s,
                "        //  before any formulation onto components.\n";
         for (const auto& [sp, v] : a.conservedInventory)
             out << "        " << sp << "    " << v * 3600.0 << " kmol/h;\n";
-        out << "    }\n}\n";
+        out << "    }\n";
+        if (hasSpec) writeEquilibriumStateRef();
+        out << "}\n";
+    }
+    else if (hasSpec)
+    {
+        out << "\ncalculated\n{\n"
+               "    //  ENGINE OUTPUT, not state.  Deleting this block gives the same\n"
+               "    //  case; MUTATING the canonical state while keeping it does not\n"
+               "    //  (the stale cross-reference below refuses).\n";
+        writeEquilibriumStateRef();
+        out << "}\n";
     }
 
     // Particle-size distribution: diameter [m] + the mass fraction per bin
@@ -2533,8 +2617,17 @@ ProcessStream readStreamState(const fs::path&       file,
         auto carried = std::make_shared<ProcessStream::Speciation>();
         if (sd->found("network"))
         {
+            //  ALL of them.  This used to keep nets.front() only, so a block
+            //  declaring `network ( ammonia carbonate );` was carried as
+            //  "ammonia" -- the second chemistry set silently dropped on
+            //  every write->read->write cycle.  Nothing noticed until the
+            //  equilibriumState fingerprint (2026-08-10) compared the
+            //  written block against the carried one and refused its own
+            //  round trip: the byte-stability criterion (spike criterion 6)
+            //  was already broken for multi-network blocks, invisibly.
             const auto nets = sd->lookupWordList("network");
-            if (!nets.empty()) carried->network = nets.front();
+            for (std::size_t i = 0; i < nets.size(); ++i)
+                carried->network += (i ? " " : "") + nets[i];
         }
         carried->basis  = sd->lookupWordOrDefault("basis", "stoichiometric");
         carried->origin = sd->lookupWordOrDefault("origin", "");
@@ -2551,6 +2644,52 @@ ProcessStream readStreamState(const fs::path&       file,
         }
         carried->flows.assign(declared.begin(), declared.end());
         s.speciation = std::move(carried);
+    }
+
+    //  ---- The equilibriumState CROSS-REFERENCE: verified, never believed --
+    //  `calculated {}` stays engine output the reader otherwise ignores
+    //  (deleting the whole block gives the same case -- the deletability
+    //  claim is untouched).  The ONE thing read out of it is this reference,
+    //  and only to verify it: a reference that no longer names the state
+    //  actually in the file must refuse, or an edited state and its stale
+    //  reference would stand together as two apparently valid accounts of
+    //  one equilibrium (ruled 2026-08-10).
+    if (d->found("calculated"))
+    {
+        auto cd = d->subDict("calculated");
+        if (cd->found("equilibriumState"))
+        {
+            auto ed = cd->subDict("equilibriumState");
+            const std::string target =
+                ed->lookupWordOrDefault("target", "");
+            if (target != "speciation")
+                throw std::runtime_error("stream state '" + name + "': "
+                    "`calculated.equilibriumState` targets '" + target
+                    + "'.  The canonical equilibrium state lives in the"
+                    " `speciation {}` block (THE TWO BASES, 2026-07-30);"
+                    " a reference to anything else is incompatible with"
+                    " this snapshot.  Re-run the case that wrote it.");
+            if (!s.speciation)
+                throw std::runtime_error("stream state '" + name + "': "
+                    "`calculated.equilibriumState` references a `speciation`"
+                    " block this file does not carry -- the reference's"
+                    " target is MISSING.  Either restore the block or delete"
+                    " the `calculated {}` block; a reference must never"
+                    " outlive what it references.");
+            const std::string stored =
+                ed->lookupWordOrDefault("fingerprint", "");
+            const std::string actual = equilibriumFingerprint(*s.speciation);
+            if (stored != actual)
+                throw std::runtime_error("stream state '" + name + "': "
+                    "`calculated.equilibriumState` is STALE -- its"
+                    " fingerprint (" + stored + ") does not reproduce from"
+                    " the `speciation` block actually in this file ("
+                    + actual + ").  The canonical state was changed under"
+                    " the reference; an edited state and its old reference"
+                    " must never stand together as two accounts of one"
+                    " equilibrium.  Re-run the case that wrote this"
+                    " snapshot, or delete the `calculated {}` block.");
+        }
     }
 
     // ---- Reconstruct the ProcessStream: fluid = overall - solid (the legacy
