@@ -621,3 +621,46 @@ thermodynamic domain.**
 
 Return after EACH slice with its contracts and witnessed gates.  The closed
 TP-stream campaign is not reopened by any of this.
+
+### 10.4 Slice A as BUILT (2026-08-10) — and the two clauses that had no subject
+
+**Built and witnessed.**  `material { ... }` is read for EVERY canonical
+material form (one rule, no special case for the analysis), and a stream
+declaring the wrapper beside a top-level form is REFUSED as ambiguous, naming
+the offending key.  Gate `check_material_wrapper`: the wrapped
+`analysis01_water_analysis_inlet` answers identically to the bare form
+(pH 7.90774504802, same reconciliation, same conserved inventory), the wrapper
+also serves `componentMolarFlows` on `flash01_benzene_toluene`, and the
+refusal fires.  Sabotage-verified: disabling the refusal fails A2 in the
+ruling's own words.
+
+One implementation note, paid for at the site: DETECTION and READING must use
+the same source.  A form detected inside the wrapper and then read from the
+top level finds nothing and refuses for the wrong reason, so both go through
+one `matSrc`.
+
+**Two clauses of the ruling turned out to have NO SUBJECT, and inventing one
+would have been worse than reporting it.**
+
+*"The writer must emit only the canonical form."*  There is no writer of the
+`aqueousAnalysis` form.  It is AUTHOR-ONLY input: `converged/` emits the
+RESOLVED `componentMolarFlows` + `speciation {}` + `calculated {}`, never the
+analysis.  So the canonical-round-trip obligation falls on the READER, which
+is what the gate witnesses.  A writer built only to satisfy the clause would
+have created a second spelling of the measurement — the opposite of the
+ruling's intent.
+
+*"`calculated { equilibriumState { aqueousSpecies, precipitatedSolids } }`."*
+**NOT BUILT — escalated.**  The equilibrium state already has a settled home:
+THE TWO BASES contract (2026-07-30) puts the speciation at stream top level
+when there is one liquid, and inside `phases.aqueous` when a second liquid or
+a solid is named, because that is where the ions actually are.  A copy under
+`calculated {}` would be a THIRD home for one truth — the arity sin — and
+MOVING it there for analysis-derived streams alone would make a reader's
+lookup depend on how the inlet was specified, which is worse.
+
+The ruling's substance is nevertheless already satisfied: the three layers ARE
+separate (declared measurements preserved per row as `reportedValue`;
+reconciled totals in `conservedInventory`; equilibrium in `speciation {}`).
+What is missing is only that `calculated {}` does not NAME where layer 3
+lives.  **Recommendation: a cross-reference, not a copy.**  Vítor's call.

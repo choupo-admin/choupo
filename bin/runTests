@@ -443,6 +443,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/readmecap.$$
 
+    #  The `material { ... }` wrapper (slice A of Vitor's aqueous-analysis
+    #  ruling, 2026-08-10): one rule for every canonical form, and EXACTLY ONE
+    #  authoritative material-input form per inlet -- a wrapper beside a
+    #  top-level form is refused rather than resolved by an undeclared
+    #  precedence.  The round trip is witnessed, not asserted.
+    if "$ROOT/bin/curate/check_material_wrapper.py" > /tmp/matwrap.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "material-wrapper" "$(head -1 /tmp/matwrap.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_material_wrapper.py)\n" "material-wrapper"
+        cat /tmp/matwrap.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/matwrap.$$
+
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
     #  a type from a module that only re-imports it passed `npm test` and was
