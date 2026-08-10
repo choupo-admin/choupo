@@ -521,6 +521,28 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/witness.$$
 
+    #  The OPERATIONAL MEMORY stays live (2026-08-10, Vitor's ruling): the
+    #  ownership index resolves (paths/gates/witness classes exist), and the
+    #  two generated artefacts -- codeMap.json (classes, the compiler's own
+    #  include graph, the factory registries) and caseManifest.json (roles +
+    #  reverse indices) -- match the tree they claim to describe.  A stale
+    #  map sends the impact brief to the wrong blast radius with confidence,
+    #  which is worse than no map.
+    for om_gate in "ownership-index-gate check_ownership_index.py" \
+                   "code-map-gate code_map.py --check" \
+                   "case-manifest-gate case_manifest.py --check"; do
+        read -r om_name om_script om_arg <<< "$om_gate"
+        if "$ROOT/bin/curate/$om_script" ${om_arg:-} > /tmp/opmem.$$ 2>&1; then
+            printf "PASS  %-40s  (%s)\n" "$om_name" "$(head -1 /tmp/opmem.$$)"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (run bin/curate/%s %s)\n" "$om_name" "$om_script" "${om_arg:-}"
+            cat /tmp/opmem.$$
+            fail=$((fail+1))
+        fi
+        rm -f /tmp/opmem.$$
+    done
+
     #  GUI TYPECHECK -- because a green suite did not mean the site would
     #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
     #  a type from a module that only re-imports it passed `npm test` and was

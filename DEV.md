@@ -860,9 +860,60 @@ symmetric:
 ```bash
 git checkout main
 # ... work; commit as Vítor Geraldes <talentgroundlda@gmail.com>, no Co-Authored-By ...
-bin/runTests                 # 0 FAIL before any push (NaN/inf guard + goldens + gates)
+# test by the LADDER below -- the full suite is for CLOSURE, not for every edit
+bin/runTests                 # 0 FAIL at campaign closure, before main advances
 git push origin main         # this also publishes www.choupo.org
 ```
+
+### 6a. The testing ladder (ruled 2026-08-10 — the full regression is a confirmation, not a discovery tool)
+
+Full statement: `docs/architecture/verification-and-validation.md` §3a.
+
+1. **While editing** — only the directly affected tests: the touched case,
+   the relevant `check_*` gates (find them in the ownership index).
+2. **A coherent change closed** — the witness of the affected class
+   (`bin/runTests <case>`; classes in `tutorials/WITNESSES`).
+3. **A bounded slice closed** — `bin/runTests --witnesses` (all 15 classes,
+   minutes).
+4. **Campaign closure / release / genuinely cross-cutting change** — the
+   full `bin/runTests`, ONCE; `main` advances once if green.
+
+Accumulate coherent, reviewed changes on the branch between closures.
+Editing `bin/runTests` itself, a `src/core/` header half the tree includes,
+or the dict grammar IS cross-cutting; a doc fix, an anchor row, a new
+diagnostic key is NOT.
+
+### 6b. The impact brief (MANDATORY before a non-trivial source change)
+
+Fill this BEFORE editing, from the operational memory — the point is to
+force repository inspection and consequence prediction first, not paperwork.
+Sources: `docs/architecture/ownership-index.md` (owner, contracts, gates,
+witness) · `generated/codeMap.json` (`includesReverse` = compile-time blast
+radius; `factories` = what name mints what type) ·
+`generated/caseManifest.json` (`indices` = which cases declare the model /
+unit type / op you are touching).
+
+```
+INTENDED CHANGE:
+CANONICAL OWNER:                  (ownership-index row; why it is the owner)
+EXPECTED FILES:
+KNOWN PRODUCERS / CONSUMERS:      (index row + codeMap.includesReverse)
+INVARIANTS AT RISK:               (row's Never line; global-invariants.md)
+PROHIBITED DUPLICATION/FALLBACK:
+APPLICABLE ADRS:                  (row's Contract line)
+FOCUSED TESTS:                    (row's Gates line + touched cases)
+REPRESENTATIVE WITNESS:           (row's Witness class)
+POSSIBLE DOWNSTREAM EFFECTS:      (caseManifest.indices candidates)
+FULL REGRESSION REQUIRED?         (yes only if cross-cutting — say why)
+DEFINITION OF DONE:
+```
+
+The brief lives in the slice's design doc, task description or commit body —
+wherever the slice is recorded.  **If the edit starts touching owners or
+consumers the brief did not predict, STOP and update the brief** — do not
+continue experimentally until the changed blast radius is understood.  A row
+missing from the ownership index for the feature you are touching means the
+index gets its row as part of the slice.
 
 - **Never `git add -A`** — stage explicitly; keep run outputs and the untracked
   root coordination files (`chatGPT.md`, `HANDOFF.md`, …) and the tracked GUI
