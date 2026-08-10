@@ -425,6 +425,35 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/doctrine.$$
 
+    #  GUI TYPECHECK -- because a green suite did not mean the site would
+    #  BUILD (2026-08-10).  vitest does not typecheck: a test file importing
+    #  a type from a module that only re-imports it passed `npm test` and was
+    #  rejected by `tsc`, which bin/buildSite and the publish workflow both
+    #  run.  publish-site therefore failed on every commit for hours while
+    #  the suite reported green, and the Mass Balance plot fix riding those
+    #  commits never reached the site -- the live build stayed on the
+    #  previous publish, still double-counting the crystal.  CI was the only
+    #  thing that could catch it, and it catches it AFTER main.  This arm
+    #  moves the check to before the push.
+    #
+    #  A CHECK THAT CANNOT RUN MUST NOT PASS: with no gui/node_modules (a
+    #  C++-only checkout, which is legitimate) it reports SKIPPED and is
+    #  counted as NEITHER pass nor fail -- the green line never claims
+    #  coverage the run did not have.
+    if [ -d "$ROOT/gui/node_modules" ]; then
+        if (cd "$ROOT/gui" && npx tsc -p tsconfig.json --noEmit) > /tmp/guitsc.$$ 2>&1; then
+            printf "PASS  %-40s  (%s)\n" "gui-typecheck" "tsc --noEmit clean over gui/src + gui/tests -- the site can build"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (tsc rejects the GUI -- the site publish WILL fail)\n" "gui-typecheck"
+            head -12 /tmp/guitsc.$$
+            fail=$((fail+1))
+        fi
+        rm -f /tmp/guitsc.$$
+    else
+        printf "SKIP  %-40s  (gui/node_modules absent -- run npm install in gui/ to cover the site build; NOT counted as a pass)\n" "gui-typecheck"
+    fi
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
