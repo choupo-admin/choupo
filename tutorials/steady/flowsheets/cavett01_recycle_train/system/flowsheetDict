@@ -44,6 +44,22 @@
   from the source differed in 2 edges out of 11 -- worth remembering when
   citing anything from memory.
 
+  THE MISSING ANCHOR, named rather than implied (2026-08-10).  This case's
+  controlDict used to advertise "SRK vs published APR/FLOWTRAN products".  It
+  carries NO such comparison: no published product table is staged anywhere in
+  the case, and nothing checks a Choupo number against one.  What IS anchored
+  here is the SPECIFICATION -- the feed, the four stage conditions and the
+  topology, all from the primary -- plus the solver behaviour (Wegstein
+  defeated on the real conditions; Newton converges in 7 iterations).  That is
+  a reproduction of the PROBLEM, not agreement with a published ANSWER, and
+  the description now says so.
+
+  To become a real external anchor this case needs Rosen & Pauls' (or
+  FLOWTRAN's) product compositions transcribed from the primary and pinned as
+  `anchor` rows in `expected` -- published values, never refreshed by
+  `--record`.  Until someone reads that paper, the gap stays visible: a claim
+  of agreement nobody can check is worse than an admitted absence.
+
   TWO tears still close all three loops: cut the two mixer outlets and
   every stream is computable in the declared order (validated by the
   sequential-plan contract, not asserted here).

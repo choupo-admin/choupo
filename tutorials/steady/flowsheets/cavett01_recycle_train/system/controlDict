@@ -70,6 +70,6 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Cavett (1963) four-flash recycle benchmark on the primary Rosen-Pauls spec: 2 tears, Newton 7 it (Wegstein defeated), SRK vs published APR/FLOWTRAN products";
+description   "Cavett (1963) four-flash recycle benchmark on the primary Rosen-Pauls spec: 2 tears, Newton 7 it (Wegstein defeated).  NO published product comparison is carried -- see the flowsheetDict header";
 
 verbosity     3;
