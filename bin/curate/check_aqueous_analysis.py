@@ -339,13 +339,16 @@ refuses("nodensity", analysis(density=""), "declares no DENSITY ROUTE",
         "density the reader would have to invent one, and inventing it from "
         "the analysis is the ITERATION A1 declares as a gap")
 
-refuses("iterative",
+#  REWRITTEN 2026-08-10 (slice B): `provenance iterative` is no longer the
+#  declared gap -- it is the AUTHORISED route, with its own gate
+#  (check_iterative_density).  What still refuses here is the AMBIGUOUS
+#  declaration: iterative AND a value is two sources for one number.
+refuses("iterative-plus-value",
         analysis(density="    density { value 998.4 kg/m3; "
                          "provenance iterative; }\n"),
-        "A1 accepts ONE provenance",
-        "an ITERATIVE density is a declared A1 gap -- permitted only with "
-        "explicit authorisation, and an iteration whose convergence must be "
-        "visible is its own slice")
+        "Two sources for one number",
+        "`provenance iterative` beside a `value` is ambiguous: the "
+        "laboratory measured it, or the engine solves it -- not both")
 
 refuses("overlimit", analysis(limit="2"), "maximumCorrection",
         "a 5.12 % correction against a declared 2 % limit stops being a "
@@ -460,8 +463,10 @@ print("check_aqueous_analysis: OK -- the analysis inlet resolves through its "
       "balance recomputed here from the authored mg/L (with the `as CaCO3` "
       "surrogate) agrees with the engine's, is non-zero before, zero after, "
       "and the charge the listed adjustments move equals the residue they "
-      "cancel; eight refusals fire BY NAME (no density route, iterative "
-      "density, correction over the limit, pH as the balancing variable, "
+      "cancel; eight refusals fire BY NAME (no density route, iterative-"
+      "plus-value (the AUTHORISED iterative route has its own gate, "
+      "check_iterative_density), correction over the limit, pH as the "
+      "balancing variable, "
       "weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing "
       "analysis) and a closing analysis passes through ANNOUNCED; a plain "
       "componentMolarFlows stream produces no record at all.  NOT CHECKED: "

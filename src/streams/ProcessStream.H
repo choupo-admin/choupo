@@ -297,6 +297,18 @@ struct ProcessStream
 
         std::string basis;             // the declared reporting basis
         std::string defaultQualifier;  // block-level analytical qualifier ("" = none declared)
+
+        //  SLICE B (ruled 2026-08-10): the AUTHORISED iterative density.
+        //  Nothing here exists unless the author declared `provenance
+        //  iterative;` -- there is no automatic or silent route.  The
+        //  complete record is kept because an iteration whose convergence a
+        //  student cannot watch is exactly what the ruling forbids.
+        std::vector<scalar> densityIterates;   // rho_0 (initial estimate) .. rho_N [kg/m3]
+        std::vector<scalar> densityResiduals;  // relative |rho_k - rho_{k-1}|/rho_k, size N
+        scalar densityTol = 0.0;               // convergence tolerance (relative)
+        bool   densityTolDefaulted = false;
+        int    densityMaxIter = 0;
+        bool   densityMaxIterDefaulted = false;
         std::string method;            // "" = none declared (pass-through)
         std::string methodAsWritten;   // the author's spelling (sugar kept)
         std::string adjustedSpecies;   // "" = nothing adjusted
