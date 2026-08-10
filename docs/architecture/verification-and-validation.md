@@ -61,7 +61,7 @@ independent published result):
 
 | case | anchor |
 |---|---|
-| `steady/flowsheets/cavett01_recycle_train` | Rosen & Pauls specification verbatim; products beside the published APR/FLOWTRAN tables |
+| `steady/flowsheets/cavett01_recycle_train` | Rosen & Pauls **specification** verbatim, plus solver behaviour on it (Wegstein defeated, Newton 7 iterations). **SPECIFICATION-ONLY, corrected 2026-08-10:** this row used to read "products beside the published APR/FLOWTRAN tables", and the case carries no such table and nothing that compares against one — the claim lived in the case's `controlDict` description, was copied here, and went stale in both homes at once. The missing anchor is now named in the case's own header |
 | `ctrl/ctrl12_williams_otto` | Williams & Otto published x\* to all digits |
 | `ctrl/ctrl13_williams_otto_step` | the paper's Fig. 2 step response |
 | `ctrl/ctrl14_williams_otto_pi` | the paper's Fig. 4 PI shape |
@@ -76,7 +76,7 @@ credibility claim this document exists to deflate:
 
 | case | anchor | independence |
 |---|---|---|
-| `props/electrolyte/pitzer_gamma_hamer_wu` | Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) — six 1-1 salts, γ± AAD 0.1–0.7 % | **independent** for five salts; the Li–Cl pair was refit to this table — that arm is fit-consistency, per the case's own header |
+| `props/electrolyte/pitzer_gamma_hamer_wu` | Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) — six 1-1 salts, γ± AAD 0.1–0.7 %. **Since 2026-08-10 the agreement is CHECKED, not asserted:** 15 `anchor` rows carry the paper's own γ±(1 m), γ±(3 m) and φ(1 m) for the five independent salts, so a model that drifted off the table now fails the suite instead of leaving the header's claim standing | **independent** for five salts; the Li–Cl pair was refit to this table — that arm is fit-consistency, per the case's own header, and it is deliberately given **no anchor row**: anchoring it would claim validation from the data the parameters already saw |
 | `props/electrolyte/enthalpy_naoh_water` | Parker (1965) measured Φ_L, calorimetric | independent |
 | `props/electrolyte/enrtl_mixed_nacl_ethanol_esteso` | Esteso — NaCl γ± in ethanol–water, predictive | independent |
 | `props/electrolyte/pitzer_seawater_verify` | published seawater benchmarks (the S3 forum's own no-go gate) | independent |
@@ -88,6 +88,19 @@ credibility claim this document exists to deflate:
 | `props/electrolyte/fpd01_nacl_freezing` | one tabulated FPD point at 1 mol/kg (interim citation, Scatchard–Prentiss candidate) + dilute-limit slope vs the derived K_f | independent but THIN — one point, said plainly; also the ice witness: the depression agrees to 0.05 % with a_w evaluated at T_f, where the 25 °C surface leaves a 1.8 % gap |
 | `props/electrolyte/archer01_nacl_cold_to_hot` | Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9–10 — γ±/φ at 273/298/323/373 K (interim transcription from the owner-provided paper) | **cross-evaluation** — Archer's tables are his own fitted equation's check values, and his database overlaps SP77's corpora: two independent fits of overlapping data, stronger than fit-consistency, weaker than raw measurement. The 273 K arm measures the announced below-window extrapolation fpd01 stands on: γ± AAD 1.05 % at 0 °C vs 0.17–0.29 % inside the window |
 | `props/electrolyte/pb82_calcite_open_co2` | Plummer & Busenberg, GCA 46 (1982) 1011 — measured junction-corrected pH 6.004 ± 0.005 at calcite equilibrium, 25 °C / 0.956 atm PCO₂ (their model: 6.011) | **split, stated in the case**: the K's are LINEAGE (PHREEQC's carbonate block is this paper), but the measured pH independently tests the ASSEMBLY — gas pin + chained carbonate + ion pairs + Davies + electroneutrality + SI = 0 ceiling end to end. Engine: 6.029 — 0.025 above the electrode, the size an activity-model difference (Davies vs their Truesdell–Jones) predicts at I = 0.027; reported, not tuned |
+
+**How much of this table is CHECKED, stated because the difference is the
+whole point of the document.**  `check_validation_subset` recounts
+*membership*: a validation-op case missing from the table fails.  It does not
+and cannot check the *claims* in the right-hand columns — those are prose, and
+prose about a number goes stale silently, which is precisely how the cavett01
+row above came to assert a comparison that does not exist in the case.  The
+`anchor` row (2026-08-10) is the mechanism that converts one of these claims
+into something the suite falsifies, and today exactly two cases use it:
+`pitzer_gamma_hamer_wu` (15 rows) and `flash09_n2ch4_stryjek` (2).  **Every
+other row here is still a claim in prose.**  Anchoring the rest is worth doing
+and is not a campaign to start unasked; what is recorded here is the honest
+count, so nobody reads this table as machine-verified.
 
 Synthetic datasets (`*synthetic*.dat`) are teaching surrogates and may never
 appear in this section; the gate refuses them by name.  The corrected axis
