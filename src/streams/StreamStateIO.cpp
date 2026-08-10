@@ -629,6 +629,9 @@ void writeStreamState(const ProcessStream&  s,
                "    //  ===============================================================\n"
                "    analysisReconciliation\n    {\n";
         out << "        basis                  " << a.basis << ";\n";
+        if (!a.defaultQualifier.empty())
+            out << "        defaultQualifier       " << a.defaultQualifier
+                << ";\n";
         if (a.sampleT > 0.0)
             out << "        sampleTemperature      " << a.sampleT << " K;\n";
         if (a.density > 0.0)
@@ -822,6 +825,18 @@ void writeStreamState(const ProcessStream&  s,
                 << " { amount " << an.measured * 3600.0 << " kmol/h;";
             if (!an.species.empty()) out << " species " << an.species << ";";
             if (!an.element.empty()) out << " element " << an.element << ";";
+            //  Origin as DATA, never as an inline comment: these rows are
+            //  single-line, and a `//` here swallows the rest of the row up
+            //  to and including its closing brace -- the exact trap the
+            //  note below this loop records.  A reader compares the word
+            //  against `defaultQualifier` above; `qualifierFrom row;` marks
+            //  the override case.
+            if (!an.qualifier.empty())
+            {
+                out << " qualifier " << an.qualifier << ";";
+                if (!an.qualifierFromDefault)
+                    out << " qualifierFrom row;";
+            }
             if (!an.asFormula.empty())
             {
                 out << " as " << an.asFormula << ";";
@@ -1326,6 +1341,44 @@ ProcessStream readStreamState(const fs::path&       file,
                 blk->lookupScalar("solventMassFlow", Dims::massFlow);
         }
 
+        //  ---- (0c) THE ANALYTICAL QUALIFIER (slice C, ruled 2026-08-10) ---
+        //  Whether a reported value is a DISSOLVED concentration, a TOTAL, or
+        //  a FREE-ION activity-adjacent measurement is a property of the
+        //  sample preparation and the analytical method -- a fact about the
+        //  LABORATORY, which Choupo cannot infer safely.  So there is NO
+        //  default, announced or otherwise (the proposal's "default to
+        //  dissolved, announced" was REJECTED): a block-level
+        //  `defaultQualifier` with per-analyte overrides, and a row neither
+        //  resolves REFUSES.  Vocabulary and what each word means here:
+        //    dissolved -- the meaning this inversion IMPLEMENTS: the sheet
+        //                 states what is in solution, and m = A n feeds it
+        //                 to the aqueous inventory;
+        //    total     -- parsed and preserved, RESOLUTION REFUSED: "total"
+        //                 must be defined precisely before anything
+        //                 calculates from it, because it silently collapses
+        //                 dissolved, total-recoverable and particulate-
+        //                 bearing meanings into one word;
+        //    freeIon   -- parsed and preserved, RESOLUTION REFUSED: honouring
+        //                 it needs an activity model, hence an ionic
+        //                 strength, hence the speciation -- the same side of
+        //                 the boundary pH adjustment lives on.  It must
+        //                 never be quietly reinterpreted as a total.
+        auto validQualifier = [&](const std::string& q, const std::string& at)
+        {
+            if (q != "dissolved" && q != "total" && q != "freeIon")
+                throw std::runtime_error("stream state '" + name + "': " + at
+                    + " declares qualifier '" + q + "'.  The analytical"
+                    " qualifier vocabulary is `dissolved` (implemented),"
+                    " `total` and `freeIon` (both preserved, resolution"
+                    " refused) -- a word outside it says nothing the"
+                    " inversion can act on.");
+        };
+        rec->defaultQualifier =
+            blk->lookupWordOrDefault("defaultQualifier", "");
+        if (!rec->defaultQualifier.empty())
+            validQualifier(rec->defaultQualifier,
+                           "`defaultQualifier`");
+
         rec->sampleT = blk->lookupScalarOrDefault("sampleTemperature", 0.0,
                                                   Dims::temperature);
         //  pH is CARRIED as a measurement and is never a balancing variable
@@ -1437,6 +1490,9 @@ ProcessStream readStreamState(const fs::path&       file,
                         100.0 * e->lookupScalar("uncertainty", Dims::dimensionless);
                     a.uncertaintyOrigin = "declared on the row";
                 }
+                a.qualifier = e->lookupWordOrDefault("qualifier", "");
+                if (!a.qualifier.empty())
+                    validQualifier(a.qualifier, "analyte '" + key + "'");
             }
             else
             {
@@ -1444,6 +1500,45 @@ ProcessStream readStreamState(const fs::path&       file,
                 dimsDeclared = an->hasDimensions(key);
                 if (dimsDeclared) gotDims = an->dimensionsOf(key);
             }
+
+            //  RESOLUTION: the row's own qualifier, else the block default,
+            //  else REFUSE -- there is no third source and no inference.
+            if (a.qualifier.empty())
+            {
+                if (rec->defaultQualifier.empty())
+                    throw std::runtime_error("stream state '" + name
+                        + "': analyte '" + key + "' has no analytical"
+                          " qualifier and the `aqueousAnalysis` block"
+                          " declares no `defaultQualifier`.  Whether this"
+                          " value is a dissolved concentration, a total, or"
+                          " a free-ion measurement is a fact about the"
+                          " sample preparation that Choupo cannot infer --"
+                          " declare `defaultQualifier dissolved;` on the"
+                          " block, or `qualifier <word>;` on the row.");
+                a.qualifier            = rec->defaultQualifier;
+                a.qualifierFromDefault = true;
+            }
+            if (a.qualifier == "total")
+                throw std::runtime_error("stream state '" + name
+                    + "': analyte '" + key + "' resolves to qualifier"
+                      " `total`, whose calculation is REFUSED: \"total\""
+                      " silently collapses dissolved concentration,"
+                      " total-recoverable concentration and a particulate-"
+                      "bearing sample into one word, and it must be defined"
+                      " precisely before anything calculates from it.  If"
+                      " the sample was filtered and the value is what is in"
+                      " solution, say `dissolved`.");
+            if (a.qualifier == "freeIon")
+                throw std::runtime_error("stream state '" + name
+                    + "': analyte '" + key + "' resolves to qualifier"
+                      " `freeIon`, whose calculation is REFUSED: honouring a"
+                      " free-ion measurement needs an activity model, hence"
+                      " an ionic strength, hence the speciation -- the other"
+                      " side of the analysis->reconciliation->equilibrium"
+                      " boundary.  The declaration is PRESERVED, never"
+                      " quietly reinterpreted as a total; until the"
+                      " speciation machinery honours it, report the"
+                      " dissolved total instead.");
 
             //  THE SIGMA, and WHERE IT CAME FROM.  Resolved here so the
             //  origin travels with the number: a reader who cannot tell a

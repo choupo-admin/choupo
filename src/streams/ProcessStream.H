@@ -255,6 +255,15 @@ struct ProcessStream
             std::string label;            // the author's own row key
             std::string element;          // set => the row totals an ELEMENT
             std::string asFormula;        // reported-as surrogate ("" = none)
+            //  THE ANALYTICAL QUALIFIER (slice C, ruled 2026-08-10): what
+            //  KIND of concentration the row reports -- `dissolved` (the
+            //  meaning the inversion implements), `total` or `freeIon`
+            //  (both parsed and preserved; their RESOLUTION refuses until
+            //  their thermodynamic meaning is honoured).  There is NO
+            //  default: sample preparation is a fact about the laboratory,
+            //  and Choupo cannot infer it safely.
+            std::string qualifier;              // resolved (row or block)
+            bool        qualifierFromDefault = false;
             scalar      perFormulaUnit = 1.0;   // species per surrogate unit
             scalar      uncertaintyPct = 0.0;   // 0 = not declared
             std::string uncertaintyOrigin;      // HOW that sigma was arrived at
@@ -287,6 +296,7 @@ struct ProcessStream
         };
 
         std::string basis;             // the declared reporting basis
+        std::string defaultQualifier;  // block-level analytical qualifier ("" = none declared)
         std::string method;            // "" = none declared (pass-through)
         std::string methodAsWritten;   // the author's spelling (sugar kept)
         std::string adjustedSpecies;   // "" = nothing adjusted

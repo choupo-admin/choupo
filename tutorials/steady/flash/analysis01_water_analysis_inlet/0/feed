@@ -77,6 +77,12 @@ aqueousAnalysis
     network            carbonate;    // WHICH chemistry set these names belong to
     basis              mg/L;         // ...and what KIND of quantity they are
 
+    //  SLICE C (ruled 2026-08-10): the sheet states DISSOLVED
+    //  concentrations -- a fact about the sample preparation the engine
+    //  must not infer, so it is declared.  `total` and `freeIon` are
+    //  parsed but their calculation refuses until defined.
+    defaultQualifier   dissolved;
+
     sampleTemperature  293.15 K;
 
     //  THE DENSITY ROUTE -- required, explicit, and measured.
