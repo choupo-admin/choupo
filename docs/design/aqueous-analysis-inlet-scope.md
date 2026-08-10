@@ -522,3 +522,102 @@ feeds every resolved snapshot back.
 * **A ROW REPORTED AS ZERO.**  Refused: relative uncertainty has no scale to
   be relative to.  An absent analyte is not a measured zero — drop the row, or
   report it at its detection limit.
+
+---
+
+## 10. RULINGS 2026-08-10 — the uncertainty refusal upheld, and slices A → C → B
+
+Vítor's architectural ruling on aqueous analysis as a first-class inlet was
+received on 2026-08-10, inspected against the shipped A1/A2 work, and answered
+with a gap list.  Two rulings came back.  Both are recorded here verbatim in
+substance because they CONSTRAIN the slices below.
+
+### 10.1 `genericWaterAnalysis-v1` — refusal UPHELD, earlier ruling WITHDRAWN
+
+The 2026-08-10 directive had allowed a named, versioned default uncertainty
+profile.  It was **withdrawn by its author** on inspection, with the reasoning
+that matters more than the outcome:
+
+> Versioning would make assumptions reproducible, but would not make them
+> evidentially valid; worse, it could give invented uncertainties an
+> undeserved appearance of authority.
+
+That is the sharper form of the argument A1 shipped ("an uncertainty is a
+property of a laboratory and a method, not of an analyte"), and it settles the
+class of defect: **reproducibility is not validity, and a version number is a
+credibility signal that unearned data must not be allowed to borrow.**
+
+The contract, as ruled:
+
+* constrained weighted least squares REQUIRES user-supplied uncertainties,
+  covariance information, or an explicitly selected laboratory/method profile;
+* absent those, Choupo **refuses that method** — it does not degrade quietly to
+  a weaker one;
+* the user may instead select an explicit deterministic closure rule
+  (`adjustChloride` / `adjustSingleSpecies`), which is already built;
+* an unweighted or heuristic least-norm policy MAY exist later, but it must be
+  named as a **numerical allocation rule** and never presented as measurement
+  uncertainty.
+
+**No built-in `genericWaterAnalysis-v1`.**  The name stays reserved and
+unshipped so that a future reader finds the refusal rather than a gap.
+
+### 10.2 Slice order APPROVED: A → C → B, with sharpened contracts
+
+**A — `equilibriumState` grouping + `material` wrapper.**  Approved as the
+structural foundation, with one correction to the proposal's wording.  "Both
+forms accepted side by side" means the PARSER understands both layouts — it
+does **not** mean one stream may carry two competing material specifications:
+
+> For each inlet, exactly one authoritative material-input form must be
+> selected unless a future contract explicitly defines how forms are combined.
+
+Therefore, and each is a refusal rather than a convention:
+
+* **ambiguous double specification is REJECTED** — the reader refuses a stream
+  in which both representations appear;
+* the **writer emits ONLY the canonical form**, so a round trip converges on
+  the canonical layout rather than preserving whichever the author happened to
+  type;
+* a **write → read witness must prove the canonical round trip** (the §5a.5
+  rule: a format claim earns an executable witness, not a paragraph).
+
+**C — the analytical qualifier.**  The proposal's "default to `dissolved`,
+announced" was **rejected**:
+
+> Whether a result is dissolved, total, or free-ion is a property of the sample
+> preparation and analytical method; Choupo cannot infer it safely.
+
+So there is no default at all, announced or otherwise.  The grammar is a
+block-level declaration with per-analyte overrides:
+
+```
+aqueousAnalysis
+{
+    defaultQualifier dissolved;      // explicitly supplied by the user
+
+    calcium   44 mg/L;
+    iron       2 mg/L qualifier total;
+}
+```
+
+* if neither a block-level nor an analyte-level qualifier resolves the meaning,
+  **refuse**;
+* `freeIon` is **accepted and preserved syntactically**, and its RESOLUTION
+  refuses until the speciation machinery can honour its thermodynamic meaning —
+  it must never be quietly reinterpreted as an analytical total;
+* **`total` must be defined precisely before anything calculates from it**: it
+  may not silently collapse dissolved concentration, total recoverable
+  concentration, and a particulate-bearing sample into one meaning.
+
+**B — authorised iterative density.**  Third, and only after the material
+structure and analytical semantics are fixed.  The user authorises it
+explicitly, and the diagnostic record must keep visible: the initial estimate,
+the successive values, the residual, the convergence criterion, the iteration
+count and the final density.  **Refuse on non-convergence or an invalid
+thermodynamic domain.**
+
+### 10.3 Standing instruction
+
+Return after EACH slice with its contracts and witnessed gates.  The closed
+TP-stream campaign is not reopened by any of this.

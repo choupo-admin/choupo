@@ -829,6 +829,54 @@ ProcessStream readStreamState(const fs::path&       file,
     s.z.assign(n, 0.0);
     s.s.assign(n, 0.0);
 
+    //  ---- THE `material {}` WRAPPER (slice A, 2026-08-10) -----------------
+    //  Vitor's ruling: a total flow and a laboratory analysis belong together
+    //  under one heading, because neither means anything without the other --
+    //  concentrations without a flow are a sample, a flow without them is a
+    //  number.  The wrapper is READ for every canonical form (one rule, no
+    //  special case for the analysis); it is WRITTEN only where it is
+    //  canonical today, which is the analysis form.  A stream whose material
+    //  is componentMolarFlows keeps the layout it has -- this slice adds a
+    //  spelling, it does not migrate the corpus (the closed TP-stream
+    //  campaign is not reopened).
+    //
+    //  THE RULE THAT MATTERS, and it is a refusal: "the parser understands
+    //  both alternatives" does NOT mean one stream may carry two competing
+    //  material specifications.  Exactly one authoritative form per inlet --
+    //  so a file with a `material {}` block AND a bare material form at top
+    //  level is ambiguous about which the author meant, and is REFUSED rather
+    //  than resolved by a precedence rule nobody declared.
+    DictPtr matBlk = d->found("material") ? d->subDict("material") : nullptr;
+    {
+        static const char* kForms[] = {
+            "componentMolarFlows", "componentFlows", "molarFlow",
+            "componentMassFlows", "massFlow", "speciesMolarFlows",
+            "aqueousAnalysis", "totalMassFlow" };
+        if (matBlk)
+        {
+            std::vector<std::string> outside;
+            for (const char* k : kForms) if (d->found(k)) outside.push_back(k);
+            if (!outside.empty())
+            {
+                std::string list;
+                for (const auto& k : outside) list += (list.empty() ? "" : ", ") + k;
+                throw std::runtime_error("stream state '" + name + "': AMBIGUOUS"
+                    " material specification -- a `material { ... }` block is"
+                    " declared AND " + list + " appears at top level.  Exactly"
+                    " ONE authoritative material-input form is selected per"
+                    " inlet; no contract defines how two are combined, so this"
+                    " is refused rather than resolved by an undeclared"
+                    " precedence.  Move the top-level entr(ies) inside"
+                    " `material { ... }`, or delete the block.");
+            }
+        }
+    }
+    //  Every material lookup below reads from the wrapper when it exists.
+    //  Named `matSrc`, not `md`: a local `md` (the maximumCorrection sub-dict)
+    //  already exists further down, and a shadowed name in a 2000-line reader
+    //  is a defect waiting for a careless edit.
+    const DictPtr matSrc = matBlk ? matBlk : d;
+
     // ---- MATERIAL FLOW: exactly ONE canonical form (Choupo accepts several,
     //      mutually exclusive) -> the OVERALL per-component molar flow [kmol/s].
     //   A  componentMolarFlows { comp <kmol/h>; }
@@ -836,17 +884,17 @@ ProcessStream readStreamState(const fs::path&       file,
     //   B  molarFlow <kmol/h>; moleFractions { ... }
     //   C  componentMassFlows  { comp <kg/h>; }       (-> molar via MW)
     //   D  massFlow <kg/h>; massFractions { ... }
-    const bool hasCMF  = d->found("componentMolarFlows");
-    const bool hasCF   = d->found("componentFlows");     // legacy, fluid-only
-    const bool hasMolF = d->found("molarFlow");
-    const bool hasCmMF = d->found("componentMassFlows");
-    const bool hasMasF = d->found("massFlow");
+    const bool hasCMF  = matSrc->found("componentMolarFlows");
+    const bool hasCF   = matSrc->found("componentFlows");     // legacy, fluid-only
+    const bool hasMolF = matSrc->found("molarFlow");
+    const bool hasCmMF = matSrc->found("componentMassFlows");
+    const bool hasMasF = matSrc->found("massFlow");
     //  E  speciesMolarFlows { network <set>; <species> <kmol/h>; ... }
     //     The AQUEOUS-SPECIES basis: a water measured the way waters are
     //     measured, in ions.  It is a SIXTH canonical form, exclusive with the
     //     rest -- two material blocks in one file cannot say which one the
     //     author meant.  See docs/design/aqueous-stream-basis-proposal.md.
-    const bool hasSMF  = d->found("speciesMolarFlows");
+    const bool hasSMF  = matSrc->found("speciesMolarFlows");
     //  F  aqueousAnalysis { basis mg/L; density {...}; analytes { ... } }
     //     A laboratory MEASUREMENT, not an inventory -- a SEVENTH canonical
     //     form, exclusive with the rest for exactly the same reason.
@@ -861,7 +909,7 @@ ProcessStream readStreamState(const fs::path&       file,
     //     two would have made one block mean two different things about the
     //     same numbers; keeping them apart made this an ADDITION, and the
     //     corpus blast radius zero.
-    const bool hasAQA  = d->found("aqueousAnalysis");
+    const bool hasAQA  = matSrc->found("aqueousAnalysis");
     const int  forms   = hasCMF + hasCF + hasMolF + hasCmMF + hasMasF + hasSMF
                        + hasAQA;
     if (forms == 0)
@@ -910,7 +958,9 @@ ProcessStream readStreamState(const fs::path&       file,
     };
     auto readFractions = [&](const char* fkey, scalar total, bool mass)
     {
-        auto fr = d->subDict(fkey);
+        //  matSrc, for the same reason the callers use it: the fraction block
+        //  lives beside its flow, inside the wrapper when there is one.
+        auto fr = matSrc->subDict(fkey);
         scalar sum = 0.0;
         std::vector<scalar> f(n, 0.0);
         for (const auto& comp : fr->keys())
@@ -2243,13 +2293,17 @@ ProcessStream readStreamState(const fs::path&       file,
         s.analysis = rec;
     };
 
-    if      (hasCMF)  readMolar(d->subDict("componentMolarFlows"), false);
-    else if (hasCF)   readMolar(d->subDict("componentFlows"),      false);
-    else if (hasCmMF) readMolar(d->subDict("componentMassFlows"),  true);
-    else if (hasSMF)  readSpecies(d->subDict("speciesMolarFlows"));
-    else if (hasAQA)  readAnalysis(d->subDict("aqueousAnalysis"));
-    else if (hasMolF) readFractions("moleFractions", d->lookupScalar("molarFlow"), false);
-    else if (hasMasF) readFractions("massFractions", d->lookupScalar("massFlow"),  true);
+    //  Read from `matSrc` -- the `material {}` wrapper when the file declares
+    //  one, the stream dict itself otherwise.  Detection and reading MUST use
+    //  the same source: a form detected inside the wrapper and then read from
+    //  the top level would find nothing and refuse for the wrong reason.
+    if      (hasCMF)  readMolar(matSrc->subDict("componentMolarFlows"), false);
+    else if (hasCF)   readMolar(matSrc->subDict("componentFlows"),      false);
+    else if (hasCmMF) readMolar(matSrc->subDict("componentMassFlows"),  true);
+    else if (hasSMF)  readSpecies(matSrc->subDict("speciesMolarFlows"));
+    else if (hasAQA)  readAnalysis(matSrc->subDict("aqueousAnalysis"));
+    else if (hasMolF) readFractions("moleFractions", matSrc->lookupScalar("molarFlow"), false);
+    else if (hasMasF) readFractions("massFractions", matSrc->lookupScalar("massFlow"),  true);
 
     // ---- SOLID phase: new phases{ solid { } } decomposition (validated to sum
     //      back to overall) OR the legacy solidFlows block.
