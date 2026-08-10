@@ -80,6 +80,30 @@
 #  (look inside the named stream).  `reltol` is |actual-exp|/|exp| (falls
 #  back to absolute when exp is ~0).
 #
+#  `anchor` is a FOURTH kind, and it is a different CLAIM (2026-08-10).  A
+#  kpi/stream/diag row is SELF-RECORDED: it pins that the answer has not
+#  MOVED, which is regression.  An `anchor` row carries a PUBLISHED value
+#  from the case's cited primary, so it pins that the answer AGREES with a
+#  measurement -- which is validation, and the two must never be confused.
+#  Three consequences, all enforced below:
+#    * `--record` COPIES an anchor row through verbatim and never refreshes
+#      it.  A published number is not the model's to rewrite; a refresh
+#      would silently convert a disagreement into a new "reference" -- the
+#      exact laundering this kind exists to prevent.
+#    * auto-generation never emits one: an anchor is AUTHORED, with its
+#      source in the case, or it does not exist.
+#    * a mismatch reports as ANCHOR (disagreement with the cited value),
+#      not as a moved golden.
+#  It resolves like `kpi`, so the quantity must be PUBLISHED by the case:
+#
+#       anchor   flash01   K_N2        3.047           3e-2
+#
+#  Written before this existed, a case's agreement with its primary lived
+#  only in prose -- flash09_n2ch4_stryjek quoted Stryjek's K_N2 = 3.047 in
+#  a header comment while its golden pinned F/P/T/Q, so a model that
+#  drifted off the measurement would still have passed, with the header
+#  still claiming agreement.  A claim in prose goes stale silently.
+#
 #  Usage:
 #      runTests                       # every tutorial under tutorials/
 #      runTests tutorials/steady/flash01_benzene_toluene   # one case
@@ -170,6 +194,9 @@ get_diag() {
 # --- dispatch by `kind`: diag -> operation diagnostics, else kpi/stream object
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
+    #  `anchor` resolves exactly like `kpi` -- the difference between them is
+    #  what the row CLAIMS (published vs self-recorded), never where the
+    #  number is read from.  One lookup, two claims.
     if [ "$kind" = diag ]; then get_diag "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
@@ -352,6 +379,15 @@ if [ -n "$RECORD" ]; then
             while read -r line; do
                 case "$line" in ''|\#*) echo "$line" >> "$tmp"; continue;; esac
                 read -r kind name key exp_v tol _ <<< "$line"
+                #  AN ANCHOR IS NEVER REFRESHED.  Its expected column is a
+                #  PUBLISHED value; rewriting it with what the model happens
+                #  to produce would convert a disagreement into a reference
+                #  and destroy the only row in the file that can falsify the
+                #  case's citation.
+                if [ "$kind" = anchor ]; then
+                    printf '%-7s %-22s %-16s %-16s %s\n' "$kind" "$name" "$key" "$exp_v" "$tol" >> "$tmp"
+                    continue
+                fi
                 act=$(get_any "$out" "$kind" "$name" "$key")
                 printf '%-7s %-22s %-16s %-16s %s\n' "$kind" "$name" "$key" "${act:-$exp_v}" "$tol" >> "$tmp"
             done < "$exp"
@@ -2464,7 +2500,7 @@ for case_dir in "${CASES[@]}"; do
 
     # (3) reference KPIs
     if [ -f "$case_dir/expected" ]; then
-        bad=""
+        bad=""; anchors_ok=0
         while read -r line; do
             case "$line" in ''|\#*) continue;; esac
             read -r kind name key exp_v tol _ <<< "$line"
@@ -2472,15 +2508,33 @@ for case_dir in "${CASES[@]}"; do
             act=$(get_any "$out" "$kind" "$name" "$key")
             within_tol "$act" "$exp_v" "$tol"
             case $? in
-              0) ;;
-              2) bad="$bad\n    $kind.$name.$key: MISSING (expected $exp_v)";;
-              *) bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)";;
+              0) [ "$kind" = anchor ] && anchors_ok=$((anchors_ok+1)); ;;
+              #  An anchor states a DISAGREEMENT WITH THE CITED VALUE, which
+              #  is a finding about the model or the datum -- never "the
+              #  golden moved".  It is reported in those words so a reader
+              #  cannot mistake the two, and the remedy is never to loosen
+              #  the band: report, or fix the physics.
+              2) if [ "$kind" = anchor ]; then
+                     bad="$bad\n    ANCHOR $name.$key: NOT PUBLISHED by this case (cited value $exp_v) -- the quantity an anchor names must be emitted as a KPI"
+                 else bad="$bad\n    $kind.$name.$key: MISSING (expected $exp_v)"; fi;;
+              *) if [ "$kind" = anchor ]; then
+                     bad="$bad\n    ANCHOR $name.$key: model gives ${act:-?} against the CITED $exp_v (band $tol) -- a disagreement with the primary, not a moved golden"
+                 else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)"; fi;;
             esac
         done < "$case_dir/expected"
         if [ -n "$bad" ]; then
             printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf "$bad\n"; fail=$((fail+1)); continue
         fi
-        printf "PASS  %-40s  (checked vs reference)\n" "$name_short"; pass=$((pass+1))
+        #  Say WHICH claim passed.  "checked vs reference" is true of a
+        #  self-recorded golden and would be a false advertisement for an
+        #  anchor row, whose PASS means the answer agrees with a published
+        #  measurement.  A case carrying both says both.
+        if [ "$anchors_ok" -gt 0 ]; then
+            printf "PASS  %-40s  (checked vs reference; %d anchor(s) agree with the cited primary)\n" "$name_short" "$anchors_ok"
+        else
+            printf "PASS  %-40s  (checked vs reference)\n" "$name_short"
+        fi
+        pass=$((pass+1))
     else
         printf "pass  %-40s  (smoke + NaN guard)\n" "$name_short"; pass=$((pass+1))
     fi

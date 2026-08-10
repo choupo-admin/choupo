@@ -21,6 +21,15 @@
   299 psia and 2.241 at 396.5 psia -- the engine interpolates between them
   consistently (try P 22 bar in this dict: K_N2 ~ 2.9).  This is the quantitative anchor
   of the phi-phi world, the same standard as Wiebe-1934 for the Henry world.
+
+  THE AGREEMENT IS EXECUTABLE (2026-08-10).  Everything above was prose: the
+  golden pinned F/P/T/Q -- all SELF-RECORDED -- so a model that drifted off
+  Stryjek's isotherm would still have passed while this header went on
+  claiming a measured anchor.  `expected` now carries two `anchor` rows
+  holding the PAPER's K_N2 = 3.047 and K_CH4 = 0.638; they are compared on
+  every run and are never refreshed by `--record` (a published number is not
+  the model's to rewrite).  Measured agreement: K_N2 +2.25 %, K_CH4 -1.56 %,
+  x_N2 -0.52 %, y_N2 +1.73 % -- inside the declared 3 % band, with margin.
 \*---------------------------------------------------------------------------*/
 type isothermalFlash;
 operation { T 149.82 K;  P 20.616 bar; }

@@ -1939,6 +1939,26 @@ int IsothermalFlash::solve(const DictPtr& dict,
           (opts.phaseSet == PhaseSet::VLLE) ? 2.0
       : (opts.phaseSet == PhaseSet::LL  ) ? 1.0
                                           : 0.0;  // 0 VL / 1 LL / 2 VLLE
+
+    //  THE DISTRIBUTION RATIO, per component: K_i = y_i / x_i (2026-08-10).
+    //  A flash's agreement with a measured isotherm is stated in K -- it is
+    //  what Stryjek, Wiebe and every VLE table publish -- but the unit
+    //  published only aggregate flows, so flash09's cited K_N2 = 3.047 lived
+    //  in a header comment where nothing could check it.  A quantity a case
+    //  wants to ANCHOR must first be published; this is that publication.
+    //
+    //  Emitted only where the ratio MEANS something: both phases present
+    //  (a single-phase answer has no partition), and the component actually
+    //  in the liquid (x -> 0 sends K -> inf, which is a division, not a
+    //  measurement -- such a component is simply omitted rather than given
+    //  a large number that reads like a result).  The KPI set is therefore
+    //  composition-dependent by design; existing goldens are untouched
+    //  because the checker reads the rows a case already declares.
+    if (!isLL && sol.V_over_F > 1.0e-12 && sol.V_over_F < 1.0 - 1.0e-12)
+        for (std::size_t i = 0; i < thermo.n() && i < sol.x.size()
+                                && i < sol.y.size(); ++i)
+            if (sol.x[i] > 1.0e-12)
+                kpis_["K_" + thermo.comp(i).name()] = sol.y[i] / sol.x[i];
     for (const auto& [k, v] : sol.extraKpis)
         kpis_[k] = v;
 
