@@ -57,6 +57,31 @@ set -e
 script_dir=$(dirname "$(readlink -f "$0")")
 URL="http://127.0.0.1:5173/"
 
+#  A STALE WASM IS OLD PHYSICS IN THE BROWSER, and it fails silently: the
+#  GUI faithfully draws whatever the .wasm computes, so an engine fix that
+#  never reached `make wasm-gui` simply... is not there.  Found the hard
+#  way (2026-08-10): gui/public/wasm sat twelve days behind src/, and
+#  flash21's mass balance "did not close and finished without any warning"
+#  in the browser while the native binary and the whole suite had both
+#  right.  gui/public/wasm is gitignored -- a LOCAL build product -- so
+#  every machine must build its own, and this launcher is the one seam
+#  every GUI session passes through.  REFUSE to serve a solver older than
+#  the sources; a missing wasm gets the same message.
+root_dir=$(dirname "$script_dir")
+wasm="$root_dir/gui/public/wasm/choupoSolve.wasm"
+newest_src=$(find "$root_dir/src" "$root_dir/make" -type f \
+                 \( -name '*.cpp' -o -name '*.H' -o -name '*.mk' \) \
+                 -newer "$wasm" 2>/dev/null | head -1 || true)
+if [ ! -f "$wasm" ] || [ -n "$newest_src" ]; then
+    echo "[runGui] REFUSED: gui/public/wasm is $( [ -f "$wasm" ] \
+         && echo 'OLDER than the C++ sources' || echo 'MISSING' ) --"
+    echo "         the browser would run old physics while the native"
+    echo "         binary runs the current tree (the two CAN disagree on"
+    echo "         answers, balances and refusals)."
+    echo "         Build it:   make wasm-gui      (then re-run bin/runGui)"
+    exit 1
+fi
+
 kill_prior() {
     local prior
     prior=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
