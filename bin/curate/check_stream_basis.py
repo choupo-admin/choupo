@@ -186,7 +186,16 @@ else:
                 bad.append("the broken block refused, but not by naming the "
                            "closure.  Got:\n" + outB[-600:])
 
+        #  Deleting the block means deleting it AND the cross-reference that
+        #  names it (calculated.equilibriumState, ruled 2026-08-10): a
+        #  reference must never outlive its target, so stripping the target
+        #  alone is an INCOMPLETE deletion the engine now refuses by name --
+        #  which this gate observed the day the reference shipped.  The
+        #  report-only claim is about the pair; the dangling-reference
+        #  refusal has its own gate (check_equilibrium_state_ref).
         stripped = re.sub(r"\nspeciation\n\{.*?\n\}\n", "\n", body,
+                          flags=re.S)
+        stripped = re.sub(r"\ncalculated\n\{.*?\n\}\n", "\n", stripped,
                           flags=re.S)
         if stripped == body:
             bad.append("could not strip the speciation block -- the "
