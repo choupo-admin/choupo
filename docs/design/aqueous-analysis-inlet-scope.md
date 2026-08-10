@@ -695,3 +695,30 @@ Fixed with the slice.  Gate: `check_equilibrium_state_ref`
 predicted — a missing fingerprint reads as STALE at the round trip, and
 the observed output is what the docstring records).  **Slices C and B are
 now unblocked.**
+
+### 10.5 Slice C as BUILT (2026-08-10)
+
+The ruled grammar, verbatim: block-level `defaultQualifier` + per-analyte
+`qualifier` overrides; **no default of any kind** — an unresolved row
+refuses naming both remedies.  `dissolved` computes (it is the meaning the
+m = A n inversion implements); **`total` refuses at resolution**, naming
+the collapse it would commit (dissolved / total-recoverable /
+particulate-bearing — three meanings one word must not silently unify);
+**`freeIon` refuses at resolution**, naming the speciation boundary (an
+activity model, hence an ionic strength — the pH side), and the refusal
+restates the preservation promise: never quietly reinterpreted as a total.
+Both refusing words are parsed and PRESERVED — the resolved snapshot echoes
+`defaultQualifier` in the reconciliation record and `qualifier` on every
+measured row, origin as data (`qualifierFrom row;` for overrides), never as
+an inline comment: the first draft's `// from defaultQualifier` inside a
+single-line row swallowed each row's uncertainty and closing brace — the
+row-swallowing trap this file's own §8 already documents, paid for a second
+time and caught by reading the output.
+
+Corpus migration: the two analysis cases declare `defaultQualifier
+dissolved;` — the statement was always implicit in what the inversion did;
+now it is the author's, on the record.  Both goldens byte-identical.
+Gate: `check_aqueous_qualifier` (Q1–Q6; sabotage-verified twice, observed
+output in the docstring).  NOT in this slice, by ruling: any semantics for
+`total`/`freeIon` — when a future slice defines them, the gate's Q4/Q5
+arms are rewritten, not deleted.

@@ -344,6 +344,7 @@ SHEET = """aqueousAnalysis
 {{
     network            carbonate;
     basis              mg/L;
+    defaultQualifier   dissolved;    // slice C: no default of any kind
     sampleTemperature  293.15 K;
     density   {{ value 998.4 kg/m3;  provenance measured; }}
     volumetricFlow     2.0 m3/h;

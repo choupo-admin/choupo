@@ -20,16 +20,20 @@
       "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases)"
     },
     "check_aqueous_analysis": {
-      "exit": 0,
-      "claim": "check_aqueous_analysis: OK -- the analysis inlet resolves through its three separately recorded layers (measurement in 0/, reconciled inventory in converged/ under calculated{}, equilibrium in the answer); the authored file is byte-identical after the run; the ion balance recomputed here from the authored mg/L (with the `as CaCO3` surrogate) agrees with the engine's, is non-zero before, zero after, and the charge the listed adjustments move equals the residue they cancel; eight refusals fire BY NAME (no density route, iterative density, correction over the limit, pH as the balancing variable, weightedLeastSquares without an enforce list, a sigma limit on a single-species rule, two material forms, no rule on a non-closing analysis) and a closing analysis passes through ANNOUNCED; a plain componentMolarFlows stream produces no record at all.  NOT CHECKED: whether the reconciled water is RIGHT (absorbing a residue into one ion is a convention, not a measurement), and whether the carried uncertainties are USED -- A1 only records them."
+      "exit": 1,
+      "claim": "check_aqueous_analysis: FAILED"
     },
     "check_aqueous_navigation": {
       "exit": 0,
       "claim": "navigation gate: 52 species -> 34 families, 8 topics, 2 mediators; no runtime reader"
     },
-    "check_aqueous_reconciliation": {
+    "check_aqueous_qualifier": {
       "exit": 0,
-      "claim": "check_aqueous_reconciliation: OK -- constrained weighted least squares reconciles the witness's four measured quantities to an answer this gate recomputes INDEPENDENTLY (its own KKT elimination from the authored mg/L, `as CaCO3` surrogates included) to 1e-9; the charge balance closes, every adjusted quantity states all six inspectable fields (reported, adjusted, sigma+weight, correction IN SIGMA, the constraint responsible, and its contribution to each law's closure) both on disk and in the result JSON; the two published identities hold -- the per-law parts sum to the correction and the corrections sum to the residue they removed; the fit SPREADS across four quantities at under 0.29 sigma each instead of dumping on one ion; a correction past `maximumCorrection { in sigma; }` REFUSES with the numbers; a missing uncertainty refuses naming genericWaterAnalysis-v1 (reserved, deliberately not shipped) while a declared `default` is accepted and its use ANNOUNCED per row; the ONE-WAY BOUNDARY holds as a compile fact on two independent readings (no thermo/ include and no chemistry type named in the source; the object references exactly ONE Choupo symbol, solver::activeSetQP); the measurement side is structurally distinguishable from the chemistry (reportedValue and correctionSigma appear only there, the key spaces are disjoint, the measured pH is `pHReported`); five further refusals fire by name; and the resolved snapshot still re-reads as state.  NOT CHECKED: whether the reconciled water is the TRUE one (it is the closest admissible one in the metric the author declared), whether the declared uncertainties are right, and which measurement is at fault when the objective is large -- A2 does no gross-error detection and claims none."
+      "claim": "check_aqueous_qualifier: OK -- the declared case preserves its qualifiers as data (block default + every measured row, no inline row comments); an unresolved analyte refuses naming both remedies; per-row overrides resolve to the identical answer; total, freeIon and an unknown word each refuse naming their reason.  NOT COVERED: total/freeIon SEMANTICS (none exist yet, by ruling -- Q4/Q5 must be rewritten when a slice defines them), the reconciliation arithmetic (its own gates), and whether `dissolved` is true of a given sheet (the author's declaration, which is the point)."
+    },
+    "check_aqueous_reconciliation": {
+      "exit": 1,
+      "claim": "check_aqueous_reconciliation: FAILED"
     },
     "check_asset_homes": {
       "exit": 0,
@@ -97,7 +101,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 120 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 121 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -197,7 +201,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 121 gates, and the other 117 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 122 gates, and the other 118 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -209,7 +213,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40445 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40446 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -432,8 +436,8 @@
       "claim": "std includes: 615 source files, each includes what it uses."
     },
     "check_stream_basis": {
-      "exit": 1,
-      "claim": "stream-basis gate FAILED:"
+      "exit": 0,
+      "claim": "stream-basis gate: species basis == component basis; charge, network and basis refusals fire; the written speciation closes, refuses when broken, and is deletable without moving the answer"
     },
     "check_stream_faces": {
       "exit": 0,

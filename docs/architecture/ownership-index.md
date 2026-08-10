@@ -123,7 +123,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Prod → Cons: lab sheet in `0/<stream>` (never rewritten) → `converged/` `calculated{analysisReconciliation, conservedInventory}` → reports only
 - Never: reconciling into the measurement; a silent adjustment; a built-in uncertainty table (`genericWaterAnalysis-v1` refused); pH adjustment (other side of the boundary)
 - Contract: `docs/design/aqueous-analysis-inlet-scope.md` §8–9
-- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`
+- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`
 
 ## Solvers & flowsheet
 

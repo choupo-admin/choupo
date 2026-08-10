@@ -152,6 +152,7 @@ ANALYSIS = """aqueousAnalysis
 {{
     network            carbonate;
     basis              mg/L;
+    defaultQualifier   dissolved;    // slice C: no default of any kind
     sampleTemperature  293.15 K;
 {density}    volumetricFlow     2.0 m3/h;
     pH                 7.6;
