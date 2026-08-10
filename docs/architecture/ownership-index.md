@@ -121,9 +121,9 @@ Legend: **Owner** = canonical home of the logic/representation ·
 **S3 — Aqueous analysis inlet (measurement ≠ inventory)**
 - Owner: `src/streams/AnalysisReconciler.cpp` (QP reconciliation; includes NOTHING from thermo/ — boundary is a translation unit) + the `aqueousAnalysis{}` reader in `src/streams/StreamStateIO.cpp`
 - Prod → Cons: lab sheet in `0/<stream>` (never rewritten) → `converged/` `calculated{analysisReconciliation, conservedInventory}` → reports only
-- Never: reconciling into the measurement; a silent adjustment; a built-in uncertainty table (`genericWaterAnalysis-v1` refused); pH adjustment (other side of the boundary)
+- Never: reconciling into the measurement; a silent adjustment; a built-in uncertainty table (`genericWaterAnalysis-v1` refused); pH adjustment (other side of the boundary); a silent or automatic iterative density (authorised `provenance iterative;` only, record visible)
 - Contract: `docs/design/aqueous-analysis-inlet-scope.md` §8–9
-- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`
+- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`, `check_iterative_density`
 
 ## Solvers & flowsheet
 
