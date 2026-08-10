@@ -823,7 +823,8 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `atmosphere` |   | object | — | `{ pCO2 4.2e-4 atm; ... }` — every key is a gas the solution equilibrates WITH, so the system is open to it. Each value MUST carry a pres… |
 | `activityModel` |   | string | — | Which per-ion model prices the gammas, e.g. davies or pitzerHMW. The model is the experiment's subject here, which is why a props BENCH m… |
 | `equilibrate` |   | object | — | Present = let the named solids precipitate to SI = 0. `minerals` is the ONLY key accepted inside; an empty list is refused, and so is any… |
-| `diagSpecies` |   | array[string] | — | Their activity coefficients are emitted as named KPIs, so a golden test can lock them. |
+| `diagSpecies` |   | array[string] | — | Their activity coefficients are emitted as named KPIs, so a golden test can lock them. These are SINGLE-ION coefficients, which are conve… |
+| `diagMeanIonic` |   | array[object] | — | Emits gamma_pm_<cation>_<anion> = (gamma_+^nu+ * gamma_-^nu-)^(1/(nu+ + nu-)), the coefficient experiment actually reports. The stoichiom… |
 | `verifyGlobal` |   | string | — | Sweeps EVERY curated Pitzer binary against the closed single-salt kernel instead of only the case's own ions. Expensive, and belongs to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
 | `networkScope` |   | string | — | full (default): every curated chemistry record reachable from the feed. restricted: only the records admitted in network ( ... ) -- requi… |
