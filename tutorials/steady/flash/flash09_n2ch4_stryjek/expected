@@ -12,7 +12,9 @@ kpi     node                   Q_kW             0                1e-4
 kpi     node                   T                149.82           1e-4
 kpi     node                   V_over_F         0.475737805121   1e-4
 kpi     node                   phaseSet         0                1e-4
-# --- ANCHOR rows: PUBLISHED values, never refreshed by --record -------------
+# --- ANCHOR rows (6th column): PUBLISHED values, never refreshed by --record -
+# The `kind` column still says WHERE the number is read (kpi); `anchor` says
+# WHAT the row claims about it.  Two axes, two columns.
 # Stryjek, Chappelear & Kobayashi, J. Chem. Eng. Data 19 (1974) 334, Table III
 # (DOI 10.1021/je60063a023), the 149.82 K / 20.616 bar point.  These are the
 # PAPER's numbers, not the model's.  Observed agreement when the rows were
@@ -20,5 +22,5 @@ kpi     node                   phaseSet         0                1e-4
 # therefore a real constraint with visible margin, not a fit to the answer.
 # A disagreement here is a finding about the SRK/kij pair; the remedy is
 # never to widen the band.
-anchor  node                   K_N2             3.047            3e-2
-anchor  node                   K_CH4            0.638            3e-2
+kpi     node                   K_N2             3.047            3e-2     anchor
+kpi     node                   K_CH4            0.638            3e-2     anchor

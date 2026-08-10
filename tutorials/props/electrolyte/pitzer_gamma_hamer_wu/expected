@@ -48,3 +48,54 @@ diag    gamma_naoh             gamma_pm_3m      0.7838             1e-4
 diag    gamma_naoh             phi_1m           0.9471             1e-4
 diag    gamma_naoh             phi_AAD_pct      0.4948             1e-4
 diag    gamma_naoh             phi_nMeas        8.0000             1e-4
+
+# --- ANCHOR rows (6th column): PUBLISHED values, never refreshed by --record -
+# Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) 1047, DOI 10.1063/1.3253108
+# (NBS critically-evaluated tables, 25 C).  Every number below is the PAPER's,
+# transcribed from constant/experiments/hamer_wu_1972.dat, not the model's.
+#
+# WHAT THESE ADD, given the diag rows above already pin every quantity at
+# 1e-4.  Those rows are SELF-RECORDED: they catch drift of any size, against
+# Choupo's own last answer.  They cannot catch a Choupo that was never right,
+# and they carry no link to the measurement at all -- the agreement lived only
+# in the propsDict header, which is prose, and prose goes stale silently.
+# The anchor rows carry the link, as data.
+#
+# THE BAND IS 2 % ON ALL FIFTEEN ROWS, deliberately ONE band and deliberately
+# not the observed error.  Observed when authored (2026-08-10), gamma_pm at
+# 1 m / 3 m and phi at 1 m:
+#     NaCl  +0.03 %  0.00 %  +0.03 %
+#     KCl   +0.05 % +0.32 %  +0.08 %
+#     KBr   -0.28 % -0.17 %  +0.01 %
+#     HCl   +0.06 % +0.16 %  +0.21 %
+#     NaOH  -0.90 % -1.28 %  -0.72 %   <-- the loosest, and a REPORTED finding
+# Four of the five sit inside 0.35 %; NaOH is 4x worse and the band was not
+# set from it (1.5 % would also have held).  A 2 % anchor therefore says only
+# "the answer has not left the published table", which is what an anchor is
+# for; it does NOT certify the 0.1 % agreement the tight salts show, and it
+# is NOT a declared accuracy envelope for Pitzer 1-1 salts -- that taxonomy
+# is roadmap (docs/design/post-consolidation-roadmap.md item 3).
+#
+# LiCl IS ABSENT ON PURPOSE.  The catalogue Li-Cl pair was REFIT to this very
+# table, so an anchor row on it would claim validation from the data the
+# parameters already saw -- the exact circularity the evidence taxonomy is
+# meant to make machine-detectable.  Its diag rows above stay: as a
+# fit-consistency check they are honest, and at ~3 % they are also the
+# corpus's own evidence that three Pitzer parameters cannot hold LiCl across
+# two anchors.  A row omitted with its reason is worth more than a row that
+# passes for the wrong one.
+diag    gamma_nacl             gamma_pm_1m      0.657            2e-2     anchor
+diag    gamma_nacl             gamma_pm_3m      0.714            2e-2     anchor
+diag    gamma_nacl             phi_1m           0.936            2e-2     anchor
+diag    gamma_kcl              gamma_pm_1m      0.604            2e-2     anchor
+diag    gamma_kcl              gamma_pm_3m      0.568            2e-2     anchor
+diag    gamma_kcl              phi_1m           0.898            2e-2     anchor
+diag    gamma_kbr              gamma_pm_1m      0.617            2e-2     anchor
+diag    gamma_kbr              gamma_pm_3m      0.595            2e-2     anchor
+diag    gamma_kbr              phi_1m           0.907            2e-2     anchor
+diag    gamma_hcl              gamma_pm_1m      0.811            2e-2     anchor
+diag    gamma_hcl              gamma_pm_3m      1.316            2e-2     anchor
+diag    gamma_hcl              phi_1m           1.038            2e-2     anchor
+diag    gamma_naoh             gamma_pm_1m      0.674            2e-2     anchor
+diag    gamma_naoh             gamma_pm_3m      0.794            2e-2     anchor
+diag    gamma_naoh             phi_1m           0.954            2e-2     anchor
