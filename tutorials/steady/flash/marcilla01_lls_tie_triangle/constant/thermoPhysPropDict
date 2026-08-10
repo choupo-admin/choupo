@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Classification (from canonical component FACTS, never from names):
+      water     declared aqueous solvent          (a_w-based VLE)
+      NaCl      apparent electrolyte              (dissociatesTo Na 1, Cl 1;
+                                                   its own solidPhases.halite
+                                                   is the crystal admitted by
+                                                   chemistryDict)
+      ethanol   molecular condensable, nonionising (aqueousSpeciation none)
+      nButanol  molecular condensable, nonionising (aqueousSpeciation none)
+
+  THE MODEL, stated up front because the anchor will disagree with it:
+
+  * Ions: Davies on water-referenced molality.  The saturated brine sits at
+    I ~ 3.6 mol/kg, FAR beyond the Davies band (I ~ 0.5) -- the engine
+    announces that extrapolation, and the predicted halite saturation is
+    expected to sit well below Pinho & Macedo's 6.14 mol/kg.  Reported,
+    never tuned: this witness measures where the composite model breaks,
+    beside a primary anchor, which is exactly its job.
+
+  * Molecular backbone: UNIFAC (water + ethanol + nButanol), the same
+    group-contribution surface on BOTH liquids -- the split is an equality
+    of activity, so one model prices both sides.  No fitted W-B / E-B pair
+    exists in the public catalogue, and UNIFAC predicts (or here, fails to
+    predict) the butanol-water split without one (the flash17 posture: an
+    estimate that says so).
+
+  * The organic phase is WET: water is a declared member (2026-08-10 --
+    built against THIS case, where the dry-organic equality system has no
+    root: a dry butanol liquid holds a_B ~ 0.93 while the aqueous branch
+    tops out near 0.85, so no organic phase could form at all).  Water's
+    cross-liquid equality carries the ionic a_w factor, and the molality
+    basis is the aqueous liquid's water alone.  ONE declared exclusion
+    remains, visible in the comparison: NO SALT in the organic -- the
+    anchor's 0.56 wt% NaCl (ion partitioning into a low-permittivity
+    solvent is different physics, the declared refusal in the builder).
+
+  * Davies prices NEUTRAL solutes at exactly gamma = 1 (charge-only), so
+    the SALTING-OUT of ethanol/butanol by the brine -- the effect Marcilla
+    measured deliberately -- is invisible to the ionic leg here.  What
+    moves the distribution in this model is only the backbone UNIFAC and
+    the water the ions bind through a_w.  That gap is part of the finding
+    this witness exists to measure.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( NaCl  nButanol  ethanol  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { ionic davies;  molecular UNIFAC; }
+    }
+
+    organic
+    {
+        solvent  nButanol;
+        members  ( nButanol  ethanol  water );
+        activityModel UNIFAC;
+
+        reason
+            "Marcilla 1995: above ~2 wt% NaCl the water-butanol split is
+             present at every composition studied; the butanol-rich liquid
+             is the extract phase of the published tie-triangles.";
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( water  ethanol  nButanol );
+}

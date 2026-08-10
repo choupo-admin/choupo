@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE FLAGSHIP LLS WITNESS (solid-equilibrium migration S5).
+
+  One isothermal flash at the paper's own conditions: 25.0 C, 1 atm.  The
+  feed is Marcilla, Ruiz & Olaya's Table 10A initial mixture, row 4 --
+  a published experimental charge, not an invented one -- and the anchor
+  is the tie-triangle that charge produced (Table 10B row 4): an aqueous
+  brine, a butanol-rich organic liquid, and solid NaCl, all simultaneously
+  at equilibrium.  PRIMARY: A. Marcilla, F. Ruiz, M. M. Olaya, Fluid Phase
+  Equilibria 105 (1995) 71-91, DOI 10.1016/0378-3812(94)02595-R.
+
+  What the engine must do at once here, through the ONE mechanism each:
+  dissolve NaCl onto the Na/Cl master families (the typed dissociatesTo
+  bridge), split the molecular backbone into two liquids by equality of
+  activity, and hold the halite complementarity through the solid-
+  equilibrium service while that split resolves.  No unit below declares
+  any of that chemistry -- the case does (thermoPhysPropDict +
+  chemistryDict), and the flash reads it.
+
+  WHAT THIS CASE CURRENTLY WITNESSES, honestly (2026-08-10): the brine +
+  solid halite half of the anchor, and a MODEL FINDING on the other half.
+  The corpus' UNIFAC is the VLE table (Hansen 1991), and under it the
+  water/1-butanol pair is fully miscible at 25 C -- g_mix stays convex
+  (independently confirmed by a propertyScanBinary sweep), so the Gibbs
+  decision correctly reports ONE liquid where the paper measures two.
+  The organic vertex of the tie-triangle is therefore NOT reproduced, and
+  no number here was tuned to change that.  The named remedy is curation:
+  a UNIFAC-LLE parameter set (Magnussen, Rasmussen & Fredenslund, Ind.
+  Eng. Chem. Process Des. Dev. 20 (1981) 331 -- the parameterisation
+  created precisely because the VLE table misses binodals), or fitted
+  NRTL pairs for water/1-butanol and ethanol/1-butanol.  See README.md.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 298.15 K;  P 1.0 atm; }
+    }
+);

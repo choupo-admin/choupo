@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Marcilla, Ruiz & Olaya 1995, Table 10A row 4 -- a PUBLISHED initial
+  mixture (wt%): water 36.04 / ethanol 10.01 / 1-butanol 22.49 /
+  NaCl 31.46, on a 100 kg/h basis.  Moles = mass / MW from each record
+  (18.015, 46.069, 74.122, 58.44 g/mol).  The lever-rule check against
+  the paired tie-triangle (Table 10B row 4) closes to sum(lambda) = 1.010.
+\*---------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    water      2.000555  kmol/h;
+    ethanol    0.217283  kmol/h;
+    nButanol   0.303419  kmol/h;
+    NaCl       0.538330  kmol/h;
+}
+T               298.15 K;
+P               101325 Pa;
