@@ -338,3 +338,174 @@ and it is also the cheapest piece.
   gate, no importer.
 
 **Not authorised, not started, and not to begin before the release.**
+
+---
+
+## 8. Direction as ruled (2026-08-11) — supersedes §0's open question and §6's state model
+
+The assessment above is the analysis; this section is the decision.  Recorded
+here so a later reader does not have to reconstruct which parts were proposed
+and which were ruled.
+
+### 8a. The output is a CURATION DOSSIER, not a tier
+
+§0 left the candidate record's home as a two-way choice.  Ruled: **neither** —
+recreating a staging tier under another name would repeat the architectural
+mistake that retired `data/proposed/`, and the correction is not to rename it
+but to change what the first phase produces.
+
+```
+choupoProps curateComponent acetophenone
+                ↓
+        curation dossier
+{
+    identity
+    datasets
+    dataset identities / hashes
+    pre-declared fit/validation partition
+    fitted parameters
+    residuals
+    uncertainty
+    provenance
+    refusals
+    reviewStatus unreviewed
+}
+                ↓ human promotion
+data/standards/components/acetophenone.dat
+```
+
+**The dossier has EVIDENCE semantics, not CATALOGUE semantics.**  Nothing the
+runtime trusts is produced by the automated phase at all, which dissolves the
+problem rather than relocating it: there is no partially-trusted record for a
+solver to read, because the automated output is not a record.
+
+The governing sentence, and it is worth quoting into any implementation:
+
+> **Curation state belongs to the evidence process; runtime trust belongs to the
+> numerical record actually admitted to standards.**
+
+*Open question for the implementing slice, deliberately NOT decided here:*
+where the dossier lives.  `generated/` is the obvious precedent
+(`interimReviewDossier.md`, `gateManifest.json`, `releaseInventory.json`) and
+carries the right connotation — derived, not authoritative.  But those artefacts
+are all **regenerable on demand**, and a dossier whose evidence sits outside the
+repository is not: a third party cannot rebuild it.  So it may be closer to a
+committed *record of an act* than to a generated view, and `generated/`'s
+staleness gates would be checking something they cannot recompute.  Decide it
+when the slice is authorised; do not assume `generated/`.
+
+### 8b. Maturity is per PROPERTY OBJECT, not per component
+
+§2b said the state should be derived rather than stored.  Sharpened: the state
+is not merely derived, it **does not exist at component level at all**.
+Maturity attaches to the individual numerical/property object, and a component
+legitimately holds a mixture:
+
+```
+vapourPressure     curated
+liquidDensity      curated
+liquidCp           estimated
+viscosity          missing
+VLE/ethanol        validated
+VLE/water          missing
+```
+
+Any whole-component status is DERIVED from its contents, never stored beside
+them.  Note this also disposes of `DISCOVERED → CANDIDATE → VALIDATED → CURATED`
+as a global stored lifecycle: those words describe the maturity of one property
+object, not a phase the component is in.
+
+### 8c. The minimal new contract, in its ruled form
+
+```
+experimentalDataset
+{
+    identity ...
+    role fit;          //  or:  role validation;
+}
+```
+
+with the hard rule:
+
+> **Dataset roles are declared before fitting begins, and fitting is forbidden
+> from changing them.**
+
+The fitting operation may not move inconvenient evidence from validation into
+fitting, may not refresh the split, and may not silently replace the held-out
+set.  This is the anchor posture, and the reason is that a partition selectable
+after residuals are observed would make the machinery permit an elegant form of
+tuning-to-the-answer — the more dangerous kind, because it would look like
+method.
+
+### 8d. Independence — the mechanical facts, enumerated
+
+Announced, never adjudicated.  The machinery establishes and exposes:
+
+* same or different DOI;
+* same or different dataset identity;
+* duplicate observations;
+* overlapping experimental conditions;
+* same source publication.
+
+Whether two studies constitute scientifically *independent* evidence is a human
+judgement.  The system exposes the facts and preserves the human finding; it
+does not infer scientific independence algorithmically.
+
+### 8e. `validated` vs `validatable here`
+
+Confirmed, with the scope of the first slice fixed.  A curated record may
+legitimately preserve dataset identity, DOI, checksum where available,
+experimental domain, model, fitted parameters, validation residuals, the
+validation result, and provenance — and on that basis honestly claim:
+
+> This model was validated against dataset X.
+
+while **not** claiming:
+
+> This sealed record contains everything necessary to independently repeat that
+> validation.
+
+Making that distinction machine-readable (external vs sealed evidence
+availability) is a legitimate later step and is **explicitly excluded from the
+first slice.**
+
+### 8f. The slice, confirmed
+
+```
+acetophenone
+
+vapourPressure
+    fitting evidence: dataset A
+    held-out evidence: dataset B
+    → VALIDATED
+
+liquidViscosity
+    all admissible evidence consumed by fitting
+    no held-out evidence remains
+    → VALIDATION REFUSED
+```
+
+One component, one property validated, one property refused, one gate, **no
+ThermoML importer**.  Use small local experimental datasets whose provenance is
+already understood — which also keeps §3's unresolved ThermoML licence question
+entirely off the first slice's critical path.
+
+### 8g. The direction, restated
+
+> Add an explicit pre-declared fit/validation evidence-partition contract to the
+> existing Choupo curation machinery, prove it with one success and one refusal,
+> and only then connect ThermoML as an external evidence source.
+
+The ordering is the point: building a large importer first risks discovering
+afterwards that the evidence semantics were wrong, at which point the importer
+is the sunk cost defending the mistake.
+
+And the differentiator, stated so it can be written down in a paper:
+
+> It need not be who has the better NIST downloader.  It is **what happens to
+> experimental evidence after it enters the simulator** — whether measurement,
+> fitting, held-out validation, estimation, review and refusal remain explicitly
+> distinguishable and auditable.
+
+**Post-release work.  Assessment complete; no implementation before the
+release.**
