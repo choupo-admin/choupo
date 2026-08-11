@@ -201,3 +201,57 @@ of a kind the machinery can recognise — a disagreement with experiment, by
 itself, is a MODEL or DATA finding, and reopens nothing.  This rule exists so
 that low validation coverage can never become psychological evidence that the
 simulator needs redesign.
+
+---
+
+## 7. Episodes worth keeping — evidence that the machinery CONSTRAINS
+
+A verification suite can be an ornament: run, green, cited, and never once the
+reason a change was different from what it would otherwise have been.  The
+claim this project wants to be able to make is the stronger one — that the
+machinery *binds*.  A claim like that is not established by describing the
+suite; it is established by episodes where the suite refused something and the
+work changed as a result.  They are recorded here as they happen, because
+reconstructing them afterwards from a commit log is exactly the kind of
+remembered-once fact this project no longer accepts.
+
+### E1 — a native-clean, WASM-broken defect, and the green that had to be voided (2026-08-11)
+
+The last engine slice before the release freeze (the volumetric-model slot and
+`standardStateVolumes`, rung 1) compiled cleanly with `g++`, passed its own
+gate, and passed a **full 468-case regression**.  It was also broken.
+
+`AqueousVolumetric.cpp` used `std::make_unique` without including `<memory>`.
+GNU libstdc++ lends the declaration transitively; Emscripten's libc++ does not.
+So the native binary and every test that runs it were correct, and the
+WebAssembly build — the one the browser GUI loads — would have failed, at a
+point where nothing in the tutorial corpus could have noticed.
+
+Three things about this episode are the evidence, and each is separable:
+
+1. **A gate that exists for exactly this caught it.**  `check_std_includes`
+   flagged the missing header on the sweep.  It is not a compiler warning and
+   it is not a test failure; it is a check written because *the two toolchains
+   disagree about what a header lends*, and a green native suite cannot see the
+   disagreement.  The defect was found by a rule, not by luck.
+
+2. **The fix invalidated the green that preceded it.**  The regression had
+   already passed on the tree *without* the include.  A one-line header change
+   is as safe an edit as exists, and the temptation — the whole reason this is
+   worth writing down — is to let the earlier green stand for the later tree.
+   It does not.  A regression result attaches to the exact tree that produced
+   it, and the tree changed.
+
+3. **So the landing gate was re-run against the tree that actually landed**,
+   and the release commit is the head that carries the passing run, not its
+   parent.  That is what makes the claim "468 PASS at `b330f389`" a statement
+   about a specific object rather than a mood.
+
+The general rule the episode illustrates is the one this project keeps paying
+for in different costumes: **a check that cannot see the failure mode must not
+be quoted as though it could.**  A native regression is silent about a
+cross-toolchain header contract, in the same way that a permanently-green gate
+was silent about its own deleted inputs, and a hand-compiled count was silent
+about the tree drifting underneath it.  What distinguishes this episode is that
+the silence had already been anticipated and given a gate — which is the form
+the argument takes when it works.
