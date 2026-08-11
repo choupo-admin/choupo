@@ -68,6 +68,7 @@ Description
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
+#include "thermo/electrolyte/AqueousVolumetric.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/SurfaceTensionModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
@@ -145,6 +146,7 @@ try
     VaporPressureModel::registerBuiltins();
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
+    electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)
     PureFluidModel    ::registerBuiltins();   // pure-component absolute props (IF97)
     EquationOfState ::registerBuiltins();
     TransportModel  ::registerBuiltins();

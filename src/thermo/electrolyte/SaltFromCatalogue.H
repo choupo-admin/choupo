@@ -174,6 +174,19 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
         if (t->found("radius")) os << "radius " << t->subDict("radius")->lookupScalar("value") << "; ";
         if (t->found("D0"))     os << "D0 "     << t->subDict("D0")->lookupScalar("value")     << "; ";
     }
+    //  THE REDUCED-IDENTITY RULE, third encounter (first: dissociatesTo;
+    //  second: formula -- CLAUDE.md sec.5): this bridge REBUILDS the record,
+    //  so every fact it does not copy is silently absent downstream.  The
+    //  volumetric block (rung 1, 2026-08-11) rides as flat keys; when you
+    //  add a field the runtime reads off a species, add it HERE too.
+    if (r->found("volumetric"))
+    {
+        auto v = r->subDict("volumetric");
+        if (v->found("V0"))
+            os << "V0 " << v->subDict("V0")->lookupScalar("value") << "; ";
+        if (v->found("convention"))
+            os << "volConvention " << v->lookupWord("convention") << "; ";
+    }
     return Dictionary::fromString(os.str());
 }
 

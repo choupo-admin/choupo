@@ -37,6 +37,7 @@ License
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/electrolyte/SolventProperties.H"   // rhoWaterKell (slice B)
+#include "thermo/electrolyte/AqueousVolumetric.H"    // the volumetric-model slot (rung 1)
 #include "thermo/electrolyte/ElectrolyteModel.H"   // solventIndex() on the molality path
 #include "core/Dictionary.H"
 #include "core/Types.H"
@@ -640,27 +641,49 @@ void writeStreamState(const ProcessStream&  s,
                 << a.densityProvenance << "\n"
                 << "        volumetricFlow         " << a.volumetricFlow * 3600.0
                 << " m3/h;\n";
-        //  SLICE B as CORRECTED: the DERIVATION record, both terms visible.
-        //  Exists only under the authorised `provenance derivedDiluteVolume;`
-        //  -- a measured density writes nothing here.  There is no
-        //  iteration block anywhere, because there is no iteration: the
-        //  first build's `densityIteration {}` record was rejected as
-        //  ceremony over a constant-in-rho map.
-        if (a.densityProvenance == "derivedDiluteVolume"
-            && a.densityRhoWater > 0.0)
+        //  THE DERIVATION RECORD (slice B corrected 2026-08-10; rung 1
+        //  2026-08-11): the selected formulation and its terms, visible.
+        //  Exists only under a derived provenance -- a measured density
+        //  writes nothing here.  There is no iteration block anywhere,
+        //  because there is no iteration.
+        if (!a.densityMethod.empty() && a.densityRhoWater > 0.0)
         {
             out << "        densityDerivation\n        {\n"
-                   "            //  AUTHORISED direct closure: rho = rhoWaterKell(T_sample)\n"
-                   "            //  + soluteMass.  An APPROXIMATION -- solutes add mass, not\n"
-                   "            //  volume -- recorded term by term so the reader can see\n"
-                   "            //  exactly what was assumed and re-derive the sum by hand.\n"
-                   "            closure            diluteVolume;\n"
+                   "            //  AUTHORISED direct closure through the volumetric-model\n"
+                   "            //  slot.  Recorded term by term so the reader can see what\n"
+                   "            //  was assumed and re-derive the answer by hand.\n"
+                   "            method             " << a.densityMethod << ";\n"
                    "            rhoWater           " << a.densityRhoWater
-                << " kg/m3;    // rhoWaterKell at sampleTemperature\n"
-                   "            soluteMass         " << a.densitySoluteMass
-                << " kg/m3;    // Sum of dissolved components per m3 of solution\n"
-                   "            final              " << a.density
-                << " kg/m3;    // the sum of the two terms above\n        }\n";
+                << " kg/m3;    // rhoWaterKell at sampleTemperature\n";
+            if (a.densityMethod == "diluteVolume")
+                out << "            soluteMass         " << a.densitySoluteMass
+                    << " kg/m3;    // solutes add MASS and no volume (rung 0)\n"
+                       "            final              " << a.density
+                    << " kg/m3;    // rhoWater + soluteMass\n";
+            else
+            {
+                out << "            //  rung 1: V_E = 0 on the infinite-dilution standard\n"
+                       "            //  state.  V0 are CONVENTIONAL single-ion values (only\n"
+                       "            //  electroneutral sums are physical); the inventory below\n"
+                       "            //  is charge-closed by the reconciliation, so Sum n z = 0\n"
+                       "            //  and the density is convention-invariant.\n"
+                       "            excessVolume       0;    // V_E = 0, the model's defining claim\n"
+                       "            soluteVolumeFrac   " << a.densityVolumeFrac
+                    << ";    // phi = Sum n V0 per litre\n"
+                       "            soluteMass         " << a.densitySoluteMass
+                    << " kg/m3;\n"
+                       "            final              " << a.density
+                    << " kg/m3;    // rhoWater*(1 - phi) + soluteMass\n"
+                       "            terms\n            {\n";
+                for (const auto& t : a.densityTerms)
+                    out << "                " << t.master
+                        << " { molPerL " << t.molPerL
+                        << "; V0 " << t.V0_cm3mol << " cm3/mol; MW "
+                        << t.MW_gmol << " g/mol; z " << t.z
+                        << "; convention " << t.convention << "; }\n";
+                out << "            }\n";
+            }
+            out << "        }\n";
         }
         if (a.solventMassFlow > 0.0)
             out << "        solventMassFlow        " << a.solventMassFlow * 3600.0
@@ -1304,7 +1327,8 @@ ProcessStream readStreamState(const fs::path&       file,
         //  solvent -- and A1 refuses to invent either.
         const bool perVolume = (route != Route::molality);
         scalar Q = 0.0;                       // [m3/s]
-        scalar pendingMassAnchor = 0.0;       // [kg/s] deferred: iterative rho
+        scalar pendingMassAnchor = 0.0;       // [kg/s] deferred: derived rho
+        bool   densitySugar = false;          // derivedDiluteVolume sugar used
         if (perVolume)
         {
             if (!blk->found("density"))
@@ -1336,22 +1360,57 @@ ProcessStream readStreamState(const fs::path&       file,
                     throw std::runtime_error("stream state '" + name + "':"
                         " the declared density is not positive.");
             }
-            else if (rec->densityProvenance == "derivedDiluteVolume")
+            else if (rec->densityProvenance == "derived"
+                  || rec->densityProvenance == "derivedDiluteVolume")
             {
                 if (dd->found("value"))
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the density declares `provenance"
-                        " derivedDiluteVolume` AND a `value`.  Two sources"
-                        " for one number: either the laboratory measured it"
-                        " (provenance measured) or the engine derives it"
-                        " under your authorisation -- not both.");
+                        " the density declares a derived provenance AND a"
+                        " `value`.  Two sources for one number: either the"
+                        " laboratory measured it (provenance measured) or"
+                        " the engine derives it under your authorisation --"
+                        " not both.");
                 if (dd->found("iteration"))
                     throw std::runtime_error("stream state '" + name + "':"
-                        " the density declares an `iteration {}` block on"
-                        " the derivedDiluteVolume closure, which is a DIRECT"
-                        " calculation -- there is nothing for a tolerance or"
-                        " an iteration count to govern, and a declaration"
-                        " nothing reads is refused rather than ignored.");
+                        " the density declares an `iteration {}` block on a"
+                        " derived closure, which is a DIRECT calculation --"
+                        " there is nothing for a tolerance or an iteration"
+                        " count to govern, and a declaration nothing reads"
+                        " is refused rather than ignored.");
+                //  THE VOLUMETRIC-MODEL SLOT (rung 1, ruled 2026-08-11).
+                //  `provenance derived;` selects a formulation from the
+                //  extensible AqueousVolumetricModel family:
+                //      volumetric { method standardStateVolumes; }   rung 1
+                //      volumetric { method diluteVolume; }           rung 0
+                //  The old one-word `provenance derivedDiluteVolume;` stays
+                //  readable as SUGAR for derived + diluteVolume (expanded
+                //  aloud, like adjustChloride) -- no corpus case uses it,
+                //  but the gates and any external case keep working.
+                if (rec->densityProvenance == "derivedDiluteVolume")
+                {
+                    rec->densityMethod = "diluteVolume";
+                    densitySugar = true;         // announced at the closure
+                }
+                else
+                {
+                    if (!dd->found("volumetric")
+                        || !dd->subDict("volumetric")->found("method"))
+                        throw std::runtime_error("stream state '" + name
+                            + "': `provenance derived` selects a volumetric"
+                              " formulation and none is declared.  Declare"
+                              " `volumetric { method standardStateVolumes; }`"
+                              " (ideal V_E = 0 mixing on cited infinite-"
+                              "dilution standard-state volumes) or"
+                              " `volumetric { method diluteVolume; }` (the"
+                              " zero-solute-volume closure).  There is no"
+                              " default -- the formulation is a claim about"
+                              " the physics, and it is the author's.");
+                    rec->densityMethod =
+                        dd->subDict("volumetric")->lookupWord("method");
+                    //  Validate NOW against the registry, so a typo refuses
+                    //  at read rather than at the closure.
+                    electrolyte::AqueousVolumetricModel::New(rec->densityMethod);
+                }
                 rec->density = 0.0;              // derived at the closure
             }
             else if (rec->densityProvenance == "iterative")
@@ -1407,7 +1466,8 @@ ProcessStream readStreamState(const fs::path&       file,
             //  it -- so the conversion is DEFERRED there, never guessed.
             if (hasQ)
                 Q = blk->lookupScalar("volumetricFlow", Dims::volumetricFlow);
-            else if (rec->densityProvenance == "derivedDiluteVolume")
+            else if (rec->densityProvenance == "derived"
+                  || rec->densityProvenance == "derivedDiluteVolume")
                 pendingMassAnchor =
                     blk->lookupScalar("totalMassFlow", Dims::massFlow);
             else
@@ -2513,18 +2573,29 @@ ProcessStream readStreamState(const fs::path&       file,
             for (std::size_t i = 0; i < n; ++i)
                 if (i != solventIdx) soluteMass += perUnit[i] * thermo.comp(i).MW();
 
-            //  ---- (d0) THE DERIVED DENSITY (slice B as CORRECTED) ---------
-            //  `provenance derivedDiluteVolume;`: the DIRECT closure
-            //      rho = rhoWaterKell(T_sample) + soluteMass ,
-            //  computed here, where the solute mass it needs exists, with
-            //  BOTH terms recorded.  It is the dilute-volume approximation
-            //  the per-volume route already stands on -- solutes add mass,
-            //  not volume -- announced as an approximation and named as a
-            //  DERIVATION: the first build wrapped exactly this formula in
-            //  an "iteration" whose update ignored the iterate, and was
-            //  rejected for it.  Nothing iterates here, and nothing claims
-            //  to.
-            if (rec->densityProvenance == "derivedDiluteVolume")
+            //  ---- (d0) THE DERIVED DENSITY -- through the VOLUMETRIC SLOT
+            //  (slice B corrected 2026-08-10; rung 1 ruled 2026-08-11).
+            //  `provenance derived;` dispatches to the selected
+            //  AqueousVolumetricModel formulation -- rung 0 (diluteVolume:
+            //  solutes add mass, not volume) or rung 1
+            //  (standardStateVolumes: ideal V_E = 0 mixing on cited
+            //  infinite-dilution standard-state volumes).  Both are DIRECT
+            //  calculations; nothing iterates, and nothing claims to (the
+            //  constant-map "iteration" was rejected and stays out).  The
+            //  shared domain refusals live HERE, once, ahead of either
+            //  formulation.
+            //
+            //  PARTITION NOTE, load-bearing: each formulation prices its
+            //  own solvent.  diluteVolume subtracts the COMPONENT solute
+            //  mass (its historical scheme); standardStateVolumes prices
+            //  the MASTERS (species records, one home) and its water is
+            //  rhoWater*(1 - phi).  The closure below therefore takes the
+            //  solvent from the MODEL's own pair (rho - its soluteMass),
+            //  never from a partition the model did not use.
+            scalar solventMass = 0.0;
+            if (rec->densityProvenance == "measured")
+                solventMass = rec->density - soluteMass;
+            else
             {
                 if (rec->sampleT <= 0.0)
                     throw std::runtime_error("stream state '" + name + "':"
@@ -2541,26 +2612,58 @@ ProcessStream readStreamState(const fs::path&       file,
                         " 1 atm, and outside that thermodynamic domain the"
                         " water term would be an extrapolation nothing here"
                         " has validated.  Measure the density instead.");
-                rec->densityRhoWater   = SolventProperties::rhoWaterKell(tC);
-                rec->densitySoluteMass = soluteMass;
-                rec->density = rec->densityRhoWater + soluteMass;
+                if (densitySugar)
+                    ann << "[analysis] stream '" << name << "': `provenance"
+                           " derivedDiluteVolume;` expanded to `provenance"
+                           " derived; volumetric { method diluteVolume; }`\n";
+
+                //  mTot is the RECONCILED master inventory (charge-closed
+                //  by the reconciliation above), in kmol/m3 == mol/L.
+                std::map<std::string, scalar> mastersPerL(mTot.begin(),
+                                                          mTot.end());
+                auto model = electrolyte::AqueousVolumetricModel::New(
+                                 rec->densityMethod);
+                const auto res = model->solve(rec->sampleT, mastersPerL,
+                                              soluteMass, name);
+                rec->densityRhoWater   = res.rhoWater;
+                rec->densitySoluteMass = res.soluteMass;
+                rec->densityVolumeFrac = res.soluteVolumeFrac;
+                rec->density           = res.rho;
+                for (const auto& t : res.terms)
+                    rec->densityTerms.push_back(
+                        { t.master, t.molPerL, t.V0_cm3mol, t.MW_gmol, t.z,
+                          t.convention });
+                solventMass = res.rho - res.soluteMass;
                 if (pendingMassAnchor > 0.0)
                 {
                     Q = pendingMassAnchor / rec->density;   // the deferred anchor
                     rec->volumetricFlow = Q;
                 }
-                ann << "[analysis] stream '" << name << "': density DERIVED"
-                       " (diluteVolume closure, authorised): rho ="
-                       " rhoWaterKell(" << tC << " degC) "
-                    << rec->densityRhoWater << " + solutes " << soluteMass
-                    << " = " << rec->density << " kg/m3.  The closure is an"
-                       " APPROXIMATION -- solutes add mass, not volume --"
-                       " and a DIRECT calculation: nothing iterates here,"
-                       " and nothing claims to.\n";
+                if (rec->densityMethod == "diluteVolume")
+                    ann << "[analysis] stream '" << name << "': density"
+                           " DERIVED (diluteVolume, authorised): rho ="
+                           " rhoWaterKell(" << tC << " degC) "
+                        << res.rhoWater << " + solutes " << res.soluteMass
+                        << " = " << res.rho << " kg/m3.  The closure is an"
+                           " APPROXIMATION -- solutes add mass, not volume"
+                           " -- and a DIRECT calculation: nothing iterates"
+                           " here, and nothing claims to.\n";
+                else
+                    ann << "[analysis] stream '" << name << "': density"
+                           " DERIVED (standardStateVolumes, authorised):"
+                           " rho = rhoWaterKell(" << tC << " degC) "
+                        << res.rhoWater << " * (1 - phi " 
+                        << res.soluteVolumeFrac << ") + solute mass "
+                        << res.soluteMass << " = " << res.rho << " kg/m3"
+                           " over " << res.terms.size() << " master(s),"
+                           " V_E = 0 on the infinite-dilution standard"
+                           " state (validity ~1 mol/kg; a DIRECT"
+                           " calculation -- single-ion V0 are CONVENTIONAL"
+                           " and the charge-closed inventory makes the sum"
+                           " convention-invariant).\n";
             }
 
-            const scalar solventMass = rec->density - soluteMass;
-            if (solventMass <= 0.0)
+            if (solventMass <= 0.0)            if (solventMass <= 0.0)
                 throw std::runtime_error("stream state '" + name + "': the"
                     " dissolved components weigh more than the declared"
                     " density allows, so there is no solvent left to hold"

@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  conventions/MilleroConventional-v1.dat -- a VERSIONED, IMMUTABLE convention
+  profile (the D2 identity pattern; once published it NEVER changes --
+  corrections mint a -v2).
+
+  The single-ion standard-state (infinite-dilution) partial molar volume
+  convention of Millero's critical compilation: V0(H+) == 0 exactly, at
+  298.15 K and 1 atm, water reference.  Values on this profile are
+  CONVENTIONAL, not physical -- a convention shift adds lambda*z_i to every
+  ion's V0, so ONLY ELECTRONEUTRAL SUMS are observable (the shift cancels
+  exactly when Sum n_i z_i = 0, which is why the aqueousAnalysis consumer
+  charge-closes its inventory BEFORE summing).  Negative values (Na+, Mg2+,
+  Ca2+, OH-) are artifacts of the H+ = 0 anchor plus real electrostriction;
+  they are not "negative volumes of matter".
+
+  CAUTIONARY PRECEDENT, recorded where the numbers live: the open-source
+  DWSIM electrolyte database carries this same table UNCITED, with K+
+  apparently SIGN-FLIPPED (-9 against the primary's +9.02 cm3/mol) --
+  six neighbouring values matching the primary to the printed digit.  An
+  uncited value cannot be audited; every V0 on this profile cites the
+  primary, and the check_derived_density gate anchors electroneutral sums
+  against measured solution densities so a flipped sign cannot ship.
+\*-----------------------------------------------------------------------------*/
+recordType    conventionProfile;
+schemaVersion 1;
+
+name                 MilleroConventional-v1;
+property             standardStatePartialMolarVolume;
+ionAnchor            "V0(H+) = 0 exactly";
+temperatureReference 298.15 K;
+pressureReference    101325 Pa;
+solventReference     water;
+observableRule       "electroneutral sums only; single-ion values are conventional";
+source               "Millero, F. J. (1971) Chem. Rev. 71, 147 -- partial molal volumes of electrolytes in aqueous solution (conventional scale)";
+reviewStatus         interim;    // transcribed values staged for batch primary review (Vitor)

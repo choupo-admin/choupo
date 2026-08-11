@@ -310,6 +310,23 @@ struct ProcessStream
         //  completed (scope doc 10.6).
         scalar densityRhoWater   = 0.0;        // rhoWaterKell(T_sample) [kg/m3]
         scalar densitySoluteMass = 0.0;        // Sum solutes [kg per m3 of solution]
+        //  RUNG 1 (ruled 2026-08-11): the selected volumetric formulation
+        //  and, for standardStateVolumes, the per-master contributions --
+        //  kept term by term so the written record is re-derivable by hand
+        //  and so the gate can check the convention-invariance premise
+        //  (Sum n z = 0) from the record itself.
+        std::string densityMethod;             // "" = measured (no slot)
+        scalar      densityVolumeFrac = 0.0;   // phi = Sum n V0 per L    [-]
+        struct VolumetricTerm
+        {
+            std::string master;
+            scalar      molPerL   = 0.0;       // [mol/L solution]
+            scalar      V0_cm3mol = 0.0;       // conventional            [cm3/mol]
+            scalar      MW_gmol   = 0.0;       // [g/mol]
+            scalar      z         = 0.0;       // charge
+            std::string convention;
+        };
+        std::vector<VolumetricTerm> densityTerms;
         std::string method;            // "" = none declared (pass-through)
         std::string methodAsWritten;   // the author's spelling (sugar kept)
         std::string adjustedSpecies;   // "" = nothing adjusted

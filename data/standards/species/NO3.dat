@@ -36,3 +36,15 @@ cpAvg298
     source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
 }
 }
+
+volumetric
+{
+    //  STANDARD-STATE (infinite-dilution) partial molar volume,
+    //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
+    //  only electroneutral sums are physical).
+    V0          { value 29.0; unit cm3/mol; }
+    convention  MilleroConventional-v1;
+    Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
+    source      "Millero, Chem. Rev. 71 (1971) 147 -- INTERIM transcription, staged for batch primary review";
+    reviewStatus interim;
+}
