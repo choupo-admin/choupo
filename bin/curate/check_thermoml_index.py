@@ -29,6 +29,18 @@ ARMS:
       nothing, so every declared property type Choupo cannot read yet is
       named in the output.
 
+  A7  EXTRACTION PRODUCES A DATASET THE ENGINE ALREADY READS, carrying the
+      DOI, the source file and its sha256 -- and the extracted file states
+      that Choupo redistributes none of it and that the fit/held-out ROLE is
+      not set here but in the operation that consumes it.
+
+  A8  A UNITLESS PROPERTY REFUSES.  ThermoML states the unit inside the
+      property name after a comma; without one, guessing kPa versus Pa is the
+      difference between a boiling point and a vacuum.
+
+  A9  A v5 FILE IS NAMED AND SKIPPED by extraction, not run through a reader
+      built and tested for the published dialect.
+
   A5  AN EMPTY CACHE REFUSES.  An index built over nothing would report a
       clean, empty archive -- which is not the same as a working one, and is
       the shape of a check that cannot run reporting success.
@@ -130,6 +142,45 @@ def main():
             if rc_s != 0 or "1 dataset(s)" not in out_s:
                 fails.append(f"A3 search by {label} ('{key}') did not resolve")
 
+        # -- A7/A9: extraction ------------------------------------------------
+        dest = pathlib.Path(td) / "out"
+        rc_x, out_x = run(["extract", "water", "--into", str(dest)], home)
+        ds = dest / "water-vapourPressure.dat"
+        if rc_x != 0 or not ds.exists():
+            fails.append(f"A7 extraction produced no dataset (exit {rc_x})")
+        else:
+            t = ds.read_text()
+            for needle, why in (
+                ("columns", "the Choupo dataset grammar the ops already read"),
+                ("unit K;", "the temperature unit"),
+                ("unit kPa;", "the property unit, split out of the ThermoML name"),
+                ("DOI", "the primary citation"),
+                ("sha256", "the source file's hash"),
+                ("NOT REDISTRIBUTED BY CHOUPO", "the redistribution statement"),
+                ("role", "that the fit/held-out role is declared elsewhere"),
+            ):
+                if needle not in t:
+                    fails.append(f"A7 the extracted dataset lacks {why} "
+                                 f"({needle!r})")
+            if t.count("\n    ") < 8:
+                fails.append("A7 fewer than the 8 fixture points were written")
+        rc_v, out_v = run(["extract", "ethanol", "--into", str(dest)], home)
+        if "SKIPPED" not in out_v or "dialect 'v5'" not in out_v:
+            fails.append("A9 a v5 file was not named and skipped by extraction")
+
+        # -- A8: a property with no unit refuses ------------------------------
+        home2 = pathlib.Path(td) / "nounit"
+        home2.mkdir()
+        bad = (FIXTURES / "published-water.xml").read_text().replace(
+            "Vapor or sublimation pressure, kPa", "Vapor pressure")
+        (home2 / "nounit.xml").write_text(bad)
+        run(["index"], home2)
+        rc_u, out_u = run(["extract", "water", "--into",
+                           str(pathlib.Path(td) / "u")], home2)
+        if "states no unit" not in out_u:
+            fails.append("A8 a property with no declared unit did not refuse "
+                         "by name")
+
     # -- A5: an empty cache refuses -------------------------------------------
     with tempfile.TemporaryDirectory() as td2:
         rc_e, out_e = run(["index"], pathlib.Path(td2))
@@ -159,7 +210,7 @@ def main():
           "nesting difference costs an adjustment rather than producing wrong "
           "numbers, and only a real archive file can settle it.  Also not "
           "covered: the download itself, and any numeric VALUE (this gate "
-          "reads identity and property names only).")
+          "reads identity and property names only, plus the extraction arms A7-A9).")
     return 0
 
 

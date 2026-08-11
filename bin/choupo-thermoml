@@ -196,6 +196,146 @@ def read_file(path: pathlib.Path):
     }
 
 
+#  ThermoML states a property's unit inside its name, after the comma:
+#  "Vapor or sublimation pressure, kPa".  Choupo's dataset grammar wants the
+#  unit in its own field, so it is SPLIT OUT here and REFUSED when absent --
+#  a value whose unit had to be guessed is worse than no value.
+def split_unit(prop_name: str):
+    if "," not in prop_name:
+        raise ValueError(
+            f"property '{prop_name}' states no unit.  ThermoML carries the "
+            f"unit inside the property name after a comma; without one the "
+            f"numbers cannot be placed on any scale, and guessing kPa versus "
+            f"Pa is the difference between a boiling point and a vacuum.")
+    head, unit = prop_name.rsplit(",", 1)
+    return head.strip(), unit.strip()
+
+
+#  Spellings ThermoML uses that Choupo's tokenizer would not accept verbatim.
+UNIT_MAP = {"kg/m3": "kg/m3", "K": "K", "kPa": "kPa", "MPa": "MPa",
+            "Pa": "Pa", "J/K/mol": "J/mol/K", "J/mol/K": "J/mol/K"}
+
+
+def extract_published(root, path):
+    """(property -> {unit, xUnit, points[(T, value)]}) from one archive file."""
+    out = {}
+    for pom in find_all(root, "PureOrMixtureData"):
+        props, varunits = {}, {}
+        for p in find_all(pom, "Property"):
+            num = find_text(p, "nPropNumber")
+            name = find_text(p, "ePropName")
+            if num and name:
+                props[num] = name
+        for v in find_all(pom, "Variable"):
+            num = find_text(v, "nVarNumber")
+            for e in v.iter():
+                t = local(e.tag)
+                if t.startswith("e") and e.text and "," in e.text:
+                    varunits[num] = e.text.strip()
+                    break
+        for nv in find_all(pom, "NumValues"):
+            xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
+                  for x in find_all(nv, "VariableValue")}
+            for pv in find_all(nv, "PropertyValue"):
+                pn = find_text(pv, "nPropNumber")
+                val = find_text(pv, "nPropValue")
+                if pn not in props or not val or not xs:
+                    continue
+                key = classify(props[pn])
+                if key is None:
+                    continue
+                xnum, xval = next(iter(xs.items()))
+                _, punit = split_unit(props[pn])
+                _, xunit = split_unit(varunits.get(xnum, "Temperature, K"))
+                rec = out.setdefault(key, {"unit": punit, "xUnit": xunit,
+                                           "declaredAs": props[pn],
+                                           "points": []})
+                rec["points"].append((float(xval), float(val)))
+    return out
+
+
+def cmd_extract(a):
+    cache = cache_root()
+    idx = cache / "index.json"
+    if not idx.exists():
+        print(f"choupo-thermoml extract: no index at {idx}.  Run `index` first.")
+        return 1
+    index = json.loads(idx.read_text())
+    hits = index["byKey"].get(a.query.strip().lower(), [])
+    if not hits:
+        print(f"choupo-thermoml extract: nothing matches '{a.query}'.")
+        return 1
+
+    dest = pathlib.Path(a.into)
+    dest.mkdir(parents=True, exist_ok=True)
+    written, skipped = [], []
+
+    for h in hits:
+        src = pathlib.Path(h["file"])
+        root = ET.parse(src).getroot()
+        dialect = detect_dialect(root)
+        if dialect != "published":
+            #  Honest scope: the archive is the published dialect, and value
+            #  extraction was built and tested against it.  A v5 file is
+            #  NAMED and skipped rather than run through a reader that was
+            #  never meant for it.
+            skipped.append((src.name, f"dialect '{dialect}' -- value "
+                            f"extraction is implemented for the published "
+                            f"dialect (the archive's) only"))
+            continue
+        try:
+            found = extract_published(root, src)
+        except ValueError as exc:
+            skipped.append((src.name, str(exc)))
+            continue
+        for prop, rec in found.items():
+            if not rec["points"]:
+                continue
+            name = f"{h['compound']}-{prop}".replace(" ", "_")
+            out = dest / f"{name}.dat"
+            sha = hashlib.sha256(src.read_bytes()).hexdigest()
+            lines = [
+                "/*--------------------------------------------------------------------------*\\",
+                f"  EXPERIMENTAL EVIDENCE extracted from a local ThermoML archive file.",
+                "",
+                f"  compound     {h['compound']}",
+                f"  property     {prop}   (declared as '{rec['declaredAs']}')",
+                f"  points       {len(rec['points'])}",
+                f"  DOI          {h['doi'] or '(none declared in the file)'}",
+                f"  source       {src.name}",
+                f"  sha256       {sha}",
+                "",
+                "  NOT REDISTRIBUTED BY CHOUPO.  This file was generated on this machine",
+                "  from an archive copy the user obtained themselves; the archive is not",
+                "  part of Choupo and no part of it enters the repository.  Cite the DOI",
+                "  above -- the PRIMARY publication -- never the archive's arrangement.",
+                "",
+                "  The role this evidence plays (fit or held-out validation) is NOT set",
+                "  here: it is declared in the operation that consumes it, before any",
+                "  fitting runs.  See src/propertyOps/EvidencePartition.H.",
+                "\\*--------------------------------------------------------------------------*/",
+                "", "columns", "(",
+                f"    {{ name T;     unit {UNIT_MAP.get(rec['xUnit'], rec['xUnit'])}; }}",
+                f"    {{ name {'Psat' if prop == 'vapourPressure' else ('rho' if prop == 'liquidDensity' else 'Cp')};  unit {UNIT_MAP.get(rec['unit'], rec['unit'])}; }}",
+                ");", "", "data", "(",
+            ]
+            for x, y in sorted(rec["points"]):
+                lines.append(f"    {x:12.4f}  {y:.10g}")
+            lines += [");", ""]
+            out.write_text("\n".join(lines))
+            written.append((str(out), len(rec["points"])))
+
+    for w, n in written:
+        print(f"choupo-thermoml extract: {w}  ({n} points)")
+    for name, why in skipped:
+        print(f"  SKIPPED {name}: {why}")
+    if not written:
+        print("choupo-thermoml extract: nothing extracted -- every candidate "
+              "was skipped for the reason named above.")
+        return 1
+    return 0
+
+
 def cmd_sync(a):
     cache = cache_root()
     print(f"choupo-thermoml sync")
@@ -335,8 +475,12 @@ def main():
     sub.add_parser("index", help="build the local index over the cache")
     s = sub.add_parser("search", help="search by name / CAS / InChI / InChIKey")
     s.add_argument("query")
+    e = sub.add_parser("extract", help="write Choupo datasets for a compound")
+    e.add_argument("query")
+    e.add_argument("--into", default="constant/experiments")
     a = ap.parse_args()
-    return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search}[a.cmd](a)
+    return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
+            "extract": cmd_extract}[a.cmd](a)
 
 
 if __name__ == "__main__":

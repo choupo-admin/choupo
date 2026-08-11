@@ -41,8 +41,36 @@
       <VariableID><VariableType><eTemperature>Temperature, K</eTemperature></VariableType></VariableID>
     </Variable>
     <NumValues>
-      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>298.15</nVarValue></VariableValue>
-      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>3.1690</nPropValue></PropertyValue>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>280.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>0.990951</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>290.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>1.91787</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>300.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>3.53353</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>310.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>6.23049</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>320.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>10.562</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>330.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>17.2822</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>340.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>27.3892</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>350.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>42.1688</nPropValue></PropertyValue>
     </NumValues>
   </PureOrMixtureData>
 </DataReport>
