@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE FIT / HELD-OUT VALIDATION CONTRACT, and its refusal, side by side.
+
+  TWO OPERATIONS.  SAME COMPONENT.  SAME PROPERTY.  SAME TWO DATASETS.
+  The ONLY thing that differs is whether any evidence was held out -- which
+  is exactly the variable the contract governs, and isolating it is why this
+  witness does not use two different properties.
+
+      psat_water_validated   lowT `role fit`   +  highT `role validation`
+      psat_water_refused     lowT `role fit`   +  highT `role fit`
+
+  The first can report a held-out residual because the fitter never received
+  the 325-370 K points.  The second cannot, and says so by name instead of
+  presenting its in-sample R2 as though it were an external check:
+
+      VALIDATION REFUSED:
+      No independent experimental evidence remains after fitting.
+
+  THE ANCHOR IS ENFORCED BY CONSTRUCTION.  The partition is parsed and frozen
+  before any fitting code runs, and the fitter is handed only the `role fit`
+  points.  It is not forbidden to move a held-out point into the fit -- it is
+  never given one.  A rule can be broken by the next edit; a data-flow fact
+  cannot.  `role` has NO default, because a defaulted role would make every
+  dataset a fitting dataset and bring the in-sample problem back invisibly.
+
+  WHAT THIS CASE DOES NOT SHOW.  Both datasets are generated from the SAME
+  curated Antoine correlation (see either dataset header), so the held-out
+  residual is arithmetic rather than evidence about the physics.  This is a
+  STRUCTURAL witness -- no number in it is validated against measurement.
+
+  Contract: src/propertyOps/EvidencePartition.H
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    //  -------------------------------------------------------------------
+    //  A.  Evidence IS held out -> a validation may be reported.
+    //  -------------------------------------------------------------------
+    {
+        name       psat_water_validated;
+        type       vaporPressureFit;
+        component  water;
+
+        evidence
+        (
+            {
+                dataset   "constant/experiments/psat-water-lowT.dat";
+                identity  { doi "choupo-synthetic/water-psat-lowT"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/experiments/psat-water-highT.dat";
+                identity  { doi "choupo-synthetic/water-psat-highT"; }
+                role      validation;
+            }
+        );
+
+        output     { file psat_water_validated.csv; }
+    }
+
+    //  -------------------------------------------------------------------
+    //  B.  ALL evidence is consumed by the fit -> the validation is REFUSED.
+    //      Identical to A but for the second `role`.
+    //  -------------------------------------------------------------------
+    {
+        name       psat_water_refused;
+        type       vaporPressureFit;
+        component  water;
+
+        evidence
+        (
+            {
+                dataset   "constant/experiments/psat-water-lowT.dat";
+                identity  { doi "choupo-synthetic/water-psat-lowT"; }
+                role      fit;
+            }
+            {
+                dataset   "constant/experiments/psat-water-highT.dat";
+                identity  { doi "choupo-synthetic/water-psat-highT"; }
+                role      fit;
+            }
+        );
+
+        output     { file psat_water_refused.csv; }
+    }
+);

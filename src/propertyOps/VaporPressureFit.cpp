@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "VaporPressureFit.H"
+#include "EvidencePartition.H"
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 #include "core/Units.H"
@@ -41,15 +42,6 @@ License
 
 namespace Choupo {
 
-namespace {
-scalar convUnit(scalar v, const std::string& unit)
-{
-    if (unit == "frac" || unit == "-" || unit == "[-]" || unit == "dimensionless") return v;
-    auto spec = units::lookupUnit(unit);
-    if (!spec) throw std::runtime_error("vaporPressureFit dataset: unknown unit '" + unit + "'");
-    return spec->affine ? units::affineToK(v, unit) : v * spec->factor;
-}
-}
 
 int VaporPressureFit::run(const DictPtr& dict,
                           const ThermoPackage& /*thermo*/,
@@ -58,39 +50,44 @@ int VaporPressureFit::run(const DictPtr& dict,
     diag_.clear();
     const std::string comp = dict->lookupWordOrDefault("component", "");
 
-    // -- read (T, Psat) ; convert T->K, Psat->bar (Antoine convention) -------
-    auto ds = Dictionary::fromFile(dict->lookupWord("dataset"));
-    auto cols = ds->lookupDictList("columns");
-    auto grid = ds->lookupList("data");
-    const std::size_t nc = cols.size();
-    if (nc < 2 || grid.empty() || grid.size() % nc != 0)
-        throw std::runtime_error("vaporPressureFit dataset: need >=2 columns + matching grid");
-    int cT = -1, cP = -1;
-    std::vector<std::string> unit(nc);
-    for (std::size_t j = 0; j < nc; ++j)
-    {
-        const std::string name = cols[j]->lookupWord("name");
-        unit[j] = cols[j]->lookupWord("unit");
-        if      (name == "T" || name == "temperature") cT = static_cast<int>(j);
-        else if (name == "Psat" || name == "P" || name == "psat") cP = static_cast<int>(j);
-    }
-    if (cT < 0 || cP < 0)
-        throw std::runtime_error("vaporPressureFit dataset needs columns T and Psat");
+    // -- THE EVIDENCE PARTITION, frozen before a single point is fitted ----
+    //  The fitter below is handed `T`/`y`, which are built from the FIT
+    //  datasets only.  It is not forbidden to touch the held-out points; it
+    //  is never given them.
+    const std::string label = "vaporPressureFit" + (comp.empty() ? "" : " (" + comp + ")");
+    const auto part = EvidencePartition::read(dict, label);
+    part.announce(label, verbosity);
 
-    const std::size_t N = grid.size() / nc;
-    std::vector<scalar> T, y;   // y = log10(Psat[bar])
-    scalar Tmin = 1e30, Tmax = 0.0;
-    for (std::size_t r = 0; r < N; ++r)
+    const std::vector<std::string> xN{ "T", "temperature" };
+    const std::vector<std::string> yN{ "Psat", "P", "psat" };
+
+    //  A point is admissible when Psat > 0 -- log10 needs it.  Applied
+    //  identically to both roles, because a filter that differs between them
+    //  would make the held-out comparison measure the filter.
+    auto admissible = [](const std::vector<EvidencePoint>& raw,
+                         std::vector<scalar>& T, std::vector<scalar>& y)
     {
-        const scalar Tk   = convUnit(grid[r * nc + cT], unit[cT]);         // K
-        const scalar P_Pa = convUnit(grid[r * nc + cP], unit[cP]);         // Pa
-        if (P_Pa <= 0.0) continue;
-        const scalar Pbar = P_Pa / units::bar_to_Pa;
-        T.push_back(Tk); y.push_back(std::log10(Pbar));
-        Tmin = std::min(Tmin, Tk); Tmax = std::max(Tmax, Tk);
-    }
+        for (const auto& pt : raw)
+        {
+            if (pt.y <= 0.0) continue;                       // P in Pa
+            T.push_back(pt.x);
+            y.push_back(std::log10(pt.y / units::bar_to_Pa));
+        }
+    };
+
+    std::vector<scalar> T, y;                                 // y = log10(Psat[bar])
+    admissible(EvidencePartition::loadAll(part.fit(), xN, yN, label), T, y);
+
+    std::vector<scalar> Tv, yv;                               // held-out
+    admissible(EvidencePartition::loadAll(part.validation(), xN, yN, label), Tv, yv);
+    part.requireNonEmptyValidation(Tv.size(), label);
+
     if (T.size() < 3)
-        throw std::runtime_error("vaporPressureFit: need >=3 (T, Psat) points");
+        throw std::runtime_error(label + ": need >= 3 admissible (T, Psat)"
+            " fitting points; got " + std::to_string(T.size()) + ".");
+
+    scalar Tmin = 1e30, Tmax = 0.0;
+    for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
 
     // -- fit log10(P) = A − B/(T+C): linear (A,B) for fixed C, golden-section C -
     auto solveAtC = [&](scalar C, scalar& A, scalar& B) -> scalar
@@ -143,6 +140,58 @@ int VaporPressureFit::run(const DictPtr& dict,
     for (std::size_t k : order)
         csv << T[k] << "," << std::pow(10.0, y[k]) * units::bar_to_Pa << ","
             << std::pow(10.0, A - B / (T[k] + C)) * units::bar_to_Pa << "\n";
+
+    // -- HELD-OUT VALIDATION, on evidence the fit above never saw ----------
+    //  The four quantities this operation can report are kept APART on
+    //  purpose: the in-sample R2 says how well the model reproduces what it
+    //  was given; the held-out statistics say whether it survives evidence it
+    //  never saw.  Merging them into one "good fit" number is exactly the
+    //  claim this contract exists to prevent.
+    if (part.engaged() && !Tv.empty())
+    {
+        scalar sse_v = 0.0, aad = 0.0;
+        for (std::size_t i = 0; i < Tv.size(); ++i)
+        {
+            const scalar r = yv[i] - (A - B / (Tv[i] + C));       // in log10(bar)
+            sse_v += r * r;
+            aad   += std::abs(std::pow(10.0, -r) - 1.0);          // relative in P
+        }
+        const scalar rms_v = std::sqrt(sse_v / static_cast<scalar>(Tv.size()));
+        const scalar aad_v = 100.0 * aad / static_cast<scalar>(Tv.size());
+
+        scalar Tvmin = 1e30, Tvmax = 0.0;
+        for (scalar t : Tv) { Tvmin = std::min(Tvmin, t); Tvmax = std::max(Tvmax, t); }
+        const bool overlaps = !(Tvmax < Tmin || Tvmin > Tmax);
+
+        diag_["n_heldout"]          = static_cast<scalar>(Tv.size());
+        diag_["rms_heldout_log10P"] = rms_v;
+        diag_["aad_heldout_pct"]    = aad_v;
+
+        if (verbosity >= 2)
+        {
+            std::cout << "    HELD-OUT VALIDATION (" << Tv.size()
+                      << " pts, " << Tvmin << "-" << Tvmax << " K): AAD "
+                      << aad_v << " %, RMS " << rms_v << " in log10(P)\n";
+            //  A caller-side independence fact: the partition class settles
+            //  identity, the caller has the numbers and settles domain.
+            if (overlaps)
+                std::cout << "      [independence] the held-out temperature"
+                             " range OVERLAPS the fitted one -- interpolation,"
+                             " not extrapolation.  A finding for the reviewer,"
+                             " not an error.\n";
+        }
+    }
+    else if (part.validationRefused())
+    {
+        //  R1.  The chi-square below is IN-SAMPLE and is labelled so; it is
+        //  not an external validation and must never be presented as one.
+        std::cout << "    VALIDATION REFUSED:\n"
+                  << "    No independent experimental evidence remains after"
+                     " fitting.\n"
+                  << "    R2 = " << R2 << " is IN-SAMPLE (the model reproducing"
+                     " the very points it was fitted to).\n";
+        diag_["n_heldout"] = 0.0;
+    }
 
     diag_["A"]               = A;
     diag_["B"]               = B;

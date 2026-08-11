@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HeatCapacityFit.H"
+#include "EvidencePartition.H"
 #include "core/Dictionary.H"
 #include "core/Units.H"
 #include "thermo/ThermoPackage.H"
@@ -45,16 +46,6 @@ License
 namespace Choupo {
 
 namespace {
-scalar convUnit(scalar v, const std::string& unit)
-{
-    // Cp units are passed through (Choupo uses J/(mol·K) numerically); T via the table.
-    if (unit == "J/(mol·K)" || unit == "J/mol/K" || unit == "J/molK"
-        || unit == "J/(mol.K)" || unit == "frac" || unit == "-")
-        return v;
-    auto spec = units::lookupUnit(unit);
-    if (!spec) throw std::runtime_error("heatCapacityFit dataset: unknown unit '" + unit + "'");
-    return spec->affine ? units::affineToK(v, unit) : v * spec->factor;
-}
 
 // Solve the (n x n) linear system M x = b by Gaussian elimination with partial
 // pivoting.  Small, dense, well-conditioned (a low-degree Vandermonde normal
@@ -86,7 +77,9 @@ bool gaussSolve(std::vector<std::vector<scalar>> M, std::vector<scalar> b,
     }
     return true;
 }
-}
+
+} // namespace
+
 
 int HeatCapacityFit::run(const DictPtr& dict,
                          const ThermoPackage& thermo,
@@ -99,38 +92,31 @@ int HeatCapacityFit::run(const DictPtr& dict,
     if (degree < 1 || degree > 5)
         throw std::runtime_error("heatCapacityFit: degree must be 1..5");
 
-    // -- read (T, Cp) -------------------------------------------------------
-    auto ds = Dictionary::fromFile(dict->lookupWord("dataset"));
-    auto cols = ds->lookupDictList("columns");
-    auto grid = ds->lookupList("data");
-    const std::size_t nc = cols.size();
-    if (nc < 2 || grid.empty() || grid.size() % nc != 0)
-        throw std::runtime_error("heatCapacityFit dataset: need >=2 columns + matching grid");
-    int cT = -1, cCp = -1;
-    std::vector<std::string> unit(nc);
-    for (std::size_t j = 0; j < nc; ++j)
-    {
-        const std::string name = cols[j]->lookupWord("name");
-        unit[j] = cols[j]->lookupWord("unit");
-        if      (name == "T" || name == "temperature") cT = static_cast<int>(j);
-        else if (name == "Cp" || name == "cp")          cCp = static_cast<int>(j);
-    }
-    if (cT < 0 || cCp < 0)
-        throw std::runtime_error("heatCapacityFit dataset needs columns T and Cp");
+    // -- THE EVIDENCE PARTITION, frozen before a single point is fitted ----
+    const std::string label = "heatCapacityFit" + (comp.empty() ? "" : " (" + comp + ")");
+    const auto part = EvidencePartition::read(dict, label);
+    part.announce(label, verbosity);
 
-    const std::size_t N = grid.size() / nc;
+    const std::vector<std::string> xN{ "T", "temperature" };
+    const std::vector<std::string> yN{ "Cp", "cp" };
+
     std::vector<scalar> T, Cp;
+    for (const auto& pt : EvidencePartition::loadAll(part.fit(), xN, yN, label))
+    { T.push_back(pt.x); Cp.push_back(pt.y); }
+
+    std::vector<scalar> Tv, Cpv;                              // held-out
+    for (const auto& pt : EvidencePartition::loadAll(part.validation(), xN, yN, label))
+    { Tv.push_back(pt.x); Cpv.push_back(pt.y); }
+    part.requireNonEmptyValidation(Tv.size(), label);
+
     scalar Tmin = 1e30, Tmax = 0.0;
-    for (std::size_t r = 0; r < N; ++r)
-    {
-        const scalar Tk = convUnit(grid[r * nc + cT], unit[cT]);
-        const scalar c  = convUnit(grid[r * nc + cCp], unit[cCp]);
-        T.push_back(Tk); Cp.push_back(c);
-        Tmin = std::min(Tmin, Tk); Tmax = std::max(Tmax, Tk);
-    }
+    for (scalar t : T) { Tmin = std::min(Tmin, t); Tmax = std::max(Tmax, t); }
+
     const std::size_t M = T.size();
     if (static_cast<int>(M) < degree + 1)
-        throw std::runtime_error("heatCapacityFit: need >= degree+1 points");
+        throw std::runtime_error(label + ": need >= degree+1 fitting points;"
+            " got " + std::to_string(M) + " for degree "
+            + std::to_string(degree) + ".");
 
     // -- linear least squares: normal equations for a degree-d polynomial ----
     const std::size_t P = static_cast<std::size_t>(degree) + 1;
@@ -168,6 +154,40 @@ int HeatCapacityFit::run(const DictPtr& dict,
     std::vector<std::size_t> ord(M); for (std::size_t i = 0; i < M; ++i) ord[i] = i;
     std::sort(ord.begin(), ord.end(), [&](std::size_t i, std::size_t j) { return T[i] < T[j]; });
     for (std::size_t i : ord) csv << T[i] << "," << Cp[i] << "," << cpFit(T[i]) << "\n";
+
+    // -- HELD-OUT VALIDATION, on evidence the fit above never saw ----------
+    //  Without this block the op would LOAD the held-out points, check they
+    //  are non-empty, and then ignore them -- a declared validation answered
+    //  by silence, which is the exact failure the contract exists to prevent.
+    if (part.engaged() && !Tv.empty())
+    {
+        scalar sse_v = 0.0, aad = 0.0;
+        for (std::size_t i = 0; i < Tv.size(); ++i)
+        {
+            scalar yh = 0.0, tp = 1.0;
+            for (std::size_t j = 0; j < P; ++j) { yh += coef[j] * tp; tp *= Tv[i]; }
+            const scalar r = Cpv[i] - yh;
+            sse_v += r * r;
+            if (Cpv[i] != 0.0) aad += std::abs(r / Cpv[i]);
+        }
+        const scalar rms_v = std::sqrt(sse_v / static_cast<scalar>(Tv.size()));
+        const scalar aad_v = 100.0 * aad / static_cast<scalar>(Tv.size());
+        diag_["n_heldout"]       = static_cast<scalar>(Tv.size());
+        diag_["rms_heldout_Cp"]  = rms_v;
+        diag_["aad_heldout_pct"] = aad_v;
+        if (verbosity >= 2)
+            std::cout << "    HELD-OUT VALIDATION (" << Tv.size() << " pts): AAD "
+                      << aad_v << " %, RMS " << rms_v << " J/(mol.K)\n";
+    }
+    else if (part.validationRefused())
+    {
+        std::cout << "    VALIDATION REFUSED:\n"
+                  << "    No independent experimental evidence remains after"
+                     " fitting.\n"
+                  << "    R2 is IN-SAMPLE (the model reproducing the very"
+                     " points it was fitted to).\n";
+        diag_["n_heldout"] = 0.0;
+    }
 
     for (std::size_t j = 0; j < P; ++j) diag_["A" + std::to_string(j)] = coef[j];
     diag_["R2"]          = R2;

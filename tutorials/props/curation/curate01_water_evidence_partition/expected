@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    psat_water_validated   A                5.40221            1e-4
+diag    psat_water_validated   B                1838.68            1e-4
+diag    psat_water_validated   C                -31.737            1e-4
+diag    psat_water_validated   R2               1                  1e-4
+diag    psat_water_validated   aad_heldout_pct  5.95532e-08        1e-4
+diag    psat_water_validated   dHvap_kJ_per_mol 43.3787            1e-4
+diag    psat_water_validated   n_heldout        10                 1e-4
+diag    psat_water_validated   n_points         10                 1e-4
+diag    psat_water_validated   rms_heldout_log10P 2.76024e-10        1e-4
+diag    psat_water_refused     A                5.40221            1e-4
+diag    psat_water_refused     B                1838.68            1e-4
+diag    psat_water_refused     C                -31.737            1e-4
+diag    psat_water_refused     R2               1                  1e-4
+diag    psat_water_refused     dHvap_kJ_per_mol 42.1162            1e-4
+diag    psat_water_refused     n_heldout        0                  1e-4
+diag    psat_water_refused     n_points         20                 1e-4
