@@ -27,6 +27,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "FitParameters.H"
+#include "EvidencePartition.H"
+
+#include <memory>
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/ThermoResolution.H"
@@ -339,17 +342,68 @@ int FitParameters::run(const DictPtr& dict,
                     "nothing and refuses fit vocabulary");
     }
 
-    auto flat = resDict->lookupList("data");
-    if (flat.empty() || flat.size() % 2 != 0)
-        throw std::runtime_error("fitParameters: residual.data must be a "
-                                 "flat (x1 T x1 T...) list of even length");
-    const std::size_t N = flat.size() / 2;
-    sVector xExp(N), tExp(N);
-    for (std::size_t k = 0; k < N; ++k)
+    //  THE EVIDENCE PARTITION on the binary-VLE path (item 8, 2026-08-11).
+    //  A binary bubble-point datum is (x1, T), which is exactly the (x, y) an
+    //  EvidencePoint carries -- so this path needs the CONTRACT, not a second
+    //  loader.  The op accepts either form and refuses BOTH declared together,
+    //  the same posture the pure-property fits already take:
+    //
+    //      residual { data ( x1 T ... ); }     legacy, inline, claims nothing
+    //      evidence ( { dataset ...; role fit; } ... )   the contract
+    //
+    //  Until this existed, every chi-square this operation produced was
+    //  IN-SAMPLE and nothing said so.  It still computes that number -- a fit
+    //  must be able to report how well it describes what it saw -- but it is
+    //  now LABELLED, and the held-out claim is a separate section that only
+    //  appears when evidence was actually withheld.
+    //  ONLY engage when `evidence` is actually declared.  EvidencePartition::
+    //  read() refuses a dict carrying NEITHER of its two forms -- correct for
+    //  the pure-property fits, where one of them is mandatory -- but T_bubble
+    //  has a THIRD, older form (`residual.data ( x1 T ... )`, inline), and
+    //  calling read() unconditionally refused every legacy case in the corpus.
+    //  Caught by three tutorials going red, which is what they are for.
+    const bool engaged = dict->found("evidence");
+    if (engaged && resDict->found("data"))
+        throw std::runtime_error("fitParameters: `evidence ( )` and "
+            "`residual.data ( )` are BOTH declared -- the first says which "
+            "points are held out, the second says every point is fitted, and "
+            "they cannot both be true.  Declare one.");
+
+    std::unique_ptr<EvidencePartition> partPtr;
+    sVector xExp, tExp;
+    if (engaged)
     {
-        xExp[k] = flat[2*k    ];
-        tExp[k] = flat[2*k + 1];
+        partPtr = std::make_unique<EvidencePartition>(
+            EvidencePartition::read(dict, "fitParameters(" + kind + ")"));
+        const EvidencePartition& part = *partPtr;
+        //  The fitter is HANDED only the fit subset.  It is not forbidden to
+        //  touch a validation point; it is never given one.
+        for (const auto& pt : EvidencePartition::loadAll(
+                 part.fit(), {"x1", "x", "liquidMoleFraction"},
+                 {"T", "Tbubble", "temperature"},
+                 "fitParameters(" + kind + ")"))
+        { xExp.push_back(pt.x); tExp.push_back(pt.y); }
+        if (xExp.empty())
+            throw std::runtime_error("fitParameters: the fit evidence loaded "
+                "ZERO points -- check the declared column names (x1 and T) "
+                "and units in the datasets carrying `role fit`.");
+        part.announce("fitParameters(" + kind + ")", verbosity);
     }
+    else
+    {
+        auto flat = resDict->lookupList("data");
+        if (flat.empty() || flat.size() % 2 != 0)
+            throw std::runtime_error("fitParameters: residual.data must be a "
+                                     "flat (x1 T x1 T...) list of even length");
+        const std::size_t nIn = flat.size() / 2;
+        xExp.resize(nIn); tExp.resize(nIn);
+        for (std::size_t k = 0; k < nIn; ++k)
+        {
+            xExp[k] = flat[2*k    ];
+            tExp[k] = flat[2*k + 1];
+        }
+    }
+    const std::size_t N = xExp.size();
 
     // -- options -----------------------------------------------------------
     int    maxIter = 40;
