@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  STRUCTURAL FIXTURE == SYNTHETIC.  NOT EXPERIMENTAL DATA.
+  ============================================================================
+
+  This file exists to exercise Choupo's ThermoML reader end to end.  It is
+  written in the published ThermoML dialect (<DataReport>, <Compound>,
+  <PureOrMixtureData>) and carries a fixed-pressure binary bubble-point
+  series == the ONE geometry the extractor supports.
+
+  EVERY NUMBER BELOW IS INVENTED.  They are not measurements, they are not
+  transcribed from any publication, and the DOI is deliberately a non-
+  resolving placeholder in the reserved 10.0000 prefix so that nobody can
+  mistake it for a citation.  A verdict computed from this file is a statement
+  about the PLUMBING and never about physics.
+
+  The extracted dataset declares `provenance { source synthetic; }`, so the
+  fact travels with the evidence rather than living only in this comment ==
+  which the parser discards.
+
+  Licence: GPL-3.0-or-later, like the rest of Choupo.  No third-party data is
+  involved and none is redistributed.
+  ============================================================================
+-->
+<DataReport xmlns="http://www.iupac.org/namespaces/ThermoML">
+
+  <Citation>
+    <sDOI>10.0000/choupo-structural-fixture-heldout</sDOI>
+    <sTitle>Synthetic fixed-pressure binary bubble-point fixture (held-out half)</sTitle>
+    <sAuthor>Choupo structural fixture -- not a publication</sAuthor>
+    <yrPubYr>2026</yrPubYr>
+  </Citation>
+
+  <Compound>
+    <RegNum><nOrgNum>1</nOrgNum></RegNum>
+    <sCommonName>ethanol</sCommonName>
+    <sFormulaMolec>C2H6O</sFormulaMolec>
+  </Compound>
+
+  <Compound>
+    <RegNum><nOrgNum>2</nOrgNum></RegNum>
+    <sCommonName>water</sCommonName>
+    <sFormulaMolec>H2O</sFormulaMolec>
+  </Compound>
+
+  <PureOrMixtureData>
+    <Component><RegNum><nOrgNum>1</nOrgNum></RegNum></Component>
+    <Component><RegNum><nOrgNum>2</nOrgNum></RegNum></Component>
+
+    <Property>
+      <nPropNumber>1</nPropNumber>
+      <Property-MethodID>
+        <PropertyGroup>
+          <PhaseTransition>
+            <ePropName>Temperature, K</ePropName>
+          </PhaseTransition>
+        </PropertyGroup>
+      </Property-MethodID>
+      <ePresentation>Direct value, X</ePresentation>
+    </Property>
+
+    <Variable>
+      <nVarNumber>1</nVarNumber>
+      <VariableID>
+        <VariableType><eBioVariables>Pressure, kPa</eBioVariables></VariableType>
+      </VariableID>
+    </Variable>
+
+    <Variable>
+      <nVarNumber>2</nVarNumber>
+      <VariableID>
+        <VariableType><eComponentComposition>Mole fraction</eComponentComposition></VariableType>
+        <RegNum><nOrgNum>1</nOrgNum></RegNum>
+      </VariableID>
+    </Variable>
+
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>101.325</nVarValue></VariableValue>
+      <VariableValue><nVarNumber>2</nVarNumber><nVarValue>0.40</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>356.85</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>101.325</nVarValue></VariableValue>
+      <VariableValue><nVarNumber>2</nVarNumber><nVarValue>0.60</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>355.30</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>101.325</nVarValue></VariableValue>
+      <VariableValue><nVarNumber>2</nVarNumber><nVarValue>0.80</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>353.30</nPropValue></PropertyValue>
+    </NumValues>
+  </PureOrMixtureData>
+
+</DataReport>

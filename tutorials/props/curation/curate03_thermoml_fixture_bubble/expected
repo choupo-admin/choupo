@@ -1,0 +1,24 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    thermoml_fixture_bubble aad_heldout_pct  0.0529             1e-4
+diag    thermoml_fixture_bubble chi2             0.6692             1e-4
+diag    thermoml_fixture_bubble chi2_in_sample   0.6692             1e-4
+diag    thermoml_fixture_bubble chi2_reduced     0.2231             1e-4
+diag    thermoml_fixture_bubble cond_JtJ         272780104373.5624  1e-4
+diag    thermoml_fixture_bubble converged        1.0000             1e-4
+diag    thermoml_fixture_bubble corr_computed    1.0000             1e-4
+diag    thermoml_fixture_bubble dof              3.0000             1e-4
+diag    thermoml_fixture_bubble identifiable     0.0000             1e-4
+diag    thermoml_fixture_bubble invertible       1.0000             1e-4
+diag    thermoml_fixture_bubble iter             42.0000            1e-4
+diag    thermoml_fixture_bubble max_abs_corr     1.0000             1e-4
+diag    thermoml_fixture_bubble max_abs_resid    0.6562             1e-4
+diag    thermoml_fixture_bubble n_data           7.0000             1e-4
+diag    thermoml_fixture_bubble n_heldout        3.0000             1e-4
+diag    thermoml_fixture_bubble n_params         4.0000             1e-4
+diag    thermoml_fixture_bubble params_at_bound  0.0000             1e-4
+diag    thermoml_fixture_bubble penalised_points 0.0000             1e-4
+diag    thermoml_fixture_bubble rms              0.3092             1e-4
+diag    thermoml_fixture_bubble t_crit95         3.1820             1e-4
+diag    thermoml_fixture_bubble well_conditioned 0.0000             1e-4

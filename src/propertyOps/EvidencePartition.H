@@ -162,6 +162,14 @@ struct EvidenceDataset
     //  evidence was generated.  Empty = the dataset declares none, announced
     //  as undeclared exactly as a missing DOI is.
     std::string provenanceSource;
+    //  The ThermoML crossing must not lose the evidence's identity (Vitor,
+    //  2026-08-11).  A dossier that records a verdict but cannot say WHICH
+    //  archive file, WHICH publication, WHICH system and at WHAT pressure it
+    //  rests on has recorded a number, not a finding.  Declared by the dataset
+    //  itself, because the dataset is what knows them.
+    std::string archiveFile;   // the ThermoML file it was extracted from
+    std::string system;        // "ethanol + water"
+    std::string pressure;      // as declared, with its unit
 };
 
 //  A loaded (x, y) pair from a dataset's declared columns.

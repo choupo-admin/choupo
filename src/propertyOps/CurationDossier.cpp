@@ -91,6 +91,15 @@ void writeSets(std::ofstream& f, const char* role,
         else
             f << "            provenance undeclared;   // the dataset states"
                  " neither measured nor generated\n";
+        //  WHERE THE EVIDENCE CAME FROM, carried across the ThermoML crossing.
+        //  A verdict whose dossier cannot name the archive file, the system
+        //  and the pressure is a number, not a finding.
+        if (!d.archiveFile.empty())
+            f << "            archiveFile \"" << d.archiveFile << "\";\n";
+        if (!d.system.empty())
+            f << "            system    \"" << d.system << "\";\n";
+        if (!d.pressure.empty())
+            f << "            pressure  \"" << d.pressure << "\";\n";
         f << "        }\n";
     }
 }

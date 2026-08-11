@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate03 -- THE THERMOML PATH, END TO END, ON A STRUCTURAL FIXTURE.
+
+      ThermoML .xml  ->  extract-vle  ->  EvidencePartition  ->  FIT only
+                     ->  T_bubble regression  ->  held-out  ->  dossier
+
+  EVERY NUMBER HERE IS INVENTED.  Both datasets were extracted by
+  `bin/choupo-thermoml extract-vle` from synthetic fixtures under
+  tutorials/props/curation/fixtures/thermoml/, and each carries
+  `provenance { source synthetic; }` -- so the run ANNOUNCES that its evidence
+  was generated, and the dossier records it per dataset.  A reader cannot
+  arrive at the verdict without having been told what the numbers are.
+
+  WHAT THIS CASE PROVES: that a ThermoML file crosses into the evidence
+  contract without losing its identity -- archive file, DOI, system, pressure
+  and checksum all survive into the dossier -- and that the partition, the
+  regression and the verdict work on evidence that arrived through the parser
+  rather than being typed into a case.
+
+  WHAT IT DOES NOT PROVE: anything about ethanol, water, or NRTL.  The
+  acceptance band below is a PLUMBING tolerance and says so.  The scientific
+  witness on measured evidence is curate02, next door.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        thermoml_fixture_bubble;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  initial -0.8009;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial  246.18;   min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  initial  3.4578;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/ethanol-water-bubble-binary-bubble-fixture.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/ethanol-water-bubble-binary-bubble-fixture-heldout.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.5 percent;
+            origin  "PLUMBING tolerance for a synthetic structural fixture -- the numbers are invented, so this band bounds the extract/partition/regress path and states nothing about experimental accuracy";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            P           1.01325 bar;
+            components  ( ethanol water );
+        }
+
+        options
+        {
+            maxIter      60;
+            tolerance    1.0e-6;
+            fdStep       1.0e-3;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+        }
+    }
+);

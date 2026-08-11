@@ -1,0 +1,47 @@
+/*--------------------------------------------------------------------------*\
+  FIXED-PRESSURE BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML
+  file by bin/choupo-thermoml extract-vle.
+
+  system       ethanol + water   (x1 is ethanol)
+  pressure     101.325 kPa   (CONSTANT across the series)
+  points       7
+
+  The identity below is DECLARED AS FIELDS, not only described here:
+  a header is a comment the parser discards, and the dossier must be
+  able to say which archive file, which publication and which system
+  a verdict rests on.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( ethanol water );
+pressure     101.325 kPa;
+
+provenance
+{
+    source       synthetic;
+    note         "STRUCTURAL FIXTURE -- generated, never measured.  Any verdict computed from it is about the machinery, not physics";
+    archiveFile  "binary-bubble-fixture.xml";
+    doi          "10.0000/choupo-structural-fixture";
+    sha256       "73b7cd00a31e79391084d569093b69cd0898539101a78d9a838a96d613ac6ce2";
+}
+
+columns
+(
+    { name x1;  unit -;  }
+    { name T;   unit K;  }
+);
+
+data
+(
+      0.0500  361.95
+      0.1000  359.95
+      0.2000  358.05
+      0.3000  357.3
+      0.5000  356.2
+      0.7000  354.5
+      0.9000  351.85
+);

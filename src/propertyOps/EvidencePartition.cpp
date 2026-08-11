@@ -211,8 +211,49 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         {
             auto dsDict = Dictionary::fromFile(d.path);
             if (dsDict->found("provenance"))
-                d.provenanceSource =
-                    dsDict->subDict("provenance")->lookupWordOrDefault("source", "");
+            {
+                auto pv = dsDict->subDict("provenance");
+                d.provenanceSource = pv->lookupWordOrDefault("source", "");
+                d.archiveFile      = pv->lookupWordOrDefault("archiveFile", "");
+
+                //  The dataset's own DOI / hash FILL IN where the case
+                //  declared none.  If BOTH declare and they DISAGREE, that is
+                //  an identity conflict and is refused rather than resolved by
+                //  an undeclared precedence -- the same posture R3 takes for a
+                //  cross-role collision.  Silently preferring one would make
+                //  the dossier cite a publication the evidence may not be from.
+                const std::string dsDoi = pv->lookupWordOrDefault("doi", "");
+                const std::string dsSha = pv->lookupWordOrDefault("sha256", "");
+                if (!dsDoi.empty() && dsDoi != "none-declared")
+                {
+                    if (d.doi.empty()) d.doi = dsDoi;
+                    else if (d.doi != dsDoi)
+                        throw std::runtime_error(opLabel + ": evidence dataset '"
+                            + d.path + "' declares doi '" + dsDoi + "' but the"
+                            " case declares '" + d.doi + "'.  Two identities"
+                            " for one dataset -- correct whichever is wrong"
+                            " rather than letting the dossier cite a"
+                            " publication the numbers may not come from.");
+                }
+                if (!dsSha.empty())
+                {
+                    if (d.sha256.empty()) d.sha256 = dsSha;
+                    else if (d.sha256 != dsSha)
+                        throw std::runtime_error(opLabel + ": evidence dataset '"
+                            + d.path + "' declares a sha256 that differs from"
+                            " the one the case declares.  A checksum conflict"
+                            " is not a preference.");
+                }
+            }
+            if (dsDict->found("system"))
+            {
+                const auto sys = dsDict->lookupWordList("system");
+                for (std::size_t k = 0; k < sys.size(); ++k)
+                    d.system += (k ? " + " : "") + sys[k];
+            }
+            if (dsDict->found("pressure"))
+                d.pressure = std::to_string(dsDict->lookupScalar("pressure"))
+                           + " Pa";
         }
         catch (const std::exception&)
         {

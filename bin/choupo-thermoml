@@ -254,6 +254,158 @@ def extract_published(root, path):
     return out
 
 
+
+# ===========================================================================
+#  THE FIXED-PRESSURE BINARY BUBBLE-POINT READER
+# ===========================================================================
+#
+#  ITS OWN READER, DELIBERATELY.  `extract_published` above takes
+#  `next(iter(xs.items()))` -- ONE variable per point, whichever the dict
+#  happens to yield first.  That is correct for a pure-component property
+#  measured against temperature, and it is exactly the wrong shape here: a
+#  binary bubble point has TWO variables (pressure and a composition), so
+#  reusing that path would silently keep whichever came first and emit
+#  plausible-looking garbage.  A parser that guesses is worse than no parser.
+#
+#  SO THIS ONE REQUIRES what it understands and REFUSES everything else BY
+#  NAME.  It supports exactly:
+#
+#      fixed-pressure binary bubble-point evidence   (P, x1, T)
+#
+#  and refuses variable pressure, vapour compositions, more than two
+#  components, and any other geometry -- stating what it DOES understand, so
+#  the refusal carries its own remedy.
+
+BUBBLE_SUPPORTED = ("fixed-pressure binary bubble-point evidence "
+                    "(constant P, liquid mole fraction x1, bubble temperature T)")
+
+
+class BubbleRefusal(Exception):
+    """A dataset shape this extractor does not interpret.  Never a fallback."""
+
+
+def _var_kind(v):
+    """(kind, unit, orgNum) for one <Variable>: kind in {pressure, composition,
+    temperature, other}.  Read from the DECLARED type element, never guessed
+    from position."""
+    unit, kind = "", "other"
+    for e in v.iter():
+        t, txt = local(e.tag), (e.text or "").strip()
+        if not txt:
+            continue
+        if t.startswith("e") and "," in txt:
+            unit = txt
+        low = txt.lower()
+        if "pressure" in low:
+            kind = "pressure"
+        elif "mole fraction" in low or "composition" in low:
+            kind = "composition"
+        elif "temperature" in low:
+            kind = "temperature"
+    org = find_text(v, "nOrgNum")
+    return kind, unit, org
+
+
+def extract_binary_bubble(root, path):
+    """One fixed-P binary bubble series, or a BubbleRefusal naming the shape.
+
+    Returns {system, doi, P_kPa, points[(x1, T)], nComponents}."""
+    comps = compounds_published(root)
+    doi = find_text(root, "sDOI")
+
+    poms = find_all(root, "PureOrMixtureData")
+    if not poms:
+        raise BubbleRefusal("the file declares no <PureOrMixtureData> block")
+
+    for pom in poms:
+        members = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
+        if len(members) != 2:
+            raise BubbleRefusal(
+                f"this dataset declares {len(members)} component(s).  "
+                f"Only BINARY systems are interpreted.")
+
+        #  The property must be temperature, and there must be exactly one.
+        props = {}
+        for pr in find_all(pom, "Property"):
+            num, name = find_text(pr, "nPropNumber"), find_text(pr, "ePropName")
+            if num and name:
+                props[num] = name
+        if len(props) != 1:
+            raise BubbleRefusal(
+                f"this dataset declares {len(props)} properties "
+                f"({', '.join(sorted(props.values())) or 'none'}).  A bubble "
+                f"series carries exactly one: the temperature.")
+        pnum, pname = next(iter(props.items()))
+        if "temperature" not in pname.lower():
+            raise BubbleRefusal(
+                f"the measured property is '{pname}'.  This extractor reads "
+                f"the BUBBLE TEMPERATURE; a dataset whose property is a "
+                f"pressure or a composition is a different geometry.")
+
+        #  The variables must be exactly {pressure, composition}.
+        kinds = {}
+        for v in find_all(pom, "Variable"):
+            num = find_text(v, "nVarNumber")
+            if num:
+                kinds[num] = _var_kind(v)
+        kindset = sorted(k for k, _, _ in kinds.values())
+        if kindset != ["composition", "pressure"]:
+            raise BubbleRefusal(
+                f"the declared variables are {kindset or ['none']}.  This "
+                f"extractor requires EXACTLY a pressure and a liquid "
+                f"composition -- it does not choose among the variables "
+                f"present, because choosing is guessing.")
+
+        pvar = next(n for n, (k, _, _) in kinds.items() if k == "pressure")
+        xvar = next(n for n, (k, _, _) in kinds.items() if k == "composition")
+        xorg = kinds[xvar][2]
+        if xorg and xorg != members[0]:
+            #  The composition names a component; x1 must be the FIRST, or the
+            #  series would be reported against the wrong axis.
+            members = [members[1], members[0]]
+
+        punit = kinds[pvar][1]
+        if "kpa" not in punit.lower():
+            raise BubbleRefusal(
+                f"the pressure is declared in '{punit}'.  Only kPa is read "
+                f"today; a unit conversion here would be a silent one.")
+
+        pressures, points = set(), []
+        for nv in find_all(pom, "NumValues"):
+            xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
+                  for x in find_all(nv, "VariableValue")}
+            if pvar not in xs or xvar not in xs:
+                raise BubbleRefusal(
+                    "a data point declares only one of the two required "
+                    "variables -- the series is not a fixed-P bubble curve.")
+            tval = ""
+            for pv in find_all(nv, "PropertyValue"):
+                if find_text(pv, "nPropNumber") == pnum:
+                    tval = find_text(pv, "nPropValue")
+            if not tval:
+                continue
+            pressures.add(round(float(xs[pvar]), 6))
+            points.append((float(xs[xvar]), float(tval)))
+
+        if len(pressures) != 1:
+            raise BubbleRefusal(
+                f"the series spans {len(pressures)} distinct pressures "
+                f"({sorted(pressures)}).  VARIABLE PRESSURE is a different "
+                f"geometry; this extractor reads a curve at ONE pressure.")
+        if len(points) < 2:
+            raise BubbleRefusal("fewer than two usable points")
+
+        names = [c["name"] for c in comps] or ["component1", "component2"]
+        return {
+            "system": names[:2],
+            "doi": doi,
+            "P_kPa": next(iter(pressures)),
+            "points": sorted(points),
+        }
+
+    raise BubbleRefusal("no interpretable dataset found")
+
+
 def cmd_extract(a):
     cache = cache_root()
     idx = cache / "index.json"
@@ -349,6 +501,109 @@ def cmd_extract(a):
         print("choupo-thermoml extract: nothing extracted -- every candidate "
               "was skipped for the reason named above.")
         return 1
+    return 0
+
+
+
+def cmd_extract_vle(a):
+    """Write ONE Choupo dataset from a fixed-P binary bubble-point file."""
+    src = pathlib.Path(a.file)
+    if not src.is_file():
+        print(f"choupo-thermoml extract-vle: no such file: {src}")
+        return 1
+    try:
+        root = ET.parse(src).getroot()
+    except ET.ParseError as ex:
+        print(f"choupo-thermoml extract-vle: {src.name} is not parseable XML: {ex}")
+        return 1
+
+    dialect = detect_dialect(root)
+    if dialect != "published":
+        print(f"choupo-thermoml extract-vle: REFUSED\n"
+              f"  {src.name} is the '{dialect}' dialect.  The bubble-point "
+              f"reader is written against the published archive dialect only.")
+        return 1
+
+    try:
+        rec = extract_binary_bubble(root, src)
+    except BubbleRefusal as ex:
+        #  THE REFUSAL NAMES WHAT IS SUPPORTED, so it carries its own remedy.
+        print(f"choupo-thermoml extract-vle: REFUSED\n"
+              f"  This extractor supports {BUBBLE_SUPPORTED}.\n"
+              f"  {src.name}: {ex}\n"
+              f"  Nothing was written.  A dataset of another geometry -- "
+              f"variable pressure, vapour compositions, more than two "
+              f"components, VLLE -- is NOT reduced to a shape it does not "
+              f"have; reducing it would produce plausible numbers from a "
+              f"misreading.")
+        return 1
+
+    dest = pathlib.Path(a.into)
+    dest.mkdir(parents=True, exist_ok=True)
+    sha = hashlib.sha256(src.read_bytes()).hexdigest()
+    syn = a.provenance == "synthetic"
+    sysname = "-".join(rec["system"]).replace(" ", "_")
+    out = dest / f"{sysname}-bubble-{src.stem}.dat"
+
+    lines = [
+        "/*--------------------------------------------------------------------------*\\",
+        "  FIXED-PRESSURE BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
+        "  file by bin/choupo-thermoml extract-vle.",
+        "",
+        f"  system       {rec['system'][0]} + {rec['system'][1]}   (x1 is {rec['system'][0]})",
+        f"  pressure     {rec['P_kPa']} kPa   (CONSTANT across the series)",
+        f"  points       {len(rec['points'])}",
+        "",
+        "  The identity below is DECLARED AS FIELDS, not only described here:",
+        "  a header is a comment the parser discards, and the dossier must be",
+        "  able to say which archive file, which publication and which system",
+        "  a verdict rests on.",
+        "",
+        "  The role this evidence plays -- fit or held-out validation -- is NOT",
+        "  set here.  It is declared in the operation that consumes it, before",
+        "  any fitting runs (src/propertyOps/EvidencePartition.H).",
+        "\*--------------------------------------------------------------------------*/",
+        "",
+        "property     binaryVLE.T_bubble;",
+        f"system       ( {rec['system'][0]} {rec['system'][1]} );",
+        f"pressure     {rec['P_kPa']} kPa;",
+        "",
+        "provenance",
+        "{",
+        f"    source       {a.provenance};",
+    ]
+    if syn:
+        lines.append('    note         "STRUCTURAL FIXTURE -- generated, never measured.  '
+                     'Any verdict computed from it is about the machinery, not physics";')
+    lines += [
+        f'    archiveFile  "{src.name}";',
+        f'    doi          "{rec["doi"] or "none-declared"}";',
+        f'    sha256       "{sha}";',
+        "}",
+        "",
+        "columns",
+        "(",
+        "    { name x1;  unit -;  }",
+        "    { name T;   unit K;  }",
+        ");",
+        "",
+        "data",
+        "(",
+    ]
+    for x, t in rec["points"]:
+        lines.append(f"    {x:8.4f}  {t:.6g}")
+    lines += [");", ""]
+    out.write_text("\n".join(lines))
+
+    print(f"choupo-thermoml extract-vle: {out}  ({len(rec['points'])} points)")
+    print(f"  system    {rec['system'][0]} + {rec['system'][1]}")
+    print(f"  pressure  {rec['P_kPa']} kPa (constant)")
+    print(f"  doi       {rec['doi'] or '(none declared)'}")
+    if syn:
+        print("  provenance synthetic -- GENERATED.  Any verdict from this "
+              "evidence is about the plumbing, never about physics.")
+    print("  role      NOT set here: the consuming operation declares it "
+          "before fitting.")
     return 0
 
 
@@ -491,12 +746,20 @@ def main():
     sub.add_parser("index", help="build the local index over the cache")
     s = sub.add_parser("search", help="search by name / CAS / InChI / InChIKey")
     s.add_argument("query")
+    ev = sub.add_parser("extract-vle",
+                        help="write ONE dataset from a fixed-P binary bubble-point file")
+    ev.add_argument("file", help="the ThermoML .xml to read")
+    ev.add_argument("--into", required=True, help="destination directory")
+    ev.add_argument("--provenance", default="measured",
+                    choices=["measured", "synthetic"],
+                    help="what the numbers ARE -- `synthetic` marks a structural "
+                         "fixture, and the mark travels with the dataset")
     e = sub.add_parser("extract", help="write Choupo datasets for a compound")
     e.add_argument("query")
     e.add_argument("--into", default="constant/experiments")
     a = ap.parse_args()
     return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
-            "extract": cmd_extract}[a.cmd](a)
+            "extract": cmd_extract, "extract-vle": cmd_extract_vle}[a.cmd](a)
 
 
 if __name__ == "__main__":
