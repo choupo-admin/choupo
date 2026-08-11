@@ -192,6 +192,10 @@ public:
     //  tuning-to-the-answer the partition itself exists to prevent.
     bool   hasAcceptance() const { return hasAcceptance_; }
     scalar acceptanceMaxAADPct() const { return maxAADPct_; }
+    //  The DECLARED provenance of the band -- mandatory when a band exists,
+    //  because a limit with no stated origin cannot be distinguished from one
+    //  chosen after the residuals were seen.
+    const std::string& acceptanceOrigin() const { return acceptanceOrigin_; }
     static const char* refusalR1();
 
     //  R4 -- the caller knows how many validation points survived its own
@@ -261,6 +265,7 @@ public:
 private:
     bool                         engaged_ = false;
     bool                         hasAcceptance_ = false;
+    std::string                  acceptanceOrigin_;
     scalar                       maxAADPct_ = 0.0;
     std::vector<EvidenceDataset> fit_;
     std::vector<EvidenceDataset> validation_;

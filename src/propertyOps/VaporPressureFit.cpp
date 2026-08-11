@@ -184,7 +184,9 @@ int VaporPressureFit::run(const DictPtr& dict,
                           << (aad_v <= part.acceptanceMaxAADPct()
                                 ? "VALIDATED" : "NOT VALIDATED")
                           << " against the pre-declared band (maxAAD "
-                          << part.acceptanceMaxAADPct() << " %)\n";
+                          << part.acceptanceMaxAADPct() << " %)\n"
+                          << "       band origin: " << part.acceptanceOrigin()
+                          << "\n";
             else
                 std::cout << "    -> held-out validation PERFORMED; no"
                              " acceptance band was declared, so no verdict is"
@@ -236,6 +238,7 @@ int VaporPressureFit::run(const DictPtr& dict,
         }
         rec.hasAcceptance   = part.hasAcceptance();
         rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
+        rec.acceptOrigin    = part.acceptanceOrigin();
         rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
                                                  rec.aadHeldOutPct);
         if (part.validationRefused())

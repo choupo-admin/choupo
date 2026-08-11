@@ -197,8 +197,12 @@ std::vector<std::string> CurationDossier::write() const
                   << ";   // " << r->rmsUnit << ", on evidence the fit never saw\n";
                 f << "        aadHeldOutPct     " << r->aadHeldOutPct << ";\n";
                 if (r->hasAcceptance)
+                {
                     f << "        acceptanceMaxAADPct " << r->acceptMaxAADPct
                       << ";   // DECLARED BEFORE the fit; part of the fingerprint\n";
+                    f << "        acceptanceOrigin  \"" << r->acceptOrigin
+                      << "\";\n";
+                }
                 else
                     f << "        //  No acceptance band was declared, so the"
                          " residuals above are\n"

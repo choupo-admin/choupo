@@ -128,6 +128,12 @@ public:
 
         bool   hasAcceptance   = false;
         scalar acceptMaxAADPct = 0.0;
+        //  WHERE THE BAND CAME FROM.  Recorded beside the limit because a
+        //  reader auditing a verdict months later needs to know whether the
+        //  criterion was an experimental uncertainty, a literature tolerance
+        //  or an engineering choice -- and, above all, that it existed BEFORE
+        //  the residuals did.
+        std::string acceptOrigin;
 
         //  notClaimed | validationRefused | heldOutPerformed | validated
         //  | notValidated

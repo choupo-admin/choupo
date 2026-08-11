@@ -64,6 +64,7 @@ property vapourPressure
         rmsHeldOut        2.76023695412e-10;   // log10(P), on evidence the fit never saw
         aadHeldOutPct     5.95531823855e-08;
         acceptanceMaxAADPct 0.001;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "round-off of the synthetic evidence -- this case's held-out points are generated from the correlation being fitted, so the residual is arithmetic and NOT a statement about physics";
     }
 }
 

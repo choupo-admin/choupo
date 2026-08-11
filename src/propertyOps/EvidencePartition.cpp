@@ -144,6 +144,27 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
                 " nothing; either state `maxAAD <x> percent;` or delete the"
                 " block and let the run report the held-out residuals without"
                 " claiming a verdict.");
+        //  WHERE THE CRITERION CAME FROM (Vitor, 2026-08-11).  A band with no
+        //  stated provenance is indistinguishable from a band chosen AFTER
+        //  seeing the held-out residuals -- which is exactly the tuning the
+        //  partition exists to prevent, arriving through the one number the
+        //  partition does not fix.  So `origin` is MANDATORY whenever a band
+        //  is declared, and it has no default: experimental uncertainty, a
+        //  literature tolerance and a case-declared engineering criterion are
+        //  different claims, and only the author knows which was meant.
+        if (!acc->found("origin"))
+            throw std::runtime_error(opLabel + ": `acceptance {}` declares a"
+                " band but no `origin`.  A limit with no stated provenance"
+                " cannot be told apart from one chosen after seeing the"
+                " residuals -- state where it came from, e.g.\n"
+                "          origin \"experimental uncertainty of the held-out"
+                " set (Smith 1987, +/- 0.5 %)\";\n"
+                "          origin \"engineering criterion declared by this"
+                " case\";");
+        p.acceptanceOrigin_ = acc->lookupWord("origin");
+        if (p.acceptanceOrigin_.empty())
+            throw std::runtime_error(opLabel + ": `acceptance.origin` is"
+                " empty.  An empty provenance is not a provenance.");
         p.hasAcceptance_ = true;
         p.maxAADPct_ = acc->lookupScalar("maxAAD") * 100.0;   // fraction -> %
         if (p.maxAADPct_ <= 0.0)

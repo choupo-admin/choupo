@@ -217,6 +217,7 @@ int HeatCapacityFit::run(const DictPtr& dict,
         }
         rec.hasAcceptance   = part.hasAcceptance();
         rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
+        rec.acceptOrigin    = part.acceptanceOrigin();
         rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
                                                  rec.aadHeldOutPct);
         if (part.validationRefused())
