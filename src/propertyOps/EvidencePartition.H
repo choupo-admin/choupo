@@ -80,7 +80,8 @@ Description
     precedence -- the same posture the stream reader takes for two material
     forms.
 
-    THE REFUSALS (each by name; R5 is deliberately absent, see below):
+    THE REFUSALS (each by name; R5 shipped 2026-08-11 -- see the note under it,
+    which is the interesting half):
 
       R1  the contract is engaged and NO dataset carries `role validation`
           -> "VALIDATION REFUSED: No independent experimental evidence
