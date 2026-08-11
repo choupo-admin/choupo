@@ -131,6 +131,43 @@ export function StreamsSummary({
         background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))",
       }}
     >
+      {/* PROBLEM DIVERGENCE -- ABOVE the advisories, and deliberately not among
+          them.  An advisory qualifies the answer; a divergence says the answer
+          is to a DIFFERENT QUESTION (an authorised ideal binary pair, an FUG
+          shortcut standing in for a rigorous column).  Mixing the two would
+          bury the one entry that changes what the numbers below mean among the
+          ones that only qualify them -- the same reason the engine prints them
+          apart.  The GUI RENDERS the engine's verdict here and computes none
+          of its own: `kind`, `requested` and `solved` are the engine's words.
+          Only shown when non-empty: the "silence is a real answer" line is the
+          run log's job, and repeating it on every result screen would be noise
+          where it is not news. */}
+      {result.divergences && result.divergences.length > 0 && (
+        <Stack gap={2} mb={6}>
+          <Text size="xs" fw={600} tt="uppercase" c="orange.5" style={{ letterSpacing: 0.4 }}>
+            The problem solved is not the problem posed ({result.divergences.length})
+          </Text>
+          {result.divergences.slice(0, MAX_BAND_ROWS).map((d, i) => (
+            <Group key={i} gap={6} align="baseline" wrap="nowrap">
+              <IconArrowsSplit2
+                size={13}
+                color="var(--mantine-color-orange-5)"
+                style={{ flexShrink: 0, transform: "translateY(2px)" }}
+              />
+              <Text size="xs" ff="monospace" c="orange.4">
+                <Text span fw={600}>{d.locus}:</Text> {d.requested} &rarr; {d.solved}
+                {d.reason ? <Text span c="dimmed"> — {d.reason}</Text> : null}
+              </Text>
+            </Group>
+          ))}
+          {result.divergences.length > MAX_BAND_ROWS && (
+            <Text size="xs" ff="monospace" c="dimmed">
+              +{result.divergences.length - MAX_BAND_ROWS} more — see Log
+            </Text>
+          )}
+        </Stack>
+      )}
+
       {/* Solver advisories (bounds active at the solution, rating exceedances,
           auto-init) -- "no silent crutch" surfaced where a student reads the
           results, not buried in the Log. */}

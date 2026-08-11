@@ -64,6 +64,7 @@ import type { PairOrigin, ValidityDomain, PromotionOverride } from "./SolverAdap
 import type {
   AadRecord,
   Advisory,
+  Divergence,
   ComponentCoverage,
   ConvergenceCurve,
   Economics,
@@ -154,7 +155,7 @@ export class WasmAdapter implements SolverAdapter {
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
         const { displayLog, streams, convergence, profiles, txy, componentMolarMass, kpis,
-          utilityAllocation, computed, timeline, advisories, modelBoundaries, operationResults, thermoResolution,
+          utilityAllocation, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
@@ -166,6 +167,7 @@ export class WasmAdapter implements SolverAdapter {
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
         if (advisories && advisories.length > 0) result.advisories = advisories;
+        if (divergences && divergences.length > 0) result.divergences = divergences;
         if (modelBoundaries && modelBoundaries.length > 0) result.modelBoundaries = modelBoundaries;
         if (operationResults && operationResults.length > 0) result.operationResults = operationResults;
         if (thermoResolution && thermoResolution.length > 0) result.thermoResolution = thermoResolution;
@@ -332,6 +334,7 @@ export function extractStructured(log: string,
   timeline?: TimelineEvent[];
   /** Solver advisories (bound active at the solution, rating, auto-init). */
   advisories?: Advisory[];
+  divergences?: Divergence[];
   /** Model-boundary audit findings (adjacent units on different thermo models). */
   modelBoundaries?: ModelBoundary[];
   /** Per-operation diagnostics from a choupoProps run (fit stats). */
@@ -516,6 +519,9 @@ export function extractStructured(log: string,
 ...(parsed.advisories && parsed.advisories.length > 0
       ? { advisories: parsed.advisories }
     : {}),
+...(parsed.problemDivergence && parsed.problemDivergence.length > 0
+      ? { divergences: parsed.problemDivergence }
+    : {}),
 ...(parsed.modelBoundaries && parsed.modelBoundaries.length > 0
       ? { modelBoundaries: parsed.modelBoundaries }
     : {}),
@@ -592,6 +598,9 @@ interface ResultPayload {
   computed?: { [name: string]: number };
   timeline?: TimelineEvent[];
   advisories?: Advisory[];
+  /** the engine's `problemDivergence` array -- a separate channel from the
+   *  advisories, carried under its JSON name here and renamed at the seam. */
+  problemDivergence?: Divergence[];
   modelBoundaries?: ModelBoundary[];
   convergence?: { [unitName: string]: number[] };
   profiles?: {

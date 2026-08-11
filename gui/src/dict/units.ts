@@ -212,6 +212,14 @@ const TABLE: Record<string, UnitSpec> = {
   // dimensionless / percent
   "-": { factor: 1.0, affine: false },
   "%": { factor: 1.0e-2, affine: false },
+  //  `percent` spelled out: the engine's table (src/core/Units.cpp) has
+  //  carried BOTH spellings all along and this one carried only the symbol,
+  //  so three curation tutorials that write `maxAAD 0.1 percent;` could not be
+  //  OPENED in the GUI at all -- they were skipped at index time with a parse
+  //  error, which reads to a student as "this case is broken".  Two tables for
+  //  one vocabulary is the arity sin; until they share a source, a spelling
+  //  added to one belongs in the other in the same commit.
+  percent: { factor: 1.0e-2, affine: false },
   // mass ratio (e.g. dry resin per kg water)
   "kg/kg": { factor: 1.0, affine: false },
 };

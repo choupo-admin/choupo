@@ -352,6 +352,10 @@ export interface RunResult {
    *  `[electrolyte]`), surfaced so a student who never opens the Log still
    *  sees them ("no silent crutch"). */
   advisories?: Advisory[];
+  /** Problem divergences -- see the Divergence interface.  Kept apart from
+   *  `advisories` deliberately; merging them buries the one entry that changes
+   *  what the numbers mean among the ones that only qualify them. */
+  divergences?: Divergence[];
   /** Model-boundary audit: internal streams where adjacent units use different
    *  thermo models -- the enthalpy the two models disagree about (or a refusal
    *  across a speciation change).  H is conserved, T is the model-dependent
@@ -430,6 +434,25 @@ export interface Economics {
   accLo: number;               // accuracy band low  (%)
   accHi: number;               // accuracy band high (%)
   cashFlow: CashFlowRow[];
+}
+
+/** A PROBLEM DIVERGENCE: the run solved something other than what the case
+ *  describes on its face (engine contract, 2026-08-11 --
+ *  docs/design/problem-divergence-contract.md).  A DIFFERENT thing from an
+ *  Advisory: an advisory qualifies the answer, a divergence says the answer is
+ *  to a different question, which is why the two never share a surface here
+ *  any more than they do in the engine's own output.
+ *
+ *  `kind` is "substitution" (the engine delivered other than what was
+ *  requested -- authorised, or it would have refused) or
+ *  "declaredApproximation" (what the case asked for, recorded because a stream
+ *  table cannot show it).  The GUI RENDERS this verdict; it never infers one. */
+export interface Divergence {
+  kind: string;
+  locus: string;
+  requested: string;
+  solved: string;
+  reason: string;
 }
 
 export interface Advisory {
