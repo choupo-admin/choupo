@@ -222,6 +222,17 @@ public:
                                      const std::string& opLabel,
                                      const std::string& whatItCompares);
 
+    //  THE ONE WORDING of what a comparison is and is not.
+    //
+    //  An operation that compares curated parameters against a dataset makes a
+    //  real and useful statement, and a WEAKER one than it used to sound like:
+    //  until 2026-08-11 four console lines called it "validation", which reads
+    //  as the strong claim while establishing only the weak one.  The word is
+    //  now COMPARISON everywhere a human reads it, and this sentence says what
+    //  the difference is -- in ONE home, because two ops print it and a
+    //  sentence with two homes drifts exactly as a number does.
+    static const char* comparisonCaveat();
+
     //  FNV-1a over the canonical declaration (role|path|doi|sha256, sorted).
     const std::string& fingerprint() const { return fingerprint_; }
 

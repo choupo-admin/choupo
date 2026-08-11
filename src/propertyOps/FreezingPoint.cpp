@@ -150,6 +150,8 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         auto v   = dict->subDict("validation");
         auto ds  = Dictionary::fromFile(v->lookupWord("dataset"));
         auto pts = ds->lookupDictList(v->lookupWord("series"));
+        if (verbosity >= 2)
+            std::cout << EvidencePartition::comparisonCaveat() << "\n";
         scalar sum = 0.0; int nM = 0;
         for (const auto& e : pts)
         {
@@ -170,7 +172,7 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
             diag_["theta_AAD_pct"] = 100.0 * sum / nM;
             diag_["theta_nMeas"]   = static_cast<scalar>(nM);
             if (verbosity >= 2)
-                std::cout << "  depression validation vs "
+                std::cout << "  depression COMPARISON vs "
                           << v->lookupWord("dataset") << " ["
                           << v->lookupWord("series") << "]: AAD "
                           << 100.0 * sum / nM << " % over " << nM

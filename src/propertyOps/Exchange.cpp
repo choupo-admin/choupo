@@ -98,7 +98,8 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
             " softened effluent is supersaturated in), or run the effluent"
             " through a separate `speciate` op that carries the"
             " `equilibrate { minerals ( ... ); }`.  Joint exchange +"
-            " precipitation is a validation slice nobody has run: the CEC"
+            " precipitation is a comparison against a reference that nobody has"
+            " run: the CEC"
             " capacity row and the mineral active set have never been solved"
             " together against a reference.");
     auto in = propertyOps::readAnalysis(dict);

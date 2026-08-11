@@ -144,6 +144,8 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
         auto v   = dict->subDict("validation");
         auto ds  = Dictionary::fromFile(v->lookupWord("dataset"));
         auto pts = ds->lookupDictList(v->lookupWord("series"));
+        if (verbosity >= 2)
+            std::cout << EvidencePartition::comparisonCaveat() << "\n";
         const scalar CALORIE = 4.184;
         // The fit's data window (the calorimetric contract): in-window points
         // make the headline AAD; beyond it the comparison is an EXTRAPOLATION
@@ -194,7 +196,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
             diag_["gamma_AAD_pct"] = 100.0 * gSum / gN;
             diag_["gamma_nMeas"]   = static_cast<scalar>(gN);
             if (verbosity >= 1)
-                std::cout << "  gamma_pm validation vs " << v->lookupWord("dataset")
+                std::cout << "  gamma_pm COMPARISON vs " << v->lookupWord("dataset")
                           << " [" << v->lookupWord("series") << "]: AAD "
                           << std::fixed << std::setprecision(2) << (100.0 * gSum / gN)
                           << " % over " << gN << " points\n";
@@ -204,7 +206,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
             diag_["phi_AAD_pct"] = 100.0 * pSum / pN;
             diag_["phi_nMeas"]   = static_cast<scalar>(pN);
             if (verbosity >= 1)
-                std::cout << "  osmotic phi validation vs " << v->lookupWord("dataset")
+                std::cout << "  osmotic phi COMPARISON vs " << v->lookupWord("dataset")
                           << " [" << v->lookupWord("series") << "]: AAD "
                           << std::fixed << std::setprecision(2) << (100.0 * pSum / pN)
                           << " % over " << pN << " points\n";
@@ -216,7 +218,7 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
             diag_["Lphi_AAD_abs_Jmol"] = sumAbs / nAbs;
             diag_["Lphi_nMeas"]        = static_cast<scalar>(nAbs);
             if (verbosity >= 1)
-                std::cout << "  L_phi validation vs " << v->lookupWord("dataset")
+                std::cout << "  L_phi COMPARISON vs " << v->lookupWord("dataset")
                           << " [" << v->lookupWord("series") << "], window "
                           << wLo << "-" << wHi << " mol/kg: rel-AAD "
                           << std::fixed << std::setprecision(2) << relPct

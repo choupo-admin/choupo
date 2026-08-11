@@ -248,6 +248,16 @@ void EvidencePartition::requireNonEmptyValidation(std::size_t nSurviving,
         " operation reads.");
 }
 
+const char* EvidencePartition::comparisonCaveat()
+{
+    //  Deliberately says what is NOT established.  A caveat that only praises
+    //  the comparison teaches the student nothing about the boundary.
+    return "  [comparison] agreement with measured data.  This does NOT"
+           " establish that these data were independent of the fit that"
+           " produced the parameters -- that is held-out validation, and it"
+           " requires a declared FIT / HELD-OUT partition on the fit itself.";
+}
+
 void EvidencePartition::refuseOnNonFittingOp(const DictPtr& opDict,
                                              const std::string& opLabel,
                                              const std::string& whatItCompares)

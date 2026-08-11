@@ -729,7 +729,7 @@ try
                 {
                     if (verbosity >= 2)
                     {
-                        std::cout << ">>>  Validation '" << name << "' (abscissa "
+                        std::cout << ">>>  Comparison '" << name << "' (abscissa "
                                   << aadAbs << ", " << rec.nPoints << " measured pts):\n";
                         for (const auto& a : aadRecs)
                         {
