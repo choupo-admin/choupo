@@ -168,6 +168,41 @@ The smallest change with the largest teaching return, in order:
 
 Items 1–2 are the September-critical pair. Item 3 lands with the campaign.
 
+### Status (2026-08-11, same day)
+
+**Item 1 SHIPPED** (`8f125ccc`, `788ce429`). Double-click a compound → the
+Component Inspector, as a panel; "open full" → the same component in its own
+tab at `?component=<name>`, addressed **by name, not by a stash**, so it is
+bookmarkable, shareable, linkable from the Property Guide, and cannot expire —
+strictly better than the McCabe pop-out it is modelled on, which must stash
+because a curve cannot be re-derived without the engine.
+
+The four sections are as sketched: IDENTITY / PROPERTY COVERAGE / RESOLVED
+MODELS / EVIDENCE, with `[view raw record]`. Two disciplines are enforced in
+code and pinned by tests:
+
+* **The verdict union in the TS mirrors `CurationDossier::verdictOf` exactly.**
+  Five values, no sixth. With no dossier attached every property reads
+  `notClaimed` — *including the ones whose data is excellent*, because nobody
+  has declared evidence for them. A test asserts this: a green badge minted by
+  the GUI would be a scientific claim the engine never made.
+* **Absence is rendered, never omitted.** Every identity field keeps its row
+  with a stated remedy. The InChIKey row is shown *because* it is empty — no
+  catalogue record carries one — so it names what curation will supply rather
+  than letting the panel look complete. A `role nonvolatile` component keeps
+  "not applicable" instead of a bare ✗, and a declared-unknown validity window
+  (AP3) is distinguished from no window at all.
+
+**Item 2 NOT done, deliberately.** The Props workspace's readiness grid still
+shows bare ✓/✗. Wiring the verdict column there today would add "no dossier" to
+a table students see constantly, with no payoff until dossiers exist — the
+inspector is where the concept is taught first. It becomes worth doing the day
+`bin/choupo-curate` has produced dossiers for real components.
+
+Verification: 2087 GUI tests pass, typecheck clean, `npm run build` succeeds.
+The C++ regression was **not** run and did not need to be — the change touches
+zero files under `src/`, `data/` or `tutorials/`.
+
 ## 7. One defect found while reading (unrelated to the above) — and the
 ## correction to how it was first reported
 
