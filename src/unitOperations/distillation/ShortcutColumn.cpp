@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ShortcutColumn.H"
+#include "core/ProblemDivergence.H"
 #include "unitOperations/saturation/BubblePoint.H"
 
 #include <cmath>
@@ -40,6 +41,33 @@ int ShortcutColumn::solve(const DictPtr& dict,
                           const ThermoPackage& thermo,
                           int verbosity)
 {
+    //  A DECLARED APPROXIMATION, recorded -- not refused.
+    //
+    //  FUG is what the author asked for, so nothing here is a substitution:
+    //  the problem posed and the problem solved are the same problem.  But a
+    //  reader six months later cannot tell from a stream table that the column
+    //  was a shortcut, and FUG's own assumptions -- constant relative
+    //  volatility evaluated at ONE reference state, and therefore no azeotrope
+    //  representable at all -- may be exactly what the process turns on.  So it
+    //  rides the result beside the answer it produced.
+    //
+    //  This is the second of the two kinds in core/ProblemDivergence.H, and the
+    //  reason that class carries a `kind` field rather than being a refusal
+    //  list: an approximation the author chose and an approximation the engine
+    //  imposed are both divergences from the rigorous problem, and a reader
+    //  needs to see both -- but only one of them is anybody's mistake.
+    ProblemDivergence::instance().add("declaredApproximation",
+        //  The augmented dict STRIPS the `name` entry and carries the unit
+        //  name as the dictionary's own name -- a locus read from
+        //  lookupWordOrDefault("name") silently reports the type instead, and
+        //  in a flowsheet with three shortcut columns that names none of them.
+        "unit " + (dict->name().empty() ? std::string("shortcutColumn")
+                                        : dict->name()),
+        "distillation separation",
+        "Fenske-Underwood-Gilliland shortcut (constant relative volatility at"
+        " the feed bubble point; no azeotrope representable)",
+        "the case declares `type shortcutColumn;`");
+
     // ---- Feed ----------------------------------------------------------
     auto feed = dict->subDict("feed");
     auto comp = dict->subDict("composition");

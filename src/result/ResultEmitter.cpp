@@ -445,6 +445,25 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     }
     os << "\n  },\n";
 
+    //  ---- problemDivergence ------------------------------------------------
+    //  ABOVE the KPIs, and not among the advisories at the bottom.  Placement
+    //  is the claim: a consumer that reads the numbers first would learn only
+    //  afterwards that they answer a different question.  Always emitted --
+    //  an empty array means "nothing diverged", and the absence of the key
+    //  would mean "an older Choupo wrote this".
+    os << "  \"problemDivergence\": [";
+    for (std::size_t k = 0; k < r.divergences.size(); ++k)
+    {
+        const auto& d = r.divergences[k];
+        os << (k ? ",\n    " : "\n    ")
+           << "{ \"kind\": " << esc(d.kind)
+           << ", \"locus\": " << esc(d.locus)
+           << ", \"requested\": " << esc(d.requested)
+           << ", \"solved\": " << esc(d.solved)
+           << ", \"reason\": " << esc(d.reason) << " }";
+    }
+    os << (r.divergences.empty() ? "],\n" : "\n  ],\n");
+
     // ---- kpis ------------------------------------------------------------
     os << "  \"kpis\": {";
     bool firstU = true;

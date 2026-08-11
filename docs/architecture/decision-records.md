@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 61 records already exist
+## 1. Why an index, when 63 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 61 design records, **28 state a rejected alternative and 33 do not** —
+- Of 63 design records, **29 state a rejected alternative and 34 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -91,6 +91,7 @@ direction is an error.
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
 | [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **RATIFIED 2026-08-08** (queue ruling D2) — direction + recommended shape approved; build sequenced after the validation work |
 | [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-05** — debt D7; records to `core`, audit to the engine; checked against DWSIM, which supplies the pattern (`DWSIM.Interfaces`, zero deps) and the counter-example (its solver's compile path to WinForms) |
+| [`problem-divergence-contract.md`](../design/problem-divergence-contract.md) | ADR | yes | **RULED + IMPLEMENTED 2026-08-11** — an approximation nobody authorised is REFUSED; one the case authorised runs and RIDES the result on three surfaces, above the KPIs and apart from the advisories.  Rejects filing the authorisation inside `activityModel {}` (a scientific concession is not an object's parameter) and rejects a new AdvisoryLog severity (a divergence is not a qualification).  Records the sabotage that caught nothing and what was changed because of it |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
 | [`reference-rung-refusal.md`](../design/reference-rung-refusal.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-06** — `h_pure_ig`/`s_pure_ig`/`g_pure_ig` refuse a non-gas `referenceState`; revised its own plan on the first measurement (the field was already parsed), and names the water-liquid-datum gap as NOT closed |
 | [`vapour-or-gas-is-a-state.md`](../design/vapour-or-gas-is-a-state.md) | ADR | yes | **FINDING RECORDED 2026-08-06, implementation NOT started** — `noncondensable true;` stores a STATE relation (T vs Tc) as a substance flag; CO2's Tc is 31.0 °C and nine corpus cases run it at 298.15 K, six kelvin BELOW, while the engine announces "above Tc".  Ruled: announce the contradiction, as `role` vs `volatility{}` already does — never delete the flag, never silently re-route |
@@ -161,6 +162,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`openfoam-study.md`](../design/openfoam-study.md) | STUDY | ordered "go and learn first, no deliverable"; proposes a uniform `phases ( … )` list and one shared unknown-type refusal, decides neither |
 | [`thermoml-campaign-plan.md`](../design/thermoml-campaign-plan.md) | PLAN | the ThermoML curation campaign: sync/index/search/extract, the evidence partition, the dossier boundary.  Sequencing only -- the scientific rulings live in the ADRs it points at |
 | [`evidence-partition-slice-plan.md`](../design/evidence-partition-slice-plan.md) | PLAN | the FIT / HELD-OUT contract as an executable plan: the grammar, enforcement BY CONSTRUCTION, refusals R1-R5, and the dossier's home outside every resolver root.  R5 shipped 2026-08-11 WIDER than planned and the record says so |
+| [`acetone-ipa-reference-case.md`](../design/acetone-ipa-reference-case.md) | ANCHOR | transcribed 2026-08-11 from two owner-supplied primaries (Luyben 2011: flowsheet, stream table, kinetics, UNIQUAC + the IPA/water azeotrope; Rioux & Vannice 2003: measured LHHW rates).  States that the two are at DIFFERENT SCALES and must not be blended, and lists the five data gaps a case would still have to close.  Locates anchors, curates nothing, builds no case |
 | [`props-component-curator-assessment.md`](../design/props-component-curator-assessment.md) | STUDY | assessment of the proposed `curateComponent` op; concluded the natural output is a curation DOSSIER, not a resurrected `data/proposed/` tier.  Decides nothing by itself |
 | [`properties-gui-task-orientation-2026-08-11.md`](../design/properties-gui-task-orientation-2026-08-11.md) | STUDY | measured the Properties GUI against a task-orientation critique: the flow is already substance-first and one-click-to-a-curve, and the real gap is that a component is not an inspectable object.  Item 1 (the Component Inspector) shipped from it |
 
@@ -215,7 +217,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**33 of 61 records state no rejected alternative.**  For a FORUM or a STUDY
+**34 of 63 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

@@ -494,9 +494,53 @@ vocabulary (standard states + conventions) onto the engine's declarations.
 | **mean-ionic activity, γ±** | Davies / Pitzer / eNRTL on molality |
 | **fugacity coefficient φ̂ from an EoS** | `phiPhi` (SRK, PC-SAFT) |
 | **ideal-solution approximation** | `approximations { idealMolecularVLE { components (...) } }` — authorised, delimited, announced |
+| **ideal binary pair** (a declared γ-model pair with no parameters) | `approximations { idealBinaryPair { pairs (...); reason "..."; } }` — **REFUSED unless authorised** (2026-08-11), then recorded as a `problemDivergence` |
 | **composite mixed-solvent electrolyte v1** | NRTL molecular backbone + Davies ions + multiplicative a_w — a COMPOSITE whose limits are PROVEN each sweep (`check_composite_limits`): x_co→0 recovers the aqueous electrolyte, I→0 recovers molecular NRTL, NRTL→0 recovers the authorised ideal |
 
 Rule of reading: when an announcement names a *convention* it is telling
 you which standard state a γ or K is referred to; when it names an
 *approximation* it is telling you which physics was deliberately, visibly
 neglected — and which named slice will replace it.
+
+---
+
+## When Choupo refuses because a binary pair has no parameters
+
+If you declare NRTL, UNIQUAC or Wilson and a pair has no parameter record,
+that pair does **not** run the model you declared — it runs **ideal**.  Since
+2026-08-11 the engine refuses rather than announcing it and carrying on,
+because the problem solved would not be the problem you posed.
+
+You have four ways forward, and the refusal prints all of them:
+
+1. **Add the record** under `constant/parameters/<MODEL>/<a>-<b>.dat` (or the
+   sealed snapshot) — the best answer when a curated pair exists.
+2. **Fit it** from experimental data: `fitParameters`, residual kind
+   `T_bubble` (see `tutorials/props/curation/`).
+3. **Declare a predictive model that needs no pair** — UNIFAC, if every
+   component carries group decompositions.
+4. **Authorise the approximation.**  It then runs, and every ideal-defaulted
+   pair is recorded as a divergence that rides the result:
+
+```
+//  TOP LEVEL of constant/thermoPhysPropDict -- NOT inside activityModel {}.
+//  The authorisation is a statement about your CASE, not a parameter of the
+//  model, and it has exactly one home.
+approximations
+{
+    idealBinaryPair
+    {
+        pairs  ( acetone-water isopropanol-water );
+        reason "no curated parameters; ideal accepted for this screening pass";
+    }
+}
+```
+
+The block is **delimited**: authorising one pair does not authorise another.
+The `reason` is not decoration — it is what a reader (or a marker) sees beside
+the number, so write the engineering argument, not "TODO".
+
+Do NOT invent parameter values to get past the refusal.  A fabricated pair
+looks exactly like a curated one and no gate can tell them apart; an
+authorised ideal pair is visible forever.
+

@@ -1083,6 +1083,26 @@ PYEOF
     fi
     rm -f /tmp/mbl.$$
 
+    # Problem-divergence gate (ruled 2026-08-11): the problem SOLVED must
+    # not silently differ from the problem POSED.  An unauthorised ideal-pair
+    # substitution refuses by name with a paste-ready remedy; an authorised
+    # one runs and is RECORDED on three surfaces (human block above the
+    # caveats, result JSON above the kpis, converged/), and a declared
+    # approximation like an FUG column is recorded without being refused.
+    # Four sabotages -- and the first caught nothing, which is what put arm
+    # A8 (the unexamined branch) there.  Observed output in the docstring.
+    if "$ROOT/bin/curate/check_problem_divergence.py" > /tmp/pdv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "problem-divergence-gate" \
+            "$(tail -1 /tmp/pdv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_problem_divergence.py)\n" \
+            "problem-divergence-gate"
+        cat /tmp/pdv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pdv.$$
+
     # Stage-identity gate (2026-08-04): an equilibrium stage IS a flash.
     # The witness draws BOTH phases off one stage, recombines them and
     # re-flashes the mixture adiabatically; T, x, y and V/F must all come

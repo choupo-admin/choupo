@@ -46,6 +46,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "core/ProblemDivergence.H"
 #include "core/FlatUnit.H"          // topology, not output -- see that header
 #include "core/ResultRecords.H"      // the eight plain records this struct
                                     //   carries.  They are in `core` because
@@ -221,6 +222,14 @@ struct SimulationResult
     // exceeded, auto-init) -- the same events printed to the log, carried here
     // so the GUI surfaces them.  Drained from AdvisoryLog after each pass.
     std::vector<Advisory>                                          advisories;
+    //  PROBLEM DIVERGENCE -- a DIFFERENT channel from the advisories above,
+    //  deliberately.  An advisory qualifies the answer ("extrapolated 3 K");
+    //  a divergence says the answer is to a different question (a declared
+    //  NRTL pair that ran ideal, a rigorous column replaced by a shortcut).
+    //  Merging them would bury the one line that changes what the number
+    //  means among nine that do not.  Drained from ProblemDivergence after
+    //  each pass, exactly as the advisories are.
+    std::vector<Divergence>                                        divergences;
     // Binary-pair resolution provenance: where each activity-model pair came
     // from (inline / per-node file / plant-root / standard library / ideal-
     // default) + the file's own provenance.source.  Feeds the GUI foundation

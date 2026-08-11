@@ -21,6 +21,38 @@ schemaVersion 2;
 
 components ( water ethanol KCl potassiumBitartrate );
 
+//  AUTHORISED APPROXIMATION -- the column's NRTL world, declared here.
+//
+//  The `rectifier` unit overrides the activity model to NRTL so the
+//  ethanol-water azeotrope is represented (see system/flowsheetDict).  In
+//  THAT world the two salts have no binary pair and would run ideal.  Until
+//  2026-08-11 that happened silently and the only record of it was a comment
+//  in the flowsheetDict; the engine now refuses the substitution unless the
+//  case authorises it here, and records it as a divergence when it runs.
+//
+//  Why it is acceptable HERE and is still not free: both salts are
+//  nonvolatile and leave in the bottoms, so their liquid activity does not
+//  enter the vapour-liquid equilibrium the column solves.  It does enter the
+//  liquid-phase nonideality the column's energy balance sees, which is why
+//  this is an approximation and not an identity.  The crystallisers -- where
+//  the salt activity IS the answer -- keep the case's eNRTL and are untouched
+//  by this block.
+approximations
+{
+    idealBinaryPair
+    {
+        pairs
+        (
+            water-KCl
+            water-potassiumBitartrate
+            ethanol-KCl
+            ethanol-potassiumBitartrate
+            KCl-potassiumBitartrate
+        );
+        reason "nonvolatile salts in the rectifier's molecular NRTL world -- they leave in the bottoms and take no part in the VLE the column solves; the eNRTL crystallisers are unaffected";
+    }
+}
+
 equilibrium
 {
     formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour

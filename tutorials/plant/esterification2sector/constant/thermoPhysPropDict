@@ -18,6 +18,34 @@ schemaVersion 2;
 
 components       ( aceticAcid  ethanol  ethylAcetate  water );
 
+//  AUTHORISED APPROXIMATION -- and the honest statement of what it costs.
+//
+//  The SEPARATION sector's flash overrides the activity model to NRTL to
+//  demonstrate the fractal `constant/` walk-up: the ethylAcetate-water pair
+//  lives with the sector that needs it.  Four of the six binary pairs resolve;
+//  the two ACETIC-ACID pairs below have no curated record and would run ideal.
+//
+//  Until 2026-08-11 they did, silently.  They are authorised here so the case
+//  runs, and the run now says so on its own result.
+//
+//  WHAT IS GIVEN UP, stated rather than glossed: acetic acid + water is
+//  STRONGLY non-ideal, and acetic acid additionally associates in the vapour
+//  (Choupo models that dimerisation elsewhere -- flash13).  Ideal is a
+//  KNOWN-POOR approximation for these two pairs, not a benign one.  This case
+//  teaches WHERE A PAIR RECORD LIVES; no separation number it reports is a
+//  physical claim about acetic-acid recovery, and its golden is a regression
+//  reference, never a validated one.  Curating the two pairs -- or fitting
+//  them (fitParameters, kind T_bubble) -- would retire this block, and the
+//  answer would be expected to MOVE when it does.
+approximations
+{
+    idealBinaryPair
+    {
+        pairs  ( aceticAcid-ethylAcetate  aceticAcid-water );
+        reason "uncurated acetic-acid pairs in a case that teaches pair-record LOCATION, not acetic-acid VLE -- ideal is known-poor here and no reported separation is a physical claim";
+    }
+}
+
 equilibrium
 {
     formulation gammaPhi;

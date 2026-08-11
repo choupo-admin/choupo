@@ -185,18 +185,45 @@ wrong side of an azeotrope (it can step THROUGH and invent a
 non-physical answer).  For azeotropes: `model simultaneous;` (MESH
 Newton, quadratic).
 
-### NRTL without `pairs` block
-If you select NRTL but `data/standards/parameters/NRTL/<i>-<j>.dat`
-doesn't exist AND you didn't write inline `pairs (...)`, the model
-defaults to ideal (γ=1) for that pair — **announced loudly**, never
-silently: a `[thermo] NRTL: N binary pair(s) have no parameters ->
-defaulted to IDEAL` log line, an advisory the GUI shows as an amber
-toast, and the pair-coverage matrix colouring the pair as
-ideal-default.  The pitfall is IGNORING the announcement, not the
-absence of one.  Always verify the file exists for your component
-pair, or inline the parameters.  (Contrast a DECLARED pair: a
-`binaryParameters` entry whose `source` file is missing does not
-default at all — the builder REFUSES at assembly, naming the entry.)
+### NRTL / UNIQUAC / Wilson without parameters for a pair — now REFUSED
+If you select a pair-parameter activity model but
+`parameters/<MODEL>/<i>-<j>.dat` doesn't exist AND you didn't write inline
+parameters, that pair does **not** run the model you declared: it runs ideal
+(γ=1).  **Since 2026-08-11 the engine refuses** rather than announcing it and
+carrying on — the answer would be to a different problem from the one your
+case describes.
+
+The refusal names every affected pair and prints four ways forward: add the
+record, fit it (`fitParameters`, kind `T_bubble`), declare a predictive model
+that needs no pair (UNIFAC), or **authorise the approximation** with a
+paste-ready block at the TOP LEVEL of `constant/thermoPhysPropDict`:
+
+```
+approximations
+{
+    idealBinaryPair
+    {
+        pairs  ( acetone-water );
+        reason "why ideal is acceptable for THIS problem";
+    }
+}
+```
+
+Authorised, it runs — and every ideal-defaulted pair rides the result as a
+`problemDivergence`, printed above the KPIs and written to
+`converged/problemDivergence`.  Three traps:
+
+* the block goes at the **top level**, not inside `activityModel {}` (the
+  grammar refuses it there — it is a statement about your case, not a
+  parameter of the model);
+* it is **delimited** — authorising one pair does not authorise another;
+* **never invent parameter values to escape the refusal.**  A fabricated pair
+  is indistinguishable from a curated one; an authorised ideal pair is visible
+  forever.
+
+(Contrast a DECLARED pair: a `binaryParameters` entry whose `source` file is
+missing does not default at all — the builder REFUSES at assembly, naming the
+entry.)
 
 ### `model ideal` for a strongly non-ideal mixture
 Common mistake.  Ethanol/water at 1 atm has a 12% offset from Raoult

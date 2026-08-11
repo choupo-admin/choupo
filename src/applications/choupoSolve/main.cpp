@@ -56,6 +56,7 @@ Description
 #include "result/ResultEmitter.H"
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
+#include "core/DivergenceSummary.H"
 #include "result/SimulationResult.H"
 #include "streams/StreamOwnership.H"
 #include "streams/StreamStateIO.H"
@@ -149,6 +150,10 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // is captured.
     AdvisoryLog::instance().clear();
     ThermoResolutionLog::instance().clear();   // per-pass binary-pair provenance
+    //  The divergence record is per-pass for the same reason: an outer
+    //  driver evaluating many design points must not carry a
+    //  substitution from a point it has already left.
+    ProblemDivergence::instance().clear();
 
     if (!packageDict)
         throw std::runtime_error("choupoSolve: no constant/thermoPhysPropDict"
@@ -279,6 +284,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     r.profiles    = flowsheet.unitProfiles();
     r.converged   = (rc == 0);
     r.advisories  = AdvisoryLog::instance().entries();   // drain this pass's advisories
+    r.divergences = ProblemDivergence::instance().entries();   // separate channel
     r.thermoResolution = ThermoResolutionLog::instance().entries();  // pair provenance
 
     // D-c (forum #67/#69, shared impl per #73-3): announced on EVERY
@@ -881,8 +887,39 @@ try
         const fs::path dir = fs::current_path() / "converged";
         fs::remove_all(dir);                 // stale state must never linger
         StreamStateIO::writeStateDir(result.streams, tp, dir, sectorOwnedPaths(result));
+
+        //  THE DIVERGENCE TRAVELS WITH THE STATE, not only with the log.
+        //  `converged/` is the disk truth a drill-in materialises a child `0/`
+        //  from, and a child inheriting numbers without inheriting the
+        //  statement of WHICH PROBLEM produced them inherits a falsehood.
+        //  Written ALWAYS, empty list included: the file's absence would then
+        //  mean "an older Choupo wrote this", never "nothing diverged".
+        //  The 0/-completeness validator reads bodies, not names
+        //  (`looksLikeStreamState`), so this record is invisible to it.
+        {
+            std::ofstream f(dir / "problemDivergence");
+            f << "recordType problemDivergence;\n\n"
+              << "//  The problem SOLVED, where it differed from the problem\n"
+              << "//  POSED.  A substitution ran instead of what the case\n"
+              << "//  declares (and was authorised to); a declaredApproximation\n"
+              << "//  is what the case asked for, recorded because a stream\n"
+              << "//  table cannot show it.  An empty list is a real answer.\n\n"
+              << "divergences\n(\n";
+            for (const auto& d : result.divergences)
+                f << "    {\n"
+                  << "        kind      " << d.kind      << ";\n"
+                  << "        locus     \"" << d.locus     << "\";\n"
+                  << "        requested \"" << d.requested << "\";\n"
+                  << "        solved    \"" << d.solved    << "\";\n"
+                  << "        reason    \"" << d.reason    << "\";\n"
+                  << "    }\n";
+            f << ");\n";
+        }
+
         if (verbosity >= 2)
-            std::cout << "[state] wrote converged/ -- (sector-owned, componentFlows)\n";
+            std::cout << "[state] wrote converged/ -- (sector-owned, componentFlows)"
+                      << "  + problemDivergence (" << result.divergences.size()
+                      << ")\n";
     };
 
     // ---- 0/ COMPLETENESS validator (arch doc rule 8.2, no heuristics) ------
@@ -1001,13 +1038,19 @@ try
         // rating warnings AFTER the simulate() pass drained the log.  Re-draining
         // captures the flowsheet advisories + any from the post chain.
         result.advisories = AdvisoryLog::instance().entries();
+        result.divergences = ProblemDivergence::instance().entries();
 
         //  THE END-OF-RUN CAVEAT BLOCK.  Printed BEFORE the JSON so a reader
         //  who stops at the human-readable output still meets it, and after
         //  the reports so it is the last thing on screen.  It reprints what
         //  the log already holds -- no second source of truth.
         if (verbosity >= 1)
+        {
+            //  The divergence block comes FIRST: a reader must learn which
+            //  problem was solved before reading how well it was solved.
+            printProblemDivergence(result.divergences);
             printAdvisorySummary(result.advisories);
+        }
 
         // Structured-result emitter: any downstream consumer (the
         // browser GUI; a shell script with `awk`; a Python notebook)

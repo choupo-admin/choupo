@@ -48,6 +48,7 @@ Description
 
 #include "AadCompare.H"
 #include "core/AdvisorySummary.H"
+#include "core/DivergenceSummary.H"
 #include "propertyOps/CurationDossier.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
@@ -404,6 +405,10 @@ try
     auto propsDict = Dictionary::fromFile("system/propsDict");
     ThermoResolutionLog::instance().clear();
     AdvisoryLog::instance().clear();   // capture binary-pair provenance
+    //  The divergence record is per-pass for the same reason: an outer
+    //  driver evaluating many design points must not carry a
+    //  substitution from a point it has already left.
+    ProblemDivergence::instance().clear();
     ThermoPackage thermo;
     DictPtr v2Authored;   // the authored system (fit ops mutate a copy)
     // The case system lives in constant/thermoPhysPropDict.
@@ -866,6 +871,21 @@ try
     // Binary-pair resolution provenance (feeds the GUI foundation navigator +
     // pair-coverage matrix): where each NRTL pair came from + its source tag.
     const auto& resln = ThermoResolutionLog::instance().entries();
+    //  problemDivergence -- the separate channel, on this binary too.  A
+    //  props run assembles the same thermo package a flowsheet does, and an
+    //  ideal-defaulted pair is the same substitution here as there.
+    std::cout << ",\n  \"problemDivergence\": [";
+    {
+        const auto& dv = ProblemDivergence::instance().entries();
+        for (std::size_t i = 0; i < dv.size(); ++i)
+            std::cout << (i ? "," : "") << "\n    { \"kind\": "
+                      << jsonEscape(dv[i].kind)
+                      << ", \"locus\": "     << jsonEscape(dv[i].locus)
+                      << ", \"requested\": " << jsonEscape(dv[i].requested)
+                      << ", \"solved\": "    << jsonEscape(dv[i].solved)
+                      << ", \"reason\": "    << jsonEscape(dv[i].reason) << " }";
+        std::cout << (dv.empty() ? "]" : "\n  ]");
+    }
     // advisories (forum #75-1/#77-6): the ONE shared emitter.
     std::cout << advisoriesJson(AdvisoryLog::instance().entries());
     std::cout << ",\n  \"thermoResolution\": [";
@@ -1027,6 +1047,7 @@ try
                          " property to data/standards/)\n";
     }
 
+    printProblemDivergence(ProblemDivergence::instance().entries());
     printAdvisorySummary(AdvisoryLog::instance().entries());
 
     return overallRc;

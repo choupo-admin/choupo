@@ -28,6 +28,8 @@ License
 
 #include "NRTL.H"
 #include "core/Advisory.H"
+#include "thermo/ApproximationAuthorisation.H"
+#include "core/ProblemDivergence.H"
 #include "core/Origin.H"
 #include "core/ThermoResolution.H"
 #include "thermo/PairAudit.H"
@@ -304,26 +306,11 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
                      "checked at convergence by the route gate)\n";
     }
 
-    // Announce the ideal-defaulted pairs (no silent crutch): the student sees
-    // which interactions are unconstrained and can fit/add them.
-    if (!idealDefaulted.empty())
-    {
-        std::string list;
-        for (std::size_t k = 0; k < idealDefaulted.size(); ++k)
-            list += (k ? ", " : "") + idealDefaulted[k];
-        // Gate the log line on the AdvisoryLog dedup: NRTL's activity model is
-        // constructed more than once per thermo build (the liquid Phase + the
-        // legacy activity_ pointer), so without this the SAME warning prints
-        // twice and reads like a bug.
-        const bool isNew = AdvisoryLog::instance().add("thermo", "warning", "NRTL",
-            std::to_string(idealDefaulted.size())
-            + " binary pair(s) defaulted to ideal (no parameters): " + list
-            + " -- fit or add them to constrain these interactions");
-        if (isNew)
-            std::cout << "  [thermo] NRTL: " << idealDefaulted.size()
-                      << " binary pair(s) have no parameters -> defaulted to IDEAL: "
-                      << list << "  (fit or add them to constrain these interactions)\n";
-    }
+    // THE SUBSTITUTION IS AUTHORISED BEFORE IT HAPPENS, OR IT IS REFUSED.
+    // Refuse / record / announce all live in ONE home -- NRTL, UNIQUAC and
+    // Wilson reach this default by the same route and answer for it the same
+    // way.  See thermo/ApproximationAuthorisation.H.
+    resolveIdealPairSubstitution("NRTL", idealDefaulted);
 }
 
 sVector NRTL::gamma(scalar T, const sVector& x) const

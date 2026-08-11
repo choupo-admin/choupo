@@ -978,6 +978,57 @@ guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
 importer's dependency closure since flash20 (a sealed case must never change
 physics on sealing).
 
+**THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED, AND THE DIFFERENCE NOW
+TRAVELS WITH THE ANSWER (ruled 2026-08-11).**  An end-to-end agent test reached
+a converged acetone process by downgrading the physics TWICE -- a rigorous
+column replaced by an FUG shortcut, and a declared NRTL liquid run as IDEAL on
+two pairs with no parameters.  Both were declared, in COMMENTS the agent chose
+to write; nothing in the result JSON, the KPIs or `converged/` carried either,
+and the distillate still read 99.55 mol%.  **An ADVISORY says the answer is
+qualified; a DIVERGENCE says the answer is to a DIFFERENT QUESTION** -- so they
+do not share a channel (`core/ProblemDivergence.H`, printed ABOVE the caveats,
+emitted ABOVE the KPIs, and written to `converged/problemDivergence`; all three
+ALWAYS, empty included -- plus a FOURTH surface, the GUI results band, above
+the advisories band and rendering the engine's own words).  The contract is INVERTED: an approximation the case
+AUTHORISED runs and is RECORDED, one nobody authorised is REFUSED with four
+named paths and a paste-ready block.  TWO KINDS, deliberately: a **substitution**
+(the engine would deliver other than what was asked -- refused) and a **declared
+approximation** (an FUG column IS what was asked -- recorded, never refused,
+because a stream table cannot show that the column was a shortcut).  The
+authorisation lives ONCE at the TOP LEVEL of the thermophysical system beside
+`idealMolecularVLE` -- *it is a statement about the CASE, not a parameter of the
+model* -- and the problem it created was PROPAGATION, not grammar: a constructor
+sees only its own sub-dict, so the block is parsed ONCE at `buildV2Dispatch`
+(the dispatch EVERY v2 formulation passes) and consulted from
+`thermo/ApproximationAuthorisation`.  The first version put that parse inside
+the reactive-electrolyte branch, where four formulations out of five never
+reach it -- unenforceable on exactly the molecular cases it exists for.  The
+refusal/record/announce DECISION has ONE home (`resolveIdealPairSubstitution`,
+shared by NRTL/UNIQUAC/Wilson): three transcriptions of one refusal would be the
+arity sin inside the machinery built to enforce it.  **The sabotage that caught
+NOTHING is the one worth knowing**: forcing the tri-valued authorisation's
+NotRead branch on changed no probe, because no path reaches it -- so the branch
+now ANNOUNCES itself as an engine defect, stamps its divergences `UNEXAMINED`,
+and arm A8 asserts it stays unreached (S4, bypassing the ONE parse, is the only
+sabotage whose failure names the CAUSE).  Corpus: TWO cases out of ~480 were
+hiding a substitution, and they are different findings.
+`crystalliser09_KHT_KCl_series` (rectifier overridden to NRTL, two salts with no
+pair) is DEFENSIBLE -- both salts leave in the bottoms and take no part in the
+VLE -- and its flowsheetDict comment said so, which was the only record
+anywhere.  `esterification2sector` is NOT: its two uncurated ACETIC-ACID pairs
+ran ideal, and acetic acid + water is strongly non-ideal and associates in the
+vapour, so ideal there is KNOWN-POOR.  Its block says so, states that no
+separation number it reports is a physical claim, and that the answer is
+EXPECTED TO MOVE when the pairs are curated -- the pairs were NOT invented to
+close it (unsourced must never become falsely sourced).  *The engine cannot
+judge whether ideal is acceptable; it can force somebody to say in writing,
+beside the number, that the question was changed.*  **Neither golden moved** --
+the substitutions were already happening, only their declaration is new, and
+that is the expected outcome for every case this touches.  NOT covered, said plainly: only `shortcutColumn`
+and the three pair-parameter activity models are wired; every other downgrade is
+UNCOVERED.  Gate: `check_problem_divergence` (8 arms, 4 sabotages).  Record:
+[`docs/design/problem-divergence-contract.md`](docs/design/problem-divergence-contract.md).
+
 **THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT
 (2026-08-09).**  A unit carrying a per-unit `thermo {}` override solves in
 ITS OWN world while the energy report prices every stream in the CASE's, and

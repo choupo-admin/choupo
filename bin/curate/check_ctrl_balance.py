@@ -335,7 +335,18 @@ def main():
                        % (rr.returncode, (rr.stdout + rr.stderr)[-400:]))
         else:
             out = rr.stdout + rr.stderr
-            if "diverge" in out.lower() or "sha256" in out.lower():
+            #  SCOPED TO THE SEAL'S OWN LINES.  This used to scan the WHOLE
+            #  run output for the substrings "diverge" / "sha256", and on
+            #  2026-08-11 it went red because an unrelated subsystem started
+            #  printing the word: the problemDivergence block says "No
+            #  divergence declared or imposed" on a clean run, and the gate
+            #  read a clean run as a dirty seal.  Every seal message is
+            #  prefixed `[seal]` (src/thermo/SealCheck.cpp), so the check is
+            #  taken on those lines only.  A gate matching a bare English
+            #  word against a whole log is claiming the word belongs to it.
+            sealed = [ln for ln in out.splitlines() if "[seal]" in ln]
+            if any("diverge" in ln.lower() or "sha256" in ln.lower()
+                   for ln in sealed):
                 bad.append("canonicalTdep: the fixture did not re-stamp the"
                            " seal cleanly -- fix the fixture, do not let the"
                            " gate depend on a seal warning.")

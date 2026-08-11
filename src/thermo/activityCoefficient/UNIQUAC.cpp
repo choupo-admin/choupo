@@ -28,6 +28,7 @@ License
 
 #include "UNIQUAC.H"
 #include "core/Advisory.H"
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/Database.H"
 #include "thermo/RecordResolver.H"
 #include "core/ThermoResolution.H"
@@ -217,20 +218,11 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             }
         }
 
-    // No silent crutch: announce the ideal-defaulted pairs.
-    if (!idealDefaulted.empty())
-    {
-        std::string list;
-        for (std::size_t k = 0; k < idealDefaulted.size(); ++k)
-            list += (k ? ", " : "") + idealDefaulted[k];
-        const bool isNew = AdvisoryLog::instance().add("thermo", "warning", "UNIQUAC",
-            std::to_string(idealDefaulted.size())
-            + " binary pair(s) defaulted to ideal (no parameters): " + list);
-        if (isNew)
-            std::cout << "  [thermo] UNIQUAC: " << idealDefaulted.size()
-                      << " binary pair(s) have no parameters -> defaulted to IDEAL: "
-                      << list << "  (fit or add them to constrain these interactions)\n";
-    }
+    // THE SUBSTITUTION IS AUTHORISED BEFORE IT HAPPENS, OR IT IS REFUSED.
+    // Refuse / record / announce all live in ONE home -- NRTL, UNIQUAC and
+    // Wilson reach this default by the same route and answer for it the same
+    // way.  See thermo/ApproximationAuthorisation.H.
+    resolveIdealPairSubstitution("UNIQUAC", idealDefaulted);
 }
 
 sVector UNIQUAC::gamma(scalar T, const sVector& x) const

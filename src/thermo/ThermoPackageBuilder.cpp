@@ -29,6 +29,7 @@
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/activityCoefficient/UNIFAC.H"
 #include "thermo/activityCoefficient/UNIQUAC.H"
@@ -588,6 +589,10 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
     //      the approximation for any component not explicitly listed, and
     //      refuses listing a component the classifier did not find
     //      MolecularNonionising (an authorisation must not reclassify).
+    //  (The ONE PARSE of the block for the activity models happens earlier,
+    //  at the top of buildV2Dispatch -- every formulation passes through it,
+    //  this one does not.)
+
     std::set<std::string> idealMolecularVLE;
     std::string approximationReason;     // optional declared justification
     if (v2->found("approximations"))
@@ -1595,6 +1600,20 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                                      const ChemistrySystem* chem)
 {
     (void)chem;   // consumed by the electrolyte formulation only
+
+    //  THE ONE PARSE of the case's authorised approximations.  It sits HERE,
+    //  at the single dispatch every v2 formulation passes through, and not
+    //  beside the `idealMolecularVLE` reader inside the electrolyte branch --
+    //  a parse reachable on one formulation out of five would leave the other
+    //  four in the NotRead state, and NotRead means "may not refuse".  The
+    //  authorisation would then be silently unenforceable on exactly the
+    //  molecular cases the contract exists for.
+    //
+    //  Activity models see only their own sub-dict and can never reach the
+    //  top level; they consult ApproximationAuthorisation instead of
+    //  re-parsing -- one parse, several callers, never a second copy.
+    ApproximationAuthorisation::instance().readFrom(v2);
+
     if (!ThermoPackageBuilder::v2NativeFormulation(v2))
         throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"
             " formulation/shape is not on the native path yet -- gate the"

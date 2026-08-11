@@ -60,6 +60,7 @@ Description
 #include "control/signal/Signal.H"
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
+#include "core/DivergenceSummary.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
@@ -1279,6 +1280,8 @@ try
         //  and not the others teaches the reader that its ABSENCE means
         //  "nothing to report", which is false in the three that never had it.
         result.advisories = AdvisoryLog::instance().entries();
+        result.divergences = ProblemDivergence::instance().entries();
+        printProblemDivergence(ProblemDivergence::instance().entries());
         printAdvisorySummary(result.advisories);
         if (writeOutputs) emitResultJson(std::cout, result);
         return result;
