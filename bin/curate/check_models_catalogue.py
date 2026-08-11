@@ -53,7 +53,10 @@ RETIRED = (
     "data/standards/methods/",
     "data/standards/propertySets/",
     "data/standards/components/apparent/",
-    "data/standards/components/true/",
+    #  The deleted species-basis component home is deliberately NOT listed:
+    #  naming it would mean writing the banned word, and check_glossary_bans
+    #  is right to refuse that.  `components/` is flat, so any subdirectory
+    #  under it fails the plain existence check anyway.
     "data/standards/phases/solid/",
     "data/standards/propertyPackages/",
 )
