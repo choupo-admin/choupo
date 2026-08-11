@@ -606,12 +606,7 @@ COMPONENT, parameters per PAIR, **packages per UNIT** — and the model
 boundary it creates is auditable (the opt-in model-boundary AUDIT prints
 `ΔH = H_down − H_up` at fixed (T,P,z) into the first-law ledger).
 
-## State keyword on a source stream
-
-A feed stream may carry `state saturatedVapour;` (or `saturatedLiquid`
-/ `subcooledLiquid` / `superheatedVapour`); the parser then runs
-Antoine inversion at parse-time and fills in T / phase fractions
-from the supplied P.  The dict no longer carries a redundant T:
+## Pinning the phase of an inlet — `vaporFraction` and `phase`
 
 **The phase is normally a CONSEQUENCE, not a declaration.**  A stream of known
 composition is fixed by exactly two variables (Duhem's theorem): give `(T, P, z)`
@@ -634,105 +629,64 @@ state).  Prefer declaring only `(T, P, z)`.
 The reader stores only these pins; the *permanent-gas* case (hot air, combustion gas)
 carries **nothing** — the engine's `Tc` screen recovers `vf = 1` on its own.
 
-`vf <0..1>;` and `state <...>;` remain available as a **deliberate override** —
-to assert a metastable / kinetically-frozen inlet, or to pin a phase a parser
-shortcut needs (e.g. so a mixer reads a gas feed as gas, not liquid).  An
-explicit `state` already pins vf and wins; otherwise the declared `vf` is
-honoured.  (Out of `[0,1]` throws.)
+The two pins are keys of the stream's own `0/<stream>` file, beside the material
+block:
 
 ```
-chest1
-{
-    F         5000 kg/h;
-    P         200 kPa;
-    state     saturatedVapour;      # T = T_sat(P) at parse time
-    molarComposition { water 1.0; }
-    category  LP_steam_200kPa;       # for utility aggregation
-}
+// 0/chest1
+componentMolarFlows { water 277.6 kmol/h; }
+T               393.36 K;
+P               200 kPa;
+vaporFraction   1.0;
+category        LP_steam_200kPa;      // for utility aggregation
 ```
+
+**There is no `state <word>;` key on a stream, and no `vf` spelling.**  A
+`state saturatedVapour;` spec (with its parse-time Antoine inversion) and the
+short spelling `vf` were both readers of the **retired** `flowsheetDict
+streams {}` block; that block is refused loudly since the stream-state
+migration of 2026-07-10, and its two solvers (`invertPsat`,
+`solveStateForVf`) were deleted with it — one home, no dual reader.  Write
+the saturation temperature you mean, or let a `phaseChanger` produce it.  The
+four words `saturatedVapour` / `saturatedLiquid` / `subcooledLiquid` /
+`superheatedVapour` are still live, but as `phaseChanger`'s **`outletState`**
+— a unit-operation specification, not a stream one.  (Should a saturated-state
+inlet spec ever return, it returns through the `0/` grammar, where the code is
+not that code.)
 
 ## Stream `category` for utility aggregation
 
-A stream entry may carry `category <word>;`.  At end of solve, the
+A `0/<stream>` file may carry `category <word>;`.  At end of solve, the
 simulator sums F (kmol/s) and mass flow (kg/s) by category and emits
 the totals on `SimulationResult.utilities` + `reports/utilities/consumption.csv`
 — so a triple-effect cascade reports total `LP_steam_170kPa` even
 though three different stream names feed the three chests.
 
-## Stream `utility <name>;` for catalogued plant utilities
+## `utility <name>;` — the catalogue is read by a unit PORT, not by a stream
 
-A stream may declare `utility <name>;` to pull defaults from
-`data/standards/utilities/<name>.dat`.  The catalogue carries
-`components`, `state`, `P`, `T_in`, `T_out`, `dutyPerKg` (J/kg
-delivered) and `cost` (€/GJ); the parser substitutes any field
-the user did not declare and sets the stream's `category` to
-the utility name automatically.  Eight utilities ship by default:
-`steamLP` / `steamMP` / `steamHP`, `coolingWater`, `chilledWater`,
-`dowthermA`, `hitecSalt`, `refrigerationPG`.
+`data/standards/utilities/<name>.dat` carries a service's `components`,
+`state`, `P`, `T_in`, `T_out`, `dutyPerKg` (J/kg delivered) and `cost`
+(€/GJ).  **Nine** utilities ship: `steamLP` / `steamMP` / `steamHP`,
+`coolingWater`, `chilledWater`, `dowthermA`, `hitecSalt`,
+`refrigerationPG`, `electricity` (`ls data/standards/utilities/` is the
+authority — this list is a convenience, not a second home for the count).
 
-```
-PlantSteam { utility steamLP;  F 60 kmol/h; }
-```
+The key is declared **on a unit's port**, where it says which service pays
+for that port's duty; the allocation report and the costing chain read it
+there.  It is **not** a stream key and it expands no stream fields — a
+utility loop is written as ordinary streams in `0/`, with `category` tying
+them to the service.  See `tutorials/steady/utilities/utility01_dowtherm_preheat`
+for the worked shape.
 
-Expands to the equivalent of
-```
-PlantSteam {
-    F 60 kmol/h;
-    P 2.5 bar;
-    state saturatedVapour;
-    molarComposition { water 1.0; }
-    category steamLP;
-}
-```
-with the user override winning whenever they restate a key.
-The `utilities` report then reports MW + €/h for each category
-in `reports/utilities/consumption.csv`.
+## Tear seeds, and the convergence aids a stream does NOT carry
 
-## Stream `bounds {}` — optional convergence aids
-
-A stream block may carry an OPTIONAL `bounds {}` sub-dict that *cages*
-the stream's variables to help a hard recycle converge.  Bounds are
-aids, never requirements: a case runs without them, and the solver
-**announces** when one binds (the "no silent crutch" credo — see
-`docs/ai/patterns.md` §11).  Applied to TEAR streams (the recycle
-iterate); reuses the `{ min; max; }`+unit grammar of `DesignSpec`.
-
-```
-recycle
-{
-    F  2.0 kmol/h;  T 350 K;  P 1.01325 bar;  molarComposition { ... }
-
-    bounds
-    {
-        // ABSOLUTE — a number you know, with its unit:
-        // F  { min 0 kmol/h;  max 20 kmol/h; }
-        // T  { min 300 K;     max 420 K; }
-
-        // RELATIVE — to a FROZEN reference (see below).  The way it
-        // combines is set by the variable's MEASUREMENT SCALE:
-        F  { reference feedTotal;  min 0.1;    max 8; }       // flow: ratio scale → FRACTION  (0.1× .. 8×)
-        T  { reference feedMax;    min -50 K;  max +100 K; }  // temp: interval scale → K OFFSET ([ref-50, ref+100])
-    }
-}
-```
-
-* **Flow `F` is a ratio scale** (a true zero: 0 = no flow), so a relative
-  bound is a **dimensionless fraction** — `min 0.1; max 8;` means 0.1× to
-  8× the reference.  No `%` (write 5 % as `0.05`); `%` is not a dict token.
-* **Temperature `T` is an interval scale** (its zero is conventional), so a
-  fraction of it is meaningless.  A relative T bound is a **signed K
-  offset** carrying an explicit unit — `min -10 K; max +15 K;` means
-  `[ref-10 K, ref+15 K]`.  A bare number on a T bound is a parse error.
-* **Frozen references** (evaluated once at solve start, re-frozen per sweep
-  point so a band auto-scales): `feedTotal` (Σ feed flows, F only),
-  `feedMax` / `feedMin` / `feedMean` (the aggregate of the bounded variable
-  across feeds — e.g. `feedMax` on T = the hottest feed), and `<feed>.F` /
-  `<feed>.T`.  `reference iterateMean` (or any moving reference) is rejected.
-* A relative `%`-style bound is **flow-only**; T uses the K offset, P uses an
-  absolute bound (it is often gauge).
-* The cage shapes the SEARCH; after convergence the solver checks the
-  PHYSICAL value and WARNs if it lies outside the cage ("the bound excludes
-  the physical solution") — it never fakes the answer.
+**A stream has no `bounds {}` block.**  A cage on a tear iterate (absolute or
+frozen-reference limits on `F` / `T`) was designed and is described in the
+solver-aid literature of this project, but **no reader for it exists in the
+engine** — do not write one into a case expecting it to bind.  What is live is
+the announcement side of the same credo: auto-init, equipment ratings and
+similar aids report aloud when they act (see below), and the seed itself is
+authored, never invented.
 
 **Tear seeds are authored `0/` files; `solverDict tearStreams` only NAMES
 them.**  The split of responsibilities: `tearStreams ( recycle );` in
@@ -749,9 +703,11 @@ P/T exceeds the element's catalogue `P_max`/`T_max`; vessel sizing WARNs (no
 longer aborts) if the design pressure exceeds the material rating.  These are
 WARN-only — a rating never clamps a stream.
 
-All of these — bound-at-solution, auto-init, rating — are emitted in the
-result JSON (`advisories`) and surfaced by the GUI (an amber run-complete
-toast + a list in the Streams summary band), not just printed to the log.
+Auto-init and ratings are emitted in the result JSON (`advisories`) and
+surfaced by the GUI (an amber run-complete toast + a list in the Streams
+summary band), not just printed to the log — alongside the durable caveat
+surface (extrapolations, unverified records, estimates), which is replayed
+once, grouped, at the end of every run.
 
 ## estimateComponent: the `derived {}` closure block
 

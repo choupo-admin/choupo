@@ -50,15 +50,24 @@ Order matters: it sets the indexing the solver uses internally.
 
 ## The formulations — the `formulation` keyword IS the VLE world
 
-The `equilibrium.formulation` keyword selects which of the four K-value
+The `equilibrium.formulation` keyword selects which of the five K-value
 structures the whole VLE runs on:
 
 | `formulation` | World | K-value | Reference tutorial |
 |---|---|---|---|
 | `gammaPhi` | **γ-φ** | `K_i = γ_i·Psat_i / (φ_i·P)` | `flash02_ethanol_water` (NRTL) |
+| `gammaGamma` | **γ-γ (liquid-liquid)** | `K_i = γ_i^II / γ_i^I` — TWO OR MORE liquid phases, one γ surface each, from the SAME activity model | `vlle01_waterButanol` (UNIQUAC) |
 | `diluteSolution` | **dilute solution** | solvent on Raoult; each solute on the full Krichevsky-Kasarnovsky / Krichevsky-Ilinskaya Henry form `y φ_V P = x γ* H(T) exp[v_∞(P−Ps)/RT]` | `flash08_co2_water_package` |
 | `phiPhi` | **φ-φ** | `K_i = φ_i^L / φ_i^V` — the SAME cubic's two roots | `flash09_n2ch4_stryjek` |
 | `electrolyteGammaPhi` | **aqueous electrolyte** | ionic activity + osmotic coefficients on the aqueous-ion reference | `pitzer02_nacl_package` |
+
+`gammaGamma` is the formulation that carries an explicit **phase list**: the
+liquid phases are named (`liquidPhases ( { name waterRich; } { name
+butanolRich; } );`, or the uniform `phases ( ... )` list, never both — two
+authorities on one phase set refuse), and each takes its γ from the one
+declared `liquid.activityModel`.  That is the "one Gibbs surface per phase"
+rule below, seen from the liquid side: two liquids priced by two different
+activity models would be two surfaces pretending to be one equilibrium.
 
 Two hard rules ride on this:
 

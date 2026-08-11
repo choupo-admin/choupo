@@ -479,7 +479,7 @@ carriers (`Q` carried-or-allocated), the column reboiler/condenser
 heat ports, allocation-by-temperature-level, and the `utilityAllocation`
 report — see `docs/ai/energy.md`.
 
-## 11. Convergence aids — bounds + honest auto-init  (the "no silent crutch" credo)
+## 11. Convergence aids — honest auto-init  (the "no silent crutch" credo)
 
 When a hard recycle wanders out of the physical region mid-iteration (a
 flash flips, a tear flow goes negative, T runs away), help it — but
@@ -493,42 +493,26 @@ guess (`process03_recycle`).  A MISSING tear file is FATAL before the solve
 (completeness) and `bin/choupo-init0` refuses to invent it — the seed is
 yours, authored and visible like every other stream state.
 
-**Bounds cage the iterate (optional).**  Add a `bounds {}` to the tear
-stream (syntax: `docs/ai/dict-syntax.md`).  Flow uses a fraction of a
-frozen feed reference (ratio scale → ×); temperature uses a signed K
-offset (interval scale → ±):
-
-```
-recycle
-{
-    F  2.0 kmol/h;  T 350 K;  P 1 bar;  molarComposition { ethanol 0.5; water 0.5; }
-    bounds
-    {
-        F  { reference feedTotal;  min 0.1;    max 8; }       // 0.1× .. 8× the feed
-        T  { reference feedMax;    min -50 K;  max +100 K; }  // feedMax ± K
-    }
-}
-```
-
-The cage shapes the SEARCH; after convergence the solver checks the
-PHYSICAL value and WARNs if it lies outside the cage — a bound active at
-the solution is a SIGNAL that your spec, not the solver, is the
-constraint.  It never fakes the answer:
-
-```
-[bound] tear 'recycle': F caged to your max 0.600 kmol/h during the recycle solve
-[bound] WARNING: tear 'recycle': converged F = 0.679 kmol/h EXCEEDS your max 0.600
-        -- the bound excludes the physical solution; widen it or revisit the spec.
-```
+**There is no `bounds {}` cage on a tear stream.**  A relative/absolute cage
+on the recycle iterate was designed under this credo, and earlier drafts of
+these notes documented its grammar — but **no reader for it exists in the
+engine**, so a `bounds {}` block written into a case is inert.  What remains
+of the design is its rule, and it is worth stating because any future cage
+must obey it: a bound shapes the SEARCH only, and a bound still active at the
+converged answer must be ANNOUNCED as a signal that the spec, not the solver,
+is the constraint — never silently applied to the reported result.
 
 **Ratings speak.**  A membrane warns if the feed exceeds its catalogue
 `P_max`/`T_max`; vessel sizing warns (it no longer aborts) above the
 material's pressure rating — WARN-only, never a clamp.
 
-All of these advisories ride in the result JSON and surface in the GUI
-(amber run-complete toast + a list in the Streams summary band), so a
-student who never opens the Log still sees them.  Bounds are aids, not
-requirements — a case runs without any.
+**And the caveat surface is durable.**  Extrapolations beyond a declared
+validity window, `[unreviewed]` records, `[local]` values and `[estimate]`
+correlations ride the advisory log into the result JSON and are replayed
+once, grouped, at the end of every run — a run with nothing to say says so,
+so silence means "nothing raised" and never "the block did not run".  These
+surface in the GUI too (amber run-complete toast + a list in the Streams
+summary band), so a student who never opens the Log still sees them.
 
 ## 12. Compare several models on ONE plot — the `experimental {}` overlay  (choupoProps)
 

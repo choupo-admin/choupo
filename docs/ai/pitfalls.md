@@ -42,17 +42,31 @@ kmol/s;`.
 
 ## Composition
 
-### `molarComposition` vs `massComposition`
-Use `molarComposition { water 0.85; sucrose 0.15; }` for mole
-fractions; use `massComposition { water 0.30; sucrose 0.70; }` for
-mass fractions — `readComposition` converts mass to mole via the
-component MWs.  Using the wrong key SILENTLY interprets your numbers
-in the wrong basis.
+### `molarComposition` vs `massComposition` — and where each spelling is read
+Two different readers, two different vocabularies, and mixing them up is the
+commonest authoring error:
+
+* **Inside a batch / dynamic unit-op block** (`initial {}`, `feed {}` of
+  `batchReactor`, `batchStill`, `dynamicCSTR`, `fixedBedAdsorber`, …) the keys
+  are `molarComposition { water 0.85; sucrose 0.15; }` for mole fractions and
+  `massComposition { water 0.30; sucrose 0.70; }` for mass fractions.  The
+  shared `readComposition` helper converts mass to mole via the component MWs.
+* **Inside a `0/<stream>` state file** neither spelling exists.  A stream
+  declares ONE canonical material form — `componentMolarFlows { … }`,
+  `componentMassFlows { … }`, `molarFlow` + `moleFractions { … }`,
+  `massFlow` + `massFractions { … }`, `speciesMolarFlows { … }` or
+  `aqueousAnalysis { … }` — and declaring two is refused, not resolved by
+  precedence.
+
+Using the wrong key SILENTLY interprets your numbers in the wrong basis; using
+a unit-op spelling in a `0/` file leaves the stream with no material at all.
 
 ### Σ z ≠ 1 — auto-normalised, but watch precision
 The parser normalises any composition that doesn't sum to 1.  If you
 write 0.05/0.10/0.20/.../1.00 by mistake (Σ > 1), you get
-auto-normalised values.  Print the parsed stream early to verify.
+auto-normalised values.  `readComposition` (the unit-op blocks) prints a
+warning first when the sum is off by more than 1e-3 — but a drift smaller
+than that is absorbed silently, so print the parsed stream early to verify.
 
 ### Component name typos
 Component names are case-sensitive.  `Water` ≠ `water`.  The list of
@@ -117,8 +131,11 @@ saturated / two-phase feed CANNOT be pinned with `(T,P)` — you must give
   flash at `(T,P)` already fixes the vf; a declared vf that disagrees is named in
   the error).
 - Only one is under-specified → refused with guidance.
-- (`vf` is the legacy alias of `vaporFraction`; the pure-only
-  `state saturatedLiquid`/… keyword still works.)
+- The key is spelled `vaporFraction` in full.  **`vf` is not a dict key** (it
+  is the name of the field inside `ProcessStream`), and there is no
+  `state saturatedLiquid;` stream keyword — both belonged to the retired
+  `flowsheetDict streams {}` block.  `phase gas;` / `phase liquid;` is the
+  other live pin.
 
 ### A feed's phase must match its declared state (don't call a vapour "liquid")
 At low pressure, light species sit ABOVE their boiling point, so a feed you think
@@ -526,19 +543,25 @@ ports, the `utilityAllocation` report).
 
 ## State / streams
 
-### Forgetting the `state` keyword on a steam feed
-A "saturated steam at 200 kPa" feed should be:
+### Writing a saturated steam feed — there is no `state` keyword to forget
+A "saturated steam at 200 kPa" feed is written in its own `0/<stream>` file,
+with the saturation temperature stated and the phase pinned:
 ```
-chest1
-{
-    F         5000 kg/h;
-    P         200 kPa;
-    state     saturatedVapour;       # T resolved by Antoine inversion
-    molarComposition { water 1.0; }
-}
+// 0/chest1
+componentMolarFlows { water 277.6 kmol/h; }
+T               393.36 K;             // T_sat(P) for water at 200 kPa
+P               200 kPa;
+vaporFraction   1.0;
 ```
-NOT a hand-computed T that may drift from `T_sat(P)` for water
-(393.4 K at 200 kPa).: the parser inverts at parse-time.
+The engine does **not** invert Antoine for you at parse time.  A
+`state saturatedVapour;` key did exactly that, but it read the retired
+`flowsheetDict streams {}` block and was deleted with it (stream-state
+migration, 2026-07-10) — its two solvers had no other caller.  So the
+hand-computed `T` is now yours to get right; check it against the same
+`Psat` correlation the run will use (`choupoProps` will print it), because a
+`T` that drifts from `T_sat(P)` silently makes the feed superheated or
+sub-cooled.  The four saturated-state words survive on a `phaseChanger`'s
+`outletState`, where a unit — not a parser shortcut — does the work.
 
 ### Per-unit thermo override leaks
 When unit A uses SRK and downstream unit B uses ideal gas, the
