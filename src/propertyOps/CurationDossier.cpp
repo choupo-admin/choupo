@@ -31,6 +31,7 @@ License
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <iterator>
 #include <map>
 #include <stdexcept>
 
@@ -90,6 +91,21 @@ std::vector<std::string> CurationDossier::write() const
     std::map<std::string, std::vector<const PropertyRecord*>> byComponent;
     for (const auto& [comp, rec] : records_)
         byComponent[comp.empty() ? "unnamed" : comp].push_back(&rec);
+
+    //  A DOSSIER IS THE PRODUCT OF A CURATION ACT, so a component whose
+    //  properties were ALL fitted through the legacy single-dataset form gets
+    //  none: that form claims nothing, announces on stdout that it claims
+    //  nothing, and a file repeating `verdict notClaimed` would add a record
+    //  of a decision nobody took.  Every teaching case that merely
+    //  demonstrates a fitting algorithm would otherwise sprout a curation
+    //  directory saying so.
+    for (auto it = byComponent.begin(); it != byComponent.end(); )
+    {
+        bool anyEngaged = false;
+        for (const auto* r : it->second) anyEngaged |= r->engaged;
+        it = anyEngaged ? std::next(it) : byComponent.erase(it);
+    }
+    if (byComponent.empty()) return written;
 
     fs::create_directories("curation");
 
