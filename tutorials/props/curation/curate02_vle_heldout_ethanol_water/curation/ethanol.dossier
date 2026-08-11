@@ -44,11 +44,13 @@ property binaryVLE.T_bubble
             role      fit;
             dataset   "constant/experiments/etoh-water-101kPa-fit.dat";
             identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
         }
         {
             role      validation;
             dataset   "constant/experiments/etoh-water-101kPa-heldout.dat";
             identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+            provenance measured;
         }
         );
 

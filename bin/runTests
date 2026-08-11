@@ -1234,6 +1234,26 @@ PYEOF
     fi
     rm -f /tmp/vparity.$$
 
+    # claim-separation gate (2026-08-11).  "The model fits the data it saw" and
+    # "the fitted model predicted evidence it never saw" are DIFFERENT
+    # scientific statements; fitParameters printed only the first, unlabelled,
+    # until this slice.  The gate RUNS curate02 and asserts the separation in
+    # the output and in the dossier -- not by grepping the C++ for headings,
+    # which would pass a build whose headings print the wrong numbers.
+    # Sabotage-verified four ways, and two of those found bugs in the GATE:
+    # it compared formatted strings (blind, because chi2 prints scientific and
+    # the held-out slot fixed), and it probed the legacy case as shipped, at a
+    # verbosity that silences the whole block.
+    if "$ROOT/bin/curate/check_claim_separation.py" > /tmp/claimsep.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "claim-separation-gate" "$(tail -1 /tmp/claimsep.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_claim_separation.py)\n" "claim-separation-gate"
+        cat /tmp/claimsep.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/claimsep.$$
+
     # glossary-bans gate (G7, ruled by Vitor 2026-08-05).  The doctrine used
     # to read "the apparent/true wording is banned" -- one sentence over two
     # words that fail differently -- and CLAUDE.md itself, the level-1

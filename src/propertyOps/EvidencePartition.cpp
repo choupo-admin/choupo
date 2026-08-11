@@ -203,6 +203,25 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
                   " it).  A defaulted role would make every dataset a fitting"
                   " dataset and re-create an in-sample error reported as"
                   " validation.");
+        //  The dataset's OWN provenance, read from the dataset file rather
+        //  than re-declared in the case: the file is where a curator writes
+        //  what the numbers are, and a second declaration beside the role
+        //  would be a second home for the same fact.
+        try
+        {
+            auto dsDict = Dictionary::fromFile(d.path);
+            if (dsDict->found("provenance"))
+                d.provenanceSource =
+                    dsDict->subDict("provenance")->lookupWordOrDefault("source", "");
+        }
+        catch (const std::exception&)
+        {
+            //  Unreadable here is not fatal HERE: loadColumns opens the same
+            //  file and refuses with the message that names the column
+            //  problem.  Failing twice, differently, about one file would tell
+            //  the author less, not more.
+        }
+
         d.role = e->lookupWord("role");
         if (d.role != "fit" && d.role != "validation")
             throw std::runtime_error(opLabel + ": evidence dataset '" + d.path
@@ -318,12 +337,30 @@ void EvidencePartition::announce(const std::string& opLabel, int verbosity) cons
 
     std::cout << "  [evidence] " << opLabel << ": partition declared before"
                  " fitting (fingerprint " << fingerprint_ << ")\n";
-    for (const auto& d : fit_)
-        std::cout << "      FIT         " << d.path
-                  << (d.doi.empty() ? "" : "   doi " + d.doi) << "\n";
-    for (const auto& d : validation_)
-        std::cout << "      HELD-OUT    " << d.path
-                  << (d.doi.empty() ? "" : "   doi " + d.doi) << "\n";
+    auto line = [](const char* role, const EvidenceDataset& d) {
+        std::cout << "      " << role << " " << d.path
+                  << (d.doi.empty() ? "" : "   doi " + d.doi)
+                  << (d.provenanceSource.empty()
+                        ? ""
+                        : "   provenance " + d.provenanceSource) << "\n";
+    };
+    for (const auto& d : fit_)        line("FIT        ", d);
+    for (const auto& d : validation_) line("HELD-OUT   ", d);
+
+    //  A GENERATED DATASET SAYS SO IN THE RUN, not only in its header prose.
+    //  curate01's two halves were synthetic from the day they were written and
+    //  said so ONLY in a comment the parser discards -- which is the shape the
+    //  2026-08-05 honesty slice named: a field the engine cannot see is a
+    //  comment.  A reader must not have to open the file to learn that the
+    //  evidence was never measured.
+    std::size_t nSynthetic = 0;
+    for (const auto& d : fit_)        if (d.provenanceSource == "synthetic") ++nSynthetic;
+    for (const auto& d : validation_) if (d.provenanceSource == "synthetic") ++nSynthetic;
+    if (nSynthetic > 0)
+        std::cout << "      [provenance] " << nSynthetic << " dataset(s)"
+                     " declare `source synthetic` -- GENERATED, not measured."
+                     "  Any verdict below is a statement about the machinery,"
+                     " never about physics.\n";
 
     //  The identity-level independence facts.  ANNOUNCED, never adjudicated:
     //  whether two studies are scientifically independent is a human

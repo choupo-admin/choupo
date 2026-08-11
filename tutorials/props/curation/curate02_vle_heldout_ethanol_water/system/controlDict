@@ -38,5 +38,5 @@
                        a straight line through transformed numbers.
 */
 application   choupoProps;
-description     "The FIT/HELD-OUT partition contract: the same property fitted twice, differing only in whether evidence was held out -- one VALIDATED, one VALIDATION REFUSED";
+description     "A binary NRTL pair regressed on eight MEASURED bubble temperatures and scored on three it never saw -- the first held-out validation in the corpus against real evidence";
 verbosity     3;

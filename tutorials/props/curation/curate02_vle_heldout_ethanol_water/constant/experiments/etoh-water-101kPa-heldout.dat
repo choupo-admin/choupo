@@ -19,6 +19,13 @@
   Licence: GPL-3.0-or-later, as the fitted half.
 \*---------------------------------------------------------------------------*/
 
+provenance
+{
+    source  measured;   // transcribed laboratory data (see the header),
+                        // which is what makes the held-out residual a
+                        // statement about the MODEL rather than arithmetic.
+}
+
 columns
 (
     { name x1;  unit -;  }

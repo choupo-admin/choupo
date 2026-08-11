@@ -43,11 +43,13 @@ property vapourPressure
             role      fit;
             dataset   "constant/experiments/psat-water-lowT.dat";
             doi       "choupo-synthetic/water-psat-lowT";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
         }
         {
             role      validation;
             dataset   "constant/experiments/psat-water-highT.dat";
             doi       "choupo-synthetic/water-psat-highT";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
         }
         );
 
@@ -92,11 +94,13 @@ property vapourPressure
             role      fit;
             dataset   "constant/experiments/psat-water-lowT.dat";
             doi       "choupo-synthetic/water-psat-lowT";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
         }
         {
             role      fit;
             dataset   "constant/experiments/psat-water-highT.dat";
             doi       "choupo-synthetic/water-psat-highT";
+            provenance synthetic;   // GENERATED, not measured -- any verdict here is about the machinery
         }
         );
 

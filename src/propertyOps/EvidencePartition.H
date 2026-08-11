@@ -152,6 +152,16 @@ struct EvidenceDataset
     std::string doi;       // identity -- optional, but see announce()
     std::string sha256;    // identity -- optional
     std::string role;      // "fit" | "validation"  (never defaulted)
+    //  `provenance { source ...; }` READ FROM THE DATASET FILE, using the word
+    //  the tree already uses (`synthetic`, `fitted`, `placeholder`, ...).
+    //
+    //  WHY IT LIVES ON THE DATASET AND NOT ONLY IN THE ACCEPTANCE BLOCK
+    //  (Vitor, 2026-08-11): "these data are synthetic" and "this band is a
+    //  round-off tolerance" are RELATED BUT DIFFERENT statements, and a reader
+    //  must not have to inspect the acceptance block to discover that the
+    //  evidence was generated.  Empty = the dataset declares none, announced
+    //  as undeclared exactly as a missing DOI is.
+    std::string provenanceSource;
 };
 
 //  A loaded (x, y) pair from a dataset's declared columns.

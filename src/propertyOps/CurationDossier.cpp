@@ -78,6 +78,19 @@ void writeSets(std::ofstream& f, const char* role,
         if (d.doi.empty() && d.sha256.empty())
             f << "            identity  none;    // declares no DOI or hash --"
                  " it cannot take part in the cross-role identity check\n";
+        //  WHAT THE NUMBERS ARE, read from the dataset itself.  A dossier that
+        //  records a verdict without recording whether the evidence was
+        //  MEASURED lets a structural fixture read like an experiment months
+        //  later, when nobody remembers which case was which.
+        if (!d.provenanceSource.empty())
+            f << "            provenance " << d.provenanceSource
+              << ";" << (d.provenanceSource == "synthetic"
+                            ? "   // GENERATED, not measured -- any verdict"
+                              " here is about the machinery"
+                            : "") << "\n";
+        else
+            f << "            provenance undeclared;   // the dataset states"
+                 " neither measured nor generated\n";
         f << "        }\n";
     }
 }
