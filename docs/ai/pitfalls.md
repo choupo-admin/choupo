@@ -114,13 +114,14 @@ for `adiabaticFlash`).  Its duty `Q` is a RESULT (a KPI + heat stream), never an
 
 ### Specifying a feed's thermal state — the `vaporFraction` rule
 A stream of known composition + flow is fixed by exactly **two** intensive
-variables (Duhem).  Give **`P` + exactly ONE of {`T`, `vaporFraction`}**:
+variables (Duhem).  That is the theory; what the engine implements is narrower:
 
-| you write | engine resolves | use |
+| you write | engine does today | |
 |---|---|---|
-| `T` + `P` | flash → `vf` | general feed (single- or two-phase) |
-| `P` + `vaporFraction` | solves `T` (bubble/dew/flash-at-vf) | saturated-liquid (`vaporFraction 0`) / vapour (`1`) feed |
-| `T` + `vaporFraction` | solves `P` | feed pinned at a temperature |
+| `T` + `P` | flash → `vf` | the implemented closure |
+| `P` + `vaporFraction` | — | recognised; resolution DEFERRED |
+| `T` + `vaporFraction` | — | recognised; resolution DEFERRED |
+| `T` + `P` + `vaporFraction` | flash on `(T,P)`; the declared `vf` is a PIN | carried, not refused |
 
 **`vaporFraction` is often ESSENTIAL, not optional sugar:** on the phase boundary
 `T` and `P` are NOT independent (a pure two-phase stream has `P = Psat(T)`), so a

@@ -350,3 +350,136 @@ with a ChemSep distribution licence file and a copy of the 1991 paper, neither
 of which this review could reach.  Resolving them by assumption would convert
 *unsourced* into *falsely sourced*, which no reader and no gate can detect —
 and a visible gap is strictly better than an invisible falsehood.
+
+---
+
+## 8. Upstream verification, as instructed (2026-08-11, second pass)
+
+Ruling received: *verify the upstream ChemSep licence scope before removal;
+Artistic-2.0 itself is acceptable and GPL-compatible, so the unresolved issue is
+scope, not compatibility.*  Agreed on the law — §1's GPL paragraph already said
+compatibility was not the problem.  Here is what the verification found.
+
+### 8.1 The upstream archive is NOT in this repository, by design
+
+```
+$ find thirdParty/chemsep
+thirdParty/chemsep/pcd/Artistic_license_2_0.txt
+thirdParty/chemsep/NOTICE
+thirdParty/chemsep/README.md
+thirdParty/chemsep/.gitignore
+```
+
+No `chemsep1.xml`, no `ipd/`, no `.gct`.  `thirdParty/chemsep/.gitignore`
+excludes exactly the files the importer reads (`ipd/`, `*.gct`, `*.ipd`,
+`chemsep1.xml`).  So **the licence-bearing artefact cannot be inspected from
+this checkout** — the import sources are user-supplied and were never committed.
+`chemsep.org` and `www.chemsep.org` are both blocked by this environment's
+egress proxy, so the distribution's own terms could not be read externally
+either.
+
+**That absence is not evidence against the licence.**  It is a fact about the
+container, and a real ChemSep install settles it in minutes (§8.4).
+
+### 8.2 Three internal documents scope Artistic-2.0 to the pure-component database
+
+Evidence independent of the missing archive, and all three point the same way:
+
+* **`thirdParty/chemsep/README.md` enumerates the drop-point contents** —
+  `chemsep1.xml` (pure-component database), `*.ipd` (binary interaction
+  parameters), and the licence text.  **`.gct` is not listed.**  `grep -c gct`
+  over both README and NOTICE returns **0**.  Choupo's own documentation of this
+  import never contemplated the group-contribution tables.
+* **`thirdParty/chemsep/NOTICE` states its "Factual basis"** as: *the "ChemSep
+  pure-component database" is published crediting Kooijman & Taylor under
+  Artistic License 2.0.*  That is a scope statement about the pure-component
+  database; the GCT files are a different artefact.
+* **The licence copy present carries no ChemSep attribution at all.**
+  `grep -ic "chemsep\|kooijman\|taylor"` over `pcd/Artistic_license_2_0.txt`
+  returns **0**; it is the canonical 75-line Perl Foundation text.  Choupo's own
+  NOTICE had said to use *either* the copy shipping with ChemSep *or* the
+  canonical text — so the file's presence does **not** establish that the
+  ChemSep distribution shipped a licence with the database.  The one artefact
+  that would have carried the chain turns out to prove nothing.
+
+### 8.3 The import also bypassed its own review pipeline
+
+Separate from the licence question, and worth ruling on independently.
+`thirdParty/chemsep/README.md` documents the discipline: the importer *"never
+writes to `data/standards/`"*, stages to `data/proposed/` for human review, and
+promotion is *"a deliberate act"*; every value carries `provenance { origin
+"ChemSep"; license "Artistic-2.0"; ... reviewed false; }`.
+
+The two shipped UNIFAC files sit directly in `data/standards/parameters/UNIFAC/`
+and carry **no provenance block at all** (`grep -c provenance` → 0 on both) —
+only a comment banner.  `data/proposed/` was itself retired in 2026-07-13.  So
+the tables entered the curated catalogue without the review step the ChemSep
+import was designed around, which is why no reviewer ever put the scope
+question.  **That block is owed whichever way the licence question goes.**
+
+### 8.4 What to check in a real ChemSep install — the minimal test
+
+1. Is there a `LICENSE` / `COPYING` / `Artistic*` file at the **top level of the
+   distribution**, or only inside a `pcd/` (pure-component data) subdirectory?
+   A licence scoped to `pcd/` is the negative answer.
+2. Are `unifacrq.gct` / `unifacvl.gct` (or the GCD binaries they mirror)
+   **inside the same directory tree that licence governs**?  Artistic-2.0
+   defines the "Package" as the collection the Copyright Holder distributes, so
+   physical containment under the licensed tree is the question that matters.
+3. Do the `.gct` files carry their **own header, copyright line, or narrower
+   per-file terms**?
+4. Does any accompanying README/manual state terms for the **group-contribution
+   data** specifically, as distinct from the component databank?
+
+If (1) and (2) are both yes and (3) shows no narrower term, the chain closes and
+§5's KEEP branch applies.
+
+### 8.5 Two couplings that change the cost of both rulings
+
+Found while measuring the blast radius; both were unknown when the rulings were
+written.
+
+* **`groups.dat` is a RUNTIME dependency, not shelf data.**
+  `src/thermo/activityCoefficient/UNIFAC.cpp:59` resolves
+  `parameters/UNIFAC/groups.dat` on every UNIFAC construction.  Demoting the
+  tables to `data/local/` therefore does not merely break seven tutorials — it
+  makes a **registered activity model refuse** unless the user has a local
+  install.  That is coherent with the two-tier precedence (`local` fills gaps)
+  and is how the bulk NRTL/UNIQUAC scrub already behaves, but it is an
+  engine-visible capability change and should be decided as one.
+* **The DDBST assignments are already in `data/standards/`.**  Fifty-three
+  curated components carry a `groups { unifac ( ... ) }` list annotated *"added
+  from data/groupEstimative (UNIFAC decomposition; vocab-checked vs
+  groups.dat)"*.  So "stop shipping the bulk table" is not confined to
+  `compounds.csv`: it reaches the curated catalogue, and the vocabulary those
+  lists are checked against is `groups.dat` — the ChemSep file whose fate is
+  still open.  Resolving DDBST first would mean redoing it after the ChemSep
+  answer.
+
+  One mitigating fact, and it is the route out: each of those files also carries
+  a `joback ( ... )` list produced by **Choupo's own RDKit fragmentation from
+  SMILES**, and it is the joback fragmentation that produced every estimated
+  NUMBER in the tier.  28 445 files carry `joback`, 28 285 carry `unifac`.  So
+  the tier's numerical content does not depend on the DDBST column, and
+  independent regeneration from structure is bounded work rather than a rebuild.
+
+### 8.6 Recommendation, revised
+
+**ChemSep/UNIFAC: HOLD, and do not demote on the strength of a container
+artefact.**  The chain cannot be shown from here, but the reason is that the
+archive was deliberately never committed — not that a check was run and failed.
+Run §8.4 against a real install first.  If it closes: KEEP, with explicit
+third-party Artistic-2.0 attribution, the licence text referenced from the files
+and from `NOTICE`, and the mechanical conversion documented — plus §8.3's
+missing provenance block either way.
+
+**DDBST assignments: DO NOT execute the removal yet**, notwithstanding the
+ruling — not because the ruling is wrong, but because §8.5 shows its scope is
+larger than it appeared and is entangled with the open ChemSep question.  The
+sequence that avoids doing it twice is: settle ChemSep → regenerate the 53
+standards-tree `unifac` lists from Choupo's own fragmenter → then drop the DDBST
+columns from `compounds.csv` and the estimation tier.  Nothing is redistributed
+meanwhile that was not redistributed yesterday, and today's `NOTICE` disclosure
+is already live.
+
+**No data file has been moved, edited or deleted.  No engine physics touched.**
