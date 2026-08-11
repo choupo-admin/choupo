@@ -193,7 +193,43 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
            << (i + 1 < f.size() ? "," : "") << "\n";
     os << "    ],\n";
 
-    os << "    \"verdict\": \"" << (anyGap ? "has-gaps" : "clean") << "\"\n";
+    //  THE REPORT MAY NOT SAY `clean` (ruled by Vitor, 2026-08-11).
+    //
+    //  On 2026-08-11 an agent test ran this report on a case that could not
+    //  execute, and it answered `"verdict": "clean"` -- then the run died on
+    //  `liquidHeatCapacity missing`, a field that appears ZERO times in this
+    //  file.  `curation-protocol.md` calls this report "the authoritative gap
+    //  list" and tells the reader to consult it FIRST.  A permanently-green
+    //  verifier is worse than none, and this project has already retired one
+    //  (check_true_ions) for exactly this shape.
+    //
+    //  The honest fix, until dependency closure exists, is NOT to guess harder
+    //  -- it is to stop claiming an authority this report does not have.  It
+    //  enumerates COMPONENT PROPERTIES from a fixed list; it does not walk the
+    //  flowsheet, does not know which unit consumes what, and cannot see a
+    //  requirement raised by a consumer at run time.  So it says what it is:
+    //
+    //      verdict            incomplete-assessment   (never `clean`)
+    //      dependencyClosure  not-complete
+    //
+    //  `has-gaps` stays meaningful and is still worth acting on: a gap found
+    //  here is real.  What is removed is the inference in the other direction
+    //  -- that finding none means there are none.
+    //
+    //  The structural remedy, ordered but not built: derive this report from
+    //  the SAME requirement machinery that refuses execution, walking
+    //  flowsheet -> units -> consumers -> requirements -> available producers,
+    //  so a missing datum cannot be invisible here and fatal there.  Until
+    //  that exists, no caller may read a silent report as a clean one.
+    os << "    \"verdict\": \"" << (anyGap ? "has-gaps" : "incomplete-assessment")
+       << "\",\n"
+       << "    \"dependencyClosure\": \"not-complete\",\n"
+       << "    \"assessmentScope\": \"component properties from a fixed list"
+          " (criticals, vaporPressure, cpIdealGas, standardThermochemistry)"
+          " plus declared binary-pair coverage.  This report does NOT walk the"
+          " flowsheet, does not know which unit consumes which datum, and"
+          " cannot see a requirement a consumer raises at run time -- so a run"
+          " MAY still fail on a datum absent from this list.\"\n";
     os << "  }\n}\n";
 }
 

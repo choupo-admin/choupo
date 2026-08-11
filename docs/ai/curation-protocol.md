@@ -41,7 +41,21 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
    ```
    It emits pre-solve JSON: per component `{have, missing, unverified, status}`,
    `modelGaps` (per model × component × property that is MISSING or ESTIMATED),
-   and a `verdict` (`clean` | `has-gaps`). This is the authoritative gap list.
+   and a `verdict` (`has-gaps` | `incomplete-assessment`).
+
+   **It is NOT an authoritative gap list, and this line used to say it was.**
+   On 2026-08-11 an agent following that instruction was told `"verdict":
+   "clean"` on a case that then died on `liquidHeatCapacity missing` — a field
+   the report does not look at.  The report enumerates COMPONENT PROPERTIES
+   from a fixed list; it does not walk the flowsheet, does not know which unit
+   consumes which datum, and cannot see a requirement a consumer raises at run
+   time.  It therefore no longer emits `clean`: the absence of findings is
+   reported as `incomplete-assessment`, with `dependencyClosure:
+   not-complete`.
+
+   **What it IS good for:** a gap it FINDS is real, and acting on it is
+   worthwhile.  What you may not do is read a quiet report as a clear one.
+   A run may still fail on a datum this report never examined.
 
 2. **For each gap, ADVISE in plain language** — name the consequence, and
    note that the consequence DIFFERS by kind.  An UNDECLARED activity pair
