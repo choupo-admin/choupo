@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 57 records already exist
+## 1. Why an index, when 61 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 57 design records, **28 state a rejected alternative and 29 do not** —
+- Of 61 design records, **28 state a rejected alternative and 33 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -159,6 +159,10 @@ is this index failing its own purpose; they move below with their rulings.
 | [`dwsim-architecture-manual.md`](../design/dwsim-architecture-manual.md) | STUDY | a consultable dev manual: 5 patterns to copy, 6 to avoid, each measured from source.  Rejects DWSIM's presentation-first object base (6 of 9 mandatory members are GUI; `Calculate` is optional) |
 | [`dwsim-solids-study.md`](../design/dwsim-solids-study.md) | STUDY | ordered "if openfoam is not the way, try dwsim"; DWSIM has ONE solid mechanism (fusion K, chemistry entering via gamma) and corroborates Choupo's crystal equation; decides nothing |
 | [`openfoam-study.md`](../design/openfoam-study.md) | STUDY | ordered "go and learn first, no deliverable"; proposes a uniform `phases ( … )` list and one shared unknown-type refusal, decides neither |
+| [`thermoml-campaign-plan.md`](../design/thermoml-campaign-plan.md) | PLAN | the ThermoML curation campaign: sync/index/search/extract, the evidence partition, the dossier boundary.  Sequencing only -- the scientific rulings live in the ADRs it points at |
+| [`evidence-partition-slice-plan.md`](../design/evidence-partition-slice-plan.md) | PLAN | the FIT / HELD-OUT contract as an executable plan: the grammar, enforcement BY CONSTRUCTION, refusals R1-R5, and the dossier's home outside every resolver root.  R5 shipped 2026-08-11 WIDER than planned and the record says so |
+| [`props-component-curator-assessment.md`](../design/props-component-curator-assessment.md) | STUDY | assessment of the proposed `curateComponent` op; concluded the natural output is a curation DOSSIER, not a resurrected `data/proposed/` tier.  Decides nothing by itself |
+| [`properties-gui-task-orientation-2026-08-11.md`](../design/properties-gui-task-orientation-2026-08-11.md) | STUDY | measured the Properties GUI against a task-orientation critique: the flow is already substance-first and one-click-to-a-curve, and the real gap is that a component is not an inspectable object.  Item 1 (the Component Inspector) shipped from it |
 
 ### Historical
 
@@ -211,7 +215,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**29 of 57 records state no rejected alternative.**  For a FORUM or a STUDY
+**33 of 61 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

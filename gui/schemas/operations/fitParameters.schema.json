@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/fitParameters.schema.json",
   "title": "fitParameters operation",
-  "description": "Levenberg-Marquardt regression of thermophysical-model parameters against experimental data, and the SCORING of a package as it stands. Two modes, and the difference matters: `fit` (default) adjusts the listed parameters and writes a fit log (chi^2 and the parameter trajectory per iteration) plus a parity CSV at the optimum; `evaluate` changes nothing and only scores — 'how good are the pairs I already have against MY data?' — so in that mode a `parameters` list is OPTIONAL and, when present, is a pinned what-if whose entries carry `value` rather than the fit vocabulary of initial/min/max.",
+  "description": "Levenberg-Marquardt regression of thermophysical-model parameters against experimental data, and the SCORING of a package as it stands. Two modes, and the difference matters: `fit` (default) adjusts the listed parameters and writes a fit log (chi^2 and the parameter trajectory per iteration) plus a parity CSV at the optimum; `evaluate` changes nothing and only scores \u2014 'how good are the pairs I already have against MY data?' \u2014 so in that mode a `parameters` list is OPTIONAL and, when present, is a pinned what-if whose entries carry `value` rather than the fit vocabulary of initial/min/max.",
   "type": "object",
   "properties": {
     "mode": {
@@ -17,7 +17,7 @@
     "parameters": {
       "type": "array",
       "title": "Parameters to vary",
-      "description": "One entry per scalar. REQUIRED in `fit` mode (an empty list is refused there); optional in `evaluate` mode. A `fit` entry gives `initial` and usually bounds; an `evaluate` entry gives `value` — mixing the two vocabularies is refused. The scalar is identified either by `path` (dot-separated into the thermophysical system, e.g. `activityModel.pairs[0].a_ij`) or by `name` where the residual's own model names its parameters (e.g. an isotherm's `q_max`).",
+      "description": "One entry per scalar. REQUIRED in `fit` mode (an empty list is refused there); optional in `evaluate` mode. A `fit` entry gives `initial` and usually bounds; an `evaluate` entry gives `value` \u2014 mixing the two vocabularies is refused. The scalar is identified either by `path` (dot-separated into the thermophysical system, e.g. `activityModel.pairs[0].a_ij`) or by `name` where the residual's own model names its parameters (e.g. an isotherm's `q_max`).",
       "items": {
         "type": "object",
         "properties": {
@@ -108,7 +108,7 @@
     "options": {
       "type": "object",
       "title": "Solver options",
-      "description": "Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit.",
+      "description": "Levenberg-Marquardt controls. Every one is an explicit, announced aid \u2014 never a silent default that hides a hard fit.",
       "properties": {
         "maxIter": {
           "type": "integer",
@@ -139,7 +139,7 @@
     "output": {
       "type": "object",
       "title": "Output files",
-      "description": "Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curated catalogue — promoting it is a separate, human curation act.",
+      "description": "Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curated catalogue \u2014 promoting it is a separate, human curation act.",
       "properties": {
         "file": {
           "type": "string",
@@ -148,6 +148,70 @@
         "proposal": {
           "type": "string",
           "title": "Proposal record to write under data/local/"
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "description": "The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no default, and the fitter is handed only the `fit` subset. Mutually exclusive with the legacy single `dataset`.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dataset",
+          "role"
+        ],
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "description": "path to the dataset file"
+          },
+          "series": {
+            "type": "string",
+            "description": "named series inside it"
+          },
+          "role": {
+            "enum": [
+              "fit",
+              "validation"
+            ],
+            "description": "fit = regressed against; validation = held out"
+          },
+          "identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "declared identity; fills in what the dataset does not state",
+            "properties": {
+              "doi": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxAAD",
+        "origin"
+      ],
+      "description": "The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chosen after the residuals were seen.",
+      "properties": {
+        "maxAAD": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "the band, e.g. `0.1 percent`"
+        },
+        "origin": {
+          "type": "string",
+          "description": "where the criterion came from (experimental uncertainty, literature tolerance, engineering requirement, plumbing tolerance, ...)"
         }
       }
     }

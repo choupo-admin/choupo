@@ -253,6 +253,9 @@
   "CrystalliserSize": [
    "src/postProcessing/sizing/CrystalliserSize.H"
   ],
+  "CurationDossier": [
+   "src/propertyOps/CurationDossier.H"
+  ],
   "Cyclone": [
    "src/unitOperations/separation/Cyclone.H"
   ],
@@ -438,6 +441,15 @@
   ],
   "EvaporatorSize": [
    "src/postProcessing/sizing/EvaporatorSize.H"
+  ],
+  "EvidenceDataset": [
+   "src/propertyOps/EvidencePartition.H"
+  ],
+  "EvidencePartition": [
+   "src/propertyOps/EvidencePartition.H"
+  ],
+  "EvidencePoint": [
+   "src/propertyOps/EvidencePartition.H"
   ],
   "Exchange": [
    "src/propertyOps/Exchange.H"
@@ -876,6 +888,9 @@
   ],
   "PropertyPoint": [
    "src/propertyOps/PropertyPoint.H"
+  ],
+  "PropertyRecord": [
+   "src/propertyOps/CurationDossier.H"
   ],
   "PropertyScan1D": [
    "src/propertyOps/PropertyScan1D.H"
@@ -2270,6 +2285,8 @@
    "src/curation/AqueousGraph.H",
    "src/propertyOps/CasePackage.H",
    "src/propertyOps/ConstantEstimator.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/PropertyOperation.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
@@ -3148,6 +3165,13 @@
    "src/propertyOps/VanKrevelen.H",
    "src/propertyOps/Yang2020.H"
   ],
+  "src/propertyOps/CurationDossier.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H"
+  ],
   "src/propertyOps/ENRTLMixedSolventOp.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3212,12 +3236,20 @@
    "src/core/Types.H",
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/EstimateComponent.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/DerivedClosures.H",
    "src/thermo/vaporPressure/AmbroseWalton.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
+  ],
+  "src/propertyOps/EvidencePartition.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/propertyOps/EvidencePartition.H"
   ],
   "src/propertyOps/Exchange.cpp": [
    "src/core/Advisory.H",
@@ -3252,6 +3284,8 @@
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/Units.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/PropertyOperation.H",
    "src/result/UnitProfile.H",
@@ -3276,6 +3310,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FreezingPoint.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
@@ -3327,6 +3362,8 @@
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/core/Units.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/HeatCapacityFit.H",
    "src/propertyOps/PropertyOperation.H",
    "src/solver/Convergence.H",
@@ -3401,6 +3438,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/PitzerActivity.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
@@ -3677,6 +3715,8 @@
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/core/Units.H",
+   "src/propertyOps/CurationDossier.H",
+   "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/VaporPressureFit.H"
   ],
@@ -6802,11 +6842,13 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -7051,11 +7093,13 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -7889,11 +7933,13 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/CurationDossier.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -8113,6 +8159,7 @@
    "src/core/DisplayUnits.cpp",
    "src/core/Units.cpp",
    "src/postProcessing/PinchPass.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/Kinetics1D.cpp",
@@ -8334,6 +8381,13 @@
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/Yang2020.cpp"
   ],
+  "src/propertyOps/CurationDossier.H": [
+   "src/applications/choupoProps/main.cpp",
+   "src/propertyOps/CurationDossier.cpp",
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/VaporPressureFit.cpp"
+  ],
   "src/propertyOps/ENRTLMixedSolventOp.H": [
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -8353,6 +8407,17 @@
   "src/propertyOps/EstimateComponent.H": [
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/EvidencePartition.H": [
+   "src/applications/choupoProps/main.cpp",
+   "src/propertyOps/CurationDossier.cpp",
+   "src/propertyOps/EstimateComponent.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/VaporPressureFit.cpp"
   ],
   "src/propertyOps/Exchange.H": [
    "src/propertyOps/Exchange.cpp",

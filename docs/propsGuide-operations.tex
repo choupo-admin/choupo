@@ -396,6 +396,8 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline
+\code{acceptance} &  \\
+\code{evidence} &  \\
 \code{mode} & Mode \\
 \code{options} & Solver options \\
 \code{output} & Output files \\
@@ -407,7 +409,7 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 
 \begin{tutoriallink}
 \file{tutorials/props/adsorption/isotherm02\_fit\_jaschik}
-\quad (and 4 more)
+\quad (and 6 more)
 \end{tutoriallink}
 
 \paragraph{\code{vaporPressureFit}}
@@ -415,15 +417,18 @@ Least-squares fit of measured vapour-pressure data to the Antoine form, producin
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline
+\code{acceptance} &  \\
 \code{component} & Component \\
-\code{dataset}\textbf{*} & Measured dataset \\
+\code{dataset} & Measured dataset \\
+\code{evidence} &  \\
 \code{output} & CSV output \\
 \hline
 \end{tabular}
 
 
 \begin{tutoriallink}
-\file{tutorials/props/fit/psat01\_antoine\_recovery}
+\file{tutorials/props/curation/curate01\_water\_evidence\_partition}
+\quad (and 1 more)
 \end{tutoriallink}
 
 \paragraph{\code{heatCapacityFit}}
@@ -431,9 +436,11 @@ Least-squares polynomial fit of measured heat-capacity data, producing the \code
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline
+\code{acceptance} &  \\
 \code{component} & Component \\
-\code{dataset}\textbf{*} & Measured dataset \\
+\code{dataset} & Measured dataset \\
 \code{degree} & Polynomial degree [-] \\
+\code{evidence} &  \\
 \code{output} & CSV output \\
 \hline
 \end{tabular}

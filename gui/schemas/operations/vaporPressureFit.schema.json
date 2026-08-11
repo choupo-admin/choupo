@@ -18,7 +18,7 @@
     "output": {
       "type": "object",
       "title": "CSV output",
-      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory.",
+      "description": "`{ file <name>.csv; }` \u2014 where the per-row results are written, relative to the case directory.",
       "properties": {
         "file": {
           "type": "string",
@@ -28,10 +28,71 @@
       "required": [
         "file"
       ]
+    },
+    "evidence": {
+      "type": "array",
+      "description": "The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no default, and the fitter is handed only the `fit` subset. Mutually exclusive with the legacy single `dataset`.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dataset",
+          "role"
+        ],
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "description": "path to the dataset file"
+          },
+          "series": {
+            "type": "string",
+            "description": "named series inside it"
+          },
+          "role": {
+            "enum": [
+              "fit",
+              "validation"
+            ],
+            "description": "fit = regressed against; validation = held out"
+          },
+          "identity": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "declared identity; fills in what the dataset does not state",
+            "properties": {
+              "doi": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxAAD",
+        "origin"
+      ],
+      "description": "The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chosen after the residuals were seen.",
+      "properties": {
+        "maxAAD": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "the band, e.g. `0.1 percent`"
+        },
+        "origin": {
+          "type": "string",
+          "description": "where the criterion came from (experimental uncertainty, literature tolerance, engineering requirement, plumbing tolerance, ...)"
+        }
+      }
     }
   },
-  "required": [
-    "dataset"
-  ],
   "additionalProperties": false
 }
