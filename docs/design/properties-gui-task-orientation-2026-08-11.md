@@ -168,21 +168,63 @@ The smallest change with the largest teaching return, in order:
 
 Items 1–2 are the September-critical pair. Item 3 lands with the campaign.
 
-## 7. One defect found while reading (unrelated to the above)
+## 7. One defect found while reading (unrelated to the above) — and the
+## correction to how it was first reported
 
-`CompoundBrowser` still ships a full **`data/proposed/`** tier UI — an orange
+`CompoundBrowser` shipped a full **`data/proposed/`** tier UI — an orange
 `proposed` badge, a collapsible "PROPOSED — review before relying" section, and
-two tooltips describing the tier's semantics — and `catalogue.ts` imports
-`virtual:proposed-component-catalogue` to populate it.
+two tooltips describing the tier's trust semantics — for a tier **retired
+2026-07-13** (`CLAUDE.md` §7: *"the public `proposed` tier was RETIRED … do NOT
+reintroduce it"*).
 
-**That tier was retired 2026-07-13** (`CLAUDE.md` §7: *"the public `proposed`
-tier was RETIRED … do NOT reintroduce it"*). `data/proposed/` does not exist;
-the glob resolves empty, so the section never renders and no user has ever seen
-it. It is dead code making a claim about the data architecture that the data
-architecture contradicts — the same class of defect as the documentation slice
-of 2026-08-09, in TypeScript instead of prose.
+**This was first reported as dead code, purely subtractive. That was wrong, and
+the way it was wrong is the interesting part.** Reading the *component* and
+stopping there showed a section that never renders — `data/proposed/` does not
+exist, so the glob resolves empty. Reading the *plugin* showed why: it had
+already been migrated on the day of the retirement and reads
+`data/local/components`. Its own comment says so.
 
-Purely subtractive; not done here, because the instruction was assessment only.
+So the mechanism was live and correct; only the **names and the user-visible
+claims** were stale. The directory moved and the vocabulary did not. On any dev
+machine with a populated `data/local/` — which is every machine doing curation
+work, i.e. exactly the September workflow — the section *does* render, badged
+`proposed`, over a tooltip promising the solver prints a `[proposed]` notice.
+The solver prints `[local] … UNVERIFIED` (`Database.cpp:238`).
+
+Deleting it would therefore have removed the only browser surface for the
+private tier. The correction is a rename plus a retext, and it uncovered a
+second, worse confusion the deletion would have preserved: `ComponentMeta.origin`
+used the word **`local` for two different tiers with opposite precedence** —
+`data/local/` (shared, private, *loses* to standards, fills gaps) and a
+case-local `constant/components/*.dat` (one case's own, *beats* standards,
+shadows it). Both rendered a badge reading `local`.
+
+Executed 2026-08-11:
+
+| was | is | why |
+|---|---|---|
+| `virtual:proposed-component-catalogue` | `virtual:local-component-catalogue` | the module names the tier it reads |
+| `PROPOSED_CATALOGUE` | `DATA_LOCAL_CATALOGUE` | ditto |
+| `origin: "proposed"` | `"dataLocal"`, badge **local** | the engine's own word |
+| `origin: "local"` | `"caseLocal"`, badge **case** | frees `local` for the tier the engine calls local |
+| `origin: "local-shadow"` | `"caseShadow"`, badge **override** | unchanged meaning, consistent name |
+
+Tooltips now quote the engine's actual announcement and state the actual
+precedence. Typecheck clean, 2069 GUI tests pass, build succeeds — two test
+assertions moved with the names, and the typechecker found the first of them,
+which a `grep` for "proposed" could not have (it asserted on `"local"`).
+
+**The lesson worth keeping:** *a retirement that moves a directory but not the
+vocabulary leaves the claim standing.* The audit that found this was looking for
+a stale word in a component; the word was stale in five files, and the one place
+it had been correctly updated — the plugin — was the only place that proved the
+other four wrong. Reading the consumer alone would have produced a confident,
+wrong deletion.
+
+The C++ still carries `usingProposed` / `announceOnce("proposed:")` as internal
+identifiers. Its user-visible text is already correct, so this is not a false
+claim to anybody — left alone rather than churn `Database.cpp` for a variable
+name, and recorded here so it is a decision rather than an oversight.
 
 ---
 

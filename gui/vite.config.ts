@@ -1,9 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { proposedCataloguePlugin } from "./scripts/proposedCataloguePlugin.js";
+import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
 
 export default defineConfig({
-  plugins: [proposedCataloguePlugin(), react()],
+  plugins: [localCataloguePlugin(), react()],
   server: {
     port: 5173,
     // strictPort: a stale vite left on 5173 used to make the new one drift to

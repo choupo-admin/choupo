@@ -4,13 +4,16 @@ import { resolve } from "node:path";
 
 import type { Plugin } from "vite";
 
-export const PROPOSED_CATALOGUE_ID = "virtual:proposed-component-catalogue";
-const RESOLVED_ID = `\0${PROPOSED_CATALOGUE_ID}`;
+export const LOCAL_CATALOGUE_ID = "virtual:local-component-catalogue";
+const RESOLVED_ID = `\0${LOCAL_CATALOGUE_ID}`;
 
 /** Bundle the PRIVATE working tier (`data/local/`, gitignored) as one virtual
- * module -- the unverified/estimated components the CompoundBrowser shows below
- * the curated standards.  (Was `data/proposed/`, retired 2026-07-13; the tier
- * became the private `data/local/`.)  Importing every .dat through
+ * module -- the unverified components the CompoundBrowser shows below the
+ * curated standards, under the SAME word the engine announces them with
+ * (`[local] ... UNVERIFIED`, Database.cpp).  The tier was called
+ * `data/proposed/` until 2026-07-13; the directory moved that day, but the
+ * NAMES did not, and a browser badge reading "proposed" went on describing a
+ * tier the data architecture had retired.  Importing every .dat through
  * import.meta.glob makes Rollup transform one module per file and exhausts the
  * default Node heap once the open catalogue grows beyond a few hundred files;
  * the browser still receives the original raw strings and catalogue.ts parses
@@ -21,15 +24,15 @@ const RESOLVED_ID = `\0${PROPOSED_CATALOGUE_ID}`;
  * the browser then shows only the public standards, and NO private data is baked
  * into the deployed bundle.  A dev machine with a populated `data/local/` sees
  * its own tier (build the public site from a clean clone to keep it out). */
-export function proposedCataloguePlugin(): Plugin {
+export function localCataloguePlugin(): Plugin {
   const directory = fileURLToPath(
     new URL("../../data/local/components", import.meta.url),
   );
 
   return {
-    name: "choupo-proposed-component-catalogue",
+    name: "choupo-local-component-catalogue",
     resolveId(id) {
-      return id === PROPOSED_CATALOGUE_ID ? RESOLVED_ID : null;
+      return id === LOCAL_CATALOGUE_ID ? RESOLVED_ID : null;
     },
     // Watch the DIRECTORY through the dev server's chokidar watcher, never
     // through addWatchFile: a directory registered as a module dependency

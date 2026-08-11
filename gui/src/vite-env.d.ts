@@ -28,7 +28,7 @@ License
 
 /// <reference types="vite/client" />
 
-declare module "virtual:proposed-component-catalogue" {
+declare module "virtual:local-component-catalogue" {
   const bodies: string[];
   export default bodies;
 }

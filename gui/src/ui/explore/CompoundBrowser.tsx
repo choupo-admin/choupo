@@ -12,7 +12,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Badge, Box, Button, Chip, CloseButton, Group, ScrollArea, Stack, Text, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconArrowRight, IconFlask } from "@tabler/icons-react";
 
-import { CATALOGUE, PROPOSED_CATALOGUE, type ComponentMeta, formulaIfDistinct, searchCatalogue } from "../../case/catalogue.js";
+import { CATALOGUE, DATA_LOCAL_CATALOGUE, type ComponentMeta, formulaIfDistinct, searchCatalogue } from "../../case/catalogue.js";
 
 type RoleFilter = "all" | "vle" | "solute";
 
@@ -75,7 +75,7 @@ export function CompoundBrowser({
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<RoleFilter>("all");
   const [recent, setRecent] = useState<string[]>(loadRecent);
-  const [showProposed, setShowProposed] = useState(false);
+  const [showDataLocal, setShowDataLocal] = useState(false);
 
   // Adding a component records it in the MRU (the "Recently used" group); the
   // recompute is driven by the parent's selected[] as before.
@@ -97,16 +97,17 @@ export function CompoundBrowser({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [q, filter, localNames],
   );
-  // PROPOSED (data/proposed/) — unverified; drop any name a verified standard or
-  // a case-local file already provides (those tiers shadow a proposal).
+  // data/local/ — the private working tier, UNVERIFIED; drop any name a curated
+  // standard or a case-local file already provides.  This mirrors the engine's
+  // own precedence (Database.cpp): standards BEATS local, local fills gaps.
   const stdNames = useMemo(() => new Set(CATALOGUE.map((m) => m.name)), []);
-  const proposedResults = useMemo(
-    () => searchCatalogue(q, PROPOSED_CATALOGUE)
+  const dataLocalResults = useMemo(
+    () => searchCatalogue(q, DATA_LOCAL_CATALOGUE)
       .filter((m) => !localNames.has(m.name) && !stdNames.has(m.name) && passFilter(m)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [q, filter, localNames],
   );
-  const nothing = caseResults.length === 0 && stdResults.length === 0 && proposedResults.length === 0;
+  const nothing = caseResults.length === 0 && stdResults.length === 0 && dataLocalResults.length === 0;
 
   const sel = new Set(selected);
 
@@ -152,19 +153,19 @@ export function CompoundBrowser({
             )}
           </Text>
           <Group gap={3} wrap="nowrap">
-            {m.origin === "proposed" && (
+            {m.origin === "dataLocal" && (
               <Tooltip withArrow multiline w={250}
-                label="Extended-tier component (data/proposed/) — machine-ingested / estimated, USABLE but not yet hand-curated. The solver prints a [proposed] notice; review its gaps (esp. Cp / formation) before relying on it, then promote it to the verified catalogue.">
-                <Badge size="xs" variant="light" color="orange">proposed</Badge>
+                label="Your PRIVATE working tier (data/local/, gitignored) — UNVERIFIED, not part of the curated catalogue. The solver announces it '[local] … UNVERIFIED'; the curated data/standards/ entry WINS where one exists (local fills gaps). Review its gaps (esp. Cp / formation), then promote it to data/standards/.">
+                <Badge size="xs" variant="light" color="orange">local</Badge>
               </Tooltip>
             )}
-            {(m.origin === "local" || m.origin === "local-shadow") && (
+            {(m.origin === "caseLocal" || m.origin === "caseShadow") && (
               <Tooltip withArrow multiline w={230}
-                label={m.origin === "local-shadow"
+                label={m.origin === "caseShadow"
                   ? "case-local .dat — overrides the standard component of the same name (shipped to the solver)"
                   : "case-local component — shipped to the solver as a raw .dat"}>
                 <Badge size="xs" variant="light" color="teal">
-                  {m.origin === "local-shadow" ? "override" : "local"}
+                  {m.origin === "caseShadow" ? "override" : "case"}
                 </Badge>
               </Tooltip>
             )}
@@ -238,19 +239,19 @@ export function CompoundBrowser({
             </>
           )}
 
-          {/* PROPOSED — the extended data/proposed/ tier (usable, review first), last + clearly marked. */}
-          {proposedResults.length > 0 && (
+          {/* data/local/ — YOUR private working tier (gitignored), last + clearly marked. */}
+          {dataLocalResults.length > 0 && (
             <Tooltip withArrow multiline w={260}
-              label="data/proposed/ — extended catalogue (bulk-ingested / estimated). Usable for screening, but not yet hand-curated: the solver flags it, and you should review its gaps (esp. Cp / formation) before relying on it.">
-              <UnstyledButton mt={8} onClick={() => setShowProposed((v) => !v)}
-                aria-expanded={q.trim().length > 0 || showProposed}>
+              label="data/local/ — your PRIVATE working tier (gitignored, never shipped). Usable for screening, but UNVERIFIED: the solver announces every consumption '[local] … UNVERIFIED', and you should review its gaps (esp. Cp / formation) before relying on it.">
+              <UnstyledButton mt={8} onClick={() => setShowDataLocal((v) => !v)}
+                aria-expanded={q.trim().length > 0 || showDataLocal}>
                 <Text size="xs" fw={700} c="orange.6">
-                  PROPOSED — review before relying ({proposedResults.length}) · {q.trim().length > 0 || showProposed ? "hide" : "show"}
+                  data/local/ — UNVERIFIED, review before relying ({dataLocalResults.length}) · {q.trim().length > 0 || showDataLocal ? "hide" : "show"}
                 </Text>
               </UnstyledButton>
             </Tooltip>
           )}
-          {(q.trim().length > 0 || showProposed) && proposedResults.map((m) => renderRow(m, "proposed-"))}
+          {(q.trim().length > 0 || showDataLocal) && dataLocalResults.map((m) => renderRow(m, "dataLocal-"))}
           {nothing && (
             <Stack gap={6} align="center" mt="sm">
               <Text size="xs" c="dimmed" ta="center">no match</Text>

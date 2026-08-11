@@ -18,7 +18,7 @@
 
 import type { JsonDict } from "../dict/index.js";
 import { parse, toJson } from "../dict/index.js";
-import proposedRaw from "virtual:proposed-component-catalogue";
+import dataLocalRaw from "virtual:local-component-catalogue";
 
 export type ComponentKind = "volatile" | "nonvolatile" | "fragment";
 
@@ -26,11 +26,18 @@ export interface ComponentMeta {
   name: string;
   formula: string;
   kind: ComponentKind;
-  /** Where this entry came from: the frozen standard catalogue, the UNVERIFIED
-   *  data/proposed/ tier (student-review-pending), a case-local
-   *  constant/components/<name>.dat, or a case-local file shadowing a same-named
-   *  standard component. Drives the provenance chip in the compound browser. */
-  origin?: "standard" | "proposed" | "local" | "local-shadow";
+  /** Where this entry came from: the frozen standard catalogue, the PRIVATE
+   *  working tier `data/local/` (UNVERIFIED — the engine announces it `[local]`),
+   *  a case-local constant/components/<name>.dat, or a case-local file shadowing
+   *  a same-named standard component. Drives the provenance chip in the compound
+   *  browser.
+   *
+   *  `dataLocal` and `caseLocal` are DIFFERENT tiers and must not share a word:
+   *  the first is the shared private catalogue (standards beats it — it fills
+   *  gaps), the second is one case's own file (it beats standards — it shadows).
+   *  They were both badged "local" until 2026-08-11, which is precisely backwards
+   *  about precedence for one of the two. */
+  origin?: "standard" | "dataLocal" | "caseLocal" | "caseShadow";
   /** Can appear in a VLE plot (T-x-y, gamma, ...): vaporPressure + Tc, role not nonvolatile. */
   vleAble: boolean;
   /** Carries dissolved-ion thermodynamics (an `electrolyte{}` block, or a
@@ -89,15 +96,19 @@ export const CATALOGUE: ComponentMeta[] = Object.values(RAW)
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));
 
-// The UNVERIFIED data/proposed/ tier -- bulk-ingested / estimated components a
-// student must review + promote. The build plugin aggregates the raw .dat
-// strings into ONE virtual module so a broad catalogue does not create hundreds
-// of Rollup modules. Parsing and classification remain here, on the same path as
-// standards and case-local components.
+// The PRIVATE working tier `data/local/` -- gitignored, UNVERIFIED components a
+// student must review + promote to data/standards/. The build plugin aggregates
+// the raw .dat strings into ONE virtual module so a broad catalogue does not
+// create hundreds of Rollup modules. Parsing and classification remain here, on
+// the same path as standards and case-local components.
+//
+// A clean public checkout ships data/local/ EMPTY, so this list is normally
+// empty and the section never renders -- which is exactly why its label went on
+// saying "proposed" for a month after that tier was retired: nobody could see it.
 
-/** Every PROPOSED (unverified) component, sorted by name. */
-export const PROPOSED_CATALOGUE: ComponentMeta[] = proposedRaw
-  .map((body) => metaFromDat(body, "proposed"))
+/** Every data/local/ (unverified private-tier) component, sorted by name. */
+export const DATA_LOCAL_CATALOGUE: ComponentMeta[] = dataLocalRaw
+  .map((body) => metaFromDat(body, "dataLocal"))
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -119,8 +130,8 @@ function caseDatStem(path: string): string | null {
  *  them apart from the frozen standard catalogue).  Walks the whole case tree;
  *  keyed by FILENAME STEM (the engine's canonical key); on a stem declared at
  *  several levels the SHALLOWEST path wins (the most shared, plant-level — the
- *  engine inherits it down to the sectors).  Tagged 'local' (new) or
- *  'local-shadow' (overrides a standard of the same name). */
+ *  engine inherits it down to the sectors).  Tagged 'caseLocal' (new) or
+ *  'caseShadow' (overrides a standard of the same name). */
 export function caseComponents(rawFiles?: { [relPath: string]: string }): ComponentMeta[] {
   if (!rawFiles) return [];
   const stdNames = new Set(CATALOGUE.map((m) => m.name));
@@ -128,7 +139,7 @@ export function caseComponents(rawFiles?: { [relPath: string]: string }): Compon
   for (const [path, body] of Object.entries(rawFiles)) {
     const stem = caseDatStem(path);
     if (!stem) continue;
-    const base = metaFromDat(body, stdNames.has(stem) ? "local-shadow" : "local");
+    const base = metaFromDat(body, stdNames.has(stem) ? "caseShadow" : "caseLocal");
     if (!base) continue;
     const meta = { ...base, name: stem };   // canonical key = filename stem, not the in-file name
     const depth = path.split("/").length;

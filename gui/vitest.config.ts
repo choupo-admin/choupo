@@ -1,8 +1,8 @@
 import { defineConfig } from "vitest/config";
-import { proposedCataloguePlugin } from "./scripts/proposedCataloguePlugin.js";
+import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
 
 export default defineConfig({
-  plugins: [proposedCataloguePlugin()],
+  plugins: [localCataloguePlugin()],
   test: {
     include: ["tests/**/*.test.ts"],
     environment: "node",

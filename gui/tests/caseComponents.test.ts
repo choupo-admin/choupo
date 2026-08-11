@@ -20,7 +20,7 @@ describe("caseComponents — whole-case-tree, separate list", () => {
       "system/controlDict": "application choupoProps;",
     });
     expect(list.map((m) => m.name).sort()).toEqual(["foo", "pentadiene"]);
-    expect(list.every((m) => m.origin === "local")).toBe(true);
+    expect(list.every((m) => m.origin === "caseLocal")).toBe(true);
   });
 
   it("dedups a name declared at several depths — shallowest (most shared) wins", () => {
@@ -32,10 +32,10 @@ describe("caseComponents — whole-case-tree, separate list", () => {
     expect(list[0]!.tc).toBe(490);
   });
 
-  it("a same-name as a standard component is tagged 'local-shadow'", () => {
+  it("a same-name as a standard component is tagged 'caseShadow'", () => {
     const list = caseComponents({ "constant/components/water.dat": LOCAL_WATER });
     expect(list[0]!.name).toBe("water");
-    expect(list[0]!.origin).toBe("local-shadow");
+    expect(list[0]!.origin).toBe("caseShadow");
   });
 
   it("caseComponentFiles flattens every tree component to the case root", () => {

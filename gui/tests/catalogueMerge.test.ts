@@ -23,7 +23,7 @@ describe("mergeCatalogue — case-local components in the Explorer", () => {
     const merged = mergeCatalogue({ "constant/components/pentadiene.dat": PENTADIENE });
     const p = metaByName("pentadiene", merged);
     expect(p).toBeDefined();
-    expect(p!.origin).toBe("local");
+    expect(p!.origin).toBe("caseLocal");
     expect(p!.vleAble).toBe(true);
     expect(p!.tc).toBe(490);
     // CATALOGUE itself is never mutated
@@ -35,7 +35,7 @@ describe("mergeCatalogue — case-local components in the Explorer", () => {
     const merged = mergeCatalogue({ "constant/components/water.dat": LOCAL_WATER });
     const w = metaByName("water", merged);
     expect(w).toBeDefined();
-    expect(w!.origin).toBe("local-shadow");
+    expect(w!.origin).toBe("caseShadow");
     // no new row — it replaced the standard water in place
     expect(merged.length).toBe(CATALOGUE.length);
   });
