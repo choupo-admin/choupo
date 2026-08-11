@@ -8,7 +8,7 @@
   Pure UI: it renders names + role badges and emits component NAMES; no physics.
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Badge, Box, Button, Chip, CloseButton, Group, ScrollArea, Stack, Text, TextInput, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconArrowRight, IconFlask } from "@tabler/icons-react";
 
@@ -83,7 +83,29 @@ export function CompoundBrowser({
 
   // Adding a component records it in the MRU (the "Recently used" group); the
   // recompute is driven by the parent's selected[] as before.
-  const add = useCallback((name: string) => { setRecent(pushRecent(name)); onAdd(name); }, [onAdd]);
+  //
+  // The MRU is fed ONLY by selection, so "used" means "taken into a property
+  // task" -- not "looked at" (Vitor, 2026-08-11).  A double click therefore
+  // must not feed it: the first of its two clicks passes through `add` on the
+  // way, so `add` remembers the list it displaced and `inspect` puts it back.
+  // Six lines to make the sentence true in both directions -- a double click
+  // leaves the SET and the MRU exactly as it found them, so INSPECTION CHANGES
+  // NOTHING is a statement about the whole component, not just the set.
+  const mruBeforeAdd = useRef<string[] | null>(null);
+  const add = useCallback((name: string) => {
+    mruBeforeAdd.current = loadRecent();
+    setRecent(pushRecent(name));
+    onAdd(name);
+  }, [onAdd]);
+  const inspect = useCallback((name: string) => {
+    const before = mruBeforeAdd.current;
+    if (before) {
+      try { window.localStorage.setItem(RECENT_KEY, JSON.stringify(before)); } catch { /* blocked */ }
+      setRecent(before);
+      mruBeforeAdd.current = null;
+    }
+    onInspect?.(name);
+  }, [onInspect]);
 
   const passFilter = (m: ComponentMeta) =>
     filter === "vle" ? m.vleAble : filter === "solute" ? m.kind === "nonvolatile" : true;
@@ -145,12 +167,10 @@ export function CompoundBrowser({
         // Double click INSPECTS.  The browser deliberately keeps the plain
         // onClick/onDoubleClick pair FolderNav already uses (no debounce
         // timer), which means a double click toggles twice and leaves the SET
-        // exactly as it found it -- inspection changes nothing.  That is the
-        // semantics we want, and it falls out of the pattern rather than being
-        // engineered.  (An unselected row does pass through the MRU on the way,
-        // so an inspected compound appears under "Recently used": you did touch
-        // it, so that reads correctly.)
-        onDoubleClick={onInspect ? () => onInspect(m.name) : undefined}
+        // exactly as it found it -- inspection changes nothing.  That falls out
+        // of the pattern rather than being engineered; `inspect` above restores
+        // the MRU the passing clicks displaced, so the same is true there.
+        onDoubleClick={onInspect ? () => inspect(m.name) : undefined}
         title={onInspect ? "click to use · double click to inspect" : undefined}
         className="choupo-compound-row"
         data-on={on ? "true" : undefined}

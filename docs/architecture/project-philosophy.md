@@ -82,6 +82,44 @@ Corollaries, each paid for at least once:
   A rule about what an absent input means — a default, a fallback, a
   substitution — is a derived fact about the contract, and copies of it drift
   exactly as numbers do.
+- **The doctrine covers a VOCABULARY** *(extended 2026-08-11)*.  A set of
+  names the engine can conclude — the curation verdicts — is a derived fact
+  about what the machinery can say, and a display surface that re-declares
+  the set is a second home.  A gate that RECOUNTS is the remedy, never a
+  generator: `check_verdict_parity`.
+
+### 3c. The GUI may display a claim; it may not infer a stronger one
+
+*Ruled by Vítor, 2026-08-11, on the Component Inspector.*
+
+> **The GUI may display scientific claims made by the evidence machinery;
+> it may not infer stronger claims from apparently good data.**
+
+Four consequences, each a distinction the interface is forbidden to collapse:
+
+* no dossier → **`notClaimed`**.  Not "fitted", not a green tick.  A datum may
+  be excellent; nobody has declared evidence for it, and the absence of a claim
+  is itself the honest claim.
+* **`validationRefused` stays distinct from fitted.**  "Everything available
+  was used to fit, so nothing tested the result" is the most valuable state a
+  student can read, and it is exactly what a friendlier badge scheme rounds off.
+* **`not applicable` stays distinct from missing.**  A `role nonvolatile`
+  component has no vapour pressure BY DESIGN; a bare ✗ teaches that a complete
+  record is deficient.
+* **an unknown validity range stays distinct from no declared range** (AP3).
+
+The same rule governs the *words*: **comparison asks whether a model agrees
+with data; held-out validation additionally proves those data were excluded
+from the fit being assessed.**  The pre-existing `validation {}` surface does
+the first and is scientifically useful; it is not renamed.  But nothing may
+call an ordinary comparison "held-out validation", because nothing there
+withheld anything.  Enforced by `check_verdict_parity`'s second arm.
+
+Why it is doctrine and not a UI convention: a badge is read as the project
+speaking.  A verdict invented at the display layer is a scientific claim with
+no experiment behind it, and it is invisible to every gate the engine has —
+which is the arity sin arriving through the one door the engine does not
+watch.
 
 ### 3a. Why the extension was needed
 

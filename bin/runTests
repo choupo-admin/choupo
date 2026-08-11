@@ -1212,6 +1212,28 @@ PYEOF
     fi
     rm -f /tmp/fworder.$$
 
+    # verdict-parity gate (2026-08-11).  The Component Inspector draws the
+    # curation dossier's five verdicts, so the vocabulary acquired three homes
+    # -- verdictOf() in C++, a TS union, and the renderer's table -- and the
+    # GUI's own tests cannot catch a divergence because they check TypeScript
+    # against TypeScript.  This recounts instead of generating: the doctrine it
+    # protects is that the GUI may DISPLAY a claim the evidence machinery made
+    # and may not INFER a stronger one, so a sixth verdict invented in the GUI
+    # and a verdict retired in C++ both fail.  Second arm: "HELD-OUT
+    # VALIDATION" may only be printed where a partition withheld the data --
+    # an ordinary comparison making that claim is a different, stronger
+    # statement.  Sabotage-verified five ways, the fifth being that a renamed
+    # verdictOf makes the gate FAIL BLIND rather than pass.
+    if "$ROOT/bin/curate/check_verdict_parity.py" > /tmp/vparity.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "verdict-parity-gate" "$(tail -1 /tmp/vparity.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_verdict_parity.py)\n" "verdict-parity-gate"
+        cat /tmp/vparity.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/vparity.$$
+
     # glossary-bans gate (G7, ruled by Vitor 2026-08-05).  The doctrine used
     # to read "the apparent/true wording is banned" -- one sentence over two
     # words that fail differently -- and CLAUDE.md itself, the level-1
