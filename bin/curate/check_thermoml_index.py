@@ -41,6 +41,17 @@ ARMS:
   A9  A v5 FILE IS NAMED AND SKIPPED by extraction, not run through a reader
       built and tested for the published dialect.
 
+  A11 TWO INDEPENDENT DATASETS DO NOT COLLIDE.  Extracting the same property
+      from two source files must yield TWO files.  Naming them by compound
+      and property alone made the second silently overwrite the first, so a
+      partition that believed it held evidence back had one file twice --
+      a collision that destroys the very independence the contract rests on.
+
+  A12 THE PROPERTY IS A DECLARED FIELD, not a filename convention.  A
+      consumer recovering it by splitting the name would be doing
+      identity-by-name, which this project bans, and which bit here as soon
+      as the name grew a second component.
+
   A5  AN EMPTY CACHE REFUSES.  An index built over nothing would report a
       clean, empty archive -- which is not the same as a working one, and is
       the shape of a check that cannot run reporting success.
@@ -105,7 +116,7 @@ def main():
             fails.append(f"A1 index failed (exit {rc})\n{out[-600:]}")
         else:
             # -- A1: both dialects --------------------------------------------
-            if "dialect published  1" not in out:
+            if "dialect published  2" not in out:
                 fails.append("A1 the published dialect was not detected")
             if "dialect v5         1" not in out:
                 fails.append("A1 the v5 dialect was not detected")
@@ -129,8 +140,8 @@ def main():
                              "published reader has never seen a real file")
 
             idx = json.loads((home / "index.json").read_text())
-            if idx["indexed"] != 2 or len(idx["refused"]) != 1:
-                fails.append(f"A1 expected 2 indexed / 1 refused, got "
+            if idx["indexed"] != 3 or len(idx["refused"]) != 1:
+                fails.append(f"A1 expected 3 indexed / 1 refused, got "
                              f"{idx['indexed']} / {len(idx['refused'])}")
 
         # -- A3: all four key kinds resolve -----------------------------------
@@ -139,17 +150,17 @@ def main():
                            ("InChI=1S/H2O/h1H2", "InChI"),
                            ("XLYOFNOQVPJJNP-UHFFFAOYSA-N", "InChIKey")):
             rc_s, out_s = run(["search", key], home)
-            if rc_s != 0 or "1 dataset(s)" not in out_s:
+            if rc_s != 0 or "dataset(s)" not in out_s:
                 fails.append(f"A3 search by {label} ('{key}') did not resolve")
 
         # -- A7/A9: extraction ------------------------------------------------
         dest = pathlib.Path(td) / "out"
         rc_x, out_x = run(["extract", "water", "--into", str(dest)], home)
-        ds = dest / "water-vapourPressure.dat"
-        if rc_x != 0 or not ds.exists():
+        made = sorted(dest.glob("water-vapourPressure-*.dat"))
+        if rc_x != 0 or not made:
             fails.append(f"A7 extraction produced no dataset (exit {rc_x})")
         else:
-            t = ds.read_text()
+            t = made[0].read_text()
             for needle, why in (
                 ("columns", "the Choupo dataset grammar the ops already read"),
                 ("unit K;", "the temperature unit"),
@@ -167,6 +178,17 @@ def main():
         rc_v, out_v = run(["extract", "ethanol", "--into", str(dest)], home)
         if "SKIPPED" not in out_v or "dialect 'v5'" not in out_v:
             fails.append("A9 a v5 file was not named and skipped by extraction")
+
+        # -- A11/A12: two sources, two files, each declaring its property ----
+        two = sorted(dest.glob("water-vapourPressure-*.dat"))
+        if len(two) < 2:
+            fails.append(f"A11 two independent source files produced "
+                         f"{len(two)} dataset(s) -- they collided, and a "
+                         f"partition would have held the same file twice")
+        for f in two:
+            if "\nproperty     vapourPressure;" not in f.read_text():
+                fails.append(f"A12 {f.name} declares no `property` field; a "
+                             f"consumer would have to split its NAME")
 
         # -- A8: a property with no unit refuses ------------------------------
         home2 = pathlib.Path(td) / "nounit"

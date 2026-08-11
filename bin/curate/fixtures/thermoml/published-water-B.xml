@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DataReport xmlns="http://www.iupac.org/namespaces/ThermoML">
+  <Version><nVersionMajor>4</nVersionMajor><nVersionMinor>0</nVersionMinor></Version>
+  <Citation>
+    <sAuthor>Fixture, A.</sAuthor>
+    <sTitle>Second INDEPENDENT fixture, published dialect, high-T range</sTitle>
+    <sDOI>10.0000/choupo-fixture-published-B</sDOI>
+    <yrPubYr>2026</yrPubYr>
+  </Citation>
+  <Compound>
+    <RegNum><nOrgNum>1</nOrgNum></RegNum>
+    <sCommonName>water</sCommonName>
+    <sFormulaMolec>H2O</sFormulaMolec>
+    <sStandardInChI>InChI=1S/H2O/h1H2</sStandardInChI>
+    <sStandardInChIKey>XLYOFNOQVPJJNP-UHFFFAOYSA-N</sStandardInChIKey>
+    <RegNum><nCASRegNum>7732-18-5</nCASRegNum></RegNum>
+  </Compound>
+  <PureOrMixtureData>
+    <nPureOrMixtureDataNumber>1</nPureOrMixtureDataNumber>
+    <Component><RegNum><nOrgNum>1</nOrgNum></RegNum></Component>
+    <Property>
+      <nPropNumber>1</nPropNumber>
+      <Property-MethodID><PropertyGroup><VaporPBoilingTAzeotropTandP>
+        <ePropName>Vapor or sublimation pressure, kPa</ePropName>
+      </VaporPBoilingTAzeotropTandP></PropertyGroup></Property-MethodID>
+    </Property>
+    <Property>
+      <nPropNumber>2</nPropNumber>
+      <Property-MethodID><PropertyGroup><VolumetricProp>
+        <ePropName>Mass density, kg/m3</ePropName>
+      </VolumetricProp></PropertyGroup></Property-MethodID>
+    </Property>
+    <Property>
+      <nPropNumber>3</nPropNumber>
+      <Property-MethodID><PropertyGroup><TransportProp>
+        <ePropName>Viscosity, Pa*s</ePropName>
+      </TransportProp></PropertyGroup></Property-MethodID>
+    </Property>
+    <Variable>
+      <nVarNumber>1</nVarNumber>
+      <VariableID><VariableType><eTemperature>Temperature, K</eTemperature></VariableType></VariableID>
+    </Variable>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>360.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>63.239</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>365.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>76.7398</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>370.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>92.5918</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>375.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>111.109</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>380.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>132.633</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>385.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>157.535</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>390.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>186.216</nPropValue></PropertyValue>
+    </NumValues>
+    <NumValues>
+      <VariableValue><nVarNumber>1</nVarNumber><nVarValue>395.00</nVarValue></VariableValue>
+      <PropertyValue><nPropNumber>1</nPropNumber><nPropValue>219.107</nPropValue></PropertyValue>
+    </NumValues>
+  </PureOrMixtureData>
+</DataReport>

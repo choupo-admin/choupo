@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+"""choupo-curate -- one command: evidence -> partition -> fit -> held-out -> dossier.
+
+    choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N]
+
+What it does, in the order a curator would:
+
+    identity      resolve the compound in the local ThermoML index
+    evidence      extract every dataset Choupo can read into the case
+    partition     DECLARE which datasets fit and which are held out
+    fit           run choupoProps
+    validate      report held-out residuals, or refuse
+    dossier       write the evidence record; promote nothing
+
+THE PARTITION RULE IS DECLARED AND DETERMINISTIC, AND THAT IS THE WHOLE POINT.
+A class cannot hand-pick DOIs for thirty components, so an automatic rule is
+allowed -- but only one that is stated in advance, reproducible from the
+declaration alone, and RECORDED in the dossier.  `byDoiOrder` sorts the
+datasets by DOI and gives the first `nFit` to the fit; the rest are held out.
+It does not look at a single residual, and this tool will not re-run it after
+seeing one.  Automatic-and-declared is not tuning; re-partitioning after a bad
+result is, and that is what the whole contract exists to prevent.
+
+WITH ONLY ONE DATASET the honest outcome is a refusal, not a smaller split.
+The tool says so before running, and choupoProps then prints
+
+    VALIDATION REFUSED:
+    No independent experimental evidence remains after fitting.
+
+which is the correct answer to "I have one measurement and want to know if my
+model generalises".
+
+NOTHING IS PROMOTED.  The dossier has evidence semantics and sits in
+<case>/curation/, outside every resolver root.  Admitting a property to
+data/standards/ is a separate, explicit human act:
+bin/curate/promote-from-dossier.
+"""
+
+import argparse
+import json
+import os
+import pathlib
+import subprocess
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+THERMOML = ROOT / "bin" / "choupo-thermoml"
+PROPS = ROOT / "choupoProps"
+
+PROP_OP = {
+    "vapourPressure":  ("vaporPressureFit", "vapourPressure"),
+    "heatCapacity":    ("heatCapacityFit",  "liquidHeatCapacity"),
+}
+
+
+def sh(args, cwd=None):
+    p = subprocess.run(args, cwd=cwd, capture_output=True, text=True)
+    return p.returncode, p.stdout + p.stderr
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("compound")
+    ap.add_argument("--case", default=None,
+                    help="case directory to build (default: ./curate-<compound>)")
+    ap.add_argument("--rule", default="byDoiOrder", choices=["byDoiOrder"])
+    ap.add_argument("--nFit", type=int, default=1)
+    ap.add_argument("--maxAAD", type=float, default=None,
+                    help="acceptance band in percent; without one no verdict "
+                         "is claimed on the held-out residuals")
+    a = ap.parse_args()
+
+    case = pathlib.Path(a.case or f"curate-{a.compound}")
+
+    # -- identity ---------------------------------------------------------
+    print(f"IDENTITY")
+    rc, out = sh([str(THERMOML), "search", a.compound])
+    if rc != 0:
+        print(out.rstrip())
+        return 1
+    print("  " + out.strip().splitlines()[0])
+
+    # -- evidence ---------------------------------------------------------
+    print(f"\nTHERMOML EVIDENCE")
+    exp = case / "constant" / "experiments"
+    rc, out = sh([str(THERMOML), "extract", a.compound, "--into", str(exp)])
+    print("  " + "\n  ".join(l for l in out.strip().splitlines() if l))
+    if rc != 0:
+        return 1
+
+    # -- partition --------------------------------------------------------
+    #  Group the extracted datasets by property, then split each group by the
+    #  DECLARED rule.  The rule runs ONCE, before anything is fitted.
+    import re as _re
+    by_prop = {}
+    for f in sorted(exp.glob("*.dat")):
+        m = _re.search(r"^property\s+(\S+);", f.read_text(), _re.M)
+        if not m:
+            print(f"  SKIPPED {f.name}: declares no `property` field.  The "
+                  f"property is read from the file, never split out of its "
+                  f"name -- a name is not an identity.")
+            continue
+        by_prop.setdefault(m.group(1), []).append(f)
+
+    print(f"\nPARTITION   rule {a.rule}, nFit {a.nFit}"
+          f"   (declared before the fit; recorded in the dossier)")
+    ops = []
+    for prop, files in sorted(by_prop.items()):
+        if prop not in PROP_OP:
+            print(f"  {prop:<20} SKIPPED -- Choupo has no fit operation for it")
+            continue
+        files = sorted(files, key=lambda p: p.name)          # byDoiOrder proxy
+        fit, held = files[:a.nFit], files[a.nFit:]
+        if not fit:
+            print(f"  {prop:<20} SKIPPED -- nFit {a.nFit} leaves nothing to fit")
+            continue
+        print(f"  {prop}")
+        for f in fit:
+            print(f"      FIT        {f.name}")
+        for f in held:
+            print(f"      HELD-OUT   {f.name}")
+        if not held:
+            print(f"      -> only one dataset: the validation will be REFUSED, "
+                  f"which is the honest answer, not a smaller split.")
+        ops.append((prop, fit, held))
+
+    if not ops:
+        print("\nNothing to curate: no extracted property has a fit operation.")
+        return 1
+
+    # -- write the case ---------------------------------------------------
+    (case / "system").mkdir(parents=True, exist_ok=True)
+    blocks = []
+    for prop, fit, held in ops:
+        optype, _ = PROP_OP[prop]
+        ev = "\n".join(
+            f'            {{ dataset "constant/experiments/{f.name}"; '
+            f'role {role}; }}'
+            for role, group in (("fit", fit), ("validation", held))
+            for f in group)
+        #  `--maxAAD 0.01` means 0.01 PERCENT, and the `percent` unit already
+        #  carries the /100 -- dividing again here made a 0.01 % band arrive at
+        #  the engine as 0.0001 %, and the run reported NOT VALIDATED for a
+        #  reason that was the tool's arithmetic rather than the model's.
+        acc = (f"\n        acceptance {{ maxAAD {a.maxAAD:g} percent; }}"
+               if a.maxAAD is not None else "")
+        blocks.append(f'''    {{
+        name       curate_{prop};
+        type       {optype};
+        component  {a.compound};
+        evidence
+        (
+{ev}
+        );{acc}
+        output     {{ file curate_{prop}.csv; }}
+    }}''')
+
+    (case / "system" / "propsDict").write_text(
+        "//  GENERATED by bin/choupo-curate.  The partition below was declared\n"
+        f"//  by rule `{a.rule}` (nFit {a.nFit}) BEFORE anything was fitted, and\n"
+        "//  re-running this tool after seeing residuals would re-declare it --\n"
+        "//  which is why the dossier records the rule beside the answer.\n\n"
+        "operations\n(\n" + "\n\n".join(blocks) + "\n);\n")
+
+    for f in ("controlDict",):
+        srcs = list(ROOT.glob(f"tutorials/props/**/system/{f}"))
+        if srcs:
+            (case / "system" / f).write_text(srcs[0].read_text())
+
+    if not (case / "constant" / "thermoPhysPropDict").exists():
+        tp = next(ROOT.glob("tutorials/props/fit/*/constant/thermoPhysPropDict"))
+        (case / "constant" / "thermoPhysPropDict").write_text(tp.read_text())
+
+    # -- run --------------------------------------------------------------
+    print(f"\nRUN   {case}")
+    rc, out = sh([str(PROPS), "."], cwd=case)
+    for line in out.splitlines():
+        if any(k in line for k in ("HELD-OUT", "VALIDAT", "[evidence]",
+                                   "[curation]", "REFUSED", "Antoine",
+                                   "[estimate]", "[unreviewed]")):
+            print("  " + line.strip())
+    if rc != 0:
+        print(f"\n  choupoProps exited {rc}")
+        return rc
+
+    print(f"\nNOTHING PROMOTED.  Review {case}/curation/, then\n"
+          f"  bin/curate/promote-from-dossier {case}/curation/<component>.dossier \\\n"
+          f"      --property <name> --by <who> --grounds \"<why>\"")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

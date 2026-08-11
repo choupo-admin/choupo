@@ -291,7 +291,14 @@ def cmd_extract(a):
         for prop, rec in found.items():
             if not rec["points"]:
                 continue
-            name = f"{h['compound']}-{prop}".replace(" ", "_")
+            #  THE SOURCE STEM IS PART OF THE NAME, and it is not cosmetic.
+            #  Naming by <compound>-<property>alone made two INDEPENDENT
+            #  datasets for the same property collide, and the second silently
+            #  overwrote the first -- so a partition that believed it had
+            #  held-out evidence would have had one file twice.  A collision
+            #  that destroys the very independence the contract rests on must
+            #  not be possible by construction.
+            name = f"{h['compound']}-{prop}-{src.stem}".replace(" ", "_")
             out = dest / f"{name}.dat"
             sha = hashlib.sha256(src.read_bytes()).hexdigest()
             lines = [
@@ -314,6 +321,15 @@ def cmd_extract(a):
                 "  here: it is declared in the operation that consumes it, before any",
                 "  fitting runs.  See src/propertyOps/EvidencePartition.H.",
                 "\\*--------------------------------------------------------------------------*/",
+                "",
+                #  A DECLARED FIELD, not a filename convention.  A consumer
+                #  that recovered the property by splitting the filename would
+                #  be doing identity-by-name, which this project bans for
+                #  exactly the reason it bit here: the name also carries the
+                #  source stem, and parsing it gave `vapourPressure-published-
+                #  water` as a property.
+                f"property     {prop};",
+                f"compound     {h['compound']};",
                 "", "columns", "(",
                 f"    {{ name T;     unit {UNIT_MAP.get(rec['xUnit'], rec['xUnit'])}; }}",
                 f"    {{ name {'Psat' if prop == 'vapourPressure' else ('rho' if prop == 'liquidDensity' else 'Cp')};  unit {UNIT_MAP.get(rec['unit'], rec['unit'])}; }}",
