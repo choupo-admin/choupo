@@ -385,6 +385,8 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 | `residual` | ✓ | object | — | The quantity the residual measures and the data it measures against. `kind` selects the residual family; the remaining keys are that fami… |
 | `options` |   | object | — | Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit. |
 | `output` |   | object | — | Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curate… |
+| `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |
+| `acceptance` |   | object | — | The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chos… |
 
 ## `flash`  (flash operation)
 
@@ -470,8 +472,10 @@ Least-squares polynomial fit of measured heat-capacity data, producing the `coef
 |---|:-:|---|---|---|
 | `component` |   | string | — | The component the data belongs to; used to label the report and to compare against any already-curated correlation. |
 | `degree` |   | integer | - | Degree of the fitted polynomial in T; defaults to 2. |
-| `dataset` | ✓ | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
+| `dataset` |   | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+| `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |
+| `acceptance` |   | object | — | The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chos… |
 
 ## `heatExchanger`  (heatExchanger operation)
 
@@ -935,8 +939,10 @@ Least-squares fit of measured vapour-pressure data to the Antoine form, producin
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `component` |   | string | — | The component the data belongs to; used to label the report and to compare against any already-curated correlation. |
-| `dataset` | ✓ | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
+| `dataset` |   | string | — | Path to a self-describing dataset dict (a `columns ( { name ...; unit ...; } ... )` block plus a flat `data ( ... )` grid), relative to t… |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+| `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |
+| `acceptance` |   | object | — | The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chos… |
 
 ## `vleConsistency`  (vleConsistency operation)
 
