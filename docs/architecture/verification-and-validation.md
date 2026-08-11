@@ -255,3 +255,47 @@ was silent about its own deleted inputs, and a hand-compiled count was silent
 about the tree drifting underneath it.  What distinguishes this episode is that
 the silence had already been anticipated and given a gate — which is the form
 the argument takes when it works.
+
+### E2 — a mirrored number, "corrected" against the wrong source of truth (2026-08-11)
+
+While correcting demonstrably false public claims before the release, I found
+the site's homepage carrying `data-inv` fallback literals of 288 runnable cases
+and 255 regression checks.  The development tree holds 341 and 307.  I judged
+the literals stale and refreshed them.
+
+They were not stale.  `check_release_identity` refuses any such literal that
+disagrees with `generated/releases/v2607.json` — the inventory counted from a
+worktree of the *released tag* — because the pages describe **the release**,
+not the development line.  The literals exist so the static HTML is truthful
+with JavaScript disabled, and a gate recounts them every run precisely so the
+copy can never become an independent home.  I broke a deliberate mirror, and
+the full regression caught it at 467 PASS / 2 FAIL.
+
+**The rule, stated so it generalises: a number is only stale relative to the
+source of truth it is supposed to mirror.**  I checked the value against the
+tree in front of me instead of asking what the value was a copy *of*.  The
+gate's own docstring stated the contract; reading it before touching the value
+would have answered the question in one line.
+
+Two things make this worth keeping for the evidence dossier rather than filing
+as an ordinary slip.
+
+First, **it is the same defect as a stale scientific datum, arrived at from the
+opposite direction.** This project's provenance doctrine exists because a value
+without a named source cannot be audited — and a *documentation* claim is
+subject to the identical discipline. 288 was not a number someone had failed to
+update; it was a correctly-sourced mirror of a named artefact, and the error was
+to treat it as unsourced. Provenance applies to what the project says about
+itself exactly as it applies to what it says about a fluid.
+
+Second, **the episode is only visible because the mirror was gated.** An
+ungated fallback literal would have accepted my "correction" silently and the
+homepage would have described the wrong tree indefinitely — with no failure
+anywhere, because nothing else in the repository knows what those two numbers
+are supposed to be. The gate did not merely catch a typo; it was the only
+witness that a source-of-truth relationship existed at all.
+
+The corrected sentence stands on its own merits — "Every tutorial ships an
+`expected` golden-master file" was false, and 307 of 341 do — but it now leads
+with the qualitative claim and quotes the release's own ratio, so both literals
+stay pure mirrors of the artefact they answer to.
