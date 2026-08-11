@@ -31,6 +31,7 @@ License
 
 #include "core/Constants.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
+#include "EvidencePartition.H"
 
 #include <cmath>
 #include <fstream>
@@ -131,6 +132,13 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     // window (skipping the near-zero band |meas| < 50 cal/mol -- the curve
     // crosses zero; a ratio there is noise), prints it aloud and emits it as
     // diagnostics so the golden master locks it.
+    //  R5: this operation EVALUATES curated Pitzer parameters -- it fits
+    //  nothing -- so a FIT / HELD-OUT partition cannot mean here what it
+    //  means on a fit.  Refuse the declaration rather than parse and drop it.
+    EvidencePartition::refuseOnNonFittingOp(dict, "pitzerActivity",
+        "evaluates Pitzer parameters read from the curated catalogue and"
+        " compares them against a measured series");
+
     if (dict->found("validation"))
     {
         auto v   = dict->subDict("validation");

@@ -248,6 +248,31 @@ void EvidencePartition::requireNonEmptyValidation(std::size_t nSurviving,
         " operation reads.");
 }
 
+void EvidencePartition::refuseOnNonFittingOp(const DictPtr& opDict,
+                                             const std::string& opLabel,
+                                             const std::string& whatItCompares)
+{
+    if (!opDict->found("evidence")) return;
+
+    //  R5.  The op did not fit anything, so nothing was withheld FROM a fit,
+    //  so the partition's central claim is unavailable to it -- not merely
+    //  unproven.  Refuse the DECLARATION rather than silently ignoring it: a
+    //  parsed-and-dropped block is the worst outcome, because the case then
+    //  reads as though a held-out validation had been performed.
+    throw std::runtime_error(opLabel + ": `evidence ( )` declares a FIT /"
+        " HELD-OUT partition, but this operation performs no fit -- it "
+        + whatItCompares + ".  Nothing here was withheld from a fit, so the"
+        " partition has nothing to be a partition OF.\n"
+        "        Comparison asks whether a model AGREES with data; held-out"
+        " validation additionally establishes that those data were EXCLUDED"
+        " from the fit being assessed.  This operation can make the first"
+        " claim and not the second.\n"
+        "        Remedy: use `validation { dataset \"...\"; }`, which is the"
+        " comparison this operation already supports and which claims exactly"
+        " what it does.  To make a held-out claim, the fit itself must carry"
+        " the partition.");
+}
+
 void EvidencePartition::announce(const std::string& opLabel, int verbosity) const
 {
     if (verbosity < 2) return;

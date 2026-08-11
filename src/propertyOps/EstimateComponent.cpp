@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EstimateComponent.H"
+#include "EvidencePartition.H"
 #include "ConstantEstimator.H"
 #include "thermo/DerivedClosures.H"
 
@@ -73,6 +74,15 @@ int EstimateComponent::run(const DictPtr& dict,
 {
     diag_.clear();
     const std::string comp = dict->lookupWordOrDefault("component", "newComponent");
+
+    //  R5, at the ONE entry every estimate mode passes through (scalar and
+    //  polymer both dispatch from here), so the refusal cannot be reached by
+    //  one route and missed by the other -- the check_ebullioscopic lesson.
+    //  An estimate is computed FROM GROUPS, never regressed against data, so
+    //  no dataset can have been held out of it.
+    EvidencePartition::refuseOnNonFittingOp(dict, "estimateComponent",
+        "computes the constants from molecular GROUPS and compares them"
+        " against optional reference values");
 
     // The estimation METHOD is a registered ConstantEstimator (default Joback);
     // a new method is a new registered sub-model, never an inline branch here.

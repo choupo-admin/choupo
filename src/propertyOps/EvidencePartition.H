@@ -100,11 +100,26 @@ Description
           -> refused.  An empty comparison must never report as a pass; that
           is the shape of a check that cannot run and therefore must not.
 
-    R5 of the design ("`role validation` declared on an op that performs no
-    fit") is NOT implemented here.  Both ops wired in this slice do fit, so no
-    witness could fire it, and a refusal nothing exercises is a claim without
-    evidence.  It arrives with the slice that folds `freezingPoint` and
-    `pitzerActivity` onto this reader.
+      R5  an `evidence ( )` partition declared on an operation that performs
+          NO fit -> refused.  See refuseOnNonFittingOp below.
+
+    R5 SHIPPED 2026-08-11, and what it turned into is worth recording, because
+    it is not what the plan said.  The plan expected it with "the slice that
+    folds freezingPoint and pitzerActivity onto this reader" -- i.e. it assumed
+    those two ops would BECOME fitters.  Measuring the op catalogue instead of
+    remembering it showed they never will: `pitzerActivity` evaluates curated
+    Pitzer parameters, `freezingPoint` derives the depression curve from the
+    solvent's own record, and `estimateComponent` computes constants from
+    molecular groups.  All three read data, none regresses against it.
+    choupoProps has exactly TWO pure-property fitters (vapourPressure, heat
+    capacity) and both carried the contract already.
+
+    So R5 is not a step toward folding them in -- it is the refusal that says
+    they can never be folded in, and why.  An operation with no fit has nothing
+    to withhold data FROM, so the held-out claim is unavailable to it rather
+    than merely unproven.  That is a stronger and more useful statement than
+    the plan anticipated, and it is why the three ops keep their `validation {}`
+    comparison unchanged: the refusal is about the CLAIM, never the comparison.
 
     INDEPENDENCE IS ANNOUNCED, NEVER ADJUDICATED.  Whether two studies are
     scientifically independent is a human judgement.  This class settles the
@@ -182,6 +197,29 @@ public:
     //  domain filtering, and only the caller can know.
     void requireNonEmptyValidation(std::size_t nSurviving,
                                    const std::string& opLabel) const;
+
+    //  R5 -- THE CONTRACT MAY ONLY BE DECLARED ON AN OPERATION THAT FITS.
+    //
+    //  Called by an operation that performs NO regression but does read data
+    //  (pitzerActivity, freezingPoint, estimateComponent: each evaluates a
+    //  curated or estimated parameter set and compares it against a dataset).
+    //  Declaring `evidence ( ... role validation ... )` there is a category
+    //  error, and a quiet one: the block would be parsed, the words "held out"
+    //  would be true of nothing, and the run would read like a validation.
+    //
+    //  The distinction the refusal exists to protect (philosophy 3c):
+    //  COMPARISON asks whether a model agrees with data; HELD-OUT VALIDATION
+    //  additionally establishes that the data were withheld from the fit being
+    //  assessed.  An op with no fit has nothing to withhold data FROM, so the
+    //  stronger claim is unavailable to it -- not merely unproven.
+    //
+    //  It names the legacy `validation {}` block as the remedy, because a
+    //  comparison against curated parameters IS scientifically useful and is
+    //  what that block already does.  The refusal is about the CLAIM, never
+    //  about the comparison.
+    static void refuseOnNonFittingOp(const DictPtr& opDict,
+                                     const std::string& opLabel,
+                                     const std::string& whatItCompares);
 
     //  FNV-1a over the canonical declaration (role|path|doi|sha256, sorted).
     const std::string& fingerprint() const { return fingerprint_; }

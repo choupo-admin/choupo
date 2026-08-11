@@ -97,11 +97,37 @@ merely discouraged.
 | R2 | a dataset declares no `role` | refuses naming the dataset and both legal words |
 | R3 | the same dataset appears in both roles (same path, or same `sha256`, or same `doi`) | refuses naming which identity collided |
 | R4 | the validation set is empty after domain filtering | refuses — an empty comparison must never report as a pass |
-| R5 | `role validation` declared on an op that performs no fit in this run | refuses, naming that comparison-without-a-fit is not validation |
+| R5 | an `evidence ( )` partition declared on an op that performs no fit | refuses, naming that comparison-without-a-fit is not validation |
 
 R1 and R4 are the two that matter most: both are cases where the tempting
 behaviour is to report the in-sample number or a vacuous pass, and both are the
 `check_true_ions` shape — *a check that cannot run must not pass.*
+
+**R5 shipped 2026-08-11, and it is not the refusal this plan expected.**  The
+plan deferred it to "the slice that folds `freezingPoint` and `pitzerActivity`
+onto this reader" — an assumption that those ops would eventually become
+fitters.  Measuring the operation catalogue rather than remembering it showed
+they will not: `pitzerActivity` evaluates curated parameters, `freezingPoint`
+derives the curve from the solvent's own record, `estimateComponent` computes
+constants from groups.  **All three read data; none regresses against it.**
+
+Two consequences the plan did not foresee, both worth having:
+
+* **choupoProps has exactly TWO pure-property fitters** — vapour pressure and
+  heat capacity — **and both already carried the contract.**  There was no
+  backlog of fitters to extend it to; the honest scope of "item 7" was
+  therefore R5 plus the boundary it draws, not a coverage sweep.  The remaining
+  regression in the tool is `fitParameters` (`kind isotherm`, `kind T_bubble`),
+  which is pair/phase-equilibrium work and belongs to item 8.
+* **R5 is a permanent boundary, not a waypoint.**  An operation with no fit has
+  nothing to withhold data *from*, so the held-out claim is *unavailable* to it,
+  not merely unproven.  The three ops keep their `validation {}` comparison
+  exactly as it was — the refusal governs the CLAIM, never the comparison.
+
+Gate arm: `check_evidence_partition` A11 — all three ops, each through its own
+route (one probe would test one route and claim three), each with its
+unmodified case still running, and the message required to carry both the
+distinction and the remedy.  Sabotage-verified twice.
 
 ### 2d. Independence is announced, never adjudicated
 

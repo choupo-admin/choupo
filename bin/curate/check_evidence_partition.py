@@ -58,7 +58,8 @@ WHAT THIS GATE DOES NOT CHECK, stated plainly:
   * whether two datasets are SCIENTIFICALLY INDEPENDENT.  Only an identity
     collision is a fact a machine may settle (A4); shared provenance is
     announced for a human and never adjudicated here.
-  * R5 of the design ("role validation on an op that performs no fit") -- not
+  * (R5 is now arm A11 -- it was, until 2026-08-11) -- the note below is kept
+    because it records WHY it waited:  not
     implemented yet, because both ops wired in this slice do fit and no
     witness could fire it.
 
@@ -237,6 +238,64 @@ def main():
             fails.append("A10 a promotion with no promoter/grounds was not "
                          "refused by name")
 
+    # -- A11: R5.  The contract may only be DECLARED on an op that fits ----
+    #  Three non-fitting operations read data and compare against it, and each
+    #  is reached by its own route, so one probe would test one route and claim
+    #  three.  The NEGATIVE matters as much: the unmodified case must still run,
+    #  or the arm would pass by breaking the op rather than by refusing a claim.
+    R5_OPS = (
+        ("pitzerActivity",
+         "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+         "evaluates Pitzer parameters"),
+        ("freezingPoint",
+         "tutorials/props/electrolyte/fpd01_nacl_freezing",
+         "derives the depression curve"),
+        ("estimateComponent",
+         "tutorials/props/estimate/estimate_acetone",
+         "computes the constants from molecular GROUPS"),
+    )
+    EVIDENCE_BLOCK = ("\n        evidence\n        (\n"
+                      '            { dataset "a.dat"; role fit; }\n'
+                      '            { dataset "b.dat"; role validation; }\n'
+                      "        );")
+    for op, rel, phrase in R5_OPS:
+        src = ROOT / rel
+        if not src.exists():
+            fails.append(f"A11 {op}: witness case {rel} is gone -- this arm "
+                         f"cannot run, so it must not pass")
+            continue
+        with tempfile.TemporaryDirectory() as td:
+            d = pathlib.Path(td) / "probe"
+            shutil.copytree(src, d)
+            pd = d / "system/propsDict"
+            text, n = re.subn(rf"(type\s+{op}\s*;)",
+                              lambda m: m.group(1) + EVIDENCE_BLOCK,
+                              pd.read_text(), count=1)
+            if n != 1:
+                fails.append(f"A11 {op}: could not find `type {op};` in {rel} "
+                             f"-- the probe is blind, not satisfied")
+                continue
+            pd.write_text(text)
+            rc_r5, out_r5 = run(d)
+            if rc_r5 == 0:
+                fails.append(f"A11 {op}: an `evidence ()` partition on an op "
+                             f"that performs no fit was ACCEPTED; R5 must "
+                             f"refuse it")
+            else:
+                for needle in ("performs no fit", phrase,
+                               "Comparison asks whether a model AGREES",
+                               "validation { dataset"):
+                    if needle not in out_r5:
+                        fails.append(f"A11 {op}: refused, but the message is "
+                                     f"missing {needle!r} -- a refusal that "
+                                     f"does not name the distinction or its "
+                                     f"remedy teaches nothing")
+        #  the negative: unmodified, the case still runs
+        rc_ok, _ = run(src)
+        if rc_ok != 0:
+            fails.append(f"A11 {op}: the UNMODIFIED case {rel} does not run, "
+                         f"so the refusal above proves nothing about R5")
+
     if fails:
         print("check_evidence_partition: FAIL")
         for f in fails:
@@ -254,8 +313,10 @@ def main():
           "number is physically right (curate01's evidence is generated from "
           "the correlation being fitted, so its held-out residual is "
           "arithmetic), whether two datasets are scientifically independent "
-          "(only an identity collision is a fact), and design refusal R5, "
-          "which has no witness in this slice.  The dossier arms check that the "
+          "(only an identity collision is a fact).  R5 now refuses an "
+          "`evidence ()` partition on each of the three operations that read "
+          "data without fitting, each through its own route and each with its "
+          "unmodified case still running.  The dossier arms check that the "
           "four metrics are SEPARATE FIELDS and that a verdict is only claimed "
           "against a pre-declared band; they do not judge whether a band is "
           "well chosen, which is the curator's call.")
