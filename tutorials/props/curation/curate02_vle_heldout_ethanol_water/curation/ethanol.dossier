@@ -1,0 +1,71 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+property binaryVLE.T_bubble
+{
+    operation      nrtl_etoh_water_heldout;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        validated;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  5.89152288337;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -2383.55837692;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  11.0833068255;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  -2954.4085826;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "697a886d6caee2ac";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/etoh-water-101kPa-fit.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/etoh-water-101kPa-heldout.dat";
+            identity  none;    // declares no DOI or hash -- it cannot take part in the cross-role identity check
+        }
+        );
+
+        domain
+        {
+            fit         { min 0.05 x1; max 0.95 x1; n 8; }
+            validation  { min 0.2 x1; max 0.8 x1; n 3; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.0736714746429;
+        acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
+        acceptanceOrigin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
+    }
+}
+

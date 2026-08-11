@@ -28,6 +28,8 @@ License
 
 #include "CurationDossier.H"
 
+#include <cmath>
+
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -189,10 +191,18 @@ std::vector<std::string> CurationDossier::write() const
             //  able to tell "reproduces what it was given" from "survives what
             //  it never saw" without reading prose.
             f << "\n    metrics\n    {\n";
+            if (std::isnan(r->r2InSample))
+                f << "        //  r2InSample: not computed by this operation"
+                     " (it reports chi-square).\n";
+            else
             f << "        r2InSample        " << r->r2InSample
               << ";   // the model reproducing the points it was FITTED to\n";
             if (r->heldOut)
             {
+                if (std::isnan(r->rmsHeldOut))
+                    f << "        //  rmsHeldOut: not computed by this"
+                         " operation (see aadHeldOutPct).\n";
+                else
                 f << "        rmsHeldOut        " << r->rmsHeldOut
                   << ";   // " << r->rmsUnit << ", on evidence the fit never saw\n";
                 f << "        aadHeldOutPct     " << r->aadHeldOutPct << ";\n";

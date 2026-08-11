@@ -89,6 +89,7 @@ Description
 #include "core/Types.H"
 
 #include <cstddef>
+#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -120,9 +121,14 @@ public:
         std::size_t nFit = 0, nValidation = 0;
 
         //  The four metrics, never merged.
-        scalar r2InSample    = 0.0;
+        //  NaN = THIS OPERATION DOES NOT COMPUTE THIS METRIC.  Not zero:
+        //  a printed `r2InSample 0` reads as a catastrophically bad fit, and
+        //  fitParameters (which reports chi-square, not R2) wrote exactly that
+        //  on its first dossier.  A metric nobody computed must be ABSENT, and
+        //  absence needs a value that cannot be mistaken for a measurement.
+        scalar r2InSample    = std::numeric_limits<scalar>::quiet_NaN();
         bool   heldOut       = false;
-        scalar rmsHeldOut    = 0.0;
+        scalar rmsHeldOut    = std::numeric_limits<scalar>::quiet_NaN();
         std::string rmsUnit;
         scalar aadHeldOutPct = 0.0;
 

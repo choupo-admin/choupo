@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  Ethanol-water bubble temperature at 101.325 kPa -- THE HELD-OUT SUBSET.
+
+  The three points the declared split (every third of the eleven-point series)
+  reserves: x1 = 0.20, 0.50, 0.80.  Same provenance as the fitted half --
+  DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset, transcribed
+  within the corpus.
+
+  THESE POINTS ARE NEVER HANDED TO THE FITTER.  That is enforced by data flow,
+  not by rule: `fitParameters` obtains its points from `part.fit()`, and this
+  file is declared `role validation`, so it is not in that container at all.
+
+  WHAT THIS SUBSET CAN SHOW, AND CURATE01 CANNOT.  curate01's two halves come
+  from the SAME Antoine equation, so its held-out residual is round-off and its
+  acceptance band is a numerical criterion.  These are measurements, and the
+  NRTL pair fitted to the other eight has never seen them -- so the residual
+  here is a statement about the MODEL, at the scatter of the measurement.
+
+  Licence: GPL-3.0-or-later, as the fitted half.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name x1;  unit -;  }
+    { name T;   unit K;  }
+);
+
+data
+(
+    0.20  358.05
+    0.50  356.20
+    0.80  353.30
+);

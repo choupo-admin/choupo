@@ -28,6 +28,7 @@ License
 
 #include "FitParameters.H"
 #include "EvidencePartition.H"
+#include "CurationDossier.H"
 
 #include <memory>
 #include "core/Advisory.H"
@@ -1096,10 +1097,172 @@ int FitParameters::run(const DictPtr& dict,
         }
     }
 
+    //  ===================================================================
+    //  THE TWO CLAIMS, PHYSICALLY SEPARATED (Vitor, 2026-08-11).
+    //
+    //  "the model fits the data it saw" and "the fitted model predicted
+    //  evidence it never saw" are different scientific statements, and until
+    //  now this operation printed only the first, unlabelled.  A student
+    //  reading `Final chi2` had no way to know it was in-sample.
+    //
+    //  No new vocabulary: the verdict is CurationDossier::verdictOf, the same
+    //  five states the pure-property fits use.  A display surface may phrase
+    //  `validated` as "agrees"; the engine keeps one set of words.
+    //  ===================================================================
+    scalar aadHeldOut = 0.0;
+    scalar heldOutXmin = 0.0, heldOutXmax = 0.0;
+    std::size_t nHeldOut = 0;
+    std::string heldOutSets;
+    if (engaged)
+    {
+        const EvidencePartition& part = *partPtr;
+        sVector xVal, tVal;
+        for (const auto& pt : EvidencePartition::loadAll(
+                 part.validation(), {"x1", "x", "liquidMoleFraction"},
+                 {"T", "Tbubble", "temperature"},
+                 "fitParameters(" + kind + ")"))
+        { xVal.push_back(pt.x); tVal.push_back(pt.y); }
+
+        //  R4: the caller is the only one that knows how many survived.
+        part.requireNonEmptyValidation(xVal.size(),
+                                       "fitParameters(" + kind + ")");
+        for (const auto& ds : part.validation())
+            heldOutSets += (heldOutSets.empty() ? "" : ", ") + ds.path;
+
+        if (!xVal.empty())
+        {
+            //  The fitted parameters meet evidence the fitter was never
+            //  handed.  Same residual routine as the fit -- one evaluator, so
+            //  a difference between the two cannot look like a model error.
+            ThermoPackage thV = buildThermo(params);
+            sVector rV;
+            computeResiduals(thV, P_data, xVal, tVal, rV, nullptr, iF1, iF2);
+            for (std::size_t k = 0; k < rV.size(); ++k)
+                aadHeldOut += std::fabs(rV[k]) / tVal[k];
+            aadHeldOut = 100.0 * aadHeldOut / static_cast<scalar>(rV.size());
+            nHeldOut = rV.size();
+            heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
+            heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
+        }
+    }
+
+    if (verbosity >= 2)
+    {
+        std::cout << "\n  FIT QUALITY\n"
+                  << "    chi2   " << std::scientific << std::setprecision(5)
+                  << chi2 << "   over " << N << " points\n"
+                  << "    [IN-SAMPLE]  this is the model reproducing the very"
+                     " points it was fitted to.\n";
+
+        if (!engaged)
+        {
+            std::cout << "\n  HELD-OUT EVIDENCE\n"
+                      << "    none declared -- this operation used the legacy"
+                         " inline `residual.data ( )` form, which fits every\n"
+                         "    point and claims no validation.  Declare"
+                         " `evidence ( ... role validation ... )` to make one.\n";
+        }
+        else
+        {
+            const EvidencePartition& part = *partPtr;
+            std::cout << "\n  HELD-OUT EVIDENCE\n";
+            if (nHeldOut == 0)
+                std::cout << "    none -- every declared dataset was fitted.\n";
+            else
+                std::cout << "    dataset(s)  " << heldOutSets << "\n"
+                          << "    points      " << nHeldOut << "\n"
+                          << "    AAD         " << std::fixed
+                          << std::setprecision(4) << aadHeldOut << " %\n";
+
+            std::cout << "\n  ACCEPTANCE CRITERION\n";
+            if (part.hasAcceptance())
+                std::cout << "    maxAAD      " << part.acceptanceMaxAADPct()
+                          << " %\n"
+                          << "    origin      " << part.acceptanceOrigin()
+                          << "\n";
+            else
+                std::cout << "    none declared BEFORE the fit.\n";
+
+            const std::string verdict = CurationDossier::verdictOf(
+                part, nHeldOut > 0, aadHeldOut);
+            std::cout << "\n  VERDICT\n    " << verdict << "\n";
+            if (verdict == "validationRefused")
+                std::cout << "    VALIDATION REFUSED: no independent"
+                             " experimental evidence remains after fitting.\n"
+                             "    The chi2 above is IN-SAMPLE and is not an"
+                             " external validation.\n";
+            else if (verdict == "heldOutPerformed")
+                std::cout << "    Genuinely held-out evidence was tested, but"
+                             " no acceptance criterion was declared\n"
+                             "    beforehand -- so the residual above is"
+                             " reported and NO pass/fail claim is made.\n";
+            else if (verdict == "notValidated")
+                std::cout << "    The held-out test was performed and the"
+                             " declared criterion was MISSED.  This is a\n"
+                             "    completed experiment with a negative result"
+                             " -- not a refusal to test.\n";
+            else if (verdict == "validated")
+                std::cout << "    The held-out test was performed and the"
+                             " criterion declared before the fit was met.\n";
+        }
+        std::cout << "\n";
+    }
+
+    //  THE CURATION DOSSIER -- the SAME representation the pure-property
+    //  fits write, not a second one for phase equilibrium.  Evidence
+    //  semantics: it lands in <case>/curation/, which no resolver root
+    //  reaches, so nothing here can be read back as runtime data.
+    if (engaged)
+    {
+        const EvidencePartition& part = *partPtr;
+        CurationDossier::PropertyRecord rec;
+        rec.property   = "binaryVLE.T_bubble";
+        rec.opName     = dict->lookupWordOrDefault("name", "fitParameters");
+        rec.opType     = "fitParameters";
+        rec.model      = "NRTL binary pair, bubble-T residual at fixed P";
+        for (const auto& ps : params)
+            rec.parameters.push_back({ps.path, ps.value});
+        rec.engaged     = true;
+        rec.fingerprint = part.fingerprint();
+        rec.fitSets        = part.fit();
+        rec.validationSets = part.validation();
+        scalar xlo = 1e30, xhi = -1e30;
+        for (scalar x : xExp) { xlo = std::min(xlo, x); xhi = std::max(xhi, x); }
+        rec.fitMin = xlo; rec.fitMax = xhi; rec.domainUnit = "x1";
+        rec.nFit   = xExp.size();
+        rec.heldOut = nHeldOut > 0;
+        if (rec.heldOut)
+        {
+            rec.nValidation   = nHeldOut;
+            rec.aadHeldOutPct = aadHeldOut;
+            rec.rmsUnit       = "K";
+            //  The held-out DOMAIN, not left at its 0.0 default: a dossier
+            //  reporting `validation { min 0; max 0; }` states that three
+            //  points were tested at a composition none of them has.
+            rec.valMin = heldOutXmin;
+            rec.valMax = heldOutXmax;
+        }
+        rec.hasAcceptance   = part.hasAcceptance();
+        rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
+        rec.acceptOrigin    = part.acceptanceOrigin();
+        rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
+                                                 rec.aadHeldOutPct);
+        if (part.validationRefused())
+            rec.refusal = "No independent experimental evidence remains after fitting.";
+        CurationDossier::instance().add(
+            dict->subDict("residual")->found("components")
+                ? dict->subDict("residual")->lookupWordList("components")[0]
+                : std::string("binaryPair"),
+            std::move(rec));
+    }
+
     diag_["n_data"]    = static_cast<scalar>(N);
     diag_["n_params"]  = static_cast<scalar>(P);
     diag_["iter"]      = static_cast<scalar>(iter);
     diag_["chi2"]      = chi2;
+    diag_["chi2_in_sample"] = chi2;   // the same number, named for what it is
+    diag_["n_heldout"] = static_cast<scalar>(nHeldOut);
+    if (nHeldOut > 0) diag_["aad_heldout_pct"] = aadHeldOut;
     diag_["converged"] = converged ? 1.0 : 0.0;
     for (const auto& ps : params)
         diag_[ps.path] = ps.value;

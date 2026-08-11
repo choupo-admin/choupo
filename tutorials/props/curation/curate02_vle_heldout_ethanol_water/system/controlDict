@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  FITTING ANTOINE, AND KNOWING THE ANSWER BEFOREHAND.
+
+    `vaporPressureFit` regresses  log10(Psat[bar]) = A - B/(T + C)  on
+    measured Psat(T).  The fit is linear in (A, B) at fixed C, so the op
+    golden-sections C and solves (A, B) by least squares at each one --
+    derivative-free, and worth reading in the source.
+
+    This case feeds it data generated FROM THE SAME EQUATION, by evaluating
+    Choupo's own curated water correlation at twenty temperatures.  That is
+    deliberate.  Against laboratory data a fit can only be judged to the
+    scatter of the measurements; against data the equation itself produced,
+    the fit must RETURN THE COEFFICIENTS IT WAS GIVEN -- so any deviation is
+    the op's arithmetic and nothing else, and the expected file can pin it to
+    the digit.
+
+    Why the case exists: `vaporPressureFit` had NO case and no gate.  It
+    could have been broken for a year and the suite would have stayed green;
+    the first to find out would be a student fitting their own data.  The
+    psychrometric chart was in exactly that position last week, and writing
+    its first test found it reporting nothing.
+
+    What to read in the output:
+      * A, B, C     -- the recovered coefficients, against 5.40221 /
+                       1838.675 / -31.737;
+      * R2          -- 1 to floating point, because the data has no scatter;
+      * dHvap       -- the Clausius-Clapeyron reading of B WITH the (T/(T+C))^2
+                       correction, at the highest T.  Compare it to water's
+                       tabulated enthalpy of vaporisation: this is the
+                       physical cross-check on a fit that is otherwise just
+                       a straight line through transformed numbers.
+*/
+application   choupoProps;
+description     "The FIT/HELD-OUT partition contract: the same property fitted twice, differing only in whether evidence was held out -- one VALIDATED, one VALIDATION REFUSED";
+verbosity     3;

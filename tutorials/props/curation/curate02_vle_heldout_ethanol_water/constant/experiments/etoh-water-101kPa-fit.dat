@@ -1,0 +1,39 @@
+/*---------------------------------------------------------------------------*\
+  Ethanol-water bubble temperature at 101.325 kPa -- THE FITTED SUBSET.
+
+  Provenance: transcribed from constant/experiments/ethanol-water-101kPa of
+  tutorials/steady/optimisation/fitNRTL01_ethanol_water, which records its own
+  source as DECHEMA / Gmehling-Onken Vol. I Part 1, pedagogical subset.  These
+  are MEASURED data, not generated -- which is what makes the held-out test in
+  this case a statement about the model rather than about arithmetic.
+
+  THE SPLIT IS DECLARED, AND IT IS ARITHMETIC.  Every THIRD point of the
+  eleven-point series (the 3rd, 6th and 9th, i.e. x1 = 0.20, 0.50, 0.80) is
+  held out; the remaining eight are here.  The rule was written down before
+  anything was fitted and does not look at a single residual.  It spreads the
+  held-out points across the composition range rather than cutting the series
+  in half, because a model can extrapolate badly and interpolate well, and a
+  contiguous cut would test only one of those.
+
+  Licence: GPL-3.0-or-later.  The numbers are a small pedagogical subset
+  transcribed within the corpus, carried here unchanged from the case that
+  already ships them.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name x1;  unit -;  }     // liquid mole fraction of ethanol
+    { name T;   unit K;  }     // bubble temperature at 101.325 kPa
+);
+
+data
+(
+    0.05  361.95
+    0.10  359.95
+    0.30  357.30
+    0.40  356.85
+    0.60  355.30
+    0.70  354.50
+    0.90  351.85
+    0.95  351.45
+);

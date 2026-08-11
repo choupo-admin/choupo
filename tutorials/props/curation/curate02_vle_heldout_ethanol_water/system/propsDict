@@ -1,0 +1,117 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  curate02 -- THE FIT / HELD-OUT CONTRACT ON A BINARY PHASE EQUILIBRIUM.
+
+  The NRTL ethanol-water pair is regressed against eight measured bubble
+  temperatures at 101.325 kPa, and then asked to predict THREE it never saw.
+
+  WHY THIS CASE EXISTS BESIDE curate01.  curate01 proves the machinery: its
+  two halves come from the same Antoine equation, so its held-out residual is
+  round-off and its acceptance band is a numerical criterion, which its own
+  `acceptance.origin` says out loud.  Here the evidence is MEASURED, so the
+  held-out residual is a statement about the MODEL -- the first place in the
+  corpus where a fitted binary pair is scored on real evidence it was never
+  handed.
+
+  THE SPLIT IS DECLARED AND ARITHMETIC.  Every third point of the eleven-point
+  series (x1 = 0.20, 0.50, 0.80) is held out, spread across the composition
+  range rather than cut contiguously, because a model can interpolate well and
+  extrapolate badly and a contiguous cut tests only one of those.  The rule was
+  fixed before anything was fitted.
+
+  THE ACCEPTANCE BAND IS DECLARED BEFORE THE FIT, WITH ITS ORIGIN, AND IS NOT
+  ADJUSTED AFTERWARDS.  Whatever verdict falls out of it is the result.  A band
+  chosen after seeing the residual would make the whole contract decorative.
+
+  Read the run's four sections in order: FIT QUALITY is what the model does on
+  what it saw; HELD-OUT EVIDENCE is what it did on what it did not.
+
+  TWO THINGS THIS CASE DOES NOT SHOW, BOTH VISIBLE IN ITS OWN GOLDEN.
+
+  (1) THE PARAMETERS ARE NOT IDENTIFIABLE.  `identifiable 0`, `cond_JtJ ~4e11`
+      and pairwise correlations of 0.9999 between each a/b pair: eight points
+      at ONE pressure cannot separate the entropic and enthalpic halves of an
+      NRTL parameter, because they only ever appear together over a narrow T
+      span.  The model PREDICTS well and the four numbers are individually
+      meaningless -- a validated prediction is not a determined parameter set,
+      and a student must be able to read both facts off the same run.  This is
+      why the verdict is scoped `binaryVLE.T_bubble` in the dossier and not to
+      the pair itself.
+
+  (2) THE HELD-OUT MARGIN IS NOT LARGE.  0.0737 % against a 0.1 % band is a
+      pass by a factor of 1.4, not by an order of magnitude.  The band was
+      declared before the fit and is not adjusted; the margin is reported
+      rather than described as comfortable.
+
+  The run also announces an extrapolation: ethanol's vapour pressure is
+  evaluated at 372 K, outside its declared Trange (273-369).  Announced, not
+  judged -- it rides the caveat surface like every other extrapolation.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        nrtl_etoh_water_heldout;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  initial -0.8009;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial  246.18;   min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  initial  3.4578;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
+        );
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/etoh-water-101kPa-fit.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/etoh-water-101kPa-heldout.dat";
+                role     validation;
+            }
+        );
+
+        acceptance
+        {
+            maxAAD  0.1 percent;
+            //  0.1 % of a ~356 K bubble temperature is about 0.36 K, which is
+            //  a generous but defensible bound on the scatter of atmospheric
+            //  bubble-point measurements in the compilation these points were
+            //  transcribed from (classically quoted as a few tenths of a
+            //  kelvin).  It is an EXPERIMENTAL-UNCERTAINTY criterion, not an
+            //  engineering requirement and not a number chosen to be met.
+            origin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
+        }
+
+        residual
+        {
+            kind        T_bubble;
+            P           1.01325 bar;
+            components  ( ethanol water );
+        }
+
+        options
+        {
+            maxIter      60;
+            tolerance    1.0e-6;
+            fdStep       1.0e-3;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+        }
+    }
+);

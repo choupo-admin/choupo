@@ -1,0 +1,24 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    nrtl_etoh_water_heldout aad_heldout_pct  0.0737             1e-4
+diag    nrtl_etoh_water_heldout chi2             0.8097             1e-4
+diag    nrtl_etoh_water_heldout chi2_in_sample   0.8097             1e-4
+diag    nrtl_etoh_water_heldout chi2_reduced     0.2024             1e-4
+diag    nrtl_etoh_water_heldout cond_JtJ         394331596991.7449  1e-4
+diag    nrtl_etoh_water_heldout converged        1.0000             1e-4
+diag    nrtl_etoh_water_heldout corr_computed    1.0000             1e-4
+diag    nrtl_etoh_water_heldout dof              4.0000             1e-4
+diag    nrtl_etoh_water_heldout identifiable     0.0000             1e-4
+diag    nrtl_etoh_water_heldout invertible       1.0000             1e-4
+diag    nrtl_etoh_water_heldout iter             29.0000            1e-4
+diag    nrtl_etoh_water_heldout max_abs_corr     0.9999             1e-4
+diag    nrtl_etoh_water_heldout max_abs_resid    0.5825             1e-4
+diag    nrtl_etoh_water_heldout n_data           8.0000             1e-4
+diag    nrtl_etoh_water_heldout n_heldout        3.0000             1e-4
+diag    nrtl_etoh_water_heldout n_params         4.0000             1e-4
+diag    nrtl_etoh_water_heldout params_at_bound  0.0000             1e-4
+diag    nrtl_etoh_water_heldout penalised_points 0.0000             1e-4
+diag    nrtl_etoh_water_heldout rms              0.3181             1e-4
+diag    nrtl_etoh_water_heldout t_crit95         2.7760             1e-4
+diag    nrtl_etoh_water_heldout well_conditioned 0.0000             1e-4
