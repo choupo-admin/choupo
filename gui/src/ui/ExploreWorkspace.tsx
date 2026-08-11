@@ -32,7 +32,8 @@ import {
 
 import { resolveAdapter } from "../adapters/index.js";
 import { EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec } from "../case/exploreSynth.js";
-import { caseComponentFiles, caseComponents, mergeCatalogue, metaByName, type ComponentMeta } from "../case/catalogue.js";
+import { caseComponentFiles, caseComponents, mergeCatalogue, metaByName, rawRecordFor, type ComponentMeta } from "../case/catalogue.js";
+import { readComponentRecord } from "../case/componentRecord.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { CsvAutoPlot, axisDisplay } from "./plotting/CsvAutoPlot.js";
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
@@ -44,6 +45,7 @@ import { McCabePlot } from "./plotting/McCabePlot.js";
 import { FlashPlot } from "./plotting/FlashPlot.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
+import { ComponentInspector } from "./explore/ComponentInspector.js";
 import { useRailWidth, type RailWidthHandle } from "./explore/useRailWidth.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
@@ -475,6 +477,22 @@ export function ExploreWorkspace() {
   const [estimateOpen, setEstimateOpen] = useState(false);
   const [estimatePrefill, setEstimatePrefill] = useState("");
   const openEstimate = useCallback((nm: string) => { setEstimatePrefill(nm); setEstimateOpen(true); }, []);
+
+  // The Component Inspector (2026-08-11): double click a compound to inspect it
+  // as a scientific object.  A PANEL, not a workspace -- a workspace in this GUI
+  // answers "what am I doing", and inspection answers "what is this", so making
+  // it one would put an object beside nine verbs AND make the student leave the
+  // property task to look at a component.  The panel resolves the record by
+  // NAME, at open time: a case-local file shadows the catalogue exactly as the
+  // engine resolves it, so the inspector cannot show a record the solver would
+  // not use.
+  const [inspecting, setInspecting] = useState<string | null>(null);
+  const openInspector = useCallback((nm: string) => setInspecting(nm), []);
+  const inspected = useMemo(() => {
+    if (!inspecting) return null;
+    const local = localComponentFiles[`constant/components/${inspecting}.dat`];
+    return readComponentRecord(local ?? rawRecordFor(inspecting) ?? "");
+  }, [inspecting, localComponentFiles]);
 
   // McCabe-Thiele consumes the SAME engine run as the T-x-y (the y_eq(x) curve),
   // so it walks the VLE path for the spec / model pickers / fixed-P control.
@@ -1096,9 +1114,10 @@ export function ExploreWorkspace() {
   if (selected.length === 0) {
     return (
       <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
-        <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
+        <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} onInspect={openInspector} rail={rail} unlockLine={unlockLine} />
         {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
         <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
+        <InspectorPanel record={inspected} name={inspecting} onClose={() => setInspecting(null)} />
         <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
           alignItems: "center", justifyContent: "center", padding: 24 }}>
           <Stack gap="xs" align="center" maw={420} style={{ textAlign: "center" }}>
@@ -1132,9 +1151,10 @@ export function ExploreWorkspace() {
 
   return (
     <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
-      <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
+      <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} onInspect={openInspector} rail={rail} unlockLine={unlockLine} />
       {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
       <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
+      <InspectorPanel record={inspected} name={inspecting} onClose={() => setInspecting(null)} />
 
       {/* RIGHT — the VIEW column.  Chrome lives in exactly THREE homes (see the
           NO-REBLOAT invariant below): (1) the collapsible left SET rail; (2) the
@@ -1810,7 +1830,7 @@ export function ExploreWorkspace() {
  *  over the same catalogue regardless of the open case).  Explorer-only; never
  *  an app-wide panel. */
 function LeftRail({
-  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, rail, unlockLine,
+  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, onInspect, rail, unlockLine,
 }: {
   selected: string[];
   onAdd: (n: string) => void;
@@ -1818,6 +1838,7 @@ function LeftRail({
   vleContext?: boolean;
   caseComponents: ComponentMeta[];
   onEstimate: (name: string) => void;
+  onInspect: (name: string) => void;
   rail: RailWidthHandle;
   unlockLine?: string | null;
 }) {
@@ -1856,7 +1877,7 @@ function LeftRail({
         </Tooltip>
       </Group>
       <Box style={{ height: "calc(100% - 28px)" }}>
-        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} unlockLine={unlockLine} />
+        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} />
       </Box>
       {/* 6px col-resize splitter over the rail's right border (drag to resize,
           double-click to reset); the hover seam tints with the accent.  Hidden
@@ -1877,6 +1898,47 @@ function LeftRail({
           }}
         />
       )}
+    </Box>
+  );
+}
+
+/** The Component Inspector as a right-hand panel over the Explore view: a
+ *  DEEPER VIEW of the object the browser row names, never a task of its own.
+ *
+ *  It refuses honestly.  A name whose record cannot be resolved or parsed gets
+ *  a stated refusal naming the component, not an empty shell -- an inspector
+ *  that renders blank sections for a record it could not read is claiming the
+ *  record is empty, which is a different (and false) statement. */
+function InspectorPanel({ record, name, onClose }: {
+  record: ReturnType<typeof readComponentRecord>;
+  name: string | null;
+  onClose: () => void;
+}) {
+  if (!name) return null;
+  return (
+    <Box style={{
+      width: 460, flexShrink: 0, height: "100%", padding: 12, overflow: "hidden",
+      borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+      order: 3,
+    }}>
+      {record
+        ? <ComponentInspector record={record} onClose={onClose} />
+        : (
+          <Stack gap="xs">
+            <Group justify="space-between">
+              <Text fw={700} size="sm">{name}</Text>
+              <Button size="compact-xs" variant="subtle" onClick={onClose}>close</Button>
+            </Group>
+            <Text size="xs" c="dimmed">
+              No record could be read for <b>{name}</b>.  The compound browser
+              lists it, so either the file resolves outside the shared catalogue
+              (a case-local component in a case that is not open) or its
+              <Code> .dat </Code> does not parse.  Nothing is shown rather than
+              an empty inspector: a blank record would read as “this component
+              declares nothing”.
+            </Text>
+          </Stack>
+        )}
     </Box>
   );
 }

@@ -55,7 +55,7 @@ function groupOf(m: ComponentMeta): GroupKey {
 }
 
 export function CompoundBrowser({
-  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, unlockLine,
+  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, onInspect, unlockLine,
 }: {
   selected: string[];
   onAdd: (name: string) => void;
@@ -68,6 +68,10 @@ export function CompoundBrowser({
   caseComponents: ComponentMeta[];
   /** open the "estimate a missing component" modal (G3), prefilled with a name. */
   onEstimate: (name: string) => void;
+  /** DOUBLE click — inspect the component as a scientific object.  Single click
+   *  stays "use it in the current task"; the two never compete, because one
+   *  changes the SET and the other changes nothing. */
+  onInspect?: (name: string) => void;
   /** "what unlocks next" — a structural fact shown under the SET chips
    *  (EXPLORER-ux-redesign §4); null when nothing further unlocks. */
   unlockLine?: string | null;
@@ -138,6 +142,16 @@ export function CompoundBrowser({
     return (
       <UnstyledButton key={keyPrefix + m.name}
         onClick={() => (on ? onRemove(m.name) : add(m.name))}
+        // Double click INSPECTS.  The browser deliberately keeps the plain
+        // onClick/onDoubleClick pair FolderNav already uses (no debounce
+        // timer), which means a double click toggles twice and leaves the SET
+        // exactly as it found it -- inspection changes nothing.  That is the
+        // semantics we want, and it falls out of the pattern rather than being
+        // engineered.  (An unselected row does pass through the MRU on the way,
+        // so an inspected compound appears under "Recently used": you did touch
+        // it, so that reads correctly.)
+        onDoubleClick={onInspect ? () => onInspect(m.name) : undefined}
+        title={onInspect ? "click to use · double click to inspect" : undefined}
         className="choupo-compound-row"
         data-on={on ? "true" : undefined}
         style={{

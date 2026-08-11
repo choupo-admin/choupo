@@ -64,6 +64,27 @@ const RAW = import.meta.glob("../../../data/standards/components/*.dat", {
   eager: true,
 }) as Record<string, string>;
 
+// The RAW body behind each catalogue name, so the Component Inspector can show
+// the record verbatim ("[view raw record]") instead of re-rendering a parse of
+// it.  A re-render is a SECOND copy of the record's content, and the two drift:
+// the file on disk is the only thing a student can check a claim against.
+//
+// Standards first, then data/local/ — which is the engine's precedence, not an
+// accident of insertion order (Database.cpp: standards beats local, local fills
+// gaps).  A case-local file overrides both, and reaches the inspector through
+// the open case's own files, not through this map.
+const RAW_BY_NAME = new Map<string, string>();
+function rememberRaw(body: string): void {
+  const m = /^\s*name\s+([^;\s]+)\s*;/m.exec(body);
+  if (m && !RAW_BY_NAME.has(m[1]!)) RAW_BY_NAME.set(m[1]!, body);
+}
+
+/** The verbatim `.dat` behind a catalogue name, or null when the name is not in
+ *  the shared catalogue (a case-local component is resolved by its caller). */
+export function rawRecordFor(name: string): string | null {
+  return RAW_BY_NAME.get(name) ?? null;
+}
+
 function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard"): ComponentMeta | null {
   let j: JsonDict;
   try { j = toJson(parse(body)); } catch { return null; }
@@ -92,7 +113,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
 
 /** Every standard component, sorted by name. Computed once at module load. */
 export const CATALOGUE: ComponentMeta[] = Object.values(RAW)
-  .map((body) => metaFromDat(body))
+  .map((body) => { rememberRaw(body); return metaFromDat(body); })
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -108,7 +129,7 @@ export const CATALOGUE: ComponentMeta[] = Object.values(RAW)
 
 /** Every data/local/ (unverified private-tier) component, sorted by name. */
 export const DATA_LOCAL_CATALOGUE: ComponentMeta[] = dataLocalRaw
-  .map((body) => metaFromDat(body, "dataLocal"))
+  .map((body) => { rememberRaw(body); return metaFromDat(body, "dataLocal"); })
   .filter((m): m is ComponentMeta => m !== null)
   .sort((a, b) => a.name.localeCompare(b.name));
 
