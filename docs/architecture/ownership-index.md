@@ -119,11 +119,11 @@ Legend: **Owner** = canonical home of the logic/representation ·
 - Witness: `reactiveMultiphaseFlash` · Gates: `check_both_bases`, `check_phase_speciation`, `check_basis_spike`, `check_equilibrium_state_ref`
 
 **S3 — Aqueous analysis inlet (measurement ≠ inventory)**
-- Owner: `src/streams/AnalysisReconciler.cpp` (QP reconciliation; includes NOTHING from thermo/ — boundary is a translation unit) + the `aqueousAnalysis{}` reader in `src/streams/StreamStateIO.cpp`
+- Owner: `src/streams/AnalysisReconciler.cpp`; volumetric slot `src/thermo/electrolyte/AqueousVolumetric.cpp` (QP reconciliation; includes NOTHING from thermo/ — boundary is a translation unit) + the `aqueousAnalysis{}` reader in `src/streams/StreamStateIO.cpp`
 - Prod → Cons: lab sheet in `0/<stream>` (never rewritten) → `converged/` `calculated{analysisReconciliation, conservedInventory}` → reports only
 - Never: reconciling into the measurement; a silent adjustment; a built-in uncertainty table (`genericWaterAnalysis-v1` refused); pH adjustment (other side of the boundary); any iterative density at all (`provenance iterative;` REFUSED -- no composition-dependent volume closure exists; the direct closure is `derivedDiluteVolume`, both terms recorded); an iteration whose update is independent of the iterate (the constant-map ceremony, rejected 2026-08-10)
 - Contract: `docs/design/aqueous-analysis-inlet-scope.md` §8–9
-- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`, `check_derived_density`
+- Witness: `aqueousAnalysisInlet` · Gates: `check_aqueous_analysis`, `check_aqueous_reconciliation`, `check_aqueous_qualifier`, `check_derived_density`, `check_volumetric_rung1`
 
 ## Solvers & flowsheet
 

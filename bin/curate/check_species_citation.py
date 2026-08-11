@@ -59,6 +59,10 @@ CITED = re.compile(r'^\s*(source|citation|origin|reference)\b', re.M | re.I)
 #  reference: an invented citation is undetectable, and it would turn a
 #  visible gap into an invisible falsehood.
 PINNED = SPECIES_WITHOUT_CITATION
+
+#  Blocks that carry their OWN source for their OWN datum -- excluded from
+#  the thermochemistry citation search (see the note in main()).
+OTHER_SOURCED_BLOCKS = re.compile(r"\nvolumetric\s*\{.*?\n\}", re.S)
 def main() -> int:
     missing, seen, nclaim = [], set(), 0
     if not SPECIES.is_dir():
@@ -68,6 +72,15 @@ def main() -> int:
 
     for p in sorted(SPECIES.glob("*.dat")):
         text = p.read_text()
+        #  A citation ANYWHERE in the file is not a citation FOR THE
+        #  THERMOCHEMISTRY.  Found 2026-08-11, by the rung-1 slice that
+        #  caused it: adding a properly cited `volumetric { ... source
+        #  "Millero ..." }` block made NH4.dat look sourced and turned its
+        #  pinned thermochemistry gap into a "stale pin" -- a FALSE NEGATIVE
+        #  in the exact gate that exists to stop unsourced numbers.  Other
+        #  blocks' sources are stripped before the search, so a citation
+        #  must sit in the file's own body or inside aqueousThermo.
+        text = OTHER_SOURCED_BLOCKS.sub("", text)
         if not CLAIMS.search(text):
             continue                      # no thermochemical claim, no duty
         nclaim += 1

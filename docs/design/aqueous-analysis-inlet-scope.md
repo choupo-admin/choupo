@@ -768,3 +768,71 @@ Gate: `check_derived_density` (D1 independent python recomputation of the
 closure + term-sum identity; D2–D8 refusals by name, `iterative` among
 them; a non-convergence probe DELIBERATELY ABSENT, and the docstring says
 why).  The corpus case stays MEASURED.
+
+### 10.7 Rung 1 — the volumetric-model slot (ruled + built 2026-08-11)
+
+**What changed, and what deliberately did not.**  The density-less aqueous
+analysis had exactly one closure (solutes add mass, no volume) and no way
+to say so as a *choice*.  Vítor ruled a first explicit rung: ideal
+volumetric mixing on the infinite-dilution standard state, **V^E = 0**,
+direct and algebraic, as one legitimate formulation inside an extensible
+slot — never a shortcut hard-wired into `aqueousAnalysis`.
+
+```
+density { provenance derived; volumetric { method standardStateVolumes; } }
+```
+
+`AqueousVolumetricModel` (`src/thermo/electrolyte/`) is the slot — explicit
+factory, registered in all four binaries — with two formulations:
+`diluteVolume` (rung 0, now first-class and declarable by name) and
+`standardStateVolumes` (rung 1).  `provenance derivedDiluteVolume;` stays
+readable as **sugar** for the pair, expanded aloud.
+
+**The name.** `standardStateVolumes`, not "ideal molar volume": for ions
+these are *conventional standard-state* quantities, not pure-liquid molar
+volumes — there is no pure liquid Na⁺ at 25 °C.
+
+**The convention, disarmed by a theorem.**  Single-ion V° are conventional
+(V°(H⁺) = 0 — `conventions/MilleroConventional-v1`); a shift adds λ·zᵢ to
+every ion, so over a **charge-closed** inventory it cancels exactly — and
+the reconciliation closes charge *before* the sum.  Measured through the
+engine: V° → V° + 5z leaves the density unchanged to 1e-12 (a tight
+numerical tolerance, not a bit-level claim — the identity is exact, the
+summation order is not).
+
+**Validation, external and two-sided.**  Eleven species records gained
+`volumetric { V0; convention; Trange; source; reviewStatus interim; }`
+(Millero, Chem. Rev. 71 (1971), interim transcription staged for batch
+primary review).  Their electroneutral sums reproduce the literature salt
+volumes to the digit — NaCl 16.62, KCl 26.85, CaCl₂ 17.81, MgCl₂ 14.49 —
+and seven **measured** solution densities (NaCl: Rogers & Pitzer 1982;
+KCl: Isono 1984) sit inside per-point bands: 0.01–0.06 % at 0.1 m, ~0.1 %
+at 1 m, +0.69 % at 3 m, against rung 0's +1.8 % at 1 m.  The 3 molal point
+is pinned **both ways** — a floor as well as a ceiling — so the declared
+~1 mol/kg validity cannot silently drift into a claim nobody re-derived.
+
+**Refusals** (never DWSIM's silent zero volume): a master with no
+volumetric block, a V° with no convention, mixed conventions in one sum,
+an unregistered method, and `provenance derived` with no method — each by
+name, with both remedies where two exist.
+
+**What this does NOT do.**  Rung 1 serves slice B's *user story*
+(density-less sheets) with an explicitly selected direct approximation.
+**The composition-dependent iterative volumetric closure remains BLOCKED**
+pending a genuine non-ideal volumetric model (rung 2: V̄ᵢ(T, I), excess
+volume; rung 3: Pitzer volumetrics).  Slice B is not completed by this.
+
+**Two things found while building, pinned not expanded** (the last-slice
+rule): (a) a newly curated species field does **not** reach a SEALED case
+until re-import — the seal behaving exactly as designed, and the reason
+the gate re-imports its staged copies; (b) `bridgeTrueIon` rebuilds the
+species record, so any field it does not copy is silently absent
+downstream — the reduced-identity rule's **third** encounter (after
+`dissociatesTo` and `formula`), now carrying the volumetric block and a
+comment telling the next author to check it.
+
+Gate: `check_volumetric_rung1` (V1 record re-derivation + charge-closure
+premise, V2 the seven measured anchors with the two-sided edge, V3
+engine-level convention invariance, V4 five refusals; sabotage-verified
+twice — and the K⁺ sign-flip sabotage showed the 0.1 m point staying
+inside its band, which is why the anchor set spans 0.1–3 molal).

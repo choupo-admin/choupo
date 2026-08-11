@@ -3,6 +3,12 @@
 
     bin/curate/check_derived_density.py
 
+SCOPE NOTE (2026-08-11, rung 1).  This gate covers the SUGAR spelling
+`provenance derivedDiluteVolume;` -- which now expands to
+`provenance derived; volumetric { method diluteVolume; }` -- and the
+`iterative` refusal.  The volumetric SLOT itself and rung 1
+(standardStateVolumes) have their own gate: check_volumetric_rung1.
+
 WHY THIS EXISTS.  Slice B's first build wrapped the direct dilute-volume
 closure in an "iteration" whose update was independent of the iterate, and
 Vitor REJECTED it: immediate convergence was not a solver property but
@@ -141,8 +147,12 @@ else:
                     fails.append(f"D1: the record is missing '{key}'")
                 else:
                     vals[key] = float(m.group(1))
-            if "closure            diluteVolume;" not in b:
-                fails.append("D1: the record does not name its closure")
+            #  RENAMED 2026-08-11 (rung 1): the record names its FORMULATION
+            #  through the volumetric slot (`method diluteVolume;`) rather
+            #  than a bare `closure` key -- diluteVolume is now one
+            #  registered method among others, not the only closure.
+            if "method             diluteVolume;" not in b:
+                fails.append("D1: the record does not name its method")
             if len(vals) == 3:
                 if abs(vals["rhoWater"] + vals["soluteMass"]
                        - vals["final"]) > 1e-4:

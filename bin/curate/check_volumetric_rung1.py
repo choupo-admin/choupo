@@ -64,9 +64,13 @@ Sabotage 1 -- K+ sign-flipped in the curated record (the DWSIM precedent
 reproduced deliberately):
 
     check_volumetric_rung1: FAILED
-      V2: KCl at 0.1 m: model 1000.00 kg/m3 vs measured 1002.4 (dev
-      -0.239 %, band 0.150 %) -- the curated electroneutral sum does not
+      V2: KCl at 0.5 m: model 1029.69 kg/m3 vs measured 1020.6 (dev
+      +0.890 %, band 0.150 %) -- the curated electroneutral sum does not
       reproduce the measurement
+      V2: KCl at 1.0 m: ... (dev +1.826 %, band 0.250 %)
+    WORTH KNOWING: the 0.1 m point stays INSIDE its band under the flip.
+    A single dilute anchor would not have caught a sign-flipped ion --
+    which is why the set spans 0.1 to 3 molal rather than one point.
 
 Sabotage 2 -- the missing-volumetric refusal removed (silent zero volume):
 

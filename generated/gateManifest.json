@@ -101,7 +101,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 122 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 123 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -112,8 +112,8 @@
       "claim": "check_default_reports: OK -- a no-reports steady case writes the three balances by default with no ERROR/WARNING noise; a missing enthalpy datum is UNAVAILABLE (with its curation remedy and the REFUSED artefact) under the default and a hard ERROR when declared; `enabled false;` opts out per report, independently"
     },
     "check_derived_density": {
-      "exit": 0,
-      "claim": "check_derived_density: OK -- the authorised derivedDiluteVolume closure runs with both terms recorded (they sum to the final, and the final agrees with an independent python recomputation to 0.1 kg/m3); provenance-less, two-sources, missing sample temperature, out-of-domain (Kell 0-100 degC), molality-basis and iteration{}-on-a-direct-closure all refuse by name; and `provenance iterative` refuses stating the missing machinery -- slice B is BLOCKED on a composition-dependent volume model, not completed.  DELIBERATELY ABSENT: a non-convergence probe (only reachable against machinery that should not exist).  NOT COVERED: the closure's ACCURACY (an announced approximation, not a validated density model) and the reconciliation/inversion arithmetic (their own gates)."
+      "exit": 1,
+      "claim": "check_derived_density: FAILED"
     },
     "check_doc_references": {
       "exit": 0,
@@ -169,7 +169,7 @@
     },
     "check_equilibrium_families": {
       "exit": 0,
-      "claim": "equilibrium-family gate: 3 convention profiles, 214 migrated parameterisations, 7 cross-convention diagnostics"
+      "claim": "equilibrium-family gate: 4 convention profiles, 214 migrated parameterisations, 7 cross-convention diagnostics"
     },
     "check_equilibrium_state_ref": {
       "exit": 0,
@@ -205,7 +205,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 123 gates, and the other 119 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 124 gates, and the other 120 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -217,7 +217,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40438 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40442 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -413,15 +413,15 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 782 record(s) scanned; no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted."
+      "claim": "check_source_licence: OK -- 783 record(s) scanned; no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted."
     },
     "check_speciation": {
       "exit": 0,
       "claim": "electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK."
     },
     "check_species_citation": {
-      "exit": 0,
-      "claim": "check_species_citation: OK -- 36 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids."
+      "exit": 1,
+      "claim": "check_species_citation: FAILED"
     },
     "check_species_identity": {
       "exit": 0,
@@ -436,8 +436,8 @@
       "claim": "check_stage_identity: OK -- a stage's own two products, recombined and re-flashed, come back as the same stage (T, x, y, V/F all within 1e-06 relative); the off-stage negative does not"
     },
     "check_std_includes": {
-      "exit": 0,
-      "claim": "std includes: 615 source files, each includes what it uses."
+      "exit": 1,
+      "claim": "FAIL  src/thermo/electrolyte/AqueousVolumetric.cpp uses std::unique_ptr without #include <memory> -- g++ lends it, emscripten's libc++ does not"
     },
     "check_stream_basis": {
       "exit": 0,
@@ -493,11 +493,15 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 2983 declared window(s) across 3666 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 2994 declared window(s) across 3667 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_volatility_declaration": {
       "exit": 0,
       "claim": "check_volatility_declaration: OK -- the modelled/declared contradiction is announced with its own Tb and the run continues; absence stays UNKNOWN (never a claim); 3 refusals fire named (junk class, unfalsifiable claim, restated Tb)"
+    },
+    "check_volumetric_rung1": {
+      "exit": 0,
+      "claim": "check_volumetric_rung1: OK -- rung 1 (standardStateVolumes) runs through the volumetric slot and its record re-derives exactly (phi, solute mass, rho, and a charge-closed inventory); the curated electroneutral sums reproduce 7 MEASURED solution densities (NaCl Rogers & Pitzer 1982, KCl Isono 1984) inside their bands, with the 3 molal point pinned BOTH ways so the ~1 mol/kg validity claim cannot silently drift; a convention shift (V0 -> V0 + 5 z) leaves the density unchanged to 1e-12 through the engine; and five refusals fire by name.  NOT COVERED: accuracy outside the anchored range (two 1-1 salts, 25 C, to 3 molal), any composition dependence (rung 2 does not exist -- slice B's iterative closure stays BLOCKED on it), and the reconciliation arithmetic (its own gates)."
     },
     "check_witness_tier": {
       "exit": 0,

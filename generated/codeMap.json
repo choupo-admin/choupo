@@ -97,6 +97,9 @@
   "AqueousSurface": [
    "src/propertyOps/CasePackage.H"
   ],
+  "AqueousVolumetricModel": [
+   "src/thermo/electrolyte/AqueousVolumetric.H"
+  ],
   "Atomizer": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
@@ -964,6 +967,7 @@
    "src/thermo/Database.H"
   ],
   "Result": [
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
    "src/unitOperations/saturation/BubblePoint.H"
   ],
@@ -1177,6 +1181,9 @@
   "Target": [
    "src/outerDriver/DesignSpec.H"
   ],
+  "Term": [
+   "src/thermo/electrolyte/AqueousVolumetric.H"
+  ],
   "ThermalConductivityModel": [
    "src/thermo/transport/ThermalConductivityModel.H"
   ],
@@ -1292,6 +1299,9 @@
   ],
   "Vogel": [
    "src/thermo/transport/Vogel.H"
+  ],
+  "VolumetricTerm": [
+   "src/streams/ProcessStream.H"
   ],
   "Wegstein": [
    "src/solver/Wegstein.H"
@@ -1692,6 +1702,16 @@
    {
     "key": "edwardsPitzer",
     "type": "EdwardsPitzerModel"
+   }
+  ],
+  "src/thermo/electrolyte/AqueousVolumetric.cpp": [
+   {
+    "key": "diluteVolume",
+    "type": "DiluteVolume"
+   },
+   {
+    "key": "standardStateVolumes",
+    "type": "StandardStateVolumes"
    }
   ],
   "src/thermo/phase/Phase.cpp": [
@@ -2139,6 +2159,7 @@
    "src/thermo/ThermoPackageBuilder.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/electrolyte/AqueousActivity.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
@@ -2203,6 +2224,7 @@
    "src/thermo/ThermoPackageBuilder.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/electrolyte/AqueousActivity.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
@@ -2266,6 +2288,7 @@
    "src/thermo/ThermoPackageBuilder.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/electrolyte/AqueousActivity.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/phase/Phase.H",
@@ -2328,6 +2351,7 @@
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
    "src/thermo/electrolyte/AqueousActivity.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/henrysLaw/HenrysLaw.H",
@@ -4188,6 +4212,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/PitzerForm.H",
@@ -4542,6 +4567,24 @@
    "src/thermo/electrolyte/EdwardsCatalogue.H",
    "src/thermo/electrolyte/EdwardsPitzer.H",
    "src/thermo/electrolyte/PitzerHMW.H",
+   "src/thermo/electrolyte/SolventProperties.H"
+  ],
+  "src/thermo/electrolyte/AqueousVolumetric.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/electrolyte/AqueousVolumetric.H",
+   "src/thermo/electrolyte/ENRTLSingleSalt.H",
+   "src/thermo/electrolyte/PitzerForm.H",
+   "src/thermo/electrolyte/PitzerSingleSalt.H",
+   "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H"
   ],
   "src/thermo/electrolyte/EdwardsCatalogue.cpp": [
@@ -6597,6 +6640,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -6831,6 +6875,7 @@
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -7079,6 +7124,7 @@
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -7371,6 +7417,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -7576,6 +7623,7 @@
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -7929,6 +7977,7 @@
    "src/thermo/adsorbent/Adsorbent.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -9219,6 +9268,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -9343,6 +9393,7 @@
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -9560,6 +9611,7 @@
    "src/thermo/activityCoefficient/UNIFAC.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
@@ -9665,6 +9717,7 @@
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
@@ -9953,6 +10006,14 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp"
   ],
+  "src/thermo/electrolyte/AqueousVolumetric.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoCtrl/main.cpp",
+   "src/applications/choupoProps/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp"
+  ],
   "src/thermo/electrolyte/ENRTLMixedSolvent.H": [
    "src/propertyOps/ENRTLMixedSolventOp.cpp"
   ],
@@ -9971,6 +10032,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
@@ -10023,6 +10085,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
@@ -10050,6 +10113,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
@@ -10078,6 +10142,7 @@
    "src/thermo/Component.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
    "src/thermo/electrolyte/ReactiveVLE.cpp",
@@ -10105,6 +10170,7 @@
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/electrolyte/AqueousActivity.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
    "src/thermo/electrolyte/EdwardsPitzer.cpp",
    "src/thermo/electrolyte/ExchangeInput.cpp",
    "src/thermo/electrolyte/PitzerHMW.cpp",
