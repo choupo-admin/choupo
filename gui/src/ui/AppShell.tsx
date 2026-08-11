@@ -99,6 +99,9 @@ const InternalsView = lazy(() =>
 );
 // The McCabe-Thiele analyzer popped out full-window (?explore=mccabe&key=…) —
 // lazy so its Plotly chain stays out of the index chunk (same reason as above).
+const ComponentTab = lazy(() =>
+  import("./explore/ComponentTab.js").then((m) => ({ default: m.ComponentTab })),
+);
 const ExploreMccabeTab = lazy(() =>
   import("./explore/ExploreMccabeTab.js").then((m) => ({ default: m.ExploreMccabeTab })),
 );
@@ -213,6 +216,20 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <ExploreMccabeTab />
+      </Suspense>
+    );
+  }
+
+  // The Component Inspector full-window (?component=<name>): a real tab that
+  // re-derives from the NAME rather than re-hydrating a stash, so it is
+  // bookmarkable, shareable and has nothing to expire.  It must sit BEFORE the
+  // bootExpired branch: this tab has no stash, so an expired-stash refusal
+  // would be describing a mechanism it does not use.
+  if (typeof window !== "undefined"
+      && new URLSearchParams(window.location.search).has("component")) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <ComponentTab />
       </Suspense>
     );
   }
