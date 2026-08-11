@@ -32,6 +32,21 @@ ARMS (each sabotage-verified; every one must fail with the fix reverted):
       that all points are fitted and no validation is claimed, and the two
       pre-existing fit cases keep their goldens.
 
+  A8  THE DOSSIER IS OUT OF THE SOLVER'S REACH.  Record resolution looks in
+      <case>/constant/, data/standards/ and data/local/ only, so a file under
+      <case>/curation/ is unreachable BY CONSTRUCTION.  The arm plants a
+      poisoned component record inside curation/ and requires that a run does
+      not read it -- which keeps the guarantee true if a resolver root is ever
+      added.
+
+  A9  THE FOUR METRICS STAY APART.  The dossier names r2InSample, rmsHeldOut
+      and aadHeldOutPct as separate fields and states a verdict only against a
+      PRE-DECLARED band; a run with no band must say so and claim nothing.
+
+  A10 PROMOTION REFUSES WHAT IT SHOULD.  promote-from-dossier refuses a
+      property with no promotable verdict, and refuses any promotion with no
+      promoter and grounds.
+
   A7  THE FINGERPRINT CAPTURES THE ROLE, not merely the file list: curate01's
       two operations name identical datasets and must fingerprint differently.
 
@@ -167,6 +182,61 @@ def main():
         fails.append("A6 the legacy single-dataset form does not announce that "
                      "it claims no validation")
 
+    # -- A9: the four metrics are separate fields, and the verdict is earned -
+    dossier = CASE / "curation/water.dossier"
+    if not dossier.exists():
+        fails.append("A9 no curation dossier was written")
+    else:
+        d = dossier.read_text()
+        for field in ("r2InSample", "rmsHeldOut", "aadHeldOutPct",
+                      "acceptanceMaxAADPct", "partitionFingerprint"):
+            if field not in d:
+                fails.append(f"A9 the dossier does not carry `{field}`")
+        if "verdict        validated;" not in d:
+            fails.append("A9 the held-out operation did not reach `validated` "
+                         "against its pre-declared band")
+        if "verdict        validationRefused;" not in d:
+            fails.append("A9 the all-fit operation is not recorded as refused")
+        if "NOT runtime property data" not in d:
+            fails.append("A9 the dossier does not state that it is not runtime "
+                         "data -- a reader must not have to be told elsewhere")
+
+    # -- A8: the solver cannot reach anything under curation/ ----------------
+    with tempfile.TemporaryDirectory() as td:
+        d = pathlib.Path(td) / "poison"
+        shutil.copytree(CASE, d)
+        (d / "curation/components").mkdir(parents=True, exist_ok=True)
+        #  A VALID record carrying one OBSERVABLE marker.  The first version
+        #  of this arm planted an invalid stub, and the sabotage fired on the
+        #  run CRASHING rather than on the record being read -- proving the
+        #  arm noticed a difference, not that it would catch the actual leak.
+        #  `reviewStatus interim;` is announced by name when a record is
+        #  resolved, so its ABSENCE is the evidence.
+        poisoned = (d / "constant/components/water.dat").read_text() \
+                 + "\nreviewStatus interim;\n"
+        (d / "curation/components/water.dat").write_text(poisoned)
+        rc_p, out_p = run(d)
+        if rc_p != 0:
+            fails.append(f"A8 the case stopped running once curation/ held a "
+                         f"component record (exit {rc_p})")
+        elif "[unreviewed] component 'water'" in out_p:
+            fails.append("A8 A RECORD UNDER curation/ REACHED THE RUN -- the "
+                         "dossier directory sits inside a resolver root, and "
+                         "'invisible to the solver' is no longer a fact about "
+                         "the code")
+
+    # -- A10: promotion refuses -------------------------------------------
+    promoter = ROOT / "bin/curate/promote-from-dossier"
+    if not promoter.exists():
+        fails.append("A10 promote-from-dossier is missing")
+    else:
+        r = subprocess.run([str(promoter), "curation/water.dossier",
+                            "--property", "vapourPressure"],
+                           cwd=CASE, capture_output=True, text=True)
+        if r.returncode == 0 or "act with an author" not in r.stdout:
+            fails.append("A10 a promotion with no promoter/grounds was not "
+                         "refused by name")
+
     if fails:
         print("check_evidence_partition: FAIL")
         for f in fails:
@@ -185,7 +255,10 @@ def main():
           "the correlation being fitted, so its held-out residual is "
           "arithmetic), whether two datasets are scientifically independent "
           "(only an identity collision is a fact), and design refusal R5, "
-          "which has no witness in this slice.")
+          "which has no witness in this slice.  The dossier arms check that the "
+          "four metrics are SEPARATE FIELDS and that a verdict is only claimed "
+          "against a pre-declared band; they do not judge whether a band is "
+          "well chosen, which is the curator's call.")
     return 0
 
 

@@ -48,6 +48,7 @@ Description
 
 #include "AadCompare.H"
 #include "core/AdvisorySummary.H"
+#include "propertyOps/CurationDossier.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
 #include "core/DictCanonical.H"
@@ -977,6 +978,19 @@ try
     //
     //  Printed AFTER the result markers so the JSON block between them stays
     //  exactly what every downstream consumer already parses.
+    //  THE CURATION DOSSIER -- written last, so it records the run that
+    //  actually happened.  It is a work record with evidence semantics and is
+    //  structurally out of the resolver's reach; nothing in it is promoted.
+    {
+        const auto paths = CurationDossier::instance().write();
+        for (const auto& pth : paths)
+            std::cout << "\n[curation] dossier written: " << pth
+                      << "   (evidence record -- NOT runtime data, and nothing"
+                         " promoted; review it, then\n"
+                         "           bin/curate/promote-from-dossier to admit a"
+                         " property to data/standards/)\n";
+    }
+
     printAdvisorySummary(AdvisoryLog::instance().entries());
 
     return overallRc;

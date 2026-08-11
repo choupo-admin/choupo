@@ -164,6 +164,18 @@ public:
 
     //  R1.
     bool validationRefused() const { return engaged_ && validation_.empty(); }
+
+    //  THE ACCEPTANCE CRITERION, and why it is OPTIONAL but PRE-DECLARED.
+    //  Held-out residuals are a measurement; whether they are SMALL ENOUGH is
+    //  a judgement, and the engine may not make it silently.  So:
+    //    * declared  -> the run may report VALIDATED or NOT VALIDATED;
+    //    * absent    -> the run reports that a held-out validation was
+    //                   PERFORMED, with its residuals, and claims no verdict.
+    //  The band is part of the frozen declaration and rides the fingerprint,
+    //  because widening it after seeing the residuals is the same
+    //  tuning-to-the-answer the partition itself exists to prevent.
+    bool   hasAcceptance() const { return hasAcceptance_; }
+    scalar acceptanceMaxAADPct() const { return maxAADPct_; }
     static const char* refusalR1();
 
     //  R4 -- the caller knows how many validation points survived its own
@@ -198,6 +210,8 @@ public:
 
 private:
     bool                         engaged_ = false;
+    bool                         hasAcceptance_ = false;
+    scalar                       maxAADPct_ = 0.0;
     std::vector<EvidenceDataset> fit_;
     std::vector<EvidenceDataset> validation_;
     std::string                  fingerprint_;

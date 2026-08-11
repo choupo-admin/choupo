@@ -63,6 +63,14 @@ operations
             }
         );
 
+        //  THE ACCEPTANCE BAND, declared BEFORE the fit and part of the
+        //  frozen fingerprint.  Without it the run would report the held-out
+        //  residuals and claim no verdict -- because whether a residual is
+        //  small enough is a judgement, not a measurement, and the engine
+        //  does not make it silently.  Widening this after seeing the
+        //  residuals is the tuning the whole contract exists to prevent.
+        acceptance { maxAAD 0.001 percent; }
+
         output     { file psat_water_validated.csv; }
     }
 

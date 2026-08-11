@@ -132,6 +132,27 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
     }
 
     p.engaged_ = true;
+
+    //  The acceptance band, if the author declared one.  Read BEFORE the
+    //  datasets so it is unambiguously part of the pre-fit declaration.
+    if (opDict->found("acceptance"))
+    {
+        auto acc = opDict->subDict("acceptance");
+        if (!acc->found("maxAAD"))
+            throw std::runtime_error(opLabel + ": `acceptance {}` is declared"
+                " but carries no `maxAAD`.  A band with no number decides"
+                " nothing; either state `maxAAD <x> percent;` or delete the"
+                " block and let the run report the held-out residuals without"
+                " claiming a verdict.");
+        p.hasAcceptance_ = true;
+        p.maxAADPct_ = acc->lookupScalar("maxAAD") * 100.0;   // fraction -> %
+        if (p.maxAADPct_ <= 0.0)
+            throw std::runtime_error(opLabel + ": `acceptance.maxAAD` must be"
+                " positive; a band of zero or less can never be met and would"
+                " make every validation fail for a reason that is not the"
+                " model's.");
+    }
+
     auto entries = opDict->lookupDictList("evidence");
     if (entries.empty())
         throw std::runtime_error(opLabel + ": `evidence ( )` is declared and"
@@ -202,6 +223,10 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
     std::sort(ids.begin(), ids.end());
     std::string canon;
     for (const auto& s : ids) canon += s + "\n";
+    //  The acceptance band is part of the frozen declaration: a fingerprint
+    //  blind to it would let the band move after the residuals were seen.
+    if (p.hasAcceptance_)
+        canon += "acceptance|maxAAD=" + std::to_string(p.maxAADPct_) + "\n";
     p.fingerprint_ = fnv1a(canon);
 
     return p;

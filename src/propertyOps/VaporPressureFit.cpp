@@ -28,6 +28,7 @@ License
 
 #include "VaporPressureFit.H"
 #include "EvidencePartition.H"
+#include "CurationDossier.H"
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 #include "core/Units.H"
@@ -174,6 +175,20 @@ int VaporPressureFit::run(const DictPtr& dict,
                       << aad_v << " %, RMS " << rms_v << " in log10(P)\n";
             //  A caller-side independence fact: the partition class settles
             //  identity, the caller has the numbers and settles domain.
+            //  THE VERDICT, said out loud -- but only against a band the
+            //  case declared BEFORE the fit.  With no band the run reports
+            //  the residuals and claims nothing, which is honest rather than
+            //  incomplete.
+            if (part.hasAcceptance())
+                std::cout << "    -> "
+                          << (aad_v <= part.acceptanceMaxAADPct()
+                                ? "VALIDATED" : "NOT VALIDATED")
+                          << " against the pre-declared band (maxAAD "
+                          << part.acceptanceMaxAADPct() << " %)\n";
+            else
+                std::cout << "    -> held-out validation PERFORMED; no"
+                             " acceptance band was declared, so no verdict is"
+                             " claimed on these residuals.\n";
             if (overlaps)
                 std::cout << "      [independence] the held-out temperature"
                              " range OVERLAPS the fitted one -- interpolation,"
@@ -191,6 +206,41 @@ int VaporPressureFit::run(const DictPtr& dict,
                   << "    R2 = " << R2 << " is IN-SAMPLE (the model reproducing"
                      " the very points it was fitted to).\n";
         diag_["n_heldout"] = 0.0;
+    }
+
+    // -- THE CURATION DOSSIER.  Evidence semantics, not runtime data: it
+    //  lands in <case>/curation/, which no resolver root reaches.
+    {
+        CurationDossier::PropertyRecord rec;
+        rec.property   = "vapourPressure";
+        rec.opName     = dict->lookupWordOrDefault("name", "vaporPressureFit");
+        rec.opType     = "vaporPressureFit";
+        rec.model      = "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+        rec.parameters = { {"A", A}, {"B", B}, {"C", C} };
+        rec.engaged     = part.engaged();
+        rec.fingerprint = part.fingerprint();
+        rec.fitSets        = part.fit();
+        rec.validationSets = part.validation();
+        rec.fitMin = Tmin; rec.fitMax = Tmax; rec.domainUnit = "K";
+        rec.nFit   = T.size();
+        rec.r2InSample = R2;
+        rec.heldOut = part.engaged() && !Tv.empty();
+        if (rec.heldOut)
+        {
+            scalar lo = 1e30, hi = 0.0;
+            for (scalar t : Tv) { lo = std::min(lo, t); hi = std::max(hi, t); }
+            rec.valMin = lo; rec.valMax = hi; rec.nValidation = Tv.size();
+            rec.rmsHeldOut    = diag_["rms_heldout_log10P"];
+            rec.rmsUnit       = "log10(P)";
+            rec.aadHeldOutPct = diag_["aad_heldout_pct"];
+        }
+        rec.hasAcceptance   = part.hasAcceptance();
+        rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
+        rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
+                                                 rec.aadHeldOutPct);
+        if (part.validationRefused())
+            rec.refusal = "No independent experimental evidence remains after fitting.";
+        CurationDossier::instance().add(comp, std::move(rec));
     }
 
     diag_["A"]               = A;

@@ -28,6 +28,7 @@ License
 
 #include "HeatCapacityFit.H"
 #include "EvidencePartition.H"
+#include "CurationDossier.H"
 #include "core/Dictionary.H"
 #include "core/Units.H"
 #include "thermo/ThermoPackage.H"
@@ -187,6 +188,40 @@ int HeatCapacityFit::run(const DictPtr& dict,
                   << "    R2 is IN-SAMPLE (the model reproducing the very"
                      " points it was fitted to).\n";
         diag_["n_heldout"] = 0.0;
+    }
+
+    {
+        CurationDossier::PropertyRecord rec;
+        rec.property = "liquidHeatCapacity";
+        rec.opName   = dict->lookupWordOrDefault("name", "heatCapacityFit");
+        rec.opType   = "heatCapacityFit";
+        rec.model    = "polynomial (degree " + std::to_string(degree) + ")";
+        for (std::size_t j = 0; j < P; ++j)
+            rec.parameters.emplace_back("A" + std::to_string(j), coef[j]);
+        rec.engaged     = part.engaged();
+        rec.fingerprint = part.fingerprint();
+        rec.fitSets        = part.fit();
+        rec.validationSets = part.validation();
+        rec.fitMin = Tmin; rec.fitMax = Tmax; rec.domainUnit = "K";
+        rec.nFit   = M;
+        rec.r2InSample = R2;
+        rec.heldOut = part.engaged() && !Tv.empty();
+        if (rec.heldOut)
+        {
+            scalar lo = 1e30, hi = 0.0;
+            for (scalar t : Tv) { lo = std::min(lo, t); hi = std::max(hi, t); }
+            rec.valMin = lo; rec.valMax = hi; rec.nValidation = Tv.size();
+            rec.rmsHeldOut    = diag_["rms_heldout_Cp"];
+            rec.rmsUnit       = "J/(mol.K)";
+            rec.aadHeldOutPct = diag_["aad_heldout_pct"];
+        }
+        rec.hasAcceptance   = part.hasAcceptance();
+        rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
+        rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
+                                                 rec.aadHeldOutPct);
+        if (part.validationRefused())
+            rec.refusal = "No independent experimental evidence remains after fitting.";
+        CurationDossier::instance().add(comp, std::move(rec));
     }
 
     for (std::size_t j = 0; j < P; ++j) diag_["A" + std::to_string(j)] = coef[j];

@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      water;
+reviewStatus   unreviewed;
+
+property vapourPressure
+{
+    operation      psat_water_validated;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validated;
+
+    fittedParameters
+    {
+        A  5.40221000938;
+        B  1838.67500498;
+        C  -31.7369996414;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "871dae00c113a0ec";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/psat-water-lowT.dat";
+            doi       "choupo-synthetic/water-psat-lowT";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/psat-water-highT.dat";
+            doi       "choupo-synthetic/water-psat-highT";
+        }
+        );
+
+        domain
+        {
+            fit         { min 275 K; max 320 K; n 10; }
+            validation  { min 325 K; max 370 K; n 10; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        1;   // the model reproducing the points it was FITTED to
+        rmsHeldOut        2.76023695412e-10;   // log10(P), on evidence the fit never saw
+        aadHeldOutPct     5.95531823855e-08;
+        acceptanceMaxAADPct 0.001;   // DECLARED BEFORE the fit; part of the fingerprint
+    }
+}
+
+property vapourPressure
+{
+    operation      psat_water_refused;   // type vaporPressureFit
+    model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
+    verdict        validationRefused;
+    refusal        "No independent experimental evidence remains after fitting.";
+
+    fittedParameters
+    {
+        A  5.40221000142;
+        B  1838.67500085;
+        C  -31.7369999323;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "4fa3052bbbfff4d9";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/psat-water-lowT.dat";
+            doi       "choupo-synthetic/water-psat-lowT";
+        }
+        {
+            role      fit;
+            dataset   "constant/experiments/psat-water-highT.dat";
+            doi       "choupo-synthetic/water-psat-highT";
+        }
+        );
+
+        domain
+        {
+            fit         { min 275 K; max 370 K; n 20; }
+        }
+    }
+
+    metrics
+    {
+        r2InSample        1;   // the model reproducing the points it was FITTED to
+        //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
+        //  in-sample -- and must not be read as an external check.
+    }
+}
+
