@@ -127,10 +127,16 @@ variables (Duhem).  Give **`P` + exactly ONE of {`T`, `vaporFraction`}**:
 saturated / two-phase feed CANNOT be pinned with `(T,P)` — you must give
 `vaporFraction` with one of them.  This is the classic point of confusion.
 
-- All three (`T` + `P` + `vaporFraction`) is **over-specified → REFUSED** (the
-  flash at `(T,P)` already fixes the vf; a declared vf that disagrees is named in
-  the error).
-- Only one is under-specified → refused with guidance.
+- **The implemented closure is `T` + `P`.**  `(P, vaporFraction)` and
+  `(T, vaporFraction)` are recognised spellings whose flash resolution is
+  DEFERRED — the engine does not currently solve `T` from a declared `β`.
+- All three together are **carried, not refused**, whatever older notes said:
+  the flash runs on `(T, P)` and the declared `vaporFraction` acts as a PIN
+  (it sets `phasePinned`, which is what energy-pricing consumers ask instead of
+  testing `vf == 0`).  It is not checked against the flash, so if the two
+  disagree the flash wins silently.  `tutorials/steady/flash/flash01_benzene_toluene`
+  ships all three and passes — which is how the old "REFUSED" claim was caught.
+  Write `β` only when you mean the pin.
 - The key is spelled `vaporFraction` in full.  **`vf` is not a dict key** (it
   is the name of the field inside `ProcessStream`), and there is no
   `state saturatedLiquid;` stream keyword — both belonged to the retired

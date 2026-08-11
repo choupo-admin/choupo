@@ -2838,7 +2838,7 @@ Ordered by impact for the MCFT course and V\'\i tor's research:
 \begin{tabularx}{\linewidth}{@{}llX@{}}
 \toprule
 \textbf{Target} & \textbf{Idea}                                                          & \textbf{Difficulty} \\
-\midrule (shipped) & Levenberg-Marquardt parameter-estimation driver (\code{fitBinaryPair})  & --- \\ & Nelder-Mead optimisation driver (minimise cost / TAC)                   & easy \\ & LL flash via 2nd-order Michelsen TPD with multiple restarts             & hard \\ & Solids: inert phase + filter / cyclone / dryer unit-ops                 & medium \\ & Crystalliser + PSD basics                                               & hard \\ & NRTL distillation robustness (Naphtali-Sandholm)                        & medium-hard \\
+\midrule (shipped) & Levenberg-Marquardt parameter estimation (\code{fitParameters}, in \code{choupoProps}; the \code{fitBinaryPair} outer driver it replaced is retired and its factory throws) & --- \\ & Nelder-Mead optimisation driver (minimise cost / TAC)                   & easy \\ & LL flash via 2nd-order Michelsen TPD with multiple restarts             & hard \\ & Solids: inert phase + filter / cyclone / dryer unit-ops                 & medium \\ & Crystalliser + PSD basics                                               & hard \\ & NRTL distillation robustness (Naphtali-Sandholm)                        & medium-hard \\
 v1.0            & Equation-oriented sparse Newton for the full flowsheet                  & very hard \\
 $> $ v1         & Membrane NF/RO unit op (V\'\i tor's research bridge)                    & research-grade \\
 \bottomrule

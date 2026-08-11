@@ -269,7 +269,7 @@ Physical meaning          & The actual fluid / energy crossing the boundary & A 
         the carrier fluid explicitly (a so-called ``energy stream'').
         Choupo does not yet expose this as a first-class type;
         cases that need a duty source pass it through a material
-        stream + \code{state saturatedVapour}.  Energy streams
+        stream carrying the utility fluid explicitly.  Energy streams
         are on the roadmap.
   \item \textbf{Information port} --- carries a scalar or vector
         of values for control signals, set-points, sensor readings.
@@ -12104,66 +12104,78 @@ recomputes those from the equation-of-state layer on demand).
 
 \subsection{Specification + consistency check on import}
 
-The case-file syntax (\file{system/flowsheetDict}) lets the user
-write \emph{any consistent subset} of the state variables, with
-the simulator filling in the rest.  The most-used patterns are:
+A stream's state is written in its own file under a state directory
+(\file{0/<stream>}); \file{system/flowsheetDict} carries the topology
+and no numbers.  The implemented closure is \textbf{$T + P + \zv$}: the
+package checks whether the state is one- or two-phase and fills
+$\beta$.
 
 \begin{center}\small
 \begin{tabular}{@{}lll@{}}
 \toprule
-What you write                     & What the simulator does          & When it applies \\
+What you write                     & What the simulator does          & Status \\
 \midrule
-$T$ + $P$ + $\zv$                  & checks if 1- or 2-phase; fills $\beta$ & general process feed \\
-$P$ + \code{state saturatedVapour} & inverts $P_{\mathrm{sat},i}(T) = P$; $\beta = 1$ & heating steam, condensate \\
-$P$ + \code{state saturatedLiquid} & same inversion, $\beta = 0$       & cooling water, refrigerant \\
-$T$ + \code{state saturatedVapour} & evaluates $P_{\mathrm{sat},i}(T)$; $\beta = 1$ & utility-side temperature \\
-$T$ + $P$ + \code{state subcooled} & validates $T < T_{\mathrm{sat}}(P)$; $\beta = 0$ & feed integrity check \\
-$T$ + $P$ + \code{state superheated} & validates $T > T_{\mathrm{sat}}(P)$; $\beta = 1$ & post-heater check \\
+$T$ + $P$ + $\zv$                  & flash $\to$ $\beta$, phase       & implemented \\
+$P$ + \code{vaporFraction}         & solve $T$ so the flash gives $\beta$ & recognised, resolution deferred \\
+$T$ + \code{vaporFraction}         & solve $P$ so the flash gives $\beta$ & recognised, resolution deferred \\
+$P$ + $H$ \quad / \quad $P$ + $S$  & isenthalpic / isentropic closure & recognised, resolution deferred \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent The \code{state} keyword tags the expected phase
-behaviour; the simulator either \emph{computes} the missing
-variable from the saturation curve or \emph{validates} the
-declared values against it.  Three failure modes are caught at
-import time:
-
-\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
-  \item Declaring \code{state saturatedVapour} with $T$ and $P$
-        that disagree with $P_{\mathrm{sat}}(T)$ by more than
-        5\,\%: thrown with a message naming the stream, the
-        declared $T$, $P$, and the actual $P_{\mathrm{sat}}(T)$.
-  \item Declaring \code{state subcooled} with $T > T_{\mathrm{sat}}(P)$:
-        a physical contradiction; thrown.
-  \item The \code{state} keyword is PURE-component only (it inverts a
-        single $P_{\mathrm{sat},i}$).  For a \emph{mixture} saturated or
-        two-phase state, use \code{vaporFraction} (next subsection), which
-        is mixture-aware.
-\end{itemize}
+\begin{warning}
+\textbf{There is no \code{state} keyword on a stream, and this table used to
+say there was.}  Earlier printings documented \code{state saturatedVapour},
+\code{saturatedLiquid}, \code{subcooled} and \code{superheated} as stream
+specifications, with a parse-time Antoine inversion behind them.  Those were
+readers of the \code{flowsheetDict streams \{\}} block, which was retired in
+the 2026-07-10 stream-state migration; the block is now refused loudly and its
+two solvers (\code{invertPsat}, \code{solveStateForVf}) were deleted with it,
+having lost their only caller.  Write the saturation temperature you mean, or
+let a \code{phaseChanger} produce it --- the four saturated-state words survive
+there, as its \code{outletState}, where a \emph{unit operation} rather than a
+parser shortcut does the work.  The consequence for the author is real and not
+merely lexical: the engine no longer inverts $P_{\mathrm{sat}}$ for you at
+import, so a hand-entered $T$ that drifts from $T_{\mathrm{sat}}(P)$ silently
+makes a ``saturated'' feed superheated or sub-cooled, and no check catches it.
+\end{warning}
 
 \subsection{\code{vaporFraction}: the general two-spec rule (why $\beta$ is
 often essential)}\label{sec:vaporFraction-dof}
 
-The \code{state} keyword above is convenient but pure-only.  The general,
-mixture-aware spec is: \textbf{a stream is fixed by $\zv$ + $F$ + exactly TWO
-of $\{T,\,P,\,\code{vaporFraction}\}$} (vaporFraction is the vapour fraction
-$\beta$; the legacy key \code{vf} is an alias).  The engine resolves whichever
-pair you give:
+The mixture-aware statement of the degrees of freedom is: \textbf{a stream is
+fixed by $\zv$ + $F$ + exactly TWO of $\{T,\,P,\,\code{vaporFraction}\}$}
+(\code{vaporFraction} is the vapour fraction $\beta$; it is spelled in full ---
+\code{vf} is the name of the field inside \code{ProcessStream}, not a dict
+key).  That is the \emph{theory}.  What the engine implements today is
+narrower, and the difference is worth stating precisely because it is the kind
+of gap a reader would otherwise discover by getting a wrong answer:
 
 \begin{center}\small
 \begin{tabular}{@{}lll@{}}
 \toprule
-What you write & What the engine does & Typical use \\
+What you write & What the engine does today & \\
 \midrule
-$T$ + $P$              & Rachford--Rice flash $\to$ $\beta$ & general feed (single- or two-phase) \\
-$P$ + \code{vaporFraction} & solve $T$ so the flash gives $\beta$ & saturated-liquid ($\beta{=}0$) / vapour ($\beta{=}1$) feed \\
-$T$ + \code{vaporFraction} & solve $P$ so the flash gives $\beta$ & feed pinned at a known temperature \\
-all three              & \textbf{REFUSED} (over-specified) & --- \\
-only one               & \textbf{REFUSED} (under-specified) & --- \\
+$T$ + $P$              & Rachford--Rice flash $\to$ $\beta$ & the implemented closure \\
+$P$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
+$T$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
+$T$ + $P$ + \code{vaporFraction} & flash on $(T,P)$; the declared $\beta$ is a PIN & carried, not refused \\
 \bottomrule
 \end{tabular}
 \end{center}
+
+\begin{warning}
+Earlier printings of this table claimed that all three variables together were
+\textbf{REFUSED} as over-specified and that one alone was refused as
+under-specified.  \textbf{No such refusal is implemented}, and the corpus
+disproves the claim directly: \file{tutorials/steady/flash/flash01\_benzene\_toluene}
+ships $T$, $P$ \emph{and} \code{vaporFraction} in its \file{0/feed} and passes.
+A top-level \code{vaporFraction} sets the \code{phasePinned} flag --- consumers
+that price energy ask that flag rather than testing $\beta = 0$, so an
+\emph{implicit} pin cannot be smuggled in --- but it does not close the state
+and it is not checked against the flash the $(T,P)$ pair produces.  If the two
+disagree, the flash wins silently.  Write $\beta$ only when you mean the pin.
+\end{warning}
 
 \begin{intuition}
 Why \code{vaporFraction} is not optional sugar but often \emph{essential}: on
@@ -12178,10 +12190,13 @@ stream specification, and the over-/under-specification refusals above exist so
 the engine never silently resolves an ill-posed request.
 \end{intuition}
 
-The resolver (\code{Flowsheet.cpp::solveStateForVf}) brackets and bisects on the
-(monotone) flash $\beta$ --- $\beta{=}0$ is the bubble point, $\beta{=}1$ the dew
-point, in between a flash-at-$\beta$ --- and announces the resolved
-$(T,P,\beta,\text{phase})$ loudly.  \textbf{A feed's thermal state lives in the
+A resolver that brackets and bisects on the (monotone) flash $\beta$ ---
+$\beta{=}0$ the bubble point, $\beta{=}1$ the dew point, in between a
+flash-at-$\beta$ --- is what the two deferred closures need, and is the shape
+the retired \code{Flowsheet.cpp::solveStateForVf} had before it lost its only
+caller with the \code{streams \{\}} block.  When those closures return they
+return through the \file{0/} grammar, and the announcement obligation returns
+with them.  \textbf{A feed's thermal state lives in the
 STREAM, never duplicated on the consuming unit.}  A distillation column reads its
 feed quality $q = 1-\beta$ directly from the inlet stream
 (\S\ref{ch:mesh}); a redundant \code{operation.feeds.quality} that
@@ -12196,15 +12211,24 @@ basis of the design problem.  For utility streams (heating
 steam, cooling water) the situation is reversed: the engineer
 knows the \emph{conditions} (pressure header, temperature) but
 the \emph{quantity} is whatever the consuming unit operation
-demands.  Choupo allows omitting $F$ when the stream is
-declared with \code{state saturatedVapour} or
-\code{state saturatedLiquid}; the simulator marks the
-\code{ProcessStream::demandDriven} flag and waits for the
-consuming unit op to publish its $F_{\mathrm{steam}}$ via
-\code{consumedInputs()}.  After the unit's \code{solve()} returns,
-the Flowsheet writes the demanded $F$ back into the stream
-registry, so the Streams panel (and the structured JSON output)
-shows the actual consumption rather than a placeholder zero.
+demands.  Choupo has the machinery for that reversal: a stream carries a
+\code{ProcessStream::demandDriven} flag, and when it is set the Flowsheet
+writes back the $F$ the consuming unit publishes through
+\code{consumedInputs()} after its \code{solve()} returns, so the Streams panel
+and the structured JSON show the actual consumption rather than a placeholder
+zero.
+
+\begin{warning}
+\textbf{Nothing currently sets that flag.}  The only way to raise it was to
+declare a stream with \code{state saturatedVapour} / \code{saturatedLiquid} and
+no $F$, and that keyword went with the \code{streams \{\}} block --- so the
+write-back at \code{Flowsheet.cpp} reads a flag that is never true, and a
+utility stream must be given its $F$ like any other.  This is recorded here
+rather than quietly dropped because a reader who finds the flag in the source
+is entitled to know it is unreachable; restoring demand-driven flow means
+giving the \file{0/} grammar its own way to declare the intent, which is a
+design act and not a rename.
+\end{warning}
 
 \begin{intuition}
 The mental model the student should leave with: a stream
@@ -13372,10 +13396,11 @@ Inputs (ports):
   \item One \textbf{heating steam} stream (chest side):
         $F_{\!\text{steam}}, T_{\!\text{steam}}, P_{\!\text{steam}},
          \zv_{\!\text{steam}}$.
-        Typically declared with
-        \code{state saturatedVapour;} so the stream parser computes
-        $T$ from $P$ via the solvent's saturation curve
-        (\S\ref{ch:stream-as-state}).
+        The chest-side $T$ is the saturation temperature at
+        $P_{\!\text{steam}}$ and is \emph{written} into the stream file
+        by the author: the engine no longer inverts the saturation
+        curve at import (\S\ref{ch:stream-as-state}), so the number is
+        yours to compute and to keep consistent with $P$.
 \end{itemize}
 
 Parameters (operation block):
@@ -13573,8 +13598,8 @@ Variable                            & In Mode 2, this is\ldots             & Whe
 \midrule
 $F_{\!\text{feed}}, T_{\!\text{feed}}, \zv_{\!\text{feed}}$ & USER INPUT     & \file{0/feed} \\
 $P_{\!\text{steam}}$                 & USER INPUT                          & \code{P} in \file{0/liveSteam} \\
-\code{state saturatedVapour}         & USER FLAG                           & \code{state} in \file{0/liveSteam} \\
-$T_{\!\text{steam}}$                 & COMPUTED ($P$+state, stream parser) & \code{T} in \file{0/liveSteam} \\
+\code{phase gas}                     & USER PIN                            & \code{phase} in \file{0/liveSteam} \\
+$T_{\!\text{steam}}$                 & USER INPUT ($= T_{\mathrm{sat}}(P)$, computed by the author) & \code{T} in \file{0/liveSteam} \\
 $F_{\!\text{steam}}$                 & USER INPUT (often via \$variable)  & \code{F} in \file{0/liveSteam} \\
 $A$, $U$                             & USER INPUT (hardware)               & \code{operation.\{area,U\}} \\
 $Q$                                  & COMPUTED, eq.~\eqref{eq:evap-Q-chest} & KPI \code{evap.duty} \\

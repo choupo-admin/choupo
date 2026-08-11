@@ -191,8 +191,10 @@ src/
 │   ├── batch/                    BatchUnitOperation + BatchReactor + BatchStill  (choupoBatch)
 │   └── dynamic/                  DynamicUnitOperation + DynamicCSTR  (choupoCtrl)
 ├── control/             Controller abstract + PIDController + ScheduleController  (choupoCtrl)
-├── outerDriver/         OuterDriver abstract + SweepDriver + FitBinaryPair
-│                         + OptimizationDriver (Nelder-Mead)
+├── outerDriver/         OuterDriver abstract + SweepDriver + GridSweepDriver
+│                         + ParetoSweepDriver + OptimizationDriver (Nelder-Mead)
+│                         + DesignSpec   (fitBinaryPair is RETIRED: factory throws,
+│                         naming choupoProps `fitParameters`)
 ├── postProcessing/      PostProcessor abstract + SizingPass + CostingPass
 │   ├── sizing/                   EquipmentSize abstract + StirredTank + ShellTubeHX
 │   └── costing/                  CostingModel abstract + Guthrie

@@ -71,9 +71,14 @@ category        LP_steam_200kPa; // optional, for utility aggregation
 
 `vaporFraction` is spelled in full — **`vf` is not a dict key** (it is the
 field name inside `ProcessStream`), and there is no `state saturatedVapour;`
-keyword; both belonged to the retired `flowsheetDict streams {}` block.  See
-`dict-syntax.md` for when a pin is essential (a saturated feed cannot be fixed
-by `(T, P)` alone) and when it is over-specification.
+keyword; both belonged to the retired `flowsheetDict streams {}` block.
+
+**`T` + `P` is the implemented closure.**  `(P, vaporFraction)` and
+`(T, vaporFraction)` are recognised and their flash resolution is DEFERRED, so
+a declared `vaporFraction` is a PIN carried into the solve (it raises
+`phasePinned`, which energy-pricing consumers ask instead of testing `vf == 0`)
+and not a spec that solves for `T`.  All three together are carried, not
+refused, and the pin is not checked against the flash — see `pitfalls.md`.
 
 ---
 
