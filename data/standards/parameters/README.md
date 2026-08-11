@@ -5,17 +5,29 @@
 One subfolder per activity-coefficient model:
 
 ```
-binaryPairs/
-├── NRTL/        (shipped)
-├── Wilson/      (shipped)
-└── UNIQUAC/     (shipped -- canonical DECHEMA binaries, imported from ChemSep)
+parameters/
+├── NRTL/        (2 pairs shipped)
+├── UNIQUAC/     (3 pairs shipped)
+└── ...          (Henry/ Pitzer/ eNRTL/ SRK/ UNIFAC/ EdwardsPitzer/
+                  adsorption/ solution/ -- `ls` is the authority)
 ```
 
-The UNIQUAC set was imported from the ChemSep database (Artistic-2.0) via
-`bin/curate/chemsep_to_choupo.py` and promoted after review; each file keeps the
-raw cal/mol `source{}` block alongside the converted `parameters{}` (see any
-file's `provenance`).  The model name in the folder must match the dict `model`
-keyword inside each file.
+Two corrections landed here on 2026-08-11, both of which had been telling a
+reader the opposite of the truth:
+
+* the tree above still showed the pre-Migration-2 `binaryPairs/` layout, and a
+  `Wilson/` folder that does not exist;
+* the UNIQUAC set was described as "canonical DECHEMA binaries, imported from
+  ChemSep".  **All three shipped UNIQUAC files cite Pöpken, Götze & Gmehling,
+  Ind. Eng. Chem. Res. 39 (2000) 2601, Table 3** — a primary journal table.
+  The bulk ChemSep import was moved to the private `data/local/` tier in the
+  legal scrub and is not what ships.  A stale provenance claim that makes
+  CLEAN data look encumbered is as much a defect as the reverse, and it is
+  harder to notice because nobody audits in that direction.
+
+Each file keeps the raw cal/mol `source{}` block alongside the converted
+`parameters{}` (see any file's `provenance`).  The model name in the folder
+must match the dict `model` keyword inside each file.
 
 ## Naming convention
 

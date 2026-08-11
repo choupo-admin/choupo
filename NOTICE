@@ -45,21 +45,46 @@ reference data under `data/standards/` is an AGGREGATION of independently-licens
 datasets; each data file carries its own provenance header (primary source,
 method, licence).  The third-party datasets bundled here, and their licences, are:
 
-* Binary interaction parameters (NRTL / UNIQUAC / Wilson) and full UNIFAC
-  group-contribution tables imported from the ChemSep database and its upstream
-  DECHEMA primary sources.
-  RELEASE POLICY (Choupo-2607): because a clear licence extending redistribution
-  rights to the *values* (as distinct from the ChemSep simulator code) was not
-  established, the published release does **NOT** redistribute these values.
-  They are simply NOT shipped; where broad coverage is useful the release
+* Binary interaction parameters (NRTL / UNIQUAC / Wilson) imported in bulk
+  from the ChemSep database and its upstream DECHEMA sources.
+  RELEASE POLICY: because a clear licence extending redistribution rights to
+  the *values* (as distinct from the ChemSep simulator code) was not
+  established, the bulk import is NOT redistributed.  It was moved to the
+  private `data/local/` tier; where broad coverage is useful the release
   instead provides Choupo's OWN group-contribution ESTIMATES under
   `data/groupEstimative/` (self-generated Joback / Lee-Kesler values, clearly
-  flagged as estimates), carrying zero third-party numeric values.  A case that needs such a pair supplies it locally or regresses it
-  from its own data.  This retires the earlier "compiled under Artistic 2.0"
-  attribution, which overstated the licence coverage of the values; the
-  definitive per-file enumeration is produced by the snapshot allowlist gate.
+  flagged as estimates).  A case that needs such a pair supplies it locally
+  or regresses it from its own data.  This retires the earlier "compiled
+  under Artistic 2.0" attribution, which overstated the licence coverage of
+  the values.  The three UNIQUAC pairs that DO ship are not part of that
+  import: each cites Pöpken, Götze & Gmehling, Ind. Eng. Chem. Res. 39 (2000)
+  2601, Table 3 — a primary journal table — in its own header.
 
-* Henry's-law constants (`data/standards/henrysLaw/`)
+* UNIFAC group-contribution tables
+  (`data/standards/parameters/UNIFAC/{groups,interactions}.dat`, and the
+  sealed mirrors of them inside seven tutorial cases)
+  THESE ARE SHIPPED, AND THEIR REDISTRIBUTION BASIS IS UNDER REVIEW.  Until
+  2026-08-11 the paragraph above was written as though they were covered by
+  the bulk-import exclusion and were "simply NOT shipped"; that was false,
+  and a licence review found it.  Stating the position plainly instead:
+    - the two files were produced by `bin/curate/unifac_gct_to_choupo.py`
+      from ChemSep's own `.gct` distribution files; the values are unaltered
+      (only subgroup names are tokenizer-sanitised);
+    - each file's header credits the ChemSep database, © H. Kooijman &
+      R. Taylor, and names Hansen, Rasmussen, Fredenslund, Schiller &
+      Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352 as the primary to cite;
+    - Choupo does NOT here assert that ChemSep's Artistic-2.0 grant extends
+      to these particular files.  Every attribution we could verify attaches
+      Artistic-2.0 to ChemSep's PURE-COMPONENT database specifically, and the
+      question of the group-contribution and interaction tables is open;
+    - the shipped table also contains main groups that post-date the 1991
+      paper it cites, so that citation is incomplete as well as unresolved.
+  The review, its sources and the remedies under consideration are recorded
+  in `docs/legal/data-licensing-review-2026-08-11.md`.  A false denial
+  protects nobody and hides the question from anyone who could answer it;
+  this entry stands until the question is settled.
+
+* Henry's-law constants (`data/standards/parameters/Henry/`)
   Sander, R. (2015), "Compilation of Henry's law constants (version 4.0) for
   water as solvent," Atmospheric Chemistry and Physics 15, 4399-4981,
   doi:10.5194/acp-15-4399-2015.  Licensed CC-BY 3.0.
@@ -85,8 +110,17 @@ method, licence).  The third-party datasets bundled here, and their licences, ar
 
 This product also bundles, with their respective licences honoured:
 PubChem identifiers (U.S. public domain) and Wikidata facts (CC0).
-Excluded by policy (not bundled): NIST SRD/WebBook, DIPPR, Yaws, CRC, DECHEMA/
-DDBST, and any NonCommercial (e.g. CC-BY-NC) source.
+Excluded by policy: NIST SRD/WebBook, DIPPR, Yaws, CRC, DECHEMA/DDBST, and any
+NonCommercial (e.g. CC-BY-NC) source.  The 2026-08-11 licence review found the
+tree does not yet fully honour that policy, and the exceptions are named rather
+than left for a reader to discover: four single-record citations (two DECHEMA,
+one CRC, one NIST/DIPPR) are pinned in `bin/curate/debt_registry.py`, each with
+its remedy; and the `unifac`/`modfac`/`psrk` group-assignment COLUMNS of
+`data/groupEstimative/compounds.csv` are DDBST-published assignments,
+redistributed via the MIT-licensed `thermo` package and stated as such in
+`data/groupEstimative/SOURCES.md` — so the claim that that tier carries "zero
+third-party numeric values" held for its estimated PROPERTIES and not for those
+three columns.  See `docs/legal/data-licensing-review-2026-08-11.md`.
 
 * Independence from OpenFOAM
   Choupo is an independent project.  Its file-based case organization
