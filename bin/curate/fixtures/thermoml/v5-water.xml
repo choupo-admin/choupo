@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CHOUPO'S OWN FIXTURE in the 2017 ThermoML v5 dialect.  Written from the
+     structure of NIST's published v5 example and of ThermoML5.xsd; it carries
+     no NIST content, so nothing here redistributes anything.  Its job is to
+     make the DIALECT DETECTOR take its v5 branch in a test that runs with no
+     archive present. -->
+<dataReport xmlns="http://www.iupac.org/namespaces/ThermoML">
+  <citation id="001">
+    <title>Fixture in the v5 dialect</title>
+    <DOI>10.0000/choupo-fixture-v5</DOI>
+    <yearPublished>2026</yearPublished>
+  </citation>
+  <chemical id="10">
+    <commonName>ethanol</commonName>
+    <molecularFormula>C2H6O</molecularFormula>
+    <standardInChI>InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3</standardInChI>
+    <standardInChIKey>LFQSCWFLJHTTHZ-UHFFFAOYSA-N</standardInChIKey>
+    <casrn>64-17-5</casrn>
+  </chemical>
+  <prop id="1"><name>Vapor pressure, kPa</name></prop>
+  <prop id="2"><name>Thermal conductivity, W/m/K</name></prop>
+</dataReport>

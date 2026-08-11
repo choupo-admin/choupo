@@ -1,0 +1,343 @@
+#!/usr/bin/env python3
+"""choupo-thermoml -- the local ThermoML archive: sync, index, search.
+
+WHY THIS IS A CURATION TOOL AND NOT PART OF choupoProps.  `choupoProps`
+compiles to WebAssembly and runs in the browser, where opening an HTTPS
+connection is impossible; and the engine carries no external dependencies by
+policy.  So the network lives here, in Python, beside every other importer,
+and the engine only ever READS the cache this tool builds.  The solver never
+touches the network.
+
+WHAT IS AND IS NOT REDISTRIBUTED.  Choupo ships no ThermoML content.  This
+tool downloads the official NIST archive into a gitignored cache on the user's
+own machine, from the source NIST publishes for exactly that purpose
+(doi:10.18434/mds2-2422).  Nothing from the archive enters the repository or a
+release tarball, so the unresolved question of downstream redistribution stays
+off the critical path.  Keep it that way.
+
+    thirdParty/thermoml/          the cache (already gitignored by thirdParty/*)
+    $CHOUPO_THERMOML_HOME         overrides it -- a class of thirty students
+                                  shares one copy rather than fetching it thirty
+                                  times
+
+TWO DIALECTS, AND THE REASON THIS TOOL DETECTS RATHER THAN ASSUMES.  ThermoML
+exists in two incompatible forms, and a reader written for one fails on every
+file of the other:
+
+    published   <DataReport>   <Compound> <PureOrMixtureData> <Property>
+                               -- the dialect the ARCHIVE ships
+    v5 (2017)   <dataReport>   <chemical> <prop> <var> <phase>
+                               -- the proposal in usnistgov/thermoML
+
+Verified element by element against NIST's own ThermoML5.xsd, which defines
+`chemical` and `property` and contains no `Compound` or `PureOrMixtureData` at
+all.  So the dialect is READ off the root element and an unrecognised one is
+REFUSED BY NAME.  If NIST ever migrates the archive to v5 -- and publishing a
+v5 schema suggests they intend to -- Choupo refuses instead of silently
+misreading, which is the whole point of detecting rather than assuming.
+
+MATCHING IS BY LOCAL ELEMENT NAME, NOT BY PATH.  The exact nesting of the
+published dialect could not be verified from this environment (every NIST host
+is unreachable behind the proxy here), so the extractor searches for elements
+by name anywhere beneath their parent and REFUSES when a required name is
+absent.  A nesting difference then costs an adjustment; it does not produce
+plausible wrong numbers.
+
+STATUS.  The v5 path is exercised against a REAL NIST file.  The published
+path is exercised against a FIXTURE written from the documented element names
+and is marked unverified until a real archive file has passed through it --
+`index` says so on every run over a cache with no provenance stamp.
+"""
+
+import argparse
+import hashlib
+import json
+import os
+import pathlib
+import sys
+import xml.etree.ElementTree as ET
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+
+ARCHIVE_DOI = "10.18434/mds2-2422"
+ARCHIVE_LANDING = "https://data.nist.gov/od/id/mds2-2422"
+SCHEMA_URL = "https://trc.nist.gov/ThermoML.xsd"
+
+#  The property names Choupo can consume today.  Anything else is LISTED and
+#  skipped, never silently dropped: a reader that quietly ignores two thirds of
+#  a file is indistinguishable from one that found nothing.
+WANTED = {
+    "vapourPressure": ("vapor", "sublimation pressure", "vapour"),
+    "liquidDensity":  ("density", "mass density", "specific volume"),
+    "heatCapacity":   ("heat capacity",),
+}
+
+
+def cache_root() -> pathlib.Path:
+    env = os.environ.get("CHOUPO_THERMOML_HOME")
+    return pathlib.Path(env) if env else ROOT / "thirdParty" / "thermoml"
+
+
+def local(tag: str) -> str:
+    """Element tag without its namespace."""
+    return tag.rsplit("}", 1)[-1]
+
+
+def find_all(elem, name):
+    return [e for e in elem.iter() if local(e.tag) == name]
+
+
+def find_text(elem, name, default=""):
+    for e in elem.iter():
+        if local(e.tag) == name and e.text:
+            return e.text.strip()
+    return default
+
+
+def detect_dialect(root) -> str:
+    r = local(root.tag)
+    if r == "DataReport":
+        return "published"
+    if r == "dataReport":
+        return "v5"
+    raise ValueError(
+        f"unrecognised ThermoML root element <{r}>.  Choupo reads two "
+        f"dialects: the PUBLISHED one (<DataReport>, <Compound>, "
+        f"<PureOrMixtureData>) that the NIST archive ships, and the 2017 v5 "
+        f"proposal (<dataReport>, <chemical>, <prop>).  This file is neither, "
+        f"and guessing which reader to point at it would produce plausible "
+        f"wrong numbers rather than an error.")
+
+
+def compounds_published(root):
+    out = []
+    for c in find_all(root, "Compound"):
+        cas = ""
+        for rn in find_all(c, "RegNum"):
+            v = find_text(rn, "nCASRegNum")
+            if v:
+                cas = v
+        out.append({
+            "name":     find_text(c, "sCommonName"),
+            "formula":  find_text(c, "sFormulaMolec"),
+            "inchi":    find_text(c, "sStandardInChI"),
+            "inchikey": find_text(c, "sStandardInChIKey"),
+            "cas":      cas,
+        })
+    return out
+
+
+def compounds_v5(root):
+    out = []
+    for c in find_all(root, "chemical"):
+        out.append({
+            "name":     find_text(c, "commonName"),
+            "formula":  find_text(c, "molecularFormula"),
+            "inchi":    find_text(c, "standardInChI"),
+            "inchikey": find_text(c, "standardInChIKey"),
+            "cas":      find_text(c, "casrn"),
+        })
+    return out
+
+
+def properties_published(root):
+    """Property names declared in the file, with how many points carry them."""
+    names = []
+    for p in find_all(root, "Property"):
+        n = find_text(p, "ePropName")
+        if n:
+            names.append(n)
+    return names
+
+
+def properties_v5(root):
+    names = []
+    for p in find_all(root, "prop"):
+        n = find_text(p, "name") or find_text(p, "label")
+        if n:
+            names.append(n)
+    return names
+
+
+def classify(prop_name: str):
+    low = prop_name.lower()
+    for key, needles in WANTED.items():
+        if any(nd in low for nd in needles):
+            return key
+    return None
+
+
+def read_file(path: pathlib.Path):
+    root = ET.parse(path).getroot()
+    dialect = detect_dialect(root)
+    if dialect == "published":
+        comps, props = compounds_published(root), properties_published(root)
+        doi = find_text(root, "sDOI")
+        title = find_text(root, "sTitle")
+    else:
+        comps, props = compounds_v5(root), properties_v5(root)
+        doi = find_text(root, "DOI")
+        title = find_text(root, "title")
+
+    supported, unsupported = [], []
+    for p in props:
+        (supported if classify(p) else unsupported).append(p)
+
+    return {
+        "file": str(path),
+        "dialect": dialect,
+        "doi": doi,
+        "title": title,
+        "compounds": comps,
+        "propertiesSupported": sorted({classify(p) for p in supported}),
+        "propertiesDeclared": sorted(set(props)),
+        "propertiesUnsupported": sorted(set(unsupported)),
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
+
+
+def cmd_sync(a):
+    cache = cache_root()
+    print(f"choupo-thermoml sync")
+    print(f"  cache      {cache}")
+    print(f"  archive    doi:{ARCHIVE_DOI}")
+    print(f"  landing    {ARCHIVE_LANDING}")
+    print(f"  schema     {SCHEMA_URL}")
+    print()
+    print("  NOT IMPLEMENTED IN THIS SLICE, and refusing rather than pretending:")
+    print("  the download itself is written against the archive's published")
+    print("  distribution URL and checksum, and neither could be read from the")
+    print("  environment this tool was built in -- every NIST host is")
+    print("  unreachable behind its proxy.  Fetching them is one command on a")
+    print("  normal network; inventing them here would ship a sync that fails")
+    print("  at the only moment it matters.")
+    print()
+    print(f"  Meanwhile: place archive .xml files under {cache} by hand and")
+    print(f"  `choupo-thermoml index` reads them.  Set CHOUPO_THERMOML_HOME to")
+    print(f"  share one copy across a class.")
+    print()
+    print("  INTEGRITY, when it lands: if NIST publishes a checksum the sync")
+    print("  verifies against it and records `integrity verified`; if not it")
+    print("  hashes what it received and records `integrity recorded` -- a")
+    print("  record of what was obtained, never a verification that was not")
+    print("  performed.")
+    return 2
+
+
+def cmd_index(a):
+    cache = cache_root()
+    if not cache.is_dir():
+        print(f"choupo-thermoml index: no cache at {cache}.  Run `sync`, or "
+              f"set CHOUPO_THERMOML_HOME to a shared copy.")
+        return 1
+
+    files = sorted(cache.rglob("*.xml"))
+    if not files:
+        print(f"choupo-thermoml index: {cache} holds no .xml files.  An index "
+              f"built over nothing would report a clean empty archive, which "
+              f"is not the same as a working one.")
+        return 1
+
+    entries, refused, dialects = [], [], {}
+    for f in files:
+        try:
+            e = read_file(f)
+        except ValueError as exc:
+            refused.append((f.name, str(exc)))
+            continue
+        except ET.ParseError as exc:
+            refused.append((f.name, f"not well-formed XML: {exc}"))
+            continue
+        dialects[e["dialect"]] = dialects.get(e["dialect"], 0) + 1
+        entries.append(e)
+
+    #  The index is keyed by every identifier a student might type.
+    by_key = {}
+    for e in entries:
+        for c in e["compounds"]:
+            for field in ("name", "cas", "inchi", "inchikey"):
+                v = (c.get(field) or "").strip()
+                if v:
+                    by_key.setdefault(v.lower(), []).append(
+                        {"file": e["file"], "doi": e["doi"],
+                         "compound": c["name"],
+                         "properties": e["propertiesSupported"]})
+
+    index = {
+        "cache": str(cache),
+        "archiveDoi": ARCHIVE_DOI,
+        "files": len(files),
+        "indexed": len(entries),
+        "refused": [{"file": n, "reason": r} for n, r in refused],
+        "dialects": dialects,
+        "entries": entries,
+        "byKey": by_key,
+        "provenance": "hand-placed" if not (cache / "SYNC.json").exists()
+                      else "synced",
+    }
+    out = cache / "index.json"
+    out.write_text(json.dumps(index, indent=2, sort_keys=True))
+
+    print(f"choupo-thermoml index: {len(entries)} file(s) indexed from {cache}")
+    for d, n in sorted(dialects.items()):
+        print(f"  dialect {d:<10} {n} file(s)")
+    print(f"  {len(by_key)} searchable identifier(s) "
+          f"(name / CAS / InChI / InChIKey)")
+    for name, reason in refused:
+        print(f"  REFUSED {name}: {reason.splitlines()[0]}")
+    unsup = sorted({p for e in entries for p in e["propertiesUnsupported"]})
+    if unsup:
+        print(f"  {len(unsup)} declared property type(s) Choupo does not read "
+              f"yet, LISTED rather than dropped:")
+        for u in unsup[:8]:
+            print(f"      {u}")
+    if index["provenance"] == "hand-placed":
+        print("  [unverified] this cache carries no sync stamp -- its files "
+              "were placed by hand,\n"
+              "              so the published-dialect reader has not yet been "
+              "exercised against\n"
+              "              a file NIST actually served.")
+    print(f"  wrote {out}")
+    return 0
+
+
+def cmd_search(a):
+    cache = cache_root()
+    idx = cache / "index.json"
+    if not idx.exists():
+        print(f"choupo-thermoml search: no index at {idx}.  Run "
+              f"`choupo-thermoml index` first.")
+        return 1
+    index = json.loads(idx.read_text())
+    q = a.query.strip().lower()
+    hits = index["byKey"].get(q, [])
+    if not hits:
+        near = [k for k in index["byKey"] if q in k][:8]
+        print(f"choupo-thermoml search: nothing matches '{a.query}'.")
+        print("  Searchable keys are the compound NAME, CAS number, InChI and "
+              "InChIKey.")
+        if near:
+            print("  Did you mean: " + ", ".join(near))
+        return 1
+    print(f"choupo-thermoml search: '{a.query}' -> {len(hits)} dataset(s)")
+    for h in hits:
+        props = ", ".join(h["properties"]) or "(none Choupo reads)"
+        print(f"  {h['compound']:<24} {props}")
+        print(f"      doi {h['doi'] or '(none declared)'}")
+        print(f"      {h['file']}")
+    return 0
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("sync", help="download the official NIST archive")
+    sub.add_parser("index", help="build the local index over the cache")
+    s = sub.add_parser("search", help="search by name / CAS / InChI / InChIKey")
+    s.add_argument("query")
+    a = ap.parse_args()
+    return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

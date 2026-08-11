@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Neither dialect: the detector must REFUSE this by name rather than point
+     a reader at it and produce plausible wrong numbers. -->
+<thermoData><compound><name>water</name></compound></thermoData>
