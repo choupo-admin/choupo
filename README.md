@@ -46,9 +46,12 @@ matter more than breadth.
 ## Build
 
 ```bash
-make all              # native release, -O2  →./choupoSolve,./choupoBatch,./choupoCtrl
+make all              # native release, -O2 → ./choupoSolve ./choupoBatch
+                      #                        ./choupoCtrl  ./choupoProps
 make MODE=debug all   # -O0 -g, parallel build tree
-make wasm             # WebAssembly builds for the browser GUI — one.wasm per binary
+make wasm-gui         # WebAssembly builds for the browser GUI — all four
+                      # binaries into gui/public/wasm/ (never run two
+                      # concurrently: they share that directory)
 make wasm-clean
 make distclean        # wipe the whole build/ tree
 ```
@@ -56,7 +59,7 @@ make distclean        # wipe the whole build/ tree
 ## Run a tutorial
 
 ```bash
-./choupoSolve tutorials/steady/flash01_benzene_toluene
+./choupoSolve tutorials/steady/flash/flash01_benzene_toluene
 ```
 
 For an interactive shell with helpers (`runCase`, `listCases`,
@@ -65,8 +68,11 @@ For an interactive shell with helpers (`runCase`, `listCases`,
 ```bash
 source etc/bashrc
 listCases
-runCase tutorials/steady/process01_reactor_flash
+runCase tutorials/steady/flowsheets/process01_reactor_flash
 ```
+
+`runCase` reads `controlDict.application` and dispatches to the right
+binary, so it takes any tutorial in any category.
 
 The component database is auto-resolved.  Move tutorials around freely
 or set `CHOUPO_HOME` to override the lookup.
@@ -147,7 +153,7 @@ The four binaries share `src/{core,thermo,solver,materials,unitOperations,contro
 | n-D solvers                     | NewtonND with Gauss elimination |
 | Direct minimisation             | Nelder-Mead simplex (relative-per-axis tolerance) |
 | Phase stability                 | Michelsen TPD detector; LL + VLLE flash via Gibbs-energy minimisation on the simplex with multi-start |
-| Outer drivers                   | `sweep` (sensitivity), `gridSweep`, `paretoSweep` (multi-objective front), `fitBinaryPair` (LM regression of NRTL/Wilson pairs), `optimization` (Nelder-Mead minimisation of KPI / cost / `costTotal`), `designSpec` |
+| Outer drivers                   | `sweep` (sensitivity), `gridSweep`, `paretoSweep` (multi-objective front), `optimization` (Nelder-Mead minimisation of KPI / cost / `costTotal`), `designSpec`.  (`fitBinaryPair` is RETIRED — the factory throws, naming `fitParameters`; pair regression lives in `choupoProps`, with identifiability diagnostics and a golden.) |
 | Post-processing                 | sizing (`stirredTank`, `shellTubeHX`), Guthrie costing (`method guthrie`), Materials registry (`carbonSteel` / `SS304` / `SS316` / `aluminium`) |
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
