@@ -329,7 +329,7 @@
       <div class="proof"><strong data-inv="components">247</strong><span>curated pure-component records</span></div>
       <div class="proof"><strong data-inv="mixtureParameterRecords">268</strong><span>mixture-parameter records — NRTL, Wilson, UNIQUAC, Henry, Pitzer, eNRTL</span></div>
       <div class="proof"><strong data-inv="unitOperations">49</strong><span>unit-operation models across four engines</span></div>
-      <div class="proof"><strong data-inv="runnableCases">341</strong><span>runnable tutorial cases</span></div>
+      <div class="proof"><strong data-inv="runnableCases">288</strong><span>runnable tutorial cases</span></div>
     </div>
   </div>
 </header>
@@ -350,8 +350,8 @@
         <div class="included"><strong data-inv="henryPairs">205</strong><span>Henry-law gas–solvent pairs</span></div>
         <div class="included"><strong data-inv="pitzerPairs">55</strong><span>Pitzer electrolyte pairs</span></div>
         <div class="included"><a href="/models/"><strong data-inv="unitOperations">49</strong><span>unit-operation models&nbsp;→</span></a></div>
-        <div class="included"><strong data-inv="runnableCases">341</strong><span>runnable tutorial cases</span></div>
-        <div class="included"><strong data-inv="regressionChecks">307</strong><span>golden-master regression checks</span></div>
+        <div class="included"><strong data-inv="runnableCases">288</strong><span>runnable tutorial cases</span></div>
+        <div class="included"><strong data-inv="regressionChecks">255</strong><span>golden-master regression checks</span></div>
         <div class="included"><strong data-inv="engines">4</strong><span>execution engines: steady, batch, control, properties</span></div>
         <div class="included"><a href="/models/"><strong>Catalogue</strong><span>browse every model&nbsp;→</span></a></div>
       </div>
@@ -446,13 +446,13 @@ energy balance      <span class="hot">reported</span></pre>
         <p class="lede">Choupo separates numerical convergence, conservation, model validation and data provenance. They are different questions and receive different verdicts.</p>
       </div>
       <div class="scoreboard" aria-label="Validation summary">
-        <div class="score"><strong data-inv="runnableCases">341</strong><span>runnable tutorial cases, each with checkable output</span></div>
+        <div class="score"><strong data-inv="runnableCases">288</strong><span>runnable tutorial cases, each with checkable output</span></div>
         <div class="score"><strong>Golden</strong><span>tutorial KPIs are checked against versioned expected results</span></div>
         <div class="score"><strong>Balances</strong><span>material and energy closure are reported, including declared gaps</span></div>
         <div class="score"><strong>Provenance</strong><span>measured, regressed, estimated and assumed data remain distinguishable</span></div>
       </div>
       <div class="evidence-copy">
-        <p><strong data-inv="regressionChecks">307</strong> of the <strong data-inv="runnableCases">341</strong> tutorial cases ship an <code>expected</code> golden-master file; the rest are sweeps, deliberate refusal cases and composite sub-sectors, which are still run and still guarded against NaN/inf. <code>bin/runTests</code> re-runs the whole suite and flags any KPI drift, across all <span data-inv="engines">4</span> engines.</p>
+        <p>Most tutorial cases ship an <code>expected</code> golden-master file (<strong data-inv="regressionChecks">255</strong> of <strong data-inv="runnableCases">288</strong> in this release); the rest are sweeps, deliberate refusal cases and composite sub-sectors, which are still run and still guarded against NaN/inf. <code>bin/runTests</code> re-runs the whole suite and flags any KPI drift, across all <span data-inv="engines">4</span> engines.</p>
         <p>A passing golden proves an answer <em>has not moved</em>, never that it is right. Agreement with published measurement is claimed only where a case carries an explicit <code>anchor</code> row citing its primary source — a separate and much smaller set.</p>
         <p class="caution">Choupo is educational and research software, not certified process-design or safety software. Engineering use requires independent validation of models, data and results.</p>
       </div>
