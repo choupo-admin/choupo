@@ -31,6 +31,7 @@ License
 #include "SolventProperties.H"      // rhoWaterKell
 
 #include <map>
+#include <memory>      // std::make_unique -- g++ lends it, emscripten does not
 #include <sstream>
 #include <stdexcept>
 
