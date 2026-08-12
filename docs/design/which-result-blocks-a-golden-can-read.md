@@ -26,7 +26,7 @@ waiting for a symptom:
 |---|---|---|---|
 | `validation` | the AAD of each model against a MEASURED dataset — the headline result of every `compare_*` case | since the overlay shipped | a header claiming UNIFAC "AAD ~2.6 K" against its own output's 0.407 K |
 | `energyClosures` | the model-boundary ledger's three quantities (raw / step / remaining) | since 2026-08-09 | asked which blocks were readable |
-| `utilityAllocation` | which catalogue utility `pickForDuty` chose, its kg/s and its €/h, on 77 cases | since the allocator shipped | same question, continued |
+| `utilityAllocation` | which catalogue utility `pickForDuty` chose, its kg/s and its €/h — on every case that allocates one, which was most of the steady corpus | since the allocator shipped | same question, continued |
 
 Only the first announced itself, and it did so through a false sentence in a
 case header rather than through any machinery.  **That is the shape to
@@ -102,7 +102,11 @@ stops a number drifting unwatched, the second stops a row that matches nothing
 from reading as coverage.
 
 `check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
-`check_utility_allocation_pinned`.  All three sabotage-verified; the third
+`check_utility_allocation_pinned`.  **Each gate's OK line carries its own live
+count, and this document deliberately carries none** — a tally repeated in
+prose is a second home for a derived number, and the release-inventory gate
+caught exactly that in the first draft of this record's CLAUDE.md paragraph,
+which is a pleasing place for it to have happened.  All three sabotage-verified; the third
 FAILED its own first run because it derived its keys by a rule of its own
 instead of the writer's — *a gate that computes its keys differently from the
 generator measures the difference between the two*, which is the arity sin

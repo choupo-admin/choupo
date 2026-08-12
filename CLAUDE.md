@@ -739,8 +739,10 @@ one the golden format could not reach, and **an unreadable block does not fail
 `validation` (the AAD of each model against MEASURED data — the headline result
 of every `compare_*` case), `energyClosures` (the model-boundary ledger's three
 quantities, unpinned since the slice shipped) and `utilityAllocation` (which
-catalogue utility `pickForDuty` chose, its kg/s and its €/h, on **77 cases** —
-the unit's own `Q_kW` does not move when the picker does).  Closed with the
+catalogue utility `pickForDuty` chose, its kg/s and its €/h, on **every case
+that allocates one** — the unit's own `Q_kW` does not move when the picker
+does; the live count is in `check_utility_allocation_pinned`'s own OK line,
+which recounts it).  Closed with the
 `aad` / `closure` / `utility` kinds, auto-generation in `--record`, and a gate
 each requiring **published ⇒ pinned AND pinned ⇒ published**.  **THE RULE, and
 it is the Edwards lesson one layer up:** when you add a top-level result block
