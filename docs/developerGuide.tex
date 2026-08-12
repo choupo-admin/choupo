@@ -2747,26 +2747,56 @@ void VaporPressureModel::registerBuiltins()
         block.
 \end{enumerate}
 
-\paragraph{B.2 --- Validate FIRST (the AAD step).}  A property model is
-\textbf{not trustworthy until it has been checked against measured data}.
-Choupo's \code{choupoProps} binary is the validation weapon: run the
-\emph{measured} dataset through the model and read the average absolute
-deviation (AAD) before you let the model into a flowsheet.
+\paragraph{B.2 --- Compare against measured data FIRST (the AAD step).}  A
+property model is \textbf{not trustworthy until it has been checked against
+measured data}.  \code{choupoProps} gives you two different ways to do that,
+and confusing them is easy, so take them one at a time.
+
+\emph{(i) The overlay comparison.}  Declare model scans plus an
+\code{experimental \{\}} block naming a measured dataset.  The run prints one
+average absolute deviation (AAD) per model per property:
 
 \begin{lstlisting}
-choupoProps <validationCase>          # e.g. a propertyScan1D over measured T
-# the run prints, per point:  model vs measured, dev %;  headline:
+choupoProps tutorials/props/compare/compare_vle_etoh_water
+# >>>  Comparison 'etoh_water_1atm' (abscissa x[ethanol], 12 measured pts):
+#        txy_ideal  T_bubble : AAD 5.35404 K   (12/12 pts)
+#        txy_nrtl   T_bubble : AAD 0.349277 K  (12/12 pts)
+#        txy_unifac T_bubble : AAD 0.407352 K  (12/12 pts)
+\end{lstlisting}
+
+There is deliberately \textbf{no PASS here, and no tolerance}.  The overlay
+reports a distance; what counts as close enough is a judgement about the
+system and the use, and the engine does not have it.  What the suite does hold
+is that the distance has not \emph{moved}: since 2026-08-12 those AADs are
+pinned by \code{aad} rows in the case's \file{expected}.  That matters --- the
+same case's header claimed a UNIFAC AAD of ${\sim}2.6$~K for as long as the arm
+existed, against its own output's 0.407~K, and nothing could catch it while the
+number lived only in prose.
+
+\emph{(ii) The bench verdict.}  \code{heatTransferBench} is the other shape: it
+carries a \code{aadTolerance} the case DECLARES, and it does return a verdict.
+
+\begin{lstlisting}
+# heatTransferBench, and ONLY this family, prints a pass/fail line:
 #   AAD = 1.8 %   AAD tolerance = 3.0 %   -> PASS
 \end{lstlisting}
 
+This paragraph used to show that second listing under a
+\code{propertyScan1D} command --- one operation's transcript attributed to
+another, so a reader following it would run a scan and wait for a line that
+never comes.
+
 \begin{keyidea}
 \textbf{The number that earns trust is the AAD against measured data, not that
-the model compiles.}  The bench prints the per-point deviation and a headline
-AAD against a tolerance (the same machinery \code{HeatTransferBench} and the
-Pitzer activity validation use); a model that misses its anchor beyond
-tolerance fails loudly.  This is the property half of ``see, then decide'' ---
-you simulate with a model \emph{because} you have seen its AAD, never because a
-dropdown recommended it.
+the model compiles.}  But an AAD is a \emph{comparison}, not a validation: it
+says the model agrees with these data, never that the data were independent of
+the fit that produced its parameters.  A model fitted to a series sits close to
+that series by construction --- Choupo's own corpus has both kinds side by
+side, and \file{docs/architecture/verification-and-validation.md} labels each
+one.  A verdict needs a band somebody DECLARED; where no band is declared, read
+the distance and decide yourself.  That is the property half of ``see, then
+decide'': you simulate with a model \emph{because} you have seen its AAD, never
+because a dropdown recommended it.
 \end{keyidea}
 
 \paragraph{B.3 --- An equation of state (and the data-doctrine path).}  An EoS
