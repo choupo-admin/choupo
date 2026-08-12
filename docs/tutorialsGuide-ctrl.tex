@@ -10,7 +10,7 @@
 \end{tutscheme}
 \tutwhat{Dynamic CSTR (compA $\to$ compB) with PID jacket-temperature control; T climbs from 320 K into the +/-2\% setpoint band within \textasciitilde{}20 s (no overshoot) and tracks toward 350 K across the 150 s window}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -32,7 +32,7 @@
 \end{tutscheme}
 \tutwhat{PID disturbance rejection: T\_in steps down then up, PID maintains T\_setpoint}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -57,7 +57,7 @@
 \end{tutscheme}
 \tutwhat{PID disturbance rejection with ADAPTIVE plant integration --- controller samples on the fixed 1 s grid, Rosenbrock23 sub-steps between samples (MV held)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -82,7 +82,7 @@
 \end{tutscheme}
 \tutwhat{Open-loop CSTR START-UP transient with OpenFOAM-style real-time instant dirs: charged cold (320 K), no control, watch T(t) and the holdup approach the natural steady state by scrubbing 0/ 50/ 100/ ... s}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -101,7 +101,7 @@
 \end{tutscheme}
 \tutwhat{PID disturbance rejection with OpenFOAM-style real-time instant dirs: T\_in steps down (700 s) then up (1300 s); scrub 0/ 40/ 80/ ... s to watch the PID track the 350 K setpoint and the jacket MV move}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -126,7 +126,7 @@
 \end{tutscheme}
 \tutwhat{Forced SINUSOIDAL inlet-T disturbance: T\_in = 320 + 15 sin(2 pi t / 600). The PID chases a moving target $\to$ the reactor temperature settles into a forced sinusoidal response (attenuated + phase-lagged). Sweep the period to build a one-point Bode by trial-and-error (the frequency-response seed).}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -151,7 +151,7 @@
 \end{tutscheme}
 \tutwhat{Product inhibition meets a PID: an LHHW reaction whose exotherm fades as its own product covers the catalyst}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -173,7 +173,7 @@
 \end{tutscheme}
 \tutwhat{PRBS identification experiment: T\_in = 320 +/- 10 K by a maximal-length LFSR (n=4, period 15 bits x 120 s) -- deterministic, seed-declared, period-VERIFIED; the broadband excitation the sine of ctrl06 cannot give.}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -198,7 +198,7 @@
 \end{tutscheme}
 \tutwhat{Inlet-field disturbance: componentMolarFlow.compA steps 3.5e-5 $\to$ 5.25e-5 kmol/s; F and z\_in change by the DERIVED values (F = 6.75e-5, z\_A = 7/9) -- the disturbance never hides from the other components}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization |  |
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -215,5 +215,185 @@
 \goldrow{kpi}{reactor}{t\_end}{1800}
 \goldrow{kpi}{reactor}{z\_in\_compA\_final}{0.777777777778}
 \goldrow{kpi}{reactor}{z\_in\_compB\_final}{0.222222222222}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl10\_brine\_concentration}{tutorials/ctrl/ctrl10\_brine\_concentration}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank) at (0.0,-0.0) {\textbf{tank}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Dynamic brine tank on a Pitzer package: the electrolyte thermodynamics through a transient}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{TC1}{MV\_final}{360}
+\goldrow{kpi}{TC1}{PV\_final}{310.319973652}
+\goldrow{kpi}{TC1}{SP\_final}{313.15}
+\goldrow{kpi}{balance}{element\_Cl\_closure\_rel}{7.17019034075e-16}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{3.40011338976e-16}
+\goldrow{kpi}{balance}{element\_Na\_closure\_rel}{7.17019034075e-16}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{3.40011338976e-16}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{7.17019034075e-16}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{7.85289304221e-11}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-853632.741074}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{2658.78680029}
+\goldrow{kpi}{balance}{energy\_kJ\_in\_cum}{-87796.8114225}
+\goldmore{17}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl11\_esterification\_jacket}{tutorials/ctrl/ctrl11\_esterification\_jacket}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Jacketed esterification CSTR under PID temperature control: the first ctrl case whose stored enthalpy exists, so the first-law ledger claims closure instead of refusing}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{TC1}{MV\_final}{360.338985371}
+\goldrow{kpi}{TC1}{PV\_final}{364.93860506}
+\goldrow{kpi}{TC1}{SP\_final}{365}
+\goldrow{kpi}{balance}{element\_C\_closure\_rel}{1.32609972386e-14}
+\goldrow{kpi}{balance}{element\_H\_closure\_rel}{1.31993181817e-14}
+\goldrow{kpi}{balance}{element\_O\_closure\_rel}{1.32609972386e-14}
+\goldrow{kpi}{balance}{element\_worst\_closure\_rel}{1.32609972386e-14}
+\goldrow{kpi}{balance}{energy\_balance\_available}{1}
+\goldrow{kpi}{balance}{energy\_closure\_rel}{1.42432856618e-07}
+\goldrow{kpi}{balance}{energy\_functional\_H}{1}
+\goldrow{kpi}{balance}{energy\_kJ\_final}{-28146.0243548}
+\goldrow{kpi}{balance}{energy\_kJ\_heat\_cum}{-1199.4769622}
+\goldrow{kpi}{balance}{energy\_kJ\_in\_cum}{-65562.9346941}
+\goldrow{kpi}{balance}{energy\_kJ\_initial}{-27888.8423982}
+\goldmore{20}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl12\_williams\_otto}{tutorials/ctrl/ctrl12\_williams\_otto}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (plant) at (0.0,-0.0) {\textbf{plant}\\[-1pt]{\tiny williamsOttoPlant}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Williams-Otto plant (arXiv:2004.07614 eqs. 3.6-3.11 verbatim) settling onto the published steady state x$\ast$ = (3.27, 7.47, 1.12, 9.81, 1.69, 0.22) klb}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{4.0063377475e-10}
+\goldrow{kpi}{balance}{mass\_kg\_final}{10701.9131449}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{5443104}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{4989.512}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{5437391.60103}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{0.00218069130187}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldrow{kpi}{plant}{F\_pP\_klbh\_final}{3.90161524936}
+\goldrow{kpi}{plant}{F\_wG\_klbh\_final}{1.22338475064}
+\goldrow{kpi}{plant}{J\_combined\_klb\_final}{1071.35532885}
+\goldrow{kpi}{plant}{T\_final}{322.2222}
+\goldrow{kpi}{plant}{t\_end}{1440000}
+\goldrow{kpi}{plant}{waste\_klb\_final}{481.451273663}
+\goldmore{13}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl13\_williams\_otto\_step}{tutorials/ctrl/ctrl13\_williams\_otto\_step}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (plant) at (0.0,-0.0) {\textbf{plant}\\[-1pt]{\tiny williamsOttoPlant}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Williams-Otto F\_fB step 20$\to$21 klb/h at t$\ast$=100 h (paper Fig. 2): F\_pP climbs \textasciitilde{}3.90 $\to$ \textasciitilde{}4.45 klb/h}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{FeedStep}{MV\_final}{0.0058333333}
+\goldrow{kpi}{FeedStep}{PV\_final}{0}
+\goldrow{kpi}{FeedStep}{SP\_final}{0.0058333333}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{1.45035580918e-09}
+\goldrow{kpi}{balance}{mass\_kg\_final}{19794.220051}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{2766911.20181}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{4989.512}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{2752106.49778}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{0.00401300573503}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldrow{kpi}{plant}{F\_pP\_klbh\_final}{4.44568758172}
+\goldrow{kpi}{plant}{F\_wG\_klbh\_final}{1.90791543668}
+\goldrow{kpi}{plant}{J\_combined\_klb\_final}{529.364471374}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl14\_williams\_otto\_pi}{tutorials/ctrl/ctrl14\_williams\_otto\_pi}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (plant) at (0.0,-0.0) {\textbf{plant}\\[-1pt]{\tiny williamsOttoPlant}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Williams-Otto PI channel (F\_fB, F\_pP), paper eq. 4.6 with the section-4.1 tunings: F\_pP tracks 3.90 $\to$ 4.5 klb/h with the Fig. 4 overshoot}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{PC1}{MV\_final}{0.00586183454679}
+\goldrow{kpi}{PC1}{PV\_final}{0.00124999896025}
+\goldrow{kpi}{PC1}{SP\_final}{0.00125}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{2.05158151889e-09}
+\goldrow{kpi}{balance}{mass\_kg\_final}{21425.7971042}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{1418738.01455}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{10701.9131449}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{1408014.1335}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{0.0029106566908}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldrow{kpi}{plant}{F\_pP\_klbh\_final}{4.49999626428}
+\goldrow{kpi}{plant}{F\_wG\_klbh\_final}{2.00328828826}
+\goldrow{kpi}{plant}{J\_combined\_klb\_final}{255.611908728}
+\goldmore{10}
+\end{tutgolden}
+
+\clearpage
+\tutentry{ctrl16\_williams\_otto\_optimal}{tutorials/ctrl/ctrl16\_williams\_otto\_optimal}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (plant) at (0.0,-0.0) {\textbf{plant}\\[-1pt]{\tiny williamsOttoPlant}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Williams-Otto section-5.3 combined optimisation: Nelder-Mead over two K=5 Schedule profiles, J measured against the published collocation optimum 551.8}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{FfBprof}{MV\_final}{0.00463988515428}
+\goldrow{kpi}{FfBprof}{PV\_final}{0}
+\goldrow{kpi}{FfBprof}{SP\_final}{0.00463988515428}
+\goldrow{kpi}{Tprof}{MV\_final}{300.373635533}
+\goldrow{kpi}{Tprof}{PV\_final}{0}
+\goldrow{kpi}{Tprof}{SP\_final}{300.373635533}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{1.14401865779e-07}
+\goldrow{kpi}{balance}{mass\_kg\_final}{723583.798797}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{2128628.70559}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{10701.9131449}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{1415747.06346}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{0.243519095471}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldmore{40}
 \end{tutgolden}
 
