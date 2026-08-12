@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  evaporator03_co_current --- outer driver (MCFT 10.38 case a).
+  evaporator03_co_current --- outer driver (textbook problem 10.38 case a).
 
   v0.33 Mode-2 formulation.  Pressures inside the effects EMERGE
   from each effect's heat balance (T_boil = T_steam − Q/(U·A);

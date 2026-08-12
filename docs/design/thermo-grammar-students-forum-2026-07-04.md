@@ -1,6 +1,6 @@
 # Students' forum — usability of the propertyPackage convention (2026-07-04)
 
-Panel: the usual student archetypes (first-time MCFT student; the careful
+Panel: the usual student archetypes (first-time student; the careful
 reader; the one who only reads run logs; the one who breaks things on purpose).
 Materials: `propertyPackages/co2Water_henry.dat`, the `flash08` run log, and
 the deliberately-broken variants.

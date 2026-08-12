@@ -32,9 +32,14 @@ The *Choupo* trademark is held separately by TalentGround Lda.
 
 Targeted at:
 
-* **Pedagogy** — the *Métodos Computacionais em Fenómenos de Transferência*
-  (MCFT) course.  A "glass-box" alternative where every equation, every
-  Newton iteration, every K-value is visible in source AND run-time output.
+* **Pedagogy** — undergraduate chemical engineering.  A "glass-box"
+  alternative where every equation, every Newton iteration, every K-value is
+  visible in source AND run-time output.  (This file used to name a specific
+  course here.  It named the WRONG one -- that course is CFD, not process
+  simulation -- and the wrong name had been copied into the guides, the
+  AI-facing docs, five deliberation records and about twenty tutorial
+  headers before anyone read it back.  Corrected 2026-08-12.  No course is
+  named in its place: the audience is the discipline, not a timetable slot.)
 * **Research / industry differentiation** — extensible for areas where
   breadth-first tools are weak (membranes / NF / RO — Vítor's research;
   electrochemical systems; bioprocess detail; multi-scale CFD coupling).
@@ -225,9 +230,8 @@ written in another cannot be audited together.
 
 Three things are NOT covered by this rule, and must stay as they are:
 
-* **Proper nouns** — `Vítor Geraldes`, `TalentGround Lda.`, *Métodos
-  Computacionais em Fenómenos de Transferência* (the MCFT course), and
-  *choupo* itself (the poplar).  A name is not text to be translated.
+* **Proper nouns** — `Vítor Geraldes`, `TalentGround Lda.`, and *choupo*
+  itself (the poplar).  A name is not text to be translated.
 * **Third-party legal text** — `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES`,
   anything under `thirdParty/`.  Retranslating a licence changes it.
 * **Git history** — commit messages already written stay written.  The rule

@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "Single-effect evaporator concentrating orange juice 10% to 50% solids (MCFT Ex. 10.2 a-c, without BPE)";
+description   "Single-effect evaporator concentrating orange juice 10% to 50% solids (textbook Example 10.2 a-c, without BPE)";
 verbosity     2;
 
 units

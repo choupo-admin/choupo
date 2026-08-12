@@ -24,7 +24,7 @@ a negative.  The first implementation derived K_b for ANY component carrying
 Tb/MW/Hvap -- which is every solvent in the corpus.  That gave a
 boiling-point elevation to cases that deliberately model WITHOUT one:
 
-    evaporator04_orange_juice_simple reproduces MCFT Ex. 10.2 "without BPE".
+    evaporator04_orange_juice_simple reproduces textbook Example 10.2 "without BPE".
     Its own component record says, in words, "no K_b (BPE neglected)".
     It acquired BPE = 0.41 K and its heat-transfer area moved 4.75 %.
 

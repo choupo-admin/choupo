@@ -26,9 +26,8 @@ at:
 
 - **Pedagogy** — a *glass-box* process simulator
   where every equation, every Newton iteration, every K-value is
-  visible in both the source and the run-time output.  The
-  *Métodos Computacionais em Fenómenos de Transferência* (MCFT) course
-  at IST is the primary student audience.
+  visible in both the source and the run-time output.  The primary
+  student audience is undergraduate chemical engineering.
 - **Research differentiation** — focused on areas often treated
   weakly: membrane separations (NF/RO), the spiral-wound module,
   electrolyte osmotic pressure (Pitzer), the dynamic population

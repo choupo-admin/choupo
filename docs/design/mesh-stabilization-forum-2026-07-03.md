@@ -3,7 +3,7 @@
 **Status: DESIGN RATIFIED (5/5), NOT BUILT.** Forum: distillation-solver expert
 (25 yr MESH/Naphtali-Sandholm/inside-out), constrained-Newton numerical analyst,
 Choupo credo-keeping architect, OpenFOAM numerics veteran, pedagogy professor +
-MCFT student.
+undergraduate student.
 
 ## The problem (verified in code)
 The `simultaneous`/MESH column solves the N·n MESH set (per-stage liquid

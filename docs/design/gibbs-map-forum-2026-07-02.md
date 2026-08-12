@@ -2,7 +2,8 @@
 
 **Status: DESIGN RATIFIED, NOT BUILT.** Forum: 3 professors (equilibrium
 thermodynamics, reaction engineering, computational pedagogy) + 3 users
-(MCFT undergrad, methanol-synthesis PhD/Aspen power user, thermodynamics TA).
+(chemical-engineering undergrad, methanol-synthesis PhD/Aspen power user,
+thermodynamics TA).
 Verdict: **6/6 on the architecture**; amendments below are binding.
 
 ## What ships in v1

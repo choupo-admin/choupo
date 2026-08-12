@@ -10,7 +10,7 @@
   USER-DEFINED COMPONENT --- "solidos" (generic non-volatile dissolved
                                          solids; textbook abstraction).
 
-  The MCFT problem 10.38 specifies only one thermal property of the
+  The textbook problem 10.38 specifies only one thermal property of the
   solute: the AQUEOUS-SOLUTION heat capacity is 4.18 kJ/(kg·K), the
   same as pure water.  In a binary mass-fraction-weighted mixing rule
   (Cp_mix = w_water · Cp_water + w_solids · Cp_solids), this is exactly

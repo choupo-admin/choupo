@@ -7,8 +7,17 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
+  SOURCE.  The exercise number below is the numbering of the course notes
+  this case was built from; the TEXTBOOK those notes drew on is not
+  recorded anywhere in this case.  It used to be labelled with a course
+  acronym, and that acronym named the WRONG course (a CFD one), so it was
+  removed on 2026-08-12 rather than replaced with a guess.  The gap is
+  left visible: a missing citation a reader can see beats a plausible one
+  nobody can check.  (`sucrose.dat` does carry a primary for the Cp
+  correlation -- Coulson & Richardson 6th ed. Example 14.4.)
+
   evaporator03_co_current  --  triple-effect evaporator, forward-feed,
-                                user-defined components, MCFT Ex. 10.38 (a).
+                                user-defined components, textbook Example 10.38 (a).
 
   Problem (textbook givens):
     Feed         1.25 kg/s, 10 wt% solids, 294 K

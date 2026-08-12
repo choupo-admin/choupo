@@ -1304,7 +1304,7 @@ PYEOF
     # and the run announces the comparison.
     # The NEGATIVE is the one that matters: the first implementation derived
     # for every solvent and so gave BPE to evaporator04, which reproduces
-    # MCFT Ex. 10.2 WITHOUT it and says "no K_b (BPE neglected)" in its own
+    # textbook Example 10.2 WITHOUT it and says "no K_b (BPE neglected)" in its own
     # record -- a different model, arrived at silently.  An absence must keep
     # meaning what it meant, so the derivation is opt-in.
     # Sabotage-verified twice: derivation made non-opt-in (the negative

@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoSolve;
-description   "Triple-effect cocurrent evaporator: 22500 kg/h sugar solution 5%->25% (MCFT Ex. 10.4)";
+description   "Triple-effect cocurrent evaporator: 22500 kg/h sugar solution 5%->25% (textbook Example 10.4)";
 verbosity     3;
 
 // Mass-basis display recovers the textbook framing of the problem

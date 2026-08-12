@@ -7,11 +7,20 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
+  SOURCE.  The exercise number below is the numbering of the course notes
+  this case was built from; the TEXTBOOK those notes drew on is not
+  recorded anywhere in this case.  It used to be labelled with a course
+  acronym, and that acronym named the WRONG course (a CFD one), so it was
+  removed on 2026-08-12 rather than replaced with a guess.  The gap is
+  left visible: a missing citation a reader can see beats a plausible one
+  nobody can check.  (`sucrose.dat` does carry a primary for the Cp
+  correlation -- Coulson & Richardson 6th ed. Example 14.4.)
+
   evaporator05_counter_current  --  COUNTER-CURRENT (BACKWARD-FEED)
                                      triple-effect evaporator, Mode-2,
                                      credo-pure.
 
-  Problem (textbook givens, MCFT 10.38 numerics, counter-current variant):
+  Problem (textbook givens, textbook problem 10.38 numerics, counter-current variant):
     Feed         1.25 kg/s, 10 wt% solids, 294 K
     Live steam   170 kPa  (saturated vapour) entering EFFECT 1 (hot end)
     P_3 (cold end) such that T_3 = 325 K  ->  13.5 kPa

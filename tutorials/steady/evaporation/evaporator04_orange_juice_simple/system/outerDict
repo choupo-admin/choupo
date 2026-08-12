@@ -7,7 +7,7 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  evaporator04_orange_juice_simple --- outer driver (MCFT Ex. 10.2).
+  evaporator04_orange_juice_simple --- outer driver (textbook Example 10.2).
 
   TWO design unknowns:
       $A          heat-exchange area      (textbook question (a))

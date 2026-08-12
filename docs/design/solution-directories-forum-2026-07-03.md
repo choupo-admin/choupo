@@ -4,7 +4,7 @@
 the streams supposed to be in folders 0/ 1/ 2/ like OpenFOAM?"
 
 **Forum: 6 voices** — OpenFOAM/CFD veteran, process-simulation expert (Aspen/
-gPROMS), computational-pedagogy professor, MCFT undergrad (no OpenFOAM),
+gPROMS), computational-pedagogy professor, undergrad (no OpenFOAM),
 reproducibility/git engineer, credo-keeping architect.
 
 ## The unanimous verdict (6/6)

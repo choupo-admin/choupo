@@ -11,7 +11,7 @@
 
       Cp(x)  ≈  4.19  -  2.35 · x    [kJ/(kg·K)]
 
-  used in standard MCFT exercises (e.g. Coulson & Richardson 6th
+  used in standard evaporation exercises (e.g. Coulson & Richardson 6th
   ed. Example 14.4; the same coefficients appear in the course
   notes Exemplo 10.4 for the triple-effect cocurrent evaporator).
 

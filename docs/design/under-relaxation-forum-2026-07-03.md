@@ -2,7 +2,8 @@
 
 **Status: DESIGN RATIFIED (5/5 unanimous), NOT BUILT.** Forum: OpenFOAM numerics
 veteran, process-simulation numerics expert, numerical analyst, Choupo
-credo-keeping architect, computational-pedagogy professor + MCFT student.
+credo-keeping architect, computational-pedagogy professor + undergraduate
+student.
 
 ## The verdict, unanimous
 

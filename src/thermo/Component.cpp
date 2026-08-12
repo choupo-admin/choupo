@@ -416,7 +416,7 @@ void Component::readFromDict(const DictPtr& d)
     //  THE DERIVATION IS OPT-IN, and this cost one wrong answer to learn.
     //  Deriving whenever Tb/MW/Hvap exist means EVERY solvent acquires a
     //  boiling-point elevation -- including cases that deliberately model
-    //  without one.  evaporator04 reproduces MCFT Ex. 10.2 "without BPE",
+    //  without one.  evaporator04 reproduces textbook Example 10.2 "without BPE",
     //  and its own record says so in words: "no K_b (BPE neglected)".  The
     //  first draft gave it BPE = 0.41 K and moved its area 4.75 %.  That is
     //  not a refined constant, it is a DIFFERENT MODEL.
