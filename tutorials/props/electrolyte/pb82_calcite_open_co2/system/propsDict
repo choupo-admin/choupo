@@ -34,7 +34,19 @@
   pH tests independently is the ASSEMBLY: that the engine composes those
   constants (gas pin, chained carbonate master, ion pairs, activity model,
   charge balance, mineral ceiling) into the same physical answer the
-  electrode saw.  A wrong composition would not land within 0.01 pH.
+  electrode saw.
+
+  WHAT IT ACTUALLY LANDS AT, and where that is written.  The engine gives
+  pH 6.02946 -- 0.025 ABOVE the measurement, 0.018 above their own model's
+  6.011 -- and the case attributes that offset to an activity-model
+  difference (Davies here against their Truesdell-Jones, at I = 0.027).
+  SINCE 2026-08-12 THAT COMPARISON IS DATA, NOT PROSE: `expected` carries an
+  `anchor` row on the measured 6.004 with a band set to the explained offset,
+  beside the self-recorded row on 6.02946 -- so a drift AWAY from the
+  electrode fails as an anchor disagreement, and an unexplained drift TOWARD
+  it fails as a moved golden.  Both ends, on purpose.  This header used to
+  end with "a wrong composition would not land within 0.01 pH", which reads
+  as though the engine does; it does not, and the number is above.
 
   APPROACH FROM ABOVE: the engine's equilibrate is a precipitation
   CEILING (SI -> 0 from supersaturation; it does not dissolve a solid it

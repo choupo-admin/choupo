@@ -87,7 +87,7 @@ credibility claim this document exists to deflate:
 | `props/compare/compare_vle_etoh_water` | Carey & Lewis (1932) ethanol–water VLE at 101.3 kPa, 12 points | independent — ideal / NRTL / UNIFAC / **Wilson** (on flash03's inline pair, its first measured anchor: T_bubble AAD 0.276 K vs NRTL's 0.349 K). **The eight AADs are PINNED since 2026-08-12** (`aad` rows), which is how two false claims about the UNIFAC arm were found — see §3b |
 | `props/electrolyte/fpd01_nacl_freezing` | one tabulated FPD point at 1 mol/kg (interim citation, Scatchard–Prentiss candidate) + dilute-limit slope vs the derived K_f | independent but THIN — one point, said plainly; also the ice witness: the depression agrees to 0.05 % with a_w evaluated at T_f, where the 25 °C surface leaves a 1.8 % gap |
 | `props/electrolyte/archer01_nacl_cold_to_hot` | Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9–10 — γ±/φ at 273/298/323/373 K (interim transcription from the owner-provided paper) | **cross-evaluation** — Archer's tables are his own fitted equation's check values, and his database overlaps SP77's corpora: two independent fits of overlapping data, stronger than fit-consistency, weaker than raw measurement. The 273 K arm measures the announced below-window extrapolation fpd01 stands on: γ± AAD 1.05 % at 0 °C vs 0.17–0.29 % inside the window |
-| `props/electrolyte/pb82_calcite_open_co2` | Plummer & Busenberg, GCA 46 (1982) 1011 — measured junction-corrected pH 6.004 ± 0.005 at calcite equilibrium, 25 °C / 0.956 atm PCO₂ (their model: 6.011) | **split, stated in the case**: the K's are LINEAGE (PHREEQC's carbonate block is this paper), but the measured pH independently tests the ASSEMBLY — gas pin + chained carbonate + ion pairs + Davies + electroneutrality + SI = 0 ceiling end to end. Engine: 6.029 — 0.025 above the electrode, the size an activity-model difference (Davies vs their Truesdell–Jones) predicts at I = 0.027; reported, not tuned |
+| `props/electrolyte/pb82_calcite_open_co2` | Plummer & Busenberg, GCA 46 (1982) 1011 — measured junction-corrected pH 6.004 ± 0.005 at calcite equilibrium, 25 °C / 0.956 atm PCO₂ (their model: 6.011) | **split, stated in the case**: the K's are LINEAGE (PHREEQC's carbonate block is this paper), but the measured pH independently tests the ASSEMBLY — gas pin + chained carbonate + ion pairs + Davies + electroneutrality + SI = 0 ceiling end to end. Engine: 6.029 — 0.025 above the electrode, the size an activity-model difference (Davies vs their Truesdell–Jones) predicts at I = 0.027; reported, not tuned. **CHECKED since 2026-08-12:** an `anchor` row carries the measured 6.004 with the band set to that explained offset, beside the self-recorded row on 6.02946 — both ends pinned, so a drift away from the electrode fails as an anchor disagreement and an unexplained drift toward it fails as a moved golden |
 
 **How much of this table is CHECKED, stated because the difference is the
 whole point of the document.**  `check_validation_subset` recounts
@@ -96,9 +96,13 @@ and cannot check the *claims* in the right-hand columns — those are prose, and
 prose about a number goes stale silently, which is precisely how the cavett01
 row above came to assert a comparison that does not exist in the case.  The
 `anchor` row (2026-08-10) is the mechanism that converts one of these claims
-into something the suite falsifies, and today exactly four cases use it:
+into something the suite falsifies, and today exactly five cases use it:
 `pitzer_gamma_hamer_wu` (15 rows), `ctrl12_williams_otto` (6),
-`flash09_n2ch4_stryjek` (2) and `pitzer_seawater_verify` (1).  The
+`flash09_n2ch4_stryjek` (2), `pitzer_seawater_verify` (1) and
+`pb82_calcite_open_co2` (1, added 2026-08-12 — the first anchor whose band is
+the case's own EXPLAINED deviation rather than the citation's precision, and
+the first paired with a self-recorded row on the same key so that both ends
+are pinned).  The
 Wiebe-Henry candidate from the same queue resolved the OTHER way, and the
 resolution is the record: the `H2-NH3` Henry pair is FITTED to Wiebe &
 Tremearne's Table I — the only dataset — so a Wiebe anchor would claim
@@ -204,8 +208,8 @@ published dataset *together*: no primary published it, so no primary can be
 quoted for it.  What an `aad` row pins is that the agreement has not MOVED —
 regression over a validation statistic.  Anchoring this case still means
 carrying a Carey & Lewis point and comparing the model AT it, and that row
-has not been authored.  §3's count therefore stands unchanged: four cases use
-`anchor`.
+has not been authored.  The `anchor` count in §3 moved for a different reason
+the same day — `pb82_calcite_open_co2`, below — not because of anything here.
 
 ## 4. What this changes, and what it does not
 

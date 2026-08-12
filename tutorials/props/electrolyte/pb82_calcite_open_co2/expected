@@ -8,3 +8,29 @@ diag    calciteEq_25C          SI_portlandite   -13.0919         1e-4
 diag    calciteEq_25C          aw               0.998916         1e-4
 diag    calciteEq_25C          n_calcite        0.00543277       1e-4
 diag    calciteEq_25C          pH               6.02946          1e-4
+#
+#  THE ANCHOR, and why the band is what it is (2026-08-12).
+#
+#  The row below carries Plummer & Busenberg's MEASURED junction-corrected pH
+#  at calcite equilibrium, 25 C / 0.956 atm PCO2 -- 6.004 +/- 0.005, GCA 46
+#  (1982) 1011, p. 1022.  It is here because until now the comparison between
+#  this case and its primary lived only in the header, and a comparison that
+#  lives only in prose goes stale silently: that is the cavett01 lesson, whose
+#  header asserted a comparison against published tables that the case did not
+#  contain.  A citation the suite reads cannot rot unnoticed.
+#
+#  THE BAND IS THE EXPLAINED DEVIATION, DECLARED.  The engine sits 0.025 pH
+#  ABOVE the electrode (0.416 %), and the case attributes that to an activity-
+#  model difference -- Davies here against their Truesdell-Jones, at I = 0.027.
+#  `reltol 5e-3` (0.030 pH) admits exactly that stated offset and about 20 %
+#  more, and nothing else.  A drift further from the measurement FAILS as an
+#  ANCHOR disagreement, which is what an anchor is for.
+#
+#  BOTH ENDS ARE PINNED, deliberately.  The self-recorded row above holds the
+#  engine's own 6.02946 to 1e-4, so a drift TOWARD the measurement fails too.
+#  That is not pedantry: an unexplained improvement in a number this case
+#  exists to explain is news of the same size as an unexplained worsening, and
+#  a band alone would swallow it.  Neither row may be widened to make the other
+#  pass -- the remedy is the physics, or the record of why it moved.
+#
+diag    calciteEq_25C          pH               6.004            5e-3     anchor
