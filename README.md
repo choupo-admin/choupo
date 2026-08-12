@@ -132,7 +132,7 @@ The four binaries share `src/{core,thermo,solver,materials,unitOperations,contro
 | Aqueous (electrolyte) activity  | `davies` (teaching rung, charge-only), `pitzerHMW` (per-ion virials), `edwardsPitzer` (Edwards et al. 1978 truncation, sour-water), eNRTL + single-salt Pitzer adapters |
 | Equation of state φ_i(T, P, y)  | `idealGas`, `SRK`, `PengRobinson` (alias `PR`), `PCSAFT` (incl. association, 2B/3B/4C schemes) |
 | Vapour pressure Psat_i(T)       | `Antoine`, `AmbroseWalton` |
-| Heat capacity Cp(T)             | `polynomial` (liquid + ideal gas), `NASA7` |
+| Heat capacity Cp(T)             | `polynomial` (liquid + ideal gas), `NASA7`, `RowlinsonBondi` (predictive liquid Cp from Tc, ω and the ideal-gas Cp — nothing measured; ~1 % on non-polar species, **30–70 % on hydrogen-bonding ones**, measured against all 86 curated liquid-Cp components) |
 | Latent heat ΔHvap(T)            | Watson correlation |
 | Pure-component Gibbs energy     | `standardThermochemistry { dHf_298; s_298; referenceState; }` block + Kirchhoff via Cp |
 | Phases                          | vapour, liquid, solid.  The solid's **crystallising** mode is implemented (one component's pure crystal in SLE — ice and minerals, `f_solid = Psat·exp(−ΔG_fus/RT)`); its **inert** mode (propagated but skipped by the flash) is still a stub and refuses by name |
