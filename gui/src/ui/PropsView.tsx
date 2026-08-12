@@ -220,11 +220,26 @@ function opOutputMap(propsDict: JsonDict | null): Map<string, string> {
   return m;
 }
 
-/** The validation weapon, on screen: engine-computed AAD of each model vs the
+/** The COMPARISON table, on screen: engine-computed AAD of each model vs the
  *  MEASURED data, per property -- the NUMBER under the data-vs-models overlay.
  *  Numbers only when the engine marked the row ok; otherwise the status word (a
  *  wrong AAD is worse than none).  Smaller AAD = closer to data (highlighted as
- *  evidence, not a recommended-by badge).  Defensive: "—" instead of throwing. */
+ *  evidence, not a recommended-by badge).  Defensive: "—" instead of throwing.
+ *
+ *  IT IS A COMPARISON, NOT A VALIDATION, and this surface used to say
+ *  otherwise (corrected 2026-08-12).  `EvidencePartition::comparisonCaveat()`
+ *  is the ONE wording of the difference, and the console lines were moved onto
+ *  it in August -- the engine prints "Comparison '<dataset>'".  This panel was
+ *  missed and went on reading "Validation (AAD vs data)": one sentence, two
+ *  homes, one updated, and the stale home is the one a STUDENT reads.
+ *
+ *  The difference is load-bearing here rather than pedantic.  Agreement with
+ *  measured data is validation only when the data were INDEPENDENT of the fit
+ *  -- and the corpus contains both kinds side by side: compare_vle_etoh_water
+ *  holds four models against Carey & Lewis, none of which saw those points,
+ *  while compare_kinetics_order FITS k to the very series it is then compared
+ *  against.  One panel serves both, so it must make the weaker claim; the
+ *  caption below says which is which and points at where the case declares it. */
 function ValidationTable({ blocks }: { blocks: ValidationBlock[] }) {
   const num = (x: number | null, digits = 4) =>
     typeof x === "number" && isFinite(x) ? String(Number(x.toPrecision(digits))) : "—";
@@ -235,6 +250,14 @@ function ValidationTable({ blocks }: { blocks: ValidationBlock[] }) {
           Engine-computed average absolute deviation (AAD) of each model curve
           vs the measured points, interpolated onto the measured abscissa.
           Smaller is closer to the data.
+        </Text>
+        <Text size="xs" c="dimmed">
+          This is a <b>comparison</b>, not a validation. It says a model agrees
+          with these data; it does <b>not</b> say the data were independent of
+          the fit that produced the model&rsquo;s parameters. A model fitted to
+          this same series will sit close to it by construction. Which case you
+          are looking at is declared in the case itself — the propsDict header
+          says whether the parameters saw these points.
         </Text>
         {blocks.map((b) => {
           // closest model per property (smallest ok aadAbs) -- evidence, not a badge
@@ -369,12 +392,17 @@ function buildTargetItems(opts: {
     for (const n of modelCsvNames) consumed.add(n);
   }
 
-  // Validation (AAD vs data): the engine's quantified model-vs-measured
+  // Comparison with data (AAD): the engine's quantified model-vs-measured
   // deviation, its own pill so the table fills the pane (no clash with the
-  // overlay plot above).
+  // overlay plot above).  The label says COMPARISON, not validation -- see
+  // ValidationTable's header for why the weaker word is the correct one on a
+  // panel that serves both an independent dataset and a fit's own training
+  // series.  (The JSON field and the component name stay `validation`: that is
+  // the engine's wire format, and renaming it here would break the adapters
+  // without changing what a reader is told.)
   if (result?.validation && result.validation.length > 0) {
     out.push({ key: `${keyPrefix}cmp-aad`, group: "Comparison",
-      label: `${labelPrefix}Validation (AAD vs data)`,
+      label: `${labelPrefix}Comparison with data (AAD)`,
       node: <ValidationTable blocks={result.validation} /> });
   }
 
