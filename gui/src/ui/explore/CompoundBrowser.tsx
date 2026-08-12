@@ -39,15 +39,23 @@ function pushRecent(name: string): string[] {
 // data, no recommended badge.  Grouping-by-what-it-unlocks is self-documenting:
 // a student wanting a psychro chart SEES "Permanent gases" and learns the
 // carrier concept.  Order matters (the most VLE-rich groups first).
-type GroupKey = "volatiles" | "electrolytes" | "gases" | "nonvolatile";
+type GroupKey = "volatiles" | "electrolytes" | "gases" | "nonvolatile" | "synthetic";
 const GROUP_LABEL: Record<GroupKey, string> = {
   volatiles: "Volatiles (VLE-able)",
   electrolytes: "Electrolytes / ions",
   gases: "Permanent gases",
   nonvolatile: "Non-volatile / fragments",
+  //  LAST, and named for what it is.  compA/compB/compC are numerical
+  //  stand-ins for the VLLE audit -- no elements, no heat of formation,
+  //  formula "A", CAS 00-00-0.  They used to sit alphabetically between two
+  //  real compounds, and a student had no way to tell.
+  synthetic: "Synthetic test stand-ins (NOT real substances)",
 };
-const GROUP_ORDER: GroupKey[] = ["volatiles", "electrolytes", "gases", "nonvolatile"];
+const GROUP_ORDER: GroupKey[] = ["volatiles", "electrolytes", "gases", "nonvolatile", "synthetic"];
 function groupOf(m: ComponentMeta): GroupKey {
+  //  FIRST test, so a synthetic species never lands in a chemical group on
+  //  the strength of having a vapour pressure -- which compA does, tuned.
+  if (m.isSynthetic) return "synthetic";
   if (m.isElectrolyte) return "electrolytes";
   if (m.isPermanentGas) return "gases";
   if (m.vleAble) return "volatiles";
@@ -150,7 +158,7 @@ export function CompoundBrowser({
   const recentSet = useMemo(() => new Set(recentRows.map((m) => m.name)), [recentRows]);
   const stdGroups = useMemo(() => {
     const buckets: Record<GroupKey, ComponentMeta[]> = {
-      volatiles: [], electrolytes: [], gases: [], nonvolatile: [],
+      volatiles: [], electrolytes: [], gases: [], nonvolatile: [], synthetic: [],
     };
     for (const m of stdResults) {
       if (grouped && recentSet.has(m.name)) continue;   // already in "Recently used"

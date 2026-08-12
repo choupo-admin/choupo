@@ -44,3 +44,16 @@ liquidHeatCapacity
     coefficients  (120.0);
     Trange        (300  400);
 }
+
+//  DECLARED, not left to a comment.  The header above has always said "NOT A
+//  REAL SUBSTANCE"; the parser discards comments, so nothing downstream could
+//  know it.  A student browsing the catalogue met 'compB' between two real
+//  compounds with no way to tell.  `source synthetic` is the value the
+//  ThermoML fixture already uses -- no new vocabulary, and it sits on the axis
+//  that answers "where did the data come from" (five-axis contract,
+//  docs/design/provenance-semantics-five-axes.md).
+provenance
+{
+    source      synthetic;
+    reason      "numerical stand-in for an algorithm audit; no physical primary exists";
+}

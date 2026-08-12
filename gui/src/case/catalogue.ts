@@ -46,6 +46,10 @@ export interface ComponentMeta {
   /** A permanent / non-condensable carrier gas (declared `noncondensable true;`
    *  — air/N2/O2/CO2) — gates the psychrometric view (carrier + condensable). */
   isPermanentGas: boolean;
+  /** the record DECLARES `provenance { source synthetic; }` -- a numerical
+   *  test stand-in, not a chemical.  Read, never inferred: a CAS of 00-00-0
+   *  would have been a fair guess, and guessing is what philosophy 3c forbids. */
+  isSynthetic: boolean;
   /** Carries a UNIFAC group decomposition in its .dat (`groups { unifac (…) }`)
    *  — the engine reads it directly, so the component is UNIFAC-able (gates the
    *  γ=UNIFAC views without a hardcoded map). */
@@ -104,10 +108,12 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const isElectrolyte = (j.electrolyte !== undefined && j.electrolyte !== null)
     || (dissoc > 1 && !isSolid);
   const isPermanentGas = j.noncondensable === "true" || j.noncondensable === true;
+  const prov = j.provenance as Record<string, unknown> | undefined;
+  const isSynthetic = !!prov && prov.source === "synthetic";
   const grp = j.groups as Record<string, unknown> | undefined;
   const hasUnifac = !!grp && grp.unifac !== undefined && grp.unifac !== null;
   const num = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, hasUnifac,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isSynthetic, hasUnifac,
     origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 

@@ -356,6 +356,38 @@ Component Database::loadComponent(const std::string& name) const
         }
     }
 
+    //  A SYNTHETIC STAND-IN SAYS SO AT RUN TIME (2026-08-12).
+    //  compA / compB / compC are numerical test species for the VLLE audit --
+    //  no elements, no real heat of formation, formula "A", CAS 00-00-0.  All
+    //  three headers said "NOT A REAL SUBSTANCE" in a BANNER COMMENT, which
+    //  the parser discards, so nothing downstream could know: a student
+    //  browsing the catalogue met `compA` between two real compounds with no
+    //  way to tell, and a result computed with one carried no mark at all.
+    //
+    //  The same shape as the reviewStatus finding above, and the third time
+    //  this file has paid for it: A FIELD THE ENGINE CANNOT SEE IS A COMMENT.
+    //  `provenance { source synthetic; }` is the value the ThermoML fixture
+    //  already uses -- no new vocabulary, and it sits on the axis that answers
+    //  "where did the data come from".
+    if (dict->found("provenance")
+        && dict->subDict("provenance")->lookupWordOrDefault("source", "")
+           == "synthetic")
+        if (announceOnce("synthetic:" + name))
+        {
+            const std::string why = dict->subDict("provenance")
+                                        ->lookupWordOrDefault("reason", "");
+            AdvisoryLog::instance().add(
+                "provenance", "warning", "component '" + name + "'",
+                "provenance source synthetic -- NOT a real substance"
+                + (why.empty() ? std::string() : " (" + why + ")"));
+            std::cerr << "[synthetic] component '" << name
+                      << "' is NOT a real substance: it is a numerical"
+                         " stand-in with no physical primary"
+                      << (why.empty() ? "" : " -- " + why)
+                      << ".  Any number computed with it describes the"
+                         " algorithm, never a chemical.\n";
+        }
+
     //  AN UNREVIEWED RECORD SAYS SO AT RUN TIME (AP2, 2026-08-05).
     //  67 standard records carried "PROPOSAL TIER -- UNVERIFIED" in the
     //  BANNER COMMENT, which the parser discards -- so the doctrine that

@@ -67,7 +67,7 @@ export interface ModelRow {
 }
 
 export interface RecordMark {
-  kind: "reviewStatus" | "tier" | "role" | "estimate";
+  kind: "reviewStatus" | "tier" | "role" | "estimate" | "synthetic";
   text: string;
   tone: "warn" | "info";
 }
@@ -232,6 +232,19 @@ export function readComponentRecord(raw: string): ComponentRecord | null {
     marks.push({ kind: "role", text:
       "role nonvolatile — no vapour pressure BY DESIGN; the absence above is a modelling choice, not a gap",
       tone: "info" });
+  }
+  // A SYNTHETIC STAND-IN IS NOT A CHEMICAL, and the record now says so in a
+  // field rather than in a banner comment the parser discards (engine mark
+  // `[synthetic]`, Database.cpp).  The GUI RENDERS that declaration; it does
+  // not infer one -- a CAS of 00-00-0 would have been a reasonable guess and
+  // guessing is exactly what philosophy §3c forbids here.
+  const prov = dict(j.provenance);
+  if (prov && str(prov.source) === "synthetic") {
+    const why = str(prov.reason);
+    marks.push({ kind: "synthetic", tone: "warn", text:
+      "provenance source synthetic — NOT a real substance" +
+      (why ? ` (${why})` : "") +
+      ".  Any number computed with it describes the algorithm, never a chemical." });
   }
 
   return { name, formula, identity, capabilities, models, marks, raw };
