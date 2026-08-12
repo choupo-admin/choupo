@@ -730,6 +730,33 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED — three found
+in one day (2026-08-12).**  `bin/runTests` compares a run against `expected`
+row by row, and each row's `kind` says WHERE the number is read from.  The
+result JSON kept growing; every slice that shipped a new top-level block added
+one the golden format could not reach, and **an unreadable block does not fail
+— it just stops being checked**, silently, with the suite green.  Three:
+`validation` (the AAD of each model against MEASURED data — the headline result
+of every `compare_*` case), `energyClosures` (the model-boundary ledger's three
+quantities, unpinned since the slice shipped) and `utilityAllocation` (which
+catalogue utility `pickForDuty` chose, its kg/s and its €/h, on **77 cases** —
+the unit's own `Q_kW` does not move when the picker does).  Closed with the
+`aad` / `closure` / `utility` kinds, auto-generation in `--record`, and a gate
+each requiring **published ⇒ pinned AND pinned ⇒ published**.  **THE RULE, and
+it is the Edwards lesson one layer up:** when you add a top-level result block
+carrying a number a reader would act on, add the row kind that reads it IN THE
+SAME COMMIT.  A word cannot be a golden value, so a decision is pinned either
+by putting the word in the KEY (`heating.steamLP.eur_h` — a changed pick
+reports MISSING and names itself) or, where the word is free text, through its
+numeric consequences, said plainly rather than claimed as direct coverage.
+What is deliberately NOT pinned is audited with its reason (residual histories
+and curves are paths, not answers; words have their own gates).  Gates:
+`check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
+`check_utility_allocation_pinned` — the third FAILED its own first run because
+it derived keys by a rule of its own instead of the writer's, which is the
+arity sin inside the machinery built to enforce it.  Record:
+[`docs/design/which-result-blocks-a-golden-can-read.md`](docs/design/which-result-blocks-a-golden-can-read.md).
+
 **THE `aad` ROW — an overlay's comparison against measured data becomes
 falsifiable (2026-08-12).**  A choupoProps `experimental {}` overlay publishes
 how far each model sits from a MEASURED dataset — the headline result of every
