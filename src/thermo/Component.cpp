@@ -564,7 +564,25 @@ void Component::readFromDict(const DictPtr& d)
         return sub;
     };
     if (d->found("liquidHeatCapacity"))
-        cpLiq_ = HeatCapacityModel::New(stampOwner("liquidHeatCapacity"));
+    {
+        DictPtr lcp = stampOwner("liquidHeatCapacity");
+        //  A CORRESPONDING-STATES liquid Cp (RowlinsonBondi) needs Tc, omega
+        //  and the IDEAL-GAS Cp -- all three of which live at component level.
+        //  Inject them, exactly as the vapour-pressure block's Tc/Pc/omega are
+        //  injected above, so the case author declares each fact ONCE and the
+        //  model never re-states what the component already says.
+        //
+        //  The ideal-gas block is injected as a DICT, not as a built model:
+        //  cpGas_ is constructed after this line, and handing over a
+        //  half-built object to save one parse is how construction order
+        //  becomes a silent dependency.
+        if (!lcp->found("Tc")    && Tc_    > 0.0) lcp->insert("Tc",    Tc_);
+        if (!lcp->found("omega"))                 lcp->insert("omega", omega_);
+        if (!lcp->found("idealGasHeatCapacity") && d->found("idealGasHeatCapacity"))
+            lcp->insert("idealGasHeatCapacity",
+                        EntryValue(d->subDict("idealGasHeatCapacity")));
+        cpLiq_ = HeatCapacityModel::New(lcp);
+    }
     if (d->found("idealGasHeatCapacity"))
         cpGas_ = HeatCapacityModel::New(stampOwner("idealGasHeatCapacity"));
     // A REAL solid heat capacity (same HeatCapacityModel factory as the liquid

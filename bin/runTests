@@ -1083,6 +1083,26 @@ PYEOF
     fi
     rm -f /tmp/mbl.$$
 
+    # Rowlinson-Bondi gate (2026-08-12): the last rung of the predictive
+    # ladder -- a liquid Cp from Tc, omega and the ideal-gas Cp, nothing
+    # measured.  The departure is checked against an independent
+    # transcription of Poling Eq. 6-8.4, the Tr>=1 pole refuses, and the
+    # ACCURACY is MEASURED against all 86 curated liquid-Cp components and
+    # pinned at BOTH ends -- excellent for non-polar, poor for
+    # hydrogen-bonding, and a "fix" that made the alcohols agree would mean
+    # the comparison stopped comparing.
+    if "$ROOT/bin/curate/check_rowlinson_bondi.py" > /tmp/rb.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rowlinson-bondi-gate" \
+            "$(tail -1 /tmp/rb.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rowlinson_bondi.py)\n" \
+            "rowlinson-bondi-gate"
+        cat /tmp/rb.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rb.$$
+
     # Problem-divergence gate (ruled 2026-08-11): the problem SOLVED must
     # not silently differ from the problem POSED.  An unauthorised ideal-pair
     # substitution refuses by name with a paste-ready remedy; an authorised

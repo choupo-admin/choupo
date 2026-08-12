@@ -28,6 +28,7 @@ License
 
 #include "HeatCapacityModel.H"
 #include "PolynomialCp.H"
+#include "RowlinsonBondi.H"
 #include "NASA7Cp.H"
 
 #include <map>
@@ -62,6 +63,12 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("polynomial",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<PolynomialCp>(d); });
+
+    //  The predictive rung: a liquid Cp from Tc, omega and the ideal-gas Cp,
+    //  with nothing measured.  See RowlinsonBondi.H for why it exists.
+    registerModel("RowlinsonBondi",
+        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
+        { return std::make_unique<RowlinsonBondi>(d); });
     registerModel("NASA7",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<NASA7Cp>(d); });

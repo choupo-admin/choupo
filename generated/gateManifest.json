@@ -105,11 +105,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 129 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 130 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 62 design record(s) appear in the index, and its stated counts (28 state a rejected alternative, 34 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "claim": "check_decision_index: OK -- all 64 design record(s) appear in the index, and its stated counts (30 state a rejected alternative, 34 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -121,7 +121,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 259 path mention(s) and 110 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 260 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
@@ -213,7 +213,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 130 gates, and the other 126 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 131 gates, and the other 127 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -225,7 +225,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40697 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40716 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -348,8 +348,8 @@
       "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with the energy residual at integration order (B), throttle/negative-P/feed-P refuse by name"
     },
     "check_readme_capabilities": {
-      "exit": 0,
-      "claim": "check_readme_capabilities: OK -- every model key the engine registers (activity, EoS, Psat, Cp, outer drivers) and all 4 binaries are named in the README.  NOT CHECKED: the converse (a README naming something unregistered passes -- the matrix legitimately carries aliases and sub-models), whether any named capability WORKS, unit-operation keys (grouped by function by design), and prose outside the capability matrix."
+      "exit": 1,
+      "claim": "check_readme_capabilities: FAILED"
     },
     "check_record_form": {
       "exit": 0,
@@ -386,6 +386,10 @@
     "check_review_status": {
       "exit": 0,
       "claim": "check_review_status: OK -- 67 standard record(s) declare `reviewStatus interim` in a PARSED field (none in a banner only); the sealed cavett01_recycle_train voices all 7 of the ones it mirrors, with the remedy named, and a case with no interim record stays silent"
+    },
+    "check_rowlinson_bondi": {
+      "exit": 0,
+      "claim": "check_rowlinson_bondi: OK -- the departure reproduces Poling Eq. 6-8.4 from an independent transcription; the Tr >= 1 pole refuses by name rather than returning a large number; a missing ideal-gas Cp refuses naming the departure and both remedies; the window announces outside and stays quiet inside.  MEASURED against 86 curated liquid-Cp components over 350 points: AAD 9.7 %, median 3.0 % -- excellent for non-polar (neopentane, siloxanes, n-alkanes ~1 %) and POOR for hydrogen-bonding (methanol, ethanol, water 30-70 %), pinned at BOTH ends so neither a regression nor a comparison that stopped comparing passes.  NOT CHECKED: whether the correlation is good enough for any particular process (a sensitivity question, not a receipt), and the structural flag that could warn on an -OH molecule is NOT wired."
     },
     "check_schema_coverage": {
       "exit": 0,
@@ -453,7 +457,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 625 source files, each includes what it uses."
+      "claim": "std includes: 627 source files, each includes what it uses."
     },
     "check_stream_basis": {
       "exit": 0,

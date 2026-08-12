@@ -1010,6 +1010,9 @@
   "RotaryAtomizer": [
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H"
   ],
+  "RowlinsonBondi": [
+   "src/thermo/heatCapacity/RowlinsonBondi.H"
+  ],
   "SQPOptions": [
    "src/solver/SQP.H"
   ],
@@ -4878,7 +4881,8 @@
    "src/core/Types.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/NASA7Cp.H",
-   "src/thermo/heatCapacity/PolynomialCp.H"
+   "src/thermo/heatCapacity/PolynomialCp.H",
+   "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
   "src/thermo/heatCapacity/NASA7Cp.cpp": [
    "src/core/Constants.H",
@@ -4895,6 +4899,15 @@
    "src/core/Types.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/PolynomialCp.H"
+  ],
+  "src/thermo/heatCapacity/RowlinsonBondi.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
   "src/thermo/henrysLaw/HenrysLaw.cpp": [
    "src/core/Constants.H",
@@ -6768,6 +6781,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
@@ -6838,6 +6852,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
@@ -7012,6 +7027,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -7264,6 +7280,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -8182,6 +8199,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -10479,6 +10497,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
@@ -10499,6 +10518,10 @@
   "src/thermo/heatCapacity/PolynomialCp.H": [
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp"
+  ],
+  "src/thermo/heatCapacity/RowlinsonBondi.H": [
+   "src/thermo/heatCapacity/HeatCapacityModel.cpp",
+   "src/thermo/heatCapacity/RowlinsonBondi.cpp"
   ],
   "src/thermo/henrysLaw/HenrysLaw.H": [
    "src/applications/choupoBatch/main.cpp",
