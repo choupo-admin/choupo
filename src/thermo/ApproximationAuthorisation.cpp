@@ -31,6 +31,7 @@ License
 #include "core/ProblemDivergence.H"
 
 #include <iostream>
+#include <set>
 #include <stdexcept>
 
 namespace Choupo {
