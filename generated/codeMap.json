@@ -3584,6 +3584,7 @@
    "src/thermo/equationOfState/EquationOfState.H"
   ],
   "src/propertyOps/PropertyScan1D.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -6745,6 +6746,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",

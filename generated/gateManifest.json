@@ -225,7 +225,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40716 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40704 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -348,8 +348,8 @@
       "claim": "check_pswing: OK -- inventory ratio 0.5 analytic (A), blowdown cooling shown with the energy residual at integration order (B), throttle/negative-P/feed-P refuse by name"
     },
     "check_readme_capabilities": {
-      "exit": 1,
-      "claim": "check_readme_capabilities: FAILED"
+      "exit": 0,
+      "claim": "check_readme_capabilities: OK -- every model key the engine registers (activity, EoS, Psat, Cp, outer drivers) and all 4 binaries are named in the README.  NOT CHECKED: the converse (a README naming something unregistered passes -- the matrix legitimately carries aliases and sub-models), whether any named capability WORKS, unit-operation keys (grouped by function by design), and prose outside the capability matrix."
     },
     "check_record_form": {
       "exit": 0,
