@@ -29,12 +29,14 @@ License
 #include "PropertyScan1D.H"
 #include "PropertyEvaluator.H"
 #include "thermo/ThermoPackage.H"
+#include "core/Advisory.H"
 
 #include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -162,6 +164,13 @@ int PropertyScan1D::run(const DictPtr& dict,
     }
 
     std::size_t failures = 0;
+    //  PER-CURVE, not just a total.  A scan where a few points drop at the
+    //  edges of a range is a legitimate scan with holes; one where a curve
+    //  lost EVERY point produced no curve at all, and the two must not be
+    //  reported by the same sentence.
+    std::map<std::string, std::size_t> failedPerProp;
+    std::map<std::string, std::string> firstReasonPerProp;
+
     std::vector<std::string> reasons;   // distinct failure messages, for an honest note
     for (std::size_t k = 0; k < nPoints; ++k)
     {
@@ -202,21 +211,66 @@ int PropertyScan1D::run(const DictPtr& dict,
             {
                 csv << ",nan";
                 ++failures;
+                ++failedPerProp[p];       // WHICH curve lost this point
                 const std::string msg = e.what();
                 if (std::find(reasons.begin(), reasons.end(), msg) == reasons.end())
                     reasons.push_back(msg);
+                if (firstReasonPerProp.find(p) == firstReasonPerProp.end())
+                    firstReasonPerProp[p] = msg;
             }
         }
         csv << "\n";
     }
     csv.close();
 
+    //  TWO OUTCOMES, AND THEY ARE NOT THE SAME THING.
+    //
+    //  A curve that lost some points at the edges of its range is a scan with
+    //  holes: the plotter drops them and the answer stands.  A curve that lost
+    //  EVERY point produced NO CURVE AT ALL, and reporting both with one
+    //  sentence -- "undefined over the range" -- hides the second inside the
+    //  first.  Worse, the word is wrong for the commonest cause: a MISSING
+    //  DATUM is not a property that is undefined there, it is a property that
+    //  could not be asked.  `propertyPoint` already refuses such a case BY
+    //  NAME; this op caught the same exception, wrote `nan`, and exited 0.
+    //
+    //  Found 2026-08-12 on a bootstrapped isopropanol: four points of four
+    //  came back nan, the run ended "ASSUMPTIONS AND CAVEATS: none raised",
+    //  and the exit code said success.  The note below was a bare `cout`, so
+    //  it reached neither the caveat surface nor the result JSON.
+    std::vector<std::string> emptyCurves;
+    for (const auto& [prop, nBad] : failedPerProp)
+        if (nBad >= nPoints) emptyCurves.push_back(prop);
+
     if (failures > 0 && verbosity >= 1)
     {
-        std::cout << "  [note] " << failures << " property evaluation(s) were "
-                  << "undefined over the range (written as nan; the plotter drops them).\n";
+        const std::size_t partial = failures
+            - [&]{ std::size_t k = 0; for (const auto& c : emptyCurves)
+                                          k += failedPerProp[c]; return k; }();
+        if (partial > 0)
+            std::cout << "  [note] " << partial << " property evaluation(s) "
+                      << "were undefined at some points of the range (written "
+                      << "as nan; the plotter drops them).\n";
         for (const auto& r : reasons)
             std::cout << "         - " << r << "\n";
+    }
+
+    //  The empty curves ride the ADVISORY LOG, not a bare cout: that is what
+    //  puts them in the end-of-run caveat block and in the result JSON, where
+    //  a reader who never watched the console still meets them.
+    for (const auto& c : emptyCurves)
+    {
+        const std::string why = firstReasonPerProp.count(c)
+                              ? firstReasonPerProp[c] : std::string("(no reason recorded)");
+        AdvisoryLog::instance().add("refusal", "warning",
+            "propertyScan1D -> " + outFile,
+            "property '" + c + "' produced NO value at any of the "
+            + std::to_string(nPoints) + " points -- this is not a curve with "
+            "gaps, it is an absent curve.  Reason at the first point: " + why);
+        if (verbosity >= 1)
+            std::cout << "  [REFUSED] property '" << c << "': no value at any "
+                      << "of the " << nPoints << " points -- the column in the "
+                      << "CSV is entirely nan.\n             " << why << "\n";
     }
 
     if (verbosity >= 2)
@@ -224,9 +278,13 @@ int PropertyScan1D::run(const DictPtr& dict,
                   << "'.\n=====================================================================\n\n";
 
     diag_.clear();
-    diag_["n_points"]   = static_cast<scalar>(nPoints);
-    diag_["n_failures"] = static_cast<scalar>(failures);
-    return 0;
+    diag_["n_points"]      = static_cast<scalar>(nPoints);
+    diag_["n_failures"]    = static_cast<scalar>(failures);
+    diag_["n_emptyCurves"] = static_cast<scalar>(emptyCurves.size());
+    //  A scan that produced no curve did not succeed.  Exiting 0 with a file
+    //  full of `nan` is the shape the corpus NaN guard exists to catch, and it
+    //  was reachable here without ever tripping it.
+    return emptyCurves.empty() ? 0 : 1;
 }
 
 } // namespace Choupo

@@ -1267,11 +1267,11 @@ scalar Component::h_pure_ig(scalar T) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
-            "': h_pure_ig(T) needs standardThermochemistry block in.dat");
+            "': h_pure_ig(T) needs a standardThermochemistry block in its .dat");
     requireIdealGasRung("h_pure_ig");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
-            "': h_pure_ig(T) needs idealGasHeatCapacity block in.dat");
+            "': h_pure_ig(T) needs an idealGasHeatCapacity block in its .dat");
     //  ONE implementation of the standard-state enthalpy, not two.
     //
     //  This is `h_formation(T, "gas")` and always was -- the arithmetic was
@@ -1292,11 +1292,11 @@ scalar Component::s_pure_ig(scalar T) const
 {
     if (!hasGibbsData_)
         throw std::runtime_error("Component '" + name_ +
-            "': s_pure_ig(T) needs standardThermochemistry block in.dat");
+            "': s_pure_ig(T) needs a standardThermochemistry block in its .dat");
     requireIdealGasRung("s_pure_ig");
     if (!cpGas_)
         throw std::runtime_error("Component '" + name_ +
-            "': s_pure_ig(T) needs idealGasHeatCapacity block in.dat");
+            "': s_pure_ig(T) needs an idealGasHeatCapacity block in its .dat");
     return s_formation(T, "gas");        // one implementation -- see h_pure_ig
 }
 
