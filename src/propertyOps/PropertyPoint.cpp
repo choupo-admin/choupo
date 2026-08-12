@@ -28,11 +28,13 @@ License
 
 #include "PropertyPoint.H"
 #include "core/Constants.H"
+#include "PropertyEvaluator.H"
 #include "thermo/ThermoPackage.H"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
@@ -169,6 +171,48 @@ int PropertyPoint::run(const DictPtr& dict,
     try { diag_["viscosity"]            = thermo.viscosityGas(T, z); }            catch (...) {}
     try { diag_["thermal_conductivity"] = thermo.thermalConductivityGas(T, z); }  catch (...) {}
     try { diag_["surface_tension"]      = thermo.surfaceTension(T, z); }          catch (...) {}
+
+    //  ---- the DECLARED `properties ( ... )` list, which was parsed by nobody
+    //
+    //  Found 2026-08-12 by acetone01_ipa_water_azeotrope, which asked for
+    //  `properties ( T_bubble )` and got silence.  The list had NEVER been
+    //  read: the base set above is emitted unconditionally, the three
+    //  transport keys are attempted unconditionally and guarded, and the
+    //  coincidence that every existing case's declared names happened to be
+    //  among those is why nobody noticed for as long as the operation has
+    //  existed.  Meanwhile the class header offers "properties (all); // or
+    //  pick a subset" and the published JSON schema names `T_bubble` among
+    //  the accepted keywords.  A field the engine cannot see is a comment --
+    //  this one was worse, because two documents promised it worked.
+    //
+    //  It is honoured ADDITIVELY, and that is deliberate: the declared names
+    //  are RESOLVED and added, the base set is not filtered out.  Filtering
+    //  would silently shrink every existing golden, which is a corpus-wide
+    //  change to make an operation obey a list nobody could rely on.  What
+    //  the author gains is that a name they declare is either computed or
+    //  REFUSED BY NAME -- never dropped.
+    if (dict->found("properties"))
+    {
+        for (const auto& key : dict->lookupWordList("properties"))
+        {
+            if (key == "all") continue;          // the documented "everything"
+            if (diag_.count(key)) continue;      // already emitted above
+            try
+            {
+                diag_[key] = propertyOps::evaluateProperty(key, thermo, T, P_Pa, z);
+            }
+            catch (const std::exception& e)
+            {
+                throw std::runtime_error("propertyPoint '"
+                    + dict->lookupWordOrDefault("name", "?")
+                    + "': the case declares property '" + key + "', which this"
+                      " operation cannot produce here -- " + e.what() + "\n"
+                      "        A declared property is computed or refused by"
+                      " name; it is never silently dropped.  Remove it, fix"
+                      " the spelling, or use an operation that computes it.");
+            }
+        }
+    }
 
     return 0;
 }

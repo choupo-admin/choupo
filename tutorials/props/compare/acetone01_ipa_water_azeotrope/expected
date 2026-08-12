@@ -1,8 +1,65 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    txy_unifac             n_emptyCurves    0                  1e-4
-diag    txy_unifac             n_failures       0                  1e-4
-diag    txy_unifac             n_points         51                 1e-4
+diag    bp_ipa                 Cp_ig            99.0857            1e-4
+diag    bp_ipa                 H_R              0.0000             1e-4
+diag    bp_ipa                 H_ig             -257924.6674       1e-4
+diag    bp_ipa                 H_real           -257924.6674       1e-4
+diag    bp_ipa                 P                101325.0000        1e-4
+diag    bp_ipa                 S_R              0.0000             1e-4
+diag    bp_ipa                 S_ig             329.0377           1e-4
+diag    bp_ipa                 S_real           329.0377           1e-4
+diag    bp_ipa                 T                350.0000           1e-4
+diag    bp_ipa                 T_bubble         359.9075           1e-4
+diag    bp_ipa                 Z                1.0000             1e-4
+diag    bp_ipa                 gamma            1.0916             1e-4
+diag    bp_ipa                 v_molar          0.0287             1e-4
+diag    bp_water               Cp_ig            34.0552            1e-4
+diag    bp_water               H_R              0.0000             1e-4
+diag    bp_water               H_ig             -240070.6575       1e-4
+diag    bp_water               H_real           -240070.6575       1e-4
+diag    bp_water               P                101325.0000        1e-4
+diag    bp_water               S_R              0.0000             1e-4
+diag    bp_water               S_ig             194.1518           1e-4
+diag    bp_water               S_real           194.1518           1e-4
+diag    bp_water               T                350.0000           1e-4
+diag    bp_water               T_bubble         372.4536           1e-4
+diag    bp_water               Z                1.0000             1e-4
+diag    bp_water               gamma            1.3230             1e-4
+diag    bp_water               v_molar          0.0287             1e-4
+diag    azeo_luyben_x          Cp_ig            77.8337            1e-4
+diag    azeo_luyben_x          H_R              0.0000             1e-4
+diag    azeo_luyben_x          H_ig             -252089.9769       1e-4
+diag    azeo_luyben_x          H_real           -252089.9769       1e-4
+diag    azeo_luyben_x          P                101325.0000        1e-4
+diag    azeo_luyben_x          S_R              0.0000             1e-4
+diag    azeo_luyben_x          S_ig             290.2108           1e-4
+diag    azeo_luyben_x          S_real           290.2108           1e-4
+diag    azeo_luyben_x          T                350.0000           1e-4
+diag    azeo_luyben_x          T_bubble         355.9854           1e-4
+diag    azeo_luyben_x          Z                1.0000             1e-4
+diag    azeo_luyben_x          gamma            1.1196             1e-4
+diag    azeo_luyben_x          v_molar          0.0287             1e-4
+diag    txy_unifac             n_emptyCurves    0.0000             1e-4
+diag    txy_unifac             n_failures       0.0000             1e-4
+diag    txy_unifac             n_points         51.0000            1e-4
 aad     luyben2011_1atm        txy_unifac.T_bubble.aadAbs 2.54695            1e-4
 aad     luyben2011_1atm        txy_unifac.T_bubble.aadRelPct 0.715599           1e-4
+#
+#  THE THREE BUBBLE POINTS, and why NONE of them is an `anchor` row.
+#
+#    bp_water   372.4536 K   literature 373.15 K   -0.70 K
+#    bp_ipa     359.9075 K   literature 355.40 K   +4.51 K
+#    azeo       355.9854 K   Luyben     353.40 K   +2.59 K
+#
+#  bp_ipa is the LAKE ESTIMATE and is 4.5 K out; an anchor whose band cannot
+#  admit the observed value would put the suite in the red, and the rule is
+#  report, never tune.  It becomes an anchor the day isopropanol is curated.
+#
+#  azeo compares against Luyben's own UNIQUAC model value, not a measurement,
+#  so it is not an anchor by class.
+#
+#  bp_water is the one that COULD have been anchored -- 373.15 K is fixed by
+#  the definition of the normal boiling point -- and measuring it is what found
+#  that Choupo's own curated water record puts it at 372.4536 K, 0.70 K low.
+#  That is not this case's error to absorb behind a loose band: see CLAUDE.md.

@@ -211,7 +211,14 @@ scalar evaluateProperty(const std::string& propKey,
     if (propKey == "H_ig")     return thermo.H_ig(T, xLiquid);
     if (propKey == "S_ig")     return thermo.S_ig(T, P_Pa, xLiquid);
     if (propKey == "Z")        return thermo.eos().Z(T, P_Pa, xLiquid);
-    if (propKey == "v_molar")  return thermo.eos().molarVolume(T, P_Pa, xLiquid);
+    //  `molarVolume` is the schema's other documented spelling of the same
+    //  quantity, and until 2026-08-12 the catalogue knew only `v_molar` --
+    //  which nobody noticed, because propertyPoint never read its declared
+    //  list at all, so three pcsaft cases have been asking for `molarVolume`
+    //  and silently receiving the base set's `v_molar` instead.  One
+    //  catalogue, both spellings.
+    if (propKey == "v_molar" || propKey == "molarVolume")
+        return thermo.eos().molarVolume(T, P_Pa, xLiquid);
     if (propKey == "H_R")      return thermo.eos().H_residual(T, P_Pa, xLiquid);
     if (propKey == "S_R")      return thermo.eos().S_residual(T, P_Pa, xLiquid);
     if (propKey == "H_real")   return thermo.H_real(T, P_Pa, xLiquid);

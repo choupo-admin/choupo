@@ -1062,6 +1062,7 @@
   "tutorials/props/compare/acetone01_ipa_water_azeotrope": {
    "application": "choupoProps",
    "ops": [
+    "propertyPoint",
     "propertyScan1D"
    ],
    "thermo": {
@@ -6299,6 +6300,7 @@
     "tutorials/props/electrolyte/pitzer_nacl_sp77_hot"
    ],
    "propertyPoint": [
+    "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",

@@ -58,15 +58,44 @@ You are helping AUTHOR this Choupo **case** (the dicts under `system/` +
     AAD is derived from it and this model together, so no primary published it.
     What the suite holds is that the agreement has not MOVED.
 
+### What measuring the water leg found (2026-08-12)
+
+The three bubble points are published as operation diagnostics now, and the
+one that was meant to be the boring control turned out not to be:
+
+| | Choupo | reference | |
+|---|---|---|---|
+| water normal bp | **372.4536 K** | 373.15 K (definition) | **−0.70 K** |
+| IPA normal bp | 359.9075 K | 355.40 K (literature) | +4.51 K |
+| T at Luyben's x\* | 355.9854 K | 353.40 K (his model) | +2.59 K |
+
+`bp_water` was the one point here that could honestly have carried an `anchor`
+row — the normal boiling point of water is fixed by definition, not measured —
+and asking for it is what found that **Choupo's own curated water record does
+not reproduce it**. `data/standards/components/water.dat` carries the Antoine
+set (5.40221, 1838.675, −31.737) over `Trange (273 373)`; solved for 1 atm
+that gives 372.4536 K, and at 373.15 K it returns 1.0393 bar — 2.6 % high.
+
+The diagnosis is not that the record is wrong but that it is being **used at
+the extreme top of its own declared window**, where this NIST set is known to
+be weak (its companion set covers 379–573 K). Every corpus case that boils
+water at 1 atm inherits the 0.70 K.
+
+Not absorbed here behind a loose band, and not fixed: re-curating water's
+vapour pressure is a curation act (reserved) and would move a large number of
+goldens. Recorded, with the arithmetic, so the decision can be made on
+evidence.
+
 - **Pending / in curation:**
   - A curated `isopropanol` in `data/standards/` with a measured Tb would
     remove the dominant error and is the single highest-value next step.
     Vítor's call.
   - The three UNIQUAC pairs (IPA–water, acetone–water, acetone–IPA) that a
     full reproduction of Luyben's flowsheet needs. None exists.
-  - **An engine gap found building this:** `propertyPoint` never reads its own
-    `properties ( ... )` list — it emits a fixed set and discards what the case
-    asked for, while its class header and its published JSON schema both say
-    otherwise. That is why the comparison rides the overlay rather than three
-    clean bubble-point ops, and it is why this case has no `anchor` row: a
-    published value can only be anchored where the quantity is emitted.
+  - water's 0.70 K, above — Vítor's call, curation is reserved;
+  - **the engine gap this case found is FIXED (2026-08-12):** `propertyPoint`
+    never read its own `properties ( ... )` list — it emitted a fixed set and
+    discarded what the case asked for, while its class header and its published
+    schema both promised otherwise. It now resolves declared names through the
+    same catalogue the scans use, additively, and REFUSES an unknown one by
+    name. That is what made the three bubble points above possible.

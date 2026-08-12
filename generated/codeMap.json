@@ -3575,6 +3575,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/propertyOps/PropertyEvaluator.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyPoint.H",
    "src/solver/Convergence.H",
@@ -8634,6 +8635,7 @@
   ],
   "src/propertyOps/PropertyEvaluator.H": [
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/PropertyScan2D.cpp"
   ],

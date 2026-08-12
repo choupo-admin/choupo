@@ -68,9 +68,48 @@
 
 operations
 (
-    //  The curve.  Predictive UNIFAC over the whole binary at 1 atm: the
-    //  T-x-y lens a student reads, and the surface the three published points
-    //  are laid over.
+    //  THREE BUBBLE POINTS, one per published number.  A propertyPoint
+    //  publishes into the operation diagnostics, where a golden row can read
+    //  it -- which is what makes the two literature boiling points ANCHORABLE
+    //  and the azeotrope temperature comparable at Luyben's own composition.
+    //
+    //  THIS CASE IS WHY THAT WORKS.  It asked for exactly this on the day it
+    //  was written and got silence: `propertyPoint` never read its own
+    //  `properties ( ... )` list, while its class header offered
+    //  "properties (all); // or pick a subset" and its published JSON schema
+    //  named T_bubble among the accepted keywords.  Fixed 2026-08-12,
+    //  additively -- a declared property is now computed or REFUSED BY NAME,
+    //  never dropped.
+    {
+        //  Pure IPA.  Luyben quotes 355.4 K, the ordinary literature normal
+        //  boiling point.  UNIFAC returns gamma = 1 for a pure component by
+        //  construction, so any deviation here is the LAKE-ESTIMATED vapour
+        //  pressure alone.  This is the control for the azeotrope point below.
+        name        bp_ipa;
+        type        propertyPoint;
+        state       { T 350 K;  P 1 atm;  composition { isopropanol 1.0;  water 0.0; } }
+        properties  ( T_bubble );
+    }
+    {
+        //  Pure water: curated component, curated correlation.  The leg that
+        //  must be right; if it moves, something unrelated to this case's
+        //  question has broken.
+        name        bp_water;
+        type        propertyPoint;
+        state       { T 350 K;  P 1 atm;  composition { isopropanol 0.0;  water 1.0; } }
+        properties  ( T_bubble );
+    }
+    {
+        //  The bubble temperature AT Luyben's azeotropic composition.  A model
+        //  that puts the azeotrope elsewhere will not reproduce his T there.
+        name        azeo_luyben_x;
+        type        propertyPoint;
+        state       { T 350 K;  P 1 atm;  composition { isopropanol 0.6732;  water 0.3268; } }
+        properties  ( T_bubble );
+    }
+
+    //  The curve: the whole T-x-y lens a student reads, and the surface the
+    //  three published points are laid over.
     {
         name        txy_unifac;
         type        propertyScan1D;
