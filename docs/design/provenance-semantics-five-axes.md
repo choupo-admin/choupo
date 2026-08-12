@@ -1,6 +1,10 @@
 # What a number IS: five axes, one responsibility each
 
 **Status: RATIFIED 2026-08-12 (Vítor + the architect, over four exchanges).
+AMENDED the next day, by the architect, on measurement: `origin` has FIVE
+words, not four (§3.1), and the migration is ~95 values across 72 files, not
+thirty (§5).  The amendment is left visible rather than folded in, because how
+the first census went wrong is the more useful half.
 CONTRACT ONLY — no implementation authorised by this record.  It exists because
 the component-bootstrap slice would otherwise mint a new status word per
 generated `.dat`, and a vocabulary that drifts cannot be audited.**
@@ -101,7 +105,12 @@ shorthand**.  Nothing here is invented.
 One responsibility each.  A value that wants to say two things says them on two
 axes.
 
-### 3.1 `origin` — exactly four words
+### 3.1 `origin` — five words
+
+**AMENDED 2026-08-12, one day after ratification, by measurement.**  This
+section said FOUR.  It was written from a census that counted one spelling of
+the key and concluded about the whole vocabulary — see §5, which carries the
+correction and the lesson.
 
 * **`measured`** — an experimental determination.
 * **`fitted`** — regressed against data.  The data's identity lives in
@@ -109,8 +118,31 @@ axes.
   as an origin: it fused the origin with its scope).
 * **`predicted`** — a model or correlation.
 * **`calculated`** — a definition or an identity.
+* **`assumed`** — a STIPULATION.  Not measured, not fitted, not produced by any
+  model, not computed from anything: somebody chose it, usually by convention.
+
+**Why `assumed` earns a word of its own**, rather than being folded into
+`predicted`.  The boundary question of §3.2 — *would perfect inputs give an
+exact result?* — cannot even be asked of it, because there are no inputs.  And
+the corpus argues the point in its own words: `parameters/NRTL/benzene-toluene.dat`
+carries null coefficients marked
+
+    origin  assumed;   // null coefficients = the IDEALITY ASSUMPTION
+                       // (see notes), NOT an estimate
+
+Calling that `predicted` would claim a model that does not exist and would
+contradict the record's own comment.  Sixteen values across the catalogue are
+`assumed`, most of them adsorption anchors that also declare
+`quality teachingOnly;` — a stipulated number, honestly labelled, which is
+exactly the thing that must not be laundered into a prediction.
 
 `derived` is **not** an origin and is retired.  Its job moves to `from`.
+
+**And two words move OFF this axis entirely**: `literature` (7) and `standard`
+(3) answer *where the value came from*, not *how it was produced*.  They are
+`provenance`.  A literature value is normally `origin measured;` with a
+`provenance { source ... }` naming the publication — which is the whole point
+of keeping the two axes apart.
 
 ### 3.2 THE BOUNDARY, and the case that defines it
 
@@ -229,10 +261,45 @@ The scale fear was checked twice, and both times it dissolved:
 * the curated catalogue uses `origin=` **7 times**; the scalar `provenance`
   shorthand appears **22 times**.
 
-So the hand-migration is on the order of thirty values, not a hundred and
-seventy thousand.  There is no renaming campaign, and none is authorised: the
-point is a single semantics for what is generated from here on, with the past
-migrated only as far as that requires.
+**CORRECTION, 2026-08-12.**  "On the order of thirty" was wrong, and the way it
+was wrong matters more than the number.
+
+The census above counted the COMMENT form (`origin=predictive`) and the SCALAR
+shorthand (`provenance measured;`).  It never counted the **block form** —
+`origin <word>;` inside a `provenance {}` — which is the very form §2.2 praised
+as *"already doing this right"*.  Praising a form and never reading its values
+is how a census misses the largest population it was written to find.
+
+Measured properly, `data/standards/` carries **73 block-form occurrences across
+72 files**, in **eight distinct words**:
+
+| word | uses | where it belongs |
+|---|---|---|
+| `estimated` | 40 | → `predicted` |
+| `assumed` | 16 | **stays** — a fifth origin (§3.1) |
+| `literature` | 7 | → `provenance`, not an origin |
+| `measured` | 4 | already right |
+| `standard` | 3 | → `provenance`, not an origin |
+| `regressed` | 1 | → `fitted` |
+| `definition` | 1 | → `calculated` |
+| `asserted` | 1 | still open (§6) |
+
+So the curated migration is ~95 values across ~72 files, not thirty — and one
+of the eight forced an amendment to the scheme itself rather than a rename.
+
+The conclusion nonetheless SURVIVES the correction, and that is worth saying
+plainly: there is still no renaming campaign, the lake's 170 thousand still go
+with the lake reform, and ~95 values across 72 files is a bounded, mechanical
+migration.  What changed is that the scheme was incomplete, and it was caught
+by counting BEFORE the first generated file — which is the only reason this
+record exists at all.
+
+**THE FIFTH WORD WAS ALREADY BEING MINTED.**  `src/propertyOps/EstimateComponent.cpp`
+writes `origin estimated;` into every component it generates, at three sites.
+That is a generator producing new files in a vocabulary the scheme did not
+contain, which is precisely the failure this record was written to prevent —
+and it was one commit away from being multiplied by every bootstrapped
+component.
 
 ---
 
