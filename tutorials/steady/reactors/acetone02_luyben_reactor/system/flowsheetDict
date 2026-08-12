@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  acetone02_luyben_reactor  --  the FIRST PROCESS slice of the acetone plant
+  ==========================================================================
+
+  W. L. Luyben, "Design and Control of the Acetone Process via Dehydrogenation
+  of 2-Propanol", Ind. Eng. Chem. Res. 50 (2011) 1206-1218,
+  DOI 10.1021/ie901923a -- the Turton base case of his Figure 1.
+
+  ONE UNIT, chosen because it is the piece of the flowsheet whose answer does
+  NOT depend on the mixture thermodynamics.  At 623 K and 2.6 atm everything is
+  vapour; no activity model is consulted.  What is exercised is stoichiometry,
+  the elements-datum heat of reaction and the energy balance -- and those can
+  be held against published numbers without first solving the harder problem
+  the separations pose (acetone01_ipa_water_azeotrope measures how hard).
+
+  THE FEED IS DERIVED FROM THE PAPER'S OWN STREAM TABLE, and the derivation is
+  a check in itself.  Luyben gives Rin = 57.83 kmol/h at 389 K, 2.6 atm and
+  Rout = 92.6 kmol/h with H2 0.3755, acetone 0.3755, IPA 0.0417, water 0.2073.
+  Water is inert and hydrogen is produced one-for-one with acetone, so:
+
+      H2 produced      = 92.6 x 0.3755 = 34.77 kmol/h  = IPA converted
+      IPA out          = 92.6 x 0.0417 =  3.86 kmol/h
+      IPA in           = 34.77 + 3.86  = 38.63 kmol/h
+      water in         = 92.6 x 0.2073 = 19.19 kmol/h  (inert)
+      total in         = 38.63 + 19.19 = 57.82 kmol/h  vs the stated 57.83
+      conversion       = 34.77 / 38.63 = 90.0 %        vs the stated 90 %
+
+  Two independent closures on a table transcribed by hand.  The feed in 0/ is
+  those numbers; the conversion spec is the paper's 90 %.
+
+  WHAT IS BEING COMPARED (see `expected`):
+    * the outlet composition, four mole fractions from Luyben's Rout;
+    * the reactor DUTY against his 0.960 MW.
+
+  THE DUTY IS THE INTERESTING ONE.  Choupo derives the heat of reaction from
+  each species' own formation enthalpy -- it is never read from the reactions
+  dict -- and isopropanol's dHf here is a JOBACK ESTIMATE, because Choupo has
+  no curated isopropanol.  So the published duty tests a chain that runs from
+  a group-contribution estimate of one molecule all the way to a megawatt of
+  furnace heat.  That is the whole point of building this rather than asserting
+  it: a case says where in the chain the error entered.
+
+  NOT MODELLED, and named rather than implied: the reactor's SIZE.  Luyben
+  specifies 450 tubes with a 624 K molten-salt jacket, and the paper does not
+  give the tube dimensions this record was built from, so a `pfr` on his
+  kinetics cannot be dimensioned from what is in hand.  A `conversionReactor`
+  at his stated 90 % asks the thermodynamic question without pretending to the
+  kinetic one.  The kinetics (Luyben Table 1) are transcribed in the design
+  record and remain unused here, on purpose.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        conversionReactor;
+        in          Rin;
+        outputs     ( Rout );
+        //  Luyben holds 90 % conversion of IPA and 623 K at the outlet
+        //  throughout the paper; equilibrium at 2 atm would allow 97.1 %.
+        operation   { conversion 0.90;  T 623 K; }
+        reaction    dehydrogenation;
+    }
+);

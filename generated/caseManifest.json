@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 345,
+  "cases": 346,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -4443,6 +4443,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/reactors/acetone02_luyben_reactor": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/reactors/chlorophenol01_chlorination": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5324,6 +5338,7 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/power/rankine01_water",
     "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",
@@ -5471,6 +5486,7 @@
     "tutorials/steady/power/rankine02_water"
    ],
    "conversionReactor": [
+    "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity"
@@ -6150,6 +6166,7 @@
     "tutorials/steady/power/combined02_brayton_rankine_shaft",
     "tutorials/steady/power/rankine01_water",
     "tutorials/steady/power/rankine02_water",
+    "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity",

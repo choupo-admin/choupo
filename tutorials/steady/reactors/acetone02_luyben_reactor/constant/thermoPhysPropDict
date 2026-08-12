@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The reactor runs at 623 K and 2.6 atm: everything is vapour, there is no
+  liquid phase, and no activity model is consulted anywhere in this case.
+  That is WHY this is the first slice of the plant -- it isolates
+  stoichiometry, the elements-datum heat of reaction and the energy balance
+  from the mixture thermodynamics, which is the part that is hard here (see
+  acetone01_ipa_water_azeotrope for how hard).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( isopropanol  acetone  H2  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
