@@ -277,3 +277,4 @@ generated/gitVersion.H
 # SECURITY: recovery codes must never enter git.  Better still: move them to a
 # password manager and delete this file (see DEV.md / the session note).
 /github-recovery-codes.txt
+/.regout/
