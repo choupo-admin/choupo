@@ -32,6 +32,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/Database.H"
 #include "EvidencePartition.H"
+#include "EvidencePartition.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/phase/SolidPhase.H"
@@ -137,6 +138,13 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     diag_["slope_dilute_K_kg_mol"] = slope0;
     if (water.K_f() > 0.0)
         diag_["slope_over_nuKf"] = slope0 / (nu * water.K_f());
+
+    //  R5: the depression curve is DERIVED from the solvent record (Hfus,
+    //  triple point) -- nothing is regressed here -- so a held-out claim
+    //  has nothing to be held out from.
+    EvidencePartition::refuseOnNonFittingOp(dict, "freezingPoint",
+        "derives the depression curve from the solvent's own record and"
+        " compares it against a measured series");
 
     //  R5: the depression curve is DERIVED from the solvent record (Hfus,
     //  triple point) -- nothing is regressed here -- so a held-out claim

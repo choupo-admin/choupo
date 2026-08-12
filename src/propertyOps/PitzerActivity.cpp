@@ -32,6 +32,7 @@ License
 #include "core/Constants.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "EvidencePartition.H"
+#include "EvidencePartition.H"
 
 #include <cmath>
 #include <fstream>
