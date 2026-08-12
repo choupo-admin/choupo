@@ -9,7 +9,7 @@
   "cases": 344,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 4
+  "anchored": 5
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -1096,7 +1096,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_psat_ambrose_walton": {
    "application": "choupoProps",
@@ -1346,7 +1346,9 @@
    "ops": [
     "speciate"
    ],
-   "roles": [],
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/props/electrolyte/pitzer01_nacl": {
