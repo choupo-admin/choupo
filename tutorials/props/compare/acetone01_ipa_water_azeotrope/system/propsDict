@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  acetone01_ipa_water_azeotrope
+  =============================
+
+  THE FIRST RUNNABLE SLICE of the acetone-from-2-propanol reference case
+  (docs/design/acetone-ipa-reference-case.md).  It answers ONE question, and
+  the question is chosen because it can be answered honestly today:
+
+      how close does a component Choupo has never curated, priced by a model
+      that saw no data for it, land on a published azeotrope?
+
+  WHAT IS BEING TESTED, and it is a stack of three things at once -- said up
+  front, because a single number that agrees can hide two errors that cancel:
+
+    1. ISOPROPANOL IS A LAKE ESTIMATE.  It is NOT in data/standards/.  The
+       record in this case's constant/components/ came from
+       data/groupEstimative/, where every NUMBER is a Joback / Lee-Kesler
+       estimate from the molecular structure -- including Tb, Tc, Pc, omega
+       and hence the whole Ambrose-Walton vapour pressure.  Its estimated
+       Tb is 359.98 K; the measured normal boiling point Luyben quotes is
+       355.4 K.  The pure component is already 4.6 K out before any mixture
+       model is asked anything.
+    2. UNIFAC IS PREDICTIVE.  No pair was fitted, because Choupo ships no
+       UNIQUAC or NRTL pair for IPA-water and inventing one would convert
+       `unsourced` into `falsely sourced`.  gamma comes from the groups.
+    3. WATER IS CURATED.  It is the one leg of the three that rests on
+       reviewed data, which is what makes the comparison legible at all.
+
+  THE COMPARISON POINTS: W. L. Luyben, "Design and Control of the Acetone Process via
+  Dehydrogenation of 2-Propanol", Ind. Eng. Chem. Res. 50 (2011) 1206-1218,
+  DOI 10.1021/ie901923a.  He states the IPA/water azeotrope as
+  67.32 mol % IPA at 353.4 K and 1 atm, and normal boiling points IPA 355.4 K,
+  water 373 K.  Those numbers come out of his UNIQUAC model, fitted to VLE
+  data neither this case nor its components have ever seen -- so for the
+  predictive route here they are an INDEPENDENT target.
+
+  A NOTE ON WHAT KIND OF ROW PINS THIS, because it is not an `anchor`.
+  Luyben's azeotrope is his UNIQUAC model's value, not a measurement, and the
+  AAD computed here is derived from that number and this model TOGETHER -- so
+  nobody published it and no primary can be quoted for it.  It is pinned as a
+  self-recorded `aad` row: what the suite holds is that the agreement has not
+  MOVED.  Anchoring properly needs a bubble temperature published as an
+  operation diagnostic, which is a separate gap -- see the note at the end.
+
+  WHAT THIS CASE IS NOT.  It is not a reproduction of Luyben's flowsheet, and
+  it makes no claim about the acetone process.  The full reproduction needs
+  three curated UNIQUAC pairs that do not exist; the design record's section 4
+  lists them and section 5 says which case category that would be.  This is the
+  bottom rung: the thermodynamics, alone, against three published points.
+
+  A GAP FOUND BUILDING THIS, and left visible rather than worked around.  The
+  natural shape for this case is three `propertyPoint` ops asking for
+  `T_bubble` at the three compositions, because a propertyPoint publishes into
+  the operation diagnostics where a golden row can read it.  It does not work:
+  `PropertyPoint` never reads its own `properties ( ... )` list -- it emits a
+  fixed set and discards what the case asked for.  Both the class header
+  ("properties (all); // or pick a subset") and the published JSON schema
+  (which names `T_bubble` among the accepted keywords) say otherwise.  That is
+  a parsed-and-dropped field, the shape this project has paid for three times,
+  and it is why the comparison below rides the overlay instead.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    //  The curve.  Predictive UNIFAC over the whole binary at 1 atm: the
+    //  T-x-y lens a student reads, and the surface the three published points
+    //  are laid over.
+    {
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[isopropanol];  from 0.0;  to 1.0;  n 51; }
+        state       { T 350 K;  P 1 atm;  composition { isopropanol 0.5;  water 0.5; } }
+        properties  ( T_bubble  y_eq_isopropanol );
+        output      { file txy_unifac.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      luyben2011_1atm;
+        component isopropanol;
+        kind      txy;
+        models    ( txy_unifac );
+        dataset   "constant/experiments/luyben2011_ipa_water.dat";
+        source    "Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206 -- azeotrope + two boiling points, NOT a measured VLE set (see the dataset header)";
+    }
+);

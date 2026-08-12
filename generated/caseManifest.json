@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 344,
+  "cases": 345,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -1058,6 +1058,20 @@
     "expectedFail"
    ],
    "hasGolden": false
+  },
+  "tutorials/props/compare/acetone01_ipa_water_azeotrope": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_activity_etoh_water": {
    "application": "choupoProps",
@@ -5063,6 +5077,7 @@
     "tutorials/props/adsorption/isotherm01_eval_13x_co2",
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
+    "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/compare_activity_etoh_water",
     "tutorials/props/compare/compare_eos_co2",
     "tutorials/props/compare/compare_kinetics_order",
@@ -5858,6 +5873,7 @@
     "tutorials/steady/thermoTest/model2_pitzer_evaporator"
    ],
    "UNIFAC": [
+    "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/distillation/column05_reactive_methylacetate",
@@ -6253,6 +6269,7 @@
     "tutorials/props/steam/steam02_water_transport"
    ],
    "propertyScan1D": [
+    "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/compare_activity_etoh_water",
     "tutorials/props/compare/compare_eos_co2",
     "tutorials/props/compare/compare_psat_ambrose_walton",

@@ -1,0 +1,8 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    txy_unifac             n_emptyCurves    0                  1e-4
+diag    txy_unifac             n_failures       0                  1e-4
+diag    txy_unifac             n_points         51                 1e-4
+aad     luyben2011_1atm        txy_unifac.T_bubble.aadAbs 2.54695            1e-4
+aad     luyben2011_1atm        txy_unifac.T_bubble.aadRelPct 0.715599           1e-4

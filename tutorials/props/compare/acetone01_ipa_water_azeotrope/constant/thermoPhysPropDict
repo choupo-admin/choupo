@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  UNIFAC on the IPA/water binary -- PREDICTIVE, and that is the whole point.
+
+  Luyben's paper runs UNIQUAC.  Choupo ships NO UNIQUAC pair for IPA-water,
+  IPA-acetone or acetone-water, and inventing one would convert `unsourced`
+  into `falsely sourced`.  UNIFAC needs no pair: it builds gamma from the
+  molecular groups each component's own record declares (isopropanol =
+  2 CH3 + CH + OH, water = H2O).  So this case can be built today, from
+  nothing but structure, and its answer can be held against a published
+  number that no part of it ever saw.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( isopropanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel
+        {
+            model UNIFAC;
+            // groups come from each component's own record -- ONE home.
+        }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

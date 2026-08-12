@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Isopropanol(1) / water(2) at 1 atm -- THREE POINTS, from Luyben (2011).
+
+  READ THIS BEFORE USING IT AS DATA.  These three numbers are the ones the
+  paper STATES while describing the thermodynamics of its flowsheet: the two
+  normal boiling points and the azeotrope.  They are NOT a measured VLE
+  dataset, and this file must never be cited as one.  Luyben's own model is
+  UNIQUAC, fitted elsewhere; what he publishes here is that model's azeotrope
+  together with two boiling points that are ordinary literature values.
+
+  Why they are still worth comparing against, stated exactly:
+
+    * For the PREDICTIVE route this case runs (UNIFAC from molecular groups,
+      on a component estimated from structure), these three numbers were
+      unseen by every model and every parameter involved.  That makes them an
+      INDEPENDENT target for this case, whatever they are for Luyben.
+    * The azeotrope in particular is a sharp, falsifiable claim about a curve:
+      it says where the lens closes.  A model can match two boiling points and
+      still put the azeotrope in the wrong place, which is precisely the
+      failure mode a group-contribution method is known for on alcohol-water.
+
+  It has THREE points.  An AAD over three points is a coarse instrument and
+  the case says so; nothing here should be read as a validated agreement.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source   "W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a";
+    citation "Section on physical properties: IPA/water azeotrope 67.32 mol% IPA at 353.4 K and 1 atm; normal boiling points IPA 355.4 K, water 373 K.  The azeotrope is the paper's UNIQUAC model value, quoted by the paper as the design-relevant fact; the boiling points are literature.  NOT a measured VLE dataset -- see this file's header.";
+}
+
+columns
+(
+    { name x[isopropanol];  unit -; }      // liquid mole fraction IPA
+    { name T_bubble;        unit K; }      // bubble temperature at 1 atm
+);
+
+data
+(
+    0.0000   373.0
+    0.6732   353.4
+    1.0000   355.4
+);
