@@ -15,3 +15,12 @@ kpi      steamTurbine   P_out      858590.397228      1e-4
 kpi      steamTurbine   W_gen_kW   9.0                1e-6
 stream   superheatedSteam  vf      1.0                1e-6
 stream   condensate        vf      0.0                1e-6
+utility boiler                 heating.-.unserved 1                  1e-4
+utility condenser              cooling.coolingWater.duty_kW -39.0172479639     1e-4
+utility condenser              cooling.coolingWater.T 446.515894355      1e-4
+utility condenser              cooling.coolingWater.kg_s 0.933426984782     1e-4
+utility condenser              cooling.coolingWater.eur_h 0.056184837068     1e-4
+utility feedPump               power.electricity.duty_kW 0.169796409897     1e-4
+utility feedPump               power.electricity.T -1                 1e-4
+utility feedPump               power.electricity.kg_s 0                  1e-4
+utility feedPump               power.electricity.eur_h 0.0169932247025    1e-4

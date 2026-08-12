@@ -42,3 +42,7 @@ kpi     Reactor                T                900              1e-4
 kpi     Reactor                conversion       0.75             1e-4
 kpi     Reactor                dHrxn_kJ_per_mol -48.3683482303   1e-4
 kpi     Reactor                extent_kmol_h    99.6141923445    1e-4
+utility HPFlash                cooling.coolingWater.duty_kW -21360.4553436     1e-4
+utility HPFlash                cooling.coolingWater.T 320                1e-4
+utility HPFlash                cooling.coolingWater.kg_s 511.015678075      1e-4
+utility HPFlash                cooling.coolingWater.eur_h 30.7590556947      1e-4

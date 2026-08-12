@@ -7,3 +7,7 @@ kpi     V1       vf       0.20555173        1e-5
 kpi     V1       dP       900000            1e-9
 stream  liquid   F        0.0220680075      1e-6
 stream  vapour   F        0.0057097703      1e-6
+utility H1                     heating.steamMP.duty_kW 260                1e-4
+utility H1                     heating.steamMP.T 413.089781612      1e-4
+utility H1                     heating.steamMP.kg_s 0.1305876444       1e-4
+utility H1                     heating.steamMP.eur_h 14.04              1e-4

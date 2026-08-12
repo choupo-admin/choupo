@@ -16,3 +16,11 @@ kpi     column06               nSideDraws       0                1e-4
 kpi     column06               nStages          15               1e-4
 kpi     column06               x_B_HK           0.978685755803   1e-4
 kpi     column06               x_D_LK           0.978685755803   1e-4
+utility column06               heating.steamLP.duty_kW 1299.72437334      1e-4
+utility column06               heating.steamLP.T 382.774927808      1e-4
+utility column06               heating.steamLP.kg_s 0.594567416898     1e-4
+utility column06               heating.steamLP.eur_h 56.1480929283      1e-4
+utility column06               cooling.coolingWater.duty_kW -1281.19539111     1e-4
+utility column06               cooling.coolingWater.T 354.339103085      1e-4
+utility column06               cooling.coolingWater.kg_s 30.6506074429      1e-4
+utility column06               cooling.coolingWater.eur_h 1.8449213632       1e-4

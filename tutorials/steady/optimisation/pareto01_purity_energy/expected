@@ -22,3 +22,11 @@ kpi     column01               x_D_LK           0.994000029135   1e-4
 kpi     pareto                 points_converged 5                1e-4
 kpi     pareto                 points_feasible  5                1e-4
 kpi     pareto                 points_total     5                1e-4
+utility column01               heating.steamLP.duty_kW 2033.86732819      1e-4
+utility column01               heating.steamLP.T 383.489767144      1e-4
+utility column01               heating.steamLP.kg_s 0.930405914087     1e-4
+utility column01               heating.steamLP.eur_h 87.863068578       1e-4
+utility column01               cooling.coolingWater.duty_kW -2035.41756863     1e-4
+utility column01               cooling.coolingWater.T 353.562992445      1e-4
+utility column01               cooling.coolingWater.kg_s 48.6942002063      1e-4
+utility column01               cooling.coolingWater.eur_h 2.93100129882      1e-4

@@ -19,3 +19,4 @@ kpi     hx                     U                500                1e-4
 kpi     hx                     UA               5000               1e-4
 kpi     hx                     area             10                 1e-4
 kpi     hx                     effectiveness    0.745370092566     1e-4
+utility hx                     heating.-.unserved 1                  1e-4

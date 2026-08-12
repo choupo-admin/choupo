@@ -12,3 +12,15 @@ kpi     h                      Q_per_mol        1999.99999997    1e-4
 kpi     h                      T_in             298.15           1e-4
 kpi     h                      T_out            366.647115308    1e-4
 kpi     h                      dT               68.497115308     1e-4
+utility A.h1                   heating.steamMP.duty_kW 1                  1e-4
+utility A.h1                   heating.steamMP.T 400.742542906      1e-4
+utility A.h1                   heating.steamMP.kg_s 0.000502260170768  1e-4
+utility A.h1                   heating.steamMP.eur_h 0.054              1e-4
+utility A.h2                   heating.steamMP.duty_kW 1                  1e-4
+utility A.h2                   heating.steamMP.T 434.694914778      1e-4
+utility A.h2                   heating.steamMP.kg_s 0.000502260170768  1e-4
+utility A.h2                   heating.steamMP.eur_h 0.054              1e-4
+utility h                      heating.steamLP.duty_kW 2                  1e-4
+utility h                      heating.steamLP.T 366.647115308      1e-4
+utility h                      heating.steamLP.kg_s 0.000914913083257  1e-4
+utility h                      heating.steamLP.eur_h 0.0864             1e-4

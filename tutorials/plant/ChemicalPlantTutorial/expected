@@ -12,3 +12,7 @@ stream  RecoveredDust          F                0                1e-4
 stream  Stack                  F                0.0892305131175  1e-4
 stream  EthanolVapour          F                0.00377744855647 1e-4
 stream  Purge                  F                0.0150468350492  1e-4
+utility FERMENTATION.Flash     heating.steamLP.duty_kW 74.792488812       1e-4
+utility FERMENTATION.Flash     heating.steamLP.T 320                1e-4
+utility FERMENTATION.Flash     heating.steamLP.kg_s 0.0342143132717    1e-4
+utility FERMENTATION.Flash     heating.steamLP.eur_h 3.23103551668      1e-4

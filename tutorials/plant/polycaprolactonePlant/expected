@@ -33,3 +33,7 @@ kpi     Reactor                Xn               47.3860347532    1e-4
 kpi     Reactor                Xw               93.7720695065    1e-4
 kpi     Reactor                p_conversion     0.978896736028   1e-4
 kpi     Reactor                tau_s            5643.40513537    1e-4
+utility Devolatiliser          heating.steamHP.duty_kW 2.19502758655      1e-4
+utility Devolatiliser          heating.steamHP.T 470                1e-4
+utility Devolatiliser          heating.steamHP.kg_s 0.00128064619985   1e-4
+utility Devolatiliser          heating.steamHP.eur_h 0.142237787608     1e-4

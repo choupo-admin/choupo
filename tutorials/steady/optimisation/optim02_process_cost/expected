@@ -29,3 +29,11 @@ kpi     separator              P                100000           1e-4
 kpi     separator              T                358.40065757     1e-4
 kpi     separator              V_over_F         0.0678293705496  1e-4
 kpi     separator              phaseSet         0                1e-4
+utility heater                 heating.steamLP.duty_kW 0.5                1e-4
+utility heater                 heating.steamLP.T 358.40065757       1e-4
+utility heater                 heating.steamLP.kg_s 0.000228728270814  1e-4
+utility heater                 heating.steamLP.eur_h 0.0216             1e-4
+utility separator              heating.steamLP.duty_kW 0.453397883018     1e-4
+utility separator              heating.steamLP.T 358.40065757       1e-4
+utility separator              heating.steamLP.kg_s 0.000207409827547  1e-4
+utility separator              heating.steamLP.eur_h 0.0195867885464    1e-4

@@ -13,3 +13,7 @@ kpi     decanter01             T                350                1e-4
 kpi     decanter01             V_over_F         0.407072569823     1e-4
 kpi     decanter01             beta_vapor       0.185796503505     1e-4
 kpi     decanter01             phaseSet         2                  1e-4
+utility decanter01             heating.steamLP.duty_kW 4.38784508636      1e-4
+utility decanter01             heating.steamLP.T 350                1e-4
+utility decanter01             heating.steamLP.kg_s 0.00200724843841   1e-4
+utility decanter01             heating.steamLP.eur_h 0.189554907731     1e-4

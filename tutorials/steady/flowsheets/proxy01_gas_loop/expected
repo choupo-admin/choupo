@@ -79,3 +79,8 @@ kpi     T1                     dT               -55.364353455    1e-4
 kpi     T1                     dT_isen          -69.5439024217   1e-4
 kpi     T1                     eta_isen         0.8              1e-4
 kpi     T1                     ratio            2.70896077419    1e-4
+utility HX1                    heating.-.unserved 1                  1e-4
+utility G1                     power.electricity_(generated).duty_kW 0.388              1e-4
+utility G1                     power.electricity_(generated).T -1                 1e-4
+utility G1                     power.electricity_(generated).kg_s 0                  1e-4
+utility G1                     power.electricity_(generated).eur_h -0.03883104        1e-4

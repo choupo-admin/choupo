@@ -37,3 +37,7 @@ closure turbine                remaining_kW     536.035950031      1e-4
 closure flash                  raw_kW           -5.11590769747e-13 1e0
 closure flash                  step_kW          0                  1e-4
 closure flash                  remaining_kW     -5.11590769747e-13 1e0
+utility flash                  cooling.coolingWater.duty_kW -413.177313739     1e-4
+utility flash                  cooling.coolingWater.T 353                1e-4
+utility flash                  cooling.coolingWater.kg_s 9.88462473059      1e-4
+utility flash                  cooling.coolingWater.eur_h 0.594975331784     1e-4

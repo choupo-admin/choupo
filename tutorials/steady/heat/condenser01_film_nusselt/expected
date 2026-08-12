@@ -23,3 +23,7 @@ kpi     condenser              dT_film          46.9006431773      1e-4
 kpi     condenser              h_condensation   2865.30006113      1e-4
 kpi     condenser              vf_in            1                  1e-4
 kpi     condenser              vf_out           0.551476029749     1e-4
+utility condenser              cooling.coolingWater.duty_kW -506.70051677      1e-4
+utility condenser              cooling.coolingWater.T 372.755918611      1e-4
+utility condenser              cooling.coolingWater.kg_s 12.1220219323      1e-4
+utility condenser              cooling.coolingWater.eur_h 0.729648744149     1e-4

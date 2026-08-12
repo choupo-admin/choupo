@@ -19,3 +19,11 @@ kpi     radfrac                nSideDraws       2                1e-4
 kpi     radfrac                nStages          30               1e-4
 kpi     radfrac                x_B_HK           0.775307075681   1e-4
 kpi     radfrac                x_D_LK           0.979334134026   1e-4
+utility radfrac                heating.steamHP.duty_kW 1698.71150765      1e-4
+utility radfrac                heating.steamHP.T 454.498489397      1e-4
+utility radfrac                heating.steamHP.kg_s 0.991080226164     1e-4
+utility radfrac                heating.steamHP.eur_h 110.076505695      1e-4
+utility radfrac                cooling.coolingWater.duty_kW -804.58622364      1e-4
+utility radfrac                cooling.coolingWater.T 321.647346922      1e-4
+utility radfrac                cooling.coolingWater.kg_s 19.2484742498      1e-4
+utility radfrac                cooling.coolingWater.eur_h 1.15860416204      1e-4

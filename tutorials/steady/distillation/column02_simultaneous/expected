@@ -12,3 +12,11 @@ kpi     column01               feedStage        8                  1e-4
 kpi     column01               nStages          15                 1e-4
 kpi     column01               x_B_HK           0.981245125322     1e-4
 kpi     column01               x_D_LK           0.981245125322     1e-4
+utility column01               heating.steamLP.duty_kW 1299.61040477      1e-4
+utility column01               heating.steamLP.T 382.893527916      1e-4
+utility column01               heating.steamLP.kg_s 0.594515281228     1e-4
+utility column01               heating.steamLP.eur_h 56.1431694859      1e-4
+utility column01               cooling.coolingWater.duty_kW -1281.04347534     1e-4
+utility column01               cooling.coolingWater.T 354.210890137      1e-4
+utility column01               cooling.coolingWater.kg_s 30.6469730942      1e-4
+utility column01               cooling.coolingWater.eur_h 1.84470260448      1e-4

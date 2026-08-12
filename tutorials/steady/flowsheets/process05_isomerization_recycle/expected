@@ -27,3 +27,11 @@ kpi     reactor                X_limiting       0.845828260803   1e-4
 kpi     reactor                k                0.0604856890795  1e-4
 kpi     reactor                tau_s            90.7036549111    1e-4
 kpi     reactor                xi_mol_per_s     0.272167476543   1e-4
+utility column                 heating.steamLP.duty_kW 7.37187012121      1e-4
+utility column                 heating.steamLP.T 364.62708689       1e-4
+utility column                 heating.steamLP.kg_s 0.00337231021098   1e-4
+utility column                 heating.steamLP.eur_h 0.318464789236     1e-4
+utility column                 cooling.coolingWater.duty_kW -5.30609909696     1e-4
+utility column                 cooling.coolingWater.T 350.366212454      1e-4
+utility column                 cooling.coolingWater.kg_s 0.126940169784     1e-4
+utility column                 cooling.coolingWater.eur_h 0.00764078269962   1e-4

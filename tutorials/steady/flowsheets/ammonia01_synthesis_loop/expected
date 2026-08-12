@@ -47,3 +47,8 @@ kpi     separator              Q_kW             -9.33318549211   1e-4
 kpi     separator              T                250              1e-4
 kpi     separator              V_over_F         0.697474502055   1e-4
 kpi     separator              phaseSet         0                1e-4
+utility letdown                heating.steamLP.duty_kW 0.00254731632945   1e-4
+utility letdown                heating.steamLP.T 250                1e-4
+utility letdown                heating.steamLP.kg_s 1.16528651851e-06  1e-4
+utility letdown                heating.steamLP.eur_h 0.000110044065432  1e-4
+utility separator              cooling.-.unserved 1                  1e-4

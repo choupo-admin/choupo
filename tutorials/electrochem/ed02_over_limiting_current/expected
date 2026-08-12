@@ -23,3 +23,7 @@ kpi     rectifier              W_losses         0                  1e-4
 kpi     rectifier              W_shaft          33.34229736        1e-4
 kpi     rectifier              W_shaft_kW       0.03334229736      1e-4
 kpi     rectifier              eta_generator    1                  1e-4
+utility rectifier              power.electricity_(generated).duty_kW 0.0333422973595    1e-4
+utility rectifier              power.electricity_(generated).T -1                 1e-4
+utility rectifier              power.electricity_(generated).kg_s 0                  1e-4
+utility rectifier              power.electricity_(generated).eur_h -0.00333689711974  1e-4

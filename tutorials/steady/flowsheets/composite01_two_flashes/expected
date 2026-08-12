@@ -18,3 +18,11 @@ kpi     flash2                 P                100000           1e-4
 kpi     flash2                 T                373              1e-4
 kpi     flash2                 V_over_F         0.435866674264   1e-4
 kpi     flash2                 phaseSet         0                1e-4
+utility flash1                 heating.steamLP.duty_kW 686.964038241      1e-4
+utility flash1                 heating.steamLP.T 370                1e-4
+utility flash1                 heating.steamLP.kg_s 0.314256193157     1e-4
+utility flash1                 heating.steamLP.eur_h 29.676846452       1e-4
+utility flash2                 heating.steamLP.duty_kW 97.3567463602      1e-4
+utility flash2                 heating.steamLP.T 373                1e-4
+utility flash2                 heating.steamLP.kg_s 0.0445364804941    1e-4
+utility flash2                 heating.steamLP.eur_h 4.20581144276      1e-4

@@ -16,3 +16,4 @@ kpi     freezer01              aEq_water        0.857434120855     1e-4
 kpi     freezer01              a_water          0.857434120931     1e-4
 kpi     freezer01              phaseSet         0                  1e-4
 kpi     freezer01              solidFraction    0.475994623251     1e-4
+utility freezer01              cooling.-.unserved 1                  1e-4

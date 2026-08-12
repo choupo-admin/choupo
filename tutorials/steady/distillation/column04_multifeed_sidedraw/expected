@@ -17,3 +17,11 @@ kpi     radfracLite            nSideDraws       1                1e-4
 kpi     radfracLite            nStages          15               1e-4
 kpi     radfracLite            x_B_HK           0.467203119885   1e-4
 kpi     radfracLite            x_D_LK           0.965888000336   1e-4
+utility radfracLite            heating.steamMP.duty_kW 1516.14164522      1e-4
+utility radfracLite            heating.steamMP.T 395.926996928      1e-4
+utility radfracLite            heating.steamMP.kg_s 0.761497561637     1e-4
+utility radfracLite            heating.steamMP.eur_h 81.8716488418      1e-4
+utility radfracLite            cooling.coolingWater.duty_kW -1435.80274013     1e-4
+utility radfracLite            cooling.coolingWater.T 354.978489481      1e-4
+utility radfracLite            cooling.coolingWater.kg_s 34.3493478499      1e-4
+utility radfracLite            cooling.coolingWater.eur_h 2.06755594578      1e-4

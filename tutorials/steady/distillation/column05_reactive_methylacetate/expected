@@ -18,3 +18,11 @@ kpi     rdColumn               nStages          25               1e-4
 kpi     rdColumn               reactionExtent   8.21768645872e-06 1e-4
 kpi     rdColumn               x_B_HK           0.887999711425   1e-4
 kpi     rdColumn               x_D_LK           0.00491176521521 1e-4
+utility rdColumn               heating.steamLP.duty_kW 0.626813788646     1e-4
+utility rdColumn               heating.steamLP.T 363.229492539      1e-4
+utility rdColumn               heating.steamLP.kg_s 0.000286740067999  1e-4
+utility rdColumn               heating.steamLP.eur_h 0.0270783556695    1e-4
+utility rdColumn               cooling.coolingWater.duty_kW -0.790521316742    1e-4
+utility rdColumn               cooling.coolingWater.T 330.062558898      1e-4
+utility rdColumn               cooling.coolingWater.kg_s 0.0189119932235    1e-4
+utility rdColumn               cooling.coolingWater.eur_h 0.00113835069611   1e-4

@@ -103,3 +103,16 @@ kpi     steamTurbine           dT               -128.912320341   1e-4
 kpi     steamTurbine           dT_isen          -152.278431568   1e-4
 kpi     steamTurbine           eta_isen         0.85             1e-4
 kpi     steamTurbine           ratio            2.4381120323     1e-4
+utility hrsg                   heating.-.unserved 1                  1e-4
+utility steamCooler            cooling.coolingWater.duty_kW -45                1e-4
+utility steamCooler            cooling.coolingWater.T 622.330239429      1e-4
+utility steamCooler            cooling.coolingWater.kg_s 1.07655502392      1e-4
+utility steamCooler            cooling.coolingWater.eur_h 0.0648             1e-4
+utility gasGenerator           power.electricity_(generated).duty_kW 582                1e-4
+utility gasGenerator           power.electricity_(generated).T -1                 1e-4
+utility gasGenerator           power.electricity_(generated).kg_s 0                  1e-4
+utility gasGenerator           power.electricity_(generated).eur_h -58.24656          1e-4
+utility steamGenerator         power.electricity_(generated).duty_kW 48.5               1e-4
+utility steamGenerator         power.electricity_(generated).T -1                 1e-4
+utility steamGenerator         power.electricity_(generated).kg_s 0                  1e-4
+utility steamGenerator         power.electricity_(generated).eur_h -4.85388           1e-4

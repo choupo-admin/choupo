@@ -20,3 +20,4 @@ kpi     boilerHX               U                800                1e-4
 kpi     boilerHX               UA               680                1e-4
 kpi     boilerHX               area             0.85               1e-4
 kpi     boilerHX               effectiveness    0.326976122099     1e-4
+utility boilerHX               heating.-.unserved 1                  1e-4

@@ -14,3 +14,8 @@ kpi     column07               nSideDraws       0                1e-4
 kpi     column07               nStages          20               1e-4
 kpi     column07               x_B_HK           0.416665691626   1e-4
 kpi     column07               x_D_LK           0.999874145869   1e-4
+utility column07               heating.steamLP.duty_kW 9374.37429576      1e-4
+utility column07               heating.steamLP.T 296.58946842       1e-4
+utility column07               heating.steamLP.kg_s 4.28836884527      1e-4
+utility column07               heating.steamLP.eur_h 404.972969577      1e-4
+utility column07               cooling.condenser.unserved 1                  1e-4

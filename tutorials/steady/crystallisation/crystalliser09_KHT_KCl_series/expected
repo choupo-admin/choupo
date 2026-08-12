@@ -53,3 +53,11 @@ kpi     recovery               feedStage        10               1e-4
 kpi     recovery               nStages          20               1e-4
 kpi     recovery               x_B_HK           0.000279295699418 1e-4
 kpi     recovery               x_D_LK           0.189641096358   1e-4
+utility recovery               heating.steamLP.duty_kW 3153.45936383      1e-4
+utility recovery               heating.steamLP.T 358.019009224      1e-4
+utility recovery               heating.steamLP.kg_s 1.44257061474      1e-4
+utility recovery               heating.steamLP.eur_h 136.229444517      1e-4
+utility recovery               cooling.coolingWater.duty_kW -2776.01469262     1e-4
+utility recovery               cooling.coolingWater.T 351.369759441      1e-4
+utility recovery               cooling.coolingWater.kg_s 66.4118347516      1e-4
+utility recovery               cooling.coolingWater.eur_h 3.99746115737      1e-4

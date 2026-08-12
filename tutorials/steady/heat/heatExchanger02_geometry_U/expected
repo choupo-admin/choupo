@@ -37,3 +37,4 @@ kpi     hx                     f_tube           0.00537680738626   1e-4
 kpi     hx                     h_inner          10959.8375488      1e-4
 kpi     hx                     h_outer          6533.369397        1e-4
 kpi     hx                     nBaffles         15                 1e-4
+utility hx                     heating.-.unserved 1                  1e-4

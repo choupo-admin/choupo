@@ -18,3 +18,7 @@ kpi     reboiler               q_nucleate       88996.7151761      1e-4
 kpi     reboiler               regime           0                  1e-4
 kpi     reboiler               vf_in            0                  1e-4
 kpi     reboiler               vf_out           0.0975570824881    1e-4
+utility reboiler               heating.steamLP.duty_kW 111.804644945      1e-4
+utility reboiler               heating.steamLP.T 372.755918611      1e-4
+utility reboiler               heating.steamLP.kg_s 0.0511457662144    1e-4
+utility reboiler               heating.steamLP.eur_h 4.82996066161      1e-4

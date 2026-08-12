@@ -78,14 +78,18 @@
 #       diag     gamma_nacl gamma_pm_1m 0.6572         1e-4
 #       aad      etoh_water_1atm txy_wilson.T_bubble.aadAbs 0.275964  1e-4
 #       closure  transporter step_kW    -2.98508731741 1e-4
+#       utility  transporter heating.steamLP.eur_h 1.728  1e-4
 #
 #  `kind` names WHERE the number is read from: `kpi` (inside the "kpis" of the
 #  named unit), `stream` (inside the named stream), `diag` (inside an
 #  `operationResults[].diagnostics` object, `name` = the op), `aad` (inside
 #  the top-level `"validation"` overlay table, `name` = the dataset and `key`
-#  = `<model>.<property>.<statistic>`) or `closure` (inside the top-level
-#  `"energyClosures"` model-boundary ledger, `name` = the unit).  `reltol` is
-#  |actual-exp|/|exp| (falls back to absolute when exp is ~0).
+#  = `<model>.<property>.<statistic>`), `closure` (inside the top-level
+#  `"energyClosures"` model-boundary ledger, `name` = the unit) or `utility`
+#  (inside the top-level `"utilityAllocation"` array, `name` = the unit and
+#  `key` = `<tier>.<utility>.<field>`, or `<tier>.<port>.unserved` for a duty
+#  no catalogue utility can meet).  `reltol` is |actual-exp|/|exp| (falls
+#  back to absolute when exp is ~0).
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
 #  same day -- see below).  A row is SELF-RECORDED by default: it pins that
@@ -289,9 +293,71 @@ get_closure() {
         }'
 }
 
+# --- pull one field out of the top-level `"utilityAllocation": [...]` array
+#     (choupoSolve; which catalogue utility `pickForDuty` chose for a duty).
+#
+#     THE UTILITY NAME IS IN THE KEY, ON PURPOSE.  The decision this block
+#     records is WHICH utility serves the duty -- and that is a word, which a
+#     golden row cannot compare.  Putting it in the key makes the row match
+#     only while that utility is the one allocated: a picker that switched
+#     steamLP for steamMP does not shift a number, it makes the row report
+#     MISSING, which fails and names what changed.  The consequences (kg_s,
+#     eur_h, T) are pinned beside it as ordinary numbers.
+#
+#     WHITESPACE IN A NAME IS NORMALISED TO `_`, ON BOTH SIDES.  A golden row
+#     is whitespace-delimited, so a key simply cannot carry a space -- and
+#     real catalogue names do: `electricity (generated)` is the credit an
+#     electrochemical cell earns, and it broke the first version of this
+#     format on nineteen cases.  The substitution is applied HERE and in the
+#     generator from the same rule, so the two cannot disagree.
+#
+#     AN UNSERVED DUTY IS PINNED TOO, and it is not an allocation.  A duty no
+#     catalogue utility can meet (column07's condenser at 272.7 K) is reported
+#     with `allocated: false` and a PROSE placeholder in the utility field --
+#     `(none adequate)` -- which must never be pinned as though it were a
+#     name.  Such an entry gets one row, `<tier>.<port>.unserved`, whose value
+#     is 1: the fact being pinned is that the duty is still unserved.  If the
+#     catalogue later grows a utility that can meet it, the entry flips to
+#     allocated, that row reports MISSING, and the improvement is reported
+#     rather than absorbed.
+#
+#     `name` is the unit, `key` is `<tier>.<utility>.<field>` or
+#     `<tier>.<port>.unserved` (port `-` when the entry declares none).
+get_utility() {
+    local out="$1" unit="$2" key="$3"
+    local tier util field
+    tier=${key%%.*}; field=${key##*.}
+    util=${key#*.}; util=${util%.*}
+    printf '%s\n' "$out" | awk -v u="$unit" -v t="$tier" -v w="$util" -v f="$field" '
+        function norm(s) { gsub(/[ \t]+/, "_", s); return s }
+        /"utilityAllocation":/ {
+            n = split($0, rec, /\}, *\{/)
+            for (i = 1; i <= n; i++) {
+                if (index(rec[i], "\"unit\": \"" u "\"") == 0) continue
+                if (index(rec[i], "\"tier\": \"" t "\"") == 0) continue
+                alloc = (index(rec[i], "\"allocated\": true") > 0)
+                if (f == "unserved") {
+                    if (alloc) continue
+                    p = "-"
+                    if (match(rec[i], /"port": "[^"]*"/))
+                        { p = substr(rec[i], RSTART+9, RLENGTH-10); if (p == "") p = "-" }
+                    if (norm(p) != w) continue
+                    print 1; exit
+                }
+                if (!alloc) continue
+                if (!match(rec[i], /"utility": "[^"]*"/)) continue
+                if (norm(substr(rec[i], RSTART+12, RLENGTH-13)) != w) continue
+                if (match(rec[i], "\"" f "\": *-?[0-9][0-9.eE+-]*")) {
+                    v = substr(rec[i], RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                    print v; exit
+                }
+            }
+        }'
+}
+
 # --- dispatch by `kind`: diag -> operation diagnostics, aad -> the validation
-#     overlay table, closure -> the model-boundary energy ledger, else
-#     kpi/stream object
+#     overlay table, closure -> the model-boundary energy ledger, utility ->
+#     the utility allocation, else kpi/stream object
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -299,6 +365,7 @@ get_any() {
     if   [ "$kind" = diag    ]; then get_diag    "$out" "$name" "$key"
     elif [ "$kind" = aad     ]; then get_aad     "$out" "$name" "$key"
     elif [ "$kind" = closure ]; then get_closure "$out" "$name" "$key"
+    elif [ "$kind" = utility ]; then get_utility "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -436,7 +503,7 @@ fi
 #  `iterations`) plus each stream's F, at a default relative tolerance.
 auto_generate() {
     local case_dir="$1" out="$2" reltol="${3:-1e-4}"
-    local block kpis_sec streams_sec opres_sec valid_sec closure_sec
+    local block kpis_sec streams_sec opres_sec valid_sec closure_sec util_sec
     block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
     [ -z "$block" ] && return 1
     streams_sec=$(printf '%s\n' "$block" | sed -n '/"streams": {/,/^  },\?$/p')
@@ -444,6 +511,7 @@ auto_generate() {
     opres_sec=$(printf '%s\n'   "$block" | sed -n '/"operationResults": \[/,/^  \],\?$/p')
     valid_sec=$(printf '%s\n'   "$block" | sed -n '/"validation": \[/,/^  \],\?$/p')
     closure_sec=$(printf '%s\n' "$block" | grep '"energyClosures":')
+    util_sec=$(printf '%s\n'    "$block" | grep '"utilityAllocation":')
     [ -z "$kpis_sec$streams_sec$opres_sec$valid_sec" ] && return 1
     {
         echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
@@ -564,6 +632,46 @@ auto_generate() {
                         roundoff = (v + 0 != 0 && abs(v + 0) < 1e-6)
                         printf "closure %-22s %-16s %-18s %s\n", u, f[j], v,
                                (roundoff ? "1e0" : tol)
+                    }
+                }
+            }'
+        #  utility allocation: which catalogue utility `pickForDuty` chose for
+        #  each duty, and what that choice costs.  The chosen utility's NAME
+        #  is part of the key rather than a value, so a different pick makes
+        #  the row MISSING instead of shifting a number -- see get_utility.
+        #
+        #  `MW` is deliberately left out: it is the catalogue's molar mass,
+        #  which the component records already own and
+        #  check_record_self_consistency already guards.  `allocated` is not a
+        #  field either -- it SELECTS which shape of row is written (see
+        #  get_utility): a served duty is pinned by its utility's name and
+        #  numbers, an unserved one by a single `unserved` row, and the two
+        #  must never be confused, because an unserved entry's utility field
+        #  is a prose placeholder rather than a name.
+        printf '%s\n' "$util_sec" | awk -v tol="$reltol" '
+            function norm(s) { gsub(/[ \t]+/, "_", s); return s }
+            {
+                n = split($0, rec, /\}, *\{/)
+                for (i = 1; i <= n; i++) {
+                    if (!match(rec[i], /"unit": "[^"]*"/))    continue
+                    u = substr(rec[i], RSTART+9, RLENGTH-10)
+                    if (!match(rec[i], /"tier": "[^"]*"/))    continue
+                    t = substr(rec[i], RSTART+9, RLENGTH-10)
+                    if (index(rec[i], "\"allocated\": true") == 0) {
+                        p = "-"
+                        if (match(rec[i], /"port": "[^"]*"/))
+                            { p = substr(rec[i], RSTART+9, RLENGTH-10); if (p == "") p = "-" }
+                        printf "utility %-22s %-16s %-18s %s\n", u,
+                               t "." norm(p) ".unserved", 1, tol
+                        continue
+                    }
+                    if (!match(rec[i], /"utility": "[^"]*"/)) continue
+                    w = norm(substr(rec[i], RSTART+12, RLENGTH-13))
+                    split("duty_kW T kg_s eur_h", f, " ")
+                    for (j = 1; j <= 4; j++) {
+                        if (!match(rec[i], "\"" f[j] "\": *-?[0-9][0-9.eE+-]*")) continue
+                        v = substr(rec[i], RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                        printf "utility %-22s %-16s %-18s %s\n", u, t "." w "." f[j], v, tol
                     }
                 }
             }'
@@ -2791,6 +2899,22 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/clopin.$$
+
+    # Utility-allocation gate (2026-08-12), the third instance of the same
+    # question in one session: which blocks of the result JSON can a golden
+    # row read?  `pickForDuty`'s choice of catalogue utility -- and its mass
+    # flow and cost -- went into a top-level `utilityAllocation` array that
+    # nothing could reach, on 77 cases.  The unit's own Q_kW does not move
+    # when the picker does: the duty is the same, the service is not.
+    if "$ROOT/bin/curate/check_utility_allocation_pinned.py" > /tmp/utilpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "utility-allocation-gate" "$(grep -m1 ': OK' /tmp/utilpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_utility_allocation_pinned.py)\n" "utility-allocation-gate"
+        cat /tmp/utilpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/utilpin.$$
 
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op

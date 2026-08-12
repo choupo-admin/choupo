@@ -5,3 +5,7 @@ stream  Feed                   F                0.0277777777778    1e-4
 stream  liquid                 F                0.00949461019202   1e-4
 stream  reactorOut             F                0.0277777777778    1e-4
 stream  vapor                  F                0.0182831675858    1e-4
+utility SEPARATION.flash       cooling.coolingWater.duty_kW -195.801233278     1e-4
+utility SEPARATION.flash       cooling.coolingWater.T 355                1e-4
+utility SEPARATION.flash       cooling.coolingWater.kg_s 4.68424003057      1e-4
+utility SEPARATION.flash       cooling.coolingWater.eur_h 0.28195377592      1e-4

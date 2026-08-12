@@ -17,3 +17,7 @@ kpi     compressor01           dT               335.224206884      1e-4
 kpi     compressor01           dT_isen          253.22943898       1e-4
 kpi     compressor01           eta_isen         0.75               1e-4
 kpi     compressor01           ratio            8.90211642995      1e-4
+utility compressor01           power.electricity.duty_kW 10.5263157895      1e-4
+utility compressor01           power.electricity.T -1                 1e-4
+utility compressor01           power.electricity.kg_s 0                  1e-4
+utility compressor01           power.electricity.eur_h 1.05347368421      1e-4
