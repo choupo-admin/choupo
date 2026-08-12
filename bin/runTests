@@ -75,9 +75,14 @@
 #       # kind   name      key         expected        reltol
 #       kpi      flash01   V_over_F    0.30398357      1e-4
 #       stream   vapor     F           0.0084439881    1e-4
+#       diag     gamma_nacl gamma_pm_1m 0.6572         1e-4
+#       aad      etoh_water_1atm txy_wilson.T_bubble.aadAbs 0.275964  1e-4
 #
-#  `kind` is `kpi` (look inside the "kpis" of the named unit) or `stream`
-#  (look inside the named stream).  `reltol` is |actual-exp|/|exp| (falls
+#  `kind` names WHERE the number is read from: `kpi` (inside the "kpis" of the
+#  named unit), `stream` (inside the named stream), `diag` (inside an
+#  `operationResults[].diagnostics` object, `name` = the op) or `aad` (inside
+#  the top-level `"validation"` overlay table, `name` = the dataset and `key`
+#  = `<model>.<property>.<statistic>`).  `reltol` is |actual-exp|/|exp| (falls
 #  back to absolute when exp is ~0).
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
@@ -202,12 +207,48 @@ get_diag() {
         | head -1
 }
 
-# --- dispatch by `kind`: diag -> operation diagnostics, else kpi/stream object
+# --- pull one AAD statistic out of the top-level `"validation": [...]` block
+#     (choupoProps `experimental {}` overlays).
+#
+#     WHY IT NEEDS ITS OWN EXTRACTOR, and why that mattered.  The overlay's
+#     AAD table is the ONLY place a props case says how far a model sits from
+#     measured data -- the whole point of a `compare_*` case -- and it is
+#     emitted NEITHER as a kpi object NOR under `operationResults[].diagnostics`.
+#     So no golden row could reach it, and every AAD in the corpus was pinned
+#     by nothing.  Found 2026-08-12 on compare_vle_etoh_water, whose header
+#     claimed UNIFAC "T_bubble AAD ~2.6 K" against its own output's 0.407 K.
+#
+#     `name` is the dataset, `key` is `<model>.<property>.<stat>` -- one column
+#     per axis, as for `diag`: the kind says WHERE (the validation block), the
+#     name says WHICH dataset, the key says which model/property/statistic.
+#     `stat` is any numeric field of the record (aadAbs, aadRelPct, nMeas,
+#     nUsed, nOutOfRange, ...).  A `null` field yields nothing, so a statistic
+#     the case does not publish reports as MISSING and never as agreement.
+get_aad() {
+    local out="$1" dataset="$2" key="$3"
+    local model prop stat
+    model=${key%%.*}; stat=${key##*.}
+    prop=${key#*.}; prop=${prop%.*}
+    printf '%s\n' "$out" | awk -v ds="$dataset" -v m="$model" -v p="$prop" -v s="$stat" '
+        /"dataset":/ { cur = ""; if (match($0, /"dataset": "[^"]*"/))
+                       { cur = substr($0, RSTART+12, RLENGTH-13) } }
+        cur == ds && index($0, "\"model\": \"" m "\"") \
+                  && index($0, "\"property\": \"" p "\"") {
+            if (match($0, "\"" s "\": *-?[0-9][0-9.eE+-]*")) {
+                v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                print v; exit
+            }
+        }'
+}
+
+# --- dispatch by `kind`: diag -> operation diagnostics, aad -> the validation
+#     overlay table, else kpi/stream object
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
     #  not reach here: it never changes where the number is read from.
-    if [ "$kind" = diag ]; then get_diag "$out" "$name" "$key"
+    if   [ "$kind" = diag ]; then get_diag "$out" "$name" "$key"
+    elif [ "$kind" = aad  ]; then get_aad  "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -345,13 +386,14 @@ fi
 #  `iterations`) plus each stream's F, at a default relative tolerance.
 auto_generate() {
     local case_dir="$1" out="$2" reltol="${3:-1e-4}"
-    local block kpis_sec streams_sec opres_sec
+    local block kpis_sec streams_sec opres_sec valid_sec
     block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
     [ -z "$block" ] && return 1
     streams_sec=$(printf '%s\n' "$block" | sed -n '/"streams": {/,/^  },\?$/p')
     kpis_sec=$(printf '%s\n'    "$block" | sed -n '/"kpis": {/,/^  },\?$/p')
     opres_sec=$(printf '%s\n'   "$block" | sed -n '/"operationResults": \[/,/^  \],\?$/p')
-    [ -z "$kpis_sec$streams_sec$opres_sec" ] && return 1
+    valid_sec=$(printf '%s\n'   "$block" | sed -n '/"validation": \[/,/^  \],\?$/p')
+    [ -z "$kpis_sec$streams_sec$opres_sec$valid_sec" ] && return 1
     {
         echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
         echo "# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h."
@@ -392,6 +434,38 @@ auto_generate() {
                 printf 'diag    %-22s %-16s %-18s %s\n' "$o" "$k" "$v" "$reltol"
             done
         done
+        #  overlay AADs: how far each model sits from the MEASURED dataset.
+        #  These are the numbers a `compare_*` case exists to publish, and
+        #  until 2026-08-12 auto-generation walked straight past them, so the
+        #  headline result of every overlay case was pinned by nothing.
+        #
+        #  They are SELF-RECORDED rows, never anchors, and the difference is
+        #  not a formality: an AAD is a statistic DERIVED from the model and
+        #  the published dataset together, so nobody published it and no
+        #  primary can be quoted for it.  What it pins is that the agreement
+        #  has not MOVED.  Anchoring this case means carrying a measured point
+        #  from Carey & Lewis and comparing the model AT it -- a different row.
+        #
+        #  Only aadAbs/aadRelPct are emitted: nMeas/nUsed and the rejection
+        #  counters are properties of the DATASET, not of the model, and
+        #  pinning them here would spread a dataset fact over one row per
+        #  model.  A dataset that shrinks shows up in every AAD anyway.
+        printf '%s\n' "$valid_sec" | awk -v tol="$reltol" '
+            /"dataset":/ { if (match($0, /"dataset": "[^"]*"/))
+                           { ds = substr($0, RSTART+12, RLENGTH-13) } }
+            /"model":/ {
+                if (!match($0, /"model": "[^"]*"/)) next
+                m = substr($0, RSTART+10, RLENGTH-11)
+                if (!match($0, /"property": "[^"]*"/)) next
+                p = substr($0, RSTART+13, RLENGTH-14)
+                split("aadAbs aadRelPct", st, " ")
+                for (i = 1; i <= 2; i++) {
+                    if (match($0, "\"" st[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                        v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                        printf "aad     %-22s %-16s %-18s %s\n", ds, m "." p "." st[i], v, tol
+                    }
+                }
+            }'
     } > "$case_dir/expected"
     return 0
 }
@@ -2582,6 +2656,23 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/valsub.$$
+
+    # Overlay-AAD gate (2026-08-12).  An `experimental {}` overlay publishes
+    # how far each model sits from a MEASURED dataset -- the headline result
+    # of every compare_* case -- into a top-level `validation` block that no
+    # golden row could read until the `aad` kind was added.  So those numbers
+    # lived only in prose, and prose about a number goes stale: this case's
+    # own header claimed UNIFAC "T_bubble AAD ~2.6 K" against its output's
+    # 0.407 K.  Requires published-implies-pinned and pinned-implies-published.
+    if "$ROOT/bin/curate/check_overlay_aad_pinned.py" > /tmp/aadpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "overlay-aad-gate" "$(grep -m1 ': OK' /tmp/aadpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_overlay_aad_pinned.py)\n" "overlay-aad-gate"
+        cat /tmp/aadpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/aadpin.$$
 
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op

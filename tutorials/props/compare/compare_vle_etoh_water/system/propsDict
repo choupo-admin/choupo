@@ -63,15 +63,37 @@ operations
         // PREDICT (not fit): UNIFAC builds gamma from the molecular groups with
         // NO regressed binary parameters.  ethanol = CH3 + CH2 + OH, water = H2O;
         // the CH2/OH/H2O group interactions alone produce an azeotrope.  The
-        // validation AAD shows how close a zero-data PREDICTION lands: T_bubble
-        // AAD ~2.6 K, BETWEEN ideal (~5.4 K) and the fitted NRTL (~0.35 K).
-        // HONEST CAVEAT: this is ORIGINAL UNIFAC, known to be weak for alcohol-
-        // water -- it predicts the azeotrope EXISTS but misplaces it to x_eth
-        // ~0.77 (real 0.894).  That mislocation is the method's documented
-        // limitation (the motivation for modified UNIFAC/Dortmund), NOT a bug:
-        // the a_mn table here matches Poling 5th ed. Table 8-24.  Lesson: group
-        // prediction gets you into the ballpark for free; for an associating
-        // system you still fit NRTL (or use modified UNIFAC).
+        // overlay AAD shows how close a zero-data PREDICTION lands: T_bubble
+        // AAD 0.407 K against Carey & Lewis, between ideal (5.354 K) and the
+        // FITTED NRTL (0.349 K) -- and much nearer the fit than the ideal.
+        // The azeotrope lands at x_eth 0.888 / 351.17 K, against NRTL's 0.885
+        // and the measured 0.894.  For a method that saw none of these data,
+        // that is a good result, and it is the lesson: group prediction gets
+        // you into the ballpark for free.  It does NOT retire the fit -- NRTL
+        // still wins on T_bubble, Wilson wins on both, and neither of those
+        // is predictive.
+        //
+        // THREE NUMBERS HERE WERE WRONG UNTIL 2026-08-12, and the reason is
+        // the reason this case now pins its AADs.  This comment used to claim
+        // "T_bubble AAD ~2.6 K" and an azeotrope "misplaced to x_eth ~0.77",
+        // and called that mislocation the documented weakness of original
+        // UNIFAC for alcohol-water.  The case's own output says 0.407 K and
+        // 0.888.  Both claims were 6x and 0.12 mole fraction off, both in the
+        // direction that made the method look worse than it is, and NOTHING
+        // could catch them: the AAD table was emitted in a `validation` block
+        // that no golden row could read, so this case's headline result --
+        // how far each model sits from the lab data -- was pinned by nothing
+        // at all.  `bin/runTests` now has an `aad` kind; the eight AADs are
+        // in `expected`; pinning the old 2.6 there makes the suite FAIL.
+        //
+        // The third claim was an attribution: "the a_mn table here matches
+        // Poling 5th ed. Table 8-24".  The table this case actually reads
+        // declares its own source in its own header -- the ChemSep compilation
+        // of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, IECR 30
+        // (1991) 2352 -- and that record is the authority on what it contains.
+        // Whether Poling reproduces the same revision was never checked
+        // against the shipped numbers, so the secondary citation is dropped
+        // rather than kept as an unverified endorsement.
         name        txy_unifac;
         type        propertyScan1D;
         vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }

@@ -25,5 +25,12 @@ engine; HERE your job is this case.
   draws a smooth lens with no azeotrope, while the run shows the real
   minimum-boiling azeotrope at x ~ 0.88 ethanol / T ~ 351.3 K (~78.1 C);
   the experimental points fall on the NRTL curve, not the ideal one.
-- **Pending / in curation:** none -- the three model scans (ideal, NRTL,
-  UNIFAC) and the experimental overlay all run; the lesson is the overlay.
+- **Pending / in curation:** none -- the four model scans (ideal, NRTL, UNIFAC,
+  Wilson) and the experimental overlay all run; the lesson is the overlay.
+  Since 2026-08-12 the overlay's eight AADs are PINNED in `expected` (`aad`
+  rows), so a model that drifts off the measured data fails the suite instead
+  of leaving a header claim standing -- which is how two claims about the
+  UNIFAC arm survived being wrong.  They are self-recorded rows, not anchors:
+  an AAD is derived from the model and the dataset together, so no primary
+  published it.  Anchoring this case means carrying a Carey & Lewis point and
+  comparing the model AT it.

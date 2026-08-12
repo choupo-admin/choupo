@@ -730,6 +730,30 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
+**THE `aad` ROW — an overlay's comparison against measured data becomes
+falsifiable (2026-08-12).**  A choupoProps `experimental {}` overlay publishes
+how far each model sits from a MEASURED dataset — the headline result of every
+`compare_*` case — into a **top-level `"validation"` block** of the result
+JSON, and `bin/runTests` could read `kpis`, `streams` and
+`operationResults[].diagnostics` and nothing else.  So no golden row could
+reach an AAD and **every AAD in the corpus was pinned by nothing**; what
+survived was prose, and the prose was wrong.  `compare_vle_etoh_water`'s header
+claimed original UNIFAC gave "T_bubble AAD ~2.6 K" with the azeotrope
+"misplaced to x_eth ~0.77" — the case's own output says **0.407 K** and
+**0.888**, six times and 0.12 mole fraction off, both in the direction that
+made the predictive method look worse than it is.  `compare_kinetics_order`
+shipped **no golden at all**, so its whole lesson was a smoke pass.  Fixed on
+the doctrine's own axis rule: a new **`aad` kind** (`aad <dataset>
+<model>.<property>.<statistic>`) — the kind says WHERE, the name says which
+dataset, the key says which model/property/statistic — plus auto-generation in
+`--record`, so the NEXT overlay case gets its rows without anyone remembering.
+**They are self-recorded rows, never `anchor` rows**: an AAD is derived from
+the model and the published dataset *together*, so nobody published it and no
+primary can be quoted for it; what it pins is that the agreement has not MOVED.
+Gate: `check_overlay_aad_pinned` (published ⇒ pinned AND pinned ⇒ published;
+three sabotages).  Record:
+[`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md) §3b.
+
 **THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building
 them found.**  Three audits (arity, silent fallbacks, provenance) were acted
 on end to end.  The engine changes are small; the pattern is the point, and it

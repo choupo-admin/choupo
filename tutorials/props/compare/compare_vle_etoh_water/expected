@@ -1,10 +1,13 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
+diag    txy_ideal              n_emptyCurves    0                  1e-4
 diag    txy_ideal              n_failures       0                  1e-4
 diag    txy_ideal              n_points         51                 1e-4
+diag    txy_nrtl               n_emptyCurves    0                  1e-4
 diag    txy_nrtl               n_failures       0                  1e-4
 diag    txy_nrtl               n_points         51                 1e-4
+diag    txy_unifac             n_emptyCurves    0                  1e-4
 diag    txy_unifac             n_failures       0                  1e-4
 diag    txy_unifac             n_points         51                 1e-4
 diag    consistency_etoh_water gamma1_inf       4.68506            1e-4
@@ -15,5 +18,14 @@ diag    consistency_etoh_water herington_D      12.0482            1e-4
 diag    consistency_etoh_water herington_J      7.4082             1e-4
 diag    consistency_etoh_water herington_pass   1                  1e-4
 diag    consistency_etoh_water n_points         10                 1e-4
+diag    txy_wilson             n_emptyCurves    0                  1e-4
 diag    txy_wilson             n_failures       0                  1e-4
 diag    txy_wilson             n_points         51                 1e-4
+aad     etoh_water_1atm        txy_ideal.T_bubble.aadAbs 5.35404            1e-4
+aad     etoh_water_1atm        txy_ideal.y_eq_ethanol.aadAbs 0.087966           1e-4
+aad     etoh_water_1atm        txy_nrtl.T_bubble.aadAbs 0.349277           1e-4
+aad     etoh_water_1atm        txy_nrtl.y_eq_ethanol.aadAbs 0.00232279         1e-4
+aad     etoh_water_1atm        txy_unifac.T_bubble.aadAbs 0.407352           1e-4
+aad     etoh_water_1atm        txy_unifac.y_eq_ethanol.aadAbs 0.00483698         1e-4
+aad     etoh_water_1atm        txy_wilson.T_bubble.aadAbs 0.275964           1e-4
+aad     etoh_water_1atm        txy_wilson.y_eq_ethanol.aadAbs 0.00502164         1e-4

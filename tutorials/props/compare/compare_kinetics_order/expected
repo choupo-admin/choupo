@@ -1,0 +1,25 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    rate_order1            R2               0.973397           1e-4
+diag    rate_order1            chi2             0.0105136          1e-4
+diag    rate_order1            fitted           1                  1e-4
+diag    rate_order1            k                0.00065871         1e-4
+diag    rate_order1            max_abs_resid    0.0544611          1e-4
+diag    rate_order1            n_data           8                  1e-4
+diag    rate_order1            n_points         61                 1e-4
+diag    rate_order1            order            1                  1e-4
+diag    rate_order1            rms              0.0362518          1e-4
+diag    rate_order2            R2               0.999421           1e-4
+diag    rate_order2            chi2             0.000228631        1e-4
+diag    rate_order2            fitted           1                  1e-4
+diag    rate_order2            k                0.000992909        1e-4
+diag    rate_order2            max_abs_resid    0.00829088         1e-4
+diag    rate_order2            n_data           8                  1e-4
+diag    rate_order2            n_points         61                 1e-4
+diag    rate_order2            order            2                  1e-4
+diag    rate_order2            rms              0.00534593         1e-4
+aad     kinetics_batch         rate_order1.c_AcOH.aadAbs 0.0308467          1e-4
+aad     kinetics_batch         rate_order1.c_AcOH.aadRelPct 5.94883            1e-4
+aad     kinetics_batch         rate_order2.c_AcOH.aadAbs 0.00427537         1e-4
+aad     kinetics_batch         rate_order2.c_AcOH.aadRelPct 0.828869           1e-4

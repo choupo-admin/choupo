@@ -84,7 +84,7 @@ credibility claim this document exists to deflate:
 | `props/electrolyte/farelo_licl_range` | Hamer & Wu range for LiCl | **fit-consistency** — the pair was refit to it |
 | `props/electrolyte/pitzer_nacl_sp77_hot` | Silvester & Pitzer (1977) Table V, 25–200 °C | **fit-consistency** — the coefficients are the same paper's Table IV, verbatim |
 | `props/electrolyte/pitzer01_nacl` | Parker (1965) Φ_L, NaCl series | **fit-consistency** — the op's own prose pins the AAD against "the same curated Parker series"; found by the gate's first run, then re-verified against the case rather than my first guess (which had the wrong anchor AND the wrong class) |
-| `props/compare/compare_vle_etoh_water` | Carey & Lewis (1932) ethanol–water VLE at 101.3 kPa, 12 points | independent — ideal / NRTL / UNIFAC / **Wilson** (on flash03's inline pair, its first measured anchor: T_bubble AAD 0.28 K vs NRTL's 0.35 K) |
+| `props/compare/compare_vle_etoh_water` | Carey & Lewis (1932) ethanol–water VLE at 101.3 kPa, 12 points | independent — ideal / NRTL / UNIFAC / **Wilson** (on flash03's inline pair, its first measured anchor: T_bubble AAD 0.276 K vs NRTL's 0.349 K). **The eight AADs are PINNED since 2026-08-12** (`aad` rows), which is how two false claims about the UNIFAC arm were found — see §3b |
 | `props/electrolyte/fpd01_nacl_freezing` | one tabulated FPD point at 1 mol/kg (interim citation, Scatchard–Prentiss candidate) + dilute-limit slope vs the derived K_f | independent but THIN — one point, said plainly; also the ice witness: the depression agrees to 0.05 % with a_w evaluated at T_f, where the 25 °C surface leaves a 1.8 % gap |
 | `props/electrolyte/archer01_nacl_cold_to_hot` | Archer, J. Phys. Chem. Ref. Data 21 (1992) 793, Tables 9–10 — γ±/φ at 273/298/323/373 K (interim transcription from the owner-provided paper) | **cross-evaluation** — Archer's tables are his own fitted equation's check values, and his database overlaps SP77's corpora: two independent fits of overlapping data, stronger than fit-consistency, weaker than raw measurement. The 273 K arm measures the announced below-window extrapolation fpd01 stands on: γ± AAD 1.05 % at 0 °C vs 0.17–0.29 % inside the window |
 | `props/electrolyte/pb82_calcite_open_co2` | Plummer & Busenberg, GCA 46 (1982) 1011 — measured junction-corrected pH 6.004 ± 0.005 at calcite equilibrium, 25 °C / 0.956 atm PCO₂ (their model: 6.011) | **split, stated in the case**: the K's are LINEAGE (PHREEQC's carbonate block is this paper), but the measured pH independently tests the ASSEMBLY — gas pin + chained carbonate + ion pairs + Davies + electroneutrality + SI = 0 ceiling end to end. Engine: 6.029 — 0.025 above the electrode, the size an activity-model difference (Davies vs their Truesdell–Jones) predicts at I = 0.027; reported, not tuned |
@@ -153,6 +153,59 @@ witness (`column13` is both); what the ruling's separation actually forbids —
 complicating a tutorial into an "everything case", or minting a duplicate
 case for a role an existing one carries — is enforced by review, and the
 refusal of duplication is the arity doctrine applied to cases.
+
+## 3b. The `aad` row: an overlay's comparison becomes falsifiable (2026-08-12)
+
+§3 says prose about a number goes stale silently, and that the `anchor` row
+exists because it had.  It had again — in the very case §3's table B cites for
+Wilson's first measured anchor.
+
+`compare_vle_etoh_water` overlays four models on Carey & Lewis's 12 measured
+points and publishes an AAD per model — the headline result of the whole
+`compare_*` family, and the number a student reads to decide which model to
+trust.  That table was emitted in a **top-level `"validation"` block** of the
+result JSON, while `bin/runTests` could read `kpis`, `streams` and
+`operationResults[].diagnostics` and nothing else.  So no golden row could
+reach an AAD, and **every AAD in the corpus was pinned by nothing**.
+
+What survived instead was the case header, and two of its claims were false:
+
+| claim in the header | the case's own output |
+|---|---|
+| original UNIFAC, T_bubble AAD **~2.6 K** | **0.407 K** |
+| UNIFAC azeotrope misplaced to x_eth **~0.77** (measured 0.894) | **0.888** |
+
+Six times off and 0.12 in mole fraction, both in the direction that made the
+predictive method look worse than it is — and both published, for as long as
+the arm has existed, with the suite green throughout.  A third claim was an
+attribution (the a_mn table "matches Poling 5th ed. Table 8-24") against a
+record that declares a different source in its own header; it was dropped
+rather than kept as an unverified endorsement.
+
+Three things now hold.  `bin/runTests` has an **`aad` kind** —
+`aad <dataset> <model>.<property>.<statistic>` — reading the validation block,
+so the same one-column-per-axis rule that gave `diag` its home gives the
+overlay table one.  `--record` auto-generates those rows, so the *next*
+overlay case gets them without anyone remembering.  And
+`check_overlay_aad_pinned` requires **published ⇒ pinned and pinned ⇒
+published** on every non-plant overlay case: an AAD the run emits and no row
+pins is a failure, and a row matching nothing is a failure too, because a row
+that matches nothing reads as coverage it does not give.  Sabotage-verified
+three ways; pinning the old 2.6 makes the suite FAIL.
+
+`compare_kinetics_order` was in a worse state and is fixed by the same slice:
+it shipped **no golden at all**, so its entire lesson — order 2 fits the
+measured batch data 7× better than order 1 — was a smoke pass.  It now pins
+its two ops' fit statistics and its four AADs.
+
+**These are self-recorded rows, never `anchor` rows, and the distinction is
+not a formality.**  An AAD is a statistic derived from the model and the
+published dataset *together*: no primary published it, so no primary can be
+quoted for it.  What an `aad` row pins is that the agreement has not MOVED —
+regression over a validation statistic.  Anchoring this case still means
+carrying a Carey & Lewis point and comparing the model AT it, and that row
+has not been authored.  §3's count therefore stands unchanged: four cases use
+`anchor`.
 
 ## 4. What this changes, and what it does not
 
