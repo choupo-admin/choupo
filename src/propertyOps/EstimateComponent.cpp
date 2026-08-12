@@ -277,6 +277,29 @@ int EstimateComponent::run(const DictPtr& dict,
         std::ofstream f(outPath);
         if (f)
         {
+            //  DOES THIS MOLECULE HYDROGEN-BOND?  The Joback fragmentation is
+            //  already in hand, and it answers the question the two
+            //  corresponding-states rungs below cannot ask for themselves:
+            //  Ambrose-Walton (Psat) and Rowlinson-Bondi (liquid Cp) are BOTH
+            //  weak on associating species, and they are weak on the SAME
+            //  ones.  Measured against the catalogue's own curated liquid Cp,
+            //  Rowlinson-Bondi lands ~1 % on non-polar species and 30-70 % on
+            //  alcohols and water (bin/curate/check_rowlinson_bondi.py).
+            //
+            //  So the caveat this file carries is about THIS compound, not
+            //  about the method in general.  The same structural fact that
+            //  makes UNIFAC possible is what tells us when the estimates will
+            //  be poor -- nothing is stored, it is read off the groups.
+            std::string hbGroups;
+            for (const auto& [g, n] : specs)
+            {
+                (void) n;
+                if (g == "OH" || g == "OHar" || g == "acid"
+                 || g == "NH2" || g == "NH" || g == "rNH")
+                    hbGroups += (hbGroups.empty() ? "" : ", ") + g;
+            }
+            const bool hBonding = !hbGroups.empty();
+
             f << std::setprecision(6);
             f << "/*--------------------------------*- Choupo -*-----------------------*\\\n"
               << "  Component: " << comp << "   (Joback group-contribution ESTIMATE)\n"
@@ -288,6 +311,8 @@ int EstimateComponent::run(const DictPtr& dict,
                            : "    (vapour pressure REFUSED by `derived { Psat none; }` -- gap below)\n")
               << (fillVliq ? "    + liquid molar volume Vliq (Rackett / Yamada-Gunn from Tc,Pc,omega)\n"
                            : "    (liquid molar volume REFUSED by `derived { Vliq none; }` -- gap below)\n")
+              << "    + liquid heat capacity (Rowlinson-Bondi from Tc, omega, Cp_ig)\n"
+              << "      -> the component can enter an ENERGY BALANCE, not only a flash.\n"
               << (fillPsat ? "    -> the component is FLASHABLE with no measured data.\n"
                            : "    -> NOT flashable until vapour pressure is supplied.\n")
               << "  GAP Joback cannot fill -- see the commented TODO below:\n"
@@ -351,6 +376,27 @@ int EstimateComponent::run(const DictPtr& dict,
                 f << "// GAP -- Psat REFUSED (`derived { Psat none; }`): NOT flashable until\n"
                   << "// a Psat model lands (fit an Antoine with choupoProps vaporPressureFit).\n"
                   << "// vaporPressure { model ?; }\n";
+
+            //  THE LIQUID HEAT CAPACITY -- what turns a FLASHABLE component
+            //  into one that can enter an ENERGY BALANCE.  Without it the
+            //  estimate stops at the phase equilibrium: a rigorous column
+            //  refuses, which is exactly where the 2026-08-11 agent test died.
+            //  Rowlinson-Bondi needs only Tc, omega and the ideal-gas Cp --
+            //  all three are above, so nothing measured is required.
+            f << "// Rowlinson-Bondi corresponding states from Tc, omega and the ideal-gas Cp\n"
+              << "// above -- this is what makes the component usable in an ENERGY BALANCE\n"
+              << "// (a flash needs Psat; a column needs this too).  An ESTIMATE:\n"
+              << (hBonding
+                  ? "// *** THIS COMPOUND HYDROGEN-BONDS (Joback group(s): " + hbGroups + ").\n"
+                    "// *** Measured against the catalogue's own curated liquid Cp values,\n"
+                    "// *** Rowlinson-Bondi deviates 30-70 % on species like these (methanol\n"
+                    "// *** 67 %, ethanol 50 %, water 32 %) -- and Ambrose-Walton's Psat above\n"
+                    "// *** is weak on the SAME molecules, for the same reason.  Treat both as\n"
+                    "// *** order-of-magnitude until you overlay them on measured data.\n"
+                  : "// ~1 % on non-polar species (measured: neopentane 0.4 %, n-alkanes ~1 %),\n"
+                    "// degrading toward the critical point; the declared window is Tr 0.25-0.85\n"
+                    "// and the engine announces every evaluation outside it.\n")
+              << "liquidHeatCapacity { model RowlinsonBondi; }\n";
             f << "\n";
 
             // The curated molecular record travels WITH the proposal (forum
