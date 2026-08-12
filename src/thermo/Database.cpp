@@ -36,6 +36,7 @@ License
 
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -207,19 +208,68 @@ Component Database::loadComponent(const std::string& name) const
         const std::string caseMsg = caseLocal.empty()
             ? "(no case-local constant/components/" + name + ".dat up the tree)"
             : caseLocal.string();
+
+        //  THE REMEDY LOOKS FOR THE GROUPS INSTEAD OF ASKING FOR THEM.
+        //  `data/groupEstimative/` carries a structural decomposition for
+        //  ~28 800 molecules -- identity + UNIFAC + Joback groups, the half of
+        //  the lake Choupo cannot regenerate (it came from RDKit, a dependency
+        //  this project refuses).  Telling a student to "supply Joback groups"
+        //  while the repo already holds theirs is sending them to look up what
+        //  is one directory away.  So: look, and if it is there, PASTE IT.
+        std::string groupHint;
+        {
+            const fs::path lake = fs::path(root_) / "groupEstimative"
+                                / "components" / (name + ".dat");
+            if (fs::exists(lake))
+            {
+                std::ifstream f(lake.string());
+                std::string ln;
+                while (std::getline(f, ln))
+                {
+                    const auto j = ln.find("joback (");
+                    if (j == std::string::npos) continue;
+                    auto close = ln.rfind(");");
+                    if (close == std::string::npos || close <= j) break;
+                    //  The record's own line, minus its trailing comment.
+                    groupHint = ln.substr(j, close + 2 - j);
+                    break;
+                }
+            }
+        }
         throw std::runtime_error(
             "Database: component '" + name + "' not found.\n"
             "  looked in: " + caseMsg + "\n"
             "         and: " + standard.string() + "  (verified)\n"
             "         and: " + proposed.string() + "  (proposed/unverified)\n"
-            "  remedy: if it is not curated data, create a case-local proposal — add\n"
-            "    to your propsDict an estimateComponent operation (component " + name + ";\n"
-            "    groups ( ... );  // Joback groups, see docs/ai/components.md).\n"
+            + (groupHint.empty()
+               ? std::string(
+                 "  remedy: if it is not curated data, create a case-local proposal — add\n"
+                 "    to your propsDict an estimateComponent operation (component " + name + ";\n"
+                 "    groups ( ... );  // Joback groups, see docs/ai/components.md).\n")
+               : std::string(
+                 "  GOOD NEWS: '" + name + "' IS structurally known to Choupo --\n"
+                 "    data/groupEstimative/components/" + name + ".dat carries its group\n"
+                 "    decomposition (a FACT; the numbers there are estimates).  Paste this\n"
+                 "    into your propsDict and choupoProps builds a working component:\n"
+                 "\n"
+                 "      operations\n"
+                 "      (\n"
+                 "        { name est; type estimateComponent; model Joback;\n"
+                 "          component " + name + ";\n"
+                 "          groups ( " + groupHint.substr(8) + "\n"
+                 "          output { proposal auto; } }\n"
+                 "      );\n"
+                 "\n"
+                 "    You get Tc/Pc/omega (Joback), an ideal-gas Cp, Ambrose-Walton for\n"
+                 "    the vapour pressure and Rowlinson-Bondi for the liquid Cp -- enough\n"
+                 "    to FLASH it and to put it through an ENERGY BALANCE, with nothing\n"
+                 "    measured.  Every value is marked as an estimate and the file says so.\n")
+              ) +
             "    NOTE: do NOT list '" + name + "' in thermoPackage's components yet --\n"
             "    it has no .dat, which is exactly what failed here.  estimateComponent\n"
             "    reads its groups from the propsDict, so keep an existing placeholder\n"
             "    component in thermoPackage meanwhile.  Then run choupoProps <caseDir>,\n"
-            "    REVIEW the generated constant/components/" + name + ".estimate-*.dat,\n"
+            "    REVIEW the generated constant/components/" + name + ".estimated.dat,\n"
             "    fill the gaps, then rename it to constant/components/" + name + ".dat.\n"
             "  if you expected it to exist: check spelling/casing — lookup is by the\n"
             "    exact <name>.dat filename (CAS and aliases are NOT resolved).");
