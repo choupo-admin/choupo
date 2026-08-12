@@ -31,6 +31,7 @@ License
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
 #include "thermo/Database.H"
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/RecordResolver.H"
 
 #include <cmath>
@@ -82,6 +83,7 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
     DictPtr gblk = dict->found("groups") ? dict->subDict("groups") : nullptr;
     std::vector<std::map<std::string, int>> compGroups(N);
     std::set<std::string> used;
+    std::vector<std::string> groupless;
     hasGroups_.assign(N, false);
     for (std::size_t i = 0; i < N; ++i)
     {
@@ -97,16 +99,28 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
             }
         }
         else
-            // Forum #67 (census: zero affected cases): a UNIFAC package with a
-            // participating component that has no decomposition is an ERROR
-            // with a remedy -- the old announced gamma = 1 quietly turned a
-            // group-contribution model into "ideal for whoever lacks data".
-            throw std::runtime_error("UNIFAC: component '" + names[i]
-                + "' has no group decomposition.  Add\n"
-                  "    groups { unifac ( { group ...; count ...; } ... ); }\n"
-                  "to its component .dat (case-local overlay for a pedagogical "
-                  "alternative), or drop it from the UNIFAC package.");
+            // Forum #67 (census: zero affected cases at the time): a UNIFAC
+            // package with a participating component that has no
+            // decomposition is an ERROR with a remedy -- the old announced
+            // gamma = 1 quietly turned a group-contribution model into "ideal
+            // for whoever lacks data".
+            //
+            // THAT REFUSAL STANDS.  What changed on 2026-08-12 is only that it
+            // now has an authorised exit, because the first affected case
+            // arrived: Luyben's acetone flowsheet carries H2, and there is no
+            // UNIFAC group for hydrogen -- none exists, and inventing one
+            // would be fabrication rather than approximation.  The decision is
+            // collected and made ONCE below, so the refusal can name every
+            // offending component at once instead of the first one it meets.
+            groupless.push_back(names[i]);
     }
+
+    //  The ONE decision: unauthorised refuses (naming the paths), authorised
+    //  runs at gamma = 1 (the `hasGroups_` branch in gamma()) and RIDES the
+    //  result as a recorded divergence.  Same contract as an ideal binary
+    //  pair; see src/thermo/ApproximationAuthorisation.H.
+    if (!groupless.empty())
+        resolveGrouplessComponents("UNIFAC", groupless);
 
     // ---- active subgroup list (sorted -> deterministic) + parameters --------
     for (const auto& s : used)

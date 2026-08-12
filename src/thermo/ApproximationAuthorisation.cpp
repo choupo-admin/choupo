@@ -134,4 +134,92 @@ void resolveIdealPairSubstitution(const std::string& model,
                   << "  (fit or add them to constrain these interactions)\n";
 }
 
+//  ---- a component the activity model cannot price -----------------------
+std::set<std::string>
+resolveGrouplessComponents(const std::string& model,
+                           const std::vector<std::string>& groupless)
+{
+    std::set<std::string> authorised;
+    if (groupless.empty()) return authorised;
+
+    const auto& auth = ApproximationAuthorisation::instance();
+
+    //  (1) REFUSE what nobody authorised.  Gated on wasRead() for the same
+    //  reason as the pair substitution: where no case-level block was ever
+    //  read, "authorises nothing" and "nobody looked" are the same silence.
+    std::vector<std::string> unauthorised;
+    for (const auto& c : groupless)
+    {
+        if (auth.wasRead() && auth.authorisesOutsideActivity(c))
+            authorised.insert(c);
+        else
+            unauthorised.push_back(c);
+    }
+
+    if (!unauthorised.empty())
+    {
+        std::string list, block;
+        for (std::size_t k = 0; k < unauthorised.size(); ++k)
+        {
+            list  += (k ? ", " : "") + unauthorised[k];
+            block += (k ? " "  : "") + unauthorised[k];
+        }
+        throw std::runtime_error(model + ": component(s) " + list
+            + " have no group decomposition, so " + model + " cannot price"
+            " them.\n"
+            "        Running them at gamma = 1 anyway would turn a"
+            " group-contribution model into \"ideal for whoever lacks data\","
+            " which is a DIFFERENT MODEL from the one requested.\n"
+            "        Three legitimate paths:\n"
+            "          * add `groups { unifac ( ... ); }` to the component's"
+            " .dat, IF a decomposition exists -- for a permanent gas such as"
+            " H2 none does, and inventing one is fabrication;\n"
+            "          * drop the component from the package, or give the"
+            " unit its own `thermo {}` world without it;\n"
+            "          * or AUTHORISE the approximation, which then runs and"
+            " is recorded as a declared divergence:\n"
+            "                approximations { componentOutsideActivityModel {"
+            " components ( " + block + " ); reason \"...\"; } }");
+    }
+
+    //  (2) RECORD what survived, on the RESULT and not only in the log.
+    const bool unexamined = !auth.wasRead();
+    for (const auto& c : authorised)
+        ProblemDivergence::instance().add("substitution",
+            model + " component " + c,
+            model, "outside the activity model (gamma = 1)",
+            unexamined ? std::string("UNEXAMINED -- the case's authorisation"
+                                     " was never read on this construction"
+                                     " path (engine defect, not an authored"
+                                     " choice)")
+                       : auth.reasonOutside());
+
+    //  (3) ANNOUNCE, and say what gamma = 1 does NOT establish.  This is the
+    //  half a bare "defaulted to ideal" line would leave out: for a
+    //  supercritical permanent gas the LIQUID-side reference is a vapour
+    //  pressure extrapolated far above its own critical temperature, which
+    //  the validity channel already flags as "not a vapour pressure".  Such a
+    //  component can come out of the flash on the right side for the wrong
+    //  reason, and a case relying on it should know that is what it bought.
+    if (!authorised.empty())
+    {
+        std::string list;
+        for (const auto& c : authorised) list += (list.empty() ? "" : ", ") + c;
+        const bool isNew = AdvisoryLog::instance().add("thermo", "warning",
+            model, std::to_string(authorised.size())
+            + " component(s) run OUTSIDE the activity model at gamma = 1"
+              " (authorised): " + list
+            + " -- gamma = 1 is not a solubility model; if the component is"
+              " supercritical its liquid reference is an extrapolated"
+              " pseudo-Psat, so its phase split may be right for the wrong"
+              " reason");
+        if (isNew)
+            std::cout << "  [thermo] " << model << ": " << authorised.size()
+                      << " authorised component(s) OUTSIDE the activity model"
+                         " (gamma = 1): " << list
+                      << "  -- recorded as a declared divergence\n";
+    }
+    return authorised;
+}
+
 }   // namespace Choupo

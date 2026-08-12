@@ -104,6 +104,8 @@ public:
         read_ = false;
         idealPairs_.clear();
         reason_.clear();
+        outsideActivity_.clear();
+        reasonOutside_.clear();
     }
 
     //  THE ONE PARSE.  Called by the builder with the top-level thermophysical
@@ -114,13 +116,37 @@ public:
         read_ = true;
         idealPairs_.clear();
         reason_.clear();
+        outsideActivity_.clear();
+        reasonOutside_.clear();
         if (!topLevel || !topLevel->found("approximations")) return;
         auto ap = topLevel->subDict("approximations");
-        if (!ap->found("idealBinaryPair")) return;
-        auto ib = ap->subDict("idealBinaryPair");
-        for (const auto& w : ib->lookupWordList("pairs"))
-            idealPairs_.insert(w);
-        reason_ = ib->lookupWordOrDefault("reason", "");
+        if (ap->found("idealBinaryPair"))
+        {
+            auto ib = ap->subDict("idealBinaryPair");
+            for (const auto& w : ib->lookupWordList("pairs"))
+                idealPairs_.insert(w);
+            reason_ = ib->lookupWordOrDefault("reason", "");
+        }
+        //  A COMPONENT THE ACTIVITY MODEL CANNOT PRICE, authorised by name.
+        //
+        //  A group-contribution model needs a decomposition per component, and
+        //  some real components have none because none EXISTS: there is no
+        //  UNIFAC group for hydrogen, and inventing one would be fabrication.
+        //  Such a component makes the model refuse (forum #67 -- correctly:
+        //  the refusal replaced an announced gamma = 1 that quietly turned a
+        //  group model into "ideal for whoever lacks data").
+        //
+        //  This block does NOT weaken that refusal.  It is the same shape as
+        //  `idealBinaryPair`: unauthorised is refused, authorised runs AND
+        //  rides the result as a recorded divergence.  What changes is only
+        //  who decided -- the case, by name, with a reason.
+        if (ap->found("componentOutsideActivityModel"))
+        {
+            auto co = ap->subDict("componentOutsideActivityModel");
+            for (const auto& w : co->lookupWordList("components"))
+                outsideActivity_.insert(w);
+            reasonOutside_ = co->lookupWordOrDefault("reason", "");
+        }
     }
 
     //  False until a case has been read.  A caller that refuses on an
@@ -134,11 +160,20 @@ public:
 
     const std::string& reason() const { return reason_; }
 
+    bool authorisesOutsideActivity(const std::string& c) const
+    {
+        return outsideActivity_.count(c) > 0;
+    }
+
+    const std::string& reasonOutside() const { return reasonOutside_; }
+
 private:
     ApproximationAuthorisation() = default;
     bool read_ = false;
     std::set<std::string> idealPairs_;
     std::string reason_;
+    std::set<std::string> outsideActivity_;
+    std::string reasonOutside_;
 };
 
 
@@ -157,5 +192,28 @@ private:
 //  `idealDefaulted` holds "<a>-<b>" pair keys.  Empty is a no-op.
 void resolveIdealPairSubstitution(const std::string& model,
                                   const std::vector<std::string>& idealDefaulted);
+
+//  THE SAME DECISION for a component the activity model cannot price at all.
+//
+//  A group-contribution model needs a decomposition per component, and for
+//  some real components none EXISTS -- there is no UNIFAC group for hydrogen,
+//  and inventing one would be fabrication rather than approximation.  Forum
+//  #67 made that a refusal, correctly, replacing an announced gamma = 1 that
+//  quietly turned a group model into "ideal for whoever lacks data".
+//
+//  This resolver does not weaken the refusal; it gives it an authorised exit,
+//  in the same three steps as the pair substitution above:
+//
+//      not authorised -> REFUSED, naming the component and the paths
+//      authorised     -> gamma = 1 for that component, RECORDED as a
+//                        divergence, and announced with a caveat that says
+//                        what gamma = 1 does NOT mean here
+//
+//  `groupless` holds the component names the model found no decomposition
+//  for.  Returns the subset that is authorised (the caller sets gamma = 1 for
+//  exactly those); throws if any is not.  Empty is a no-op.
+std::set<std::string>
+resolveGrouplessComponents(const std::string& model,
+                           const std::vector<std::string>& groupless);
 
 }   // namespace Choupo

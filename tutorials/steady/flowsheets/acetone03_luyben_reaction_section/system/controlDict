@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Luyben's acetone REACTION SECTION: reactor -> cooler -> flash, against his Rout and the flash split";
+verbosity     2;

@@ -1,0 +1,31 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  Rin                    F                0.0160611111111    1e-4
+stream  Rout                   F                0.0257186111111    1e-4
+stream  flashGas               F                0.0123053585397    1e-4
+stream  flashLiquid            F                0.0134132525714    1e-4
+kpi     reactor                F_in_kmol_h      57.82              1e-4
+kpi     reactor                F_out_kmol_h     92.587             1e-4
+kpi     reactor                Q_kW             470.487527672      1e-4
+kpi     reactor                T                623                1e-4
+kpi     reactor                conversion       0.9                1e-4
+kpi     reactor                dHrxn_kJ_per_mol 48.7173210118      1e-4
+kpi     reactor                extent_kmol_h    34.767             1e-4
+kpi     separator              F_alpha          0.0134132525714    1e-4
+kpi     separator              F_beta           0.0123053585397    1e-4
+kpi     separator              F_in             0.0257186111111    1e-4
+kpi     separator              K_H2             656.600087113      1e-4
+kpi     separator              K_acetone        0.332211977852     1e-4
+kpi     separator              K_isopropanol    0.0950743303124    1e-4
+kpi     separator              K_water          0.0700676604898    1e-4
+kpi     separator              P                263445             1e-4
+kpi     separator              Q                -967612.950775     1e-4
+kpi     separator              Q_kW             -967.612950775     1e-4
+kpi     separator              T                318                1e-4
+kpi     separator              V_over_F         0.478461239082     1e-4
+kpi     separator              phaseSet         0                  1e-4
+utility separator              cooling.coolingWater.duty_kW -967.612950775     1e-4
+utility separator              cooling.coolingWater.T 318                1e-4
+utility separator              cooling.coolingWater.kg_s 23.148635186       1e-4
+utility separator              cooling.coolingWater.eur_h 1.39336264912      1e-4

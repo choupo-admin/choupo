@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*  Luyben Figure 1, stream Rin: 57.83 kmol/h at 389 K and 2.6 atm.  The
+    component split is derived from his Rout in the flowsheetDict header and
+    closes on his own total to 0.02 %.                                        */
+
+T   389 K;
+P   2.6 atm;
+
+componentMolarFlows
+{
+    isopropanol  38.63 kmol/h;
+    acetone       0.0  kmol/h;
+    H2            0.0  kmol/h;
+    water        19.19 kmol/h;
+}

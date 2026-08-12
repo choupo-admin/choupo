@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Endothermic dehydrogenation of 2-propanol over a solid catalyst:
+
+      (CH3)2CHOH  ->  (CH3)2CO  +  H2
+
+  NO `dH_rxn` KEY IS WRITTEN HERE, deliberately.  Choupo derives the heat of
+  reaction from the species' own formation data (the settled elements datum),
+  and that derivation is one of the things this case is here to expose:
+  isopropanol's dHf comes from a Joback ESTIMATE, so the reactor duty inherits
+  an error from the component record.  Writing Luyben's 62 900 kJ/kmol here
+  would override the derivation and hide exactly that.
+\*---------------------------------------------------------------------------*/
+dehydrogenation
+{
+    stoichiometry
+    (
+        { component isopropanol; nu -1; }
+        { component acetone;     nu  1; }
+        { component H2;          nu  1; }
+    );
+    limitingReactant  isopropanol;
+}

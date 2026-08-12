@@ -1,0 +1,34 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( isopropanol  acetone  H2  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model UNIFAC; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
+
+//  THE ONE APPROXIMATION THIS CASE BUYS, declared so it can be refused if
+//  nobody wants it and RECORDED in the answer when they do.
+//
+//  UNIFAC prices a component from its molecular groups.  There is no UNIFAC
+//  group for hydrogen -- none exists in the published table, and inventing one
+//  would be fabrication rather than approximation -- so without this block the
+//  package REFUSES by name (forum #67, and the refusal is right).
+//
+//  What gamma = 1 buys here, and what it does NOT: H2 leaves the flash almost
+//  entirely in the vapour, which is physically correct, but it does so because
+//  its liquid reference is a vapour pressure extrapolated far above its own
+//  critical temperature (33.18 K) -- the run says so in the caveats.  The
+//  answer is right for the wrong reason, and the size of what is at stake is
+//  small: Luyben's own F1 carries H2 at a mole fraction of 2e-4.
+approximations
+{
+    componentOutsideActivityModel
+    {
+        components ( H2 );
+        reason     "supercritical permanent gas; no UNIFAC group exists for hydrogen, and its liquid mole fraction in this flowsheet is 2e-4 (Luyben F1). Henry in a mixed solvent is the principled route and is the deferred D3 transfer term";
+    }
+}

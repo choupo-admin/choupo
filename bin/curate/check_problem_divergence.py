@@ -462,6 +462,94 @@ with tempfile.TemporaryDirectory() as td:
                             " bypassed the ONE parse -- its substitutions are"
                             " recorded UNEXAMINED")
 
+    # ---- A9: a component the activity model cannot price at all -----------
+    #
+    #  The SECOND authorisation kind (2026-08-12).  A group-contribution model
+    #  needs a decomposition per component and for some real components none
+    #  EXISTS -- there is no UNIFAC group for hydrogen.  Forum #67 made that a
+    #  refusal, correctly; this arm asserts the refusal still fires, that the
+    #  authorised exit works, and that the two are the SAME contract as the
+    #  pair substitution (refuse / record / announce), not a second one.
+    H2SYS = """recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components       ( ethanol  water  H2 );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model UNIFAC; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
+%(approx)s"""
+    AUTH = """
+approximations
+{
+    componentOutsideActivityModel
+    {
+        components ( H2 );
+        reason     "probe: supercritical permanent gas, no UNIFAC group exists";
+    }
+}
+"""
+
+    def h2_case(tag, approx):
+        d = tmp / tag
+        (d / "system").mkdir(parents=True)
+        (d / "constant").mkdir(parents=True)
+        (d / "constant" / "thermoPhysPropDict").write_text(H2SYS % {"approx": approx})
+        (d / "system" / "controlDict").write_text(CONTROL)
+        (d / "system" / "propsDict").write_text(
+            PROPSDICT % {"x": "ethanol 0.4; water 0.4; H2 0.2;"})
+        return d
+
+    #  (a) unauthorised REFUSES, names the component, and offers the block
+    rc, out = run(PROPS, h2_case("a9a", ""))
+    if rc == 0:
+        failures.append("A9a: a groupless component ran unauthorised --"
+                        " UNIFAC became 'ideal for whoever lacks data'")
+    else:
+        for want in ("H2", "no group decomposition",
+                     "approximations { componentOutsideActivityModel {"
+                     " components ( H2 )"):
+            if want not in out:
+                failures.append("A9a: the refusal does not carry %r" % want)
+        #  It must NOT offer a remedy that would be fabrication.
+        if "inventing one is fabrication" not in out:
+            failures.append("A9a: the refusal does not say that inventing a"
+                            " group for a permanent gas is fabrication --"
+                            " without it the first remedy reads as advice")
+
+    #  (b) authorised RUNS and the substitution reaches the RESULT
+    rc, out = run(PROPS, h2_case("a9b", AUTH))
+    if rc != 0:
+        failures.append("A9b: the AUTHORISED case still refuses (rc=%d)" % rc)
+    else:
+        subs = [e for e in result_json(out).get("problemDivergence", [])
+                if e.get("locus", "").startswith("UNIFAC component")]
+        if not subs:
+            failures.append("A9b: the authorised substitution does NOT ride"
+                            " the result -- it is announced and forgotten")
+        elif "permanent gas" not in (subs[0].get("reason") or ""):
+            failures.append("A9b: the recorded divergence does not carry the"
+                            " case's own reason")
+        #  The caveat that says what gamma = 1 does NOT establish.
+        if "right for the wrong reason" not in out:
+            failures.append("A9b: the run does not state that a supercritical"
+                            " component's phase split may be right for the"
+                            " wrong reason -- gamma = 1 is not a solubility"
+                            " model, and a case relying on it must be told")
+
+    #  (c) THE NEGATIVE: an all-grouped package raises no such divergence.
+    #      Without this the arm would pass on a build that recorded one for
+    #      every component.
+    rc, out = run(PROPS, probe_case(tmp, "a9c", "UNIFAC", "",
+                                    comps="ethanol  water", x=BINARY))
+    if rc == 0:
+        if any(e.get("locus", "").startswith("UNIFAC component")
+               for e in result_json(out).get("problemDivergence", [])):
+            failures.append("A9c: a package whose components ALL carry groups"
+                            " still recorded an outside-the-model divergence")
+
+
 if failures:
     print("check_problem_divergence: FAIL")
     for f in failures:
@@ -480,4 +568,9 @@ print("check_problem_divergence: OK -- an unauthorised ideal-pair"
       " pair-parameter activity models -- those are UNCOVERED.  The NotRead"
       " branch of the authorisation is asserted UNREACHED rather than"
       " exercised: no path in this corpus produces it, which is why it"
-      " announces itself as an engine defect if it ever does.")
+      " announces itself as an engine defect if it ever does."
+      "  A9 covers the SECOND authorisation kind: a component the activity"
+      " model cannot price at all (no UNIFAC group exists for hydrogen)"
+      " refuses by name, its authorised exit rides the result with the case's"
+      " own reason, the run states that gamma = 1 is not a solubility model,"
+      " and an all-grouped package records nothing.")

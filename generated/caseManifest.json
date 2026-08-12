@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 346,
+  "cases": 347,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -3300,6 +3300,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flowsheets/acetone03_luyben_reaction_section": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "conversionReactor",
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flowsheets/ammonia01_synthesis_loop": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5265,6 +5280,7 @@
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/ammonia02_full_plant",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
@@ -5486,6 +5502,7 @@
     "tutorials/steady/power/rankine02_water"
    ],
    "conversionReactor": [
+    "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
@@ -5719,6 +5736,7 @@
     "tutorials/steady/flash/marcilla02_lls_ternary_invariant",
     "tutorials/steady/flash/vlle01_waterButanol",
     "tutorials/steady/flash/vlle03_audit_artificial",
+    "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/cavett01_recycle_train",
     "tutorials/steady/flowsheets/credo01_valve_heater_drum",
@@ -5895,7 +5913,8 @@
     "tutorials/steady/distillation/column05_reactive_methylacetate",
     "tutorials/steady/flash/flash17_two_liquids_reactive",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
-    "tutorials/steady/flash/marcilla01_lls_tie_triangle"
+    "tutorials/steady/flash/marcilla01_lls_tie_triangle",
+    "tutorials/steady/flowsheets/acetone03_luyben_reaction_section"
    ],
    "UNIQUAC": [
     "tutorials/batch/reactor/batch07_lhhw_methylAcetate",

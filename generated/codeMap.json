@@ -4603,6 +4603,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/thermo/ApproximationAuthorisation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/RecordResolver.H",
@@ -9386,6 +9387,7 @@
    "src/thermo/ApproximationAuthorisation.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
+   "src/thermo/activityCoefficient/UNIFAC.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp"
   ],

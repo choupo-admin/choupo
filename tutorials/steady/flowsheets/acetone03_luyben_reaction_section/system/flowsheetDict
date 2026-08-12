@@ -1,0 +1,79 @@
+/*---------------------------------------------------------------------------*\
+  acetone03_luyben_reaction_section
+  =================================
+
+  Three units of Luyben's Figure 1 wired together -- reactor, cooler, flash --
+  and the first piece of the plant whose answer DOES depend on the mixture
+  thermodynamics.  acetone02 isolated the reaction; this adds the phase split
+  that sends hydrogen and acetone one way and the aqueous liquid the other.
+
+  W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI
+  10.1021/ie901923a.  Feed Rin as derived in acetone02 (57.82 kmol/h, IPA
+  0.668 / water 0.332, 389 K, 2.6 atm).
+
+  WHAT IS INDEPENDENT HERE, and it is the point.  acetone02's outlet
+  composition agreed with the paper because the feed had been DERIVED from that
+  same outlet -- a closed loop, and its golden says so.  The flash split is
+  not: nothing in 0/Rin was built from it.  Luyben's Figure 1 gives
+
+      flash vapour   39.76 kmol/h   H2 0.8742  A 0.0634  IPA 0.0002  W 0.0622
+      flash liquid   52.84 kmol/h   (92.6 - 39.76; his F1 of 72.85 kmol/h is
+                                     this stream AFTER the absorber bottoms
+                                     of 20.05 kmol/h rejoin it)
+
+  and those are a real test of the thermodynamics this case declares.
+
+  THE THERMODYNAMICS IS DECLARED AND WEAK, said before the numbers rather than
+  after.  Luyben runs UNIQUAC; Choupo ships no UNIQUAC pair for any of these
+  binaries, so this case runs PREDICTIVE UNIFAC on a lake-estimated
+  isopropanol.  The sibling props case measures what that costs on the same
+  binary: the IPA boiling point is 4.5 K high and the IPA/water azeotrope
+  lands at x 0.590 against a published 0.673.  A separation built on that will
+  not reproduce a separation built on fitted pairs, and the interesting
+  question is HOW MUCH, not WHETHER.
+
+  Plus the one declared approximation, in constant/thermoPhysPropDict: H2 runs
+  outside the activity model at gamma = 1, authorised by name, recorded in the
+  answer.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        conversionReactor;
+        in          Rin;
+        outputs     ( Rout );
+        operation   { conversion 0.90;  T 623 K; }
+        reaction    dehydrogenation;
+    }
+    {
+        //  The phase split that feeds the absorber (vapour) and the first
+        //  column (liquid).
+        //
+        //  ITS PRESSURE IS NOT IN THE PAPER, and the choice is argued rather
+        //  than fitted.  Luyben states 1.5 atm for the ABSORBER gas, which is
+        //  downstream; there is no compressor between the reactor and the
+        //  separator, and pressure only falls, so the separator sits at the
+        //  reactor's 2.6 atm.  That is a physical argument.  The alternative
+        //  -- picking the pressure that best reproduces his split -- would be
+        //  fitting a design variable to the answer, and the sweep that would
+        //  have tempted it is recorded in this case's CLAUDE.md instead: the
+        //  agreement improves monotonically with pressure right past 2.6 atm,
+        //  so a fitted value would have been higher and would have looked
+        //  better for no reason anyone could defend.
+        //
+        //  IT DOES THE COOLING TOO.  An isothermal flash at 318 K computes the
+        //  duty needed to bring its feed there, so this one unit stands for
+        //  Luyben's HX1 plus his separator, and its Q is directly comparable
+        //  to his 0.8993 MW of cooling water.  A separate `heater` was tried
+        //  first and refused, correctly: Choupo's heater takes a DUTY and
+        //  reports the temperature, because a heater with a specified outlet
+        //  temperature is a design specification, not a heater.
+        name        separator;
+        type        isothermalFlash;
+        in          Rout;
+        outputs     ( flashLiquid  flashGas );
+        operation   { T 318 K;  P 2.6 atm; }
+    }
+);
