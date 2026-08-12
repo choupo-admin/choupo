@@ -71,6 +71,10 @@
       "exit": 0,
       "claim": "check_claim_separation: OK -- on curate02_vle_heldout_ethanol_water the fit chi-square is reported IN-SAMPLE, the held-out metric is a DIFFERENT number over named datasets, the acceptance band reaches the reader with its origin, and the verdict is one of the engine's 5; an unreachable band reports notValidated (a completed test that missed its criterion) and NOT a refusal; the legacy inline path claims neither a criterion nor a verdict; and the dossier carries the same separation plus each dataset's provenance.  NOT COVERED: whether any number is physically right, and any fitting operation other than this one witness."
     },
+    "check_closure_ledger_pinned": {
+      "exit": 0,
+      "claim": "check_closure_ledger_pinned: OK -- 12 model-boundary ledger quantit(ies) pinned across 4 candidate case(s), in both directions (published implies pinned, pinned implies published); 1 candidate(s) declare an override and publish no credited step, which is a legitimate outcome (a crossing refused across a speciation flip is reported in `modelBoundaries` instead) and passes silently.  NOT CHECKED: whether any step is RIGHT, the status/rule WORDS (a golden row compares numbers; a status downgrade is caught indirectly, through step_kW and remaining_kW), and a boundary arising without a per-unit `thermo {}` block -- none exists and the ledger says none can, but this discovery would not see one."
+    },
     "check_column_datum_downgrade": {
       "exit": 0,
       "claim": "check_column_datum_downgrade: OK -- both column solver paths announce the formation-datum downgrade with its consequence named (simultaneous via column05_reactive_methylacetate/aceticAcid; WangHenke via column01_benzene_toluene/benzene), and an intact case stays silent"
@@ -105,11 +109,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 131 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 133 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
-      "exit": 0,
-      "claim": "check_decision_index: OK -- all 64 design record(s) appear in the index, and its stated counts (30 state a rejected alternative, 34 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
+      "exit": 1,
+      "claim": "check_decision_index: FAILED"
     },
     "check_default_reports": {
       "exit": 0,
@@ -213,7 +217,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 132 gates, and the other 128 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 134 gates, and the other 130 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -225,7 +229,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40521 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40710 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -510,6 +514,10 @@
     "check_unread_keys": {
       "exit": 0,
       "claim": "ok   a misspelt key is reported BY NAME, with the key the model looked for offered as the correction"
+    },
+    "check_utility_allocation_pinned": {
+      "exit": 0,
+      "claim": "check_utility_allocation_pinned: OK -- 415 utility-allocation quantit(ies) pinned across 77 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
     },
     "check_v2_refusals": {
       "exit": 0,
