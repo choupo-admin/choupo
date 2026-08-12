@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  acetone04_acetone_water_vle
+  ===========================
+
+  MEASURE THE THERMODYNAMICS BEFORE BUILDING THE UNIT THAT RESTS ON IT.
+
+  Luyben's absorber recovers acetone from the reactor's hydrogen-rich offgas
+  by washing it with water, and it is the next unit of the flowsheet to build
+  (docs/design/acetone-ipa-reference-case.md).  What that unit costs, and
+  whether it can work at all, is set by ONE thing: how volatile acetone is out
+  of a dilute aqueous solution.  So that is measured here first -- the same
+  order that made acetone01 useful before acetone03 was written.
+
+  WHAT MAKES THIS A CLEANER TEST THAN acetone01.  Both components are CURATED:
+  acetone and water are in data/standards/, neither comes from the estimate
+  lake.  acetone01 had to measure a mixture model and a lake-estimated
+  component at once and separate them afterwards; here there is nothing to
+  separate.  Whatever deviation appears is UNIFAC, plus whatever the pure
+  vapour pressures carry -- and the two pure boiling points below say how much
+  that second part is.
+
+  WHAT LUYBEN GIVES, and it is less than for the IPA binary: acetone's normal
+  boiling point 329.4 K, and the qualitative statement that acetone/water has
+  NO azeotrope but a pinch at the high-acetone end.  A qualitative claim is
+  still falsifiable -- a model that invents an azeotrope here would be wrong
+  in a way no AAD would show.
+
+  NOTE THE WATER LEG IS KNOWN TO BE 0.70 K LOW before it is measured again
+  here: Choupo's curated water record puts the normal boiling point at
+  372.4536 K against the definition's 373.15 K, because its Antoine set is
+  being used at the very top of its own declared window (see
+  acetone01_ipa_water_azeotrope/CLAUDE.md).  It is repeated in this case
+  rather than assumed, because a number quoted from another case is a number
+  with two homes.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        //  Pure acetone.  Luyben: 329.4 K.  Curated component, curated
+        //  correlation, gamma = 1 by construction -- this is the pure leg.
+        name        bp_acetone;
+        type        propertyPoint;
+        state       { T 330 K;  P 1 atm;  composition { acetone 1.0;  water 0.0; } }
+        properties  ( T_bubble );
+    }
+    {
+        name        bp_water;
+        type        propertyPoint;
+        state       { T 370 K;  P 1 atm;  composition { acetone 0.0;  water 1.0; } }
+        properties  ( T_bubble );
+    }
+    {
+        //  THE NUMBER THE ABSORBER TURNS ON.  At 1 mol % acetone in water --
+        //  the dilute end an absorber's bottom stage actually sees -- gamma
+        //  and the resulting K say how hard acetone is to hold in the water.
+        //  A large gamma here means acetone would rather be in the gas, and
+        //  the absorber needs more water or more stages.
+        name        dilute_acetone;
+        type        propertyPoint;
+        state       { T 318 K;  P 1 atm;  composition { acetone 0.01;  water 0.99; } }
+        properties  ( gamma_acetone  Psat_acetone  T_bubble );
+    }
+
+    //  The whole lens, so the ABSENCE of an azeotrope is seen and not merely
+    //  asserted, and the high-acetone pinch is visible.
+    {
+        //  A FINE grid over the top 8 mol %, because the interesting feature
+        //  there is decided in the fourth decimal place and a 0.02 step in x
+        //  cannot resolve it.  See this case's CLAUDE.md.
+        name        txy_top_fine;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.92;  to 1.0;  n 41; }
+        state       { T 330 K;  P 1 atm;  composition { acetone 0.96;  water 0.04; } }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_top_fine.csv; }
+    }
+    {
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[acetone];  from 0.0;  to 1.0;  n 51; }
+        state       { T 340 K;  P 1 atm;  composition { acetone 0.5;  water 0.5; } }
+        properties  ( T_bubble  y_eq_acetone );
+        output      { file txy_unifac.csv; }
+    }
+);

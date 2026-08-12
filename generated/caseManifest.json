@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 347,
+  "cases": 348,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -1060,6 +1060,21 @@
    "hasGolden": false
   },
   "tutorials/props/compare/acetone01_ipa_water_azeotrope": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/compare/acetone04_acetone_water_vle": {
    "application": "choupoProps",
    "ops": [
     "propertyPoint",
@@ -5108,6 +5123,7 @@
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
+    "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/compare_activity_etoh_water",
     "tutorials/props/compare/compare_eos_co2",
     "tutorials/props/compare/compare_kinetics_order",
@@ -5909,6 +5925,7 @@
    ],
    "UNIFAC": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
+    "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/distillation/column05_reactive_methylacetate",
@@ -6301,6 +6318,7 @@
    ],
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
+    "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
@@ -6308,6 +6326,7 @@
    ],
    "propertyScan1D": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
+    "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/compare_activity_etoh_water",
     "tutorials/props/compare/compare_eos_co2",
     "tutorials/props/compare/compare_psat_ambrose_walton",

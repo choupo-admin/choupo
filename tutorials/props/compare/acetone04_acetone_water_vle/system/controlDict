@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Acetone/water T-x-y at 1 atm on PREDICTIVE UNIFAC -- both components curated, so this isolates the mixture model";
+verbosity     2;

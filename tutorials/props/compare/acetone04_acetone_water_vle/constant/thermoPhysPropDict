@@ -1,0 +1,11 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( acetone  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model UNIFAC; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
