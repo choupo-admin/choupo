@@ -77,13 +77,15 @@
 #       stream   vapor     F           0.0084439881    1e-4
 #       diag     gamma_nacl gamma_pm_1m 0.6572         1e-4
 #       aad      etoh_water_1atm txy_wilson.T_bubble.aadAbs 0.275964  1e-4
+#       closure  transporter step_kW    -2.98508731741 1e-4
 #
 #  `kind` names WHERE the number is read from: `kpi` (inside the "kpis" of the
 #  named unit), `stream` (inside the named stream), `diag` (inside an
-#  `operationResults[].diagnostics` object, `name` = the op) or `aad` (inside
+#  `operationResults[].diagnostics` object, `name` = the op), `aad` (inside
 #  the top-level `"validation"` overlay table, `name` = the dataset and `key`
-#  = `<model>.<property>.<statistic>`).  `reltol` is |actual-exp|/|exp| (falls
-#  back to absolute when exp is ~0).
+#  = `<model>.<property>.<statistic>`) or `closure` (inside the top-level
+#  `"energyClosures"` model-boundary ledger, `name` = the unit).  `reltol` is
+#  |actual-exp|/|exp| (falls back to absolute when exp is ~0).
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
 #  same day -- see below).  A row is SELF-RECORDED by default: it pins that
@@ -241,14 +243,62 @@ get_aad() {
         }'
 }
 
+# --- pull one field out of the top-level `"energyClosures": [...]` ledger
+#     (choupoSolve; the model-boundary energy ledger, 2026-08-09).
+#
+#     WHY IT NEEDS ITS OWN EXTRACTOR.  The ledger's whole contract is that
+#     THREE quantities travel apart and are never collapsed -- the raw
+#     imbalance, the DECLARED model-boundary step, and what REMAINS after the
+#     step is credited -- and the verdict is taken on the third.  All three are
+#     emitted as objects in a top-level array keyed by `"unit"`, which is
+#     neither the `"<name>": {}` form get_value reads nor an
+#     operationResults diagnostics object.  So no golden row could reach them:
+#     found 2026-08-12, one field over from the same defect in `validation`.
+#
+#     What that cost: the step is credited ONLY when an INDEPENDENTLY
+#     assembled package reproduces the imbalance, and if that independent
+#     arithmetic drifted, `remaining_kW` would grow from 9e-9 to something
+#     real and `status` would fall back -- with the suite green throughout.
+#
+#     `name` is the unit, `key` is any numeric field (raw_kW, step_kW,
+#     remaining_kW, magnitude, normResidual).  `status`, `rule` and the two
+#     world strings are WORDS and are deliberately NOT reachable here -- a
+#     golden row compares numbers.  A status downgrade is caught INDIRECTLY
+#     and reliably: it zeroes step_kW and pushes remaining_kW back up to raw,
+#     both of which are numbers these rows pin.  Said plainly rather than
+#     claimed as coverage it does not have.
+get_closure() {
+    local out="$1" unit="$2" key="$3"
+    printf '%s\n' "$out" | awk -v u="$unit" -v k="$key" '
+        /"energyClosures":/ {
+            n = split($0, rec, /\}, *\{/)
+            for (i = 1; i <= n; i++) {
+                if (index(rec[i], "\"unit\": \"" u "\"") == 0) continue
+                #  NOTE the `||` must END the line: awk continues a statement
+                #  after the operator, never before it.  Written the other way
+                #  round this whole program is a syntax error, and the row
+                #  reports MISSING -- which is how it was found, and is the
+                #  right failure (a broken extractor must never read as an
+                #  agreeing value).
+                if (match(rec[i], "\"" k "\": *-?[0-9][0-9.eE+-]*") ||
+                    match(rec[i], "\"" k "\": *-?(nan|inf)")) {
+                    v = substr(rec[i], RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                    print v; exit
+                }
+            }
+        }'
+}
+
 # --- dispatch by `kind`: diag -> operation diagnostics, aad -> the validation
-#     overlay table, else kpi/stream object
+#     overlay table, closure -> the model-boundary energy ledger, else
+#     kpi/stream object
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
     #  not reach here: it never changes where the number is read from.
-    if   [ "$kind" = diag ]; then get_diag "$out" "$name" "$key"
-    elif [ "$kind" = aad  ]; then get_aad  "$out" "$name" "$key"
+    if   [ "$kind" = diag    ]; then get_diag    "$out" "$name" "$key"
+    elif [ "$kind" = aad     ]; then get_aad     "$out" "$name" "$key"
+    elif [ "$kind" = closure ]; then get_closure "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -386,13 +436,14 @@ fi
 #  `iterations`) plus each stream's F, at a default relative tolerance.
 auto_generate() {
     local case_dir="$1" out="$2" reltol="${3:-1e-4}"
-    local block kpis_sec streams_sec opres_sec valid_sec
+    local block kpis_sec streams_sec opres_sec valid_sec closure_sec
     block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
     [ -z "$block" ] && return 1
     streams_sec=$(printf '%s\n' "$block" | sed -n '/"streams": {/,/^  },\?$/p')
     kpis_sec=$(printf '%s\n'    "$block" | sed -n '/"kpis": {/,/^  },\?$/p')
     opres_sec=$(printf '%s\n'   "$block" | sed -n '/"operationResults": \[/,/^  \],\?$/p')
     valid_sec=$(printf '%s\n'   "$block" | sed -n '/"validation": \[/,/^  \],\?$/p')
+    closure_sec=$(printf '%s\n' "$block" | grep '"energyClosures":')
     [ -z "$kpis_sec$streams_sec$opres_sec$valid_sec" ] && return 1
     {
         echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
@@ -463,6 +514,56 @@ auto_generate() {
                     if (match($0, "\"" st[i] "\": *-?[0-9][0-9.eE+-]*")) {
                         v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
                         printf "aad     %-22s %-16s %-18s %s\n", ds, m "." p "." st[i], v, tol
+                    }
+                }
+            }'
+        #  model-boundary energy ledger: the three quantities that must never
+        #  be collapsed, for the units that actually declare a boundary.
+        #
+        #  ONLY the units whose status is NOT `none`.  A unit with no declared
+        #  boundary reports three zeros, and pinning a zero per unit on every
+        #  steady case in the corpus would rewrite every golden to say the same
+        #  nothing.  What is pinned is what the ledger CLAIMED: a step it
+        #  credited, and the residue it credited it against.
+        #
+        #  THE BAND COMES FROM AN ABSOLUTE FLOOR, not from the relative size
+        #  of the quantities, and the project has already paid for the reason.
+        #  A value below a MICROWATT is numerically zero for a process energy
+        #  balance: it is cancellation round-off, and a 1e-4 RELATIVE band on
+        #  it pins round-off -- it fails on a compiler flag while catching no
+        #  physics.  That is the column13 lesson verbatim (a golden pinning a
+        #  one-nanowatt re-flash duty at 1e-4 relative was pinning
+        #  cancellation), applied here before it can be re-learnt.
+        #
+        #  Such a row is emitted at `1e0`, which asserts the ORDER OF
+        #  MAGNITUDE and nothing finer, and that is still a real check: if the
+        #  independent audit stopped reproducing the step, basis01's remaining
+        #  would climb from 9.4e-9 to the full 2.99 kW -- eight orders of
+        #  magnitude through a factor-of-two band.
+        #
+        #  Above the floor the default band applies, so perUnitThermo01's
+        #  turbine (status `unconfirmed`: an independently computed 7.5 kW
+        #  against a 536 kW imbalance, step NOT credited) pins all three of
+        #  its real numbers tight.  An EXACT zero also keeps the default: with
+        #  expected 0 the comparison is already absolute, and 1e-4 kW is a
+        #  tenth of a watt -- tighter than the floor and correct there.
+        printf '%s\n' "$closure_sec" | awk -v tol="$reltol" '
+            function abs(x) { return x < 0 ? -x : x }
+            {
+                n = split($0, rec, /\}, *\{/)
+                for (i = 1; i <= n; i++) {
+                    if (!match(rec[i], /"status": "[^"]*"/)) continue
+                    st = substr(rec[i], RSTART+11, RLENGTH-12)
+                    if (st == "none") continue
+                    if (!match(rec[i], /"unit": "[^"]*"/)) continue
+                    u = substr(rec[i], RSTART+9, RLENGTH-10)
+                    split("raw_kW step_kW remaining_kW", f, " ")
+                    for (j = 1; j <= 3; j++) {
+                        if (!match(rec[i], "\"" f[j] "\": *-?[0-9][0-9.eE+-]*")) continue
+                        v = substr(rec[i], RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
+                        roundoff = (v + 0 != 0 && abs(v + 0) < 1e-6)
+                        printf "closure %-22s %-16s %-18s %s\n", u, f[j], v,
+                               (roundoff ? "1e0" : tol)
                     }
                 }
             }'
@@ -2673,6 +2774,23 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/aadpin.$$
+
+    # Model-boundary ledger gate (2026-08-12), the same defect as the overlay
+    # AADs one field over: the ledger's three quantities (raw imbalance /
+    # declared step / what remains) live in a top-level `energyClosures` array
+    # no golden row could read, so not one number of it was checked.  The step
+    # is credited only when an INDEPENDENTLY assembled package reproduces the
+    # imbalance; if that path drifted, remaining_kW would climb from 9e-9 to
+    # the full 2.99 kW with the suite green.
+    if "$ROOT/bin/curate/check_closure_ledger_pinned.py" > /tmp/clopin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "closure-ledger-gate" "$(grep -m1 ': OK' /tmp/clopin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_closure_ledger_pinned.py)\n" "closure-ledger-gate"
+        cat /tmp/clopin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/clopin.$$
 
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op
