@@ -185,7 +185,7 @@ Every unit Luyben's flowsheet uses exists in Choupo (`absorber`, `pfr`,
 | gap | status | note |
 |---|---|---|
 | `isopropanol` component | **ABSENT from `data/standards/`** | a Joback-estimated record exists in `data/groupEstimative/`; the agent test showed the legal promotion route works |
-| `liquidHeatCapacity` for isopropanol | **ABSENT and UNCLOSEABLE** | no estimator produces it for a real molecule; this is what blocked the rigorous column in the agent test |
+| `liquidHeatCapacity` for isopropanol | **ABSENT; closeable, not closed** | what blocked the rigorous column in the agent test.  This row used to read *"ABSENT and UNCLOSEABLE -- no estimator produces it for a real molecule"*.  **That was wrong**, and the error is worth keeping visible: it was reached by listing the estimators that EXIST rather than asking what is legitimately DERIVABLE.  Rowlinson-Bondi gives `(Cp_L - Cp_ig)/R` from `Tr`, `omega` and the ideal-gas Cp, all three of which `data/groupEstimative/` already carries for isopropanol.  No such model is registered today (`polynomial` and `NASA7` only), so the gap is real -- but it is a MISSING ESTIMATOR, not a missing possibility.  Corrected 2026-08-12 |
 | UNIQUAC pair IPA–water | **ABSENT** | Luyben's model |
 | UNIQUAC pair acetone–water | **ABSENT** | |
 | UNIQUAC pair acetone–IPA | **ABSENT** | |
