@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 63 records already exist
+## 1. Why an index, when 64 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 63 design records, **29 state a rejected alternative and 34 do not** —
+- Of 64 design records, **30 state a rejected alternative and 34 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -88,6 +88,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`provenance-semantics-five-axes.md`](../design/provenance-semantics-five-axes.md) | ADR | yes | **RATIFIED 2026-08-12, contract only** — `origin` / `method`(+`methodVersion`) / `from` / `provenance` / `reviewStatus`+`validation`, one responsibility each.  Retires `derived` AS AN ORIGIN (it only ever said a value has parents — that is `from`) and the scalar `provenance <word>;` shorthand (6 of its 22 uses answered the question the axis is named for; the BLOCK form already did this right).  The calculated/predicted line is *would perfect inputs give an exact result?*, with `K_f` kept as the permanent exhibit: exact arithmetic, inexact physical model.  Rejects storing a confidence tag (compute it from the graph) and rejects re-encoding input status into `origin`.  No implementation authorised |
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
 | [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **RATIFIED 2026-08-08** (queue ruling D2) — direction + recommended shape approved; build sequenced after the validation work |
 | [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-05** — debt D7; records to `core`, audit to the engine; checked against DWSIM, which supplies the pattern (`DWSIM.Interfaces`, zero deps) and the counter-example (its solver's compile path to WinForms) |
@@ -217,7 +218,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**34 of 63 records state no rejected alternative.**  For a FORUM or a STUDY
+**34 of 64 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
