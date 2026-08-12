@@ -22,7 +22,7 @@
   },
   "tutorials": {
     "runnableCases": 344,
-    "regressionChecks": 310,
+    "regressionChecks": 311,
     "byTier": {
       "witness": 333,
       "tutorial": 3,

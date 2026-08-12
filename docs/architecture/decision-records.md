@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 64 records already exist
+## 1. Why an index, when 65 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 64 design records, **30 state a rejected alternative and 34 do not** —
+- Of 65 design records, **31 state a rejected alternative and 34 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -95,6 +95,7 @@ direction is an error.
 | [`problem-divergence-contract.md`](../design/problem-divergence-contract.md) | ADR | yes | **RULED + IMPLEMENTED 2026-08-11** — an approximation nobody authorised is REFUSED; one the case authorised runs and RIDES the result on three surfaces, above the KPIs and apart from the advisories.  Rejects filing the authorisation inside `activityModel {}` (a scientific concession is not an object's parameter) and rejects a new AdvisoryLog severity (a divergence is not a qualification).  Records the sabotage that caught nothing and what was changed because of it |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
 | [`reference-rung-refusal.md`](../design/reference-rung-refusal.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-06** — `h_pure_ig`/`s_pure_ig`/`g_pure_ig` refuse a non-gas `referenceState`; revised its own plan on the first measurement (the field was already parsed), and names the water-liquid-datum gap as NOT closed |
+| [`origin-vocabulary-conflict.md`](../design/origin-vocabulary-conflict.md) | ADR | yes | **FINDING RECORDED 2026-08-12, nothing executed** — `src/core/Origin.H` silently folds five of the eleven catalogue records declaring an `origin` word onto `unattributed` ("no provenance declared"), including fluorine's IUPAC-`definition` ΔHf° = 0, and folds `measured` into `literature` against the five-axis record ratified above.  The fold is the deliberate typo guard, which is the defect: an unknown word and a curator's word are indistinguishable.  Proposes a DELEGATE-WITH-DEFAULT — add `definition` (a category the enum lacks), `standard`→`literature`, `asserted`→`placeholder`, keep the `measured` fold as a STATED approximation, and refuse an unknown word by name.  Rejects a silent mechanical remap (it would lose the one fact `definition` carries) |
 | [`vapour-or-gas-is-a-state.md`](../design/vapour-or-gas-is-a-state.md) | ADR | yes | **FINDING RECORDED 2026-08-06, implementation NOT started** — `noncondensable true;` stores a STATE relation (T vs Tc) as a substance flag; CO2's Tc is 31.0 °C and nine corpus cases run it at 298.15 K, six kelvin BELOW, while the engine announces "above Tc".  Ruled: announce the contradiction, as `role` vs `volatility{}` already does — never delete the flag, never silently re-route |
 | [`theory-in-class-structure-study.md`](../design/theory-in-class-structure-study.md) | STUDY | no | **LEARNING STUDY, no decision** — how OpenFOAM, Cantera and DWSIM embed thermodynamic theory and size distributions in class structure; commissioned before any change to Choupo's thermo spine |
 
@@ -218,7 +219,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**34 of 64 records state no rejected alternative.**  For a FORUM or a STUDY
+**34 of 65 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
