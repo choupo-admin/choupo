@@ -108,29 +108,56 @@ with neither heat capacity still refuses naming both blocks. Gate:
 H2 6.8e-4 is a Jacobian problem, not an enthalpy one, and removing the bulk of
 the hydrogen before the column is the physical thing to do anyway.
 
-### F4 -- THE TWO CEILINGS INTERACT THROUGH THE RECYCLE (the live blocker)
+### F4 -- THE TWO CEILINGS INTERACT THROUGH THE RECYCLE
 
 With the enthalpy legs consistent, the open-loop chain runs end to end: all
 eight units solve, C1 converges in 7 Newton iterations to |F| 2.1e-10 and
-prices its condenser. **The closed loop does not.**
+prices its condenser. The closed loop did not.
 
-Wegstein moves the tear twice -- |r| 3.86 -> 1.20, so it is converging -- and
-then C1 fails on the third pass. Newton fails on the first, before printing an
-iteration, because its Jacobian perturbation pushes the tear somewhere C1
-cannot solve.
+Wegstein moved the tear twice -- |r| 3.86 -> 1.20, so it was converging -- and
+then C1 failed on the third pass. Newton failed on the first, before printing
+an iteration, because its Jacobian perturbation pushed the tear somewhere C1
+could not solve.
 
 The mechanism is physical and is the plant's own finding. C2's overhead is
 capped by the IPA/water azeotrope, so the recycle returns **wetter** than
-Luyben's; a wetter recycle carries less isopropanol back; less isopropanol
-makes less acetone; and C1's distillate rate -- a FIXED number, because the
-rigorous column takes a rate and not a recovery -- becomes infeasible again as
-the loop tightens. **The two column ceilings are coupled through the recycle**,
-which is exactly the kind of thing a closed flowsheet shows and six isolated
+Luyben's; a wetter recycle carries less isopropanol; less isopropanol makes
+less acetone; and C1's distillate rate -- a FIXED number -- becomes infeasible
+again as the loop tightens. **The two column ceilings are coupled through the
+recycle**, which is exactly what a closed flowsheet shows and six isolated
 units cannot.
 
-What that needs is a distillate specification that tracks its feed rather than
-a fixed rate, or an author-side outer design iteration on the rate, converged
-and shown. Neither is chosen yet.
+### F5 -- `distillateRecovery`: the specification the loop needed, and what it costs
+
+A rate is the wrong specification for a column inside a recycle, because the
+quantity the design actually fixes is a RECOVERY. `distillateRecovery {
+component <name>; fraction <f>; }` now says "send this fraction of the named
+component's feed overhead", implemented as an ANNOUNCED outer secant on the
+rate around the existing solve -- so it wraps either method, and the MESH
+residual every existing column golden is recorded against is untouched. Five
+column cases verified unmoved, including the two acetone columns and the
+reactive `column13`.
+
+Three things it had to learn, each from a failed run rather than from thought:
+
+1. **The feasible region has a real boundary.** Asked for a rate that needs
+   more light material than the feed carries, the MESH does not converge --
+   that is physics, not a wobble. The first version treated an inner failure
+   as fatal and killed the plant on its second guess; the search now RETREATS,
+   halving back towards the last feasible rate and announcing when it does.
+2. **The search must start from below.** The pure-distillate rate (recovery x
+   feed of the component) is a lower bound any real column exceeds, so the
+   secant steps up from it and never down into a region where the recovery is
+   unreachable at all.
+3. **Cold, it is unaffordable inside a recycle.** Each outer evaluation is a
+   full 66-stage MESH; multiplied by a recycle Jacobian and the recycle's own
+   iterations, the plant was still grinding after eleven minutes at 200 % CPU,
+   re-solving each pass a problem whose answer had barely moved. The accepted
+   rate is now remembered between passes and announced as a warm start.
+
+**STATE: the code is in and verified against the existing corpus; the closed
+plant has NOT yet been run to convergence with it.** That is the next step and
+it is the only thing between here and the stream table.
 
 ## What is NOT claimed here
 

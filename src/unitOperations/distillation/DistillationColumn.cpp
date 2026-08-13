@@ -95,6 +95,12 @@ int DistillationColumn::solve(const DictPtr& dict,
     // to the legacy `method` key inside operation for old cases.
     const std::string method = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
+
+    //  A recovery specification wraps whichever method is selected: it drives
+    //  the RATE those methods already take.  See DistillationColumn.H.
+    if (operDict->found("distillateRecovery"))
+        return solveForRecovery(dict, thermo, verbosity);
+
     if (method == "simultaneous" || method == "MESH"
         || method == "NaphtaliSandholm" || method == "fullMESH")
         return solveSimultaneous(dict, thermo, verbosity);
@@ -557,6 +563,200 @@ int DistillationColumn::solve(const DictPtr& dict,
 //   set --- the part that converges azeotropes; the Naphtali-Sandholm
 //   block-tridiagonal Jacobian is an efficiency refinement left for later.
 // ===========================================================================
+// ---------------------------------------------------------------------------
+//  DISTILLATE BY RECOVERY -- an announced outer secant on the rate.
+// ---------------------------------------------------------------------------
+int DistillationColumn::solveForRecovery(const DictPtr& dict,
+                                         const ThermoPackage& thermo,
+                                         int verbosity)
+{
+    auto operDict = dict->subDict("operation");
+    auto specDict = operDict->subDict("distillateRecovery");
+
+    //  ---- DOF guard.  Exactly one distillate specification ---------------
+    if (operDict->found("distillateRate"))
+        throw std::runtime_error("DistillationColumn: `distillateRate` AND "
+            "`distillateRecovery` are BOTH declared, and they specify the same "
+            "degree of freedom -- the column cannot honour two.  Keep the rate "
+            "for a fixed-duty column, or the recovery for one whose feed moves "
+            "(a column inside a recycle); delete the other.");
+
+    const std::string comp = specDict->lookupWord("component");
+    const scalar target    = specDict->lookupScalar("fraction");
+    if (target <= 0.0 || target >= 1.0)
+        throw std::runtime_error("DistillationColumn: distillateRecovery "
+            "`fraction` must be strictly between 0 and 1 (got "
+            + std::to_string(target) + ").  A recovery of 1 asks for a perfect "
+            "separation, which no finite column performs and which no rate can "
+            "deliver.");
+
+    const std::size_t ic = thermo.indexOf(comp);
+
+    //  ---- The component's FEED flow, which is what a recovery is OF ------
+    //  Single feed only, and the refusal says so rather than summing an
+    //  arbitrary subset: with several feeds "the recovery" needs to name
+    //  which of them it is referenced to, and that is a grammar decision
+    //  nobody has taken.
+    if (dict->found("inputStreams") || operDict->found("feeds"))
+        throw std::runtime_error("DistillationColumn: `distillateRecovery` is "
+            "implemented for a SINGLE-feed column only.  With several feeds a "
+            "recovery must state which feed it is referenced to, and that is "
+            "not declarable today -- use `distillateRate` here, or merge the "
+            "feeds upstream with a mixer.");
+
+    auto feedDict = dict->subDict("feed");
+    auto compDict = dict->subDict("composition");
+    const scalar Ff = feedDict->lookupScalar("F", Dims::molarFlow);
+    scalar zsum = 0.0, zc = 0.0;
+    for (const auto& key : compDict->keys())
+    {
+        const scalar v = compDict->lookupScalar(key);
+        zsum += v;
+        if (thermo.indexOf(key) == ic) zc = v;
+    }
+    const scalar feedOfComp = (zsum > 0.0) ? Ff * zc / zsum : 0.0;
+    if (feedOfComp <= 0.0)
+        throw std::runtime_error("DistillationColumn: distillateRecovery names "
+            "'" + comp + "', which this column's feed does not carry -- a "
+            "recovery of a component that is not there is not a specification.");
+
+    //  ---- One evaluation: set the rate, run the column, read the recovery -
+    //  Returns false when the column does not solve AT THAT RATE.  A rate is
+    //  not merely a number here: too much material asked overhead has to be
+    //  made up with the heavy component, and past some point no set of stage
+    //  compositions satisfies the MESH at all.  That is a real boundary of
+    //  the feasible region, not a numerical wobble, so the outer search has
+    //  to RETREAT from it rather than treat it as a fatal error -- which is
+    //  what the first version did, aborting the plant on its second guess.
+    auto tryEvaluate = [&](scalar D, scalar& recovery) -> bool
+    {
+        DictPtr work = dict->deepCopy();
+        auto wOper = work->subDict("operation");
+        //  The inner call must not see the recovery block again; erasing it
+        //  is what makes this a wrapper rather than a recursion.
+        wOper->erase("distillateRecovery");
+        wOper->insert("distillateRate", D, Dims::molarFlow);
+        try
+        {
+            const int rc = solve(work, thermo, verbosity >= 4 ? verbosity : 0);
+            if (rc != 0 || produced_.empty()) return false;
+        }
+        catch (const std::exception&) { return false; }
+        const ProcessStream& d = produced_.front();
+        recovery = d.F * d.z[ic] / feedOfComp;
+        return true;
+    };
+
+    //  Step from a KNOWN-FEASIBLE rate towards a trial one, halving until the
+    //  column solves.  Announced when it bites: a bound that moves the answer
+    //  and says nothing is the silent crutch the doctrine forbids.
+    scalar lastGood = 0.0;
+    auto evaluateNear = [&](scalar trial, scalar& accepted) -> scalar
+    {
+        scalar r = 0.0;
+        scalar D = trial;
+        for (int back = 0; back < 12; ++back)
+        {
+            if (tryEvaluate(D, r)) { accepted = D; lastGood = D; return r; }
+            if (lastGood <= 0.0)
+                throw std::runtime_error("DistillationColumn: the column does "
+                    "not solve at ANY distillate rate tried while searching for "
+                    "a recovery of '" + comp + "' -- the first trial was "
+                    + std::to_string(trial * 3600.0) + " kmol/h.  The recovery "
+                    "specification is not the problem; the column is not "
+                    "solving.");
+            if (verbosity >= 2)
+                std::cout << "      [bound] " << (D * 3600.0)
+                          << " kmol/h is outside the feasible region -- halving"
+                             " back towards " << (lastGood * 3600.0) << " kmol/h\n";
+            D = 0.5 * (D + lastGood);
+        }
+        throw std::runtime_error("DistillationColumn: could not find a feasible "
+            "distillate rate near " + std::to_string(trial * 3600.0)
+            + " kmol/h while searching for a recovery of '" + comp + "'.");
+    };
+
+    //  ---- Announced secant.  The bracket is physical: the rate cannot be
+    //  negative and cannot exceed the feed.  The first guess assumes a pure
+    //  distillate (D = recovered component), the second allows for the
+    //  co-distilled remainder -- so the pair straddles the answer for any
+    //  column that concentrates the named component at all.
+    const scalar tol     = specDict->lookupScalarOrDefault("tolerance", 1.0e-6);
+    const int    maxIter = static_cast<int>(
+                               specDict->lookupScalarOrDefault("maxIter", 40));
+
+    //  D0 is the PURE-DISTILLATE lower bound: if the overhead were the named
+    //  component alone, this rate would deliver the target exactly.  Any real
+    //  column carries something else over too, so the answer lies ABOVE it --
+    //  which is why the search starts here and steps up, never down into a
+    //  region where the recovery cannot be reached at all.
+    const bool warm = (lastAcceptedD_ > 0.0 && lastAcceptedD_ < Ff);
+    if (warm && verbosity >= 2)
+        std::cout << "  [recovery] warm start from the previously accepted "
+                  << (lastAcceptedD_ * 3600.0) << " kmol/h\n";
+    scalar D0 = warm ? lastAcceptedD_ : target * feedOfComp;
+    scalar a0 = D0;
+    scalar f0 = evaluateNear(D0, a0) - target;
+    D0 = a0;
+    scalar D1 = std::min(1.05 * D0, 0.999 * Ff), a1 = D1;
+    scalar f1 = evaluateNear(D1, a1) - target;
+    D1 = a1;
+
+    if (verbosity >= 2)
+        std::cout << "  [recovery] targeting " << target << " of " << comp
+                  << " (" << (feedOfComp * 3600.0) << " kmol/h in the feed)"
+                  << " by secant on the distillate rate:\n"
+                  << "      " << (D0 * 3600.0) << " kmol/h -> " << (f0 + target)
+                  << "\n      " << (D1 * 3600.0) << " kmol/h -> " << (f1 + target)
+                  << "\n";
+
+    int it = 2;
+    scalar D = D1;
+    for (; it < maxIter && std::abs(f1) > tol; ++it)
+    {
+        const scalar den = f1 - f0;
+        if (std::abs(den) < 1.0e-14)
+            throw std::runtime_error("DistillationColumn: the recovery secant "
+                "stalled -- two distillate rates gave the same recovery of '"
+                + comp + "', so the specification does not select a rate here.");
+        D = D1 - f1 * (D1 - D0) / den;
+        D = std::max(1.0e-9 * Ff, std::min(D, 0.999 * Ff));
+        D0 = D1; f0 = f1;
+        scalar acc = D;
+        f1 = evaluateNear(D, acc) - target;
+        D1 = acc;
+        if (verbosity >= 2)
+            std::cout << "      " << (D1 * 3600.0) << " kmol/h -> "
+                      << (f1 + target) << "\n";
+    }
+    if (std::abs(f1) > tol)
+        throw std::runtime_error("DistillationColumn: the distillate recovery "
+            "of '" + comp + "' did not reach its target (" + std::to_string(target)
+            + ") in " + std::to_string(maxIter) + " outer iterations; the last "
+              "recovery was " + std::to_string(f1 + target) + ".  A recovery "
+              "above what the column's stages and reflux can deliver has no "
+              "rate that satisfies it -- check the specification against the "
+              "separation, do not raise maxIter.");
+
+    //  A final evaluation at the accepted rate, at the CALLER's verbosity, so
+    //  the printed profile and the stored produced_/kpis_ are the accepted
+    //  answer and not the last search step.
+    DictPtr fin = dict->deepCopy();
+    auto fOper = fin->subDict("operation");
+    fOper->erase("distillateRecovery");
+    fOper->insert("distillateRate", D1, Dims::molarFlow);
+    const int rc = solve(fin, thermo, verbosity);
+
+    lastAcceptedD_ = D1;
+    kpis_["recovery_" + comp]        = f1 + target;
+    kpis_["recoveryOuterIterations"] = static_cast<scalar>(it);
+    if (verbosity >= 2)
+        std::cout << "  [recovery] accepted D = " << (D1 * 3600.0)
+                  << " kmol/h, recovery of " << comp << " = " << (f1 + target)
+                  << " after " << it << " outer iteration(s)\n";
+    return rc;
+}
+
 int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                                           const ThermoPackage& thermo,
                                           int verbosity)

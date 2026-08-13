@@ -112,6 +112,29 @@ private:
                           const ThermoPackage& thermo,
                           int verbosity);
 
+    //  A DISTILLATE SPECIFIED BY RECOVERY RATHER THAN BY RATE.
+    //
+    //  `distillateRate` is a NUMBER, and a number is the wrong specification
+    //  the moment a column sits inside a recycle: the acetone plant's C1 is
+    //  fed less acetone on every turn of the loop (its C2 overhead is capped
+    //  by an azeotrope and returns a wetter recycle), so a rate that was
+    //  feasible on the first pass is infeasible on the third and the flowsheet
+    //  stops converging on an arithmetic impossibility rather than on physics.
+    //
+    //  `distillateRecovery { component <name>; fraction <f>; }` says instead
+    //  "send this fraction of the named component's FEED overhead", which is
+    //  what the design actually means and what survives a changing feed.
+    //
+    //  It is an OUTER SECANT on the rate around the inner solve -- announced
+    //  iteration by iteration at verbosity >= 2, never silent, because it is
+    //  a solver aid and the numerical-honesty doctrine makes those the
+    //  student's to see.  Deliberately NOT folded into the MESH Jacobian: one
+    //  more equation there would change the residual every existing column
+    //  golden is recorded against, for a specification most cases do not use.
+    int solveForRecovery(const DictPtr& dict,
+                         const ThermoPackage& thermo,
+                         int verbosity);
+
     // Sieve-tray hydraulics: an optional RATING pass over the converged
     // profile.  A column that floods separates nothing, and the MESH
     // equations never notice.  Absent an `operation { hydraulics {} }`
@@ -127,6 +150,18 @@ private:
                         int                         verbosity);
 
     inline static const std::string type_ = "distillationColumn";
+    //  WARM START for the recovery secant, and it is what makes the
+    //  specification affordable inside a recycle.  Cold, the outer search
+    //  costs a handful of full 66-stage MESH solves; multiplied by a recycle
+    //  Jacobian (one perturbation per tear variable) and by the recycle's own
+    //  iterations, the acetone plant was still grinding after eleven minutes
+    //  at 200 % CPU.  Every pass re-solved a problem whose answer had barely
+    //  moved since the last one.
+    //
+    //  Remembering the accepted rate turns each later pass into two or three
+    //  evaluations.  It is a CONVERGENCE AID and therefore never silent: the
+    //  run says it is starting warm and from where.
+    scalar                         lastAcceptedD_ = 0.0;
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
     UnitProfile                    profile_;
