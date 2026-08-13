@@ -1,0 +1,24 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( isopropanol  acetone  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model UNIFAC; }  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
+
+//  NO `approximations {}` BLOCK, and its ABSENCE is the point.
+//
+//  acetone03 needed one: it carries hydrogen, UNIFAC has no group for
+//  hydrogen, and the package rightly refuses a component it cannot price, so
+//  that case authorises gamma = 1 for H2 by name.
+//
+//  This column carries no hydrogen at all (the flowsheetDict header argues
+//  why), so there is nothing to authorise.  Every one of the three components
+//  here is priced by the model that is declared.  An approximation carried
+//  over from a sibling case out of habit would be an authorisation for a
+//  component that is not present -- which reads, to anyone auditing the
+//  answer, as though something had been waved through.

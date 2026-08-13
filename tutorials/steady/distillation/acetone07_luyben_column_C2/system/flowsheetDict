@@ -1,0 +1,71 @@
+/*---------------------------------------------------------------------------*\
+  acetone07_luyben_column_C2
+  ==========================
+
+  THE SECOND COLUMN, AND THE SECOND PREDICTION WRITTEN BEFORE IT.
+
+  W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI
+  10.1021/ie901923a.  Column C2 of his Figure 1: 19 stages, feed on stage 16,
+  reflux ratio 0.849, 1 atm.  It takes C1's bottoms and makes the plant's
+  WATER PRODUCT at the bottom (34.67 kmol/h, 99.9 mol % water) while sending
+  the unconverted isopropanol back overhead as the RECYCLE (5.88 kmol/h at
+  x_IPA 0.6500).
+
+  THE PREDICTION, quoted from acetone01 rather than reinvented, and committed
+  to the repository BEFORE this case was written:
+
+      "C2's overhead should cap at roughly x_IPA 0.59 and cannot reach his
+       0.650.  The gap is 0.06 in mole fraction, about 9 % relative, and it
+       is a HARD ceiling rather than a shortfall in stages or reflux."
+
+  The reason is one measured number: acetone01 puts the UNIFAC IPA/water
+  azeotrope at x_IPA 0.5901 against Luyben's UNIQUAC value of 0.6732.  A
+  column cannot distil past a minimum-boiling azeotrope from below.
+
+  AND THE DIRECTION OF THIS ERROR IS THE OPPOSITE OF C1's, which is the part
+  worth carrying away.  C1's azeotrope is a UNIFAC INVENTION -- Luyben's model
+  has none in acetone/water -- so it costs purity the paper does not lose.
+  Here the azeotrope is REAL in both models and UNIFAC merely puts it in the
+  wrong place.  One failure is a spurious feature; the other is a misplaced
+  real one.  They are not the same defect and should not be reported as one.
+
+  THE FEED IS LUYBEN'S PUBLISHED B1, not acetone06's answer -- the same choice
+  and the same reason as in C1: it isolates the column.  His B1 is 40.56
+  kmol/h at 370 K, A 0.0001 / IPA 0.0951 / W 0.9048.  The CLOSED flowsheet
+  (acetone08) is where the two columns finally see each other's real streams,
+  and the difference between this case and that one is exactly the propagation
+  the plant exists to show.
+
+  THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it
+  did not in C1.  Fixing the rate means the column must send that much
+  material overhead whatever its composition can be -- so if the ceiling binds,
+  it shows up as a WETTER recycle at the same flow, not as a smaller one.
+  That is the honest way to pose it: the plant's IPA inventory has to go
+  somewhere, and the question is what quality it comes back at.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        C2;
+        type        distillationColumn;
+        model       simultaneous;
+        in          B1;
+        outputs     ( ipaRecycle  waterProduct );
+
+        operation
+        {
+            nStages        19;
+            feedStage      16;
+            refluxRatio    0.849;
+            distillateRate 5.88 kmol/h;
+
+            //  B1 leaves C1's reboiler as a saturated liquid and enters here
+            //  as one; q = 1 with the feed's own temperature carrying its
+            //  enthalpy.
+            feedQuality    1.0;
+
+            P              1 atm;
+        }
+    }
+);

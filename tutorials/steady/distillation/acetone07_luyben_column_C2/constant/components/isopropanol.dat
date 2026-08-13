@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropanol  (C3H8O, CAS 67-63-0)
+  GROUP-ESTIMATE TIER -- UNVERIFIED.  Identity + UNIFAC groups are FACTS.
+  Every NUMBER is an ESTIMATE computed from the `joback` groups below
+  (Joback & Reid 1987) + Lee-Kesler omega; AAD Tb~10% Tc~11% Pc~11%.
+  thermo_class=molecular. Tool: chemicals/thermo/rdkit (MIT/BSD).
+\*---------------------------------------------------------------------------*/
+
+name        isopropanol;
+formula     C3H8O;
+CAS         67-63-0;
+InChIKey    KFZMGEQAYNKOFK-UHFFFAOYSA-N;
+MW          60.096;      // g/mol [origin=calculated method=formula-sum]
+Tc          525.94;      // K   [origin=predictive method=joback]
+Pc          50.586;      // bar [origin=predictive method=joback]
+omega       0.5711;      // -   [origin=predictive method=lee-kesler]
+Tb          359.98;      // K   [origin=predictive method=joback]
+HvapTb      38563.0;      // J/mol [origin=predictive method=joback]
+
+vaporPressure
+{
+    model AmbroseWalton;   // [est: corresponding-states from Tc,Pc,omega]
+}
+idealGasHeatCapacity
+{
+    model         polynomial;   // J/(mol K), T in K [est: joback_gc]
+    coefficients  (3.77 0.32874 -0.000173 3.38e-08);
+    Trange        (200 1000);
+}
+liquidHeatCapacity
+{
+    //  THE LAST RUNG OF THE PREDICTIVE LADDER, and the reason this case can
+    //  run at all: a column needs a liquid enthalpy, isopropanol is a lake
+    //  estimate, and no measured liquid Cp exists for it here.
+    //
+    //  Rowlinson-Bondi derives (Cp_L - Cp_ig)/R from Tr and omega -- both of
+    //  which this record already carries, both from the SAME Joback
+    //  fragmentation as everything else above.  Nothing new is claimed.
+    //
+    //  ITS MEASURED ACCURACY SAYS THIS IS THE WEAK LEG, stated before any
+    //  number this case produces: against 86 curated liquid-Cp components the
+    //  correlation runs ~1 % for non-polar molecules and 30-70 % for
+    //  HYDROGEN-BONDING ones (methanol 67 %, ethanol 50 %).  Isopropanol is an
+    //  alcohol, so its liquid Cp here should be assumed poor by tens of
+    //  per cent.  What bounds the damage is that it is 5 mol % of the feed and
+    //  that the separation is set by the VLE, not by the sensible heat: the
+    //  DUTIES carry this error, the split does not.
+    model RowlinsonBondi;   // [est: corresponding-states from Tc,omega,Cp_ig]
+}
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } );   // DDBST groups for MIXTURE activity (UNIFAC gamma)
+    joback ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } );   // the fragmentation (RDKit, from SMILES) that PRODUCED the estimates above
+}
+aliases     ( "propan-2-ol" "2-propanol" "isopropyl alcohol" "sec-propyl alcohol" "2-hydroxypropane" "alkolave" "avantine" "hartosol" "dimethylcarbinol" "takineocol" "alcojel" "avantin" );
+standardThermochemistry
+{
+    dHf_298   -262760.0;      // J/mol ideal-gas [origin=predictive method=joback]
+    s_298     314.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164880.0
+}

@@ -1,0 +1,42 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  B1                     F                0.0112666944444    1e-4
+stream  ipaRecycle             F                0.00163333333333   1e-4
+stream  waterProduct           F                0.00963336111111   1e-4
+kpi     C2                     B                0.00963336111111   1e-4
+kpi     C2                     D                0.00163333333333   1e-4
+kpi     C2                     Q_condenser_kW   -120.936005804     1e-4
+kpi     C2                     Q_reboiler_kW    114.900183788      1e-4
+kpi     C2                     R                0.849              1e-4
+kpi     C2                     T_bottom         366.174785539      1e-4
+kpi     C2                     T_top            355.876498071      1e-4
+kpi     C2                     feedStage        16                 1e-4
+kpi     C2                     nFeeds           1                  1e-4
+kpi     C2                     nSideDraws       0                  1e-4
+kpi     C2                     nStages          19                 1e-4
+kpi     C2                     x_B_HK           0.987071195419     1e-4
+kpi     C2                     x_D_LK           0.579745774059     1e-4
+utility C2                     heating.steamLP.duty_kW 114.900183788      1e-4
+utility C2                     heating.steamLP.T 366.174785539      1e-4
+utility C2                     heating.steamLP.kg_s 0.052561840708     1e-4
+utility C2                     heating.steamLP.eur_h 4.96368793963      1e-4
+utility C2                     cooling.coolingWater.duty_kW -120.936005804     1e-4
+utility C2                     cooling.coolingWater.T 355.876498071      1e-4
+utility C2                     cooling.coolingWater.kg_s 2.89320588047      1e-4
+utility C2                     cooling.coolingWater.eur_h 0.174147848357     1e-4
+#
+# --- THE NUMBERS THIS CASE EXISTS FOR, added by hand -----------------------
+#
+# `--record` writes stream totals and the column's x_D_LK / x_B_HK.  Here the
+# light key IS isopropanol, so x_D_LK is for once the number under test -- but
+# the isopropanol LEAKING INTO THE WATER PRODUCT is not, and that is the plant
+# cost this case found.  Both ends of the split are pinned explicitly rather
+# than left to the KPI naming happening to line up.
+#
+# The claim is REGRESSION.  0.5797 DISAGREES with Luyben's 0.6500 and is meant
+# to: it sits against the azeotrope acetone01 measured.
+stream  ipaRecycle             isopropanol      0.579745774059     1e-4
+stream  ipaRecycle             water            0.419568067302     1e-4
+stream  waterProduct           isopropanol      0.0129281878815    1e-4
+stream  waterProduct           water            0.987071195419     1e-4

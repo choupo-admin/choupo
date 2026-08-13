@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Initial guess for the recycle overhead.  Luyben: 5.88 kmol/h at
+     A 0.0007 / IPA 0.6500 / W 0.3493.  Whether the column can reach that
+     IPA fraction is the question this case asks. ---*/
+
+componentMolarFlows
+{
+    acetone       0.0041160 kmol/h;
+    isopropanol   3.8220000 kmol/h;
+    water         2.0538840 kmol/h;
+}
+
+T               353.4 K;
+P               101325 Pa;

@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Luyben Figure 1, stream B1 (C1's bottoms): 40.56 kmol/h at 370 K, mole
+     fractions A 0.0001 / IPA 0.0951 / W 0.9048.  Flows are those fractions
+     times that total.  This is HIS stream, not acetone06's answer -- the
+     column is isolated here on purpose; acetone08 wires the real one. ---*/
+
+componentMolarFlows
+{
+    acetone       0.0040560 kmol/h;
+    isopropanol   3.8572560 kmol/h;
+    water        36.6987880 kmol/h;
+}
+
+T               370 K;
+P               101325 Pa;

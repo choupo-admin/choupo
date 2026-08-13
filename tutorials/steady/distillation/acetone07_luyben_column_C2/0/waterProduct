@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Initial guess for the water product.  Luyben: 34.67 kmol/h at
+     A 0.001 / W 0.999, 377 K. ---*/
+
+componentMolarFlows
+{
+    acetone       0.0346700 kmol/h;
+    isopropanol   0.0000000 kmol/h;
+    water        34.6353300 kmol/h;
+}
+
+T               377 K;
+P               101325 Pa;
