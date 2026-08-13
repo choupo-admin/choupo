@@ -30,6 +30,7 @@ License
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/ThermoPackage.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -109,6 +110,54 @@ int Absorber::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i)
         isSolute[i] = (thermo.comp(i).role() == "solute" && !solv.empty()
                     && HenrysLawRegistry::has(thermo.comp(i).name(), solv));
+
+    //  ---- AN ABSORBER WITH NOTHING TO ABSORB MUST REFUSE ------------------
+    //
+    //  Found 2026-08-12, building Luyben's acetone absorber on a `gammaPhi`
+    //  package.  This method is KREMSER: it reads Henry's law, it does not
+    //  consult the activity model at all, and it needs a package that names a
+    //  SOLVENT and at least one component whose role is `solute` with a Henry
+    //  pair against that solvent.  Given a package that names none, every
+    //  branch above silently produced `false`, every component fell through to
+    //  `inert`, and the unit returned the gas UNCHANGED while the entire
+    //  solvent stream -- 20 kmol/h of water -- simply disappeared.  Exit 0.
+    //
+    //  The default mass-balance report caught it (49.2 % closure, and the
+    //  element balance failed on oxygen), which is the safety net working.
+    //  But a unit that has ALREADY DETERMINED it cannot do its job must not
+    //  hand a fabricated answer to a report and hope the report objects.  The
+    //  no-silent-crutch rule is about exactly this: announce, or refuse --
+    //  never return something that looks like an answer.
+    if (solv.empty())
+        throw std::runtime_error("Absorber: this package names no SOLVENT, so"
+            " the unit cannot tell which component washes and which is washed"
+            " out.\n"
+            "        The Kremser method here reads HENRY'S LAW, not the"
+            " activity model -- a `gammaPhi` package with UNIFAC or NRTL"
+            " carries no answer it can use.\n"
+            "        Declare the dilute-solution formulation instead:\n"
+            "                equilibrium { formulation diluteSolution;"
+            " liquid { solvent { component <name>; ... } solutes { ... } } }\n"
+            "        (see tutorials/steady/absorption/absorber01_NH3_water)."
+            "  Refused rather than run: with no solvent every component is"
+            " inert, the gas would leave unchanged and the solvent stream"
+            " would vanish.");
+
+    if (std::none_of(isSolute.begin(), isSolute.end(), [](bool b){ return b; }))
+    {
+        std::string present;
+        for (std::size_t i = 0; i < n; ++i)
+            if (y_in[i] > 1.0e-9 && thermo.comp(i).name() != solv)
+                present += (present.empty() ? "" : ", ") + thermo.comp(i).name();
+        throw std::runtime_error("Absorber: not one component is a SOLUTE this"
+            " unit can transfer into '" + solv + "'.\n"
+            "        A component transfers only when its record declares"
+            " `role solute;` AND a Henry pair <component>-" + solv + " exists."
+            "  Present in the gas: " + present + ".\n"
+            "        Refused rather than run: with no solute the gas leaves"
+            " unchanged and the solvent stream vanishes, which is an answer"
+            " only in the sense that it is a number.");
+    }
 
     // ---- Energy data (heat-of-absorption balance; isothermal fallback) -
     const scalar T0 = 0.5 * (T_gas + T_sol);
