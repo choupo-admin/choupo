@@ -502,7 +502,11 @@ fi
 #  Pulls every numeric KPI of every unit (skipping the volatile
 #  `iterations`) plus each stream's F, at a default relative tolerance.
 auto_generate() {
-    local case_dir="$1" out="$2" reltol="${3:-1e-4}"
+    #  $4 -- optional destination.  Defaults to the case's own `expected`;
+    #  the refresh path below writes to a scratch file instead so it can
+    #  diff the generated rows against the golden it is about to keep.
+    local case_dir="$1" out="$2" reltol="${3:-1e-4}" dest="${4:-}"
+    [ -z "$dest" ] && dest="$case_dir/expected"
     local block kpis_sec streams_sec opres_sec valid_sec closure_sec util_sec
     block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
     [ -z "$block" ] && return 1
@@ -675,7 +679,7 @@ auto_generate() {
                     }
                 }
             }'
-    } > "$case_dir/expected"
+    } > "$dest"
     return 0
 }
 
@@ -707,6 +711,38 @@ if [ -n "$RECORD" ]; then
                 printf '%-7s %-22s %-16s %-16s %s\n' "$kind" "$name" "$key" "${act:-$exp_v}" "$tol" >> "$tmp"
             done < "$exp"
             mv "$tmp" "$exp"
+
+            #  A REFRESH THAT CANNOT ADD A ROW LEAVES A NEW KPI UNPINNED.
+            #  The loop above only rewrites the VALUE of rows that already
+            #  exist, so a unit that starts publishing a new number is born
+            #  checked by nothing -- and nothing anywhere says so.  That is
+            #  the same defect the `aad`/`closure`/`utility` kinds were built
+            #  to close one layer up, and it bit the day `conversionReactor`
+            #  split its duty into `Q_reaction_kW` + `Q_sensible_kW`: both
+            #  appeared in every reacting case's result JSON and in none of
+            #  their goldens.
+            #
+            #  So: generate what a FRESH record would write, and append only
+            #  the (kind, name, key) triples the file does not already carry.
+            #  Existing rows are never touched here -- hand-written rows,
+            #  anchors and per-row tolerances all survive, because this
+            #  appends and does not merge.
+            gen=$(mktemp)
+            if auto_generate "$case_dir" "$out" "1e-4" "$gen"; then
+                added=0
+                while read -r gkind gname gkey gval gtol _; do
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility) ;; *) continue;; esac
+                    if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
+                         '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
+                        printf '%-7s %-22s %-16s %-16s %s\n' \
+                            "$gkind" "$gname" "$gkey" "$gval" "$gtol" >> "$exp"
+                        added=$((added+1))
+                    fi
+                done < "$gen"
+                [ "$added" -gt 0 ] \
+                    && echo "  + $added new row(s) appended (keys the golden did not carry)"
+            fi
+            rm -f "$gen"
             echo "refreshed: $exp"
         elif auto_generate "$case_dir" "$out"; then
             echo "generated: $exp  ($(grep -cE '^(kpi|stream|diag)' "$exp") refs)"

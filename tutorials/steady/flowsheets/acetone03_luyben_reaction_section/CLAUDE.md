@@ -30,6 +30,7 @@ isopropanol; H₂ authorised outside the activity model.
 | x acetone | 0.4427 | 0.5518 | |
 | x water | 0.5041 | 0.3734 | |
 | cooling duty, kW | −899.3 (his HX1) | −967.6 | +7.6 % |
+| reactor duty, kW | 960 (his reactor) | **840.3** | **−12.5 %** |
 
 **The energy is nearly right and the separation is not, and that split is the
 finding.** The duty lands within 8 % of Luyben's cooling-water exchanger. The
@@ -45,6 +46,15 @@ lake-estimated isopropanol boils 4.5 K high. A separation resting on that
 cannot reproduce one resting on fitted UNIQUAC pairs, and the question worth
 asking was never *whether* but *how much*. The answer is: the duty survives,
 the split does not.
+
+**The reactor duty row was added on 2026-08-13 and could not have been written
+before.** `conversionReactor` used to report the heat of reaction alone —
+470.5 kW, 49 % of Luyben's 960 kW, and invariant to its own feed temperature.
+It now reports the first law over the unit, 840.3 kW = 470.5 kW of reaction at
+623 K plus 369.8 kW heating the feed from 389 K, and lands at 87.5 % of the
+paper. See `acetone02`'s §3 for the defect, the fix, and the 602 kW that
+remains — the feed's latent heat, which a gas-basis reactor does not price and
+now says so.
 
 ### The separator pressure: argued, not fitted
 
@@ -84,4 +94,5 @@ solvent is the principled route and is the deferred D3 transfer term.
   - the three UNIQUAC pairs, which is what would actually close the split;
   - a curated isopropanol;
   - the absorber and the two columns (the rest of Figure 1);
-  - `conversionReactor`'s duty defect, inherited from `acetone02`.
+  - the gas-basis reactor's liquid inlet, inherited from `acetone02` §3:
+    the duty defect is fixed, the latent-heat term is announced and open.

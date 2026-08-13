@@ -51,20 +51,19 @@ band cannot admit the observed value would put the suite in the red, and the
 rule is *report, never tune*. The disagreement is reported here and in the
 programme record; it becomes an anchor the day isopropanol is curated.
 
-**3. AN ENGINE DEFECT, found by the first-law report and reproduced.**
+**3. AN ENGINE DEFECT, found by the first-law report, reproduced — and FIXED
+on 2026-08-13.  Both states are kept, because the sequence is the record.**
 
-The run raises:
+*What the run used to raise:*
 
 > `ENERGY balance, unit 'reactor': dH = 1442.4 kW vs declared items 470.5 kW
 > (306.6 % closure) — An UNEXPLAINED first-law residual`
 
-It is not a case error. `conversionReactor` reports `Q_kW` = **the reaction
-enthalpy alone** (extent × ΔH_rxn = 34.767 kmol/h × 48.7173 kJ/mol =
-470.49 kW, exact), while declaring an **outlet temperature**. The heat needed
-to bring the feed from its inlet state to that temperature — sensible, and
-here also latent — is simply absent from the declared duty.
-
-Reproduced by sweeping the inlet temperature; the declared duty does not move:
+`conversionReactor` reported `Q_kW` = **the reaction enthalpy alone**
+(extent × ΔH_rxn = 34.767 kmol/h × 48.7173 kJ/mol = 470.49 kW, exact) while
+declaring an **outlet temperature**. The heat needed to bring the feed to that
+temperature was simply absent. It was reproduced by sweeping the inlet
+temperature and watching the declared duty *not move*:
 
 | T_in | vf_in | Q declared | ΔH of the streams | residual |
 |---|---|---|---|---|
@@ -72,26 +71,52 @@ Reproduced by sweeping the inlet temperature; the declared duty does not move:
 | 420 K | 0.00 | 470.49 kW | 1357.40 kW | 886.92 kW |
 | 450 K | 0.00 | 470.49 kW | 1266.26 kW | 795.78 kW |
 
-A duty that is invariant to the inlet state is not a duty. Everywhere else in
-this engine `Q_kW` on a unit means the heat crossing its boundary (that is
-what the flash, the heater and the energy report all mean by it), so the
-reactor is inconsistent with its own vocabulary — and the report is right to
-alarm.
+**A duty that is invariant to the inlet state is not a duty.** Everywhere else
+in this engine `Q_kW` on a unit means the heat crossing its boundary.
 
-Why it was never seen: the existing corpus reactors either carry no formation
-data (so no `Q` is reported at all — `chlorophenol01`) or are fed at the
-reactor temperature, where the missing term is zero.
+*What it is now.* `Q_kW` is the first law over the unit,
+Σn_out·h(T_out) − Σn_in·h(T_in), published beside its two exact parts:
 
-**NOT FIXED HERE.** Changing what a reactor's `Q_kW` means moves duties, and
-possibly goldens, across every reacting case in the corpus. That is a
-physics-affecting change and it is measured and reported before it is made.
-The alarm is left standing and explained rather than silenced: a visible gap
-is strictly better than an invisible falsehood.
+> `dH_rxn = 48.7 kJ/mol -> duty Q = 840.3 kW  (net added)`
+> `  = reaction 470.5 kW at 623.00 K + sensible 369.8 kW heating the feed from 389.00 K`
+
+The split is Hess's law and is exact, not an apportionment. Against Luyben's
+reactor duty of **0.960 MW** this case now reads **0.840 MW — 87.5 %**, where
+it read **49 %** before. Nothing was tuned; a term that belonged in the sum
+was put in it.
+
+**Only one case in the corpus moved**, and that is the check on the change:
+every other reactor is fed at its own temperature, where the new term is
+identically zero, so their numbers are byte-identical. `tutorials/plant/hda`
+moved from −1338 kW to **+18723 kW**, which is not a regression but the same
+defect at plant scale — its flowsheet has no feed preheater, so the reactor
+itself is heating 2122 kmol/h from 330 K to 900 K, and the old number hid a
+20 MW furnace load.
+
+*What is still open, and it is now NAMED rather than lumped.* The residual did
+not go to zero — it went from 972 kW to **602 kW** — and the run says why, at
+the site:
+
+> `[rating] the duty above is priced on the IDEAL-GAS rung (this reactor is
+> gas-basis and emits vf = 1) while this inlet arrives at vf = 0.00 — the
+> sensible term omits its latent heat`
+
+That is checkable rather than asserted: 602.18 kW over 57.82 kmol/h is
+**37.5 kJ/mol**, against a feed whose components carry ΔH_vap of 38.6
+(isopropanol) and ~40.6 (water) kJ/mol at their boiling points. **The residual
+is the vaporisation of the feed**, to the accuracy the arithmetic allows.
+
+Closing it means deciding what a gas-basis reactor should do with a liquid
+inlet — price the latent heat itself, or refuse the inlet — and that is a
+question about the unit's phase contract, not about its duty. It is left
+open, announced, and no longer inside a number.
 
 - **Pending / in curation:**
   - a curated `isopropanol` in `data/standards/` (would close most of the
     ΔH_rxn gap) — Vítor's call, curation is reserved;
-  - the `conversionReactor` duty defect above;
+  - the gas-basis reactor's LIQUID INLET (§3): the duty is now the first
+    law on the ideal-gas rung and the remaining 602 kW residual is the
+    feed's latent heat, announced at its site and not yet priced;
   - the reactor's SIZE: Luyben specifies 450 tubes and a 624 K jacket, but the
     design record has no tube dimensions, so a `pfr` on his kinetics cannot be
     dimensioned from what is in hand. The kinetics are transcribed in the

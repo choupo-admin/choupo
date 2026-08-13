@@ -15,3 +15,4 @@ kpi     reformer               extent_smr_kmol_h 0.998691254363   1e-4
 kpi     reformer               extent_wgs_kmol_h 0.329306020923   1e-4
 kpi     reformer               nReactions       2                1e-4
 kpi     reformer               newtonResidual   3.2596148003e-13 1e-4
+kpi     reformer               newtonIterations 10               1e-4

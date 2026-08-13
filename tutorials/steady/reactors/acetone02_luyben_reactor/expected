@@ -1,15 +1,15 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  Rin                    F                0.0160611111111    1e-4
-stream  Rout                   F                0.0257186111111    1e-4
-kpi     reactor                F_in_kmol_h      57.82              1e-4
-kpi     reactor                F_out_kmol_h     92.587             1e-4
-kpi     reactor                Q_kW             470.487527672      1e-4
-kpi     reactor                T                623                1e-4
-kpi     reactor                conversion       0.9                1e-4
-kpi     reactor                dHrxn_kJ_per_mol 48.7173210118      1e-4
-kpi     reactor                extent_kmol_h    34.767             1e-4
+stream  Rin                    F                0.0160611111111  1e-4
+stream  Rout                   F                0.0257186111111  1e-4
+kpi     reactor                F_in_kmol_h      57.82            1e-4
+kpi     reactor                F_out_kmol_h     92.587           1e-4
+kpi     reactor                Q_kW             840.263234652    1e-4
+kpi     reactor                T                623              1e-4
+kpi     reactor                conversion       0.9              1e-4
+kpi     reactor                dHrxn_kJ_per_mol 48.7173210118    1e-4
+kpi     reactor                extent_kmol_h    34.767           1e-4
 #
 #  Outlet mole fractions.  SELF-RECORDED, and deliberately NOT `anchor` rows
 #  even though Luyben publishes all four -- the feed in 0/Rin was DERIVED from
@@ -17,7 +17,9 @@ kpi     reactor                extent_kmol_h    34.767             1e-4
 #  verifies the stoichiometry and the transcription arithmetic, not the model.
 #  Anchoring a number the input was built from is the LiCl circularity this
 #  project refuses by name.
-stream  Rout                   isopropanol      0.0417229200644    1e-4
-stream  Rout                   acetone          0.375506280579     1e-4
-stream  Rout                   H2               0.375506280579     1e-4
-stream  Rout                   water            0.207264518777     1e-4
+stream  Rout                   isopropanol      0.0417229200644  1e-4
+stream  Rout                   acetone          0.375506280579   1e-4
+stream  Rout                   H2               0.375506280579   1e-4
+stream  Rout                   water            0.207264518777   1e-4
+kpi     reactor                Q_reaction_kW    470.487527672    1e-4
+kpi     reactor                Q_sensible_kW    369.77570698     1e-4

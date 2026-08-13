@@ -70,7 +70,7 @@ int ConversionReactor::solve(const DictPtr& dict,
     //  Each reaction's extent is SPECIFIED (a conversion or a direct extent);
     //  the single-reaction path below is untouched.
     if (dict->hasDictList("reactions"))
-        return solveMultiReaction(dict, thermo, verbosity, F_in, T, P, z);
+        return solveMultiReaction(dict, thermo, verbosity, F_in, T, T_feed, P, z);
 
     auto rxnDict = dict->subDict("reaction");
 
@@ -112,17 +112,68 @@ int ConversionReactor::solve(const DictPtr& dict,
     sVector zout(n, 0.0);
     if (F_out > 0.0) for (std::size_t i = 0; i < n; ++i) zout[i] = molesOut[i] / F_out;
 
-    // Heat of reaction at T (ideal-gas, elements datum); isothermal duty.
-    // Skip if a participating species lacks the ideal-gas Cp data.
+    //  THE DUTY IS AN ENTHALPY DIFFERENCE, NOT A HEAT OF REACTION.
+    //
+    //  `Q_kW` used to be xi * dH_rxn(T) and nothing else, so a reactor fed at
+    //  389 K and held at 623 K reported a duty INVARIANT to its own feed
+    //  temperature -- it answered "what does the reaction cost at T", which is
+    //  not what a duty is.  Found on acetone03, where it read 470 kW against
+    //  the paper's 960 kW and the gap was the feed nobody was heating.
+    //
+    //  What is computed now is the first law over the unit,
+    //
+    //      Q = SUM n_out h(T_out) - SUM n_in h(T_in),
+    //
+    //  published beside its two EXACT parts (Hess, not an apportionment):
+    //  the reaction run at T_out, and the FEED heated from T_in to T_out.
+    //  When T_in == T_out the sensible term is identically zero and Q is the
+    //  old number -- which is why the change moved no case whose feed already
+    //  sat at the reactor temperature.
+    //
+    //  Skip the whole duty if ANY species present lacks ideal-gas Cp data --
+    //  the sensible term needs the inerts too, not just the reactants, so the
+    //  loop is over everything that flows.
     scalar dHrxn = 0.0;       // J / mol of extent
+    scalar Q_sens_W = 0.0;    // W
     bool haveDuty = true;
     try
     {
         for (std::size_t i = 0; i < n; ++i)
             if (nu[i] != 0.0) dHrxn += nu[i] * thermo.comp(i).h_pure_ig(T);
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const scalar nIn = z[i] * F_in;                 // kmol/s
+            if (nIn <= 0.0) continue;
+            Q_sens_W += nIn * 1000.0
+                      * (thermo.comp(i).h_pure_ig(T) - thermo.comp(i).h_pure_ig(T_feed));
+        }
     }
     catch (const std::exception&) { haveDuty = false; }
-    const scalar Q_W = xi * 1000.0 * dHrxn;   // W (xi kmol/s -> mol/s ; <0 exothermic)
+    const scalar Q_rxn_W = xi * 1000.0 * dHrxn;   // W (<0 exothermic)
+    const scalar Q_W     = Q_rxn_W + Q_sens_W;
+
+    //  THE RUNG THE DUTY IS PRICED ON, announced when it can differ from the
+    //  stream's own.  This reactor is gas-basis by construction (it emits
+    //  vf = 1.0 and its dH_rxn is an ideal-gas quantity), so both terms above
+    //  use h_pure_ig.  If the INLET stream arrives as anything but a vapour,
+    //  the sensible term is missing that inlet's latent heat and Q will not
+    //  reconcile with the flowsheet's per-unit energy ledger by exactly that
+    //  amount.  Saying so is the whole point: the number is still the honest
+    //  gas-basis duty, and the reader is told which reconciliation to expect
+    //  to fail.  Found on tutorials/plant/hda, whose mixer hands the reactor
+    //  a vf = 0 stream at 35 bar.
+    //
+    //  LOG-ONLY, and the reason is the doctrine's own (Advisory.H): the
+    //  durable caveat surface takes events true AT THE SOLUTION, while
+    //  transient per-iteration conditions stay log-only.  This one is
+    //  transient by construction -- a recycle solves each unit against
+    //  states it does not end on, and hda proved it: its mixer hands the
+    //  reactor a vf = 0 stream on early passes and a vf = 1 stream at
+    //  convergence.  Routed through AdvisoryLog it appeared in the result
+    //  JSON of a converged run describing an inlet that run does not have,
+    //  which is worse than not warning at all.
+    const scalar vf_in = feedDict->lookupScalarOrDefault("vf", 1.0);
+    const bool   offRung = haveDuty && T_feed != T && vf_in < 1.0;
 
     // ---- Outlet stream (gas-phase reactor effluent) -----------------
     produced_.clear();
@@ -141,6 +192,8 @@ int ConversionReactor::solve(const DictPtr& dict,
     {
         kpis_["dHrxn_kJ_per_mol"] = dHrxn / 1000.0;
         kpis_["Q_kW"]             = Q_W / 1000.0;
+        kpis_["Q_reaction_kW"]    = Q_rxn_W / 1000.0;
+        kpis_["Q_sensible_kW"]    = Q_sens_W / 1000.0;
     }
 
     if (verbosity >= 2)
@@ -150,9 +203,27 @@ int ConversionReactor::solve(const DictPtr& dict,
                   << "   extent = " << std::setprecision(4) << (xi * 3600.0) << " kmol/h"
                   << "   (gas-basis, isothermal at " << T << " K)\n";
         if (haveDuty)
+        {
             std::cout << "  dH_rxn = " << std::setprecision(1) << (dHrxn / 1000.0)
                       << " kJ/mol   ->  duty Q = " << (Q_W / 1000.0) << " kW"
-                      << (Q_W < 0 ? "  (exothermic; removed)\n\n" : "  (endothermic; added)\n\n");
+                      << (Q_W < 0 ? "  (net removed)\n" : "  (net added)\n");
+            //  Print the split whenever the feed is NOT already at T: a single
+            //  number cannot show that most of a duty is preheat.
+            if (T_feed != T)
+                std::cout << "    = reaction " << (Q_rxn_W / 1000.0) << " kW at "
+                          << std::setprecision(2) << T << " K  +  sensible "
+                          << std::setprecision(1) << (Q_sens_W / 1000.0)
+                          << " kW heating the feed from " << std::setprecision(2)
+                          << T_feed << " K\n";
+            if (offRung)
+                std::cout << "  [rating] the duty above is priced on the"
+                             " IDEAL-GAS rung (this reactor is gas-basis and"
+                             " emits vf = 1) while this inlet arrives at vf = "
+                          << vf_in << " -- the sensible term omits its latent"
+                             " heat, so the per-unit energy ledger will differ"
+                             " from Q by that amount\n";
+            std::cout << "\n";
+        }
         else
             std::cout << "  (duty not reported -- a species lacks ideal-gas Cp data)\n\n";
     }
@@ -173,6 +244,7 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
                                           int                  verbosity,
                                           scalar               F_in,
                                           scalar               T,
+                                          scalar               T_feed,
                                           scalar               P,
                                           const sVector&       z)
 {
@@ -263,8 +335,23 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
             for (std::size_t i = 0; i < n; ++i)
                 if (nu[j][i] != 0.0) dHrxn[j] += nu[j][i] * thermo.comp(i).h_pure_ig(T);
     } catch (const std::exception&) { haveDuty = false; }
-    scalar Q_W = 0.0;
-    for (std::size_t j = 0; j < R; ++j) Q_W += xi[j] * 1000.0 * dHrxn[j];
+    scalar Q_rxn_W = 0.0;
+    for (std::size_t j = 0; j < R; ++j) Q_rxn_W += xi[j] * 1000.0 * dHrxn[j];
+
+    //  Same correction as the single-reaction path above: the duty is the
+    //  enthalpy difference across the unit, so the feed's own sensible heat
+    //  belongs in it.  Zero, identically, when the feed enters at T.
+    scalar Q_sens_W = 0.0;
+    try {
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const scalar nIn = z[i] * F_in;
+            if (nIn <= 0.0) continue;
+            Q_sens_W += nIn * 1000.0
+                      * (thermo.comp(i).h_pure_ig(T) - thermo.comp(i).h_pure_ig(T_feed));
+        }
+    } catch (const std::exception&) { haveDuty = false; }
+    const scalar Q_W = Q_rxn_W + Q_sens_W;
 
     // ---- Outlet stream --------------------------------------------------
     produced_.clear();
@@ -284,7 +371,12 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
         kpis_["extent_" + rname[j] + "_kmol_h"] = xi[j] * 3600.0;
         if (haveDuty) kpis_["dHrxn_" + rname[j] + "_kJ_per_mol"] = dHrxn[j] / 1000.0;
     }
-    if (haveDuty) kpis_["Q_kW"] = Q_W / 1000.0;
+    if (haveDuty)
+    {
+        kpis_["Q_kW"]          = Q_W / 1000.0;
+        kpis_["Q_reaction_kW"] = Q_rxn_W / 1000.0;
+        kpis_["Q_sensible_kW"] = Q_sens_W / 1000.0;
+    }
 
     if (verbosity >= 2)
     {
@@ -295,8 +387,15 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
                       << "  extent = " << std::fixed << std::setprecision(5)
                       << (xi[j] * 3600.0) << " kmol/h\n";
         if (haveDuty)
+        {
             std::cout << "  net duty Q = " << std::setprecision(2) << (Q_W / 1000.0) << " kW"
-                      << (Q_W < 0 ? "  (exothermic; removed)\n\n" : "  (endothermic; added)\n\n");
+                      << (Q_W < 0 ? "  (net removed)\n" : "  (net added)\n");
+            if (T_feed != T)
+                std::cout << "    = reaction " << (Q_rxn_W / 1000.0) << " kW at " << T
+                          << " K  +  sensible " << (Q_sens_W / 1000.0)
+                          << " kW heating the feed from " << T_feed << " K\n";
+            std::cout << "\n";
+        }
         else std::cout << "  (duty not reported -- a species lacks ideal-gas Cp data)\n\n";
     }
     return 0;

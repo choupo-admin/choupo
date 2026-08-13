@@ -47,8 +47,22 @@ namespace Choupo {
 // honest for a GAS-phase reactor where the per-pass conversion is set by the
 // catalyst / residence time, not by equilibrium or a liquid-basis rate.  The
 // classic use is a recycle process (e.g. HDA): a finite per-pass conversion is
-// exactly what makes the recycle meaningful.  Isothermal; reports the duty Q
-// from the heat of reaction at T.
+// exactly what makes the recycle meaningful.
+//
+// ISOTHERMAL means the OUTLET is at T -- the INLET need not be, and the duty
+// has to say so.  `Q_kW` used to carry the heat of reaction ALONE, so a reactor
+// fed at 389 K and held at 623 K reported a duty that did not move when its
+// feed temperature did.  It is now the enthalpy difference the first law asks
+// for, published beside its two exact parts:
+//
+//     Q_kW           = SUM n_out h(T_out) - SUM n_in h(T_in)
+//     Q_reaction_kW  = xi * dH_rxn(T_out)          (the reaction, run at T_out)
+//     Q_sensible_kW  = SUM n_in [h(T_out) - h(T_in)]   (the FEED, heated)
+//
+// The split is Hess's law and is EXACT, not an apportionment.  When the feed
+// already enters at T the sensible term is identically zero and `Q_kW` is what
+// it always was, which is why no case whose feed sits at the reactor
+// temperature moved.
 class ConversionReactor : public UnitOperation
 {
 public:
@@ -72,6 +86,7 @@ private:
                            int                  verbosity,
                            scalar               F_in,
                            scalar               T,
+                           scalar               T_feed,
                            scalar               P,
                            const sVector&       z);
 
