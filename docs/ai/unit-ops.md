@@ -428,6 +428,39 @@ operation
 }
 ```
 
+**A distillate specified by RECOVERY instead of a rate.**  `distillateRate` is a
+number, and a number stops being a specification the moment the column sits
+inside a **recycle**: the feed changes on every pass, so a rate feasible on the
+first is infeasible on the third and the flowsheet fails on arithmetic rather
+than physics.  What a design actually fixes is usually a recovery.
+
+```
+operation
+{
+    nStages 66;  feedStage 54;  refluxRatio 2.78;  P 1 atm;
+    distillateRecovery { component acetone;  fraction 0.97; }   # XOR distillateRate
+    # optional: tolerance 1e-6;  maxIter 40;
+}
+```
+
+"send 97 % of the acetone in the feed overhead".  It is an **announced outer
+secant** on the rate around the ordinary solve, so it wraps either method and
+prints every trial at `verbosity >= 2`; it also announces when it has to
+retreat from a rate the column cannot solve at (asked for more light material
+than the feed carries, the MESH has no solution — a real boundary, not a
+wobble).
+
+It **refuses** rather than guess: both distillate specifications declared at
+once (they claim the same degree of freedom), a `fraction` outside (0, 1), a
+component the feed does not carry, and a **multi-feed** column — there a
+recovery must state which feed it is referenced to, and that is not declarable
+today, so use `distillateRate` or merge the feeds upstream with a `mixer`.
+
+It is **expensive**: each outer trial is a full column solve.  Inside a
+recycle prefer `recycleSolver Wegstein;`, whose pass costs one search, over
+`Newton`, whose Jacobian perturbs the tear once per variable and so triggers
+one search each.  Witness: `tutorials/plant/acetonePlant`.
+
 **Multiple feeds + side draws (`simultaneous` only).**  A multi-feed column takes
 its feeds as **flowsheet streams** — `inputs ( feed feed2 )` — so the plant-boundary
 mass + energy balance sees them (information follows the streams; an inline-composition
