@@ -5,6 +5,10 @@ units run; it is blocked on ONE named engine gap and is deliberately NOT in
 `tutorials/` until it converges.**  Recorded 2026-08-13 so the state is a
 document rather than a memory.
 
+The dictionaries are in [`acetone-plant-wip/`](acetone-plant-wip/), beside
+this record; that directory's README says why they are not in the corpus and
+what has to be true before they move there.
+
 Programme record: [`acetone-ipa-reference-case.md`](acetone-ipa-reference-case.md).
 
 ## What the closed flowsheet is

@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ONE tear: the isopropanol recycle, C2's overhead back to the feed mixer.
+  It is DECLARED rather than discovered -- the sequential-plan contract
+  (settled 2026-07-25) makes cycle DETECTION the engine's job and tear CHOICE
+  the author's, and refuses an undeclared backward edge by name.  With one
+  cycle there is only one honest cut, and this is it.
+
+  Newton rather than Wegstein: acetone03 already records that Wegstein was
+  DEFEATED on cavett01's real conditions while Newton took 7 iterations, and
+  a loop whose recycle composition sits against an azeotrope is exactly the
+  shape where a scalar acceleration misbehaves.
+\*---------------------------------------------------------------------------*/
+tearStreams    ( ipaRecycle );
+recycleSolver  Newton;
+recycleTol     1e-6;
+recycleMaxIter 120;

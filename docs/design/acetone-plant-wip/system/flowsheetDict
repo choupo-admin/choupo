@@ -1,0 +1,328 @@
+/*---------------------------------------------------------------------------*\
+  acetonePlant  --  ACETONE FROM 2-PROPANOL, THE CLOSED FLOWSHEET
+  ============================================================================
+
+  W. L. Luyben, "Design and Control of the Acetone Process via Dehydrogenation
+  of 2-Propanol", Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI
+  10.1021/ie901923a -- his Figure 1 (the Turton base case), end to end:
+
+      fresh feed + IPA recycle -> vaporiser -> reactor -> separator
+                                            -> absorber (offgas washed)
+                                            -> C1 -> acetone product
+                                                  -> C2 -> water product
+                                                        -> IPA RECYCLE (tear)
+
+  This is the case the six preceding ones were built to make possible.  Each of
+  them isolates one unit on Luyben's OWN published inlet, so that whatever it
+  gets wrong is that unit and its thermodynamics.  Here nothing is published
+  except the fresh feed: every internal stream is the plant's own answer, and
+  the errors compose.
+
+  WHAT THIS CASE CLAIMS, AND WHAT IT DOES NOT.  It claims to be Luyben's
+  TOPOLOGY and Luyben's EQUIPMENT SPECIFICATIONS solved on the thermodynamics
+  Choupo actually has.  It does NOT claim to reproduce his stream table -- the
+  siblings measured, in advance, exactly why it cannot, and the gap between
+  his table and this one is the deliverable rather than a defect to be closed:
+
+    * acetone01: UNIFAC puts the IPA/water azeotrope at x 0.590 against his
+      0.673, and the lake-estimated isopropanol boils 4.5 K high.
+    * acetone04: UNIFAC INVENTS an acetone/water azeotrope at x 0.978 where
+      his UNIQUAC has none -- 0.044 K deep, and decisive.
+    * acetone06: so C1 caps at 97.3 mol % acetone against his 99.9 % spec.
+    * acetone07: so C2's recycle caps at x_IPA 0.580 against his 0.650, and
+      11.6 % of the isopropanol entering it leaves in the water product.
+
+  Both column ceilings were WRITTEN DOWN BEFORE the columns existed and are
+  pinned by check_azeotrope_ceiling.  This case is where they stop being two
+  separate findings and become one plant.
+
+  ------------------------------------------------------------------------
+  DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
+  ------------------------------------------------------------------------
+
+  (a) NO HYDROGEN IN THE COLUMNS.  His C1 has a partial condenser and a vent
+      (0.0465 kmol/h, carrying 0.0130 kmol/h H2 and 0.0335 kmol/h acetone);
+      Choupo's column has a total condenser and no vapour distillate.  A
+      permanent gas fed to a total condenser is asked to leave as a liquid,
+      and the engine rightly refuses (hydrogen has no liquid heat capacity at
+      330 K).  So the separator's LIQUID goes to C1 and the hydrogen leaves
+      with the offgas, i.e. the columns are modelled downstream of his vent.
+      Cost, stated: the 0.0335 kmol/h of acetone his vent loses is not lost
+      here, which flatters this plant's acetone recovery by 0.10 %.
+
+  (b) THE SEPARATOR DOES THE COOLING.  An isothermal flash at 318 K computes
+      the duty to bring its feed there, so this one unit stands for his HX1
+      plus his separator and its Q is directly comparable to his 0.8993 MW.
+      A separate `heater` was tried in acetone03 and refused, correctly:
+      Choupo's heater takes a DUTY and reports the temperature, because a
+      heater with a specified outlet temperature is a design specification.
+
+  (c) THE SEPARATOR PRESSURE IS ARGUED, NOT FITTED.  Luyben states 1.5 atm for
+      the absorber gas, which is downstream; there is no compressor between
+      reactor and separator and pressure only falls, so the separator sits at
+      the reactor's 2.6 atm.  acetone03 records the sweep that would have
+      tempted a fitted value and why it was refused.
+
+  (d) THE ABSORBER'S SECOND OUTLET REJOINS C1's FEED, as in his Figure 1
+      (his F1 of 72.85 kmol/h is the flash liquid AFTER the absorber bottoms
+      of 20.05 kmol/h rejoin it).
+
+  (e) NO VENT/PURGE ON THE RECYCLE LOOP.  Luyben has none either -- the loop
+      closes through C2's overhead and nothing else -- so this is his
+      structure, not a simplification.  It does mean any component that both
+      enters and cannot leave would accumulate without bound; here water
+      leaves in three places and isopropanol in two, so the loop is closed
+      and bounded.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        //  THE RECYCLE MIXER.  `ipaRecycle` is BOTH an input here and C2's
+        //  output far below -- the flat plant-level tear pattern, declared in
+        //  system/solverDict.  The sequential-plan contract refuses an
+        //  undeclared backward edge by name, which is what makes this
+        //  readable rather than lucky.
+        //
+        //  Its T is DECLARED, not solved.  A genuine cold-liquid mix whose
+        //  species carry a large formation+latent gap on the gas basis makes
+        //  the adiabatic single-phase T-solve ill-posed (the same call hda
+        //  makes and for the same reason).  It only labels the stream: the
+        //  vaporiser below sets the real reactor-feed state, and its duty is
+        //  measured from THERE.
+        name        M1;
+        type        mixer;
+        inputs      ( freshFeed  ipaRecycle );
+        outputs     ( mixedFeed );
+        operation   { T 320 K; }
+    }
+
+    {
+        //  Luyben's VAPORISER: he quotes 0.7577 MW of LP steam to bring the
+        //  reactor feed to 389 K at 2.6 atm.  Here the outlet temperature is
+        //  the SPECIFICATION and the duty is the RESULT, so Q_kW is directly
+        //  comparable to his figure and is one of the few numbers in this
+        //  plant that can be.
+        name        vaporiser;
+        type        phaseChanger;
+        in          mixedFeed;
+        outputs     ( Rin );
+        operation   { outletT 389 K;  P 2.6 atm; }
+    }
+
+    {
+        //  His reactor: 90 % per-pass conversion of isopropanol at 623 K.
+        //  A conversionReactor and not a pfr, deliberately -- his kinetics are
+        //  transcribed in the design record and deliberately unused, because
+        //  the paper gives no tube dimensions and a pfr cannot be dimensioned
+        //  from what is in hand.  acetone02 records that decision.
+        name        reactor;
+        type        conversionReactor;
+        in          Rin;
+        outputs     ( Rout );
+        operation   { conversion 0.90;  T 623 K; }
+        reaction    dehydrogenation;
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          Rout;
+        outputs     ( flashLiquid  flashGas );
+        operation   { T 318 K;  P 2.6 atm; }
+    }
+
+    {
+        //  9 stages, ID 0.217 m, 1.5 atm (his spec).  Washes the acetone out
+        //  of the hydrogen-rich offgas with 20 kmol/h of water.  acetone05
+        //  measured this unit in isolation and found it recovers a SIXTH of
+        //  what the paper does -- that finding rides into this plant as a
+        //  larger acetone loss in the offgas, and is not re-argued here.
+        name        absorber;
+        type        absorber;
+        inputs      ( flashGas  washWater );
+        outputs     ( offgas  absBottoms );
+        operation   { stages 9; }
+
+        //  ---------------------------------------------------------------
+        //  THE MODEL BOUNDARY, and it is not decoration -- the plant does
+        //  not run without it.
+        //
+        //  Handed the plant's gammaPhi/UNIFAC world, this unit REFUSES by
+        //  name: "this package names no SOLVENT, so the unit cannot tell
+        //  which component washes and which is washed out".  It is right.
+        //  `absorber` solves Kremser, Kremser reads HENRY'S LAW, and an
+        //  activity model carries no answer it can use.  Before 2026-08-12
+        //  it did not refuse -- it silently deleted the wash-water stream
+        //  and exited 0.
+        //
+        //  So the absorber gets its OWN world: water the solvent on the
+        //  Raoult rung, acetone the solute on the Henry rung, hydrogen and
+        //  isopropanol inert.  This is the settled heterogeneous-thermo
+        //  architecture doing the job it was built for, on a published
+        //  flowsheet rather than on a demonstration: components stay global,
+        //  models are replaced for this unit only.
+        //
+        //  WHAT IT COSTS IS VISIBLE, NOT HIDDEN.  The rule is `H` conserved,
+        //  `T` a model-dependent readout: crossing a model boundary holds
+        //  (T, P, z) and lets the enthalpy JUMP, and the jump is printed.
+        //  The model-boundary ledger prices that step independently -- it
+        //  assembles both worlds itself and credits the step only if its own
+        //  arithmetic reproduces the imbalance -- so the first-law report on
+        //  this unit separates the RAW residual, the DECLARED step, and what
+        //  REMAINS.  A student can read exactly what changing thermodynamics
+        //  mid-flowsheet cost, in kilowatts.
+        //
+        //  AND THE MEASUREMENT THAT INFORMED THIS UNIT DOES NOT REACH IT.
+        //  acetone04 measured UNIFAC's acetone/water surface in order to
+        //  inform the absorber, and the absorber consumes none of it.  That
+        //  correction is acetone05's, recorded there and not re-argued: the
+        //  measurement stands, because it is the right surface for the two
+        //  COLUMNS, which do take their K from the activity model.
+        thermo
+        {
+            equilibrium
+            {
+                formulation diluteSolution;
+
+                liquid
+                {
+                    solvent
+                    {
+                        component     water;
+                        standardState pureLiquid;
+                    }
+                    solutes
+                    {
+                        components    ( acetone );
+                        standardState infiniteDilution;
+                        solutionModel henryDilute;
+                        binaryParameters
+                        {
+                            acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
+                        }
+                    }
+                }
+
+                vapour { fugacityModel idealGas; }
+            }
+        }
+    }
+
+    {
+        name        M2;
+        type        mixer;
+        inputs      ( flashLiquid  absBottoms );
+        outputs     ( F1 );
+        operation   { T 325 K; }
+    }
+
+    {
+        //  ---------------------------------------------------------------
+        //  THE VENT, and it is here because the plant refused to run without
+        //  it -- a structural departure paid for by a measurement, not a
+        //  preference.
+        //
+        //  Luyben's C1 has a PARTIAL condenser and vents 0.0465 kmol/h of
+        //  non-condensables off the top.  Choupo's column has a total
+        //  condenser and no vapour distillate, so the hydrogen dissolved in
+        //  the separator's liquid has nowhere to go -- and it is not
+        //  harmless.  Measured, on this plant's own F1 (probe, 2026-08-13):
+        //
+        //     with H2 at 6.8e-4     rigorous MESH BLOWS UP: |F| 6.2e+12
+        //                           after 3 iterations, x_D(IPA) NEGATIVE
+        //     the same feed, no H2  converges, 8 iterations, |F| 2.2e-14
+        //
+        //  at every distillate rate tried (24, 26, 27, 32.25 kmol/h).  A
+        //  supercritical permanent gas at K ~ 1e3-1e4 wrecks the Jacobian.
+        //
+        //  AND THE HYDROGEN THAT REACHES HERE IS ITSELF AN ARTEFACT OF A
+        //  DECLARED APPROXIMATION.  H2 runs at gamma = 1 outside the activity
+        //  model (constant/thermoPhysPropDict authorises it by name, because
+        //  no UNIFAC group for hydrogen exists and inventing one would be
+        //  fabrication).  acetone03 already recorded that this is "right for
+        //  the wrong reason": the separator sends H2 almost entirely to the
+        //  vapour, which is correct, but via a vapour pressure extrapolated
+        //  far above hydrogen's 33.18 K critical temperature.  The residue it
+        //  leaves in the liquid -- 6.8e-4 here against Luyben's 2e-4 -- is
+        //  that approximation's error, and it is large enough to break the
+        //  unit three steps downstream.  **That is the clearest thing this
+        //  plant has to teach**: a declared approximation with a stated,
+        //  small local effect was not locally contained.
+        //
+        //  So the vent is an explicit unit rather than a deletion.  It is a
+        //  flash at the column's own pressure: V/F = 0.16 %, and what leaves
+        //  with the hydrogen is COMPUTED, not assumed, and is directly
+        //  comparable to his 0.0465 kmol/h vent and its 0.0335 kmol/h of
+        //  acetone.  Placed on the FEED rather than on the condenser, which
+        //  is where this engine can express it -- said plainly, because it is
+        //  a different place from his.
+        name        vent;
+        type        isothermalFlash;
+        in          F1;
+        outputs     ( columnFeed  ventGas );
+        operation   { T 325 K;  P 1 atm; }
+    }
+
+    {
+        //  C1: 66 stages, feed 54, RR 2.78 -- all his.  acetone06 predicted
+        //  and then measured this column's 97.3 % acetone ceiling on Luyben's
+        //  own feed; here it gets the plant's, which is poorer.
+        //
+        //  THE DISTILLATE RATE IS NOT HIS, AND THE RULE IS STATED RATHER THAN
+        //  THE NUMBER FITTED.  His 32.25 kmol/h is the acetone in HIS feed:
+        //  his C1 sends essentially all of it overhead at 99.9 %.  This
+        //  plant's C1 receives only ~26.6 kmol/h of acetone, because the
+        //  separator sends 2.9x too much of it to the vapour (acetone03) and
+        //  the absorber recovers a sixth of what the paper does (acetone05).
+        //  Asked for 32.25 it would have to make up the balance with water.
+        //
+        //  So the SPEC is carried over rather than the number: send overhead
+        //  the acetone that arrives, at the azeotropic purity acetone04
+        //  measured and acetone06 confirmed --
+        //
+        //      D = (acetone reaching C1) / x_D,ceiling ~ 26.6 / 0.973 = 27.3
+        //
+        //  and it is rounded DOWN to 27.0, because at 27.45 (all the acetone,
+        //  no water) the MESH pinches and does not converge in 80 iterations.
+        //  That last step is a design iteration performed by the author and
+        //  shown here rather than hidden: the number was not tuned to improve
+        //  agreement with the paper -- it cannot, it is 16 % below his rate,
+        //  which is the finding.
+        name        C1;
+        type        distillationColumn;
+        model       simultaneous;
+        in          columnFeed;
+        outputs     ( acetoneProduct  B1 );
+        operation
+        {
+            nStages 66;  feedStage 54;  refluxRatio 2.78;
+            distillateRate 27.0 kmol/h;  feedQuality 1.0;  P 1 atm;
+        }
+    }
+
+    {
+        //  C2: 19 stages, feed 16, RR 0.849, 5.88 kmol/h overhead -- and that
+        //  overhead is the tear.  acetone07 predicted and then measured its
+        //  x_IPA 0.580 ceiling against his 0.650.
+        name        C2;
+        type        distillationColumn;
+        model       simultaneous;
+        in          B1;
+        outputs     ( ipaRecycle  waterProduct );
+        operation
+        {
+            nStages 19;  feedStage 16;  refluxRatio 0.849;
+            distillateRate 5.88 kmol/h;  feedQuality 1.0;  P 1 atm;
+        }
+    }
+);
+
+boundary
+{
+    inlets   ( freshFeed  washWater );
+    outlets  ( acetoneProduct  waterProduct  offgas  ventGas );
+}
+
+//  stream state lives on disk in 0/ (one file per stream); this dict is
+//  TOPOLOGY only.
