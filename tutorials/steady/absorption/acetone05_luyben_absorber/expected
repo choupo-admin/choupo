@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.00574366573439   1e-4
+stream  gasIn                  F                0.0110555555556    1e-4
+stream  offgas                 F                0.0108674453767    1e-4
+stream  washWater              F                0.00555555555556   1e-4
+kpi     absorber               A_H2             0.00044153375233   1e-4
+kpi     absorber               A_acetone        0.0857422914441    1e-4
+kpi     absorber               A_isopropanol    4.51803004485      1e-4
+kpi     absorber               A_water          8.0125706439       1e-4
+kpi     absorber               F_cleanGas       0.0108674453767    1e-4
+kpi     absorber               F_richLiquid     0.00574366573439   1e-4
+kpi     absorber               K_H2             1138.10679288      1e-4
+kpi     absorber               K_acetone        5.86073166871      1e-4
+kpi     absorber               K_isopropanol    0.11122382052      1e-4
+kpi     absorber               K_water          0.0627155235376    1e-4
+kpi     absorber               L_in             0.00555555555556   1e-4
+kpi     absorber               L_over_V         0.502512562814     1e-4
+kpi     absorber               T_bottom         321.205142041      1e-4
+kpi     absorber               T_top            326.737585634      1e-4
+kpi     absorber               V_in             0.0110555555556    1e-4
+kpi     absorber               dT_rise          1.20514204119      1e-4
+kpi     absorber               nonIsothermal    1                  1e-4
+kpi     absorber               recovery_H2      0                  1e-4
+kpi     absorber               recovery_acetone 0.0726811337763    1e-4
+kpi     absorber               recovery_isopropanol 0                  1e-4
+kpi     absorber               recovery_water   1                  1e-4
+kpi     absorber               stages           9                  1e-4

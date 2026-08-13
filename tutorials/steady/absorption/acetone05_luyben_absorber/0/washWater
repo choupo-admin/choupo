@@ -1,0 +1,12 @@
+/*  Luyben Figure 1, "Absorber water": 20 kmol/h of water at 320 K.  */
+
+T   320 K;
+P   1.5 atm;
+
+componentMolarFlows
+{
+    isopropanol   0.0 kmol/h;
+    acetone       0.0 kmol/h;
+    H2            0.0 kmol/h;
+    water        20.0 kmol/h;
+}

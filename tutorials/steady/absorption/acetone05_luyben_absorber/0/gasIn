@@ -1,0 +1,17 @@
+/*  Luyben Figure 1, the gas ENTERING the absorber ("Gas (to absorber)"):
+    39.80 kmol/h, acetone 0.1147, IPA 0.0033.  H2 is derived from the gas
+    LEAVING (39.76 x 0.8742 = 34.7582 kmol/h) using its inertness in the
+    absorber, and water closes the balance -- so the H2 and water of the
+    OUTLET are not independent checks on this case.  The acetone numbers and
+    the bottoms are: nothing here was built from them.                        */
+
+T   318 K;
+P   1.5 atm;
+
+componentMolarFlows
+{
+    isopropanol   0.1313 kmol/h;
+    acetone       4.5651 kmol/h;
+    H2           34.7582 kmol/h;
+    water         0.3454 kmol/h;
+}

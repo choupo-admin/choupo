@@ -1,0 +1,66 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-13";
+    importerVersion    "3";
+    records
+    {
+        "components/H2.dat"
+        {
+            type          imported;
+            sha256        "73d151de1b77cce424a77105854d210da3c7d9017762793307412403ed6e8f2c";
+            computationalSha256 "8555cf19b12947973821a056cfa08c01ab55a40ee34b2cccd71cb59fbcf5ac47";
+            origin        "data/standards/components/H2.dat";
+            originSha256  "610e5e8eda88feed00c912b4a7d0c76f3c4ddc322515810a8d5496ee0e5bd947";
+            release       Choupo-2607;
+        }
+        "components/acetone.dat"
+        {
+            type          merged;
+            sha256        "dbdd9fd0f94a8b6932119a65ceece200cd84ef410672dcce3faa2ce72da87726";
+            computationalSha256 "e382b53c357dbe09a437ba60bf41658a4295313318c8856265bdc6bb8055b779";
+            origin        "data/standards/components/acetone.dat";
+            originSha256  "d41785404ac76a1e0ff9ba1d631331c132db7a975fc6f7a71a0f85c790a72f71";
+            overlaySha256 "c9bde02f20e72537e513a9aeb4d96a7be2f6b43de40fde87cc33d4113eaf1673";
+            release       Choupo-2607;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "8cc87e6cd7e32e02046dde621edb6d3fc382246b580098a25d87498f6e9e7b9e";
+            computationalSha256 "991ff5537012a205dfcc49305c28302ebb1d52b0668d8094f395a1f9b907fec9";
+            origin        "data/standards/components/water.dat";
+            originSha256  "88c0f73f76a12f0c277cddd933fe464e61b08e8b7c68d40105ce738c78da7852";
+            release       Choupo-2607;
+        }
+        "parameters/Henry/acetone-water.dat"
+        {
+            type          imported;
+            sha256        "b95b933bb2fc741fbb659e88e52f15cd59d9cfb3446c5148ebefa44ae0fe3d54";
+            computationalSha256 "59eb9457c480a6eadb0f48caa20b3e74230c87d69806a000772e23797f7a0843";
+            origin        "data/standards/parameters/Henry/acetone-water.dat";
+            originSha256  "24b13d60a822b46921a02cd40b57e52cdf756c985884cc1d0e56e874515b4760";
+            release       Choupo-2607;
+        }
+    }
+}

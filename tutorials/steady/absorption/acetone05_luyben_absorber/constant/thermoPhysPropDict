@@ -1,0 +1,54 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+/*---------------------------------------------------------------------------*\
+  THE DILUTE-SOLUTION FORMULATION, and why this case does NOT run the package
+  the rest of the acetone family runs.
+
+  `absorber` solves Kremser, which reads HENRY'S LAW.  It does not consult the
+  activity model at all -- so the gammaPhi/UNIFAC package of acetone03 and
+  acetone04 carries nothing this unit can use, and handing it one is refused by
+  name (the engine says so since 2026-08-12; before that it silently deleted
+  the wash-water stream).
+
+  That is a correction to this family's own reasoning, recorded rather than
+  quietly worked around: acetone04 measured UNIFAC's acetone/water surface in
+  order to inform THIS unit, and this unit consumes none of it.  The
+  measurement stands -- it is the right surface for the two distillation
+  columns, which do take K from the activity model -- but it does not describe
+  the absorber.
+
+  So the absorber gets its own world: water the solvent on the Raoult rung,
+  acetone the solute on the Henry rung, hydrogen and isopropanol inert.
+\*---------------------------------------------------------------------------*/
+
+components       ( isopropanol  acetone  H2  water );
+
+equilibrium
+{
+    formulation diluteSolution;
+
+    liquid
+    {
+        solvent
+        {
+            component     water;
+            standardState pureLiquid;
+        }
+        solutes
+        {
+            components    ( acetone );
+            standardState infiniteDilution;
+            solutionModel henryDilute;
+            binaryParameters
+            {
+                acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
+            }
+        }
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

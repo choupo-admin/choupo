@@ -1,0 +1,102 @@
+/*----------------------------------------------------------*\
+  constant/components/acetone.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  CASE-LOCAL OVERLAY -- one field, and only for this case.
+
+  `absorber` transfers a component only when its record declares
+  `role solute;` AND a Henry pair exists against the declared solvent.  The
+  pair (acetone-water) is in the curated catalogue; the ROLE is not, because
+  acetone's standard record does not carry one -- and adding it there is a
+  CURATION act, which is reserved.
+
+  So the role is declared HERE, where it is a statement about this case's
+  model ("in this absorber, acetone is the thing being washed out") rather
+  than a claim about the substance.  `Database` overlays this field-by-field
+  over the standard entry; every other property of acetone comes from
+  data/standards/components/acetone.dat unchanged.
+\*---------------------------------------------------------------------------*/
+
+name        acetone;
+
+formula     C3H6O;
+
+CAS         67-64-1;
+
+MW          58.080;
+
+Tc          508.10;
+
+Pc          47.01;
+
+omega       0.3070;
+
+Tb          329.22;
+
+HvapTb      29100;
+
+Vliq        7.35e-5;
+
+standardThermochemistry
+{
+    dHf_298   -217100.0;      
+    s_298     295.30;         
+}
+
+vaporPressure
+{
+    model         Antoine;
+    
+    coefficients  (4.42448   1312.253   -32.445);
+    Trange        (259.16  507.60);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (6.301   0.2606   -1.253e-4   2.038e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (125.0);
+    Trange        (250  330);
+}
+
+provenance
+{
+    vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group ketone; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+}
+
+diffusionVolume  67.7;
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0438-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-64-1";
+        licence     externalRestricted;   
+        installed   false;                 
+    }
+}
+
+role        solute;

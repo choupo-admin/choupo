@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 348,
+  "cases": 349,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -1984,6 +1984,17 @@
    "application": "choupoSolve",
    "unitTypes": [
     "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/absorption/acetone05_luyben_absorber": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "absorber"
    ],
    "thermo": {
     "formulation": "diluteSolution"
@@ -5210,6 +5221,7 @@
     "tutorials/plant/twoSectorDemo/SECTOR_S",
     "tutorials/steady/absorption/absorber01_NH3_water",
     "tutorials/steady/absorption/absorption01_CO2_water",
+    "tutorials/steady/absorption/acetone05_luyben_absorber",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/absorption/stripper01_NH3_water",
@@ -5440,7 +5452,8 @@
     "tutorials/ctrl/ctrl09_stream_disturbance"
    ],
    "absorber": [
-    "tutorials/steady/absorption/absorber01_NH3_water"
+    "tutorials/steady/absorption/absorber01_NH3_water",
+    "tutorials/steady/absorption/acetone05_luyben_absorber"
    ],
    "adiabaticFlash": [
     "tutorials/steady/distillation/column12_stage_is_a_flash",

@@ -246,7 +246,21 @@ int Absorber::solve(const DictPtr& dict,
         for (std::size_t i = 0; i < n; ++i)
         {
             if (isSolute[i])      { gasMol[i][j] = V_in * ys[i][j]; liqMol[i][j] = L_in * xs[i][j]; }
-            else if (i == iSolv)  { liqMol[i][j] = L_in * x_in[i]; }       // solvent stays liquid
+            //  SOLVENT ARRIVING WITH THE GAS WAS BEING DELETED (fixed
+            //  2026-08-12).  This read `L_in * x_in[i]` -- the solvent stream
+            //  ALONE -- so any solvent carried in by the gas feed went into
+            //  neither outlet.  Luyben's absorber gas carries 0.345 kmol/h of
+            //  water into a 20 kmol/h wash, and the run closed on mass at
+            //  99.12 % with oxygen off by 1.38 %, which is how it was found.
+            //  The line above it claimed "(mass closes)".
+            //
+            //  Where it goes is not a new assumption: this method has ALREADY
+            //  assumed the solvent does not evaporate (that is what the branch
+            //  means).  Under that assumption solvent entering with the gas
+            //  can only leave in the liquid, so it is added there.  A method
+            //  that wanted it otherwise would have to model solvent
+            //  volatility, which Kremser does not.
+            else if (i == iSolv)  { liqMol[i][j] = L_in * x_in[i] + V_in * y_in[i]; }
             else                  { gasMol[i][j] = V_in * y_in[i]; }       // inert stays gas
             Vj += gasMol[i][j]; Lj += liqMol[i][j];
         }

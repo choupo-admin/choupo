@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Luyben's acetone absorber: 9 stages, water washing acetone out of the hydrogen offgas -- against his own acetone and bottoms";
+verbosity     2;

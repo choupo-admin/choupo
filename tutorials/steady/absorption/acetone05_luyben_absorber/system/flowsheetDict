@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  acetone05_luyben_absorber
+  =========================
+
+  The unit acetone04 was measured FOR.  Luyben's absorber washes acetone out of
+  the reactor's hydrogen-rich offgas with water: 9 stages at 1.5 atm, 20 kmol/h
+  of water on top, 39.80 kmol/h of gas at the bottom.
+
+  W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI
+  10.1021/ie901923a, Figure 1.
+
+  WHAT IS INDEPENDENT HERE, stated before the numbers because the last case in
+  this family had to say the opposite.  The gas inlet is Luyben's own
+  ("Gas (to absorber)": 39.80 kmol/h, acetone 0.1147, IPA 0.0033) EXCEPT for
+  its hydrogen and water, which were derived from the gas LEAVING using H2's
+  inertness and a balance.  So:
+
+    NOT independent -- the outlet H2 and water (the inlet was built from them)
+    INDEPENDENT     -- everything about the ACETONE, and the whole bottoms
+                       stream.  Nothing in 0/ was built from those.
+
+  Luyben's answer, for the record, before this case is run:
+
+      bottoms        20.05 kmol/h   acetone 0.1020  ->  2.045 kmol/h absorbed
+      offgas         39.76 kmol/h   acetone 0.0634  ->  2.521 kmol/h lost
+      recovery       2.045 / 4.565  =  44.8 %
+
+  His own table closes on itself to 0.02 % in both acetone and water, which is
+  two checks on a hand transcription and the reason those numbers are trusted
+  as targets.
+
+  WHAT acetone04 PREDICTS FOR THIS UNIT.  Measured there, on the same
+  thermodynamics this case runs: gamma_acetone = 10.27 at 1 mol % in water and
+  318 K, giving K = 6.84.  A model that holds acetone too weakly in the water
+  will absorb LESS of it than Luyben does.  That is the prediction; the run
+  below is the test.
+
+  The thermodynamics is PREDICTIVE UNIFAC with H2 authorised outside the
+  activity model -- the same declared package as acetone03, for the same
+  reasons, recorded in constant/thermoPhysPropDict.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        absorber;
+        type        absorber;
+        inputs      ( gasIn  washWater );     // gas at the bottom, water on top
+        outputs     ( offgas  bottoms );
+        operation   { stages 9; }             // Luyben: 9 stages, ID 0.217 m
+    }
+);
