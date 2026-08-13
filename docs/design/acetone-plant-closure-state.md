@@ -81,39 +81,56 @@ acetone that arrives, at the azeotropic ceiling `acetone06` measured. That is
 a **declared divergence**, not a tuning -- the resulting rate is 16 % below
 his, which is the finding, not an improvement.
 
-### F3 -- THE BLOCKER: no unit can remove a component completely
+### F3 -- CLOSED 2026-08-13: the refusal was an inconsistency, not a gap
 
-`acetone06` established that a permanent gas fed to a TOTAL condenser is asked
-to leave as a liquid, and the engine rightly refuses (`Component 'H2':
-liquidHeatCapacity missing -- required for enthalpy`), because at 330 K
-hydrogen has no liquid. Luyben's C1 has a PARTIAL condenser and vents it.
+The blocker was recorded here as "no unit can remove a component completely",
+with two candidate remedies (per-component recoveries on `splitter`, or a
+partial condenser on `distillationColumn`). **Neither was needed, and building
+either would have been a workaround for an engine defect.**
 
-An explicit vent flash ahead of C1 fixes the MESH -- V/F 0.16 %, and what
-leaves with the hydrogen is computed rather than assumed, directly comparable
-to his 0.0465 kmol/h vent. But an equilibrium flash leaves a TRACE, and the
-column's duty refusal is about PRESENCE, not amount. So the column converges
-and then refuses to price its condenser.
+`ThermoPackage::speciesPhaseEnthalpy` -- the formation-datum leg -- had
+handled a component with no `liquidHeatCapacity` since it was written, by an
+ANNOUNCED Watson-slope fallback documented in place as the right treatment for
+"a permanent / supercritical gas appearing as a dissolved trace in a liquid
+stream". `Component::Hliq_pure` -- the sensible leg, reached through
+`ThermoPackage::Hliquid` -- REFUSED HARD on the identical condition. Same
+component, same missing datum, two behaviours in one run; C1 converged and
+then refused to price its condenser **four lines after its own log announced
+the fallback for that very component**.
 
-**What is missing is a component-selective split.** `splitter` divides by ONE
-fraction common to every species (it declares that: `materialMapping
-proportionalExtensiveSplit`), and nothing else in the corpus removes a named
-component.
+Both legs now take the fallback, and the two refusals that must survive it
+are pinned: a `role nonvolatile;` component still refuses naming the role (the
+ideal-gas reference is forbidden for it, settled 2026-06-29), and a component
+with neither heat capacity still refuses naming both blocks. Gate:
+`check_liquid_cp_fallback`.
 
-**Two candidate remedies, and the choice is a design decision not yet made:**
+**The vent flash stays**, for the other half of F1: the MESH divergence at
+H2 6.8e-4 is a Jacobian problem, not an enthalpy one, and removing the bulk of
+the hydrogen before the column is the physical thing to do anyway.
 
-* **(a) A per-component recovery on `splitter`** -- `operation { recoveries {
-  H2 ( 1.0 0.0 ); } }` beside the existing proportional `fractions`. Cheap,
-  and it makes the "this is a vent, and here is exactly what it removes"
-  statement explicit and readable. Risk: a splitter that can separate is no
-  longer a splitter, and the name would then lie.
-* **(b) A partial condenser on `distillationColumn`** -- the physically
-  faithful answer, since that is what Luyben has, and it would also let C1's
-  vent loss be compared with his 0.0335 kmol/h directly. Much larger: it
-  changes the MESH boundary condition at stage 1 and touches every column
-  golden's condenser duty unless gated behind a declared option.
+### F4 -- THE TWO CEILINGS INTERACT THROUGH THE RECYCLE (the live blocker)
 
-(b) is the right unit-operation answer and (a) is the right flowsheet answer;
-they are not exclusive. **Neither is authorised yet.**
+With the enthalpy legs consistent, the open-loop chain runs end to end: all
+eight units solve, C1 converges in 7 Newton iterations to |F| 2.1e-10 and
+prices its condenser. **The closed loop does not.**
+
+Wegstein moves the tear twice -- |r| 3.86 -> 1.20, so it is converging -- and
+then C1 fails on the third pass. Newton fails on the first, before printing an
+iteration, because its Jacobian perturbation pushes the tear somewhere C1
+cannot solve.
+
+The mechanism is physical and is the plant's own finding. C2's overhead is
+capped by the IPA/water azeotrope, so the recycle returns **wetter** than
+Luyben's; a wetter recycle carries less isopropanol back; less isopropanol
+makes less acetone; and C1's distillate rate -- a FIXED number, because the
+rigorous column takes a rate and not a recovery -- becomes infeasible again as
+the loop tightens. **The two column ceilings are coupled through the recycle**,
+which is exactly the kind of thing a closed flowsheet shows and six isolated
+units cannot.
+
+What that needs is a distillate specification that tracks its feed rather than
+a fixed rate, or an author-side outer design iteration on the rate, converged
+and shown. Neither is chosen yet.
 
 ## What is NOT claimed here
 

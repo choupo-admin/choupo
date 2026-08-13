@@ -499,9 +499,22 @@ public:
     //     ΔHvap(T) = HvapTb · ((Tc - T)/(Tc - Tb))^0.38
     // which requires Tc, Tb and HvapTb to be supplied in the.dat file.
 
+    //  A component with NO liquidHeatCapacity used to REFUSE here, while
+    //  `ThermoPackage::speciesPhaseEnthalpy` answered the identical question
+    //  with an ANNOUNCED Watson-slope fallback -- the same component and the
+    //  same missing datum getting two different behaviours in one run, which
+    //  is the arity defect one layer up from a value with two homes.  Both
+    //  legs now take that fallback, `Cp_ig` integrated and the latent heat
+    //  subtracted, announced once per component.
+    //
+    //  IT DOES NOT APPLY TO A NONVOLATILE, and that guard is not a detail:
+    //  routing a dissolved salt's enthalpy through the ideal-gas reference is
+    //  forbidden outright (settled 2026-06-29).  A nonvolatile, or a record
+    //  with no ideal-gas Cp either, keeps the refusal it always had.
     scalar Hliq_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_pure   (scalar T_K, scalar Tref_K = 298.15) const;
     scalar Hvap_latent (scalar T_K) const;
+
 
     // ---- Absolute (ideal-gas) thermo at T -- Gibbs reactor consumers --------
     //   h_pure_ig(T)  = Hf298 + ∫_{298.15}^{T} cp_ig(T') dT'             [J/mol]

@@ -1422,6 +1422,23 @@ PYEOF
     fi
     rm -f /tmp/rb.$$
 
+    # Liquid-Cp fallback gate: a missing liquidHeatCapacity had TWO answers
+    # -- an announced Watson-slope fallback on the formation-datum leg and a
+    # hard refusal on the sensible one.  Both legs now take the fallback; this
+    # pins that AND the two refusals that must survive it, because the danger
+    # of turning a refusal into an answer is turning every refusal into one.
+    if "$ROOT/bin/curate/check_liquid_cp_fallback.py" > /tmp/lcp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "liquid-cp-fallback-gate" \
+            "$(tail -1 /tmp/lcp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_liquid_cp_fallback.py)\n" \
+            "liquid-cp-fallback-gate"
+        cat /tmp/lcp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lcp.$$
+
     # Azeotrope-ceiling gate: acetone04 measured a UNIFAC azeotrope and wrote
     # down, in advance, what a column built on it would do; acetone06 built
     # the column and the prediction held.  That LINK lives in neither case's

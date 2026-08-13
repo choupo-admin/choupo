@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Component.H"
+#include "core/Advisory.H"
 #include "thermo/AtomicWeights.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
@@ -1197,8 +1198,71 @@ scalar Component::Hvap_latent(scalar T) const
 scalar Component::Hliq_pure(scalar T, scalar Tref) const
 {
     if (!cpLiq_)
-        throw std::runtime_error("Component '" + name_ +
-            "': liquidHeatCapacity missing — required for enthalpy");
+    {
+        //  THE SAME ANSWER THE OTHER LEG ALREADY GAVE.
+        //
+        //  ThermoPackage::speciesPhaseEnthalpy has handled this case since the
+        //  formation-datum leg was written: a permanent or supercritical gas
+        //  (H2, N2) appearing as a DISSOLVED TRACE in a liquid stream has no
+        //  pure-liquid rung to integrate, so the liquid leg falls back to
+        //  h_ig - dHvap(T) and says so.  This leg refused instead, and the
+        //  disagreement was invisible until a flowsheet used both: the acetone
+        //  plant's column converged and then refused to price its condenser
+        //  over a hydrogen mole fraction of order 1e-9, in a run whose own log
+        //  had already announced the fallback for the very same component.
+        //
+        //  Above Tc the Watson latent heat is zero, so this returns the
+        //  ideal-gas sensible enthalpy -- a dissolved permanent gas carrying
+        //  its gas-phase enthalpy, i.e. zero heat of solution.  That is the
+        //  zero-order approximation, it is the one the other leg already
+        //  makes, and the honest home for both remains the dissolved-gas
+        //  HENRY rung named in ThermoPackage.cpp.  What changed is that the
+        //  engine now gives ONE answer rather than two.
+        //
+        //  TWO CASES KEEP THE REFUSAL, and neither is a technicality:
+        //
+        //  (1) A NONVOLATILE.  "A nonvolatile salt must NEVER route its
+        //      enthalpy through the ideal-gas reference" is settled doctrine
+        //      (2026-06-29); a dissolved salt takes the solid/aqueous rung and
+        //      has no vaporisation leg to subtract.  Falling back here would
+        //      hand it exactly the reference the doctrine forbids.
+        //  (2) NO IDEAL-GAS Cp EITHER.  Then there is nothing to integrate on
+        //      any rung, and the remedy is data, not a branch.
+        if (isNonvolatile())
+            throw std::runtime_error("Component '" + name_ +
+                "': liquidHeatCapacity missing, and this component is declared"
+                " `role nonvolatile;` -- the ideal-gas fallback the engine uses"
+                " for a dissolved permanent gas is FORBIDDEN here (a"
+                " nonvolatile's enthalpy must not route through the ideal-gas"
+                " reference).  Give it a liquidHeatCapacity block, or price it"
+                " on the solid/aqueous rung.");
+
+        if (!cpGas_)
+            throw std::runtime_error("Component '" + name_ +
+                "': liquidHeatCapacity missing — required for enthalpy, and"
+                " there is no idealGasHeatCapacity to fall back on either, so"
+                " no rung can be integrated.  Add one of the two blocks.");
+
+        //  DEDUP THROUGH THE SINK, not through a flag on this object -- and
+        //  the first version got that wrong in a way worth keeping.  A
+        //  `mutable bool` here announced FOUR times for one component,
+        //  because the package copies its Components and each copy carried a
+        //  fresh flag.  AdvisoryLog::add() already dedups process-wide and
+        //  returns whether the entry was new, which is exactly the question,
+        //  so the log line rides on it.  That is also what the formation-datum
+        //  leg does: fixing a decision with two homes by adding a second
+        //  announce-once mechanism would have been the same defect again.
+        if (AdvisoryLog::instance().add("thermo", "warning",
+                "liquidEnthalpy " + name_,
+                "no liquidHeatCapacity: the SENSIBLE liquid leg falls back to"
+                " the Watson-slope form h_ig - Hvap(T), the same fallback the"
+                " formation-datum leg already used (a dissolved-gas Henry rung"
+                " is the honest future home)"))
+            std::cerr << "[thermo] " << name_ << ": no liquidHeatCapacity --"
+                         " sensible liquid leg uses the ANNOUNCED Watson-slope"
+                         " fallback\n";
+        return cpIdealGas().H(T, Tref) - Hvap_latent(T);
+    }
     return cpLiq_->H(T, Tref);
 }
 
