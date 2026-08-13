@@ -46,6 +46,41 @@ You are helping AUTHOR this Choupo **case** (the dicts under `system/` +
     as "UNIFAC's error" has attributed to the mixture model an error the pure
     component brought with it.
 
+### THE PREDICTION FOR COLUMN C2, written 2026-08-13 before that column existed
+
+The same discipline `acetone04` used for C1, applied here: state the
+consequence in advance so it cannot be retrofitted once the column is built.
+
+Luyben's C2 (19 stages, feed 16, RR 0.849) takes C1's bottoms and splits it
+into a **water product** at the bottom and an **IPA recycle** overhead, which
+his Figure 1 gives as **5.88 kmol/h at x_IPA = 0.6500**.
+
+That distillate composition sits **above the azeotrope this case measured**.
+UNIFAC puts the IPA/water azeotrope at x_IPA **0.5901**; a column cannot
+distil past a minimum-boiling azeotrope from below, so:
+
+> **C2's overhead should cap at roughly x_IPA 0.59 and cannot reach his
+> 0.650.** The gap is 0.06 in mole fraction, about 9 % relative, and it is a
+> HARD ceiling rather than a shortfall in stages or reflux — the same shape
+> as C1's, one binary over.
+
+Two consequences follow, and both are stated now rather than discovered later:
+
+1. **The recycle stream will be wetter than his.** At a fixed IPA recovery,
+   an overhead capped at 0.59 instead of 0.65 carries proportionally more
+   water back to the reactor. In the CLOSED flowsheet that water is not inert
+   — it returns to the vaporiser and the reactor and is heated twice.
+
+2. **The direction of the error is the opposite of C1's.** C1's azeotrope was
+   a UNIFAC INVENTION (Luyben's UNIQUAC has none there), so it cost purity
+   the paper does not lose. Here the azeotrope is REAL and both models have
+   it; UNIFAC only puts it in the wrong place. A reader who lumps the two
+   columns together as "UNIFAC is worse" will have missed that one failure is
+   a spurious feature and the other is a misplaced real one.
+
+**What would falsify this:** an overhead that reaches 0.65, which would mean
+either the azeotrope moved or C2 is not being run as specified.
+
 - **Decisions + why:**
   - **UNIFAC, not UNIQUAC**, although the paper runs UNIQUAC: Choupo ships no
     UNIQUAC pair for IPA–water, and inventing one would convert *unsourced*
