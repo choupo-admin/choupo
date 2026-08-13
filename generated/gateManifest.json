@@ -39,6 +39,10 @@
       "exit": 0,
       "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs"
     },
+    "check_azeotrope_ceiling": {
+      "exit": 0,
+      "claim": "check_azeotrope_ceiling: OK -- the prediction acetone04 wrote before acetone06 existed is pinned to its outcome.  UNIFAC's minimum-boiling azeotrope sits at x_acetone 0.9780 (0.044 K below the pure boiling point); the column tops out at 0.97312, below it, against Luyben's 0.999 spec, and it is PINCHED there (the top 40 rectifying stages move x by 0.0204), so the cap is the azeotrope and not the stage count.  2.69 % of the feed acetone leaves in the WATER product, closing to 8.5e-13 relative on an independent recount.  NOT CHECKED: whether the azeotrope is real -- there is no fitted acetone/water pair in the corpus and the paper says it does not exist, so this pins a MODEL and its consequence; nor the duties, nor the 16 K bottoms-temperature gap the case records as unattributed."
+    },
     "check_basis_rank": {
       "exit": 0,
       "claim": "basis-rank gate: rank-deficient basis refused with (c-1)(a-1) = 1 named and a remedy; full-rank multi-master basis runs and announces rank 2"
@@ -57,7 +61,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 333 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 339 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -93,7 +97,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 602 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 616 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -109,11 +113,11 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 133 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 134 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
-      "exit": 1,
-      "claim": "check_decision_index: FAILED"
+      "exit": 0,
+      "claim": "check_decision_index: OK -- all 66 design record(s) appear in the index, and its stated counts (32 state a rejected alternative, 34 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -125,11 +129,11 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 260 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 261 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 345 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 349 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -217,7 +221,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 134 gates, and the other 130 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 135 gates, and the other 131 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -229,7 +233,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40710 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40614 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -345,7 +349,7 @@
     },
     "check_problem_divergence": {
       "exit": 0,
-      "claim": "check_problem_divergence: OK -- an unauthorised ideal-pair substitution refuses by name with a paste-ready remedy on all three pair models; the authorisation is read at the top level ONLY and delimits to the pairs it lists; a declared approximation reaches the human block (above the caveats), the result JSON (above the kpis) and converged/, naming the unit; silence is printed rather than implied.  NOT CHECKED: whether any authorised approximation is scientifically acceptable (the author's judgement, which is why `reason` is demanded), and any downgrade outside shortcutColumn + the three pair-parameter activity models -- those are UNCOVERED.  The NotRead branch of the authorisation is asserted UNREACHED rather than exercised: no path in this corpus produces it, which is why it announces itself as an engine defect if it ever does."
+      "claim": "check_problem_divergence: OK -- an unauthorised ideal-pair substitution refuses by name with a paste-ready remedy on all three pair models; the authorisation is read at the top level ONLY and delimits to the pairs it lists; a declared approximation reaches the human block (above the caveats), the result JSON (above the kpis) and converged/, naming the unit; silence is printed rather than implied.  NOT CHECKED: whether any authorised approximation is scientifically acceptable (the author's judgement, which is why `reason` is demanded), and any downgrade outside shortcutColumn + the three pair-parameter activity models -- those are UNCOVERED.  The NotRead branch of the authorisation is asserted UNREACHED rather than exercised: no path in this corpus produces it, which is why it announces itself as an engine defect if it ever does.  A9 covers the SECOND authorisation kind: a component the activity model cannot price at all (no UNIFAC group exists for hydrogen) refuses by name, its authorised exit rides the result with the case's own reason, the run states that gamma = 1 is not a solubility model, and an all-grouped package records nothing."
     },
     "check_psat_range": {
       "exit": 0,
@@ -401,7 +405,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 521 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 535 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -417,7 +421,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 339 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 345 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -517,7 +521,7 @@
     },
     "check_utility_allocation_pinned": {
       "exit": 0,
-      "claim": "check_utility_allocation_pinned: OK -- 415 utility-allocation quantit(ies) pinned across 77 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
+      "claim": "check_utility_allocation_pinned: OK -- 427 utility-allocation quantit(ies) pinned across 79 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
     },
     "check_v2_refusals": {
       "exit": 0,
@@ -529,7 +533,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 3009 declared window(s) across 3678 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 3054 declared window(s) across 3707 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_verdict_parity": {
       "exit": 0,

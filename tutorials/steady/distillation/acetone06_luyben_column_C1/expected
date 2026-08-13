@@ -1,0 +1,44 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  B1                     F                0.0112717083333    1e-4
+stream  F1                     F                0.0202300416667    1e-4
+stream  acetoneProduct         F                0.00895833333333   1e-4
+kpi     C1                     B                0.0112717083333    1e-4
+kpi     C1                     D                0.00895833333333   1e-4
+kpi     C1                     Q_condenser_kW   -997.746586798     1e-4
+kpi     C1                     Q_reboiler_kW    1030.49217736      1e-4
+kpi     C1                     R                2.78               1e-4
+kpi     C1                     T_bottom         353.606283382      1e-4
+kpi     C1                     T_top            329.375698025      1e-4
+kpi     C1                     feedStage        54                 1e-4
+kpi     C1                     nFeeds           1                  1e-4
+kpi     C1                     nSideDraws       0                  1e-4
+kpi     C1                     nStages          66                 1e-4
+kpi     C1                     x_B_HK           0.883650489877     1e-4
+kpi     C1                     x_D_LK           5.08121687919e-10  1e-4
+utility C1                     heating.steamLP.duty_kW 1030.49217736      1e-4
+utility C1                     heating.steamLP.T 353.606283382      1e-4
+utility C1                     heating.steamLP.kg_s 0.471405387629     1e-4
+utility C1                     heating.steamLP.eur_h 44.5172620618      1e-4
+utility C1                     cooling.coolingWater.duty_kW -997.746586798     1e-4
+utility C1                     cooling.coolingWater.T 329.375698025      1e-4
+utility C1                     cooling.coolingWater.kg_s 23.8695355693      1e-4
+utility C1                     cooling.coolingWater.eur_h 1.43675508499      1e-4
+#
+# --- THE NUMBERS THIS CASE EXISTS FOR, added by hand -----------------------
+#
+# `--record` writes each stream's TOTAL flow and the column's KPIs, and the
+# column publishes `x_D_LK` (isopropanol) and `x_B_HK` (water).  Neither is the
+# acetone.  So the product purity -- the one quantity the whole case is about,
+# and the one that tests acetone04's written prediction -- would have been
+# pinned by nothing, exactly the defect the `aad`/`closure`/`utility` kinds
+# were built to close one layer up.  These rows read the stream compositions.
+#
+# The claim each makes is REGRESSION, not agreement: 0.9731 DISAGREES with
+# Luyben's 0.999 and is meant to.  What they pin is that the disagreement has
+# not silently moved.
+stream  acetoneProduct         acetone          0.973123011145     1e-4
+stream  acetoneProduct         water            0.0268769883467    1e-4
+stream  B1                     acetone          0.0213780788578    1e-4
+stream  B1                     isopropanol      0.0949714312657    1e-4

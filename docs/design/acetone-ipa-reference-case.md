@@ -1,9 +1,20 @@
 # Acetone from 2-propanol — reference-case anchor record
 
-**Status: ANCHOR RECORD ONLY.  No case is built from this yet.**  What follows
-is the numerical content of two primary sources, transcribed for a future
-validation case, plus an honest statement of what Choupo would still need in
-order to run it.
+**Status: ANCHOR RECORD -- six cases now built from it.**  What follows is the
+numerical content of two primary sources, transcribed, plus an honest statement
+of what Choupo would still need to run the whole flowsheet.
+
+Built so far, each stating what it establishes and what it does not:
+`props/compare/acetone01_ipa_water_azeotrope` (the IPA/water binary),
+`steady/reactors/acetone02_luyben_reactor`,
+`steady/flowsheets/acetone03_luyben_reaction_section`,
+`props/compare/acetone04_acetone_water_vle` (the acetone/water binary, and the
+azeotrope PREDICTION), `steady/absorption/acetone05_luyben_absorber`,
+`steady/distillation/acetone06_luyben_column_C1` (which tests that prediction).
+**No case makes a global reproduction claim**, and the running pattern across
+all six is worth stating here rather than in six places: the energy quantities
+land within roughly 5-15 % of the paper, and every SEPARATION is off by a
+factor -- each for a different, named reason.
 
 Assembled 2026-08-11 from two PDFs supplied by Vítor.  **Every number below was
 read from the papers themselves**, not from an abstract, a search summary or
@@ -185,7 +196,7 @@ Every unit Luyben's flowsheet uses exists in Choupo (`absorber`, `pfr`,
 | gap | status | note |
 |---|---|---|
 | `isopropanol` component | **ABSENT from `data/standards/`** | a Joback-estimated record exists in `data/groupEstimative/`; the agent test showed the legal promotion route works |
-| `liquidHeatCapacity` for isopropanol | **ABSENT; closeable, not closed** | what blocked the rigorous column in the agent test.  This row used to read *"ABSENT and UNCLOSEABLE -- no estimator produces it for a real molecule"*.  **That was wrong**, and the error is worth keeping visible: it was reached by listing the estimators that EXIST rather than asking what is legitimately DERIVABLE.  Rowlinson-Bondi gives `(Cp_L - Cp_ig)/R` from `Tr`, `omega` and the ideal-gas Cp, all three of which `data/groupEstimative/` already carries for isopropanol.  No such model is registered today (`polynomial` and `NASA7` only), so the gap is real -- but it is a MISSING ESTIMATOR, not a missing possibility.  Corrected 2026-08-12 |
+| `liquidHeatCapacity` for isopropanol | **ABSENT; closeable, not closed** | what blocked the rigorous column in the agent test.  This row used to read *"ABSENT and UNCLOSEABLE -- no estimator produces it for a real molecule"*.  **That was wrong**, and the error is worth keeping visible: it was reached by listing the estimators that EXIST rather than asking what is legitimately DERIVABLE.  Rowlinson-Bondi gives `(Cp_L - Cp_ig)/R` from `Tr`, `omega` and the ideal-gas Cp, all three of which `data/groupEstimative/` already carries for isopropanol.  This row has now been corrected TWICE and both corrections are kept, because the sequence is the lesson.  It first read *"ABSENT and UNCLOSEABLE -- no estimator produces it for a real molecule"*, which was reached by listing the estimators that EXIST rather than asking what is legitimately DERIVABLE.  On 2026-08-12 it was corrected to *"a MISSING ESTIMATOR, not a missing possibility"* -- Rowlinson-Bondi gives `(Cp_L - Cp_ig)/R` from `Tr`, `omega` and the ideal-gas Cp, all three of which `data/groupEstimative/` already carries for isopropanol.  **CLOSED the same day:** `RowlinsonBondi` is a registered `HeatCapacityModel`, its accuracy MEASURED against 86 curated components rather than claimed (`check_rowlinson_bondi`), and its known weakness on hydrogen-bonding molecules is stated in the isopropanol record that uses it.  `acetone06_luyben_column_C1` runs on it. |
 | UNIQUAC pair IPA–water | **ABSENT** | Luyben's model |
 | UNIQUAC pair acetone–water | **ABSENT** | |
 | UNIQUAC pair acetone–IPA | **ABSENT** | |

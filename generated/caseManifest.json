@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 349,
+  "cases": 350,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -2247,6 +2247,23 @@
      "Pitzer"
     ],
     "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/acetone06_luyben_column_C1": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -5238,6 +5255,7 @@
     "tutorials/steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol",
     "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent",
     "tutorials/steady/crystallisation/overlay02_nacl_calorimetric",
+    "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/column01_benzene_toluene",
     "tutorials/steady/distillation/column02_simultaneous",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
@@ -5585,6 +5603,7 @@
    ],
    "distillationColumn": [
     "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
+    "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/column01_benzene_toluene",
     "tutorials/steady/distillation/column02_simultaneous",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
@@ -5941,6 +5960,7 @@
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/steady/absorption/extract01_ethanol_water_benzene",
+    "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/column05_reactive_methylacetate",
     "tutorials/steady/flash/flash17_two_liquids_reactive",
     "tutorials/steady/flash/flash19_organic_and_precipitate",

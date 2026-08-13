@@ -1422,6 +1422,26 @@ PYEOF
     fi
     rm -f /tmp/rb.$$
 
+    # Azeotrope-ceiling gate: acetone04 measured a UNIFAC azeotrope and wrote
+    # down, in advance, what a column built on it would do; acetone06 built
+    # the column and the prediction held.  That LINK lives in neither case's
+    # golden -- both can pass while the sentence connecting them stops being
+    # true -- so it is pinned executably, and at both ends: the arm that
+    # fires on PROGRESS makes a column that finally MEETS Luyben's spec a
+    # FAILURE, because it would mean the thermodynamics moved under the
+    # finding rather than the finding being wrong.
+    if "$ROOT/bin/curate/check_azeotrope_ceiling.py" > /tmp/az.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "azeotrope-ceiling-gate" \
+            "$(tail -1 /tmp/az.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_azeotrope_ceiling.py)\n" \
+            "azeotrope-ceiling-gate"
+        cat /tmp/az.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/az.$$
+
     # Problem-divergence gate (ruled 2026-08-11): the problem SOLVED must
     # not silently differ from the problem POSED.  An unauthorised ideal-pair
     # substitution refuses by name with a paste-ready remedy; an authorised

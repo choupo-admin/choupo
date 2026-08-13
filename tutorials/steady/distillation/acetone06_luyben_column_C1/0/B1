@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Initial guess for the bottoms.  Luyben B1: 40.56 kmol/h at 370 K,
+     A 0.0001 / IPA 0.0951 / W 0.9048. ---*/
+
+componentMolarFlows
+{
+    acetone       0.0040560 kmol/h;
+    isopropanol   3.8572560 kmol/h;
+    water        36.7186880 kmol/h;
+}
+
+T               370 K;
+P               101325 Pa;

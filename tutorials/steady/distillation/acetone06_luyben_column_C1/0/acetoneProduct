@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Initial guess for the distillate.  Luyben's product spec (32.25 kmol/h
+     at 99.9 mol % acetone) is used as the SEED; whether the column can reach
+     it is the question this case asks. ---*/
+
+componentMolarFlows
+{
+    acetone      32.21775 kmol/h;
+    isopropanol   0.0 kmol/h;
+    water         0.03225 kmol/h;
+}
+
+T               329.4 K;
+P               101325 Pa;

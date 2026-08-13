@@ -1,0 +1,108 @@
+/*---------------------------------------------------------------------------*\
+  acetone06_luyben_column_C1
+  ==========================
+
+  THE COLUMN THAT TESTS A PREDICTION WRITTEN BEFORE IT EXISTED.
+
+  W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI
+  10.1021/ie901923a.  Column C1 of his Figure 1: 66 stages, feed on stage 54,
+  reflux ratio 2.78, distillate 32.25 kmol/h, 1 atm.  It takes the combined
+  flash liquid plus absorber bottoms (his F1) and is asked to make the
+  ACETONE PRODUCT at 99.9 mol %.
+
+  THE PREDICTION, quoted from the sibling props case rather than reinvented.
+  `props/compare/acetone04_acetone_water_vle` measured the acetone/water VLE
+  this column rests on BEFORE any column was built, and found that predictive
+  UNIFAC puts a minimum-boiling azeotrope at x_acetone ~ 0.978 where Luyben's
+  UNIQUAC has only a pinch.  It is a tiny feature -- 0.044 K deep, |y - x|
+  never above 7.7e-4 -- and acetone04 recorded, in advance and in writing:
+
+      "A column C1 built on this thermodynamics should be expected to
+       asymptote near 97.9 % and fail his spec -- and if it had been built
+       before this was measured, the column would have been blamed for a
+       defect that lives in the activity model."
+
+  So THIS case has a pass/fail criterion that is not its own golden: either the
+  distillate stalls near the predicted ceiling, or the prediction was wrong.
+  Both outcomes are results.  Neither is a reason to touch the thermodynamics.
+
+  THE FEED IS LUYBEN'S OWN F1, not this project's upstream answer.  acetone03
+  computes a flash liquid and acetone05 an absorber bottoms, and their sum is
+  what physically feeds C1 -- but wiring them in would test the column and two
+  upstream units at once, and acetone05 already reports that it recovers a
+  sixth of what the paper does.  Feeding the PUBLISHED stream isolates the
+  column: whatever it gets wrong here is the column and its thermodynamics.
+  The composition in 0/F1 is his mole fractions times his 72.85 kmol/h.
+
+  WHAT IS NOT LUYBEN'S, and why each choice is the honest one:
+
+    * UNIQUAC vs UNIFAC.  He runs UNIQUAC; Choupo ships no fitted pair for
+      any of these binaries and inventing one would convert unsourced into
+      falsely sourced.  Predictive UNIFAC is what is available, and acetone04
+      measured what it costs on the binary that decides this column.
+
+    * The rigorous MESH (`model simultaneous`).  Wang-Henke is the corpus
+      default and is documented as unstable through an azeotrope, which is
+      precisely the feature under test here.  Choosing the method that CAN
+      resolve the feature is not tuning; choosing the one that cannot would
+      have hidden it.
+
+    * Isopropanol's liquid heat capacity is Rowlinson-Bondi off the same
+      Joback fragmentation as the rest of its record.  Its measured accuracy
+      on hydrogen-bonding molecules is 30-70 %, stated in the record itself.
+      It is 5 mol % of the feed and it moves the DUTIES, not the split.
+
+    * THIS COLUMN IS MODELLED DOWNSTREAM OF LUYBEN'S VENT, so it carries no
+      hydrogen.  His C1 has a partial condenser with a vent; Choupo's column
+      has a total condenser and no vapour distillate.  Both facts are stated
+      before the reason, because the reason has to be argued rather than
+      asserted:
+
+        - his vent is 0.0465 kmol/h at H2 0.2798, i.e. 0.0130 kmol/h of
+          hydrogen, against the 0.0146 kmol/h that F1 carries.  The vent
+          removes essentially ALL of it.  A column model with no vent and a
+          total condenser therefore represents the column AFTER the vent,
+          which is a statement about WHICH UNIT is being modelled -- not an
+          approximation to the physics of the one that is.
+
+        - what that costs is quantified rather than hidden: the same vent
+          carries 0.0335 kmol/h of ACETONE (his own figure), 0.10 % of the
+          product.  Not modelling the vent therefore FLATTERS this column's
+          acetone recovery by that much, and the comparison below must be
+          read knowing it.
+
+      IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this
+      paragraph exists rather than a preference.  With H2 in the feed the MESH
+      converged (16 Newton iterations, ||F|| 2.4e-11) to the SAME distillate
+      -- x_acetone 0.9722 -- and then the energy report REFUSED: hydrogen has
+      no liquid heat capacity, because at 330 K it has no liquid.  The refusal
+      is right, and it is the honest form of the modelling error: a total
+      condenser was silently asking a permanent gas to leave as a liquid.
+      See this case's CLAUDE.md.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        C1;
+        type        distillationColumn;
+        model       simultaneous;
+        in          F1;
+        outputs     ( acetoneProduct  B1 );
+
+        operation
+        {
+            nStages        66;
+            feedStage      54;
+            refluxRatio    2.78;
+            distillateRate 32.25 kmol/h;
+
+            //  q = 1 is "the feed enters entirely as liquid", and the feed's
+            //  own 325 K carries its enthalpy.  F1 is a subcooled liquid, so
+            //  this is exact, not an approximation.
+            feedQuality    1.0;
+
+            P              1 atm;
+        }
+    }
+);

@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Luyben Figure 1, stream F1: 72.85 kmol/h at 325 K, mole fractions
+     are those fractions times that total; they sum to 72.8428 kmol/h rather
+     than 72.85 because his published fractions are rounded to four places.
+     The rounding is left visible instead of being normalised away. ---*/
+
+componentMolarFlows
+{
+    acetone      32.250700 kmol/h;
+    isopropanol   3.853765 kmol/h;
+    water        36.723685 kmol/h;
+}
+
+T               325 K;
+P               101325 Pa;
