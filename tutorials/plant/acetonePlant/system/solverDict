@@ -15,6 +15,6 @@
   shape where a scalar acceleration misbehaves.
 \*---------------------------------------------------------------------------*/
 tearStreams    ( ipaRecycle );
-recycleSolver  Newton;
+recycleSolver  Wegstein;
 recycleTol     1e-6;
 recycleMaxIter 120;

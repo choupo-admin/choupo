@@ -609,6 +609,23 @@ def closure_of(pp_path, caseDir, std, AQ):
                     a, b = sorted((comps[i], comps[j]))
                     want("parameters/NRTL/" + a + "-" + b + ".dat")
 
+        # A per-unit override may DECLARE its parameter record by path -- the
+        # dilute-solution formulation does exactly that, `binaryParameters {
+        # acetone-water { source "data/standards/parameters/Henry/..."; } }`.
+        # The list above was written for NRTL and never grew, so the acetone
+        # plant's absorber (its own Henry world, the unit that makes the
+        # flowsheet run at all) sealed WITHOUT its pair and then refused at
+        # run time: "declared parameter record is NOT in the case's constant/
+        # record tree".  The refusal is right and it caught this; what it
+        # caught is the closure, not the case.
+        #
+        # Harvesting the DECLARED PATH rather than reconstructing pair names
+        # from the component list is deliberate: the record the case names is
+        # the record it reads, and guessing a name is how a closure ends up
+        # staging a file the run never asks for while missing the one it does.
+        for m in re.finditer(r'source\s+"data/standards/([^"]+)"', fs_text):
+            want(m.group(1))
+
     # ---- UNIFAC group-contribution tables ------------------------------------
     # UNIFAC's R_k/Q_k (groups.dat) + a_mn (interactions.dat) are SINGLETON
     # tables, not per-pair records: the model reads them through the case-local

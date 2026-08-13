@@ -690,12 +690,7 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     //  column carries something else over too, so the answer lies ABOVE it --
     //  which is why the search starts here and steps up, never down into a
     //  region where the recovery cannot be reached at all.
-    const bool warm = (lastAcceptedD_ > 0.0 && lastAcceptedD_ < Ff);
-    if (warm && verbosity >= 2)
-        std::cout << "  [recovery] warm start from the previously accepted "
-                  << (lastAcceptedD_ * 3600.0) << " kmol/h\n";
-    scalar D0 = warm ? lastAcceptedD_ : target * feedOfComp;
-    scalar a0 = D0;
+    scalar D0 = target * feedOfComp, a0 = D0;
     scalar f0 = evaluateNear(D0, a0) - target;
     D0 = a0;
     scalar D1 = std::min(1.05 * D0, 0.999 * Ff), a1 = D1;
@@ -747,7 +742,6 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     fOper->insert("distillateRate", D1, Dims::molarFlow);
     const int rc = solve(fin, thermo, verbosity);
 
-    lastAcceptedD_ = D1;
     kpis_["recovery_" + comp]        = f1 + target;
     kpis_["recoveryOuterIterations"] = static_cast<scalar>(it);
     if (verbosity >= 2)

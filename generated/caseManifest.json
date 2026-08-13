@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 351,
+  "cases": 352,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -900,6 +900,28 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/plant/acetonePlant": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "absorber",
+    "conversionReactor",
+    "distillationColumn",
+    "isothermalFlash",
+    "mixer",
+    "phaseChanger"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
     ]
    },
    "roles": [],
@@ -5244,6 +5266,7 @@
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
     "tutorials/plant/ChemicalPlantTutorial",
+    "tutorials/plant/acetonePlant",
     "tutorials/plant/esterification2sector",
     "tutorials/plant/hda",
     "tutorials/plant/lithiumBrinePlant",
@@ -5488,6 +5511,7 @@
     "tutorials/ctrl/ctrl09_stream_disturbance"
    ],
    "absorber": [
+    "tutorials/plant/acetonePlant",
     "tutorials/steady/absorption/absorber01_NH3_water",
     "tutorials/steady/absorption/acetone05_luyben_absorber"
    ],
@@ -5568,6 +5592,7 @@
     "tutorials/steady/power/rankine02_water"
    ],
    "conversionReactor": [
+    "tutorials/plant/acetonePlant",
     "tutorials/steady/flowsheets/acetone03_luyben_reaction_section",
     "tutorials/steady/reactors/acetone02_luyben_reactor",
     "tutorials/steady/reactors/chlorophenol01_chlorination",
@@ -5620,6 +5645,7 @@
     "tutorials/steady/flash/dewT01_ethanol_water"
    ],
    "distillationColumn": [
+    "tutorials/plant/acetonePlant",
     "tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series",
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
@@ -5766,6 +5792,7 @@
     "tutorials/steady/membranes/membrane08_softened_scaling"
    ],
    "isothermalFlash": [
+    "tutorials/plant/acetonePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
@@ -5823,6 +5850,7 @@
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "mixer": [
+    "tutorials/plant/acetonePlant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
@@ -5843,6 +5871,9 @@
     "tutorials/steady/reactors/pfr03_series_selectivity",
     "tutorials/steady/reactors/pfr04_adiabatic",
     "tutorials/steady/reactors/pfr_polyesterification"
+   ],
+   "phaseChanger": [
+    "tutorials/plant/acetonePlant"
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
@@ -5975,6 +6006,7 @@
     "tutorials/steady/thermoTest/model2_pitzer_evaporator"
    ],
    "UNIFAC": [
+    "tutorials/plant/acetonePlant",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",

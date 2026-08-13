@@ -297,7 +297,8 @@ units
         operation
         {
             nStages 66;  feedStage 54;  refluxRatio 2.78;
-            distillateRate 27.0 kmol/h;  feedQuality 1.0;  P 1 atm;
+            distillateRecovery { component acetone;  fraction 0.97; }
+            feedQuality 1.0;  P 1 atm;
         }
     }
 

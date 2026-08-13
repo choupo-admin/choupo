@@ -150,18 +150,22 @@ private:
                         int                         verbosity);
 
     inline static const std::string type_ = "distillationColumn";
-    //  WARM START for the recovery secant, and it is what makes the
-    //  specification affordable inside a recycle.  Cold, the outer search
-    //  costs a handful of full 66-stage MESH solves; multiplied by a recycle
-    //  Jacobian (one perturbation per tear variable) and by the recycle's own
-    //  iterations, the acetone plant was still grinding after eleven minutes
-    //  at 200 % CPU.  Every pass re-solved a problem whose answer had barely
-    //  moved since the last one.
+    //  NO WARM START LIVES HERE, and the attempt is recorded rather than
+    //  deleted, because the reason generalises to every unit operation.
     //
-    //  Remembering the accepted rate turns each later pass into two or three
-    //  evaluations.  It is a CONVERGENCE AID and therefore never silent: the
-    //  run says it is starting warm and from where.
-    scalar                         lastAcceptedD_ = 0.0;
+    //  The recovery secant is expensive inside a recycle -- each evaluation is
+    //  a full MESH solve, multiplied by the recycle's Jacobian and its own
+    //  iterations -- so a `scalar lastAcceptedD_` member was added to carry
+    //  the accepted rate between passes.  It never carried anything.
+    //  `Flowsheet::runUnit` calls `UnitOperation::New(type)` on EVERY
+    //  evaluation, so the object that stores the aid is destroyed before the
+    //  next pass could read it.
+    //
+    //  A UNIT OPERATION IS STATELESS BETWEEN PASSES BY CONSTRUCTION.  Any
+    //  convergence aid that must survive a pass belongs where the state lives
+    //  -- the case's dicts or the flowsheet -- and not on the unit.  Worth
+    //  knowing before writing the next one: the member compiles, runs, and
+    //  silently does nothing.
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
     UnitProfile                    profile_;

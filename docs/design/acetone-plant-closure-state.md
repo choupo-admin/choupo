@@ -1,9 +1,15 @@
 # The acetone plant: what closes, what does not, and the one gap left
 
-**Status: WORK IN PROGRESS.  The flowsheet is written and six of its eight
-units run; it is blocked on ONE named engine gap and is deliberately NOT in
-`tutorials/` until it converges.**  Recorded 2026-08-13 so the state is a
-document rather than a memory.
+**Status: CLOSED 2026-08-13.  The plant converges and lives in
+`tutorials/plant/acetonePlant`** -- Wegstein on one tear, 3 iterations,
+|r| 2.847 -> 1.785e-4, mass closure 100.000 %, elements 0.0000 %, sealed with
+150 golden rows reproduced with the catalogue hidden.  The comparison with
+Luyben's stream table is in that case's CLAUDE.md.
+
+This document stays as the BUILD RECORD: five findings, each reproduced,
+several of which were blockers that turned out to be engine defects rather
+than missing features.  Read it for how the plant got there; read the case for
+what it says.
 
 The dictionaries are in [`acetone-plant-wip/`](acetone-plant-wip/), beside
 this record; that directory's README says why they are not in the corpus and
@@ -168,3 +174,39 @@ converges, the comparison will be published with the same posture as
 `acetone06` and `acetone07`: a comparison with a published reference, never a
 validation, because every number in his table is his own Aspen/UNIQUAC output
 rather than a measurement.
+
+
+---
+
+## Closure, 2026-08-13
+
+F3 was closed by making the two enthalpy legs agree.  F4 -- the two ceilings
+compounding through the recycle -- was closed by `distillateRecovery`, which
+specifies what the design actually fixes instead of a number that stops being
+feasible as the loop tightens.
+
+**F6 -- two more, found by finishing.**
+
+* **A convergence aid cannot live on a unit object.** A `lastAcceptedD_`
+  member was added to warm-start the recovery secant between recycle passes.
+  It never carried anything: `Flowsheet::runUnit` calls
+  `UnitOperation::New(type)` on EVERY evaluation, so the object is destroyed
+  before the next pass could read it.  The member compiled, ran, and silently
+  did nothing -- and the comment above it asserted that it made the
+  specification affordable.  Removed, with the reason kept in
+  `DistillationColumn.H`, because it generalises to every unit operation.
+
+  What actually paid was the CASE-level choice: Newton's Jacobian perturbs the
+  tear five times per iteration and each perturbation triggers a full recovery
+  search; Wegstein needs one search per pass and converged in three.
+
+* **The importer's per-unit closure was written for NRTL and never grew.**
+  The absorber declares its Henry pair by PATH inside its per-unit `thermo {}`
+  override.  `bin/choupo-import` walked per-unit overrides for NRTL pairs and
+  UNIFAC tables only, so the plant sealed WITHOUT the pair and then refused at
+  run time.  The refusal is right and it caught this; what it caught is the
+  closure, not the case.  The importer now harvests the DECLARED PATH -- the
+  record the case names is the record it reads, and guessing a pair name is
+  how a closure stages a file the run never asks for while missing the one it
+  does.  Exactly the lesson the Edwards slice recorded on 2026-08-04, one
+  declaration site over.
