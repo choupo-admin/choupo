@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Stripper.H"
+#include "LumpedCpEnergyNote.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/ThermoPackage.H"
 
@@ -252,6 +253,9 @@ int Stripper::solve(const DictPtr& dict,
     kpis_["T_bottom"]        = T_bot;
     kpis_["dT_drop"]         = T_liq - T_bot;       // endothermic cooling of the liquid
     kpis_["nonIsothermal"]   = nonIso ? 1.0 : 0.0;
+
+    //  Same lumped-Cp balance as Absorber, same confession, one home.
+    if (nonIso) announceLumpedCpColumnEnergy(type(), verbosity);
     for (std::size_t i = 0; i < n; ++i)
     {
         if (L_in * x_in[i] <= 0.0) continue;

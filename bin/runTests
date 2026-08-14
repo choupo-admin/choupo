@@ -2372,6 +2372,22 @@ PYEOF
     # added and listing a directory that does not exist; two case READMEs
     # claiming their parameters were curated under data/standards/ when the
     # record had been deliberately staged case-locally pending review.)
+    # An APPROXIMATE energy model must announce itself.  absorber/stripper
+    # share a lumped-Cp stage balance that does not conserve canonical H, and
+    # the residual it leaves (+82.93 / -19.87 / -11.25 kW across the corpus)
+    # was invisible until the model-boundary audit was extended to units
+    # declaring no duty.  Same posture as the dynamicCSTR: declare it.
+    if "$ROOT/bin/curate/check_lumped_cp_note.py" > /tmp/lcp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_lumped_cp_note" "$(tail -1 /tmp/lcp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (an approximate energy model stopped declaring itself)\n" \
+            "check_lumped_cp_note"
+        cat /tmp/lcp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lcp.$$
+
     if "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
         pass=$((pass+1))

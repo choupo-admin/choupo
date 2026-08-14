@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Absorber.H"
+#include "LumpedCpEnergyNote.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/ThermoPackage.H"
 
@@ -316,6 +317,11 @@ int Absorber::solve(const DictPtr& dict,
     kpis_["T_bottom"]     = T_bot;
     kpis_["dT_rise"]      = T_bot - T_sol;
     kpis_["nonIsothermal"]= nonIso ? 1.0 : 0.0;
+
+    //  The energy model is a lumped-Cp one and must say so; the sentence
+    //  and the decision to say it live in ONE place, shared with Stripper,
+    //  which carries the same balance.
+    if (nonIso) announceLumpedCpColumnEnergy(type(), verbosity);
     for (std::size_t i = 0; i < n; ++i)
     {
         if (V_in * y_in[i] <= 0.0) continue;

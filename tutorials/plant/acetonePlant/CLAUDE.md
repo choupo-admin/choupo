@@ -120,3 +120,32 @@ caveat surface.
 - an energy-balance comparison against his vaporiser and HX duties, which
   needs the model-boundary ledger read across the absorber's world;
 - water's 0.70 K Antoine deficit, shared with `acetone01` and `acetone04`.
+
+
+## The absorber's -11.25 kW is the energy MODEL, not the model boundary (2026-08-14)
+
+The absorber carries the plant's only per-unit `thermo {}` override, so its
+enthalpy step was the obvious suspect for the -11.2496 kW the energy report
+attributes to it.  It is not.  The model-boundary auditor prices all four of
+its streams in both worlds and the step is **zero on every one**: changing the
+liquid activity model (UNIFAC -> diluteSolution/Henry) changes K-values, not
+the enthalpy datum, so at this boundary there is nothing to credit.
+
+The residual is the absorber's own energy balance -- a lumped-Cp textbook
+model (liquid Cp = the solvent's alone, vapour Cp = the feed gas at feed
+composition, both constant across the column, source = heat of absorption)
+whose converged temperature profile does not conserve canonical enthalpy.  The
+proof is that a standalone absorber with **no model boundary at all** shows
+the same thing: `absorber01_NH3_water` carries +82.93 kW, `stripper01_NH3_water`
+-19.87 kW.
+
+None of that was visible before this date: every one of those units read `n/a`
+in the ledger, because the model-boundary audit only ran on units declaring a
+duty and all three are adiabatic.  The unit now ANNOUNCES the approximation
+(the choupoCtrl dynamicCSTR posture), the size stays where the report already
+publishes it, and NO number in this plant moved.
+
+Still open, and deliberately: whether the lumped-Cp balance should be replaced
+by a canonical enthalpy formulation.  That would move the temperature profile,
+hence the K-values, hence every product composition in this plant and in every
+other absorber case -- it is a physics change, not a reporting one.
