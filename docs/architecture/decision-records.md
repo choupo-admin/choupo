@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 66 records already exist
+## 1. Why an index, when 67 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 66 design records, **32 state a rejected alternative and 34 do not** —
+- Of 67 design records, **32 state a rejected alternative and 35 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -166,6 +166,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`thermoml-campaign-plan.md`](../design/thermoml-campaign-plan.md) | PLAN | the ThermoML curation campaign: sync/index/search/extract, the evidence partition, the dossier boundary.  Sequencing only -- the scientific rulings live in the ADRs it points at |
 | [`evidence-partition-slice-plan.md`](../design/evidence-partition-slice-plan.md) | PLAN | the FIT / HELD-OUT contract as an executable plan: the grammar, enforcement BY CONSTRUCTION, refusals R1-R5, and the dossier's home outside every resolver root.  R5 shipped 2026-08-11 WIDER than planned and the record says so |
 | [`acetone-ipa-reference-case.md`](../design/acetone-ipa-reference-case.md) | ANCHOR | transcribed 2026-08-11 from two owner-supplied primaries (Luyben 2011: flowsheet, stream table, kinetics, UNIQUAC + the IPA/water azeotrope; Rioux & Vannice 2003: measured LHHW rates).  States that the two are at DIFFERENT SCALES and must not be blended, and lists the five data gaps a case would still have to close.  Locates anchors, curates nothing, builds no case |
+| [`acetone-plant-closure-state.md`](../design/acetone-plant-closure-state.md) | BUILD RECORD | how the Luyben plant went from six isolated units to a closed flowsheet, 2026-08-13.  Six findings, each reproduced: a declared H2 approximation that was NOT locally contained (it diverges the MESH three units downstream); the plant's inability to honour the published product rate; a refusal that turned out to be ONE missing datum answered two ways rather than a missing feature; the two column ceilings compounding through the recycle; a convergence aid that cannot live on a unit object; and an importer closure written for NRTL that never grew.  Decides nothing about doctrine -- it records what building it cost |
 | [`props-component-curator-assessment.md`](../design/props-component-curator-assessment.md) | STUDY | assessment of the proposed `curateComponent` op; concluded the natural output is a curation DOSSIER, not a resurrected `data/proposed/` tier.  Decides nothing by itself |
 | [`properties-gui-task-orientation-2026-08-11.md`](../design/properties-gui-task-orientation-2026-08-11.md) | STUDY | measured the Properties GUI against a task-orientation critique: the flow is already substance-first and one-click-to-a-curve, and the real gap is that a component is not an inspectable object.  Item 1 (the Component Inspector) shipped from it |
 
@@ -220,7 +221,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**34 of 66 records state no rejected alternative.**  For a FORUM or a STUDY
+**35 of 67 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

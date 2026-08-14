@@ -105,14 +105,15 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 
 ## `column`  (column operation)
 
-Multistage distillation column — the SAME unit as `distillationColumn` under its shorter name; both read the identical operation block. Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
-| `distillateRate` | ✓ | number | kmol/s | Top product molar flow rate. |
+| `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |
@@ -212,14 +213,15 @@ Dew-point temperature at fixed pressure: the T at which the first liquid droplet
 
 ## `distillationColumn`  (distillationColumn operation)
 
-Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.
+Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` | ✓ | number | — | L/D, liquid returned to the column over distillate withdrawn. |
-| `distillateRate` | ✓ | number | kmol/s | Top product molar flow rate. |
+| `distillateRate` |   | number | kmol/s | Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one… |
+| `distillateRecovery` |   | object | — | Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so i… |
 | `P` |   | number | Pa | Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted. |
 | `feedQuality` |   | number | — | Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour. |
 | `method` |   | string | — | WangHenke (sequential bubble-point, the default, fine for ideal systems) or simultaneous (rigorous MESH Newton, stable through an azeotro… |

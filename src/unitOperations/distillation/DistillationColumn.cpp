@@ -592,6 +592,30 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
 
     const std::size_t ic = thermo.indexOf(comp);
 
+    //  ---- READ THE COLUMN'S OWN KEYS, ON THE CASE'S OWN DICT ---------------
+    //  Not decoration, and not only for the announcement.  Every inner
+    //  evaluation below runs on a `deepCopy`, so without this the case's
+    //  operation block is never touched by the run at all -- and
+    //  `check_unread_keys` reported exactly that: nStages, refluxRatio,
+    //  feedStage, P and feedQuality all DEAD on the acetone plant's C1.  They
+    //  were being read, on a copy; from outside, a column whose geometry a
+    //  typo had silently dropped would look identical.
+    //
+    //  So they are read HERE, where the case declares them, and they buy two
+    //  real things: the geometry is validated BEFORE the search spends dozens
+    //  of full MESH solves on a column that cannot run, and the announcement
+    //  says which column is being searched.
+    const int nSt = static_cast<int>(operDict->lookupScalar("nStages"));
+    const int nFd = static_cast<int>(operDict->lookupScalar("feedStage"));
+    const scalar RR = operDict->lookupScalar("refluxRatio");
+    const scalar Pc = operDict->lookupScalarOrDefault("P", 0.0, Dims::pressure);
+    const scalar qF = operDict->lookupScalarOrDefault("feedQuality", 1.0);
+    if (nFd < 2 || nFd > nSt)
+        throw std::runtime_error("DistillationColumn: feedStage " +
+            std::to_string(nFd) + " is outside 2.." + std::to_string(nSt) +
+            " -- refused BEFORE the recovery search, which would otherwise "
+            "have spent dozens of column solves discovering it.");
+
     //  ---- The component's FEED flow, which is what a recovery is OF ------
     //  Single feed only, and the refusal says so rather than summing an
     //  arbitrary subset: with several feeds "the recovery" needs to name
@@ -698,7 +722,11 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
     D1 = a1;
 
     if (verbosity >= 2)
-        std::cout << "  [recovery] targeting " << target << " of " << comp
+        std::cout << "  [recovery] " << nSt << " stages, feed " << nFd
+                  << ", R = " << RR << ", q = " << qF
+                  << (Pc > 0.0 ? ", P = " + std::to_string(Pc * 1.0e-5) + " bar"
+                               : std::string(", P from the feed"))
+                  << "\n  [recovery] targeting " << target << " of " << comp
                   << " (" << (feedOfComp * 3600.0) << " kmol/h in the feed)"
                   << " by secant on the distillate rate:\n"
                   << "      " << (D0 * 3600.0) << " kmol/h -> " << (f0 + target)

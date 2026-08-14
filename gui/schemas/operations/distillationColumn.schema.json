@@ -2,12 +2,11 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/distillationColumn.schema.json",
   "title": "distillationColumn operation",
-  "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.",
+  "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.",
   "type": "object",
   "required": [
     "nStages",
-    "refluxRatio",
-    "distillateRate"
+    "refluxRatio"
   ],
   "properties": {
     "nStages": {
@@ -35,9 +34,46 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Distillate flow",
-      "description": "Top product molar flow rate.",
+      "description": "Top product molar flow rate. XOR with `distillateRecovery`: a rate is the right specification for a fixed-duty column, a recovery for one whose feed moves (a column inside a recycle).",
       "unit": "kmol/s",
       "default": 0.5
+    },
+    "distillateRecovery": {
+      "type": "object",
+      "title": "Distillate by recovery",
+      "description": "Send this fraction of the named component's FEED overhead, instead of a fixed rate. Solved as an announced outer secant on the rate, so it wraps either method. Single-feed columns only. Expensive: each outer trial is a full column solve, so inside a recycle prefer `recycleSolver Wegstein`.",
+      "properties": {
+        "component": {
+          "type": "string",
+          "title": "Component recovered",
+          "description": "Must be present in the column's feed; a recovery of a component that is not there is not a specification."
+        },
+        "fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "title": "Recovery fraction",
+          "description": "Strictly between 0 and 1. A recovery of 1 asks for a perfect separation, which no finite column performs.",
+          "default": 0.99
+        },
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Outer tolerance",
+          "default": 1e-06
+        },
+        "maxIter": {
+          "type": "integer",
+          "minimum": 1,
+          "title": "Outer iteration limit",
+          "default": 40
+        }
+      },
+      "required": [
+        "component",
+        "fraction"
+      ],
+      "additionalProperties": false
     },
     "P": {
       "type": "number",

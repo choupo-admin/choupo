@@ -61,7 +61,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 340 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 341 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -77,7 +77,7 @@
     },
     "check_closure_ledger_pinned": {
       "exit": 0,
-      "claim": "check_closure_ledger_pinned: OK -- 12 model-boundary ledger quantit(ies) pinned across 4 candidate case(s), in both directions (published implies pinned, pinned implies published); 1 candidate(s) declare an override and publish no credited step, which is a legitimate outcome (a crossing refused across a speciation flip is reported in `modelBoundaries` instead) and passes silently.  NOT CHECKED: whether any step is RIGHT, the status/rule WORDS (a golden row compares numbers; a status downgrade is caught indirectly, through step_kW and remaining_kW), and a boundary arising without a per-unit `thermo {}` block -- none exists and the ledger says none can, but this discovery would not see one."
+      "claim": "check_closure_ledger_pinned: OK -- 12 model-boundary ledger quantit(ies) pinned across 5 candidate case(s), in both directions (published implies pinned, pinned implies published); 2 candidate(s) declare an override and publish no credited step, which is a legitimate outcome (a crossing refused across a speciation flip is reported in `modelBoundaries` instead) and passes silently.  NOT CHECKED: whether any step is RIGHT, the status/rule WORDS (a golden row compares numbers; a status downgrade is caught indirectly, through step_kW and remaining_kW), and a boundary arising without a per-unit `thermo {}` block -- none exists and the ledger says none can, but this discovery would not see one."
     },
     "check_column_datum_downgrade": {
       "exit": 0,
@@ -97,7 +97,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 618 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 621 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -116,8 +116,8 @@
       "claim": "check_debt_registry: OK -- 135 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
-      "exit": 1,
-      "claim": "check_decision_index: FAILED"
+      "exit": 0,
+      "claim": "check_decision_index: OK -- all 67 design record(s) appear in the index, and its stated counts (32 state a rejected alternative, 35 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed."
     },
     "check_default_reports": {
       "exit": 0,
@@ -129,11 +129,11 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 261 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "claim": "check_doc_references: OK -- 262 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 350 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 351 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -233,7 +233,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40663 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40877 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -368,7 +368,7 @@
       "claim": "check_readme_capabilities: OK -- every model key the engine registers (activity, EoS, Psat, Cp, outer drivers) and all 4 binaries are named in the README.  NOT CHECKED: the converse (a README naming something unregistered passes -- the matrix legitimately carries aliases and sub-models), whether any named capability WORKS, unit-operation keys (grouped by function by design), and prose outside the capability matrix."
     },
     "check_record_form": {
-      "exit": 1,
+      "exit": 0,
       "claim": "record-form gate: 91 record(s) still carry `role` -- the named migration (property-architecture 6b.3) has not run.  Counted, not failed: the field is live in the engine."
     },
     "check_record_self_consistency": {
@@ -409,7 +409,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (69 exercised by the corpus over 536 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (70 exercised by the corpus over 545 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -425,7 +425,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 346 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 347 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -525,7 +525,7 @@
     },
     "check_utility_allocation_pinned": {
       "exit": 0,
-      "claim": "check_utility_allocation_pinned: OK -- 435 utility-allocation quantit(ies) pinned across 80 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
+      "claim": "check_utility_allocation_pinned: OK -- 463 utility-allocation quantit(ies) pinned across 81 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
     },
     "check_v2_refusals": {
       "exit": 0,
@@ -537,7 +537,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 3061 declared window(s) across 3712 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 3071 declared window(s) across 3719 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_verdict_parity": {
       "exit": 0,
