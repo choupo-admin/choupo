@@ -78,6 +78,14 @@ make wasm-clean
 make distclean        # wipe the whole build/ tree
 ```
 
+## Start here
+
+`listCases` lists 354 tutorials, which is a reference rather than a way in.
+**[`docs/start-here.md`](docs/start-here.md) is the way in**: nine cases in
+order, each introducing exactly one new idea and resting on the one before —
+from a single flash you can check with a pen to a published industrial process
+solved with its recycle closed, and what its errors are made of.
+
 ## Run a tutorial
 
 ```bash

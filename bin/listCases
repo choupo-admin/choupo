@@ -95,3 +95,10 @@ for cat in steady batch ctrl; do
     done < <(find "$cat" -path '*/system/controlDict' 2>/dev/null | sort)
     echo
 done
+
+#  A LIST IS NOT A WAY IN.  354 entries organised by what each case IS answers
+#  "which case does X"; someone arriving needs "which case FIRST".  The
+#  ordered path is a separate document and this is where a reader of the list
+#  is standing when they need it.
+printf 'New here?  %s reads nine of these in order,\n' "docs/start-here.md"
+printf '           each introducing one idea and resting on the one before.\n\n'

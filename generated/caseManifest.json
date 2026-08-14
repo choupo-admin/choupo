@@ -1137,7 +1137,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_eos_co2": {
    "application": "choupoProps",
