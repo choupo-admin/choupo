@@ -148,6 +148,84 @@ SABOTAGES = [
 ]
 
 
+#  ---------------------------------------------------------------------
+#  SOURCE-LEVEL SABOTAGE (2026-08-14) -- the slice this file named as next.
+#
+#  The docstring above declined it on the grounds that "a source sabotage
+#  needs a rebuild, and a gate harness that rebuilds the tree is a gate
+#  harness nobody will run".  That was true of a FULL rebuild and false of the
+#  one actually needed: a one-file incremental `make all` was MEASURED at
+#  3.3 s.  The objection was to a cost nobody had priced.
+#
+#  Two traps, both paid for by hand the same day and both guarded below:
+#
+#    * A SABOTAGE THAT DOES NOT COMPILE TESTS THE PREVIOUS BINARY.  The gate
+#      then runs against the unsabotaged engine, passes, and reads exactly
+#      like a gate that failed to detect.  So the build's exit status is
+#      checked AND the binary's mtime must have advanced.  VERIFIED, not
+#      asserted: replacing this arm's C++ with `this_is_not_valid_cxx(((;`
+#      yields "the sabotage does NOT COMPILE, so the gate would have run
+#      against the previous binary", exit 1.  That same probe is what exposed
+#      the dead failure-check described at the source tier below -- before the
+#      fix it printed OK and dropped the gate from its own results.
+#    * A HARNESS THAT MUTATES THE BUILD MUST LEAVE IT CORRECT.  A data
+#      sabotage left behind corrupts a record; a SOURCE sabotage left behind
+#      corrupts the binary every later gate and every case runs against --
+#      "a green run over the wrong binary looks exactly like a green run".
+#      So the restore rebuilds, and the covered gates are re-run at the end
+#      and must PASS, which is the only proof the tree came back.
+SOURCE_SABOTAGES = [
+    {
+        "gate": "check_lumped_cp_note.py",
+        "kind": "source/guard-removed",
+        "file": "src/unitOperations/separation/Absorber.cpp",
+        "find": "    if (nonIso) announceLumpedCpColumnEnergy(type(), verbosity);",
+        "replace": "    announceLumpedCpColumnEnergy(type(), verbosity);",
+        "why": "the note is a confession about the NON-isothermal energy "
+               "model.  Fired unconditionally it also lands on isothermal "
+               "columns, which make no temperature claim and have no such "
+               "approximation -- a note that always fires carries no "
+               "information.  A5 must catch it.",
+    },
+    {
+        "gate": "check_model_boundary_ledger.py",
+        "kind": "source/filter-restored",
+        "file": "src/reporting/EnergyBalanceReport.cpp",
+        "find": "        if (r.kind != 0) continue;",
+        "replace": "        if (r.kind != 0 || !r.declares) continue;",
+        "why": "this restores the filter that limited the model-boundary "
+               "audit to units DECLARING a duty, leaving every adiabatic "
+               "boundary unaudited and its enthalpy step published as the "
+               "unit's own duty at a trivially perfect closure.  A6 must "
+               "catch it.",
+    },
+]
+
+
+def platform_dir():
+    base = ROOT / "build"
+    if not base.is_dir():
+        return None
+    c = [d for d in sorted(base.iterdir())
+         if d.is_dir() and not d.name.endswith("Debug") and d.name != "wasm"]
+    return c[0] if c else None
+
+
+def rebuild():
+    p = subprocess.run(["make", "all", "-j4"], capture_output=True, text=True,
+                       cwd=ROOT, timeout=1800)
+    return p.returncode == 0, (p.stdout + p.stderr)[-2000:]
+
+
+def artefact_stamp(bdir):
+    """Newest mtime across the built artefacts -- the evidence that a rebuild
+    actually produced something, not that make decided it had nothing to do."""
+    if bdir is None:
+        return 0.0
+    return max((f.stat().st_mtime for f in bdir.iterdir() if f.is_file()),
+               default=0.0)
+
+
 def run_gate(name):
     p = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / name)],
                        capture_output=True, text=True, timeout=900, cwd=ROOT)
@@ -231,36 +309,121 @@ def main() -> int:
         else:
             results.append(f"{s['gate']} [{s['kind']}] -> exit {rc}")
 
+    #  THE FAILURE CHECK LIVES BELOW THE SOURCE TIER, and it has to.
+    #  It used to sit HERE, above it -- so every `fail.append` the source tier
+    #  makes landed after the only code that reads the list, and a
+    #  non-compiling source sabotage printed OK while quietly dropping its
+    #  gate from the results.  Found by sabotaging this file's own sabotage
+    #  (replacing the C++ with `this_is_not_valid_cxx(((;`) and watching it
+    #  report success.  A check that cannot fail, inside the gate that exists
+    #  to catch checks that cannot fail, added by the person extending it.
+    #  Do not move this block back up.
+
+    # ---- SOURCE TIER -------------------------------------------------
+    src_results, src_skipped = [], []
+    bdir = platform_dir()
+    for src in SOURCE_SABOTAGES:
+        rel = src["file"]
+        if not (ROOT / rel).exists() or dirty(rel):
+            src_skipped.append(rel)
+            continue
+        path = ROOT / rel
+        original = path.read_bytes()
+        text = original.decode("utf-8")
+        if src["find"] not in text:
+            fail.append(f"{src['gate']} [{src['kind']}]: the sabotage target "
+                        f"is not in {rel} -- this arm is stale and is testing "
+                        f"nothing, which is the condition this file exists to "
+                        f"refuse")
+            continue
+        try:
+            before = artefact_stamp(bdir)
+            path.write_text(text.replace(src["find"], src["replace"], 1))
+            ok, log = rebuild()
+            if not ok:
+                fail.append(f"{src['gate']} [{src['kind']}]: the sabotage does "
+                            f"NOT COMPILE, so the gate would have run against "
+                            f"the previous binary and its result would mean "
+                            f"nothing.  Build tail: {log[-300:]}")
+            elif artefact_stamp(bdir) <= before:
+                fail.append(f"{src['gate']} [{src['kind']}]: the build produced "
+                            f"no newer artefact, so the sabotage never reached "
+                            f"the binary the gate runs")
+            else:
+                rc, _ = run_gate(src["gate"])
+                if rc == 0:
+                    fail.append(f"{src['gate']} [{src['kind']}]: PASSED with "
+                                f"the sabotage in the ENGINE and built into "
+                                f"the binary.  {src['why']}")
+                else:
+                    src_results.append(f"{src['gate']} [{src['kind']}] -> "
+                                       f"exit {rc}")
+        finally:
+            path.write_bytes(original)
+            if path.read_bytes() != original:
+                print("check_gate_selftest: FAILED\n  could not restore "
+                      + rel + " -- the tree is left SABOTAGED.  Fix by hand "
+                      "before running anything else.")
+                return 1
+            ok, log = rebuild()
+            if not ok:
+                print("check_gate_selftest: FAILED\n  the RESTORE build "
+                      "failed for " + rel + ".  The source is back but the "
+                      "binary is not; every later gate and case would run "
+                      "against a sabotaged engine.  Build tail: " + log[-300:])
+                return 1
+
+    #  THE ONLY PROOF THE TREE CAME BACK.  Bytes restored and a build that
+    #  exits 0 are necessary, not sufficient -- the gates themselves must
+    #  agree, on the rebuilt binary, that nothing is wrong any more.
+    for src in SOURCE_SABOTAGES:
+        if src["file"] in src_skipped:
+            continue
+        rc, out = run_gate(src["gate"])
+        if rc != 0:
+            print("check_gate_selftest: FAILED\n  " + src["gate"] + " does "
+                  "NOT pass after its source sabotage was reverted and the "
+                  "tree rebuilt.  The restore is incomplete.\n  " + out[-400:])
+            return 1
+
     if fail:
         print("check_gate_selftest: FAILED")
         for f in fail:
             print("  " + f)
         return 1
 
-    if not results:
+    if not results and not src_results:
         print("check_gate_selftest: FAILED\n  NOT ONE sabotage ran"
               + (" -- every target file has uncommitted changes ("
-                 + ", ".join(skipped) + ")" if skipped else "")
+                 + ", ".join(skipped + src_skipped) + ")" if skipped or src_skipped else "")
               + ".  A green verdict over zero verified sabotages is the exact "
               "vacuity this gate exists to catch, so it refuses to give one.")
         return 1
 
-    n_cov = len({s["gate"] for s in SABOTAGES if s["file"] not in skipped})
+    #  COVERAGE COUNTS ARMS THAT WERE OBSERVED, never arms that were merely
+    #  attempted: an arm that failed reaches the FAILED path above, so by here
+    #  every gate named in the results really did fail on purpose.
+    n_cov = len({r.split()[0] for r in results + src_results})
     print(
         "check_gate_selftest: OK -- every sabotage below was OBSERVED failing "
         "its gate, not assumed to.  "
-        + "; ".join(results) + ".  "
+        + "; ".join(results + src_results) + ".  "
         + (f"SKIPPED (uncommitted changes, so the original could not be "
            f"vouched for): {', '.join(skipped)} -- coverage is lower than it "
            "looks on this run.  " if skipped else "")
         + f"COVERAGE IS {n_cov} of {total_gates} gates, and the other "
         f"{total_gates - n_cov} are UNAUDITED -- not implied sound.  Both "
-        "sabotage kinds are exercised: an input REMOVED (the check_true_ions "
-        "shape, where the subject disappears and the gate agrees with nothing) "
-        "and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so "
-        "the engine-behaviour arms of these gates -- refusals, announcements -- "
-        "are not re-verified here; a source sabotage needs a rebuild, and that "
-        "is the next slice rather than something this run silently includes.")
+        "sabotage kinds are exercised at the DATA tier: an input REMOVED (the "
+        "check_true_ions shape, where the subject disappears and the gate "
+        "agrees with nothing) and a value CORRUPTED.  The SOURCE tier "
+        "(2026-08-14) edits the ENGINE, rebuilds, and requires the gate to "
+        "fail on the rebuilt binary -- with the build's exit status AND a "
+        "newer artefact both checked, because a sabotage that does not "
+        "compile silently tests the previous binary.  The source is then "
+        "restored, rebuilt, and the covered gates RE-RUN and required to "
+        "pass, which is the only proof the tree came back.  NOT COVERED: "
+        "the gates not listed, and any defect needing more than a "
+        "single-substring edit to express.")
     return 0
 
 
