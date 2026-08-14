@@ -92,6 +92,38 @@ if [ ! -f "$gui/public/wasm/choupoSolve.wasm" ]; then
     exit 1
 fi
 
+#  PRESENT IS NOT FRESH, and this is the one artefact where nothing else says so.
+#
+#  gui/public/wasm/ is GITIGNORED and this script does NOT build it -- it copies
+#  whatever happens to be on the publishing machine.  So the engine the site
+#  serves is whatever someone last remembered to build, with no check anywhere:
+#  `check_build_fresh` covers the NATIVE build and states, in its own words,
+#  that "the WASM build is separate and not covered".
+#
+#  Found 2026-08-14 with the WASM sixteen days and ~250 commits behind the
+#  engine -- old enough to predate a corrected reactor duty, a corrected
+#  enthalpy leg and a whole new distillate specification.  A site published
+#  from that tree would have served an app that silently disagrees with the
+#  repository it was built from, and the symptom is the confusing
+#  `unknown type '<yourType>'` that CLAUDE.md 13 already documents.
+#
+#  This REFUSES rather than warns, for the reason this same script was already
+#  corrected once: a check that cannot run must not pass, and a warning at
+#  publish time is a check nobody reads.  `--stale-wasm-ok` exists for the
+#  deliberate case (publishing a doc-only change from a tree you have not
+#  rebuilt) and it has to be typed, which is the point.
+newest_src=$(find "$root/src" "$root/make" -type f \( -name '*.cpp' -o -name '*.H' -o -name '*.mk' \) \
+             -newer "$gui/public/wasm/choupoSolve.wasm" -print -quit 2>/dev/null)
+if [ -n "$newest_src" ] && [ "${STALE_WASM_OK:-0}" != 1 ]; then
+    echo "[buildSite] ERROR: the WASM is OLDER than the engine sources." >&2
+    echo "[buildSite]        e.g. $newest_src is newer than gui/public/wasm/choupoSolve.wasm" >&2
+    echo "[buildSite]        The site would serve an engine that disagrees with this tree;" >&2
+    echo "[buildSite]        the symptom in the browser is an unknown unit type or a" >&2
+    echo "[buildSite]        silently different answer.  Run \`make wasm-gui\`." >&2
+    echo "[buildSite]        Deliberate (doc-only publish)?  STALE_WASM_OK=1 bin/buildSite ..." >&2
+    exit 1
+fi
+
 echo "[buildSite] assembling combined site -> $dist"
 rm -rf "$dist"
 mkdir -p "$dist/app"
