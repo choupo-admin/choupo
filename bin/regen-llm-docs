@@ -380,6 +380,25 @@ def render_schemas_md() -> str:
         "     to the hand-curated unit-ops.md (which has groupings, prose and",
         "     worked examples); this file is the alphabetical schema dump. -->",
         "",
+        #  WHO THIS IS FOR, said in the file rather than assumed by its
+        #  folder.  Measured 2026-08-14: 57 operation keys across 21 units
+        #  appear in NO hand-written guide -- and all 57 are here, because
+        #  this file is generated from the schemas.  Nothing was undocumented;
+        #  the complete, always-current reference was simply filed under a
+        #  directory whose stated audience is an assistant, so a student
+        #  looking for `distillateRecovery` would never open it.
+        "**This is the complete reference: every operation, every key.**  It is",
+        "generated from the same schemas `check_schema_coverage` holds against",
+        "the running cases, so it cannot fall behind the engine — a key the",
+        "engine reads and this file omits is a gate failure, not a",
+        "documentation debt.",
+        "",
+        "It lives under `docs/ai/` because an assistant helping you author a",
+        "case reads it, but it is plain Markdown and reads perfectly well for a",
+        "person.  For prose, groupings and worked examples instead of an",
+        "alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be",
+        "taught rather than to look something up, read the User Guide.",
+        "",
     ]
     files = sorted(SCHEMA_DIR.glob("*.schema.json"))
     have = {f.name[:-len(".schema.json")] for f in files}

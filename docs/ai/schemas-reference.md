@@ -5,6 +5,18 @@
      to the hand-curated unit-ops.md (which has groupings, prose and
      worked examples); this file is the alphabetical schema dump. -->
 
+**This is the complete reference: every operation, every key.**  It is
+generated from the same schemas `check_schema_coverage` holds against
+the running cases, so it cannot fall behind the engine — a key the
+engine reads and this file omits is a gate failure, not a
+documentation debt.
+
+It lives under `docs/ai/` because an assistant helping you author a
+case reads it, but it is plain Markdown and reads perfectly well for a
+person.  For prose, groupings and worked examples instead of an
+alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
+taught rather than to look something up, read the User Guide.
+
 *77 of 77 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
