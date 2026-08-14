@@ -313,7 +313,13 @@ Full dict/units/thermo-override detail + examples →
 * Brace style: Allman (open brace on a new line for functions).
 * Indent 4 spaces, no tabs.
 * `snake_case` variables, `camelCase` methods, `PascalCase` types.
-* Compile cleanly with `-Wall -Wextra -Wpedantic`.
+* Compile cleanly with `-Wall -Wextra -Wpedantic` — **checked** by
+  `check_compile_clean` on every full `bin/runTests`, because this line
+  had gone quietly false (eight warnings on 2026-08-14, one of them a
+  `-Wmisleading-indentation` on unconditional statements that read as
+  guarded).  `make STRICT=1` makes warnings fatal and remains the
+  complete check; the gate is the affordable one (`-fsyntax-only`, so no
+  optimiser-only warnings).
 
 ### `controlDict` entries
 

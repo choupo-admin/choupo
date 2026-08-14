@@ -51,6 +51,14 @@ WHAT IT DOES NOT CHECK, said plainly:
     says only that it was built from these files.
   * NOT THE WASM BUILD, which is separate (`make wasm`) and has its own stale
     failure mode, described in CLAUDE.md §13.
+
+FLAGS ARE CHECKED BY THE BUILD'S OWN STAMP (2026-08-14), not by the mtime of
+`make/*.mk`.  Sabotage-verified both ways, observed:
+  * `touch build/<platform>/.stamp-cxx-sabotage00000000` -> FAILED, naming
+    that stamp as what the artefacts predate.  A real flag change mints
+    exactly such a file, so a rebuild is genuinely required.
+  * a COMMENT-only edit to `make/compiler.mk` -> OK, where the old mtime rule
+    failed and prescribed a `make all` that could not fix it.
 """
 import sys
 from pathlib import Path
@@ -59,9 +67,25 @@ ROOT = Path(__file__).resolve().parents[2]
 
 #  What the library is built FROM.  The Makefile fragments are included: a
 #  changed compiler flag produces a different binary from identical sources.
-SOURCE_GLOBS = [("src", "**/*.H"), ("src", "**/*.cpp"),
-                ("make", "*.mk")]
-SOURCE_FILES = [Path("Makefile")]
+#
+#  THE MAKE FRAGMENTS ARE JUDGED BY THE BUILD'S OWN STAMP, NOT BY THEIR MTIME
+#  (2026-08-14).  `make/*.mk` used to sit in this list, on the correct
+#  reasoning that a changed compile flag yields a different binary from
+#  identical sources.  The instrument was wrong: those files also hold
+#  COMMENTS, and editing one made every artefact "predate a source" while
+#  `make all` -- the remedy this gate prints -- could do nothing about it,
+#  because the signature had not changed and make was right to decline.
+#  Prescribing a remedy that cannot satisfy the check is the same defect this
+#  gate was already narrowed once to remove.
+#
+#  The build already tracks flags BY CONTENT: `make/compiler.mk` mints
+#  `.stamp-cxx-<COMPILE_SIG>`, a hash of the actual compile signature, and
+#  `make/rules.mk` makes every object depend on it -- so a real flag change
+#  rebuilds everything and a comment change correctly does not.  Comparing
+#  the artefacts against that stamp asks the question the mtime was a proxy
+#  for, and asks it exactly.
+SOURCE_GLOBS = [("src", "**/*.H"), ("src", "**/*.cpp")]
+SOURCE_FILES = []
 
 #  What is built.  The library first: it is what the gates' probes link.
 ARTEFACTS = ["libchoupo.so", "choupoSolve", "choupoBatch", "choupoCtrl",
@@ -87,6 +111,15 @@ def main() -> int:
               "nothing has been compiled.  Run `make all`.  Every case and "
               "every probe in this suite runs against that tree, so there is "
               "nothing to verify until it exists.")
+        return 1
+
+    #  The flag signature, by content (see SOURCE_GLOBS above).
+    stamps = sorted(bdir.glob(".stamp-cxx-*"))
+    if not stamps:
+        print("check_build_fresh: FAILED\n  " + bdir.name + " carries no "
+              ".stamp-cxx-* -- the build did not record the compile signature "
+              "it was made with, so this gate cannot tell whether the flags "
+              "have moved.  Run `make all`.")
         return 1
 
     missing = [a for a in ARTEFACTS if not (bdir / a).exists()]
@@ -151,10 +184,18 @@ def main() -> int:
               "over zero files would pass while checking nothing.")
         return 1
 
+    #  The stamp is a FLOOR on every artefact: it is re-minted only when the
+    #  compile signature actually changes, so an artefact older than it was
+    #  built with different flags.  This is the make/*.mk check, asked exactly.
+    stamp = max(stamps, key=lambda f: f.stat().st_mtime)
+    stamp_t = stamp.stat().st_mtime
+
     stale = []
     for a in ARTEFACTS:
         art = bdir / a
         limit, limit_path = newest_for(relevant(a))
+        if stamp_t > limit:
+            limit, limit_path = stamp_t, stamp
         if art.stat().st_mtime < limit:
             stale.append(a)
             newest_path = limit_path               # name the source that bites

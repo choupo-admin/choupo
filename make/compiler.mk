@@ -40,8 +40,8 @@ endif
 CXXSTD   := -std=c++17
 WARN     := -Wall -Wextra -Wpedantic
 
-#  STRICT=1  ->  a warning is an ERROR.  The tree compiles CLEAN (zero
-#  warnings, 2026-07-28), and the point of that is to keep it readable: a
+#  STRICT=1  ->  a warning is an ERROR.  The tree compiles CLEAN, and the
+#  point of that is to keep it readable: a
 #  build that prints forty "this is fine" lines is a build where the one that
 #  matters gets scrolled past -- the uninitialised norm in NewtonND and the
 #  dangling `else` in VleConsistency had both been sitting in that noise.
@@ -51,6 +51,16 @@ WARN     := -Wall -Wextra -Wpedantic
 #  build the simulator.  Development holds the line; distribution stays kind.
 #      make STRICT=1            release, warnings fatal
 #      make MODE=debug STRICT=1 the same on the debug tree
+#
+#  AND THE CLAIM IS NOW CHECKED (2026-08-14).  This comment used to
+#  assert "zero warnings, 2026-07-28" as a dated fact.  By 2026-08-14
+#  there were EIGHT -- because STRICT=1 is opt-in and nobody opts in, so
+#  the mechanism that could have caught them was never run.  One of the
+#  eight was a -Wmisleading-indentation on unconditional statements that
+#  read as guarded, in code added that same day: exactly the signal this
+#  block says gets scrolled past.  bin/curate/check_compile_clean.py now
+#  sweeps every TU on each full bin/runTests, and the dated boast is
+#  gone -- a fact nothing re-measures is a fact that goes quietly false.
 ifeq ($(STRICT),1)
     WARN += -Werror
 endif

@@ -1356,72 +1356,72 @@ if (flowsheetDict->found("cycle"))
         //  with the measured value otherwise; UNAVAILABLE when no cycles
         //  were declared.  The engine never invents the tolerance: whether
         //  a bed "has converged" is a modelling judgement, not a default.
-        if (cycleCount >= 2 && cycleSnaps.size() >= 2)
-        {
-            auto& ck2 = result.kpis["campaign"];
-            //  ONE norm, the same the stopping test used -- see
-            //  cssRelativeChange above.  Recomputing it here with its own
-            //  loop is exactly the duplication this feature exists to detect
-            //  in a bed, and it would be free to drift.
-            const scalar worst = cssRelativeChange();
-            const std::string& worstUnit = cssWorstUnit;
-            ck2["css_relative_change"] = worst;
-            ck2["css_cycles_completed"] = static_cast<scalar>(cycleSnaps.size());
-            auto cy2 = flowsheetDict->subDict("cycle");
-            if (cy2->found("cssTolerance"))
+            if (cycleCount >= 2 && cycleSnaps.size() >= 2)
             {
-                const scalar tol = cy2->lookupScalar("cssTolerance");
-                if (tol <= 0.0)
-                    throw std::runtime_error("cycle.cssTolerance must be > 0");
-                ck2["css_tolerance"] = tol;
-                ck2["css_converged"] = (worst <= tol) ? 1.0 : 0.0;
-                if (untilCSS)
+                auto& ck2 = result.kpis["campaign"];
+                //  ONE norm, the same the stopping test used -- see
+                //  cssRelativeChange above.  Recomputing it here with its own
+                //  loop is exactly the duplication this feature exists to detect
+                //  in a bed, and it would be free to drift.
+                const scalar worst = cssRelativeChange();
+                const std::string& worstUnit = cssWorstUnit;
+                ck2["css_relative_change"] = worst;
+                ck2["css_cycles_completed"] = static_cast<scalar>(cycleSnaps.size());
+                auto cy2 = flowsheetDict->subDict("cycle");
+                if (cy2->found("cssTolerance"))
                 {
-                    //  `repeat untilCSS;` asked a question; the run must say
-                    //  which answer it got.  Reaching the cap WITHOUT
-                    //  converging is not a crash -- the trajectory is a
-                    //  physically valid campaign and every other KPI in it is
-                    //  real -- but it means the case's own question went
-                    //  unanswered, so it is published and announced rather
-                    //  than left to be inferred from a short run.
-                    ck2["css_stopped_at_cap"] = cssStopped ? 0.0 : 1.0;
-                    ck2["css_cycles_run"] =
-                        static_cast<scalar>(cssStopped ? cssStoppedAtCycle
-                                                       : cycleSnaps.size());
-                    if (!cssStopped && verbosity >= 1)
-                        std::cout << "[cycle] `repeat untilCSS;` ran its full"
-                                     " declared cap of " << cycleCount
-                                  << " cycle(s) WITHOUT reaching the"
-                                     " tolerance -- the campaign is valid and"
-                                     " its KPIs are real, but the question the"
-                                     " case asked (where is the cyclic steady"
-                                     " state?) is UNANSWERED.  Raise"
-                                     " maxCycles, or accept that this bed does"
-                                     " not settle at this tolerance.\n";
+                    const scalar tol = cy2->lookupScalar("cssTolerance");
+                    if (tol <= 0.0)
+                        throw std::runtime_error("cycle.cssTolerance must be > 0");
+                    ck2["css_tolerance"] = tol;
+                    ck2["css_converged"] = (worst <= tol) ? 1.0 : 0.0;
+                    if (untilCSS)
+                    {
+                        //  `repeat untilCSS;` asked a question; the run must say
+                        //  which answer it got.  Reaching the cap WITHOUT
+                        //  converging is not a crash -- the trajectory is a
+                        //  physically valid campaign and every other KPI in it is
+                        //  real -- but it means the case's own question went
+                        //  unanswered, so it is published and announced rather
+                        //  than left to be inferred from a short run.
+                        ck2["css_stopped_at_cap"] = cssStopped ? 0.0 : 1.0;
+                        ck2["css_cycles_run"] =
+                            static_cast<scalar>(cssStopped ? cssStoppedAtCycle
+                                                           : cycleSnaps.size());
+                        if (!cssStopped && verbosity >= 1)
+                            std::cout << "[cycle] `repeat untilCSS;` ran its full"
+                                         " declared cap of " << cycleCount
+                                      << " cycle(s) WITHOUT reaching the"
+                                         " tolerance -- the campaign is valid and"
+                                         " its KPIs are real, but the question the"
+                                         " case asked (where is the cyclic steady"
+                                         " state?) is UNANSWERED.  Raise"
+                                         " maxCycles, or accept that this bed does"
+                                         " not settle at this tolerance.\n";
+                    }
+                    if (verbosity >= 1)
+                        std::cout << "[cycle] CSS " << (worst <= tol
+                                ? "CONVERGED" : "NOT YET CONVERGED")
+                                  << ": ||x_k - x_(k-1)||/||x_k|| = "
+                                  << std::scientific << worst << std::fixed
+                                  << " vs the case's declared tolerance " << tol
+                                  << " (worst unit '" << worstUnit << "', over "
+                                  << cycleSnaps.size() << " cycle boundaries)\n";
                 }
-                if (verbosity >= 1)
-                    std::cout << "[cycle] CSS " << (worst <= tol
-                            ? "CONVERGED" : "NOT YET CONVERGED")
-                              << ": ||x_k - x_(k-1)||/||x_k|| = "
-                              << std::scientific << worst << std::fixed
-                              << " vs the case's declared tolerance " << tol
-                              << " (worst unit '" << worstUnit << "', over "
-                              << cycleSnaps.size() << " cycle boundaries)\n";
+                else if (verbosity >= 1)
+                    std::cout << "[cycle] CSS verdict UNAVAILABLE -- the cycle"
+                                 " ran and the change between the last two"
+                                 " boundaries is " << std::scientific << worst
+                              << std::fixed << " (worst unit '" << worstUnit
+                              << "'), but no `cssTolerance` is declared and the"
+                                 " engine does not invent one: whether that is"
+                                 " converged is the case's judgement.\n";
             }
-            else if (verbosity >= 1)
-                std::cout << "[cycle] CSS verdict UNAVAILABLE -- the cycle"
-                             " ran and the change between the last two"
-                             " boundaries is " << std::scientific << worst
-                          << std::fixed << " (worst unit '" << worstUnit
-                          << "'), but no `cssTolerance` is declared and the"
-                             " engine does not invent one: whether that is"
-                             " converged is the case's judgement.\n";
-        }
-        else if (cycleCount > 0 && verbosity >= 1)
-            std::cout << "[cycle] CSS verdict UNAVAILABLE -- a verdict needs"
-                         " at least TWO completed cycle boundaries to compare"
-                         " (declared " << cycleCount << ", captured "
-                      << cycleSnaps.size() << ").\n";
+            else if (cycleCount > 0 && verbosity >= 1)
+                std::cout << "[cycle] CSS verdict UNAVAILABLE -- a verdict needs"
+                             " at least TWO completed cycle boundaries to compare"
+                             " (declared " << cycleCount << ", captured "
+                          << cycleSnaps.size() << ").\n";
 
             auto& ck = result.kpis["campaign"];
             scalar m0 = 0.0, mF = 0.0, mOut = 0.0;

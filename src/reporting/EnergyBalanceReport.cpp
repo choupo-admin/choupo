@@ -172,7 +172,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                       << "  (curate the standardThermochemistry block; the per-unit "
                          "closure is reported as a gap, not a sensible "
                          "fallback)\n";
-            rows.push_back(UnitRow{ u.name, 1 });
+            //  Named-member init: aggregate init leaves the later vector
+            //  members unlisted, which -Wmissing-field-initializers flags.
+            UnitRow gapRow;
+            gapRow.name = u.name;
+            gapRow.kind = 1;
+            rows.push_back(std::move(gapRow));
             ++gapCount;
             // A GAPPED unit still has process streams (the datum is missing,
             // not the topology), so its real boundary duty crosses the boundary
@@ -189,7 +194,9 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             // conversion node (the electricLoad generator) -- its KPI is energy
             // that already crossed at the upstream unit, so it is NOT added to
             // the plant-boundary sum (it would double-count).
-            UnitRow r{ u.name, 2 };
+            UnitRow r;
+            r.name = u.name;
+            r.kind = 2;
             r.nItems      = nItems;
             r.sumExternal = sumExternal;
             rows.push_back(std::move(r));
@@ -250,7 +257,9 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             items   = dH;
         }
 
-        UnitRow r{ u.name, 0 };
+        UnitRow r;
+        r.name = u.name;
+        r.kind = 0;
         r.hIn = e.hIn; r.hOut = e.hOut; r.dH = dH; r.items = items;
         r.supplied = supplied;
         r.closure = closure; r.declares = declares;

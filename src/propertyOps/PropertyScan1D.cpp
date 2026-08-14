@@ -244,9 +244,18 @@ int PropertyScan1D::run(const DictPtr& dict,
 
     if (failures > 0 && verbosity >= 1)
     {
+        //  Written out rather than crammed onto two lines: at one statement
+        //  per line the `return` is visibly OUTSIDE the loop, which is what it
+        //  has always been.  -Wmisleading-indentation was right to complain --
+        //  the code was correct and read as though it were not.
         const std::size_t partial = failures
-            - [&]{ std::size_t k = 0; for (const auto& c : emptyCurves)
-                                          k += failedPerProp[c]; return k; }();
+            - [&]
+              {
+                  std::size_t k = 0;
+                  for (const auto& c : emptyCurves)
+                      k += failedPerProp[c];
+                  return k;
+              }();
         if (partial > 0)
             std::cout << "  [note] " << partial << " property evaluation(s) "
                       << "were undefined at some points of the range (written "

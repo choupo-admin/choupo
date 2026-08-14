@@ -2377,6 +2377,22 @@ PYEOF
     # the residual it leaves (+82.93 / -19.87 / -11.25 kW across the corpus)
     # was invisible until the model-boundary audit was extended to units
     # declaring no duty.  Same posture as the dynamicCSTR: declare it.
+    # The tree is supposed to compile without warnings (CLAUDE.md 5, and the
+    # STRICT=1 block in make/compiler.mk).  Nothing enforced it -- STRICT=1 is
+    # opt-in -- so on 2026-08-14 there were eight, one of them a
+    # -Wmisleading-indentation on unconditional statements that read as
+    # guarded.  ~50 s, and it runs only in this gates section: never on a
+    # single case, never on --witnesses.
+    if "$ROOT/bin/curate/check_compile_clean.py" > /tmp/ccl.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_compile_clean" "$(tail -1 /tmp/ccl.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a compiler warning is back; see below)\n" "check_compile_clean"
+        cat /tmp/ccl.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ccl.$$
+
     if "$ROOT/bin/curate/check_lumped_cp_note.py" > /tmp/lcp.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_lumped_cp_note" "$(tail -1 /tmp/lcp.$$)"
         pass=$((pass+1))
