@@ -381,3 +381,74 @@ turbine's three real numbers are pinned tight.
 numbers.  A status downgrade is caught *indirectly* — it zeroes `step_kW` and
 pushes `remaining_kW` back up to the raw, both pinned — but it is not read
 directly, and the gate says so rather than implying coverage it lacks.
+
+---
+
+## The audit ran on one of two roads (2026-08-14)
+
+The audit was filtered to units that reconcile against **declared heat**:
+
+```cpp
+//  Only a unit whose closure is actually RECONCILED against declared
+//  heat has an imbalance to explain.  A unit that declares none has
+//  dH as its net duty by definition -- there is no residual, so
+//  there is nothing for a boundary step to account for.
+if (r.kind != 0 || !r.declares) continue;
+```
+
+The comment is a correct statement about a unit priced in ONE world, and a
+false one about a unit carrying a model boundary.  Under a declared `thermo
+{}` override part of `dH` is the model STEP, which is not duty at all — so an
+**adiabatic** unit at a model boundary had its step silently reclassified as
+its own net duty and published at a trivially perfect 100 % closure.  That is
+the collapse §2 forbids, arrived at from the other side: not the step charged
+as *unexplained*, but the step charged as *explained*, which raises no alarm
+at all.
+
+**Why nothing caught it.**  Both witnesses of the original ruling declare a
+duty — `basis01`'s transporter (40 kW) and `flash20`'s flashNRTL.  So did
+`perUnitThermo01`'s two units.  Every arm of `check_model_boundary_ledger`
+therefore travelled the same road.  This is the third time in the project's
+recorded history that a guard armed on one of two routes has been found green
+while the other route was unwatched (`check_true_ions`, `check_ebullioscopic`);
+the shape is worth naming as a class rather than fixing a third time as an
+incident.
+
+**The fix is a deletion.**  The report no longer decides whether a boundary
+exists — the ledger already owns that test (§4, DECLARED) and returns
+`boundary=none` for a unit that declares no world.  Two judgements over one
+fact was also the arity sin.  One thing had to be added: `UnitRow::supplied`,
+the heat GENUINELY supplied, kept apart from the reported `items`, because
+when a unit declares no duty `items` is set to `dH` for the CSV — handing that
+to the auditor computes `raw = dH - dH = 0` and the audit would see nothing
+on exactly the units it was extended to cover.
+
+**What it found, and it is not what was expected.**  `acetonePlant`'s absorber
+is the plant's only declared boundary and it is adiabatic; it reported `n/a`
+in every ledger column while carrying **−11.2496 kW**.  Audited, the verdict
+is `unconfirmed`: the auditor priced all four streams in both worlds and the
+step is **zero on every one of them** — changing the liquid activity model
+(UNIFAC → diluteSolution/Henry) changes K-values but not the enthalpy datum,
+so at this boundary there is no step to credit.  The −11.2496 kW is therefore
+a real first-law discrepancy on a unit that declares `nonIsothermal 1` and a
+4.54 K rise, and it is **not diagnosed here**.  What changed is that it is now
+visible and correctly classified, where before it read as 100 % closed.
+
+Two smaller things fell out and are recorded rather than fixed:
+
+* `M1`/`M2` now publish raw imbalances of −7.26 and +10.61 kW.  Those are
+  explained at their own site — both are declared-isothermal mixers, printing
+  `energy balance skipped` — but the ledger is where the size of that
+  approximation becomes readable.
+* The structural process-to-process exchanger test (`>=2 process in AND >=2
+  process out AND no boundary heat`) catches an **absorber**, and would catch
+  an extractor or a membrane module.  It changes no number in this plant
+  (the absorber declares no external duty either way) and is left alone
+  deliberately; it would matter for a 2-in/2-out unit that DOES declare a duty,
+  and there is no such case in the corpus to test a fix against.
+
+`ClosureInputs::declaresItems` was removed: one setter, zero readers.
+
+Gate: `check_model_boundary_ledger` A6, sabotage-verified by restoring the
+filter — observed `A6: 'divider' declares a thermo{} override and no duty, and
+its model-boundary verdict is 'n/a'` plus the JSON/CSV disagreement arm.

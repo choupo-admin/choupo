@@ -388,6 +388,36 @@ def main() -> int:
                     failures.append("A4: no ENERGY alarm on a genuine"
                                     " imbalance with no declared override")
 
+    #  ---- A6: the ADIABATIC route -------------------------------------
+    #  A unit that declares a `thermo {}` override but NO duty must still be
+    #  audited.  It was not: the report filtered the audit to units that
+    #  reconcile against declared heat, reasoning that "a unit that declares
+    #  none has dH as its net duty by definition -- there is no residual".
+    #  That holds only while both ends of dH are priced in the SAME world;
+    #  under an override part of dH is the model step, so an adiabatic
+    #  boundary had its step silently reclassified as its own duty and
+    #  published at a trivially perfect 100 %.  Both witnesses of the ruling
+    #  (basis01's transporter, flash20's flashNRTL) declare a duty, so no
+    #  arm here reached the other road -- a guard armed on one of two.
+    #
+    #  basis01's `divider` IS that road: it declares a world and no duty.
+    d = rows.get("divider", {})
+    dc = cl.get("divider")
+    if not d:
+        failures.append("A6: basis01 has no `divider` row at all")
+    elif d.get("boundary", "n/a") == "n/a":
+        failures.append("A6: `divider` declares a thermo{} override and no"
+                        " duty, and its model-boundary verdict is 'n/a' --"
+                        " the adiabatic route is unaudited, so an enthalpy"
+                        " step there is published as the unit's own duty")
+    if dc is None:
+        failures.append("A6: the result JSON carries no energyClosures entry"
+                        " for 'divider' -- the CSV and the JSON must agree on"
+                        " which units were audited")
+    elif dc.get("status") == "none":
+        failures.append("A6: `divider` is reported as declaring no model"
+                        " boundary, but its flowsheetDict declares one")
+
     if failures:
         print_failures()
         return 1
@@ -400,7 +430,9 @@ def main() -> int:
           " tolerance refuses the same step and the alarm returns); an"
           " imbalance with no declared override is credited nothing and still"
           " alarms; and a step that does not reproduce its imbalance is"
-          " printed but not credited.  NOT claimed: that any step is"
+          " printed but not credited; and a unit declaring a world but NO"
+          " duty (the ADIABATIC route) is audited rather than left n/a."
+          "  NOT claimed: that any step is"
           " physically correct, nor any coverage of the speciation / datum /"
           " reading refusals, which no corpus case exercises.")
     return 0

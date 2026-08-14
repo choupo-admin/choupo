@@ -124,6 +124,13 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         scalar      hIn = 0.0, hOut = 0.0, dH = 0.0, items = 0.0;
         scalar      closure = 0.0;         // the RAW closure, as always
         scalar      sumExternal = 0.0;
+        //  The heat GENUINELY supplied across the unit's boundary.  Kept
+        //  APART from `items` on purpose: when a unit declares no duty,
+        //  `items` is set to dH for the CSV (its implied net duty), and
+        //  handing THAT to the ledger would compute a raw imbalance of
+        //  exactly zero -- the audit would see nothing on precisely the
+        //  units it was extended to cover.
+        scalar      supplied = 0.0;
         int         nItems = 0;
         bool        declares = false;
         std::vector<const ProcessStream*> ins, outs;
@@ -245,6 +252,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 
         UnitRow r{ u.name, 0 };
         r.hIn = e.hIn; r.hOut = e.hOut; r.dH = dH; r.items = items;
+        r.supplied = supplied;
         r.closure = closure; r.declares = declares;
         r.nItems = nItems;  r.sumExternal = sumExternal;
         r.ins  = lookup(u.ins);
@@ -266,14 +274,30 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     std::map<std::string, std::size_t>    auditOf;   // unit -> index in ledger
     for (const auto& r : rows)
     {
-        //  Only a unit whose closure is actually RECONCILED against declared
-        //  heat has an imbalance to explain.  A unit that declares none has
-        //  dH as its net duty by definition -- there is no residual, so
-        //  there is nothing for a boundary step to account for.
-        if (r.kind != 0 || !r.declares) continue;
+        //  EVERY unit with a priceable enthalpy goes to the auditor, and the
+        //  auditor decides whether a boundary exists -- it owns the DECLARED
+        //  test (ModelBoundaryLedger.H sec.4) and returns `boundary=none` for
+        //  a unit that declares no world.  Deciding it a second time here is
+        //  the arity sin, and it was ALSO wrong.
+        //
+        //  It used to read `if (r.kind != 0 || !r.declares) continue;`, on the
+        //  stated grounds that "a unit that declares none has dH as its net
+        //  duty by definition -- there is no residual".  That holds only while
+        //  both ends of dH are priced in the SAME world.  Under a declared
+        //  `thermo {}` override part of dH is the model STEP, which is not
+        //  duty at all -- so an ADIABATIC unit carrying a model boundary had
+        //  its step silently reclassified as its own duty and published at a
+        //  trivially perfect 100 % closure.  Not hypothetical: acetonePlant's
+        //  absorber is the only declared boundary in that plant, it is
+        //  adiabatic, and it reported n/a in every ledger column while
+        //  carrying -11.2496 kW.  Both witnesses of the 2026-08-09 ruling
+        //  (basis01's transporter, flash20's flashNRTL) declare a duty, so the
+        //  route was never covered -- the same shape as check_ebullioscopic
+        //  and check_true_ions, a guard armed on one of two roads.
+        if (r.kind != 0) continue;
         reporting::ClosureInputs ci;
-        ci.unit = r.name; ci.dH_kW = r.dH; ci.items_kW = r.items;
-        ci.declaresItems = true;
+        //  `supplied`, NOT `items`: see UnitRow::supplied.
+        ci.unit = r.name; ci.dH_kW = r.dH; ci.items_kW = r.supplied;
         ci.ins = r.ins; ci.outs = r.outs;
         auditOf[r.name] = auditIn.size();
         auditIn.push_back(std::move(ci));

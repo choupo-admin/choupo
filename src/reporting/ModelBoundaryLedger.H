@@ -204,7 +204,6 @@ struct ClosureInputs
     std::string                        unit;
     scalar                             dH_kW    = 0.0;   // report's process dH
     scalar                             items_kW = 0.0;   // declared energy items
-    bool                               declaresItems = false;
     std::vector<const ProcessStream*>  ins;
     std::vector<const ProcessStream*>  outs;
 };
