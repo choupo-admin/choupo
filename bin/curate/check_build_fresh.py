@@ -97,16 +97,53 @@ def main() -> int:
               "case by case, and names no cause.")
         return 1
 
-    newest_src, newest_path = 0.0, None
-    for sub, pat in SOURCE_GLOBS:
-        for f in (ROOT / sub).glob(pat):
-            m = f.stat().st_mtime
-            if m > newest_src:
-                newest_src, newest_path = m, f
-    for rel in SOURCE_FILES:
-        f = ROOT / rel
-        if f.exists() and f.stat().st_mtime > newest_src:
-            newest_src, newest_path = f.stat().st_mtime, f
+    #  AN ARTEFACT IS COMPARED AGAINST THE SOURCES IT CAN DEPEND ON.
+    #
+    #  This gate used to take the newest mtime ANYWHERE under src/ and require
+    #  every artefact to postdate it.  That is wrong for one specific and very
+    #  common edit, and the wrongness is worse than a false alarm: editing
+    #  `src/applications/choupoBatch/main.cpp` makes libchoupo.so, choupoSolve,
+    #  choupoCtrl and choupoProps all "predate a source" -- and NO amount of
+    #  `make all`, the remedy this gate prints, can fix it, because make is
+    #  right to decline relinking targets whose dependencies did not change.
+    #  The prescribed remedy could not satisfy the check.  Hit twice in ten
+    #  minutes on 2026-08-14 while editing choupoBatch, each time costing a
+    #  full `make clean` rebuild.
+    #
+    #  An application's own main.cpp is linked into THAT binary and nothing
+    #  else, so it is excluded from every other artefact's comparison.  The
+    #  library is compared against everything EXCEPT applications/.  Nothing
+    #  else relaxes: a change under thermo/, solver/, core/ or any other
+    #  subsystem still has to postdate every artefact, which is the case the
+    #  gate exists for.
+    def newest_for(exclude_app_dirs):
+        newest, path = 0.0, None
+        for sub, pat in SOURCE_GLOBS:
+            for f in (ROOT / sub).glob(pat):
+                rel = f.relative_to(ROOT).as_posix()
+                if any(rel.startswith(d) for d in exclude_app_dirs):
+                    continue
+                m = f.stat().st_mtime
+                if m > newest:
+                    newest, path = m, f
+        for rel in SOURCE_FILES:
+            f = ROOT / rel
+            if f.exists() and f.stat().st_mtime > newest:
+                newest, path = f.stat().st_mtime, f
+        return newest, path
+
+    APP_DIR = "src/applications/"
+    app_dirs = sorted(d.name for d in (ROOT / "src" / "applications").iterdir()
+                      if d.is_dir()) if (ROOT / "src" / "applications").is_dir() else []
+
+    def relevant(artefact):
+        """Which application directories this artefact must NOT be judged by."""
+        stem = artefact.replace(".so", "").replace("lib", "")
+        if artefact.startswith("lib"):
+            return [APP_DIR]                       # the library links no main
+        return [APP_DIR + d + "/" for d in app_dirs if d != artefact]
+
+    newest_src, newest_path = newest_for([])       # the whole-tree reference
 
     if newest_path is None:
         print("check_build_fresh: FAILED\n  no sources found under src/ -- "
@@ -117,8 +154,10 @@ def main() -> int:
     stale = []
     for a in ARTEFACTS:
         art = bdir / a
-        if art.stat().st_mtime < newest_src:
+        limit, limit_path = newest_for(relevant(a))
+        if art.stat().st_mtime < limit:
             stale.append(a)
+            newest_path = limit_path               # name the source that bites
 
     if stale:
         rel = newest_path.relative_to(ROOT)
@@ -145,7 +184,10 @@ def main() -> int:
     #  message, where it is the diagnosis and the reader needs it.
     print("check_build_fresh: OK -- " + bdir.name + " carries all "
           + str(len(ARTEFACTS)) + " artefact(s), each newer than the newest "
-          "source under src/ and make/.  The suite is "
+          "source it can DEPEND on -- an application's own main.cpp is judged "
+          "against that binary alone, the library against everything except "
+          "applications/, and a shared source under thermo/, solver/, core/ or "
+          "any other subsystem against all five.  The suite is "
           "therefore testing a build OF this tree.  NOT CHECKED: content -- "
           "this compares modification times, not hashes, so a `touch` or a "
           "`git checkout` that changes no byte can still trip it (the remedy "

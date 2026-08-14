@@ -88,6 +88,7 @@ Description
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ResultEmitter.H"
 
+#include <variant>
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -480,17 +481,78 @@ try
 //  this must reproduce.
 std::size_t cycleCount = 0;
 scalar      cyclePeriod = 0.0;
+bool        untilCSS = false;
+scalar      cssTolerance = 0.0;   // 0 = not declared
 if (flowsheetDict->found("cycle"))
 {
     auto cy = flowsheetDict->subDict("cycle");
     cyclePeriod = cy->lookupScalar("period");
-    const scalar repeatN = cy->lookupScalar("repeat");
     if (cyclePeriod <= 0.0)
         throw std::runtime_error("cycle: period must be > 0 s");
-    if (repeatN < 1.0 || repeatN != std::floor(repeatN))
-        throw std::runtime_error("cycle: repeat must be a positive"
-            " whole number of cycles");
-    cycleCount = static_cast<std::size_t>(repeatN);
+
+    //  ---- A6 item 4: `repeat untilCSS;` --------------------------------
+    //  `repeat N;` says how many cycles to RUN.  `repeat untilCSS;` says
+    //  what to run UNTIL -- the cyclic steady state itself becomes the
+    //  stopping condition, which is what a student actually wants to ask
+    //  of a TSA bed: not "run three cycles" but "settle, and tell me how
+    //  many that took".  batch23 made the question visible (qbar 0.3151 ->
+    //  0.2415 -> 0.1748, ratio ~0.9, NOT converged); this answers it.
+    //
+    //  TWO THINGS ARE MANDATORY, and both refuse rather than default.
+    //  A tolerance, because whether a bed has converged is a modelling
+    //  judgement the engine must never invent (the same rule the tri-state
+    //  verdict already follows).  And a CAP, because a bed that never
+    //  settles would otherwise run to endTime with nobody saying why -- the
+    //  cap is what turns "it stopped" into a statement.
+    //  `repeat` may hold a NUMBER or the word `untilCSS`, so the ENTRY's own
+    //  type decides which branch runs.
+    //
+    //  The first version asked `lookupWordOrDefault("repeat", "")` and
+    //  reasoned in a comment that "a numeric entry cannot match the
+    //  sentinel".  It cannot -- it THROWS: that helper defaults only when the
+    //  key is ABSENT, and calls lookupWord otherwise.  So every existing
+    //  case declaring `repeat 3;` died on entry, which batch23 reported
+    //  immediately.  Reading the variant asks the question that was actually
+    //  meant: is this entry a word?
+    const bool repeatIsWord =
+        cy->found("repeat")
+        && std::holds_alternative<std::string>(cy->entryValue("repeat"));
+    if (repeatIsWord && cy->lookupWord("repeat") == "untilCSS")
+    {
+        untilCSS = true;
+        if (!cy->found("cssTolerance"))
+            throw std::runtime_error("cycle: `repeat untilCSS;` needs a"
+                " `cssTolerance` -- it IS the stopping condition, and"
+                " whether a bed has converged is the case's judgement, not"
+                " a number the engine picks.");
+        if (!cy->found("maxCycles"))
+            throw std::runtime_error("cycle: `repeat untilCSS;` needs a"
+                " `maxCycles` cap -- a bed that never settles must stop"
+                " somewhere, and the run has to be able to say it stopped"
+                " because it ran out of cycles rather than because it"
+                " converged.");
+        cssTolerance = cy->lookupScalar("cssTolerance");
+        if (cssTolerance <= 0.0)
+            throw std::runtime_error("cycle.cssTolerance must be > 0");
+        const scalar capN = cy->lookupScalar("maxCycles");
+        if (capN < 2.0 || capN != std::floor(capN))
+            throw std::runtime_error("cycle: maxCycles must be a whole"
+                " number >= 2 -- a CSS verdict compares two completed"
+                " boundaries, so one cycle can never produce one.");
+        cycleCount = static_cast<std::size_t>(capN);
+    }
+    else
+    {
+        if (repeatIsWord)
+            throw std::runtime_error("cycle: `repeat " + cy->lookupWord("repeat")
+                + ";` is not a form this engine knows -- write a positive whole"
+                  " number of cycles, or the word `untilCSS`.");
+        const scalar repeatN = cy->lookupScalar("repeat");
+        if (repeatN < 1.0 || repeatN != std::floor(repeatN))
+            throw std::runtime_error("cycle: repeat must be a positive"
+                " whole number of cycles, or the word `untilCSS`");
+        cycleCount = static_cast<std::size_t>(repeatN);
+    }
     if (!cy->found("steps"))
         throw std::runtime_error("cycle: needs a `steps ( ... )` list --"
             " the events of ONE period, each with a time in [0, period)");
@@ -521,7 +583,8 @@ if (flowsheetDict->found("cycle"))
     std::sort(events.begin(), events.end(),
               [](const RecipeEvent& a, const RecipeEvent& b)
               { return a.time < b.time; });
-    std::cout << "Declared cycle: " << cycleCount << " x "
+    std::cout << "Declared cycle: " << (untilCSS ? "until CSS, at most " : "")
+              << cycleCount << " x "
               << cyclePeriod << " s (" << steps.size()
               << " step(s) per period) -> " << (cycleCount * steps.size())
               << " expanded event(s); campaign covers "
@@ -926,6 +989,47 @@ if (flowsheetDict->found("cycle"))
     //  whether a bed "has converged".
     std::vector<std::vector<sVector>> cycleSnaps;   // [cycle][unit] -> state
     std::size_t nextCycleIdx = 1;                   // boundary k*period
+
+    //  THE CSS NORM HAS ONE HOME.  It is asked twice -- once per boundary as
+    //  the `untilCSS` stopping test, once at the end as the reported verdict
+    //  -- and two transcriptions of the same norm would be the arity sin
+    //  inside the feature built to answer a convergence question.  Returns
+    //  the worst relative change over the units, or -1 when fewer than two
+    //  boundaries have been captured.
+    std::string cssWorstUnit;
+    auto cssRelativeChange = [&]() -> scalar
+    {
+        if (cycleSnaps.size() < 2) return -1.0;
+        const auto& a = cycleSnaps[cycleSnaps.size() - 2];
+        const auto& b = cycleSnaps.back();
+        scalar worst = 0.0;
+        cssWorstUnit.clear();
+        for (std::size_t i = 0; i < b.size() && i < a.size(); ++i)
+        {
+            scalar num = 0.0, den = 0.0;
+            for (std::size_t j = 0; j < b[i].size() && j < a[i].size(); ++j)
+            {
+                const scalar d = b[i][j] - a[i][j];
+                num += d * d;
+                den += b[i][j] * b[i][j];
+            }
+            const scalar rel = std::sqrt(num)
+                             / std::max(std::sqrt(den), 1.0e-30);
+            if (rel > worst)
+            {
+                worst = rel;
+                cssWorstUnit = (i < unitNames.size()) ? unitNames[i]
+                                                      : std::string();
+            }
+        }
+        return worst;
+    };
+
+    //  Set when `untilCSS` stops the campaign early, so the end-of-run report
+    //  can say WHY it stopped rather than leaving the reader to infer it from
+    //  a short trajectory.
+    bool        cssStopped = false;
+    std::size_t cssStoppedAtCycle = 0;
     auto captureCycleBoundary = [&](scalar tNow)
     {
         if (cycleCount == 0) return;
@@ -938,6 +1042,29 @@ if (flowsheetDict->found("cycle"))
             for (const auto& u : units) snap.push_back(u->cycleState());
             cycleSnaps.push_back(std::move(snap));
             ++nextCycleIdx;
+
+            //  `repeat untilCSS;` -- the verdict is the stopping condition.
+            //  Tested HERE, at the boundary, because that is the only place
+            //  the comparison is meaningful: a cyclic state repeats period to
+            //  period, not step to step.
+            if (untilCSS && !cssStopped)
+            {
+                const scalar rel = cssRelativeChange();
+                if (rel >= 0.0 && rel <= cssTolerance)
+                {
+                    cssStopped = true;
+                    cssStoppedAtCycle = cycleSnaps.size();
+                    if (verbosity >= 1)
+                        std::cout << "[cycle] CSS reached after "
+                                  << cssStoppedAtCycle << " cycle(s): "
+                                  << std::scientific << rel << std::fixed
+                                  << " <= the declared " << cssTolerance
+                                  << " (worst unit '" << cssWorstUnit
+                                  << "') -- the campaign stops here rather"
+                                     " than running the declared cap of "
+                                  << cycleCount << ".\n";
+                }
+            }
         }
     };
 
@@ -997,7 +1124,7 @@ if (flowsheetDict->found("cycle"))
     if (!adaptive)
     {
         // ---- FIXED-STEP RK4 (today's path --- byte-identical) ---------
-        while (t < endTime - 1.0e-12)
+        while (t < endTime - 1.0e-12 && !cssStopped)
         {
             scalar dt = deltaT;
             if (t + dt > endTime) dt = endTime - t;
@@ -1058,7 +1185,7 @@ if (flowsheetDict->found("cycle"))
                       << "  " << std::setw(11) << hTaken << "\n";
         };
 
-        while (t < endTime - 1.0e-12)
+        while (t < endTime - 1.0e-12 && !cssStopped)
         {
             // Next clean boundary: the earliest of the next write, the next
             // pending recipe event, and endTime.  The integrator lands HERE.
@@ -1232,22 +1359,12 @@ if (flowsheetDict->found("cycle"))
         if (cycleCount >= 2 && cycleSnaps.size() >= 2)
         {
             auto& ck2 = result.kpis["campaign"];
-            const auto& a2 = cycleSnaps[cycleSnaps.size() - 2];
-            const auto& b2 = cycleSnaps.back();
-            scalar worst = 0.0;
-            std::string worstUnit;
-            for (std::size_t i = 0; i < b2.size() && i < a2.size(); ++i)
-            {
-                scalar num = 0.0, den = 0.0;
-                for (std::size_t j = 0; j < b2[i].size() && j < a2[i].size(); ++j)
-                {
-                    const scalar d = b2[i][j] - a2[i][j];
-                    num += d * d;
-                    den += b2[i][j] * b2[i][j];
-                }
-                const scalar rel = std::sqrt(num) / std::max(std::sqrt(den), 1.0e-30);
-                if (rel > worst) { worst = rel; worstUnit = unitNames[i]; }
-            }
+            //  ONE norm, the same the stopping test used -- see
+            //  cssRelativeChange above.  Recomputing it here with its own
+            //  loop is exactly the duplication this feature exists to detect
+            //  in a bed, and it would be free to drift.
+            const scalar worst = cssRelativeChange();
+            const std::string& worstUnit = cssWorstUnit;
             ck2["css_relative_change"] = worst;
             ck2["css_cycles_completed"] = static_cast<scalar>(cycleSnaps.size());
             auto cy2 = flowsheetDict->subDict("cycle");
@@ -1258,6 +1375,30 @@ if (flowsheetDict->found("cycle"))
                     throw std::runtime_error("cycle.cssTolerance must be > 0");
                 ck2["css_tolerance"] = tol;
                 ck2["css_converged"] = (worst <= tol) ? 1.0 : 0.0;
+                if (untilCSS)
+                {
+                    //  `repeat untilCSS;` asked a question; the run must say
+                    //  which answer it got.  Reaching the cap WITHOUT
+                    //  converging is not a crash -- the trajectory is a
+                    //  physically valid campaign and every other KPI in it is
+                    //  real -- but it means the case's own question went
+                    //  unanswered, so it is published and announced rather
+                    //  than left to be inferred from a short run.
+                    ck2["css_stopped_at_cap"] = cssStopped ? 0.0 : 1.0;
+                    ck2["css_cycles_run"] =
+                        static_cast<scalar>(cssStopped ? cssStoppedAtCycle
+                                                       : cycleSnaps.size());
+                    if (!cssStopped && verbosity >= 1)
+                        std::cout << "[cycle] `repeat untilCSS;` ran its full"
+                                     " declared cap of " << cycleCount
+                                  << " cycle(s) WITHOUT reaching the"
+                                     " tolerance -- the campaign is valid and"
+                                     " its KPIs are real, but the question the"
+                                     " case asked (where is the cyclic steady"
+                                     " state?) is UNANSWERED.  Raise"
+                                     " maxCycles, or accept that this bed does"
+                                     " not settle at this tolerance.\n";
+                }
                 if (verbosity >= 1)
                     std::cout << "[cycle] CSS " << (worst <= tol
                             ? "CONVERGED" : "NOT YET CONVERGED")

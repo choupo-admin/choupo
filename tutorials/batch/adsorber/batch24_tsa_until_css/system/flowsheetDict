@@ -1,0 +1,132 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch24_tsa_until_css  --  A6 item 4: the cyclic steady state as the
+  STOPPING CONDITION, not a count.
+
+  batch23 beside this one declares `repeat 3;` and reports honestly that
+  three cycles did not settle -- it makes the question visible and does not
+  answer it.  This case asks what an engineer actually wants to ask of a TSA
+  bed: not "run three cycles" but "cycle until it repeats, and tell me how
+  many that took".
+
+      cycle { period 7200; repeat untilCSS; cssTolerance 3e-2; maxCycles 6; ... }
+
+  The declared cap is SIX and the run uses TWO, announcing why it stopped.
+
+  TWO KEYS ARE MANDATORY under `untilCSS` and the engine refuses without
+  either: the tolerance, because whether a bed has converged is a modelling
+  judgement the engine must never invent; and the cap, because a bed that
+  never settles has to stop somewhere and the run must be able to say it
+  stopped for want of cycles rather than because it arrived.  Reaching the
+  cap is NOT an error -- the trajectory is a physically valid campaign and
+  every other KPI in it is real -- but it means the case's own question went
+  unanswered, so it is published (`css_stopped_at_cap`) and announced.
+
+  WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the
+  loading are NOT the same quantity.  See the measured numbers beside
+  `cssTolerance` below.  A tolerance chosen without looking can certify a bed
+  whose loading is still visibly marching, because the norm over the whole
+  packed state is dominated by its largest components.  The verdict is only
+  as meaningful as the number the case declares -- which is the argument for
+  the engine refusing to supply one.
+*/
+
+units
+(
+    {
+        name bed;
+        type fixedBedAdsorber;
+        solver { samplingInterval 2.0; rtol 1e-6; }
+        operation
+        {
+            adsorbent zeolite13X_A4; flowModel ergun;
+            energyBalance adiabatic;
+            solidHeatCapacity
+            {
+                value  [0 2 -2 -1 0] 920;   // J/(kg K)
+                scope  "packed 13X teaching bed, RUN-A6-CYCLES";
+                source "declared teaching value (order of magnitude for zeolite pellets); curating a primary-cited cp onto the asset record is a separate act";
+            }
+            L 0.5 m; area 0.01 m2; eps 0.4; u 0.05 m/s;
+            T 298.15 K; P 1 bar; P_out 1 bar;
+            Dax [0 2 -1 0 0] 1e-4; nCells 25;
+            feed { molarComposition { CO2 0.15; He 0.85; } }
+            initial { molarComposition { He 1.0; } }
+            kLDF
+            {
+                basis solidFilm;
+                scope "2 mm synthetic A4 conservation anchor";
+                source "declared numerical comparison";
+                k { CO2 [0 0 -1 0 0] 0.05; }
+            }
+        }
+    }
+);
+
+//  A6: the cycle is DECLARED STRUCTURE, not a hand-unrolled event list.
+//  Each step's `time` is its offset WITHIN one period; the driver adds
+//  k*period and expands to the same event stream the unrolled form
+//  produced -- proven equivalent on all 51 KPIs of this case's golden,
+//  which is what let the hand-written version be retired.
+//  Order matters at each instant: the T switch fires FIRST (it rescales
+//  every feed concentration to the new P/(R T) and re-declares the
+//  commitment), the composition switch second (it reads its fraction
+//  against the nominal total at the CURRENT T).
+cycle
+{
+    period        7200;      // s -- one load + one hot purge
+
+    //  THE CYCLIC STEADY STATE IS THE STOPPING CONDITION, not a count.
+    //  batch23 beside this one declares `repeat 3;` and reports that it did
+    //  NOT settle; here the case says what it is actually after -- "cycle
+    //  until it repeats" -- and the run reports how many cycles that took.
+    repeat        untilCSS;
+
+    //  BOTH OF THESE ARE MANDATORY under `untilCSS`, and the engine refuses
+    //  without them.  The tolerance because whether a bed has converged is a
+    //  modelling judgement (the same rule the tri-state verdict follows); the
+    //  cap because a bed that never settles has to stop somewhere, and the
+    //  run must be able to say it stopped for want of cycles rather than
+    //  because it arrived.
+    //
+    //  3e-2 is DELIBERATELY LOOSE, and what it exposes is worth more than
+    //  the feature it was chosen to demonstrate.  MEASURED, on this bed:
+    //
+    //      boundary 1 -> 2   ||dx||/||x|| = 2.0938e-2   (this case)
+    //      boundary 2 -> 3   ||dx||/||x|| = 2.1059e-2   (batch23, same bed)
+    //
+    //  Essentially FLAT.  So the run stops at the SECOND boundary, and this
+    //  comment first predicted the third -- written from an assumption that
+    //  the norm decays like the loading does, and corrected by running it.
+    //
+    //  BECAUSE THE TWO QUANTITIES ARE NOT THE SAME THING, and that is the
+    //  caveat a student should take from this case.  batch23 reports the
+    //  end-of-cycle loading marching visibly (qbar 0.3151 -> 0.2415 ->
+    //  0.1748, ratio ~0.9), while the FULL packed-state norm barely moves at
+    //  ~2.1e-2.  The CSS verdict answers "does the whole state repeat", and
+    //  that norm is dominated by whatever components are largest in the
+    //  vector -- so a tolerance picked without looking can certify a bed
+    //  whose loading is still drifting cycle after cycle.
+    //
+    //  The verdict is therefore only as meaningful as the tolerance the case
+    //  declares, which is exactly why the engine refuses to invent one.  At
+    //  batch23's 1e-3 this same bed does NOT converge in three cycles, and
+    //  that case says so.
+    cssTolerance  3e-2;
+    maxCycles     6;
+
+    steps
+    (
+        { time 0;    action setParameter; unit bed; key feed.T;   value 298.15;}
+        { time 0;    action setParameter; unit bed; key feed.CO2; value 0.15;  }
+        { time 3600; action setParameter; unit bed; key feed.CO2; value 0.0;   }
+        { time 3600; action setParameter; unit bed; key feed.T;   value 400.0; }
+    );
+}

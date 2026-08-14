@@ -263,9 +263,14 @@ ones for day-to-day work:
    runs THREE full TSA cycles with today's grammar (fifteen ledgered
    amendments, energy claimed across ten switches) and MEASURES the CSS
    approach: end-of-cycle qbar 0.3151 → 0.2415 → 0.1748, ratio ~0.9,
-   not converged — the A6 question made visible.  A6 proper (declared
-   cycles, per-cycle snapshots, tri-state CSS verdict, stop-at-CSS) is
-   PROPOSED in the design note §7 → §4b decision queue.  STILL
+   not converged — the A6 question made visible.  A6 is COMPLETE: items 1-3 (declared cycles, per-cycle snapshots,
+   tri-state verdict) shipped 2026-08-02, item 4 (`repeat untilCSS;`)
+   2026-08-14 with witness `batch24_tsa_until_css` — declares 6 cycles,
+   uses 2, announces why, and refuses without a tolerance or a cap.  It
+   also MEASURED that the CSS norm and the loading are different
+   quantities (norm flat at ~2.1e-2 while qbar marches at ratio ~0.9),
+   so a tolerance chosen without looking can certify a drifting bed —
+   evidence for the rule that the engine never invents that number.  STILL
    REFUSING, named: pressure swing / blowdown (transient c_tot), flow
    transients (transient Ergun), flow reversal.  Close those + A6 to
    complete the programme.

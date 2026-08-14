@@ -137,9 +137,32 @@ not built" refusal retires WITH this slice.
 
 ## 7. A6 — cyclic steady state (BUILT 2026-08-02)
 
-**Status: shipped.**  Vítor's ruling was "faz como achares melhor" and
-then "Avança!", so items 1-3 below are built; item 4 (`repeat untilCSS;`)
-stays the named next step.  What the BUILD added to the design:
+**Status: shipped, ALL FOUR ITEMS (item 4 on 2026-08-14).**  Vítor's ruling
+was "faz como achares melhor" and then "Avança!".  What the BUILD added to
+the design:
+
+* **Item 4, `repeat untilCSS;`.**  The verdict becomes the stopping
+  condition, tested at each cycle boundary because that is the only place a
+  cyclic state is comparable.  TWO keys are mandatory and both refuse: the
+  tolerance (the engine must never invent the number that decides
+  convergence) and a `maxCycles` cap (a bed that never settles has to stop
+  somewhere, and the run must be able to say it stopped for want of cycles).
+  Reaching the cap is NOT an error -- the campaign is physically valid and
+  its KPIs are real -- but the case's question went unanswered, so it is
+  published as `css_stopped_at_cap` and announced.  The norm has ONE home,
+  shared by the stopping test and the reported verdict.
+  Witness `batch24_tsa_until_css`: declares 6 cycles, uses 2.
+
+* **WHAT ITEM 4 FOUND, and it outlives the feature.**  The CSS norm and the
+  loading are different quantities.  Measured on the same bed: the
+  full-state relative change is 2.0938e-2 between boundaries 1-2 and
+  2.1059e-2 between 2-3 -- essentially FLAT -- while batch23's end-of-cycle
+  loading marches visibly (qbar 0.3151 -> 0.2415 -> 0.1748, ratio ~0.9).
+  The norm is dominated by the largest components of the packed state, so a
+  tolerance chosen without looking can certify a bed whose loading is still
+  drifting cycle after cycle.  **The verdict is only as meaningful as the
+  number the case declares** -- which is the argument for the engine
+  refusing to supply one, now with evidence rather than principle.
 
 * **The accumulator trap.**  A unit's packed state also holds MONOTONE
   ACCUMULATORS — the bed's `M_in`/`M_out` ledger rows and its `Q_wall`

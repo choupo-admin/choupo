@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 352,
+  "cases": 353,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -225,6 +225,20 @@
    "hasGolden": true
   },
   "tutorials/batch/adsorber/batch24_blowdown_inert": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/adsorber/batch24_tsa_until_css": {
    "application": "choupoBatch",
    "unitTypes": [
     "fixedBedAdsorber"
@@ -5140,6 +5154,7 @@
     "tutorials/batch/adsorber/batch22_wall_cooled",
     "tutorials/batch/adsorber/batch23_tsa_cycles",
     "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
@@ -5733,6 +5748,7 @@
     "tutorials/batch/adsorber/batch22_wall_cooled",
     "tutorials/batch/adsorber/batch23_tsa_cycles",
     "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal"
    ],
    "gasSolidSplitter": [
@@ -6093,6 +6109,7 @@
     "tutorials/batch/adsorber/batch22_wall_cooled",
     "tutorials/batch/adsorber/batch23_tsa_cycles",
     "tutorials/batch/adsorber/batch24_blowdown_inert",
+    "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
