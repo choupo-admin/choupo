@@ -2310,6 +2310,23 @@ PYEOF
     # bin/regen-llm-docs has carried a --check mode since it was written and it
     # ran nowhere, so components.md advertised 56 components while the tree
     # held 247 -- in the very file an assistant reads to pick component names.
+    # The TUTORIALS GUIDE is generated from the cases too, and until
+    # 2026-08-14 nothing noticed when it fell behind them: the generator
+    # existed, wrote whenever run, and nobody ran it.  Regenerating that day
+    # moved thousands of lines across six category files -- every case added
+    # since the last manual run was absent from the manual a student reads.
+    # Same shape as the WASM: a derived artefact with no freshness check.
+    if "$ROOT/bin/curate/gen_tutorials_guide.py" --check > /tmp/tutg.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "tutorials-guide-gate" "$(tail -1 /tmp/tutg.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/gen_tutorials_guide.py, then commit)\n" \
+            "tutorials-guide-gate"
+        cat /tmp/tutg.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tutg.$$
+
     if "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
         pass=$((pass+1))

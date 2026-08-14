@@ -32,6 +32,90 @@
 \end{tutnarrative}
 
 \clearpage
+\tutentry{acetonePlant}{tutorials/plant/acetonePlant}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M1) at (237.8,-0.0) {\textbf{M1}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vaporiser) at (240.7,-0.0) {\textbf{vaporiser}\\[-1pt]{\tiny phaseChanger}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (243.6,-0.0) {\textbf{reactor}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (246.5,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (absorber) at (249.4,-0.0) {\textbf{absorber}\\[-1pt]{\tiny absorber}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (M2) at (252.3,-0.0) {\textbf{M2}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (vent) at (255.2,-0.0) {\textbf{vent}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (C1) at (258.1,-0.0) {\textbf{C1}\\[-1pt]{\tiny distillationColumn}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (C2) at (261.0,-0.0) {\textbf{C2}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(M1.west)+(-1.05,0.00)$) -- ($(M1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {freshFeed};
+  \draw[->, dashed] (C2.south) .. controls +(0,-1.0) and +(0,-1.0) .. (M1.south) node[midway, below, font=\tiny] {ipaRecycle};
+  \draw[->] (M1) -- (vaporiser) node[midway, above, font=\tiny] {mixedFeed};
+  \draw[->] (vaporiser) -- (reactor) node[midway, above, font=\tiny] {Rin};
+  \draw[->] (reactor) -- (separator) node[midway, above, font=\tiny] {Rout};
+  \draw[->] (separator) -- (absorber) node[midway, above, font=\tiny] {flashGas};
+  \draw[->] ($(absorber.west)+(-1.05,0.00)$) -- ($(absorber.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
+  \draw[->] (separator) -- (M2) node[midway, above, font=\tiny] {flashLiquid};
+  \draw[->] (absorber) -- (M2) node[midway, above, font=\tiny] {absBottoms};
+  \draw[->] (M2) -- (vent) node[midway, above, font=\tiny] {F1};
+  \draw[->] (vent) -- (C1) node[midway, above, font=\tiny] {columnFeed};
+  \draw[->] (C1) -- (C2) node[midway, above, font=\tiny] {B1};
+  \draw[->] ($(absorber.east)+(0,0.00)$) -- ($(absorber.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {offgas};
+  \draw[->] ($(vent.east)+(0,0.00)$) -- ($(vent.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {ventGas};
+  \draw[->] ($(C1.east)+(0,0.00)$) -- ($(C1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {acetoneProduct};
+  \draw[->] ($(C2.east)+(0,0.00)$) -- ($(C2.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {waterProduct};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Acetone from 2-propanol: Luyben's Figure 1 closed, with the IPA recycle}
+\begin{tutnarrative}
+ACETONE FROM 2-PROPANOL, THE CLOSED FLOWSHEET
+
+W. L. Luyben, "Design and Control of the Acetone Process via Dehydrogenation of 2-Propanol", Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a -- his Figure 1 (the Turton base case), end to end:
+
+fresh feed + IPA recycle $\to$ vaporiser $\to$ reactor $\to$ separator $\to$ absorber (offgas washed) $\to$ C1 $\to$ acetone product $\to$ C2 $\to$ water product $\to$ IPA RECYCLE (tear)
+
+This is the case the six preceding ones were built to make possible. Each of them isolates one unit on Luyben's OWN published inlet, so that whatever it gets wrong is that unit and its thermodynamics. Here nothing is published except the fresh feed: every internal stream is the plant's own answer, and the errors compose.
+
+WHAT THIS CASE CLAIMS, AND WHAT IT DOES NOT. It claims to be Luyben's TOPOLOGY and Luyben's EQUIPMENT SPECIFICATIONS solved on the thermodynamics Choupo actually has. It does NOT claim to reproduce his stream table -- the siblings measured, in advance, exactly why it cannot, and the gap between his table and this one is the deliverable rather than a defect to be closed:
+
+acetone01: UNIFAC puts the IPA/water azeotrope at x 0.590 against his 0.673, and the lake-estimated isopropanol boils 4.5 K high. acetone04: UNIFAC INVENTS an acetone/water azeotrope at x 0.978 where his UNIQUAC has none -- 0.044 K deep, and decisive. acetone06: so C1 caps at 97.3 mol \% acetone against his 99.9 \% spec. acetone07: so C2's recycle caps at x\_IPA 0.580 against his 0.650, and 11.6 \% of the isopropanol entering it leaves in the water product.
+
+Both column ceilings were WRITTEN DOWN BEFORE the columns existed and are pinned by check\_azeotrope\_ceiling. This case is where they stop being two separate findings and become one plant.
+
+DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
+
+(a) NO HYDROGEN IN THE COLUMNS. His C1 has a partial condenser and a vent (0.0465 kmol/h, carrying 0.0130 kmol/h H2 and 0.0335 kmol/h acetone); Choupo's column has a total condenser and no vapour distillate. A permanent gas fed to a total condenser is asked to leave as a liquid, and the engine rightly refuses (hydrogen has no liquid heat capacity at 330 K). So the separator's LIQUID goes to C1 and the hydrogen leaves with the offgas, i.e. the columns are modelled downstream of his vent. Cost, stated: the 0.0335 kmol/h of acetone his vent loses is not lost here, which flatters this plant's acetone recovery by 0.10 \%.
+
+(b) THE SEPARATOR DOES THE COOLING. An isothermal flash at 318 K computes the duty to bring its feed there, so this one unit stands for his HX1 plus his separator and its Q is directly comparable to his 0.8993 MW. A separate `heater` was tried in acetone03 and refused, correctly: Choupo's heater takes a DUTY and reports the temperature, because a heater with a specified outlet temperature is a design specification.
+
+(c) THE SEPARATOR PRESSURE IS ARGUED, NOT FITTED. Luyben states 1.5 atm for the absorber gas, which is downstream; there is no compressor between reactor and separator and pressure only falls, so the separator sits at the reactor's 2.6 atm. acetone03 records the sweep that would have tempted a fitted value and why it was refused.
+
+(d) THE ABSORBER'S SECOND OUTLET REJOINS C1's FEED, as in his Figure 1 (his F1 of 72.85 kmol/h is the flash liquid AFTER the absorber bottoms of 20.05 kmol/h rejoin it).
+
+(e) NO VENT/PURGE ON THE RECYCLE LOOP. Luyben has none either -- the loop closes through C2's overhead and nothing else -- so this is his structure, not a simplification. It does mean any component that both enters and cannot leave would accumulate without bound; here water leaves in three places and isopropanol in two, so the loop is closed and bounded.
+
+\end{tutnarrative}
+\tutreadme{These are the dictionaries of the closed acetone flowsheet described in [../acetone-plant-closure-state.md](../acetone-plant-closure-state.md). It does not converge yet, and the reason is one named engine gap (F3 in that record: no unit can remove a component completely).}
+\tutreadme{tutorials/ is the verification and regression corpus. Everything in it is run by bin/runTests and is expected to answer. Putting a case there that cannot answer would have meant claiming one of two markers, and neither is true of this case:}
+\tutreadme{$\ast$ .expect-nonconvergence --- every one of the five cases carrying it is a DELIBERATE TEACHING REFUSAL (flash15\_refused\_salt\_basis\_rank, tsa02\_refused\_capacity, ?): the refusal $\ast$is$\ast$ the lesson, and the case is finished. This one is not refusing anything on purpose; it is unfinished. $\ast$ .known-broken --- the corpus carries ZERO of these, and that zero is a claim the project makes about its own health. Spending it to park work in progress would be paying a real claim for my convenience.}
+\tutreadme{So the case sits beside the record that explains it, makes no corpus claim, and moves to tutorials/plant/acetonePlant/ the day it converges --- at which point it gets a golden, a seal and an entry in the case manifest like any other case.}
+\tutreadme{0/ is NOT kept: it is generated by bin/choupo-init0 from the authored inlets plus the tear seed, and a stale copy of a generated state is a second home for numbers the tool derives. The tear seed itself --- the one part of 0/ that is authored rather than propagated --- is described in the closure record.}
+\tutreadme{The absorber's second thermodynamic world is declared inline in system/flowsheetDict as a per-unit thermo \{\} block, not as a separate file, because that is where the model boundary belongs and where the run announces it.}
+\begin{tutgolden}
+\goldrow{stream}{B1}{F}{0.0118946232842}
+\goldrow{stream}{F1}{F}{0.0195617446099}
+\goldrow{stream}{Rin}{F}{0.0160666666667}
+\goldrow{stream}{Rout}{F}{0.0255036799795}
+\goldrow{stream}{absBottoms}{F}{0.00608647733675}
+\goldrow{stream}{acetoneProduct}{F}{0.00762772388347}
+\goldrow{stream}{columnFeed}{F}{0.0195223471677}
+\goldrow{stream}{flashGas}{F}{0.0120284127064}
+\goldrow{stream}{flashLiquid}{F}{0.0134752672731}
+\goldrow{stream}{freshFeed}{F}{0.0144333333333}
+\goldrow{stream}{ipaRecycle}{F}{0.00163333333333}
+\goldrow{stream}{mixedFeed}{F}{0.0160666666667}
+\goldrow{stream}{offgas}{F}{0.0114974909252}
+\goldrow{stream}{ventGas}{F}{3.9397442245e-05}
+\goldmore{136}
+\end{tutgolden}
+
+\clearpage
 \tutentry{esterification2sector}{tutorials/plant/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
 \begin{tutnarrative}
@@ -57,6 +141,10 @@ The root graph assembles the sectors and the inter-sector links, nothing more. E
 \goldrow{stream}{liquid}{F}{0.00949461019202}
 \goldrow{stream}{reactorOut}{F}{0.0277777777778}
 \goldrow{stream}{vapor}{F}{0.0182831675858}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.duty\_kW}{-195.801233278}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.T}{355}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.kg\_s}{4.68424003057}
+\goldrow{utility}{SEPARATION.flash}{cooling.coolingWater.eur\_h}{0.28195377592}
 \end{tutgolden}
 
 \clearpage
@@ -106,7 +194,7 @@ Everything is at 35 bar so the recycles return at reactor pressure (the Mixer ta
 \goldrow{kpi}{Column}{D}{0.0308570333668}
 \goldrow{kpi}{Column}{N\_min}{8.3953506183}
 \goldrow{kpi}{Column}{N\_theoretical}{20.1717591626}
-\goldmore{28}
+\goldmore{38}
 \end{tutgolden}
 
 \clearpage

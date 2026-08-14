@@ -460,6 +460,36 @@
 \end{tutgolden}
 
 \clearpage
+\tutentry{batch24\_tsa\_until\_css}{tutorials/batch/adsorber/batch24\_tsa\_until\_css}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed) at (0.0,-0.0) {\textbf{bed}\\[-1pt]{\tiny fixedBedAdsorber}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Toward A6: three hand-declared TSA cycles (cold load / 400 K purge) in one campaign -- eleven ledgered feed amendments, balances closed, final KPIs at the cycle boundary; the CSS verdict machinery stays a named proposal}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{bed}{P\_final}{100029.553817}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100059.686721}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.177433}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100029.506183}
+\goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
+\goldrow{kpi}{bed}{Pe}{250}
+\goldrow{kpi}{bed}{T\_final}{324.614533765}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{399.878004394}
+\goldrow{kpi}{bed}{T\_min\_final\_K}{297.926151955}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{310.618231369}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.35003119794e-11}
+\goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.6867210897}
+\goldrow{kpi}{bed}{gasInventory\_mol}{0.0747102437107}
+\goldmore{45}
+\end{tutgolden}
+
+\clearpage
 \tutentry{batch25\_blowdown\_thermal}{tutorials/batch/adsorber/batch25\_blowdown\_thermal}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

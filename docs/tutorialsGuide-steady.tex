@@ -66,6 +66,57 @@
 \end{tutgolden}
 
 \clearpage
+\tutentry{acetone05\_luyben\_absorber}{tutorials/steady/absorption/acetone05\_luyben\_absorber}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (absorber) at (0.0,-0.0) {\textbf{absorber}\\[-1pt]{\tiny absorber}};
+  \draw[->] ($(absorber.west)+(-1.05,-0.17)$) -- ($(absorber.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {gasIn};
+  \draw[->] ($(absorber.west)+(-1.05,0.17)$) -- ($(absorber.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
+  \draw[->] ($(absorber.east)+(0,-0.34)$) -- ($(absorber.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {offgas};
+  \draw[->] ($(absorber.east)+(0,0.00)$) -- ($(absorber.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {bottoms};
+  \draw[->] ($(absorber.east)+(0,0.34)$) -- ($(absorber.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Luyben's acetone absorber: 9 stages, water washing acetone out of the hydrogen offgas -- against his own acetone and bottoms}
+\begin{tutnarrative}
+The unit acetone04 was measured FOR. Luyben's absorber washes acetone out of the reactor's hydrogen-rich offgas with water: 9 stages at 1.5 atm, 20 kmol/h of water on top, 39.80 kmol/h of gas at the bottom.
+
+W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a, Figure 1.
+
+WHAT IS INDEPENDENT HERE, stated before the numbers because the last case in this family had to say the opposite. The gas inlet is Luyben's own ("Gas (to absorber)": 39.80 kmol/h, acetone 0.1147, IPA 0.0033) EXCEPT for its hydrogen and water, which were derived from the gas LEAVING using H2's inertness and a balance. So:
+
+NOT independent -- the outlet H2 and water (the inlet was built from them) INDEPENDENT -- everything about the ACETONE, and the whole bottoms stream. Nothing in 0/ was built from those.
+
+Luyben's answer, for the record, before this case is run:
+
+bottoms 20.05 kmol/h acetone 0.1020 $\to$ 2.045 kmol/h absorbed offgas 39.76 kmol/h acetone 0.0634 $\to$ 2.521 kmol/h lost recovery 2.045 / 4.565 = 44.8 \%
+
+His own table closes on itself to 0.02 \% in both acetone and water, which is two checks on a hand transcription and the reason those numbers are trusted as targets.
+
+WHAT acetone04 PREDICTS FOR THIS UNIT. Measured there, on the same thermodynamics this case runs: gamma\_acetone = 10.27 at 1 mol \% in water and 318 K, giving K = 6.84. A model that holds acetone too weakly in the water will absorb LESS of it than Luyben does. That is the prediction; the run below is the test.
+
+The thermodynamics is PREDICTIVE UNIFAC with H2 authorised outside the activity model -- the same declared package as acetone03, for the same reasons, recorded in constant/thermoPhysPropDict.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.00574366573439}
+\goldrow{stream}{gasIn}{F}{0.0110555555556}
+\goldrow{stream}{offgas}{F}{0.0108674453767}
+\goldrow{stream}{washWater}{F}{0.00555555555556}
+\goldrow{kpi}{absorber}{A\_H2}{0.00044153375233}
+\goldrow{kpi}{absorber}{A\_acetone}{0.0857422914441}
+\goldrow{kpi}{absorber}{A\_isopropanol}{4.51803004485}
+\goldrow{kpi}{absorber}{A\_water}{8.0125706439}
+\goldrow{kpi}{absorber}{F\_cleanGas}{0.0108674453767}
+\goldrow{kpi}{absorber}{F\_richLiquid}{0.00574366573439}
+\goldrow{kpi}{absorber}{K\_H2}{1138.10679288}
+\goldrow{kpi}{absorber}{K\_acetone}{5.86073166871}
+\goldrow{kpi}{absorber}{K\_isopropanol}{0.11122382052}
+\goldrow{kpi}{absorber}{K\_water}{0.0627155235376}
+\goldmore{12}
+\end{tutgolden}
+
+\clearpage
 \tutentry{extract01\_ethanol\_water\_benzene}{tutorials/steady/absorption/extract01\_ethanol\_water\_benzene}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -426,7 +477,7 @@
 \goldrow{kpi}{cryst1}{c\_sat}{0.0034013435}
 \goldrow{kpi}{cryst1}{cakeLiquidFlow}{2.54671494088e-05}
 \goldrow{kpi}{cryst1}{cakeMoisture}{0.1}
-\goldmore{39}
+\goldmore{47}
 \end{tutgolden}
 
 \clearpage
@@ -567,6 +618,112 @@
 \subsection{distillation}
 \grouptheory{distillation}
 \clearpage
+\tutentry{acetone06\_luyben\_column\_C1}{tutorials/steady/distillation/acetone06\_luyben\_column\_C1}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (C1) at (0.0,-0.0) {\textbf{C1}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(C1.west)+(-1.05,0.00)$) -- ($(C1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {F1};
+  \draw[->] ($(C1.east)+(0,-0.17)$) -- ($(C1.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {acetoneProduct};
+  \draw[->] ($(C1.east)+(0,0.17)$) -- ($(C1.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {B1};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Luyben's acetone column C1 on predictive UNIFAC: the test of a prediction written before the column was built}
+\begin{tutnarrative}
+THE COLUMN THAT TESTS A PREDICTION WRITTEN BEFORE IT EXISTED.
+
+W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a. Column C1 of his Figure 1: 66 stages, feed on stage 54, reflux ratio 2.78, distillate 32.25 kmol/h, 1 atm. It takes the combined flash liquid plus absorber bottoms (his F1) and is asked to make the ACETONE PRODUCT at 99.9 mol \%.
+
+THE PREDICTION, quoted from the sibling props case rather than reinvented. `props/compare/acetone04\_acetone\_water\_vle` measured the acetone/water VLE this column rests on BEFORE any column was built, and found that predictive UNIFAC puts a minimum-boiling azeotrope at x\_acetone \textasciitilde{} 0.978 where Luyben's UNIQUAC has only a pinch. It is a tiny feature -- 0.044 K deep, |y - x| never above 7.7e-4 -- and acetone04 recorded, in advance and in writing:
+
+"A column C1 built on this thermodynamics should be expected to asymptote near 97.9 \% and fail his spec -- and if it had been built before this was measured, the column would have been blamed for a defect that lives in the activity model."
+
+So THIS case has a pass/fail criterion that is not its own golden: either the distillate stalls near the predicted ceiling, or the prediction was wrong. Both outcomes are results. Neither is a reason to touch the thermodynamics.
+
+THE FEED IS LUYBEN'S OWN F1, not this project's upstream answer. acetone03 computes a flash liquid and acetone05 an absorber bottoms, and their sum is what physically feeds C1 -- but wiring them in would test the column and two upstream units at once, and acetone05 already reports that it recovers a sixth of what the paper does. Feeding the PUBLISHED stream isolates the column: whatever it gets wrong here is the column and its thermodynamics. The composition in 0/F1 is his mole fractions times his 72.85 kmol/h.
+
+WHAT IS NOT LUYBEN'S, and why each choice is the honest one:
+
+UNIQUAC vs UNIFAC. He runs UNIQUAC; Choupo ships no fitted pair for any of these binaries and inventing one would convert unsourced into falsely sourced. Predictive UNIFAC is what is available, and acetone04 measured what it costs on the binary that decides this column.
+
+The rigorous MESH (`model simultaneous`). Wang-Henke is the corpus default and is documented as unstable through an azeotrope, which is precisely the feature under test here. Choosing the method that CAN resolve the feature is not tuning; choosing the one that cannot would have hidden it.
+
+Isopropanol's liquid heat capacity is Rowlinson-Bondi off the same Joback fragmentation as the rest of its record. Its measured accuracy on hydrogen-bonding molecules is 30-70 \%, stated in the record itself. It is 5 mol \% of the feed and it moves the DUTIES, not the split.
+
+THIS COLUMN IS MODELLED DOWNSTREAM OF LUYBEN'S VENT, so it carries no hydrogen. His C1 has a partial condenser with a vent; Choupo's column has a total condenser and no vapour distillate. Both facts are stated before the reason, because the reason has to be argued rather than asserted:
+
+- his vent is 0.0465 kmol/h at H2 0.2798, i.e. 0.0130 kmol/h of hydrogen, against the 0.0146 kmol/h that F1 carries. The vent removes essentially ALL of it. A column model with no vent and a total condenser therefore represents the column AFTER the vent, which is a statement about WHICH UNIT is being modelled -- not an approximation to the physics of the one that is.
+
+- what that costs is quantified rather than hidden: the same vent carries 0.0335 kmol/h of ACETONE (his own figure), 0.10 \% of the product. Not modelling the vent therefore FLATTERS this column's acetone recovery by that much, and the comparison below must be read knowing it.
+
+IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this paragraph exists rather than a preference. With H2 in the feed the MESH converged (16 Newton iterations, ||F|| 2.4e-11) to the SAME distillate -- x\_acetone 0.9722 -- and then the energy report REFUSED: hydrogen has no liquid heat capacity, because at 330 K it has no liquid. The refusal is right, and it is the honest form of the modelling error: a total condenser was silently asking a permanent gas to leave as a liquid. See this case's CLAUDE.md.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{B1}{F}{0.0112717083333}
+\goldrow{stream}{F1}{F}{0.0202300416667}
+\goldrow{stream}{acetoneProduct}{F}{0.00895833333333}
+\goldrow{kpi}{C1}{B}{0.0112717083333}
+\goldrow{kpi}{C1}{D}{0.00895833333333}
+\goldrow{kpi}{C1}{Q\_condenser\_kW}{-997.746586798}
+\goldrow{kpi}{C1}{Q\_reboiler\_kW}{1030.49217736}
+\goldrow{kpi}{C1}{R}{2.78}
+\goldrow{kpi}{C1}{T\_bottom}{353.606283382}
+\goldrow{kpi}{C1}{T\_top}{329.375698025}
+\goldrow{kpi}{C1}{feedStage}{54}
+\goldrow{kpi}{C1}{nFeeds}{1}
+\goldrow{kpi}{C1}{nSideDraws}{0}
+\goldrow{kpi}{C1}{nStages}{66}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{acetone07\_luyben\_column\_C2}{tutorials/steady/distillation/acetone07\_luyben\_column\_C2}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (C2) at (0.0,-0.0) {\textbf{C2}\\[-1pt]{\tiny distillationColumn}};
+  \draw[->] ($(C2.west)+(-1.05,0.00)$) -- ($(C2.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {B1};
+  \draw[->] ($(C2.east)+(0,-0.17)$) -- ($(C2.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {ipaRecycle};
+  \draw[->] ($(C2.east)+(0,0.17)$) -- ($(C2.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {waterProduct};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Luyben's water column C2: the IPA recycle meets the azeotrope acetone01 measured}
+\begin{tutnarrative}
+THE SECOND COLUMN, AND THE SECOND PREDICTION WRITTEN BEFORE IT.
+
+W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a. Column C2 of his Figure 1: 19 stages, feed on stage 16, reflux ratio 0.849, 1 atm. It takes C1's bottoms and makes the plant's WATER PRODUCT at the bottom (34.67 kmol/h, 99.9 mol \% water) while sending the unconverted isopropanol back overhead as the RECYCLE (5.88 kmol/h at x\_IPA 0.6500).
+
+THE PREDICTION, quoted from acetone01 rather than reinvented, and committed to the repository BEFORE this case was written:
+
+"C2's overhead should cap at roughly x\_IPA 0.59 and cannot reach his 0.650. The gap is 0.06 in mole fraction, about 9 \% relative, and it is a HARD ceiling rather than a shortfall in stages or reflux."
+
+The reason is one measured number: acetone01 puts the UNIFAC IPA/water azeotrope at x\_IPA 0.5901 against Luyben's UNIQUAC value of 0.6732. A column cannot distil past a minimum-boiling azeotrope from below.
+
+AND THE DIRECTION OF THIS ERROR IS THE OPPOSITE OF C1's, which is the part worth carrying away. C1's azeotrope is a UNIFAC INVENTION -- Luyben's model has none in acetone/water -- so it costs purity the paper does not lose. Here the azeotrope is REAL in both models and UNIFAC merely puts it in the wrong place. One failure is a spurious feature; the other is a misplaced real one. They are not the same defect and should not be reported as one.
+
+THE FEED IS LUYBEN'S PUBLISHED B1, not acetone06's answer -- the same choice and the same reason as in C1: it isolates the column. His B1 is 40.56 kmol/h at 370 K, A 0.0001 / IPA 0.0951 / W 0.9048. The CLOSED flowsheet (acetone08) is where the two columns finally see each other's real streams, and the difference between this case and that one is exactly the propagation the plant exists to show.
+
+THE DISTILLATE RATE IS HIS, 5.88 kmol/h, and that matters here in a way it did not in C1. Fixing the rate means the column must send that much material overhead whatever its composition can be -- so if the ceiling binds, it shows up as a WETTER recycle at the same flow, not as a smaller one. That is the honest way to pose it: the plant's IPA inventory has to go somewhere, and the question is what quality it comes back at.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{B1}{F}{0.0112666944444}
+\goldrow{stream}{ipaRecycle}{F}{0.00163333333333}
+\goldrow{stream}{waterProduct}{F}{0.00963336111111}
+\goldrow{kpi}{C2}{B}{0.00963336111111}
+\goldrow{kpi}{C2}{D}{0.00163333333333}
+\goldrow{kpi}{C2}{Q\_condenser\_kW}{-120.936005804}
+\goldrow{kpi}{C2}{Q\_reboiler\_kW}{114.900183788}
+\goldrow{kpi}{C2}{R}{0.849}
+\goldrow{kpi}{C2}{T\_bottom}{366.174785539}
+\goldrow{kpi}{C2}{T\_top}{355.876498071}
+\goldrow{kpi}{C2}{feedStage}{16}
+\goldrow{kpi}{C2}{nFeeds}{1}
+\goldrow{kpi}{C2}{nSideDraws}{0}
+\goldrow{kpi}{C2}{nStages}{19}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
 \tutentry{column01\_benzene\_toluene}{tutorials/steady/distillation/column01\_benzene\_toluene}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -587,6 +744,14 @@
 \goldrow{kpi}{column01}{T\_bottom}{382.893530951}
 \goldrow{kpi}{column01}{x\_D\_LK}{0.981245045999}
 \goldrow{kpi}{column01}{x\_B\_HK}{0.981245183716}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1279.30480005}
+\goldrow{utility}{column01}{heating.steamLP.T}{382.893530951}
+\goldrow{utility}{column01}{heating.steamLP.kg\_s}{0.585226349518}
+\goldrow{utility}{column01}{heating.steamLP.eur\_h}{55.265967362}
+\goldrow{utility}{column01}{cooling.coolingWater.duty\_kW}{-1281.04348002}
+\goldrow{utility}{column01}{cooling.coolingWater.T}{354.21089412}
+\goldrow{utility}{column01}{cooling.coolingWater.kg\_s}{30.6469732063}
+\goldrow{utility}{column01}{cooling.coolingWater.eur\_h}{1.84470261124}
 \end{tutgolden}
 
 \clearpage
@@ -618,6 +783,9 @@
 \goldrow{kpi}{column01}{nStages}{15}
 \goldrow{kpi}{column01}{x\_B\_HK}{0.981245125322}
 \goldrow{kpi}{column01}{x\_D\_LK}{0.981245125322}
+\goldrow{utility}{column01}{heating.steamLP.duty\_kW}{1299.61040477}
+\goldrow{utility}{column01}{heating.steamLP.T}{382.893527916}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -649,6 +817,9 @@
 \goldrow{kpi}{column}{nStages}{16}
 \goldrow{kpi}{column}{x\_B\_HK}{0.868205515093}
 \goldrow{kpi}{column}{x\_D\_LK}{0.804616545279}
+\goldrow{utility}{column}{heating.steamLP.duty\_kW}{935.650111764}
+\goldrow{utility}{column}{heating.steamLP.T}{357.713408957}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -689,7 +860,7 @@
 \goldrow{kpi}{radfracLite}{feedStage}{5}
 \goldrow{kpi}{radfracLite}{nFeeds}{2}
 \goldrow{kpi}{radfracLite}{nSideDraws}{1}
-\goldmore{3}
+\goldmore{11}
 \end{tutgolden}
 
 \clearpage
@@ -730,7 +901,7 @@
 \goldrow{kpi}{rdColumn}{feedStage}{20}
 \goldrow{kpi}{rdColumn}{nFeeds}{2}
 \goldrow{kpi}{rdColumn}{nSideDraws}{0}
-\goldmore{4}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -770,7 +941,7 @@
 \goldrow{kpi}{column06}{nFeeds}{1}
 \goldrow{kpi}{column06}{nSideDraws}{0}
 \goldrow{kpi}{column06}{nStages}{15}
-\goldmore{2}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage
@@ -814,6 +985,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column07}{nStages}{20}
 \goldrow{kpi}{column07}{x\_B\_HK}{0.416665691626}
 \goldrow{kpi}{column07}{x\_D\_LK}{0.999874145869}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -854,7 +1026,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{radfrac}{T\_bottom}{454.498489397}
 \goldrow{kpi}{radfrac}{T\_top}{321.647346922}
 \goldrow{kpi}{radfrac}{feedStage}{10}
-\goldmore{5}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -888,7 +1060,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column09}{T\_top}{354.21089412}
 \goldrow{kpi}{column09}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column09}{V\_strip}{0.0416666666667}
-\goldmore{11}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -922,7 +1094,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column10}{T\_top}{354.21089412}
 \goldrow{kpi}{column10}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column10}{V\_strip}{0.0416666666667}
-\goldmore{11}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -956,7 +1128,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column11}{T\_top}{355.136328304}
 \goldrow{kpi}{column11}{V\_rect}{0.0416666666667}
 \goldrow{kpi}{column11}{V\_strip}{0.0416666666667}
-\goldmore{12}
+\goldmore{20}
 \end{tutgolden}
 
 \clearpage
@@ -1002,7 +1174,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{1}
 \goldrow{kpi}{restage}{F\_in}{0.00555555555556}
-\goldmore{21}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -1048,7 +1220,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{0}
 \goldrow{kpi}{restage}{F\_alpha}{0.00041666666663}
-\goldmore{23}
+\goldmore{31}
 \end{tutgolden}
 
 \clearpage
@@ -2315,7 +2487,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{flash01}{dimer\_share}{0.121262947986}
 \goldrow{kpi}{flash01}{pH}{5.02590694419}
 \goldrow{kpi}{flash01}{p\_dimer\_atm}{0.000709068539902}
-\goldmore{4}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -2424,7 +2596,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{flash01}{dimer\_share}{0.0277517993126}
 \goldrow{kpi}{flash01}{pH}{2.89059200063}
 \goldrow{kpi}{flash01}{p\_benzene\_atm}{0.232354322065}
-\goldmore{5}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -2524,12 +2696,12 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{flashNRTL}{F\_alpha}{0.0135537277127}
 \goldrow{kpi}{flashNRTL}{F\_beta}{0.014224050065}
 \goldrow{kpi}{flashNRTL}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flashNRTL}{K\_ethanol}{3.89559152547}
+\goldrow{kpi}{flashNRTL}{K\_water}{0.602023174315}
 \goldrow{kpi}{flashNRTL}{P}{101325}
 \goldrow{kpi}{flashNRTL}{Q}{0}
 \goldrow{kpi}{flashNRTL}{Q\_kW}{0}
-\goldrow{kpi}{flashNRTL}{T}{358.15}
-\goldrow{kpi}{flashNRTL}{V\_over\_F}{0.512065802342}
-\goldmore{10}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -2568,7 +2740,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{freezer01}{aEq\_water}{0.857434120855}
 \goldrow{kpi}{freezer01}{a\_water}{0.857434120931}
 \goldrow{kpi}{freezer01}{phaseSet}{0}
-\goldmore{1}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
@@ -2764,10 +2936,59 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{decanter01}{V\_over\_F}{0.407072569823}
 \goldrow{kpi}{decanter01}{beta\_vapor}{0.185796503505}
 \goldrow{kpi}{decanter01}{phaseSet}{2}
+\goldrow{utility}{decanter01}{heating.steamLP.duty\_kW}{4.38784508636}
+\goldmore{3}
 \end{tutgolden}
 
 \subsection{flowsheets}
 \grouptheory{flowsheets}
+\clearpage
+\tutentry{acetone03\_luyben\_reaction\_section}{tutorials/steady/flowsheets/acetone03\_luyben\_reaction\_section}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny conversionReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (2.9,-0.0) {\textbf{separator}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Rin};
+  \draw[->] (reactor) -- (separator) node[midway, above, font=\tiny] {Rout};
+  \draw[->] ($(separator.east)+(0,-0.17)$) -- ($(separator.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {flashLiquid};
+  \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {flashGas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Luyben's acetone REACTION SECTION: reactor $\to$ cooler $\to$ flash, against his Rout and the flash split}
+\begin{tutnarrative}
+Three units of Luyben's Figure 1 wired together -- reactor, cooler, flash -- and the first piece of the plant whose answer DOES depend on the mixture thermodynamics. acetone02 isolated the reaction; this adds the phase split that sends hydrogen and acetone one way and the aqueous liquid the other.
+
+W. L. Luyben, Ind. Eng. Chem. Res. 50 (2011) 1206-1218, DOI 10.1021/ie901923a. Feed Rin as derived in acetone02 (57.82 kmol/h, IPA 0.668 / water 0.332, 389 K, 2.6 atm).
+
+WHAT IS INDEPENDENT HERE, and it is the point. acetone02's outlet composition agreed with the paper because the feed had been DERIVED from that same outlet -- a closed loop, and its golden says so. The flash split is not: nothing in 0/Rin was built from it. Luyben's Figure 1 gives
+
+flash vapour 39.76 kmol/h H2 0.8742 A 0.0634 IPA 0.0002 W 0.0622 flash liquid 52.84 kmol/h (92.6 - 39.76; his F1 of 72.85 kmol/h is this stream AFTER the absorber bottoms of 20.05 kmol/h rejoin it)
+
+and those are a real test of the thermodynamics this case declares.
+
+THE THERMODYNAMICS IS DECLARED AND WEAK, said before the numbers rather than after. Luyben runs UNIQUAC; Choupo ships no UNIQUAC pair for any of these binaries, so this case runs PREDICTIVE UNIFAC on a lake-estimated isopropanol. The sibling props case measures what that costs on the same binary: the IPA boiling point is 4.5 K high and the IPA/water azeotrope lands at x 0.590 against a published 0.673. A separation built on that will not reproduce a separation built on fitted pairs, and the interesting question is HOW MUCH, not WHETHER.
+
+Plus the one declared approximation, in constant/thermoPhysPropDict: H2 runs outside the activity model at gamma = 1, authorised by name, recorded in the answer.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{Rin}{F}{0.0160611111111}
+\goldrow{stream}{Rout}{F}{0.0257186111111}
+\goldrow{stream}{flashGas}{F}{0.0123053585397}
+\goldrow{stream}{flashLiquid}{F}{0.0134132525714}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{57.82}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{92.587}
+\goldrow{kpi}{reactor}{Q\_kW}{840.263234652}
+\goldrow{kpi}{reactor}{T}{623}
+\goldrow{kpi}{reactor}{conversion}{0.9}
+\goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{48.7173210118}
+\goldrow{kpi}{reactor}{extent\_kmol\_h}{34.767}
+\goldrow{kpi}{separator}{F\_alpha}{0.0134132525714}
+\goldrow{kpi}{separator}{F\_beta}{0.0123053585397}
+\goldrow{kpi}{separator}{F\_in}{0.0257186111111}
+\goldmore{16}
+\end{tutgolden}
+
 \clearpage
 \tutentry{ammonia01\_synthesis\_loop}{tutorials/steady/flowsheets/ammonia01\_synthesis\_loop}
 \begin{tutscheme}
@@ -2808,7 +3029,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{converter}{N\_in\_mol\_s}{0.5681436407}
 \goldrow{kpi}{converter}{N\_out\_mol\_s}{0.438221495669}
 \goldrow{kpi}{converter}{P}{20000000}
-\goldmore{33}
+\goldmore{38}
 \end{tutgolden}
 
 \clearpage
@@ -2862,7 +3083,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{stream}{productNH3}{F}{0.965707281277}
 \goldrow{stream}{purge}{F}{0.28854663174}
 \goldrow{stream}{rawLiquid}{F}{0.97363568927}
-\goldmore{108}
+\goldmore{123}
 \end{tutgolden}
 
 \clearpage
@@ -2908,7 +3129,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{FL1}{F\_alpha}{23.6955550394}
 \goldrow{kpi}{FL1}{F\_beta}{3.68430363786}
 \goldrow{kpi}{FL1}{F\_in}{27.3798586772}
-\goldmore{43}
+\goldmore{59}
 \end{tutgolden}
 
 \clearpage
@@ -2933,7 +3154,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{flash2}{F\_alpha}{0.00370154472079}
 \goldrow{kpi}{flash2}{F\_beta}{0.00285992674691}
 \goldrow{kpi}{flash2}{F\_in}{0.0065614714677}
-\goldmore{4}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -2963,6 +3184,10 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{V1}{dP}{900000}
 \goldrow{stream}{liquid}{F}{0.0220680075}
 \goldrow{stream}{vapour}{F}{0.0057097703}
+\goldrow{utility}{H1}{heating.steamMP.duty\_kW}{260}
+\goldrow{utility}{H1}{heating.steamMP.T}{413.089781612}
+\goldrow{utility}{H1}{heating.steamMP.kg\_s}{0.1305876444}
+\goldrow{utility}{H1}{heating.steamMP.eur\_h}{14.04}
 \end{tutgolden}
 
 \clearpage
@@ -2977,6 +3202,14 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{stream}{feed}{F}{0.0277777777778}
 \goldrow{stream}{vaporA}{F}{0.0212163063101}
 \goldrow{stream}{vaporB}{F}{0.0065614714677}
+\goldrow{utility}{secA.fa}{heating.steamLP.duty\_kW}{686.964038241}
+\goldrow{utility}{secA.fa}{heating.steamLP.T}{370}
+\goldrow{utility}{secA.fa}{heating.steamLP.kg\_s}{0.314256193157}
+\goldrow{utility}{secA.fa}{heating.steamLP.eur\_h}{29.676846452}
+\goldrow{utility}{secB.fb}{heating.steamLP.duty\_kW}{226.733908578}
+\goldrow{utility}{secB.fb}{heating.steamLP.T}{378}
+\goldrow{utility}{secB.fb}{heating.steamLP.kg\_s}{0.103720909688}
+\goldrow{utility}{secB.fb}{heating.steamLP.eur\_h}{9.79490485056}
 \end{tutgolden}
 
 \clearpage
@@ -2998,6 +3231,10 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{h}{T\_in}{298.15}
 \goldrow{kpi}{h}{T\_out}{366.647115308}
 \goldrow{kpi}{h}{dT}{68.497115308}
+\goldrow{utility}{A.h1}{heating.steamMP.duty\_kW}{1}
+\goldrow{utility}{A.h1}{heating.steamMP.T}{400.742542906}
+\goldrow{utility}{A.h1}{heating.steamMP.kg\_s}{0.000502260170768}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -3032,7 +3269,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{reactor}{tau\_s}{310.291329081}
 \goldrow{kpi}{reactor}{xi\_mol\_per\_s}{0.0730426553834}
 \goldrow{kpi}{separator}{F\_alpha}{0.000108248328241}
-\goldmore{6}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage
@@ -3069,7 +3306,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{heater}{T\_out}{359.280306702}
 \goldrow{kpi}{heater}{dT}{9.28030670231}
 \goldrow{kpi}{reactor}{Da\_kTau}{1.10929132154}
-\goldmore{15}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -3106,7 +3343,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{heater}{T\_out}{359.280306702}
 \goldrow{kpi}{heater}{dT}{9.28030670231}
 \goldrow{kpi}{reactor}{Da\_kTau}{1.10929132154}
-\goldmore{15}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -3146,7 +3383,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{reactor}{V\_R}{0.02}
 \goldrow{kpi}{reactor}{X\_limiting}{0.779668274718}
 \goldrow{kpi}{reactor}{k}{0.00478796954448}
-\goldmore{9}
+\goldmore{13}
 \end{tutgolden}
 
 \clearpage
@@ -3218,7 +3455,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column}{T\_top}{350.366212454}
 \goldrow{kpi}{column}{V\_rect}{0.000258333333333}
 \goldrow{kpi}{column}{V\_strip}{0.000258333333333}
-\goldmore{13}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -3268,7 +3505,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{stream}{toFlash}{F}{0.000375486726088}
 \goldrow{stream}{warmCW}{F}{0.0166666666667}
 \goldrow{kpi}{F1}{F\_alpha}{4.97902319203e-05}
-\goldmore{64}
+\goldmore{69}
 \end{tutgolden}
 
 \clearpage
@@ -3308,7 +3545,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{mixer01}{vf}{0}
 \goldrow{kpi}{reactor}{Da\_kTau}{3.53861380168}
 \goldrow{kpi}{reactor}{F\_in\_kmol\_h}{1.78755464481}
-\goldmore{16}
+\goldmore{20}
 \end{tutgolden}
 
 \subsection{gas-solid}
@@ -3942,7 +4179,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{condenser}{T\_in}{372.76}
 \goldrow{kpi}{condenser}{T\_out}{372.755918611}
 \goldrow{kpi}{condenser}{T\_wall}{325.855275434}
-\goldmore{8}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -3977,7 +4214,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{hx}{T\_cold\_in}{300}
 \goldrow{kpi}{hx}{T\_cold\_out}{337.268504628}
 \goldrow{kpi}{hx}{T\_hot\_in}{360}
-\goldmore{5}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -4012,7 +4249,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{2065604.42087}
-\goldmore{22}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -4049,7 +4286,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{R}{2}
 \goldrow{kpi}{column01}{T\_bottom}{382.893530951}
 \goldrow{kpi}{column01}{T\_top}{354.21089412}
-\goldmore{14}
+\goldmore{20}
 \end{tutgolden}
 
 \clearpage
@@ -4085,7 +4322,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{T\_bottom}{365.99791143}
 \goldrow{kpi}{column01}{T\_top}{354.558892551}
 \goldrow{kpi}{column01}{V\_rect}{0.0347222222222}
-\goldmore{13}
+\goldmore{19}
 \end{tutgolden}
 
 \clearpage
@@ -4113,6 +4350,10 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{heater01}{T\_in}{300}
 \goldrow{kpi}{heater01}{T\_out}{338.338658147}
 \goldrow{kpi}{heater01}{dT}{38.338658147}
+\goldrow{utility}{heater01}{heating.steamLP.duty\_kW}{100}
+\goldrow{utility}{heater01}{heating.steamLP.T}{338.338658146}
+\goldrow{utility}{heater01}{heating.steamLP.kg\_s}{0.0457456541629}
+\goldrow{utility}{heater01}{heating.steamLP.eur\_h}{4.32}
 \end{tutgolden}
 
 \clearpage
@@ -4147,7 +4388,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{1888506.69951}
-\goldmore{22}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -4182,7 +4423,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{hx}{Pr\_shell}{3.16405821902}
 \goldrow{kpi}{hx}{Pr\_tube}{5.87094963164}
 \goldrow{kpi}{hx}{Q}{1888394.47754}
-\goldmore{22}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -4243,6 +4484,10 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{condenser}{Tsat}{352.826063711}
 \goldrow{stream}{wetOut}{F}{0.0277777777778}
 \goldrow{stream}{wetOut}{vf}{0.399999998746}
+\goldrow{utility}{condenser}{cooling.coolingWater.duty\_kW}{-630.508868406}
+\goldrow{utility}{condenser}{cooling.coolingWater.T}{367.494289759}
+\goldrow{utility}{condenser}{cooling.coolingWater.kg\_s}{15.0839442202}
+\goldrow{utility}{condenser}{cooling.coolingWater.eur\_h}{0.907932770504}
 \end{tutgolden}
 
 \clearpage
@@ -4283,7 +4528,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{coolerH1}{Q\_kW}{-180}
 \goldrow{kpi}{coolerH1}{Q\_per\_mol}{-9000}
 \goldrow{kpi}{coolerH1}{T\_in}{423.15}
-\goldmore{38}
+\goldmore{54}
 \end{tutgolden}
 
 \clearpage
@@ -4315,7 +4560,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{reboiler}{chf\_margin}{0.0709724846287}
 \goldrow{kpi}{reboiler}{dT\_excess}{8.6345895313}
 \goldrow{kpi}{reboiler}{q\_CHF}{1253960.82217}
-\goldmore{4}
+\goldmore{8}
 \end{tutgolden}
 
 \subsection{hydraulics}
@@ -4835,7 +5080,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{V\_strip}{0.0555555555556}
 \goldrow{kpi}{column01}{feedStage}{9}
 \goldrow{kpi}{column01}{nStages}{15}
-\goldmore{2}
+\goldmore{10}
 \end{tutgolden}
 
 \clearpage
@@ -4878,7 +5123,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{heater}{T\_out}{358.40065757}
 \goldrow{kpi}{heater}{dT}{8.40065756953}
 \goldrow{kpi}{reactor}{Da\_kTau}{1.79046552367}
-\goldmore{15}
+\goldmore{23}
 \end{tutgolden}
 
 \clearpage
@@ -4955,7 +5200,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{heater}{F}{0.138888888889}
 \goldrow{kpi}{heater}{P}{101325}
 \goldrow{kpi}{heater}{Q}{200000}
-\goldmore{24}
+\goldmore{32}
 \end{tutgolden}
 
 \clearpage
@@ -4989,7 +5234,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{T\_top}{354.273383646}
 \goldrow{kpi}{column01}{V\_rect}{0.0452621055716}
 \goldrow{kpi}{column01}{V\_strip}{0.0452621055716}
-\goldmore{7}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage
@@ -5023,7 +5268,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{T\_top}{353.562992445}
 \goldrow{kpi}{column01}{V\_rect}{0.0662412666959}
 \goldrow{kpi}{column01}{V\_strip}{0.0662412666959}
-\goldmore{7}
+\goldmore{15}
 \end{tutgolden}
 
 \clearpage
@@ -5074,7 +5319,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{column01}{T\_top}{353.679332066}
 \goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
 \goldrow{kpi}{column01}{V\_strip}{0.0563271604938}
-\goldmore{7}
+\goldmore{15}
 \end{tutgolden}
 
 \subsection{power}
@@ -5112,7 +5357,7 @@ Paper result: B = nC4 200.1 / iC5 499.9 / nC5 500.0; combined top \textasciitild
 \goldrow{kpi}{combustor}{dT}{613.029768231}
 \goldrow{kpi}{compressor}{F}{0.001}
 \goldrow{kpi}{compressor}{P\_in}{100000}
-\goldmore{27}
+\goldmore{32}
 \end{tutgolden}
 
 \clearpage
@@ -5207,7 +5452,7 @@ Bottom Rankine stays gas-only (phase-change boiler is the next step).
 \goldrow{kpi}{compressor}{P\_out}{828817.033759}
 \goldrow{kpi}{compressor}{T\_in}{300}
 \goldrow{kpi}{compressor}{T\_out}{592.090873473}
-\goldmore{89}
+\goldmore{102}
 \end{tutgolden}
 
 \clearpage
@@ -5258,7 +5503,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{generator}{W\_electric}{9700}
 \goldrow{kpi}{generator}{W\_electric\_kW}{9.7}
 \goldrow{kpi}{generator}{W\_losses}{300}
-\goldmore{17}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -5293,10 +5538,46 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{steamTurbine}{W\_gen\_kW}{9.0}
 \goldrow{stream}{superheatedSteam}{vf}{1.0}
 \goldrow{stream}{condensate}{vf}{0.0}
+\goldrow{utility}{boiler}{heating.-.unserved}{1}
+\goldrow{utility}{condenser}{cooling.coolingWater.duty\_kW}{-39.0172479639}
+\goldrow{utility}{condenser}{cooling.coolingWater.T}{446.515894355}
+\goldmore{6}
 \end{tutgolden}
 
 \subsection{reactors}
 \grouptheory{reactors}
+\clearpage
+\tutentry{acetone02\_luyben\_reactor}{tutorials/steady/reactors/acetone02\_luyben\_reactor}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny conversionReactor}};
+  \draw[->] ($(reactor.west)+(-1.05,0.00)$) -- ($(reactor.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {Rin};
+  \draw[->] ($(reactor.east)+(0,0.00)$) -- ($(reactor.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {Rout};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Luyben's acetone reactor: IPA dehydrogenation at 90 \% conversion, 623 K -- outlet composition and duty against the published Rout}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{Rin}{F}{0.0160611111111}
+\goldrow{stream}{Rout}{F}{0.0257186111111}
+\goldrow{kpi}{reactor}{F\_in\_kmol\_h}{57.82}
+\goldrow{kpi}{reactor}{F\_out\_kmol\_h}{92.587}
+\goldrow{kpi}{reactor}{Q\_kW}{840.263234652}
+\goldrow{kpi}{reactor}{T}{623}
+\goldrow{kpi}{reactor}{conversion}{0.9}
+\goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{48.7173210118}
+\goldrow{kpi}{reactor}{extent\_kmol\_h}{34.767}
+\goldrow{stream}{Rout}{isopropanol}{0.0417229200644}
+\goldrow{stream}{Rout}{acetone}{0.375506280579}
+\goldrow{stream}{Rout}{H2}{0.375506280579}
+\goldrow{stream}{Rout}{water}{0.207264518777}
+\goldrow{kpi}{reactor}{Q\_reaction\_kW}{470.487527672}
+\goldmore{1}
+\end{tutgolden}
+
 \clearpage
 \tutentry{chlorophenol01\_chlorination}{tutorials/steady/reactors/chlorophenol01\_chlorination}
 \begin{tutscheme}
@@ -5329,7 +5610,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{separator}{F\_in}{0.000583333333333}
 \goldrow{kpi}{separator}{P}{101325}
 \goldrow{kpi}{separator}{T}{353}
-\goldmore{2}
+\goldmore{6}
 \end{tutgolden}
 
 \clearpage
@@ -5356,6 +5637,8 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{reactor}{conversion}{0.75}
 \goldrow{kpi}{reactor}{dHrxn\_kJ\_per\_mol}{-48.3683482303}
 \goldrow{kpi}{reactor}{extent\_kmol\_h}{75}
+\goldrow{kpi}{reactor}{Q\_reaction\_kW}{-1007.67392146}
+\goldrow{kpi}{reactor}{Q\_sensible\_kW}{0}
 \end{tutgolden}
 
 \clearpage
@@ -5618,6 +5901,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{reformer}{extent\_wgs\_kmol\_h}{0.329306020923}
 \goldrow{kpi}{reformer}{nReactions}{2}
 \goldrow{kpi}{reformer}{newtonResidual}{3.2596148003e-13}
+\goldmore{1}
 \end{tutgolden}
 
 \clearpage
@@ -5789,7 +6073,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{compressor01}{W\_shaft\_kW}{10}
 \goldrow{kpi}{compressor01}{dS\_gen}{4.22615345389}
 \goldrow{kpi}{compressor01}{dT}{335.224206884}
-\goldmore{3}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -5822,7 +6106,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{compressor}{W\_shaft\_kW}{9.35640696301}
 \goldrow{kpi}{compressor}{dS\_gen}{4.08116534481}
 \goldrow{kpi}{compressor}{dT}{314.26049696}
-\goldmore{3}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -5890,7 +6174,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{pump01}{dT}{0.927152317881}
 \goldrow{kpi}{pump01}{eta}{0.65}
 \goldrow{kpi}{pump01}{head\_m}{735.848502288}
-\goldmore{1}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -5923,7 +6207,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{pump02}{dT}{0.373735099338}
 \goldrow{kpi}{pump02}{eta}{0.65}
 \goldrow{kpi}{pump02}{head\_m}{296.620531272}
-\goldmore{1}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -6123,6 +6407,10 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{airHeater}{T\_in}{298.15}
 \goldrow{kpi}{airHeater}{T\_out}{468.478847995}
 \goldrow{kpi}{airHeater}{dT}{170.328847995}
+\goldrow{utility}{airHeater}{heating.steamHP.duty\_kW}{5}
+\goldrow{utility}{airHeater}{heating.steamHP.T}{468.478847995}
+\goldrow{utility}{airHeater}{heating.steamHP.kg\_s}{0.00291715285881}
+\goldrow{utility}{airHeater}{heating.steamHP.eur\_h}{0.324}
 \end{tutgolden}
 
 \clearpage
@@ -6146,6 +6434,8 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 
 \end{tutnarrative}
 \begin{tutgolden}
+\goldrow{stream}{branchA}{F}{0.00689112315881}
+\goldrow{stream}{branchB}{F}{0.0206733694764}
 \goldrow{stream}{brine}{F}{0.0275644926352}
 \goldrow{stream}{feed}{F}{0.0277222222222}
 \goldrow{stream}{offgas}{F}{0.000157729586982}
@@ -6153,14 +6443,12 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{speciator}{F\_alpha}{0.0275644926352}
 \goldrow{kpi}{speciator}{F\_beta}{0.000157729586982}
 \goldrow{kpi}{speciator}{F\_in}{0.0277222222222}
-\goldrow{kpi}{speciator}{P}{101325}
-\goldrow{kpi}{speciator}{Q}{0}
-\goldrow{kpi}{speciator}{Q\_kW}{0}
-\goldrow{kpi}{speciator}{T}{313.15}
-\goldrow{kpi}{speciator}{V\_over\_F}{0.00568964442019}
-\goldrow{kpi}{speciator}{pH}{8.83013782346}
-\goldrow{kpi}{speciator}{p\_eq\_sum\_atm}{1}
-\goldmore{10}
+\goldrow{kpi}{speciator}{K\_CO2}{4.78835784059}
+\goldrow{kpi}{speciator}{K\_N2}{105036.780664}
+\goldrow{kpi}{speciator}{K\_NH3}{0.777804159627}
+\goldrow{kpi}{speciator}{K\_ethanol}{0.180718643037}
+\goldrow{kpi}{speciator}{K\_water}{0.0721940189402}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -6188,14 +6476,14 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{flash}{F\_alpha}{0.00854830793289}
 \goldrow{kpi}{flash}{F\_beta}{0.005340580956}
 \goldrow{kpi}{flash}{F\_in}{0.0138888888889}
+\goldrow{kpi}{flash}{K\_ethanol}{1.4838682811}
+\goldrow{kpi}{flash}{K\_water}{0.647356121192}
 \goldrow{kpi}{flash}{P}{100000}
+\goldrow{kpi}{flash}{Q}{-413177.313739}
+\goldrow{kpi}{flash}{Q\_kW}{-413.177313739}
 \goldrow{kpi}{flash}{T}{353}
 \goldrow{kpi}{flash}{V\_over\_F}{0.384521828832}
-\goldrow{kpi}{flash}{phaseSet}{0}
-\goldrow{kpi}{turbine}{F}{0.0138888888889}
-\goldrow{kpi}{turbine}{P\_in}{600000}
-\goldrow{kpi}{turbine}{P\_out}{553956.972451}
-\goldmore{11}
+\goldmore{26}
 \end{tutgolden}
 
 \subsection{thermoTest}
@@ -6456,7 +6744,7 @@ Inspection: how much HITEC do we circulate to deliver the duty? At what hourly c
 \goldrow{kpi}{boilerHX}{Q\_kW}{208.465443178}
 \goldrow{kpi}{boilerHX}{T\_cold\_in}{393.15}
 \goldrow{kpi}{boilerHX}{T\_cold\_out}{517.400926398}
-\goldmore{6}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage

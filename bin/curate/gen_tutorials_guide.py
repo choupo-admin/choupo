@@ -5,6 +5,7 @@
 # source of truth; this guide is a generated VIEW (a derivative is never
 # hand-maintained -- regenerate with this script after adding cases).
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -272,6 +273,8 @@ CATTITLE = {
 }
 
 total = 0
+produced = {}
+
 for cat in CATS:
     d = TUT / cat
     if not d.is_dir():
@@ -324,6 +327,38 @@ for cat in CATS:
                 out.append("\\end{tutgolden}")
             out.append("")
             total += 1
-    (ROOT / f"docs/tutorialsGuide-{cat}.tex").write_text("\n".join(out) + "\n")
+    produced[ROOT / f"docs/tutorialsGuide-{cat}.tex"] = "\n".join(out) + "\n"
 
+#  --check: REPORT drift instead of silently repairing it.
+#
+#  This guide is a generated VIEW of the cases, and until 2026-08-14 nothing
+#  noticed when it fell behind them: the generator existed, wrote whenever it
+#  was run, and nobody ran it.  Regenerating on that date moved 2256 lines
+#  across six category files -- every case added since the last manual run was
+#  missing from the manual a student reads.
+#
+#  Same defect, same shape, as the two others found this week: a DERIVED
+#  artefact with no freshness check (docs/ai/schemas-reference.md had one and
+#  caught its own drift; gui/public/wasm/ had none and was sixteen days
+#  stale).  A derivative that nobody checks is a second source of truth that
+#  looks like the first.
+if "--check" in sys.argv:
+    stale = [p for p, text in produced.items()
+             if not p.exists() or p.read_text() != text]
+    if stale:
+        print("gen_tutorials_guide: STALE -- "
+              + ", ".join(p.name for p in stale)
+              + " do(es) not match the cases.  The tutorials guide is a"
+                " GENERATED view: run bin/curate/gen_tutorials_guide.py and"
+                " commit the result.  A guide that describes a different"
+                " corpus than the one shipped is worse than no guide, because"
+                " a student trusts it.")
+        sys.exit(1)
+    print(f"gen_tutorials_guide: OK -- {total} tutorial entries across "
+          f"{len(CATS)} category files match the cases they are generated "
+          f"from (dicts are the source of truth; this guide is a view).")
+    sys.exit(0)
+
+for p, text in produced.items():
+    p.write_text(text)
 print(f"entries: {total} tutorials across {len(CATS)} category files")

@@ -84,6 +84,81 @@
 \subsection{compare}
 \grouptheory{compare}
 \clearpage
+\tutentry{acetone01\_ipa\_water\_azeotrope}{tutorials/props/compare/acetone01\_ipa\_water\_azeotrope}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{bp\_ipa}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{bp\_water}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{azeo\_luyben\_x}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_unifac}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{IPA/water T-x-y at 1 atm from PREDICTIVE UNIFAC on a lake-estimated isopropanol, held against Luyben's published azeotrope}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{bp\_ipa}{Cp\_ig}{99.0857}
+\goldrow{diag}{bp\_ipa}{H\_R}{0.0000}
+\goldrow{diag}{bp\_ipa}{H\_ig}{-257924.6674}
+\goldrow{diag}{bp\_ipa}{H\_real}{-257924.6674}
+\goldrow{diag}{bp\_ipa}{P}{101325.0000}
+\goldrow{diag}{bp\_ipa}{S\_R}{0.0000}
+\goldrow{diag}{bp\_ipa}{S\_ig}{329.0377}
+\goldrow{diag}{bp\_ipa}{S\_real}{329.0377}
+\goldrow{diag}{bp\_ipa}{T}{350.0000}
+\goldrow{diag}{bp\_ipa}{T\_bubble}{359.9075}
+\goldrow{diag}{bp\_ipa}{Z}{1.0000}
+\goldrow{diag}{bp\_ipa}{gamma}{1.0916}
+\goldrow{diag}{bp\_ipa}{v\_molar}{0.0287}
+\goldrow{diag}{bp\_water}{Cp\_ig}{34.0552}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
+\tutentry{acetone04\_acetone\_water\_vle}{tutorials/props/compare/acetone04\_acetone\_water\_vle}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{bp\_acetone}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{bp\_water}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{dilute\_acetone}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_top\_fine}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{txy\_unifac}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Acetone/water T-x-y at 1 atm on PREDICTIVE UNIFAC -- both components curated, so this isolates the mixture model}
+\begin{tutnarrative}
+MEASURE THE THERMODYNAMICS BEFORE BUILDING THE UNIT THAT RESTS ON IT.
+
+Luyben's absorber recovers acetone from the reactor's hydrogen-rich offgas by washing it with water, and it is the next unit of the flowsheet to build (docs/design/acetone-ipa-reference-case.md). What that unit costs, and whether it can work at all, is set by ONE thing: how volatile acetone is out of a dilute aqueous solution. So that is measured here first -- the same order that made acetone01 useful before acetone03 was written.
+
+WHAT MAKES THIS A CLEANER TEST THAN acetone01. Both components are CURATED: acetone and water are in data/standards/, neither comes from the estimate lake. acetone01 had to measure a mixture model and a lake-estimated component at once and separate them afterwards; here there is nothing to separate. Whatever deviation appears is UNIFAC, plus whatever the pure vapour pressures carry -- and the two pure boiling points below say how much that second part is.
+
+WHAT LUYBEN GIVES, and it is less than for the IPA binary: acetone's normal boiling point 329.4 K, and the qualitative statement that acetone/water has NO azeotrope but a pinch at the high-acetone end. A qualitative claim is still falsifiable -- a model that invents an azeotrope here would be wrong in a way no AAD would show.
+
+NOTE THE WATER LEG IS KNOWN TO BE 0.70 K LOW before it is measured again here: Choupo's curated water record puts the normal boiling point at 372.4536 K against the definition's 373.15 K, because its Antoine set is being used at the very top of its own declared window (see acetone01\_ipa\_water\_azeotrope/CLAUDE.md). It is repeated in this case rather than assumed, because a number quoted from another case is a number with two homes.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{bp\_acetone}{Cp\_ig}{79.3862}
+\goldrow{diag}{bp\_acetone}{H\_R}{0.0000}
+\goldrow{diag}{bp\_acetone}{H\_ig}{-214666.2971}
+\goldrow{diag}{bp\_acetone}{H\_real}{-214666.2971}
+\goldrow{diag}{bp\_acetone}{P}{101325.0000}
+\goldrow{diag}{bp\_acetone}{S\_R}{0.0000}
+\goldrow{diag}{bp\_acetone}{S\_ig}{302.9409}
+\goldrow{diag}{bp\_acetone}{S\_real}{302.9409}
+\goldrow{diag}{bp\_acetone}{T}{330.0000}
+\goldrow{diag}{bp\_acetone}{T\_bubble}{329.4179}
+\goldrow{diag}{bp\_acetone}{Z}{1.0000}
+\goldrow{diag}{bp\_acetone}{gamma}{1.1170}
+\goldrow{diag}{bp\_acetone}{v\_molar}{0.0271}
+\goldrow{diag}{bp\_water}{Cp\_ig}{34.2177}
+\goldmore{33}
+\end{tutgolden}
+
+\clearpage
 \tutentry{compare\_activity\_etoh\_water}{tutorials/props/compare/compare\_activity\_etoh\_water}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -126,6 +201,23 @@
 - Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{rate\_order1}{R2}{0.973397}
+\goldrow{diag}{rate\_order1}{chi2}{0.0105136}
+\goldrow{diag}{rate\_order1}{fitted}{1}
+\goldrow{diag}{rate\_order1}{k}{0.00065871}
+\goldrow{diag}{rate\_order1}{max\_abs\_resid}{0.0544611}
+\goldrow{diag}{rate\_order1}{n\_data}{8}
+\goldrow{diag}{rate\_order1}{n\_points}{61}
+\goldrow{diag}{rate\_order1}{order}{1}
+\goldrow{diag}{rate\_order1}{rms}{0.0362518}
+\goldrow{diag}{rate\_order2}{R2}{0.999421}
+\goldrow{diag}{rate\_order2}{chi2}{0.000228631}
+\goldrow{diag}{rate\_order2}{fitted}{1}
+\goldrow{diag}{rate\_order2}{k}{0.000992909}
+\goldrow{diag}{rate\_order2}{max\_abs\_resid}{0.00829088}
+\goldmore{8}
+\end{tutgolden}
 
 \clearpage
 \tutentry{compare\_psat\_ambrose\_walton}{tutorials/props/compare/compare\_psat\_ambrose\_walton}
@@ -210,10 +302,13 @@
 
 \end{tutnarrative}
 \begin{tutgolden}
+\goldrow{diag}{txy\_ideal}{n\_emptyCurves}{0}
 \goldrow{diag}{txy\_ideal}{n\_failures}{0}
 \goldrow{diag}{txy\_ideal}{n\_points}{51}
+\goldrow{diag}{txy\_nrtl}{n\_emptyCurves}{0}
 \goldrow{diag}{txy\_nrtl}{n\_failures}{0}
 \goldrow{diag}{txy\_nrtl}{n\_points}{51}
+\goldrow{diag}{txy\_unifac}{n\_emptyCurves}{0}
 \goldrow{diag}{txy\_unifac}{n\_failures}{0}
 \goldrow{diag}{txy\_unifac}{n\_points}{51}
 \goldrow{diag}{consistency\_etoh\_water}{gamma1\_inf}{4.68506}
@@ -221,10 +316,7 @@
 \goldrow{diag}{consistency\_etoh\_water}{gd\_max\_resid}{0.0964023}
 \goldrow{diag}{consistency\_etoh\_water}{gd\_mean\_resid}{0.05208}
 \goldrow{diag}{consistency\_etoh\_water}{herington\_D}{12.0482}
-\goldrow{diag}{consistency\_etoh\_water}{herington\_J}{7.4082}
-\goldrow{diag}{consistency\_etoh\_water}{herington\_pass}{1}
-\goldrow{diag}{consistency\_etoh\_water}{n\_points}{10}
-\goldmore{2}
+\goldmore{14}
 \end{tutgolden}
 
 \subsection{curation}
@@ -696,6 +788,7 @@
 \goldrow{diag}{calciteEq\_25C}{aw}{0.998916}
 \goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00543277}
 \goldrow{diag}{calciteEq\_25C}{pH}{6.02946}
+\goldrow{diag}{calciteEq\_25C}{pH}{6.004}
 \end{tutgolden}
 
 \clearpage
