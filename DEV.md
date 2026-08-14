@@ -378,7 +378,41 @@ ones for day-to-day work:
 > that stream's own (T, P, z), answers ALL VAPOUR.  Either those distillates
 > are reported at a state that is not a liquid, or the package and the column
 > disagree about the same point -- the column/thermo version of the
-> absorber's lumped-Cp gap.  **Unexamined**; one case would settle which.
+> absorber's lumped-Cp gap.  ONE CASE SETTLED IT -- see V3.
+
+> **V3 (2026-08-14): the distillate is reported at the overhead's DEW point
+> while labelled a fully condensed liquid.**
+>
+> `column01_benzene_toluene`, measured with the engine's own saturation units
+> on the distillate's own composition (98.12 % benzene / 1.88 % toluene,
+> 1 atm):
+>
+> | | K |
+> |---|---|
+> | `T_bubble` (`bubbleT` unit) | 353.6310 |
+> | `T_dew` (`dewT` unit) | **354.2132** |
+> | what the column reports for `distillate` | **354.211**, `vf = 0` |
+>
+> The reported temperature coincides with the DEW point to 0.002 K and sits
+> 0.58 K above the bubble point.  `DistillationColumn.cpp` sets
+> `dStream.T = T[0]` with `dStream.vf = 0.0; // already condensed`, and the
+> condenser duty is a latent heat evaluated isothermally at that same `T[0]`.
+> A total condenser's saturated liquid product is at the BUBBLE point of
+> `xD`; the dew point is where condensation BEGINS.
+>
+> WHAT IS MEASURED: the three temperatures above, and that the same shape
+> appears on every column the withdrawn detector reached (`column01`, `03`,
+> `04`, `05`, `09`, `10`, `12`, `shortcut01`, `acetone05/06/07`, `dewT01`).
+> WHAT IS **NOT** ESTABLISHED, and I am not asserting it: whether `T[0]`
+> being the dew point is a deliberate isothermal-condenser convention that
+> the duty term is consistent with, or an error in the stage-0 temperature.
+> The two have different fixes and I have run out of evidence, not out of
+> arithmetic.
+>
+> THE STAKE: 0.58 K on this narrow-boiling binary, and the gap widens with
+> the boiling range.  Any fix moves ~12 column goldens and the acetone plant,
+> so it is yours.  It also decides whether the withdrawn V2 detector was
+> reporting a defect or a convention when it flagged those distillates.
 >
 > Both cases tested are REPORTING-only: their unit models carry their own Cp
 > / psychrometric energy balances, so their KPIs and goldens do not move.
