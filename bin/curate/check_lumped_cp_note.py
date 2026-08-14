@@ -35,13 +35,8 @@ WHAT IT CHECKS
       note -- the advisory is emitted by the unit, not by every run.
 
 WHAT IT DOES *NOT* CHECK, and this is the honest limit:
-  * THE ISOTHERMAL BRANCH.  A column that runs isothermal makes no temperature
-    claim and must stay silent, and NO corpus case exercises that branch --
-    all four absorber/stripper cases converge non-isothermal.  So the "stays
-    silent when it should" half is unproven here.  Synthesising it means
-    defeating a sealed case's Henry data, which would test the seal rather
-    than the branch.  Stated rather than implied: a gate that suggests more
-    coverage than it has is worse than one that reports less.
+  * (was: the isothermal branch.  CLOSED 2026-08-14 by A5, which synthesises
+    the case no corpus case provides -- see below.)
   * whether the residual is CORRECT, or whether the lumped-Cp model should be
     replaced.  Both are open; this gate only enforces that it is declared.
 
@@ -51,6 +46,10 @@ SABOTAGE-VERIFIED 2026-08-14, observed output:
       summary arm.  A2 is the arm that keeps the two classes honest.
   S2  the note's pointer to `raw_imbalance_kW` softened to "somewhere in the
       reports" -> A3 fires on BOTH cases.
+  S3  the `if (nonIso)` guard dropped so the note fires unconditionally ->
+      "A5: an ISOTHERMAL column announces the lumped-Cp note".  That is the
+      arm's whole purpose: a note that always fires carries no information,
+      and before A5 existed this sabotage passed silently.
 Each sabotage was rebuilt and the binary's timestamp checked before the
 verdict was read: a sabotage that does not compile tests the previous binary.
 
@@ -61,8 +60,10 @@ should be.
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -134,6 +135,53 @@ def main() -> int:
                             f" `raw_imbalance_kW` -- it worries the reader"
                             f" without telling them where the size is")
 
+    # -- A5: the ISOTHERMAL branch, on a SYNTHESISED case ----------------
+    #  A column that runs isothermal makes no temperature claim and must stay
+    #  SILENT.  No corpus case reaches that branch -- every absorber and
+    #  stripper converges non-isothermal -- so this arm builds one, exactly as
+    #  the ice gate had to synthesise both of its negatives.
+    #
+    #  The probe copies absorber01 and zeroes the heat of absorption in its
+    #  case-local Henry record, which makes `anyHeat` false and sends the unit
+    #  down the isothermal path.  The `propertyManifest` is dropped with it:
+    #  the probe is not testing the seal, and a modified record would
+    #  legitimately diverge from it.
+    #
+    #  SILENCE IS ONLY EVIDENCE IF THE BRANCH WAS REACHED.  The arm therefore
+    #  asserts `nonIsothermal == 0` FIRST -- a probe that silently failed to
+    #  build would otherwise pass by being quiet, which is the exact defect
+    #  found in check_liquid_cp_fallback's own A5 earlier the same day.
+    with tempfile.TemporaryDirectory() as td:
+        probe = Path(td) / "iso"
+        shutil.copytree(CASES["absorber"], probe)
+        for junk in ("converged", "reports", "log.choupoSolve", "expected",
+                     "constant/propertyManifest"):
+            tgt = probe / junk
+            if tgt.is_dir():
+                shutil.rmtree(tgt)
+            elif tgt.exists():
+                tgt.unlink()
+        rec = probe / "constant/parameters/Henry/NH3-water.dat"
+        txt = rec.read_text()
+        if "enthalpy    -33700  J/mol;" not in txt:
+            failures.append("A5: the probe cannot zero the heat of absorption"
+                            " -- NH3-water.dat no longer carries the enthalpy"
+                            " line it edits, so this arm is testing nothing")
+        else:
+            rec.write_text(txt.replace("enthalpy    -33700  J/mol;",
+                                       "enthalpy         0  J/mol;"))
+            out = run(probe)
+            if '"nonIsothermal": 0' not in out:
+                failures.append("A5: the probe did NOT reach the isothermal"
+                                " branch (nonIsothermal is not 0), so its"
+                                " silence proves nothing")
+            elif NEEDLE in out:
+                failures.append("A5: an ISOTHERMAL column announces the"
+                                " lumped-Cp note.  It makes no temperature"
+                                " claim and has no such approximation to"
+                                " confess; a note that always fires carries"
+                                " no information")
+
     # -- A4: the negative
     out = run(CASES["neither"])
     if notes_in_json(out) or NEEDLE in out:
@@ -151,10 +199,10 @@ def main() -> int:
     print("check_lumped_cp_note: OK -- both column classes announce their"
           " lumped-Cp energy model, the note reaches the caveat summary and"
           " the result JSON, it names the ledger column carrying the size,"
-          " and a case with neither unit stays silent.  NOT checked: the"
-          " ISOTHERMAL branch (no corpus case reaches it, so 'stays silent"
-          " when it should' is unproven), whether the residual is correct, or"
-          " whether the model should be replaced.")
+          " a case with neither unit stays silent, and a SYNTHESISED"
+          " isothermal column (heat of absorption zeroed) stays silent while"
+          " provably reaching that branch.  NOT checked: whether the residual"
+          " is correct, or whether the lumped-Cp model should be replaced.")
     return 0
 
 
