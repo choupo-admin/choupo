@@ -294,6 +294,32 @@ ones for day-to-day work:
 > says whose error the premise was).  Items below are kept as history;
 > none is awaiting a ruling unless marked.
 
+> **2026-08-14 — ONE ITEM IS OPEN.  V1: the lumped-Cp column energy model.**
+>
+> `Absorber` and `Stripper` share the textbook stage energy balance -- liquid
+> Cp is the SOLVENT's alone, vapour Cp is the FEED gas at feed composition,
+> both constant across the column, source = heat of absorption.  It does not
+> conserve the canonical (formation-datum, full-mixture, T-dependent) enthalpy
+> the energy report prices, so every non-isothermal column leaves a first-law
+> residual on its own streams: **+82.93 kW** on `absorber01_NH3_water`,
+> **-19.87 kW** on `stripper01_NH3_water`, **-11.25 kW** on the acetone
+> plant's absorber.
+>
+> All three were invisible until 2026-08-14, reading `n/a` in the
+> model-boundary ledger because the audit only ran on units declaring a duty
+> and all three are adiabatic.  The units now ANNOUNCE the approximation (the
+> `dynamicCSTR` posture) and the size stays where the report publishes it.
+> **Nothing is broken and nothing is waiting on this to keep working.**
+>
+> THE QUESTION: should the balance be reformulated onto canonical enthalpy?
+> It is a PHYSICS change, not a reporting one -- it moves the temperature
+> profile, hence the K-values, hence every product composition in every
+> absorber and stripper case, including the acetone plant's offgas loss.  The
+> architect will not make that change quietly, and it is not urgent: the
+> approximation is now declared, which is what the doctrine asks of it.
+> Record: `docs/design/model-boundary-energy-ledger.md` (final section) and
+> `tutorials/plant/acetonePlant/CLAUDE.md` (final section).
+
 **DECISIONS 2026-08-02 (Vítor, after an external second opinion).**  The
 rulings, verbatim in spirit; each item below is annotated where it lives:
 
@@ -533,6 +559,29 @@ accepts today, and that is a policy call.
    stay refused — that boundary changes KIND.
 
 ## 5. Known debts (severity-ish)
+
+00. **A GUARD ARMED ON ONE OF TWO ROUTES — now a named class, third instance
+   2026-08-14.**  `check_true_ions` was permanently green over deleted
+   inputs; `check_ebullioscopic` watched `K_f()` while its consumer read
+   `subHfus()`; and the model-boundary ledger audited only units DECLARING a
+   duty, so every adiabatic model boundary went unwatched — including the
+   acetone plant's absorber, the only one it has.  In all three the gate
+   passed, the claim was false, and the shape was identical: **two roads to
+   the same condition, an arm on one of them.**  When you add an arm, ask
+   what the OTHER route into the same state looks like and whether any case
+   travels it; when no corpus case does, say so in the gate's own output
+   rather than letting a green run imply coverage it lacks.
+
+0b. **An absorber is classified as a heat exchanger, structurally.**  The
+   energy report detects a process-to-process exchanger as ">=2 process in
+   AND >=2 process out AND no boundary heat", which is also an absorber, an
+   extractor and a membrane module.  It changes NO number today (the units
+   that trip it declare no external duty either way, so the branch it
+   selects is the one they would have taken) and it is left alone
+   deliberately: the fix matters only for a 2-in/2-out unit that DOES
+   declare a duty, and the corpus has none to test it against.  Recorded in
+   `docs/design/model-boundary-energy-ledger.md`; it becomes real the day
+   such a case is authored.
 
 0. **THE MANUALS WERE OUTSIDE THE FENCES, and are now inside them.**  A
    coverage sweep on 2026-08-04 found seven shipped capabilities described
