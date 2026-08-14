@@ -329,10 +329,16 @@ ones for day-to-day work:
 >
 > Measured on `absorber01_NH3_water`: its gas feed moves from -6572 to
 > -4594 J/mol (-182.56 to -127.61 kW) and the column's imbalance from
-> +82.93 kW to +27.98 kW.  A second instance is confirmed --
-> `evapDryer01_nacl`'s 400 K drying gas, also `vf 0`.  A scan finds 27
-> boundary inlets carrying the signature (unpinned, permanent gas plus a
-> sub-critical species).
+> +82.93 kW to +27.98 kW.  **That is the ONE confirmed instance.**
+>
+> `evapDryer01_nacl` was recorded here as a second and is NOT one: its energy
+> row is `gap` -- the unit has no elements-datum route, so the report never
+> prices its streams and the mispricing cannot occur.  Its `vf 0` is the
+> carried default being DISPLAYED, which says nothing about any computation.
+>
+> A scan finds 27 boundary inlets carrying the signature (unpinned, permanent
+> gas plus a sub-critical species), but it cannot separate them, and the two
+> examined most closely turned out NOT to be instances.
 >
 > **THE SCOPE IS NARROWER THAN THE SCAN, and the three cases separate
 > cleanly** (checked 2026-08-14, one representative each):
@@ -353,8 +359,26 @@ ones for day-to-day work:
 >   price as vapour correctly.
 >
 > So the ones that MATTER are those resolving single-phase vapour with a
-> sub-critical component present.  Two are confirmed; the rest are
+> sub-critical component present.  ONE is confirmed; the rest are
 > unclassified, and the scan cannot separate them without resolving each.
+>
+> **A DETECTOR WAS BUILT AND WITHDRAWN, and its false positives are worth
+> more than its true one.**  An advisory in `streamH_elements` -- fire when an
+> UNPINNED stream is about to be priced on `vf == 0` while its own
+> equilibrium resolves all-vapour -- was written, built, run over 80 steady
+> cases, and REVERTED unshipped.  It cannot make the distinction the
+> constitution makes: `phasePinned` is set BY THE FILE READER ONLY, so a
+> liquid a UNIT computed is indistinguishable from a file's untouched
+> default, and `ProcessStream` says exactly that ("a vf a producing unit
+> wrote is not a constraint: it is that unit's answer").
+>
+> What it flagged was almost entirely COLUMN DISTILLATES -- `column01`, `03`,
+> `04`, `05`, `09`, `10`, `12`, `shortcut01`, `acetone05/06/07`, `dewT01`.  A
+> total condenser sets `vf = 0` ("already condensed") and the package, handed
+> that stream's own (T, P, z), answers ALL VAPOUR.  Either those distillates
+> are reported at a state that is not a liquid, or the package and the column
+> disagree about the same point -- the column/thermo version of the
+> absorber's lumped-Cp gap.  **Unexamined**; one case would settle which.
 >
 > Both cases tested are REPORTING-only: their unit models carry their own Cp
 > / psychrometric energy balances, so their KPIs and goldens do not move.
