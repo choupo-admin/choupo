@@ -330,10 +330,31 @@ ones for day-to-day work:
 > Measured on `absorber01_NH3_water`: its gas feed moves from -6572 to
 > -4594 J/mol (-182.56 to -127.61 kW) and the column's imbalance from
 > +82.93 kW to +27.98 kW.  A second instance is confirmed --
-> `evapDryer01_nacl`'s 400 K drying gas, also `vf 0` -- and a scan finds 27
+> `evapDryer01_nacl`'s 400 K drying gas, also `vf 0`.  A scan finds 27
 > boundary inlets carrying the signature (unpinned, permanent gas plus a
-> sub-critical species), of which the gas-solid and flash-feed ones are
-> likely false positives OF THE SCAN rather than of the engine.
+> sub-critical species).
+>
+> **THE SCOPE IS NARROWER THAN THE SCAN, and the three cases separate
+> cleanly** (checked 2026-08-14, one representative each):
+>
+> * **SINGLE-PHASE VAPOUR, unpinned, holding a sub-critical species -- the
+>   defect.**  `streamSplit` returns nothing (a single-phase resolution is
+>   not a split), the fallback prices on `vf == 0`, and a vapour becomes a
+>   liquid.  absorber01, evapDryer01.
+> * **TWO-PHASE -- not affected.**  `streamSplit` resolves it and prices on
+>   the split; only the DISPLAYED `vf` is the carried default.  `flash10`'s
+>   feed is genuinely 64 % vapour (the flash runs at the feed's own T and
+>   returns V/F 0.6408) and displays `vf 0`, yet its node closes at
+>   -2.4e-5 kW with or without a quality pin: the pin shifts every stream's
+>   enthalpy together, so it perturbs a correct reading rather than repairing
+>   a wrong one.  Cosmetic -- worth knowing before anyone "fixes" 27 files.
+> * **ALL components above their Tc -- not affected.**  The Tc screen recovers
+>   `vf 1`; the gas-solid feeds (N2 + silica, the solid on its own block)
+>   price as vapour correctly.
+>
+> So the ones that MATTER are those resolving single-phase vapour with a
+> sub-critical component present.  Two are confirmed; the rest are
+> unclassified, and the scan cannot separate them without resolving each.
 >
 > Both cases tested are REPORTING-only: their unit models carry their own Cp
 > / psychrometric energy balances, so their KPIs and goldens do not move.
