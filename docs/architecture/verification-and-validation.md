@@ -144,8 +144,14 @@ architect's review call and deliberately not gated.
    the relevant `check_*` contract/refusal gates.
 2. **A coherent change closed** — the witness of the affected class.
 3. **A bounded slice closed** — `runTests --witnesses` across all classes.
-4. **Campaign closure, release, or a genuinely cross-cutting change** — the
-   full regression, once; `main` advances once if green.
+4. **Campaign closure, a release TAG, or a genuinely cross-cutting change** —
+   the full regression, once, and IN CHUNKS (`bin/runTests <directory>`
+   expands a directory of cases).  **`main` advances on rung 3**, amended
+   2026-08-14: `main` is the development line and not a release, and a sweep
+   that a killed container never finishes verifies nothing while blocking the
+   work.  What is given up — interactions between slices caught at the tag
+   rather than at the advance — is recorded in `DEV.md` §6a with the evidence
+   for both sides.
 
 **Two deviations from the ruling's text, stated rather than silent.**
 (a) There is no `validation/` directory and none was created: a witness is a

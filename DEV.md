@@ -880,8 +880,40 @@ Full statement: `docs/architecture/verification-and-validation.md` §3a.
    (`bin/runTests <case>`; classes in `tutorials/WITNESSES`).
 3. **A bounded slice closed** — `bin/runTests --witnesses` (all 15 classes,
    minutes).
-4. **Campaign closure / release / genuinely cross-cutting change** — the
-   full `bin/runTests`, ONCE; `main` advances once if green.
+4. **Campaign closure / release TAG / genuinely cross-cutting change** — the
+   full `bin/runTests`, ONCE, and IN CHUNKS (`bin/runTests <directory>`).
+   `main` advances on rung 3 — see the amendment below.
+
+**AMENDED 2026-08-14 (proposed by the architect, ratified by Vítor): the full
+sweep belongs to the TAG, not to `main`.**
+
+Rung 4 used to fire on four triggers, one of which was "`main` advances".  It
+was pointing at the wrong target.  **`main` is not a release** -- it is the
+development line, `Choupo-dev`; a release is an immutable TAG (CLAUDE.md 2).
+Holding the development line behind a 45-minute sweep buys little and costs a
+lot, and in a session whose container kills long jobs it costs everything: the
+sweep was started six times on 2026-08-14 and finished once.  A run that never
+finishes verifies nothing and blocks the work meanwhile.
+
+So:
+
+* **`main` advances on rung 3** -- `--witnesses` plus the cases each
+  accumulated slice touches plus its gates.  Every slice was already verified
+  at its own rung before it landed on the branch; the advance adds the class
+  traversal over all fifteen execution classes.
+* **The full sweep is the TAG's**, and is to be run **in chunks** --
+  `bin/runTests tutorials/steady/flash` now expands a directory, so a killed
+  container costs a chunk and not the hour.
+
+**WHAT IS GIVEN UP, stated rather than glossed.**  Interactions BETWEEN slices,
+and cases outside every slice's blast radius, are now caught at the tag instead
+of at the advance.  That is not hypothetical: the one full sweep that did
+finish, on 2026-08-14, found four real defects before `main` moved (a GUI
+schema rejecting a case the engine runs, an incomplete decision index, a stale
+generated doc, five dead keys).  Under the amended ladder those would have
+been found at the tag.  The judgement is that finding them a few days later is
+worth not losing half a session to runs that die -- and the mitigation is that
+chunks make the sweep survivable, so it can be run more often, not less.
 
 Accumulate coherent, reviewed changes on the branch between closures.
 Editing `bin/runTests` itself, a `src/core/` header half the tree includes,

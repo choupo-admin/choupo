@@ -461,7 +461,31 @@ fi
 # --- gather cases ---------------------------------------------------------
 CASES=()
 if [ "$#" -gt 0 ]; then
-    CASES=("$@")
+    #  An argument may be a CASE or a DIRECTORY OF CASES.  Passing
+    #  `tutorials/steady/flash` used to be taken as one case, fail to find its
+    #  controlDict and report a crash -- so running the corpus in slices meant
+    #  expanding the paths by hand, which is exactly the friction that keeps a
+    #  long sweep from being run in pieces at all.
+    #
+    #  This matters since the ladder was amended (2026-08-14): the FULL sweep
+    #  belongs to a release TAG and is to be run in CHUNKS, because a session
+    #  that loses a 45-minute run to a killed container has produced nothing.
+    #  An instruction to run it in pieces is empty if pieces are awkward.
+    for a in "$@"; do
+        if [ -f "$a/system/controlDict" ]; then
+            CASES+=("$a")
+        elif [ -d "$a" ]; then
+            n=0
+            while IFS= read -r cd; do
+                CASES+=("$(dirname "$(dirname "$cd")")"); n=$((n+1))
+            done < <(find "$a" -path '*/system/controlDict' 2>/dev/null | sort)
+            [ "$n" -gt 0 ] \
+                && echo "[chunk] $a -> $n case(s)" \
+                || { echo "ERROR: '$a' is a directory holding no case"; exit 2; }
+        else
+            echo "ERROR: '$a' is neither a case nor a directory"; exit 2
+        fi
+    done
 else
     # A case is any directory holding system/controlDict, at ANY depth -- so the
     # <category>/<subclass>/<case> layout (steady/batch/props) AND the flat ctrl/
