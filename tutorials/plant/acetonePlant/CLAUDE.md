@@ -135,9 +135,13 @@ The residual is the absorber's own energy balance -- a lumped-Cp textbook
 model (liquid Cp = the solvent's alone, vapour Cp = the feed gas at feed
 composition, both constant across the column, source = heat of absorption)
 whose converged temperature profile does not conserve canonical enthalpy.  The
-proof is that a standalone absorber with **no model boundary at all** shows
-the same thing: `absorber01_NH3_water` carries +82.93 kW, `stripper01_NH3_water`
--19.87 kW.
+proof is that a standalone column with **no model boundary at all** shows the
+same thing: `stripper01_NH3_water` carries -19.87 kW.
+(`absorber01_NH3_water`'s +82.93 kW was first cited here too; it is a poor
+witness -- two thirds of it is its gas feed priced as a liquid, an unrelated
+defect corrected the same day in
+`docs/design/model-boundary-energy-ledger.md`.  This plant's absorber is
+unaffected: its inlets are correctly phased.)
 
 None of that was visible before this date: every one of those units read `n/a`
 in the ledger, because the model-boundary audit only ran on units declaring a

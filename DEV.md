@@ -314,7 +314,17 @@ ones for day-to-day work:
 > THE QUESTION: should the balance be reformulated onto canonical enthalpy?
 > It is a PHYSICS change, not a reporting one -- it moves the temperature
 > profile, hence the K-values, hence every product composition in every
-> absorber and stripper case, including the acetone plant's offgas loss.  The
+> absorber and stripper case, including the acetone plant's offgas loss.
+>
+> **V2 (found the same day, NOT fixed): a supercritical component breaks the
+> phase resolution of an unpinned inlet.**  `absorber01_NH3_water`'s gas feed
+> resolves to all-LIQUID at 298 K / 1 atm because N2's vapour pressure is
+> extrapolated above its critical temperature; declaring `phase gas;` moves
+> the stream from -6572 to -4594 J/mol and the unit's imbalance from +82.93 to
+> +27.98 kW.  The run already announces the extrapolation -- nobody had
+> connected the warning to its consequence 55 kW downstream.  What a
+> resolution should DO when a component is supercritical touches how every
+> inlet in the corpus is priced, which is why it is here and not in a commit.  The
 > architect will not make that change quietly, and it is not urgent: the
 > approximation is now declared, which is what the doctrine asks of it.
 > Record: `docs/design/model-boundary-energy-ledger.md` (final section) and

@@ -6,9 +6,13 @@ liquid Cp is the SOLVENT's alone, vapour Cp is the FEED gas at feed
 composition, both evaluated once at the inlet and held constant, with the
 per-solute heat of absorption as the only source.  That is not the canonical
 enthalpy the energy report prices, so the converged temperature profile leaves
-a first-law residual on the unit's own streams: +82.93 kW on
-absorber01_NH3_water, -19.87 kW on stripper01_NH3_water, -11.25 kW on the
-acetone plant's absorber (measured 2026-08-14).
+a first-law residual on the unit's own streams: -19.87 kW on
+stripper01_NH3_water and -11.25 kW on the acetone plant's absorber (measured
+2026-08-14).  absorber01_NH3_water shows +82.93 kW, but only ~28 kW of that
+is this model: the rest is its gas feed being priced as a LIQUID, because
+N2's vapour pressure extrapolated above its critical temperature makes the
+phase resolution return all-liquid for the mixture.  See the correction in
+docs/design/model-boundary-energy-ledger.md.
 
 None of those was visible before that date -- all three read `n/a` in the
 model-boundary ledger, because the audit only ran on units declaring a duty.

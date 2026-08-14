@@ -452,3 +452,40 @@ Two smaller things fell out and are recorded rather than fixed:
 Gate: `check_model_boundary_ledger` A6, sabotage-verified by restoring the
 filter — observed `A6: 'divider' declares a thermo{} override and no duty, and
 its model-boundary verdict is 'n/a'` plus the JSON/CSV disagreement arm.
+
+
+### CORRECTION 2026-08-14, same day: two thirds of `absorber01`'s +82.93 kW is
+### NOT the lumped-Cp model
+
+The three residuals were attributed above to the columns' lumped-Cp energy
+balance.  For the acetone plant's absorber (-11.25 kW) and for
+`stripper01_NH3_water` (-19.87 kW) that attribution stands: their inlets are
+correctly phased (the plant's flashGas is unit-produced and carries its
+producer's vapour fraction; washWater is liquid and is liquid; stripper01's
+strippingGas resolves to vf 1).
+
+`absorber01_NH3_water` is different, and the difference was measured, not
+argued: declaring `phase gas;` on its `0/gasFeed` moves that stream's
+enthalpy from -6572 to -4594 J/mol (-182.56 to -127.61 kW) and the unit's
+imbalance from **+82.93 kW to +27.98 kW**.  Roughly two thirds of it is the
+INLET BEING PRICED AS A LIQUID.
+
+It is not a missing pin defaulting to liquid -- the engine resolves an
+unpinned stream at its own (T, P, z), exactly as `ProcessStream` says it
+must, and the proof is in the corpus: `stripper01`'s pure-N2 feed, equally
+unpinned, resolves to vapour.  The mixture is what fails.  At 298 K and 1 atm
+with 10 % NH3 / 90 % N2 the answer is all-vapour; the resolution returns
+all-liquid because **N2's vapour pressure is extrapolated above its critical
+temperature** (Tc = 126.2 K) into a number that makes its K-value nonsense.
+
+The run already ANNOUNCED that extrapolation -- it is in absorber01's caveat
+summary, and has been.  What nobody had done is connect the warning to its
+consequence 55 kW downstream.  An announced approximation is not the same as
+an understood one.
+
+NOT FIXED HERE, and named rather than attempted: what a phase resolution
+should do when a component is supercritical at the stream's conditions.  It
+touches how every inlet in the corpus is priced, which is not a change to
+make at the end of a long session.  What is fixed is the record: the number
+above was written into five places in one day, which is the arity sin
+committed by the person documenting it.

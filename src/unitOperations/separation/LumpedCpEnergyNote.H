@@ -37,12 +37,18 @@ Description
     prices (elements / formation datum, full mixture, T-dependent Cp).
 
     So the converged temperature profile does not conserve canonical H, and
-    the unit's own streams carry a first-law residual.  Measured 2026-08-14
-    over the corpus: +82.93 kW on `absorber01_NH3_water`, -19.87 kW on
-    `stripper01_NH3_water`, -11.25 kW on the acetone plant's absorber.  Every
-    one of those had read `n/a` in the model-boundary ledger until the audit
-    was extended to units declaring no duty -- the residual is not new, it was
-    unlit.
+    the unit's own streams carry a first-law residual.  Measured 2026-08-14:
+    -19.87 kW on `stripper01_NH3_water`, -11.25 kW on the acetone plant's
+    absorber.  Both had read `n/a` in the model-boundary ledger until the
+    audit was extended to units declaring no duty -- the residual is not new,
+    it was unlit.
+
+    `absorber01_NH3_water` shows +82.93 kW and only ~28 kW of that is THIS
+    model: the rest is its gas feed priced as a LIQUID, because N2's vapour
+    pressure extrapolated above its critical temperature makes the phase
+    resolution return all-liquid for the mixture.  A residual on a column is
+    not automatically this approximation -- check how the inlets were priced
+    before attributing it here.
 
     This is the choupoCtrl dynamicCSTR situation one field away (a Cp /
     convective energy equation is not the derivative of the canonical U), and
