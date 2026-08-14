@@ -43,6 +43,28 @@ is visible — both in the source code and in the terminal output.  It is built
 for teaching and for research in areas where transparency and customisation
 matter more than breadth.
 
+## What you need
+
+**A C++17 compiler and GNU `make`.  That is the whole list.**
+
+Choupo links **no external libraries** — no Boost, no Eigen, no Sundials, no
+CMake.  Newton, Wegstein, RK4, Nelder-Mead, Levenberg-Marquardt and Michelsen's
+stability test are all in the tree and readable, which is the point of a glass
+box: nothing the answer depends on is hidden behind a package you did not
+build.
+
+Measured on a clean clone (Ubuntu 24.04, g++ 13.3, GNU make 4.3, `-j4`):
+**5 s to clone, 125 s to build, and the first tutorial runs.**  Nothing else to
+install.
+
+Optional, and only for parts you may never touch:
+
+| for | you also need |
+|---|---|
+| the browser GUI (`gui/`) | Node.js + npm |
+| rebuilding the WASM engine (`make wasm-gui`) | Emscripten |
+| the curation + doctrine gates (`bin/curate/*.py`) | Python 3 |
+
 ## Build
 
 ```bash
