@@ -16,5 +16,22 @@ componentMolarFlows
     N2    90 kmol/h;
 }
 
+//  PHASE PIN (2026-08-14).  This stream is the case's gas feed -- the header
+//  says so: "Feed gas: 100 kmol/h, 10 % NH3 / 90 % N2".  The pin states that
+//  fact, and it is what the engine's own state writer emits for a vapour
+//  holding a SUB-CRITICAL species (StreamStateIO: a permanent gas is
+//  recovered by the Tc screen and needs none, which is why stripper01's
+//  pure-N2 feed is correct without one; NH3 at 298 K is below its Tc, so the
+//  phase must be declared).  This file was hand-authored and missed it.
+//
+//  What the pin was worth here: the energy report was pricing the stream as
+//  a LIQUID, putting 55 kW of phantom enthalpy into the column's balance
+//  (dH read +82.93 kW against +27.98).  That the ABSENCE of a pin has that
+//  effect is an ENGINE defect, not this file's -- the reader states plainly
+//  that the 0.0 default is "a starting value" and that "consumers that price
+//  energy ask phasePinned, never vf == 0", and the energy report asks vf.
+//  Recorded as DEV.md 4b V2; this pin is correct on its own merits either
+//  way, because the stream really is a gas.
+phase           gas;
 T               298.15 K;
 P               101325 Pa;

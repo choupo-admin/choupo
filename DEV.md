@@ -316,15 +316,37 @@ ones for day-to-day work:
 > profile, hence the K-values, hence every product composition in every
 > absorber and stripper case, including the acetone plant's offgas loss.
 >
-> **V2 (found the same day, NOT fixed): a supercritical component breaks the
-> phase resolution of an unpinned inlet.**  `absorber01_NH3_water`'s gas feed
-> resolves to all-LIQUID at 298 K / 1 atm because N2's vapour pressure is
-> extrapolated above its critical temperature; declaring `phase gas;` moves
-> the stream from -6572 to -4594 J/mol and the unit's imbalance from +82.93 to
-> +27.98 kW.  The run already announces the extrapolation -- nobody had
-> connected the warning to its consequence 55 kW downstream.  What a
-> resolution should DO when a component is supercritical touches how every
-> inlet in the corpus is priced, which is why it is here and not in a commit.  The
+> **V2 (found the same day, NOT fixed): the energy report prices an UNPINNED
+> stream on `vf == 0`, which the constitution bans by name.**
+>
+> `StreamStateIO`'s reader says it outright: the `vaporFraction` default of
+> 0.0 is "a starting value", "reading it as liquid is precisely the implicit
+> pin the constitution bans and the flash19 duty was paying for", and
+> **"consumers that price energy ask `phasePinned`, never `vf == 0`"**.
+> `BalanceMath::streamH_elements` asks `s.vf`: when a stream resolves
+> SINGLE-PHASE, `streamSplit` returns nothing and the fallback prices on the
+> carried default, so an unpinned vapour is priced as a LIQUID.
+>
+> Measured on `absorber01_NH3_water`: its gas feed moves from -6572 to
+> -4594 J/mol (-182.56 to -127.61 kW) and the column's imbalance from
+> +82.93 kW to +27.98 kW.  A second instance is confirmed --
+> `evapDryer01_nacl`'s 400 K drying gas, also `vf 0` -- and a scan finds 27
+> boundary inlets carrying the signature (unpinned, permanent gas plus a
+> sub-critical species), of which the gas-solid and flash-feed ones are
+> likely false positives OF THE SCAN rather than of the engine.
+>
+> Both cases tested are REPORTING-only: their unit models carry their own Cp
+> / psychrometric energy balances, so their KPIs and goldens do not move.
+> That is NOT established for the other 25.
+>
+> THE QUESTION: should `streamH_elements` price an unpinned single-phase
+> stream on its RESOLVED phase instead of the carried default?  The reader's
+> own contract says yes; the risk is that every mispriced stream's reported
+> enthalpy moves with it, and any golden pinning an energy KPI moves too.
+> Adding a pin per case -- as done for absorber01, where the pin is true on
+> its own merits and its golden did not move -- treats the symptom, and the
+> next hand-authored file misses it again.  Record: the correction section of
+> `docs/design/model-boundary-energy-ledger.md`.  The
 > architect will not make that change quietly, and it is not urgent: the
 > approximation is now declared, which is what the doctrine asks of it.
 > Record: `docs/design/model-boundary-energy-ledger.md` (final section) and
