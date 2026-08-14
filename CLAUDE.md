@@ -203,6 +203,13 @@ src/
 ├── postProcessing/      PostProcessor abstract + SizingPass + CostingPass
 │   ├── sizing/                   EquipmentSize abstract + StirredTank + ShellTubeHX
 │   └── costing/                  CostingModel abstract + Guthrie
+├── propertyOps/         PropertyOperation abstract + the props BENCH ops (choupoProps)
+├── reporting/           BalanceMath + the mass/element/energy balance reports
+├── result/              the pipeline's OUTPUT records — SimulationResult,
+│                         UnitProfile, ResultEmitter (2026-08-05 layering slice)
+├── io/                  SolutionWriter — the OpenFOAM-style state directories
+├── curation/            BESIDE the stack, never in it: a tool may read the
+│                         runtime, NOTHING in the runtime may read a tool
 └── applications/
     ├── choupoSolve/main.cpp     steady-state binary
     ├── choupoBatch/main.cpp     batch / time-dependent binary

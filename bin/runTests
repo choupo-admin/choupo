@@ -2365,6 +2365,24 @@ PYEOF
     fi
     rm -f /tmp/tutg.$$
 
+    # The manuals are the one artefact with NO compiler behind them: a guide
+    # can send a reader to a file deleted two hundred commits ago and nothing
+    # notices.  It had.  (Retired driver still offered as an example to read;
+    # a source-tree diagram missing the two subsystems the layering slice
+    # added and listing a directory that does not exist; two case READMEs
+    # claiming their parameters were curated under data/standards/ when the
+    # record had been deliberately staged case-locally pending review.)
+    if "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a manual cites a path that is not in the tree)\n" \
+            "check_guide_paths"
+        cat /tmp/gpaths.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gpaths.$$
+
     if "$ROOT/bin/regen-llm-docs" --check > /tmp/regen.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "generated-doc-gate" "$(tail -1 /tmp/regen.$$)"
         pass=$((pass+1))

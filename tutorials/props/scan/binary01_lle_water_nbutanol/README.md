@@ -55,8 +55,14 @@ cited per value:
 - **Structural r, q — their Table 1 (p.72)**: 1-butanol r = 3.9243, q = 3.668;
   water r = 0.9200, q = 1.400.
 
-The same numbers live, fully provenanced, in
-`data/standards/parameters/UNIQUAC/nButanol-water.dat`. The engine evaluates
+The numbers are inline here, fully provenanced above; the record is STAGED CASE-LOCALLY, not curated: it lives at
+`tutorials/steady/flash/marcilla02_lls_ternary_invariant/constant/parameters/UNIQUAC/nButanol-water.dat`
+with `reviewStatus interim`, and promotion into `data/standards/` is the
+maintainer's batch review.  This README used to claim the numbers already
+lived under `data/standards/` -- asserting a curation status that had been
+deliberately withheld, which is a worse error than saying nothing.
+
+The engine evaluates
 the full `a + b·T + c·T²` temperature dependence (the quadratic `c·T²` term is
 essential — at 320 K it is ~−450 K, comparable to `a`).
 

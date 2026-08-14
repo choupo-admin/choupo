@@ -138,17 +138,21 @@ Choupo/
 |   |-- materials/                  Material, MaterialRegistry
 |   |-- solver/                     NewtonRaphson, NewtonND, Wegstein, StabilityTest
 |   |-- unitOperations/             UnitOperation base + per-category folders
-|   |-- outerDriver/                OuterDriver base + SweepDriver + FitBinaryPair
+|   |-- outerDriver/                OuterDriver base + Sweep/Grid/Pareto/Optim
 |   |-- postProcessing/             PostProcessor base + Sizing/Costing passes
 |   |-- propertyOps/                PropertyOperation base (choupoProps)
 |   |-- control/                    Controller base + PID/Schedule (choupoCtrl)
 |   |-- reporting/                  BalanceMath, EnergyBalanceReport (the ledger)
+|   |-- result/                     the pipeline's OUTPUT records (SimulationResult,
+|   |                                UnitProfile, ResultEmitter) -- see Sec. layering
 |   |-- io/                         SolutionWriter --- OpenFOAM-style instants
+|   |-- curation/                   BESIDE the stack, not in it: a tool may read
+|   |                                the runtime, the runtime may read no tool
 |   `-- applications/               choupoSolve / choupoBatch / choupoCtrl /
 |                                     choupoProps -- one main.cpp per binary
-|-- tests/                         regression scripts (bin/runTests)
-|-- tutorials/                     end-to-end cases (~190, under
-|                                     steady/ batch/ ctrl/ props/ plant/)
+|-- bin/                           runCase, runTests, listCases, curate/check_*
+|-- tutorials/                     end-to-end cases under
+|                                     steady/ batch/ ctrl/ props/ plant/ electrochem/
 |-- gui/                           web GUI (see CLAUDE.md Sec. 12)
 |-- LICENSE                        GPL-3.0-or-later
 `-- README.md
@@ -1576,10 +1580,22 @@ Two concrete examples to read first:
 \begin{itemize}[leftmargin=*,nosep]
   \item \file{src/outerDriver/SweepDriver.\{H,cpp\}} ($\sim 150$ LOC)
         --- 1-D sensitivity sweep.
-  \item \file{src/outerDriver/FitBinaryPair.\{H,cpp\}} ($\sim 300$ LOC)
-        --- Marquardt LM with FD Jacobian, mutates both flowsheet
-        (composition) and thermo (pair params).
+  \item \file{src/outerDriver/OptimizationDriver.\{H,cpp\}}
+        --- Nelder--Mead over the same functor, with \code{DesignSpec}
+        constraints; the one to read when your driver has to \emph{decide}
+        rather than merely traverse.
 \end{itemize}
+
+\begin{pitfall}
+This list used to send you to \file{src/outerDriver/FitBinaryPair.\{H,cpp\}}.
+That driver was \textbf{retired}: \code{OuterDriver::registerBuiltins} still
+registers the name \code{fitBinaryPair} purely so that an old case gets a
+refusal that \emph{names its replacement} (\code{choupoProps}'
+\code{fitParameters} op) instead of an unhelpful ``unknown type''.  The file
+is gone; the guide went on citing it as one of two worked examples to read
+first.  A manual that sends a reader to a file that is not there costs more
+than a manual that says nothing.
+\end{pitfall}
 
 Register your driver in \code{OuterDriver::registerBuiltins()}.
 
@@ -1717,14 +1733,43 @@ Don't omit this on new files --- it doubles as licence notice.
 % =====================================================================
 \section{Regression testing}\label{sec:regression}
 
-Regression is run with \code{bin/runTests}.  Run it before every
-change set; all previously-passing tutorials must still pass.
+Regression is run with \code{bin/runTests}.
 
 \begin{lstlisting}
 bin/runTests                 # every tutorial (4 binaries + buildCode cases)
 bin/runTests <case>          # one case
+bin/runTests <directory>     # every case under it -- the chunk
+bin/runTests --witnesses     # one witness per execution class
 bin/runTests --record <case> # refresh that case's golden-master `expected`
 \end{lstlisting}
+
+\paragraph{The testing ladder --- run what the change can reach.}
+The authority is \file{docs/architecture/verification-and-validation.md}
+\S3a; this is the working summary.  \emph{Do not} reach for the full sweep
+by default:
+
+\begin{enumerate}[leftmargin=1.6em]
+  \item \textbf{While editing} --- the touched case and the \code{check\_*}
+    gates that own the thing you touched.
+  \item \textbf{A coherent change closed} --- the witness of the affected
+    class (\file{tutorials/WITNESSES}).
+  \item \textbf{A bounded slice closed} --- \code{bin/runTests --witnesses},
+    every execution class, minutes.  \textbf{This is the rung \code{main}
+    advances on.}
+  \item \textbf{The release TAG, or a genuinely cross-cutting change} ---
+    the full \code{bin/runTests}, once, and \emph{in chunks}
+    (\code{bin/runTests tutorials/steady/flash}).
+\end{enumerate}
+
+\begin{keyidea}
+\textbf{The full regression is a confirmation, not a discovery tool.}  It is
+also long enough that it is often started and rarely finished --- and a run
+that never finishes verifies nothing while blocking the work.  What the
+ladder gives up is stated rather than glossed: interactions \emph{between}
+slices are caught at the tag instead of at each advance
+(\S3a of the V\&V document records the four real defects that argument
+has already cost).
+\end{keyidea}
 
 \code{runTests} does two checks, both stronger than a plain exit-code
 loop:
@@ -1756,9 +1801,32 @@ guarding; \code{--record} writes them from the current run once you trust
 it.  A case with no \file{expected} still gets the NaN guard.
 \end{keyidea}
 
-At, four canonical cases ship an \file{expected} (flash01, cstr01,
-column01, membrane01); the rest run under the smoke + NaN guard.  Add an
-\file{expected} whenever a case's numbers are load-bearing.
+\emph{Most} of the corpus ships an \file{expected}; the rest run under the
+NaN guard alone.  Add one whenever a case's numbers are load-bearing --- and
+count them yourself rather than trusting a number written here:
+
+\begin{lstlisting}
+find tutorials -name expected | wc -l          # cases with a golden
+find tutorials -name '*.cho'  | wc -l          # cases
+\end{lstlisting}
+
+\noindent This paragraph used to name four cases as the ones carrying a
+golden.  It was written when that was true and was never revisited, and by
+2026-08 the real figure was two orders of magnitude larger --- so a
+contributor reading it concluded their case's numbers were probably
+\emph{not} pinned when in fact the odds were the other way.  A count copied
+into prose is a derived value with a second home, which is the one thing
+this project's data doctrine forbids; the shape belongs here, the number
+belongs to whatever recomputes it.
+
+\paragraph{The curation gates.}  \code{runTests} does not only run cases: it
+also runs the \code{check\_*} scripts under \file{bin/curate/}, which is
+where the project's settled contracts are actually enforced (one home per
+value, no unread dict key, no commercial competitor named in the manuals, a
+sealed case that cannot change physics on sealing, and so on).  Each is
+independently runnable, states in its own output what it does \emph{not}
+cover, and has been sabotage-verified --- a gate nobody has ever seen fail
+is not evidence.
 
 % =====================================================================
 \section{Debugging}\label{sec:debug}
@@ -1768,7 +1836,7 @@ column01, membrane01); the rest run under the smoke + NaN guard.  Add an
 \begin{lstlisting}
 make MODE=debug all
 gdb build/linux64GccDebug/choupoSolve
-(gdb) r tutorials/flash01_benzene_toluene
+(gdb) r tutorials/steady/flash/flash01_benzene_toluene
 \end{lstlisting}
 
 The debug build leaves a separate symlink \file{choupoSolve.debug}
@@ -2633,7 +2701,7 @@ diagnostics).  Never run two \code{make wasm} concurrently --- they clobber
 \end{pitfall}
 
 \paragraph{Step 6 --- A minimal tutorial case.}  Keep it trivial so it doubles
-as a regression test.  \file{tutorials/steady/mixer/splitter01\_isothermal/}:
+as a regression test.  \file{tutorials/steady/userops/splitter01\_isothermal/}:
 
 \begin{lstlisting}
 splitter01_isothermal/
@@ -2671,7 +2739,7 @@ units
 \paragraph{Step 7 --- Add KPIs to the regression (\code{expected}).}  Your
 \code{kpis()} already feed sizing, costing and the sweep/optimisation drivers;
 pin the load-bearing ones to golden masters.  Drop a
-\file{tutorials/steady/mixer/splitter01\_isothermal/expected}:
+\file{tutorials/steady/userops/splitter01\_isothermal/expected}:
 
 \begin{lstlisting}
 # kind   name   key             expected   reltol
@@ -2683,8 +2751,8 @@ stream   top    F               0.3        1e-6
 \noindent then record/verify and run the full gate:
 
 \begin{lstlisting}
-bin/runTests --record tutorials/steady/mixer/splitter01_isothermal   # write from a trusted run
-bin/runTests                                                          # the whole corpus must stay green
+bin/runTests --record tutorials/steady/userops/splitter01_isothermal  # write from a trusted run
+bin/runTests --witnesses                     # rung 3: every execution class
 \end{lstlisting}
 
 \begin{keyidea}

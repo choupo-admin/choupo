@@ -7482,7 +7482,7 @@ equilibrium
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions              // optional; k_ij = 0 announced
         {
-            CO2-CH4 { source "data/standards/parameters/SRK/CO2-CH4.dat"; }
+            N2-CH4 { source "data/standards/parameters/SRK/N2-CH4.dat"; }
         }
     }
 
@@ -22913,7 +22913,7 @@ conditions.  The properties that matter:
             |- (w.west);
 \end{tikzpicture}
 \caption{One adaptive step of Rosenbrock23, the stiff integrator
-(\code{src/solver/Rosenbrock23}).  The key economy is the blue box: the
+(\code{src/solver/ODE/Rosenbrock23}).  The key economy is the blue box: the
 matrix $\mathbf W=\mathbf I-h\gamma\Jac$ is LU-factorised \emph{once} per
 step and then \emph{reused} by both linear stages (violet) --- each
 stage is just a back-substitution, and because the stages are
