@@ -1,8 +1,8 @@
 # Start here — nine cases, in this order
 
-`listCases` lists 354 tutorials.  That is a reference, not a way in: it is
-organised by what each case IS, and a person arriving needs to know what to
-open FIRST.
+`listCases` lists every tutorial in the corpus — several hundred.  That is a
+reference, not a way in: it is organised by what each case IS, and a person
+arriving needs to know what to open FIRST.
 
 This is the way in.  **Nine cases, each introducing exactly one new idea, each
 resting on the one before.**  Run them in order and at the end you will have
@@ -16,11 +16,23 @@ going to fail on you for a reason that is not yours.
 ```bash
 source etc/bashrc          # gives you runCase, listCases
 runCase tutorials/steady/flash/flash01_benzene_toluene
+less tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
 ```
 
-Read the `system/flowsheetDict` of each case before you run it, and the run's
-own output after.  Both are written to be read; that is the whole point of the
-project.
+**The second line is not optional, and it is the one people skip.**  `runCase`
+prints a SUMMARY to your terminal — what was assembled, whether the balances
+closed, and every caveat the run raised.  The glass box itself, every Newton
+iteration and every K-value, goes to `log.choupoSolve` beside the case.  The
+last line `runCase` prints is the path to it.
+
+Read the `system/flowsheetDict` of each case before you run it, and that log
+after.  Both are written to be read; that is the whole point of the project.
+
+Two things worth knowing before you start.  A case keeps its previous log:
+re-running refuses rather than overwrite it (`runCase -f` to replace, `-a` to
+append) — a result you have not read yet is not scratch space.  And the last
+case on this list is a whole plant with a recycle: it takes minutes, where the
+first eight take seconds.
 
 ---
 
@@ -28,9 +40,15 @@ project.
 `tutorials/steady/flash/flash01_benzene_toluene`
 
 Two components, Raoult's law, one isothermal flash at 370 K and 1 bar.  Small
-enough to check with a pen.  Watch the **Newton iterations printed as they
-happen** — that is the default, not a debug mode, and it is the habit the rest
-of the corpus depends on.
+enough to check with a pen.  Open the log and find the **Rachford-Rice Newton
+iterations** — printed at the default verbosity, not in a debug mode, and the
+habit the rest of the corpus depends on.
+
+Your terminal will also carry two extrapolation warnings: at 370 K both
+components are being evaluated outside their fitted vapour-pressure range, and
+the run says so and returns the answer anyway.  That is the project's posture
+in the first case you run — announce, never silently refuse and never silently
+pretend.
 
 *New idea: a case is a directory of text files, and the answer is computed in
 front of you.*
