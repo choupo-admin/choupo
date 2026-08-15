@@ -91,6 +91,8 @@ const EpsilonNtuTool = lazy(() =>
   import("./methods/EpsilonNtuTool.js").then((m) => ({ default: m.EpsilonNtuTool })));
 const BreakthroughTool = lazy(() =>
   import("./methods/BreakthroughTool.js").then((m) => ({ default: m.BreakthroughTool })));
+const PinchCompositeTool = lazy(() =>
+  import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -130,9 +132,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
   },
   {
-    id: "pinch-composite", label: "Pinch composite curves", status: "planned",
-    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn.",
-    fedBy: "will read the engine's reports/pinch/compositeCurves.csv (PinchPass)",
+    id: "pinch-composite", label: "Pinch composite curves", status: "live",
+    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
   },
   {
     id: "entu", label: "ε-NTU (heat exchangers)", status: "live",
@@ -299,6 +300,7 @@ export function MethodsWorkspace() {
           }>
             {tool === "kremser" ? <KremserTool />
               : tool === "entu" ? <EpsilonNtuTool />
+              : tool === "pinch-composite" ? <PinchCompositeTool />
               : <BreakthroughTool />}
           </Suspense>
         )}
