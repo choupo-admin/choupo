@@ -51,7 +51,7 @@ License
   its roadmap honestly instead of pretending to be finished.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton, Group,
   Loader, NumberInput, Select, Stack, Text, Tooltip,
@@ -80,6 +80,17 @@ import {
   kToDisplay, paToDisplay, parsePressure, parseTemperature,
   pressureLabel, temperatureLabel,
 } from "../state/displayUnits.js";
+
+// The three run-fed tools are lazy: BreakthroughTool reaches the plotly seam
+// at module scope (plotly.js-basic-dist-min cannot load under node), and
+// deferring all three keeps this module importable by the vitest node
+// environment and the initial bundle unchanged until a tool is opened.
+const KremserTool = lazy(() =>
+  import("./methods/KremserTool.js").then((m) => ({ default: m.KremserTool })));
+const EpsilonNtuTool = lazy(() =>
+  import("./methods/EpsilonNtuTool.js").then((m) => ({ default: m.EpsilonNtuTool })));
+const BreakthroughTool = lazy(() =>
+  import("./methods/BreakthroughTool.js").then((m) => ({ default: m.BreakthroughTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -115,9 +126,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:drying",
   },
   {
-    id: "kremser", label: "Kremser (absorption / stripping)", status: "planned",
-    teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight.",
-    fedBy: "will read a stagewise absorber run from the engine",
+    id: "kremser", label: "Kremser (absorption)", status: "live",
+    teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
   },
   {
     id: "pinch-composite", label: "Pinch composite curves", status: "planned",
@@ -125,9 +135,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     fedBy: "will read the engine's reports/pinch/compositeCurves.csv (PinchPass)",
   },
   {
-    id: "entu", label: "ε-NTU (heat exchangers)", status: "planned",
-    teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying.",
-    fedBy: "needs an ε-NTU sweep op in choupoProps",
+    id: "entu", label: "ε-NTU (heat exchangers)", status: "live",
+    teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
   },
   {
     id: "pump-system", label: "Pump vs system curve", status: "planned",
@@ -135,9 +144,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     fedBy: "needs a head-curve sweep op in choupoProps",
   },
   {
-    id: "breakthrough", label: "Adsorption breakthrough", status: "planned",
-    teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates.",
-    fedBy: "will read a fixed-bed choupoBatch trajectory",
+    id: "breakthrough", label: "Adsorption breakthrough", status: "live",
+    teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
   },
 ];
 
@@ -282,9 +290,17 @@ export function MethodsWorkspace() {
         {tool === "mccabe" ? (
           <McCabeTool tool={active} catalogue={catalogue}
             localUnifac={localUnifac} componentFiles={componentFiles} />
-        ) : (
+        ) : tool === "psychro" ? (
           <PsychroTool tool={active} catalogue={catalogue}
             componentFiles={componentFiles} />
+        ) : (
+          <Suspense fallback={
+            <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+          }>
+            {tool === "kremser" ? <KremserTool />
+              : tool === "entu" ? <EpsilonNtuTool />
+              : <BreakthroughTool />}
+          </Suspense>
         )}
       </Box>
     </Box>
