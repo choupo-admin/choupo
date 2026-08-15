@@ -39,16 +39,21 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { applyScalarOverride } from "../src/case/methodRun.js";
+import { tutorialByName } from "../src/cases/tutorials.js";
 import {
   CANDIDATE_MATCHES_CSV_PATH,
   COMPOSITE_CURVES_CSV_PATH,
   CROSS_CHECK_TOL,
+  PINCH_KNOBS,
+  PINCH_WITNESS,
   candidateFlag,
   computePinchFromCurves,
   crossCheckAgainstKpis,
   interpolateH,
   parseCandidateMatches,
   parseCompositeCurves,
+  pinchOverrides,
   type CandidateMatch,
 } from "../src/ui/methods/PinchCompositeTool.js";
 
@@ -288,6 +293,71 @@ describe("candidateFlag -- which rows the table visibly marks", () => {
       ...infeasible,
       pinchRule: "pinch match: CP_hot <= CP_cold VIOLATED",
     })).toBe("infeasible");
+  });
+});
+
+// ---- The standalone classroom witness: knobs vs the REAL bundled corpus -----
+// No WASM here: what is verified is the KNOB MAP — every ScalarOverride the
+// tool declares must resolve, uniquely, against the witness's own raw dict
+// text exactly as the bundled corpus ships it.  applyScalarOverride throws on
+// a missing or ambiguous key, so a plain successful call IS the uniqueness
+// proof (no knob passes `occurrence`).
+
+describe("the classroom knob map resolves against the bundled witness", () => {
+  const entry = tutorialByName(PINCH_WITNESS);
+
+  it("finds the witness in the bundled corpus, with raw text and knob files", () => {
+    expect(entry).toBeDefined();
+    expect(entry!.files.rawFiles).toBeDefined();
+    for (const k of PINCH_KNOBS) {
+      expect(entry!.files.rawFiles![k.file],
+        `knob '${k.id}' names file '${k.file}'`).toBeDefined();
+    }
+  });
+
+  it("every knob's override resolves uniquely in the real witness text", () => {
+    const raw = entry!.files.rawFiles!;
+    for (const k of PINCH_KNOBS) {
+      // A distinctive probe value: the edit must land (text changes and the
+      // probe appears), and the call not throwing proves the key is unique.
+      const probe = 123.456;
+      const edited = applyScalarOverride(raw[k.file]!,
+        { file: k.file, key: k.key, value: probe });
+      expect(edited).not.toBe(raw[k.file]);
+      expect(edited).toContain(`${probe}`);
+    }
+  });
+
+  it("each knob's declared default IS the witness's own number (byte-identical re-write)", () => {
+    // Writing the default back must leave the file untouched: the override
+    // keeps key, spacing, unit and comment tail, so only the number could
+    // differ — and it must not.
+    const raw = entry!.files.rawFiles!;
+    for (const k of PINCH_KNOBS) {
+      const rewritten = applyScalarOverride(raw[k.file]!,
+        { file: k.file, key: k.key, value: k.value });
+      expect(rewritten, `knob '${k.id}' default ${k.value} in ${k.file}`)
+        .toBe(raw[k.file]);
+    }
+  });
+
+  it("a bogus key throws instead of silently missing its dict", () => {
+    const raw = entry!.files.rawFiles!;
+    expect(() => applyScalarOverride(raw["system/postDict"]!,
+      { file: "system/postDict", key: "noSuchKnob", value: 1 }))
+      .toThrow(/not found/);
+  });
+
+  it("pinchOverrides maps values by id and falls back to the witness's own", () => {
+    const overrides = pinchOverrides({ dTmin: 10 });
+    expect(overrides).toHaveLength(PINCH_KNOBS.length);
+    const dt = overrides.find((o) => o.file === "system/postDict")!;
+    expect(dt).toEqual({ file: "system/postDict", key: "dTmin", value: 10 });
+    // Untouched knobs carry the witness's own value.
+    const h1T = overrides.find((o) => o.file === "0/h1In" && o.key === "T")!;
+    expect(h1T.value).toBe(423.15);
+    // No knob relies on `occurrence` — uniqueness per file is the contract.
+    for (const o of overrides) expect(o).not.toHaveProperty("occurrence");
   });
 });
 

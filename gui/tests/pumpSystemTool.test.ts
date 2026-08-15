@@ -38,11 +38,17 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { applyScalarOverride } from "../src/case/methodRun.js";
+import { tutorialByName } from "../src/cases/tutorials.js";
 import {
+  DEFAULT_PUMP_KNOBS,
   FLAT_REL_TOL,
+  PUMP_PROVENANCE_LINE,
+  PUMP_WITNESS,
   classifyPumpCharacteristic,
   findOperatingPoint,
   findPumpSystemSweep,
+  pumpSystemOverrides,
 } from "../src/ui/methods/PumpSystemTool.js";
 
 // ---- Fixture: the witness case's sweep CSV, verbatim ------------------------
@@ -194,6 +200,91 @@ describe("classifyPumpCharacteristic -- the honesty classifier", () => {
   });
 });
 
+// ---- The standalone classroom feed: knobs vs the REAL witness ---------------
+// These tests never touch WASM: they resolve every knob's ScalarOverride
+// against the witness's actual bundled raw dict text — the same text
+// methodCase() clones at run time — so a knob that would silently miss (or
+// ambiguously hit) its dict fails HERE, not in a browser.
+
+describe("the standalone classroom feed -- knobs against the bundled witness", () => {
+  const entry = tutorialByName(PUMP_WITNESS);
+
+  it("finds the witness in the bundled corpus, with its raw dicts", () => {
+    expect(PUMP_WITNESS).toBe("steady/hydraulics/pumpSystem01_operating_point");
+    expect(entry).toBeDefined();
+    const raws = entry!.files.rawFiles!;
+    expect(raws).toBeDefined();
+    expect(raws["system/flowsheetDict"]).toContain("W_shaft");
+    expect(raws["system/outerDict"]).toContain("sweep_pumpSystem.csv");
+  });
+
+  it("every knob's ScalarOverride resolves UNIQUELY against the raw text", () => {
+    const raws = entry!.files.rawFiles!;
+    const overrides = pumpSystemOverrides(DEFAULT_PUMP_KNOBS);
+    // The five declared knobs: W_shaft, eta (pump) + D, L, dz (pipe).
+    expect(overrides.map((o) => o.key).sort())
+      .toEqual(["D", "L", "W_shaft", "dz", "eta"]);
+    for (const o of overrides) {
+      const raw = raws[o.file];
+      expect(raw, `witness carries ${o.file}`).toBeDefined();
+      // No override declares an occurrence: each key must be unique in its
+      // file, and applyScalarOverride throws if it is absent OR ambiguous.
+      expect(o.occurrence).toBeUndefined();
+      const rewritten = applyScalarOverride(raw!, { ...o, value: 123.456 });
+      expect(rewritten).not.toBe(raw);
+      expect(rewritten).toContain("123.456");
+    }
+  });
+
+  it("keeps the declared unit word when rewriting a knob", () => {
+    const raw = entry!.files.rawFiles!["system/flowsheetDict"]!;
+    const out = applyScalarOverride(raw,
+      { file: "system/flowsheetDict", key: "W_shaft", value: 3.5 });
+    expect(out).toMatch(/W_shaft\s+3\.5\s+kW;/);
+  });
+
+  it("throws on a bogus key -- a knob must never silently miss its dict", () => {
+    const raw = entry!.files.rawFiles!["system/flowsheetDict"]!;
+    expect(() => applyScalarOverride(raw,
+      { file: "system/flowsheetDict", key: "noSuchKnob", value: 1 }))
+      .toThrow(/not found/);
+  });
+
+  it("cannot rewrite the sweep 'range' -- the list limitation is real", () => {
+    // The outerDict declares `range ( 0.4 1.6 );` — a LIST.  ScalarOverride
+    // rewrites `key <number> [unit];` scalars only, so the swept window stays
+    // the witness's in v1; this test pins that the limitation the knob panel
+    // states is a fact of the override channel, not a choice of the tool.
+    const raw = entry!.files.rawFiles!["system/outerDict"]!;
+    expect(raw).toMatch(/range\s+\(\s*0\.4\s+1\.6\s*\)\s*;/);
+    expect(() => applyScalarOverride(raw,
+      { file: "system/outerDict", key: "range", value: 0.5 }))
+      .toThrow(/not found/);
+  });
+
+  it("the provenance line matches the witness: name and 13-point claim", () => {
+    expect(PUMP_PROVENANCE_LINE).toBe(
+      "Runs tutorials/steady/hydraulics/pumpSystem01_operating_point "
+      + "(13-point sweep) with your parameters, in your browser.");
+    expect(PUMP_PROVENANCE_LINE).toContain("tutorials/" + PUMP_WITNESS);
+    // The "(13-point sweep)" claim is the witness's own nPoints, not prose.
+    expect(entry!.files.rawFiles!["system/outerDict"]).toMatch(/nPoints\s+13\s*;/);
+  });
+
+  it("the default knobs are the witness's own authored values", () => {
+    // Booting the classroom must reproduce the sealed case bit-for-bit:
+    // writing each default back over the raw text is a no-op number-wise.
+    const fs = entry!.files.rawFiles!["system/flowsheetDict"]!;
+    expect(fs).toMatch(/W_shaft\s+2\.0\s+kW;/);
+    expect(fs).toMatch(/eta\s+0\.65\s*;/);
+    expect(fs).toMatch(/D\s+0\.1\s+m;/);
+    expect(fs).toMatch(/L\s+50\.0\s+m;/);
+    expect(fs).toMatch(/dz\s+2\.0\s+m;/);
+    expect(DEFAULT_PUMP_KNOBS).toEqual(
+      { W_shaft: 2.0, eta: 0.65, D: 0.1, L: 50.0, dz: 2.0 });
+  });
+});
+
 // ---- The module-source honesty scan -----------------------------------------
 
 describe("the module source carries the honesty annotations", () => {
@@ -212,5 +303,14 @@ describe("the module source carries the honesty annotations", () => {
 
   it("says plainly when there is no crossing in the window", () => {
     expect(src).toContain("no crossing inside the swept window");
+  });
+
+  it("states the fixed-range limitation in the knob panel, not a comment", () => {
+    expect(src).toContain("cannot rewrite");
+    expect(src).toContain("range ( 0.4 1.6 );");
+  });
+
+  it("persists the knob-panel fold under the agreed localStorage key", () => {
+    expect(src).toContain("choupo.methods.pump-system.controlsCollapsed");
   });
 });

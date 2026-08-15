@@ -26,16 +26,24 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-// merkelTool -- the detector, the Chebyshev-4 deviation helper, and the
-// display-axis scaling.  Pure functions only; nothing here touches the DOM
-// and the module imports no plotly seam (inline SVG).
+// merkelTool -- the detector, the Chebyshev-4 deviation helper, the
+// display-axis scaling, and the classroom knob->override map (verified
+// against the REAL bundled witness raw text).  Pure layers only; nothing
+// here touches the DOM, no WASM run, and the module imports no plotly seam
+// (inline SVG).
 import { describe, expect, it } from "vitest";
 
 import type { UnitProfile } from "../src/adapters/SolverAdapter.js";
+import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
+import { tutorialByName } from "../src/cases/tutorials.js";
 import {
   chebyshevDeviation,
+  defaultKnobValues,
   findMerkelUnits,
   kelvinToC,
+  knobOverrides,
+  MERKEL_KNOBS,
+  MERKEL_WITNESS,
   NEARLY_EXACT_TOL,
   OPERATING_COLUMN,
   SATURATION_COLUMN,
@@ -206,5 +214,94 @@ describe("kelvinToC -- unit scaling only, no physics", () => {
     expect(kelvinToC(318.15)).toBe(45);
     // The witness T_wb_in in display units.
     expect(kelvinToC(293.021697982)).toBeCloseTo(19.871697982, 9);
+  });
+});
+
+// ---- The classroom knob->override map, against the REAL witness -------------
+// The self-feeding mode clones the bundled witness and writes each knob into
+// a declared dict scalar.  These tests hold the map against the actual raw
+// text shipped in the corpus bundle -- a knob whose (file, key) does not
+// resolve there would run the engine on the wrong question, which is exactly
+// what applyScalarOverride throws on.
+
+describe("the knob->override map resolves against the bundled witness", () => {
+  const entry = tutorialByName(MERKEL_WITNESS);
+
+  it(`witness '${MERKEL_WITNESS}' is in the bundled corpus with raw text`, () => {
+    expect(entry).toBeDefined();
+    expect(entry!.files.rawFiles).toBeDefined();
+    // The task-sheet spelling WITHOUT the sub-class segment must NOT be
+    // relied on: steady is sub-classed, the identifier keeps `heat/`.
+    expect(tutorialByName("steady/coolingTower01_merkel")).toBeUndefined();
+  });
+
+  it("every knob's file exists and its key resolves UNIQUELY (override succeeds)", () => {
+    const raw = entry!.files.rawFiles!;
+    for (const k of MERKEL_KNOBS) {
+      const body = raw[k.file];
+      expect(body, `knob '${k.id}': witness file '${k.file}' missing`).toBeDefined();
+      // A unique sentinel; applyScalarOverride throws on zero or ambiguous
+      // matches, so plain success IS the uniqueness proof.
+      const out = applyScalarOverride(body!, {
+        file: k.file, key: k.key, value: 123456.789,
+      });
+      expect(out).not.toBe(body);
+      expect(out).toContain("123456.789");
+      // The unit word declared in the dict survives the textual override.
+      if (k.unit) expect(out).toContain(k.unit);
+    }
+  });
+
+  it("each knob's default IS the witness's authored value", () => {
+    const raw = entry!.files.rawFiles!;
+    for (const k of MERKEL_KNOBS) {
+      const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(
+        "^[ \\t]*" + esc(k.key) + "[ \\t]+([-+0-9.eE]+)", "m");
+      const m = re.exec(raw[k.file]!);
+      expect(m, `knob '${k.id}': key '${k.key}' not found in '${k.file}'`).not.toBeNull();
+      expect(Number(m![1]), `knob '${k.id}' default drifted from the witness`)
+        .toBe(k.def);
+    }
+  });
+
+  it("knobOverrides maps ids to the declared (file, key) and drops non-finite", () => {
+    const values = defaultKnobValues();
+    const ovs = knobOverrides(values);
+    expect(ovs).toHaveLength(MERKEL_KNOBS.length);
+    for (let i = 0; i < MERKEL_KNOBS.length; i++) {
+      expect(ovs[i]).toEqual({
+        file: MERKEL_KNOBS[i]!.file,
+        key: MERKEL_KNOBS[i]!.key,
+        value: MERKEL_KNOBS[i]!.def,
+      });
+    }
+    // A knob mid-edit (NaN) is dropped -- the witness's authored number
+    // stands, never a NaN written into a dict.
+    const partial = knobOverrides({ ...values, merkelNumber: NaN });
+    expect(partial).toHaveLength(MERKEL_KNOBS.length - 1);
+    expect(partial.find((o) => o.key === "merkelNumber")).toBeUndefined();
+  });
+
+  it("methodCase builds the parameterized witness from the default knobs", () => {
+    const cf = methodCase(MERKEL_WITNESS, knobOverrides(defaultKnobValues()));
+    expect(cf.flowsheet).toBeDefined();
+    expect(cf.rawFiles).toBeDefined();
+    // The knob landed: the flowsheet raw text carries the written number
+    // (same value as authored -- the default IS the witness).
+    const cf2 = methodCase(MERKEL_WITNESS, knobOverrides({
+      ...defaultKnobValues(), merkelNumber: 2.25,
+    }));
+    expect(cf2.rawFiles!["system/flowsheetDict"]).toMatch(/merkelNumber[ \t]+2\.25;/);
+  });
+
+  it("a bogus key or file throws -- never a silent no-op override", () => {
+    const raw = entry!.files.rawFiles!;
+    expect(() => applyScalarOverride(raw["0/hotWater"]!, {
+      file: "0/hotWater", key: "notAKey", value: 1,
+    })).toThrow(/not found/);
+    expect(() => methodCase(MERKEL_WITNESS, [
+      { file: "0/noSuchStream", key: "T", value: 300 },
+    ])).toThrow(/not in witness/);
   });
 });

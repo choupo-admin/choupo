@@ -53,18 +53,35 @@ License
   only.  If the stripper ever mirrors A_*, extend findKremserUnits (the
   predicate), not the caption.
 
+  SELF-FEEDING (the Methods-workspace standalone contract, case/methodRun.ts):
+  the DEFAULT mode is "Classroom" -- the tool runs the engine ITSELF, in the
+  browser, on its own witness `tutorials/steady/absorption/absorber01_NH3_water`
+  (the textbook NH3/water absorber, non-isothermal, 6 stages), cloned from the
+  bundled corpus with the knob values written into its dicts and solved by the
+  WASM choupoSolve.  The knobs edit DECLARED dict scalars only (stages, the
+  water/NH3/N2 feed flows, the two feed temperatures -- each key verified
+  unique in its file; applyScalarOverride throws otherwise), so zero physics
+  in TypeScript survives intact: the student moves a knob, the engine
+  re-solves the column, and the deviation chip re-measures the gap.  When the
+  app's CURRENT run has servable units a source toggle offers it; the old
+  no-absorber empty state survives only under "Current run".
+
   The plotly bundle cannot load outside a browser ("self is not defined"), so
   both plot panes are React.lazy -- the module top level stays importable by
-  the node test runner, which pins the closed form and the activation
-  predicate (tests/kremserTool.test.ts).
+  the node test runner, which pins the closed form, the activation predicate,
+  and the knob->dict-scalar map against the REAL bundled witness text
+  (tests/kremserTool.test.ts).
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
 import {
-  Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Tooltip,
+  Alert, Badge, Box, Collapse, Group, Loader, LoadingOverlay, NumberInput,
+  SegmentedControl, Stack, Text, Tooltip, UnstyledButton,
 } from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
+import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
 // ---- The Kremser closed form (the authorized method geometry) --------------
@@ -265,33 +282,130 @@ const KremserFanPlot = lazy(async () => {
 const StageProfilePlot = lazy(() =>
   import("../plotting/ProfilePlot.js").then((m) => ({ default: m.ProfilePlot })));
 
+// ---- The classroom witness + its knob map ----------------------------------
+
+/** The standalone witness this tool re-runs in-browser: the bundled-corpus
+ *  identifier (`<category>/<subclass>/<shortName>` for the sub-classed steady
+ *  category), exactly what tutorialByName resolves.  The tutorial IS the
+ *  textbook Kremser lesson: NH3 scrubbed from air by water, non-isothermal,
+ *  so the engine's stagewise recovery visibly leaves the closed-form curve. */
+export const KREMSER_WITNESS = "steady/absorption/absorber01_NH3_water";
+
+/** The knob values.  Each writes ONLY the NUMBER of a declared dict scalar;
+ *  the unit word (kmol/h, K) stays in the witness file, so the values below
+ *  are in the file's own units. */
+export interface KremserKnobValues {
+  /** theoretical stages -- flowsheetDict `operation { stages ...; }` */
+  stages: number;
+  /** solvent (water) feed [kmol/h] -- 0/solvent `water` */
+  solventFlow: number;
+  /** solvent feed temperature [K] -- 0/solvent `T` */
+  solventT: number;
+  /** gas-feed NH3 flow [kmol/h] -- 0/gasFeed `NH3` */
+  nh3Flow: number;
+  /** gas-feed N2 (inert carrier) flow [kmol/h] -- 0/gasFeed `N2` */
+  n2Flow: number;
+  /** gas feed temperature [K] -- 0/gasFeed `T` */
+  gasT: number;
+}
+
+/** The witness's own authored values (feed gas 10 NH3 / 90 N2 kmol/h,
+ *  water 150 kmol/h, both feeds 298.15 K, 6 stages) -- the classroom opens
+ *  ON the tutorial, and overriding with these leaves the dicts byte-identical
+ *  (pinned by the test). */
+export const KREMSER_KNOB_DEFAULTS: KremserKnobValues = {
+  stages: 6, solventFlow: 150, solventT: 298.15,
+  nh3Flow: 10, n2Flow: 90, gasT: 298.15,
+};
+
+/** knob -> dict-scalar map.  Every key was verified UNIQUE in its witness
+ *  file (no `occurrence` needed anywhere): `stages` appears once in
+ *  flowsheetDict (the header prose mentions "$stages" only mid-comment, which
+ *  the line-anchored override regex cannot match), `water`/`T` once in
+ *  0/solvent, `NH3`/`N2`/`T` once in 0/gasFeed.  applyScalarOverride THROWS
+ *  on a missing or ambiguous key, and the test resolves each entry against
+ *  the real bundled raw text so a witness edit that breaks a knob fails CI,
+ *  not the classroom. */
+export function kremserOverrides(k: KremserKnobValues): ScalarOverride[] {
+  return [
+    { file: "system/flowsheetDict", key: "stages",
+      value: Math.max(1, Math.round(k.stages)) },
+    { file: "0/solvent", key: "water", value: k.solventFlow },
+    { file: "0/solvent", key: "T", value: k.solventT },
+    { file: "0/gasFeed", key: "NH3", value: k.nh3Flow },
+    { file: "0/gasFeed", key: "N2", value: k.n2Flow },
+    { file: "0/gasFeed", key: "T", value: k.gasT },
+  ];
+}
+
+const KNOB_FIELDS: {
+  id: keyof KremserKnobValues; label: string;
+  min: number; max: number; step: number; decimals: number;
+}[] = [
+  { id: "stages", label: "Stages N", min: 1, max: 30, step: 1, decimals: 0 },
+  { id: "solventFlow", label: "Solvent water [kmol/h]", min: 1, max: 2000, step: 10, decimals: 1 },
+  { id: "nh3Flow", label: "Gas feed NH3 [kmol/h]", min: 0.1, max: 500, step: 1, decimals: 1 },
+  { id: "n2Flow", label: "Gas feed N2 [kmol/h]", min: 1, max: 2000, step: 10, decimals: 1 },
+  { id: "gasT", label: "Gas feed T [K]", min: 274, max: 360, step: 1, decimals: 2 },
+  { id: "solventT", label: "Solvent T [K]", min: 274, max: 360, step: 1, decimals: 2 },
+];
+
+// The collapsed/expanded preference for the knob panel, persisted so a
+// returning student finds the panel the way they left it.  localStorage may
+// be absent (node) or refused (private mode) -- the preference then simply
+// does not persist; never an error.
+const COLLAPSE_KEY = "choupo.methods.kremser.controlsCollapsed";
+function readCollapsedPref(): boolean {
+  try { return globalThis.localStorage?.getItem(COLLAPSE_KEY) === "1"; }
+  catch { return false; }
+}
+function writeCollapsedPref(v: boolean): void {
+  try { globalThis.localStorage?.setItem(COLLAPSE_KEY, v ? "1" : "0"); }
+  catch { /* not persistable here -- fine */ }
+}
+
 // ---- The tool --------------------------------------------------------------
+
+type Source = "classroom" | "current";
 
 export function KremserTool(): JSX.Element {
   const runResult = useStore((s) => s.runResult);
-  const units = useMemo(() => findKremserUnits(runResult?.kpis), [runResult]);
+  const currentUnits = useMemo(
+    () => findKremserUnits(runResult?.kpis), [runResult]);
+
+  const [source, setSource] = useState<Source>("classroom");
+  const [knobs, setKnobs] = useState<KremserKnobValues>(KREMSER_KNOB_DEFAULTS);
+  const [collapsed, setCollapsedState] = useState<boolean>(readCollapsedPref);
   const [unitName, setUnitName] = useState<string>("");
   const [pane, setPane] = useState<"fan" | "profile">("fan");
 
+  const setCollapsed = (v: boolean) => {
+    setCollapsedState(v);
+    writeCollapsedPref(v);
+  };
+
+  // The knob values ARE the override spec; the stable JSON is the change
+  // signal useMethodRun debounces on.  Passing null in "Current run" mode
+  // aborts/idles the standalone engine run.
+  const overridesKey = JSON.stringify(knobs);
+  const overrides = useMemo(() => kremserOverrides(knobs),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [overridesKey]);
+  const classroom = useMethodRun(
+    source === "classroom" ? KREMSER_WITNESS : null,
+    overrides, overridesKey, "choupoSolve");
+
+  const result = source === "current" ? runResult : classroom.result;
+  const units = useMemo(() => findKremserUnits(result?.kpis), [result]);
   const active = units.find((u) => u.unit === unitName) ?? units[0];
+  const profile = result?.profiles?.find((p) => p.unit === active?.unit);
 
-  if (!active) {
-    return (
-      <Box p="xl">
-        <Text c="dimmed" size="sm" maw={560}>
-          No absorber run to analyse. The Kremser construction reads a converged
-          run of a <strong>stagewise absorber</strong> — its KPIs publish{" "}
-          <code>stages</code> plus the per-solute absorption factor{" "}
-          <code>A_&lt;component&gt;</code> (A = L/(K·V)). Run such a case — e.g.{" "}
-          <code>tutorials/steady/absorption/absorber01_NH3_water</code> — then
-          return here. (The stripper publishes <code>S_*</code> = K·V/L instead
-          of <code>A_*</code>, so stripper runs do not feed this tool.)
-        </Text>
-      </Box>
-    );
-  }
+  // The toggle appears when the app's current run has servable units -- and
+  // stays while the user IS on "Current run", so a cleared run cannot strand
+  // them there with no way back to the classroom.
+  const showSourceToggle = currentUnits.length > 0 || source === "current";
+  const busy = source === "classroom" && classroom.busy;
 
-  const profile = runResult?.profiles?.find((p) => p.unit === active.unit);
   const fallback = (
     <Group gap={8} p="md">
       <Loader size="sm" />
@@ -299,22 +413,62 @@ export function KremserTool(): JSX.Element {
     </Group>
   );
 
+  // The pre-standalone empty state, kept verbatim -- but ONLY under
+  // "Current run": the classroom never waits for a flowsheet.
+  if (source === "current" && !active) {
+    return (
+      <Stack gap="xs" p="sm">
+        {showSourceToggle && (
+          <SegmentedControl size="xs" value={source} w={220}
+            onChange={(v) => setSource(v as Source)}
+            data={[
+              { label: "Classroom", value: "classroom" },
+              { label: "Current run", value: "current" },
+            ]} />
+        )}
+        <Box p="xl">
+          <Text c="dimmed" size="sm" maw={560}>
+            No absorber run to analyse. The Kremser construction reads a converged
+            run of a <strong>stagewise absorber</strong> — its KPIs publish{" "}
+            <code>stages</code> plus the per-solute absorption factor{" "}
+            <code>A_&lt;component&gt;</code> (A = L/(K·V)). Run such a case — e.g.{" "}
+            <code>tutorials/steady/absorption/absorber01_NH3_water</code> — then
+            return here. (The stripper publishes <code>S_*</code> = K·V/L instead
+            of <code>A_*</code>, so stripper runs do not feed this tool.) Or
+            switch back to <strong>Classroom</strong>: the tool runs that very
+            case itself, in the browser.
+          </Text>
+        </Box>
+      </Stack>
+    );
+  }
+
   return (
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
       <Group justify="space-between" align="center" wrap="wrap">
         <Group gap={8} align="center" wrap="wrap">
-          {units.length > 1 && (
+          {showSourceToggle && (
+            <SegmentedControl size="xs" value={source}
+              onChange={(v) => setSource(v as Source)}
+              data={[
+                { label: "Classroom", value: "classroom" },
+                { label: "Current run", value: "current" },
+              ]} />
+          )}
+          {active && units.length > 1 && (
             <SegmentedControl size="xs" value={active.unit}
               onChange={setUnitName}
               data={units.map((u) => ({ label: u.unit, value: u.unit }))} />
           )}
-          <Badge variant="light" color="gray" size="lg"
-            styles={{ root: { textTransform: "none" } }}>
-            {active.unit} · N = {active.stages} stages
-          </Badge>
+          {active && (
+            <Badge variant="light" color="gray" size="lg"
+              styles={{ root: { textTransform: "none" } }}>
+              {active.unit} · N = {active.stages} stages
+            </Badge>
+          )}
           {/* THE LESSON, as a labelled chip per solute: the engine's recovery
               vs the closed form at the case's own (A_i, N). */}
-          {active.components.map((c) => (
+          {active?.components.map((c) => (
             <Tooltip key={c.name} withArrow multiline w={300}
               label={`|recovery_KPI − Kremser(A, N)| for ${c.name}: the closed form assumes ONE constant A = L/(K·V); the engine re-evaluates K on every stage, so the run leaves the curve.`}>
               <Badge variant="light" size="lg"
@@ -326,7 +480,7 @@ export function KremserTool(): JSX.Element {
               </Badge>
             </Tooltip>
           ))}
-          {active.nonIsothermal && (
+          {active?.nonIsothermal && (
             <Badge variant="light" color="yellow" size="lg"
               styles={{ root: { textTransform: "none" } }}>
               nonIsothermal = 1
@@ -342,16 +496,61 @@ export function KremserTool(): JSX.Element {
           ]} />
       </Group>
 
-      <Box style={{ flex: 1, minHeight: 0 }}>
-        {pane === "fan" ? (
+      {source === "classroom" && (
+        <>
+          <UnstyledButton onClick={() => setCollapsed(!collapsed)}
+            aria-label={collapsed ? "expand the knob panel" : "collapse the knob panel"}>
+            <Group gap={6} align="center">
+              {collapsed
+                ? <IconChevronRight size={14} />
+                : <IconChevronDown size={14} />}
+              <Text size="xs" fw={600}>Column knobs</Text>
+              <Text size="xs" c="dimmed">
+                N = {Math.round(knobs.stages)} · water {knobs.solventFlow} kmol/h
+                · gas {knobs.nh3Flow} NH3 + {knobs.n2Flow} N2 kmol/h
+                · T {knobs.gasT} / {knobs.solventT} K
+              </Text>
+            </Group>
+          </UnstyledButton>
+          <Collapse in={!collapsed}>
+            <Group gap="sm" align="flex-end" wrap="wrap">
+              {KNOB_FIELDS.map((f) => (
+                <NumberInput key={f.id} size="xs" w={160} label={f.label}
+                  value={knobs[f.id]}
+                  min={f.min} max={f.max} step={f.step}
+                  decimalScale={f.decimals} clampBehavior="strict"
+                  onChange={(v) => {
+                    if (typeof v === "number" && Number.isFinite(v))
+                      setKnobs({ ...knobs, [f.id]: v });
+                  }} />
+              ))}
+            </Group>
+          </Collapse>
+          {classroom.err && (
+            /* The engine's refusal/error, VERBATIM -- a refusal is a teaching
+               surface, never to be paraphrased away. */
+            <Alert color="red" variant="light" title="choupoSolve (WASM)">
+              <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+                {classroom.err}
+              </Text>
+            </Alert>
+          )}
+        </>
+      )}
+
+      <Box pos="relative" style={{ flex: 1, minHeight: 0 }}>
+        <LoadingOverlay visible={busy} zIndex={5}
+          overlayProps={{ blur: 1 }}
+          loaderProps={{ children: fallback }} />
+        {active && pane === "fan" ? (
           <Suspense fallback={fallback}>
             <KremserFanPlot unit={active} />
           </Suspense>
-        ) : profile ? (
+        ) : active && profile ? (
           <Suspense fallback={fallback}>
             <StageProfilePlot profiles={[stageProfileForDisplay(profile)]} />
           </Suspense>
-        ) : (
+        ) : active ? (
           <Box p="xl">
             <Text c="dimmed" size="sm">
               This run published no per-stage profile for{" "}
@@ -359,18 +558,36 @@ export function KremserTool(): JSX.Element {
               (stage, T_K, y_i, x_i) on every solve; re-run the case.
             </Text>
           </Box>
-        )}
+        ) : !classroom.err && !busy ? (
+          <Box p="xl">
+            <Text c="dimmed" size="sm" maw={560}>
+              The classroom run finished without a servable absorber — the
+              witness should always publish <code>stages</code> + <code>A_*</code>;
+              check the engine log via the Run workspace.
+            </Text>
+          </Box>
+        ) : null}
       </Box>
 
-      <Text size="xs" c="dimmed">
-        Kremser assumes ONE constant absorption factor A = L/(K·V) — straight
-        operating and equilibrium lines. The engine re-computes K stage by
-        stage, so the run&apos;s recovery leaves the closed-form curve; each chip
-        measures that gap, |recovery_KPI − Kremser(A, N)|, at the case&apos;s own
-        A_i (taken at the feed T).
-        {active.nonIsothermal &&
-          " This run is non-isothermal: the solvent heats as it absorbs (dT_rise), and that temperature rise drives the K variation."}
-      </Text>
+      {source === "classroom" && (
+        <Text size="xs" c="dimmed">
+          Classroom mode: the engine runs in-browser on this tool&apos;s own
+          witness, <code>tutorials/{KREMSER_WITNESS}</code>, cloned with the
+          knob values above and solved by choupoSolve (WASM) — move a knob and
+          the column is re-solved.
+        </Text>
+      )}
+      {active && (
+        <Text size="xs" c="dimmed">
+          Kremser assumes ONE constant absorption factor A = L/(K·V) — straight
+          operating and equilibrium lines. The engine re-computes K stage by
+          stage, so the run&apos;s recovery leaves the closed-form curve; each chip
+          measures that gap, |recovery_KPI − Kremser(A, N)|, at the case&apos;s own
+          A_i (taken at the feed T).
+          {active.nonIsothermal &&
+            " This run is non-isothermal: the solvent heats as it absorbs (dT_rise), and that temperature rise drives the K variation."}
+        </Text>
+      )}
     </Stack>
   );
 }

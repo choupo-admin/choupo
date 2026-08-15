@@ -59,6 +59,20 @@ License
   candidate" — no row is ever ranked, and no superlative appears anywhere in
   this file (gate-checked by the test).
 
+  SELF-FEEDING (the Methods plane's standalone contract): the DEFAULT source
+  is "Classroom" — the tool runs the ENGINE itself (choupoSolve, WASM, via
+  case/methodRun.ts) on its bundled witness case
+  tutorials/steady/heat/pinch01_four_stream_classic, with the knob values
+  (supply temperatures, flows, dTmin) written into the witness's own dicts by
+  methodRun's textual scalar override.  ZERO physics enters TypeScript on
+  that path either: the knobs edit declared dict scalars and the engine
+  recomputes the targets — with each heater's hardware duty Q fixed in the
+  flowsheet, moving a supply T or a flow moves the outlet T through the
+  engine's own enthalpy balance, and the pinch pass re-extracts the stream
+  population from the converged result.  The "Current run" source keeps the
+  original behaviour (read the app run's published pinch artefacts) and is
+  offered when that run carries them; its old empty state lives only there.
+
   Charts are inline SVG (the EpsilonNtuTool precedent) — the plotly bundle
   cannot load outside a browser, and the pure helpers here must stay
   importable by the node test runner (tests/pinchCompositeTool.test.ts).
@@ -66,9 +80,12 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  Badge, Box, Group, SegmentedControl, Stack, Table, Text, Tooltip,
+  ActionIcon, Alert, Badge, Box, Button, Collapse, Group, Loader, NumberInput,
+  SegmentedControl, Stack, Table, Text, Tooltip,
 } from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
+import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
@@ -467,15 +484,115 @@ function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
   );
 }
 
+// ---- The standalone classroom witness + its knobs ---------------------------
+// The witness is the bundled tutorial the classroom mode re-runs in the
+// browser.  Its identifier is the bundled-corpus key (sub-classed categories
+// carry the subclass segment: <category>/<subclass>/<case>).
+
+export const PINCH_WITNESS = "steady/heat/pinch01_four_stream_classic";
+
+/** One classroom knob: a declared scalar in one of the witness's own dict
+ *  files.  `key` must be UNIQUE in `file` — methodRun's applyScalarOverride
+ *  THROWS otherwise, and the test verifies every knob against the REAL
+ *  bundled witness text.  `value` is the witness's own number, as written. */
+export interface PinchKnob {
+  id: string;
+  label: string;
+  /** Case-root-relative dict file the knob edits. */
+  file: string;
+  /** The dict key as written in that file. */
+  key: string;
+  /** The witness's own value, verbatim from its dict. */
+  value: number;
+  unit: string;
+  min: number;
+  step: number;
+}
+
+export const PINCH_KNOBS: readonly PinchKnob[] = [
+  // The pass's minimum approach — system/postDict `dTmin 20 K;`.
+  { id: "dTmin", label: "ΔTmin", file: "system/postDict", key: "dTmin",
+    value: 20, unit: "K", min: 1, step: 1 },
+  // Supply temperatures — each stream's own 0/ file, key `T` (unique there).
+  { id: "h1T", label: "H1 supply T", file: "0/h1In", key: "T",
+    value: 423.15, unit: "K", min: 273.15, step: 5 },
+  { id: "h2T", label: "H2 supply T", file: "0/h2In", key: "T",
+    value: 363.15, unit: "K", min: 273.15, step: 5 },
+  { id: "c1T", label: "C1 supply T", file: "0/c1In", key: "T",
+    value: 293.15, unit: "K", min: 273.15, step: 5 },
+  { id: "c2T", label: "C2 supply T", file: "0/c2In", key: "T",
+    value: 298.15, unit: "K", min: 273.15, step: 5 },
+  // Molar flows — the single-component `hxFluid <F> mol/s;` line in each
+  // inlet's componentMolarFlows block (unique per file).  CP = F·cp, so a
+  // flow knob scales that stream's CP — in the engine, never here.
+  { id: "h1F", label: "H1 flow", file: "0/h1In", key: "hxFluid",
+    value: 20, unit: "mol/s", min: 1, step: 5 },
+  { id: "h2F", label: "H2 flow", file: "0/h2In", key: "hxFluid",
+    value: 80, unit: "mol/s", min: 1, step: 5 },
+  { id: "c1F", label: "C1 flow", file: "0/c1In", key: "hxFluid",
+    value: 25, unit: "mol/s", min: 1, step: 5 },
+  { id: "c2F", label: "C2 flow", file: "0/c2In", key: "hxFluid",
+    value: 30, unit: "mol/s", min: 1, step: 5 },
+];
+
+/** The ScalarOverride list for a knob-value map — one override per knob,
+ *  missing ids falling back to the witness's own value. */
+export function pinchOverrides(
+  values: { [id: string]: number },
+): ScalarOverride[] {
+  return PINCH_KNOBS.map((k) => ({
+    file: k.file, key: k.key, value: values[k.id] ?? k.value,
+  }));
+}
+
+/** Where the knob panel's collapsed state persists across sessions. */
+export const CONTROLS_COLLAPSED_KEY =
+  "choupo.methods.pinch-composite.controlsCollapsed";
+
 // ---- The workspace tool -----------------------------------------------------
 
 type Pane = "composite" | "gcc" | "matches";
+type Source = "classroom" | "current";
 
 export function PinchCompositeTool(): JSX.Element {
-  const runResult = useStore((s) => s.runResult);
-  const curvesCsv = runResult?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH];
-  const matchesCsv = runResult?.csvFiles?.[CANDIDATE_MATCHES_CSV_PATH];
-  const kpis = runResult?.kpis?.["pinch"];
+  // ---- The app's own run — the "Current run" source. -----------------------
+  const appRun = useStore((s) => s.runResult);
+  const appHasPinch = !!(appRun?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH]
+    || appRun?.kpis?.["pinch"]);
+
+  const [source, setSource] = useState<Source>("classroom");
+  const [pane, setPane] = useState<Pane>("composite");
+
+  // ---- Classroom knobs (values are session state; collapse persists). ------
+  const [knobValues, setKnobValues] = useState<{ [id: string]: number }>(
+    () => Object.fromEntries(PINCH_KNOBS.map((k) => [k.id, k.value])));
+  const [controlsCollapsed, setControlsCollapsed] = useState<boolean>(() => {
+    try { return window.localStorage.getItem(CONTROLS_COLLAPSED_KEY) === "1"; }
+    catch { return false; }
+  });
+  const toggleControls = (): void => setControlsCollapsed((c) => {
+    const next = !c;
+    try { window.localStorage.setItem(CONTROLS_COLLAPSED_KEY, next ? "1" : "0"); }
+    catch { /* storage unavailable — the collapse stays session-only */ }
+    return next;
+  });
+
+  // ---- The classroom engine run: the witness with the knobs written in. ----
+  const overridesKey = JSON.stringify(knobValues);
+  const overrides = useMemo(() => pinchOverrides(knobValues),
+    // overridesKey is the change signal for the value map (methodRun's own
+    // convention); the map identity is not a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [overridesKey]);
+  const method = useMethodRun(
+    source === "classroom" ? PINCH_WITNESS : null,
+    overrides, overridesKey, "choupoSolve");
+
+  // ---- The active result feeds the EXISTING rendering, unchanged. ----------
+  const active = source === "classroom" ? method.result : appRun;
+  const curvesCsv = active?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH];
+  const matchesCsv = active?.csvFiles?.[CANDIDATE_MATCHES_CSV_PATH];
+  const kpis = active?.kpis?.["pinch"];
 
   const curves = useMemo(
     () => (curvesCsv ? parseCompositeCurves(curvesCsv) : null), [curvesCsv]);
@@ -490,25 +607,11 @@ export function PinchCompositeTool(): JSX.Element {
     () => (derived ? crossCheckAgainstKpis(derived, kpis) : []),
     [derived, kpis]);
 
-  const [pane, setPane] = useState<Pane>("composite");
-
-  // ---- Honest empty state: no pinch pass in this run. ----------------------
-  if (!curves && !kpis) {
-    return (
-      <Box style={{ height: "100%", display: "flex", alignItems: "center",
-        justifyContent: "center", padding: 24 }}>
-        <Text size="sm" c="dimmed" ta="center" maw={520}>
-          No pinch targets in this run.  This tool reads the engine&apos;s own
-          pinch pass: declare <code>pinchPass</code> in the case&apos;s{" "}
-          <code>system/postDict</code> chain and run a converged steady case —
-          the engine then writes <code>reports/pinch/compositeCurves.csv</code>{" "}
-          + <code>candidateMatches.csv</code> and publishes the{" "}
-          <code>pinch</code> KPI row.  Witness case:{" "}
-          <code>tutorials/steady/heat/pinch01_four_stream_classic</code>.
-        </Text>
-      </Box>
-    );
-  }
+  // The toggle appears when the app run carries pinch artefacts (or the user
+  // is already on "Current run" and needs the way back); the old empty state
+  // lives ONLY under "Current run" — Classroom feeds itself.
+  const showSourceToggle = appHasPinch || source === "current";
+  const emptyCurrentRun = source === "current" && !curves && !kpis;
 
   const hot = curves?.["hot"];
   const cold = curves?.["cold"];
@@ -521,7 +624,18 @@ export function PinchCompositeTool(): JSX.Element {
     <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
       <Group justify="space-between" align="center" wrap="wrap">
         <Group gap={8} align="center" wrap="wrap">
+          {/* Where the numbers come from: the self-fed classroom witness
+              (default) or the app's own run when it carries the artefacts. */}
+          {showSourceToggle && (
+            <SegmentedControl size="xs" value={source}
+              onChange={(v) => setSource(v as Source)}
+              data={[
+                { label: "Classroom", value: "classroom" },
+                { label: "Current run", value: "current" },
+              ]} />
+          )}
           {/* The engine's targets — the numbers of record, from the KPI row. */}
+          {active && !emptyCurrentRun && (
           <Badge variant="light" color="gray" size="lg"
             styles={{ root: { textTransform: "none" } }}>
             {kpis
@@ -531,6 +645,7 @@ export function PinchCompositeTool(): JSX.Element {
                 + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
               : "no pinch KPI row in this run — curves shown, targets unverified"}
           </Badge>
+          )}
           {/* The cross-check chip — derived in view, the engine is the judge. */}
           {derived && checks.length > 0 && (
             <Tooltip withArrow multiline w={380}
@@ -564,7 +679,95 @@ export function PinchCompositeTool(): JSX.Element {
           ]} />
       </Group>
 
-      <Box style={{ flex: 1, minHeight: 0 }}>
+      {source === "classroom" && (
+        <Stack gap={4} style={{ flexShrink: 0 }}>
+          {/* Provenance: the standalone run names its witness. */}
+          <Text size="xs" c="dimmed">
+            Classroom mode — standalone: choupoSolve (WASM) runs in the browser
+            on the witness case <code>tutorials/{PINCH_WITNESS}</code>, with the
+            knob values written into its own dicts; every number above is the
+            engine&apos;s output.
+          </Text>
+          <Box>
+            <Group gap={6} align="center" wrap="wrap">
+              <ActionIcon variant="subtle" size="sm" color="gray"
+                onClick={toggleControls}
+                aria-label={controlsCollapsed
+                  ? "expand the knob panel" : "collapse the knob panel"}>
+                {controlsCollapsed
+                  ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
+              </ActionIcon>
+              <Text size="xs" fw={500}>
+                Knobs — dict scalars of the witness, engine re-run on change
+              </Text>
+              <Button size="compact-xs" variant="subtle" color="gray"
+                onClick={() => setKnobValues(Object.fromEntries(
+                  PINCH_KNOBS.map((k) => [k.id, k.value])))}>
+                reset to the witness
+              </Button>
+            </Group>
+            <Collapse in={!controlsCollapsed}>
+              <Group gap="sm" wrap="wrap" pt={4}>
+                {PINCH_KNOBS.map((k) => (
+                  <NumberInput key={k.id} size="xs" w={124}
+                    label={`${k.label} (${k.unit})`}
+                    value={knobValues[k.id]}
+                    min={k.min} step={k.step}
+                    onChange={(v) => {
+                      const n = typeof v === "number" ? v : Number(v);
+                      if (Number.isFinite(n))
+                        setKnobValues((s) => ({ ...s, [k.id]: n }));
+                    }} />
+                ))}
+              </Group>
+            </Collapse>
+          </Box>
+          {method.err && (
+            <Alert color="red" variant="light" p="xs"
+              title="engine error (verbatim)">
+              <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
+                {method.err}
+              </Text>
+            </Alert>
+          )}
+        </Stack>
+      )}
+
+      <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+        {/* Honest empty state — ONLY for the "Current run" source; the
+            classroom source feeds itself. */}
+        {emptyCurrentRun && (
+          <Box style={{ height: "100%", display: "flex", alignItems: "center",
+            justifyContent: "center", padding: 24 }}>
+            <Text size="sm" c="dimmed" ta="center" maw={520}>
+              No pinch targets in this run.  This tool reads the engine&apos;s
+              own pinch pass: declare <code>pinchPass</code> in the case&apos;s{" "}
+              <code>system/postDict</code> chain and run a converged steady
+              case — the engine then writes{" "}
+              <code>reports/pinch/compositeCurves.csv</code> +{" "}
+              <code>candidateMatches.csv</code> and publishes the{" "}
+              <code>pinch</code> KPI row.  Witness case:{" "}
+              <code>tutorials/{PINCH_WITNESS}</code>.
+            </Text>
+          </Box>
+        )}
+        {/* Classroom source before its first result: the run is in flight
+            (Loader) or it refused (the Alert above carries the words). */}
+        {source === "classroom" && !active && (
+          <Box style={{ height: "100%", display: "flex", alignItems: "center",
+            justifyContent: "center", padding: 24 }}>
+            {method.busy
+              ? <Loader size="lg" />
+              : (
+                <Text size="sm" c="dimmed" ta="center" maw={520}>
+                  {method.err
+                    ? "The classroom run did not produce a result — the engine's own words are in the alert above."
+                    : "Waiting for the classroom engine run."}
+                </Text>
+              )}
+          </Box>
+        )}
+        {!emptyCurrentRun && active && (<>
         {pane === "composite" && (hot && cold ? (
           <CompositeSvg hot={hot} cold={cold}
             pinchHot={kpis?.["T_pinch_hot_K"]} pinchCold={kpis?.["T_pinch_cold_K"]} />
@@ -612,6 +815,16 @@ export function PinchCompositeTool(): JSX.Element {
             </Text>
           </Box>
         ))}
+        </>)}
+        {/* A knob changed while a previous result is on screen: the stale
+            curves stay visible under the loader until the engine answers. */}
+        {source === "classroom" && method.busy && active && (
+          <Box style={{ position: "absolute", inset: 0, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            pointerEvents: "none" }}>
+            <Loader size="lg" />
+          </Box>
+        )}
       </Box>
 
       <Text size="xs" c="dimmed">

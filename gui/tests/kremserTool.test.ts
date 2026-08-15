@@ -28,8 +28,11 @@ License
 
 import { describe, expect, it } from "vitest";
 
+import { applyScalarOverride } from "../src/case/methodRun.js";
+import { tutorialByName } from "../src/cases/tutorials.js";
 import {
-  findKremserUnits, kremserCurve, kremserRecovery, stageProfileForDisplay,
+  KREMSER_KNOB_DEFAULTS, KREMSER_WITNESS, findKremserUnits, kremserCurve,
+  kremserOverrides, kremserRecovery, stageProfileForDisplay,
 } from "../src/ui/methods/KremserTool.js";
 
 // Independent arithmetic for the closed form: A^{N+1} by REPEATED
@@ -147,6 +150,67 @@ describe("findKremserUnits — activation on the absorber's published KPIs", () 
     expect(findKremserUnits(undefined)).toEqual([]);
     expect(findKremserUnits({})).toEqual([]);
     expect(findKremserUnits({ heater: { Q: 1 } })).toEqual([]);
+  });
+});
+
+describe("classroom witness — the knob map resolves against the bundled corpus", () => {
+  // NO WASM here: these tests exercise only the textual override against the
+  // REAL bundled raw dicts, i.e. exactly what methodCase() does before the
+  // engine ever runs.  A witness edit that breaks a knob fails HERE.
+  const entry = tutorialByName(KREMSER_WITNESS);
+
+  it("the witness is bundled, steady (choupoSolve), with raw files", () => {
+    expect(entry).toBeDefined();
+    expect(entry!.category).toBe("steady");
+    expect(entry!.files.rawFiles).toBeDefined();
+    // Every file a knob writes into is present in the bundle.
+    for (const rel of ["system/flowsheetDict", "0/solvent", "0/gasFeed"]) {
+      expect(entry!.files.rawFiles![rel], `witness file ${rel}`).toBeDefined();
+    }
+  });
+
+  it("every knob's ScalarOverride resolves UNIQUELY in the real witness text", () => {
+    const raw = entry!.files.rawFiles!;
+    // Deliberately off-default values so each replacement is observable.
+    const overrides = kremserOverrides({
+      stages: 9, solventFlow: 175, solventT: 293.15,
+      nh3Flow: 12, n2Flow: 88, gasT: 303.15,
+    });
+    expect(overrides.length).toBe(6);
+    for (const o of overrides) {
+      const body = raw[o.file]!;
+      // applyScalarOverride THROWS on a missing or ambiguous key -- this call
+      // not throwing IS the uniqueness verification, on the real text.
+      const out = applyScalarOverride(body, o);
+      expect(out, `${o.file} · ${o.key}`).not.toBe(body);
+      expect(out).toContain(String(o.value));
+    }
+  });
+
+  it("the defaults ARE the witness's authored values (override = byte-identical)", () => {
+    // Overriding with KREMSER_KNOB_DEFAULTS must leave every dict unchanged:
+    // the classroom opens ON the tutorial, not on a variant of it.
+    const raw = entry!.files.rawFiles!;
+    for (const o of kremserOverrides(KREMSER_KNOB_DEFAULTS)) {
+      const body = raw[o.file]!;
+      expect(applyScalarOverride(body, o), `${o.file} · ${o.key}`).toBe(body);
+    }
+  });
+
+  it("a bogus key throws — never a silent no-op override", () => {
+    const fs = entry!.files.rawFiles!["system/flowsheetDict"]!;
+    expect(() => applyScalarOverride(fs, {
+      file: "system/flowsheetDict", key: "refluxRatio", value: 3,
+    })).toThrow(/not found/);
+  });
+
+  it("stages is knob-clamped to an integer >= 1 before it reaches the dict", () => {
+    const o = kremserOverrides({ ...KREMSER_KNOB_DEFAULTS, stages: 0 })
+      .find((x) => x.key === "stages")!;
+    expect(o.value).toBe(1);
+    const o2 = kremserOverrides({ ...KREMSER_KNOB_DEFAULTS, stages: 7.4 })
+      .find((x) => x.key === "stages")!;
+    expect(o2.value).toBe(7);
   });
 });
 

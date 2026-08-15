@@ -49,6 +49,15 @@ License
   engine feeds via case/methodFeeds.ts) and five PLANNED entries visible but
   disabled, each naming the engine output that will feed it — the plane shows
   its roadmap honestly instead of pretending to be finished.
+
+  Classroom chrome (2026-08-15): the tool rail folds to a 28px re-open strip
+  (chevron or `[`, persisted under choupo.methods.railCollapsed) and the two
+  in-file tools fold their setup bar + hand-off footer to a slim restore strip
+  (choupo.methods.controlsCollapsed) — on a projector every freed pixel goes
+  to the construction.  The idiom is the Explorer's ratified fold-to-edge
+  (methods/methodsChrome.tsx reuses it); alerts fold to a counted pill, never
+  silently.  The McCabe R/q controls pane is INSIDE the shared
+  plotting/McCabePlot.tsx and is not reachable from this host.
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
@@ -56,7 +65,10 @@ import {
   ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton, Group,
   Loader, NumberInput, Select, Stack, Text, Tooltip,
 } from "@mantine/core";
-import { IconBook, IconExternalLink } from "@tabler/icons-react";
+import { useReducedMotion } from "@mantine/hooks";
+import {
+  IconBook, IconChevronDown, IconChevronLeft, IconChevronUp, IconExternalLink,
+} from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -75,6 +87,10 @@ import { dropCsvColumn } from "./plotting/csvShape.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
+import {
+  CONTROLS_COLLAPSED_KEY, RAIL_COLLAPSED_KEY, RailReopenStrip,
+  useCollapsedFlag, usePlotRefit,
+} from "./methods/methodsChrome.js";
 import { useStore } from "../state/store.js";
 import {
   kToDisplay, paToDisplay, parsePressure, parseTemperature,
@@ -257,46 +273,104 @@ export function MethodsWorkspace() {
 
   const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
 
+  // The rail folds to a 28px re-open strip (the Explorer's fold-to-edge idiom,
+  // LeftRail/RailReopenTab in ExploreWorkspace.tsx — reused, not reinvented,
+  // so the two workspaces feel like one application).  Persisted globally
+  // (never case-keyed); `[` toggles it, guarded so typing "[" into a toolbar
+  // field never folds the rail.  On a projector every pixel goes to the
+  // construction: collapsed, the active tool keeps working full-width.
+  const rail = useCollapsedFlag(RAIL_COLLAPSED_KEY);
+  const reduce = useReducedMotion();
+  const toggleRail = rail.toggle;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const t = e.target as HTMLElement | null;
+        const tag = t?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
+        e.preventDefault();
+        toggleRail();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [toggleRail]);
+  // Animated fold refits Plotly on transitionend; reduced-motion has no
+  // transition event, so one rAF covers it (the LeftRail pattern verbatim).
+  useEffect(() => {
+    if (typeof window === "undefined" || !reduce) return;
+    const id = window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+    return () => window.cancelAnimationFrame(id);
+  }, [rail.collapsed, reduce]);
+
   return (
     <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
       {/* LEFT — the method-tool rail: the registry rendered as the roadmap.
-          Planned entries stay visible but disabled (stated, not hidden). */}
-      <Box style={{
-        width: 252, flexShrink: 0, height: "100%", padding: 12, overflowY: "auto",
-        borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
-        <Text size="xs" fw={700} c="dimmed" mb={6} style={{ letterSpacing: 0.5 }}>
-          METHOD TOOLS
-        </Text>
-        <Stack gap={4}>
-          {METHOD_TOOLS.map((m) => (
-            <Tooltip key={m.id} withArrow multiline w={280} openDelay={400}
-              label={m.status === "live" ? m.teaches : `${m.teaches}  (planned — ${m.fedBy ?? "engine feed pending"})`}>
-              <Button
-                variant={m.id === tool ? "light" : "subtle"}
-                color={m.id === tool ? "accent" : "gray"}
-                size="compact-sm"
-                justify="space-between"
-                fullWidth
-                disabled={m.status === "planned"}
-                onClick={() => { if (m.status === "live") setTool(m.id); }}
-                rightSection={m.status === "planned"
-                  ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
-                  : undefined}
-                styles={{ root: { fontWeight: m.id === tool ? 600 : 400 },
-                  label: { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }}
-              >
-                {m.label}
-              </Button>
+          Planned entries stay visible but disabled (stated, not hidden).
+          Animated on WIDTH (not translateX — a transform would slide the rail
+          over the tool and the plot would jump at the end). */}
+      <Box
+        onTransitionEnd={(e) => {
+          if (e.propertyName === "width") window.dispatchEvent(new Event("resize"));
+        }}
+        style={{
+          width: rail.collapsed ? 0 : 252, flexShrink: 0, height: "100%",
+          padding: rail.collapsed ? 0 : 12, overflow: "hidden",
+          transition: reduce ? "none" : "width 180ms ease, padding 180ms ease",
+          borderRight: rail.collapsed
+            ? "none"
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        }}>
+        {/* Fixed-width inner column: the fold CLIPS the rail instead of
+            reflowing its labels mid-animation (no layout jumps). */}
+        <Box style={{ width: 228, height: "100%", display: "flex", flexDirection: "column" }}>
+          <Group justify="space-between" align="center" mb={6} wrap="nowrap" gap={4}>
+            <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>
+              METHOD TOOLS
+            </Text>
+            <Tooltip label="Collapse the tool rail (shortcut: [ )" withArrow>
+              <ActionIcon variant="subtle" size="sm" color="gray"
+                aria-label="collapse the tool rail" onClick={rail.toggle}>
+                <IconChevronLeft size={15} />
+              </ActionIcon>
             </Tooltip>
-          ))}
-        </Stack>
-        <Text size="xs" c="dimmed" mt={10} style={{ lineHeight: 1.4 }}>
-          Classical method constructions over engine-computed curves.
-          Property surfaces live in <b>Explore</b>; the split criterion:
-          method-construction → Methods, property-surface → Explore.
-        </Text>
+          </Group>
+          <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+            <Stack gap={4}>
+              {METHOD_TOOLS.map((m) => (
+                <Tooltip key={m.id} withArrow multiline w={280} openDelay={400}
+                  label={m.status === "live" ? m.teaches : `${m.teaches}  (planned — ${m.fedBy ?? "engine feed pending"})`}>
+                  <Button
+                    variant={m.id === tool ? "light" : "subtle"}
+                    color={m.id === tool ? "accent" : "gray"}
+                    size="compact-sm"
+                    justify="space-between"
+                    fullWidth
+                    disabled={m.status === "planned"}
+                    onClick={() => { if (m.status === "live") setTool(m.id); }}
+                    rightSection={m.status === "planned"
+                      ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
+                      : undefined}
+                    styles={{ root: { fontWeight: m.id === tool ? 600 : 400 },
+                      label: { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }}
+                  >
+                    {m.label}
+                  </Button>
+                </Tooltip>
+              ))}
+            </Stack>
+            <Text size="xs" c="dimmed" mt={10} style={{ lineHeight: 1.4 }}>
+              Classical method constructions over engine-computed curves.
+              Property surfaces live in <b>Explore</b>; the split criterion:
+              method-construction → Methods, property-surface → Explore.
+            </Text>
+          </Box>
+        </Box>
       </Box>
+      {rail.collapsed && (
+        <RailReopenStrip label="TOOLS" ariaLabel="show the tool rail"
+          tooltip="Show the method tools (shortcut: [ )" onExpand={rail.toggle} />
+      )}
 
       {/* RIGHT — the active tool's panel. */}
       <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
@@ -313,16 +387,23 @@ export function MethodsWorkspace() {
           // every tool states its theory destination or it is not finished.
           <>
             <TeachesLine tool={active} />
-            <Suspense fallback={
-              <Group justify="center" mt="xl"><Loader size="sm" /></Group>
-            }>
-              {tool === "kremser" ? <KremserTool />
-                : tool === "entu" ? <EpsilonNtuTool />
-                : tool === "pinch-composite" ? <PinchCompositeTool />
-                : tool === "pump-system" ? <PumpSystemTool />
-                : tool === "merkel" ? <MerkelTool />
-                : <BreakthroughTool />}
-            </Suspense>
+            {/* A bounded full-height flex column for the run-fed tools: they
+                manage their own internal panels, and this container keeps them
+                inside the workspace when the rail fold reflows the width —
+                never reached into, only sized. */}
+            <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
+              flexDirection: "column", overflow: "hidden" }}>
+              <Suspense fallback={
+                <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+              }>
+                {tool === "kremser" ? <KremserTool />
+                  : tool === "entu" ? <EpsilonNtuTool />
+                  : tool === "pinch-composite" ? <PinchCompositeTool />
+                  : tool === "pump-system" ? <PumpSystemTool />
+                  : tool === "merkel" ? <MerkelTool />
+                  : <BreakthroughTool />}
+              </Suspense>
+            </Box>
           </>
         )}
       </Box>
@@ -338,6 +419,62 @@ function ToolField({ label, children }: { label: string; children: React.ReactNo
       <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>{label}</Text>
       {children}
     </Group>
+  );
+}
+
+/** The toolbar's fold affordance — rightmost slot of the setup bar. */
+function SetupCollapseButton({ onCollapse }: { onCollapse: () => void }) {
+  return (
+    <Tooltip label="Hide the setup bar — the diagram takes the freed rows" withArrow>
+      <ActionIcon variant="subtle" size="md" color="gray"
+        aria-label="hide setup controls" onClick={onCollapse}>
+        <IconChevronUp size={16} />
+      </ActionIcon>
+    </Tooltip>
+  );
+}
+
+/** The slim strip a folded setup bar leaves behind (lecture mode): the
+ *  committed setup stays SEEN (the Explorer's value-stays-visible rule), and
+ *  alerts fold to a counted `⚠ N` pill rather than vanishing — the honesty
+ *  credo allows folded, never silent.  The WHOLE strip is the click target
+ *  (Fitts edge strip); keyboard: tabbable, Enter / Space restore. */
+function SetupCollapsedStrip({ summary, busy, alertCount, onExpand }: {
+  summary: string; busy: boolean; alertCount: number; onExpand: () => void;
+}) {
+  const [hover, setHover] = useState(false);
+  return (
+    <Tooltip label="Show the setup bar" withArrow position="bottom">
+      <Box
+        onClick={onExpand}
+        onPointerEnter={() => setHover(true)}
+        onPointerLeave={() => setHover(false)}
+        role="button" tabIndex={0} aria-label="show setup controls"
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onExpand(); }
+        }}
+        style={{
+          flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+          padding: "3px 12px", cursor: "pointer",
+          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+          background: hover
+            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
+            : "transparent",
+          transition: "background 120ms",
+        }}>
+        <IconChevronDown size={14} color="var(--mantine-color-dimmed)" />
+        <Text size="xs" c="dimmed"
+          style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {summary}
+        </Text>
+        {busy && <Loader size="xs" />}
+        {alertCount > 0 && (
+          <Badge size="xs" color="orange" variant="light" style={{ flexShrink: 0 }}>
+            ⚠ {alertCount}
+          </Badge>
+        )}
+      </Box>
+    </Tooltip>
   );
 }
 
@@ -454,6 +591,12 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
   [pairOk, compA, compB, catalogue, activity, eos, P, nPts, localUnifac, componentFiles]);
 
   const { csv, err, busy, advisories } = useEngineCsv(spec);
+  // Lecture fold: the setup bar + teaches line + hand-off footer give their
+  // rows to the diagram.  ONE global key shared by the in-file tools, so
+  // switching tools keeps the presentation posture; the fold is instant (no
+  // width animation), so the refit rides a rAF instead of transitionend.
+  const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
+  usePlotRefit(setup.collapsed);
   // The plot reads y_eq_<more volatile>: pass the pair in the SAME order the
   // spec ran it, so the curve lookup can never miss.
   const [vA, vB] = orderBinaryByVolatility([compA, compB], catalogue);
@@ -483,6 +626,36 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
     <Alert key="adv" color="yellow" variant="light" title="Solver advisory">
       {advisories.map((a) => <Text key={a} size="xs">{a}</Text>)}
     </Alert>);
+
+  // ONE plot pane, whichever way the setup bar is folded — the fold moves
+  // chrome around the diagram, never a second copy of it.
+  const plotPane = (
+    <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
+      {mccabeCsv ? (
+        <McCabePlot csv={mccabeCsv} compA={vA} compB={vB} P={P} allowWide />
+      ) : (
+        <Box style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {busy
+            ? <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing the equilibrium curve…</Text></Group>
+            : <Text size="sm" c="dimmed" ta="center" maw={460}>
+                The engine computes the real equilibrium curve y*(x) for the pair at P;
+                the staircase then re-walks in pure geometry as you turn R and q.
+              </Text>}
+        </Box>
+      )}
+    </Box>
+  );
+
+  if (setup.collapsed) {
+    return (
+      <>
+        <SetupCollapsedStrip
+          summary={`${compA} / ${compB} · γ ${activity} · P ${paToDisplay(P, Pu)} ${pressureLabel(Pu)}`}
+          busy={busy} alertCount={alerts.length} onExpand={setup.toggle} />
+        {plotPane}
+      </>
+    );
+  }
 
   return (
     <>
@@ -538,23 +711,11 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
               </ActionIcon>
             </Tooltip>
           )}
+          <SetupCollapseButton onCollapse={setup.toggle} />
         </Group>
       </Box>
       <TeachesLine tool={tool} />
-      <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
-        {mccabeCsv ? (
-          <McCabePlot csv={mccabeCsv} compA={vA} compB={vB} P={P} allowWide />
-        ) : (
-          <Box style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {busy
-              ? <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing the equilibrium curve…</Text></Group>
-              : <Text size="sm" c="dimmed" ta="center" maw={460}>
-                  The engine computes the real equilibrium curve y*(x) for the pair at P;
-                  the staircase then re-walks in pure geometry as you turn R and q.
-                </Text>}
-          </Box>
-        )}
-      </Box>
+      {plotPane}
       <HandOffFooter spec={spec} alerts={alerts} />
     </>
   );
@@ -604,6 +765,9 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
   [pairOk, carrier, condensable, catalogue, P, tFrom, tTo, rhFrom, rhTo, rhStep, wbStep, componentFiles]);
 
   const { csv, err, busy, advisories } = useEngineCsv(spec);
+  // Lecture fold — same shared key and posture as the McCabe tool.
+  const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
+  usePlotRefit(setup.collapsed);
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
@@ -620,6 +784,36 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
     const n = typeof v === "number" ? v : parseFloat(v);
     return Number.isFinite(n) ? n : fallback;
   };
+
+  // ONE plot pane, whichever way the setup bar is folded (same rule as the
+  // McCabe tool: the fold moves chrome, never duplicates the diagram).
+  const plotPane = (
+    <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
+      {csv ? (
+        <PsychroPlot csv={csv} yMax={yMax} />
+      ) : (
+        <Box style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {busy
+            ? <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing the chart…</Text></Group>
+            : <Text size="sm" c="dimmed" ta="center" maw={460}>
+                Psychrometric chart at P — humidity ratio Y vs dry-bulb T for
+                the carrier + condensable pair, fully computed by the engine.
+              </Text>}
+        </Box>
+      )}
+    </Box>
+  );
+
+  if (setup.collapsed) {
+    return (
+      <>
+        <SetupCollapsedStrip
+          summary={`${carrier} + ${condensable} · ${Number(kToDisplay(tFrom, Tu).toFixed(1))}–${Number(kToDisplay(tTo, Tu).toFixed(1))} ${temperatureLabel(Tu)} · P ${paToDisplay(P, Pu)} ${pressureLabel(Pu)}`}
+          busy={busy} alertCount={alerts.length} onExpand={setup.toggle} />
+        {plotPane}
+      </>
+    );
+  }
 
   return (
     <>
@@ -671,23 +865,14 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
               <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
             </Group>
           )}
+          {/* Spacer + the fold affordance pinned to the toolbar's right end —
+              the same rightmost slot the McCabe toolbar gives it. */}
+          <Box style={{ flex: 1, minWidth: 8 }} />
+          <SetupCollapseButton onCollapse={setup.toggle} />
         </Group>
       </Box>
       <TeachesLine tool={tool} />
-      <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
-        {csv ? (
-          <PsychroPlot csv={csv} yMax={yMax} />
-        ) : (
-          <Box style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            {busy
-              ? <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing the chart…</Text></Group>
-              : <Text size="sm" c="dimmed" ta="center" maw={460}>
-                  Psychrometric chart at P — humidity ratio Y vs dry-bulb T for
-                  the carrier + condensable pair, fully computed by the engine.
-                </Text>}
-          </Box>
-        )}
-      </Box>
+      {plotPane}
       <HandOffFooter spec={spec} alerts={alerts} />
     </>
   );

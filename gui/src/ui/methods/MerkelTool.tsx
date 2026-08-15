@@ -27,18 +27,30 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  MerkelTool — the Merkel cooling-tower diagram over a SOLVED tower: the
-  air-saturation enthalpy curve h*(T) above, the operating line below, and
-  the area between them shaded — that area IS the enthalpy driving force
-  the Merkel number integrates, which is the whole pedagogy of the plot.
+  MerkelTool — the Merkel cooling-tower diagram: the air-saturation enthalpy
+  curve h*(T) above, the operating line below, and the area between them
+  shaded — that area IS the enthalpy driving force the Merkel number
+  integrates, which is the whole pedagogy of the plot.
 
-  Feeds: the coolingTower unit's PUBLISHED profile (xAxis "T_K", columns
-  h_operating_kJ_kg + h_saturation_kJ_kg, 41 points spanning
+  SELF-FEEDING (the Methods-workspace contract): the DEFAULT mode is
+  STANDALONE — the tool runs the ENGINE itself, in the browser, on its own
+  witness case (tutorials/steady/heat/coolingTower01_merkel, bundled
+  identifier "steady/heat/coolingTower01_merkel"), with a compact knob
+  panel writing declared dict scalars (hot-water T and flow, ambient-air T,
+  moisture and dry-air flow, the packing's Merkel number) through
+  methodRun's textual ScalarOverride.  The knobs write NUMBERS into the
+  witness dicts; the WASM engine computes everything — an infeasible
+  construction (a pinched L/G, a below-wet-bulb target) REFUSES with the
+  engine's own named message, shown verbatim: that refusal is the pedagogy.
+  When the app's CURRENT run also carries a cooling tower, a source toggle
+  offers "Current run" beside the classroom witness.
+
+  Feeds (either source): the coolingTower unit's PUBLISHED profile (xAxis
+  "T_K", columns h_operating_kJ_kg + h_saturation_kJ_kg, 41 points spanning
   [T_water_out, T_water_in], markers at both water ends) and its KPI row
   (range_K, approach_K, T_wb_in, merkelNumber, merkelNumber_chebyshev4,
   L_over_G, evaporation_pct_of_L, Q_kW, ...).  Detection is by the COLUMN
-  PAIR, never a unit or case name.  Witness case:
-  tutorials/steady/heat/coolingTower01_merkel.
+  PAIR, never a unit or case name.
 
   ZERO physics in TypeScript, no exception here: no enthalpy, no humidity,
   no integral is computed in this file.  The tool DRAWS the engine's
@@ -54,14 +66,22 @@ License
 
   Charts are inline SVG (the EpsilonNtuTool / PumpSystemTool precedent) —
   the plotly bundle cannot load outside a browser, and the pure helpers
-  here must stay importable by the node test runner
+  here (plus the knob→override map, verified against the REAL witness raw
+  text) must stay importable by the node test runner
   (tests/merkelTool.test.ts).
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
-import { Badge, Box, Group, Select, Text, Tooltip } from "@mantine/core";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Alert, Badge, Box, Collapse, Group, Loader, NumberInput, SegmentedControl,
+  Select, Slider, Text, Tooltip, UnstyledButton,
+} from "@mantine/core";
+import {
+  IconAlertTriangle, IconChevronDown, IconChevronRight,
+} from "@tabler/icons-react";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
+import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
 // ---- Detection: which units feed the tool -----------------------------------
@@ -140,6 +160,82 @@ export function chebyshevDeviation(kpis: KpiRow | undefined): ChebyshevCheck | n
  *  axis transform is unit scaling and nothing more. */
 export const kelvinToC = (T_K: number): number => T_K - 273.15;
 
+// ---- The classroom witness + its knob→dict map ------------------------------
+// The STANDALONE feed: the tool clones this bundled tutorial, writes the knob
+// values into its declared dict scalars (methodRun's textual override — units
+// and comments survive), and runs choupoSolve in the browser.  Each knob names
+// the FILE and dict KEY it writes; the defaults ARE the witness's authored
+// values, and the test suite verifies every (file, key) resolves uniquely
+// against the real bundled raw text — a knob that misses its dict would run
+// the engine on the wrong question.
+
+/** Bundled identifier of the witness case ("<category>/<subclass>/<case>" —
+ *  steady is a sub-classed category, so the `heat` segment is part of it). */
+export const MERKEL_WITNESS = "steady/heat/coolingTower01_merkel";
+
+export interface MerkelKnob {
+  /** Stable id — the key of the knob-value state bag. */
+  id: string;
+  /** What the student reads beside the control. */
+  label: string;
+  /** Witness file the knob writes into (e.g. "0/hotWater"). */
+  file: string;
+  /** The dict key as written there (e.g. "T", "water", "merkelNumber"). */
+  key: string;
+  /** The witness's own authored value — the classroom default. */
+  def: number;
+  min: number;
+  max: number;
+  step: number;
+  /** The unit the dict declares.  The knob writes the NUMBER only; the
+   *  unit word in the dict survives the override untouched.  "" for the
+   *  dimensionless Merkel number. */
+  unit: string;
+}
+
+export const MERKEL_KNOBS: readonly MerkelKnob[] = [
+  { id: "hotWaterT", label: "hot water in T", file: "0/hotWater", key: "T",
+    def: 318.15, min: 303.15, max: 343.15, step: 0.5, unit: "K" },
+  { id: "waterFlow", label: "water flow L", file: "0/hotWater", key: "water",
+    def: 100, min: 10, max: 300, step: 5, unit: "kmol/h" },
+  { id: "airT", label: "air in T", file: "0/air", key: "T",
+    def: 298.15, min: 273.15, max: 313.15, step: 0.5, unit: "K" },
+  { id: "airMoisture", label: "air moisture (humidity)", file: "0/air", key: "water",
+    def: 1.3, min: 0, max: 5, step: 0.1, unit: "kmol/h" },
+  { id: "dryAirFlow", label: "dry air flow G", file: "0/air", key: "N2",
+    def: 65, min: 20, max: 200, step: 5, unit: "kmol/h" },
+  { id: "merkelNumber", label: "Merkel number KaV/L", file: "system/flowsheetDict",
+    key: "merkelNumber", def: 1.5, min: 0.2, max: 5, step: 0.05, unit: "" },
+];
+
+export type MerkelKnobValues = { [id: string]: number };
+
+/** The witness's authored values — the classroom baseline. */
+export function defaultKnobValues(): MerkelKnobValues {
+  const out: MerkelKnobValues = {};
+  for (const k of MERKEL_KNOBS) out[k.id] = k.def;
+  return out;
+}
+
+/** Knob values → methodRun ScalarOverrides.  Non-finite values are dropped
+ *  (that knob keeps the witness's authored number) — never written as NaN. */
+export function knobOverrides(values: MerkelKnobValues): ScalarOverride[] {
+  const out: ScalarOverride[] = [];
+  for (const k of MERKEL_KNOBS) {
+    const v = values[k.id];
+    if (v !== undefined && Number.isFinite(v))
+      out.push({ file: k.file, key: k.key, value: v });
+  }
+  return out;
+}
+
+// The provenance line, stated where the knobs are.
+const PROVENANCE =
+  "Runs tutorials/steady/heat/coolingTower01_merkel with your parameters, "
+  + "in your browser.";
+
+const COLLAPSE_KEY = "choupo.methods.merkel.controlsCollapsed";
+
 // ---- Chart frame (viewBox units, the sibling tools' conventions) ------------
 
 const FW = 640, FH = 420;
@@ -162,36 +258,233 @@ const METHOD_HYPOTHESES =
   "Lewis = 1 · L constant inside the integral (loss reported) · saturated "
   + "exit air — the engine announces these on every solve.";
 
+// ---- One knob control (label + exact entry + slider) ------------------------
+
+function KnobControl({ k, value, onChange }: {
+  k: MerkelKnob;
+  value: number;
+  onChange: (v: number) => void;
+}): JSX.Element {
+  return (
+    <Box style={{ width: 168 }}>
+      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+        {k.label}{k.unit ? ` [${k.unit}]` : ""}
+      </Text>
+      <NumberInput size="xs" value={value} min={k.min} max={k.max}
+        step={k.step}
+        onChange={(v) => {
+          const n = typeof v === "number" ? v : Number(v);
+          if (Number.isFinite(n)) onChange(n);
+        }} />
+      <Slider size="xs" mt={4} value={value} min={k.min} max={k.max}
+        step={k.step} label={null} onChange={onChange} />
+    </Box>
+  );
+}
+
 // ---- The workspace tool -----------------------------------------------------
 
 export function MerkelTool(): JSX.Element {
+  // The app's CURRENT run — the secondary source, offered only when it
+  // carries a tower.
   const result = useStore((s) => s.runResult);
-  const units = useMemo(
+  const currentUnits = useMemo(
     () => findMerkelUnits(result?.profiles, result?.kpis),
     [result]);
+
+  // Source: the self-fed classroom witness (DEFAULT) vs the current run.
+  // The toggle appears once the current run carries a tower, and stays while
+  // the user is on "Current run" so they can always come back.
+  const [source, setSource] = useState<"classroom" | "current">("classroom");
+  const mode = source;
+  const showToggle = currentUnits.length > 0 || source === "current";
+
+  // The classroom knobs (defaults = the witness's authored values) and the
+  // collapsible panel state, persisted per browser.
+  const [knobs, setKnobs] = useState<MerkelKnobValues>(defaultKnobValues);
+  const overridesKey = useMemo(() => JSON.stringify(knobs), [knobs]);
+  const overrides = useMemo(() => knobOverrides(knobs), [knobs]);
+  const setKnob = useCallback((id: string, v: number) => {
+    setKnobs((s) => ({ ...s, [id]: v }));
+  }, []);
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try { return window.localStorage.getItem(COLLAPSE_KEY) === "1"; }
+    catch { return false; }
+  });
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((c) => {
+      const next = !c;
+      try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); }
+      catch { /* storage blocked — the session state still works */ }
+      return next;
+    });
+  }, []);
+
+  // The self-run: debounced in-browser choupoSolve on the parameterized
+  // witness.  Witness null in "Current run" mode — no engine run there.
+  const { result: classroomResult, err, busy } = useMethodRun(
+    mode === "classroom" ? MERKEL_WITNESS : null,
+    overrides, overridesKey, "choupoSolve");
+  const classroomUnits = useMemo(
+    () => findMerkelUnits(classroomResult?.profiles, classroomResult?.kpis),
+    [classroomResult]);
+
+  const units = mode === "classroom" ? classroomUnits : currentUnits;
   const [picked, setPicked] = useState<string | null>(null);
   const active = (picked && units.find((u) => u.unit === picked)) || units[0];
 
   const check = useMemo(
     () => chebyshevDeviation(active?.kpis), [active]);
 
-  // ---- Honest empty state: no tower profile, no diagram. --------------------
-  if (!active) {
+  const sourceToggle = showToggle ? (
+    <SegmentedControl size="xs" value={mode} style={{ flexShrink: 0 }}
+      onChange={(v) => setSource(v as "classroom" | "current")}
+      data={[
+        { label: "Classroom", value: "classroom" },
+        { label: "Current run", value: "current" },
+      ]} />
+  ) : null;
+
+  // ---- Honest empty state — only inside "Current run" mode: no tower
+  // profile in the app's run, no diagram (the classroom source never needs
+  // one, it feeds itself). ----------------------------------------------------
+  if (mode === "current" && !active) {
     return (
-      <Box style={{ height: "100%", display: "flex", alignItems: "center",
-        justifyContent: "center", padding: 24 }}>
-        <Text size="sm" c="dimmed" ta="center" maw={520}>
-          No cooling-tower profile in this run.  The Merkel diagram activates
-          when a solved unit publishes a profile carrying both{" "}
-          <b>{OPERATING_COLUMN}</b> and <b>{SATURATION_COLUMN}</b> columns —
-          run a case with a <b>coolingTower</b> unit first, e.g.{" "}
-          <code>tutorials/steady/heat/coolingTower01_merkel</code>, then
-          return here.
-        </Text>
+      <Box style={{ position: "absolute", inset: 0, display: "flex",
+        flexDirection: "column", overflow: "hidden" }}>
+        {sourceToggle && (
+          <Box style={{ flexShrink: 0, padding: "6px 12px" }}>
+            {sourceToggle}
+          </Box>
+        )}
+        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 24 }}>
+          <Text size="sm" c="dimmed" ta="center" maw={520}>
+            No cooling-tower profile in this run.  The Merkel diagram activates
+            when a solved unit publishes a profile carrying both{" "}
+            <b>{OPERATING_COLUMN}</b> and <b>{SATURATION_COLUMN}</b> columns —
+            run a case with a <b>coolingTower</b> unit first, e.g.{" "}
+            <code>tutorials/steady/heat/coolingTower01_merkel</code>, then
+            return here.
+          </Text>
+        </Box>
       </Box>
     );
   }
 
+  return (
+    <Box style={{ position: "absolute", inset: 0, display: "flex",
+      flexDirection: "column", overflow: "hidden" }}>
+      {/* Toolbar: source toggle + the unit picker + the KPI chips + the
+          hand-method chip. */}
+      <Box style={{
+        flexShrink: 0, minHeight: 44, padding: "6px 12px",
+        overflowX: "auto", overflowY: "hidden",
+        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+      }}>
+        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+          {sourceToggle}
+          {active && (
+            <Group gap={4} wrap="nowrap" align="center">
+              <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>tower</Text>
+              <Select size="xs" data={units.map((u) => u.unit)} value={active.unit}
+                w={180} onChange={(v) => setPicked(v)} allowDeselect={false}
+                disabled={units.length < 2} />
+            </Group>
+          )}
+          {active && (
+            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+              range {fmt(active.kpis?.["range_K"])} K
+              {" "}· approach {fmt(active.kpis?.["approach_K"])} K (over T_wb)
+              {" "}· Me {fmt(active.kpis?.["merkelNumber"])}
+              {" "}· L/G {fmt(active.kpis?.["L_over_G"])}
+              {" "}· evaporation {fmt(active.kpis?.["evaporation_pct_of_L"], 3)} % of L (= make-up)
+              {" "}· Q {fmt(active.kpis?.["Q_kW"])} kW
+            </Text>
+          )}
+          {check && (
+            <Tooltip withArrow multiline w={380}
+              label={"Both operands are engine-published KPIs: the converged "
+                + `integral Me = ${fmt(check.merkel, 8)} and the CTI Chebyshev-4 `
+                + `evaluation ${fmt(check.chebyshev4, 8)}.  The tool computes only `
+                + "their relative deviation — no integral is evaluated in the GUI."}>
+              <Badge color={check.nearlyExact ? "teal" : "orange"} variant="light"
+                tt="none" styles={{ root: { cursor: "help" } }}
+                style={{ flexShrink: 0 }}>
+                CTI Chebyshev-4 vs converged integral:
+                {" "}Δ = {check.relDeviation.toExponential(2)}
+                {check.nearlyExact && " — the hand method is nearly exact for smooth curves"}
+              </Badge>
+            </Tooltip>
+          )}
+        </Group>
+      </Box>
+
+      {/* The classroom knob panel (collapsible, persisted) + provenance. */}
+      {mode === "classroom" && (
+        <Box style={{
+          flexShrink: 0, padding: "4px 12px",
+          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        }}>
+          <Group justify="space-between" align="center" wrap="wrap" gap={6}>
+            <UnstyledButton onClick={toggleCollapsed}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}
+              aria-expanded={!collapsed}>
+              {collapsed
+                ? <IconChevronRight size={14} />
+                : <IconChevronDown size={14} />}
+              <Text size="xs" fw={500}>Classroom parameters</Text>
+            </UnstyledButton>
+            <Text size="xs" c="dimmed">{PROVENANCE}</Text>
+          </Group>
+          <Collapse in={!collapsed}>
+            <Group gap="md" wrap="wrap" py={6} align="flex-end">
+              {MERKEL_KNOBS.map((k) => (
+                <KnobControl key={k.id} k={k}
+                  value={knobs[k.id] ?? k.def}
+                  onChange={(v) => setKnob(k.id, v)} />
+              ))}
+            </Group>
+          </Collapse>
+        </Box>
+      )}
+
+      {/* The engine's refusal, verbatim — a pinched L/G or a below-wet-bulb
+          construction refuses with a named message, and that refusal IS the
+          pedagogy.  Nothing is rephrased. */}
+      {mode === "classroom" && err && (
+        <Alert color="orange" variant="light" m={12} py={8}
+          icon={<IconAlertTriangle size={16} />}
+          title="The engine did not solve this construction"
+          style={{ flexShrink: 0 }}>
+          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>{err}</Text>
+        </Alert>
+      )}
+
+      {active ? (
+        <MerkelDiagram active={active}
+          busyOverlay={mode === "classroom" && busy} />
+      ) : mode === "classroom" && !err ? (
+        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+          justifyContent: "center", gap: 8 }}>
+          <Loader size="sm" />
+          <Text size="sm" c="dimmed">
+            running coolingTower01_merkel in your browser…
+          </Text>
+        </Box>
+      ) : null}
+    </Box>
+  );
+}
+
+// ---- The diagram (either source; the rendering path is unchanged) -----------
+
+function MerkelDiagram({ active, busyOverlay }: {
+  active: MerkelUnit;
+  /** A newer classroom run is in flight: keep the last diagram visible and
+   *  overlay a loader — never a blank. */
+  busyOverlay: boolean;
+}): JSX.Element {
   const { profile, kpis } = active;
   const T_K = profile.columns[profile.xAxis]!;
   const hOp = profile.columns[OPERATING_COLUMN]!;
@@ -230,47 +523,7 @@ export function MerkelTool(): JSX.Element {
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => yLo + f * (yHi - yLo));
 
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex",
-      flexDirection: "column", overflow: "hidden" }}>
-      {/* Toolbar: the unit picker + the KPI chips + the hand-method chip. */}
-      <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px",
-        overflowX: "auto", overflowY: "hidden",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
-          <Group gap={4} wrap="nowrap" align="center">
-            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>tower</Text>
-            <Select size="xs" data={units.map((u) => u.unit)} value={active.unit}
-              w={180} onChange={(v) => setPicked(v)} allowDeselect={false}
-              disabled={units.length < 2} />
-          </Group>
-          <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-            range {fmt(kpis?.["range_K"])} K
-            {" "}· approach {fmt(kpis?.["approach_K"])} K (over T_wb)
-            {" "}· Me {fmt(kpis?.["merkelNumber"])}
-            {" "}· L/G {fmt(kpis?.["L_over_G"])}
-            {" "}· evaporation {fmt(kpis?.["evaporation_pct_of_L"], 3)} % of L (= make-up)
-            {" "}· Q {fmt(kpis?.["Q_kW"])} kW
-          </Text>
-          {check && (
-            <Tooltip withArrow multiline w={380}
-              label={"Both operands are engine-published KPIs: the converged "
-                + `integral Me = ${fmt(check.merkel, 8)} and the CTI Chebyshev-4 `
-                + `evaluation ${fmt(check.chebyshev4, 8)}.  The tool computes only `
-                + "their relative deviation — no integral is evaluated in the GUI."}>
-              <Badge color={check.nearlyExact ? "teal" : "orange"} variant="light"
-                tt="none" styles={{ root: { cursor: "help" } }}
-                style={{ flexShrink: 0 }}>
-                CTI Chebyshev-4 vs converged integral:
-                {" "}Δ = {check.relDeviation.toExponential(2)}
-                {check.nearlyExact && " — the hand method is nearly exact for smooth curves"}
-              </Badge>
-            </Tooltip>
-          )}
-        </Group>
-      </Box>
-
+    <>
       {/* The pedagogy line, stated before the plot. */}
       <Text size="xs" c="dimmed" px={12} py={4} style={{ flexShrink: 0 }}>
         Both curves are the engine&apos;s published profile ({n} points).  The
@@ -312,7 +565,14 @@ export function MerkelTool(): JSX.Element {
             </Group>
           )}
         </Group>
-        <Box style={{ flex: 1, minHeight: 0 }}>
+        <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+          {busyOverlay && (
+            <Box style={{ position: "absolute", inset: 0, display: "flex",
+              alignItems: "center", justifyContent: "center", zIndex: 1,
+              background: "light-dark(rgba(255,255,255,0.5), rgba(0,0,0,0.35))" }}>
+              <Loader size="sm" />
+            </Box>
+          )}
           <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
             preserveAspectRatio="xMidYMid meet"
             role="img"
@@ -387,6 +647,6 @@ export function MerkelTool(): JSX.Element {
       <Text size="xs" c="dimmed" px={12} pb={6} style={{ flexShrink: 0 }}>
         {METHOD_HYPOTHESES}
       </Text>
-    </Box>
+    </>
   );
 }

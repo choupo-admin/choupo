@@ -29,6 +29,16 @@ License
 /*---------------------------------------------------------------------------*\
   EpsilonNtuTool — the ε-NTU effectiveness chart over a SOLVED exchanger.
 
+  SELF-FEEDING (the Methods-workspace contract, src/case/methodRun.ts): the
+  tool's DEFAULT source is a CLASSROOM run — it clones its witness tutorial
+  (tutorials/steady/heat/heatExchanger01_water_water), writes the student's
+  knobs (A, U, each stream's flow and inlet T) into the witness's own dicts
+  as textual scalar overrides, and solves it with the WASM choupoSolve in
+  the browser.  Zero physics in TypeScript survives intact: the knobs edit
+  DECLARED dict scalars and the ENGINE computes ε, NTU, C_r and the rest.
+  The app's own flowsheet run stays available as the "Current run" source
+  whenever it carries a servable exchanger KPI row.
+
   The one authorization this tool carries (an exception to the zero-physics-
   in-TS rule, granted because the ENGINE computes its own ε and the case's
   point is the judge): the ε(NTU, C_r) textbook closed forms drawn here are
@@ -54,9 +64,15 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { Alert, Badge, Box, Group, Select, Stack, Text, Tooltip } from "@mantine/core";
+import {
+  Alert, Badge, Box, Collapse, Group, Loader, SegmentedControl, Select,
+  Slider, Stack, Text, Tooltip, UnstyledButton,
+} from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
-import type { UnitProfile } from "../../adapters/SolverAdapter.js";
+import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
+import type { ScalarOverride } from "../../case/methodRun.js";
+import { useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
 // ---- The closed forms (the authorized method geometry) ----------------------
@@ -147,6 +163,78 @@ export function matchConfiguration(kpis: { [k: string]: number } | undefined): C
   return { checks, confirmed: checks.filter((c) => c.matches).map((c) => c.id) };
 }
 
+// ---- The classroom witness + its knob map -----------------------------------
+
+/** The tool's own sealed tutorial, run in-browser with the student's knobs.
+ *  The identifier carries the sub-class folder (the 2026-06-03 tutorial
+ *  reorganisation): <category>/<subclass>/<case>. */
+export const ENTU_WITNESS = "steady/heat/heatExchanger01_water_water";
+
+/** The knob values, in the UNITS THE WITNESS DICTS DECLARE — the override is
+ *  textual and keeps each scalar's unit word (m2, W/m2/K, kmol/h, K), so a
+ *  knob's number IS the number written before that unit. */
+export interface EntuKnobs {
+  /** Exchanger area, m² (flowsheetDict `area`). */
+  area_m2: number;
+  /** Overall coefficient, W/m²/K (flowsheetDict `U`). */
+  U_W_m2K: number;
+  /** Hot stream molar flow, kmol/h (0/hot `water`). */
+  hotFlow_kmolh: number;
+  /** Hot inlet temperature, K (0/hot `T`). */
+  hotT_K: number;
+  /** Cold stream molar flow, kmol/h (0/cold `water`). */
+  coldFlow_kmolh: number;
+  /** Cold inlet temperature, K (0/cold `T`). */
+  coldT_K: number;
+}
+
+/** The witness's authored values (flowsheetDict + 0/ as shipped). */
+export const ENTU_DEFAULT_KNOBS: EntuKnobs = {
+  area_m2: 10, U_W_m2K: 500,
+  hotFlow_kmolh: 100, hotT_K: 360,
+  coldFlow_kmolh: 120, coldT_K: 300,
+};
+
+/** Knob → dict-scalar map.  Each key is UNIQUE in its file (T lives once per
+ *  stream because every stream has its OWN 0/ file; `water` is the single
+ *  component of each stream's componentMolarFlows) — verified against the
+ *  real bundled raw text by tests/epsilonNtuTool.test.ts, and enforced at
+ *  run time by applyScalarOverride, which throws on 0 or >1 matches. */
+export function entuOverrides(k: EntuKnobs): ScalarOverride[] {
+  return [
+    { file: "system/flowsheetDict", key: "area", value: k.area_m2 },
+    { file: "system/flowsheetDict", key: "U", value: k.U_W_m2K },
+    { file: "0/hot", key: "water", value: k.hotFlow_kmolh },
+    { file: "0/hot", key: "T", value: k.hotT_K },
+    { file: "0/cold", key: "water", value: k.coldFlow_kmolh },
+    { file: "0/cold", key: "T", value: k.coldT_K },
+  ];
+}
+
+/** Slider affordances only (labels + ranges) — the ENGINE judges the values;
+ *  an infeasible pick surfaces as the engine's own error, verbatim. */
+const KNOB_SPECS: {
+  id: keyof EntuKnobs; label: string; unit: string;
+  min: number; max: number; step: number;
+}[] = [
+  { id: "area_m2", label: "area A", unit: "m²", min: 1, max: 40, step: 0.5 },
+  { id: "U_W_m2K", label: "U", unit: "W/m²/K", min: 100, max: 2000, step: 25 },
+  { id: "hotFlow_kmolh", label: "hot flow", unit: "kmol/h", min: 10, max: 300, step: 5 },
+  { id: "hotT_K", label: "hot inlet T", unit: "K", min: 310, max: 390, step: 1 },
+  { id: "coldFlow_kmolh", label: "cold flow", unit: "kmol/h", min: 10, max: 300, step: 5 },
+  { id: "coldT_K", label: "cold inlet T", unit: "K", min: 275, max: 350, step: 1 },
+];
+
+/** localStorage home of the knob panel's collapsed state. */
+export const ENTU_COLLAPSE_KEY = "choupo.methods.entu.controlsCollapsed";
+
+function loadCollapsed(): boolean {
+  try { return localStorage.getItem(ENTU_COLLAPSE_KEY) === "1"; } catch { return false; }
+}
+function saveCollapsed(c: boolean): void {
+  try { localStorage.setItem(ENTU_COLLAPSE_KEY, c ? "1" : "0"); } catch { /* private mode */ }
+}
+
 // ---- Chart geometry (SVG helpers) -------------------------------------------
 
 const NTU_MAX = 6;
@@ -171,6 +259,13 @@ function familyPath(config: ExchangerConfigId, Cr: number): string {
   return pts.join(" ");
 }
 
+// The families are pure geometry with no inputs — 3 configurations × 5
+// capacity ratios, computed once at module load, never per render.
+const FAMILIES = EXCHANGER_CONFIGS.map((c) => ({
+  config: c,
+  lines: CR_FAMILY.map((Cr) => ({ Cr, path: familyPath(c.id, Cr) })),
+}));
+
 const GRID = "var(--mantine-color-default-border)";
 const INK = "var(--mantine-color-dimmed)";
 const POINT = "#ff8a65";   // the kit's warm2 — the engine's answer
@@ -178,6 +273,9 @@ const HOT = "#ff8a65", COLD = "#80deea";   // profile pane traces
 
 const fmt = (v: number | undefined, d = 4) =>
   v !== undefined && Number.isFinite(v) ? v.toPrecision(d) : "—";
+
+const HAIRLINE =
+  "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))";
 
 // ---- The area-profile lookup ------------------------------------------------
 
@@ -192,8 +290,31 @@ function findAreaProfile(profiles: UnitProfile[] | undefined, unit: string | und
 
 // ---- The workspace tool -----------------------------------------------------
 
+type Source = "classroom" | "run";
+
 export function EpsilonNtuTool(): JSX.Element {
-  const result = useStore((s) => s.runResult);
+  const appResult = useStore((s) => s.runResult);
+
+  // Does the APP's run carry a servable exchanger row?  Only then does the
+  // source toggle appear — the classroom witness never depends on it.
+  const appServable = useMemo(() => {
+    const k = appResult?.kpis ?? {};
+    return Object.keys(k).some((u) => hasEpsilonNtuKpis(k[u]));
+  }, [appResult]);
+
+  const [source, setSource] = useState<Source>("classroom");
+
+  // ---- The classroom knobs + the self-feeding engine run -------------------
+  const [knobs, setKnobs] = useState<EntuKnobs>(ENTU_DEFAULT_KNOBS);
+  const [collapsed, setCollapsed] = useState<boolean>(loadCollapsed);
+  const overridesKey = JSON.stringify(knobs);
+  const overrides = useMemo(() => entuOverrides(knobs), [knobs]);
+  const { result: classroomResult, err, busy } = useMethodRun(
+    source === "classroom" ? ENTU_WITNESS : null,
+    overrides, overridesKey, "choupoSolve");
+
+  const result: RunResult | null =
+    source === "classroom" ? classroomResult : appResult;
   const kpisByUnit = result?.kpis ?? {};
 
   // Every unit whose KPI row carries the full (NTU, effectiveness, C_r)
@@ -209,30 +330,128 @@ export function EpsilonNtuTool(): JSX.Element {
   const profile = useMemo(
     () => findAreaProfile(result?.profiles, unit), [result, unit]);
 
-  // The families are pure geometry — computed once, never per render of a
-  // hover.  3 configurations × 5 capacity ratios.
-  const families = useMemo(
-    () => EXCHANGER_CONFIGS.map((c) => ({
-      config: c,
-      lines: CR_FAMILY.map((Cr) => ({ Cr, path: familyPath(c.id, Cr) })),
-    })),
-    []);
+  const toggleCollapsed = () =>
+    setCollapsed((c) => { const next = !c; saveCollapsed(next); return next; });
 
-  // ---- Honest empty state: no exchanger KPIs, no chart. --------------------
-  if (!unit || !kpis || !match) {
-    return (
-      <Box style={{ height: "100%", display: "flex", alignItems: "center",
-        justifyContent: "center", padding: 24 }}>
-        <Text size="sm" c="dimmed" ta="center" maw={460}>
-          No exchanger point in this run.  The ε-NTU chart activates when a
-          solved unit's KPI row carries all of <b>NTU</b>, <b>effectiveness</b>
-          {" "}and <b>C_r</b> — run a case with a heat-exchanger unit first.
-          The families alone would be a textbook page, not your case.
-        </Text>
+  return (
+    <Box style={{ position: "absolute", inset: 0, display: "flex",
+      flexDirection: "column", overflow: "hidden" }}>
+      {/* Source strip: Classroom | Current run (toggle only when the app's
+          run can serve the tool) + the classroom provenance line. */}
+      <Box style={{ flexShrink: 0, padding: "6px 12px", borderBottom: HAIRLINE }}>
+        <Group gap="sm" wrap="wrap" align="center">
+          {(appServable || source === "run") && (
+            <SegmentedControl size="xs" value={source}
+              onChange={(v) => setSource(v === "run" ? "run" : "classroom")}
+              data={[
+                { label: "Classroom", value: "classroom" },
+                { label: "Current run", value: "run" },
+              ]} />
+          )}
+          {source === "classroom" && (
+            <Text size="xs" c="dimmed">
+              Runs tutorials/steady/heat/heatExchanger01_water_water with your
+              parameters, in your browser.
+            </Text>
+          )}
+        </Group>
       </Box>
-    );
-  }
 
+      {/* The collapsible classroom knob panel. */}
+      {source === "classroom" && (
+        <Box style={{ flexShrink: 0, borderBottom: HAIRLINE }}>
+          <Group gap={8} px={12} py={4} wrap="nowrap" align="center">
+            <UnstyledButton onClick={toggleCollapsed}
+              aria-label={collapsed ? "expand the knob panel" : "collapse the knob panel"}
+              style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {collapsed
+                ? <IconChevronRight size={14} stroke={1.6} />
+                : <IconChevronDown size={14} stroke={1.6} />}
+              <Text size="xs" fw={600}>Exchanger knobs</Text>
+            </UnstyledButton>
+            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap",
+              overflow: "hidden", textOverflow: "ellipsis" }}>
+              A {knobs.area_m2} m² · U {knobs.U_W_m2K} W/m²/K
+              {" "}· hot {knobs.hotFlow_kmolh} kmol/h at {knobs.hotT_K} K
+              {" "}· cold {knobs.coldFlow_kmolh} kmol/h at {knobs.coldT_K} K
+            </Text>
+          </Group>
+          <Collapse in={!collapsed}>
+            <Group px={12} pb={10} gap="lg" align="flex-start" wrap="wrap">
+              {KNOB_SPECS.map((s) => (
+                <Stack key={s.id} gap={2} w={150}>
+                  <Text size="xs" c="dimmed">
+                    {s.label}: <b>{knobs[s.id]}</b> {s.unit}
+                  </Text>
+                  <Slider size="xs" min={s.min} max={s.max} step={s.step}
+                    value={knobs[s.id]} label={null}
+                    onChange={(v) => setKnobs((k) => ({ ...k, [s.id]: v }))} />
+                </Stack>
+              ))}
+            </Group>
+          </Collapse>
+        </Box>
+      )}
+
+      {/* The engine's error, VERBATIM — never paraphrased. */}
+      {source === "classroom" && err && (
+        <Alert color="red" variant="light" mx={12} my={6} py={6}
+          title="The engine refused this run" style={{ flexShrink: 0 }}>
+          <Text size="xs" style={{ whiteSpace: "pre-wrap",
+            fontFamily: "var(--mantine-font-family-monospace)" }}>
+            {err}
+          </Text>
+        </Alert>
+      )}
+
+      {(!unit || !kpis || !match) ? (
+        // ---- No servable point in the active source. -----------------------
+        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 24 }}>
+          {source === "run" ? (
+            <Text size="sm" c="dimmed" ta="center" maw={460}>
+              No exchanger point in this run.  The ε-NTU chart activates when a
+              solved unit's KPI row carries all of <b>NTU</b>, <b>effectiveness</b>
+              {" "}and <b>C_r</b> — run a case with a heat-exchanger unit first.
+              The families alone would be a textbook page, not your case.
+            </Text>
+          ) : busy ? (
+            <Group gap="xs" wrap="nowrap">
+              <Loader size="sm" />
+              <Text size="sm" c="dimmed">
+                Solving the classroom exchanger in your browser…
+              </Text>
+            </Group>
+          ) : (
+            <Text size="sm" c="dimmed" ta="center" maw={460}>
+              {err
+                ? "The classroom run did not produce an exchanger point — the engine's message above says why."
+                : "Waiting for the classroom run…"}
+            </Text>
+          )}
+        </Box>
+      ) : (
+        <SolvedView units={units} unit={unit} onPick={setPicked}
+          kpis={kpis} match={match} profile={profile}
+          busy={source === "classroom" && busy} />
+      )}
+    </Box>
+  );
+}
+
+// ---- The solved-exchanger rendering (either source) -------------------------
+
+function SolvedView({ units, unit, onPick, kpis, match, profile, busy }: {
+  units: string[];
+  unit: string;
+  onPick: (u: string | null) => void;
+  kpis: { [k: string]: number };
+  match: ConfigMatch;
+  profile: UnitProfile | undefined;
+  /** A classroom re-run is in flight — Loader over the chart, the previous
+   *  point stays visible under it (never a blank flash per slider tick). */
+  busy: boolean;
+}): JSX.Element {
   const NTU = kpis["NTU"]!, eps = kpis["effectiveness"]!, Cr = kpis["C_r"]!;
   const px = ntuToX(Math.min(NTU, NTU_MAX)), py = epsToY(eps);
   const offChart = NTU > NTU_MAX;
@@ -244,18 +463,17 @@ export function EpsilonNtuTool(): JSX.Element {
     `${c.label}: ε = ${fmt(c.eps, 6)}  (Δε = ${c.dEps.toExponential(2)})`);
 
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex",
-      flexDirection: "column", overflow: "hidden" }}>
+    <>
       {/* Toolbar: the unit picker + the cross-check chip. */}
       <Box style={{
         flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        borderBottom: HAIRLINE,
       }}>
         <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
           <Group gap={4} wrap="nowrap" align="center">
             <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>exchanger</Text>
             <Select size="xs" data={units} value={unit} w={180}
-              onChange={(v) => setPicked(v)} allowDeselect={false}
+              onChange={(v) => onPick(v)} allowDeselect={false}
               disabled={units.length < 2} />
           </Group>
           <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
@@ -309,7 +527,8 @@ export function EpsilonNtuTool(): JSX.Element {
       <Box style={{ flex: 1, minHeight: 0, display: "flex", gap: 12,
         padding: "0 12px 8px", overflow: "hidden" }}>
         {/* ---- ε vs NTU families ---- */}
-        <Box style={{ flex: 2, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <Box style={{ flex: 2, minWidth: 0, display: "flex",
+          flexDirection: "column", position: "relative" }}>
           <Group gap="md" wrap="wrap" py={2} style={{ flexShrink: 0 }}>
             {EXCHANGER_CONFIGS.map((c) => (
               <Group key={c.id} gap={4} wrap="nowrap" align="center">
@@ -355,7 +574,7 @@ export function EpsilonNtuTool(): JSX.Element {
                 ε (effectiveness)
               </text>
               {/* the families: 3 configurations × C_r = 0, 0.25, 0.5, 0.75, 1 */}
-              {families.map(({ config, lines }) =>
+              {FAMILIES.map(({ config, lines }) =>
                 lines.map(({ Cr: cr, path }) => (
                   <polyline key={`${config.id}-${cr}`} points={path} fill="none"
                     stroke={config.color} strokeWidth={cr === 0 ? 1.8 : 1.1}
@@ -382,12 +601,21 @@ export function EpsilonNtuTool(): JSX.Element {
               </text>
             </svg>
           </Box>
+          {/* Classroom re-run in flight: Loader OVER the chart, previous
+              point visible underneath. */}
+          {busy && (
+            <Box style={{ position: "absolute", inset: 0, display: "flex",
+              alignItems: "center", justifyContent: "center",
+              pointerEvents: "none" }}>
+              <Loader size="sm" />
+            </Box>
+          )}
         </Box>
 
         {/* ---- Side pane: the area profile the ε summarises ---- */}
         <Box style={{ flex: 1, minWidth: 220, maxWidth: 340, display: "flex",
           flexDirection: "column",
-          borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+          borderLeft: HAIRLINE,
           paddingLeft: 12 }}>
           <Text size="xs" fw={600} c="dimmed" py={2} style={{ flexShrink: 0 }}>
             T along the area — the approach the ε summarises
@@ -408,7 +636,7 @@ export function EpsilonNtuTool(): JSX.Element {
           )}
         </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 

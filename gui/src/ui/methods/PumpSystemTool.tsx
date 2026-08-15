@@ -30,14 +30,31 @@ License
   PumpSystemTool — the pump curve laid over the system curve, both ENGINE
   numbers, with the operating point read off their crossing.
 
+  SELF-FEEDING (the classroom default): the tool does not wait for the user
+  to run a flowsheet.  It runs the ENGINE itself, in the browser, on its own
+  witness case — tutorials/steady/hydraulics/pumpSystem01_operating_point —
+  through the methodRun foundation (src/case/methodRun.ts): the knob panel's
+  values are written textually into the witness dicts (ScalarOverride keeps
+  units and comments; it THROWS on a missing or ambiguous key) and the WASM
+  choupoSolve solves the full 13-point sweep.  Drag W_shaft and the pump
+  curve shifts; "close the valve" (raise L, drop D) and the system curve
+  steepens — the operating point walks, every point an engine solve.  The
+  sweep's flow window itself stays FIXED at the witness's 0.4..1.6 kmol/s:
+  the outerDict declares `range ( 0.4 1.6 );`, a LIST, which the scalar
+  override channel cannot rewrite — a v1 limitation the knob panel states
+  rather than hides (pinned in tests/pumpSystemTool.test.ts).
+
+  A source toggle "Classroom" | "Current run" appears when the app's own run
+  ALSO carries a detectable sweep; the default stays Classroom, and the old
+  "run such a case first" empty state survives only under "Current run".
+
   Feeds: a SweepDriver CSV in the run's csvFiles bag (keys are case-root-
   relative — solverWorker.js walks /case and strips the "/case/" prefix).
   The detector is GENERIC, never a case or unit name: a sweep CSV whose
   header starts "point,streams." activates the tool when its remaining
   columns carry, for some unit prefix U, BOTH "U.dP" and "U.head_m" (the
   pump publishes that pair and nothing else does) and, for some other
-  prefix Y, "Y.deltaP" (the pipe train's demand).  Witness case:
-  tutorials/steady/hydraulics/pumpSystem01_operating_point.
+  prefix Y, "Y.deltaP" (the pipe train's demand).
 
   The plane's standing rule is ZERO physics in TypeScript, and this tool
   carries NO closed-form exception at all — no head/pressure conversion, no
@@ -46,7 +63,8 @@ License
   crossing of two engine-published columns between the two bracketing sweep
   points.  The engine computed every point; only the straight line between
   neighbouring points is the view's.  Pa→bar and kmol/s→kmol/h on the axes
-  are unit scaling, not physics.
+  are unit scaling, not physics.  The classroom knobs are the same posture:
+  they edit declared dict scalars, the engine computes everything.
 
   THE HONESTY RULE (the point of the tool): the "pump curve" drawn here is
   whatever the pump MODEL published across the sweep, and it is labelled as
@@ -65,10 +83,15 @@ License
   importable by the node test runner (tests/pumpSystemTool.test.ts).
 \*---------------------------------------------------------------------------*/
 
-import { useMemo } from "react";
-import { Badge, Box, Group, Stack, Table, Text, Tooltip } from "@mantine/core";
+import { useMemo, useState } from "react";
+import {
+  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, SegmentedControl,
+  Slider, Stack, Table, Text, Tooltip,
+} from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult } from "../../adapters/SolverAdapter.js";
+import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
 // ---- Detection: which sweep CSV feeds the tool ------------------------------
@@ -229,6 +252,79 @@ export function classifyPumpCharacteristic(
   return (hi - lo) / scale < FLAT_REL_TOL ? "flat-by-spec" : "constant-power";
 }
 
+// ---- The standalone classroom feed (methodRun) ------------------------------
+
+/** The witness case, by its bundled-corpus identifier: <category>/<subclass>/
+ *  <shortName> (steady is a sub-classed category — the identifier carries the
+ *  hydraulics/ segment; verified against tutorialByName in the tests). */
+export const PUMP_WITNESS = "steady/hydraulics/pumpSystem01_operating_point";
+
+/** The classroom knobs — each one a declared scalar of the witness's
+ *  system/flowsheetDict, edited TEXTUALLY (units and comments survive; the
+ *  override throws on a missing or ambiguous key).  Values are in the units
+ *  the dict declares (`W_shaft <n> kW;`, lengths in m), because the override
+ *  replaces only the NUMBER and the unit word stays. */
+export interface PumpSystemKnobs {
+  /** Pump shaft power, kW (`W_shaft` — the pump curve's level). */
+  W_shaft: number;
+  /** Pump efficiency, dimensionless (`eta`). */
+  eta: number;
+  /** Pipe internal diameter, m (`D` — drop it to "close the valve"). */
+  D: number;
+  /** Straight pipe length, m (`L` — raise it to "close the valve"). */
+  L: number;
+  /** Static rise outlet-over-inlet, m (`dz` — the elevation term). */
+  dz: number;
+}
+
+/** The witness's own authored values — the tool boots on the sealed case,
+ *  bit-for-bit, before the student touches anything. */
+export const DEFAULT_PUMP_KNOBS: PumpSystemKnobs = {
+  W_shaft: 2.0, eta: 0.65, D: 0.1, L: 50.0, dz: 2.0,
+};
+
+/** Knob → dict-scalar map.  Every key was verified UNIQUE in its file's raw
+ *  text (no `occurrence` needed) — pinned against the real bundled witness in
+ *  tests/pumpSystemTool.test.ts.  NOTE the sweep's `range ( 0.4 1.6 );` is a
+ *  LIST, which ScalarOverride cannot rewrite — the flow window stays the
+ *  witness's for v1, and the knob panel says so. */
+export function pumpSystemOverrides(k: PumpSystemKnobs): ScalarOverride[] {
+  return [
+    { file: "system/flowsheetDict", key: "W_shaft", value: k.W_shaft },
+    { file: "system/flowsheetDict", key: "eta", value: k.eta },
+    { file: "system/flowsheetDict", key: "D", value: k.D },
+    { file: "system/flowsheetDict", key: "L", value: k.L },
+    { file: "system/flowsheetDict", key: "dz", value: k.dz },
+  ];
+}
+
+/** Where the classroom numbers come from, stated verbatim in the UI. */
+export const PUMP_PROVENANCE_LINE =
+  "Runs tutorials/steady/hydraulics/pumpSystem01_operating_point "
+  + "(13-point sweep) with your parameters, in your browser.";
+
+/** localStorage home of the knob-panel fold (persisted across sessions). */
+export const CONTROLS_COLLAPSED_KEY =
+  "choupo.methods.pump-system.controlsCollapsed";
+
+// Slider bounds: UI affordances only — the range a classroom drag covers,
+// never a physical claim.  The engine judges whatever number arrives.
+const KNOB_META: {
+  field: keyof PumpSystemKnobs;
+  label: string; unit: string; min: number; max: number; step: number;
+}[] = [
+  { field: "W_shaft", label: "W_shaft (pump shaft power)", unit: "kW",
+    min: 0.5, max: 6, step: 0.05 },
+  { field: "eta", label: "\u03B7 (pump efficiency)", unit: "",
+    min: 0.3, max: 0.9, step: 0.01 },
+  { field: "D", label: "D (pipe diameter)", unit: "m",
+    min: 0.06, max: 0.16, step: 0.002 },
+  { field: "L", label: "L (pipe length)", unit: "m",
+    min: 10, max: 200, step: 1 },
+  { field: "dz", label: "dz (static rise)", unit: "m",
+    min: 0, max: 10, step: 0.25 },
+];
+
 // ---- Display-unit scaling (unit scaling only — no physics) ------------------
 
 const PA_TO_BAR = 1.0e-5;          // pressure display: Pa → bar
@@ -262,11 +358,65 @@ const DERIVED_IN_VIEW_LABEL =
   + "points \u2014 the engine computed every point, the line between them is "
   + "the view's";
 
+// ---- One knob row (a labelled slider — writes a number, computes nothing) ---
+
+function KnobSlider(props: {
+  label: string; unit: string; min: number; max: number; step: number;
+  value: number; onChange: (v: number) => void;
+}): JSX.Element {
+  return (
+    <Box style={{ flex: 1, minWidth: 150 }}>
+      <Group justify="space-between" gap={4} wrap="nowrap">
+        <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+          {props.label}
+        </Text>
+        <Text size="xs" ff="monospace" style={{ whiteSpace: "nowrap" }}>
+          {props.value}{props.unit ? ` ${props.unit}` : ""}
+        </Text>
+      </Group>
+      <Slider size="xs" min={props.min} max={props.max} step={props.step}
+        value={props.value} onChange={props.onChange} label={null} />
+    </Box>
+  );
+}
+
 // ---- The workspace tool -----------------------------------------------------
 
 export function PumpSystemTool(): JSX.Element {
-  const result = useStore((s) => s.runResult);
-  const sweep = useMemo(() => findPumpSystemSweep(result?.csvFiles), [result]);
+  // The app's own run — the "Current run" source, when it carries a sweep.
+  const appResult = useStore((s) => s.runResult);
+  const appSweep = useMemo(
+    () => findPumpSystemSweep(appResult?.csvFiles), [appResult]);
+
+  // The classroom knobs + the standalone in-browser engine run.
+  const [knobs, setKnobs] = useState<PumpSystemKnobs>(DEFAULT_PUMP_KNOBS);
+  const [sourceChoice, setSourceChoice] =
+    useState<"classroom" | "current">("classroom");
+  // The toggle exists only while the app run carries a detectable sweep;
+  // without one the tool is ALWAYS the classroom (its whole point).
+  const source: "classroom" | "current" =
+    appSweep ? sourceChoice : "classroom";
+  const classroom = source === "classroom";
+
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try { return window.localStorage.getItem(CONTROLS_COLLAPSED_KEY) === "1"; }
+    catch { return false; }
+  });
+  const toggleCollapsed = () => setCollapsed((c) => {
+    const next = !c;
+    try { window.localStorage.setItem(CONTROLS_COLLAPSED_KEY, next ? "1" : "0"); }
+    catch { /* storage blocked — the fold stays session-only */ }
+    return next;
+  });
+
+  const overridesKey = JSON.stringify(knobs);
+  const overrides = useMemo(() => pumpSystemOverrides(knobs), [knobs]);
+  const { result: methodResult, err, busy } = useMethodRun(
+    classroom ? PUMP_WITNESS : null, overrides, overridesKey, "choupoSolve");
+
+  const sweep = useMemo(
+    () => classroom ? findPumpSystemSweep(methodResult?.csvFiles) : appSweep,
+    [classroom, methodResult, appSweep]);
   const op = useMemo(
     () => sweep ? findOperatingPoint(sweep.F, sweep.pumpDP, sweep.systemDP) : null,
     [sweep]);
@@ -274,10 +424,335 @@ export function PumpSystemTool(): JSX.Element {
     () => sweep ? classifyPumpCharacteristic(sweep.pumpDP) : null,
     [sweep]);
 
-  // ---- Honest empty state: no sweep, no chart. ------------------------------
-  if (!sweep || !character) {
-    return (
-      <Box style={{ height: "100%", display: "flex", alignItems: "center",
+  // ---- Top chrome: source toggle + the collapsible knob panel ---------------
+  const chrome = (
+    <Box style={{
+      flexShrink: 0, padding: "6px 12px",
+      borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+    }}>
+      <Group gap="sm" wrap="nowrap" align="center">
+        {classroom && (
+          <ActionIcon variant="subtle" color="gray" size="sm"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? "expand parameter controls"
+                                  : "collapse parameter controls"}>
+            {collapsed ? <IconChevronRight size={14} />
+                       : <IconChevronDown size={14} />}
+          </ActionIcon>
+        )}
+        <Text size="xs" fw={600} style={{ whiteSpace: "nowrap" }}>
+          {classroom ? "Classroom parameters" : "Current run"}
+        </Text>
+        {appSweep && (
+          <SegmentedControl size="xs" value={source}
+            onChange={(v) =>
+              setSourceChoice(v === "current" ? "current" : "classroom")}
+            data={[
+              { label: "Classroom", value: "classroom" },
+              { label: "Current run", value: "current" },
+            ]} />
+        )}
+        <Text size="xs" c="dimmed" style={{
+          flex: 1, minWidth: 0, overflow: "hidden",
+          textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {classroom
+            ? PUMP_PROVENANCE_LINE
+            : "Reading the sweep CSV of the run you launched."}
+        </Text>
+      </Group>
+      {classroom && (
+        <Collapse in={!collapsed}>
+          <Group gap="md" wrap="wrap" pt={6} align="flex-end">
+            {KNOB_META.map((m) => (
+              <KnobSlider key={m.field} label={m.label} unit={m.unit}
+                min={m.min} max={m.max} step={m.step}
+                value={knobs[m.field]}
+                onChange={(v) =>
+                  setKnobs((k) => ({ ...k, [m.field]: v }))} />
+            ))}
+          </Group>
+          <Text size="xs" c="dimmed" pt={4}>
+            Each drag rewrites the declared dict scalar and re-solves the whole
+            sweep in the engine — close the valve (raise L, drop D) and watch
+            the operating point walk.  The swept flow window itself is fixed at
+            the witness&apos;s 0.4–1.6 kmol/s: the outerDict declares{" "}
+            <code>range ( 0.4 1.6 );</code>, a list, which the scalar-override
+            channel cannot rewrite (v1).
+          </Text>
+        </Collapse>
+      )}
+    </Box>
+  );
+
+  // ---- Engine errors, verbatim ---------------------------------------------
+  const errorAlert = classroom && err ? (
+    <Alert color="red" variant="light" mx={12} mt={8} py={6}
+      title="The engine did not deliver a sweep">
+      <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+        {err}
+      </Text>
+    </Alert>
+  ) : null;
+
+  // ---- Body -----------------------------------------------------------------
+  let body: JSX.Element;
+  if (sweep && character) {
+    const flat = character === "flat-by-spec";
+
+    // Display units (unit scaling only): kmol/s → kmol/h, Pa → bar.
+    const Fd = sweep.F.map((v) => v * KMOLPS_TO_KMOLPH);
+    const pumpBar = sweep.pumpDP.map((v) => v * PA_TO_BAR);
+    const systemBar = sweep.systemDP.map((v) => v * PA_TO_BAR);
+
+    const xLo = Math.min(...Fd), xHi = Math.max(...Fd);
+    const yHi = 1.06 * Math.max(...pumpBar, ...systemBar);
+    const toX = (f: number) => FX0 + ((FX1 - FX0) * (f - xLo)) / (xHi - xLo || 1);
+    const toY = (p: number) => FY1 - ((FY1 - FY0) * p) / (yHi || 1);
+    const line = (col: number[]) =>
+      col.map((p, i) => `${toX(Fd[i]!).toFixed(2)},${toY(p).toFixed(2)}`).join(" ");
+
+    const xTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => xLo + f * (xHi - xLo));
+    const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => f * yHi);
+
+    const opX = op ? toX(op.F * KMOLPS_TO_KMOLPH) : 0;
+    const opY = op ? toY(op.dP * PA_TO_BAR) : 0;
+    const onGridPoint = op !== null && op.lowerIndex === op.upperIndex;
+
+    // Secondary columns: everything the engine published beyond the two curves.
+    const secondaryNames = Object.keys(sweep.columns).filter((n) =>
+      n !== "point" && n !== sweep.target
+      && n !== sweep.pumpUnit + ".dP" && n !== sweep.systemUnit + ".deltaP");
+
+    body = (
+      <>
+        {/* Toolbar: what was detected + the operating-point chip. */}
+        <Box style={{
+          flexShrink: 0, minHeight: 44, padding: "6px 12px",
+          overflowX: "auto", overflowY: "hidden",
+          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        }}>
+          <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+            <Badge variant="light" color="gray" tt="none" style={{ flexShrink: 0 }}>
+              pump {sweep.pumpUnit} · system {sweep.systemUnit} · {sweep.F.length} points
+            </Badge>
+            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+              swept: {sweep.target} ({sweep.file})
+            </Text>
+            {op ? (
+              <Tooltip withArrow multiline w={360}
+                label={onGridPoint
+                  ? "The crossing sits exactly on a sweep point — the engine computed it; nothing was interpolated."
+                  : DERIVED_IN_VIEW_LABEL}>
+                <Badge color="teal" variant="light" tt="none"
+                  styles={{ root: { cursor: "help" } }} style={{ flexShrink: 0 }}>
+                  operating point: F* = {fmt(op.F * KMOLPS_TO_KMOLPH)} kmol/h ·
+                  {" "}ΔP* = {fmt(op.dP * PA_TO_BAR)} bar
+                </Badge>
+              </Tooltip>
+            ) : (
+              <Badge color="orange" variant="light" tt="none" style={{ flexShrink: 0 }}>
+                no crossing inside the swept window
+              </Badge>
+            )}
+          </Group>
+        </Box>
+
+        {/* The honesty line, stated before the plot. */}
+        <Text size="xs" c="dimmed" px={12} py={4} style={{ flexShrink: 0 }}>
+          {flat
+            ? <>The pump column is flat across the sweep: {FLAT_BY_SPEC_LABEL}.</>
+            : <>The falling pump curve is the {CONSTANT_POWER_LABEL}.</>}
+          {" "}Axes show bar and kmol/h — unit scaling of the engine&apos;s Pa and
+          kmol/s, nothing more.
+          {!op && <>
+            {" "}The two curves do not cross between F ={" "}
+            {fmt(xLo)} and {fmt(xHi)} kmol/h; widen the sweep in the case&apos;s{" "}
+            outerDict — this view never extrapolates.
+          </>}
+        </Text>
+
+        {/* Main row: the chart + the secondary-columns table. */}
+        <Box style={{ flex: 1, minHeight: 0, display: "flex", gap: 12,
+          padding: "0 12px 8px", overflow: "hidden", position: "relative" }}>
+          {/* Busy overlay: a fresh classroom solve is running; the previous
+              sweep stays visible underneath. */}
+          {classroom && busy && (
+            <Box style={{ position: "absolute", inset: 0, zIndex: 5,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              pointerEvents: "none" }}>
+              <Loader size="sm" />
+            </Box>
+          )}
+          {/* ---- Pump vs system, in pressure ---- */}
+          <Box style={{ flex: 2, minWidth: 0, display: "flex", flexDirection: "column" }}>
+            <Group gap="md" wrap="wrap" py={2} style={{ flexShrink: 0 }}>
+              <Group gap={4} wrap="nowrap" align="center">
+                <svg width={26} height={8} aria-hidden>
+                  <line x1={1} y1={4} x2={25} y2={4}
+                    stroke={flat ? PUMP_FLAT_COLOR : PUMP_COLOR} strokeWidth={2}
+                    strokeDasharray={flat ? "6 4" : undefined} />
+                </svg>
+                <Text size="xs" c="dimmed">
+                  pump ΔP ({sweep.pumpUnit}){flat ? " — flat by specification" : ""}
+                </Text>
+              </Group>
+              <Group gap={4} wrap="nowrap" align="center">
+                <svg width={26} height={8} aria-hidden>
+                  <line x1={1} y1={4} x2={25} y2={4} stroke={SYSTEM_COLOR} strokeWidth={2} />
+                </svg>
+                <Text size="xs" c="dimmed">system demand ({sweep.systemUnit})</Text>
+              </Group>
+              {op && (
+                <Group gap={4} wrap="nowrap" align="center">
+                  <svg width={12} height={12} aria-hidden>
+                    <circle cx={6} cy={6} r={4} fill={POINT_COLOR} />
+                  </svg>
+                  <Text size="xs" c="dimmed">
+                    operating point{onGridPoint ? " (on a sweep point)" : " (derived in view)"}
+                  </Text>
+                </Group>
+              )}
+            </Group>
+            <Box style={{ flex: 1, minHeight: 0 }}>
+              <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
+                preserveAspectRatio="xMidYMid meet"
+                role="img" aria-label="pump pressure rise and system pressure demand versus flow">
+                {/* grid + axes */}
+                {xTicks.map((f) => (
+                  <g key={`gx${f}`}>
+                    <line x1={toX(f)} y1={FY0} x2={toX(f)} y2={FY1}
+                      stroke={GRID} strokeWidth={0.6} />
+                    <text x={toX(f)} y={FY1 + 16} textAnchor="middle"
+                      fontSize={11} fill={INK}>{fmtTick(f)}</text>
+                  </g>
+                ))}
+                {yTicks.map((p) => (
+                  <g key={`gy${p}`}>
+                    <line x1={FX0} y1={toY(p)} x2={FX1} y2={toY(p)}
+                      stroke={GRID} strokeWidth={p === 0 ? 1.4 : 0.6} />
+                    <text x={FX0 - 6} y={toY(p) + 4} textAnchor="end"
+                      fontSize={11} fill={INK}>{fmtTick(p)}</text>
+                  </g>
+                ))}
+                <text x={(FX0 + FX1) / 2} y={FH - 6} textAnchor="middle"
+                  fontSize={12} fill={INK}>
+                  {sweep.target} (kmol/h)
+                </text>
+                <text x={14} y={(FY0 + FY1) / 2} textAnchor="middle" fontSize={12}
+                  fill={INK} transform={`rotate(-90 14 ${(FY0 + FY1) / 2})`}>
+                  ΔP (bar)
+                </text>
+
+                {/* the engine's two columns */}
+                <polyline points={line(pumpBar)} fill="none"
+                  stroke={flat ? PUMP_FLAT_COLOR : PUMP_COLOR}
+                  strokeWidth={flat ? 1.4 : 2}
+                  strokeDasharray={flat ? "6 4" : undefined}
+                  opacity={flat ? 0.8 : 1} />
+                <polyline points={line(systemBar)} fill="none"
+                  stroke={SYSTEM_COLOR} strokeWidth={2} />
+                {/* the engine's actual sweep points, so nobody mistakes the
+                    polylines for continuous engine output */}
+                {pumpBar.map((p, i) => (
+                  <circle key={`pp${i}`} cx={toX(Fd[i]!)} cy={toY(p)} r={2.2}
+                    fill={flat ? PUMP_FLAT_COLOR : PUMP_COLOR} />
+                ))}
+                {systemBar.map((p, i) => (
+                  <circle key={`sp${i}`} cx={toX(Fd[i]!)} cy={toY(p)} r={2.2}
+                    fill={SYSTEM_COLOR} />
+                ))}
+
+                {/* the flat-by-spec annotation rides the line itself */}
+                {flat && (
+                  <text x={(FX0 + FX1) / 2} y={toY(pumpBar[0] ?? 0) - 8}
+                    textAnchor="middle" fontSize={10} fill={INK}>
+                    specification echoed back — not a pump characteristic
+                  </text>
+                )}
+
+                {/* the crossing, with guides to both axes */}
+                {op && (
+                  <g>
+                    <line x1={opX} y1={opY} x2={opX} y2={FY1} stroke={POINT_COLOR}
+                      strokeWidth={0.8} strokeDasharray="3 3" />
+                    <line x1={FX0} y1={opY} x2={opX} y2={opY} stroke={POINT_COLOR}
+                      strokeWidth={0.8} strokeDasharray="3 3" />
+                    <circle cx={opX} cy={opY} r={5} fill={POINT_COLOR}
+                      stroke="var(--mantine-color-body)" strokeWidth={1.5} />
+                    <text x={opX + 8} y={opY - 8} fontSize={11} fill={POINT_COLOR}>
+                      F* = {fmt(op.F * KMOLPS_TO_KMOLPH)} kmol/h ·
+                      {" "}ΔP* = {fmt(op.dP * PA_TO_BAR)} bar
+                    </text>
+                  </g>
+                )}
+              </svg>
+            </Box>
+          </Box>
+
+          {/* ---- Side pane: the engine's secondary columns, verbatim ---- */}
+          <Box style={{ flex: 1, minWidth: 240, maxWidth: 380, display: "flex",
+            flexDirection: "column",
+            borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+            paddingLeft: 12 }}>
+            <Text size="xs" fw={600} c="dimmed" py={2} style={{ flexShrink: 0 }}>
+              The sweep&apos;s other columns — engine numbers, verbatim
+            </Text>
+            <Box style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+              <Table fz="xs" verticalSpacing={2} horizontalSpacing={6}
+                striped withRowBorders={false} stickyHeader>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>{sweep.target}</Table.Th>
+                    {secondaryNames.map((n) => <Table.Th key={n}>{n}</Table.Th>)}
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {sweep.F.map((f, i) => (
+                    <Table.Tr key={i}>
+                      <Table.Td>{String(f)}</Table.Td>
+                      {secondaryNames.map((n) => (
+                        <Table.Td key={n}>{String(sweep.columns[n]![i])}</Table.Td>
+                      ))}
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </Box>
+          </Box>
+        </Box>
+
+        {/* The pedagogy line, under the chart. */}
+        <Stack gap={2} px={12} pb={6} style={{ flexShrink: 0 }}>
+          <Text size="xs" c="dimmed">
+            Every point on both curves is an engine solve of the whole case at
+            that feed flow.  The operating point is where the pump&apos;s published
+            rise ({sweep.pumpUnit}.dP) meets the pipe train&apos;s published demand
+            ({sweep.systemUnit}.deltaP)
+            {op && !onGridPoint && <> — {DERIVED_IN_VIEW_LABEL}</>}.
+          </Text>
+        </Stack>
+      </>
+    );
+  } else if (classroom) {
+    // No sweep yet in classroom mode: the engine is (about to be) running, or
+    // it refused — the refusal rides the Alert above, verbatim.
+    body = (
+      <Box style={{ flex: 1, display: "flex", alignItems: "center",
+        justifyContent: "center", padding: 24 }}>
+        {!err && (
+          <Stack align="center" gap={8}>
+            <Loader size="sm" />
+            <Text size="xs" c="dimmed">
+              running choupoSolve on the witness sweep in your browser…
+            </Text>
+          </Stack>
+        )}
+      </Box>
+    );
+  } else {
+    // ---- Honest empty state, "Current run" source only: no sweep, no chart.
+    body = (
+      <Box style={{ flex: 1, display: "flex", alignItems: "center",
         justifyContent: "center", padding: 24 }}>
         <Text size="sm" c="dimmed" ta="center" maw={520}>
           No pump-vs-system sweep in this run.  This tool reads a{" "}
@@ -287,238 +762,18 @@ export function PumpSystemTool(): JSX.Element {
           + <code>&lt;unit&gt;.head_m</code> pair and another unit&apos;s{" "}
           <code>&lt;unit&gt;.deltaP</code> demand.  Run such a case — e.g.{" "}
           <code>tutorials/steady/hydraulics/pumpSystem01_operating_point</code>{" "}
-          — then return here.
+          — then return here, or switch back to Classroom.
         </Text>
       </Box>
     );
   }
 
-  const flat = character === "flat-by-spec";
-
-  // Display units (unit scaling only): kmol/s → kmol/h, Pa → bar.
-  const Fd = sweep.F.map((v) => v * KMOLPS_TO_KMOLPH);
-  const pumpBar = sweep.pumpDP.map((v) => v * PA_TO_BAR);
-  const systemBar = sweep.systemDP.map((v) => v * PA_TO_BAR);
-
-  const xLo = Math.min(...Fd), xHi = Math.max(...Fd);
-  const yHi = 1.06 * Math.max(...pumpBar, ...systemBar);
-  const toX = (f: number) => FX0 + ((FX1 - FX0) * (f - xLo)) / (xHi - xLo || 1);
-  const toY = (p: number) => FY1 - ((FY1 - FY0) * p) / (yHi || 1);
-  const line = (col: number[]) =>
-    col.map((p, i) => `${toX(Fd[i]!).toFixed(2)},${toY(p).toFixed(2)}`).join(" ");
-
-  const xTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => xLo + f * (xHi - xLo));
-  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => f * yHi);
-
-  const opX = op ? toX(op.F * KMOLPS_TO_KMOLPH) : 0;
-  const opY = op ? toY(op.dP * PA_TO_BAR) : 0;
-  const onGridPoint = op !== null && op.lowerIndex === op.upperIndex;
-
-  // Secondary columns: everything the engine published beyond the two curves.
-  const secondaryNames = Object.keys(sweep.columns).filter((n) =>
-    n !== "point" && n !== sweep.target
-    && n !== sweep.pumpUnit + ".dP" && n !== sweep.systemUnit + ".deltaP");
-
   return (
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", overflow: "hidden" }}>
-      {/* Toolbar: what was detected + the operating-point chip. */}
-      <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px",
-        overflowX: "auto", overflowY: "hidden",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
-          <Badge variant="light" color="gray" tt="none" style={{ flexShrink: 0 }}>
-            pump {sweep.pumpUnit} · system {sweep.systemUnit} · {sweep.F.length} points
-          </Badge>
-          <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-            swept: {sweep.target} ({sweep.file})
-          </Text>
-          {op ? (
-            <Tooltip withArrow multiline w={360}
-              label={onGridPoint
-                ? "The crossing sits exactly on a sweep point — the engine computed it; nothing was interpolated."
-                : DERIVED_IN_VIEW_LABEL}>
-              <Badge color="teal" variant="light" tt="none"
-                styles={{ root: { cursor: "help" } }} style={{ flexShrink: 0 }}>
-                operating point: F* = {fmt(op.F * KMOLPS_TO_KMOLPH)} kmol/h ·
-                {" "}ΔP* = {fmt(op.dP * PA_TO_BAR)} bar
-              </Badge>
-            </Tooltip>
-          ) : (
-            <Badge color="orange" variant="light" tt="none" style={{ flexShrink: 0 }}>
-              no crossing inside the swept window
-            </Badge>
-          )}
-        </Group>
-      </Box>
-
-      {/* The honesty line, stated before the plot. */}
-      <Text size="xs" c="dimmed" px={12} py={4} style={{ flexShrink: 0 }}>
-        {flat
-          ? <>The pump column is flat across the sweep: {FLAT_BY_SPEC_LABEL}.</>
-          : <>The falling pump curve is the {CONSTANT_POWER_LABEL}.</>}
-        {" "}Axes show bar and kmol/h — unit scaling of the engine&apos;s Pa and
-        kmol/s, nothing more.
-        {!op && <>
-          {" "}The two curves do not cross between F ={" "}
-          {fmt(xLo)} and {fmt(xHi)} kmol/h; widen the sweep in the case&apos;s{" "}
-          outerDict — this view never extrapolates.
-        </>}
-      </Text>
-
-      {/* Main row: the chart + the secondary-columns table. */}
-      <Box style={{ flex: 1, minHeight: 0, display: "flex", gap: 12,
-        padding: "0 12px 8px", overflow: "hidden" }}>
-        {/* ---- Pump vs system, in pressure ---- */}
-        <Box style={{ flex: 2, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          <Group gap="md" wrap="wrap" py={2} style={{ flexShrink: 0 }}>
-            <Group gap={4} wrap="nowrap" align="center">
-              <svg width={26} height={8} aria-hidden>
-                <line x1={1} y1={4} x2={25} y2={4}
-                  stroke={flat ? PUMP_FLAT_COLOR : PUMP_COLOR} strokeWidth={2}
-                  strokeDasharray={flat ? "6 4" : undefined} />
-              </svg>
-              <Text size="xs" c="dimmed">
-                pump ΔP ({sweep.pumpUnit}){flat ? " — flat by specification" : ""}
-              </Text>
-            </Group>
-            <Group gap={4} wrap="nowrap" align="center">
-              <svg width={26} height={8} aria-hidden>
-                <line x1={1} y1={4} x2={25} y2={4} stroke={SYSTEM_COLOR} strokeWidth={2} />
-              </svg>
-              <Text size="xs" c="dimmed">system demand ({sweep.systemUnit})</Text>
-            </Group>
-            {op && (
-              <Group gap={4} wrap="nowrap" align="center">
-                <svg width={12} height={12} aria-hidden>
-                  <circle cx={6} cy={6} r={4} fill={POINT_COLOR} />
-                </svg>
-                <Text size="xs" c="dimmed">
-                  operating point{onGridPoint ? " (on a sweep point)" : " (derived in view)"}
-                </Text>
-              </Group>
-            )}
-          </Group>
-          <Box style={{ flex: 1, minHeight: 0 }}>
-            <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
-              preserveAspectRatio="xMidYMid meet"
-              role="img" aria-label="pump pressure rise and system pressure demand versus flow">
-              {/* grid + axes */}
-              {xTicks.map((f) => (
-                <g key={`gx${f}`}>
-                  <line x1={toX(f)} y1={FY0} x2={toX(f)} y2={FY1}
-                    stroke={GRID} strokeWidth={0.6} />
-                  <text x={toX(f)} y={FY1 + 16} textAnchor="middle"
-                    fontSize={11} fill={INK}>{fmtTick(f)}</text>
-                </g>
-              ))}
-              {yTicks.map((p) => (
-                <g key={`gy${p}`}>
-                  <line x1={FX0} y1={toY(p)} x2={FX1} y2={toY(p)}
-                    stroke={GRID} strokeWidth={p === 0 ? 1.4 : 0.6} />
-                  <text x={FX0 - 6} y={toY(p) + 4} textAnchor="end"
-                    fontSize={11} fill={INK}>{fmtTick(p)}</text>
-                </g>
-              ))}
-              <text x={(FX0 + FX1) / 2} y={FH - 6} textAnchor="middle"
-                fontSize={12} fill={INK}>
-                {sweep.target} (kmol/h)
-              </text>
-              <text x={14} y={(FY0 + FY1) / 2} textAnchor="middle" fontSize={12}
-                fill={INK} transform={`rotate(-90 14 ${(FY0 + FY1) / 2})`}>
-                ΔP (bar)
-              </text>
-
-              {/* the engine's two columns */}
-              <polyline points={line(pumpBar)} fill="none"
-                stroke={flat ? PUMP_FLAT_COLOR : PUMP_COLOR}
-                strokeWidth={flat ? 1.4 : 2}
-                strokeDasharray={flat ? "6 4" : undefined}
-                opacity={flat ? 0.8 : 1} />
-              <polyline points={line(systemBar)} fill="none"
-                stroke={SYSTEM_COLOR} strokeWidth={2} />
-              {/* the engine's actual sweep points, so nobody mistakes the
-                  polylines for continuous engine output */}
-              {pumpBar.map((p, i) => (
-                <circle key={`pp${i}`} cx={toX(Fd[i]!)} cy={toY(p)} r={2.2}
-                  fill={flat ? PUMP_FLAT_COLOR : PUMP_COLOR} />
-              ))}
-              {systemBar.map((p, i) => (
-                <circle key={`sp${i}`} cx={toX(Fd[i]!)} cy={toY(p)} r={2.2}
-                  fill={SYSTEM_COLOR} />
-              ))}
-
-              {/* the flat-by-spec annotation rides the line itself */}
-              {flat && (
-                <text x={(FX0 + FX1) / 2} y={toY(pumpBar[0] ?? 0) - 8}
-                  textAnchor="middle" fontSize={10} fill={INK}>
-                  specification echoed back — not a pump characteristic
-                </text>
-              )}
-
-              {/* the crossing, with guides to both axes */}
-              {op && (
-                <g>
-                  <line x1={opX} y1={opY} x2={opX} y2={FY1} stroke={POINT_COLOR}
-                    strokeWidth={0.8} strokeDasharray="3 3" />
-                  <line x1={FX0} y1={opY} x2={opX} y2={opY} stroke={POINT_COLOR}
-                    strokeWidth={0.8} strokeDasharray="3 3" />
-                  <circle cx={opX} cy={opY} r={5} fill={POINT_COLOR}
-                    stroke="var(--mantine-color-body)" strokeWidth={1.5} />
-                  <text x={opX + 8} y={opY - 8} fontSize={11} fill={POINT_COLOR}>
-                    F* = {fmt(op.F * KMOLPS_TO_KMOLPH)} kmol/h ·
-                    {" "}ΔP* = {fmt(op.dP * PA_TO_BAR)} bar
-                  </text>
-                </g>
-              )}
-            </svg>
-          </Box>
-        </Box>
-
-        {/* ---- Side pane: the engine's secondary columns, verbatim ---- */}
-        <Box style={{ flex: 1, minWidth: 240, maxWidth: 380, display: "flex",
-          flexDirection: "column",
-          borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-          paddingLeft: 12 }}>
-          <Text size="xs" fw={600} c="dimmed" py={2} style={{ flexShrink: 0 }}>
-            The sweep&apos;s other columns — engine numbers, verbatim
-          </Text>
-          <Box style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
-            <Table fz="xs" verticalSpacing={2} horizontalSpacing={6}
-              striped withRowBorders={false} stickyHeader>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>{sweep.target}</Table.Th>
-                  {secondaryNames.map((n) => <Table.Th key={n}>{n}</Table.Th>)}
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {sweep.F.map((f, i) => (
-                  <Table.Tr key={i}>
-                    <Table.Td>{String(f)}</Table.Td>
-                    {secondaryNames.map((n) => (
-                      <Table.Td key={n}>{String(sweep.columns[n]![i])}</Table.Td>
-                    ))}
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </Box>
-        </Box>
-      </Box>
-
-      {/* The pedagogy line, under the chart. */}
-      <Stack gap={2} px={12} pb={6} style={{ flexShrink: 0 }}>
-        <Text size="xs" c="dimmed">
-          Every point on both curves is an engine solve of the whole case at
-          that feed flow.  The operating point is where the pump&apos;s published
-          rise ({sweep.pumpUnit}.dP) meets the pipe train&apos;s published demand
-          ({sweep.systemUnit}.deltaP)
-          {op && !onGridPoint && <> — {DERIVED_IN_VIEW_LABEL}</>}.
-        </Text>
-      </Stack>
+      {chrome}
+      {errorAlert}
+      {body}
     </Box>
   );
 }
