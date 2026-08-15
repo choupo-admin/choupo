@@ -1,0 +1,627 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  PinchCompositeTool — the ENGINE's pinch targets, drawn.  Unlike PinchView
+  (which recomputes a pinch analysis in the browser from the run's KPIs), this
+  tool reads what the C++ PinchPass itself published:
+
+    reports/pinch/compositeCurves.csv    curve,T_K,H_kW — curves "hot", "cold",
+                                         "hotShifted", "coldShifted" (verified
+                                         against PinchPass.cpp's emit calls; the
+                                         engine publishes NO grand-composite
+                                         curve, so the GCC here is derived)
+    reports/pinch/candidateMatches.csv   region,hotStream,coldStream,
+                                         temperatureFeasible,pinchRule,
+                                         maximumCandidateDuty_kW,limitingReason,
+                                         recommendation
+    KPI row "pinch"                      Q_H_min_kW, Q_C_min_kW, T_pinch_K
+                                         (shifted scale), T_pinch_hot_K,
+                                         T_pinch_cold_K, dTmin_K, ...
+
+  The plane's standing rule is ZERO physics in TypeScript.  The ONE authorized
+  exception this tool carries is method GEOMETRY: the Linnhoff-Flower heat
+  cascade re-run over the engine's OWN published shifted composite curves —
+  pure arithmetic on the CSV, no stream data, no Cp, no dTmin of its own (the
+  shift is already inside the curves the engine wrote).  It feeds exactly two
+  surfaces, both labelled "derived in view": the cross-check chip (does the
+  cascade over the published curves reproduce the engine's KPI targets?) and
+  the grand composite curve.  The engine's KPI row is the judge — a
+  disagreement is a finding about this tool's reading, never a moved target.
+
+  The candidate-match table renders the engine's own words.  Per the pinch
+  pass's doctrine, every feasible row is a "thermodynamically admissible
+  candidate" — no row is ever ranked, and no superlative appears anywhere in
+  this file (gate-checked by the test).
+
+  Charts are inline SVG (the EpsilonNtuTool precedent) — the plotly bundle
+  cannot load outside a browser, and the pure helpers here must stay
+  importable by the node test runner (tests/pinchCompositeTool.test.ts).
+\*---------------------------------------------------------------------------*/
+
+import { useMemo, useState } from "react";
+import {
+  Badge, Box, Group, SegmentedControl, Stack, Table, Text, Tooltip,
+} from "@mantine/core";
+
+import { useStore } from "../../state/store.js";
+
+// ---- Where the engine's pinch artefacts live in the run result --------------
+// csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
+// the "/case/" prefix), so the reports keep their reports/... path.
+
+export const COMPOSITE_CURVES_CSV_PATH = "reports/pinch/compositeCurves.csv";
+export const CANDIDATE_MATCHES_CSV_PATH = "reports/pinch/candidateMatches.csv";
+
+// ---- CSV parsing (the engine's own column contracts, verbatim) --------------
+
+export interface CurvePoint {
+  T_K: number;
+  H_kW: number;
+}
+
+/** The curves of compositeCurves.csv, keyed by the engine's own labels
+ *  ("hot", "cold", "hotShifted", "coldShifted").  Null when the text is not
+ *  the engine's curve,T_K,H_kW format — an honest empty state, never a guess. */
+export function parseCompositeCurves(
+  csv: string,
+): { [curve: string]: CurvePoint[] } | null {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 2) return null;
+  const header = lines[0]!.split(",").map((h) => h.trim());
+  if (header.length !== 3 || header[0] !== "curve"
+      || header[1] !== "T_K" || header[2] !== "H_kW") return null;
+  const out: { [curve: string]: CurvePoint[] } = {};
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length !== 3) continue;
+    const T = Number(f[1]);
+    const H = Number(f[2]);
+    if (!Number.isFinite(T) || !Number.isFinite(H)) continue;
+    const name = f[0]!.trim();
+    (out[name] ??= []).push({ T_K: T, H_kW: H });
+  }
+  return Object.keys(out).length > 0 ? out : null;
+}
+
+export interface CandidateMatch {
+  region: string;
+  hotStream: string;
+  coldStream: string;
+  temperatureFeasible: boolean;
+  pinchRule: string;
+  maximumCandidateDuty_kW: number;
+  limitingReason: string;
+  recommendation: string;
+}
+
+const MATCHES_HEADER =
+  "region,hotStream,coldStream,temperatureFeasible,pinchRule,"
+  + "maximumCandidateDuty_kW,limitingReason,recommendation";
+
+/** candidateMatches.csv rows, verbatim.  The engine writes no quoting and no
+ *  field of its contains a comma, so a plain 8-field split IS the writer's
+ *  format; a row of any other arity is skipped rather than misread. */
+export function parseCandidateMatches(csv: string): CandidateMatch[] {
+  const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  if (lines.length < 1 || lines[0] !== MATCHES_HEADER) return [];
+  const out: CandidateMatch[] = [];
+  for (const line of lines.slice(1)) {
+    const f = line.split(",");
+    if (f.length !== 8) continue;
+    const Q = Number(f[5]);
+    if (!Number.isFinite(Q)) continue;
+    out.push({
+      region: f[0]!, hotStream: f[1]!, coldStream: f[2]!,
+      temperatureFeasible: f[3] === "yes",
+      pinchRule: f[4]!,
+      maximumCandidateDuty_kW: Q,
+      limitingReason: f[6]!, recommendation: f[7]!,
+    });
+  }
+  return out;
+}
+
+/** Why a row is visibly flagged: not temperature-feasible at dTmin, or a
+ *  pinch match whose CP rule the engine marked VIOLATED (still admissible —
+ *  away from the pinch only, in the engine's own words).  Null = plain row. */
+export function candidateFlag(m: CandidateMatch): "infeasible" | "cpRuleViolated" | null {
+  if (!m.temperatureFeasible) return "infeasible";
+  if (m.pinchRule.includes("VIOLATED")) return "cpRuleViolated";
+  return null;
+}
+
+// ---- The cascade over the engine's shifted curves (derived in view) ---------
+// The authorized method geometry: H(T*) of each shifted composite is the exact
+// integral of that population's interval CPs, so differencing the two curves
+// between temperature levels reproduces the problem table's per-interval
+// dH = (sumCP_hot - sumCP_cold) * dT without ever touching a stream.
+
+/** Piecewise-linear read of a composite H(T), clamped outside its domain
+ *  (below the cold end the curve carries nothing; above the hot end it is
+ *  fully integrated).  `curve` must be sorted ascending in T. */
+export function interpolateH(curve: CurvePoint[], T: number): number {
+  const first = curve[0]!;
+  const last = curve[curve.length - 1]!;
+  if (T <= first.T_K) return first.H_kW;
+  if (T >= last.T_K) return last.H_kW;
+  for (let i = 0; i + 1 < curve.length; ++i) {
+    const a = curve[i]!;
+    const b = curve[i + 1]!;
+    if (T <= b.T_K) {
+      const w = (T - a.T_K) / (b.T_K - a.T_K);
+      return a.H_kW + w * (b.H_kW - a.H_kW);
+    }
+  }
+  return last.H_kW;
+}
+
+export interface DerivedPinch {
+  Q_H_min_kW: number;
+  Q_C_min_kW: number;
+  /** Pinch on the SHIFTED scale — comparable to the engine's T_pinch_K KPI. */
+  T_pinch_K: number;
+  /** The grand composite: net cascade + Q_H_min at every shifted level,
+   *  descending T*.  H >= 0 everywhere, exactly 0 at the pinch. */
+  gcc: CurvePoint[];
+}
+
+/** The Linnhoff-Flower cascade re-run over the engine's published hotShifted /
+ *  coldShifted curves.  ONE pass feeds both readouts (the cross-check chip and
+ *  the GCC) so the two can never disagree with each other.  Mirrors the
+ *  engine's own conventions: the cascade starts at 0 from the top level, the
+ *  running minimum uses the same 1e-9 band, Q_H_min = -min(cascade),
+ *  Q_C_min = cascade(bottom) + Q_H_min. */
+export function computePinchFromCurves(
+  hotShifted: CurvePoint[] | undefined,
+  coldShifted: CurvePoint[] | undefined,
+): DerivedPinch | null {
+  if (!hotShifted || !coldShifted
+      || hotShifted.length < 2 || coldShifted.length < 2) return null;
+  const hot = [...hotShifted].sort((a, b) => a.T_K - b.T_K);
+  const cold = [...coldShifted].sort((a, b) => a.T_K - b.T_K);
+  const levels = [...new Set([...hot, ...cold].map((p) => p.T_K))]
+    .sort((a, b) => b - a);
+  if (levels.length < 2) return null;
+
+  const top = levels[0]!;
+  const hTop = interpolateH(hot, top);
+  const cTop = interpolateH(cold, top);
+
+  // cascade(T*) = heat released by hot streams above T* minus heat absorbed
+  // by cold streams above T* — the problem table's running sum, read off the
+  // curves instead of the stream population.
+  const cascade = levels.map((T) =>
+    (hTop - interpolateH(hot, T)) - (cTop - interpolateH(cold, T)));
+
+  let minCascade = 0.0;
+  let Tpinch = top;
+  for (let i = 0; i < levels.length; ++i) {
+    if (cascade[i]! < minCascade - 1.0e-9) {
+      minCascade = cascade[i]!;
+      Tpinch = levels[i]!;
+    }
+  }
+  const QHmin = -minCascade;
+  const QCmin = cascade[cascade.length - 1]! + QHmin;
+  const gcc = levels.map((T, i) => ({ T_K: T, H_kW: cascade[i]! + QHmin }));
+  return { Q_H_min_kW: QHmin, Q_C_min_kW: QCmin, T_pinch_K: Tpinch, gcc };
+}
+
+// ---- The cross-check against the engine's KPI row ---------------------------
+
+export interface CrossCheckRow {
+  key: "Q_H_min_kW" | "Q_C_min_kW" | "T_pinch_K";
+  engine: number;
+  derived: number;
+  /** derived - engine. */
+  deviation: number;
+  agrees: boolean;
+}
+
+/** Relative agreement band (with an absolute floor of the same size) — the
+ *  CSV carries 10 significant digits, so real agreement sits far inside it. */
+export const CROSS_CHECK_TOL = 1.0e-6;
+
+/** Compare the derived cascade targets against the engine's "pinch" KPI row.
+ *  Only keys the engine actually published are compared; the engine's number
+ *  is the judge and never moves. */
+export function crossCheckAgainstKpis(
+  derived: DerivedPinch,
+  kpis: { [key: string]: number } | undefined,
+): CrossCheckRow[] {
+  if (!kpis) return [];
+  const pairs: [CrossCheckRow["key"], number][] = [
+    ["Q_H_min_kW", derived.Q_H_min_kW],
+    ["Q_C_min_kW", derived.Q_C_min_kW],
+    ["T_pinch_K", derived.T_pinch_K],
+  ];
+  const rows: CrossCheckRow[] = [];
+  for (const [key, d] of pairs) {
+    const e = kpis[key];
+    if (typeof e !== "number" || !Number.isFinite(e)) continue;
+    const deviation = d - e;
+    const scale = Math.max(1.0, Math.abs(e));
+    rows.push({ key, engine: e, derived: d, deviation,
+      agrees: Math.abs(deviation) <= CROSS_CHECK_TOL * scale });
+  }
+  return rows;
+}
+
+// ---- SVG chart geometry -----------------------------------------------------
+
+const W = 640, H = 420;
+const X0 = 62, X1 = 616, Y0 = 16, Y1 = 372;
+
+const GRID = "var(--mantine-color-default-border)";
+const INK = "var(--mantine-color-dimmed)";
+const HOT = "#ff8a65";     // the kit's warm2 — heat sources (being cooled)
+const COLD = "#80deea";    // the kit's accent2 — heat sinks (being heated)
+const GCC = "#69db7c";     // PinchView's grand-composite green
+const PINCH = "#ffd43b";
+
+const fmt = (v: number | undefined, digits = 1) =>
+  v !== undefined && Number.isFinite(v) ? v.toFixed(digits) : "—";
+
+interface Frame {
+  toX: (h: number) => number;
+  toY: (t: number) => number;
+  hLo: number; hHi: number; tLo: number; tHi: number;
+}
+
+function makeFrame(points: CurvePoint[]): Frame {
+  const hs = points.map((p) => p.H_kW);
+  const ts = points.map((p) => p.T_K);
+  const hMin = Math.min(0, ...hs);
+  const hMax = Math.max(...hs, hMin + 1.0e-9);
+  const tMin = Math.min(...ts);
+  const tMax = Math.max(...ts, tMin + 1.0e-9);
+  const hPad = 0.04 * (hMax - hMin);
+  const tPad = Math.max(1.0, 0.05 * (tMax - tMin));
+  const hLo = hMin, hHi = hMax + hPad;
+  const tLo = tMin - tPad, tHi = tMax + tPad;
+  return {
+    toX: (h) => X0 + ((X1 - X0) * (h - hLo)) / (hHi - hLo),
+    toY: (t) => Y1 - ((Y1 - Y0) * (t - tLo)) / (tHi - tLo),
+    hLo, hHi, tLo, tHi,
+  };
+}
+
+function polyline(frame: Frame, pts: CurvePoint[]): string {
+  return pts
+    .map((p) => `${frame.toX(p.H_kW).toFixed(2)},${frame.toY(p.T_K).toFixed(2)}`)
+    .join(" ");
+}
+
+function Axes({ frame, xLabel, yLabel }: {
+  frame: Frame; xLabel: string; yLabel: string;
+}): JSX.Element {
+  const hTicks = [0, 0.25, 0.5, 0.75, 1].map(
+    (f) => frame.hLo + f * (frame.hHi - frame.hLo));
+  const tTicks = [0, 0.25, 0.5, 0.75, 1].map(
+    (f) => frame.tLo + f * (frame.tHi - frame.tLo));
+  return (
+    <g>
+      {hTicks.map((h) => (
+        <g key={`gx${h}`}>
+          <line x1={frame.toX(h)} y1={Y0} x2={frame.toX(h)} y2={Y1}
+            stroke={GRID} strokeWidth={0.6} />
+          <text x={frame.toX(h)} y={Y1 + 16} textAnchor="middle"
+            fontSize={11} fill={INK}>{h.toFixed(0)}</text>
+        </g>
+      ))}
+      {tTicks.map((t) => (
+        <g key={`gy${t}`}>
+          <line x1={X0} y1={frame.toY(t)} x2={X1} y2={frame.toY(t)}
+            stroke={GRID} strokeWidth={0.6} />
+          <text x={X0 - 6} y={frame.toY(t) + 4} textAnchor="end"
+            fontSize={11} fill={INK}>{t.toFixed(0)}</text>
+        </g>
+      ))}
+      <text x={(X0 + X1) / 2} y={H - 8} textAnchor="middle"
+        fontSize={12} fill={INK}>{xLabel}</text>
+      <text x={16} y={(Y0 + Y1) / 2} textAnchor="middle" fontSize={12}
+        fill={INK} transform={`rotate(-90 16 ${(Y0 + Y1) / 2})`}>{yLabel}</text>
+    </g>
+  );
+}
+
+/** Hot + cold composite curves, straight from the engine's CSV (unshifted —
+ *  the actual T scales), with the KPI pinch temperatures as dashed guides. */
+function CompositeSvg({ hot, cold, pinchHot, pinchCold }: {
+  hot: CurvePoint[]; cold: CurvePoint[];
+  pinchHot?: number; pinchCold?: number;
+}): JSX.Element {
+  const frame = makeFrame([...hot, ...cold]);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
+      preserveAspectRatio="xMidYMid meet"
+      role="img" aria-label="hot and cold composite curves">
+      <Axes frame={frame} xLabel="cumulative enthalpy H (kW)" yLabel="T (K)" />
+      {pinchHot !== undefined && Number.isFinite(pinchHot) && (
+        <g>
+          <line x1={X0} y1={frame.toY(pinchHot)} x2={X1} y2={frame.toY(pinchHot)}
+            stroke={HOT} strokeWidth={0.9} strokeDasharray="4 4" />
+          <text x={X1 - 4} y={frame.toY(pinchHot) - 4} textAnchor="end"
+            fontSize={10} fill={HOT}>pinch (hot) {pinchHot.toFixed(2)} K</text>
+        </g>
+      )}
+      {pinchCold !== undefined && Number.isFinite(pinchCold) && (
+        <g>
+          <line x1={X0} y1={frame.toY(pinchCold)} x2={X1} y2={frame.toY(pinchCold)}
+            stroke={COLD} strokeWidth={0.9} strokeDasharray="4 4" />
+          <text x={X1 - 4} y={frame.toY(pinchCold) + 12} textAnchor="end"
+            fontSize={10} fill={COLD}>pinch (cold) {pinchCold.toFixed(2)} K</text>
+        </g>
+      )}
+      <polyline points={polyline(frame, hot)} fill="none"
+        stroke={HOT} strokeWidth={2.2} />
+      <polyline points={polyline(frame, cold)} fill="none"
+        stroke={COLD} strokeWidth={2.2} />
+      <text x={X0 + 8} y={Y0 + 14} fontSize={11} fill={HOT}>hot composite (sources)</text>
+      <text x={X0 + 8} y={Y0 + 28} fontSize={11} fill={COLD}>cold composite (sinks)</text>
+    </svg>
+  );
+}
+
+/** The grand composite curve — derived in view from the engine's shifted
+ *  composite curves (the engine publishes no GCC of its own). */
+function GccSvg({ gcc, Tpinch }: { gcc: CurvePoint[]; Tpinch: number }): JSX.Element {
+  const frame = makeFrame(gcc);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height="100%"
+      preserveAspectRatio="xMidYMid meet"
+      role="img" aria-label="grand composite curve">
+      <Axes frame={frame} xLabel="net heat flow H (kW)" yLabel="shifted T* (K)" />
+      <line x1={frame.toX(0)} y1={Y0} x2={frame.toX(0)} y2={Y1}
+        stroke={INK} strokeWidth={1.1} />
+      <polyline points={polyline(frame, gcc)} fill="none"
+        stroke={GCC} strokeWidth={2.2} />
+      <circle cx={frame.toX(0)} cy={frame.toY(Tpinch)} r={5}
+        fill={PINCH} stroke="var(--mantine-color-body)" strokeWidth={1.5} />
+      <text x={frame.toX(0) + 8} y={frame.toY(Tpinch) - 6}
+        fontSize={11} fill={PINCH}>pinch · T* = {Tpinch.toFixed(2)} K</text>
+    </svg>
+  );
+}
+
+// ---- The candidate-matches table --------------------------------------------
+
+function MatchesTable({ matches }: { matches: CandidateMatch[] }): JSX.Element {
+  return (
+    <Box style={{ overflow: "auto", height: "100%" }}>
+      <Table stickyHeader striped withTableBorder fz="xs">
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>region</Table.Th>
+            <Table.Th>hot</Table.Th>
+            <Table.Th>cold</Table.Th>
+            <Table.Th>Q_max (kW)</Table.Th>
+            <Table.Th>pinch rule</Table.Th>
+            <Table.Th>limiting reason</Table.Th>
+            <Table.Th>engine&apos;s recommendation</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {matches.map((m, i) => {
+            const flag = candidateFlag(m);
+            return (
+              <Table.Tr key={i}
+                style={flag === "infeasible" ? { opacity: 0.65 } : undefined}>
+                <Table.Td>{m.region}</Table.Td>
+                <Table.Td>{m.hotStream}</Table.Td>
+                <Table.Td>{m.coldStream}</Table.Td>
+                <Table.Td>{fmt(m.maximumCandidateDuty_kW)}</Table.Td>
+                <Table.Td>
+                  {flag ? (
+                    <Badge variant="light" size="sm"
+                      color={flag === "infeasible" ? "red" : "orange"}
+                      styles={{ root: { textTransform: "none" } }}>
+                      {flag === "infeasible"
+                        ? "not temperature-feasible at dTmin"
+                        : "CP rule violated at the pinch"}
+                    </Badge>
+                  ) : (
+                    <Text size="xs" c="dimmed">{m.pinchRule}</Text>
+                  )}
+                </Table.Td>
+                <Table.Td>{m.limitingReason}</Table.Td>
+                <Table.Td>{m.recommendation}</Table.Td>
+              </Table.Tr>
+            );
+          })}
+        </Table.Tbody>
+      </Table>
+      <Text size="xs" c="dimmed" p="xs">
+        The engine&apos;s own wording, verbatim: every feasible row is a
+        thermodynamically admissible candidate — the table ranks nothing and
+        recommends no network.  A VIOLATED CP rule keeps its away-from-pinch
+        duty; an infeasible row is listed, never dropped.
+      </Text>
+    </Box>
+  );
+}
+
+// ---- The workspace tool -----------------------------------------------------
+
+type Pane = "composite" | "gcc" | "matches";
+
+export function PinchCompositeTool(): JSX.Element {
+  const runResult = useStore((s) => s.runResult);
+  const curvesCsv = runResult?.csvFiles?.[COMPOSITE_CURVES_CSV_PATH];
+  const matchesCsv = runResult?.csvFiles?.[CANDIDATE_MATCHES_CSV_PATH];
+  const kpis = runResult?.kpis?.["pinch"];
+
+  const curves = useMemo(
+    () => (curvesCsv ? parseCompositeCurves(curvesCsv) : null), [curvesCsv]);
+  const matches = useMemo(
+    () => (matchesCsv ? parseCandidateMatches(matchesCsv) : []), [matchesCsv]);
+  const derived = useMemo(
+    () => (curves
+      ? computePinchFromCurves(curves["hotShifted"], curves["coldShifted"])
+      : null),
+    [curves]);
+  const checks = useMemo(
+    () => (derived ? crossCheckAgainstKpis(derived, kpis) : []),
+    [derived, kpis]);
+
+  const [pane, setPane] = useState<Pane>("composite");
+
+  // ---- Honest empty state: no pinch pass in this run. ----------------------
+  if (!curves && !kpis) {
+    return (
+      <Box style={{ height: "100%", display: "flex", alignItems: "center",
+        justifyContent: "center", padding: 24 }}>
+        <Text size="sm" c="dimmed" ta="center" maw={520}>
+          No pinch targets in this run.  This tool reads the engine&apos;s own
+          pinch pass: declare <code>pinchPass</code> in the case&apos;s{" "}
+          <code>system/postDict</code> chain and run a converged steady case —
+          the engine then writes <code>reports/pinch/compositeCurves.csv</code>{" "}
+          + <code>candidateMatches.csv</code> and publishes the{" "}
+          <code>pinch</code> KPI row.  Witness case:{" "}
+          <code>tutorials/steady/heat/pinch01_four_stream_classic</code>.
+        </Text>
+      </Box>
+    );
+  }
+
+  const hot = curves?.["hot"];
+  const cold = curves?.["cold"];
+  const allAgree = checks.length > 0 && checks.every((c) => c.agrees);
+  const checkLines = checks.map((c) =>
+    `${c.key}: engine ${c.engine} · derived ${c.derived.toPrecision(10)}`
+    + `  (Δ = ${c.deviation.toExponential(2)})`);
+
+  return (
+    <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
+      <Group justify="space-between" align="center" wrap="wrap">
+        <Group gap={8} align="center" wrap="wrap">
+          {/* The engine's targets — the numbers of record, from the KPI row. */}
+          <Badge variant="light" color="gray" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            {kpis
+              ? `engine targets · Q_H,min ${fmt(kpis["Q_H_min_kW"])} kW · `
+                + `Q_C,min ${fmt(kpis["Q_C_min_kW"])} kW · `
+                + `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · `
+                + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
+              : "no pinch KPI row in this run — curves shown, targets unverified"}
+          </Badge>
+          {/* The cross-check chip — derived in view, the engine is the judge. */}
+          {derived && checks.length > 0 && (
+            <Tooltip withArrow multiline w={380}
+              label={"Derived in view: the Linnhoff-Flower cascade re-run over"
+                + " the engine's published hotShifted/coldShifted curves.\n"
+                + checkLines.join("\n")}
+              styles={{ tooltip: { whiteSpace: "pre-line" } }}>
+              <Badge variant="light" size="lg"
+                color={allAgree ? "teal" : "orange"}
+                styles={{ root: { textTransform: "none", cursor: "help" } }}>
+                {allAgree
+                  ? "cross-check (derived in view): cascade reproduces the engine's targets"
+                  : "cross-check (derived in view): DISAGREES — a finding about this"
+                    + " tool's reading, the engine's targets stand"}
+              </Badge>
+            </Tooltip>
+          )}
+          {derived && checks.length === 0 && (
+            <Badge variant="light" color="gray" size="lg"
+              styles={{ root: { textTransform: "none" } }}>
+              cross-check unavailable — no engine KPI row to compare against
+            </Badge>
+          )}
+        </Group>
+        <SegmentedControl size="xs" value={pane}
+          onChange={(v) => setPane(v as Pane)}
+          data={[
+            { label: "Composite curves", value: "composite" },
+            { label: "Grand composite", value: "gcc" },
+            { label: `Candidate matches (${matches.length})`, value: "matches" },
+          ]} />
+      </Group>
+
+      <Box style={{ flex: 1, minHeight: 0 }}>
+        {pane === "composite" && (hot && cold ? (
+          <CompositeSvg hot={hot} cold={cold}
+            pinchHot={kpis?.["T_pinch_hot_K"]} pinchCold={kpis?.["T_pinch_cold_K"]} />
+        ) : (
+          <Box p="xl">
+            <Text size="sm" c="dimmed">
+              This run carries no <code>{COMPOSITE_CURVES_CSV_PATH}</code> with
+              hot + cold curves — the pinch pass writes both on every run that
+              finds duty-carrying units; re-run the case.
+            </Text>
+          </Box>
+        ))}
+        {pane === "gcc" && (derived ? (
+          <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
+            <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+              Derived in view from the engine&apos;s shifted composite curves
+              (<code>hotShifted</code>/<code>coldShifted</code> in{" "}
+              <code>{COMPOSITE_CURVES_CSV_PATH}</code>) — the engine publishes
+              no grand-composite curve of its own.  The temperature shift
+              (±ΔTmin/2) is already inside those curves; nothing here re-applies
+              it.
+            </Text>
+            <Box style={{ flex: 1, minHeight: 0 }}>
+              <GccSvg gcc={derived.gcc} Tpinch={derived.T_pinch_K} />
+            </Box>
+          </Stack>
+        ) : (
+          <Box p="xl">
+            <Text size="sm" c="dimmed">
+              The grand composite is derived from the engine&apos;s{" "}
+              <code>hotShifted</code>/<code>coldShifted</code> curves and this
+              run carries none — the pinch pass writes them beside the actual
+              curves; re-run the case.
+            </Text>
+          </Box>
+        ))}
+        {pane === "matches" && (matches.length > 0 ? (
+          <MatchesTable matches={matches} />
+        ) : (
+          <Box p="xl">
+            <Text size="sm" c="dimmed">
+              No <code>{CANDIDATE_MATCHES_CSV_PATH}</code> in this run — the
+              pinch pass writes the exhaustive hot×cold analysis table on every
+              run that finds duty-carrying units; re-run the case.
+            </Text>
+          </Box>
+        ))}
+      </Box>
+
+      <Text size="xs" c="dimmed">
+        The composite overlap is the heat that process-to-process recovery can
+        serve; the tails are the minimum utilities, fixed before any exchanger
+        is drawn.  Pockets in the grand composite are internal recovery across
+        the cascade.  All targets are the engine&apos;s (PinchPass, problem
+        table printed in the run log); this view only re-reads its published
+        curves.
+      </Text>
+    </Stack>
+  );
+}
