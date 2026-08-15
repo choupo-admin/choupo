@@ -24,6 +24,14 @@ WHAT IT CHECKS.  Every `\\begin{X}` across `docs/*.tex` resolves to either
 Every `\\begin{X}` must also have a matching `\\end{X}` in the same file: an
 unbalanced pair is the other way a guide stops compiling.
 
+DUPLICATE LABELS are checked too, and they are quieter than either.  LaTeX
+resolves `\\ref{x}` to whichever `\\label{x}` came LAST and carries on with a
+warning nobody reads, so a cross-reference points at the wrong place and looks
+perfectly fine in the PDF.  theoryGuide.tex carried three -- `eq:langmuir`,
+`ch:hydraulics`, `ch:drying`.  The one actually referenced happened to resolve
+CORRECTLY, which is worse than if it had not: nothing would have revealed the
+collision until someone added a third or moved a section.
+
 WHAT IT DOES *NOT* CHECK, and the first one is the honest limit:
   * IT IS NOT A COMPILE.  An undefined MACRO (`\\code{...}` vs `\\kode{...}`),
     a bad math expression, a missing brace or a broken reference all still
@@ -42,6 +50,8 @@ SABOTAGE-VERIFIED 2026-08-14, observed output:
       statically in under a second.
   S2  one `\\end{pitfall}` deleted -> "appears 22 time(s) and \\end{pitfall}
       21 -- an unbalanced environment stops the build", exit 1.
+  S3  one renamed label put back to its colliding name -> "\\label{eq:langmuir}
+      is defined 2 times", exit 1.
 Its own first run raised a FALSE alarm on `\\begin{footnotesize}` in a guide
 that builds: LaTeX size and style declarations are legal environments and the
 list omitted them.  Recorded because the fix was to the instrument, and a
@@ -52,6 +62,7 @@ Exit 0 = every environment opened is defined and balanced.
 
 import re
 import sys
+from collections import Counter
 from glob import glob
 from pathlib import Path
 
@@ -88,6 +99,7 @@ DEFINE = re.compile(
     r"|newtheorem|DeclareTColorBox)\s*\{([A-Za-z*]+)\}")
 BEGIN = re.compile(r"\\begin\{([A-Za-z*]+)\}")
 END = re.compile(r"\\end\{([A-Za-z*]+)\}")
+LABEL = re.compile(r"\\label\{([^}]+)\}")
 
 
 def main() -> int:
@@ -122,7 +134,14 @@ def main() -> int:
                                 f"not a standard/package one, so `make -C docs "
                                 f"all` dies here with \"Environment {name} "
                                 f"undefined\"")
-        from collections import Counter
+        for name, count in Counter(LABEL.findall(text)).items():
+            if count > 1:
+                problems.append(f"{rel}: \\label{{{name}}} is defined "
+                                f"{count} times.  Every \\ref to it resolves "
+                                f"to the LAST one and LaTeX only warns, so a "
+                                f"cross-reference can point at the wrong place "
+                                f"and look right in the PDF")
+
         cb, ce = Counter(n for n, _ in begins), Counter(ends)
         for name in set(cb) | set(ce):
             if cb[name] != ce[name]:
@@ -141,7 +160,7 @@ def main() -> int:
     print(f"check_guide_environments: OK -- {opened} environment openings "
           f"across {len(tex)} manual(s) all resolve ({len(defined)} defined in "
           f"the tree, the rest standard or package-provided) and every one is "
-          f"balanced.  NOT checked: this is not a compile -- an undefined "
+          f"balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined "
           f"MACRO, bad math, a stray brace or a broken reference still kill "
           f"`make -C docs all` and none is visible here.")
     return 0
