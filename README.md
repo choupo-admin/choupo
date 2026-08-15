@@ -80,7 +80,8 @@ make distclean        # wipe the whole build/ tree
 
 ## Start here
 
-`listCases` lists 354 tutorials, which is a reference rather than a way in.
+`listCases` lists every runnable tutorial (the count lives in
+`generated/releaseInventory.json`), which is a reference rather than a way in.
 **[`docs/start-here.md`](docs/start-here.md) is the way in**: nine cases in
 order, each introducing exactly one new idea and resting on the one before —
 from a single flash you can check with a pen to a published industrial process

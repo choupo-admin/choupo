@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 353,
+  "cases": 354,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -4150,6 +4150,24 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/hydraulics/pumpSystem01_operating_point": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "pipe",
+    "pump"
+   ],
+   "unitModels": [
+    "Churchill"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/membranes/membrane01_RO_NaCl_seawater": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5432,6 +5450,7 @@
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
     "tutorials/steady/membranes/membrane03_concentration_polarization",
@@ -5893,7 +5912,8 @@
    ],
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
-    "tutorials/steady/hydraulics/pipe02_airwater_twophase"
+    "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point"
    ],
    "pneumaticConveyor": [
     "tutorials/steady/solids/pneumaticConveyor01_sand",
@@ -5906,6 +5926,7 @@
     "tutorials/steady/separation/psa01_h2_psa"
    ],
    "pump": [
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec"
@@ -6280,6 +6301,7 @@
     "tutorials/steady/heat/reboiler_water_copper",
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/membranes/membrane01_RO_NaCl_seawater",
     "tutorials/steady/membranes/membrane02_NF_sugar",
     "tutorials/steady/membranes/membrane03_concentration_polarization",

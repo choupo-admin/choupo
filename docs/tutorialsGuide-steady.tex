@@ -4635,6 +4635,40 @@ Plus the one declared approximation, in constant/thermoPhysPropDict: H2 runs out
 \goldmore{6}
 \end{tutgolden}
 
+\clearpage
+\tutentry{pumpSystem01\_operating\_point}{tutorials/steady/hydraulics/pumpSystem01\_operating\_point}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (pump01) at (0.0,-0.0) {\textbf{pump01}\\[-1pt]{\tiny pump}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (P1) at (2.9,-0.0) {\textbf{P1}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(pump01.west)+(-1.05,0.00)$) -- ($(pump01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (pump01) -- (P1) node[midway, above, font=\tiny] {mid};
+  \draw[->] ($(P1.east)+(0,0.00)$) -- ($(P1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Pump vs system curve: sweep the feed flow, the operating point is the intersection}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{1}
+\goldrow{stream}{feed}{F}{1}
+\goldrow{stream}{mid}{F}{1}
+\goldrow{kpi}{P1}{F}{1}
+\goldrow{kpi}{P1}{P\_in}{371942.446043}
+\goldrow{kpi}{P1}{P\_out}{291888.49117}
+\goldrow{kpi}{P1}{dP\_elevation}{17201.0615699}
+\goldrow{kpi}{P1}{dP\_fittings}{35394.534314}
+\goldrow{kpi}{P1}{dP\_friction}{27458.3589895}
+\goldrow{kpi}{P1}{deltaP}{80053.9548734}
+\goldrow{kpi}{P1}{density}{877.010068162}
+\goldrow{kpi}{P1}{frictionFactor}{0.0183083994383}
+\goldrow{kpi}{P1}{head\_loss\_m}{7.30802492023}
+\goldrow{kpi}{P1}{regime}{2}
+\goldmore{20}
+\end{tutgolden}
+
 \subsection{membranes}
 \grouptheory{membranes}
 \clearpage
@@ -6448,7 +6482,7 @@ The cooler duty is deliberately bounded: the turbine exhaust at 0.528 bar has Ts
 \goldrow{kpi}{speciator}{K\_NH3}{0.777804159627}
 \goldrow{kpi}{speciator}{K\_ethanol}{0.180718643037}
 \goldrow{kpi}{speciator}{K\_water}{0.0721940189402}
-\goldmore{25}
+\goldmore{28}
 \end{tutgolden}
 
 \clearpage

@@ -719,7 +719,8 @@ accepts today, and that is a policy call.
    **2026-08-15 addendum — the class was measured, and its largest cluster is
    CLOSED.**  A fleet census over all 140 gates bucketed the sabotage
    evidence: 38 record observed output in-file, 6 claim it without showing
-   it, 34 have it only in docs/commits, 62 have none anywhere.  Its systemic
+   it, 34 have it only in design records or commit messages, 62 have none
+   anywhere.  Its systemic
    finding: FOURTEEN tree-scanner gates shared the death shape exactly -- no
    refusal over an empty scan, so one directory rename would have turned all
    fourteen permanently green at once.  All fourteen now refuse an absent

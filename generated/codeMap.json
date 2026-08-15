@@ -6450,6 +6450,7 @@
    "src/unitOperations/saturation/DewPoint.H"
   ],
   "src/unitOperations/separation/Absorber.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -6465,7 +6466,8 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/separation/Absorber.H"
+   "src/unitOperations/separation/Absorber.H",
+   "src/unitOperations/separation/LumpedCpEnergyNote.H"
   ],
   "src/unitOperations/separation/BagFilter.cpp": [
    "src/core/Dictionary.H",
@@ -6576,6 +6578,7 @@
    "src/unitOperations/separation/PSA.H"
   ],
   "src/unitOperations/separation/Stripper.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -6591,6 +6594,7 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/separation/LumpedCpEnergyNote.H",
    "src/unitOperations/separation/Stripper.H"
   ],
   "src/unitOperations/separation/TSATwinBed.cpp": [
@@ -6805,7 +6809,9 @@
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
-   "src/unitOperations/separation/IonExchanger.cpp"
+   "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/Stripper.cpp"
   ],
   "src/core/AdvisorySummary.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -11272,6 +11278,10 @@
   "src/unitOperations/separation/IonExchanger.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
+  ],
+  "src/unitOperations/separation/LumpedCpEnergyNote.H": [
+   "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/Stripper.cpp"
   ],
   "src/unitOperations/separation/PSA.H": [
    "src/unitOperations/UnitOperation.cpp",
