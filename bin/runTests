@@ -1366,6 +1366,21 @@ PYEOF
     fi
     rm -f /tmp/pnch.$$
 
+    # Cooling tower (Merkel): the published Merkel number and Chebyshev-4
+    # companion reproduced from the unit's own published diagram, the
+    # approach/range/evaporation identities, strict sub-saturation of the
+    # operating line, and five named refusals; sabotage-verified twice
+    # (damaged Simpson divisor -> A1; shifted approach KPI -> A3).
+    if "$ROOT/bin/curate/check_cooling_tower.py" > /tmp/ctwr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cooling-tower-gate" "$(tail -1 /tmp/ctwr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cooling_tower.py)\n" "cooling-tower-gate"
+        cat /tmp/ctwr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ctwr.$$
+
     # Pinch P2 gate (ratified 2026-08-03, analysis table only): the
     # candidate-match table is the exhaustive per-region enumeration,
     # duties equal an independent counter-current bound, the CP rule

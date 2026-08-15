@@ -235,6 +235,9 @@
   "ConversionReactor": [
    "src/unitOperations/reactor/ConversionReactor.H"
   ],
+  "CoolingTower": [
+   "src/unitOperations/heatTransfer/CoolingTower.H"
+  ],
   "CosmoSac": [
    "src/thermo/activityCoefficient/CosmoSac.H"
   ],
@@ -1849,6 +1852,10 @@
    {
     "key": "evaporativeDryer",
     "type": "EvaporativeDryer"
+   },
+   {
+    "key": "coolingTower",
+    "type": "CoolingTower"
    },
    {
     "key": "crystalliser",
@@ -5271,6 +5278,7 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.H",
    "src/unitOperations/flash/AdiabaticFlash.H",
    "src/unitOperations/flash/IsothermalFlash.H",
+   "src/unitOperations/heatTransfer/CoolingTower.H",
    "src/unitOperations/heatTransfer/EvaporativeDryer.H",
    "src/unitOperations/heatTransfer/Evaporator.H",
    "src/unitOperations/heatTransfer/HeatExchanger.H",
@@ -5783,6 +5791,23 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
    "src/unitOperations/flowsheet/ModelBoundaryAudit.H"
+  ],
+  "src/unitOperations/heatTransfer/CoolingTower.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/vaporPressure/VaporPressureModel.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/heatTransfer/CoolingTower.H"
   ],
   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp": [
    "src/core/Dictionary.H",
@@ -7092,6 +7117,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -7345,6 +7371,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -7626,6 +7653,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -7831,6 +7859,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -8265,6 +8294,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -8954,6 +8984,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -9097,6 +9128,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -9318,6 +9350,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -9564,6 +9597,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -9783,6 +9817,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -10085,6 +10120,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -10515,6 +10551,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
@@ -10812,6 +10849,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
@@ -10843,6 +10881,7 @@
    "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
    "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -11013,6 +11052,10 @@
   ],
   "src/unitOperations/flowsheet/ModelBoundaryAudit.H": [
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/unitOperations/heatTransfer/CoolingTower.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp"
   ],
   "src/unitOperations/heatTransfer/EvaporativeDryer.H": [
    "src/unitOperations/UnitOperation.cpp",

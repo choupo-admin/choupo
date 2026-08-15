@@ -4183,6 +4183,40 @@ Plus the one declared approximation, in constant/thermoPhysPropDict: H2 runs out
 \end{tutgolden}
 
 \clearpage
+\tutentry{coolingTower01\_merkel}{tutorials/steady/heat/coolingTower01\_merkel}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tower01) at (0.0,-0.0) {\textbf{tower01}\\[-1pt]{\tiny coolingTower}};
+  \draw[->] ($(tower01.west)+(-1.05,-0.17)$) -- ($(tower01.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {hotWater};
+  \draw[->] ($(tower01.west)+(-1.05,0.17)$) -- ($(tower01.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {air};
+  \draw[->] ($(tower01.east)+(0,-0.17)$) -- ($(tower01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {coolWater};
+  \draw[->] ($(tower01.east)+(0,0.17)$) -- ($(tower01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {humidAir};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Water cooling tower, Merkel enthalpy driving force -- rating: the packing is given, the cold-water T is the result}
+\begin{tutnarrative}
+- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{air}{F}{0.0184166666667}
+\goldrow{stream}{coolWater}{F}{0.027110090426}
+\goldrow{stream}{hotWater}{F}{0.0277777777778}
+\goldrow{stream}{humidAir}{F}{0.0190843540184}
+\goldrow{kpi}{tower01}{L\_over\_G}{0.98937581178}
+\goldrow{kpi}{tower01}{Q\_kW}{36.4315830585}
+\goldrow{kpi}{tower01}{T\_air\_out}{307.613817692}
+\goldrow{kpi}{tower01}{T\_water\_out}{300.778649138}
+\goldrow{kpi}{tower01}{T\_wb\_in}{293.021697982}
+\goldrow{kpi}{tower01}{Y\_in}{0.0128618855531}
+\goldrow{kpi}{tower01}{Y\_out}{0.0366432593178}
+\goldrow{kpi}{tower01}{approach\_K}{7.75695115581}
+\goldrow{kpi}{tower01}{evaporation\_kg\_s}{0.0120283876424}
+\goldrow{kpi}{tower01}{evaporation\_pct\_of\_L}{2.40367446642}
+\goldmore{4}
+\end{tutgolden}
+
+\clearpage
 \tutentry{heatExchanger01\_water\_water}{tutorials/steady/heat/heatExchanger01\_water\_water}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

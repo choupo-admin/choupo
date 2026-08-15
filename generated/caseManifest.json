@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 354,
+  "cases": 355,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -3943,6 +3943,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/coolingTower01_merkel": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "coolingTower"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/heatExchanger01_water_water": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5437,6 +5451,7 @@
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/heat/condenser01_film_nusselt",
+    "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
@@ -5632,6 +5647,9 @@
     "tutorials/steady/reactors/chlorophenol01_chlorination",
     "tutorials/steady/reactors/conversion01_hda",
     "tutorials/steady/reactors/conversion02_parallel_selectivity"
+   ],
+   "coolingTower": [
+    "tutorials/steady/heat/coolingTower01_merkel"
    ],
    "crystalliser": [
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -6288,6 +6306,7 @@
     "tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin",
     "tutorials/steady/gibbs/gibbs10_ammonia_fugacity",
     "tutorials/steady/heat/condenser01_film_nusselt",
+    "tutorials/steady/heat/coolingTower01_merkel",
     "tutorials/steady/heat/heatExchanger01_water_water",
     "tutorials/steady/heat/heatExchanger02_geometry_U",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",

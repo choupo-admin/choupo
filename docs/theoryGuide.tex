@@ -18893,6 +18893,89 @@ spreadsheet.  Open, cited, and reproducible --- the black box a commercial
 tool hands you, opened.
 
 % ---------------------------------------------------------------------
+\section{The water cooling tower: Merkel's enthalpy driving force}\label{ch:coolingTower}
+
+\begin{whatyoulllearn}
+Every exchanger in the last three sections moved heat from one stream to
+another; the cooling tower is where the plant finally \emph{rejects} it
+--- and it does so by evaporating a little of the very water it cools.
+Sensible and latent transfer happen together on the same film, and
+Merkel's 1925 insight is that with one approximation (the Lewis factor
+$\simeq 1$, an air--water near-coincidence) the TWO driving forces
+collapse into ONE: the difference between the enthalpy of saturated air
+at the local water temperature, $h^{*}(T)$, and the enthalpy of the bulk
+air, $h$.  The whole tower then lives on a single diagram --- $h$ against
+$T$ --- and that diagram is exactly what the \code{coolingTower} unit
+publishes as its profile.
+\end{whatyoulllearn}
+
+\subsection{The construction}
+Working per kilogram of dry air (humidity $Y$, datum: dry gas and liquid
+water at $273.15$\,K), the humid enthalpy is
+\begin{equation}
+   h(T, Y) = c_{p,\text{dry}}\,(T - T_0)
+           + Y\,\bigl[\lambda_0 + c_{p,\text{vap}}\,(T - T_0)\bigr],
+\end{equation}
+and $h^{*}(T) = h(T, Y_{\text{sat}}(T))$ with
+$Y_{\text{sat}} = (M_v/M_c)\,P^{\text{sat}}/(P - P^{\text{sat}})$ ---
+the same saturation curve the psychrometric chart draws
+(\S\ref{ch:drying}).  A counter-current energy balance from the bottom
+(air in, water out) gives the \emph{operating line}, straight in $T$:
+\begin{equation}
+   h(T) = h_{\text{in}} + \frac{L\,c_{p,L}}{G}\,(T - T_{\text{out}}),
+\end{equation}
+and eliminating the interfacial state through Le $=1$ turns the packing
+balance into Merkel's integral,
+\begin{equation}
+   \mathrm{Me} \;=\; \frac{K a V}{L}
+   \;=\; \int_{T_{\text{out}}}^{T_{\text{in}}}
+         \frac{c_{p,L}\,\mathrm{d}T}{\,h^{*}(T) - h(T)\,}.
+   \label{eq:merkel}
+\end{equation}
+The left side is \emph{hardware} (the packing's transfer characteristic);
+the right side is pure \emph{thermodynamics} of the two curves.  Exactly
+one of them is declared, and the other is the result:
+\code{merkelNumber} (rating: the cold-water $T$ emerges by bisection ---
+$\mathrm{Me}(T_{\text{out}})$ is monotone, diverging at the wet-bulb
+floor and vanishing at $T_{\text{in}}$) or \code{T\_water\_out} (design:
+the required $\mathrm{Me}$ emerges by quadrature).
+
+\subsection{What the model assumes, and says so}
+Four hypotheses ride with every solve, each announced at run time, never
+silent: Le $=1$ (what makes $h$ the single potential); the water loss
+neglected \emph{inside} the integral ($L$ constant along the packing, the
+classical form) while the loss itself is reported and honoured at the
+boundary, so the mass balance closes exactly; the exit air assumed
+saturated (Merkel resolves the air's enthalpy profile, not its humidity
+--- the exit state needs one closing assumption and this is the classical
+one); and $c_p$ evaluated once at mean film temperatures.  The engine
+integrates Eq.~\eqref{eq:merkel} by composite Simpson on 200 intervals
+and publishes the classical CTI four-point Chebyshev estimate
+\emph{beside} it (\code{merkelNumber\_chebyshev4}), so the hand method's
+deviation from the converged quadrature is a visible number --- the same
+pedagogy as the Kremser shortcut beside the stagewise absorber
+(\S\ref{ch:absorber}).
+
+\subsection{The two temperatures that matter}
+A tower's currency is not its duty but its \emph{approach}: the cold
+water can never go below the inlet air's wet-bulb temperature (the
+adiabatic-saturation solve of \S\ref{ch:drying}, at Le $=1$ the same
+thing), and the last few kelvin toward it are exponentially expensive in
+packing.  Witness \file{coolingTower01\_merkel}: water $45\,^{\circ}$C at
+$L/G = 0.99$ against air at $25\,^{\circ}$C and $62\,\%$ RH
+($T_{\text{wb}} = 293.0$\,K), packing $\mathrm{Me} = 1.5$ $\to$
+$T_{\text{out}} = 300.78$\,K --- a range of $17.4$\,K bought at an
+approach of $7.8$\,K, evaporating $2.40\,\%$ of the circulating water
+(the folklore ``$1\,\%$ per $7$\,K'' emerging from the latent heat, not
+quoted to it).  A target at or below the wet bulb refuses by name; so
+does an operating line that touches $h^{*}(T)$ (the tower analogue of a
+pinched exchanger --- the remedy is lower $L/G$), and an air inlet that
+is not a permanent gas at its own conditions.  Gate:
+\code{check\_cooling\_tower} recomputes Eq.~\eqref{eq:merkel} from the
+published diagram alone, with $c_{p,L}$ taken off the operating line's
+slope --- the engine's internals are never consulted.
+
+% ---------------------------------------------------------------------
 \section{Pinch analysis: the target before the network}\label{ch:pinch}
 
 Every heat exchanger so far in this guide has been a \emph{device}: two
