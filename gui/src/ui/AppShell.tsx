@@ -80,6 +80,11 @@ const PropsView = lazy(() =>
 const ExploreWorkspace = lazy(() =>
   import("./ExploreWorkspace.js").then((m) => ({ default: m.ExploreWorkspace })),
 );
+// The Methods workspace (classical method constructions, 2026-08-15) pulls
+// McCabePlot/PsychroPlot -> the plotly kit, so it is lazy like Explore.
+const MethodsWorkspace = lazy(() =>
+  import("./MethodsWorkspace.js").then((m) => ({ default: m.MethodsWorkspace })),
+);
 const PinchView = lazy(() =>
   import("./PinchView.js").then((m) => ({ default: m.PinchView })),
 );
@@ -211,8 +216,12 @@ export function AppShell() {
   // The McCabe-Thiele analyzer popped out full-window (?explore=mccabe&key=…):
   // a real tab (gui-credo §4) that re-hydrates from its localStorage stash and
   // refuses honestly when the stash is gone -- no flowsheet/menu shell.
+  // The &key= is REQUIRED here: a bare ?explore=mccabe is the LEGACY deep-link
+  // to the Explorer's McCabe lens, which moved to the Methods workspace
+  // (2026-08-15) -- bootWorkspace() redirects it to Methods/mccabe instead.
   if (typeof window !== "undefined"
-      && new URLSearchParams(window.location.search).get("explore") === "mccabe") {
+      && new URLSearchParams(window.location.search).get("explore") === "mccabe"
+      && new URLSearchParams(window.location.search).has("key")) {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <ExploreMccabeTab />
@@ -285,12 +294,17 @@ export function AppShell() {
       <Box style={{ gridArea: "center", position: "relative", minWidth: 0, minHeight: 0, height: "100%", overflow: "hidden" }}>
         {!caseOpen ? (
           // No case open (blank boot): the welcome on-ramp -- EXCEPT the
-          // Property Explorer, which is standalone (it synthesizes its own
-          // transient case), so the landing's ?workspace=explore deep-link and
-          // the menu open it without a case loaded.
+          // Property Explorer and the Methods workspace, which are standalone
+          // (each synthesizes its own transient case), so the landing's
+          // ?workspace=explore / ?workspace=methods deep-links and the menu
+          // open them without a case loaded.
           activeWorkspace === "explore" ? (
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
               <ExploreWorkspace />
+            </Suspense>
+          ) : activeWorkspace === "methods" ? (
+            <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+              <MethodsWorkspace />
             </Suspense>
           ) : (
             <WelcomeScreen />
@@ -308,6 +322,10 @@ export function AppShell() {
           ) : activeWorkspace === "explore" ? (
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
               <ExploreWorkspace />
+            </Suspense>
+          ) : activeWorkspace === "methods" ? (
+            <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+              <MethodsWorkspace />
             </Suspense>
           ) : (
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
@@ -337,6 +355,10 @@ export function AppShell() {
         ) : activeWorkspace === "explore" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <ExploreWorkspace />
+          </Suspense>
+        ) : activeWorkspace === "methods" ? (
+          <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+            <MethodsWorkspace />
           </Suspense>
         ) : activeWorkspace === "pinch" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>

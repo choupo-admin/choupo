@@ -80,6 +80,24 @@ export function detectCategoricalCsv(csv: string): CategoricalCsv | null {
   return { xName: header[0]!, labels, valueCols };
 }
 
+/** Drop one named column from a CSV (header + every row).  Pure column
+ *  surgery on the engine's CSV -- zero physics.  Used by the Explorer (the
+ *  scaling scan's ionic-strength column reads out as text, not on the SI
+ *  axis) and by the Methods workspace (the T-x-y `liquid_stable` probe column
+ *  is not part of the McCabe-Thiele construction).  Moved here from
+ *  ExploreWorkspace 2026-08-15 so both hosts share the ONE copy. */
+export function dropCsvColumn(csv: string, name: string): string {
+  const lines = csv.trim().split(/\r?\n/);
+  if (lines.length === 0) return csv;
+  const i = lines[0]!.split(",").map((s) => s.trim()).indexOf(name);
+  if (i < 0) return csv;
+  return lines.map((l) => {
+    const cells = l.split(",");
+    cells.splice(i, 1);
+    return cells.join(",");
+  }).join("\n");
+}
+
 /** True when any PLOTTED column (the header minus the x column) is a
  *  saturation index `SI_<mineral>` (optionally `__<model>`-suffixed by
  *  methodCompare).  Triggers the SI = 0 saturation reference line on

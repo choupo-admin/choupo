@@ -17,6 +17,13 @@
   shown with a loud badge.  Binary VLE sweeps composition along the x-axis, so
   composition appears there as the axis.  Ternary is gated until the engine op
   lands (Fase B) — never faked in TS.
+
+  PROPERTY-PURE since 2026-08-15: the two METHOD CONSTRUCTIONS this workspace
+  used to host (McCabe-Thiele, the psychrometric chart) moved to the Methods
+  workspace (MethodsWorkspace.tsx).  Criterion: method-construction → Methods;
+  property-surface → Explorer.  The shared engine feeds live in
+  case/methodFeeds.ts — the T-x-y / γ(x) / flash lenses here consume the SAME
+  binaryVleSpec the Methods McCabe tool does (one home, no drift).
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -27,7 +34,6 @@ import {
 import { useReducedMotion } from "@mantine/hooks";
 import {
   IconAdjustmentsHorizontal, IconBook, IconChevronDown, IconChevronLeft, IconChevronRight,
-  IconExternalLink,
 } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -39,15 +45,14 @@ import { CsvAutoPlot, axisDisplay } from "./plotting/CsvAutoPlot.js";
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
 import type { JsonDict } from "../dict/index.js";
 import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
-import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
-import { McCabePlot } from "./plotting/McCabePlot.js";
 import { FlashPlot } from "./plotting/FlashPlot.js";
+import { dropCsvColumn } from "./plotting/csvShape.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
 import { useRailWidth, type RailWidthHandle } from "./explore/useRailWidth.js";
-import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
+import { binaryVleSpec } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { hasPair } from "../case/pairsCatalogue.js";
@@ -77,10 +82,8 @@ const PLOT_TYPES: PlotType[] = [
     why: "needs exactly 1 VLE-able component (Tc + vapour pressure)" },
   { id: "txy",   label: "Binary boiling envelope (T-x-y)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
   { id: "gamma", label: "γ(x)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
-  // McCabe-Thiele binary distillation: the interactive staircase over the SAME
-  // y_eq(x) the T-x-y run already computes (no new physics).  R/q knobs re-walk
-  // the staircase in pure TS — the curve only changes when P or the model change.
-  { id: "mccabe", label: "McCabe-Thiele (distillation)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
+  // (McCabe-Thiele — a METHOD CONSTRUCTION over the same y_eq(x) run — moved
+  // to the Methods workspace 2026-08-15; the psychrometric chart went with it.)
   // Binary flash: the same y*(x) curve, read as an equilibrium tie-line through
   // the feed z — the lever rule gives V/F.  T (or V/F) and P are the 2 knobs
   // (Duhem); pure-TS redraw, no re-solve, like McCabe.
@@ -98,10 +101,6 @@ const PLOT_TYPES: PlotType[] = [
   // systems (water/ethanol/benzene, …) whose components have UNIFAC groups.
   { id: "ternaryLle", label: "Ternary solubility (LLE)", min: 3, max: 3, vle: true, needsUnifac: true,
     why: "needs exactly 3 components with UNIFAC groups (e.g. water, ethanol, benzene)" },
-  // Psychrometric chart: a carrier gas + a condensable vapour, ANY pair / P / T.
-  // Carrier = the lower-Tb (stays gas); condensable = the higher-Tb (needs Psat).
-  { id: "psychro", label: "Psychrometric chart", min: 2, max: 2, vle: false,
-    why: "pick a carrier gas + a condensable (the condensable needs a vapour-pressure model)" },
   // Membrane-scaling audit (scalingScan engine op): speciate a water analysis
   // at increasing RO/NF recovery and SEE each mineral's SI = log10(IAP/K)
   // cross zero — the crossing IS the max safe recovery.  Needs only water (the
@@ -123,9 +122,9 @@ const PLOT_TYPES: PlotType[] = [
 // tooltip).  Keeps the one toolbar row from wrapping while the long names stay
 // discoverable on hover.
 const LENS_SHORT: Record<PlotKind, string> = {
-  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)", mccabe: "McCabe",
+  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
-  psychro: "psychro", scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap",
+  scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap",
 };
 
 // PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
@@ -208,20 +207,10 @@ function parseFormulaAtoms(formula: string): { [el: string]: number } {
   return consumed === f.length ? out : {};
 }
 
-/** Drop one named column from a CSV (header + every row).  The scaling CSV
- *  carries the ionic strength I [mol/kg] beside the dimensionless SI columns;
- *  I is read out as text (its own unit) instead of sharing the SI axis. */
-function dropCsvColumn(csv: string, name: string): string {
-  const lines = csv.trim().split(/\r?\n/);
-  if (lines.length === 0) return csv;
-  const i = lines[0]!.split(",").map((s) => s.trim()).indexOf(name);
-  if (i < 0) return csv;
-  return lines.map((l) => {
-    const cells = l.split(",");
-    cells.splice(i, 1);
-    return cells.join(",");
-  }).join("\n");
-}
+// (dropCsvColumn moved to plotting/csvShape.ts 2026-08-15 — it is shared with
+// the Methods workspace's McCabe tool now.  The scaling CSV's ionic-strength
+// column I [mol/kg] is dropped there so it reads out as text, not on the SI
+// axis; the T-x-y family drops the liquid_stable probe column the same way.)
 
 // Steam tables (IF97): which CSV columns each property pick shows, and the
 // rename that keeps the plot's unit heuristic HONEST.  The steam CSVs are
@@ -280,13 +269,11 @@ function csvColumnEnds(csv: string, name: string): { first: number; last: number
 function theoryAnchor(plotType: PlotKind, property: string): string {
   switch (plotType) {
     case "txy": return "ch:flash";          // binary VLE / bubble-dew
-    case "mccabe": return "sec:mccabe-tray-efficiency"; // McCabe-Thiele staircase + tray efficiency (O'Connell/Murphree)
     case "flash": return "ch:flash";        // binary flash: tie-line + lever rule
     case "gamma": return "ch:activity";     // activity coefficients
     case "ternary": return "sec:ternary";   // ternary boiling surface
     case "ternaryLle": return "ch:lle-gibbs"; // liquid-liquid / solubility
     case "phase": return "ch:vap";           // vapour pressure / saturation
-    case "psychro": return "ch:drying";      // psychrometrics / wet-bulb / Lewis number
     case "scaling": return "ch:electrolytes"; // ionic strength / activity / Pitzer
     case "gibbsmap": return "ch:gibbs";       // equilibrium maps (forum 2026-07-02)
     case "steam": return "ch:vap";           // saturation line / vapour pressure
@@ -338,12 +325,8 @@ export function ExploreWorkspace() {
   const [compareModels, setCompareModels] = useState<string[]>([]);
   const [compareInfo, setCompareInfo] = useState<{ models: string[]; spread: { absMax: number; relMaxPct: number }; property: string } | null>(null);
   const [activity, setActivity] = useState("NRTL"); // for VLE templates
-  // Psychrometry: relative-humidity curve interval to plot (%).
-  const [rhFrom, setRhFrom] = useState(10);
-  const [rhTo, setRhTo] = useState(90);
-  const [rhStep, setRhStep] = useState(20);
-  const [wbStep, setWbStep] = useState(10); // ΔT (°C) between wet-bulb / adiabatic-saturation anchor lines
-  const [psyYMax, setPsyYMax] = useState(0); // y-axis cap [kg/kg]; 0 = auto (full)
+  // (Psychrometry state left with the psychro lens for the Methods workspace,
+  // 2026-08-15.)
   // Scaling: the water analysis (TOTAL molalities, mol/kg water — canonical;
   // the unit select converts for DISPLAY only), pH, recovery range.  Setting
   // an ion to 0 drops it from the synthesized `totals {}`.
@@ -494,9 +477,7 @@ export function ExploreWorkspace() {
     return readComponentRecord(local ?? rawRecordFor(inspecting) ?? "");
   }, [inspecting, localComponentFiles]);
 
-  // McCabe-Thiele consumes the SAME engine run as the T-x-y (the y_eq(x) curve),
-  // so it walks the VLE path for the spec / model pickers / fixed-P control.
-  const isVle = plotType === "txy" || plotType === "gamma" || plotType === "mccabe" || plotType === "flash";
+  const isVle = plotType === "txy" || plotType === "gamma" || plotType === "flash";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
   // Scan mode is DERIVED from the property (correct-by-construction): a
   // per-component property is a pure-component comparison; anything else is a
@@ -552,7 +533,7 @@ export function ExploreWorkspace() {
     const hasWater = selected.includes("water");
     const hasElectrolyte = selected.some((c) => has(c)?.isElectrolyte);
     if (selected.length === 1 && vleCount === 1)
-      return "+1 VLE compound → boiling envelope, γ(x), McCabe-Thiele";
+      return "+1 VLE compound → boiling envelope, γ(x), binary flash (and McCabe-Thiele in Methods)";
     if (selected.length === 2 && allVle && !currentViews.has("ternary"))
       return "+1 VLE compound → ternary boiling surface";
     if (hasWater && !hasElectrolyte && !currentViews.has("scaling"))
@@ -582,42 +563,8 @@ export function ExploreWorkspace() {
       };
     }
 
-    if (plotType === "psychro") {
-      // Carrier = lower-Tb (stays gas); condensable = higher-Tb (condenses).
-      const byTb = [...selected].sort((a, b) =>
-        (metaByName(a, catalogue)?.tb ?? 0) - (metaByName(b, catalogue)?.tb ?? 0));
-      const carrier = byTb[0] ?? "";
-      const condensable = byTb[byTb.length - 1] ?? "";
-      // tFrom/tTo are stored in SI (Kelvin) — convert straight to °C (do NOT
-      // parseTemperature again: that double-converts and sent T to ~290 °C).
-      // Read the T-range state DIRECTLY (never fromV/toV, which alias the
-      // swept-axis dimension and would be Pa right after a P-scan).
-      const TminC = tFrom - 273.15;
-      const TmaxC = tTo - 273.15;
-      const rh: number[] = [];
-      for (let p = rhFrom; p <= rhTo + 1e-9 && p < 100; p += Math.max(1, rhStep)) rh.push(Math.round(p));
-      // Wet-bulb / adiabatic-saturation anchors at ROUND temperatures (10, 20,
-      // … °C) so each line meets the saturation curve at a clean value.  The
-      // engine drops any anchor past the condensable's boiling point.
-      const wetBulb: number[] = [];
-      const dTsat = Math.max(5, wbStep);
-      for (let t = Math.ceil(TminC / dTsat) * dTsat; t <= Math.min(TmaxC, 95); t += dTsat) wetBulb.push(t);
-      return {
-        components: [carrier, condensable],
-        properties: [],
-        axis: { variable: "T", from: 0, to: 1, n: 2 },   // unused
-        state: { composition: { [carrier]: 0.5, [condensable]: 0.5 } },
-        psychrometry: {
-          carrier, condensable, P: fixedP, TminC, TmaxC,
-          gridN: Math.max(20, Math.round(nPts)), rh, wetBulb,
-        },
-        // Transport models so the op can compute the Lewis number (true wet-bulb):
-        // Chung viscosity -> Eucken k_gas (for alpha) + Fuller D_AB.  When a
-        // component lacks a diffusion volume the op silently omits the wet-bulb line.
-        transport: { model: "Chung", thermalConductivity: "Eucken", diffusivity: "Fuller" },
-        componentFiles: { ...localComponentFiles },
-      };
-    }
+    // (The psychrometric-chart spec moved to case/methodFeeds.ts psychroSpec —
+    // the Methods workspace feeds PsychroPlot with it now, 2026-08-15.)
 
     if (plotType === "gibbsmap") {
       // Elements + atoms derived from each component's FORMULA (glass-box:
@@ -742,40 +689,24 @@ export function ExploreWorkspace() {
       };
     }
 
-    if (plotType === "txy" || plotType === "gamma" || plotType === "mccabe" || plotType === "flash") {
-      // binary VLE: sweep x of the first component 0->1 at fixed P.  McCabe-Thiele
-      // and the binary FLASH need the SAME y_eq(x) curve as the T-x-y — so they
-      // share that branch (T_bubble + y_eq_<c1>); the staircase / tie-line is
-      // then pure TS, zero re-solve.
-      //
-      // Put the MORE VOLATILE component (lower normal boiling point) on the
-      // x-axis, so the equilibrium curve y*(x) lies ABOVE the y=x diagonal and
-      // the McCabe-Thiele staircase can be drawn at all.  Order by Tb; only
-      // reorder when BOTH boiling points are known (else keep the user's order).
-      const tb0 = metaByName(selected[0] ?? "", catalogue)?.tb;
-      const tb1 = metaByName(selected[1] ?? "", catalogue)?.tb;
-      const vle = (typeof tb0 === "number" && typeof tb1 === "number" && tb1 < tb0)
-        ? [selected[1]!, selected[0]!]
-        : selected;
-      const c1 = vle[0] ?? "", c2 = vle[1] ?? "";
-      const isTxy = plotType === "txy" || plotType === "mccabe" || plotType === "flash";
-      // the T-x-y also probes per-x liquid-liquid stability so it can mark the
-      // immiscibility gap instead of drawing a phantom homogeneous curve.
-      const properties = isTxy
-        ? ["T_bubble", `y_eq_${c1}`, "liquid_stable"]
-        : [`gamma_${c1}`, `gamma_${c2}`];
-      return {
-        components: vle,
-        properties,
-        axis: { variable: `x[${c1}]`, from: 0, to: 1, n: Math.max(2, Math.round(nPts)) },
-        state: { P: fixedP, composition },
-        activityModel: { model: activity },     // NRTL auto-resolves the pair by name
-        equationOfState: { model: eos },
-        ...(isTxy ? { vleTwoLiquid: true } : {}),   // 2-liquid package so the LL probe can fire
-        // UNIFAC is predictive — ship the group decomposition so it isn't ideal
-        ...(activity === "UNIFAC" ? { unifacGroups: unifacGroupsBlock(vle, localUnifac) } : {}),
-        ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
-      };
+    if (plotType === "txy" || plotType === "gamma" || plotType === "flash") {
+      // binary VLE: sweep x of the more volatile component 0->1 at fixed P.
+      // The T-x-y and the binary FLASH share ONE engine run shape (T_bubble +
+      // y_eq_<c1> + the per-x liquid-liquid stability probe); γ(x) sweeps the
+      // two activity coefficients instead.  The spec construction is SHARED
+      // with the Methods workspace's McCabe-Thiele tool (the same run feeds
+      // it) via case/methodFeeds.ts — one home, no drift.
+      return binaryVleSpec({
+        pair: [selected[0] ?? "", selected[1] ?? ""],
+        catalogue,
+        kind: plotType,
+        activity,
+        eos,
+        P: fixedP,
+        n: nPts,
+        localUnifac,
+        componentFiles: hasLocal ? localComponentFiles : undefined,
+      });
     }
     // scan: property vs T or P.  PURE -> one curve per compound (Psat_<c>),
     // composition irrelevant; MIXTURE -> the single mixture scalar at composition.
@@ -811,7 +742,7 @@ export function ExploreWorkspace() {
       ...(transportSpec ? { transport: transportSpec } : {}),
       ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
     };
-  }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, rhFrom, rhTo, rhStep, wbStep, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal,
+  }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal,
     gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmDeltaT, catalogue]);
 
   const snippet = useMemo(() => {
@@ -1066,8 +997,6 @@ export function ExploreWorkspace() {
     ? `Equilibrium map — iso-lines of ${gmMetricSp && selected.includes(gmMetricSp) ? gmMetricSp : (selected[selected.length - 1] ?? "product")} mole fraction over T × log-P by Gibbs-energy minimisation (the ATOMS you fed, redistributed to minimum G at each cell). Labelled industrial window + a user-declared kinetic band; unconverged cells marked, never interpolated. Click any cell for its full composition + the gibbsReactor dict.${gmDeltaT !== 0 ? ` ΔT approach = ${gmDeltaT} K: reaction equilibrium at T+ΔT, physical state at T (empirical; ghost ΔT=0 contours underneath).` : ""}`
     : plotType === "phase"
     ? `Pure-compound P–T phase diagram — liquid–vapour saturation curve to the critical point (AmbroseWalton corresponding states; marks Tc, Pc, normal b.p.). Solid region omitted — needs triple-point / ΔHfus data.`
-    : plotType === "psychro"
-    ? `Psychrometric chart at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — humidity ratio Y vs dry-bulb T (carrier = lower-Tb, condensable = higher-Tb). Saturation + relative-humidity + adiabatic-saturation + true wet-bulb (via the Lewis number) curves.`
     : plotType === "scaling"
     ? `Membrane-scaling audit — SI = log₁₀(IAP/K) per mineral vs water recovery; concentrate totals = feed/(1−r) (pure water removal), ${
         scalingPHMode === "solve"
@@ -1097,8 +1026,6 @@ export function ExploreWorkspace() {
     : isVle
       ? plotType === "txy"
         ? `Binary VLE — liquid composition swept 0→1 at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`
-        : plotType === "mccabe"
-        ? `McCabe-Thiele binary distillation at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the real y*(x) curve (engine) + the interactive staircase; turn R and q (pure-TS redraw, no re-solve)`
         : plotType === "flash"
         ? `Binary flash at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the real y*(x) curve + the tie-line through the feed z; the lever rule gives V/F (pure-TS redraw, no re-solve)`
         : `Activity coefficients γ(x) — composition swept 0→1`
@@ -1175,7 +1102,7 @@ export function ExploreWorkspace() {
         {/* THE ONE TOOLBAR — non-wrapping, ~44px.  Left→right: the lens
             SegmentedControl, the active lens's curve-moving controls (menu-
             buttons + inline fields + the analysis/steam popovers), the ⚙
-            overflow, then (right-pinned) Theory + the McCabe pop-out. */}
+            overflow, then (right-pinned) Theory. */}
         <Box style={{
           flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
           borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
@@ -1491,12 +1418,10 @@ export function ExploreWorkspace() {
           )}
 
           {/* resolution / performance knobs in the ⚙ overflow — not the
-              physics, so they don't clutter the row.  For the psychrometric
-              chart EVERY knob lives here (the chart fills the row): range,
-              humidity, saturation-line spacing, y-scale.  size md → fits 44px. */}
+              physics, so they don't clutter the row.  size md → fits 44px. */}
           <Popover position="bottom-end" withArrow shadow="md">
             <Popover.Target>
-              <Tooltip label={plotType === "psychro" ? "chart options" : "resolution & display options"} withArrow>
+              <Tooltip label="resolution & display options" withArrow>
                 <ActionIcon variant="default" size="md" aria-label="options">
                   <IconAdjustmentsHorizontal size={16} />
                 </ActionIcon>
@@ -1504,34 +1429,6 @@ export function ExploreWorkspace() {
             </Popover.Target>
             <Popover.Dropdown>
               <Stack gap="xs">
-                {plotType === "psychro" && (
-                  <>
-                    <Group gap="xs" grow>
-                      <NumberInput label={`T from (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tFrom, Tu).toFixed(1))}
-                        step={5} decimalScale={1}
-                        onChange={(v) => setTFrom(parseTemperature(num(v, kToDisplay(tFrom, Tu)), Tu))} />
-                      <NumberInput label={`T to (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tTo, Tu).toFixed(1))}
-                        step={5} decimalScale={1}
-                        onChange={(v) => setTTo(parseTemperature(num(v, kToDisplay(tTo, Tu)), Tu))} />
-                    </Group>
-                    <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)}
-                      onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} w={260} />
-                    <Group gap="xs" grow>
-                      <NumberInput label="RH from (%)" value={rhFrom} min={0} max={99}
-                        onChange={(v) => setRhFrom(num(v, rhFrom))} />
-                      <NumberInput label="RH to (%)" value={rhTo} min={1} max={99}
-                        onChange={(v) => setRhTo(num(v, rhTo))} />
-                      <NumberInput label="RH step (%)" value={rhStep} min={1} max={50}
-                        onChange={(v) => setRhStep(num(v, rhStep))} />
-                    </Group>
-                    <NumberInput label={`ΔT between sat. lines (${temperatureLabel(Tu)})`} value={wbStep} min={5} max={50} step={5}
-                      onChange={(v) => setWbStep(num(v, wbStep))} w={260}
-                      description="spacing of the wet-bulb / adiabatic-saturation anchor lines" />
-                    <NumberInput label="Y max (0=auto)" value={psyYMax} min={0} step={0.05} decimalScale={3}
-                      onChange={(v) => setPsyYMax(num(v, psyYMax))} w={260}
-                      description="auto = drying band; raise to see full saturation" />
-                  </>
-                )}
                 <NumberInput label={isTernary ? "grid (intervals per edge)" : "points"} value={nPts}
                   onChange={(v) => setNPts(num(v, nPts))} w={260} min={2}
                   description={isTernary ? "more = finer triangle, slower"
@@ -1556,19 +1453,7 @@ export function ExploreWorkspace() {
           {/* spacer pushes the trailing affordances to the right edge */}
           <Box style={{ flex: 1, minWidth: 8 }} />
 
-          {/* trailing: the McCabe pop-out (only for that lens) + Theory */}
-          {plotType === "mccabe" && csv && (
-            <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
-              <ActionIcon variant="subtle" size="md" color="accent" aria-label="pop out McCabe analyzer"
-                onClick={() => popOutExploreMccabe({
-                  csv: dropCsvColumn(csv, "liquid_stable"),
-                  compA: selected[0] ?? "", compB: selected[1] ?? "",
-                  P: fixedP, model: activity,
-                })}>
-                <IconExternalLink size={16} />
-              </ActionIcon>
-            </Tooltip>
-          )}
+          {/* trailing: Theory (the McCabe pop-out moved to Methods, 2026-08-15) */}
           <Tooltip label="Open the matching section of the Theory Guide (or press F1)" withArrow>
             <ActionIcon component="a" href={helpUrl} target="_blank" rel="noopener noreferrer"
               variant="subtle" size="md" color="gray" aria-label="open the Theory Guide">
@@ -1611,18 +1496,8 @@ export function ExploreWorkspace() {
                   tc={metaByName(selected[0] ?? "", catalogue)?.tc}
                   pc={metaByName(selected[0] ?? "", catalogue)?.pc}
                   tb={metaByName(selected[0] ?? "", catalogue)?.tb} />
-              ) : plotType === "psychro" ? (
-                <PsychroPlot csv={csv} yMax={psyYMax} />
               ) : plotType === "binaryLle" ? (
                 <BinaryLlePlot csv={csv} compA={selected[0] ?? ""} compB={selected[1] ?? ""} />
-              ) : plotType === "mccabe" ? (
-                // The interactive McCabe-Thiele staircase over the engine's
-                // y_eq(x) (read out of the same T-x-y CSV) — R/q knobs re-walk
-                // the staircase in pure TS, no WASM re-solve.
-                // The ↗ pop-out trigger lives in the toolbar (trailing), one
-                // affordance not two; the inline plot stays single-column.
-                <McCabePlot csv={dropCsvColumn(csv, "liquid_stable")}
-                  compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
               ) : plotType === "flash" ? (
                 // The binary flash: the engine's y_eq(x) read as an equilibrium
                 // tie-line through the feed z; T/P knobs move the split, the

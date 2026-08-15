@@ -407,6 +407,62 @@ If the answer to any of these is "no" or "I don't know", stop.
    researcher, both?**  Trade-offs that help one but degrade the other
    need explicit justification.
 
+## 9. The Methods workspace (2026-08-15)
+
+A second standalone workspace beside the Property Explorer, ratified
+2026-08-15, hosting **classical METHOD CONSTRUCTIONS** — operating lines,
+staircases, process paths on a state chart.  The criterion that splits the
+two planes, recorded here as the contract:
+
+> **method-construction → Methods;  property-surface → Explorer.**
+
+A property surface answers *"what does this system's property look like?"*
+(T-x-y, γ(x), a Psat scan — the Explorer keeps these).  A method
+construction answers *"what does the classical graphical method say about a
+design question?"* (how many stages does this R and q buy; where does this
+drying path land).  The first slice migrated the two tools that were method
+constructions living in the Explorer: **McCabe-Thiele** and the
+**psychrometric chart** — the HOSTING moved (`MethodsWorkspace.tsx`), the
+plot components stayed in the shared `gui/src/ui/plotting/` kit, and the
+engine feeds moved to their one shared home (`gui/src/case/methodFeeds.ts`
+— Explore's T-x-y / γ(x) / flash lenses and Methods' McCabe tool consume the
+SAME `binaryVleSpec`, so the two hosts cannot drift).
+
+**The Explorer's guard-rails (§3) are inherited unchanged**, above all:
+
+* **ZERO physics in TS (guard-rail 4).**  Every curve is an engine (WASM
+  `choupoProps`) run over a transient synthesized case, or an engine-written
+  CSV.  The McCabe equilibrium curve y*(x) arrives ALREADY COMPUTED by the
+  engine; the staircase drawn ON it (and the psychro chart's rendering) is
+  pure geometry in the plot kit.  A construction the engine cannot yet feed
+  is listed as *planned*, never faked in TS.
+* **The propsDict / case hand-off (guard-rail 2).**  Each live tool keeps
+  the "Author → copy propsDict" hand-off: the workspace EMITS the dict for
+  the student / agent to author on disk; dict-on-disk stays the one
+  authoring channel, and the workspace never writes a case.
+* **Ephemeral, on-demand** (top menu beside Explore; Esc closes via the
+  shell), standalone (works with no case open — it synthesizes its own
+  transient runs; case-local components still reach the runs when a case IS
+  open, exactly as in the Explorer).
+
+**The 7-tool roadmap** (the rail shows all seven — planned entries visible
+but disabled, each naming the engine output that will feed it):
+
+| Tool | Status | Feed |
+|---|---|---|
+| McCabe-Thiele (distillation) | **live** | the binary-VLE engine run (shared with Explore's T-x-y) |
+| Psychrometric chart | **live** | the `psychrometricChart` engine op |
+| Kremser (absorption / stripping) | planned | a stagewise absorber run |
+| Pinch composite curves | planned | `reports/pinch/compositeCurves.csv` (PinchPass) |
+| ε-NTU (heat exchangers) | planned | an ε-NTU sweep op in `choupoProps` |
+| Pump vs system curve | planned | a head-curve sweep op in `choupoProps` |
+| Adsorption breakthrough | planned | a fixed-bed `choupoBatch` trajectory |
+
+Deep links: `?workspace=methods&tool=<id>` (new); the legacy
+`?explore=mccabe` URL (without a `&key=` stash) now opens Methods/mccabe —
+a redirect, never a broken link.  With `&key=` it remains the McCabe
+analyzer pop-out tab, unchanged.
+
 ## Provenance
 
 Started 2026-05-27 as `gui-mental-model.md` during over-correction

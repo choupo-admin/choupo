@@ -71,6 +71,7 @@ const WORKSPACES: { label: string; key: WorkspaceKey | null }[] = [
   { label: "Flowsheet", key: null        },
   { label: "Props",     key: "props"     },   // right next to Flowsheet -- the two phases
   { label: "Explore",   key: "explore"   },   // interactive property scratchpad (see, then decide)
+  { label: "Methods",   key: "methods"   },   // classical method constructions (McCabe, psychro, ...)
   { label: "Streams",   key: "streams"   },
   { label: "Variables", key: "variables" },
   { label: "Control",   key: "control"   },   // PID tuning bench (choupoCtrl + a PID)
@@ -121,16 +122,16 @@ export function MenuBar() {
   // gains to tune, so the tab is not even shown.
   const hasPid = application === "choupoCtrl"
     && collectControllerKnobs(flowsheet).pid !== null;
-  // "Explore" is in EVERY set: the property explorer synthesizes its own
-  // transient case, so it is independent of the loaded case's type.
-  const SET_PROPS = new Set(["Props", "Explore", "Plots", "Log", "Case"]);
-  const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
+  // "Explore" and "Methods" are in EVERY set: both synthesize their own
+  // transient cases, so they are independent of the loaded case's type.
+  const SET_PROPS = new Set(["Props", "Explore", "Methods", "Plots", "Log", "Case"]);
+  const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", "Methods", "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
   const SET_TIME = new Set([
-    "Flowsheet", "Props", "Explore", "Plots", "Log", "Case",
+    "Flowsheet", "Props", "Explore", "Methods", "Plots", "Log", "Case",
     ...(hasPid ? ["Control"] : []),
   ]);
   const allowedLabels: Set<string> =
-    !hasCaseOpen(tutorialName) ? new Set(["Explore"])            // blank boot: only the standalone Explorer
+    !hasCaseOpen(tutorialName) ? new Set(["Explore", "Methods"]) // blank boot: only the standalone workspaces
     : showIntro ? new Set()                                      // intro -> no tabs
     : isPropsCase || application === "choupoProps" ? SET_PROPS
     : application === "choupoBatch" || application === "choupoCtrl" ? SET_TIME

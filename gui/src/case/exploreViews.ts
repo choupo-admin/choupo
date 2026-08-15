@@ -11,8 +11,13 @@
 import { metaByName, type ComponentMeta } from "./catalogue.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
-export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "mccabe" | "binaryLle" | "ternary"
-  | "ternaryLle" | "phase" | "psychro" | "scaling" | "steam" | "gibbsmap";
+// "mccabe" and "psychro" LEFT this union 2026-08-15: they are METHOD
+// CONSTRUCTIONS (operating lines / a process-path chart), not property
+// surfaces, and now live in the Methods workspace (MethodsWorkspace.tsx,
+// fed by case/methodFeeds.ts).  Criterion: method-construction → Methods;
+// property-surface → Explorer (gui-credo §9).
+export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "binaryLle" | "ternary"
+  | "ternaryLle" | "phase" | "scaling" | "steam" | "gibbsmap";
 
 export type SelClass = "pure" | "organic-mixture" | "aqueous-organic"
   | "aqueous-electrolyte" | "humid-gas" | "mixed";
@@ -53,14 +58,15 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
     if (metas[0]?.vleAble) out.add("phase");
     if (sel[0] === "water") out.add("steam");
   }
-  // McCabe-Thiele binary distillation: same front door as the T-x-y (exactly 2
-  // VLE-able components with a binary VLE curve) — the analyzer reuses that
-  // run's y_eq(x) as the real equilibrium curve, so it is offered iff txy is.
-  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("flash"); out.add("gamma"); out.add("mccabe"); }
+  // (McCabe-Thiele shared this front door until 2026-08-15; it is a method
+  // construction and moved to the Methods workspace.  Its feed — the same
+  // binary-VLE engine run — is shared via case/methodFeeds.ts.)
+  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("flash"); out.add("gamma"); }
   if (n === 2 && allUnifac) out.add("binaryLle");            // immiscibility instrument
   if (n === 3 && vleMix && allVle) out.add("ternary");
   if (n === 3 && vleMix && allVle && allUnifac) out.add("ternaryLle");
-  if (cls === "humid-gas" && n === 2) out.add("psychro");
+  // (humid-gas → the psychrometric chart also moved to Methods 2026-08-15;
+  // classifySelection keeps the class — it still gates the VLE views OFF.)
   if (cls === "aqueous-electrolyte") out.add("scaling");
   return out;
 }

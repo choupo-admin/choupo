@@ -162,6 +162,7 @@ export type WorkspaceKey =
   | "log"
   | "props"
   | "explore"
+  | "methods"
   | "control"
   | "case"
   | "reports"
@@ -409,6 +410,14 @@ function bootWorkspace(): WorkspaceKey | null {
     const params = new URLSearchParams(window.location.search);
     const w = params.get("workspace");
     if (w === "explore") return "explore";
+    // The Methods workspace (2026-08-15) deep-links as
+    // ?workspace=methods&tool=<id>; the tool id is read by MethodsWorkspace.
+    if (w === "methods") return "methods";
+    // LEGACY: ?explore=mccabe WITHOUT a &key= stash was the Explorer's McCabe
+    // lens; the tool moved to Methods, so the old URL now opens Methods/mccabe
+    // (a redirect, never a broken link).  WITH &key= it is the McCabe analyzer
+    // pop-out tab, which AppShell routes before boot state matters.
+    if (params.get("explore") === "mccabe" && !params.has("key")) return "methods";
     // The landing hero deep-links the Control Room on a ctrl case
     // (?case=ctrl02_disturbance_rejection&view=control).
     const v = params.get("view");
@@ -458,19 +467,23 @@ export const useStore = create<AppState>((set, get) => ({
   flowsheetRunAt: initial.inherited && initial.files.flowsheet ? 1 : 0,
   panels: bootSession?.panels ?? { property: true, output: true },
   // Workspace restore: the deep-link (?workspace=explore, the landing CTA) wins.
-  // Otherwise restore the session's workspace -- EXCEPT a stale `explore` on a
-  // BLANK boot, which would hijack the WelcomeScreen via the standalone-explorer
-  // branch (the standalone explorer must come from the deep-link or a click, not
-  // a restored session). Other restored workspaces are harmless on no case
-  // (not rendered until a case opens).
+  // Otherwise restore the session's workspace -- EXCEPT a stale `explore` (or
+  // `methods` -- also standalone) on a BLANK boot, which would hijack the
+  // WelcomeScreen via the standalone-workspace branch (a standalone workspace
+  // must come from the deep-link or a click, not a restored session). Other
+  // restored workspaces are harmless on no case (not rendered until a case
+  // opens).
   activeWorkspace:
     bootWorkspace()
-    ?? (initial.name === "" && bootSession?.activeWorkspace === "explore"
+    ?? (initial.name === ""
+        && (bootSession?.activeWorkspace === "explore"
+            || bootSession?.activeWorkspace === "methods")
           ? null
           // A result view (plots/reports/streams/variables/log/pinch) needs a
           // run -- opening a case must land on the FLOWSHEET, never a stale or
           // empty result view restored from the last session.  Only a run-free
-          // workspace (props/explore/case) is restored; otherwise null = Flowsheet.
+          // workspace (props/explore/methods/case) is restored; otherwise
+          // null = Flowsheet.
           : (["plots", "reports", "streams", "variables", "log", "pinch"] as WorkspaceKey[])
               .includes(bootSession?.activeWorkspace as WorkspaceKey)
               ? null
