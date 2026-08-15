@@ -43,12 +43,20 @@ vi.mock("../src/ui/plotting/plotly.js", () => ({
 }));
 
 import {
+  BREAKTHROUGH_KNOBS,
+  BREAKTHROUGH_WITNESS,
   decideNormalisation,
+  defaultKnobValues,
   detectBreakthrough,
   extractFrontMarkers,
   idealSquareWave,
+  knobOverrides,
   type KpiMap,
 } from "../src/ui/methods/BreakthroughTool.js";
+// The classroom feed's mechanics (textual override + witness clone) — pure
+// functions; nothing here touches the WASM adapter (that would need a browser).
+import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
+import { tutorialByName } from "../src/cases/tutorials.js";
 
 // The two REAL trajectory header shapes (verbatim from the tutorials' CSVs).
 // batch13 tracks the OUTLET (c_out_/y_out_ columns) — the breakthrough feed;
@@ -186,5 +194,82 @@ describe("idealSquareWave — pure geometry over the KPI t_st", () => {
     const w = idealSquareWave(3040.5, 0, 4200, 1);
     expect(w.t).toEqual([0, 3040.5, 3040.5, 4200]);
     expect(w.y).toEqual([0, 0, 1, 1]);
+  });
+});
+
+// ---- The classroom witness + knob map, against the REAL bundled corpus ------
+// The standalone (self-feeding) mode clones batch13 and writes the knobs into
+// its dicts.  These tests pin the whole knob→dict contract WITHOUT running the
+// engine: every (file, key) must resolve uniquely in the witness's actual raw
+// text (applyScalarOverride throws on missing/ambiguous — a knob that misses
+// its dict would run the engine on the wrong question).
+
+describe("the classroom witness — batch13 bundled and knob-addressable", () => {
+  it("is in the bundled corpus, a choupoBatch fixed-bed case with raw dicts", () => {
+    const entry = tutorialByName(BREAKTHROUGH_WITNESS);
+    expect(entry).toBeDefined();
+    expect(entry!.category).toBe("batch");
+    const raws = entry!.files.rawFiles;
+    expect(raws).toBeDefined();
+    expect(raws!["system/flowsheetDict"]).toContain("fixedBedAdsorber");
+    expect(raws!["system/controlDict"]).toContain("choupoBatch");
+  });
+
+  it("every knob's ScalarOverride resolves against the real witness raw text", () => {
+    const raws = tutorialByName(BREAKTHROUGH_WITNESS)!.files.rawFiles!;
+    for (const k of BREAKTHROUGH_KNOBS) {
+      const raw = raws[k.file];
+      expect(raw, `knob '${k.id}' names missing file '${k.file}'`).toBeDefined();
+      // Resolves (unique match) — throws on missing or ambiguous keys.
+      const out = applyScalarOverride(raw!,
+        { file: k.file, key: k.key, value: 123.456 });
+      expect(out).not.toBe(raw);
+      // The number landed on the knob's own line, with the dict's declared
+      // unit word surviving the override untouched.
+      const line = new RegExp(
+        `^[ \\t]*${k.key}[ \\t]+123\\.456[ \\t]*`
+        + k.unit.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[ \\t]*;", "m");
+      expect(out, `knob '${k.id}' (${k.file}:${k.key})`).toMatch(line);
+    }
+  });
+
+  it("the defaults ARE the witness's authored values — overriding with them is byte-neutral", () => {
+    const raws = tutorialByName(BREAKTHROUGH_WITNESS)!.files.rawFiles!;
+    for (const k of BREAKTHROUGH_KNOBS) {
+      const out = applyScalarOverride(raws[k.file]!,
+        { file: k.file, key: k.key, value: k.def });
+      expect(out, `default for knob '${k.id}' moved the witness text`)
+        .toBe(raws[k.file]);
+    }
+  });
+
+  it("methodCase clones the witness with the full default knob set applied", () => {
+    const files = methodCase(BREAKTHROUGH_WITNESS,
+      knobOverrides(defaultKnobValues()));
+    expect(files.flowsheet).toBeDefined();
+    expect(files.controlDict["application"]).toBe("choupoBatch");
+    // The clone still carries the raw dicts the adapter writes into MEMFS.
+    expect(files.rawFiles?.["system/flowsheetDict"]).toContain("fixedBedAdsorber");
+  });
+
+  it("a bogus key throws rather than silently running the wrong question", () => {
+    expect(() => methodCase(BREAKTHROUGH_WITNESS,
+      [{ file: "system/flowsheetDict", key: "noSuchKnob", value: 1 }]))
+      .toThrow(/noSuchKnob/);
+    // A bogus FILE is refused too — the other half of the same contract.
+    expect(() => methodCase(BREAKTHROUGH_WITNESS,
+      [{ file: "system/noSuchDict", key: "u", value: 1 }]))
+      .toThrow(/noSuchDict/);
+  });
+
+  it("knobOverrides drops non-finite values — never writes NaN into a dict", () => {
+    const values = defaultKnobValues();
+    values["u"] = NaN;
+    const overrides = knobOverrides(values);
+    expect(overrides.map((o) => o.key)).not.toContain("u");
+    expect(overrides).toHaveLength(BREAKTHROUGH_KNOBS.length - 1);
+    // The full default set covers every knob, u included.
+    expect(knobOverrides(defaultKnobValues()))
+      .toHaveLength(BREAKTHROUGH_KNOBS.length);
   });
 });

@@ -28,8 +28,17 @@ License
 
 /*---------------------------------------------------------------------------*\
   BreakthroughTool — the adsorption-breakthrough method construction for the
-  Methods workspace (the registry's "breakthrough" entry, fed exactly as its
-  `fedBy` line promised: a fixed-bed choupoBatch trajectory).
+  Methods workspace (the registry's "breakthrough" entry).
+
+  SELF-FEEDING (the classroom default): the tool no longer waits for the user
+  to run a flowsheet.  It clones its bundled WITNESS case
+  (tutorials/batch/adsorber/batch13_breakthrough_co2 — 15% CO2 in He on a
+  zeolite-13X fixed bed), writes the classroom knobs into the witness's own
+  declared dict scalars (methodRun's textual override — units and comments
+  survive; a knob that misses its dict THROWS), and runs choupoBatch in the
+  browser (WASM).  When the app's CURRENT run also carries a trajectory, a
+  source toggle offers "Current run" beside the classroom witness; the old
+  honest empty state lives only there.
 
   ZERO physics in TypeScript — the standing Methods rule.  Everything drawn
   here is ENGINE-EMITTED:
@@ -47,21 +56,28 @@ License
   the display normalisation c/c_in, and its anchor c_in is taken FROM THE RUN
   ITSELF — the late plateau via the engine's c_out_over_cin_final_<i> KPI.
   When that KPI is absent the curve is drawn unnormalised and the caption says
-  so: c_in is never invented.
+  so: c_in is never invented.  The knobs turn declared dict scalars only; the
+  engine recomputes q*, R_f, t_st and the whole front itself on every run.
 
-  Activation is a predicate over the run, honest empty-state otherwise: the
-  trajectory must carry outlet columns (c_out_/y_out_) AND some unit's KPIs
-  must carry a t_stoichiometric_* key.  A holdup-only adsorber run (batch09:
-  n_/q_/p_ columns, no outlet history) does NOT activate — there is no
-  breakthrough curve to draw, and drawing the inventory instead would be a
-  different plot wearing this one's name.
+  Activation is a predicate over the run (either source): the trajectory must
+  carry outlet columns (c_out_/y_out_) AND some unit's KPIs must carry a
+  t_stoichiometric_* key.  A holdup-only adsorber run (batch09: n_/q_/p_
+  columns, no outlet history) does NOT activate — there is no breakthrough
+  curve to draw, and drawing the inventory instead would be a different plot
+  wearing this one's name.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
-import { Box, Group, Stack, Switch, Table, Text } from "@mantine/core";
+import {
+  ActionIcon, Alert, Box, Collapse, Group, Loader, NumberInput,
+  SegmentedControl, Stack, Switch, Table, Text,
+} from "@mantine/core";
+import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
+import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
+import { useCollapsedFlag } from "./methodsChrome.js";
 import {
   TrajectoryPlot, type EventMarker, type GhostTrace,
 } from "../plotting/TrajectoryPlot.js";
@@ -231,6 +247,98 @@ export function idealSquareWave(
   return { t: [t0, tStoich, tStoich, tEnd], y: [0, 0, plateau, plateau] };
 }
 
+// ---- The classroom witness + its knob→dict map ------------------------------
+// The STANDALONE feed: the tool clones this bundled tutorial, writes the knob
+// values into its DECLARED dict scalars (methodRun's textual override — units
+// and comments survive), and runs choupoBatch in the browser.  Each knob names
+// the FILE and dict KEY it writes; the defaults ARE the witness's authored
+// values, and the test suite verifies every (file, key) resolves uniquely
+// against the real bundled raw text — a knob that misses its dict would run
+// the engine on the wrong question (applyScalarOverride throws instead).
+//
+// Two candidate knobs are deliberately ABSENT, and why is worth recording:
+//   * feed composition — the witness declares it as a one-line inline block
+//     (`feed { molarComposition { CO2 0.15; He 0.85; } }`), which the
+//     line-anchored `key value [unit];` override grammar cannot address (and
+//     two fractions constrained to sum to 1 are not one scalar knob anyway);
+//   * the LDF coefficient k — declared with bracket dimensions
+//     (`CO2 [0 0 -1 0 0] 0.05;`), a form the same grammar does not parse.
+// Both would need a methodRun grammar extension, not a workaround here.
+
+/** Bundled identifier of the witness case ("<category>/<subclass>/<case>" —
+ *  batch is a sub-classed category, so the `adsorber` segment is part of it). */
+export const BREAKTHROUGH_WITNESS = "batch/adsorber/batch13_breakthrough_co2";
+
+const FLOWSHEET = "system/flowsheetDict";
+
+export interface BreakthroughKnob {
+  /** Stable id — the key of the knob-value state bag. */
+  id: string;
+  /** What the student reads beside the control. */
+  label: string;
+  /** Witness file the knob writes into. */
+  file: string;
+  /** The dict key as written there. */
+  key: string;
+  /** The witness's own authored value — the classroom default. */
+  def: number;
+  min: number;
+  max: number;
+  step: number;
+  /** The unit the dict declares.  The knob writes the NUMBER only; the unit
+   *  word in the dict survives the override untouched. */
+  unit: string;
+}
+
+/** The classroom knobs.  All engine-side levers: u and L move the
+ *  stoichiometric front (t_st = (L/u)·R_f — the ENGINE derives it), T reaches
+ *  the isotherm through the record's van't Hoff dH_ads, P moves c_in = P/RT
+ *  and the CO2 partial pressure, and endTime is the horizon — slow the front
+ *  down and the student must extend it to SEE the breakthrough. */
+export const BREAKTHROUGH_KNOBS: readonly BreakthroughKnob[] = [
+  { id: "u", label: "superficial velocity u", file: FLOWSHEET, key: "u",
+    def: 0.05, min: 0.01, max: 0.2, step: 0.005, unit: "m/s" },
+  { id: "L", label: "bed length L", file: FLOWSHEET, key: "L",
+    def: 0.5, min: 0.1, max: 2, step: 0.05, unit: "m" },
+  { id: "T", label: "bed temperature T", file: FLOWSHEET, key: "T",
+    def: 298, min: 273, max: 373, step: 5, unit: "K" },
+  { id: "P", label: "pressure P", file: FLOWSHEET, key: "P",
+    def: 1, min: 0.5, max: 5, step: 0.25, unit: "bar" },
+  // controlDict declares `endTime 4200;` BARE (raw SI seconds; the "s" lives
+  // in a comment) — so this knob's dict unit is the empty word, and the label
+  // carries the seconds instead.
+  { id: "endTime", label: "horizon endTime (s)", file: "system/controlDict",
+    key: "endTime", def: 4200, min: 500, max: 20000, step: 100, unit: "" },
+];
+
+export type BreakthroughKnobValues = { [id: string]: number };
+
+/** The witness's authored values — the classroom baseline. */
+export function defaultKnobValues(): BreakthroughKnobValues {
+  const out: BreakthroughKnobValues = {};
+  for (const k of BREAKTHROUGH_KNOBS) out[k.id] = k.def;
+  return out;
+}
+
+/** Knob values → methodRun ScalarOverrides.  Non-finite values are dropped
+ *  (that knob keeps the witness's authored number) — never written as NaN. */
+export function knobOverrides(values: BreakthroughKnobValues): ScalarOverride[] {
+  const out: ScalarOverride[] = [];
+  for (const k of BREAKTHROUGH_KNOBS) {
+    const v = values[k.id];
+    if (v !== undefined && Number.isFinite(v))
+      out.push({ file: k.file, key: k.key, value: v });
+  }
+  return out;
+}
+
+// The provenance line, always visible in classroom mode.
+const PROVENANCE =
+  `Runs tutorials/${BREAKTHROUGH_WITNESS} (15% CO2 in He on a zeolite-13X `
+  + "fixed bed) with your parameters, in your browser (choupoBatch WASM).";
+
+const COLLAPSE_KEY = "choupo.methods.breakthrough.controlsCollapsed";
+
 // ---- Display formatting -----------------------------------------------------
 
 function fmt(v: number | undefined): string {
@@ -240,7 +348,25 @@ function fmt(v: number | undefined): string {
 // ---- The tool ---------------------------------------------------------------
 
 export function BreakthroughTool(): JSX.Element {
-  const result = useStore((s) => s.runResult);
+  const appResult = useStore((s) => s.runResult);
+
+  // ---- Source: the classroom witness run vs the app's current run.  The
+  // toggle appears whenever the current run carries a trajectory at all; the
+  // activation predicate then decides under "Current run", so a holdup-only
+  // run (batch09) still reaches the honest empty state that explains itself.
+  const hasAppTrajectory = appResult?.trajectory !== undefined;
+  const [source, setSource] = useState<"classroom" | "current">("classroom");
+  const src: "classroom" | "current" =
+    hasAppTrajectory && source === "current" ? "current" : "classroom";
+
+  // ---- Classroom knobs → witness overrides → in-browser choupoBatch --------
+  const [knobs, setKnobs] = useState<BreakthroughKnobValues>(defaultKnobValues);
+  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
+  const { result: classroom, err, busy } = useMethodRun(
+    src === "classroom" ? BREAKTHROUGH_WITNESS : null,
+    knobOverrides(knobs), JSON.stringify(knobs), "choupoBatch");
+
+  const result = src === "current" ? appResult : classroom;
   const trajectory: TrajectoryData | undefined = result?.trajectory;
   const kpis: KpiMap | undefined = result?.kpis;
   const [thermal, setThermal] = useState(false);
@@ -330,17 +456,107 @@ export function BreakthroughTool(): JSX.Element {
     };
   }, [trajectory, kpis, detection]);
 
-  // Honest empty state: the tool names the run that feeds it.
+  // ---- The source + classroom-knob bar (always rendered) --------------------
+  const controls = (
+    <Box style={{ flexShrink: 0, borderBottom:
+      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
+        {hasAppTrajectory && (
+          <SegmentedControl size="xs" value={src}
+            onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
+            data={[
+              { label: "Classroom", value: "classroom" },
+              { label: "Current run", value: "current" },
+            ]} />
+        )}
+        {src === "classroom" && (
+          <>
+            <ActionIcon variant="subtle" size="sm" onClick={toggle}
+              aria-label={collapsed
+                ? "show the classroom knobs" : "hide the classroom knobs"}>
+              {collapsed
+                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
+            </ActionIcon>
+            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
+              classroom knobs
+            </Text>
+            {busy && (
+              <Group gap={6} wrap="nowrap" align="center">
+                <Loader size="xs" />
+                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+                  re-integrating — seconds, not instant
+                </Text>
+              </Group>
+            )}
+          </>
+        )}
+      </Group>
+      {src === "classroom" && (
+        <>
+          <Collapse in={!collapsed}>
+            <Group gap="sm" px={12} pb={4} align="flex-end" wrap="wrap">
+              {BREAKTHROUGH_KNOBS.map((k) => (
+                <NumberInput key={k.id} size="xs" w={140}
+                  label={k.unit ? `${k.label} [${k.unit}]` : k.label}
+                  value={knobs[k.id]} min={k.min} max={k.max} step={k.step}
+                  onChange={(v) => {
+                    const num = typeof v === "number" ? v : Number(v);
+                    if (Number.isFinite(num))
+                      setKnobs((s) => ({ ...s, [k.id]: num }));
+                  }} />
+              ))}
+            </Group>
+          </Collapse>
+          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE}</Text>
+        </>
+      )}
+    </Box>
+  );
+
+  // ---- No drawable view yet: per-source honest states -----------------------
   if (view === null) {
     return (
-      <Box style={{ height: "100%", display: "flex",
-        alignItems: "center", justifyContent: "center", padding: 12 }}>
-        <Text size="sm" c="dimmed" ta="center" maw={460}>
-          Adsorption breakthrough needs a fixed-bed choupoBatch run with
-          OUTLET tracking: a trajectory carrying c_out_/y_out_ columns and the
-          engine's front KPIs (t_stoichiometric_*). A holdup-only adsorber run
-          has no breakthrough curve to draw.
-        </Text>
+      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
+        minHeight: 0 }}>
+        {controls}
+        {src === "classroom" && err !== null && (
+          <Alert color="red" variant="light" m={12}
+            title="The engine refused or failed — its message, verbatim">
+            <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {err}
+            </Text>
+          </Alert>
+        )}
+        {src === "classroom" && err === null && (
+          <Box style={{ flex: 1, display: "flex", alignItems: "center",
+            justifyContent: "center", padding: 12 }}>
+            {busy || classroom === null ? (
+              <Group gap="sm" wrap="nowrap" align="center">
+                <Loader size="sm" />
+                <Text size="sm" c="dimmed">
+                  the engine is integrating the bed — seconds, not instant
+                </Text>
+              </Group>
+            ) : (
+              <Text size="sm" c="dimmed" ta="center" maw={460}>
+                The classroom run finished but did not publish the
+                breakthrough surfaces (c_out_/y_out_ columns +
+                t_stoichiometric_* KPIs) — nothing honest to draw.
+              </Text>
+            )}
+          </Box>
+        )}
+        {src === "current" && (
+          <Box style={{ flex: 1, display: "flex", alignItems: "center",
+            justifyContent: "center", padding: 12 }}>
+            <Text size="sm" c="dimmed" ta="center" maw={460}>
+              Adsorption breakthrough needs a fixed-bed choupoBatch run with
+              OUTLET tracking: a trajectory carrying c_out_/y_out_ columns and
+              the engine's front KPIs (t_stoichiometric_*). A holdup-only
+              adsorber run has no breakthrough curve to draw.
+            </Text>
+          </Box>
+        )}
       </Box>
     );
   }
@@ -354,6 +570,19 @@ export function BreakthroughTool(): JSX.Element {
   return (
     <Box style={{ height: "100%", display: "flex", flexDirection: "column",
       minHeight: 0 }}>
+      {controls}
+
+      {/* A knob run that failed keeps the previous curve on screen — the
+          engine's message rides above it, verbatim, never swallowed. */}
+      {src === "classroom" && err !== null && (
+        <Alert color="red" variant="light" m={12}
+          title="The engine refused or failed — its message, verbatim">
+          <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+            {err}
+          </Text>
+        </Alert>
+      )}
+
       {/* Toolbar: the thermal overlay toggle, honest when there is nothing
           to overlay. */}
       <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}
