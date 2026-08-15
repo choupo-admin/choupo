@@ -188,6 +188,19 @@ SOURCE_SABOTAGES = [
                "information.  A5 must catch it.",
     },
     {
+        "gate": "check_convergence_residual.py",
+        "kind": "source/acceptance-always-true",
+        "file": "src/solver/Convergence.H",
+        "find": "    if (normNow <= c.tolerance)",
+        "replace": "    if (true)   /* SELFTEST */",
+        "why": "the ONE convergence home decides `normFinal <= tolerance`.  "
+               "Accept unconditionally and a DECLARED tolerance the run never "
+               "meets is waved through as converged -- the silent pass the "
+               "2026-08-09 ruling exists to prevent, since a dimensional "
+               "residual is a magnitude and not a verdict.  The gate's "
+               "unmeetable-tolerance arm must catch it.",
+    },
+    {
         "gate": "check_model_boundary_ledger.py",
         "kind": "source/filter-restored",
         "file": "src/reporting/EnergyBalanceReport.cpp",
