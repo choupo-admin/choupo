@@ -1,5 +1,8 @@
 /*--- StoichReactor implementation (user-defined unit op). ---*/
 #include "StoichReactor.H"
+//  User code that CALLS ThermoPackage methods must include its header:
+//  UnitOperation.H only forward-declares it (deliberate, header hygiene).
+#include "thermo/ThermoPackage.H"
 #include <iostream>
 namespace Choupo {
 int StoichReactor::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)

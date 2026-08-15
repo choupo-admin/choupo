@@ -1,6 +1,9 @@
 /*--- SharpSplitColumn implementation (user-defined distillation op). ---*/
 #include "SharpSplitColumn.H"
 #include <algorithm>
+//  User code that CALLS ThermoPackage methods must include its header:
+//  UnitOperation.H only forward-declares it (deliberate, header hygiene).
+#include "thermo/ThermoPackage.H"
 #include <iostream>
 namespace Choupo {
 int SharpSplitColumn::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)

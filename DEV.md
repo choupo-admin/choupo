@@ -414,6 +414,24 @@ ones for day-to-day work:
 > so it is yours.  It also decides whether the withdrawn V2 detector was
 > reporting a defect or a convention when it flagged those distillates.
 >
+> **V4 (2026-08-15, found by the fleet sweep): the fractal cascade hands a
+> child the DICT but not the DATA HOME the dict's model needs.**
+> `twoSectorDemo`'s dignified children (SECTOR_R/S) inherit the parent's
+> `thermoPhysPropDict` (NRTL) through the cascade, but parameter-catalogue
+> resolution stays relative to the CHILD's case dir, which has no
+> `constant/parameters/NRTL/` -- so the child refuses with all 45 pairs
+> missing, including the 10 that exist one level up.  The parent passes
+> because its streams only ever cross the 10 curated chain pairs.  The
+> refusal itself is correct doctrine (no silent model substitution); the
+> question is whether case-local parameter precedence should read "nearest
+> ancestor along the cascade" for a dignified child -- property-architecture
+> territory, level 2, so it is yours.  Until then the two children FAIL
+> honestly at the refusal instead of dying mute at compile (their case-local
+> code was missing `#include "thermo/ThermoPackage.H"`, stranded by the
+> header-hygiene campaign -- that half is fixed).  NOTE the second stratum:
+> the compile failure had been HIDING the refusal, one defect masking
+> another, which is the strongest argument the sweep has made for itself.
+>
 > Both cases tested are REPORTING-only: their unit models carry their own Cp
 > / psychrometric energy balances, so their KPIs and goldens do not move.
 > That is NOT established for the other 25.
@@ -983,6 +1001,38 @@ accepts today, and that is a policy call.
    the table; do not add a new stream field ad hoc for it.
 
 ## 5b. If you are working in a HOSTED session, read this first
+
+### The command doctrine (Vítor, 2026-08-15): one commander, seven generals
+
+The assistant working this repository is the COMMANDER of a fleet of
+subagents, and is expected to USE it -- ordered after a session in which the
+corpus-wide confirmation was fed to a fragile container one chunk at a time
+when it was embarrassingly parallel by directory.  The doctrine:
+
+* **Delegate whenever it makes sense** -- work that is parallel by
+  construction (disjoint tutorial chunks, read-only censuses, independent
+  forensic investigations) goes to generals; work that is a CHAIN (each
+  measurement changing the next question) stays with the commander.  Do not
+  spawn agents to perform initiative; do not serialise work to perform
+  caution.
+* **The tree is a shared resource.**  Generals get written rules: no `make`,
+  no git mutation, no edits, disjoint write territories (their own case
+  dirs), and a standing order to STOP and report verbatim if
+  `check_build_fresh` aborts -- never to "fix" it.
+* **NO YES-MEN (the load-bearing clause).**  A general reports OBSERVED
+  output -- the `[chunk]` lines, the verdict line, the first error lines of
+  any failure -- never a summary of success.  The commander re-verifies any
+  surprising claim against primary output before acting on it, exactly as
+  with gates: a subordinate's green is testimony, not evidence.  Generals
+  are told to report what they saw even when it contradicts what the
+  commander expected -- ESPECIALLY then; a fleet that optimises for pleasing
+  reports is worse than no fleet, because it manufactures confidence at
+  scale.
+* The commander stays severe with itself: the session record shows the
+  commander's own asserted-before-measured errors were caught by checking
+  balances, not magnitudes.  The same standard applies to what the fleet
+  brings back.
+
 
 **The checkout can silently revert to an older commit.**  It happened five
 times in one session on 2026-07-31, always to the same commit, and it is worth
