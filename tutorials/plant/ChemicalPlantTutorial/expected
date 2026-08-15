@@ -6,7 +6,7 @@ stream  EvapCondensate1        F                0.0166666666667  1e-4
 stream  EvapCondensate2        F                0.00908154950558 1e-4
 stream  EvapVapour             F                0.00923202330697 1e-4
 stream  PlantSteam             F                0.0166666666667  1e-4
-stream  Powder                 F                0.000341755255735 1e-4
+stream  Powder                 F                0.00200850525573 1e-4
 stream  RawJuice               F                0.0416666666667  1e-4
 stream  RecoveredDust          F                0                1e-4
 stream  Stack                  F                0.0892305131175  1e-4
