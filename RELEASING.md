@@ -117,7 +117,21 @@ taken away from under itself. The workflow now **builds and verifies only**.
 git checkout main
 bin/runTests                                  # 0 FAIL or no deploy
 make wasm-gui                                 # WASM + version.json (the badge)
+bin/curate/guide_version.py && make -C docs all   # the PDFs, carrying the label
 bin/buildSite                                 # assembles site/_dist
+#  THE DOCS BUILD IS A PREREQUISITE, not an optional tidy (learned
+#  2026-08-14).  `bin/buildSite` REFUSES when a guide PDF about to be
+#  published does not carry the version label -- a guide naming a version it
+#  does not describe is worse than an undated one, because the wrong label is
+#  believed.  The remedy it prints is the line above, and on that day the
+#  remedy itself FAILED: theoryGuide.tex had been opening three `warning`
+#  environments that are defined nowhere, so the guide had not compiled since
+#  the commit that added them and nothing in the suite noticed -- no gate
+#  builds the guides, and this refusal only fires when a person runs the
+#  publish.  `check_guide_environments` now catches that class statically on
+#  every runTests; `make -C docs all` remains the only real proof, and it
+#  belongs here, in the sequence, rather than in an error message.
+#
 #  --delete so removals propagate; the two --exclude are load-bearing:
 #  CNAME is the site repo's own, and v*/ are the frozen releases.
 rsync -a --delete --exclude='.git' --exclude='CNAME' --exclude='v*/' \
