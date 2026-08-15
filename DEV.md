@@ -671,6 +671,21 @@ accepts today, and that is a policy call.
 
 ## 5. Known debts (severity-ish)
 
+000. **EDITORIAL, for Vítor and Pedro: the theory guide treats DRYING twice.**
+   `\section{Drying: spray dryer and solid dryer}` (line 18572, 923 words) and
+   `\section{Drying of solids and spray drying}` (line 20078, 1914 words) are
+   two sections on one subject with **zero shared 8-word phrases** -- a double
+   treatment, not a copy-paste.  Whether that is deliberate (a survey entry
+   plus a detailed one) or an accident is an editorial call about a work its
+   authors curate, so nothing was deleted; the colliding `ch:drying` label
+   between them WAS fixed, being mechanical.
+   Correction to what the commit that found this said: it named the
+   HYDRAULICS pair as duplicates too, and they are not.  Line 17918 is PIPE
+   pressure drop (Darcy--Weisbach) and 19675 is TRAY hydraulics in a column --
+   different subjects that merely shared a label name, which the titles say
+   plainly and I asserted past.
+
+
 00. **A GUARD ARMED ON ONE OF TWO ROUTES — now a named class, third instance
    2026-08-14.**  `check_true_ions` was permanently green over deleted
    inputs; `check_ebullioscopic` watched `K_f()` while its consumer read
