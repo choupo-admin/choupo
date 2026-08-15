@@ -130,23 +130,28 @@ export const METHOD_TOOLS: MethodTool[] = [
   {
     id: "kremser", label: "Kremser (absorption)", status: "live",
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
+    theory: "ch:absorber",
   },
   {
     id: "pinch-composite", label: "Pinch composite curves", status: "live",
     teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+    theory: "ch:pinch",
   },
   {
     id: "entu", label: "ε-NTU (heat exchangers)", status: "live",
     teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
+    theory: "ch:hx-entu",
   },
   {
     id: "pump-system", label: "Pump vs system curve", status: "planned",
     teaches: "The operating point is an intersection: pump head falling with flow against system head rising with it.",
-    fedBy: "needs a head-curve sweep op in choupoProps",
+    theory: "ch:rotating",
+    fedBy: "reads an outerDict sweep of streams.<inlet>.F over a pump + pipe train (witness: pumpSystem01_operating_point)",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
+    theory: "ch:adsorption",
   },
 ];
 
@@ -295,14 +300,20 @@ export function MethodsWorkspace() {
           <PsychroTool tool={active} catalogue={catalogue}
             componentFiles={componentFiles} />
         ) : (
-          <Suspense fallback={
-            <Group justify="center" mt="xl"><Loader size="sm" /></Group>
-          }>
-            {tool === "kremser" ? <KremserTool />
-              : tool === "entu" ? <EpsilonNtuTool />
-              : tool === "pinch-composite" ? <PinchCompositeTool />
-              : <BreakthroughTool />}
-          </Suspense>
+          // The run-fed tools take no props, so the pedagogy line (teaches +
+          // the Theory Guide link) is rendered HERE, once for all of them —
+          // every tool states its theory destination or it is not finished.
+          <>
+            <TeachesLine tool={active} />
+            <Suspense fallback={
+              <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+            }>
+              {tool === "kremser" ? <KremserTool />
+                : tool === "entu" ? <EpsilonNtuTool />
+                : tool === "pinch-composite" ? <PinchCompositeTool />
+                : <BreakthroughTool />}
+            </Suspense>
+          </>
         )}
       </Box>
     </Box>
