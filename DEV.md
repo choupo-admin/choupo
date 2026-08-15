@@ -1021,6 +1021,27 @@ accepts today, and that is a policy call.
 
 ## 5b. If you are working in a HOSTED session, read this first
 
+### RUN THIS FIRST, before believing anything about the workspace
+
+```
+bin/curate/check_workspace_truth.py            # prove, or be told what failed
+bin/curate/check_workspace_truth.py --remediate  # the safe recovery only
+```
+
+Everything below this line about recyclers, rewound trees, stale refs and
+the poisoned overlay is now ENFORCED by that gate -- it runs as GATE ZERO of
+every `bin/runTests` invocation, fetches origin for real (a stale
+remote-tracking ref lies without a fetch), refuses a rewound HEAD with the
+remedy printed, refuses the poisoned overlay by sentinel, and LISTS every
+dirty tracked file so nothing is mentally filtered away.  Offline it runs
+DEGRADED and says exactly what it could not prove.  What it cannot do -- the
+recycler itself, the window inside a single action -- is delimited in its
+own docstring; git's non-fast-forward refusal is the backstop.  The prose
+below is the HISTORY of why it exists, kept as the record; the prose is not
+the defence any more.  (Architectural ruling, Vitor 2026-08-15: no more
+human procedures accumulated here for a failure class a tool can refuse.)
+
+
 ### The command doctrine (Vítor, 2026-08-15): one commander, seven generals
 
 The assistant working this repository is the COMMANDER of a fleet of

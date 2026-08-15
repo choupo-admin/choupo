@@ -156,6 +156,19 @@ cd "$ROOT"
 # The opposite error is the reason this aborts instead of warning: a stale
 # library whose goldens were recorded against it produces a CLEAN PASS, which
 # looks exactly like a real one.
+# GATE ZERO (2026-08-15, architectural ruling): before comparing the BUILD
+# to the tree, prove the TREE against the truth.  The hosted recycler rewinds
+# HEAD, restores a poisoned overlay and leaves stale remote refs -- a suite
+# run on such a workspace does not waste time, it MANUFACTURES FALSE
+# EVIDENCE about a tree nobody is discussing.  DEGRADED (offline) proceeds
+# with the reduced claim stated; a proven-stale workspace refuses with the
+# remedy printed.
+if ! "$ROOT/bin/curate/check_workspace_truth.py"; then
+    echo ""
+    echo "ABORTED before running anything -- the WORKSPACE is not proven."
+    exit 1
+fi
+
 if ! "$ROOT/bin/curate/check_build_fresh.py"; then
     printf "\nABORTED before running anything -- see above.\n"
     printf "This is not a test failure.  No case was run, and no result here "
