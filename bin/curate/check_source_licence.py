@@ -82,6 +82,19 @@ SCAN = ["data/standards"]
 
 def main() -> int:
     violations, pinned_seen, nfiles = [], set(), 0
+    #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
+    #  census).  This gate shared the check_true_ions death shape: rename
+    #  data/standards and rglob returns nothing, zero violations are found
+    #  over zero records, and the gate goes permanently green.  An absent
+    #  scan root refuses by name; the collapsed-count floor sits before
+    #  the OK verdict.
+    for root in SCAN:
+        if not (ROOT / root).is_dir():
+            print(f"check_source_licence: FAILED -- scan root '{root}' does "
+                  "not exist; this gate cannot see what it audits, and a "
+                  "green verdict over an absent tree would be the "
+                  "check_true_ions failure again.")
+            return 1
     for root in SCAN:
         for p in sorted((ROOT / root).rglob("*.dat")):
             try:
@@ -134,7 +147,17 @@ def main() -> int:
                   "is not.")
         return 1
 
-    print(f"check_source_licence: OK -- {nfiles} record(s) scanned; no "
+    #  Collapsed-scan floor (2026-08-15 fleet census): 783 records observed;
+    #  a count under 100 means the scan surface has collapsed, not that the
+    #  catalogue shrank.  See check_true_ions.
+    if nfiles < 100:
+        print(f"check_source_licence: FAILED -- only {nfiles} record(s) "
+              "scanned against a floor of 100; the scan surface has "
+              "collapsed and a verdict over it would describe nothing.")
+        return 1
+
+    print(f"check_source_licence: OK -- {nfiles} record(s) scanned (an "
+          f"absent or collapsed scan root REFUSES); no "
           f"encumbered source stands as the authority for a value, except "
           f"{len(PINNED)} pinned violations awaiting curation (a primary "
           "datum, not a guess).  A primary cited via an aggregator is "

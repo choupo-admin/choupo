@@ -28,7 +28,27 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  A SCAN OVER NOTHING IS NOT A CLEAN TREE (2026-08-15, fleet census).  This
+#  gate shared the check_true_ions death shape with thirteen other scanners:
+#  rename a scanned root and rglob returns nothing, zero offenders are found
+#  over zero subjects, and the gate goes permanently green.  Refuse an absent
+#  root BEFORE any scan -- and before the snapshot-scope self-test below,
+#  which builds its own temp tree and would keep passing over an absent
+#  corpus.  The collapsed-count floor lives beside the final verdict.
+SCAN_ROOTS = ("data/standards/components", "data/groupEstimative",
+              "tutorials", "src", "bin/curate", "docs/ai", "docs",
+              "gui/schemas/operations")
+for _r in SCAN_ROOTS:
+    if not (ROOT / _r).is_dir():
+        print("RETIRED-NAME GATE FAILED: scan root '%s' does not exist --"
+              " this gate cannot see what it audits, and a green verdict"
+              " over an absent tree would be the check_true_ions failure"
+              " again." % _r)
+        sys.exit(1)
+
 bad = []
+scanned = 0                           # files actually read, all six scans
 
 HISTORY = ("was ", "previously", "renamed", "retired", "old ", "legacy",
            "propertyData")
@@ -62,6 +82,7 @@ for f in comp_files:
         txt = f.read_text(errors="replace")
     except OSError:
         continue
+    scanned += 1
     for pat, label in COMP_PATTERNS:
         if pat.search(txt):
             bad.append(f"{f.relative_to(ROOT)}: {label}")
@@ -93,6 +114,7 @@ for f in (ROOT / "tutorials").rglob("*"):
         txt = f.read_text(errors="replace")
     except OSError:
         continue
+    scanned += 1
     for pat, label in TUT_PATTERNS:
         for m in pat.finditer(txt):
             if allowed_history(txt, m.start()):
@@ -110,6 +132,7 @@ for f in (ROOT / "src").rglob("*"):
     try:
         if "translateV2" in f.read_text(errors="replace"):
             bad.append(f"{f.relative_to(ROOT)}: translateV2 in src/")
+        scanned += 1
     except OSError:
         continue
 
@@ -179,6 +202,7 @@ for f in agg_files:
         txt = f.read_text(errors="replace")
     except OSError:
         continue
+    scanned += 1
     m = AGG.search(txt)
     if m and not allowed_history(txt, m.start()):
         bad.append(f"{f.relative_to(ROOT)}: retired aggregated-snapshot"
@@ -219,6 +243,7 @@ for f in doc_files:
         txt = f.read_text(errors="replace")
     except OSError:
         continue
+    scanned += 1
     for pat in V1_TOKENS:
         for m in pat.finditer(txt):
             if allowed_history(txt, m.start()):
@@ -258,12 +283,21 @@ for f in writer_src:
         txt = f.read_text(errors="replace")
     except OSError:
         continue
+    scanned += 1
     for i, line in enumerate(txt.split("\n"), 1):
         if V1_FILE.search(line) and "thermoPhysPropDict" not in line \
                 and not line_ok(line):
             bad.append(f"{f.relative_to(ROOT)}:{i}: creates/teaches the retired"
                        f" constant/propertyDict")
 
+#  Collapsed-scan floor (2026-08-15 fleet census): 45652 files observed
+#  across the six scans; a count under 5000 means the scan surface has
+#  collapsed, not that the corpus shrank.  See check_true_ions.
+if scanned < 5000:
+    print("RETIRED-NAME GATE FAILED: only %d files scanned -- the corpus"
+          " holds tens of thousands, so the scan surface has collapsed and"
+          " a verdict over it would describe nothing." % scanned)
+    sys.exit(1)
 if bad:
     print("RETIRED-NAME GATE FAILED (%d):" % len(bad))
     for b in bad[:60]:
@@ -273,4 +307,5 @@ print("retired-name gate: component corpus flat, tutorial sources clean,"
       " src/ clean, aggregated snapshot speaks streamFaces, doc surfaces"
       " (guides incl. tutorialsGuide-* + docs/ai + the operation schemas"
       " the GUI and the generated reference both read) free of v1 grammar,"
-      " bin/ writers + src/ messages emit v2 (only refusals name the old file)")
+      " bin/ writers + src/ messages emit v2 (only refusals name the old file)"
+      " (%d files scanned; an absent or collapsed scan root REFUSES)" % scanned)
