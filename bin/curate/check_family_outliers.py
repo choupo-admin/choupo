@@ -53,8 +53,22 @@ def strip(t):
     return re.sub(r'//.*$', '', t, flags=re.M)
 
 
+# A SCAN OVER NOTHING IS NOT A CLEAN FAMILY (2026-08-15 fleet census): this
+# gate shared the check_true_ions death shape -- rename data/standards/
+# chemistry/ and glob returns nothing, zero outliers are found over zero
+# records, and the gate goes permanently green.  A scanner must refuse when
+# it cannot see what it audits.
+if not (STD / "chemistry").is_dir():
+    print("family-outlier gate FAILED: scan root 'data/standards/chemistry'"
+          " does not exist -- this gate cannot see what it audits, and a"
+          " green verdict over an absent tree would be the check_true_ions"
+          " failure again.")
+    sys.exit(1)
+
 records = []
+scanned = 0
 for p in sorted((STD / "chemistry").glob("*.dat")):
+    scanned += 1
     raw = p.read_text()
     if "recordType aqueousSpeciation" not in raw:
         continue
@@ -114,8 +128,19 @@ for fam, cations in FAMILIES.items():
                         f"      -> transcription / re-baselining error?  "
                         f"check the record against its own cited source")
 
+# Floor set well below the observed count (77 chemistry records at the
+# 2026-08-15 census) so a collapsed scan refuses instead of describing
+# nothing.
+if scanned < 15:
+    print(f"family-outlier gate FAILED: only {scanned} chemistry record(s)"
+          f" scanned -- the corpus holds dozens, so the scan surface has"
+          f" collapsed and a verdict over it would describe nothing.")
+    sys.exit(1)
+
 print(f"family-outlier gate: {len(records)} constants over "
-      f"{len(FAMILIES)} declared families")
+      f"{len(FAMILIES)} declared families "
+      f"({scanned} chemistry files scanned; an absent or collapsed scan"
+      f" root REFUSES)")
 if findings:
     print(f"  {len(findings)} value(s) deserve a human eye:")
     for f in findings:

@@ -44,15 +44,32 @@ SRC = ROOT / "src"
 
 bad = []
 
+# A SCAN OVER NOTHING IS NOT A CLEAN CORPUS (2026-08-15 fleet census): this
+# gate shared the check_true_ions death shape -- rename any scanned root and
+# glob returns nothing, zero problems are found over zero subjects, and the
+# gate goes permanently green.  A scanner must refuse when it cannot see what
+# it audits.
+for base in (STD / "components", STD / "species", STD / "chemistry", SRC):
+    if not base.is_dir():
+        print(f"aq-disambiguation gate FAILED: scan root"
+              f" '{base.relative_to(ROOT)}' does not exist -- this gate"
+              f" cannot see what it audits, and a green verdict over an"
+              f" absent tree would be the check_true_ions failure again.")
+        sys.exit(1)
+
 components = {p.stem for p in (STD / "components").glob("*.dat")}
 masters = set()
+nSpecies = 0
 for p in (STD / "species").glob("*.dat"):
+    nSpecies += 1
     m = re.search(r'^name\s+(\S+);', p.read_text(), re.M)
     if m:
         masters.add(m.group(1))
 
 derived = {}                       # id -> (z, file)
+nChem = 0
 for p in sorted((STD / "chemistry").glob("*.dat")):
+    nChem += 1
     t = p.read_text()
     if "recordType aqueousSpeciation" not in t:
         continue
@@ -85,7 +102,8 @@ idle = [s for s in sorted(derived)
 
 # ---- 4. no runtime code parses the suffix ----------------------------------
 PARSES = re.compile(r'(ends_with|endsWith|substr)\s*\(.*"aq"|"aq"\s*==|== *"aq"')
-for f in list(SRC.rglob("*.cpp")) + list(SRC.rglob("*.H")):
+srcFiles = list(SRC.rglob("*.cpp")) + list(SRC.rglob("*.H"))
+for f in srcFiles:
     for i, line in enumerate(f.read_text(errors="replace").splitlines(), 1):
         if line.lstrip().startswith("//"):
             continue
@@ -93,6 +111,20 @@ for f in list(SRC.rglob("*.cpp")) + list(SRC.rglob("*.H")):
             bad.append(f"{f.relative_to(ROOT)}:{i}: parses the `aq` suffix --"
                        f" charge and identity come from `z` and the record,"
                        f" never from a name")
+
+# Floors set well below the observed counts (247 components / 52 species /
+# 77 chemistry records / 628 source files at the 2026-08-15 census, same
+# fleet census as the root refusal above): a collapsed count means the scan
+# surface vanished, not that the corpus is clean.
+for label, n, floor in (("component", len(components), 40),
+                        ("species", nSpecies, 10),
+                        ("chemistry", nChem, 15),
+                        ("src *.cpp/*.H", len(srcFiles), 100)):
+    if n < floor:
+        print(f"aq-disambiguation gate FAILED: only {n} {label} file(s)"
+              f" scanned (floor {floor}) -- the scan surface has collapsed"
+              f" and a verdict over it would describe nothing.")
+        sys.exit(1)
 
 if bad:
     print("aq-disambiguation gate FAILED:")
@@ -104,5 +136,8 @@ nAq = sum(1 for s in derived if s.endswith("aq"))
 print(f"aq-disambiguation gate: {nAq} neutral complexes carry `aq`"
       f" ({nAq - len(idle)} shadow a component TODAY, {len(idle)} are uniform"
       f" application); {len(masters & components)} master species share a"
-      f" component name legitimately (same substance, two phases)")
+      f" component name legitimately (same substance, two phases)"
+      f" [{len(components)} components / {nSpecies} species / {nChem}"
+      f" chemistry / {len(srcFiles)} source files scanned; an absent or"
+      f" collapsed scan root REFUSES]")
 sys.exit(0)

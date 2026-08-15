@@ -134,11 +134,30 @@ def _quoted_or_word(body, key):
 def main():
     comp_dir = Path(sys.argv[1]) if len(sys.argv) > 1 \
         else ROOT / "data/standards/components"
+    #  A SCAN OVER NOTHING IS NOT A DRIFT-FREE CORPUS (2026-08-15 fleet
+    #  census): this gate shared the check_true_ions death shape -- rename
+    #  the components dir and glob("*.dat") returns nothing, zero drift is
+    #  found over zero subjects, and the gate goes permanently green.  A
+    #  scanner must refuse when it cannot see what it audits.
+    if not comp_dir.is_dir():
+        sys.exit(f"check_estimates: components dir '{comp_dir}' does not "
+                 f"exist -- this gate cannot see what it audits, and a green "
+                 f"verdict over an absent tree would be the check_true_ions "
+                 f"failure again")
+    files = sorted(comp_dir.glob("*.dat"))
+    #  Floor set well below the observed count (247 standards components at
+    #  the 2026-08-15 census); applied only to the default corpus scan -- an
+    #  explicitly passed alternate dir may legitimately be small.
+    if len(sys.argv) <= 1 and len(files) < 40:
+        sys.exit(f"check_estimates: only {len(files)} component file(s) "
+                 f"scanned under {comp_dir} -- the corpus holds hundreds, so "
+                 f"the scan surface has collapsed and a verdict over it "
+                 f"would describe nothing")
     table = parse_joback_table()
     METHOD_VERSION = table_id()
 
     drift, stale, checked, unstructured, norecipe = [], [], 0, 0, []
-    for path in sorted(comp_dir.glob("*.dat")):
+    for path in files:
         specs, prov, vals, n_tags = parse_component(path)
         unstructured += n_tags
         for field, e in prov.items():
@@ -181,7 +200,8 @@ def main():
                 drift.append(f"{path.name}:{field}  stored={stored:.6g}  "
                              f"joback={recomputed:.6g}  rel={rel:.2e}")
 
-    print(f"check_estimates: {checked} structured Joback estimate(s) verified against the recipe")
+    print(f"check_estimates: {checked} structured Joback estimate(s) verified against the recipe "
+          f"({len(files)} component files scanned; an absent or collapsed scan root REFUSES)")
     if stale:
         print(f"\nSTALE ({len(stale)}) -- method/table moved; regenerate and re-review:")
         for s in stale:
