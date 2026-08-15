@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  coolingTower01_merkel
+  =====================
+
+  A counter-current evaporative cooling tower in RATING mode: the packing
+  characteristic is declared (Me = KaV/L = 1.5) and the cold-water
+  temperature is the RESULT.  Hot water at 45 C meets ambient air at 25 C
+  (Y = 0.01286 kg/kg dry, about 62 % RH on the N2 carrier), L/G ~ 0.99.
+
+  The whole construction lives on the Merkel diagram the unit publishes as
+  its profile: air enthalpy h against water temperature T, the saturation
+  curve h*(T) above, the operating line h1 + (L cpL / G)(T - T_out) below,
+  and Me the integral of cpL dT over the gap between them.
+
+  Method hypotheses (each announced at run time): Lewis = 1; the water
+  loss is neglected INSIDE the integral but reported and honoured at the
+  boundary (the coolWater outlet carries L_in minus the evaporation);
+  the exit air is assumed saturated; cp at mean film temperatures.
+
+  What to look at in the output:
+    * T_water_out against the wet-bulb floor (T_wb ~ 293 K): the approach
+      is the tower's real currency -- a tower can never cool BELOW T_wb.
+    * merkelNumber_chebyshev4 beside the converged integral: the CTI
+      four-point hand method against Simpson on 200 intervals.  The gap
+      is the price of the hand method, visible, not hidden.
+    * evaporation_kg_s = makeup_kg_s: the water the cooling COSTS.  A
+      tower cools ~1 % of L per ~7 K of range by evaporating it.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        tower01;
+        type        coolingTower;
+        inputs      ( hotWater  air );
+        outputs     ( coolWater  humidAir );
+
+        operation
+        {
+            merkelNumber   1.5;          // KaV/L of the installed packing (rating)
+        }
+    }
+);

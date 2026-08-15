@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Seed for the cooled-water outlet: feed propagated toward the expected
+     answer.  The solver overwrites it. ---*/
+
+componentMolarFlows
+{
+    water    99 kmol/h;
+}
+
+T               303 K;
+P               101325 Pa;

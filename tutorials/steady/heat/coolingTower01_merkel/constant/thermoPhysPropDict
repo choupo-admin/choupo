@@ -1,0 +1,26 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- water + N2 (the dry-air carrier).  The tower
+  reads, per component and by name if absent: water's vapour pressure
+  (saturation curve), liquid Cp (water-side sensible heat), ideal-gas Cp
+  (vapour humid heat) and latent heat; N2's ideal-gas Cp (dry humid heat).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( water  N2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;  standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

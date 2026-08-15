@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  air                    F                0.0184166666667    1e-4
+stream  coolWater              F                0.027110090426     1e-4
+stream  hotWater               F                0.0277777777778    1e-4
+stream  humidAir               F                0.0190843540184    1e-4
+kpi     tower01                L_over_G         0.98937581178      1e-4
+kpi     tower01                Q_kW             36.4315830585      1e-4
+kpi     tower01                T_air_out        307.613817692      1e-4
+kpi     tower01                T_water_out      300.778649138      1e-4
+kpi     tower01                T_wb_in          293.021697982      1e-4
+kpi     tower01                Y_in             0.0128618855531    1e-4
+kpi     tower01                Y_out            0.0366432593178    1e-4
+kpi     tower01                approach_K       7.75695115581      1e-4
+kpi     tower01                evaporation_kg_s 0.0120283876424    1e-4
+kpi     tower01                evaporation_pct_of_L 2.40367446642      1e-4
+kpi     tower01                makeup_kg_s      0.0120283876424    1e-4
+kpi     tower01                merkelNumber     1.5                1e-4
+kpi     tower01                merkelNumber_chebyshev4 1.50006493043      1e-4
+kpi     tower01                range_K          17.3713508623      1e-4

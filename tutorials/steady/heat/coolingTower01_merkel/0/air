@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit. ---*/
+
+componentMolarFlows
+{
+    N2       65   kmol/h;                // G_dry = 1820.9 kg/h = 0.5058 kg/s
+    water    1.3  kmol/h;                // Y1 = 0.01286 kg/kg dry (~62 % RH at 25 C)
+}
+
+T               298.15 K;                // 25 C ambient
+P               101325 Pa;

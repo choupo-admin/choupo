@@ -43,6 +43,7 @@ License
 #include "heatTransfer/PhaseChanger.H"
 #include "heatTransfer/SolidDryer.H"
 #include "heatTransfer/EvaporativeDryer.H"
+#include "heatTransfer/CoolingTower.H"
 #include "heatTransfer/SprayDryer.H"
 #include "heatTransfer/atomizer/Atomizer.H"
 #include "rotating/Compressor.H"
@@ -148,6 +149,7 @@ void UnitOperation::registerBuiltins()
     reg("sprayDryer",         []{ return std::make_unique<SprayDryer>();         });
     reg("solidDryer",         []{ return std::make_unique<SolidDryer>();         });
     reg("evaporativeDryer",   []{ return std::make_unique<EvaporativeDryer>();   });
+    reg("coolingTower",       []{ return std::make_unique<CoolingTower>();       });
     reg("crystalliser",       []{ return std::make_unique<Crystalliser>();       });
     reg("compressor",         []{ return std::make_unique<Compressor>();         });
     reg("turbine",            []{ return std::make_unique<Turbine>();            });

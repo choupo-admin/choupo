@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/coolingTower.schema.json",
+  "title": "coolingTower operation",
+  "description": "Counter-current evaporative water cooling tower (Merkel enthalpy driving force, Lewis = 1). Exactly ONE of the two keys is declared: `merkelNumber` (rating — the packing characteristic KaV/L is given and the cold-water temperature is the RESULT) or `T_water_out` (design — the duty is given and the required Merkel number is the RESULT). The thermodynamic floor is the inlet-air wet bulb; a target at or below it refuses, and an operating line that touches the saturation curve refuses naming L/G as the remedy.",
+  "type": "object",
+  "properties": {
+    "merkelNumber": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Merkel number KaV/L",
+      "description": "Tower characteristic of the installed packing (rating mode): the cold-water temperature becomes the result. Mutually exclusive with T_water_out.",
+      "unit": "-"
+    },
+    "T_water_out": {
+      "type": "number",
+      "title": "Cold-water target",
+      "description": "Design mode: the required Merkel number becomes the result. Must lie strictly between the inlet-air wet bulb and the hot-water inlet temperature.",
+      "unit": "K"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}
