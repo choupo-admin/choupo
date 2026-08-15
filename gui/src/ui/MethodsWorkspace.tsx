@@ -93,6 +93,8 @@ const BreakthroughTool = lazy(() =>
   import("./methods/BreakthroughTool.js").then((m) => ({ default: m.BreakthroughTool })));
 const PinchCompositeTool = lazy(() =>
   import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
+const PumpSystemTool = lazy(() =>
+  import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -143,10 +145,9 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:hx-entu",
   },
   {
-    id: "pump-system", label: "Pump vs system curve", status: "planned",
-    teaches: "The operating point is an intersection: pump head falling with flow against system head rising with it.",
+    id: "pump-system", label: "Pump vs system curve", status: "live",
+    teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
-    fedBy: "reads an outerDict sweep of streams.<inlet>.F over a pump + pipe train (witness: pumpSystem01_operating_point)",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -311,6 +312,7 @@ export function MethodsWorkspace() {
               {tool === "kremser" ? <KremserTool />
                 : tool === "entu" ? <EpsilonNtuTool />
                 : tool === "pinch-composite" ? <PinchCompositeTool />
+                : tool === "pump-system" ? <PumpSystemTool />
                 : <BreakthroughTool />}
             </Suspense>
           </>
