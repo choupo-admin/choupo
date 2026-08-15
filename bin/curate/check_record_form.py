@@ -99,20 +99,49 @@ def scan(path, label, bad, pending, *, component, design):
 
 bad, pending = [], []
 
-for p in sorted((ROOT / "data/standards/components").glob("*.dat")):
+#  A scan over nothing keeps no form (2026-08-15 fleet census): this gate
+#  shared the check_true_ions death shape -- rename a scanned root and
+#  glob/rglob return nothing, zero violations over zero records, permanently
+#  green.  docs/design was even a silent `is_dir()` skip, in the one place
+#  this gate exists to guard.  A scanner refuses when it cannot see its
+#  subjects.
+components_dir = ROOT / "data/standards/components"
+design = ROOT / "docs/design"
+for label, root in (("data/standards/components", components_dir),
+                    ("docs/design", design)):
+    if not root.is_dir():
+        print(f"record-form gate FAILED: scan root `{label}` does not exist "
+              f"-- this gate cannot see what it audits, and a green verdict "
+              f"over an absent tree would be the check_true_ions failure "
+              f"again.")
+        sys.exit(1)
+
+n_components = 0
+for p in sorted(components_dir.glob("*.dat")):
+    n_components += 1
     scan(p, f"data/standards/components/{p.name}", bad, pending,
              component=True, design=False)
 
-design = ROOT / "docs/design"
-if design.is_dir():
-    for p in sorted(design.rglob("*")):
-        if not p.is_file():
-            continue
-        rel = str(p.relative_to(ROOT))
-        if p.suffix in (".md", ".tex", ".png", ".pdf"):
-            continue          # prose may DISCUSS a retired field
-        scan(p, rel, bad, pending, component=("/components/" in rel),
-             design=True)
+n_design = 0
+for p in sorted(design.rglob("*")):
+    if not p.is_file():
+        continue
+    rel = str(p.relative_to(ROOT))
+    if p.suffix in (".md", ".tex", ".png", ".pdf"):
+        continue          # prose may DISCUSS a retired field
+    n_design += 1
+    scan(p, rel, bad, pending, component=("/components/" in rel),
+         design=True)
+
+#  Collapsed-scan floors (2026-08-15 fleet census, check_true_ions
+#  precedent): 247 component records / 35 design dicts observed; each floor
+#  sits a round 5x+ below.
+if n_components < 40 or n_design < 5:
+    print(f"record-form gate FAILED: only {n_components} component record(s) "
+          f"and {n_design} design dict(s) scanned -- the corpus holds far "
+          f"more, so the scan surface has collapsed and a verdict over it "
+          f"would describe nothing.")
+    sys.exit(1)
 
 if pending:
     print(f"record-form gate: {len(pending)} record(s) still carry `role` -- "
@@ -127,5 +156,6 @@ if bad:
           "existing record, never from an external format")
     sys.exit(1)
 
-print("record-form gate: component records and design drafts keep the settled "
-      "form")
+print(f"record-form gate: component records and design drafts keep the settled "
+      f"form ({n_components} components, {n_design} design dicts scanned; an "
+      f"absent or collapsed scan root REFUSES)")

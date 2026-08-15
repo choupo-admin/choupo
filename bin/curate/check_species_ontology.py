@@ -13,9 +13,23 @@ import sys
 from pathlib import Path
 
 STD = Path(__file__).resolve().parents[2] / "data" / "standards" / "species"
+
+# A scan over nothing is not an ontology (2026-08-15 fleet census): this
+# gate shared the check_true_ions death shape -- rename the species root and
+# glob returns nothing, zero violations over zero records, and the gate goes
+# permanently green.  A scanner must refuse when it cannot see its subjects.
+if not STD.is_dir():
+    print("SPECIES ONTOLOGY GATE FAILED: scan root 'data/standards/species'"
+          " does not exist -- this gate cannot see what it audits, and a"
+          " green verdict over an absent tree would be the check_true_ions"
+          " failure again.")
+    sys.exit(1)
+
 bad = []
 n = 0
+scanned = 0
 for f in sorted(STD.glob("*.dat")):
+    scanned += 1
     if f.name == "aqueous.dat":
         bad.append(f"{f.name}: the retired monolith must not exist")
         continue
@@ -33,10 +47,19 @@ for f in sorted(STD.glob("*.dat")):
         bad.append(f"{f.name}: NEUTRAL (charge 0) carries an `ion` key"
                    " -- a dissolved molecule is not an ion")
 
+# Collapsed-scan floor (2026-08-15 fleet census, check_true_ions precedent):
+# 52 species files observed; the floor sits a round 5x+ below.
+if scanned < 10:
+    print(f"SPECIES ONTOLOGY GATE FAILED: only {scanned} species file(s)"
+          f" scanned -- the catalogue holds dozens, so the scan surface has"
+          f" collapsed and a verdict over it would describe nothing.")
+    sys.exit(1)
+
 if bad:
     print("SPECIES ONTOLOGY GATE FAILED:")
     for b in bad:
         print("  " + b)
     sys.exit(1)
 print(f"species ontology: {n} modelSpecies files, formula-typed,"
-      f" neutrals not mislabelled as ions")
+      f" neutrals not mislabelled as ions ({scanned} files scanned; an"
+      f" absent or collapsed scan root REFUSES)")

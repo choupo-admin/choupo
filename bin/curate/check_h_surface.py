@@ -21,11 +21,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2] / "src"
 
+# A scan over nothing is not a clean surface (2026-08-15 fleet census): this
+# gate shared the check_true_ions death shape -- rename src/ and rglob
+# returns nothing, zero violations are found over zero files, and the gate
+# goes permanently green.  A scanner refuses when it cannot see its subject.
+if not ROOT.is_dir():
+    print("check_h_surface FAILED: scan root 'src' does not exist -- this"
+          " gate cannot see the surface it audits, and a green verdict over"
+          " an absent tree would be the check_true_ions failure again.")
+    sys.exit(1)
+
 banned    = []   # (file, line, text) calls to the RETIRED name
 unmarked  = []   # blend calls without the authorization marker
 authorized = []  # (file, line, purpose)
 
-for path in sorted(ROOT.rglob("*.cpp")) + sorted(ROOT.rglob("*.H")):
+sources = sorted(ROOT.rglob("*.cpp")) + sorted(ROOT.rglob("*.H"))
+for path in sources:
     rel = path.relative_to(ROOT.parent)
     for lineno, line in enumerate(path.read_text().splitlines(), 1):
         # The RETIRED name: any call `.H_stream(` / `->H_stream(` /
@@ -51,7 +62,17 @@ for path in sorted(ROOT.rglob("*.cpp")) + sorted(ROOT.rglob("*.H")):
             else:
                 unmarked.append((str(rel), lineno, line.strip()))
 
-print(f"check_h_surface: {len(authorized)} authorized blend locus/loci:")
+# Collapsed-scan floor (2026-08-15 fleet census, check_true_ions precedent):
+# 628 source files observed; the floor sits a round 5x+ below.
+if len(sources) < 100:
+    print(f"check_h_surface FAILED: only {len(sources)} source files scanned"
+          f" -- the tree holds hundreds, so the scan surface has collapsed"
+          f" and a verdict over it would describe nothing.")
+    sys.exit(1)
+
+print(f"check_h_surface: {len(sources)} source files scanned (an absent or"
+      f" collapsed scan root REFUSES); {len(authorized)} authorized blend"
+      f" locus/loci:")
 for f, l, p in authorized:
     print(f"  {f}:{l}  [{p}]")
 

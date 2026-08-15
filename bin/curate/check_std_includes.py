@@ -44,6 +44,16 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SRC = os.path.join(ROOT, "src")
 
+#  A scan over nothing includes nothing (2026-08-15 fleet census): this gate
+#  shared the check_true_ions death shape -- rename src/ and os.walk yields
+#  nothing, zero misses over zero files, and the gate goes permanently green.
+#  A scanner must refuse when it cannot see what it audits.
+if not os.path.isdir(SRC):
+    print("std includes FAILED: scan root 'src' does not exist -- this gate"
+          " cannot see what it audits, and a green verdict over an absent"
+          " tree would be the check_true_ions failure again.")
+    sys.exit(1)
+
 #  symbol pattern -> the header that declares it.  Kept SHORT on purpose: each
 #  entry has to be a facility whose header is genuinely borrowable, or the
 #  gate turns into noise nobody reads.
@@ -99,6 +109,14 @@ for base, _dirs, files in os.walk(SRC):
             n += 1
             check(os.path.join(base, fn))
 
+#  Collapsed-scan floor (2026-08-15 fleet census, check_true_ions precedent):
+#  628 source files observed; the floor sits a round 5x+ below.
+if n < 100:
+    print("std includes FAILED: only %d source files scanned -- the tree"
+          " holds hundreds, so the scan surface has collapsed and a verdict"
+          " over it would describe nothing." % n)
+    sys.exit(1)
+
 for path, sym, header in fails:
     print("FAIL  %s uses %s without #include <%s> -- g++ lends it, "
           "emscripten's libc++ does not"
@@ -108,5 +126,6 @@ print()
 if fails:
     print("%d file(s) borrowing a header they do not include." % len(fails))
     sys.exit(1)
-print("std includes: %d source files, each includes what it uses." % n)
+print("std includes: %d source files, each includes what it uses (an absent"
+      " or collapsed scan root REFUSES)." % n)
 sys.exit(0)
