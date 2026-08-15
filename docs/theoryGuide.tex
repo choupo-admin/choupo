@@ -12123,7 +12123,7 @@ $P$ + $H$ \quad / \quad $P$ + $S$  & isenthalpic / isentropic closure & recognis
 \end{tabular}
 \end{center}
 
-\begin{warning}
+\begin{pitfall}
 \textbf{There is no \code{state} keyword on a stream, and this table used to
 say there was.}  Earlier printings documented \code{state saturatedVapour},
 \code{saturatedLiquid}, \code{subcooled} and \code{superheated} as stream
@@ -12138,7 +12138,7 @@ parser shortcut does the work.  The consequence for the author is real and not
 merely lexical: the engine no longer inverts $P_{\mathrm{sat}}$ for you at
 import, so a hand-entered $T$ that drifts from $T_{\mathrm{sat}}(P)$ silently
 makes a ``saturated'' feed superheated or sub-cooled, and no check catches it.
-\end{warning}
+\end{pitfall}
 
 \subsection{\code{vaporFraction}: the general two-spec rule (why $\beta$ is
 often essential)}\label{sec:vaporFraction-dof}
@@ -12164,7 +12164,7 @@ $T$ + $P$ + \code{vaporFraction} & flash on $(T,P)$; the declared $\beta$ is a P
 \end{tabular}
 \end{center}
 
-\begin{warning}
+\begin{pitfall}
 Earlier printings of this table claimed that all three variables together were
 \textbf{REFUSED} as over-specified and that one alone was refused as
 under-specified.  \textbf{No such refusal is implemented}, and the corpus
@@ -12175,7 +12175,7 @@ that price energy ask that flag rather than testing $\beta = 0$, so an
 \emph{implicit} pin cannot be smuggled in --- but it does not close the state
 and it is not checked against the flash the $(T,P)$ pair produces.  If the two
 disagree, the flash wins silently.  Write $\beta$ only when you mean the pin.
-\end{warning}
+\end{pitfall}
 
 \begin{intuition}
 Why \code{vaporFraction} is not optional sugar but often \emph{essential}: on
@@ -12218,7 +12218,7 @@ writes back the $F$ the consuming unit publishes through
 and the structured JSON show the actual consumption rather than a placeholder
 zero.
 
-\begin{warning}
+\begin{pitfall}
 \textbf{Nothing currently sets that flag.}  The only way to raise it was to
 declare a stream with \code{state saturatedVapour} / \code{saturatedLiquid} and
 no $F$, and that keyword went with the \code{streams \{\}} block --- so the
@@ -12228,7 +12228,7 @@ rather than quietly dropped because a reader who finds the flag in the source
 is entitled to know it is unreachable; restoring demand-driven flow means
 giving the \file{0/} grammar its own way to declare the intent, which is a
 design act and not a rename.
-\end{warning}
+\end{pitfall}
 
 \begin{intuition}
 The mental model the student should leave with: a stream

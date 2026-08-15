@@ -2404,6 +2404,21 @@ PYEOF
     fi
     rm -f /tmp/lcp.$$
 
+    # A manual must still COMPILE.  theoryGuide.tex opened three `warning`
+    # environments that are defined nowhere, so `make -C docs all` had been
+    # dying since the commit that added them and nothing said so -- no gate
+    # builds the guides, and buildSite's refusal only fires when someone runs
+    # it.  Running LaTeX here would cost minutes; this is the static half.
+    if "$ROOT/bin/curate/check_guide_environments.py" > /tmp/genv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "check_guide_environments" "$(tail -1 /tmp/genv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (a manual will not compile)\n" "check_guide_environments"
+        cat /tmp/genv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/genv.$$
+
     if "$ROOT/bin/curate/check_guide_paths.py" > /tmp/gpaths.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "check_guide_paths" "$(tail -1 /tmp/gpaths.$$)"
         pass=$((pass+1))
