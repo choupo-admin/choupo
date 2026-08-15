@@ -19,6 +19,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# ---- Vacuity guard (2026-08-15 fleet census): this gate shared the
+#      check_true_ions death shape -- rename a scanned root and the globs
+#      below return nothing, zero violations are found over zero surfaces,
+#      and the gate goes permanently green.  An absent scan root refuses by
+#      name; a collapsed surface count refuses against a floor (352 surfaces
+#      observed at the census; the floor sits well below it).
+SCAN_ROOTS = ("docs/ai", "docs", "tutorials", "site")
+SURFACE_FLOOR = 50
+
 # ---- The teaching surfaces (user-facing; architecture/history docs exempt) --
 SURFACES = (
     list((ROOT / "docs/ai").glob("*.md"))
@@ -81,7 +90,15 @@ BARE_FILENAME = re.compile(
 
 
 def main() -> int:
+    for r in SCAN_ROOTS:
+        if not (ROOT / r).is_dir():
+            print(f"check_doctrine: FAILED -- scan root '{r}' does not "
+                  "exist; this gate cannot see what it audits, and a green "
+                  "verdict over an absent tree would be the check_true_ions "
+                  "failure again.")
+            return 1
     violations = []
+    read_surfaces = 0
     for path in SURFACES:
         if not path.exists():
             continue
@@ -89,6 +106,7 @@ def main() -> int:
         if rel in ALLOW:
             continue
         lines = path.read_text(errors="replace").splitlines()
+        read_surfaces += 1
         for i, line in enumerate(lines):
             for name, pat, tolerable in RULES:
                 if not pat.search(line):
@@ -132,8 +150,15 @@ def main() -> int:
               "with 'legacy'/'retired' context, or allowlist the file WITH a "
               "reason in this script.")
         return 1
-    print(f"check_doctrine: {len(SURFACES)} teaching surfaces clean "
-          "(streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)")
+    if read_surfaces < SURFACE_FLOOR:
+        print(f"check_doctrine: FAILED -- only {read_surfaces} teaching "
+              f"surfaces read against a floor of {SURFACE_FLOOR}; the scan "
+              "surface has collapsed and a verdict over it would describe "
+              "nothing.")
+        return 1
+    print(f"check_doctrine: {read_surfaces} teaching surfaces clean "
+          "(streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors;"
+          " an absent or collapsed scan root REFUSES)")
     return 0
 
 
