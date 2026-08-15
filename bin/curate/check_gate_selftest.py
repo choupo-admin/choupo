@@ -183,6 +183,18 @@ RETIRED_PROBE = "species" + "Map"
 
 SABOTAGES += [
     {
+        "gate": "check_workspace_truth.py",
+        "kind": "detection/poisoned-overlay",
+        "file": "src/propertyOps/EvidencePartition.H",
+        "find": "R5 SHIPPED 2026-08-11",
+        "replace": "R5 SHIPPED [SELFTEST-REMOVED]",
+        "why": "the workspace-truth gate detects the recycler's poisoned "
+               "overlay by what it REMOVES: a dirty copy of this file "
+               "lacking the shipped sentinel while HEAD carries it.  Erase "
+               "the sentinel and P2 must refuse naming the file -- "
+               "otherwise the overlay defence is a sentence in a docstring.",
+    },
+    {
         "gate": "check_legacy_schema.py",
         "kind": "detection",
         "file": "data/standards/parameters/Henry/Ar-water.dat",
