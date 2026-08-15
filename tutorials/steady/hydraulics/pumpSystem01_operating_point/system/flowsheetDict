@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  pumpSystem01_operating_point
+  ============================
+
+  A pump and its piping system IN SERIES, swept over the feed flow (see
+  system/outerDict).  The classical operating-point construction:
+
+    * PUMP characteristic -- the shaft delivers a FIXED 2 kW at eta 0.65,
+      so the pressure rise FALLS with flow:  dP_pump = eta W / Q_vol.
+      This is the constant-shaft-power characteristic of the pump MODEL,
+      not a manufacturer's tested H(Q) curve -- the engine says what it
+      models, never pretends to a datasheet it was not given.
+
+    * SYSTEM curve -- the same flow through 50 m of 0.1 m commercial-steel
+      pipe with two elbows, a globe valve and a 2 m rise:
+      dP_system = friction(Q^2) + fittings(Q^2) + rho g dz.
+
+  Where the two curves CROSS, the pump's rise exactly pays the system's
+  demand -- the operating point.  Hand estimate (water, v ~ 1.807e-5
+  m3/mol, A = 7.854e-3 m2, f ~ 0.018, sum K = 11.8):
+
+      pump:    dP ~ 1300 / (F 1.807e-5)          ~  7.19e4 / F   Pa
+      system:  dP ~ 5.45e4 F^2 + 1.956e4          Pa   (F in kmol/s)
+      cross:   F* ~ 0.99 kmol/s  (~3.6e3 kmol/h), dP* ~ 0.73 bar
+
+  The sweep straddles that crossing (0.4..1.6 kmol/s); each point is a
+  complete converged pass, and the curves are read off the pump's and the
+  pipe's own published KPIs -- nothing is fitted or interpolated here.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        pump01;
+        type        pump;
+        in          feed;
+        outputs     ( mid );
+
+        operation
+        {
+            W_shaft   2.0  kW;           // hardware: motor power (FIXED across the sweep)
+            eta       0.65;              // pump efficiency
+        }
+    }
+
+    {
+        name        P1;
+        type        pipe;
+        model       Churchill;          // one explicit friction correlation, all regimes
+        in          mid;
+        outputs     ( delivered );
+
+        operation
+        {
+            geometry
+            {
+                D          0.1     m;    // internal diameter
+                L          50.0    m;    // straight length
+                roughness  4.6e-5  m;    // commercial steel
+                dz         2.0     m;    // outlet 2 m above inlet (static head)
+
+                fittings
+                (
+                    { K 0.9;  count 2; }   // two 90-degree elbows
+                    { K 10.0;          }   // one globe valve, fully open
+                );
+            }
+        }
+    }
+);

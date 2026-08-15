@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Sweep the FEED FLOW through the pump-and-pipe train.  A `streams.` target
+  is the driver's hand on stream STATE (it rides the override channel onto
+  the seeded registry, never the dict).  At each flow the pump's rise and
+  the pipe's demand are both published; the operating point is where the
+  two columns cross -- read it off the CSV, the engine does not pick it.
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    streams.feed.F;
+    range     ( 0.4  1.6 );               // kmol/s (engine flow basis) -- straddles the crossing (~0.99)
+    nPoints   13;                         // 0.1 kmol/s steps
+}
+
+responses
+(
+    pump01.dP              // pump characteristic: falls as eta W / Q_vol
+    pump01.head_m          // the same rise in head form
+    pump01.P_out
+    P1.deltaP              // system demand: friction + fittings + elevation
+    P1.dP_friction
+    P1.dP_elevation
+    P1.head_loss_m         // friction + fittings head only (no elevation term)
+    P1.velocity
+    P1.reynolds
+);
+
+report
+{
+    format    csv;
+    file      sweep_pumpSystem.csv;
+}

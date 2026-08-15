@@ -1,0 +1,37 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  delivered              F                1                  1e-4
+stream  feed                   F                1                  1e-4
+stream  mid                    F                1                  1e-4
+kpi     P1                     F                1                  1e-4
+kpi     P1                     P_in             371942.446043      1e-4
+kpi     P1                     P_out            291888.49117       1e-4
+kpi     P1                     dP_elevation     17201.0615699      1e-4
+kpi     P1                     dP_fittings      35394.534314       1e-4
+kpi     P1                     dP_friction      27458.3589895      1e-4
+kpi     P1                     deltaP           80053.9548734      1e-4
+kpi     P1                     density          877.010068162      1e-4
+kpi     P1                     frictionFactor   0.0183083994383    1e-4
+kpi     P1                     head_loss_m      7.30802492023      1e-4
+kpi     P1                     regime           2                  1e-4
+kpi     P1                     reynolds         257816.163566      1e-4
+kpi     P1                     velocity         2.61541015675      1e-4
+kpi     P1                     viscosity        0.000889680851703  1e-4
+kpi     pump01                 F                1                  1e-4
+kpi     pump01                 P_in             300000             1e-4
+kpi     pump01                 P_out            371942.446043      1e-4
+kpi     pump01                 T_in             298.15             1e-4
+kpi     pump01                 T_out            298.159271523      1e-4
+kpi     pump01                 W_hydraulic      1300               1e-4
+kpi     pump01                 W_shaft          2000               1e-4
+kpi     pump01                 W_shaft_kW       2                  1e-4
+kpi     pump01                 dP               71942.4460432      1e-4
+kpi     pump01                 dT               0.00927152317882   1e-4
+kpi     pump01                 eta              0.65               1e-4
+kpi     pump01                 head_m           7.35848502288      1e-4
+kpi     pump01                 v_molar_liq      1.807e-05          1e-4
+utility pump01                 power.electricity.duty_kW 2.10526315789      1e-4
+utility pump01                 power.electricity.T -1                 1e-4
+utility pump01                 power.electricity.kg_s 0                  1e-4
+utility pump01                 power.electricity.eur_h 0.210694736842     1e-4
