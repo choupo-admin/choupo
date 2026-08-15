@@ -17,7 +17,7 @@
     },
     "check_aq_disambiguation": {
       "exit": 0,
-      "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases)"
+      "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases) [247 components / 52 species / 77 chemistry / 628 source files scanned; an absent or collapsed scan root REFUSES]"
     },
     "check_aqueous_analysis": {
       "exit": 0,
@@ -37,7 +37,7 @@
     },
     "check_asset_homes": {
       "exit": 0,
-      "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs"
+      "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs (373 constant/ dirs scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_azeotrope_ceiling": {
       "exit": 0,
@@ -57,11 +57,11 @@
     },
     "check_build_fresh": {
       "exit": 0,
-      "claim": "check_build_fresh: OK -- linux64Gcc carries all 5 artefact(s), each newer than the newest source under src/ and make/.  The suite is therefore testing a build OF this tree.  NOT CHECKED: content -- this compares modification times, not hashes, so a `touch` or a `git checkout` that changes no byte can still trip it (the remedy is one idempotent `make all`), and a library built from these files can still be wrong.  The WASM build is separate and not covered."
+      "claim": "check_build_fresh: OK -- linux64Gcc carries all 5 artefact(s), each newer than the newest source it can DEPEND on -- an application's own main.cpp is judged against that binary alone, the library against everything except applications/, and a shared source under thermo/, solver/, core/ or any other subsystem against all five.  The suite is therefore testing a build OF this tree.  NOT CHECKED: content -- this compares modification times, not hashes, so a `touch` or a `git checkout` that changes no byte can still trip it (the remedy is one idempotent `make all`), and a library built from these files can still be wrong.  The WASM build is separate and not covered."
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 341 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 342 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -76,12 +76,16 @@
       "claim": "check_claim_separation: OK -- on curate02_vle_heldout_ethanol_water the fit chi-square is reported IN-SAMPLE, the held-out metric is a DIFFERENT number over named datasets, the acceptance band reaches the reader with its origin, and the verdict is one of the engine's 5; an unreachable band reports notValidated (a completed test that missed its criterion) and NOT a refusal; the legacy inline path claims neither a criterion nor a verdict; and the dossier carries the same separation plus each dataset's provenance.  NOT COVERED: whether any number is physically right, and any fitting operation other than this one witness."
     },
     "check_closure_ledger_pinned": {
-      "exit": 0,
-      "claim": "check_closure_ledger_pinned: OK -- 12 model-boundary ledger quantit(ies) pinned across 5 candidate case(s), in both directions (published implies pinned, pinned implies published); 2 candidate(s) declare an override and publish no credited step, which is a legitimate outcome (a crossing refused across a speciation flip is reported in `modelBoundaries` instead) and passes silently.  NOT CHECKED: whether any step is RIGHT, the status/rule WORDS (a golden row compares numbers; a status downgrade is caught indirectly, through step_kW and remaining_kW), and a boundary arising without a per-unit `thermo {}` block -- none exists and the ledger says none can, but this discovery would not see one."
+      "exit": 1,
+      "claim": "check_closure_ledger_pinned: FAILED"
     },
     "check_column_datum_downgrade": {
       "exit": 0,
       "claim": "check_column_datum_downgrade: OK -- both column solver paths announce the formation-datum downgrade with its consequence named (simultaneous via column05_reactive_methylacetate/aceticAcid; WangHenke via column01_benzene_toluene/benzene), and an intact case stays silent"
+    },
+    "check_compile_clean": {
+      "exit": 0,
+      "claim": "check_compile_clean: OK -- 287 translation unit(s) compile under -Wall -Wextra -Wpedantic with no warning.  NOT checked: optimiser-only warnings (-fsyntax-only skips codegen; `make STRICT=1` is the complete check), headers no TU includes, the separate WASM and gui/ toolchains, or any compiler but this one."
     },
     "check_composite_limits": {
       "exit": 0,
@@ -97,7 +101,7 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 621 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree"
+      "claim": "cosmo-scrub gate: 621 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree (3723 records enumerated; an absent or collapsed scan root REFUSES)"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -109,11 +113,11 @@
     },
     "check_cycle_css": {
       "exit": 0,
-      "claim": "check_cycle_css: OK -- a declared cycle reproduces the unrolled recipe KPI for KPI (structure, never physics); the CSS verdict is announced and measured, and UNAVAILABLE when the case declares no tolerance; 4 refusals fire named (step outside the period, when{} in a step, fractional repeat, zero tolerance)"
+      "claim": "check_cycle_css: OK -- a declared cycle reproduces the unrolled recipe KPI for KPI (structure, never physics); the CSS verdict is announced and measured, and UNAVAILABLE when the case declares no tolerance; 4 refusals fire named (step outside the period, when{} in a step, fractional repeat, zero tolerance).  `repeat untilCSS;` stops the campaign at the cyclic steady state -- the witness declares 6 cycles and uses 2, announcing why -- and its three refusals fire named (no cssTolerance, no maxCycles, an unknown repeat word); the norm that STOPS the run is the same number it REPORTS.  NOT CHECKED: whether the declared tolerance is a WISE one -- the witness records that this bed's loading is still visibly drifting at a tolerance the full-state norm already satisfies, which is a judgement the case owns and no gate can make."
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 135 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 140 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -128,12 +132,12 @@
       "claim": "check_derived_density: OK -- the authorised derivedDiluteVolume closure runs with both terms recorded (they sum to the final, and the final agrees with an independent python recomputation to 0.1 kg/m3); provenance-less, two-sources, missing sample temperature, out-of-domain (Kell 0-100 degC), molality-basis and iteration{}-on-a-direct-closure all refuse by name; and `provenance iterative` refuses stating the missing machinery -- slice B is BLOCKED on a composition-dependent volume model, not completed.  DELIBERATELY ABSENT: a non-convergence probe (only reachable against machinery that should not exist).  NOT COVERED: the closure's ACCURACY (an announced approximation, not a validated density model) and the reconciliation/inversion arithmetic (their own gates)."
     },
     "check_doc_references": {
-      "exit": 0,
-      "claim": "check_doc_references: OK -- 262 path mention(s) and 111 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
+      "exit": 1,
+      "claim": "check_doc_references: FAIL"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 351 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors)"
+      "claim": "check_doctrine: 352 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors; an absent or collapsed scan root REFUSES)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -173,7 +177,7 @@
     },
     "check_empty_dirs": {
       "exit": 0,
-      "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/"
+      "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/ (5498 dirs scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_enrtl": {
       "exit": 0,
@@ -189,7 +193,7 @@
     },
     "check_estimates": {
       "exit": 0,
-      "claim": "check_estimates: 40 structured Joback estimate(s) verified against the recipe"
+      "claim": "check_estimates: 40 structured Joback estimate(s) verified against the recipe (247 component files scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_evidence_partition": {
       "exit": 0,
@@ -197,7 +201,7 @@
     },
     "check_family_outliers": {
       "exit": 0,
-      "claim": "family-outlier gate: 62 constants over 3 declared families"
+      "claim": "family-outlier gate: 62 constants over 3 declared families (77 chemistry files scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_feed_switch": {
       "exit": 0,
@@ -221,7 +225,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1.  COVERAGE IS 4 of 136 gates, and the other 132 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  NOT COVERED: sabotage is data-level only, so the engine-behaviour arms of these gates -- refusals, announcements -- are not re-verified here; a source sabotage needs a rebuild, and that is the next slice rather than something this run silently includes."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 11 of 141 gates, and the other 130 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -233,11 +237,19 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40877 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40699 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
       "claim": "[check_groups] tree: /home/user/choupo/data/standards/components"
+    },
+    "check_guide_environments": {
+      "exit": 0,
+      "claim": "check_guide_environments: OK -- 3101 environment openings across 16 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here."
+    },
+    "check_guide_paths": {
+      "exit": 0,
+      "claim": "check_guide_paths: OK -- 680 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have."
     },
     "check_guide_pdf_version": {
       "exit": 0,
@@ -245,7 +257,7 @@
     },
     "check_h_surface": {
       "exit": 0,
-      "claim": "check_h_surface: 3 authorized blend locus/loci:"
+      "claim": "check_h_surface: 628 source files scanned (an absent or collapsed scan root REFUSES); 3 authorized blend locus/loci:"
     },
     "check_ice_freezing": {
       "exit": 0,
@@ -287,6 +299,10 @@
       "exit": 0,
       "claim": "check_logk_crosscheck: OK -- 77 record(s) accounted for, 0 unparsed; 3 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0084); 74 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 11 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it."
     },
+    "check_lumped_cp_note": {
+      "exit": 0,
+      "claim": "check_lumped_cp_note: OK -- both column classes announce their lumped-Cp energy model, the note reaches the caveat summary and the result JSON, it names the ledger column carrying the size, a case with neither unit stays silent, and a SYNTHESISED isothermal column (heat of absorption zeroed) stays silent while provably reaching that branch.  NOT checked: whether the residual is correct, or whether the lumped-Cp model should be replaced."
+    },
     "check_marcilla_lls": {
       "exit": 0,
       "claim": "check_marcilla_lls: OK -- brine + solid halite reproduced (one fluid liquid, V/F = 0), Davies extrapolation announced, wet-organic contract announced, and the water/1-butanol MISCIBILITY verdict of the corpus UNIFAC table still stands (the stale-pin arm fires the day curation opens the gap).  NOT covered: quantitative brine agreement (Davies out of band), and any PRESENT wet-organic split (no corpus case can exercise one until the same curation lands)."
@@ -313,7 +329,7 @@
     },
     "check_model_boundary_ledger": {
       "exit": 0,
-      "claim": "check_model_boundary_ledger: OK -- the raw imbalance, the declared model-boundary step and the remaining residual are three distinct fields in both the CSV and the result JSON and they agree; the entry names both worlds by their declared models plus the rule, sign, units and magnitude; the verdict is taken on the REMAINING residual under the declared normalized criteria (an unmeetable tolerance refuses the same step and the alarm returns); an imbalance with no declared override is credited nothing and still alarms; and a step that does not reproduce its imbalance is printed but not credited.  NOT claimed: that any step is physically correct, nor any coverage of the speciation / datum / reading refusals, which no corpus case exercises."
+      "claim": "check_model_boundary_ledger: OK -- the raw imbalance, the declared model-boundary step and the remaining residual are three distinct fields in both the CSV and the result JSON and they agree; the entry names both worlds by their declared models plus the rule, sign, units and magnitude; the verdict is taken on the REMAINING residual under the declared normalized criteria (an unmeetable tolerance refuses the same step and the alarm returns); an imbalance with no declared override is credited nothing and still alarms; and a step that does not reproduce its imbalance is printed but not credited; and a unit declaring a world but NO duty (the ADIABATIC route) is audited rather than left n/a.  NOT claimed: that any step is physically correct, nor any coverage of the speciation / datum / reading refusals, which no corpus case exercises."
     },
     "check_models_catalogue": {
       "exit": 0,
@@ -397,7 +413,7 @@
     },
     "check_retired_names": {
       "exit": 0,
-      "claim": "retired-name gate: component corpus flat, tutorial sources clean, src/ clean, aggregated snapshot speaks streamFaces, doc surfaces (guides incl. tutorialsGuide-* + docs/ai + the operation schemas the GUI and the generated reference both read) free of v1 grammar, bin/ writers + src/ messages emit v2 (only refusals name the old file)"
+      "claim": "retired-name gate: component corpus flat, tutorial sources clean, src/ clean, aggregated snapshot speaks streamFaces, doc surfaces (guides incl. tutorialsGuide-* + docs/ai + the operation schemas the GUI and the generated reference both read) free of v1 grammar, bin/ writers + src/ messages emit v2 (only refusals name the old file) (45652 files scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_review_status": {
       "exit": 0,
@@ -425,7 +441,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 347 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 348 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -449,7 +465,7 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 783 record(s) scanned; no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted."
+      "claim": "check_source_licence: OK -- 783 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted."
     },
     "check_speciation": {
       "exit": 0,
@@ -465,15 +481,19 @@
     },
     "check_species_ontology": {
       "exit": 0,
-      "claim": "species ontology: 52 modelSpecies files, formula-typed, neutrals not mislabelled as ions"
+      "claim": "species ontology: 52 modelSpecies files, formula-typed, neutrals not mislabelled as ions (52 files scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_stage_identity": {
       "exit": 0,
       "claim": "check_stage_identity: OK -- a stage's own two products, recombined and re-flashed, come back as the same stage (T, x, y, V/F all within 1e-06 relative); the off-stage negative does not"
     },
+    "check_start_here": {
+      "exit": 0,
+      "claim": "check_start_here: OK -- the way in is intact: 9 ordered steps, every one an existing case that ships a golden and is therefore checked on every suite run, and both the README and bin/listCases point at it.  NOT CHECKED: whether the ORDER is pedagogically right, whether nine is the right number, or whether each step's one-line claim is true of its case -- those are teaching judgements and no gate can make them."
+    },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 627 source files, each includes what it uses."
+      "claim": "std includes: 628 source files, each includes what it uses (an absent or collapsed scan root REFUSES)."
     },
     "check_stream_basis": {
       "exit": 0,
@@ -505,7 +525,7 @@
     },
     "check_tree_gate": {
       "exit": 0,
-      "claim": "tree gate: retired homes stay retired (src clean, 10 top-level homes)"
+      "claim": "tree gate: retired homes stay retired (628 src files scanned, 10 top-level homes; an absent or collapsed scan root REFUSES)"
     },
     "check_two_liquids": {
       "exit": 0,
@@ -537,7 +557,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 3071 declared window(s) across 3719 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 3075 declared window(s) across 3723 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_verdict_parity": {
       "exit": 0,
