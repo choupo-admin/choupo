@@ -95,6 +95,8 @@ const PinchCompositeTool = lazy(() =>
   import("./methods/PinchCompositeTool.js").then((m) => ({ default: m.PinchCompositeTool })));
 const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
+const MerkelTool = lazy(() =>
+  import("./methods/MerkelTool.js").then((m) => ({ default: m.MerkelTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -104,7 +106,7 @@ const PumpSystemTool = lazy(() =>
 
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
-  | "pump-system" | "breakthrough";
+  | "pump-system" | "breakthrough" | "merkel";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -148,6 +150,11 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "pump-system", label: "Pump vs system curve", status: "live",
     teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
+  },
+  {
+    id: "merkel", label: "Cooling tower (Merkel)", status: "live",
+    teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
+    theory: "ch:coolingTower",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -313,6 +320,7 @@ export function MethodsWorkspace() {
                 : tool === "entu" ? <EpsilonNtuTool />
                 : tool === "pinch-composite" ? <PinchCompositeTool />
                 : tool === "pump-system" ? <PumpSystemTool />
+                : tool === "merkel" ? <MerkelTool />
                 : <BreakthroughTool />}
             </Suspense>
           </>

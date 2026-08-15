@@ -168,6 +168,17 @@ fi
 # from the user's daily Firefox: own session, own cache, own (lack of)
 # bookmarks.  Combined with `--no-remote` this guarantees a genuinely
 # separate Firefox window/process, not a new tab in the running browser.
+# The guides the GUI serves (F1 / the Theory links) live at gui/public/docs/,
+# a GITIGNORED copy of docs/*.pdf -- and an unsynced copy silently serves a
+# STALE guide: a nameddest added since the last copy is absent from the old
+# PDF, so the viewer opens on page 1 instead of the section (found 2026-08-15,
+# a 17-day-old theoryGuide.pdf behind a fresh ch:coolingTower link).  Sync on
+# every launch; -u makes it a no-op when nothing changed.
+mkdir -p "$root_dir/gui/public/docs"
+for _g in theoryGuide userGuide propsGuide developerGuide; do
+    [ -f "$root_dir/docs/$_g.pdf" ] && cp -u "$root_dir/docs/$_g.pdf" "$root_dir/gui/public/docs/"
+done
+
 PROFILE_DIR="${HOME}/.cache/choupo-firefox"
 FIRST_RUN=0
 if [ ! -d "$PROFILE_DIR" ]; then
