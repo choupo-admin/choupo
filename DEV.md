@@ -716,6 +716,25 @@ accepts today, and that is a policy call.
    travels it; when no corpus case does, say so in the gate's own output
    rather than letting a green run imply coverage it lacks.
 
+   **2026-08-15 addendum — the class was measured, and its largest cluster is
+   CLOSED.**  A fleet census over all 140 gates bucketed the sabotage
+   evidence: 38 record observed output in-file, 6 claim it without showing
+   it, 34 have it only in docs/commits, 62 have none anywhere.  Its systemic
+   finding: FOURTEEN tree-scanner gates shared the death shape exactly -- no
+   refusal over an empty scan, so one directory rename would have turned all
+   fourteen permanently green at once.  All fourteen now refuse an absent
+   scan root BY NAME and a collapsed scan count against a floor, with the
+   observed count printed in every OK line (template:
+   `check_empty_dirs.py`).  The death shape was demonstrated live before
+   fixing: a pre-fix copy over a treeless directory printed "cosmo-scrub
+   gate: ... 0 restricted values in the public tree" and "check_doctrine: 8
+   teaching surfaces clean", exit 0, over nothing.  `check_gate_selftest`
+   grew a SOURCE tier (sabotages the ENGINE, rebuilds ~3 s, demands the gate
+   fail on the rebuilt binary, restores, and re-runs the covered gates to
+   prove the tree came back) plus four census-picked data arms; coverage 11
+   of 141, said aloud on every run.  The remaining B/C/D buckets are the
+   named backlog.
+
 0b. **An absorber is classified as a heat exchanger, structurally.**  The
    energy report detects a process-to-process exchanger as ">=2 process in
    AND >=2 process out AND no boundary heat", which is also an absorber, an
