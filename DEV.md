@@ -1053,6 +1053,22 @@ when it was embarrassingly parallel by directory.  The doctrine:
   brings back.
 
 
+**THE REVERTER'S SNAPSHOT CARRIES A POISONED OVERLAY (2026-08-15) -- read
+this before "recovering" anything.**  This container's revert restores not
+only an old HEAD (39305f90) but also five UNCOMMITTED modifications under
+`src/propertyOps/` (+74 lines, EvidencePartition R5 and its call sites).
+They look like lost work.  **They are a STALE PRE-COMMIT DRAFT of R5, which
+SHIPPED on 2026-08-11 in a finished form that deliberately differs from the
+draft** -- the shipped header's own note says "what it turned into is not
+what the plan said".  A commander who "recovers" the overlay regresses
+shipped work to its draft under a false provenance; it was attempted on
+2026-08-15 and only a refused non-fast-forward push (plus the reverter
+itself sweeping the rewound objects) kept it off origin.  The rule that
+survives: **git diff the overlay against ORIGIN'S TIP, not against the
+rewound HEAD, before believing it is unshipped** -- the rewound HEAD makes a
+draft of shipped work look like new work.  Discard with
+`git checkout -- src/propertyOps/`.
+
 **The checkout can silently revert to an older commit.**  It happened five
 times in one session on 2026-07-31, always to the same commit, and it is worth
 knowing that it is NOT git and NOT this repository misbehaving.
