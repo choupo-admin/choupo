@@ -174,6 +174,65 @@ SABOTAGES = [
 #      "a green run over the wrong binary looks exactly like a green run".
 #      So the restore rebuilds, and the covered gates are re-run at the end
 #      and must PASS, which is the only proof the tree came back.
+#  Data-tier additions 2026-08-15, from the fleet census (A=38 B=6 C=34 D=62
+#  across 140 gates): the best no-rebuild candidates, each guarding a settled
+#  contract that had NO re-run sabotage evidence.  The retired-names probe is
+#  ASSEMBLED (see BANNED_PROBE above): its token is a literal this scanner
+#  would find in THIS file.
+RETIRED_PROBE = "species" + "Map"
+
+SABOTAGES += [
+    {
+        "gate": "check_legacy_schema.py",
+        "kind": "detection",
+        "file": "data/standards/parameters/Henry/Ar-water.dat",
+        "find": "gasSpecies        Ar;",
+        "replace": "gas               Ar;",
+        "why": "the D2 migration is CLOSED: legacy `gas`/`dissolved` keys are "
+               "gone from the dev corpus and the gate refuses them anywhere "
+               "in standards.  Reintroduce one and it must fire -- otherwise "
+               "the closed migration is quietly reopening.",
+    },
+    {
+        "gate": "check_cosmo_scrub.py",
+        "kind": "detection",
+        "file": "data/standards/components/1Butene.dat",
+        "find": "licence     externalRestricted;",
+        "replace": "licence     externalRestricted;\n"
+                   "        sigmaProfile ( 0.0 0.001 0.002 );",
+        "why": "the VT-2005 licence separation ships ZERO restricted VALUES.  "
+               "The first attempt flipped `installed false -> true` and the "
+               "gate rightly ignored it -- a lying flag is not a value leak, "
+               "and the meta-gate rejected the sabotage as PASSED-under-"
+               "sabotage.  Injecting an actual sigmaProfile into a restricted "
+               "set is the leak the scrub's own OK line claims to count.",
+    },
+    {
+        "gate": "check_validity_windows.py",
+        "kind": "detection",
+        "file": "data/standards/components/water.dat",
+        "find": "Trange        (273  373);",
+        "replace": "Trange        (373  273);",
+        "why": "AP3: an impossible interval (hi <= lo) must be refused -- "
+               "extrapolation needs a real domain to extrapolate from.  "
+               "water.dat is the most-read record in the tree.",
+    },
+    {
+        "gate": "check_retired_names.py",
+        "kind": "detection",
+        "file": "data/standards/components/NaCl.dat",
+        "find": "dissociatesTo  { Na 1; Cl 1; }",
+        "replace": RETIRED_PROBE + "  { Na 1; Cl 1; }",
+        "why": "the F2 campaign retired `speciesMap` in favour of "
+               "dissociatesTo{} on COMPONENT RECORDS -- which is where the "
+               "gate's regex looks.  The first attempt injected the token "
+               "into a 0/ snapshot, outside the regex's file class, and the "
+               "meta-gate rejected it as PASSED-under-sabotage.  The probe "
+               "token is assembled because this file is inside the scanner's "
+               "own scope (bin/curate .py).",
+    },
+]
+
 SOURCE_SABOTAGES = [
     {
         "gate": "check_lumped_cp_note.py",
