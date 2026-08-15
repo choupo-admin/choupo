@@ -17,7 +17,7 @@
     },
     "check_aq_disambiguation": {
       "exit": 0,
-      "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases) [247 components / 52 species / 77 chemistry / 628 source files scanned; an absent or collapsed scan root REFUSES]"
+      "claim": "aq-disambiguation gate: 24 neutral complexes carry `aq` (10 shadow a component TODAY, 14 are uniform application); 9 master species share a component name legitimately (same substance, two phases) [247 components / 52 species / 77 chemistry / 630 source files scanned; an absent or collapsed scan root REFUSES]"
     },
     "check_aqueous_analysis": {
       "exit": 0,
@@ -37,7 +37,7 @@
     },
     "check_asset_homes": {
       "exit": 0,
-      "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs (373 constant/ dirs scanned; an absent or collapsed scan root REFUSES)"
+      "claim": "asset-home gate: one home (constant/assets/), no retired overlay dirs (375 constant/ dirs scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_azeotrope_ceiling": {
       "exit": 0,
@@ -61,7 +61,7 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 342 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
+      "claim": "check_case_tiers: OK -- 344 witness(es), 3 tutorial(s), 8 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or fractal flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point."
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -76,8 +76,8 @@
       "claim": "check_claim_separation: OK -- on curate02_vle_heldout_ethanol_water the fit chi-square is reported IN-SAMPLE, the held-out metric is a DIFFERENT number over named datasets, the acceptance band reaches the reader with its origin, and the verdict is one of the engine's 5; an unreachable band reports notValidated (a completed test that missed its criterion) and NOT a refusal; the legacy inline path claims neither a criterion nor a verdict; and the dossier carries the same separation plus each dataset's provenance.  NOT COVERED: whether any number is physically right, and any fitting operation other than this one witness."
     },
     "check_closure_ledger_pinned": {
-      "exit": 1,
-      "claim": "check_closure_ledger_pinned: FAILED"
+      "exit": 0,
+      "claim": "check_closure_ledger_pinned: OK -- 18 model-boundary ledger quantit(ies) pinned across 5 candidate case(s), in both directions (published implies pinned, pinned implies published); 1 candidate(s) declare an override and publish no credited step, which is a legitimate outcome (a crossing refused across a speciation flip is reported in `modelBoundaries` instead) and passes silently.  NOT CHECKED: whether any step is RIGHT, the status/rule WORDS (a golden row compares numbers; a status downgrade is caught indirectly, through step_kW and remaining_kW), and a boundary arising without a per-unit `thermo {}` block -- none exists and the ledger says none can, but this discovery would not see one."
     },
     "check_column_datum_downgrade": {
       "exit": 0,
@@ -85,7 +85,7 @@
     },
     "check_compile_clean": {
       "exit": 0,
-      "claim": "check_compile_clean: OK -- 287 translation unit(s) compile under -Wall -Wextra -Wpedantic with no warning.  NOT checked: optimiser-only warnings (-fsyntax-only skips codegen; `make STRICT=1` is the complete check), headers no TU includes, the separate WASM and gui/ toolchains, or any compiler but this one."
+      "claim": "check_compile_clean: OK -- 288 translation unit(s) compile under -Wall -Wextra -Wpedantic with no warning.  NOT checked: optimiser-only warnings (-fsyntax-only skips codegen; `make STRICT=1` is the complete check), headers no TU includes, the separate WASM and gui/ toolchains, or any compiler but this one."
     },
     "check_composite_limits": {
       "exit": 0,
@@ -99,9 +99,13 @@
       "exit": 0,
       "claim": "check_convergence_residual: OK -- flash17 reports all five convergence numbers (raw initial/final, normalized initial/final, reduction) plus the criterion that decided; the reduction agrees with its own inputs; the normalization is defined in exactly one place (src/solver/Convergence.H); an unmeetable declared tolerance fails NAMING its criterion and writes no converged/; an unimplemented control refuses by name; and a run on the DEFAULT controls announces them.  NOT claimed: that the normalization is the right one, or that any solver beyond ReactiveVLE's outer Newton has adopted it."
     },
+    "check_cooling_tower": {
+      "exit": 0,
+      "claim": "check_cooling_tower: OK -- the published Merkel number and its Chebyshev-4 companion are reproduced from the unit's own published diagram (cpL taken off the operating line, never the engine's internals), the approach/range/evaporation identities hold, the operating line stays strictly below saturation, and five refusals (double spec, wet-bulb floor, pinched L/G, two liquids, target above inlet) fire by name.  NOT COVERED: agreement with a MEASURED tower (no primary anchor wired yet -- structural witness only), the Lewis = 1 and saturated-exit hypotheses themselves, and the golden values (runTests' own rows)."
+    },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub gate: 621 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree (3723 records enumerated; an absent or collapsed scan root REFUSES)"
+      "claim": "cosmo-scrub gate: 623 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree (3726 records enumerated; an absent or collapsed scan root REFUSES)"
     },
     "check_cp_range_announced": {
       "exit": 0,
@@ -117,7 +121,7 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 141 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
+      "claim": "check_debt_registry: OK -- 142 gate script(s) scanned; 6 waiver table(s) all resolve to debt_registry.py, and all 5 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified."
     },
     "check_decision_index": {
       "exit": 0,
@@ -132,12 +136,12 @@
       "claim": "check_derived_density: OK -- the authorised derivedDiluteVolume closure runs with both terms recorded (they sum to the final, and the final agrees with an independent python recomputation to 0.1 kg/m3); provenance-less, two-sources, missing sample temperature, out-of-domain (Kell 0-100 degC), molality-basis and iteration{}-on-a-direct-closure all refuse by name; and `provenance iterative` refuses stating the missing machinery -- slice B is BLOCKED on a composition-dependent volume model, not completed.  DELIBERATELY ABSENT: a non-convergence probe (only reachable against machinery that should not exist).  NOT COVERED: the closure's ACCURACY (an announced approximation, not a validated density model) and the reconciliation/inversion arithmetic (their own gates)."
     },
     "check_doc_references": {
-      "exit": 1,
-      "claim": "check_doc_references: FAIL"
+      "exit": 0,
+      "claim": "check_doc_references: OK -- 269 path mention(s) and 116 case name(s) across 20 AI-facing docs all resolve; 11 deliberate absences are listed with their reason and none of them has quietly come true"
     },
     "check_doctrine": {
       "exit": 0,
-      "claim": "check_doctrine: 352 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors; an absent or collapsed scan root REFUSES)"
+      "claim": "check_doctrine: 354 teaching surfaces clean (streams{}/thermoPackage/propertyPackage/fitBinaryPair/competitors; an absent or collapsed scan root REFUSES)"
     },
     "check_drill_in": {
       "exit": 0,
@@ -177,7 +181,7 @@
     },
     "check_empty_dirs": {
       "exit": 0,
-      "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/ (5498 dirs scanned; an absent or collapsed scan root REFUSES)"
+      "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/ (5537 dirs scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_enrtl": {
       "exit": 0,
@@ -225,7 +229,7 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 142 gates, and the other 130 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express."
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 12 of 143 gates, and the other 131 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express."
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -237,7 +241,7 @@
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 40700 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
+      "claim": "check_glossary_bans: OK -- 40924 file(s) scanned; no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does."
     },
     "check_groups": {
       "exit": 0,
@@ -245,11 +249,11 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 3101 environment openings across 16 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here."
+      "claim": "check_guide_environments: OK -- 3113 environment openings across 16 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here."
     },
     "check_guide_paths": {
       "exit": 0,
-      "claim": "check_guide_paths: OK -- 680 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have."
+      "claim": "check_guide_paths: OK -- 682 path citations across the .tex manuals all resolve (9 allowed as paths the reader is told to create).  NOT checked: whether the PROSE about a path is true, any NUMBER stated in a manual, anything outside docs/*.tex, or run OUTPUTS (log/, converged/, reports/ ...), which a clean clone does not have."
     },
     "check_guide_pdf_version": {
       "exit": 0,
@@ -257,7 +261,7 @@
     },
     "check_h_surface": {
       "exit": 0,
-      "claim": "check_h_surface: 628 source files scanned (an absent or collapsed scan root REFUSES); 3 authorized blend locus/loci:"
+      "claim": "check_h_surface: 630 source files scanned (an absent or collapsed scan root REFUSES); 3 authorized blend locus/loci:"
     },
     "check_ice_freezing": {
       "exit": 0,
@@ -413,7 +417,7 @@
     },
     "check_retired_names": {
       "exit": 0,
-      "claim": "retired-name gate: component corpus flat, tutorial sources clean, src/ clean, aggregated snapshot speaks streamFaces, doc surfaces (guides incl. tutorialsGuide-* + docs/ai + the operation schemas the GUI and the generated reference both read) free of v1 grammar, bin/ writers + src/ messages emit v2 (only refusals name the old file) (45653 files scanned; an absent or collapsed scan root REFUSES)"
+      "claim": "retired-name gate: component corpus flat, tutorial sources clean, src/ clean, aggregated snapshot speaks streamFaces, doc surfaces (guides incl. tutorialsGuide-* + docs/ai + the operation schemas the GUI and the generated reference both read) free of v1 grammar, bin/ writers + src/ messages emit v2 (only refusals name the old file) (45705 files scanned; an absent or collapsed scan root REFUSES)"
     },
     "check_review_status": {
       "exit": 0,
@@ -425,7 +429,7 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 77 registered operations carries a schema (70 exercised by the corpus over 545 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
+      "claim": "check_schema_coverage: OK -- every one of the 78 registered operations carries a schema (71 exercised by the corpus over 548 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property"
     },
     "check_seal_drift": {
       "exit": 0,
@@ -441,7 +445,7 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "sealed-corpus gate: 348 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
+      "claim": "sealed-corpus gate: 350 top-level cases sealed with a manifest, 2 live-overlay demos exempt by design, 0 unsealed; every case carries its .cho marker (so none is invisible here)"
     },
     "check_size_distribution": {
       "exit": 0,
@@ -493,7 +497,7 @@
     },
     "check_std_includes": {
       "exit": 0,
-      "claim": "std includes: 628 source files, each includes what it uses (an absent or collapsed scan root REFUSES)."
+      "claim": "std includes: 630 source files, each includes what it uses (an absent or collapsed scan root REFUSES)."
     },
     "check_stream_basis": {
       "exit": 0,
@@ -525,7 +529,7 @@
     },
     "check_tree_gate": {
       "exit": 0,
-      "claim": "tree gate: retired homes stay retired (628 src files scanned, 10 top-level homes; an absent or collapsed scan root REFUSES)"
+      "claim": "tree gate: retired homes stay retired (630 src files scanned, 10 top-level homes; an absent or collapsed scan root REFUSES)"
     },
     "check_two_liquids": {
       "exit": 0,
@@ -533,7 +537,7 @@
     },
     "check_type_coverage": {
       "exit": 0,
-      "claim": "ok   unit operation: 49 names -> 40 classes, every class built by a case"
+      "claim": "ok   unit operation: 50 names -> 41 classes, every class built by a case"
     },
     "check_typed_identifiers": {
       "exit": 0,
@@ -545,7 +549,7 @@
     },
     "check_utility_allocation_pinned": {
       "exit": 0,
-      "claim": "check_utility_allocation_pinned: OK -- 463 utility-allocation quantit(ies) pinned across 81 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
+      "claim": "check_utility_allocation_pinned: OK -- 467 utility-allocation quantit(ies) pinned across 82 emitting case(s), in both directions (published implies pinned, pinned implies published), with the chosen utility's NAME in each row's key so a different pick reports MISSING rather than shifting a number.  10 emitting case(s) ship no golden and are exempt: tutorials/plant/sugarPlantEconomicsSweep, tutorials/steady/economics/economics01_esterification_dcf, tutorials/steady/economics/economics02_irr_sweep, tutorials/steady/flash/flash06_sweep_T, tutorials/steady/flash/flash11_acetic_T_sweep, tutorials/steady/flash/flash_pseudoComponent_petCut, tutorials/steady/optimisation/sensitivity01_column_reflux, tutorials/steady/power/combined01_brayton_rankine, tutorials/steady/utilities/utility01_dowtherm_preheat, tutorials/steady/utilities/utility03_glycol_brine_chiller.  NOT CHECKED: whether a choice is GOOD (an expensive utility pins as happily as a cheap one), and whether a catalogue price may be quoted as a cost at all -- that is check_economics_honesty's."
     },
     "check_v2_refusals": {
       "exit": 0,
@@ -557,7 +561,7 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 3075 declared window(s) across 3723 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
+      "claim": "check_validity_windows: OK -- 3083 declared window(s) across 3726 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)"
     },
     "check_verdict_parity": {
       "exit": 0,
@@ -577,7 +581,7 @@
     },
     "check_workspace_truth": {
       "exit": 0,
-      "claim": "check_workspace_truth: OK -- HEAD 3e7a8bfce4 is SYNCED with origin/claude/simulador-ced8qq (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there."
+      "claim": "check_workspace_truth: OK -- HEAD 95bba46036 is SYNCED with origin/claude/simulador-ced8qq (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there."
     }
   }
 }
