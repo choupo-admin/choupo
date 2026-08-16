@@ -113,6 +113,8 @@ const PumpSystemTool = lazy(() =>
   import("./methods/PumpSystemTool.js").then((m) => ({ default: m.PumpSystemTool })));
 const MerkelTool = lazy(() =>
   import("./methods/MerkelTool.js").then((m) => ({ default: m.MerkelTool })));
+const RayleighTool = lazy(() =>
+  import("./methods/RayleighTool.js").then((m) => ({ default: m.RayleighTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -122,7 +124,7 @@ const MerkelTool = lazy(() =>
 
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
-  | "pump-system" | "breakthrough" | "merkel";
+  | "pump-system" | "breakthrough" | "merkel" | "rayleigh";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -171,6 +173,11 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "merkel", label: "Cooling tower (Merkel)", status: "live",
     teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
     theory: "ch:coolingTower",
+  },
+  {
+    id: "rayleigh", label: "Rayleigh (batch still)", status: "live",
+    teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
+    theory: "ch:rayleigh",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -401,6 +408,7 @@ export function MethodsWorkspace() {
                   : tool === "pinch-composite" ? <PinchCompositeTool />
                   : tool === "pump-system" ? <PumpSystemTool />
                   : tool === "merkel" ? <MerkelTool />
+                  : tool === "rayleigh" ? <RayleighTool />
                   : <BreakthroughTool />}
               </Suspense>
             </Box>
