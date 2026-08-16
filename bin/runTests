@@ -1381,6 +1381,28 @@ PYEOF
     fi
     rm -f /tmp/ctwr.$$
 
+    # Batch dryer (the drying curve): the GAB equilibrium moisture and the
+    # air's water activity recomputed from the case's OWN records (Antoine
+    # fit, molar masses, declared air), the constant-rate flux closing as
+    # k_Y (Y_sat(T_wb) - Y), the published rate column flat above X_c and
+    # decaying along the exponential tail the declared linear law integrates
+    # to, a long-horizon copy landing ON X_eq with the rate at round-off, a
+    # short-horizon copy publishing NO t_critical key (absence, never a
+    # sentinel), the energy ledger refusing with the dryer's declared gap,
+    # the declared material residual reproduced independently, and five
+    # named refusals; sabotage-verified twice (falling-rate denominator ->
+    # A4 only, and the landing arm A3 stayed green, which the gate records as
+    # a blind spot; a factor on the published R_constant -> A2 and A4).
+    if "$ROOT/bin/curate/check_batch_dryer.py" > /tmp/bdry.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "batch-dryer-gate" "$(tail -1 /tmp/bdry.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_batch_dryer.py)\n" "batch-dryer-gate"
+        cat /tmp/bdry.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bdry.$$
+
     # Pinch P2 gate (ratified 2026-08-03, analysis table only): the
     # candidate-match table is the exhaustive per-region enumeration,
     # duties equal an independent counter-current bound, the CP rule
