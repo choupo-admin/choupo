@@ -131,3 +131,52 @@ describe("collapse flags — persist round-trip", () => {
     expect(() => saveCollapsed(RAIL_COLLAPSED_KEY, true)).not.toThrow();
   });
 });
+
+describe("collapse flags — the optional posture default (sm–md autofold)", () => {
+  it("an absent key answers with the given default, both ways", async () => {
+    const { loadCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/methods/methodsChrome.js");
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, true)).toBe(true);
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, false)).toBe(false);
+  });
+
+  it("a stored user toggle WINS over the posture default, both ways", async () => {
+    const { loadCollapsed, saveCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/methods/methodsChrome.js");
+    saveCollapsed(RAIL_COLLAPSED_KEY, false);          // explicit EXPANDED
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, true)).toBe(false);
+    saveCollapsed(RAIL_COLLAPSED_KEY, true);           // explicit COLLAPSED
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, false)).toBe(true);
+  });
+
+  it("junk reads as the default (not as an explicit toggle)", async () => {
+    const { loadCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/methods/methodsChrome.js");
+    ls.setItem(RAIL_COLLAPSED_KEY, "maybe");
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, true)).toBe(true);
+    expect(loadCollapsed(RAIL_COLLAPSED_KEY, false)).toBe(false);
+  });
+
+  it("hasStoredCollapsed: only a real \"1\"/\"0\" counts as a user toggle", async () => {
+    const { hasStoredCollapsed, saveCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/methods/methodsChrome.js");
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(false);   // absent
+    ls.setItem(RAIL_COLLAPSED_KEY, "junk");
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(false);   // junk
+    saveCollapsed(RAIL_COLLAPSED_KEY, true);
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(true);    // "1"
+    saveCollapsed(RAIL_COLLAPSED_KEY, false);
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(true);    // "0"
+  });
+
+  it("hasStoredCollapsed: blocked storage or no window reads as no toggle", async () => {
+    const { hasStoredCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/methods/methodsChrome.js");
+    (globalThis as Record<string, unknown>).window = {
+      localStorage: { getItem: () => { throw new Error("blocked"); } },
+    };
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(false);
+    delete (globalThis as Record<string, unknown>).window;
+    expect(hasStoredCollapsed(RAIL_COLLAPSED_KEY)).toBe(false);
+  });
+});

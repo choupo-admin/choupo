@@ -445,23 +445,39 @@ SAME `binaryVleSpec`, so the two hosts cannot drift).
   transient runs; case-local components still reach the runs when a case IS
   open, exactly as in the Explorer).
 
-**The 7-tool roadmap** (the rail shows all seven — planned entries visible
-but disabled, each naming the engine output that will feed it):
+**The tool registry is the authority.**  `METHOD_TOOLS` in
+`MethodsWorkspace.tsx` is the single source of truth for which tools exist
+and which are live — this document carries no copy of the tally (the
+7-tool/2-live table that used to sit here had already drifted; a second
+home for a derived count is the arity sin).  Planned entries stay
+**visible but disabled**, each naming the engine output that will feed it;
+the rail and the narrow-viewport bottom sheet BOTH render the registry
+(`MethodToolList`), never a filtered subset.
 
-| Tool | Status | Feed |
-|---|---|---|
-| McCabe-Thiele (distillation) | **live** | the binary-VLE engine run (shared with Explore's T-x-y) |
-| Psychrometric chart | **live** | the `psychrometricChart` engine op |
-| Kremser (absorption / stripping) | planned | a stagewise absorber run |
-| Pinch composite curves | planned | `reports/pinch/compositeCurves.csv` (PinchPass) |
-| ε-NTU (heat exchangers) | planned | an ε-NTU sweep op in `choupoProps` |
-| Pump vs system curve | planned | a head-curve sweep op in `choupoProps` |
-| Adsorption breakthrough | planned | a fixed-bed `choupoBatch` trajectory |
+**Consolidated pattern — responsive rail (2026-08, panel-ratified).**  A
+rail-bearing workspace renders its registry as an inline collapsible rail on
+wide viewports, and as a click-opened bottom Drawer built from the SAME
+registry on narrow ones.  Detection is the shared hook pair in
+`gui/src/ui/methods/methodsChrome.tsx`: `useNarrowViewport()` (below
+Mantine `sm`, or a coarse pointer at any width) and `useCoarsePointer()`;
+between `sm` and `md` the rail still exists but its DEFAULT is collapsed —
+the media query supplies the default and a persisted user toggle wins.
+Planned entries are never filtered out by posture, and hover is never
+load-bearing: anything a rail tooltip says is a visible description in the
+Drawer.
+
+**Ratified naming (2026-08 ballot).**  The rail header is **CLASSICAL
+METHODS**; tool labels are operation-first with the method in parentheses —
+"Distillation (McCabe-Thiele)", "Absorption (Kremser)", "Batch still
+(Rayleigh)", "Heat exchanger (ε-NTU)".  The top-menu label stays
+**Methods** and the URL key stays `methods`.
 
 Deep links: `?workspace=methods&tool=<id>` (new); the legacy
 `?explore=mccabe` URL (without a `&key=` stash) now opens Methods/mccabe —
 a redirect, never a broken link.  With `&key=` it remains the McCabe
-analyzer pop-out tab, unchanged.
+analyzer pop-out tab, unchanged.  Selecting a tool writes the deep link
+back into the address bar (`history.replaceState` — no history spam), so
+the URL is always a shareable bookmark of what is on screen.
 
 ## Provenance
 
