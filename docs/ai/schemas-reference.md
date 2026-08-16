@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*78 of 78 registered operations carry a schema and are documented below.*
+*79 of 79 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -87,6 +87,18 @@ Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure
 | `arealDustLoad` |   | number | kg/m2 | Cake mass per unit cloth area; drives the cake pressure drop. |
 | `penetration0` |   | number | - | Penetration of the finest particles in η(d) = 1 - P0·exp(-d/d_c). |
 | `dCharacteristic` |   | number | m | Size scale of the grade-efficiency rise. |
+
+## `batchDryer`  (batchDryer operation)
+
+The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux falls LINEARLY in the free moisture, R = R_c (X - X_eq)/(X_c - X_eq) — announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `area` | ✓ | number | m2 | Surface of the tray/bed exposed to the air. Equipment data — there is no default. |
+| `k_Y` | ✓ | number | kg/(m2.s) | Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). SAMPLE/EQUIPMENT data (air velocity, tray geom… |
+| `criticalMoisture` | ✓ | number | kg/kg dry solid | The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivab… |
+| `moisture` |   | string | - | Which component is the moisture. Needed only when the tray holds more than one volatile besides the declared carrier — otherwise the sing… |
+| `air` | ✓ | object | — | The drying air, declared CONSTANT and not integrated — the FixedBedAdsorber's constant-carrier posture. `T` its temperature [K], `Y` its … |
 
 ## `boiler`  (boiler operation)
 

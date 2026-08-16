@@ -28,6 +28,8 @@ License
 
 #include "BatchDryer.H"
 
+#include <map>
+
 #include "core/Dimensions.H"
 #include "streams/Composition.H"
 #include "thermo/Component.H"

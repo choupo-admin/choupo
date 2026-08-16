@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 355,
+  "cases": 356,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -350,6 +350,20 @@
      "Pitzer"
     ],
     "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/drying/dryer01_sucrose_tray": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchDryer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -5194,6 +5208,7 @@
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
+    "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch02_adiabatic",
     "tutorials/batch/reactor/batch03_consecutive",
@@ -5589,6 +5604,9 @@
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/reactor/batch05_crystalliser"
+   ],
+   "batchDryer": [
+    "tutorials/batch/drying/dryer01_sucrose_tray"
    ],
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
@@ -6154,6 +6172,7 @@
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
+    "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch02_adiabatic",
     "tutorials/batch/reactor/batch03_consecutive",
