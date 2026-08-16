@@ -268,7 +268,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         // 1b. Fold the tray efficiency into an EFFECTIVE K, so that y_j = Keff_j x_j
         //     carries the Murphree relation without changing a single equation below.
         Keff = K;
-        if (Emv < 1.0)
+        if (Emv != 1.0)
             for (std::size_t j = 0; j + 1 < N; ++j)       // the reboiler is not a tray
                 for (std::size_t i = 0; i < n; ++i)
                 {
@@ -333,7 +333,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         }
 
         // 3b. The vapour this pass actually produced -- the lag term for the next.
-        if (Emv < 1.0)
+        if (Emv != 1.0)
         {
             for (std::size_t j = 0; j < N; ++j)
             {
@@ -374,7 +374,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     // ---- Distillate composition: x_D = y_1, the vapour leaving the TOP TRAY.
     //  With E_MV < 1 that is Keff_1 x_1, not the equilibrium K_1 x_1: a real top
     //  tray hands the condenser a vapour it never fully equilibrated with.
-    auto K1 = (Emv < 1.0) ? Keff[0] : thermo.stageK(T[0], P, x[0], x[0], x[0]);
+    auto K1 = (Emv != 1.0) ? Keff[0] : thermo.stageK(T[0], P, x[0], x[0], x[0]);
     sVector xD(n);
     for (std::size_t i = 0; i < n; ++i) xD[i] = K1[i] * x[0][i];
     {
@@ -398,7 +398,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     }
     for (std::size_t j = 0; j < N; ++j)
     {
-        const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
+        const auto Kj = (Emv != 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
         profile_.columns["stage"].push_back(static_cast<scalar>(j + 1));
         profile_.columns["T"].push_back(T[j]);
         for (std::size_t i = 0; i < n; ++i)
@@ -564,7 +564,7 @@ int DistillationColumn::solve(const DictPtr& dict,
             const bool rect = (j + 1 < static_cast<std::size_t>(NFint));
             Vs[j] = rect ? Vl : Vp;
             Ls[j] = rect ? Ll : Lp;
-            const auto Kj = (Emv < 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
+            const auto Kj = (Emv != 1.0) ? Keff[j] : thermo.stageK(T[j], P, x[j], x[j], x[j]);
             scalar sy = 0.0;
             for (std::size_t i = 0; i < n; ++i) { yAll[j][i] = Kj[i] * x[j][i]; sy += yAll[j][i]; }
             if (sy > 0.0) for (auto& v : yAll[j]) v /= sy;
