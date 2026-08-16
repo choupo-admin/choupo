@@ -127,6 +127,8 @@ const MerkelTool = lazy(() =>
   import("./methods/MerkelTool.js").then((m) => ({ default: m.MerkelTool })));
 const RayleighTool = lazy(() =>
   import("./methods/RayleighTool.js").then((m) => ({ default: m.RayleighTool })));
+const LevenspielTool = lazy(() =>
+  import("./methods/LevenspielTool.js").then((m) => ({ default: m.LevenspielTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -136,7 +138,7 @@ const RayleighTool = lazy(() =>
 
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
-  | "pump-system" | "breakthrough" | "merkel" | "rayleigh";
+  | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -190,6 +192,11 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "rayleigh", label: "Batch still (Rayleigh)", status: "live",
     teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
     theory: "ch:rayleigh",
+  },
+  {
+    id: "levenspiel", label: "Reactor sizing (Levenspiel)", status: "live",
+    teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
+    theory: "ch:pfr",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -553,6 +560,7 @@ export function MethodsWorkspace() {
                   : tool === "pump-system" ? <PumpSystemTool />
                   : tool === "merkel" ? <MerkelTool />
                   : tool === "rayleigh" ? <RayleighTool />
+                  : tool === "levenspiel" ? <LevenspielTool />
                   : <BreakthroughTool />}
               </Suspense>
             </Box>
