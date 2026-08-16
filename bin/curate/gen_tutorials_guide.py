@@ -34,45 +34,71 @@ def latex_escape(t: str) -> str:
     t = "".join(ch if ord(ch) < 128 or ch in "\\{}$^_" else "?" for ch in t)
     return t
 
+#  The BRAND/LICENCE banner is the first block comment of essentially every
+#  case dict, and the author's story is the SECOND.  `header_story` used to
+#  anchor its match at the start of the file, so it read the banner and the
+#  filters below chewed it into fragments -- 329 of 357 narratives in the
+#  shipped guide were mangled copyright art.  The guide was GATED and green,
+#  because the gate proves the file matches this generator's output, not that
+#  the output means anything: running is not agreeing, committed against our
+#  own manual.  The 28 that read well were the cases whose first dict carries
+#  no banner at all.
+#
+#  Detected by CONTENT, not by position: the acrostic letters and the licence
+#  line are unique to the long banner, and the `*- Choupo -*` rule opens BOTH
+#  the long form and the one-line form some cases carry instead (analysis01's
+#  flowsheetDict is nothing but that short banner -- it has no story to tell,
+#  and the honest output there is NO narrative rather than the box art
+#  reflowed into a sentence).
+BANNER_MARK = re.compile(
+    r"C\s?hemicals|H\s?eat-transfer|SPDX-License-Identifier|Licence:\s*GPL"
+    r"|Tutorial case file -- part of Choupo|\*-\s*Choupo\s*-\*")
+
+
+def _block_comments(s: str):
+    """Every /* ... */ block, in file order."""
+    return [m.group(1) for m in re.finditer(r"/\*(.*?)\*/", s, re.S)]
+
+
 def header_story(case: Path) -> str:
-    """The author's leading block comment from the primary dict."""
+    """The author's leading block comment from the primary dict -- the first
+    block that is NOT the licence/brand banner."""
     for f in ["system/propsDict", "system/flowsheetDict", "system/controlDict"]:
         p = case / f
         if not p.exists():
             continue
         s = p.read_text(errors="replace")
-        m = re.match(r"\s*/\*-*\\?\**(.*?)\*/", s, re.S) or re.match(r"\s*/\*(.*?)\*/", s, re.S)
-        if not m:
-            continue
-        body = m.group(1)
-        lines = []
-        for ln in body.splitlines():
-            raw = ln
-            ln = ln.strip().lstrip("\\*").rstrip("\\")
-            if re.match(r"^[-=~_|┌│└├─．.]+$", ln.strip()):   # rules / box art
-                lines.append("")                              # rule = paragraph break
-                continue
-            if re.match(r"^[A-Za-z0-9_]+\s*$", ln) and not any(l.strip() for l in lines):
-                continue                                       # the bare case-name line
-            lines.append(ln)
-        # paragraphs: blank lines separate them; keep bullet-ish lines as items
-        paras, cur = [], []
-        for ln in lines:
-            if not ln.strip():
-                if cur: paras.append(" ".join(cur)); cur = []
-            else:
-                cur.append(ln.strip())
-        if cur: paras.append(" ".join(cur))
-        paras = [re.sub(r"\s+", " ", p).strip() for p in paras if len(p.strip()) > 2]
-        clean = []
-        for pp in paras:
-            pp = re.sub(r"^flowsheetDict\s*[-=~:]*\s*", "", pp)
-            pp = re.sub(r"^" + re.escape(case.name) + r"\s*[.:=-]*\s*", "", pp)
-            if "topology (streams + units" in pp or len(pp) < 25:
-                continue
-            clean.append(pp)
-        if clean and sum(len(p) for p in clean) > 60:
-            return clean
+        for body in _block_comments(s):
+            if BANNER_MARK.search(body):
+                continue                       # brand/licence art, not a story
+            body = body.lstrip("-*\\ \n")
+            lines = []
+            for ln in body.splitlines():
+                ln = ln.strip().lstrip("\\*").rstrip("\\")
+                if re.match(r"^[-=~_|┌│└├─．.]+$", ln.strip()):   # rules / box art
+                    lines.append("")                              # rule = paragraph break
+                    continue
+                if re.match(r"^[A-Za-z0-9_]+\s*$", ln) and not any(l.strip() for l in lines):
+                    continue                                       # the bare case-name line
+                lines.append(ln)
+            # paragraphs: blank lines separate them; keep bullet-ish lines as items
+            paras, cur = [], []
+            for ln in lines:
+                if not ln.strip():
+                    if cur: paras.append(" ".join(cur)); cur = []
+                else:
+                    cur.append(ln.strip())
+            if cur: paras.append(" ".join(cur))
+            paras = [re.sub(r"\s+", " ", p).strip() for p in paras if len(p.strip()) > 2]
+            clean = []
+            for pp in paras:
+                pp = re.sub(r"^flowsheetDict\s*[-=~:]*\s*", "", pp)
+                pp = re.sub(r"^" + re.escape(case.name) + r"\s*[.:=-]*\s*", "", pp)
+                if "topology (streams + units" in pp or len(pp) < 25:
+                    continue
+                clean.append(pp)
+            if clean and sum(len(p) for p in clean) > 60:
+                return clean
     return []
 
 def description(case: Path) -> str:

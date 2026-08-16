@@ -12,7 +12,19 @@
 \end{tutscheme}
 \tutwhat{Closed isothermal CO2 uptake on zeolite 13X (LDF, solid film): the vessel relaxes to the inventory equilibrium p\_inf = 7229.13 Pa, q\_inf = 1.9708 mol/kg}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+closed, isothermal gas--solid uptake vessel.
+
+2 mol of pure CO2 in a 0.01 m3 ideal-gas headspace over 1 kg of regenerated zeolite 13X at 298.15 K. Linear-driving-force kinetics on the solid film (dq/dt = k$\ast$(q$\ast$ - q), k = 0.05 1/s, equipment data, this case's sample) against the competitive-Langmuir equilibrium record of the pair catalogue (here a single pair, CO2/zeolite13X: q\_max = 5.0 mol/kg, b\_298 = 9.0 1/bar, dH\_ads = -45 kJ/mol).
+
+The final state is FIXED BY INVENTORY, not by kinetics: with n\_gas = p V/(R T) and q = q\_max b (p/1e5)/(1 + b p/1e5),
+
+p V/(R T) + m\_ads $\ast$ q\_max $\ast$ b $\ast$ (p/1e5)/(1 + b$\ast$(p/1e5)) = n0
+
+whose root at 298.15 K is (a2\_vectors.py, 10 digits)
+
+p\_inf = 7229.128209 Pa q\_inf = 1.970838025 mol/kg n\_gas = 0.02916197467 mol uptake = 1.970838025 mol (98.54 \%) tau (linearised at the equilibrium) = 0.4768 s
+
+The run must reproduce these to the golden tolerances -- an independent analytic anchor, not a mirror of the code. The ODE state is ONLY q; n\_gas is algebraic (n\_tot - m\_ads$\ast$q), so the per-species closure column closure\_worst\_rel in trajectory.csv is exact by construction (<= 1e-13). Log: the unit announces the ideal-gas assumption, the initialLoading default, the RK4 stiffness bound and the isosteric-KPI label at start-up.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -42,7 +54,15 @@
 \end{tutscheme}
 \tutwhat{Closed isothermal competitive CO2/N2 uptake on zeolite 13X: extended-Langmuir site competition drives the equilibrium selectivity S = 71.43}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+COMPETITIVE binary uptake, closed vessel.
+
+0.5 mol CO2 + 1.5 mol N2 in a 0.01 m3 ideal-gas headspace over 1 kg of regenerated zeolite 13X at 298.15 K. Both species carry an isotherm record (extended Langmuir: CO2 q\_max 5.0 / b\_298 9.0 1/bar; N2 3.5 / 0.18 1/bar) and both carry a declared LDF constant -- so both integrate, and the strong adsorbate suppresses the weak one through the SHARED site denominator 1 + Sum\_j b\_j p\_j.
+
+The final state solves the 2-species inventory system n\_gas\_i + m\_ads $\ast$ q\_i(p\_CO2, p\_N2) = n0\_i, p\_i = n\_gas\_i R T / V whose root (a2\_vectors.py, Newton residual 0):
+
+CO2: p\_inf = 0.01611568794 bar q = 0.4934990047 mol/kg N2 : p\_inf = 1.802652166 bar q = 0.7728183086 mol/kg P\_total = 181876.7854 Pa selectivity S = (q\_CO2/q\_N2)/(p\_CO2/p\_N2) = 71.42857143 = (q\_max$\ast$b)\_CO2/(q\_max$\ast$b)\_N2 (extended-Langmuir identity)
+
+The golden pins the COMPETITIVE path: get the shared denominator wrong and every one of these numbers moves. closure\_worst\_rel stays exact by construction (state = q only; n\_gas algebraic).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -72,7 +92,15 @@
 \end{tutscheme}
 \tutwhat{Closed isothermal Henry-limit uptake (linear isotherm): the coupled gas+solid system is LINEAR and the run must match q(t) = q\_inf$\ast$(1 - exp(-k\_eff t)) to 1e-8}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the EXACT-solution gate (G1a of the A2 spec).
+
+1 mol of CO2 in a 0.01 m3 ideal-gas headspace over 1 kg of a SYNTHETIC Henry-limit sorbent (linear isotherm q$\ast$ = K\_H p, K\_H = 0.4 mol/(kg bar) at 298.15 K -- a teaching record, vendored case-local). With a linear isotherm and one species the coupled vessel is LINEAR and closes in analytic form:
+
+alpha = K\_H[mol/(kg Pa)] $\ast$ R$\ast$T/V = 0.9915828118 1/kg k\_eff = k $\ast$ (1 + alpha$\ast$m\_ads) = 0.09957914059 1/s q\_inf = alpha$\ast$n0 / (1 + alpha$\ast$m) = 0.4978868094 mol/kg q(t) = q\_inf $\ast$ (1 - exp(-k\_eff$\ast$t)) (q0 = 0)
+
+q(5) = 0.1952670621 q(10) = 0.3139520079 q(30) = 0.4727835287 q(60) = 0.4966211107 mol/kg
+
+The pedagogical point the closed vessel adds over the fixed-q$\ast$ packet formula: k\_eff > k -- gas depletion ACCELERATES the approach to equilibrium (the packet's q$\ast$ = const law is the V\_gas $\to$ infinity limit of this same solution). The trajectory rows at t = 5/10/30/60 s must match the table above to 1e-8 mol/kg (RK4 dt = 0.01 s); the golden pins the t = 60 s state.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -102,7 +130,25 @@
 \end{tutscheme}
 \tutwhat{REFUSAL lesson: declared initial.P (10 bar) contradicts n$\ast$R$\ast$T/V (4.958 bar) -- the honest cross-check FATALs; P of a closed ideal-gas headspace is a result, not an input}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the REFUSAL lesson (deliberate, must FAIL).
+
+Identical to batch09\_adsorber\_co2 EXCEPT initial.P declares 10 bar while n$\ast$R$\ast$T/V = 4.9579 bar. P of a closed ideal-gas headspace is a RESULT (n, T, V fix it -- Duhem); a declared P is honoured only as an honest cross-check, and a relative deviation > 1e-3 REFUSES, printing both numbers. Expected FATAL (exit != 0):
+
+batchAdsorber 'adsorber': declared P inconsistent with n$\ast$R$\ast$T/V -- initial.P = 1e+06 Pa (10 bar) but n$\ast$R$\ast$T/V = 495791 Pa (4.95791 bar), relative deviation 1.01698 > 1e-3. ...
+
+Marked .expect-nonconvergence: counted EXPECTED-FAIL by runTests, never green, never recordable. Base case (the passing twin):
+
+2 mol of pure CO2 in a 0.01 m3 ideal-gas headspace over 1 kg of regenerated zeolite 13X at 298.15 K. Linear-driving-force kinetics on the solid film (dq/dt = k$\ast$(q$\ast$ - q), k = 0.05 1/s, equipment data, this case's sample) against the competitive-Langmuir equilibrium record of the pair catalogue (here a single pair, CO2/zeolite13X: q\_max = 5.0 mol/kg, b\_298 = 9.0 1/bar, dH\_ads = -45 kJ/mol).
+
+The final state is FIXED BY INVENTORY, not by kinetics: with n\_gas = p V/(R T) and q = q\_max b (p/1e5)/(1 + b p/1e5),
+
+p V/(R T) + m\_ads $\ast$ q\_max $\ast$ b $\ast$ (p/1e5)/(1 + b$\ast$(p/1e5)) = n0
+
+whose root at 298.15 K is (a2\_vectors.py, 10 digits)
+
+p\_inf = 7229.128209 Pa q\_inf = 1.970838025 mol/kg n\_gas = 0.02916197467 mol uptake = 1.970838025 mol (98.54 \%) tau (linearised at the equilibrium) = 0.4768 s
+
+The run must reproduce these to the golden tolerances -- an independent analytic anchor, not a mirror of the code. The ODE state is ONLY q; n\_gas is algebraic (n\_tot - m\_ads$\ast$q), so the per-species closure column closure\_worst\_rel in trajectory.csv is exact by construction (<= 1e-13). Log: the unit announces the ideal-gas assumption, the initialLoading default, the RK4 stiffness bound and the isosteric-KPI label at start-up.
 
 \end{tutnarrative}
 
@@ -115,7 +161,19 @@
 \end{tutscheme}
 \tutwhat{CO2 15\%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t\_st = 3040.5 s announced pre-run, t\_b(5\%) = 2890.7 s, ledger closure at machine level}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+CO2/He breakthrough on a zeolite-13X bed.
+
+THE A3 anchor case (spec 2026-07-12): a 0.5 m isothermal fixed bed of zeolite 13X, fed 15\% CO2 in helium at u = 0.05 m/s superficial, 1 bar, 298 K. Helium carries NO isotherm record on 13X $\to$ announced inert CARRIER, transported but never adsorbed, closed by difference from the constant c\_tot = P/(RT). At 15\% CO2 this is NOT a dilute approximation: the constant-(u, P, T) closure fabricates He at the net uptake rate and the campaign material balance SHOWS that residual (KPIs carrier\_fabricated\_mol, physical\_mass\_closure\_rel) -- the named error bites, by design (forum \#119); the genuinely clean transport anchor is batch14. The engine announces, BEFORE integrating, where the front must arrive:
+
+q$\ast$(c\_in) = 5$\ast$9$\ast$0.15/(1 + 9$\ast$0.15) = 2.872340426 mol/kg R\_f = eps + rho\_b q$\ast$ / c\_in = 304.0512509 t\_st = (L/u) R\_f = 3040.512509 s u\_sh = u/R\_f = 1.644459605e-4 m/s
+
+Independent gates this run must reproduce (anchors\_a3.py, FV N = 100):
+
+t\_b(5\%) = 2890.669098 s t\_50 = 3036.448293 s t\_b(95\%) = 3204.166058 s INT(1 - c\_out/c\_in)dt = t\_st to 2.2e-10 (telescopic FV conservation) ledger mass closure <= 1e-10 (IN/OUT integrated as rows of the SAME ODE)
+
+Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200 mesh study -- batch15 publishes it: first-order upwind, observed order \textasciitilde{}1.03-1.05), Danckwerts inlet as the imposed face flux u$\ast$c\_in, outlet dc/dz = 0. u, P, T are DECLARED constants of this phase, and the price is said OUT LOUD: the real velocity drops \textasciitilde{}15\% across the uptake zone, so the constant-u closure FABRICATES carrier (He) at exactly the net uptake rate (9.19 mol here) -- announced in the run header, pinned as the KPI carrier\_fabricated\_mol, discounted in the campaign inventory; Ergun and the energy balance land in A4 (the energy gap is NAMED).
+
+Log: run header prints the hypotheses, the derived rho\_p, Pe = 250, the Gershgorin step bound term by term and the stiffness verdict; profiles land in <t>/bed.profile every 100 s; trajectory.csv carries c\_out, y\_out, qbar and the per-species ledger closure.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -145,7 +203,17 @@
 \end{tutscheme}
 \tutwhat{Pure transport (k = 0) on the batch13 bed, N = 200: t\_50 vs the Ogata-Banks analytic ADE solution (gate G1) under fixed RK4 with the Gershgorin bound printed term by term}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the k = 0 transport gate (A3 spec, gate G1).
+
+Same bed, same feed, same mesh family as batch13 -- but the LDF constant is DECLARED ZERO: the solid is frozen and CO2 crosses the bed as a pure tracer. What is left is exactly the advection-dispersion equation with a Danckwerts inlet, and THAT has an analytic yardstick (Ogata-Banks, semi-infinite ADE; the finite-domain difference is O(1/Pe) = 0.4\% at Pe = 250):
+
+u\_i = u/eps = 0.125 m/s D\_i = Dax/eps = 2.5e-4 m2/s c/c0 (L, 3.5 s) = 0.07340274358 c/c0 (L, 4.0 s) = 0.5178057707 c/c0 (L, 4.5 s) = 0.913645218 t\_50 analytic = 3.984074227 s
+
+FV yardsticks pinned by this case (anchors\_a3.py, N = 200):
+
+t\_50 numeric = 3.975611088 s (0.21\% below analytic -- first-order upwind; the deviation HALVES with each mesh doubling: 1.40\% at N=25, 0.74\% at 50, 0.40\% at 100, 0.21\% at 200, 0.11\% at 400) INT(1 - c\_out/c\_in)dt = eps L / u = 4.0 s (telescopic conservation: exact identity once saturated) ledger closure \textasciitilde{} 1e-14 (k = 0)
+
+A declared zero is not a silent default: the unit announces "k = 0 DECLARED: transport-only diagnostic, the solid is frozen (gate G1)". Note the He carrier fabrication of batch13 vanishes here (no uptake): carrier\_fabricated\_mol = 0.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -175,7 +243,15 @@
 \end{tutscheme}
 \tutwhat{Mesh-study member N = 25 of the batch13 breakthrough: t\_b(5\%) converges monotonically 2732 $\to$ 2839 $\to$ 2891 $\to$ 2916 s with observed order 1.03-1.05; full table in reports/meshStudy.md}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the declared-mesh lesson (A3 spec, gate G6).
+
+The axial mesh is a DECLARED modelling choice (nCells; absent = FATAL), and this case is the receipt: the batch13 breakthrough run on the 25/50/100/200 family, everything else identical. First-order upwind advection dominates the error, so t\_b(5\%) must converge MONOTONICALLY with observed order p \textasciitilde{} 1:
+
+N = 25 t\_b5 = 2732.027658 s (this case) N = 50 t\_b5 = 2838.542518 s N = 100 t\_b5 = 2890.669098 s (batch13, the production mesh) N = 200 t\_b5 = 2915.764796 s p(25/50/100) = 1.031 p(50/100/200) = 1.055 Richardson (p = 1): t\_b5(inf) \textasciitilde{} 2940.86 s $\to$ N = 100 sits 1.7\% low
+
+The full table, the four overlaid breakthrough curves and the verdict are PUBLISHED in reports/meshStudy.md (generated from the four runs; the report header cites mesh, tolerances and integrator). The ledger mass closure stays <= \textasciitilde{}1e-11 on EVERY mesh -- conservation is telescopic in the FV form, it does not improve with refinement because it was never discretisation-limited (gate G3).
+
+This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the family (t\_b5 5.8\% below batch13) -- coarse-mesh optimism made visible, the point of the lesson.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -204,10 +280,6 @@
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A4 F1: pure-He Ergun profile against the closed-form P-squared solution}
-\begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
-
-\end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{P\_first\_cell\_Pa}{99999.4670134}
 \goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{99946.1540012}
@@ -227,10 +299,6 @@
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A4 F2: 400 ppm uptake, Ergun must approach the A3 constant-velocity limit}
-\begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
-
-\end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{5.32078747864e-13}
 \goldrow{kpi}{campaign}{element\_He\_closure\_rel}{0.000139137956493}
@@ -257,10 +325,6 @@
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{A4 F3: 15 percent CO2 with explicit carrier continuity and Ergun velocity}
-\begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
-
-\end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.699637907}
 \goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.699637907}
@@ -288,7 +352,23 @@
 \end{tutscheme}
 \tutwhat{A5 feed switch: CO2/He load to 3600 s (batch13 anchors), then pure-He purge to 9000 s -- amended feed commitment ledgered, frozen breakthrough KPIs, desorption duty as the same state difference}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+THE A5 WITNESS: load, then switch the feed.
+
+batch13's bed (CO2 15\% in He on zeolite 13X, the A3 anchor), run through a TWO-STEP cycle in one campaign:
+
+0 .. 3600 s LOAD -- identical to batch13's feed; the front arrives on the batch13 anchors (t\_5 = 2890.7, t\_50 = 3036.4, t\_95 = 3204.2 s) 3600 s SWITCH -- recipe setParameter bed.feed.CO2 = 0: the feed becomes pure He (concentration- swing regeneration) 3600 .. 9000 s PURGE -- q$\ast$(c $\to$ 0) = 0, the LDF drives the bed to desorb; the favourable (Langmuir) isotherm makes desorption the UNFAVOURABLE direction -- watch the long tail on c\_out
+
+What the switch does, and where each consequence is VISIBLE:
+
+The feed commitment is DECLARED matter (the campaign datum owns A$\ast$u$\ast$c\_in$\ast$(endTime - t) of future feed). Re-declaring the feed at t = 3600 s AMENDS that commitment: the un-fed CO2 leaves the datum and the extra He enters it, priced and recorded as `feedAmendment` ledger records against the external boundary -- the campaign mass/element balances read the records and still close (KPIs mass\_kg\_amend\_in/out, element\_worst\_closure\_vs\_declared\_rel \textasciitilde{} 1e-14).
+
+The breakthrough sampler's reference basis (c\_out/c\_in) dies with the old feed: crossings and integral FREEZE at their pre-switch values (announced), so t\_5/t\_50/t\_95 here must MATCH batch13's anchors -- the frozen claim describes the first feed step. The desorption wave lives on in the trajectory's c\_out\_CO2 / qbar\_CO2 columns.
+
+The adsorption duty stays an EXACT state difference on the adsorbed inventory: E\_adsorption = dH\_ads $\ast$ (n\_ads(end) - n\_ads(0)). batch13 (load only) ledgers -413.6 kJ; here the purge takes part of the loading back OUT, so |E| is SMALLER -- desorption is endothermic and the ledger shows the heat returning, with no new formula anywhere.
+
+u, P, T stay DECLARED CONSTANTS: asking the bed for a thermal swing (feed.T), a flow transient (u) or a blowdown (P) is REFUSED by name (fired by bin/curate/check\_feed\_switch.py, batch12-style honesty).
+
+The carrier-fabrication caveat of the constant-(u, P, T) closure applies unchanged (forum \#119): the declared residual explains the He element closure, shown and never discounted.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -318,7 +398,19 @@
 \end{tutscheme}
 \tutwhat{A5-T1 adiabatic CO2/He breakthrough (ergun, one T per cell): thermal wave + earlier front vs batch18, anchors u\_th and DT\_ad announced pre-run, campaign energy on vessel enthalpy alone}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+THE A5-T1 WITNESS: the adiabatic bed.
+
+batch18's ergun-mode bed (15\% CO2/He, N = 25) with the energy balance DECLARED: `energyBalance adiabatic;` -- one temperature per cell, the isosteric heat staying IN the bed as a travelling thermal wave instead of being removed by an unnamed coolant. Design record: docs/design/fixed-bed-thermal-a5.md.
+
+What the engine announces BEFORE integrating (equilibrium theory):
+
+pure thermal-wave velocity u\_th = u c\_tot cpg / (eps c\_tot cpg + rho\_b cp\_s) and the time L/u\_th the heat needs to LEAVE the bed; the adiabatic LIMIT DT\_ad = q$\ast$(-dH\_ads)/(cp\_s + eps c\_tot cpg/rho\_b) -- the all-heat-retained BOUND. Here u\_th < u\_sh: the heat LAGS the front, so the observed outlet-T rise sits well BELOW the bound (\textasciitilde{} +38 K vs the 140 K limit) while the WARM bed breaks through far earlier than batch18's isothermal front (t\_50 \textasciitilde{} 806 s vs 3042 s -- q$\ast$(T) falls via the van't Hoff b(T), the SAME datum the energy source term uses; one dH\_ads, three readers).
+
+The golden pins T\_out/T\_max, both anchors, the early crossings, and the campaign ENERGY closure -- claimed, adiabatically, on vessel enthalpy against the boundary streams alone (per-step raffinate packages carry the outlet cell's own T).
+
+cp\_s enters as DECLARED case data (the kLDF pattern -- scope + source say where the number came from; curating a primary-cited cp onto the adsorbent asset record is a separate curation act). The adsorbed-phase heat capacity is neglected, declared. Feed enters at the declared T; the raffinate package leaves at the OUTLET CELL's own T so the material ledger carries the thermal wave's enthalpy.
+
+Adiabatic means NO energy record: nothing is exchanged with the environment; the campaign energy balance closes on vessel enthalpy (per-cell pricing: gas + adsorbed at T\_j, solid sensible cp\_s(T\_j-T0)) against the boundary streams alone.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -348,7 +440,17 @@
 \end{tutscheme}
 \tutwhat{T1.5 TSA half-cycle: adiabatic load to 3600 s, then 400 K clean He purge -- feed.T as the hot-purge control, the re-declared commitment ledgered OUT at 298 K / IN at 400 K, energy balance claimed across the swing}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+THE T1.5 WITNESS: a real TSA half-cycle.
+
+batch20's adiabatic bed run as LOAD $\to$ HOT CLEAN PURGE in one campaign:
+
+0 .. 3600 s LOAD -- 15\% CO2/He at 298.15 K (batch20's feed; the warm front is through by \textasciitilde{}806 s) 3600 s SWITCH -- recipe, two setParameter events: feed.CO2 = 0 (clean He purge) feed.T = 400 K (the HOT purge) 3600 .. 12000 s PURGE -- the hot clean carrier sweeps the bed: q$\ast$(T) collapses via the van't Hoff b(T) and desorption runs FAR faster than batch19's cold concentration swing
+
+This is the step the old refusal named: "thermal swing needs the non-isothermal bed energy balance". A5-T1 built that balance; feed.T is now the hot-purge CONTROL (in thermal mode ONLY -- the isothermal bed still refuses it, by name).
+
+The LEDGER story is the point. A feed at a new temperature re-declares the WHOLE remaining commitment -- at the pinned feed pressure the total concentration drops to P/(R$\ast$400) (composition preserved) and even unchanged matter changes enthalpy -- so the switch retires the old commitment (one OUT feedAmendment package, all species, at 298.15 K) and declares the new one (one IN package at 400 K): the enthalpy repricing rides in the packages' own T, and the campaign energy balance stays CLAIMED across the swing, boundary streams alone.
+
+Breakthrough crossings/integral freeze at the switch (they describe the load step); the desorption story lives in c\_out/qbar/T\_out. The frozen pre-run anchors (u\_th, DT\_ad bound) keep their initialise values -- a later switch never rewrites an announced claim.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -378,7 +480,19 @@
 \end{tutscheme}
 \tutwhat{T2 wall-cooled CO2/He breakthrough (h=5 W/m2K, T\_wall=298.15 K): the bed BETWEEN its limits -- t\_50 bracketed by the adiabatic 806 s and isothermal 3036 s, Q\_wall as a state row of the same ODE, wallHeat record read from the state}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+THE T2 WITNESS: the bed between its two limits.
+
+batch20's adiabatic bed with `energyBalance wallCooled;` -- the energy row gains -h a\_w (T\_j - T\_wall) and the bed sits BETWEEN the limits it must contain:
+
+h $\to$ 0 batch20 (adiabatic: t\_50 = 806 s, T\_max \textasciitilde{} 336 K) h $\to$ infinity batch18 (isothermal: t\_50 = 3036 s, T = T\_wall)
+
+so the golden pins the BRACKETING:
+
+t\_50(adiabatic) < t\_50(wallCooled) < t\_50(isothermal) T\_wall < T\_max(wallCooled) < T\_max(adiabatic)
+
+at h = 5 W/(m2 K), T\_wall = 298.15 K, dBed 0.113 m DECLARED (never derived from the cross-section by a silent circle assumption); the engine announces a\_w = 4/dBed and the wall NTU before integrating.
+
+The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md section 6): the removed heat integrates as ONE MORE STATE ROW of the same ODE -- the M\_in/M\_out ledger-row pattern -- so the `wallHeat` energy record READS a state (E = -Q\_wall, T\_service = T\_wall) and the campaign closure dH\_vessels = Q\_ledger + H\_external holds with every term a state function. Guards: `adiabatic` + a wallHeatTransfer block refuses (contradiction), `wallCooled` without one refuses, h <= 0 refuses (adiabatic is the way to SAY zero) -- gate check\_thermal\_bed.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -408,7 +522,15 @@
 \end{tutscheme}
 \tutwhat{Toward A6: three hand-declared TSA cycles (cold load / 400 K purge) in one campaign -- eleven ledgered feed amendments, balances closed, final KPIs at the cycle boundary; the CSS verdict machinery stays a named proposal}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+toward A6: three FULL TSA cycles, hand-declared.
+
+batch21's half-cycle repeated three times in ONE campaign, with the recipe grammar that already exists -- nothing new in the engine:
+
+cycle k (k = 0,1,2), each 7200 s: t = 7200k feed.T = 298.15 K (cold again) [k>0] feed.CO2 = 0.15 (feed returns) [k>0] t = 7200k + 3600 feed.CO2 = 0 (clean purge) feed.T = 400 K (hot purge)
+
+ending EXACTLY at the third cycle boundary (21600 s), so the FINAL KPIs are end-of-cycle values. Every switch re-declares the feed commitment through the T1.5 ledger machinery (the T switches retire and redeclare the WHOLE commitment; the composition switches amend by delta) -- FIFTEEN feedAmendment records (three per switching instant: the composition delta + the T retire/declare pair), and the campaign mass/element/energy balances still close on records, never jumps.
+
+The A6 QUESTION this case makes visible (and does not yet verdict): does the bed state at successive cycle ends approach a fixed point -- the cyclic steady state? MEASURED (this case's own run): qbar\_CO2 at the three cycle ends is 0.3151 $\to$ 0.2415 $\to$ 0.1748 mol/kg -- a slow geometric approach (ratio \textasciitilde{}0.9; each purge leaves residual heat, the next load starts warmer and holds less), NOT yet converged in three cycles. That unfinished convergence IS the pedagogical point: eyes on a trajectory can see it, and only the A6 verdict machinery could CLAIM it. The golden pins the third-cycle end. A first-class CSS verdict (declared cycles, per- cycle state snapshots, an invariance tolerance the case declares) is an ARCHITECTURE feature -- proposed in docs/design/fixed-bed-thermal-a5.md section 7, awaiting Vitor's decision; this case is deliberately its cheap, grammar-free witness.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -438,7 +560,17 @@
 \end{tutscheme}
 \tutwhat{P-swing witness A: inert isothermal blowdown, n/n0 = P/P0}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+P-SWING WITNESS A: the inventory ratio.
+
+The MATERIAL half of a blowdown, isolated from every thermal effect so it cannot pass by coincidence (design note fixed-bed-thermal-a5.md, section 8/9 amended battery, second-opinion review 2026-08-03):
+
+ideal gas, INERT bed (kLDF = 0: the solid is frozen, pure transport), pure He; ISOTHERMAL ergun mode -- T is a DECLARED constant of this teaching slice, so the energy question is out of frame BY DECLARATION (the thermal half is witness B, batch25); at t = 200 s the recipe closes the feed valve (P2, `setParameter u = 0` -- the whole remaining feed commitment retires as a ledgered feedAmendment record) and drops the outlet boundary (P1, `setParameter P\_out` 1.0 $\to$ 0.5 bar); the bed drains through the SAME Ergun face machinery every run already uses; the vented gas rides the telescopic M\_out ledger rows.
+
+THE ANCHORS (ideal-gas exactness, hand-computable):
+
+n\_end / n\_0 = P\_end / P\_0 = 0.5 n(P) = eps A L P / (R T) = 0.0807 mol at 1 bar, 0.0403 at 0.5 bar vented = inventory drop (the mass-closure KPI is the proof)
+
+The gate (check\_pswing) recomputes both analytically and pins the `gasInventory\_mol` KPI + the closure against them.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -468,7 +600,17 @@
 \end{tutscheme}
 \tutwhat{Toward A6: three hand-declared TSA cycles (cold load / 400 K purge) in one campaign -- eleven ledgered feed amendments, balances closed, final KPIs at the cycle boundary; the CSS verdict machinery stays a named proposal}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+A6 item 4: the cyclic steady state as the STOPPING CONDITION, not a count.
+
+batch23 beside this one declares `repeat 3;` and reports honestly that three cycles did not settle -- it makes the question visible and does not answer it. This case asks what an engineer actually wants to ask of a TSA bed: not "run three cycles" but "cycle until it repeats, and tell me how many that took".
+
+cycle \{ period 7200; repeat untilCSS; cssTolerance 3e-2; maxCycles 6; ... \}
+
+The declared cap is SIX and the run uses TWO, announcing why it stopped.
+
+TWO KEYS ARE MANDATORY under `untilCSS` and the engine refuses without either: the tolerance, because whether a bed has converged is a modelling judgement the engine must never invent; and the cap, because a bed that never settles has to stop somewhere and the run must be able to say it stopped for want of cycles rather than because it arrived. Reaching the cap is NOT an error -- the trajectory is a physically valid campaign and every other KPI in it is real -- but it means the case's own question went unanswered, so it is published (`css\_stopped\_at\_cap`) and announced.
+
+WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the loading are NOT the same quantity. See the measured numbers beside `cssTolerance` below. A tolerance chosen without looking can certify a bed whose loading is still visibly marching, because the norm over the whole packed state is dominated by its largest components. The verdict is only as meaningful as the number the case declares -- which is the argument for the engine refusing to supply one.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -498,7 +640,13 @@
 \end{tutscheme}
 \tutwhat{P-swing witness B: adiabatic blowdown COOLS (expansion work)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+P-SWING WITNESS B: the cooling.
+
+The THERMAL half of a blowdown, isolated from adsorption so the only heat effect in frame is the expansion work itself (design note fixed-bed-thermal-a5.md, section 8/9 amended battery):
+
+same inert pure-He ergun bed as witness A (batch24), but `energyBalance adiabatic;` -- the section-9 general energy row (cv accumulation + the explicit eps R T dc\_tot/dt source) is live; at t = 200 s the recipe closes the feed valve (P2) and halves the outlet boundary (P1) -- the bed drains, dc\_tot/dt < 0, and the expansion source pulls T DOWN; the solid heat capacity is a declared SYNTHETIC LOW value (9.2 J/(kg K), scope says so): the real \textasciitilde{}920 of a zeolite pellet would thermally bury the gas-phase cooling under the solid's mass (dT \textasciitilde{} -0.03 K); at the teaching value the drop is visible (\textasciitilde{} -3 K class). Same honest-teaching-value discipline as the hxFluid of the pinch witness -- the physics on display is the GAS's, and the header says which knob made it visible.
+
+THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margin -- a depressurising cell COOLS, which is exactly what the pre-widening cp-form could not show (the sabotage of the gate restores that form and this witness fails). The material anchors stay witness A's business; this case pins the sign and visibility of the thermal effect, and the campaign energy claim stays closed.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -530,7 +678,13 @@
 \end{tutscheme}
 \tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
+
+H2 : O2 : N2 = 2 : 1 : 4 (stoichiometric H2 + 1/2 O2 $\to$ H2O, 57\% N2)
+
+mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, with the heat release coming from the species FORMATION enthalpies (curated thermo) -- no per-reaction $\Delta$H is supplied. Temperature, and the radicals H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
 
 \end{tutnarrative}
 \tutreadme{A closed rigid vessel holds a stoichiometric H$_2$/O$_2$ charge diluted in N$_2$ at 1100 K and \textasciitilde{}5 bar. A tiny H-radical seed starts chain branching; after a short induction the radical pool explodes and the mixture ignites --- a sharp temperature jump from 1100 K to \textasciitilde{}2440 K.}
@@ -564,7 +718,13 @@
 \end{tutscheme}
 \tutwhat{Adiabatic constant-V H2/O2 ignition at 1100 K (GRI-Mech 3.0 H/O kinetics, curated thermo); EXPLICIT RK4 -- fails on the stiff chemistry (the lesson)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+ignition01\_h2o2 -- closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
+
+H2 : O2 : N2 = 2 : 1 : 4 (stoichiometric H2 + 1/2 O2 $\to$ H2O, 57\% N2)
+
+mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume, with the heat release coming from the species FORMATION enthalpies (curated thermo) -- no per-reaction $\Delta$H is supplied. Temperature, and the radicals H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 (see the ignition01\_h2o2\_rk4 sibling) and the same step blows up.
 
 \end{tutnarrative}
 \tutreadme{This is the failure half of the stiffness lesson. It runs the exact same adiabatic constant-volume H$_2$/O$_2$ ignition as the sibling case [ignition01\_h2o2](../ignition01\_h2o2/README.md), but with the explicit RK4 integrator instead of the stiff Rosenbrock23 --- at the same fixed step (deltaT = 1e-5 s).}
@@ -583,7 +743,7 @@
 \end{tutscheme}
 \tutwhat{Stoich H2/air ignition, 1100 K / 2 atm (Slack shock tube; O Conaire 2004 kinetics)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ flowsheetDict Stoichiometric H2/air autoignition at 1100 K / 2 atm against the Slack shock-tube point (O Conaire 2004 kinetics): the radical pool (H, O, OH, HO2) builds exponentially through the induction time, then runaway. A stiff-integrator showcase -- compare the ignition delay with the measured shock-tube value.
 
 \end{tutnarrative}
 \tutreadme{Stoichiometric H$_2$/air, 1100 K, 2 atm, constant volume --- the reflected-shock condition of Slack (1977) as compiled in ? Conaire et al. 2004 (Fig 8). Kinetics: the ? Conaire H$_2$/O$_2$ mechanism, Table I verbatim (19 reactions; two Troe falloffs; two summed pairs; A in cm$^3$-mol-s, Ea in kcal --- the engine converts and announces every one).}
@@ -615,7 +775,7 @@
 \end{tutscheme}
 \tutwhat{Thermal NOx in post-flame H2/air gas, 2125 K / 1 atm (Glarborg 2018 N chemistry)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ flowsheetDict Thermal NOx in post-flame H2/air gas at 2125 K / 1 atm: the Zeldovich N-chemistry (Glarborg 2018 rate set) integrated in a batch reactor -- NO grows on the SECONDS scale while the O/H radical pool stays equilibrated, the classic separation of scales that makes thermal NOx a post-flame problem.
 
 \end{tutnarrative}
 \tutreadme{Hot burnt gas (lean H$_2$/air, 2125 K, 1 atm --- Homer \& Sutton Flame 1 as compiled in Glarborg 2018) held isothermal, starting from the equilibrated H/O radical pool with all nitrogen still as N$_2$. The Glarborg 2018 nitrogen chemistry (extended Zeldovich + NNH + N$_2$O routes, Tables 2/5 verbatim) then forms NO.}
@@ -650,7 +810,7 @@
 \end{tutscheme}
 \tutwhat{Batch NaCl crystalliser: saturation from the Pitzer ion activity, not a solubility curve}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+One closed vessel. The unit declares no saturation of its own: it asks the thermodynamics the case declares, and the case declares Pitzer.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -680,7 +840,7 @@
 \end{tutscheme}
 \tutwhat{Batch NaCl crystalliser with ethanol present: a pairwise-aqueous model announces the mixed-solvent term it does not carry}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+One closed vessel, identical to batch13 except for the ethanol in the charge. The unit declares no saturation of its own: it asks the thermodynamics the case declares, and the case declares Pitzer -- which has nothing to say about a second solvent, and says so.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -712,7 +872,17 @@
 \end{tutscheme}
 \tutwhat{Tray drying of wet sucrose into declared 60 C air: the classical constant-rate / falling-rate drying curve, with the wet bulb and the GAB equilibrium moisture as results}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the DRYING CURVE, both periods, in one batch.
+
+A tray holding 2.0 kg of dry sucrose wet to X\_0 = 0.30 kg water / kg dry solid, exposed over 0.5 m2 to air of DECLARED, CONSTANT condition: 60 C (333.15 K) and Y = 0.010 kg water / kg dry N2. Nothing about that air is integrated -- it is an ENVIRONMENT, the FixedBedAdsorber's constant-carrier posture, and the water that leaves the solid leaves the campaign across that boundary (reported as the unit's DECLARED material residual, never as a silent leak).
+
+THE HAND ESTIMATE, computed from this case's own curated records (water Antoine + Watson Hvap + the two ideal-gas Cp polynomials, the case-local GAB isotherm on sucrose) -- the run must reproduce it:
+
+air water activity p\_v = P Y/(Y + Mv/Mc) = 1551 Pa a\_w = p\_v / Psat(333.15 K) = 0.0774 GAB equilibrium K a\_w = 0.0743 X\_eq = Xm C Ka /((1-Ka)(1-Ka+C Ka)) = 0.01580 kg/kg wet bulb (Lewis = 1) T\_wb = 300.53 K (27.4 C, a 32.6 K depression) driving force Y\_sat(T\_wb) - Y = 0.014011 kg/kg constant-rate flux R\_c = k\_Y dY = 0.05 $\ast$ 0.014011 = 7.0057e-4 kg/(m2 s) R\_c A = 3.5028e-4 kg/s latent load R\_c A lambda(T\_wb) = 0.8645 kW (the AIR's, not the campaign's -- KPI only, never ledgered) break time t\_c = m\_s (X\_0 - X\_c)/(R\_c A) = 1027.7 s falling-rate constant tau = m\_s (X\_c - X\_eq)/(R\_c A) = 595.0 s end of run X(3000 s) = X\_eq + (X\_c - X\_eq) exp(-(3000-t\_c)/tau) = 0.019584 kg/kg
+
+What to look at in the output: trajectory.csv columns dryer.X\_kg\_kg and dryer.R\_kg\_m2\_s: the drying curve and the rate curve, engine columns, not a post-processing. R is FLAT at 7.0057e-4 until X falls through X\_c = 0.12, then decays linearly in (X - X\_eq) -- the textbook break, visible as a corner. the KPI t\_critical is OBSERVED (the interpolated crossing between two accepted states), not the analytic 1027.7 s above; they agree because dX/dt is exactly constant on that leg. the campaign energy balance is UNAVAILABLE, and says why in one sentence: the drying heat comes from air this campaign never owned. The number is not hidden -- it is the latentDuty\_kW KPI.
+
+Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-saturation equation; the humid heat evaluated at the air's own temperature; the surface held at T\_wb while X > X\_c; the LINEAR falling-rate law (a modelling CHOICE, not physics); the solid's own temperature NOT integrated.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -744,7 +914,17 @@
 \end{tutscheme}
 \tutwhat{Isothermal batch Fischer esterification (AcOH + EtOH <$\to$ EtOAc + H2O) at 350 K, pseudo-first-order in ethanol; analytical exp-decay comparison}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+isothermal pseudo-first-order batch reactor.
+
+Single vessel, pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O, rate = k.[ethanol]). Initial charge is an equimolar ethanol + acetic acid mix; kinetics from the reactions library (Arrhenius A=1e8 1/s, Ea=70 kJ/mol). At T = 350 K:
+
+k(T) = 1e8 $\cdot$ exp(-70000 / (8.314 $\cdot$ 350)) $\approx$ 3.57e-3 s\textasciicircum{}-1 $\tau$ = 1/k $\approx$ 280 s
+
+Analytical solution for first-order in a constant-volume batch:
+
+n\_A(t) = n\_A(0) $\cdot$ exp(-k t)
+
+The simulator integrates dn\_A/dt = -k $\cdot$ (n\_A / V) $\cdot$ V = -k n\_A with RK4 at dt = 1 s; final t = 600 s gives X\_A $\approx$ 1 - exp(-k$\cdot$600) $\approx$ 1 - exp(-2.14) $\approx$ 0.882
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -774,7 +954,19 @@
 \end{tutscheme}
 \tutwhat{Adiabatic batch esterification (AcOH + EtOH $\to$ EtOAc + H2O), exothermic, starting cold (320 K); thermal runaway to \textasciitilde{}428 K then plateau as ethanol is consumed}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion (320 $\to$ 428 K), enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+
+Expected qualitative trajectory:
+
+T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+
+The energy balance is just:
+
+dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
+
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at 428 K.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -797,7 +989,23 @@
 \end{tutscheme}
 \tutwhat{Isothermal batch reactor: consecutive A $\to$ B $\to$ C with k1 > k2; intermediate B peaks then decays}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+two first-order reactions in series:
+
+with k1 > k2. This is the textbook series-reaction setup: B is produced from A faster than it is consumed to C, so n\_B grows at first, reaches a maximum, then decays as A runs out.
+
+Analytical solution (constant V, isothermal, first-order):
+
+n\_A(t) = n\_A0 $\ast$ exp(-k1 t) n\_B(t) = n\_A0 $\ast$ k1 / (k2 - k1) $\ast$ [exp(-k1 t) - exp(-k2 t)] n\_C(t) = n\_A0 - n\_A(t) - n\_B(t)
+
+t\_max = ln(k1 / k2) / (k1 - k2)
+
+With k1 = 0.01 1/s and k2 = 0.002 1/s:
+
+t\_max = ln(5) / 0.008 \textasciitilde{} 201 s n\_B\_max / n\_A0 = (k1/k2)\textasciicircum{}(k2/(k2-k1)) = 5\textasciicircum{}(-0.25) \textasciitilde{} 0.669
+
+The case demonstrates: 1. multi-reaction support in BatchReactor (v0.21); 2. time-dependent selectivity --- harvesting B at t \textasciitilde{} 200 s maximises yield, waiting longer wastes B to C.
+
+No species supplies activation energy: both A\_pre are quoted with Ea = 0 so that the rate constants are exactly the values above regardless of T (the case is isothermal anyway).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -827,7 +1035,11 @@
 \end{tutscheme}
 \tutwhat{Batch reversible water-gas shift (CO + H2O <$\to$ CO2 + H2) at 600 K; conversion relaxes to X\_eq}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the reversible water-gas shift in a closed BATCH reactor (choupoBatch), the time-domain sibling of cstr02 / pfr02.
+
+Equimolar CO + H2O charged at 600 K. The forward Arrhenius rate drives conversion up; the reverse term (k\_rev = k\_fwd / K\_eq, K\_eq from the four species' g\_pure\_ig, re-evaluated each step) brakes it. The batch trajectory relaxes onto the SAME thermodynamic ceiling the CSTR and PFR reached --- X $\to$ X\_eq \textasciitilde{} 0.84 --- then sits there (net rate $\to$ 0), instead of running to X = 1.
+
+The forward A is the illustrative value tuned for stable RK4 (see constant/reactions); the equilibrium X\_eq is A-independent.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -850,7 +1062,21 @@
 \end{tutscheme}
 \tutwhat{Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 $\to$ 1 and T runaway 320 $\to$ \textasciitilde{}428 K by scrubbing 0/ 30/ 60/ ... s}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the batch02\_adiabatic runaway re-run with REAL-TIME instant directories: the integrator dumps 0/ 30/ 60/ ... s snapshots (OpenFOAM-style) so the trajectory -- conversion 0 $\to$ 1, T 320 $\to$ \textasciitilde{}428 K -- can be scrubbed frame by frame in the GUI.
+
+The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+
+Expected qualitative trajectory:
+
+T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+
+The energy balance is just:
+
+dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
+
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at \textasciitilde{}430 K.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -873,7 +1099,7 @@
 \end{tutscheme}
 \tutwhat{Batch crystalliser: supersaturated sugar relaxes, PBE by method of moments}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+Single closed vessel. Charge: \textasciitilde{}500 kg water + \textasciitilde{}1250 kg dissolved sucrose (c0 \textasciitilde{} 2.5 kg/kg, above c\_sat(20 C) \textasciitilde{} 2.03 kg/kg, so S0 \textasciitilde{} 1.23). Unseeded: the moments start at zero and primary nucleation (j=0) bootstraps the population from the initial supersaturation. Kinetics from constant/crystallisation.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -903,7 +1129,21 @@
 \end{tutscheme}
 \tutwhat{Adiabatic esterification runaway (AcOH+EtOH); ADAPTIVE Rosenbrock23 time-stepping --- the step grows after the fast transient (glass-box step history)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the batch02\_adiabatic runaway integrated with ADAPTIVE Rosenbrock23 time-stepping: the step shrinks through the fast runaway and GROWS again on the plateau, and the step history is printed glass-box so the student sees the controller at work.
+
+The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
+
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}100 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+
+Expected qualitative trajectory:
+
+T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}450 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+
+The energy balance is just:
+
+dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
+
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at 450 K.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -926,7 +1166,25 @@
 \end{tutscheme}
 \tutwhat{LHHW in a BATCH reactor: methyl-acetate synthesis over Amberlyst 15 (Popken 2000, Eq 16)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the SAME rate law as cstr07, in a BATCH vessel.
+
+CH3OH + CH3COOH <$\to$ CH3COOCH3 + H2O over Amberlyst 15
+
+Popken, Gotze \& Gmehling, Ind. Eng. Chem. Res. 39 (2000) 2601, Eq 16: the adsorption-based LHHW on UNIQUAC activities. Nothing about the rate law is restated here -- it lives in constant/reactions, exactly as the steady CSTR reads it, because the SAME `RateLaw` evaluates it in both. A batch reactor and a continuous one cannot disagree about what an adsorption denominator means.
+
+What changes is only what a batch vessel does with a rate: it integrates it. The charge is equimolar methanol + acetic acid; the trajectory climbs to the ACTIVITY equilibrium, X = 76.6 \%, and stops. That plateau is asserted nowhere: it is where k1 a'\_HOAc a'\_MeOH = k-1 a'\_MeOAc a'\_H2O, i.e. the K\_a = 25.50 the authors' independent Eq 17 recovers from the same eight constants -- and the same number the steady CSTR climbs to as its volume grows. Two reactors, two integration schemes, one equilibrium.
+
+Water is the strongest adsorber (K/M = 0.29 against 0.052 for the acid), so as the reaction MAKES water it crowds the acid off the resin and the denominator grows. That self-inhibition is why reactive distillation, which pulls the water out as it forms, is worth its capital.
+
+Do NOT try to see the inhibition by deleting the `adsorption` block and keeping k1. It tells you nothing: the constants were REGRESSED for this rate law, on these activities, and a rate constant without its rate law is a number without a meaning. (Delete the denominator and the reaction gets FASTER, because the adsorbed activities a' are small and dividing by their square is a multiplication. That is an arithmetic accident, not physics.) To SEE the inhibition, spike the charge with water at the same acid and alcohol fractions:
+
+methanol 0.4, aceticAcid 0.4, water 0.0 $\to$ initial rate 58.3 mmol/(L.s) methanol 0.4, aceticAcid 0.4, water 0.2 $\to$ initial rate 29.0 mmol/(L.s)
+
+Half the rate, with every reactant fraction unchanged. The water is not a reactant here; it is sitting on the sites.
+
+`catalystLoading` (kg of dry resin per m\textasciicircum{}3) is what turns the paper's per-gram rate constants into a volumetric rate. With concentrations in kmol/m\textasciicircum{}3 the conversion is exact and unit-free: mol/(g.s) x kg/m\textasciicircum{}3 = kmol/(m\textasciicircum{}3.s).
+
+The vessel runs isothermal at 333.15 K, the top of the authors' data range. Do not extrapolate: their activation energies are APPARENT values, fitted over 303-333 K.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -949,7 +1207,7 @@
 \end{tutscheme}
 \tutwhat{Isothermal jacket duty from a DECLARED dH\_rxn: E = dH$\ast$dXi via extents (lumped species, no formation data)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+one isothermal batch reactor, one declared dH\_rxn, one hand-checkable jacket duty. See system/controlDict for what this case tests and constant/reactions for the analytic anchor (E = -50 kJ/mol x 0.9975 mol = -49.88 kJ over 600 s).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -983,7 +1241,17 @@
 \end{tutscheme}
 \tutwhat{Two-vessel batch recipe: esterify (AcOH + EtOH $\to$ EtOAc + H2O) in a reactor, transfer the charge to a still, then distil}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the canonical 2-stage batch recipe.
+
+Stage 1 (t = 0 $\to$ 400 s): A batch reactor at 350 K esterifies ethanol + acetic acid $\to$ ethyl acetate + water (the same first-order Arrhenius reaction as batch01). k $\approx$ 3.58e-3 s?$^1$ at 350 K, tau $\approx$ 280 s. Over 400 s the ethanol conversion reaches \textasciitilde{}76 \%.
+
+Stage 2 (t = 400 $\to$ 1200 s): The recipe TRANSFERs the reactor contents to an initially empty batch still. The still then runs a Rayleigh distillation at F\_vap = 2.0e-5 kmol/s for 800 s, vaporising 0.016 kmol (\textasciitilde{}85 \% of the charge) -- the condensed distillate is routed, step by step, into a passive batchAccumulator (`dischargeTo receiver;`), so the campaign ends with the ester-rich distillate IN a vessel while the ethanol-depleted residue stays in the still's own pot (the pot IS the bottoms tank; no third transfer needed). Mass is conserved across the three vessels at every accepted step. Starting from the converted mix (ethyl acetate + water + unreacted ethanol/acid), the still progressively strips the more volatile ethyl acetate + ethanol; pot composition follows the Raoult y-x curve. (The thermoPhysPropDict here uses ideal Raoult for pedagogical simplicity.)
+
+This case demonstrates the recipe layer (v0.23): a list of time-triggered events acting on named units. Each event in the `recipe` block below has a `time`, an `action`, and action-specific keys. Actions implemented in v0.23:
+
+transfer move all contents of `from` into `to` setParameter change a named operating parameter on a unit
+
+Events fire at the next time-loop step boundary after t\_trigger; the trajectory CSV thus shows a single-step discontinuity in the transferred quantities.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1013,7 +1281,17 @@
 \end{tutscheme}
 \tutwhat{Single-reactor recipe with T\_setpoint steps: 320 K $\to$ 350 K @ 200 s $\to$ 380 K @ 500 s}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+isothermal batch reactor with a staged temperature programme controlled by the recipe layer.
+
+The reactor starts at 320 K, where the first-order Arrhenius reaction is very slow (k\_320 $\approx$ 3.7e-4 s?$^1$, $\tau$ $\approx$ 2700 s). Two recipe events ramp the setpoint upward:
+
+t = 200 s $\to$ 320 K $\to$ 350 K (k jumps \textasciitilde{}10x to 3.58e-3 s?$^1$) t = 500 s $\to$ 350 K $\to$ 380 K (k jumps another \textasciitilde{}7x to 0.025 s?$^1$)
+
+In the trajectory CSV the temperature column shows a clean step-change at each event, and the conversion curve shows the corresponding three regimes:
+
+0 $\le$ t < 200 s barely-moving plateau (slow) 200 $\le$ t < 500 s visible drop in n\_ethanol (moderate) 500 $\le$ t rapid quench to full conversion (fast)
+
+Demonstrates the recipe layer's `setParameter` action without inter-unit transfers, so this is the cleanest possible test of the parameter-change pathway.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1044,7 +1322,15 @@
 \end{tutscheme}
 \tutwhat{Conditional + partial recipe: react until x\_ethanol < 0.30, then transfer 50\% to a still}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+recipe extensions (v0.50).
+
+Two recipe features beyond the time-triggered transfer/setParameter of v0.23:
+
+1. CONDITION-TRIGGERED event (`when \{ ... \}` instead of `time`): the event fires the first step its condition becomes true, evaluated on the live vessel state. Quantities: T, total, n\_<comp>, x\_<comp>; operators: gt, ge, lt, le.
+
+2. PARTIAL transfer (`fraction`): a fraction (0..1) of the source moves; the source keeps the rest. Default 1.0 == empty the source.
+
+Here the reactor runs the esterification (ethanol + acetic acid $\to$ ethyl acetate + water; the batch01 first-order Arrhenius test, k \textasciitilde{} 3.58e-3 s\textasciicircum{}-1 at 350 K, so n\_ethanol = n\_ethanol(0).exp(-k t)). The charge is equimolar (x\_ethanol starts at 0.5); when the ethanol mole fraction drops below 0.30, the recipe transfers HALF the reactor contents to a still; the reactor keeps the other half and reacts on, while the still distils its charge.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1075,7 +1361,15 @@
 \end{tutscheme}
 \tutwhat{H-equality recipe charge: T\_mix from the first law, not the molar average; balance CLOSES across a transfer}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+mixing is a FIRST-LAW act.
+
+Two passive tanks. `hot` holds 0.5 mol of ethanol at 340 K; `cold` holds 1.0 mol of water at 300 K. At t = 100 s the recipe empties the hot tank into the cold one. The charge solves the mix temperature from enthalpy equality on the elements datum,
+
+H(n\_EtOH + n\_W, T\_mix) = H(n\_EtOH, 340 K) + H(n\_W, 300 K),
+
+so heat capacity DIFFERENCES matter: ethanol carries \textasciitilde{}112 J/(mol K) against water's \textasciitilde{}75, and the enthalpy-true T\_mix (\textasciitilde{}317 K) sits \textasciitilde{}4 K above the equal-Cp molar average (313.3 K) a naive mixing rule gives.
+
+Because both species price on the elements datum, no jacket acts, and nothing leaves, the campaign ENERGY BALANCE is AVAILABLE and closes: dH\_vessels = 0 to the mix-solve tolerance --- the transfer moved enthalpy between tanks without creating or destroying any.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1107,7 +1401,17 @@
 \end{tutscheme}
 \tutwhat{Rayleigh batch distillation: benzene/toluene 50/50, 1 atm, ideal Raoult}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+Rayleigh batch distillation, ideal Raoult.
+
+Pot starts with 1 mol of equimolar benzene/toluene at 1 atm. A constant vapour offtake F\_vap = 1.5e-6 kmol/s strips the pot over 600 s --- by linear mass balance the pot should hold
+
+i.e. L(600 s) = 1 mmol - 0.9 mmol = 0.1 mmol (90 \% distilled).
+
+Benzene is the more volatile component (alpha \textasciitilde{} 2.4 at 1 atm), so the still pot progressively concentrates in toluene as benzene flashes off preferentially. Classical Rayleigh integration with constant alpha gives the closed form
+
+ln(L / L\_0) = (1 / (alpha - 1)) [ ln(x / x\_0) + alpha $\ast$ ln((1 - x\_0) / (1 - x)) ]
+
+where x = x\_benzene in the still pot. Plotting (L/L\_0) vs x\_pot from trajectory.csv should track this analytical curve to RK4 precision.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1137,7 +1441,19 @@
 \end{tutscheme}
 \tutwhat{Rayleigh batch distillation: ethanol/water 40/60 with NRTL, residue concentrates in water}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+Rayleigh batch distillation of a non-ideal binary with an azeotrope.
+
+System: ethanol / water with NRTL, pressure 1 atm. Minimum-boiling positive azeotrope at x\_eth \textasciitilde{} 0.894 (mole), T \textasciitilde{} 351.3 K.
+
+Pot starts at x\_eth = 0.40 (a "wine"-like feed --- well BELOW the azeotrope). Boil-off rate F\_vap = 1.5e-6 kmol/s for 600 s consumes 90 \% of the pot, leaving a 10 \% residue.
+
+Below the azeotrope, gamma\_ethanol > 1 and gamma\_water \textasciitilde{} 1, so the vapour is markedly richer in ethanol than the liquid (y\_eth \textasciitilde{} 0.61 at x\_eth = 0.40). Ethanol therefore vaporises preferentially and the still pot progressively concentrates in WATER --- i.e. the residue at end-of-run is mostly water.
+
+The pedagogical contrast with still01 (ideal Raoult, benzene/toluene) is the SHAPE of the enrichment curve:
+
+Raoult: smooth, alpha-driven (alpha \textasciitilde{} 2.4, roughly constant). NRTL : curvature changes as x crosses concentration regimes in which gamma\_ethanol shrinks toward 1; the still composition curve x\_pot(t) is noticeably non-linear vs the linear pot-volume curve L(t) = L\_0 - F\_vap$\ast$t.
+
+Crucially, this case demonstrates that a single Rayleigh still cannot cross the azeotrope. Starting below 0.894 in ethanol, the pot can only move DOWNWARD in ethanol fraction; no amount of boiling will lift the pot composition past 0.894. (To break the azeotrope one needs entrainer, pressure swing, or extractive distillation --- topics for later tutorials.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1159,7 +1475,9 @@
 \end{tutscheme}
 \tutwhat{Rayleigh still distilling INTO a receiver tank (dischargeTo accumulator)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+Rayleigh batch distillation INTO a receiver (accumulator vessel + continuous dischargeTo).
+
+Same pot as still01 (1 mol equimolar benzene/toluene, F\_vap = 1.5e-6 kmol/s, ideal Raoult), but the still's vapour is no longer lost: the `dischargeTo receiver;` line routes the condensed distillate, step by step, into a passive `batchAccumulator`. So the trajectory shows the POT depleting AND the RECEIVER filling --- the receiver collects the total distillate (amount + composition). Mass is conserved between the two vessels: pot + receiver = 1 mol at all times. Benzene is the more volatile component, so the receiver is benzene-rich early and the cumulative receiver composition drifts toward 0.5 as distillation nears completion (it ends holding everything the pot lost).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1190,7 +1508,13 @@
 \end{tutscheme}
 \tutwhat{batch rectification: 3 stages + total condenser, R=3, with receiver tank (dischargeTo accumulator)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the CLASSICAL batch rectification (model rectifier, design forum \#85): the Rayleigh pot now feeds a column of 3 ideal stages topped by a total condenser at constant reflux R = 3.
+
+F\_vap is the internal BOILUP V = 1.5e-6 kmol/s; the distillate PRODUCT is D = V/(R+1) = 3.75e-7 kmol/s and the reflux L = R.D returns to the column. The pot loses PRODUCT only: dn\_i/dt = -D.x\_D\_i, with x\_D(t) solved at every instant from the quasi-steady cascade (stage balances + bubble-T equilibrium + total-condenser closure -- a declared residual, printed on failure).
+
+What to watch (trajectory.csv): still.xD\_benzene starts \textasciitilde{}0.949 (vs \textasciitilde{}0.71 for the raw pot vapour -- the column working) and DRIFTS DOWN as the pot strips: the constant-R policy trades purity for time. The receiver's ACCUMULATED benzene fraction sits between the instantaneous x\_D and the feed -- two different compositions, deliberately both visible. The pot loses only D.dt = 0.225 mmol over 600 s (vs 0.9 mmol in still01: same boilup, but 3/4 of it refluxes).
+
+Physics anchors (verified at authoring): x\_D(0) grows with nStages and R (N=1,R=1: 0.806; N=2,R=3: 0.909; N=3,R=3: 0.949) and the R $\to$ infinity limit (R=200: 0.9765) lands inside the Fenske band alpha\textasciicircum{}(N+1) for alpha = 2.35-2.6. With nStages 0 and refluxRatio 0 the model reproduces still01's Rayleigh trajectory to the last digit.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1221,7 +1545,13 @@
 \end{tutscheme}
 \tutwhat{batch rectification, constant-composition policy: R(t) holds x\_D until refluxMax, then D=0}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+the SECOND classical reflux policy (design forum \#85-3/4): hold the distillate composition constant by RAISING the reflux as the pot strips, and STOP when the declared ceiling can no longer reach the target.
+
+Same pot and column as still04 (1 mol equimolar benzene/toluene, V = 1.5e-6 kmol/s, 3 ideal stages + total condenser), but instead of a fixed R the policy solves R(t) each step -- a BRACKETED solve over [0, refluxMax] on a feasibility map, never a bare Newton -- so that x\_D[benzene] = 0.93 exactly. As benzene depletes, R climbs (\textasciitilde{}2 at the start); when even refluxMax = 8 cannot reach the target the run announces `onRefluxLimit stopDistillation`: D = 0, the pot stops losing mass, and the campaign idles VISIBLY to endTime with still.refluxLimitReached = 1 in the trajectory -- never a magic termination.
+
+What to watch (trajectory.csv): still.xD\_benzene pinned at 0.9300 while R climbs -- the mirror image of still04, which held R and let purity drift; still.R rising 2.0 $\to$ 8 (the ceiling), then the limit event; the receiver's accumulated composition \textasciitilde{}0.93 (the whole cut is on-spec -- THE selling point of this policy); pot inventory constant after t\_refluxLimit.
+
+Declared refusals (each with its own diagnostic, try them): x\_D\_target 0.5 $\to$ BELOW the R=0 floor (even zero reflux over-purifies); x\_D\_target 0.995 with refluxMax 5 $\to$ UNREACHABLE from the charge; ethanol/water NRTL with x\_D\_target 0.95 $\to$ the 0.894 azeotrope caps the cascade at ANY reflux (the barrier is real VLE, not a message).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1257,7 +1587,19 @@
 \end{tutscheme}
 \tutwhat{Ledger H-validity is MONOTONIC: mixed valid/invalid packages never resurrect a poisoned record}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+MONOTONIC enthalpy validity on the material ledger (the adversarial case of design forum \#99/\#101).
+
+The campaign ledger integrates each transfer's enthalpy PACKAGE BY PACKAGE at each package's own temperature. A package containing a species with NO formation datum (here `compA`, a lumped teaching species that deliberately carries no standardThermochemistry block) cannot be priced --- the record must mark H invalid and NAME the species. The contract under test is the temporal one:
+
+once ONE package is unpriceable, the record's integrated H has lost a parcel FOREVER. Validity is MONOTONIC: a later priceable package must never resurrect it.
+
+Two stills exercise the two orders on ONE accumulated record each:
+
+potA (invalid $\to$ valid): starts with 10 \% compA, so its distillate record potA$\to$recA begins UNPRICEABLE. At t = 200 s the recipe dumps the whole pot to `dump` and recharges clean benzene/toluene from `fresh`; every later distillate package is priceable. The record must STAY invalid (H\_missing = compA), and the discrete potA$\to$dump record is invalid too (it carried the compA).
+
+potB (valid $\to$ invalid): starts clean, so its distillate record potB$\to$recB begins priceable and accumulates real enthalpy. At t = 200 s the recipe spikes it with pure compA from `spike`; every later package is unpriceable. The record flips invalid and the partial integral is WITHHELD --- an emitted H\_kJ that silently lost its tail would be a lie.
+
+Five ledger records result: potA$\to$recA (continuous, poisoned early), potB$\to$recB (continuous, poisoned late), potA$\to$dump and spike$\to$potB (discrete, carrying compA: unpriceable), fresh$\to$potA (discrete, clean: the ONE priceable record). The golden pins the campaign census transfers\_H\_valid = 1 / transfers\_H\_invalid = 4; the results JSON carries H\_missing = [ compA ] and NO H\_kJ key on every poisoned record.
 
 \end{tutnarrative}
 \begin{tutgolden}

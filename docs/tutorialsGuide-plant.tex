@@ -6,28 +6,44 @@
 \clearpage
 \tutentry{CONCENTRATION}{tutorials/plant/ChemicalPlantTutorial/CONCENTRATION}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ system/flowsheetDict (SECTOR -- COMPOSITE)
+
+Double-effect evaporator (vapour of effect 1 heats effect 2) feeding a crystalliser. Same shape as the plant flowsheetDict, one level down: children + boundary + default feeds + connections.
 
 \end{tutnarrative}
 
 \clearpage
 \tutentry{DRYING}{tutorials/plant/ChemicalPlantTutorial/DRYING}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ system/flowsheetDict (SECTOR -- COMPOSITE)
+
+Spray dryer $\to$ additional solid drying $\to$ cyclone dust separator. The solid powder goes SD $\to$ BD $\to$ product; the spray-dryer exhaust air (carrying fines) goes SD $\to$ CY, which returns clean air + recovered dust.
 
 \end{tutnarrative}
 
 \clearpage
 \tutentry{FERMENTATION}{tutorials/plant/ChemicalPlantTutorial/FERMENTATION}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ system/flowsheetDict (SECTOR -- COMPOSITE with INTERNAL RECYCLE)
+
+Continuous fermentation side-loop of the sugar plant: a slip-stream of fresh juice (Must) is hydrolysed + fermented into ethanol + CO2, the Flash splits the volatiles (EthanolVapour product) from the liquid bottoms, and a Splitter recycles 80 \% of the bottoms back to the Mixer so unconverted sucrose gets another shot. Pedagogical purpose:
+
+1. Reaction (Arrhenius first-order in sucrose). 2. Vapour-liquid flash for separation. 3. Tear-stream RECYCLE that the Wegstein/Newton outer loop must iterate to a fixed point.
+
+Must    [Mixer]  MixedFeed   [Fermentor]  FermOut   [Flash]   EthanolVapour           Liquid       Recycle     [Splitter]                     
+
+Tear stream: Recycle (Splitter output $\to$ Mixer input).
 
 \end{tutnarrative}
 
 \clearpage
 \tutentry{JuiceSplitter}{tutorials/plant/ChemicalPlantTutorial/JuiceSplitter}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ system/flowsheetDict (LEAF -- plant-level juice split)
+
+Diverts the fresh sugar-cane juice between the two production lines of the mill: 2/3 goes to the CONCENTRATION line (evaporators $\to$ crystals $\to$ dry sugar) and 1/3 to the FERMENTATION line (yeast $\to$ ethanol). This is what a real Brazilian sugar-ethanol plant does after the clarifier: the same juice header feeds both products, with the split ratio set by market price + crop quality.
+
+Pedagogically the splitter is the single inter-sector cable that ties the two downstream branches together -- without it, FERMENTATION would be a parallel island.
 
 \end{tutnarrative}
 
@@ -118,18 +134,6 @@ DEPARTURES FROM HIS FIGURE 1, each argued rather than absorbed
 \clearpage
 \tutentry{esterification2sector}{tutorials/plant/esterification2sector}
 \tutwhat{Esterification plant -- two sectors (REACTION + SEPARATION) sharing components; per-sector constant/ data (S1 kinetics, S2 NRTL pair); ethanol-water pair inherited from the standard library}
-\begin{tutnarrative}
-- Choupo -$\ast$------------------------------$\ast$ esterification2sector -- a TWO-SECTOR fractal plant, WIRED.
-
-[ REACTION ] --- esterification CSTR, its OWN kinetics in | sectors/REACTION/constant/reactions reactorOut
-
-[ SEPARATION ] --- isothermal flash; the ethylAcetate-water NRTL pair | \textbackslash\{\} is PARTICULAR to this sector liquid vapor (sectors/SEPARATION/constant/parameters/NRTL/...); ethanol-water is INHERITED from the standard library.
-
-The point of the case is the FRACTAL `constant/`: components shared across the plant, particular data (kinetics here, a fitted pair there) living with the sector that owns it, and the rest walked up to the standard catalogue.
-
-The root graph assembles the sectors and the inter-sector links, nothing more. Each stream's state lives in its own file under 0/, owned by the sector that produces it.
-
-\end{tutnarrative}
 \tutreadme{A two-sector plant that exists to prove one thing: data lives with the sector that owns it, and a whole-plant run finds it there.}
 \tutreadme{Components are shared across the plant. The kinetics belong to REACTION and are never copied to the root. The ethylAcetate-water NRTL pair belongs to SEPARATION --- a $\ast$particular$\ast$ datum, fitted for this separation --- while ethanol-water walks up to the standard catalogue. Three levels of ownership, one run.}
 \tutreadme{That perNode is the whole case. The sector's pair beat the standard library, and the log says so rather than leaving you to wonder which one it used.}
@@ -169,16 +173,6 @@ The root graph assembles the sectors and the inter-sector links, nothing more. E
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{HDA plant -- toluene + H2 $\to$ benzene + CH4. A single FLAT flowsheet with two plant-level recycles (an H2 gas loop and an unreacted-toluene liquid loop); cross-sector tears are unsupported, so it is not fractal. Furnace lumped into the isothermal reactor; light-gas K-values rest on Antoine extrapolation (see thermoPhysPropDict).}
-\begin{tutnarrative}
-- Choupo -$\ast$-----------------------$\ast$ flowsheetDict -- HDA plant (single FLAT flowsheet).
-
-toluene + H2 $\to$ benzene + CH4, with TWO coupled recycles: an H2 gas loop (GasSplit 95 \% $\to$ back to the Mixer) an unreacted-toluene loop (Column bottoms $\to$ back to the Mixer)
-
-WHY FLAT, not the two-sector fractal we first attempted: a recycle closes only when its `tearStreams` declaration AND both endpoints live in the SAME flowsheet node. The engine's tear-closing override (Flowsheet.cpp) is leaf-only and same-level-only -- it does NOT support CROSS-SECTOR (composite-to-composite) tears. Both HDA loops run from the separation train back to the reactor feed, so no single sector owns both ends; they are inherently plant-level and must be flat (the proven process03\_recycle pattern: each tear name is BOTH a Mixer input AND a producer output, listed after the Mixer). The fractal sector showcase lives elsewhere (the sector-internal recycle in the two-sector demo).
-
-Everything is at 35 bar so the recycles return at reactor pressure (the Mixer takes min-P). The furnace is lumped into the isothermal reactor (operation.T 900 K) -- the engine's heater is duty-specified, not T-target. The benzene product is \textasciitilde{}89 mol\% benzene but carries a non-trivial \textasciitilde{}10\% CH4 (plus \textasciitilde{}0.2\% H2 and \textasciitilde{}0.3\% toluene): the light non-keys dissolved in the flash liquid are lighter than benzene, so the FUG shortcut sends them all to the distillate. A real plant would put a stabiliser / light-ends column upstream of the product spec to strip that \textasciitilde{}10\% methane; the shortcut here is quantitatively approximate (it needs no rigorous liquid enthalpy, so unlike a Wang-Henke column it does not choke on a gas in the liquid).
-
-\end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{Benzene}{F}{0.0308570333668}
 \goldrow{stream}{Effluent}{F}{0.589422462034}
@@ -201,7 +195,7 @@ Everything is at 35 bar so the recycles return at reactor pressure (the Mixer ta
 \tutentry{lithiumBrinePlant}{tutorials/plant/lithiumBrinePlant}
 \tutwhat{lithiumBrinePlant -- THE reference case: a FRACTAL lithium-carbonate plant from salar brine, WIRED into one solver. Five SECTORS, each a thermo WORLD of its own -- BRINE (electrolyte/Pitzer), EXTRACTION (gamma-gamma NRTL LLE), CARBONATION (Li2CO3 retrograde solubility), HOTAIR (Gibbs combustion), FINISHING (drying + cyclone) -- connected sector to sector, each sector declaring its own propertyPackage (its world) on the global component set, with optional per-unit thermo overrides where a single unit needs a different world. The proof that the architecture is fractal: sectors are composite boxes, streams flow between them, model boundaries audited.}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+Five REAL sectors. Streams are named physical graph edges. Sector names are subdomains; unit operations live inside each sector.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -233,7 +227,19 @@ Everything is at 35 bar so the recycles return at reactor pressure (the Mixer ta
 \end{tutscheme}
 \tutwhat{Close the loop: ESTIMATE the PCL repeat-unit glass transition Tg by the Yang 2020 group-contribution scheme --- the plant gives Mn/PDI, this gives the physical property from the SAME repeat unit -[O-(CH2)5-CO]-}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+pclProperties -- CLOSE THE LOOP: process $\to$ molar mass $\to$ physical property.
+
+The plant (../) gave you the chain statistics from the KINETICS: Mn, Mw, PDI on the polycaprolactone it makes. Here you ESTIMATE the polymer's PHYSICAL PROPERTIES from the SAME repeat unit -[O-(CH2)5-CO]- by group contribution --- the bridge from "how big are the chains" to "how does the material behave".
+
+TWO estimators, two properties, on the repeat unit pclRepeat (M0 = 114.14):
+
+(A) Tg, the GLASS-TRANSITION temperature --- Yang 2020 (run below). Repeat unit -[O-(CH2)5-CO]- decomposes into Yang main-chain groups: O x1 : MW 16 Yg -14.718 CH2 x5 : MW 14 Yg 4.026 (each) CO x1 : MW 28 Yg 4.370
+
+M0 = 16 + 5$\ast$14 + 28 = 114 g/mol (matches the reactor M0!) Yg(inf) = -14.718 + 5$\ast$4.026 + 4.370 = 9.782 (1e3 g.K/mol) Tg(inf) = 9.782e3 / 114 \textasciitilde{} 86 K (the additive estimate) (Measured PCL Tg \textasciitilde{} 213 K / -60 C; an additive main-chain scheme is weak for a flexible aliphatic polyester --- the model tells the truth about itself, which IS the lesson. See the console's per-cent error vs the anchor.)
+
+(B) DENSITY --- Van Krevelen (Bondi Vw). NOT runnable on PCL with the shipped data: the Slice-1 Van Krevelen set ships only hydrocarbon + chloro groups (CH3 CH2 CH C ACH AC CHCl CH2Cl); it has NO ester -O- / -CO- group, so the repeat unit -[O-(CH2)5-CO]- cannot be decomposed. Running it would HARD- ERROR with "unknown polymer group 'O'" --- the estimator refuses to invent a value (no silent zero). The honest path: density needs the ester groups curated into data/standards/parameters/vanKrevelen.dat first. The worked Van Krevelen DENSITY example lives in tutorials/props/estimate/vanKrevelen01\_polystyrene\_density (a pure- hydrocarbon repeat unit the Slice-1 set CAN do).
+
+This is the same M0 = 114.14 the reactor's polymer\{\} block used for Mn = M0/(1-p) --- one repeat-unit mass, two places (process AND property).
 
 \end{tutnarrative}
 \tutreadme{A choupoProps sub-case of [../](..) (the polycaprolactone plant). The plant gives you the chain statistics from the kinetics (Mn / Mw / PDI); here you estimate the polymer's physical property --- the glass transition Tg --- from the same repeat unit -[O-(CH2)5-CO]- (M0 = 114.14, the exact number the reactor used for Mn = M0/(1-p)).}
@@ -249,7 +255,13 @@ Everything is at 35 bar so the recycles return at reactor pressure (the Mixer ta
 \tutentry{sugarPlantEconomicsSweep}{tutorials/plant/sugarPlantEconomicsSweep}
 \tutwhat{Sugar plant ECONOMICS SWEEP -- IRR / payback / NPV vs RawJuice sucrose content (Phase-2 SweepDriver post-chain differentiator)}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+/ system/flowsheetDict (PLANT level -- COMPOSITE)
+
+The flagship sugar plant (the ChemicalPlantTutorial flowsheet, reused verbatim -- sectors and units included), here driven by system/outerDict: a SweepDriver walks the RawJuice sucrose fraction and runs the FULL post chain (sizing $\to$ costing $\to$ economics, system/postDict) on every point, so IRR / NPV / payback vs feed quality come out as sweep responses.
+
+A composite node: it has `children` (sub-flowsheets, here the sectors) and `connections` (the pipework between them). The same shape a sector uses to list its units -- one level up. This is the fractal.
+
+Naming convention (see docs/ai/case-layout.md): SECTORS in CAPS : CONCENTRATION, DRYING, FERMENTATION Units in PascalCase : Cryst, Evap1, Evap2 Streams in PascalCase : RawJuice, Magma, Powder, EvapVapour Components in lowercase : water, sucrose, N2
 
 \end{tutnarrative}
 \tutreadme{This is the flagship sugar plant (tutorials/plant/ChemicalPlantTutorial) driven by a SweepDriver instead of a single pass. It exists to show the one thing a single CAPEX number cannot: how the project economics move when a process variable changes.}
@@ -276,18 +288,6 @@ Everything is at 35 bar so the recycles return at reactor pressure (the Mixer ta
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Tartaric-acid plant (wine route): lime precipitation of calcium tartrate, then sulfuric acidulation to tartaric acid + gypsum. Molecular reactors; the solution chemistry sub-study is tutorials/props/electrolyte/tartaricAcid\_acidulation. HONEST LIMITS: H2SO4 declared nonvolatile by case overlay (Psat \textasciitilde{}1e-5 Pa at process T); precipitates ride as nonvolatile solutes with NO rigorous solid-liquid separation; reactor duties honestly UNAVAILABLE (species without ideal-gas Cp -- a named gap, never a fake zero).}
-\begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ Tartaric-acid plant -- the WINE ROUTE chemistry, as a reactor train.
-
-bitartrate (KHT)      lime Ca(OH)2    M1 mixer    R1 precipitation    (CaTartrate + KOH)
-
-H2SO4                         M2 mixer                   R2 acidulation    product (tartaricAcid + gypsum)
-
-R1: KHC4H4O6 + Ca(OH)2 $\to$ CaC4H4O6 + KOH + H2O R2: CaC4H4O6 + H2SO4 $\to$ C4H6O6(tartaric acid) + CaSO4(gypsum)
-
-SCOPE (honest). This demonstrates the REACTION chemistry and closes the MASS balance. The physical solid-liquid SEPARATIONS of the real process -- filtering the calcium-tartrate cake from the mother liquor, and the gypsum from the acid -- are NOT modelled: Choupo treats the precipitate as a dissolved nonvolatile, not a solid phase, so there is no F\_solid\_mass for a filter to capture (a precipitator / solid-phase reactor is a roadmap feature). The ENERGY balance also refuses on the solid calcium tartrate (its formation datum is omitted -- no curated dissolution enthalpy). The solution-chemistry of the acidulation liquor (Pitzer, gypsum saturation) lives in tutorials/props/electrolyte/tartaricAcid\_acidulation.
-
-\end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{acidFeed}{F}{0.943266666667}
 \goldrow{stream}{bitartrate}{F}{0.583333333333}
@@ -319,7 +319,7 @@ SCOPE (honest). This demonstrates the REACTION chemistry and closes the MASS bal
 \end{tutscheme}
 \tutwhat{SECTOR\_R -- the reactor sector. Runs its OWN compiled unit op (stoichReactor) on the plant-level thermo (cascaded from ../constant).}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+one custom reactor (compiled from code/). Build + run with: bin/buildCode tutorials/plant/twoSectorDemo/SECTOR\_R runCase tutorials/plant/twoSectorDemo/SECTOR\_R ---
 
 \end{tutnarrative}
 
@@ -335,7 +335,7 @@ SCOPE (honest). This demonstrates the REACTION chemistry and closes the MASS bal
 \end{tutscheme}
 \tutwhat{SECTOR\_S -- the separation sector. Runs its OWN compiled unit op (sharpSplitColumn) on the plant-level thermo (cascaded from ../constant).}
 \begin{tutnarrative}
-- Choupo -$\ast$--------------------------------$\ast$ | \textbackslash\{\}|/ C hemicals | Choupo: open-source, glass-box simulation | | \textbackslash\{\}\textbackslash\{\}|// H eat-transfer | Version: Choupo-dev | | \textbackslash\{\}\textbackslash\{\}\textbackslash\{\}|/// O perations | Website: https://choupo.org | | \textbackslash\{\}\textbackslash\{\}|// U nits | Licence: GPL-3.0-or-later | | \textbackslash\{\}|/ P roperties | Tutorial case file -- part of Choupo | | | O ptimization | |
+one custom distillation (compiled from code/). Build + run: bin/buildCode tutorials/plant/twoSectorDemo/SECTOR\_S runCase tutorials/plant/twoSectorDemo/SECTOR\_S ---
 
 \end{tutnarrative}
 
