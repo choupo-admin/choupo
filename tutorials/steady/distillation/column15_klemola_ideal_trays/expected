@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0863020558333    1e-4
+stream  distillate             F                0.0394509877778    1e-4
+stream  feed                   F                0.125753043611     1e-4
+kpi     splitter               B                0.0863020558333    1e-4
+kpi     splitter               D                0.0394509877778    1e-4
+kpi     splitter               L_rect           0.45133097767      1e-4
+kpi     splitter               L_strip          0.565397370357     1e-4
+kpi     splitter               Q_condenser_kW   -8659.56425253     1e-4
+kpi     splitter               Q_reboiler_kW    8471.59434507      1e-4
+kpi     splitter               R                11.440296          1e-4
+kpi     splitter               T_bottom         329.435279168      1e-4
+kpi     splitter               T_top            314.116313789      1e-4
+kpi     splitter               V_rect           0.490781965448     1e-4
+kpi     splitter               V_strip          0.479095314524     1e-4
+kpi     splitter               feedStage        37                 1e-4
+kpi     splitter               nStages          75                 1e-4
+kpi     splitter               x_B_HK           0.00116916885816   1e-4
+kpi     splitter               x_D_LK           0.0627714334383    1e-4
+utility splitter               heating.steamLP.duty_kW 8471.59434507      1e-4
+utility splitter               heating.steamLP.T 329.435279168      1e-4
+utility splitter               heating.steamLP.kg_s 3.87538625117      1e-4
+utility splitter               heating.steamLP.eur_h 365.972875707      1e-4
+utility splitter               cooling.coolingWater.duty_kW -8659.56425253     1e-4
+utility splitter               cooling.coolingWater.T 314.116313789      1e-4
+utility splitter               cooling.coolingWater.kg_s 207.166608912      1e-4
+utility splitter               cooling.coolingWater.eur_h 12.4697725236      1e-4

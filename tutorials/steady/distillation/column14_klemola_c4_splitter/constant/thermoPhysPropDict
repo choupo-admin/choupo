@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- THE PAPER'S OWN MODEL, mirrored rather than
+  substituted for.
+
+  Klemola & Ilme (IECR 35 (1996) 4579) state the thermodynamics they used:
+  liquid activity coefficients by UNIFAC, vapour pressures by Antoine, vapour
+  fugacity by the ORIGINAL Soave-Redlich-Kwong.  All three are public in this
+  tree, so the case declares exactly them.  A comparison against a measured
+  column is worth something only if the model is the one the source used; had
+  this dict declared ideal vapour or a fitted NRTL pair, any agreement would
+  have been agreement between two different questions.
+
+  ANTOINE lives on each component's own record (`vaporPressure { model Antoine;
+  ... }` in data/standards/components/<name>.dat) -- it is a per-component fact
+  and is not selected here.  UNIFAC and SRK are the two model slots below.
+
+  UNIFAC coverage, verified rather than assumed.  All nine components carry a
+  `groups { unifac ( ... ) }` decomposition:
+
+      propane        2 CH3 + 1 CH2                 nButane      2 CH3 + 2 CH2
+      isoButane      3 CH3 + 1 CH                  isopentane   3 CH3 + 1 CH2 + 1 CH
+      neopentane     4 CH3 + 1 C                   nPentane     2 CH3 + 3 CH2
+      1Butene        1 CH3 + 1 CH2 + 1 CH2=CH
+      isoButene      2 CH3 + 1 CH2=C
+      trans2Butene   2 CH3 + 1 CH=CH
+
+  Two main groups appear, CH2 and C=C, and the interaction pair between them
+  (a = 86.02 / -35.36) is present in data/standards/parameters/UNIFAC/
+  interactions.dat.  Nothing is missing, so there is NO approximations{} block:
+  every component here is priced by the model that is declared, and an
+  authorisation carried over out of habit would read, to anyone auditing the
+  answer, as though something had been waved through.
+
+  WHAT THIS SYSTEM IS.  Nine saturated and unsaturated C3-C5 hydrocarbons: the
+  mixture is nearly ideal and UNIFAC returns activity coefficients close to 1
+  throughout.  That is deliberate and it is the point of choosing this column as
+  the corpus's first measured distillation anchor -- what is under test is the
+  COLUMN model, and a disagreement cannot be shifted onto the activity model
+  and then forgotten.  The separation is hard for a different reason: the keys'
+  relative volatility is about 1.40, which is why the plant needs 74 trays and
+  a reflux ratio of 11.4.
+
+  PROVENANCE CAVEAT, machine-announced and repeated here.  Seven of the nine
+  records (isoButane, 1Butene, isoButene, trans2Butene, neopentane, isopentane,
+  nPentane) carry `reviewStatus interim` -- imported from CoolProp 7.2.0 and
+  not yet checked against primary sources.  The engine raises this on every
+  run.  The thermodynamics beneath this anchor is not itself anchored, and no
+  agreement below should be read as validating it.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components
+(
+    propane
+    isoButane
+    nButane
+    1Butene
+    isoButene
+    trans2Butene
+    neopentane
+    isopentane
+    nPentane
+);
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIFAC; }     // the paper's liquid model
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel SRK;                  // the paper's vapour model
+    }
+}

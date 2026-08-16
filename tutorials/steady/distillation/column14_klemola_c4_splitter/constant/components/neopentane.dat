@@ -1,0 +1,98 @@
+// [imported] origin "data/standards/components/neopentane.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neopentane  (C5H12, CAS 463-82-1)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        neopentane;
+
+//  Review state, MACHINE-READABLE (AP2, 2026-08-05).  This used to
+//  live only in the banner above, which the parser discards -- so the
+//  engine could not announce it and a run said nothing.
+reviewStatus   interim;
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+formula     C5H12;
+CAS         463-82-1;
+
+MW          72.1488;        // kg/kmol  [CoolProp]
+Tc          433.7396;        // K        [CoolProp EOS]
+Pc          31.96297;        // bar      [CoolProp EOS]
+omega       0.19610;        // [-]      [CoolProp EOS]
+Tb          282.6550;        // K  normal boiling [CoolProp]
+HvapTb      22776.5;        // J/mol  at Tb     [CoolProp]
+Vliq        1.2346e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.06146   1055.82   -22.4271);
+    Trange        (257.10  425.06);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (-6.3604  0.492194  -0.000234339  4.6163e-08);
+    Trange        (255  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (53.4291  0.500409  -0.000981391  1.93265e-06);
+    Trange        (262  283);
+}
+
+triplePoint
+{
+    T   256.6000;
+    P   35400.9473;
+}
+
+standardThermochemistry
+{
+    dHf_298   -168050;      // J/mol ideal-gas, MEASURED -- see the structured dHf_298 block below
+    dGf_298   -17070;       // J/mol  [DERIVED: dHf - 298.15*(s_298 - Sum S_elements), CODATA element S]
+    s_298     306.390;      // J/(mol*K) third-law absolute (matches the process05 case overlay)
+}
+
+groups
+{
+    joback ( { group CH3; count 4; } { group C; count 1; } );
+    unifac ( { group CH3; count 4; } { group C; count 1; } );
+}
+provenance
+{
+    dHf_298
+    {
+        origin           measured;
+        method           "combustion calorimetry";
+        citation         "Prosen & Rossini, J. Res. Natl. Bur. Stand. 34 (1945) 263 (heats of formation of the paraffins); s_298 third-law, TRC/Scott 1974";
+        note             "PROMOTED 2026-08-02 from the Joback estimate (-155,280; ~13 kJ/mol off) under Vitor's ruling: a good measured value prevails over a group estimate (docs/design/curation-backlog-estimated-records.md P2).  Values mirror the human-reviewed process05 case overlay.  FOR REVIEW.";
+    }
+
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.37%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.44%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
+}
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0008-PROF.txt bundled in usnistgov/COSMOSAC; CAS 463-82-1";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+}

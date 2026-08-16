@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|        |     O ptimization  |  Tutorial case file -- part of Choupo         |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+/*  AN INITIAL GUESS, NOT AN INPUT -- the same status as 0/distillate.
+
+    Seeded from the paper's MEASURED bottoms composition (Table 2), but scaled
+    to the rate the ENGINE will produce, B = F - D = 452.710957 - 142.023556 =
+    310.687401 kmol/h.  The paper's own 18119 kg/h corresponds to 311.208528
+    kmol/h at its measured bottoms composition -- 0.17 % more.  That gap is the
+    tables' rounding, argued in flowsheetDict section 6; it is not reconciled
+    here, and the bottoms rate is NOT a case input.
+
+    The i-butene entry deserves a note.  Table 2 prints 0.2 wt % i-butene in the
+    feed and 0 in BOTH products, which is impossible; record section 5.4 measures
+    the discrepancy at -100 %.  The seed below therefore carries the feed's
+    i-butene into the bottoms, purely so the guess conserves material.  That is
+    a seeding choice with no source behind it, and it is exactly why the anchor
+    rows are on the KEYS only.                                                */
+
+componentMolarFlows
+{
+    propane          1.226951 kmol/h;      //  0.3 wt %, scaled to B = 310.687401
+    isoButane        0.930861 kmol/h;      //  0.3 wt %
+    nButane        304.387322 kmol/h;      // 98.1 wt %
+    1Butene          0.321436 kmol/h;      //  0.1 wt %
+    isoButene        0.934219 kmol/h;      //  see the note above -- a seed, not data
+    trans2Butene     0.321436 kmol/h;      //  0.1 wt %
+    neopentane       0.499927 kmol/h;      //  0.2 wt %
+    isopentane       2.749599 kmol/h;      //  1.1 wt %
+    nPentane         0.249964 kmol/h;      //  0.1 wt %
+}
+
+T               329.4 K;                   // guess, near the reboiler bubble point
+P               658600 Pa;
+vaporFraction   0.0;

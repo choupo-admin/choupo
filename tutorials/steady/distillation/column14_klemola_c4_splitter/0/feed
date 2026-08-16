@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+/*  THE COLUMN FEED.  Klemola & Ilme, IECR 35 (1996) 4579, Table 2:
+    26234 kg/h at the wt % printed there.  The wt % -> kmol/h conversion, the
+    normalisation of the 100.1 wt % column, and every MW used are set out line
+    by line in system/flowsheetDict section 3 -- that is where to check these
+    numbers, not here.
+
+    THE STATE BELOW IS THE COLUMN-INLET STATE, and it is DERIVED from declared
+    assumption A1 (flowsheetDict): feed saturated liquid at the Table-2 feed
+    pressure of 892.67 kPa (bubble T = 334.4218 K, computed with this case's
+    own thermo), let down adiabatically to the column pressure of 658.6 kPa
+    (V/F = 0.0929333445, T = 323.5875148 K).  The vaporFraction below MUST stay
+    equal to that V/F, and the column's `feedQuality` MUST stay equal to
+    1 - V/F; the engine does not tie them together.                            */
+
+componentMolarFlows
+{
+    propane          8.915024 kmol/h;      //  1.5 wt % /  44.0960
+    isoButane      132.567090 kmol/h;      // 29.4 wt % /  58.1222
+    nButane        305.260832 kmol/h;      // 67.7 wt % /  58.1230
+    1Butene          0.934219 kmol/h;      //  0.2 wt % /  56.1063
+    isoButene        0.934219 kmol/h;      //  0.2 wt % /  56.1063
+    trans2Butene     0.467110 kmol/h;      //  0.1 wt % /  56.1063
+    neopentane       0.363246 kmol/h;      //  0.1 wt % /  72.1488
+    isopentane       2.905971 kmol/h;      //  0.8 wt % /  72.1488
+    nPentane         0.363246 kmol/h;      //  0.1 wt % /  72.1488
+}                                          // total 452.710957 kmol/h = 26234 kg/h
+
+T               323.5875148 K;             // derived, A1
+P               658600 Pa;                 // Table 2 column top pressure
+vaporFraction   0.0929333445;              // derived, A1 -- ties to feedQuality

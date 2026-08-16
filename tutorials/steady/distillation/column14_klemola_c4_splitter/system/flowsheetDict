@@ -1,0 +1,501 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column14_klemola_c4_splitter -- an INDUSTRIAL i-butane/n-butane fractionator,
+  74 real trays, 2.9 m diameter, run on its own measured specification.
+
+  PRIMARY, and the only source used for any number below:
+
+      Klemola, K. T.; Ilme, J. K.  Distillation Efficiencies of an
+      Industrial-Scale i-Butane/n-Butane Fractionator.
+      Ind. Eng. Chem. Res. 1996, 35 (12), 4579-4586.  IE960390R.
+
+  The transcription record -- Tables 1 and 2 number by number, the efficiency
+  results, and the four things the paper does NOT publish -- is
+  docs/design/klemola-c4-splitter-reference-case.md.  No number in this case is
+  absent from that record; where the record says the paper is silent, this
+  header DECLARES an assumption and says it is one.
+
+  WHY THIS CASE EXISTS.  The corpus's other distillation tutorials are pinned
+  on self-recorded goldens; the closest thing to an external anchor
+  (acetone06/07) compares Choupo against another SIMULATION.  This is the first
+  column anchored on a measured plant.  What it puts under test is the COLUMN
+  MODEL -- the MESH solve, the declared tray efficiency, the material balance --
+  not an activity model: the system is nearly ideal, so a disagreement here
+  cannot be blamed on thermodynamics and then forgotten.
+
+  ---------------------------------------------------------------------------
+  1.  WHAT IS TRANSCRIBED, PER NUMBER  (record Sections 2 and 3, Tables 1 / 2)
+  ---------------------------------------------------------------------------
+
+      number of trays            74            Table 1  -> nStages 75 (see 2)
+      feed tray                  37            Table 2  -> feedStage 37 (see 2)
+      column top pressure        658.6 kPa     Table 2  -> P (see A2)
+      feed pressure              892.67 kPa    Table 2  -> used in A1 only
+      feed flow rate             26234 kg/h    Table 2  -> 0/feed (see 3)
+      distillate flow rate        8115 kg/h    Table 2  -> distillateRate (see 4)
+      reflux flow rate           92838 kg/h    Table 2  -> refluxRatio (see 5)
+      bottoms flow rate          18119 kg/h    Table 2  -> NOT an input (see 6)
+      Murphree tray efficiency   119.1 %       text p.4580 -> murphreeEfficiency
+      reflux temperature         18.5 C        Table 2  -> NOT USED (see 7)
+      boiler duty                10.240 MW     Table 2  -> NOT an input (see 8)
+
+  Table 1's tray geometry (2.900 m diameter, 0.600 m spacing, 4.9 m2 active
+  area, 772 valves, 18.82 % free hole area, ...) is transcribed in the record
+  for the reader and is used by NOTHING here: no hydraulics block is declared,
+  because the anchor is the separation, not the rating.  Ballast V-1 valve
+  trays are not the sieve tray Choupo's hydraulics pass models, and rating them
+  with a sieve correlation would be a number with no source behind it.
+
+  ---------------------------------------------------------------------------
+  2.  STAGE COUNT AND FEED STAGE -- and one AMBIGUITY, declared
+  ---------------------------------------------------------------------------
+
+  Choupo's Wang-Henke cascade numbers stage 1 = TOP TRAY and stage N =
+  REBOILER; the total condenser sits outside the stage list (the distillate is
+  y_1, the vapour leaving the top tray, condensed).  So 74 real trays plus the
+  reboiler gives
+
+      nStages   75      (= 74 trays + 1 reboiler)
+      feedStage 37      (Table 2, taken as counted from the TOP)
+
+  ASSUMPTION A0 -- the paper prints "feed tray 37" and does not state the
+  direction of its tray numbering; the record does not either, and the primary
+  text was checked.  Counted from the bottom instead, the feed would sit on
+  tray 38 of 74 as Choupo numbers them: 37 vs 38 rectifying trays out of 74.
+  Stage 1 = top is taken because it is Choupo's own convention and because the
+  difference is one tray in the middle of a 74-tray column.  Anyone who
+  establishes the paper's direction should change this line and say so.
+
+  ---------------------------------------------------------------------------
+  3.  THE FEED -- wt % to mole flows, arithmetic shown
+  ---------------------------------------------------------------------------
+
+  Table 2 gives the feed as 26234 kg/h at these wt % (the paper's own units and
+  its own rounding to 0.1 wt %).  THE COLUMN SUMS TO 100.1, NOT 100 -- that is
+  the rounding, and it has to be resolved before anything can be converted.  It
+  is resolved by NORMALISING the wt % to unity and applying them to the
+  measured 26234 kg/h, so that the total mass flow -- which the paper's own
+  overall balance closes exactly (18119 + 8115 = 26234) -- is preserved.  The
+  alternative (applying the raw wt % literally) would invent 26 kg/h of feed.
+
+  MW from each component's own data/standards record.  kmol/h = kg/h / MW.
+
+    component      wt%     wt% norm      kg/h        MW       kmol/h      x
+    ----------------------------------------------------------------------------
+    propane         1.5     1.49850    393.1169   44.0960    8.915024  0.0196925
+    isoButane      29.4    29.37063   7705.0909   58.1222  132.567090  0.2928294
+    nButane        67.7    67.63237  17742.6753   58.1230  305.260832  0.6742952
+    1Butene         0.2     0.19980     52.4156   56.1063    0.934219  0.0020636
+    isoButene       0.2     0.19980     52.4156   56.1063    0.934219  0.0020636
+    trans2Butene    0.1     0.09990     26.2078   56.1063    0.467110  0.0010318
+    neopentane      0.1     0.09990     26.2078   72.1488    0.363246  0.0008024
+    isopentane      0.8     0.79920    209.6623   72.1488    2.905971  0.0064190
+    nPentane        0.1     0.09990     26.2078   72.1488    0.363246  0.0008024
+    ----------------------------------------------------------------------------
+    TOTAL         100.1   100.00000  26234.0000            452.710957  1.0000000
+
+    mean feed MW = 26234 / 452.710957 = 57.94867 kg/kmol
+
+  Those kmol/h are what 0/feed carries.
+
+  ASSUMPTION A1 -- THE FEED THERMAL STATE.  Table 2 gives the feed PRESSURE
+  (892.67 kPa) and no feed temperature; record Section 5.2 names this gap and
+  names "saturated liquid at the feed pressure" as the natural assumption.
+  That is what is assumed here, and it has a consequence the case must carry
+  rather than hide: a liquid saturated at 892.67 kPa is NOT saturated on a tray
+  at 658.6 kPa -- it flashes on the way in.  Both steps were computed with THIS
+  CASE'S OWN thermo (the dict in constant/, no other model), by two throwaway
+  runs whose numbers are reproduced here so a reader can repeat them:
+
+      bubbleT   of the feed composition at 892.67 kPa  ->  T = 334.4218 K
+      adiabaticFlash of that stream to 658.6 kPa       ->  V/F = 0.0929333445
+                                                           T   = 323.5875148 K
+
+  Hence, at the feed tray,
+
+      feedQuality  q = 1 - V/F = 0.9070666555
+
+  and 0/feed carries the COLUMN-INLET state (323.5875148 K, 658600 Pa,
+  vaporFraction 0.0929333445), not the line state.  The paper's 892.67 kPa
+  therefore appears in this case only as the premise of A1, stated above.
+  NOTE the arity cost, declared: q lives in two places (this key and the
+  stream's vaporFraction) because the Wang-Henke path takes q as a number and
+  does not read it off the inlet.  They must be kept equal; the derivation
+  above is how you check them.
+
+  Sensitivity, MEASURED rather than asserted -- the competing assumption was
+  run.  Declaring instead "saturated liquid AT THE COLUMN PRESSURE" gives
+  T = 323.2706 K (bubble point at 658.6 kPa) and q = 1.0 exactly, and the whole
+  column moves by:
+
+      x_D(i-butane)   0.92571  ->  0.92576      (+5e-5)
+      x_B(i-butane)   0.00352  ->  0.00350      (-2e-5)
+
+  i.e. below the resolution of anything this case compares against.  A1 is
+  therefore chosen on FIDELITY TO THE RECORD, not on the answer, and the
+  simpler assumption is available to anyone who prefers one derived number to
+  three.
+
+  ---------------------------------------------------------------------------
+  4.  DISTILLATE RATE -- a mass spec the engine takes in moles
+  ---------------------------------------------------------------------------
+
+  Table 2 gives 8115 kg/h; `distillateRate` is a MOLAR flow.  The conversion
+  needs a mean MW, and the only one available is the one from the paper's own
+  MEASURED top composition (top wt % of Table 2, which sums to 100.0 exactly):
+
+    component      wt%       kg/h       MW       kmol/h       y
+    ------------------------------------------------------------------
+    propane         5.3    430.0950  44.0960    9.753606  0.0686760
+    isoButane      93.5   7587.5250  58.1222  130.544353  0.9191740
+    nButane         0.2     16.2300  58.1230    0.279235  0.0019661
+    1Butene         0.4     32.4600  56.1063    0.578545  0.0040736
+    trans2Butene    0.6     48.6900  56.1063    0.867817  0.0061104
+    i-butene / neopentane / i-pentane / n-pentane:  0 wt % as printed
+    ------------------------------------------------------------------
+    TOTAL         100.0   8115.0000            142.023556  1.0000000
+
+    mean distillate MW = 8115 / 142.023556 = 57.13841 kg/kmol
+    ->  distillateRate 142.023556 kmol/h
+
+  SAID PLAINLY: this input therefore borrows the measured distillate
+  COMPOSITION, which is one of the quantities the case then predicts.  A fully
+  self-consistent conversion would iterate the mean MW against the predicted
+  composition.  It is not iterated here, and the size of what is left on the
+  table is MEASURED rather than waved at: the run's own converged/distillate
+  comes out at mean MW 57.2186, i.e. +0.14 % on the 57.13841 used above, so the
+  distillate leaves at 8126.4 kg/h against the Table-2 8115 kg/h.  One
+  iteration would close that; it is left open because the residue is smaller
+  than the 0.1 wt % resolution of the composition it came from.  If a future
+  edit moves the distillate composition materially, this number must be
+  recomputed with it.
+
+  ---------------------------------------------------------------------------
+  5.  REFLUX RATIO -- why the MASS ratio IS the MOLAR ratio here
+  ---------------------------------------------------------------------------
+
+  Table 2 gives reflux 92838 kg/h and distillate 8115 kg/h, both MASS.  The
+  condenser is TOTAL, so the reflux and the distillate are drawn from one
+  condensed stream and have IDENTICAL composition, hence identical mean MW.
+  L/D in moles = (L_mass/MW)/(D_mass/MW) = L_mass/D_mass exactly -- no
+  composition-weighted conversion is needed, and none is done:
+
+      R = 92838 / 8115 = 11.440296     (11.4402957...)
+
+  A NOTE ON A NUMBER IN CIRCULATION: 11.4441 has been quoted for this ratio.
+  It is not what the division gives.  8115 x 11.4441 = 92859.9 kg/h, 22 kg/h
+  above the Table-2 reflux.  This case uses 11.440296.
+
+  ---------------------------------------------------------------------------
+  6.  BOTTOMS -- an OUTPUT, and it does not land on 18119 kg/h
+  ---------------------------------------------------------------------------
+
+  B = F - D is the engine's mole balance: 452.710957 - 142.023556 =
+  310.687401 kmol/h.  Priced at the PREDICTED bottoms composition that comes
+  out at 18107.6 kg/h, 0.06 % under the Table-2 18119 kg/h.  It cannot land on
+  it exactly: F's molar total
+  is fixed by the feed mass and the feed's measured composition, D's by the
+  distillate mass and the distillate's measured composition, and the paper's
+  three compositions do not close per component (record Section 5.4 -- the wt %
+  columns sum to 100.1, 100.0 and 100.3).  The mass residue is the printing,
+  not the column.  18119 kg/h is therefore transcribed above and used by
+  nothing.
+
+  ---------------------------------------------------------------------------
+  7.  REFLUX TEMPERATURE 18.5 C -- transcribed, NOT USED, and why
+  ---------------------------------------------------------------------------
+
+  18.5 C is far below the bubble point of the overhead at 658.6 kPa (about
+  41 C, and the run prints its own top-stage temperature).  The plant's
+  condenser therefore SUBCOOLS its reflux.  Choupo's Wang-Henke path returns
+  saturated reflux and has no subcooling keyword; declaring one would be
+  inventing a model.  The number is transcribed so nobody has to wonder whether
+  it was overlooked, and the consequence is stated: the real column's internal
+  liquid traffic in the top few trays is higher than the constant-molar-
+  overflow value used here, by the amount the subcooled reflux condenses on
+  contact.  That is a KNOWN, UNMODELLED difference between this case and the
+  plant, not a tuning knob.
+
+  ---------------------------------------------------------------------------
+  8.  BOILER DUTY 10.240 MW -- transcribed, and NOT claimed as an anchor
+  ---------------------------------------------------------------------------
+
+  The run reports a reboiler duty of about 8.47 MW against the Table-2
+  10.240 MW.  The case does NOT anchor on that, and the reason is in its own
+  output rather than in an argument.
+
+  The Wang-Henke path solves M and E under CONSTANT MOLAR OVERFLOW: the
+  internal traffic is fixed by R, D and q, and NO per-stage energy balance is
+  solved.  The duties are then reported by closing the column's overall
+  enthalpy change, and the flowsheet's independent energy audit raises the
+  first-law advisory on this run -- 98.42 % closure, a residual of 2.96 kW,
+  0.017 % of the boundary enthalpy.  That is small, and it is NOT evidence
+  that the duty is right: the ledger and the duty are computed from the same
+  three stream states, so agreement between them says the arithmetic is
+  consistent, not that a column with no energy equation found the right vapour
+  traffic.  The companion arm column15 makes the point unmissable -- the same
+  three streams to within 0.8 kW of enthalpy, and its audit closes at
+  -256.84 % with a 670.7 kW residual.  Two runs of one column, one ledger
+  claim each, three orders of magnitude apart.  The corpus's other Wang-Henke
+  columns sit further out still (column01/09/11's own
+  energyBalance_byUnit.csv), so this is a property of the solver path and of
+  the reporting around it, and it predates this case by a long way.
+
+  Also unmodelled and worth naming beside the duty: the plant's subcooled
+  reflux (7) and the condenser's own subcooling duty are not in this figure.
+
+  A duty comparison resting on any of that would be a number pretending to be
+  evidence.  10.240 MW is transcribed; 8.47 MW is reported; neither is an
+  anchor row.
+
+  ---------------------------------------------------------------------------
+  9.  THERMO -- mirroring the paper, not substituting for it
+  ---------------------------------------------------------------------------
+
+  The paper states its own model: liquid activity by UNIFAC, vapour pressure by
+  Antoine, vapour fugacity by the original Soave-Redlich-Kwong.  All three are
+  public in this tree, so constant/thermoPhysPropDict declares exactly that and
+  no comparison here hides a model swap.  All nine components carry a UNIFAC
+  group decomposition in data/standards/components/, and the only main-group
+  pair the mixture needs (CH2 <-> C=C, for the three butenes) is in
+  data/standards/parameters/UNIFAC/interactions.dat.  There is no
+  approximations{} block and none is needed: every component is priced by the
+  model that is declared.
+
+  TWO CAVEATS THE RUN ANNOUNCES FOR ITSELF, repeated here so they are read
+  before the numbers and not after:
+    * seven of the nine component records carry `reviewStatus interim`
+      (imported from CoolProp 7.2.0, not yet checked against primaries).  The
+      thermodynamics under this anchor is not itself anchored.
+    * propane's Antoine fit is declared valid to 320.7 K and the stripping
+      section runs to about 329 K, so its Psat is EXTRAPOLATED there.  Propane
+      is 1.5 wt % of the feed and leaves overhead; the extrapolation is
+      announced by the engine on every run and is not corrected here.
+
+  ---------------------------------------------------------------------------
+  10.  METHOD -- Wang-Henke, and it is not a preference
+  ---------------------------------------------------------------------------
+
+  `model simultaneous` REFUSES a murphreeEfficiency other than 1: there the
+  Murphree relation would have to enter the residual and the Jacobian, and it
+  does not. The efficiency is implemented on the Wang-Henke path only, folded
+  into an effective K with the vapour from the tray below lagged one outer
+  pass, so this case is Wang-Henke because that is where the measured input is
+  honoured.  It costs iterations: the corpus's other columns converge in tens
+  of outer passes, this one in several hundred, because 74 trays of a
+  close-boiling pair is a long cascade.  maxOuterIter is raised accordingly.
+
+  ---------------------------------------------------------------------------
+  11.  E_MV = 1.191 IS A MEASURED INPUT, AND IT IS ABOVE 1
+  ---------------------------------------------------------------------------
+
+  The paper back-calculates a Murphree TRAY efficiency of 119.1 % (74 real
+  trays behaving as 88 ideal ones; overall column efficiency 118.9 %).  Above
+  100 % is not an error: E_MV compares the vapour leaving a tray with
+  equilibrium against that tray's OUTLET liquid, and on a 2.9 m cross-flow tray
+  the liquid enters rich and leaves lean, so the vapour has met liquid richer
+  than the outlet.  Nothing anywhere exceeds equilibrium.  The engine ADMITS
+  the value and announces it, and states what it does not check (the plug-flow
+  ceiling, which needs the point efficiency and mV/L -- neither is declared).
+
+  It is an INPUT.  Predicting it needs the rate-based programme Choupo
+  deliberately does not have; the paper spends its own length on that
+  difficulty and its Table 4 shows ten published methods disagreeing across a
+  factor of five.  This case reads the measurement; it does not reproduce it.
+
+  The companion case column15_klemola_ideal_trays is this column with
+  murphreeEfficiency 1.0 and nothing else changed.  The gap between the two is
+  the pedagogical payload: how much of this separation the efficiency carries.
+
+  ---------------------------------------------------------------------------
+  12.  HAND ESTIMATE -- what the specs imply, before the engine is trusted
+  ---------------------------------------------------------------------------
+
+  Relative volatility of the keys from the same Antoine constants the case
+  uses, at 325 K (mid-column):
+
+      Psat(i-C4) = 7.2334 bar,  Psat(n-C4) = 5.1636 bar  ->  alpha = 1.4008
+
+  FENSKE, on the measured key split (moles from the tables above):
+
+      S = (d_iC4/b_iC4)(b_nC4/d_nC4)
+        = (130.544/0.932)(304.898/0.279) = 1.5287e5
+      N_min = ln S / ln alpha = 11.937 / 0.33698 = 35.4 ideal stages
+
+  UNDERWOOD, on the four real components (q = 1 for this estimate):
+
+      theta = 1.2483        R_min = 7.626
+      R / R_min = 11.440296 / 7.626 = 1.500
+
+  That last line is the strongest check available on the transcription: the
+  reflux and distillate rates, taken from two separate lines of Table 2 and
+  converted independently, land on exactly 1.5 x R_min -- the textbook design
+  point.  Two mistranscribed numbers do not do that.
+
+  GILLILAND then gives X = 0.3066, Y = 0.3761, N = 57.4 ideal stages -- fewer
+  than the 74 trays present, and fewer than the 88 ideal trays the paper's own
+  rigorous fit needs.  The disagreement is expected and is not evidence against
+  either: Gilliland is a correlation fitted across many systems and is known to
+  be optimistic at high N/N_min on close-boiling pairs, and 88 is a fitted
+  rigorous simulation, not a measurement.  What the estimate establishes is the
+  ORDER: this separation needs tens of stages, not five and not five hundred,
+  and the declared reflux is comfortably above minimum.  If the engine returned
+  a near-perfect split on ten trays, or failed to separate at all on 74, the
+  hand estimate would have caught it.
+
+  ---------------------------------------------------------------------------
+  13.  THE ANCHOR -- and what a PASS on it does NOT mean
+  ---------------------------------------------------------------------------
+
+  Compared: i-butane and n-butane, in BOTH products, against the Table-2
+  measurements.  Only the keys.  Record Section 5.4 forbids a trace-component
+  anchor before this case was built -- 0.1 wt % resolution on a 0.2 wt % number
+  is +/-25 % before anything physical happens, and the traces do not close at
+  all (propane +23 %, i-butene -100 %).  The keys close to about 1 %, which is
+  what a key-component anchor needs.  The band on any anchor row belongs to the
+  table's own rounding, not to the solver's tolerance.
+
+  This is an ENDPOINT anchor.  The paper publishes no measured tray temperature
+  profile and no measured tray composition profile -- its figures are
+  EFFICIENCY profiles from the back-calculation -- so nothing here tests what
+  the column model predicts INSIDE.  The internals stay unanchored; the natural
+  second case is a different primary (Vogelpohl's total-reflux profiles),
+  never blended into this one.
+
+  What a PASS would mean: that the MESH solve plus a declared efficiency
+  reproduces an industrial column's products from its own specification, on
+  public thermodynamics.  What it would NOT mean: that the internals are right
+  (nothing here measures them), nor that Choupo could have PREDICTED the
+  efficiency, nor that the trace components are modelled well.
+
+  ---------------------------------------------------------------------------
+  14.  THE ANCHOR TABLE -- observed, and it does NOT all agree
+  ---------------------------------------------------------------------------
+
+  Predicted product compositions, converted back to wt % from this case's own
+  converged/ streams, beside the Table-2 measurements.  The "band" column is
+  the measurement's OWN rounding: the paper prints to 0.1 wt %, so a printed
+  value v carries +/-0.05 wt %.
+
+    DISTILLATE (predicted 8126.4 kg/h vs the 8115 kg/h spec -- see 4)
+
+      component     predicted   measured    band        verdict
+      -------------------------------------------------------------------
+      i-butane        94.033       93.5    +/-0.05      +0.53 wt % HIGH
+      n-butane         0.0015       0.2    +/-0.05      LOW by ~130x
+
+    BOTTOMS (predicted 18107.6 kg/h vs the Table-2 18119 kg/h -- see 6)
+
+      component     predicted   measured    band        verdict
+      -------------------------------------------------------------------
+      i-butane         0.351        0.3    +/-0.05      INSIDE the band
+      n-butane        97.984       98.1    +/-0.05      -0.12 wt %, just out
+
+  THREE OF THE FOUR KEY ROWS LAND WHERE A KEY-COMPONENT ANCHOR WANTS THEM,
+  around the 1 % level at which record section 5.4 says the keys close at all.
+  THE FOURTH DOES NOT, and it is not a rounding argument: the model rejects
+  n-butane overhead about two orders of magnitude harder than the plant did.
+  0.2 wt % is at the printing resolution (+/-25 % before any physics), but 130x
+  is not a resolution effect.
+
+  It is recorded, not explained and not tuned.  What can be said without
+  guessing: the disagreement is NOT the efficiency, because the control arm
+  column15 at E_MV = 1 gives 0.0144 wt % -- still an order of magnitude below
+  the measurement.  Under this model 74 IDEAL trays already over-separate this
+  key, which is the opposite direction from the paper's own finding that 74
+  real trays behave as 88 ideal ones.  Candidates a future slice could test,
+  each of which this case declares as an assumption or a caveat above: the
+  single column pressure (A2), the tray-numbering direction (A0), the
+  unmodelled subcooled reflux (7), the absent per-stage energy balance (8),
+  and seven interim component records (thermo dict).  Whichever it is, an
+  anchor that disagreed and said so is worth more than one that agreed after
+  something was adjusted to make it.
+
+  THE OTHER FIVE COMPONENTS ARE NOT ANCHOR ROWS and are listed only so nobody
+  reads their absence as concealment: propane 4.84 vs 5.3 wt % overhead and
+  0.00 vs 0.3 in the bottoms; trans-2-butene 0.00 vs 0.6 overhead; i-butene
+  0.58 vs 0 overhead.  Record section 5.4 already showed these do not close in
+  the SOURCE -- propane +23 %, i-butene -100 %, trans-2-butene +155 % between
+  the feed and the two products as printed -- so a number computed here has
+  nothing to be compared against.  Anchoring on them would be measuring the
+  printing.
+
+  ---------------------------------------------------------------------------
+  15.  THE TWO ARMS, side by side
+  ---------------------------------------------------------------------------
+
+  column14 (E_MV = 1.191) against column15 (E_MV = 1.0), everything else
+  identical:
+
+      quantity                        E_MV 1.191    E_MV 1.0    measured
+      -------------------------------------------------------------------
+      distillate i-butane, wt %          94.033      93.975       93.5
+      distillate n-butane, wt %           0.0015      0.0144       0.2
+      bottoms    i-butane, wt %           0.351       0.378        0.3
+      bottoms    n-butane, wt %          97.984      97.977       98.1
+      top temperature, K                314.250     314.116        --
+      reboiler temperature, K           329.437     329.435        --
+      outer iterations                      349         426         --
+
+  WHAT THE EFFICIENCY BUYS, read off that table: essentially nothing on the
+  major components -- i-butane overhead moves 0.06 wt %, n-butane in the
+  bottoms 0.007 -- and a real factor on the MINOR key in each product: the
+  n-butane carried overhead drops about 10x, and the i-butane lost to the
+  bottoms falls 7 %.
+
+  That shape is worth more than a single number.  At 74 trays and R = 11.4 this
+  column is far past the point where separating power limits the major
+  components; extra power goes entirely into the impurity that is left, which
+  is exactly where a plant's money is.  A student who expects a 19 % efficiency
+  bonus to show up as a 19 % anything will not find it, and finding out why is
+  the lesson.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        splitter;
+        type        distillationColumn;
+        model       WangHenke;                  // see 10 -- not a preference
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        75;                  // 74 real trays + reboiler (2)
+            feedStage      37;                  // Table 2, from the top (A0)
+            P              658.6 kPa;           // Table 2 top pressure (A2)
+
+            distillateRate 142.023556 kmol/h;   // 8115 kg/h / 57.13841 (4)
+            refluxRatio    11.440296;           // 92838 / 8115 (5)
+            feedQuality    0.9070666555;        // 1 - V/F of the let-down (A1)
+
+            murphreeEfficiency 1.191;           // MEASURED, p.4580 (11)
+        }
+
+        compositionTol  1e-7;
+        maxOuterIter    2000;                   // 74 trays is a long cascade (10)
+    }
+);
+
+/*---------------------------------------------------------------------------*\
+  ASSUMPTION A2 -- THE COLUMN PRESSURE.  Table 2 gives ONLY the column TOP
+  pressure, 658.6 kPa; record Section 5.3 names the gap (there is no
+  tray-by-tray profile, and the 892.67 kPa feed pressure is a LINE pressure,
+  not a tray pressure).  A real 74-tray valve column carries a measurable
+  pressure drop from bottom to top.  This case declares ONE pressure, the
+  measured top pressure, applied to every stage -- because the Wang-Henke path
+  takes a single pressure and because inventing a drop would mean inventing
+  a per-tray dry-plate and froth model that no number in the paper constrains.
+
+  The consequence, stated: the stripping section is modelled at a LOWER
+  pressure than it runs at, so the bottom temperatures this case reports are
+  below the plant's.  That is a declared approximation, not a fitted one.
+\*---------------------------------------------------------------------------*/

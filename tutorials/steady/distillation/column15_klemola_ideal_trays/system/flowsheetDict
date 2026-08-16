@@ -1,0 +1,136 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  column15_klemola_ideal_trays -- the CONTROL ARM of the Klemola-Ilme anchor.
+
+  This is column14_klemola_c4_splitter with ONE line changed:
+
+      murphreeEfficiency 1.191;      ->      murphreeEfficiency 1.0;
+
+  Everything else -- the 74 trays, the feed on tray 37, the feed state, the
+  pressure, the distillate rate, the reflux ratio, the thermo dict, the three
+  0/ files, the convergence controls -- is byte-identical to that case, and if
+  the two ever drift apart this case stops being a control.  Read
+  column14's flowsheetDict for the provenance of every number; it is the
+  primary document and none of it is repeated here.
+
+      Klemola, K. T.; Ilme, J. K.  Distillation Efficiencies of an
+      Industrial-Scale i-Butane/n-Butane Fractionator.
+      Ind. Eng. Chem. Res. 1996, 35 (12), 4579-4586.
+
+  ---------------------------------------------------------------------------
+  WHY THIS IS A SEPARATE CASE AND NOT A SECOND ARM INSIDE column14
+  ---------------------------------------------------------------------------
+
+  A Choupo case is ONE pass: one converged/ state, one KPI set, one golden.
+  Two efficiencies could have been swept in a single case through
+  system/outerDict, and that was rejected: a sweep publishes the DRIVER's
+  KPI table, so the two arms' products would live in a sweep artefact instead
+  of in two real converged/ directories, and the anchor -- which is an
+  ENDPOINT anchor, a comparison of product compositions -- would have nowhere
+  natural to sit.  Two cases give two converged states, two goldens, and two
+  independently sealable units of evidence, at the cost of the duplication
+  named above.
+
+  ---------------------------------------------------------------------------
+  WHAT THE GAP BETWEEN THE ARMS MEANS -- and what it does NOT
+  ---------------------------------------------------------------------------
+
+  E_MV = 1 makes every one of the 74 trays an EQUILIBRIUM stage: the vapour
+  leaving it is in equilibrium with the liquid leaving it.  No real tray does
+  that, and this plant's trays do BETTER than that -- the paper back-calculates
+  119.1 %, because on a 2.9 m cross-flow tray the liquid is not well mixed, so
+  the vapour has been in contact with liquid richer than the outlet.
+
+  The difference between this case's products and column14's is therefore the
+  answer to a question a student can otherwise only be told: how much of an
+  industrial separation is carried by the tray efficiency, as against the tray
+  COUNT and the reflux?  Run both and subtract.  The paper's own version of the
+  same arithmetic is that 74 real trays behave as 88 ideal ones.
+
+  WHAT IT IS NOT.  This case is not an anchor and must never be compared with
+  the Table-2 measurements as though it were one: it deliberately declares an
+  efficiency the plant does not have.  Its role is to be the OTHER END of a
+  one-parameter difference.  If it happened to sit closer to the measured
+  products than column14 does, that would be a finding about the model, not a
+  reason to prefer E_MV = 1 -- 119.1 % is the measurement.
+
+  Note also that E_MV = 1 is the engine's DEFAULT, and the key is written out
+  in full below anyway.  An absent key would mean the same thing to the solver
+  and something quite different to a reader: it would look like an oversight in
+  a case whose entire subject is the efficiency.
+
+  ---------------------------------------------------------------------------
+  WHAT THE TWO ARMS ACTUALLY GAVE
+  ---------------------------------------------------------------------------
+
+      quantity                        E_MV 1.191    E_MV 1.0    measured
+      -------------------------------------------------------------------
+      distillate i-butane, wt %          94.033      93.975       93.5
+      distillate n-butane, wt %           0.0015      0.0144       0.2
+      bottoms    i-butane, wt %           0.351       0.378        0.3
+      bottoms    n-butane, wt %          97.984      97.977       98.1
+      top temperature, K                314.250     314.116        --
+      reboiler temperature, K           329.437     329.435        --
+      outer iterations                      349         426         --
+
+  The efficiency moves the MAJOR components by almost nothing (i-butane
+  overhead by 0.06 wt %) and the MINOR key in each product by a real factor
+  (n-butane carried overhead drops about 10x; i-butane lost to the bottoms
+  falls 7 %).  At 74 trays and R = 11.4 the column is far past the point where
+  separating power limits the majors, so extra power goes entirely into the
+  impurity that is left.  column14's flowsheetDict section 15 argues that at
+  length; this is the same table so that either case can be read alone.
+
+  A FINDING THIS ARM IS WHAT ESTABLISHED, and it belongs here because this is
+  the case that establishes it: at E_MV = 1 the model ALREADY rejects n-butane
+  overhead an order of magnitude harder than the plant measured (0.0144 wt %
+  against 0.2).  So the anchor's one clear disagreement is not caused by the
+  declared efficiency -- turning the efficiency off does not recover the
+  measurement, it only halves the distance in the log.  Under this model 74
+  ideal trays over-separate this key, which runs opposite to the paper's own
+  conclusion that 74 real trays behave as 88 ideal ones.  Recorded; not
+  explained here and not tuned away.
+
+  ONE MORE OBSERVATION, and it is about the ENGINE rather than the column.
+  These two runs produce product streams whose tabulated enthalpies agree to
+  0.8 kW, and their flowsheet energy audits disagree wildly: column14 closes at
+  98.42 % (residual 2.96 kW) and this arm at -256.84 % (residual 670.7 kW).
+  A difference that large between two nearly identical states does not come
+  from the physics of the two arms; it is in how the energy report prices the
+  products, and this pair is a compact reproducer for anyone who goes looking.
+  Neither case claims a duty anchor -- see column14's section 8.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        splitter;
+        type        distillationColumn;
+        model       WangHenke;                  // as column14 -- see its section 10
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        75;                  // 74 real trays + reboiler
+            feedStage      37;                  // Table 2, from the top
+            P              658.6 kPa;           // Table 2 top pressure
+
+            distillateRate 142.023556 kmol/h;   // 8115 kg/h / 57.13841
+            refluxRatio    11.440296;           // 92838 / 8115
+            feedQuality    0.9070666555;        // 1 - V/F of the let-down
+
+            murphreeEfficiency 1.0;             // <- THE ONLY DIFFERENCE
+        }
+
+        compositionTol  1e-7;
+        maxOuterIter    2000;
+    }
+);
