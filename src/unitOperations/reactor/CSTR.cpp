@@ -342,6 +342,12 @@ int CSTR::solve(const DictPtr& dict,
     kpis_["Da_kTau"]        = Da;
     kpis_["xi_mol_per_s"]   = xi;
     kpis_["X_limiting"]     = X;
+    // Consumption rate of the limiting reactant AT the reactor state,
+    // -r_lim = |nu_lim| * xi / V_R  [mol/(m^3.s)] -- the height of the
+    // Levenspiel rectangle (V = F_lim,in * X / (-r_lim) is the CSTR design
+    // equation read backwards); published so the classroom construction is
+    // a view over an engine number, never a TS re-derivation of kinetics.
+    kpis_["minus_r_" + limiting] = -nu[iLim] * xi / V_R;
     kpis_["F_in_kmol_h"]    = F_in_kmols * 3600.0;
     kpis_["F_out_kmol_h"]   = F_out * 3600.0 / 1000.0;
 

@@ -142,29 +142,12 @@ int PFR::solve(const DictPtr& dict,
     sVector F_i(n);
     for (std::size_t i = 0; i < n; ++i) F_i[i] = z_in[i] * F_in_mol_s;
 
-    // -- Profile sink: store V, F_i and X at every step so the GUI can
-    //    plot axial profiles.  nSteps+1 entries (inlet + every RK4 end).
-    profile_ = UnitProfile{};
-    profile_.xAxis = "V";
-    profile_.columns["V"]    = std::vector<scalar>{};
-    profile_.columns["V"].reserve(nSteps + 1);
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        const std::string col = "F_" + thermo.comp(i).name();
-        profile_.columns[col].reserve(nSteps + 1);
-    }
-    profile_.columns["X"].reserve(nSteps + 1);
-    const scalar F_lim_in = z_in[iLim] * F_in_mol_s;
-    auto pushProfile = [&](scalar V, const sVector& Fcur)
-    {
-        profile_.columns["V"].push_back(V);
-        for (std::size_t i = 0; i < n; ++i)
-            profile_.columns["F_" + thermo.comp(i).name()].push_back(Fcur[i]);
-        const scalar X_here = (F_lim_in - Fcur[iLim]) / F_lim_in;
-        profile_.columns["X"].push_back(X_here);
-    };
-    pushProfile(0.0, F_i);
-
+    // -- Net volumetric reaction rate (mol/(m^3.s)) at a flow state.  Hoisted
+    //    above the profile sink so the profile can publish the limiting
+    //    reactant's consumption rate at every stored point -- the Levenspiel
+    //    ordinate 1/(-r_lim) is the CLASSROOM construction over this column,
+    //    and the engine publishes the rate it already evaluates inside every
+    //    RK4 stage rather than letting a view re-derive kinetics.
     auto rate = [&](const sVector& Fi)
     {
         scalar r = k;
@@ -187,6 +170,37 @@ int PFR::solve(const DictPtr& dict,
         }
         return r - r_rev;
     };
+
+    // -- Profile sink: store V, F_i, X and -r_lim at every step so the GUI
+    //    can plot axial profiles and the Levenspiel construction.
+    //    nSteps+1 entries (inlet + every RK4 end).
+    profile_ = UnitProfile{};
+    profile_.xAxis = "V";
+    profile_.columns["V"]    = std::vector<scalar>{};
+    profile_.columns["V"].reserve(nSteps + 1);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const std::string col = "F_" + thermo.comp(i).name();
+        profile_.columns[col].reserve(nSteps + 1);
+    }
+    profile_.columns["X"].reserve(nSteps + 1);
+    const std::string rateCol = "minus_r_" + limiting;
+    profile_.columns[rateCol].reserve(nSteps + 1);
+    const scalar F_lim_in = z_in[iLim] * F_in_mol_s;
+    auto pushProfile = [&](scalar V, const sVector& Fcur)
+    {
+        profile_.columns["V"].push_back(V);
+        for (std::size_t i = 0; i < n; ++i)
+            profile_.columns["F_" + thermo.comp(i).name()].push_back(Fcur[i]);
+        const scalar X_here = (F_lim_in - Fcur[iLim]) / F_lim_in;
+        profile_.columns["X"].push_back(X_here);
+        // Consumption rate of the limiting reactant, -r_lim = -nu_lim * r
+        // (nu_lim < 0 for a reactant, so the published number is positive
+        // while the reaction proceeds forward and NEGATIVE past equilibrium
+        // on a reversible law -- the sign is information, not an error).
+        profile_.columns[rateCol].push_back(-nu[iLim] * rate(Fcur));
+    };
+    pushProfile(0.0, F_i);
     auto dFdV = [&](const sVector& Fi)
     {
         scalar r = rate(Fi);
