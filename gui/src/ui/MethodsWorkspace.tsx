@@ -129,6 +129,8 @@ const RayleighTool = lazy(() =>
   import("./methods/RayleighTool.js").then((m) => ({ default: m.RayleighTool })));
 const LevenspielTool = lazy(() =>
   import("./methods/LevenspielTool.js").then((m) => ({ default: m.LevenspielTool })));
+const VanHeerdenTool = lazy(() =>
+  import("./methods/VanHeerdenTool.js").then((m) => ({ default: m.VanHeerdenTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -138,7 +140,8 @@ const LevenspielTool = lazy(() =>
 
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
-  | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel";
+  | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
+  | "vanheerden";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -197,6 +200,11 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "levenspiel", label: "Reactor sizing (Levenspiel)", status: "live",
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
+  },
+  {
+    id: "vanheerden", label: "Ignition / extinction (Van Heerden)", status: "live",
+    teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
+    theory: "ch:cstr",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -561,6 +569,7 @@ export function MethodsWorkspace() {
                   : tool === "merkel" ? <MerkelTool />
                   : tool === "rayleigh" ? <RayleighTool />
                   : tool === "levenspiel" ? <LevenspielTool />
+                  : tool === "vanheerden" ? <VanHeerdenTool />
                   : <BreakthroughTool />}
               </Suspense>
             </Box>
