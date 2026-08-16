@@ -580,6 +580,38 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             return Hout - H_in_W - Qext;
         };
 
+        //  THE VAN HEERDEN DECOMPOSITION, DERIVED -- not a second model.
+        //  Split the SAME phi into the textbook pair by adding and subtracting
+        //  the outlet composition's enthalpy AT THE FEED TEMPERATURE:
+        //
+        //      phi(T) = [H(T,x) - H(T_in,x)] - Qext  -  [H_in - H(T_in,x)]
+        //             =            R(T)              -        G(T)
+        //
+        //  G is the heat the reaction RELEASES (evaluated at T_in, so it is
+        //  pure chemistry: composition changes, temperature does not) and R is
+        //  what the reactor REMOVES (sensible heat leaving with the product,
+        //  plus whatever the exchanger takes).  On the elements datum this is
+        //  an IDENTITY, not an approximation -- R - G reproduces phi exactly,
+        //  which is what makes the classroom's "generation meets removal"
+        //  picture an honest view of the engine's own equation rather than a
+        //  parallel model.  Published as the unit's profile so the Van Heerden
+        //  construction can be drawn from engine numbers.
+        auto vanHeerden = [&](scalar Tk, scalar& G, scalar& R)
+        {
+            bool ok2 = false;
+            const sVector x = extentsAt(Tk, ok2);
+            const sVector Fi = flowsOf(x);
+            scalar Ftot = 0.0;
+            for (std::size_t i = 0; i < n; ++i) Ftot += Fi[i];
+            sVector zz(n, 0.0);
+            if (Ftot > 0.0) for (std::size_t i = 0; i < n; ++i) zz[i] = Fi[i] / Ftot;
+            const scalar H_feedT = Ftot * thermo.H_stream_formation(T,  P, vf_in, zz);
+            const scalar H_atT   = Ftot * thermo.H_stream_formation(Tk, P, vf_in, zz);
+            const scalar Qext    = hx ? UA * (Tc - Tk) : 0.0;
+            G = H_in_W - H_feedT;                 // released by reaction  [W]
+            R = (H_atT - H_feedT) - Qext;         // sensible + exchanger  [W]
+        };
+
         // The bracket must span EVERY possible steady state, so it cannot stop at
         // the first sign change: the ignited branch may sit far above.  The
         // physical ceiling is the temperature reached at COMPLETE conversion --
@@ -624,11 +656,34 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
 
         // Scan for sign changes, then bisect each one.  ~1 K resolution.
         const int nScan = std::min(1000, std::max(120, int(Thi - Tlo)));
+
+        //  The scan grid IS the Van Heerden diagram: publish G, R and their
+        //  difference at every temperature the engine already visits, so the
+        //  construction costs one extra enthalpy evaluation per point and no
+        //  second sweep.
+        UnitProfile vh;
+        vh.xAxis = "T_K";
+        vh.columns["T_K"].reserve(nScan + 1);
+        vh.columns["G_kW"].reserve(nScan + 1);
+        vh.columns["R_kW"].reserve(nScan + 1);
+        vh.columns["phi_kW"].reserve(nScan + 1);
+        auto pushVH = [&](scalar Tk)
+        {
+            scalar G = 0.0, R = 0.0;
+            vanHeerden(Tk, G, R);
+            vh.columns["T_K"].push_back(Tk);
+            vh.columns["G_kW"].push_back(G / 1000.0);
+            vh.columns["R_kW"].push_back(R / 1000.0);
+            vh.columns["phi_kW"].push_back((R - G) / 1000.0);
+        };
+        pushVH(Tlo);
+
         scalar Tp = Tlo, fp = phi(Tlo);
         for (int k = 1; k <= nScan; ++k)
         {
             const scalar Tq = Tlo + (Thi - Tlo) * scalar(k) / scalar(nScan);
             const scalar fq = phi(Tq);
+            pushVH(Tq);
             if (fp == 0.0) roots.push_back(Tp);
             else if (fp * fq < 0.0)
             {
@@ -643,6 +698,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             }
             Tp = Tq; fp = fq;
         }
+        profile_ = std::move(vh);
 
         if (roots.empty())
         {
@@ -656,6 +712,19 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
             T_out = roots[0];
             for (const scalar r : roots)
                 if (std::abs(r - Tguess) < std::abs(T_out - Tguess)) T_out = r;
+
+            //  Mark every crossing on the diagram, and say which one the run
+            //  REPORTS -- with three roots the middle one is the unstable
+            //  state no start-up procedure can hold, and a diagram that hid
+            //  which branch was taken would be the silence the case header
+            //  argues against.
+            if (profile_)
+                for (std::size_t k = 0; k < roots.size(); ++k)
+                    profile_->markers.push_back(
+                        { roots[k],
+                          std::string("steady state ") + std::to_string(k + 1)
+                          + (std::abs(roots[k] - T_out) < 1.0e-9
+                             ? " (reported)" : "") });
         }
         bool ok = false;
         xi = extentsAt(T_out, ok);

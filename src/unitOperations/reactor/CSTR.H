@@ -96,6 +96,7 @@ Dictionary form:
 #include "unitOperations/UnitOperation.H"
 
 #include <map>
+#include <optional>
 #include <string>
 
 namespace Choupo {
@@ -121,6 +122,13 @@ public:
         return kpis_;
     }
 
+    //  The Van Heerden diagram of a NON-ISOTHERMAL solve: heat generated and
+    //  heat removed against temperature, over the very grid the steady-state
+    //  scan already walks, with a marker at every root it finds.  Empty on the
+    //  isothermal path, where the energy balance is a duty rather than a
+    //  crossing and there is no diagram to draw.
+    std::optional<UnitProfile> profile() const override { return profile_; }
+
 private:
     // MULTI-REACTION path (`reactions ( r1 r2 ... );`): R coupled CSTR design
     // equations  xi_j = r_j(xi) V_R  solved together by the multivariate Newton.
@@ -138,6 +146,7 @@ private:
     inline static const std::string type_ = "cstr";
     std::vector<ProcessStream>     produced_;
     std::map<std::string, scalar>  kpis_;
+    std::optional<UnitProfile>     profile_;
 };
 
 } // namespace Choupo
