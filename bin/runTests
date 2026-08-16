@@ -1388,11 +1388,15 @@ PYEOF
     # decaying along the exponential tail the declared linear law integrates
     # to, a long-horizon copy landing ON X_eq with the rate at round-off, a
     # short-horizon copy publishing NO t_critical key (absence, never a
-    # sentinel), the energy ledger refusing with the dryer's declared gap,
-    # the declared material residual reproduced independently, and five
-    # named refusals; sabotage-verified twice (falling-rate denominator ->
-    # A4 only, and the landing arm A3 stayed green, which the gate records as
-    # a blind spot; a factor on the published R_constant -> A2 and A4).
+    # sentinel), the wet bulb itself re-solved from the same records (with
+    # the latent duty hanging off it), the energy ledger refusing with the
+    # dryer's declared gap, the declared material residual reproduced
+    # independently, and seven named refusals; sabotage-verified three times
+    # (falling-rate denominator -> A4 only, and the landing arm A3 stayed
+    # green, which the gate records as a blind spot; a factor on the
+    # published R_constant -> A2/A2b/A4; the vapour term dropped from the
+    # wet-bulb humid heat -> A2b ALONE, every other arm green around a
+    # T_wb wrong by 0.134 K).
     if "$ROOT/bin/curate/check_batch_dryer.py" > /tmp/bdry.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "batch-dryer-gate" "$(tail -1 /tmp/bdry.$$)"
         pass=$((pass+1))
