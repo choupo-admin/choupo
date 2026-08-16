@@ -131,6 +131,8 @@ const LevenspielTool = lazy(() =>
   import("./methods/LevenspielTool.js").then((m) => ({ default: m.LevenspielTool })));
 const VanHeerdenTool = lazy(() =>
   import("./methods/VanHeerdenTool.js").then((m) => ({ default: m.VanHeerdenTool })));
+const DryingCurveTool = lazy(() =>
+  import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
 
 // ---- The method-tool registry ----------------------------------------------
 // One entry per classical construction.  `status: "planned"` entries are
@@ -141,7 +143,7 @@ const VanHeerdenTool = lazy(() =>
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden";
+  | "vanheerden" | "drying";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -205,6 +207,11 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "vanheerden", label: "Ignition / extinction (Van Heerden)", status: "live",
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
     theory: "ch:cstr",
+  },
+  {
+    id: "drying", label: "Drying curve (batch tray)", status: "live",
+    teaches: "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
+    theory: "ch:drying",
   },
   {
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
@@ -570,6 +577,7 @@ export function MethodsWorkspace() {
                   : tool === "rayleigh" ? <RayleighTool />
                   : tool === "levenspiel" ? <LevenspielTool />
                   : tool === "vanheerden" ? <VanHeerdenTool />
+                  : tool === "drying" ? <DryingCurveTool />
                   : <BreakthroughTool />}
               </Suspense>
             </Box>
