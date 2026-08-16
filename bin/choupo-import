@@ -256,8 +256,17 @@ def _leading_comment(text):
 def merge_overlay_text(base_text, overlay_text, rel, release):
     """Standards base with the overlay's top-level entries applied; the
     overlay's header comment kept.  Raises if the overlay declares overlayOf
-    (a deep-merge demo, not a flat delta -- never pre-materialise those)."""
-    if re.search(r'\boverlayOf\b', overlay_text):
+    (a deep-merge demo, not a flat delta -- never pre-materialise those).
+
+    The test reads the DECLARATION, not the word.  It used to be a raw
+    `\\boverlayOf\\b` search over the whole file, which cannot tell a
+    declaration from a comment ABOUT one -- so a record explaining why it is
+    deliberately NOT an overlayOf demo was refused for saying so, and the
+    remedy the refusal named (this flag) could never be taken.  That is the
+    computational-seal ruling one file over: the claim is the parsed content,
+    and a comment is cosmetic.  `_toplevel_entries` is the parser's own view,
+    so this asks it."""
+    if any(k == "overlayOf" for k, _ in _toplevel_entries(overlay_text)):
         die("[--merge-overlay %s] declares `overlayOf` -- that is a deep-merge"
             " demo meant to stay live against the standards base; do NOT seal it"
             " by pre-merging." % rel)

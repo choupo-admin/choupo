@@ -1,0 +1,38 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     campaign               element_C_closure_rel 0                  1e-4
+kpi     campaign               element_H_closure_rel 0.319043490708     1e-4
+kpi     campaign               element_O_closure_rel 0.319043490708     1e-4
+kpi     campaign               element_worst_closure_rel 0.319043490708     1e-4
+kpi     campaign               element_worst_closure_vs_declared_rel 7.11118003994e-17  1e-4
+kpi     campaign               energy_balance_available 0                  1e-4
+kpi     campaign               energy_records_invalid 0                  1e-4
+kpi     campaign               energy_records_valid 0                  1e-4
+kpi     campaign               mass_closure_rel 0.215704585481     1e-4
+kpi     campaign               mass_kg_external_out 0                  1e-4
+kpi     campaign               mass_kg_final    2.03916808853      1e-4
+kpi     campaign               mass_kg_initial  2.60000001375      1e-4
+kpi     campaign               mass_residual_kg 0.560831925217     1e-4
+kpi     campaign               moles_kmol_external_out 0                  1e-4
+kpi     campaign               moles_kmol_final 0.00801707164323   1e-4
+kpi     campaign               moles_kmol_initial 0.039148458        1e-4
+kpi     campaign               transfers_H_invalid 0                  1e-4
+kpi     campaign               transfers_H_valid 0                  1e-4
+kpi     campaign               transfers_logged 0                  1e-4
+kpi     dryer                  P_final          101300             1e-4
+kpi     dryer                  R_constant       0.000700569891048  1e-4
+kpi     dryer                  T_final          300.53             1e-4
+kpi     dryer                  T_wb             300.534289861      1e-4
+kpi     dryer                  X_critical       0.12               1e-4
+kpi     dryer                  X_equilibrium    0.0157978541807    1e-4
+kpi     dryer                  X_final          0.0195840385972    1e-4
+kpi     dryer                  X_initial        0.299999999647     1e-4
+kpi     dryer                  latentDuty_kW    0.864476040155     1e-4
+kpi     dryer                  latentEnergy_kJ  1384.0896336       1e-4
+kpi     dryer                  n_N2_final       0                  1e-4
+kpi     dryer                  n_sucrose_final  0.00584287916961   1e-4
+kpi     dryer                  n_water_final    0.00217419247362   1e-4
+kpi     dryer                  t_critical       1027.73485145      1e-4
+kpi     dryer                  t_end            3000               1e-4
+kpi     dryer                  totalMoles_final 0.00801707164323   1e-4
