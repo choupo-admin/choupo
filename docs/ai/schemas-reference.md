@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*77 of 77 registered operations carry a schema and are documented below.*
+*78 of 78 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -171,6 +171,15 @@ Reactor specified by a FRACTIONAL CONVERSION rather than by kinetics — the siz
 | `conversion` |   | number | - | Single-reaction form: the fraction of the limiting reactant consumed by the reaction the unit names in its `reaction <name>;` key. |
 | `conversions` |   | array[object] | — | Multi-reaction form: one entry per reaction, each naming a block of the case's `constant/reactions` library. |
 | `T` |   | number | K | Isothermal operating temperature. Omit to hold the feed temperature; the duty is then the result. |
+
+## `coolingTower`  (coolingTower operation)
+
+Counter-current evaporative water cooling tower (Merkel enthalpy driving force, Lewis = 1). Exactly ONE of the two keys is declared: `merkelNumber` (rating — the packing characteristic KaV/L is given and the cold-water temperature is the RESULT) or `T_water_out` (design — the duty is given and the required Merkel number is the RESULT). The thermodynamic floor is the inlet-air wet bulb; a target at or below it refuses, and an operating line that touches the saturation curve refuses naming L/G as the remedy.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `merkelNumber` |   | number | - | Tower characteristic of the installed packing (rating mode): the cold-water temperature becomes the result. Mutually exclusive with T_wat… |
+| `T_water_out` |   | number | K | Design mode: the required Merkel number becomes the result. Must lie strictly between the inlet-air wet bulb and the hot-water inlet temp… |
 
 ## `crystalliser`  (crystalliser operation)
 
