@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalState -- the batch vessels' initial HOLDUP (the SINGLE source of
+  truth; the inline initial{} block is retired, no legacy).  Each unit's
+  block is its authored initial state VERBATIM (T, P, V, totalMoles,
+  molarComposition, ...); a closed vessel has no inlet, so there is no
+  0/streamFaces.  Reads back via the engine's own dict tokenizer.
+\*-----------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "dryer"
+    {
+        T            300.53 K;           // the tray is charged AT the wet
+                                         // bulb of the declared air; the
+                                         // unit does NOT integrate T (a
+                                         // named gap, announced at run time)
+        P            1.013 bar;          // the psychrometry is read here
+        V            0.004;              // m3 -- the wet bed's bulk volume
+                                         // (carried, not used by the model)
+        totalMoles   0.039148458;        // kmol = 0.005842879 sucrose
+                                         //      + 0.033305679 water
+                                         // = 2.0 kg dry solid at X_0 = 0.30
+        molarComposition  { sucrose 0.14924928;  water 0.85075072; }
+    }
+}

@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  dryer01_sucrose_tray / constant/components/sucrose.dat  --  PARTIAL OVERLAY.
+
+  The GAB water-sorption isotherm is SAMPLE data: it belongs to THIS powder
+  (amorphous/crystalline state, particle size, thermal history), not to the
+  pure compound, so it lives in the case and merges field-by-field over the
+  standards record (MW, Cp, rho_p, solubility all come from there).  Axiom 4
+  of the property layout; `overlayOf` makes the patch explicit.
+
+  PROVENANCE, stated rather than dressed up: these are the SAME three
+  numbers the sugar-drying corpus already carries for its teaching sample
+  (solidDryer01_sugar, the sprayDryer family, the plant tutorials), so the
+  batch drying curve and the steady dryers answer to ONE isotherm and cannot
+  drift apart.  That set carries NO primary citation anywhere in the tree,
+  and inventing one here would turn `unsourced` into `falsely sourced` --
+  a visible gap is strictly better than an invisible falsehood.  It is a
+  plausible teaching isotherm for a sugar solid; no number in this case is
+  validated against measurement.
+\*---------------------------------------------------------------------------*/
+
+overlayOf      sucrose;
+
+sorption
+{
+    Xm   0.045;     // GAB monolayer moisture      [kg/kg dry solid]
+    C    6.0;       // GAB energy constant         [-]
+    K    0.96;      // GAB multilayer factor       [-]
+}

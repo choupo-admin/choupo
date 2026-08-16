@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "Tray drying of wet sucrose into declared 60 C air: the classical constant-rate / falling-rate drying curve, with the wet bulb and the GAB equilibrium moisture as results";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         3000;     // s   (50 min: ~1030 s of constant rate, then
+                          //      ~3.3 time constants of the falling-rate tail)
+deltaT          2.0;      // s   (RK4 step; the falling-rate eigenvalue is
+                          //      1/tau ~ 1/595 s, so this is far inside the
+                          //      stability bound -- see the flowsheetDict header)
+writeInterval   100;      // s

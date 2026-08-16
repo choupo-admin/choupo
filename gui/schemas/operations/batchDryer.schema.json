@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/batchDryer.schema.json",
+  "title": "batchDryer operation",
+  "description": "The drying curve as a batch vessel (choupoBatch): a tray of wet solid losing its moisture into air of DECLARED, CONSTANT condition. The state is the moisture content X = m_moisture / m_drySolid. Above the critical moisture the wetted surface sits at the air's wet-bulb temperature and the flux is gas-film controlled, R_c = k_Y (Y_sat(T_wb) - Y); below it the flux falls LINEARLY in the free moisture, R = R_c (X - X_eq)/(X_c - X_eq) — announced at run time as a modelling CHOICE, not as physics. X_eq is the GAB equilibrium moisture at the air's own water activity, read from the solid component's `sorption {}` record (a solid without one is refused by name). The air is an ENVIRONMENT, not a ledgered stream: the evaporated water leaves the campaign across that boundary and is reported as the unit's declared material residual, and the latent heat — the air's, from outside the campaign — is published as the latentDuty_kW KPI while the energy ledger honestly refuses to claim a verdict.",
+  "type": "object",
+  "properties": {
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Exposed drying area",
+      "description": "Surface of the tray/bed exposed to the air. Equipment data — there is no default.",
+      "unit": "m2"
+    },
+    "k_Y": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Gas-film mass-transfer coefficient",
+      "description": "Mass flux per unit humidity-ratio driving force, kg/(m2 s) per (kg moisture / kg dry gas). SAMPLE/EQUIPMENT data (air velocity, tray geometry) — never defaulted. Declare it dimensionally as `k_Y [1 -2 -1 0 0] <value>;`.",
+      "unit": "kg/(m2.s)"
+    },
+    "criticalMoisture": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Critical moisture content X_c",
+      "description": "The break between the constant-rate and the falling-rate periods, on the dry-solid basis. A MEASURED property of this sample, not derivable — and it must lie above the equilibrium moisture X_eq of the declared air, or the falling-rate law has no domain and the unit refuses.",
+      "unit": "kg/kg dry solid"
+    },
+    "moisture": {
+      "type": "string",
+      "title": "Moisture component",
+      "description": "Which component is the moisture. Needed only when the tray holds more than one volatile besides the declared carrier — otherwise the single volatile is identified and the ambiguity refusal never fires.",
+      "unit": "-"
+    },
+    "air": {
+      "type": "object",
+      "title": "Declared air environment",
+      "description": "The drying air, declared CONSTANT and not integrated — the FixedBedAdsorber's constant-carrier posture. `T` its temperature [K], `Y` its humidity ratio [kg moisture / kg dry gas], `carrier` the component that is the dry gas (its humid heat and molar mass come from the catalogue; nothing here hardcodes \"air\"). The wet-bulb temperature and the water activity are RESULTS of this block, never declared.",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Air temperature",
+          "unit": "K"
+        },
+        "Y": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Air humidity ratio",
+          "unit": "kg/kg dry gas"
+        },
+        "carrier": {
+          "type": "string",
+          "title": "Dry-gas component",
+          "unit": "-"
+        }
+      },
+      "required": ["T", "Y", "carrier"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["area", "k_Y", "criticalMoisture", "air"],
+  "additionalProperties": false
+}

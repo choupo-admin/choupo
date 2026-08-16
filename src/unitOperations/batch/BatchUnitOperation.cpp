@@ -30,6 +30,7 @@ License
 #include "BatchAccumulator.H"
 #include "BatchAdsorber.H"
 #include "BatchCrystalliser.H"
+#include "BatchDryer.H"
 #include "BatchReactor.H"
 #include "BatchStill.H"
 #include "FixedBedAdsorber.H"
@@ -99,6 +100,10 @@ void BatchUnitOperation::registerBuiltins()
     registerType("fixedBedAdsorber",
         []() -> std::unique_ptr<BatchUnitOperation>
         { return std::make_unique<FixedBedAdsorber>(); });
+
+    registerType("batchDryer",
+        []() -> std::unique_ptr<BatchUnitOperation>
+        { return std::make_unique<BatchDryer>(); });
 }
 
 // -----------------------------------------------------------------------

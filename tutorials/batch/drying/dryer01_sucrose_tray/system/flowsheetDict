@@ -1,0 +1,86 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  dryer01_sucrose_tray  --  the DRYING CURVE, both periods, in one batch.
+
+  A tray holding 2.0 kg of dry sucrose wet to X_0 = 0.30 kg water / kg dry
+  solid, exposed over 0.5 m2 to air of DECLARED, CONSTANT condition:
+  60 C (333.15 K) and Y = 0.010 kg water / kg dry N2.  Nothing about that
+  air is integrated -- it is an ENVIRONMENT, the FixedBedAdsorber's
+  constant-carrier posture, and the water that leaves the solid leaves the
+  campaign across that boundary (reported as the unit's DECLARED material
+  residual, never as a silent leak).
+
+  THE HAND ESTIMATE, computed from this case's own curated records
+  (water Antoine + Watson Hvap + the two ideal-gas Cp polynomials, the
+  case-local GAB isotherm on sucrose) -- the run must reproduce it:
+
+    air water activity      p_v = P Y/(Y + Mv/Mc) = 1551 Pa
+                            a_w = p_v / Psat(333.15 K) = 0.0774
+    GAB equilibrium         K a_w = 0.0743
+                            X_eq  = Xm C Ka /((1-Ka)(1-Ka+C Ka)) = 0.01580 kg/kg
+    wet bulb (Lewis = 1)    T_wb  = 300.53 K   (27.4 C, a 32.6 K depression)
+    driving force           Y_sat(T_wb) - Y    = 0.014011 kg/kg
+    constant-rate flux      R_c = k_Y dY = 0.05 * 0.014011
+                                = 7.0057e-4 kg/(m2 s)
+                            R_c A          = 3.5028e-4 kg/s
+    latent load             R_c A lambda(T_wb) = 0.8645 kW  (the AIR's, not
+                                the campaign's -- KPI only, never ledgered)
+    break time              t_c = m_s (X_0 - X_c)/(R_c A) = 1027.7 s
+    falling-rate constant   tau = m_s (X_c - X_eq)/(R_c A) = 595.0 s
+    end of run              X(3000 s) = X_eq + (X_c - X_eq) exp(-(3000-t_c)/tau)
+                                      = 0.019584 kg/kg
+
+  What to look at in the output:
+    * trajectory.csv columns dryer.X_kg_kg and dryer.R_kg_m2_s: the drying
+      curve and the rate curve, engine columns, not a post-processing.
+      R is FLAT at 7.0057e-4 until X falls through X_c = 0.12, then decays
+      linearly in (X - X_eq) -- the textbook break, visible as a corner.
+    * the KPI t_critical is OBSERVED (the interpolated crossing between two
+      accepted states), not the analytic 1027.7 s above; they agree because
+      dX/dt is exactly constant on that leg.
+    * the campaign energy balance is UNAVAILABLE, and says why in one
+      sentence: the drying heat comes from air this campaign never owned.
+      The number is not hidden -- it is the latentDuty_kW KPI.
+
+  Method hypotheses, each announced at run time: Lewis = 1 in the
+  adiabatic-saturation equation; the humid heat evaluated at the air's own
+  temperature; the surface held at T_wb while X > X_c; the LINEAR
+  falling-rate law (a modelling CHOICE, not physics); the solid's own
+  temperature NOT integrated.
+\*---------------------------------------------------------------------------*/
+
+// the vessel's initial holdup lives in 0/internalState (the single source
+// of truth); flowsheetDict carries the topology and the operation only
+
+units
+(
+    {
+        name        dryer;
+        type        batchDryer;
+
+        operation
+        {
+            area              0.5 m2;       // exposed tray surface
+            k_Y               [1 -2 -1 0 0]  0.05;
+                                            // gas-film coefficient,
+                                            // kg/(m2 s) per unit humidity
+                                            // ratio -- SAMPLE/EQUIPMENT data
+                                            // (air velocity, tray geometry)
+            criticalMoisture  0.12;         // kg/kg dry solid -- MEASURED
+
+            air                             // a DECLARED environment,
+            {                               // not a ledgered stream
+                T        333.15 K;
+                Y        0.010;             // kg water / kg dry carrier
+                carrier  N2;
+            }
+        }
+    }
+);
