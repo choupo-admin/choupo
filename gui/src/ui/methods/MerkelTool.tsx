@@ -350,7 +350,7 @@ export function MerkelTool(): JSX.Element {
   // one, it feeds itself). ----------------------------------------------------
   if (mode === "current" && !active) {
     return (
-      <Box style={{ position: "absolute", inset: 0, display: "flex",
+      <Box style={{ width: "100%", height: "100%", display: "flex",
         flexDirection: "column", overflow: "hidden" }}>
         {sourceToggle && (
           <Box style={{ flexShrink: 0, padding: "6px 12px" }}>
@@ -373,7 +373,7 @@ export function MerkelTool(): JSX.Element {
   }
 
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex",
+    <Box style={{ width: "100%", height: "100%", display: "flex",
       flexDirection: "column", overflow: "hidden" }}>
       {/* Toolbar: source toggle + the unit picker + the KPI chips + the
           hand-method chip. */}

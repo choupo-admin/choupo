@@ -682,7 +682,7 @@ function periodPolylines(
 function BusyVeil({ on }: { on: boolean }): JSX.Element | null {
   if (!on) return null;
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex",
+    <Box style={{ width: "100%", height: "100%", display: "flex",
       alignItems: "center", justifyContent: "center", zIndex: 1,
       background: "light-dark(rgba(255,255,255,0.5), rgba(0,0,0,0.35))" }}>
       <Loader size="sm" />

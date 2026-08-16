@@ -334,7 +334,7 @@ export function EpsilonNtuTool(): JSX.Element {
     setCollapsed((c) => { const next = !c; saveCollapsed(next); return next; });
 
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex",
+    <Box style={{ width: "100%", height: "100%", display: "flex",
       flexDirection: "column", overflow: "hidden" }}>
       {/* Source strip: Classroom | Current run (toggle only when the app's
           run can serve the tool) + the classroom provenance line. */}
