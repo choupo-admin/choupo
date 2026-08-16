@@ -27,10 +27,14 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  MethodsWorkspace — classical METHOD CONSTRUCTIONS (ratified 2026-08-15).
+  MethodsWorkspace — the body of EDUTOOLS, the classical METHOD CONSTRUCTIONS
+  plane (ratified 2026-08-15; renamed and re-chromed 2026-08-16 on Vítor's
+  order).  The file name and the `?workspace=methods` URL key are UNCHANGED —
+  a deep link already in a student's notes is a contract, and a caption is not
+  a reason to break one.
 
   The criterion that splits this plane from the Property Explorer:
-      method-construction → Methods;  property-surface → Explorer.
+      method-construction → EduTools;  property-surface → Explorer.
   A property surface answers "what does this system's property look like?"
   (T-x-y, γ(x), a Psat scan — the Explorer).  A method construction answers
   "what does the CLASSICAL GRAPHICAL METHOD say about a design question?"
@@ -44,41 +48,37 @@ License
   in the shared plotting kit.  The "Author → copy propsDict" hand-off stays:
   dict-on-disk remains the one authoring channel.
 
-  First slice: a 7-tool registry with the two migrated tools LIVE (McCabe-
-  Thiele, psychrometric chart — both moved from the Explorer, reusing the SAME
-  engine feeds via case/methodFeeds.ts) and five PLANNED entries visible but
-  disabled, each naming the engine output that will feed it — the plane shows
-  its roadmap honestly instead of pretending to be finished.
+  THE TOOL LIST IS NOT IN THIS FILE ANY MORE (2026-08-16, Vítor's order,
+  OVERRULING the rail design).  It was a permanent 252px left band, and an
+  absolutely-positioned tool panel painted straight over it — the cooling
+  tower did, and with the rail covered there was nothing left to select with.
+  The overlap is a bug and was fixed on its own; the RAIL is a separate
+  judgement, and the ruling is that a chooser does not get to own a permanent
+  band.  A classic top-bar DROPDOWN replaces it: zero pixels when shut, which
+  is the only width a chooser is entitled to, and nothing can be painted over
+  because there is nothing there.
 
-  Classroom chrome (2026-08-15): the tool rail folds to a 28px re-open strip
-  (chevron or `[`, persisted under choupo.methods.railCollapsed) and the two
-  in-file tools fold their setup bar + hand-off footer to a slim restore strip
-  (choupo.methods.controlsCollapsed) — on a projector every freed pixel goes
-  to the construction.  The idiom is the Explorer's ratified fold-to-edge
-  (methods/methodsChrome.tsx reuses it); alerts fold to a counted pill, never
+  The registry and the selection live in methods/registry.ts (one home, two
+  readers: this body and MenuBar's dropdown); the tool now gets the FULL width
+  of the workspace.  The narrow-viewport bottom sheet went with the rail: a
+  dropdown is already the touch-native chooser, and a second list below `sm`
+  would be a second home for the same registry.
+
+  What stays: the one-line "teaches" caption + the Theory Guide link
+  (TeachesLine, above every tool), and the in-file tools' setup-bar fold to a
+  slim restore strip (choupo.methods.controlsCollapsed) — on a projector every
+  freed pixel goes to the construction.  Alerts fold to a counted pill, never
   silently.  The McCabe R/q controls pane is INSIDE the shared
   plotting/McCabePlot.tsx and is not reachable from this host.
-
-  Responsive postures (panel-ratified 2026-08): >= md keeps the rail as-is;
-  between sm and md the rail's DEFAULT flips to collapsed (a persisted toggle
-  wins); below sm or under a coarse pointer the rail and its reopen strip are
-  not rendered at all — a slim current-tool bar opens a bottom-sheet Drawer
-  over the SAME registry (MethodToolList renders both, one source of truth).
-  Detection lives in methodsChrome (useNarrowViewport / useCoarsePointer);
-  the Drawer's open state is ephemeral, never persisted, and a narrow session
-  never writes the rail key.  The rail header + labels follow the ratified
-  naming ballot: header CLASSICAL METHODS, operation-first labels
-  ("Distillation (McCabe-Thiele)"), gui-credo §9.
 \*---------------------------------------------------------------------------*/
 
-import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton, Drawer,
-  Group, Loader, NavLink, NumberInput, Select, Stack, Text, Tooltip,
+  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
+  Group, Loader, NumberInput, Select, Stack, Text, Tooltip,
 } from "@mantine/core";
-import { useDisclosure, useReducedMotion } from "@mantine/hooks";
 import {
-  IconBook, IconChevronDown, IconChevronLeft, IconChevronUp, IconExternalLink,
+  IconBook, IconChevronDown, IconChevronUp, IconExternalLink,
 } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -99,10 +99,12 @@ import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import {
-  CONTROLS_COLLAPSED_KEY, RAIL_COLLAPSED_KEY, RailReopenStrip,
-  useCoarsePointer, useCollapsedFlag, useNarrowViewport, usePlotRefit,
-  useRailAutofoldDefault,
+  CONTROLS_COLLAPSED_KEY, useCoarsePointer, useCollapsedFlag,
+  useNarrowViewport, usePlotRefit,
 } from "./methods/methodsChrome.js";
+import {
+  METHOD_TOOLS, theoryUrl, useActiveMethodTool, type MethodTool,
+} from "./methods/registry.js";
 import { useStore } from "../state/store.js";
 import {
   kToDisplay, paToDisplay, parsePressure, parseTemperature,
@@ -133,179 +135,6 @@ const VanHeerdenTool = lazy(() =>
   import("./methods/VanHeerdenTool.js").then((m) => ({ default: m.VanHeerdenTool })));
 const DryingCurveTool = lazy(() =>
   import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
-
-// ---- The method-tool registry ----------------------------------------------
-// One entry per classical construction.  `status: "planned"` entries are
-// VISIBLE but disabled — the rail is the roadmap, stated rather than implied —
-// and each names the engine output that will feed it (zero physics in TS is
-// the standing rule for the planned five exactly as for the live two).
-
-export type MethodToolId =
-  | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
-  | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden" | "drying";
-
-export interface MethodTool {
-  id: MethodToolId;
-  label: string;
-  status: "live" | "planned";
-  /** One line: what this construction teaches. */
-  teaches: string;
-  /** Theory Guide named destination (hyperref destlabel), when one exists. */
-  theory?: string;
-  /** Planned entries: the engine output that will feed the tool. */
-  fedBy?: string;
-}
-
-export const METHOD_TOOLS: MethodTool[] = [
-  {
-    id: "mccabe", label: "Distillation (McCabe-Thiele)", status: "live",
-    teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
-    theory: "sec:mccabe-tray-efficiency",
-  },
-  {
-    id: "psychro", label: "Psychrometric chart", status: "live",
-    teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
-    theory: "ch:drying",
-  },
-  {
-    id: "kremser", label: "Absorption (Kremser)", status: "live",
-    teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
-    theory: "ch:absorber",
-  },
-  {
-    id: "pinch-composite", label: "Pinch composite curves", status: "live",
-    teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
-    theory: "ch:pinch",
-  },
-  {
-    id: "entu", label: "Heat exchanger (ε-NTU)", status: "live",
-    teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
-    theory: "ch:hx-entu",
-  },
-  {
-    id: "pump-system", label: "Pump vs system curve", status: "live",
-    teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
-    theory: "ch:rotating",
-  },
-  {
-    id: "merkel", label: "Cooling tower (Merkel)", status: "live",
-    teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
-    theory: "ch:coolingTower",
-  },
-  {
-    id: "rayleigh", label: "Batch still (Rayleigh)", status: "live",
-    teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
-    theory: "ch:rayleigh",
-  },
-  {
-    id: "levenspiel", label: "Reactor sizing (Levenspiel)", status: "live",
-    teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
-    theory: "ch:pfr",
-  },
-  {
-    id: "vanheerden", label: "Ignition / extinction (Van Heerden)", status: "live",
-    teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
-    theory: "ch:cstr",
-  },
-  {
-    id: "drying", label: "Drying curve (batch tray)", status: "live",
-    teaches: "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
-    theory: "ch:drying",
-  },
-  {
-    id: "breakthrough", label: "Adsorption breakthrough", status: "live",
-    teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
-    theory: "ch:adsorption",
-  },
-];
-
-const theoryUrl = (dest: string) => `/docs/theoryGuide.pdf#nameddest=${dest}`;
-
-/** ONE rendering of the tool registry, whichever chrome hosts it: the wide
- *  rail (`variant="rail"`) and the narrow bottom-sheet Drawer
- *  (`variant="drawer"`) both map over METHOD_TOOLS here — one source of
- *  truth, so the two postures can never drift.  Planned entries are VISIBLE
- *  and disabled in both variants, never filtered (the list is the roadmap,
- *  stated rather than implied).  Under a coarse pointer the rail buttons take
- *  one Mantine size step up (touch targets). */
-export function MethodToolList({ active, onSelect, variant }: {
-  active: MethodToolId;
-  onSelect: (id: MethodToolId) => void;
-  variant: "rail" | "drawer";
-}) {
-  const coarse = useCoarsePointer();
-  if (variant === "drawer") {
-    // The Drawer variant carries the teaches line as a visible description —
-    // hover is never load-bearing, and a touch device has no hover anyway.
-    return (
-      <Stack gap={2}>
-        {METHOD_TOOLS.map((m) => (
-          <NavLink
-            key={m.id}
-            component="button"
-            label={<Text size="sm" fw={m.id === active ? 600 : 400} span>{m.label}</Text>}
-            description={
-              <Text size="xs" c="dimmed" lineClamp={2} span style={{ display: "block" }}>
-                {m.status === "live" ? m.teaches
-                  : `${m.teaches}  (planned — ${m.fedBy ?? "engine feed pending"})`}
-              </Text>
-            }
-            active={m.id === active}
-            color="accent"
-            variant="light"
-            disabled={m.status === "planned"}
-            onClick={() => { if (m.status === "live") onSelect(m.id); }}
-            rightSection={m.status === "planned"
-              ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
-              : undefined}
-            style={{ borderRadius: 8 }}
-            py={10}
-          />
-        ))}
-      </Stack>
-    );
-  }
-  return (
-    <Stack gap={4}>
-      {METHOD_TOOLS.map((m) => (
-        <Tooltip key={m.id} withArrow multiline w={280} openDelay={400}
-          label={m.status === "live" ? m.teaches : `${m.teaches}  (planned — ${m.fedBy ?? "engine feed pending"})`}>
-          <Button
-            variant={m.id === active ? "light" : "subtle"}
-            color={m.id === active ? "accent" : "gray"}
-            size={coarse ? "compact-md" : "compact-sm"}
-            justify="space-between"
-            fullWidth
-            disabled={m.status === "planned"}
-            onClick={() => { if (m.status === "live") onSelect(m.id); }}
-            rightSection={m.status === "planned"
-              ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
-              : undefined}
-            styles={{ root: { fontWeight: m.id === active ? 600 : 400 },
-              label: { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } }}
-          >
-            {m.label}
-          </Button>
-        </Tooltip>
-      ))}
-    </Stack>
-  );
-}
-
-/** Boot tool from the URL: `?workspace=methods&tool=<id>` (new), or the legacy
- *  Explorer deep-link `?explore=mccabe` WITHOUT a `&key=` stash (with a key it
- *  is the analyzer pop-out tab, which AppShell routes before this mounts). */
-function bootTool(): MethodToolId {
-  if (typeof window !== "undefined") {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get("explore") === "mccabe" && !q.has("key")) return "mccabe";
-    const t = q.get("tool");
-    if (METHOD_TOOLS.some((m) => m.id === t && m.status === "live"))
-      return t as MethodToolId;
-  }
-  return "mccabe";
-}
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -374,26 +203,10 @@ function useEngineCsv(spec: ExploreSpec | null): {
 // ---- Workspace shell --------------------------------------------------------
 
 export function MethodsWorkspace() {
-  const [tool, setToolState] = useState<MethodToolId>(bootTool);
-
-  // Selecting a tool also writes the deep link back into the URL
-  // (history.replaceState — no history spam), so the address bar is always a
-  // shareable bookmark of what is on screen; bootTool() reads it back.  The
-  // legacy `?explore=mccabe` param is dropped on the way (it would otherwise
-  // out-vote `tool=` on the next boot).
-  const setTool = useCallback((id: MethodToolId) => {
-    setToolState(id);
-    if (typeof window !== "undefined"
-      && typeof window.history?.replaceState === "function") {
-      try {
-        const url = new URL(window.location.href);
-        url.searchParams.set("workspace", "methods");
-        url.searchParams.set("tool", id);
-        url.searchParams.delete("explore");
-        window.history.replaceState(window.history.state, "", url.toString());
-      } catch { /* opaque URL / blocked history — state alone is fine */ }
-    }
-  }, []);
+  // The active tool lives in methods/registry.ts, not here: the chooser is now
+  // the top bar's EduTools dropdown (MenuBar), which is a SIBLING of this
+  // component, not a child.  One selection, two readers.
+  const tool = useActiveMethodTool();
 
   // Case-local components reach the runs exactly as in the Explorer: merged
   // into the name-lookup catalogue, and their .dat bodies shipped to MEMFS.
@@ -404,186 +217,47 @@ export function MethodsWorkspace() {
 
   const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
 
-  // Responsive posture (shared detection in methodsChrome — three postures):
-  //   >= md            : rail + collapse chrome, default EXPANDED (unchanged);
-  //   sm..md           : rail exists, default COLLAPSED (the media query is
-  //                      the default; a persisted user toggle wins);
-  //   < sm OR coarse   : NO rail, NO reopen strip — a slim current-tool bar
-  //                      opens a bottom-sheet Drawer over the same registry.
-  const narrow = useNarrowViewport();
-  const coarse = useCoarsePointer();
-  const autofoldDefault = useRailAutofoldDefault();
-  const [sheetOpened, sheet] = useDisclosure(false);
-
-  // The rail folds to a 28px re-open strip (the Explorer's fold-to-edge idiom,
-  // LeftRail/RailReopenTab in ExploreWorkspace.tsx — reused, not reinvented,
-  // so the two workspaces feel like one application).  Persisted globally
-  // (never case-keyed); `[` toggles it, guarded so typing "[" into a toolbar
-  // field never folds the rail.  On a projector every pixel goes to the
-  // construction: collapsed, the active tool keeps working full-width.
-  // Between sm and md the DEFAULT flips to collapsed (autofoldDefault); the
-  // key is only ever WRITTEN by an explicit toggle, and the narrow posture
-  // exposes no rail toggle — a narrow session never writes the rail key.
-  const rail = useCollapsedFlag(RAIL_COLLAPSED_KEY, autofoldDefault);
-  const reduce = useReducedMotion();
-  const toggleRail = rail.toggle;
-  const toggleSheet = sheet.toggle;
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const t = e.target as HTMLElement | null;
-        const tag = t?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
-        e.preventDefault();
-        // Narrow posture: the shortcut drives the bottom sheet (ephemeral,
-        // never persisted) instead of the rail flag it has no rail for.
-        if (narrow) toggleSheet();
-        else toggleRail();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [toggleRail, toggleSheet, narrow]);
-  // Animated fold refits Plotly on transitionend; reduced-motion has no
-  // transition event, so one rAF covers it (the LeftRail pattern verbatim).
-  useEffect(() => {
-    if (typeof window === "undefined" || !reduce) return;
-    const id = window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
-    return () => window.cancelAnimationFrame(id);
-  }, [rail.collapsed, reduce]);
-
   return (
+    // The active tool gets the WHOLE workspace: with the chooser in the menu
+    // bar there is nothing beside it to reserve width for.  One column, no
+    // rail, no reopen strip.
     <Box style={{ position: "absolute", inset: 0, display: "flex",
-      flexDirection: narrow ? "column" : "row", minHeight: 0 }}>
-      {narrow ? (
-        // NARROW posture — no rail, no reopen strip: a slim full-width
-        // current-tool bar (the whole bar is the target) opens a bottom-sheet
-        // Drawer over the SAME registry (MethodToolList — one source of
-        // truth).  Open state is ephemeral (useDisclosure), never persisted.
-        <>
-          <Box
-            onClick={sheet.open}
-            role="button" tabIndex={0} aria-label="choose a method tool"
-            aria-expanded={sheetOpened}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sheet.open(); }
-            }}
-            style={{
-              flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
-              padding: coarse ? "10px 14px" : "6px 12px", cursor: "pointer",
-              borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-            }}>
-            <Text size={coarse ? "md" : "sm"} fw={600}
-              style={{ flex: 1, minWidth: 0, overflow: "hidden",
-                textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {active.label}
-            </Text>
-            <IconChevronUp size={coarse ? 20 : 16} color="var(--mantine-color-dimmed)" />
-          </Box>
-          <Drawer
-            opened={sheetOpened}
-            onClose={sheet.close}
-            position="bottom"
-            size="auto"
-            title={<Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>CLASSICAL METHODS</Text>}
-            styles={{
-              content: { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
-              body: { paddingBottom: 20 },
-            }}>
-            <MethodToolList active={tool} variant="drawer"
-              onSelect={(id) => { setTool(id); sheet.close(); }} />
-          </Drawer>
-        </>
+      flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
+      {tool === "mccabe" ? (
+        <McCabeTool tool={active} catalogue={catalogue}
+          localUnifac={localUnifac} componentFiles={componentFiles} />
+      ) : tool === "psychro" ? (
+        <PsychroTool tool={active} catalogue={catalogue}
+          componentFiles={componentFiles} />
       ) : (
+        // The run-fed tools take no props, so the pedagogy line (teaches +
+        // the Theory Guide link) is rendered HERE, once for all of them —
+        // every tool states its theory destination or it is not finished.
         <>
-          {/* LEFT — the method-tool rail: the registry rendered as the roadmap.
-              Planned entries stay visible but disabled (stated, not hidden).
-              Animated on WIDTH (not translateX — a transform would slide the
-              rail over the tool and the plot would jump at the end). */}
-          <Box
-            onTransitionEnd={(e) => {
-              if (e.propertyName === "width") window.dispatchEvent(new Event("resize"));
-            }}
-            style={{
-              width: rail.collapsed ? 0 : 252, flexShrink: 0, height: "100%",
-              padding: rail.collapsed ? 0 : 12, overflow: "hidden",
-              transition: reduce ? "none" : "width 180ms ease, padding 180ms ease",
-              borderRight: rail.collapsed
-                ? "none"
-                : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-            }}>
-            {/* Fixed-width inner column: the fold CLIPS the rail instead of
-                reflowing its labels mid-animation (no layout jumps). */}
-            <Box style={{ width: 228, height: "100%", display: "flex", flexDirection: "column" }}>
-              <Group justify="space-between" align="center" mb={6} wrap="nowrap" gap={4}>
-                <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>
-                  CLASSICAL METHODS
-                </Text>
-                <Tooltip label="Collapse the tool rail (shortcut: [ )" withArrow>
-                  <ActionIcon variant="subtle" size={coarse ? "md" : "sm"} color="gray"
-                    aria-label="collapse the tool rail" onClick={rail.toggle}>
-                    <IconChevronLeft size={coarse ? 18 : 15} />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-              <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-                <MethodToolList active={tool} onSelect={setTool} variant="rail" />
-                <Text size="xs" c="dimmed" mt={10} style={{ lineHeight: 1.4 }}>
-                  Classical graphical methods, constructed over curves the
-                  engine computes — the method&apos;s answer beside the
-                  engine&apos;s.  Property surfaces (T-x-y, γ, Psat) live
-                  in <b>Explore</b>; the split criterion:
-                  method-construction → Methods, property-surface → Explore.
-                </Text>
-              </Box>
-            </Box>
+          <TeachesLine tool={active} />
+          {/* A bounded full-height flex column for the run-fed tools: they
+              manage their own internal panels, and this container keeps them
+              inside the workspace whatever the viewport does — never reached
+              into, only sized. */}
+          <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
+            flexDirection: "column", overflow: "hidden" }}>
+            <Suspense fallback={
+              <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+            }>
+              {tool === "kremser" ? <KremserTool />
+                : tool === "entu" ? <EpsilonNtuTool />
+                : tool === "pinch-composite" ? <PinchCompositeTool />
+                : tool === "pump-system" ? <PumpSystemTool />
+                : tool === "merkel" ? <MerkelTool />
+                : tool === "rayleigh" ? <RayleighTool />
+                : tool === "levenspiel" ? <LevenspielTool />
+                : tool === "vanheerden" ? <VanHeerdenTool />
+                : tool === "drying" ? <DryingCurveTool />
+                : <BreakthroughTool />}
+            </Suspense>
           </Box>
-          {rail.collapsed && (
-            <RailReopenStrip label="TOOLS" ariaLabel="show the tool rail"
-              tooltip="Show the method tools (shortcut: [ )" onExpand={rail.toggle} />
-          )}
         </>
       )}
-
-      {/* RIGHT — the active tool's panel. */}
-      <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
-        flexDirection: "column", overflow: "hidden" }}>
-        {tool === "mccabe" ? (
-          <McCabeTool tool={active} catalogue={catalogue}
-            localUnifac={localUnifac} componentFiles={componentFiles} />
-        ) : tool === "psychro" ? (
-          <PsychroTool tool={active} catalogue={catalogue}
-            componentFiles={componentFiles} />
-        ) : (
-          // The run-fed tools take no props, so the pedagogy line (teaches +
-          // the Theory Guide link) is rendered HERE, once for all of them —
-          // every tool states its theory destination or it is not finished.
-          <>
-            <TeachesLine tool={active} />
-            {/* A bounded full-height flex column for the run-fed tools: they
-                manage their own internal panels, and this container keeps them
-                inside the workspace when the rail fold reflows the width —
-                never reached into, only sized. */}
-            <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
-              flexDirection: "column", overflow: "hidden" }}>
-              <Suspense fallback={
-                <Group justify="center" mt="xl"><Loader size="sm" /></Group>
-              }>
-                {tool === "kremser" ? <KremserTool />
-                  : tool === "entu" ? <EpsilonNtuTool />
-                  : tool === "pinch-composite" ? <PinchCompositeTool />
-                  : tool === "pump-system" ? <PumpSystemTool />
-                  : tool === "merkel" ? <MerkelTool />
-                  : tool === "rayleigh" ? <RayleighTool />
-                  : tool === "levenspiel" ? <LevenspielTool />
-                  : tool === "vanheerden" ? <VanHeerdenTool />
-                  : tool === "drying" ? <DryingCurveTool />
-                  : <BreakthroughTool />}
-              </Suspense>
-            </Box>
-          </>
-        )}
-      </Box>
     </Box>
   );
 }

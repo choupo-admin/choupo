@@ -27,29 +27,35 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  methodsChrome — the Methods workspace's collapse chrome, shared by the shell
-  (the CLASSICAL METHODS rail) and the in-file tools (the McCabe / psychro
-  setup bar).  The design is the Explorer's ratified fold-to-edge idiom
+  methodsChrome — the EduTools workspace's collapse chrome, shared by every
+  method tool (the McCabe / psychro setup bar and each run-fed tool's own
+  panel fold).  The design is the Explorer's ratified fold-to-edge idiom
   (useRailWidth.ts + LeftRail/RailReopenTab in ExploreWorkspace.tsx), reused
   rather than reinvented so the two workspaces feel like ONE application:
 
   * collapse persists under a GLOBAL localStorage key (the workspace is a
     scratchpad over the same registry regardless of the open case — never
-    case-keyed), best-effort, junk-tolerant, default EXPANDED on wide
-    viewports; between `sm` and `md` the DEFAULT flips to collapsed (the
-    media query supplies the default, a persisted user toggle wins);
-  * the folded rail leaves a 28px re-open strip — a large Fitts edge target,
-    keyboard-reachable (Enter / Space), with a rotated micro-label so the
-    collapsed state still says what it is hiding;
-  * width is ANIMATED (not translateX — a transform would slide the rail over
-    the plot and the plot would jump at the end); reduced-motion → instant.
-    The host fires a window `resize` on transitionend so Plotly refits.
+    case-keyed), best-effort, junk-tolerant, default EXPANDED;
+  * the folded bar leaves a slim restore strip the host renders — a large
+    Fitts target, keyboard-reachable (Enter / Space), and alerts fold to a
+    counted pill rather than vanishing.
 
-  Responsive posture (ratified by the 2026-08 design panel) also lives here:
-  useNarrowViewport() / useCoarsePointer() are the ONE detection home — below
-  Mantine `sm` OR a coarse pointer, a workspace drops its rail + reopen strip
-  entirely and offers a bottom-sheet Drawer instead (the host renders it; this
-  file only answers "which posture?").
+  THE TOOL RAIL IS GONE (2026-08-16, Vítor's order, overruling the rail
+  design).  An absolutely-positioned tool panel had painted over the 252px
+  band, leaving nothing to select with; the overlap was a bug and was fixed
+  separately, but the ruling went further — the chooser is now the top bar's
+  EduTools dropdown (MenuBar + methods/registry.ts), which costs no width at
+  all.  With the rail went its whole fold apparatus — RAIL_COLLAPSED_KEY, the
+  28px RailReopenStrip, and the sm–md autofold default — because a persisted
+  flag for a rail that no longer exists is a stored answer to a question
+  nobody asks.  The `[` shortcut went with it for the same reason.
+
+  useNarrowViewport() / useCoarsePointer() STAY: they are the ONE posture
+  detection home, and the tools still read them (the teaches caption wraps
+  instead of eliding on a phone; touch targets take one Mantine size step up).
+  They no longer select a bottom sheet — a dropdown is already the touch-native
+  chooser, and a second list below `sm` would be a second home for the
+  registry.
 
   Pure helpers are exported for the node test runner
   (tests/methodsChrome.test.ts) — no DOM is needed to pin the persistence
@@ -57,36 +63,22 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useEffect, useState } from "react";
-import { Text, Tooltip } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
-import { IconChevronRight } from "@tabler/icons-react";
-
-/** The METHOD TOOLS rail's collapsed flag — the key is part of the contract
- *  (classroom bookmarklets and the docs may name it). */
-export const RAIL_COLLAPSED_KEY = "choupo.methods.railCollapsed";
 
 /** The live tools' setup-bar fold (toolbar + teaches line + hand-off footer).
  *  ONE global key shared by every tool that offers the fold, so switching
  *  tools mid-lecture keeps the presentation posture instead of resetting it. */
 export const CONTROLS_COLLAPSED_KEY = "choupo.methods.controlsCollapsed";
 
-/** The folded rail's re-open strip width (px) — mirrors the Explorer's 28. */
-export const REOPEN_STRIP_PX = 28;
-
 // ---- Responsive posture (the ONE detection home) ---------------------------
 
 /** The narrow-posture breakpoint, in em — Mantine's `sm` (48em / 768px).
- *  Below it (or under a coarse pointer) a workspace renders NO rail and NO
- *  reopen strip: the tool list moves to a bottom-sheet Drawer. */
+ *  Below it (or under a coarse pointer) a tool lays its chrome out for a
+ *  phone: the teaches caption wraps rather than eliding, touch targets grow. */
 export const NARROW_BREAKPOINT_EM = 48;
 
-/** The rail-autofold breakpoint, in em — Mantine's `md` (62em).  Between `sm`
- *  and `md` the rail still exists but its DEFAULT posture is collapsed; a
- *  persisted user toggle (RAIL_COLLAPSED_KEY) wins when present. */
-export const RAIL_AUTOFOLD_BREAKPOINT_EM = 62;
-
 /** "Below breakpoint" media query — 0.01em under, so the boundary itself
- *  (exactly `sm` / `md`) counts as the wider posture, matching Mantine's own
+ *  (exactly `sm`) counts as the wider posture, matching Mantine's own
  *  hiddenFrom/visibleFrom convention. */
 const belowQuery = (em: number) => `(max-width: ${em - 0.01}em)`;
 
@@ -102,15 +94,6 @@ export function useNarrowViewport(): boolean {
   const below =
     useMediaQuery(belowQuery(NARROW_BREAKPOINT_EM), false, { getInitialValueInEffect: false }) ?? false;
   return below || coarse;
-}
-
-/** True when the rail's DEFAULT should be collapsed (viewport below `md`).
- *  Only the DEFAULT — a persisted toggle under RAIL_COLLAPSED_KEY wins. */
-export function useRailAutofoldDefault(): boolean {
-  return (
-    useMediaQuery(belowQuery(RAIL_AUTOFOLD_BREAKPOINT_EM), false, { getInitialValueInEffect: false })
-    ?? false
-  );
 }
 
 // ---- Persistence -----------------------------------------------------------
@@ -159,11 +142,11 @@ export function saveCollapsed(key: string, collapsed: boolean): void {
  *  + saved in one step.  State is mount-local; the storage key is the one
  *  home, so remounts (tool switches) re-read the persisted posture.
  *
- *  `defaultCollapsed` (optional, default false) is the POSTURE default — e.g.
- *  the sm–md autofold media query.  It answers only while the user has never
- *  toggled: a live default change (a resize crossing the breakpoint) re-seeds
- *  the state, but the first real toggle writes the key and wins from then on.
- *  Reading never writes — a session that only reads leaves storage untouched. */
+ *  `defaultCollapsed` (optional, default false) is the POSTURE default a
+ *  caller may supply.  It answers only while the user has never toggled: a
+ *  live default change re-seeds the state, but the first real toggle writes
+ *  the key and wins from then on.  Reading never writes — a session that only
+ *  reads leaves storage untouched. */
 export function useCollapsedFlag(
   key: string,
   defaultCollapsed = false,
@@ -191,47 +174,4 @@ export function usePlotRefit(dep: unknown): void {
     const id = window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
     return () => window.cancelAnimationFrame(id);
   }, [dep]);
-}
-
-/** The 28px vertical re-open strip, flush to the workspace's left edge,
- *  rendered ONLY while the rail is collapsed.  The WHOLE strip is the click
- *  target (large Fitts edge strip — the Explorer's RailReopenTab idiom), with
- *  a `›` chevron + a rotated micro-label naming what it re-opens.  Keyboard:
- *  tabbable, Enter / Space expand. */
-export function RailReopenStrip({ label, ariaLabel, tooltip, onExpand }: {
-  /** The rotated micro-label (e.g. "TOOLS"). */
-  label: string;
-  ariaLabel: string;
-  tooltip: string;
-  onExpand: () => void;
-}) {
-  const [hover, setHover] = useState(false);
-  return (
-    <Tooltip label={tooltip} withArrow position="right">
-      <div
-        onClick={onExpand}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        role="button" aria-label={ariaLabel} tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onExpand(); }
-        }}
-        style={{
-          width: REOPEN_STRIP_PX, flexShrink: 0, height: "100%", cursor: "pointer",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-          paddingTop: 10,
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-          background: hover
-            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
-            : "transparent",
-          transition: "background 120ms",
-        }}>
-        <IconChevronRight size={15} color="var(--mantine-color-dimmed)" />
-        <Text size="xs" fw={700} c="dimmed"
-          style={{ writingMode: "vertical-rl", letterSpacing: 0.5, userSelect: "none" }}>
-          {label}
-        </Text>
-      </div>
-    </Tooltip>
-  );
 }

@@ -32,11 +32,20 @@ License
   a Mantine dropdown with its actions.  Keyboard shortcuts are shown
   in the right column of each item; wiring them globally lives in the
   individual handlers (or can be added later via useHotkeys).
+
+  EduTools (2026-08-16, Vítor's order) is the one workspace entry that is a
+  MENU rather than a toggle button.  Its tool list used to be a permanent
+  252px rail inside the workspace, and a tool panel painted over it — with the
+  rail covered there was nothing to select with.  A dropdown costs no width
+  when shut and cannot be painted over.  It renders from methods/registry.ts —
+  the SAME registry the workspace body reads, never a second hand-written list
+  here — and picking a tool opens the workspace on it.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect } from "react";
 import {
   Anchor,
+  Badge,
   Button,
   Group,
   Menu,
@@ -46,6 +55,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import { resolveHelp, helpUrl } from "../help/helpMap.js";
@@ -59,6 +69,10 @@ import { downloadCaseZip } from "../case/saveCase.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
+import {
+  EDUTOOLS_BLURB, EDUTOOLS_LABEL, METHOD_TOOLS, setActiveMethodTool,
+  useActiveMethodTool,
+} from "./methods/registry.js";
 
 // Workspaces in the top menu.  Each is a top-level toggle:
 //   - implemented entries (`key` truthy) flip the global activeWorkspace
@@ -71,7 +85,11 @@ const WORKSPACES: { label: string; key: WorkspaceKey | null }[] = [
   { label: "Flowsheet", key: null        },
   { label: "Props",     key: "props"     },   // right next to Flowsheet -- the two phases
   { label: "Explore",   key: "explore"   },   // interactive property scratchpad (see, then decide)
-  { label: "Methods",   key: "methods"   },   // classical method constructions (McCabe, psychro, ...)
+  // EduTools renders as a DROPDOWN, not a toggle button (see EduToolsMenu).
+  // The label is the student-facing word; the URL key stays `methods` --
+  // ?workspace=methods&tool=<id> is a deep-link contract, and a caption is not
+  // a reason to break a bookmark.
+  { label: EDUTOOLS_LABEL, key: "methods" },
   { label: "Streams",   key: "streams"   },
   { label: "Variables", key: "variables" },
   { label: "Control",   key: "control"   },   // PID tuning bench (choupoCtrl + a PID)
@@ -122,16 +140,16 @@ export function MenuBar() {
   // gains to tune, so the tab is not even shown.
   const hasPid = application === "choupoCtrl"
     && collectControllerKnobs(flowsheet).pid !== null;
-  // "Explore" and "Methods" are in EVERY set: both synthesize their own
+  // "Explore" and "EduTools" are in EVERY set: both synthesize their own
   // transient cases, so they are independent of the loaded case's type.
-  const SET_PROPS = new Set(["Props", "Explore", "Methods", "Plots", "Log", "Case"]);
-  const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", "Methods", "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
+  const SET_PROPS = new Set(["Props", "Explore", EDUTOOLS_LABEL, "Plots", "Log", "Case"]);
+  const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", EDUTOOLS_LABEL, "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
   const SET_TIME = new Set([
-    "Flowsheet", "Props", "Explore", "Methods", "Plots", "Log", "Case",
+    "Flowsheet", "Props", "Explore", EDUTOOLS_LABEL, "Plots", "Log", "Case",
     ...(hasPid ? ["Control"] : []),
   ]);
   const allowedLabels: Set<string> =
-    !hasCaseOpen(tutorialName) ? new Set(["Explore", "Methods"]) // blank boot: only the standalone workspaces
+    !hasCaseOpen(tutorialName) ? new Set(["Explore", EDUTOOLS_LABEL]) // blank boot: only the standalone workspaces
     : showIntro ? new Set()                                      // intro -> no tabs
     : isPropsCase || application === "choupoProps" ? SET_PROPS
     : application === "choupoBatch" || application === "choupoCtrl" ? SET_TIME
@@ -330,6 +348,20 @@ export function MenuBar() {
             Top-level toggles.  Active workspace is highlighted; clicking
             it again closes back to the canvas-only default. */}
         {visibleWorkspaces.map((w) => {
+          // EduTools is a DROPDOWN in the same slot the other workspaces put a
+          // toggle button: the tool list is what the student is choosing, so
+          // the chooser belongs where the chooser is, not as a band inside the
+          // workspace it is supposed to be showing.
+          if (w.key === "methods") {
+            return (
+              <EduToolsMenu
+                key={w.label}
+                active={activeWorkspace === "methods"}
+                onPick={() => setActiveWorkspace("methods")}
+                onClose={() => toggleWorkspace("methods")}
+              />
+            );
+          }
           // In a props case the centre is PropsView by default, so "Props" is
           // the home (active when no other workspace is open).
           const isActive = w.label === "Flowsheet"
@@ -504,10 +536,15 @@ function TopMenu({
   label,
   children,
   width = 260,
+  active = false,
 }: {
   label: string;
   children: React.ReactNode;
   width?: number;
+  /** Renders the trigger in the WORKSPACE-open posture (filled, like the
+   *  workspace toggle buttons beside it), so a menu that stands in for a
+   *  workspace tab still shows whether that workspace is on screen. */
+  active?: boolean;
 }) {
   return (
     <Menu
@@ -522,14 +559,16 @@ function TopMenu({
     >
       <Menu.Target>
         <Button
-          variant="subtle"
-          color="gray"
+          variant={active ? "filled" : "subtle"}
+          color={active ? "accent" : "gray"}
           size="compact-xs"
           px={10}
           styles={{
             root: {
-              color: "light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0))",
-              fontWeight: 400,
+              color: active
+                ? "var(--mantine-color-dark-9)"
+                : "light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0))",
+              fontWeight: active ? 600 : 400,
               fontSize: 13,
               height: 24,
             },
@@ -540,6 +579,72 @@ function TopMenu({
       </Menu.Target>
       <Menu.Dropdown>{children}</Menu.Dropdown>
     </Menu>
+  );
+}
+
+/** The EduTools dropdown — the classical method constructions, listed from
+ *  methods/registry.ts (ONE registry; the workspace body reads the same array,
+ *  so the menu and the workspace can never disagree about what exists).
+ *
+ *  Behaviour where the brief left a choice: clicking the top-bar item opens
+ *  ONLY the menu; the workspace opens when a tool is PICKED.  Opening a
+ *  workspace behind a menu the student has not chosen from yet would move the
+ *  screen out from under them before they said what they wanted.
+ *
+ *  Planned entries stay VISIBLE and disabled (the list is the roadmap, stated
+ *  rather than implied) — there are none today, and the branch stays so that
+ *  adding one is a registry edit, not a menu edit. */
+function EduToolsMenu({ active, onPick, onClose }: {
+  active: boolean;
+  onPick: () => void;
+  onClose: () => void;
+}) {
+  const tool = useActiveMethodTool();
+  return (
+    <TopMenu label={EDUTOOLS_LABEL} width={330} active={active}>
+      <Menu.Label>Classical method constructions</Menu.Label>
+      {METHOD_TOOLS.map((m) => {
+        // The check marks what is ON SCREEN, so it is shown only while the
+        // workspace is actually open: with EduTools closed, the registry still
+        // remembers a selection, but nothing is being displayed and a tick
+        // would claim otherwise.
+        const isCurrent = active && m.id === tool;
+        return (
+          <Menu.Item
+            key={m.id}
+            disabled={m.status === "planned"}
+            leftSection={
+              isCurrent
+                ? <IconCheck size={14} />
+                : <span style={{ display: "inline-block", width: 14 }} />
+            }
+            rightSection={m.status === "planned"
+              ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
+              : undefined}
+            onClick={() => {
+              if (m.status !== "live") return;
+              setActiveMethodTool(m.id);
+              onPick();
+            }}
+            styles={{ itemLabel: { fontWeight: isCurrent ? 600 : 400 } }}
+          >
+            {m.label}
+          </Menu.Item>
+        );
+      })}
+      {active && (
+        <>
+          <Menu.Divider />
+          <Menu.Item onClick={onClose}>Close {EDUTOOLS_LABEL}</Menu.Item>
+        </>
+      )}
+      <Menu.Divider />
+      <Menu.Item disabled>
+        <Text size="xs" c="dimmed" component="span" style={{ whiteSpace: "normal" }}>
+          {EDUTOOLS_BLURB}
+        </Text>
+      </Menu.Item>
+    </TopMenu>
   );
 }
 
