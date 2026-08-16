@@ -15,14 +15,23 @@ CLAIM.  On the witness (tutorials/batch/drying/dryer01_sucrose_tray):
       fit (a curated correlation, extrapolation announced elsewhere).
   A2  The constant-rate flux is an identity on the same records:
       R_constant == k_Y (Y_sat(T_wb) - Y_air), with Y_sat recomputed from the
-      water record's Antoine at the run's PUBLISHED T_wb.  The wet-bulb
-      bisection itself is NOT verified here (that would need the Watson
-      latent heat and both humid-heat polynomials) -- T_wb is taken as
-      published and everything hanging off it is checked.  The engine's own
+      water record's Antoine at the run's PUBLISHED T_wb.  The engine's own
       announcement line is separately checked to multiply out (k_Y * dY = R_c
       and R_c A over the declared area) at its printed precision, and the two
       latent KPIs are checked to be one quantity twice:
       latentEnergy_kJ / latentDuty_kW == (X_0 - X) m_s / (R_c A).
+  A2b The WET BULB itself, re-solved here.  A2 evaluates Y_sat AT the
+      published T_wb, so a damaged adiabatic-saturation solve moves T_wb and
+      lets R_constant follow it -- the pair stays self-consistent and A2 sees
+      nothing (sabotage S3 below, where A2b is the ONLY arm that fires).
+      This arm bisects the same equation on the same records --
+      Y_sat(T_wb) - Y = (cp_c + Y cp_v)(T_air - T_wb)/lambda(T_wb), Lewis = 1,
+      the two ideal-gas Cp polynomials for the humid heat and the Watson
+      latent heat off Tc/Tb/HvapTb -- and requires the published T_wb to
+      1e-5 K (the width of the engine's own 1e-7 K bracket, not tighter).
+      latentDuty_kW is then reproduced as R_c A lambda(T_wb) with that same
+      Watson heat: the number A6 says is published INSTEAD of a ledgered duty
+      is itself checked, so "not ledgered" cannot quietly become "not right".
   A3  The rate really vanishes AT X_eq.  A LONG-horizon copy (endTime 3000 ->
       40000 s, ~67 time constants) lands on the published X_equilibrium and
       stops: observed X_final - X_equilibrium = 0 at the result JSON's 12
@@ -66,6 +75,11 @@ REFUSALS (probe copies of the witness, each matched on its own text):
   R3  K a_w >= 1 (sorption K 1.2, wet air) -> "diverges at this air"
   R4  initial.P = 0                    -> "must be a positive absolute pressure"
   R5  sorption block deleted           -> "no component in the tray carries a"
+  R6  air.carrier argon                -> "is not a component of this case"
+  R7  the whole air {} block deleted   -> "operation.air {} is missing"
+R6 and R7 need no record edit: the dry gas and the environment are DECLARED,
+and nothing in this unit hardcodes "air", so both must refuse by name rather
+than default to something.
 
 THE SEAL, and how it was handled.  The witness is sealed
 (`sealSchema computational;`, no `onDivergence` key, so the default is
@@ -78,8 +92,11 @@ constant/components/sucrose.dat") in the same run it requires the refusal, so
 the probe can never be mistaken for a clean case.  Nothing under
 tutorials/ is written by this gate.
 
-SABOTAGE RECORD (both performed 2026-08-16, `make all` between each; the
-failure text below is the gate's OWN output, copied from the run):
+SABOTAGE RECORD (all three performed 2026-08-16 against this file as it
+stands, `make all` between each and the engine reverted after; the failure
+text below is the gate's OWN output, copied from the run.  S1 and S2 were
+re-run after A2b/R6/R7 were added, so what is quoted is what this file
+prints, not what an earlier one did):
 
   S1  BatchDryer.cpp falling-rate denominator (X_c_ - X_eq_) -> (X_c_ - 0.5 *
       X_eq_):
@@ -101,20 +118,35 @@ failure text below is the gate's OWN output, copied from the run):
           - A2: R_constant KPI 7.075756e-04 vs k_Y * (Y_sat(T_wb) - Y_air) recomputed from the case's own Antoine record 7.005699e-04 (rel 9.90e-03)
           - A2: the announced R_c = 7.0057e-04 disagrees with the KPI 7.075756e-04 (rel 9.90e-03)
           - A2: the announced R_c A is not R_constant times the declared area
+          - A2b: latentDuty_kW 0.864476040 kW vs R_c A lambda(T_wb) with the Watson latent heat recomputed here 0.873120801 kW -- the number A6 publishes INSTEAD of a ledgered duty must still be the right number
           - A2: the two latent KPIs are not one quantity twice: latentEnergy/latentDuty 1.601073447e+03 s vs (X_0 - X) m_s/(R_c A) 1.585221235e+03 s
           - A4: the flat R column 7.005699e-04 is not the published R_constant 7.075756e-04 (rel 9.90e-03)
           - A4: observed t_critical 1027.734851 s vs the analytic break m_s (X_0 - X_c)/(R_c A) 1017.559131 s
           - A4: falling-rate tail departs from X_eq + (X_c - X_eq) exp(-(t - t_c)/tau) by 9.346e-03 relative (worst row)
 
-      Seven arms, and the announcement arm is the one that says WHY in a
-      line: the unit announces one flux and publishes another.
-  Both reverted, rebuilt, and the unmodified tree passes every arm.
+      Eight arms, and the announcement arm is the one that says WHY in a
+      line: the unit announces one flux and publishes another.  A2b fires
+      here in the OTHER direction, and it is worth reading twice -- the duty
+      KPI is formed from R_c_ and is therefore still CORRECT, so the arm is
+      reporting that the published flux and the published duty no longer
+      describe the same evaporation.
+  S3  BatchDryer.cpp initialise(), the wet-bulb residual: the vapour term
+      dropped from the humid heat, (cpc + Y_air_ * cpv) -> (cpc):
 
-NOT COVERED, said plainly: the wet-bulb bisection itself (T_wb is taken as
-published -- A2 checks what depends on it, not the adiabatic-saturation
-solve), the Lewis = 1 hypothesis and the humid heat evaluated at T_air, the
-Watson latent heat behind latentDuty_kW (only the internal consistency of the
-two latent KPIs is checked), the sorption parameters and the Antoine fit
+        check_batch_dryer: FAILED
+          - A2b: the wet bulb re-solved here (adiabatic saturation, Lewis = 1, on this case's own Cp fits and Watson latent heat) is 300.534289849 K vs the published T_wb 300.400562323 K
+
+      ONE arm, and A2b is why it exists: every other arm passed a wet bulb
+      wrong by 0.134 K.  A2 recomputes Y_sat at whatever T_wb the engine
+      publishes, so the flux, the announcement, the trajectory, the break
+      time, the tail and X_eq all stayed mutually consistent around a
+      damaged psychrometric equation.  Self-consistency is not correctness.
+  All three reverted, rebuilt, and the unmodified tree passes every arm.
+
+NOT COVERED, said plainly: the Lewis = 1 hypothesis and the humid heat
+evaluated at T_air (A2b re-solves the SAME equation on the same
+approximations -- it verifies the engine's arithmetic, never the model's
+physics), the sorption parameters and the Antoine fit
 (curated sample/correlation data -- reproduced, never judged), whether the
 LINEAR falling-rate law describes any real tray (it is announced as a
 modelling choice and this gate checks that the engine integrates the law it
@@ -205,6 +237,14 @@ def records(case: Path):
         "Mc": scalar_in(n2, "MW"),
         "Msol": scalar_in(sucrose, "MW"),
         "antoine": [float(x) for x in ant.group(1).split()] if ant else None,
+        #  What the wet-bulb equation needs, all from the same records: the
+        #  Watson inputs for the latent heat and both ideal-gas Cp fits for
+        #  the humid heat.
+        "Tc": scalar_in(water, "Tc"),
+        "Tb": scalar_in(water, "Tb"),
+        "HvapTb": scalar_in(water, "HvapTb"),
+        "cpV": coeffs_in(water, "idealGasHeatCapacity"),
+        "cpC": coeffs_in(n2, "idealGasHeatCapacity"),
     }
     if sorp:
         for k in ("Xm", "C", "K"):
@@ -216,6 +256,17 @@ def psat_pa(ant, T):
     #  Antoine in the published convention log10(Psat[bar]) = A - B/(T + C).
     A, B, C = ant
     return 10.0 ** (A - B / (T + C)) * 1.0e5
+
+
+def coeffs_in(text: str, blockName: str):
+    """The `coefficients ( ... )` of a named sub-dict, in declaration order."""
+    m = re.search(re.escape(blockName) + r'\s*\{.*?coefficients\s*\(([^)]*)\)',
+                  text, re.S)
+    return [float(x) for x in m.group(1).split()] if m else None
+
+
+def poly(c, T):
+    return sum(a * T ** i for i, a in enumerate(c))
 
 
 def main() -> int:
@@ -322,6 +373,53 @@ def main() -> int:
                 if abs(RcA_a - k["R_constant"] * area) > 2e-4 * RcA_a:
                     failures.append("A2: the announced R_c A is not R_constant"
                                     " times the declared area")
+
+            # ---- A2b: the wet bulb itself, re-solved here -------------------
+            #  A2 above recomputes Y_sat AT the published T_wb, so a damaged
+            #  adiabatic-saturation solve moves T_wb and R_constant follows it
+            #  -- both stay mutually consistent and A2 sees nothing (sabotage
+            #  S3).  This arm closes that: the same equation, bisected here on
+            #  the same records, plus the latent load the KPI hangs on.
+            def lam_jkg(T):                       # Watson, J/kg
+                return rec["HvapTb"] * ((rec["Tc"] - T)
+                                        / (rec["Tc"] - rec["Tb"])) ** 0.38 \
+                    / rec["Mv"] * 1000.0
+
+            def y_sat(T):
+                p = psat_pa(rec["antoine"], T)
+                return (rec["Mv"] / rec["Mc"]) * p / (P - p)
+
+            cpc = poly(rec["cpC"], T_air) / rec["Mc"] * 1000.0   # J/(kg K)
+            cpv = poly(rec["cpV"], T_air) / rec["Mv"] * 1000.0
+
+            def f_wb(T):
+                return y_sat(T) - Y_air \
+                    - (cpc + Y_air * cpv) * (T_air - T) / lam_jkg(T)
+
+            lo, hi = 273.65, T_air
+            for _ in range(200):
+                mid = 0.5 * (lo + hi)
+                if f_wb(mid) >= 0.0:
+                    hi = mid
+                else:
+                    lo = mid
+            T_wb_indep = 0.5 * (lo + hi)
+            #  1e-5 K, not tighter: the engine stops its own bisection at
+            #  1e-7 K and reports T_wb to 12 digits, so the two answers can
+            #  differ by the width of that bracket and nothing more.
+            if abs(T_wb_indep - k["T_wb"]) > 1e-5:
+                failures.append(
+                    f"A2b: the wet bulb re-solved here (adiabatic saturation,"
+                    f" Lewis = 1, on this case's own Cp fits and Watson latent"
+                    f" heat) is {T_wb_indep:.9f} K vs the published T_wb"
+                    f" {k['T_wb']:.9f} K")
+            duty = k["R_constant"] * area * lam_jkg(k["T_wb"]) / 1000.0
+            if abs(duty - k["latentDuty_kW"]) > 1e-6 * duty:
+                failures.append(
+                    f"A2b: latentDuty_kW {k['latentDuty_kW']:.9f} kW vs R_c A"
+                    f" lambda(T_wb) with the Watson latent heat recomputed"
+                    f" here {duty:.9f} kW -- the number A6 publishes INSTEAD"
+                    " of a ledgered duty must still be the right number")
 
             m_solid = k["n_sucrose_final"] * rec["Msol"]
             evap = (k["X_initial"] - k["X_final"]) * m_solid
@@ -513,6 +611,20 @@ def main() -> int:
                           / "sucrose.dat").read_text(), flags=re.S)),
               "no component in the tray carries a", seal_must_speak=True)
 
+        #  Two more that need no record edit at all: the declared dry gas and
+        #  the air block itself.  Nothing in this unit hardcodes "air", so
+        #  both must refuse by name rather than default to something.
+        probe("R6_unknown_carrier",
+              edit("system/flowsheetDict", "carrier  N2;", "carrier  argon;"),
+              "is not a component of this case")
+
+        probe("R7_no_air_block",
+              lambda c: (c / "system" / "flowsheetDict").write_text(
+                  re.sub(r'\n            air.*?\n            \}\n', "\n",
+                         (c / "system" / "flowsheetDict").read_text(),
+                         flags=re.S)),
+              "operation.air {} is missing")
+
     if failures:
         print("check_batch_dryer: FAILED")
         for f in failures:
@@ -524,6 +636,9 @@ def main() -> int:
           " from the Antoine fit, the two molar masses and the declared air,"
           " never from the engine), the constant-rate flux closes as k_Y"
           " (Y_sat(T_wb) - Y) and the unit's announcement multiplies out, the"
+          " wet bulb is re-solved here from the same records (adiabatic"
+          " saturation, Lewis = 1, the two Cp fits and the Watson latent"
+          " heat) and the latent duty with it, the"
           " published rate column is flat at R_constant above X_c and"
           " strictly decreasing below it along the exponential tail the"
           " declared linear law integrates to, a 40000 s copy lands ON X_eq"
@@ -531,13 +646,13 @@ def main() -> int:
           " copy publishes NO t_critical key (absence, not a sentinel), the"
           " energy balance reports UNAVAILABLE quoting the dryer's declared"
           " gap, the declared material residual is reproduced here and"
-          " announced as explained, and five refusals (X_c below X_eq, a tray"
-          " charged below X_eq, the GAB pole, P = 0, no sorption record) fire"
-          " by name.  NOT COVERED: the wet-bulb bisection itself (T_wb taken"
-          " as published), the Lewis = 1 and humid-heat hypotheses, the Watson"
-          " latent heat, the curated sorption and Antoine parameters, whether"
-          " the LINEAR falling-rate law describes any real tray, and the"
-          " golden values (runTests' own rows).")
+          " announced as explained, and seven refusals (X_c below X_eq, a"
+          " tray charged below X_eq, the GAB pole, P = 0, no sorption record,"
+          " an undeclared carrier, no air block) fire by name.  NOT COVERED:"
+          " the Lewis = 1 and humid-heat hypotheses (the same equation is"
+          " re-solved, never judged), the curated sorption and Antoine"
+          " parameters, whether the LINEAR falling-rate law describes any"
+          " real tray, and the golden values (runTests' own rows).")
     return 0
 
 
