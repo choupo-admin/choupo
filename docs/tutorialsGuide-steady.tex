@@ -8172,9 +8172,9 @@ thermoTest model5\_nrtl\_flash / flowsheetDict Water + ethanol as MOLECULAR comp
 \begin{tutnarrative}
 A single unit op --- but a USER-DEFINED one (`yieldReactor`), written in this case's code/ folder, not in the Choupo source tree. Build + run it with:
 
-bin/buildCase tutorials/steady/userOp01\_yield\_reactor
+bin/buildCode tutorials/steady/userops/userOp01\_yield\_reactor
 
-(NOT runCase: the type `yieldReactor` does not exist in the stock binary; buildCase compiles the case's code/ against libchoupo.a.)
+(NOT runCase: the type `yieldReactor` does not exist in the stock binary; buildCode compiles the case's code/ against libchoupo.so.)
 
 The op converts a SPECIFIED fraction of the reactant to the product (no kinetics) --- a "yield reactor", which the built-in CSTR/PFR are not. Here: 80 \% of neoPentane isomerised to nPentane. Because the two are isomers (same MW), the mass balance closes to 100 \%.
 
@@ -8204,7 +8204,7 @@ The op converts a SPECIFIED fraction of the reactant to the product (no kinetics
 \begin{tutnarrative}
 A USER-DEFINED unit op (`componentSplitter`), written in this case's code/ folder. Build + run with:
 
-runCase tutorials/steady/userOp02\_component\_splitter
+runCase tutorials/steady/userops/userOp02\_component\_splitter
 
 (runCase sees the code/ folder and compiles it first.)
 

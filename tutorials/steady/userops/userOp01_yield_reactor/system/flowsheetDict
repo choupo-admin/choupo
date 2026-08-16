@@ -14,10 +14,10 @@
   this case's code/ folder, not in the Choupo source tree.  Build + run
   it with:
 
-      bin/buildCase tutorials/steady/userOp01_yield_reactor
+      bin/buildCode tutorials/steady/userops/userOp01_yield_reactor
 
   (NOT runCase: the type `yieldReactor` does not exist in the stock
-  binary; buildCase compiles the case's code/ against libchoupo.a.)
+  binary; buildCode compiles the case's code/ against libchoupo.so.)
 
   The op converts a SPECIFIED fraction of the reactant to the product
   (no kinetics) --- a "yield reactor", which the built-in CSTR/PFR are

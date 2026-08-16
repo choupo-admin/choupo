@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 356,
+  "cases": 358,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -2550,6 +2550,40 @@
    "roles": [
     "witness"
    ],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column14_klemola_c4_splitter": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "WangHenke"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/column15_klemola_ideal_trays": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "WangHenke"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
    "hasGolden": true
   },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
@@ -5372,6 +5406,8 @@
     "tutorials/steady/distillation/column11_murphree",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/distillation/column14_klemola_c4_splitter",
+    "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
@@ -5732,6 +5768,8 @@
     "tutorials/steady/distillation/column11_murphree",
     "tutorials/steady/distillation/column12_stage_is_a_flash",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/distillation/column14_klemola_c4_splitter",
+    "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
@@ -6087,6 +6125,8 @@
     "tutorials/steady/distillation/acetone06_luyben_column_C1",
     "tutorials/steady/distillation/acetone07_luyben_column_C2",
     "tutorials/steady/distillation/column05_reactive_methylacetate",
+    "tutorials/steady/distillation/column14_klemola_c4_splitter",
+    "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/flash/flash17_two_liquids_reactive",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/marcilla01_lls_tie_triangle",

@@ -13,7 +13,7 @@
   A USER-DEFINED unit op (`componentSplitter`), written in this case's
   code/ folder.  Build + run with:
 
-      runCase tutorials/steady/userOp02_component_splitter
+      runCase tutorials/steady/userops/userOp02_component_splitter
 
   (runCase sees the code/ folder and compiles it first.)
 

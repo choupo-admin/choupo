@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 67 records already exist
+## 1. Why an index, when 68 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 67 design records, **32 state a rejected alternative and 35 do not** —
+- Of 68 design records, **32 state a rejected alternative and 36 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -76,6 +76,7 @@ direction is an error.
 | [`pinch-programme-scope.md`](../design/pinch-programme-scope.md) | SCOPE | no | SHIPPED P1+P2; **P3 area-cost UNAUTHORISED** |
 | [`fixed-bed-thermal-a5.md`](../design/fixed-bed-thermal-a5.md) | SCOPE | no | SHIPPED — T1, T1.5, T2 |
 | [`williams-otto-reference-case.md`](../design/williams-otto-reference-case.md) | SCOPE | no | SHIPPED — all four anchors |
+| [`klemola-c4-splitter-reference-case.md`](../design/klemola-c4-splitter-reference-case.md) | SCOPE | no | SHIPPED — column14 anchor + column15 control arm; three of four key rows agree, the fourth is a recorded disagreement |
 | [`restricted-speciation-network.md`](../design/restricted-speciation-network.md) | ADR | yes | SHIPPED |
 | [`general-salt-reconstruction-proposal.md`](../design/general-salt-reconstruction-proposal.md) | ADR | yes | SHIPPED — slice 1 |
 | [`aqueous-stream-basis-proposal.md`](../design/aqueous-stream-basis-proposal.md) | ADR | yes | SHIPPED |
@@ -221,7 +222,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**35 of 67 records state no rejected alternative.**  For a FORUM or a STUDY
+**36 of 68 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

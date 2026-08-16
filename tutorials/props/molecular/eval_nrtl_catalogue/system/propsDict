@@ -11,7 +11,7 @@
 
   ONE operation, one question: how good is the ethanol-water NRTL pair
   against this 1-atm bubble-T dataset?  Nothing is adjusted, nothing is
-  written.  The propertyDict declares NO inline pairs, so what gets scored is
+  written.  The thermoPhysPropDict declares NO inline pairs, so what gets scored is
   a REAL provenance-bearing pair resolved through the search path (from this
   case's own vendored constant/parameters/ copy, identical parameters and
   full primary citation) -- not numbers typed inline into the dict.

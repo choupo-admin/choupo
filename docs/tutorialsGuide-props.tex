@@ -1937,7 +1937,7 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \begin{tutnarrative}
 `mode evaluate`: the SCALE, not the fit.
 
-ONE operation, one question: how good is the ethanol-water NRTL pair against this 1-atm bubble-T dataset? Nothing is adjusted, nothing is written. The propertyDict declares NO inline pairs, so what gets scored is a REAL provenance-bearing pair resolved through the search path (from this case's own vendored constant/parameters/ copy, identical parameters and full primary citation) -- not numbers typed inline into the dict.
+ONE operation, one question: how good is the ethanol-water NRTL pair against this 1-atm bubble-T dataset? Nothing is adjusted, nothing is written. The thermoPhysPropDict declares NO inline pairs, so what gets scored is a REAL provenance-bearing pair resolved through the search path (from this case's own vendored constant/parameters/ copy, identical parameters and full primary citation) -- not numbers typed inline into the dict.
 
 Read the verdict (rms/aad in kelvin) and THEN decide whether a refit is worth it: compare with fitNRTL01's fitted rms (0.31 K) on this same data. Failures are honest: a non-converged point becomes status=nonconverged in the parity CSV and never enters the statistics; no chi2\_reduced is printed -- without sigmas and degrees of freedom from THIS act, the name would lie.
 
