@@ -215,9 +215,32 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  what the hydraulics pass then sizes.  The condenser and the reboiler stay
     //  equilibrium devices (they are not trays).
     const scalar Emv = operDict->lookupScalarOrDefault("murphreeEfficiency", 1.0);
-    if (Emv <= 0.0 || Emv > 1.0)
-        throw std::runtime_error("DistillationColumn: murphreeEfficiency must lie in "
-            "(0, 1] -- 1 is the ideal equilibrium stage");
+    if (Emv <= 0.0)
+        throw std::runtime_error("DistillationColumn: murphreeEfficiency must be "
+            "POSITIVE -- a tray that transfers nothing is not a tray");
+    //  E_MV ABOVE 1 IS PHYSICAL, and refusing it was a modelling claim, not a
+    //  guard.  The Murphree VAPOUR efficiency compares the vapour leaving a tray
+    //  with equilibrium against that tray's OUTLET liquid.  On a large
+    //  cross-flow tray the liquid is not well mixed: it enters rich and leaves
+    //  lean, so the vapour has been in contact with liquid richer than the
+    //  outlet, and E_MV > 1 follows without anything exceeding equilibrium
+    //  anywhere.  Measured routinely on industrial trays -- Klemola & Ilme, IECR
+    //  35 (1996) 4579 report 119.1 % on a 2.9 m i-butane/n-butane fractionator
+    //  and cite Sakata & Yanagi (1979) measuring a little under 120 % on a
+    //  1.2 m column.  The old bound (0, 1] would have refused that column's own
+    //  measurement.
+    //
+    //  There is NO ceiling the engine can check from the declared inputs: the
+    //  plug-flow limit depends on the point efficiency and on lambda = mV/L,
+    //  neither of which a declared E_MV carries.  So this announces rather than
+    //  bounds, and says which of the two it is doing.
+    if (Emv > 1.0 && verbosity >= 1)
+        std::cout << "  [column] Murphree vapour efficiency E_MV = " << Emv
+                  << " EXCEEDS 1.  That is physical on a cross-flow tray whose"
+                     " liquid is not well mixed (the vapour meets liquid richer"
+                     " than the outlet), and is measured on industrial columns."
+                     "  NOT CHECKED: the plug-flow ceiling, which needs the point"
+                     " efficiency and mV/L -- neither is declared here.\n";
     if (Emv < 1.0 && verbosity >= 2)
         std::cout << "  Murphree vapour efficiency E_MV = " << Emv
                   << "  -- the " << (N - 1) << " trays are REAL trays, not ideal stages\n";
@@ -462,7 +485,11 @@ int DistillationColumn::solve(const DictPtr& dict,
     kpis_["x_D_LK"]     = xD[0];
     kpis_["x_B_HK"]     = (n > 1) ? x[N-1][n - 1] : 0.0;
     kpis_["iterations"] = static_cast<scalar>(outerIt);
-    if (Emv < 1.0) kpis_["murphreeEfficiency"] = Emv;
+    //  Published whenever the trays are REAL, on either side of 1 -- the guard
+    //  used to read `< 1.0`, so a column carrying a measured E_MV above unity
+    //  would have hidden the very number that defines its run.  Exactly 1 stays
+    //  silent: that is the ideal-stage default, and an absent key means it.
+    if (Emv != 1.0) kpis_["murphreeEfficiency"] = Emv;
 
     // Energy items [kW].  Q_condenser is the heat removed to condense the
     // overhead vapour V1=(R+1)D (latent at the top); Q_reboiler then CLOSES
@@ -788,7 +815,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // an effective K, with the vapour from below lagged one outer pass).  The MESH
     // Newton has no outer pass to lag against: the relation would have to enter the
     // residual and the Jacobian.  Refuse rather than silently return ideal stages.
-    if (operDict->lookupScalarOrDefault("murphreeEfficiency", 1.0) < 1.0)
+    //  `!= 1.0`, not `< 1.0`: the moment E_MV above unity became admissible (a
+    //  real cross-flow measurement -- see the bound at the top of the
+    //  Wang-Henke path), a `< 1.0` test would have let 1.191 through THIS gate
+    //  and then quietly solved ideal stages.  A refusal that only catches half
+    //  its subject is the silent fallback it was written to prevent.
+    if (operDict->lookupScalarOrDefault("murphreeEfficiency", 1.0) != 1.0)
         throw std::runtime_error("DistillationColumn: `murphreeEfficiency` is not "
             "implemented for `method simultaneous` -- it would have to enter the MESH "
             "residual and Jacobian, and Choupo will not quietly hand you ideal stages "

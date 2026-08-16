@@ -168,9 +168,8 @@
     "murphreeEfficiency": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "maximum": 1,
       "title": "Murphree tray efficiency",
-      "description": "Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Below 1 the run announces that the stages are no longer theoretical.",
+      "description": "Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stages REAL trays and is announced. Values ABOVE 1 are admitted and are physical on a large cross-flow tray whose liquid is not well mixed — the vapour meets liquid richer than the tray outlet — and are measured on industrial columns (Klemola & Ilme, IECR 35 (1996) 4579: 119.1 %). No upper bound is imposed: the plug-flow ceiling needs the point efficiency and mV/L, neither of which a declared efficiency carries.",
       "unit": "-"
     },
     "hydraulics": {
