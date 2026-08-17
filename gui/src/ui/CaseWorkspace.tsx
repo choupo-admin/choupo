@@ -46,6 +46,26 @@ License
   Case tab collapsed those into a single file list + one big viewer
   with no inline jump --- you could open a file but had to scroll
   blindly.
+
+  ON A PHONE, ONE PANEL AT A TIME (2026-08-17, docs/design/
+  modes-and-views-in-the-top-row.md §4b).  240 + 220 px of fixed side columns
+  do not fit a 390 px screen: FILES and OUTLINE sat side by side at roughly
+  195 px each with the viewer -- the thing the workspace exists to show --
+  squeezed to nothing.  That is not a layout, it is three unusable panes.
+  Below the narrow breakpoint the three columns become three PANES with one
+  chooser above them, full width, one at a time.
+
+  Two rules the chooser has to obey, and both were paid for by thinking about
+  what a tap does:
+    * choosing a file SWITCHES to the viewer.  On the desk the click changes
+      the middle column in place; on a phone the file list would stay on
+      screen and nothing visible would happen.
+    * an outline jump switches too, and scrolls AFTER the switch -- the
+      viewer is not mounted while the outline is showing, so the
+      getElementById the desk path relies on would find nothing.
+  `useNarrowViewport` is the project's ONE posture-detection home
+  (methods/methodsChrome.tsx); this deliberately does not add a second
+  breakpoint.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -54,6 +74,7 @@ import {
   Box,
   Group,
   ScrollArea,
+  SegmentedControl,
   Stack,
   Text,
 } from "@mantine/core";
@@ -61,6 +82,7 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { parse, type DictEntry } from "../dict/index.js";
 import { useStore } from "../state/store.js";
+import { useNarrowViewport } from "./methods/methodsChrome.js";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -173,6 +195,20 @@ function parseOutline(text: string): OutlineKey[] {
   return out;
 }
 
+// ---- The narrow posture's three panes ---------------------------------------
+
+/** The three things the desk shows side by side, and the phone shows one at a
+ *  time.  ONE home for the pane set: the chooser renders it and the body
+ *  switches on it, so a fourth pane could never appear in one and not the
+ *  other. */
+export type CasePane = "files" | "contents" | "outline";
+
+export const CASE_PANES: { value: CasePane; label: string }[] = [
+  { value: "files",    label: "Files"    },
+  { value: "contents", label: "Contents" },
+  { value: "outline",  label: "Outline"  },
+];
+
 // ---- Component -------------------------------------------------------------
 
 export function CaseWorkspace() {
@@ -214,9 +250,29 @@ export function CaseWorkspace() {
     return out;
   }, [active, activeText]);
 
+  // NARROW POSTURE: one pane at a time.  The default is the CONTENTS -- the
+  // workspace opens on flowsheetDict/propsDict already, so landing on the file
+  // list would put a chooser in front of a choice that has been made.
+  const narrow = useNarrowViewport();
+  const [pane, setPane] = useState<CasePane>("contents");
+
+  const selectFile = (path: string) => {
+    setActivePath(path);
+    setPane("contents");    // desk: no-op; phone: the tap has to go somewhere
+  };
+
   const jumpTo = (line: number) => {
-    const el = document.getElementById(`ln-${line}`);
-    el?.scrollIntoView({ block: "center", behavior: "smooth" });
+    const scroll = () =>
+      document.getElementById(`ln-${line}`)?.scrollIntoView({ block: "center", behavior: "smooth" });
+    if (narrow && pane !== "contents") {
+      // The viewer is not mounted while the outline is showing, so the switch
+      // must land before the lookup: two frames, because the first paints the
+      // pane and the second has the line divs in the document.
+      setPane("contents");
+      requestAnimationFrame(() => requestAnimationFrame(scroll));
+      return;
+    }
+    scroll();
   };
 
   if (files.length === 0) {
@@ -227,48 +283,45 @@ export function CaseWorkspace() {
     );
   }
 
-  return (
-    <Box
-      style={{
-        display: "grid",
-        gridTemplateColumns: "240px 1fr 220px",
-        gridTemplateRows: "1fr",
-        height: "100%",
-        minHeight: 0,
-      }}
-    >
-      <style>{`
+  const highlightCss = (
+    <style>{`
 .hl-c { color: #6b7785; font-style: italic; }
 .hl-n { color: #e8a661; }
 .hl-k { color: #4dd0c0; }
 .cw-line { white-space: pre; }
 .cw-line.cw-active { background: rgba(38, 198, 218, 0.10); }
       `}</style>
+  );
 
-      {/* File tree */}
-      <Box
-        style={{
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
-          background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
-          overflow: "hidden",
-          minHeight: 0,
-        }}
+  /* The three panes, built ONCE and placed by the posture.  Wide puts them in
+   * three grid columns; narrow shows one.  Only the dividing borders differ --
+   * a full-width pane has no neighbour to be divided from. */
+  const filesPane = (
+    <Box
+      style={{
+        borderRight: narrow ? undefined
+          : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+        background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+        overflow: "hidden",
+        minHeight: 0,
+      }}
+    >
+      <ScrollArea
+        type="always"
+        scrollbarSize={10}
+        style={{ height: "100%" }}
+        styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
       >
-        <ScrollArea
-          type="always"
-          scrollbarSize={10}
-          style={{ height: "100%" }}
-          styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
-        >
-          <FileTree
-            files={files}
-            active={active}
-            onSelect={setActivePath}
-          />
-        </ScrollArea>
-      </Box>
+        <FileTree
+          files={files}
+          active={active}
+          onSelect={selectFile}
+        />
+      </ScrollArea>
+    </Box>
+  );
 
-      {/* Viewer */}
+  const contentsPane = (
       <Box style={{ minWidth: 0, height: "100%", minHeight: 0,
                     background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))" }}>
         <ScrollArea type="auto" style={{ height: "100%" }}>
@@ -307,11 +360,13 @@ export function CaseWorkspace() {
           )}
         </ScrollArea>
       </Box>
+  );
 
-      {/* Outline */}
+  const outlinePane = (
       <Box
         style={{
-          borderLeft: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          borderLeft: narrow ? undefined
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
           overflow: "hidden",
           minHeight: 0,
@@ -356,6 +411,71 @@ export function CaseWorkspace() {
           </Stack>
         </ScrollArea>
       </Box>
+  );
+
+  /* NARROW: a chooser over one pane.  The chooser is a real, full-width
+   * control in the flow ABOVE the pane -- not an edge gesture and not a
+   * fold-away strip -- because a navigation a student cannot see is a
+   * navigation that does not exist (the same argument the top row's dropdown
+   * rests on).  It is the first thing in the DOM, so it is also the first
+   * thing the keyboard and a screen reader reach. */
+  if (narrow) {
+    return (
+      <Box
+        style={{
+          display: "grid",
+          gridTemplateRows: "auto 1fr",
+          height: "100%",
+          minHeight: 0,
+          minWidth: 0,
+        }}
+      >
+        {highlightCss}
+        <Box
+          p={6}
+          style={{
+            borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+            background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+            minWidth: 0,
+          }}
+        >
+          <SegmentedControl
+            fullWidth
+            size="xs"
+            value={pane}
+            onChange={(v) => setPane(v as CasePane)}
+            data={CASE_PANES}
+            aria-label="Which case panel to show"
+          />
+        </Box>
+        {/* `display: grid` with one 1fr row, so whichever pane is showing
+            stretches to the full height -- the side panes size themselves
+            from their grid cell on the desk and have no height of their
+            own. */}
+        <Box style={{ display: "grid", gridTemplateRows: "1fr",
+                      minWidth: 0, minHeight: 0, overflow: "hidden" }}>
+          {pane === "files" ? filesPane
+            : pane === "outline" ? outlinePane
+            : contentsPane}
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      style={{
+        display: "grid",
+        gridTemplateColumns: "240px 1fr 220px",
+        gridTemplateRows: "1fr",
+        height: "100%",
+        minHeight: 0,
+      }}
+    >
+      {highlightCss}
+      {filesPane}
+      {contentsPane}
+      {outlinePane}
     </Box>
   );
 }

@@ -40,6 +40,15 @@ License
   when shut and cannot be painted over.  It renders from methods/registry.ts —
   the SAME registry the workspace body reads, never a second hand-written list
   here — and picking a tool opens the workspace on it.
+
+  MODES AND VIEWS (2026-08-17, docs/design/modes-and-views-in-the-top-row.md).
+  The lineup and its `kind` live in workspaces.ts, NOT here: this file renders
+  it twice (wide row, narrow chooser) and must not own it, or the two postures
+  would each acquire a lineup to drift.  What this file adds is the POSTURE
+  rule the record decided — modes stay visible at every width, views collapse
+  into a chooser labelled for what it OPENS with the current view as its
+  VALUE.  The old collapsed control was labelled `Case`, which is a lit tab
+  saying *you are here* while ten destinations sat unannounced behind it.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect } from "react";
@@ -55,9 +64,12 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
+import {
+  WORKSPACES, splitWorkspaces, visibleWorkspacesFor, type WorkspaceEntry,
+} from "./workspaces.js";
 import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
@@ -75,32 +87,6 @@ import {
   useActiveMethodTool,
 } from "./methods/registry.js";
 import { useNarrowViewport } from "./methods/methodsChrome.js";
-
-// Workspaces in the top menu.  Each is a top-level toggle:
-//   - implemented entries (`key` truthy) flip the global activeWorkspace
-//   - placeholders ({ key: null }) still show a "coming soon" notification
-//     so the menu reads as the contract for what is on the way
-// "Flowsheet" is the canvas itself (activeWorkspace === null); it is handled
-// specially in openWorkspace (by label) so you can switch BACK from Props to
-// the flowsheet symmetrically, the mirror of "Simulate process ->".
-const WORKSPACES: { label: string; key: WorkspaceKey | null }[] = [
-  { label: "Flowsheet", key: null        },
-  { label: "Props",     key: "props"     },   // right next to Flowsheet -- the two phases
-  { label: "Explore",   key: "explore"   },   // interactive property scratchpad (see, then decide)
-  // EduTools renders as a DROPDOWN, not a toggle button (see EduToolsMenu).
-  // The label is the student-facing word; the URL key stays `methods` --
-  // ?workspace=methods&tool=<id> is a deep-link contract, and a caption is not
-  // a reason to break a bookmark.
-  { label: EDUTOOLS_LABEL, key: "methods" },
-  { label: "Streams",   key: "streams"   },
-  { label: "Variables", key: "variables" },
-  { label: "Control",   key: "control"   },   // PID tuning bench (choupoCtrl + a PID)
-  { label: "Plots",     key: "plots"     },
-  { label: "Log",       key: "log"       },
-  { label: "Case",      key: "case"      },
-  { label: "Pinch",     key: "pinch"     },   // greyed until a run yields heat duties
-  { label: "Reports",   key: "reports"   },   // utilities + global balances (post-run)
-];
 
 export function MenuBar() {
   const tutorialName = useStore((s) => s.tutorialName);
@@ -126,12 +112,10 @@ export function MenuBar() {
 
   // The top tabs are CONTEXT-DEPENDENT: each case TYPE exposes only the
   // workspaces that mean something for it, so a lit-but-dead button (the
-  // Frankenstein the props GUI was accused of) never shows.  With NO case open
-  // (blank boot) there are no tabs at all -- just File + Help.
-  //   choupoProps  -> Props · Plots · Log · Case       (no canvas/streams/duties)
-  //   choupoSolve  -> the full steady set              (streams, variables, pinch)
-  //   choupoBatch/Ctrl -> Flowsheet · Props · Plots · Log · Case
-  //                       (no steady-only Streams/Variables/Pinch/Reports)
+  // Frankenstein the props GUI was accused of) never shows.  WHICH set is
+  // allowed lives in workspaces.ts (allowedWorkspaceLabels) -- one home, and
+  // the modes are in every set because they are modes, not because four
+  // hand-written sets each happened to name them.
   const isPropsCase = Boolean(propsDict) && !flowsheet;
   const application =
     typeof caseFiles.controlDict?.["application"] === "string"
@@ -142,22 +126,17 @@ export function MenuBar() {
   // gains to tune, so the tab is not even shown.
   const hasPid = application === "choupoCtrl"
     && collectControllerKnobs(flowsheet).pid !== null;
-  // "Explore" and "EduTools" are in EVERY set: both synthesize their own
-  // transient cases, so they are independent of the loaded case's type.
-  const SET_PROPS = new Set(["Props", "Explore", EDUTOOLS_LABEL, "Plots", "Log", "Case"]);
-  const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", EDUTOOLS_LABEL, "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
-  const SET_TIME = new Set([
-    "Flowsheet", "Props", "Explore", EDUTOOLS_LABEL, "Plots", "Log", "Case",
-    ...(hasPid ? ["Control"] : []),
-  ]);
-  const allowedLabels: Set<string> =
-    !hasCaseOpen(tutorialName) ? new Set(["Explore", EDUTOOLS_LABEL]) // blank boot: only the standalone workspaces
-    : showIntro ? new Set()                                      // intro -> no tabs
-    : isPropsCase || application === "choupoProps" ? SET_PROPS
-    : application === "choupoBatch" || application === "choupoCtrl" ? SET_TIME
-    : SET_SOLVE;                                                  // choupoSolve / default
-  const visibleWorkspaces = WORKSPACES.filter((w) => allowedLabels.has(w.label));
-  /* NARROW POSTURE: the tab strip becomes ONE dropdown.
+  const visibleWorkspaces = visibleWorkspacesFor({
+    hasCase: hasCaseOpen(tutorialName),
+    showIntro,
+    isPropsCase,
+    application,
+    hasPid,
+  }, WORKSPACES);
+  /* THE SPLIT, taken ONCE and consumed by both postures (workspaces.ts owns
+   * the property; this is only a rendering of it). */
+  const { views: visibleViews } = splitWorkspaces(visibleWorkspaces);
+  /* NARROW POSTURE: the VIEWS become one chooser; the MODES do not.
    *
    * Measured 2026-08-17 at 390x844 with a steady case open: eleven tabs laid
    * out to 833 px in a 390 px viewport, so Streams onward (seven whole
@@ -174,11 +153,33 @@ export function MenuBar() {
    * is built from the SAME `visibleWorkspaces` array the wide posture renders
    * -- there is no second lineup to drift.
    *
-   * EduTools keeps its OWN trigger even here, because it is not merely a tab:
-   * its dropdown is the only chooser for the twelve tools (the rail moved into
-   * the top bar in 9e5ff796 and MethodsWorkspace renders no tool list of its
-   * own).  Folding it into a plain item would open the workspace with no way
-   * to change tool. */
+   * WHAT THE 2026-08-17 DECISION CHANGED, and why (docs/design/
+   * modes-and-views-in-the-top-row.md).  That first collapse swept ALL of it
+   * into the dropdown, MODES INCLUDED, and labelled the trigger with the
+   * current workspace.  Two consequences, both wrong:
+   *
+   *   1. `Explore` -- one of only two things a visitor with nothing open can
+   *      do -- ended up inside a menu named after a view of a case.  The flat
+   *      strip had made that category error invisible; the dropdown made it
+   *      structural.  So MODES no longer collapse: they are few (two), they
+   *      never change with the case, and they are the whole offer on a blank
+   *      boot.  Only VIEWS go into the chooser.
+   *   2. The trigger read `Case`, i.e. a lit tab saying *you are here* over
+   *      ten unannounced destinations.  It now reads `Views: Case` -- the
+   *      category is the LABEL, the current view is its VALUE -- and it is
+   *      styled as a selector rather than an active tab, because the fill was
+   *      exactly the "arrived" signal that hid the ten.
+   *
+   * EduTools keeps its OWN trigger in both postures, because it is not merely
+   * a tab: its dropdown is the only chooser for the twelve tools (the rail
+   * moved into the top bar in 9e5ff796 and MethodsWorkspace renders no tool
+   * list of its own).  Folding it into a plain item would open the workspace
+   * with no way to change tool.  That was already true before it was also a
+   * mode; the two reasons agree.
+   *
+   * The WIDE posture is untouched: every workspace is its own entry there, in
+   * declared order, so the split costs the desk nothing (§5 of the record --
+   * this is not a navigation redesign). */
   const narrow = useNarrowViewport();
   const activeWorkspace = useStore((s) => s.activeWorkspace);
   const toggleWorkspace = useStore((s) => s.toggleWorkspace);
@@ -187,7 +188,7 @@ export function MenuBar() {
   /* The two postures render the same lineup through the same rules.  These
    * live here, above both, so a wide tab and a narrow menu item can never
    * disagree about which workspace is on screen or which is not yet runnable. */
-  const isWorkspaceActive = (w: { label: string; key: WorkspaceKey | null }): boolean =>
+  const isWorkspaceActive = (w: WorkspaceEntry): boolean =>
     w.label === "Flowsheet"
       ? activeWorkspace === null                 // the canvas itself
       : isPropsCase && w.label === "Props"
@@ -388,12 +389,13 @@ export function MenuBar() {
         {/* --- Workspaces -------------------------------------------------
             Top-level toggles.  Active workspace is highlighted; clicking
             it again closes back to the canvas-only default. */}
-        {/* NARROW: one dropdown over the whole lineup (see `narrow` above for
-            why a dropdown and not a scrolling strip).  EduTools still gets its
-            own trigger beside it -- it carries the tool chooser. */}
-        {narrow && visibleWorkspaces.length > 0 && (
-          <WorkspacesMenu
-            workspaces={visibleWorkspaces.filter((w) => w.key !== "methods")}
+        {/* NARROW: one chooser over the VIEWS (see `narrow` above for why a
+            dropdown and not a scrolling strip, and why the modes stay out of
+            it).  The modes keep their own entries, rendered by the map below
+            in declared order. */}
+        {narrow && visibleViews.length > 0 && (
+          <ViewsMenu
+            views={visibleViews}
             isActive={isWorkspaceActive}
             isDisabled={isWorkspaceDisabled}
             disabledHint={PINCH_DISABLED_HINT}
@@ -416,7 +418,7 @@ export function MenuBar() {
               />
             );
           }
-          if (narrow) return null;          // already in the dropdown above
+          if (narrow && w.kind === "view") return null;   // in the chooser above
           const isActive = isWorkspaceActive(w);
           const disabled = isWorkspaceDisabled(w);
           return (
@@ -585,14 +587,22 @@ function TopMenu({
   children,
   width = 260,
   active = false,
+  rightSection,
 }: {
-  label: string;
+  /** ReactNode, not string: a SELECTOR trigger renders its category and its
+   *  value differently (`Views: Case`), and that is one label, not two
+   *  controls. */
+  label: React.ReactNode;
   children: React.ReactNode;
   width?: number;
   /** Renders the trigger in the WORKSPACE-open posture (filled, like the
    *  workspace toggle buttons beside it), so a menu that stands in for a
    *  workspace tab still shows whether that workspace is on screen. */
   active?: boolean;
+  /** Trailing adornment — the chevron that says "this opens a list".  Purely
+   *  decorative: it must never be an interactive element of its own, or the
+   *  trigger becomes two tab stops for one action. */
+  rightSection?: React.ReactNode;
 }) {
   return (
     <Menu
@@ -611,6 +621,7 @@ function TopMenu({
           color={active ? "accent" : "gray"}
           size="compact-xs"
           px={10}
+          rightSection={rightSection}
           styles={{
             root: {
               color: active
@@ -620,6 +631,7 @@ function TopMenu({
               fontSize: 13,
               height: 24,
             },
+            section: { marginInlineStart: 4 },
           }}
         >
           {label}
@@ -630,33 +642,44 @@ function TopMenu({
   );
 }
 
-/** The NARROW-posture workspace chooser: the whole tab lineup as one dropdown.
+/** The NARROW-posture VIEW chooser: the ten views of the open case as one
+ *  dropdown.  Modes are not in here — they keep their own entries at every
+ *  width (see the `narrow` note in MenuBar, and the design record).
  *
- *  It is handed the SAME `visibleWorkspaces` array the wide posture maps over,
- *  and the SAME active/disabled predicates — it owns no lineup of its own, so
- *  the two postures cannot drift (the arity rule, applied to a menu).
+ *  It is handed the SAME entries the wide posture maps over, and the SAME
+ *  active/disabled predicates — it owns no lineup of its own, so the two
+ *  postures cannot drift (the arity rule, applied to a menu).
  *
- *  The trigger says which workspace is on screen rather than just "Workspaces",
- *  because a collapsed navigation that does not name where you are makes the
- *  student open it to find out.  It renders in the `active` posture whenever a
- *  workspace other than the canvas is open, mirroring the filled tab it
- *  replaces. */
-function WorkspacesMenu({ workspaces, isActive, isDisabled, disabledHint, onPick }: {
-  workspaces: { label: string; key: WorkspaceKey | null }[];
-  isActive: (w: { label: string; key: WorkspaceKey | null }) => boolean;
+ *  THE TRIGGER IS A SELECTOR, NOT A TAB, and the difference is the whole
+ *  point of the 2026-08-17 decision.  It used to be labelled with the current
+ *  workspace alone (`Case`) and filled like an active tab, which says *you
+ *  are here* and says nothing about the other nine destinations behind it —
+ *  the owner read the row as having gone short when in fact it had gone
+ *  silent.  So: the category is the label, the current view is its VALUE
+ *  beside it, a chevron says it opens, and the fill is gone.  Where you are
+ *  is still on screen; what else exists is now on screen too. */
+function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick }: {
+  views: WorkspaceEntry[];
+  isActive: (w: WorkspaceEntry) => boolean;
   isDisabled: (w: { key: WorkspaceKey | null }) => boolean;
   disabledHint: string;
   onPick: (label: string, key: WorkspaceKey | null) => void;
 }) {
-  const current = workspaces.find((w) => isActive(w));
-  // "Flowsheet" is the canvas -- the resting state, not a destination you are
-  // "in", so the trigger stays neutral there and only lights up for a real
-  // workspace.
-  const inWorkspace = Boolean(current && current.label !== "Flowsheet");
+  const current = views.find((w) => isActive(w));
+  const label = (
+    <Text span fz={13} fw={400} c="dimmed">
+      Views:{" "}
+      <Text span fz={13} fw={600} c="accent">{current ? current.label : "none"}</Text>
+    </Text>
+  );
   return (
-    <TopMenu label={current ? current.label : "Workspaces"} width={240} active={inWorkspace}>
-      <Menu.Label>Workspaces</Menu.Label>
-      {workspaces.map((w) => {
+    <TopMenu
+      label={label}
+      width={240}
+      rightSection={<IconChevronDown size={12} stroke={2} />}
+    >
+      <Menu.Label>Views of this case</Menu.Label>
+      {views.map((w) => {
         const active = isActive(w);
         const disabled = isDisabled(w);
         return (
