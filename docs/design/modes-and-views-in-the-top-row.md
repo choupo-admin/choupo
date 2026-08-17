@@ -1,8 +1,8 @@
 # Modes and views: the top row is doing two jobs
 
-*Status: DECIDED 2026-08-17 (Vítor delegated the decision: "Tu é que és o
-arquiteto e peço para tu refletires e decidires a melhor forma").  No
-implementation started.*
+*Status: DECIDED 2026-08-17, IMPLEMENTED, and AMENDED the same day by a
+three-lens panel after the owner reopened it (§7).  The amendment stands; the
+reasons in §4a do not.*
 
 ---
 
@@ -127,3 +127,87 @@ If a case is ever added whose workspace set makes a "mode" case-dependent —
 an Explore that needs the loaded case's components, say — then the two-column
 table is wrong and the split has to be re-derived rather than patched.  The
 test is the one the code already applies: does it survive a blank boot?
+
+
+---
+
+## 7. AMENDMENT — the panel, and what it cost me to be right for the wrong reasons
+
+The owner reopened §4a: *"Aquilo torna o menu confuso e lixa as boas práticas.
+Afinal de contas uma tool pode ficar sempre aberta num tab e pode se consultar
+quando o aluno quiser!"*  Three generals argued it from an interaction-design,
+a pedagogy and a contracts lens, each told to attack the commander's position.
+**All three concluded KEEP, and all three rejected the reasons §4a gives.**
+
+### 7.1 My two arguments were both wrong
+
+* *"Landing-only forces a student to abandon the case."*  False on the
+  mechanics — a link opens a second tab and the case tab survives.  The owner
+  was right.
+* *"The app must be able to reach every state its URL contract defines."*
+  **I invented that rule.**  It is written nowhere, and the tree refutes it
+  loudly: `?workspace=` honours only `explore`, `methods`, `control`, so nine
+  of the ten case views are URL-unreachable and nobody calls that a breach;
+  meanwhile the pop-out states are reachable ONLY by URL, deliberately.  URL
+  reachability and menu presence are independent axes.
+
+I also picked, from twelve tools, the single worst example: **McCabe-Thiele is
+one of only two that do NOT bind to the open run.**
+
+### 7.2 The two facts that actually decide it
+
+**The entry IS the chooser.**  The 252 px tool rail was deleted on the owner's
+own order (2026-08-16, recorded in `methodsChrome.tsx`) because the top-bar
+dropdown replaced it; `MethodsWorkspace` renders no tool list — it uses the
+registry only to FIND the active tool.  Remove the entry and a student
+deep-linked to `?tool=kremser` reaches the other eleven by hand-editing the
+address bar.  Removal deletes navigation, not clutter.
+
+**Ten of the twelve tools read the loaded run.**  Every `*Tool.tsx` carries a
+`Classroom | Current run` toggle over `useStore(s => s.runResult)` — verified
+by counting, 10 files, all of them.  A tool launched with no case has an empty
+store and can only ever be *Classroom*: someone else's absorber.  So the
+in-app entry is not convenience — **it is the only way to point a tool at the
+student's own result**, which is the entire pedagogy (`recovery_KPI` against
+`Kremser(A, N)`, with the reason for the gap attached).
+
+### 7.3 The owner's complaint was right about something else
+
+The row IS confusing, and the panel found the sharpest instance: it can offer
+**`Pinch`** (a VIEW that recomputes the analysis in the browser from KPIs) and
+**`EduTools → Pinch composite curves`** (which reads the engine's own
+`reports/pinch/compositeCurves.csv`) as visual peers, with different
+provenance and a stated possibility of disagreeing.  A student cannot tell
+which one the engine said.
+
+That is not fixed by deleting EduTools.  It is fixed by the mode/view split
+this record already decided — which I wrote as tidiness and which is in fact
+**honesty**, the same line this project defends when it refuses to call a
+comparison a validation, or to blend the computed with the advised.
+
+### 7.4 A defect this record's own §4a shipped
+
+The landing's EduTools cards carried `target="choupo-app"`, the shared named
+tab every other link on that page reuses.  A student with a converged case
+open who clicked a tool card was navigated in that tab and **lost the run** —
+the run the tool exists to be compared against.  Fixed: the cards open a NEW
+tab.  The owner's own argument is the fix: a tool is consulted beside the
+case, not instead of it.
+
+### 7.5 What the record now says that it did not
+
+* A mode may be case-INDEPENDENT for AVAILABILITY and case-FED for VALUE.  The
+  §4 table is binary and cannot express that; the ceiling is where the
+  teaching happens.
+* §4a's entry point is also the mode's only CHOOSER.  That is why it stays.
+* **A third falsifier**, and it is the honest one: *the day `MethodsWorkspace`
+  regains an in-body tool chooser, the menu entry becomes a plain duplicate
+  and this ruling expires.*  The panel's own strongest objection is that the
+  defence rests on an implementation accident — the rail was deleted, so the
+  menu inherited chooser duty.  Fix that accident and the case dissolves.  It
+  is written down so nobody has to rediscover it.
+
+Recorded also, unfixed: `site/index.html`'s fallback string tells the reader
+to "choose EduTools from the top row" and no gate covers that sentence, and
+`docs/ai/gui-credo.md` still names `MenuBar.tsx` as the workspace lineup's
+authority, which moved to `workspaces.ts` today.

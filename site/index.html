@@ -706,8 +706,15 @@ https://www.choupo.org/app/
         var tools = (doc && doc.tools) || [];
         if (!tools.length) throw 0;
         host.innerHTML = tools.map(function (t) {
+          //  A NEW TAB, not the shared `choupo-app` one every other link on
+          //  this page reuses.  A tool is not a place you navigate the app TO:
+          //  ten of the twelve read the loaded case's run (their
+          //  `Classroom | Current run` toggle), so stealing the app tab would
+          //  discard the very run the student opened the tool to compare
+          //  against.  Two tabs side by side is also how a tool is meant to be
+          //  used -- consulted while the case stays where it was.
           return '<a class="edutool" href="' + esc(t.href)
-            + '" target="choupo-app" rel="noopener">'
+            + '" target="_blank" rel="noopener">'
             + '<h3>' + esc(t.label) + '</h3>'
             + '<p>' + esc(t.teaches) + '</p>'
             + '<span class="edutool-go">Open in Choupo &rarr;</span></a>';
