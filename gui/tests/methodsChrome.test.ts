@@ -197,3 +197,39 @@ describe("collapse flags — the optional posture default", () => {
     expect(hasStoredCollapsed(CONTROLS_COLLAPSED_KEY)).toBe(false);
   });
 });
+
+/* The setup bar's two postures (added 2026-08-17 with the phone fix).
+ *
+ * `setupBarLayout` is pure so the reflow rule can be pinned without a DOM, and
+ * it is pinned here because the rule is what makes a phone usable: the McCabe
+ * bar is 983 px wide and the psychrometric one 1495 px, so on a 390 px screen
+ * a nowrap row put 13 and 29 controls behind an `overflow: hidden` edge with
+ * no gesture able to reach them.
+ *
+ * The spacer clause is not cosmetic and gets its own assertion: a `flex: 1`
+ * spacer inside a WRAPPING row eats the whole remainder of its line and pushes
+ * everything after it onto the next one, so the collapse button would sit
+ * alone on a row of its own. */
+describe("setup bar — the reflow rule", () => {
+  it("one row when it fits: nowrap, fit-content, spacer keeps the buttons right", async () => {
+    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
+    expect(setupBarLayout(false)).toEqual({
+      wrap: "nowrap", minWidth: "fit-content", showSpacer: true,
+    });
+  });
+
+  it("wrapped when it does not: wrap, no min width, and NO flexible spacer", async () => {
+    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
+    expect(setupBarLayout(true)).toEqual({
+      wrap: "wrap", minWidth: 0, showSpacer: false,
+    });
+  });
+
+  it("the two postures never agree on any of the three properties", async () => {
+    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
+    const one = setupBarLayout(false), wrapped = setupBarLayout(true);
+    expect(one.wrap).not.toBe(wrapped.wrap);
+    expect(one.minWidth).not.toBe(wrapped.minWidth);
+    expect(one.showSpacer).not.toBe(wrapped.showSpacer);
+  });
+});
