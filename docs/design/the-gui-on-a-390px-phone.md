@@ -1,8 +1,8 @@
-# The GUI on a 390 px phone: measured, not yet fixed
+# The GUI on a 390 px phone: measured, then fixed and gated
 
-*Status: FINDING, MEASURED 2026-08-17.  No fix attempted.  This is the brief
-for whoever takes the fix, and the record that the defect was known before it
-was closed.*
+*Status: FIXED and GATED 2026-08-17.  §5 records what shipped and what it
+cost; §1-§3 are kept as written, because the record of how a defect was found
+and mis-summarised is worth more than a tidy retelling.*
 
 ---
 
@@ -111,7 +111,7 @@ Two consequences, and the second is the one that matters:
   commit that fixes the defects still stands, but the gate must first walk a
   state that can see them.
 
-
+## 3. Why nothing caught it, and why the obvious check would not have
 
 `document.scrollWidth` reports **no overflow at all**.  Every overflowing edge
 is hidden, so the page measures as if it fits.  A boolean overflow check —
@@ -150,3 +150,64 @@ phone's never has been, and turning a first measurement into a gate hands the
 next person a red tree full of untriaged findings, which is how gates get
 switched off instead of obeyed.  The gate should be armed by the commit that
 fixes the defects, not before and not instead.
+
+---
+
+## 5. What shipped, 2026-08-17
+
+**One CSS default was the root cause.**  A grid item defaults to
+`min-width: auto`, so the shell's single `1fr` column was sized by the widest
+item's min-content -- the header row.  The whole app, workspace included, was
+laid out at 480 px on a 390 px phone and clipped.  `minWidth: 0` on the header
+item took **ten of the twelve tool pages to zero clipped without a single tool
+being touched**: their setup strips already carried `overflow-x: auto`, and
+that scroller was useless while an ancestor was wider than the screen.  §2 and
+§3 had filed those as two problems; they were one.
+
+Then, in order: the header takes two 32 px lines below `sm` and the eleven
+workspace tabs collapse into ONE dropdown (not a scroller -- the strip is
+833 px, so a scroller leaves ~55 % of it, Reports and Pinch included, behind a
+gesture with no affordance saying they exist); mccabe's and psychro's setup
+bars reflow from ONE home (`setupBarLayout`); and psychro's desk overflow is
+decided by whether the bar FITS, not by a phone breakpoint -- Stage 2 did not
+fix it for free, which was verified rather than assumed.
+
+Measured, both viewports:
+
+```
+X-axis clipped   81 -> 0
+clipped total    85 -> 6   (all Y: the pre-existing collapsed "Copy propsDict" fold)
+owner's state    13 of 18 top-bar controls unreachable -> 0; rightmost 1035 -> 378
+```
+
+**One desk count moved and it is the fix landing, not a number anyone edited.**
+`desk/psychro` 34 -> 37 checked, with off-viewport 4 -> 1: the population is 38
+in both readings, and the three that crossed are exactly the Stage 3 trio (two
+steppers at x=1411 and `hide setup controls` at x=1461).
+
+### The gate is armed, and only because both conditions were met
+
+§4 said the gate must be armed by the commit that fixes the defects, and §2a
+added a second condition: the walk had to reach a state where the worst of them
+lives.  Both hold now.  `checkGui` gained a THIRTEENTH page -- the same
+workspace with a real sealed case open -- so the case-open shell, which is
+where 13 of 18 controls were being lost, is inside the gated walk instead of
+outside it.  `phone` is `gated: true`.
+
+```
+DESK  1400x900 (gated): 406 controls over 13 pages
+PHONE  390x844  (gated): 397 controls over 13 pages
+CLIPPED: 6 (0 on the X axis)          exit 0
+```
+
+### Not closed, and named
+
+* **A single run is not gospel.**  `vanheerden` was observed reporting
+  `9 checked` on two consecutive runs and `35` on a third, on a tool nobody had
+  touched -- intermittent page-render timing, not a defect in the app.  A gate
+  that flakes will eventually be ignored; this one now has a phone arm to flake
+  in too.
+* Chromium emulating an iPhone is not Safari.  Every number here comes from
+  emulation; the defect that started it was found by a human on the real
+  device, and the correction in §2a came from his screenshot, not from the
+  harness.

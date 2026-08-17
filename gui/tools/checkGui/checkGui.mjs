@@ -194,7 +194,13 @@ const BASE = `http://${HOST}:${PORT}/`;
  * The exit code says which policy ran, every run, so nobody has to guess. */
 const VIEWPORTS = [
   { w: 1400, h: 900, label: "desk", gated: true, touch: false, mobile: false },
-  { w: 390, h: 844, label: "phone", gated: false, touch: true, mobile: true },
+  //  ARMED 2026-08-17, and only once BOTH conditions the note above demands
+  //  were met: the defects were fixed (81 X-axis clipped -> 0 at both
+  //  viewports), and the walk gained the thirteenth page, so the gate now
+  //  covers the case-open shell where the worst of them lived.  Arming it
+  //  before either would have gated a measurement nobody had read, or
+  //  certified that the empty app fits.
+  { w: 390, h: 844, label: "phone", gated: true, touch: true, mobile: true },
 ];
 
 const EXIT_CLEAN = 0;
@@ -550,8 +556,35 @@ async function main() {
         + `${vp.touch ? ", touch" : ""}) -- ${vp.gated ? "GATED" : "reported, not gated"}`);
       log("");
 
-      for (const tool of tools) {
-        const url = `${BASE}?workspace=methods&tool=${tool.id}`;
+      /*  THE THIRTEENTH PAGE: the same workspace WITH A CASE OPEN.
+       *
+       *  Everything above walks the blank boot, and MenuBar's lineup is gated
+       *  on hasCaseOpen(), so the blank app renders four tabs in a 480 px row
+       *  while a real session renders eighteen controls in 833.  On
+       *  2026-08-17 that gap WAS the defect: 13 of 18 top-bar controls
+       *  unreachable at 390 px -- Streams cut mid-word, seven workspaces
+       *  unreachable -- and this harness could not see any of it, because the
+       *  loss lives in a state it never entered.  The owner found it on his
+       *  own phone.
+       *
+       *  So the gate may not be armed while the walk cannot reach that state:
+       *  a green phone verdict would have certified that the EMPTY app fits.
+       *  A gate whose blind spot contains the defect is worse than no gate,
+       *  because it is believed.
+       *
+       *  One page is enough because the shell is shared -- it is the SHELL
+       *  being measured here, not a thirteenth tool.  The case is a real
+       *  sealed tutorial, so this also fails if the bundled corpus stops
+       *  carrying it.  */
+      const walk = [
+        ...tools.map((t) => ({ id: t.id, url: `${BASE}?workspace=methods&tool=${t.id}` })),
+        { id: "shell+case",
+          url: `${BASE}?case=steady/flash/flash01_benzene_toluene`
+             + "&workspace=methods&tool=mccabe" },
+      ];
+
+      for (const tool of walk) {
+        const url = tool.url;
         page.clearErrors();
         const loaded = await page.goto(url, 90000);
         if (!loaded) {
