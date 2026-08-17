@@ -121,3 +121,83 @@ export const OCCLUSION_PROBE = `(() => {
     covered,
   };
 })()`;
+
+/*---------------------------------------------------------------------------*\
+  THE SKIPPED PILE, RESOLVED -- and it is the phone that made this necessary.
+
+  The probe above counts an off-viewport control and moves on, correctly: a
+  centre outside the viewport is where `elementFromPoint` is not defined, so
+  it is not evidence either way.  At 1400x900 that pile is small (1 control
+  across all twelve pages).  At 390x844 it is not: 33 controls, and on one
+  page 29 of 40.  Leaving that many in a bucket labelled "no evidence" and
+  then printing "clean" would be the harness making its own coverage collapse
+  look like a result.
+
+  So each one is ASKED.  Scroll it into view, then put the same question:
+  would a click at its centre reach it?  Three answers, and they are different
+  findings:
+
+    * reachableAfterScroll -- off-screen at rest, fine once scrolled to.  Not
+      a defect by this harness's ONE check, but reported: a control 78 px off
+      the left edge of a phone at rest is something a human should see.
+    * coveredAfterScroll   -- brought into view and STILL not reachable at its
+      centre.  A real covered control that the at-rest pass could not report.
+    * unreachableByScroll  -- cannot be brought into the viewport at all.
+
+  IT MUTATES THE PAGE (it scrolls it), so it runs LAST on a page, after every
+  at-rest measurement is already taken.  It restores the document scroll, but
+  not every inner container's -- stated rather than claimed, because a scroll
+  restore that quietly missed one would make the next reading wrong.
+\*---------------------------------------------------------------------------*/
+export const OFFSCREEN_PROBE = `(() => {
+  const SEL = ${JSON.stringify(INTERACTIVE_SELECTOR)};
+  const sx = window.scrollX, sy = window.scrollY;
+
+  const describe = (el) => {
+    const r = el.getBoundingClientRect();
+    return {
+      tag: el.tagName.toLowerCase()
+           + (el.id ? "#" + el.id : "")
+           + (el.getAttribute("role") ? "[role=" + el.getAttribute("role") + "]" : ""),
+      text: (el.textContent || el.getAttribute("aria-label")
+             || el.getAttribute("placeholder") || "").trim().replace(/\\s+/g, " ").slice(0, 50),
+      box: { x: Math.round(r.x), y: Math.round(r.y),
+             w: Math.round(r.width), h: Math.round(r.height) },
+    };
+  };
+
+  const out = { reachableAfterScroll: [], coveredAfterScroll: [], unreachableByScroll: [] };
+
+  for (const el of document.querySelectorAll(SEL)) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === "hidden" || cs.display === "none"
+        || parseFloat(cs.opacity || "1") === 0) continue;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    if (cx >= 0 && cy >= 0 && cx < innerWidth && cy < innerHeight) continue;  // already judged
+
+    const atRest = describe(el);
+    el.scrollIntoView({ block: "center", inline: "center" });
+    const r2 = el.getBoundingClientRect();
+    const cx2 = r2.left + r2.width / 2, cy2 = r2.top + r2.height / 2;
+    const now = describe(el);
+    const entry = { control: atRest, afterScroll: now.box };
+
+    if (cx2 < 0 || cy2 < 0 || cx2 >= innerWidth || cy2 >= innerHeight) {
+      out.unreachableByScroll.push(entry);
+      continue;
+    }
+    const hit = document.elementFromPoint(cx2, cy2);
+    if (hit === el || (hit && el.contains(hit))) { out.reachableAfterScroll.push(entry); continue; }
+    entry.blocker = hit ? describe(hit) : { tag: "(nothing)", text: "", box: null };
+    entry.relation = hit && hit.contains(el) ? "ancestor" : "overlay";
+    out.coveredAfterScroll.push(entry);
+  }
+
+  window.scrollTo(sx, sy);
+  out.documentOverflowsX = document.documentElement.scrollWidth > document.documentElement.clientWidth;
+  out.scrollWidth = document.documentElement.scrollWidth;
+  out.clientWidth = document.documentElement.clientWidth;
+  return out;
+})()`;

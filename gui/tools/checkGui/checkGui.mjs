@@ -27,7 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  checkGui -- the visual-defect harness.  PHASE 1: one check, one viewport.
+  checkGui -- the visual-defect harness.  PHASE 2: three arms, two viewports.
 
   WHY IT EXISTS.  The GUI's 2400 tests run in node, under jsdom, where there
   is no layout engine: every box is 0x0 and nothing is ever on top of anything.
@@ -40,13 +40,19 @@ License
     1. reuses the dev server on 127.0.0.1:5173, or starts one and cleans it up;
     2. drives Chromium over the DevTools protocol (no new dependency -- see
        cdp.mjs);
-    3. opens the EduTools workspace at ONE viewport (1400x900) with each tool
-       in the registry selected in turn, via the `?workspace=methods&tool=<id>`
-       deep link that registry.ts calls a contract;
+    3. opens the EduTools workspace at TWO viewports -- 1400x900 (the gated
+       claim) and 390x844 with touch (the phone the original bug report came
+       from) -- with each tool in the registry selected in turn, via the
+       `?workspace=methods&tool=<id>` deep link registry.ts calls a contract;
     4. asks, of every visible interactive control, whether a click at its
        centre would reach it (occlusion.mjs);
-    5. exits 1 if any control is covered, 0 if none is, 2 if it could not
-       honestly run.
+    5. resolves the controls that question could NOT be asked of, by scrolling
+       to them and asking again (occlusion.mjs, OFFSCREEN_PROBE);
+    6. proves its own sabotage is not vacuous, by performing the defect
+       in-page and measuring its reach (exposure.mjs);
+    7. reads every error the page or its WORKERS produced;
+    8. exits 1 if any control is covered or any page errored, 0 if neither,
+       2 if it could not honestly run.
 
   THE REFUSAL POSTURE.  A gate that cannot run must not pass.  This project
   retired one that reported PASS on every run while both its inputs had been
@@ -69,14 +75,55 @@ License
   the Theory link not existed, the same sabotage would have produced ZERO
   findings and this harness would have passed a genuinely broken layout.  The
   proof is real and it rests on a single control -- which is geometric luck,
-  not coverage, and is the first thing a phase-2 arm should remove.
+  not coverage.
 
-  ONE MORE THING THE SABOTAGE RUN SHOWED, unasked: the merkel page never
-  solves in a container whose bundled WASM predates the coolingTower unit
-  (`UnitOperation::New: unknown type 'coolingTower'`).  The harness walked a
-  page in its ERROR state and reported it clean.  `page.consoleErrors` is
-  collected and NOT read -- reading it is phase 2, and until then a green run
-  says nothing about whether the engine behind the page worked.
+  ---------------------------------------------------------------------------
+  PHASE 2 -- the three limits above, closed.  Each was verified by observation,
+  and where the observation contradicted the expectation the observation won.
+
+  ARM 1 -- THE LUCK IS NOW MEASURED, and running out of it REFUSES.
+  `exposure.mjs` performs the defect on every page (the offending CSS, on the
+  live element that hosts the tool) and counts what it actually covers: the
+  sabotage's REACH.  Reach 0 means the sabotage would prove nothing there, so
+  the harness exits 2 naming the page.  Measured today: 11 · 11 · 1 · 1 · 1 ·
+  1 · 1 · 1 · 1 · 1 · 1 · 1.  The floor is 1 because ten of twelve pages sit
+  exactly on it -- the reasoning, and why the corpus total is deliberately NOT
+  gated, is in exposure.mjs beside the number.  Ten pages are announced
+  FRAGILE on every run: their whole proof is one shared link.
+  Self-test: `--selftest-exposure` hides exactly that population at run time
+  and the refusal fires.  VERIFIED.
+
+  ARM 2 -- A GREEN PAGE CANNOT HIDE A DEAD ENGINE.  `page.consoleErrors` was
+  DECLARED and never filled -- not "collected and not read", as this docstring
+  used to say: nothing was ever pushed to it.  It is wired now, into the
+  workers too, because the engine is Emscripten C++ in a dedicated worker and
+  a worker's console never reaches the page session (cdp.mjs header).  A page
+  that errors FAILS the run; the justification, including the argument
+  against, is at THE ERROR VERDICT below.  The channel proves it can hear on
+  every run before the walk starts, and REFUSES if it cannot -- a collector
+  that has never heard anything and silence look identical.
+  HONEST CORRECTION: the `UnitOperation::New: unknown type 'coolingTower'`
+  this docstring recorded does NOT reproduce today.  All twelve pages produce
+  zero errors at both viewports.  The channel was proved on the injected
+  self-test and on a real failure elsewhere (the Case workspace's browse call
+  to 127.0.0.1:7682, which the warm-up load still shows), NOT on the merkel
+  case that motivated it.
+
+  ARM 3 -- THE PHONE.  A second pass at 390x844 with touch emulation, because
+  the bug report that started all this was an iPhone screenshot.  It found no
+  covered control at rest -- and that was NOT the finding.  The finding is
+  that the at-rest question could not be ASKED of 33 controls there (against 1
+  at 1400x900): they sit outside the viewport, where `elementFromPoint` is
+  undefined.  Reporting twelve clean pages over that would have been the
+  harness's own coverage collapse wearing the word "clean".  So the skipped
+  pile is now resolved by scrolling to each and asking again -- see
+  occlusion.mjs -- which turned it into two real defects and thirty-one
+  at-rest-off-screen controls.  The phone pass REPORTS and does not gate; the
+  reason is stated at THE PHONE VERDICT below.
+
+  STILL NOT CLOSED, and named so no one has to rediscover it: this walks ONE
+  workspace (EduTools) in its DEFAULT state.  Nothing is clicked, no menu is
+  opened, and the other seven workspaces are unwalked.
 \*---------------------------------------------------------------------------*/
 
 import { spawn } from "node:child_process";
@@ -86,7 +133,8 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { findChromium, launch } from "./cdp.mjs";
-import { OCCLUSION_PROBE } from "./occlusion.mjs";
+import { exposureProbe, FIND_WORKSPACE_CONTAINER, MIN_SABOTAGE_REACH } from "./exposure.mjs";
+import { OCCLUSION_PROBE, OFFSCREEN_PROBE } from "./occlusion.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const GUI = resolve(HERE, "../..");
@@ -96,7 +144,32 @@ const ARTIFACTS = join(HERE, "artifacts");
 const HOST = "127.0.0.1";
 const PORT = 5173;
 const BASE = `http://${HOST}:${PORT}/`;
-const VIEWPORT = { w: 1400, h: 900 };
+
+/* THE VIEWPORTS.
+ *
+ * 1400x900 is the desk, and it is the GATED claim -- the viewport the defect
+ * that built this harness was found at, and the one whose baseline (12 pages,
+ * 359 controls, 0 covered) has been agreed.
+ *
+ * 390x844 is an iPhone 14/15's CSS viewport, and it is here because the
+ * original bug report was a phone screenshot.  `touch` is not decoration: the
+ * GUI's ONE posture-detection home (methodsChrome.useNarrowViewport) reads
+ * `(pointer: coarse)` as well as the width, so a 390px-wide MOUSE would
+ * exercise a posture no user is in.
+ *
+ * THE PHONE VERDICT -- reported, NOT gated, and the reason is not squeamishness.
+ * The desk pass gates because somebody agreed its baseline; the phone pass has
+ * never had one, and turning a brand-new measurement into a gate in the same
+ * commit that first takes it converts every pre-existing, untriaged defect
+ * into a red tree for whoever next touches gui/src.  That is how a gate gets
+ * switched off instead of obeyed.  So the phone findings are printed in full,
+ * with element names and boxes, and counted in the summary under their own
+ * heading; `--gate-phone` promotes them the day their owner has read them.
+ * The exit code says which policy ran, every run, so nobody has to guess. */
+const VIEWPORTS = [
+  { w: 1400, h: 900, label: "desk", gated: true, touch: false, mobile: false },
+  { w: 390, h: 844, label: "phone", gated: false, touch: true, mobile: true },
+];
 
 const EXIT_CLEAN = 0;
 const EXIT_DEFECT = 1;
@@ -105,6 +178,13 @@ const EXIT_REFUSED = 2;
 const args = process.argv.slice(2);
 const SAVE_ALL_SHOTS = args.includes("--screenshots");
 const KEEP_SERVER = args.includes("--keep-server");
+const GATE_PHONE = args.includes("--gate-phone");
+const DESK_ONLY = args.includes("--desk-only");
+/* The exposure arm's own sabotage, kept in the tool rather than in a note
+ * about a thing someone once did by hand: it empties the region the sabotage
+ * feeds on and the refusal must fire.  A proof that has to be re-performed
+ * from memory is a proof nobody re-performs. */
+const SELFTEST_EXPOSURE = args.includes("--selftest-exposure");
 
 // ---- refusal ---------------------------------------------------------------
 
@@ -209,23 +289,35 @@ function stopServer(proc) {
 // ---- readiness -------------------------------------------------------------
 
 /** The app is lazy: the workspace bundle loads after the shell.  Wait until
- *  the interactive-control count has been STABLE for two consecutive polls and
- *  the workspace root exists.  A screenshot of a half-mounted page would give
- *  a false negative -- there is nothing yet to be covered by. */
+ *  the interactive-control count has been STABLE for two consecutive polls
+ *  AND the workspace's own positioned container has appeared.
+ *
+ *  THE CONTAINER CLAUSE IS NOT BELT-AND-BRACES -- it was paid for.  The old
+ *  poll asked only "have the counts stopped moving?", and the app's TOP BAR
+ *  mounts long before the lazy workspace chunk does.  On a dev server busy
+ *  recompiling (another editor at work, or a cold chunk), eight top-bar
+ *  controls sit perfectly still for two polls and the page is declared ready
+ *  with the entire workspace still missing.  Observed, on five of twelve
+ *  pages in one run: "8 checked -> clean", a full green line over a page that
+ *  had not rendered the thing under test.  That is the harness telling a
+ *  falsehood in its own voice, which is worse than a crash.  So readiness now
+ *  requires the container the workspace is mounted in, and a page that never
+ *  produces one REFUSES rather than being measured. */
 const READY_PROBE = `(() => {
   const n = document.querySelectorAll(${JSON.stringify(
     'button, [role="button"], a[href], input, select, [tabindex]',
   )}).length;
   const body = (document.body && document.body.innerText || "").length;
-  return { n, body };
+  const ws = ${FIND_WORKSPACE_CONTAINER};
+  return { n, body, workspace: ws !== null };
 })()`;
 
-async function waitReady(page, timeoutMs = 25000) {
+async function waitReady(page, timeoutMs = 45000) {
   const t0 = Date.now();
   let prev = null, stable = 0;
   while (Date.now() - t0 < timeoutMs) {
     const s = await page.evaluate(READY_PROBE);
-    if (prev && s.n === prev.n && s.body === prev.body && s.n > 0) {
+    if (prev && s.n === prev.n && s.body === prev.body && s.n > 0 && s.workspace) {
       stable++;
       if (stable >= 2) return s;
     } else {
@@ -252,13 +344,96 @@ function reportCovered(log, where, c) {
   if (c.blocker.cls) log(`           blocker class ${c.blocker.cls}`);
 }
 
+/* THE ERROR VERDICT -- a page that errored FAILS the run, and the argument
+ * against it is worth stating because it is a good one.
+ *
+ * AGAINST: this harness is about pixels.  A stale bundled .wasm, or a missing
+ * local sidecar, is an ENVIRONMENT fault, and failing a layout gate for it
+ * makes the gate red for a reason it cannot speak to.
+ *
+ * FOR, and it decides: an errored page UNDER-POPULATES the very thing this
+ * harness measures.  A tool whose engine refused renders an error card where
+ * a chart and its controls would be; "40 controls checked, clean" over that
+ * page is a strictly smaller claim wearing the same words as a full one.  The
+ * count itself is the casualty.  That is not an environment problem sitting
+ * beside the measurement -- it is a silent shrinking of the measurement.  A
+ * green run over it is exactly the falsehood this project retires gates for.
+ *
+ * So: exit 1, its OWN heading in the summary, and the per-page verdict word
+ * changes so no line can read "clean" over a page whose engine failed.  The
+ * source of every entry (page / worker, console / uncaught / network) is
+ * printed, so a reader can tell an environment fault from a code fault in one
+ * line -- which is the part the "it's only the environment" objection actually
+ * needs. */
+function reportPageErrors(log, errors) {
+  for (const e of errors) {
+    log(`  PAGE ERROR  [${e.where}/${e.kind}] ${e.text.slice(0, 300)}`);
+  }
+}
+
+/** Dedupe: a worker's console.error arrives twice -- once from the worker's
+ *  own Runtime domain and once relayed to the page's Log domain.  One failure
+ *  must be reported once. */
+function dedupeErrors(errors) {
+  const seen = new Set(), out = [];
+  for (const e of errors) {
+    const key = e.text.replace(/\s+/g, " ").trim();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(e);
+  }
+  return out;
+}
+
+/** ARM 2's own precondition: prove the error channel can HEAR, on both the
+ *  page and a worker, before trusting a run of silences.  A collector that
+ *  never fires and a page that never errs produce identical output, and this
+ *  field spent its whole first life looking collected while nothing was ever
+ *  pushed to it. */
+async function proveErrorChannel(page, log) {
+  page.clearErrors();
+  const PAGE_MARK = "checkGui error-channel self-test (page)";
+  const WORKER_MARK = "checkGui error-channel self-test (worker)";
+  await page.evaluate(`console.error(${JSON.stringify(PAGE_MARK)}), 1`);
+  await page.evaluate(
+    `(() => {
+       const src = "console.error(" + ${JSON.stringify(JSON.stringify(WORKER_MARK))} + ");";
+       const w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+       return 1;
+     })()`,
+  );
+  // The worker has to spawn, run and have its message relayed; poll rather
+  // than sleep a guessed constant.
+  const t0 = Date.now();
+  let heardPage = false, heardWorker = false;
+  while (Date.now() - t0 < 10000 && !(heardPage && heardWorker)) {
+    heardPage = page.consoleErrors.some((e) => e.text.includes(PAGE_MARK));
+    heardWorker = page.consoleErrors.some((e) => e.text.includes(WORKER_MARK));
+    if (heardPage && heardWorker) break;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  page.clearErrors();
+  if (!heardPage || !heardWorker) {
+    throw new Refusal(
+      "the page-error channel is deaf: "
+      + `${heardPage ? "heard" : "MISSED"} the page probe, `
+      + `${heardWorker ? "heard" : "MISSED"} the worker probe`,
+      "a run of silences would be indistinguishable from a run of clean pages.  "
+      + "Fix the wiring in cdp.mjs (Runtime/Log enable, Target.setAutoAttach) "
+      + "before believing any 'no errors' line.",
+    );
+  }
+  log("[errors] channel proved live: page and worker console.error both heard");
+}
+
 // ---- main ------------------------------------------------------------------
 
 async function main() {
   const lines = [];
   const log = (s = "") => { lines.push(s); console.log(s); };
 
-  log("checkGui -- GUI visual-defect harness (phase 1: occlusion, one viewport)");
+  log("checkGui -- GUI visual-defect harness (phase 2: occlusion + exposure + "
+    + "page errors, two viewports)");
   log("");
 
   // -- preconditions, each refusing by name -------------------------------
@@ -288,12 +463,14 @@ async function main() {
 
   const server = await ensureServer(log);
   let browser = null;
-  const findings = [];
-  let pagesChecked = 0, controlsChecked = 0;
+  const passes = [];                 // one record per viewport
+  let warmUpErrors = [];
+
+  const viewports = DESK_ONLY ? VIEWPORTS.filter((v) => v.gated) : VIEWPORTS;
 
   try {
     browser = await launch(chromium);
-    const page = await browser.newPage(VIEWPORT.w, VIEWPORT.h);
+    const page = await browser.newPage(viewports[0].w, viewports[0].h);
 
     // WARM-UP, and it is not a formality.  Vite opens its listening socket
     // long before it can serve: the FIRST request triggers dependency
@@ -314,47 +491,116 @@ async function main() {
     await waitReady(page, 60000);
     log(`[warm-up] first load of ${BASE} took ${((Date.now() - t0) / 1000).toFixed(1)} s `
       + "(Vite dependency pre-bundling; later pages are cheap)");
+    // The warm-up loads `/`, which is the CASE workspace -- one this harness
+    // explicitly does not claim to check.  Its errors are reported (they are
+    // real, and they name the missing sidecar) but do NOT enter the verdict:
+    // failing on a page whose layout is never examined would be a claim about
+    // something unmeasured.
+    warmUpErrors = dedupeErrors(page.consoleErrors);
 
-    log("");
-    log(`[walk] EduTools workspace at ${VIEWPORT.w}x${VIEWPORT.h}, one page per tool`);
-    log("");
+    // ARM 2's precondition, before any page is believed silent.
+    await proveErrorChannel(page, log);
 
-    for (const tool of tools) {
-      const url = `${BASE}?workspace=methods&tool=${tool.id}`;
-      const loaded = await page.goto(url, 90000);
-      if (!loaded) {
-        throw new Refusal(
-          `${url} did not fire a load event within 90 s`,
-          "the dev server answered the socket but not the page; check the Vite output.",
-        );
-      }
-      const ready = await waitReady(page);
-      if (!ready || ready.n === 0) {
-        throw new Refusal(
-          `${url} mounted no interactive controls -- the harness would be checking an empty page`,
-          "open that URL in a browser; a build error or a crashed workspace shows in the console.",
-        );
-      }
+    for (const vp of viewports) {
+      await page.setViewport(vp.w, vp.h, { mobile: vp.mobile, touch: vp.touch });
+      const pass = {
+        vp, findings: [], errored: [], exposure: [],
+        offscreen: [], pagesChecked: 0, controlsChecked: 0, offViewport: 0,
+      };
+      passes.push(pass);
 
-      const r = await page.evaluate(OCCLUSION_PROBE);
-      pagesChecked++;
-      controlsChecked += r.checked;
+      log("");
+      log(`[walk] EduTools workspace at ${vp.w}x${vp.h} (${vp.label}`
+        + `${vp.touch ? ", touch" : ""}) -- ${vp.gated ? "GATED" : "reported, not gated"}`);
+      log("");
 
-      const verdict = r.covered.length === 0 ? "clean" : `${r.covered.length} COVERED`;
-      log(`  ${tool.id.padEnd(16)} ${String(r.checked).padStart(3)} controls checked `
-        + `(${r.skippedInvisible} invisible, ${r.skippedOffscreen} off-viewport)  ->  ${verdict}`);
+      for (const tool of tools) {
+        const url = `${BASE}?workspace=methods&tool=${tool.id}`;
+        page.clearErrors();
+        const loaded = await page.goto(url, 90000);
+        if (!loaded) {
+          throw new Refusal(
+            `${url} did not fire a load event within 90 s`,
+            "the dev server answered the socket but not the page; check the Vite output.",
+          );
+        }
+        const ready = await waitReady(page);
+        if (!ready || ready.n === 0) {
+          throw new Refusal(
+            `${url} mounted no interactive controls -- the harness would be checking an empty page`,
+            "open that URL in a browser; a build error or a crashed workspace shows in the console.",
+          );
+        }
+        if (!ready.workspace) {
+          const errs = dedupeErrors(page.consoleErrors);
+          throw new Refusal(
+            `${url} settled with ${ready.n} interactive controls but NO workspace container `
+            + `at ${vp.w}x${vp.h} -- only the app shell mounted, so any verdict would be about `
+            + "the top bar."
+            + (errs.length ? `  The page said: ${errs.map((e) => e.text).join(" | ")}` : ""),
+            "the lazy workspace chunk never arrived.  A dev server busy recompiling (another "
+            + "editor mid-save) is the usual cause -- re-run once it settles.  A build error or "
+            + "a crashed workspace shows in the browser console at that URL.",
+          );
+        }
 
-      if (r.covered.length > 0) {
-        findings.push({ tool: tool.id, url, covered: r.covered });
-        for (const c of r.covered) reportCovered(log, tool.id, c);
-      }
+        // (a) the at-rest occlusion question.
+        const r = await page.evaluate(OCCLUSION_PROBE);
+        pass.pagesChecked++;
+        pass.controlsChecked += r.checked;
+        pass.offViewport += r.skippedOffscreen;
 
-      if (SAVE_ALL_SHOTS || r.covered.length > 0) {
-        mkdirSync(ARTIFACTS, { recursive: true });
-        const png = await page.screenshot();
-        const file = join(ARTIFACTS, `methods-${tool.id}-${VIEWPORT.w}x${VIEWPORT.h}.png`);
-        writeFileSync(file, png);
-        log(`           screenshot ${file}`);
+        // (b) ARM 1 -- is the sabotage that proves this arm still non-vacuous?
+        //     Run at every viewport, gated only where the claim is gated.
+        const exp = await page.evaluate(exposureProbe({ hideExposed: SELFTEST_EXPOSURE }));
+        pass.exposure.push({ tool: tool.id, url, ...exp });
+
+        // (c) ARM 3 -- resolve what (a) had to skip.  LAST: it scrolls.
+        const off = await page.evaluate(OFFSCREEN_PROBE);
+        const offDefects = off.coveredAfterScroll.length + off.unreachableByScroll.length;
+        if (off.reachableAfterScroll.length || offDefects) {
+          pass.offscreen.push({ tool: tool.id, url, ...off });
+        }
+
+        // (d) ARM 2 -- what did the page and its workers say?
+        const errs = dedupeErrors(page.consoleErrors);
+        if (errs.length) pass.errored.push({ tool: tool.id, url, errors: errs });
+
+        const bits = [];
+        bits.push(r.covered.length === 0 ? "clean" : `${r.covered.length} COVERED`);
+        if (offDefects) bits.push(`${offDefects} COVERED off-screen`);
+        if (errs.length) bits.push(`${errs.length} PAGE ERROR${errs.length > 1 ? "S" : ""}`);
+        const reach = exp.found ? `reach ${exp.reach}` : "reach n/a";
+
+        log(`  ${tool.id.padEnd(16)} ${String(r.checked).padStart(3)} checked `
+          + `(${r.skippedInvisible} invisible, ${r.skippedOffscreen} off-viewport, `
+          + `${reach})  ->  ${bits.join(" + ")}`);
+
+        if (r.covered.length > 0) {
+          pass.findings.push({ tool: tool.id, url, covered: r.covered });
+          for (const c of r.covered) reportCovered(log, tool.id, c);
+        }
+        for (const e of off.coveredAfterScroll) {
+          log(`  COVERED (off-screen at rest, scrolled to) ${e.control.tag} `
+            + `"${e.control.text || "(no text)"}"`);
+          log(`           at rest ${fmtBox(e.control.box)} -> after scroll ${fmtBox(e.afterScroll)}`);
+          log(`           blocked by ${e.blocker.tag} "${e.blocker.text || "(no text)"}" `
+            + `(${e.relation}) ${fmtBox(e.blocker.box)}`);
+        }
+        for (const e of off.unreachableByScroll) {
+          log(`  UNREACHABLE (cannot be scrolled into the viewport) ${e.control.tag} `
+            + `"${e.control.text || "(no text)"}" at rest ${fmtBox(e.control.box)}`);
+        }
+        if (errs.length) reportPageErrors(log, errs);
+
+        const interesting = r.covered.length > 0 || offDefects > 0 || errs.length > 0;
+        if (SAVE_ALL_SHOTS || interesting) {
+          mkdirSync(ARTIFACTS, { recursive: true });
+          const png = await page.screenshot();
+          const file = join(ARTIFACTS, `methods-${tool.id}-${vp.w}x${vp.h}.png`);
+          writeFileSync(file, png);
+          log(`           screenshot ${file}`);
+        }
       }
     }
   } finally {
@@ -369,17 +615,119 @@ async function main() {
     }
   }
 
-  // -- verdict --------------------------------------------------------------
+  // -- ARM 1's verdict, taken BEFORE any pass/fail is announced ---------------
+  // A vacuous arm is not a failing gate, it is a gate that CANNOT fail, and
+  // this project retired one of those.  So it refuses, and it refuses before
+  // the word OK can appear anywhere above it.
   log("");
   log("-".repeat(72));
-  log(`checked ${controlsChecked} interactive controls over ${pagesChecked} pages`);
+  log("SABOTAGE REACH -- what an `inset: 0` tool root would actually cover");
+  log("  (the defect performed in-page on each tool's mount, then reverted;");
+  log("   this is what makes a clean occlusion result mean anything)");
   log("");
-  log("NOT COVERED BY THIS HARNESS (phase 1 -- stated so a PASS is not over-read):");
-  log("  * ONE viewport only (1400x900).  The 390x844 phone pass is phase 2.");
+  const vacuous = [], fragile = [];
+  for (const pass of passes) {
+    for (const e of pass.exposure) {
+      const tag = `${pass.vp.label}/${e.tool}`;
+      if (!e.found) {
+        log(`  ${tag.padEnd(28)} NO CONTAINER -- ${e.why}`);
+        if (pass.vp.gated) vacuous.push({ ...e, tag, reach: null });
+        continue;
+      }
+      const names = e.covered.map((c) => `${c.tag} "${c.text || "(no text)"}"`);
+      log(`  ${tag.padEnd(28)} reach ${String(e.reach).padStart(3)}`
+        + `   (target ${e.target.tag} ${fmtBox(e.target.box)}, `
+        + `${e.reachableBefore} reachable before)`);
+      if (e.reach > 0) log(`  ${" ".repeat(28)} covers: ${names.join(", ")}`);
+      if (e.reach < MIN_SABOTAGE_REACH && pass.vp.gated) vacuous.push({ ...e, tag });
+      else if (e.reach === MIN_SABOTAGE_REACH && pass.vp.gated) fragile.push({ ...e, tag });
+    }
+  }
+  if (fragile.length > 0) {
+    log("");
+    log(`  FRAGILE -- ${fragile.length} gated page(s) rest their whole proof on exactly `
+      + `${MIN_SABOTAGE_REACH} control:`);
+    log(`            ${fragile.map((f) => f.tag).join(", ")}`);
+    log("            This is the floor, not a margin.  It is announced every run so");
+    log("            the thinness is read rather than assumed -- see exposure.mjs.");
+  }
+  if (SELFTEST_EXPOSURE) {
+    log("");
+    log("  --selftest-exposure: the exposed controls were HIDDEN at run time before");
+    log("  each measurement.  A reach that did not fall to 0 would mean this arm's");
+    log("  own sabotage cannot empty the region it claims to guard.");
+  }
+  log("-".repeat(72));
+
+  if (vacuous.length > 0) {
+    throw new Refusal(
+      `the occlusion check is VACUOUS on ${vacuous.length} gated page(s): `
+      + vacuous.map((v) => `${v.tag} (reach ${v.reach === null ? "n/a" : v.reach})`).join(", ")
+      + `.  An \`inset: 0\` tool root there covers ${MIN_SABOTAGE_REACH > 1 ? "too few" : "no"} `
+      + "interactive control, so the defect this whole harness exists for could be "
+      + "present and produce no finding.  A clean run would prove nothing.",
+      "the workspace's positioned container has lost the controls that sat above the "
+      + "tool -- most likely the shared caption strip (TeachesLine, with the "
+      + "Theory-Guide link) moved into the top bar, out of the blast radius, exactly "
+      + "as the tool rail did in 9e5ff796.  Either keep a control in that container, "
+      + "or replace this arm with one whose sabotage reaches the new geometry.  Do NOT "
+      + "lower MIN_SABOTAGE_REACH: 0 is not a threshold, it is the absence of a test.",
+    );
+  }
+
+  // -- the walk's own summary -----------------------------------------------
+  log("");
+  log("-".repeat(72));
+  for (const pass of passes) {
+    const p = pass.vp;
+    log(`${p.label.toUpperCase()} ${p.w}x${p.h}${p.touch ? " touch" : ""} `
+      + `(${p.gated ? "gated" : "reported only"}): `
+      + `${pass.controlsChecked} controls checked over ${pass.pagesChecked} pages, `
+      + `${pass.offViewport} off-viewport`);
+    const covered = pass.findings.reduce((n, f) => n + f.covered.length, 0);
+    const offCovered = pass.offscreen.reduce(
+      (n, o) => n + o.coveredAfterScroll.length + o.unreachableByScroll.length, 0);
+    const offRest = pass.offscreen.reduce((n, o) => n + o.reachableAfterScroll.length, 0);
+    log(`    at-rest covered: ${covered}   off-screen covered/unreachable: ${offCovered}`
+      + `   off-screen but reachable once scrolled to: ${offRest}`);
+    log(`    pages that errored: ${pass.errored.length}`);
+  }
+
+  if (warmUpErrors.length > 0) {
+    log("");
+    log(`WARM-UP PAGE (${BASE}, the Case workspace -- NOT one of the checked pages, `
+      + "so these do not enter the verdict):");
+    reportPageErrors(log, warmUpErrors);
+  }
+
+  const offRestAll = passes.flatMap((p) => p.offscreen)
+    .reduce((n, o) => n + o.reachableAfterScroll.length, 0);
+  if (offRestAll > 0) {
+    log("");
+    log(`OFF-SCREEN AT REST BUT REACHABLE ONCE SCROLLED TO: ${offRestAll} control(s).`);
+    log("  Not a defect by this harness's ONE check -- a click does land on them once");
+    log("  they are scrolled into view.  Listed because a control whose centre is");
+    log("  outside the viewport when the page settles is something a human should see:");
+    for (const pass of passes) {
+      for (const o of pass.offscreen) {
+        for (const e of o.reachableAfterScroll) {
+          log(`    ${pass.vp.label}/${o.tool.padEnd(16)} ${e.control.tag} `
+            + `"${e.control.text || "(no text)"}" at rest ${fmtBox(e.control.box)}`);
+        }
+      }
+    }
+  }
+
+  log("");
+  log("NOT COVERED BY THIS HARNESS (stated so a PASS is not over-read):");
+  log("  * TWO viewports only (1400x900 gated, 390x844 reported).  Everything");
+  log("    between and beyond them is unwalked, and Chromium is not WebKit --");
+  log("    the phone pass emulates an iPhone's viewport and pointer, not Safari.");
   log("  * ONE workspace only (EduTools).  Case / Streams / Plots / Explore /");
   log("    Control / Reports / Log are not walked.");
-  log("  * ONE check only: does a click at a control's CENTRE reach it.  Viewport");
-  log("    overflow, text collision, contrast and console errors are phase 2.");
+  log("  * REACHABILITY only: does a click at a control's CENTRE reach it, at rest");
+  log("    or after scrolling to it.  Text collision, contrast and truncation are");
+  log("    not checked.");
   log("  * LAYOUT only.  It cannot judge whether a chart is right, whether a");
   log("    number is right, or whether a label reads well -- only who would");
   log("    receive the click.");
@@ -387,16 +735,64 @@ async function main() {
   log("  * Shadow DOM and iframe contents are outside elementFromPoint's reach.");
   log("  * The default page state only: no menu is opened, no dialog raised, no");
   log("    control is clicked.  An overlay that appears on interaction is unseen.");
+  log("  * The sabotage-reach arm probes ONE element per page (the tool's mount).");
+  log("    An `inset: 0` on an EARLIER sibling is painted over by the later ones");
+  log("    and covers nothing -- measured, and outside the arm.");
   log("-".repeat(72));
 
-  if (findings.length > 0) {
+  // -- the verdict -----------------------------------------------------------
+  const gatedPasses = passes.filter((p) => p.vp.gated || GATE_PHONE);
+  const reasons = [];
+  for (const pass of gatedPasses) {
+    const covered = pass.findings.reduce((n, f) => n + f.covered.length, 0);
+    const offCovered = pass.offscreen.reduce(
+      (n, o) => n + o.coveredAfterScroll.length + o.unreachableByScroll.length, 0);
+    if (covered > 0) {
+      reasons.push(`${covered} covered control(s) at ${pass.vp.label} on `
+        + `${pass.findings.length} page(s): ${pass.findings.map((f) => f.tool).join(", ")}`);
+    }
+    if (offCovered > 0) {
+      reasons.push(`${offCovered} control(s) at ${pass.vp.label} still unreachable after `
+        + `scrolling to them: ${pass.offscreen
+          .filter((o) => o.coveredAfterScroll.length + o.unreachableByScroll.length)
+          .map((o) => o.tool).join(", ")}`);
+    }
+    if (pass.errored.length > 0) {
+      reasons.push(`${pass.errored.reduce((n, e) => n + e.errors.length, 0)} page error(s) at `
+        + `${pass.vp.label} on ${pass.errored.length} page(s): `
+        + `${pass.errored.map((e) => e.tool).join(", ")}`);
+    }
+  }
+
+  const ungatedTrouble = passes.filter((p) => !(p.vp.gated || GATE_PHONE))
+    .flatMap((p) => {
+      const off = p.offscreen.reduce(
+        (n, o) => n + o.coveredAfterScroll.length + o.unreachableByScroll.length, 0);
+      const cov = p.findings.reduce((n, f) => n + f.covered.length, 0);
+      const err = p.errored.reduce((n, e) => n + e.errors.length, 0);
+      return off + cov + err > 0
+        ? [`${p.vp.label} ${p.vp.w}x${p.vp.h}: ${cov} covered at rest, ${off} covered `
+           + `off-screen, ${err} page error(s)`]
+        : [];
+    });
+  if (ungatedTrouble.length > 0) {
     log("");
-    log(`FAIL -- ${findings.reduce((n, f) => n + f.covered.length, 0)} covered control(s) `
-      + `on ${findings.length} page(s): ${findings.map((f) => f.tool).join(", ")}`);
+    log("PHONE FINDINGS -- reported, and they did NOT change the exit code:");
+    for (const t of ungatedTrouble) log(`  ${t}`);
+    log("  The phone viewport has no agreed baseline yet and gui/src is not this");
+    log("  harness's to edit.  Every finding is printed above with its element and");
+    log("  its box.  Re-run with --gate-phone to make them fail.");
+  }
+
+  if (reasons.length > 0) {
+    log("");
+    log("FAIL --");
+    for (const r of reasons) log(`  * ${r}`);
     return EXIT_DEFECT;
   }
   log("");
-  log("OK -- every visible interactive control on every EduTools page is reachable at its centre.");
+  log(`OK -- every visible interactive control on every EduTools page is reachable, and `
+    + `no checked page errored${GATE_PHONE ? "" : " (gated viewports only)"}.`);
   return EXIT_CLEAN;
 }
 

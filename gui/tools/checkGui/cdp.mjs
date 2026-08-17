@@ -35,9 +35,20 @@ License
   `ws` is ALREADY a devDependency of gui/ (the Claude bridge uses it), so a
   flat-session CDP client over one WebSocket is free.
 
-  Scope: launch, navigate, evaluate, screenshot, close.  Nothing else.  If a
-  future phase needs input synthesis or tracing, extend here rather than
-  reaching for a framework.
+  Scope: launch, navigate, evaluate, screenshot, resize, collect page errors,
+  close.  Nothing else.  If a future phase needs input synthesis or tracing,
+  extend here rather than reaching for a framework.
+
+  ERROR COLLECTION, and why it reaches into WORKERS.  `Page.consoleErrors`
+  used to be declared here and never filled -- a field that looked collected
+  and was not, which is how a sabotage run walked a page whose engine had
+  failed (`UnitOperation::New: unknown type 'coolingTower'`) and called it
+  clean.  The engine those pages run is Emscripten-compiled C++ inside a
+  DEDICATED WORKER, and a worker has its own execution context: nothing it
+  prints reaches the page session's Runtime domain.  So the client auto-
+  attaches to every sub-target (flat sessions) and enables Runtime + Log on
+  each, tagging every entry with where it came from.  Without that the WASM
+  solver could fail on every page and this file would report silence.
 \*---------------------------------------------------------------------------*/
 
 import { spawn } from "node:child_process";
@@ -122,9 +133,14 @@ export class Browser {
     const page = new Page(this, sessionId, targetId);
     await page.send("Page.enable");
     await page.send("Runtime.enable");
-    await page.send("Emulation.setDeviceMetricsOverride", {
-      width, height, deviceScaleFactor: 1, mobile: false,
+    await page.send("Log.enable");
+    // Follow the page into its workers: the WASM solver runs in one, and a
+    // worker's console never reaches the page session.  See the file header.
+    await page.send("Target.setAutoAttach", {
+      autoAttach: true, waitForDebuggerOnStart: false, flatten: true,
     });
+    page._wire();
+    await page.setViewport(width, height);
     return page;
   }
 
@@ -142,10 +158,80 @@ export class Page {
     this.browser = browser;
     this.sessionId = sessionId;
     this.targetId = targetId;
+    /** Every error-level message the page or any of its workers produced,
+     *  since the last clearErrors().  Each entry: { where, kind, text }. */
     this.consoleErrors = [];
+    this._childSessions = new Set();
   }
 
   send(method, params) { return this.browser.send(method, params, this.sessionId); }
+
+  /** Subscribe to the error channels of this target and of every sub-target
+   *  (workers) the browser attaches for us. */
+  _wire() {
+    this.browser.onEvent((m) => {
+      // A worker appeared: enable its domains so it can speak at all.
+      if (m.method === "Target.attachedToTarget" && m.sessionId === this.sessionId) {
+        const child = m.params.sessionId;
+        this._childSessions.add(child);
+        this.browser.send("Runtime.enable", {}, child).catch(() => {});
+        this.browser.send("Log.enable", {}, child).catch(() => {});
+        return;
+      }
+      if (m.sessionId !== this.sessionId && !this._childSessions.has(m.sessionId)) return;
+      const where = m.sessionId === this.sessionId ? "page" : "worker";
+
+      if (m.method === "Runtime.consoleAPICalled") {
+        // Emscripten routes C++ stderr through printErr -> console.error (some
+        // builds console.warn); both are collected, the level is kept so a
+        // reader can tell them apart.
+        const level = m.params.type;
+        if (level !== "error" && level !== "assert") return;
+        const text = (m.params.args || [])
+          .map((a) => (a.value !== undefined ? String(a.value) : a.description || a.type))
+          .join(" ").trim();
+        if (text) this.consoleErrors.push({ where, kind: `console.${level}`, text });
+        return;
+      }
+      if (m.method === "Runtime.exceptionThrown") {
+        const d = m.params.exceptionDetails || {};
+        const text = (d.exception?.description || d.text || "uncaught exception")
+          .split("\n")[0].trim();
+        this.consoleErrors.push({ where, kind: "uncaught", text });
+        return;
+      }
+      if (m.method === "Log.entryAdded") {
+        const e = m.params.entry || {};
+        if (e.level !== "error") return;
+        // console.error already arrives via consoleAPICalled; taking it again
+        // here would double-count one failure as two.
+        if (e.source === "console-api") return;
+        const text = `${e.text || ""}${e.url ? ` (${e.url})` : ""}`.trim();
+        if (text) this.consoleErrors.push({ where, kind: e.source || "log", text });
+      }
+    });
+  }
+
+  /** Drop everything collected so far.  Called between pages so each page's
+   *  report is that page's own. */
+  clearErrors() { this.consoleErrors = []; }
+
+  /** Re-emulate at a new size.  Phase 2 walks more than one viewport, and a
+   *  fresh page per viewport would pay Vite's pre-bundling cost twice.
+   *
+   *  `touch` matters and is not cosmetic: the GUI's ONE posture-detection home
+   *  (methodsChrome.useNarrowViewport) reads `(pointer: coarse)` as well as the
+   *  width, and a 390px-wide MOUSE is a different posture from a phone.  Asking
+   *  for the phone means asking for the pointer too. */
+  async setViewport(width, height, { mobile = false, touch = false, dpr = 1 } = {}) {
+    await this.send("Emulation.setDeviceMetricsOverride", {
+      width, height, deviceScaleFactor: dpr, mobile,
+    });
+    // maxTouchPoints must be 1..16 even when disabling -- Chromium rejects 0.
+    await this.send("Emulation.setTouchEmulationEnabled", {
+      enabled: touch, maxTouchPoints: 5,
+    });
+  }
 
   /** Navigate and wait for the load event (or the timeout, which is not fatal
    *  on its own -- readiness is decided by the caller's own poll). */
