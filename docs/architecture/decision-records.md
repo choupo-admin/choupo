@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 68 records already exist
+## 1. Why an index, when 69 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 68 design records, **32 state a rejected alternative and 36 do not** —
+- Of 69 design records, **33 state a rejected alternative and 36 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -99,6 +99,7 @@ direction is an error.
 | [`which-result-blocks-a-golden-can-read.md`](../design/which-result-blocks-a-golden-can-read.md) | ADR | yes | **FINDING + RULE, EXECUTED 2026-08-12** — a top-level result block the golden format cannot read arrives UNPINNED, silently, with no failure anywhere; three were found in one session (`validation`, `energyClosures`, `utilityAllocation` — the last on 77 cases) and closed with the `aad` / `closure` / `utility` kinds and a gate each (published ⇒ pinned AND pinned ⇒ published).  The rule is the Edwards lesson one layer up: add the kind in the same commit as the block.  §4 audits what is deliberately NOT pinned (residual histories, curves, words) with the reason for each.  Rejects a gate on the rule itself — a curve and a decision look identical to a script — and rejects regenerating goldens to add rows, which would silently rewrite every other row in 67 files |
 | [`origin-vocabulary-conflict.md`](../design/origin-vocabulary-conflict.md) | ADR | yes | **FINDING RECORDED 2026-08-12, nothing executed** — `src/core/Origin.H` silently folds five of the eleven catalogue records declaring an `origin` word onto `unattributed` ("no provenance declared"), including fluorine's IUPAC-`definition` ΔHf° = 0, and folds `measured` into `literature` against the five-axis record ratified above.  The fold is the deliberate typo guard, which is the defect: an unknown word and a curator's word are indistinguishable.  Proposes a DELEGATE-WITH-DEFAULT — add `definition` (a category the enum lacks), `standard`→`literature`, `asserted`→`placeholder`, keep the `measured` fold as a STATED approximation, and refuse an unknown word by name.  Rejects a silent mechanical remap (it would lose the one fact `definition` carries) |
 | [`vapour-or-gas-is-a-state.md`](../design/vapour-or-gas-is-a-state.md) | ADR | yes | **FINDING RECORDED 2026-08-06, implementation NOT started** — `noncondensable true;` stores a STATE relation (T vs Tc) as a substance flag; CO2's Tc is 31.0 °C and nine corpus cases run it at 298.15 K, six kelvin BELOW, while the engine announces "above Tc".  Ruled: announce the contradiction, as `role` vs `volatility{}` already does — never delete the flag, never silently re-route |
+| [`help-opens-in-a-tab-not-a-download.md`](../design/help-opens-in-a-tab-not-a-download.md) | ADR | yes | **FINDING + SHIPPED 2026-08-17** — Help pointed straight at `docs/<guide>.pdf#nameddest=<x>`; the link was correct and it still failed, because whether a PDF renders or downloads is decided by response headers and the reader's own browser setting, and the site is on GitHub Pages, which gives NO header control.  A help system whose behaviour is a property of the student's Firefox profile is not a help system.  So Choupo draws the manual itself (`gui/public/guide.html`, pdf.js), the bytes never reach the browser's PDF handler, and there is no header to set.  REJECTED, on availability rather than taste: LaTeX -> HTML, the better answer for a phone reader — tex4ht is installed without its support files (no `tex4ht.sty`, no `tex4ht.env`, no `htlatex`, no `make4ht`) and `preamble.tex` uses pgfplots, so every figure would route through a second toolchain; it stays recorded as the route to take if that changes.  §3.2 records the check taking three versions and why the two weak ones are the finding: "the anchor moved the reader off page 1" PASSED while both anchors landed on page 208 against a document placing them at 215 and 231 |
 | [`theory-in-class-structure-study.md`](../design/theory-in-class-structure-study.md) | STUDY | no | **LEARNING STUDY, no decision** — how OpenFOAM, Cantera and DWSIM embed thermodynamic theory and size distributions in class structure; commissioned before any change to Choupo's thermo spine |
 
 ### Awaiting a decision
@@ -222,7 +223,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**36 of 68 records state no rejected alternative.**  For a FORUM or a STUDY
+**36 of 69 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
