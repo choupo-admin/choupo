@@ -629,6 +629,9 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
   // Lecture fold — same shared key and posture as the McCabe tool.
   const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
   usePlotRefit(setup.collapsed);
+  // Widest setup bar in the corpus (1495 px at 390x844 before this): it
+  // reflows below `sm` rather than running off the side.
+  const bar = setupBarLayout(useNarrowViewport());
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
@@ -682,7 +685,7 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
         flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
         borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+        <Group gap="sm" wrap={bar.wrap} align="center" style={{ minWidth: bar.minWidth }}>
           <ToolField label="carrier">
             <Select size="xs" searchable data={carrierNames} value={carrier}
               onChange={(v) => setCarrier(v ?? carrier)} w={110} allowDeselect={false} />
@@ -727,8 +730,9 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
             </Group>
           )}
           {/* Spacer + the fold affordance pinned to the toolbar's right end —
-              the same rightmost slot the McCabe toolbar gives it. */}
-          <Box style={{ flex: 1, minWidth: 8 }} />
+              the same rightmost slot the McCabe toolbar gives it.  The spacer
+              goes when the bar wraps (see setupBarLayout). */}
+          {bar.showSpacer && <Box style={{ flex: 1, minWidth: 8 }} />}
           <SetupCollapseButton onCollapse={setup.toggle} />
         </Group>
       </Box>
