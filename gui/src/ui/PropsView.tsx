@@ -111,6 +111,7 @@ import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotting/plotly.js
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
 import { propsOpHelpLink, propsTheoryLink } from "../case/modelDocs.js";
 import { ThermoView } from "./ThermoView.js";
+import { guideUrl, openGuide } from "../help/guideLinks.js";
 import {
   parsePropertyPointReferences,
   type PointResult,
@@ -699,7 +700,7 @@ export function PropsView() {
   const showNav = items.length >= 2;
   const theoryHref = selectedItem
     ? (selectedItem.theory ?? propsTheoryLink(selectedItem.group)
-       ?? `${import.meta.env.BASE_URL}docs/propsGuide.pdf`)
+       ?? guideUrl("propsGuide"))
     : null;
   // F1 = THE THEORY: open the guide at the section deriving the thermophysics
   // + the numerical method of the SELECTED operation (ch:speciation for a
@@ -714,8 +715,7 @@ export function PropsView() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "F1") return;
       e.preventDefault();
-      window.open(theoryHref ?? `${import.meta.env.BASE_URL}docs/theoryGuide.pdf`,
-        "_blank", "noopener");
+      openGuide(theoryHref ?? guideUrl("theoryGuide"));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

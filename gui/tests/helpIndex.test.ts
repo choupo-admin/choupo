@@ -64,11 +64,21 @@ describe("help index — structure & URL building", () => {
     }
   });
 
-  it("builds a PDF named-destination URL honouring the base", () => {
-    const url = helpUrl({ guide: "theory", anchor: "ch:flash" }, "/app/");
-    expect(url).toBe("/app/docs/theoryGuide.pdf#nameddest=ch:flash");
-    const top = helpUrl({ guide: "user" }, "/");
-    expect(top).toBe("/docs/userGuide.pdf");
+  //  The link must reach the CHOUPO VIEWER, never the PDF itself.  Handing a
+  //  PDF to the browser is what produced "F1 downloads the whole file instead
+  //  of opening the page": the site has no header control, and the reader's
+  //  own PDF setting decides the outcome.  A help link that ends in `.pdf` is
+  //  therefore a regression, and this asserts it in both directions.
+  it("opens the viewer at a named destination, and never hands over a PDF", () => {
+    const url = helpUrl({ guide: "theory", anchor: "ch:flash" });
+    expect(url).toBe("/guide.html?g=theoryGuide#nameddest=ch%3Aflash");
+
+    const top = helpUrl({ guide: "user" });
+    expect(top).toBe("/guide.html?g=userGuide");
+
+    for (const t of HELP_TOPICS) {
+      expect(helpUrl(t).endsWith(".pdf"), `${t.id} links straight at a PDF`).toBe(false);
+    }
   });
 
   it("resolveHelp prefers a selected unit, then workspace, then default", () => {

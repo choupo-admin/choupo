@@ -97,12 +97,15 @@ describe("EduTools registry — shape", () => {
 });
 
 describe("EduTools registry — the Theory Guide deep link", () => {
-  it("is BASE-AWARE (never a hardcoded leading slash)", () => {
+  it("is BASE-AWARE, and reaches the viewer rather than the PDF", () => {
     const url = theoryUrl("ch:flash");
     // The base is whatever Vite injected; what must hold is that the path is
     // built ON it and carries the named destination.
-    expect(url.endsWith("docs/theoryGuide.pdf#nameddest=ch:flash")).toBe(true);
     expect(url.startsWith(import.meta.env.BASE_URL)).toBe(true);
+    expect(url.endsWith("guide.html?g=theoryGuide#nameddest=ch%3Aflash")).toBe(true);
+    // Linking straight at the PDF is the defect this route exists to remove:
+    // the browser's own PDF setting then decides whether Help opens at all.
+    expect(url.includes(".pdf")).toBe(false);
   });
 
   it("every LIVE tool declares a theory destination", () => {

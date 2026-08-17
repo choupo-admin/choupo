@@ -69,6 +69,7 @@ import { downloadCaseZip } from "../case/saveCase.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
 import { canComputePinch } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
+import { guideUrl, openGuide } from "../help/guideLinks.js";
 import {
   EDUTOOLS_BLURB, EDUTOOLS_LABEL, METHOD_TOOLS, setActiveMethodTool,
   useActiveMethodTool,
@@ -414,7 +415,7 @@ export function MenuBar() {
                 selectedUnitType = (units.find((x) => x["name"] === name)?.["type"] as string | undefined) ?? null;
               }
               const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
-              window.open(helpUrl(target, import.meta.env.BASE_URL), "_blank", "noopener");
+              openGuide(helpUrl(target));
             }}
           >
             Help on current view
@@ -423,7 +424,7 @@ export function MenuBar() {
               rendered as a deep-linking table of contents in a pop-out tab.
               A viewer, not an editor: it only opens the guides. */}
           <Menu.Item
-            onClick={() => popOutHelpTopics(import.meta.env.BASE_URL)}
+            onClick={() => popOutHelpTopics()}
           >
             Browse help topics…
           </Menu.Item>
@@ -436,7 +437,7 @@ export function MenuBar() {
                 userGuide      -- case authoring + running the GUI/CLI
                 developerGuide -- the C++ architecture for contributors */}
           <Menu.Item
-            onClick={() => window.open(`${import.meta.env.BASE_URL}docs/theoryGuide.pdf`, "_blank", "noopener")}
+            onClick={() => openGuide(guideUrl("theoryGuide"))}
           >
             Theory Guide (PDF)…
           </Menu.Item>
@@ -445,17 +446,17 @@ export function MenuBar() {
               Theory Guide, where modelDocs already deep-links it.  Label it
               honestly so it never reads as the theory home (forum 2026-06-15). */}
           <Menu.Item
-            onClick={() => window.open(`${import.meta.env.BASE_URL}docs/propsGuide.pdf`, "_blank", "noopener")}
+            onClick={() => openGuide(guideUrl("propsGuide"))}
           >
             Props Workflow Guide (PDF)…
           </Menu.Item>
           <Menu.Item
-            onClick={() => window.open(`${import.meta.env.BASE_URL}docs/userGuide.pdf`, "_blank", "noopener")}
+            onClick={() => openGuide(guideUrl("userGuide"))}
           >
             User Guide (PDF)…
           </Menu.Item>
           <Menu.Item
-            onClick={() => window.open(`${import.meta.env.BASE_URL}docs/developerGuide.pdf`, "_blank", "noopener")}
+            onClick={() => openGuide(guideUrl("developerGuide"))}
           >
             Developer Guide (PDF)…
           </Menu.Item>

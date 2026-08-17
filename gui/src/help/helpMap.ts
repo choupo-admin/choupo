@@ -42,6 +42,7 @@ License
 // The tracked index.  Imported as a JSON module (resolveJsonModule is on); the
 // bundler inlines it, so the GUI ships the map with no runtime fetch.
 import helpIndex from "../../../docs/help-index.json";
+import { guideUrl } from "./guideLinks.js";
 
 export type GuideKey = "theory" | "user" | "props" | "developer";
 
@@ -110,11 +111,10 @@ export const HELP_TOPICS: HelpTopic[] = [
 
 const GUIDE_FILE: Record<GuideKey, string> = IDX.guides;
 
-/** The browser URL that opens a guide at its section (PDF named destination). */
-export function helpUrl(target: HelpTarget, baseUrl: string): string {
-  const file = GUIDE_FILE[target.guide];
-  const dest = target.anchor ? `#nameddest=${target.anchor}` : "";
-  return `${baseUrl}docs/${file}${dest}`;
+/** The browser URL that opens a guide at its section.  The base and the
+ *  viewer route both live in `guideLinks`; this only resolves guide + anchor. */
+export function helpUrl(target: HelpTarget): string {
+  return guideUrl(GUIDE_FILE[target.guide], target.anchor);
 }
 
 /** Resolve the current context to a help target.

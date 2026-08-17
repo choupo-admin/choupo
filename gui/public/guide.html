@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--
+  ===========================================================================
+         \|/       C hemicals     | Open-source, glass-box chemical process simulator
+        \\|//      H eat-transfer | https://choupo.org
+       \\\|///     O perations    |
+        \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+         \|/       P roperties    | Licence: GPL-3.0-or-later
+          |        O ptimization  |
+         /|\                      |
+  ---------------------------------------------------------------------------
+  SPDX-License-Identifier: GPL-3.0-or-later
+  Credit and attribution: see AUTHORS ; required legal notices: see NOTICE
+  ===========================================================================
+
+  guide.html -- CHOUPO DRAWS ITS OWN MANUALS.
+
+  WHY THIS PAGE EXISTS, because it is not obvious and the reason is the whole
+  design:  linking Help straight at `docs/theoryGuide.pdf#nameddest=ch:x` is
+  correct HTML and it still fails, because whether a PDF opens in a tab or
+  lands in the Downloads folder is decided by the RESPONSE HEADERS and by the
+  reader's own browser setting -- and we control neither.  The site is served
+  by GitHub Pages (no header control at all), and a Firefox profile set to
+  "Portable Document Format (PDF) -> Save File" overrides the page's intent
+  whatever the headers say.  A help system that works or does not work
+  depending on a preference in the student's browser is not a help system.
+
+  So the bytes never reach the browser's PDF handler: this page fetches the
+  guide and DRAWS it, with pdf.js (Apache-2.0), into canvases of its own.
+  There is no download to suppress and no header to set.
+
+  What it deliberately is NOT: the HTML guide.  A canvas is not reflowable
+  text, so a phone reader is served better than by a download prompt and
+  worse than by real HTML.  That better answer is recorded, with the reason
+  it is blocked, in docs/design/help-opens-in-a-tab-not-a-download.md.
+
+  Address:   guide.html?g=<guide>#nameddest=<label>
+             guide.html?g=<guide>#page=<n>
+  where <guide> is one of the four manuals and <label> is a REAL \label{...}
+  from the corresponding .tex (the preamble sets destlabel=true, so every
+  label is a PDF named destination).  The guide name is checked against the
+  list below and never interpolated into a path unchecked -- this page must
+  not become a way to make choupo.org fetch an arbitrary file.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Choupo — Guide</title>
+<link rel="stylesheet" href="pdfjs/pdf_viewer.css">
+<style>
+  :root {
+    --bg: #f6f7f9; --fg: #1a1b1e; --chrome: #ffffff; --line: #dee2e6;
+    --accent: #1c7ed6; --muted: #5c5f66;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1b1e; --fg: #e9ecef; --chrome: #25262b; --line: #373a40;
+            --accent: #4dabf7; --muted: #909296; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); color: var(--fg);
+               font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { display: flex; flex-direction: column; }
+
+  header {
+    flex: 0 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 8px 12px; background: var(--chrome); border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 10;
+  }
+  header .title { font-weight: 600; margin-right: auto; }
+  header .where { color: var(--muted); font-weight: 400; }
+  button, a.btn {
+    font: inherit; color: var(--fg); background: transparent; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px;
+    text-decoration: none; min-height: 32px;
+  }
+  button:hover, a.btn:hover { border-color: var(--accent); color: var(--accent); }
+  #pageBox { width: 4.5em; text-align: right; }
+
+  /*  The scroll container pdf.js needs: it MUST be positioned, because the
+      viewer places every page absolutely inside it.  */
+  #viewerContainer { position: absolute; inset: 41px 0 0 0; overflow: auto; }
+  @media (max-width: 640px) { #viewerContainer { inset: 78px 0 0 0; } }
+
+  #status { padding: 24px; color: var(--muted); }
+  #status.error { color: #e03131; }
+  #status code { font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="title" id="title">Choupo guide</span>
+  <span class="where" id="where"></span>
+  <button id="zoomOut" title="Zoom out" aria-label="Zoom out">−</button>
+  <button id="zoomIn"  title="Zoom in"  aria-label="Zoom in">+</button>
+  <input id="pageBox" type="number" min="1" value="1" aria-label="Page number">
+  <span class="where" id="pageCount"></span>
+  <!--  The download stays available ON PURPOSE and says so, rather than
+        happening by accident when the reader wanted to read.  -->
+  <a class="btn" id="dl" download>Download PDF</a>
+</header>
+
+<div id="status">Loading the guide…</div>
+<div id="viewerContainer" hidden><div id="viewer" class="pdfViewer"></div></div>
+
+<script type="module">
+//  The four manuals, by the name the app passes in `?g=`.  An ALLOWLIST, not
+//  a path: an unknown name is refused rather than fetched.
+const GUIDES = {
+  theoryGuide:    "Theory Guide",
+  propsGuide:     "Properties Guide",
+  userGuide:      "User Guide",
+  developerGuide: "Developer Guide",
+};
+
+const base   = new URL(".", location.href);          // works at / and under /app
+const params = new URLSearchParams(location.search);
+const key    = params.get("g") ?? "theoryGuide";
+const status = document.getElementById("status");
+
+function fail(msg, detail) {
+  status.className = "error";
+  status.innerHTML = msg + (detail ? ` <code>${detail}</code>` : "");
+}
+
+if (!Object.prototype.hasOwnProperty.call(GUIDES, key)) {
+  //  Name the four, so a wrong link is a readable mistake and not a blank page.
+  fail(`Unknown guide <code>${key}</code>. The guides are:`,
+       Object.keys(GUIDES).join(", "));
+} else {
+  const pdfUrl = new URL(`docs/${key}.pdf`, base).href;
+  //  Declared here, not beside its handler: a page event can fire between
+  //  setDocument() and the end of this module, and a const read before its
+  //  own declaration is a temporal-dead-zone crash, not a stale value.
+  const pageBox = document.getElementById("pageBox");
+  document.title = `Choupo — ${GUIDES[key]}`;
+  document.getElementById("title").textContent = GUIDES[key];
+  const dl = document.getElementById("dl");
+  dl.href = pdfUrl;
+  dl.setAttribute("download", `${key}.pdf`);
+
+  //  pdf.js's viewer components read the core library off a global rather
+  //  than importing it, so the core must be in place BEFORE the viewer
+  //  module is evaluated -- hence the two-step import.
+  const pdfjsLib = await import(new URL("pdfjs/pdf.min.mjs", base).href);
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs/pdf.worker.min.mjs", base).href;
+  globalThis.pdfjsLib = pdfjsLib;
+  const viewerLib = await import(new URL("pdfjs/pdf_viewer.mjs", base).href);
+
+  const container = document.getElementById("viewerContainer");
+  const eventBus    = new viewerLib.EventBus();
+  const linkService = new viewerLib.PDFLinkService({ eventBus });
+  const findController = new viewerLib.PDFFindController({ eventBus, linkService });
+  const pdfViewer = new viewerLib.PDFViewer({
+    container, viewer: document.getElementById("viewer"),
+    eventBus, linkService, findController,
+    textLayerMode: 1,          // selectable text: a manual you cannot copy from is half a manual
+  });
+  linkService.setViewer(pdfViewer);
+
+  //  The named destination is the POINT of this page.  `#nameddest=ch:x` is
+  //  handed to the link service verbatim, which is the same machinery an
+  //  internal cross-reference click uses -- one mechanism, not two.
+  //  ORDER MATTERS, and getting it wrong is silent.  Setting the scale
+  //  re-lays out all 285 pages; jumping in the same tick computes the scroll
+  //  against the OLD layout, which lands the reader near the target and never
+  //  on it -- two different anchors both arrived at page 208 when the
+  //  document places them at 215 and 231.  It looks like a working jump.  So
+  //  the scale is set at `pagesinit` and the jump waits for `pagesloaded`,
+  //  when the layout the scroll is measured against is the final one.
+  eventBus.on("pagesinit", () => {
+    //  SHOW BEFORE SCALING.  "page-width" is computed from the container's
+    //  clientWidth, and a hidden element measures ZERO -- which yields a
+    //  NEGATIVE scale factor, pages 18 px wide, and a viewer that still
+    //  reports the destination's page number while the scrollbar never
+    //  moves.  Every surface agrees with a different lie, so the order here
+    //  is load-bearing, not cosmetic.
+    status.hidden = true;
+    container.hidden = false;
+    pdfViewer.currentScaleValue = "page-width";
+  });
+  eventBus.on("pagesloaded", () => {
+    const hash = location.hash.slice(1);
+    if (hash) linkService.setHash(hash);
+    document.getElementById("where").textContent =
+      hash.startsWith("nameddest=") ? `at ${decodeURIComponent(hash.slice(10))}` : "";
+  });
+  eventBus.on("pagechanging", (e) => { pageBox.value = e.pageNumber; });
+
+  try {
+    const doc = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
+    pdfViewer.setDocument(doc);
+    linkService.setDocument(doc, null);
+    document.getElementById("pageCount").textContent = `of ${doc.numPages}`;
+    pageBox.max = doc.numPages;
+  } catch (err) {
+    //  Say WHICH file could not be read.  The commonest cause by far is that
+    //  the guides were never built (docs/Makefile) or never copied into
+    //  public/docs -- which is a build problem, not a reader problem.
+    fail("Could not read the guide.", `${pdfUrl} — ${err?.message ?? err}`);
+  }
+
+  //  Back/forward and in-app re-links change only the fragment; honour that.
+  addEventListener("hashchange", () => {
+    const h = location.hash.slice(1);
+    if (h) linkService.setHash(h);
+  });
+
+  const rescale = (f) => { pdfViewer.currentScale = pdfViewer.currentScale * f; };
+  document.getElementById("zoomIn").onclick  = () => rescale(1.15);
+  document.getElementById("zoomOut").onclick = () => rescale(1 / 1.15);
+  pageBox.onchange = () => {
+    const n = Number(pageBox.value);
+    if (Number.isFinite(n) && n >= 1) pdfViewer.currentPageNumber = n;
+  };
+}
+</script>
+</body>
+</html>

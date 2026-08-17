@@ -64,6 +64,7 @@ import { useStore } from "../state/store.js";
 import {
   kToDisplay, paToDisplay, parseTemperature, parsePressure, temperatureLabel, pressureLabel,
 } from "../state/displayUnits.js";
+import { guideUrl } from "../help/guideLinks.js";
 
 interface PlotType {
   id: PlotKind;
@@ -265,7 +266,9 @@ function csvColumnEnds(csv: string, name: string): { first: number; last: number
 
 // Map the active plot to the matching Theory Guide section (hyperref destlabel
 // turns each \label{...} into a PDF named destination, so #nameddest jumps
-// straight there).  The PDF is served at /docs/theoryGuide.pdf (dev + site).
+// straight there).  The URL itself comes from `help/guideLinks`, the one
+// home for it -- this file used to hardcode a leading "/", which points
+// outside the app under a deployed base.
 function theoryAnchor(plotType: PlotKind, property: string): string {
   switch (plotType) {
     case "txy": return "ch:flash";          // binary VLE / bubble-dew
@@ -286,7 +289,7 @@ function theoryAnchor(plotType: PlotKind, property: string): string {
   }
 }
 const theoryUrl = (plotType: PlotKind, property: string) =>
-  `/docs/theoryGuide.pdf#nameddest=${theoryAnchor(plotType, property)}`;
+  guideUrl("theoryGuide", theoryAnchor(plotType, property));
 
 function num(v: number | string, fallback: number): number {
   const n = typeof v === "number" ? v : parseFloat(v);

@@ -67,6 +67,7 @@ import { ReportsWorkspace } from "./ReportsWorkspace.js";
 import { StreamsWorkspace } from "./StreamsWorkspace.js";
 import { VariablesWorkspace } from "./VariablesWorkspace.js";
 import { TopBar } from "./TopBar.js";
+import { openGuide } from "../help/guideLinks.js";
 
 // PropsView lazy-loaded: it pulls in Plotly (~300 KB gz) via CsvAutoPlot, and
 // most cases (steady / batch / ctrl) never enter this view.  Keeps Plotly out
@@ -177,7 +178,7 @@ export function AppShell() {
         selectedUnitType = (u?.["type"] as string | undefined) ?? null;
       }
       const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
-      window.open(helpUrl(target, import.meta.env.BASE_URL), "_blank", "noopener");
+      openGuide(helpUrl(target));
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

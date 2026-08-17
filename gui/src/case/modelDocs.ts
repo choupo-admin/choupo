@@ -26,6 +26,8 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
+import { guideUrl } from "../help/guideLinks.js";
+
 /*---------------------------------------------------------------------------*\
   modelDocs -- pull the prose that DESCRIBES a unit-op's model out of
   docs/ai/unit-ops.md, so the unit's Internals "Model" tab can SHOW the
@@ -173,8 +175,8 @@ export function theoryLink(type: string): string {
   // front so the student can still navigate -- honest, never a dead link.
   const dest = THEORY_DEST[type];
   return dest
-    ? `${import.meta.env.BASE_URL}docs/theoryGuide.pdf#nameddest=${dest}`
-    : `${import.meta.env.BASE_URL}docs/theoryGuide.pdf`;
+    ? guideUrl("theoryGuide", dest)
+    : guideUrl("theoryGuide");
 }
 
 // Props-mode item GROUP -> the Properties-Guide section that derives the theory
@@ -193,7 +195,7 @@ const PROPS_DEST: Record<string, string> = {
 export function propsTheoryLink(group: string): string | null {
   const dest = PROPS_DEST[group];
   if (!dest) return null;
-  return `${import.meta.env.BASE_URL}docs/propsGuide.pdf#nameddest=${dest}`;
+  return guideUrl("propsGuide", dest);
 }
 
 // Per-OP-TYPE help destination (the F1 target): what does THIS operation do?
@@ -225,9 +227,8 @@ const OP_DEST: Record<string, { pdf: string; dest?: string }> = {
 };
 export function propsOpHelpLink(opType: string): string {
   const m = OP_DEST[opType];
-  const base = import.meta.env.BASE_URL;
-  if (!m) return `${base}docs/propsGuide.pdf`;
-  return `${base}docs/${m.pdf}${m.dest ? `#nameddest=${m.dest}` : ""}`;
+  if (!m) return guideUrl("propsGuide");
+  return guideUrl(m.pdf, m.dest);
 }
 
 // ---------------------------------------------------------------------------
@@ -305,6 +306,5 @@ export function propsModelTheoryLink(model: string): string | null {
   if (!model) return null;
   const m = PROPS_MODEL_DEST[model];
   if (!m) return null;
-  const pdf = m.guide === "props" ? "propsGuide.pdf" : "theoryGuide.pdf";
-  return `${import.meta.env.BASE_URL}docs/${pdf}#nameddest=${m.dest}`;
+  return guideUrl(m.guide === "props" ? "propsGuide" : "theoryGuide", m.dest);
 }

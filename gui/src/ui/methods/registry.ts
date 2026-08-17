@@ -53,6 +53,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useSyncExternalStore } from "react";
+import { guideUrl } from "../../help/guideLinks.js";
 
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
@@ -168,7 +169,7 @@ export const EDUTOOLS_BLURB =
  *  which a browser answers by downloading or erroring, never by jumping to a
  *  section. */
 export const theoryUrl = (dest: string): string =>
-  `${import.meta.env.BASE_URL}docs/theoryGuide.pdf#nameddest=${dest}`;
+  guideUrl("theoryGuide", dest);
 
 /** Boot tool from the URL: `?workspace=methods&tool=<id>` (the contract), or
  *  the legacy Explorer deep-link `?explore=mccabe` WITHOUT a `&key=` stash

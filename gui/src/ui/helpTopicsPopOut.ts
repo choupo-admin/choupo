@@ -50,9 +50,9 @@ const GUIDE_LABEL: Record<string, string> = {
 };
 
 /** Render the indexed help topics as a deep-linking table of contents in a
- *  new tab.  `baseUrl` is `import.meta.env.BASE_URL` (so links work at "/" in
- *  dev and under a deployed base like "/app"). */
-export function popOutHelpTopics(baseUrl: string): void {
+ *  new tab.  The base and the viewer route come from `help/guideLinks`, so
+ *  this no longer takes (or could disagree about) a base of its own. */
+export function popOutHelpTopics(): void {
   const C = popoutColors();
 
   // Group the flat topic list by its bucket, preserving insertion order.
@@ -63,7 +63,7 @@ export function popOutHelpTopics(baseUrl: string): void {
     .map(([group, topics]) => {
       const rows = topics
         .map((t) => {
-          const href = helpUrl(t, baseUrl);
+          const href = helpUrl(t);
           const title = escText(t.title ?? t.id);
           const guide = GUIDE_LABEL[t.guide] ?? t.guide;
           return `<li><a href="${escAttr(href)}" target="_blank" rel="noopener">${title}</a>` +
