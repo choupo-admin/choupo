@@ -19,15 +19,34 @@ const output = [
   "",
 ];
 let packageCount = 0;
+const notInstalled = [];
 
 const candidates = /^(?:licen[cs]e|copying|notice)(?:\..*)?$/i;
 for (const [relative, meta] of Object.entries(lock.packages)) {
   if (!relative.startsWith("node_modules/") || meta.dev === true) continue;
-  packageCount++;
   const packageDir = join(root, relative);
   if (!existsSync(packageDir)) {
+    //  A package the lockfile lists for ANOTHER platform is not installed
+    //  here and is therefore not in the build we ship -- so it carries no
+    //  attribution obligation, and refusing over it would block every
+    //  publish for a file nobody receives.  (pdfjs-dist pulls @napi-rs/canvas
+    //  as an optionalDependency; npm resolves its ten per-platform binaries
+    //  into the lockfile and installs only the host's.)
+    //
+    //  The narrowness is the point: only an entry npm itself marked
+    //  `optional` may be absent.  A missing REQUIRED package still throws,
+    //  because that is a broken install, and generating notices from one
+    //  would understate what the site redistributes.  The skips are listed
+    //  in the output rather than dropped -- an omission a reader cannot see
+    //  is indistinguishable from an omission nobody noticed.
+    if (meta.optional === true) {
+      notInstalled.push(`${relative}${meta.os ? ` (${meta.os.join("/")}` : " ("}`
+                      + `${meta.cpu ? `-${meta.cpu.join("/")}` : ""})`);
+      continue;
+    }
     throw new Error(`Production package is not installed: ${relative}`);
   }
+  packageCount++;
   const packageJson = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"));
   const files = readdirSync(packageDir).filter((name) => candidates.test(name)).sort();
   output.push("-".repeat(79));
@@ -40,6 +59,21 @@ for (const [relative, meta] of Object.entries(lock.packages)) {
   for (const file of files) {
     output.push(`[${file}]`, readFileSync(join(packageDir, file), "utf8").trim(), "");
   }
+}
+
+//  Say what was left out, and why, inside the notices themselves.  A reader
+//  checking whether Choupo attributes everything it ships must be able to see
+//  the boundary of this file, not infer it.
+if (notInstalled.length > 0) {
+  output.push("-".repeat(79));
+  output.push(`NOT LISTED: ${notInstalled.length} platform-specific optional package(s)`);
+  output.push("-".repeat(79), "");
+  output.push("The lockfile names these for platforms other than the one this build ran",
+              "on.  npm did not install them, this site does not ship them, and a notice",
+              "for a file nobody receives would be a claim about a redistribution that",
+              "did not happen.  They are named so the omission is visible:", "");
+  for (const p of notInstalled) output.push(`  ${p}`);
+  output.push("");
 }
 
 const publicDir = join(root, "public");
