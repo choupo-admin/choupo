@@ -60,7 +60,58 @@ button.
 `hide setup controls` at (1461,39).  The tool is wider than the viewport it
 was designed for.
 
-## 3. Why nothing caught it, and why the obvious check would not have
+## 2a. CORRECTION, 2026-08-17 — §2's headline number is the BLANK-BOOT number
+
+The owner reported from the device what this record had described from an
+emulator, and his screenshot showed something §2 does not: **the workspace tab
+row itself is clipped**, `File · Flowsheet · Props · Explore · EduTools ·
+Stream…`, cut mid-word.
+
+Measured twice, independently (a general's probe and mine, agreeing to the
+pixel), on a real case (`?case=steady/flash/flash01_benzene_toluene`):
+
+| viewport | controls in the top row | beyond the edge | rightmost edge |
+|---|---|---|---|
+| 390×844 | 18 | **13** | x=1035 |
+| 1400×900 | 18 | 0 | x=1388 |
+
+The 13 unreachable are `Streams` (346–416, the owner's cut word), `Variables`,
+`Plots`, `Log`, `Case`, `Pinch`, `Reports`, `Help`, then the icon cluster
+(display settings, stream colours, colour scheme, clipboard bridge, assistant
+console).  **Seven whole workspaces cannot be reached on a phone**, which is a
+different order of defect from three lost affordances.
+
+So §2's "three controls on twelve pages" is **true of the state it was measured
+in and misleading as a summary**: it is the BLANK-BOOT app, no case open, where
+`MenuBar`'s lineup is gated on `hasCaseOpen()` and the row is 480 px wide.  With
+a case open the same row is 833 px.  The 480 px figure in §2 is that gated
+state, not a layout constant.  *A number measured in one state and reported as
+the defect is the same error as a number measured once and then remembered.*
+
+### The constraint on any fix
+
+At 1400×900 the row already spends 833 of 1400 px and has **12 px of
+headroom**.  Phone room cannot be bought by shrinking tabs; the row has to
+change SHAPE.
+
+### And the harness structurally cannot see this
+
+`bin/checkGui` walks the EduTools deep link **with no case loaded**, so the
+lineup it measures is the 4-tab blank-boot one.  The 13-control loss is
+invisible to it at both viewports.
+
+Two consequences, and the second is the one that matters:
+
+* the harness's own docstring already states the limit — "ONE workspace
+  (EduTools) in its DEFAULT state".  This is what that limit COSTS, in a real
+  defect, and the cost was not visible until someone opened a case;
+* **arming `--gate-phone` would therefore give FALSE ASSURANCE.**  A green
+  phone gate would mean "the blank app fits", while seven workspaces stay
+  unreachable with a case open.  §4's instruction to arm the gate in the
+  commit that fixes the defects still stands, but the gate must first walk a
+  state that can see them.
+
+
 
 `document.scrollWidth` reports **no overflow at all**.  Every overflowing edge
 is hidden, so the page measures as if it fits.  A boolean overflow check —

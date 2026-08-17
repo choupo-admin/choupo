@@ -130,6 +130,26 @@ License
   STILL NOT CLOSED, and named so no one has to rediscover it: this walks ONE
   workspace (EduTools) in its DEFAULT state.  Nothing is clicked, no menu is
   opened, and the other seven workspaces are unwalked.
+
+  WHAT THAT LIMIT COST, measured 2026-08-17 -- read this before arming
+  --gate-phone.  "DEFAULT state" means NO CASE LOADED, and MenuBar's lineup is
+  gated on hasCaseOpen(): blank boot renders four tabs in a 480 px row and
+  loses 3 controls at 390 px, which is the number this harness sees and the
+  number the design record first published.  Open a real case and the SAME row
+  is 833 px and loses THIRTEEN -- Streams, Variables, Plots, Log, Case, Pinch,
+  Reports, Help and the whole icon cluster, i.e. seven workspaces unreachable
+  on a phone.  Measured twice independently, agreeing to the pixel
+  (?case=steady/flash/flash01_benzene_toluene: 18 controls, 13 beyond the edge,
+  rightmost x=1035 at 390x844; 0 beyond, x=1388 at 1400x900).
+
+  The owner found it on his own phone.  The harness could not, and cannot: the
+  worse defect lives in a state it never enters.
+
+  So ARMING --gate-phone WOULD GIVE FALSE ASSURANCE until this walk loads a
+  case.  A green phone gate would certify that the EMPTY app fits.  A gate
+  whose blind spot contains the defect is worse than no gate, because it is
+  believed -- the same shape as the permanently-green check this project
+  retired, reached by a different road.
 \*---------------------------------------------------------------------------*/
 
 import { spawn } from "node:child_process";
