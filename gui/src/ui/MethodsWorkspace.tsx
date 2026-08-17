@@ -335,8 +335,21 @@ function SetupCollapsedStrip({ summary, busy, alertCount, onExpand }: {
  *  Guide link — rendered directly under the toolbar so the pedagogy is stated
  *  before the plot. */
 function TeachesLine({ tool }: { tool: MethodTool }) {
-  // Narrow viewports wrap to two clamped lines instead of an ellipsis that
-  // would eat most of the sentence on a phone-width screen.
+  /* Narrow viewports wrap to two clamped lines instead of an ellipsis that
+   * would eat most of the sentence on a phone-width screen.
+   *
+   * THIS ONE STAYS A BREAKPOINT, deliberately (audited 2026-08-17).  It is a
+   * width question — it never had anything to do with the pointer, and the
+   * coarse term that used to ride inside `useNarrowViewport` was pure harm
+   * here: a tablet with 1800 px of room clamped a one-line caption to two.
+   * But it is not a question `fitsRow` can answer either, because there is
+   * nothing fixed to measure: the sentence is a different length for each of
+   * the twelve tools, and the honest measurement (does THIS caption fit?)
+   * would have to be taken on the wrapped shape it produces, which is the
+   * measurement that cannot be taken.  What is being declared is a READING
+   * judgement — below `sm` a column is too narrow for an elided sentence to
+   * survive — so a declared breakpoint is the right instrument and it is
+   * stated as a judgement rather than dressed as a measurement. */
   const narrow = useNarrowViewport();
   return (
     <Group gap={6} wrap="nowrap" align={narrow ? "flex-start" : "center"} px={12} py={4}
@@ -407,6 +420,15 @@ function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: Rea
 // the equilibrium curve y*(x) arrives ALREADY COMPUTED by the engine; the R/q
 // staircase in McCabePlot is pure geometry over it, zero re-solve.
 
+/** The width the McCabe setup bar needs to stay on one row.  MEASURED
+ *  2026-08-17 through the live DOM (every child at its own width, the flexible
+ *  spacer excluded, plus the gaps and the strip's own padding): 970 px inside
+ *  a strip inset 12 px each side = a 994 px extent, and 1020 leaves it the
+ *  same ~26 px of slack the psychrometric constant below carries.  Declared
+ *  beside the tool that owns the bar, not in the shared helper — the helper
+ *  answers "does it fit", the tool says what it needs. */
+const MCCABE_BAR_ONE_ROW_PX = 1020;
+
 function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
   tool: MethodTool;
   catalogue: ComponentMeta[];
@@ -456,8 +478,14 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
   // width animation), so the refit rides a rAF instead of transitionend.
   const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
   usePlotRefit(setup.collapsed);
-  // The setup bar reflows below `sm` instead of running off the side.
-  const bar = setupBarLayout(useNarrowViewport());
+  /* The setup bar reflows when it does NOT FIT, never because the screen is
+   * classified small (2026-08-17).  It used to read `useNarrowViewport()`,
+   * which carried a coarse-pointer term, so a 1180 px tablet wrapped a bar
+   * with 160 px to spare while the psychrometric tool beside it -- same
+   * workspace, same bar, same question -- already decided by fit.  Two homes
+   * for one question, and they disagreed.  One rule now, each tool declaring
+   * only what its own bar needs. */
+  const bar = setupBarLayout(!useFitsOneRow(MCCABE_BAR_ONE_ROW_PX));
   // The plot reads y_eq_<more volatile>: pass the pair in the SAME order the
   // spec ran it, so the curve lookup can never miss.
   const [vA, vB] = orderBinaryByVolatility([compA, compB], catalogue);
@@ -591,7 +619,10 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
 /** The width the psychrometric setup bar needs to stay on one row: its
  *  measured extent (1495 px at 390x844 on 2026-08-17) plus the padding around
  *  it.  Declared beside the tool that owns the bar, not in the shared helper —
- *  the helper answers "does it fit", the tool says what it needs. */
+ *  the helper answers "does it fit", the tool says what it needs.
+ *  Re-measured 2026-08-17 through the live DOM by the same rule the McCabe
+ *  constant above states: 1470 px of content inside a strip inset 12 px each
+ *  side = a 1494 px extent, which is the 1495 already recorded here. */
 const PSYCHRO_BAR_ONE_ROW_PX = 1520;
 
 function PsychroTool({ tool, catalogue, componentFiles }: {
@@ -641,12 +672,14 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
    * the wrap here is decided by whether the bar FITS, not by a phone
    * breakpoint; 1520 is that measured 1495 plus the padding around it.
    *
-   * Both hooks are called UNCONDITIONALLY and combined afterwards: `narrow ||
-   * !fits` would short-circuit past the second hook on a phone and change the
-   * hook order between renders. */
-  const psychroNarrow = useNarrowViewport();
-  const psychroFitsOneRow = useFitsOneRow(PSYCHRO_BAR_ONE_ROW_PX);
-  const bar = setupBarLayout(psychroNarrow || !psychroFitsOneRow);
+   * The `useNarrowViewport() ||` term this line carried is GONE (2026-08-17).
+   * It could only ever add wrapping the fit question had not asked for, and
+   * that is exactly what it did on a tablet: coarse pointer at 1800 px, so
+   * `narrow` was true, so the bar wrapped with 280 px to spare while the fit
+   * question — the one this tool was given a measured constant for — said it
+   * fitted.  A second answer to a question that already had one can only
+   * disagree with it. */
+  const bar = setupBarLayout(!useFitsOneRow(PSYCHRO_BAR_ONE_ROW_PX));
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);

@@ -47,13 +47,13 @@ License
   with no inline jump --- you could open a file but had to scroll
   blindly.
 
-  ON A PHONE, ONE PANEL AT A TIME (2026-08-17, docs/design/
-  modes-and-views-in-the-top-row.md §4b).  240 + 220 px of fixed side columns
-  do not fit a 390 px screen: FILES and OUTLINE sat side by side at roughly
-  195 px each with the viewer -- the thing the workspace exists to show --
-  squeezed to nothing.  That is not a layout, it is three unusable panes.
-  Below the narrow breakpoint the three columns become three PANES with one
-  chooser above them, full width, one at a time.
+  ONE PANEL AT A TIME WHEN THE THREE COLUMNS DO NOT FIT (2026-08-17,
+  docs/design/modes-and-views-in-the-top-row.md §4b).  240 + 220 px of fixed
+  side columns do not fit a 390 px screen: FILES and OUTLINE sat side by side
+  at roughly 195 px each with the viewer -- the thing the workspace exists to
+  show -- squeezed to nothing.  That is not a layout, it is three unusable
+  panes.  When the three columns cannot have their widths, they become three
+  PANES with one chooser above them, full width, one at a time.
 
   Two rules the chooser has to obey, and both were paid for by thinking about
   what a tap does:
@@ -63,9 +63,11 @@ License
     * an outline jump switches too, and scrolls AFTER the switch -- the
       viewer is not mounted while the outline is showing, so the
       getElementById the desk path relies on would find nothing.
-  `useNarrowViewport` is the project's ONE posture-detection home
-  (methods/methodsChrome.tsx); this deliberately does not add a second
-  breakpoint.
+  WHEN it switches is decided by `fitsRow` -- the project's ONE fit rule
+  (methods/methodsChrome.tsx) -- against the width this layout's own columns
+  need (CASE_PANES_ONE_ROW_PX below).  It is NOT decided by the pointer: a
+  tablet has room for these three columns twice over and a coarse pointer does
+  not take a column away.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
@@ -82,7 +84,7 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { parse, type DictEntry } from "../dict/index.js";
 import { useStore } from "../state/store.js";
-import { useNarrowViewport } from "./methods/methodsChrome.js";
+import { useFitsOneRow } from "./methods/methodsChrome.js";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -195,7 +197,26 @@ function parseOutline(text: string): OutlineKey[] {
   return out;
 }
 
-// ---- The narrow posture's three panes ---------------------------------------
+// ---- The three panes, and the width they need -------------------------------
+
+/** The two FIXED columns of the wide layout.  They are declared once and used
+ *  twice — by the grid template and by the threshold below — so the question
+ *  "do the three columns fit?" can never be asked against numbers the layout
+ *  no longer uses. */
+const FILES_COL_PX = 240;
+const OUTLINE_COL_PX = 220;
+
+/** The narrowest the code VIEWER may be and still be a viewer.  This one is a
+ *  declared judgement, not a measurement, and it is the only such number in
+ *  this file: at the 12 px monospace the viewer renders, 480 px is about 68
+ *  characters, which is a typical dict line (`componentMolarFlows ( 0.5 0.5
+ *  );`) without a horizontal scroll.  Below that the middle column stops being
+ *  a place to read a file and becomes a place to scroll one. */
+const VIEWER_MIN_PX = 480;
+
+/** What the wide, three-column layout needs.  Two measured-from-the-layout
+ *  terms plus the declared viewer minimum. */
+export const CASE_PANES_ONE_ROW_PX = FILES_COL_PX + VIEWER_MIN_PX + OUTLINE_COL_PX;
 
 /** The three things the desk shows side by side, and the phone shows one at a
  *  time.  ONE home for the pane set: the chooser renders it and the body
@@ -250,10 +271,19 @@ export function CaseWorkspace() {
     return out;
   }, [active, activeText]);
 
-  // NARROW POSTURE: one pane at a time.  The default is the CONTENTS -- the
-  // workspace opens on flowsheetDict/propsDict already, so landing on the file
-  // list would put a chooser in front of a choice that has been made.
-  const narrow = useNarrowViewport();
+  /* ONE PANE AT A TIME when the three columns do not FIT (2026-08-17).  The
+   * default is the CONTENTS -- the workspace opens on flowsheetDict/propsDict
+   * already, so landing on the file list would put a chooser in front of a
+   * choice that has been made.
+   *
+   * This used to be `useNarrowViewport()`, whose coarse-pointer term gave a
+   * 1180 px tablet the phone's one-pane chooser with room for all three
+   * columns twice over.  The question is whether the three columns fit, so it
+   * is asked as one: two of the three widths are the layout's OWN numbers
+   * (the same constants the grid template below is built from -- change a
+   * column and the threshold follows), and the third is the viewer's declared
+   * minimum, stated as the judgement it is. */
+  const narrow = !useFitsOneRow(CASE_PANES_ONE_ROW_PX);
   const [pane, setPane] = useState<CasePane>("contents");
 
   const selectFile = (path: string) => {
@@ -466,7 +496,7 @@ export function CaseWorkspace() {
     <Box
       style={{
         display: "grid",
-        gridTemplateColumns: "240px 1fr 220px",
+        gridTemplateColumns: `${FILES_COL_PX}px 1fr ${OUTLINE_COL_PX}px`,
         gridTemplateRows: "1fr",
         height: "100%",
         minHeight: 0,

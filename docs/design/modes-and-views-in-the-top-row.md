@@ -101,11 +101,29 @@ is NOT decided here: its entry point is a compound choice (which components,
 which plot) where EduTools' is a single named tool.  Deciding both together
 would smuggle the harder one in behind the easier.
 
-### 4b. On a phone, one panel at a time
+### 4b. One panel at a time when three do not fit
 
 `FILES` and `OUTLINE` side by side at ~195 px each is not a layout, it is two
-unusable panels.  Below the narrow breakpoint the Case workspace shows ONE at
-a time.
+unusable panels.  The Case workspace shows ONE pane when three do not fit.
+
+**Amended 2026-08-17, same day: "below the narrow breakpoint" was the wrong
+rule and this record said it twice.**  The posture was `below(sm) || coarse`,
+so a TABLET — coarse pointer at ~1800 px — got the phone layout with room to
+spare, which the owner found on his own device.  One boolean was answering two
+questions: *does it FIT* (a width question, which decides whether things
+collapse) and *will a finger hit it* (a pointer question, which decides target
+SIZE, not how many controls exist).  Joining them with `||` let the second
+answer the first.
+
+The collapse is now a MEASUREMENT — `fitsRow(natural, available)`, one home,
+two numbers, no pointer.  It gets both ends right where the old rule got one:
+a landscape phone (844 px, row 833 + icons) still collapses, and a 1800 px
+tablet shows all 18 controls on one line.  An UNMEASURED width answers "fits",
+so a pre-paint frame never collapses a desk row.
+
+This is the second time this project reached that conclusion — psychro's setup
+bar already decided by fit while McCabe's decided by breakpoint, two homes for
+one question that disagreed at 1800.  Both read the one rule now.
 
 This is the smaller decision and the more certain one: there is no reading of
 the GUI credo under which two 195 px panes teach anything.

@@ -51,10 +51,11 @@ License
   saying *you are here* while ten destinations sat unannounced behind it.
 \*---------------------------------------------------------------------------*/
 
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import {
   Anchor,
   Badge,
+  Box,
   Button,
   Group,
   Menu,
@@ -86,9 +87,26 @@ import {
   EDUTOOLS_BLURB, EDUTOOLS_LABEL, METHOD_TOOLS, setActiveMethodTool,
   useActiveMethodTool,
 } from "./methods/registry.js";
-import { useNarrowViewport } from "./methods/methodsChrome.js";
+import { fitsRow, useIntrinsicWidth } from "./methods/methodsChrome.js";
 
-export function MenuBar() {
+/** How much side padding a trigger in the top row carries.  Two rungs, and
+ *  both are WIDTH economies, not touch sizes: the roomy one is what the desk
+ *  has always rendered, the compact one is the trim the collapsed row needs to
+ *  fit a 390 px phone (measured — see THE COLLAPSED ROW'S WIDTH BUDGET). */
+const ROOMY_PAD_X = 10;
+const COMPACT_PAD_X = 6;
+
+export function MenuBar({ availableWidthPx, onRowWidth }: {
+  /** The width this row may occupy, measured by the shell (AppShell owns the
+   *  header, so it is the only thing that knows what the top bar must keep).
+   *  Absent — a MenuBar mounted outside the shell — falls back to the window,
+   *  which is the honest upper bound rather than a guess about a sibling. */
+  availableWidthPx?: number;
+  /** Report back the width THIS row needs in its current shape, so the shell
+   *  can decide whether the header still fits one line.  Measured, never
+   *  inferred from a breakpoint. */
+  onRowWidth?: (px: number) => void;
+} = {}) {
   const tutorialName = useStore((s) => s.tutorialName);
   const loadTutorial = useStore((s) => s.loadTutorial);
   const loadLocalCase = useStore((s) => s.loadLocalCase);
@@ -179,8 +197,24 @@ export function MenuBar() {
    *
    * The WIDE posture is untouched: every workspace is its own entry there, in
    * declared order, so the split costs the desk nothing (§5 of the record --
-   * this is not a navigation redesign). */
-  const narrow = useNarrowViewport();
+   * this is not a navigation redesign).
+   *
+   * WHEN IT COLLAPSES IS A MEASUREMENT, NOT A BREAKPOINT (2026-08-17).  It
+   * used to be `useNarrowViewport()`, which was `width < sm || coarse pointer`
+   * -- so a tablet, coarse at any width, got the chooser at 1800 px while the
+   * same lineup laid itself out to x=823 with 577 px to spare at 1400.  The
+   * row now measures ITSELF (a hidden ghost of the expanded shape, at the real
+   * font, `methodsChrome.useIntrinsicWidth`) and collapses when that width
+   * does not fit the width the shell says it has.  Measured 2026-08-17 with a
+   * steady case open: expanded 833 px, collapsed 353 px.
+   *
+   * That gets the landscape phone right for the reason that is actually true
+   * there.  At 844 px the expanded row (833) does not fit beside what the top
+   * bar must keep (its brand and its five icon controls), so it collapses --
+   * not because the finger is blunt, but because the row is wider than the
+   * space.  The pointer's own job (target size and spacing) is untouched and
+   * lives in `useCoarsePointer`; nothing in this row reads it, because nothing
+   * in this row is a size decision. */
   const activeWorkspace = useStore((s) => s.activeWorkspace);
   const toggleWorkspace = useStore((s) => s.toggleWorkspace);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
@@ -324,7 +358,7 @@ export function MenuBar() {
     ["mod+Enter", () => { if (runStatus !== "running") fireRun(); }],
   ]);
 
-  /* THE NARROW ROW'S WIDTH BUDGET, measured rather than guessed.
+  /* THE COLLAPSED ROW'S WIDTH BUDGET, measured rather than guessed.
    *
    * AppShell gives MenuBar a full-width 32 px line of its own on a phone, so
    * the row has 390 px and must fit in it: Mantine's Group WRAPS by default,
@@ -336,24 +370,58 @@ export function MenuBar() {
    *   File 43 + "Views: Flowsheet" 143 + Explore 66 + EduTools 75 + Help 49
    *   = 376, + 4 gaps (8) + the Group's own xs padding (20) = 404.  Over by 14.
    * The desk has no such problem (that row ends at x=824 of 1400), so the trim
-   * is narrow-only: 6 px of side padding per trigger and 4 on the Group brings
-   * it to ~352, and the longest possible value ("Views: Variables") is within
-   * a character of the one measured.
+   * rides the COLLAPSE: 6 px of side padding per trigger and 4 on the Group
+   * brings it to 353 (measured again 2026-08-17 through the ghost), and the
+   * longest possible value ("Views: Variables") is within a character of the
+   * one measured.
    *
    * The trim is padding, never a control and never a word: the whole point of
-   * the change above is that a phone shows MORE of the navigation, not less. */
-  const padX = narrow ? 6 : 10;
+   * the change above is that a phone shows MORE of the navigation, not less.
+   * It is a width economy and it rides the width decision -- it is NOT a touch
+   * size, and a coarse pointer must never make a target SMALLER. */
 
-  return (
+  /* THE TWO SHAPES, and why both are measured.
+   *
+   * `expanded` is the natural width of the row with every view as its own tab
+   * -- what has to fit for the tabs to stay.  `collapsed` is the natural width
+   * of the same row with the views folded into one chooser -- the minimum this
+   * row can ever need, which is what the SHELL needs to know to decide whether
+   * the header still fits one line.
+   *
+   * Both are measured off hidden ghosts of the real markup rather than summed
+   * from remembered control widths (that sum was written down once, in the
+   * comment above, and it was already 14 px out).
+   *
+   * The signature is everything the WIDTH of a shape depends on, which is two
+   * things and not one: which workspaces are visible, AND which one is active
+   * -- the active tab renders at `fontWeight: 600` and the collapsed chooser
+   * puts the active view's NAME in its own label (`Views: Flowsheet` against
+   * `Views: none`).  Leaving the active workspace out would have left both
+   * numbers quietly stale after every navigation. */
+  const lineupSignature =
+    `${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`;
+  const expandedRow  = useIntrinsicWidth(`expanded|${lineupSignature}`);
+  const collapsedRow = useIntrinsicWidth(`collapsed|${lineupSignature}`);
+
+  const available = availableWidthPx ?? (typeof window === "undefined" ? 0 : window.innerWidth);
+  const collapsed = !fitsRow(expandedRow.width, available);
+  const padX = collapsed ? COMPACT_PAD_X : ROOMY_PAD_X;
+
+  /* What this row needs RIGHT NOW, handed back to the shell.  Reported from a
+   * layout effect so the shell's own decision lands before the first paint --
+   * a plain effect would show one painted frame of the wrong header height. */
+  const rowWidth = collapsed ? collapsedRow.width : expandedRow.width;
+  useLayoutEffect(() => {
+    if (rowWidth > 0) onRowWidth?.(rowWidth);
+  }, [rowWidth, onRowWidth]);
+
+  /* THE ROW ITSELF, built ONCE and rendered in whichever shape the measurement
+   * asked for -- the ghosts render the SAME function, so a shape can never be
+   * measured as one thing and drawn as another. */
+  const rowItems = (shape: { collapsed: boolean; padX: number }) => (
     <>
-      <Group
-        gap={2}
-        px={narrow ? 4 : "xs"}
-        h="100%"
-        align="center"
-      >
         {/* --- File ----------------------------------------------------- */}
-        <TopMenu label="File" px={padX}>
+        <TopMenu label="File" px={shape.padX}>
           <Menu.Item
             onClick={newCaseCtl.open}
             rightSection={<Shortcut k="Ctrl+Shift+N" />}
@@ -409,14 +477,14 @@ export function MenuBar() {
         {/* --- Workspaces -------------------------------------------------
             Top-level toggles.  Active workspace is highlighted; clicking
             it again closes back to the canvas-only default. */}
-        {/* NARROW: one chooser over the VIEWS (see `narrow` above for why a
+        {/* COLLAPSED: one chooser over the VIEWS (see the block above for why a
             dropdown and not a scrolling strip, and why the modes stay out of
             it).  The modes keep their own entries, rendered by the map below
             in declared order. */}
-        {narrow && visibleViews.length > 0 && (
+        {shape.collapsed && visibleViews.length > 0 && (
           <ViewsMenu
             views={visibleViews}
-            px={padX}
+            px={shape.padX}
             isActive={isWorkspaceActive}
             isDisabled={isWorkspaceDisabled}
             disabledHint={PINCH_DISABLED_HINT}
@@ -427,20 +495,20 @@ export function MenuBar() {
           // EduTools is a DROPDOWN in the same slot the other workspaces put a
           // toggle button: the tool list is what the student is choosing, so
           // the chooser belongs where the chooser is, not as a band inside the
-          // workspace it is supposed to be showing.  It survives the narrow
+          // workspace it is supposed to be showing.  It survives the
           // collapse for the same reason.
           if (w.key === "methods") {
             return (
               <EduToolsMenu
                 key={w.label}
-                px={padX}
+                px={shape.padX}
                 active={activeWorkspace === "methods"}
                 onPick={() => setActiveWorkspace("methods")}
                 onClose={() => toggleWorkspace("methods")}
               />
             );
           }
-          if (narrow && w.kind === "view") return null;   // in the chooser above
+          if (shape.collapsed && w.kind === "view") return null;   // in the chooser above
           const isActive = isWorkspaceActive(w);
           const disabled = isWorkspaceDisabled(w);
           return (
@@ -449,7 +517,7 @@ export function MenuBar() {
               variant={isActive ? "filled" : "subtle"}
               color={isActive ? "accent" : "gray"}
               size="compact-xs"
-              px={padX}
+              px={shape.padX}
               disabled={disabled}
               title={disabled ? PINCH_DISABLED_HINT : undefined}
               onClick={() => { if (!disabled) openWorkspace(w.label, w.key); }}
@@ -470,7 +538,7 @@ export function MenuBar() {
         })}
 
         {/* --- Help ----------------------------------------------------- */}
-        <TopMenu label="Help" px={padX}>
+        <TopMenu label="Help" px={shape.padX}>
           {/* Context-sensitive: opens the guide AT the section for whatever is
               selected (a unit's type) or the active workspace.  Same resolution
               as the global F1 shortcut. */}
@@ -541,7 +609,50 @@ export function MenuBar() {
             </Text>
           </Menu.Item>
         </TopMenu>
+    </>
+  );
+
+  /* A hidden ghost of one shape: the real markup, at the real font, laid out
+   * at `max-content` so it reports what the shape WANTS rather than what the
+   * box allows.  `visibility: hidden` keeps it out of the accessibility tree
+   * and the tab order; `position: absolute` keeps it out of the layout; and it
+   * is only in the document at all for the one pre-paint frame in which it is
+   * measured (see methodsChrome.useIntrinsicWidth). */
+  const ghost = (
+    ref: React.MutableRefObject<HTMLDivElement | null>,
+    shape: { collapsed: boolean; padX: number },
+  ) => (
+    <Box
+      ref={ref}
+      aria-hidden
+      style={{
+        position: "absolute", top: 0, left: 0, width: "max-content", height: "100%",
+        visibility: "hidden", pointerEvents: "none",
+      }}
+    >
+      <Group gap={2} px={shape.collapsed ? 4 : "xs"} h="100%" align="center" wrap="nowrap">
+        {rowItems(shape)}
       </Group>
+    </Box>
+  );
+
+  return (
+    <>
+      {/* `position: relative` so the ghosts anchor here and not on the page;
+          `overflow: hidden` so a ghost mid-measurement can never paint or
+          widen the header even for the frame it exists. */}
+      <Box style={{ position: "relative", height: "100%", minWidth: 0, overflow: "hidden" }}>
+        <Group
+          gap={2}
+          px={collapsed ? 4 : "xs"}
+          h="100%"
+          align="center"
+        >
+          {rowItems({ collapsed, padX })}
+        </Group>
+        {expandedRow.measuring  && ghost(expandedRow.ref,  { collapsed: false, padX: ROOMY_PAD_X })}
+        {collapsedRow.measuring && ghost(collapsedRow.ref, { collapsed: true,  padX: COMPACT_PAD_X })}
+      </Box>
 
       <Modal
         opened={aboutOpen}

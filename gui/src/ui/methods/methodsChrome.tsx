@@ -57,12 +57,36 @@ License
   chooser, and a second list below `sm` would be a second home for the
   registry.
 
+  ONE BOOLEAN WAS ANSWERING TWO QUESTIONS (fixed 2026-08-17).  Until today
+  `useNarrowViewport()` returned `below || coarse`, and the `|| coarse` was not
+  careless: a landscape phone is ~844 px wide, well above the 768 px
+  breakpoint, and it is still a phone.  The reason was real; the JOIN was the
+  defect.  Two different questions were being answered by one flag:
+
+    * "does the row FIT?"     — about WIDTH.  It decides whether controls
+                                collapse into a chooser.
+    * "will a finger hit it?" — about the POINTER.  It decides target SIZE and
+                                spacing, never how many controls exist.
+
+  `||` let the second answer the first, so a tablet — coarse at ANY width — got
+  the phone layout at 1800 px: measured 2026-08-17 at 1800x1000 with touch
+  emulation, ten top-row controls and a `Views:` chooser where the same page at
+  1400x900 with a mouse laid eighteen out to x=823 with 577 px to spare.
+
+  They are separate now, and the landscape phone is served by the FIT question
+  rather than by the pointer: at 844 px the expanded row (833 px measured) does
+  not fit beside what the top bar must keep, so it collapses — for the reason
+  that is actually true there.  `fitsRow()` below is the ONE rule; the width it
+  is given is MEASURED (`useIntrinsicWidth` / `useMeasuredBoxWidth`) wherever a
+  box can be measured, and declared from a recorded measurement (`useFitsOneRow`
+  + a named constant) where the natural width belongs to fixed content.
+
   Pure helpers are exported for the node test runner
   (tests/methodsChrome.test.ts) — no DOM is needed to pin the persistence
   contract.
 \*---------------------------------------------------------------------------*/
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@mantine/hooks";
 
 /** The live tools' setup-bar fold (toolbar + teaches line + hand-off footer).
@@ -87,13 +111,98 @@ export function useCoarsePointer(): boolean {
   return useMediaQuery("(pointer: coarse)", false, { getInitialValueInEffect: false }) ?? false;
 }
 
-/** True in the NARROW posture: viewport below Mantine `sm`, OR a coarse
- *  pointer at any width — a phone held sideways is still a phone. */
+/** True when the VIEWPORT is narrower than Mantine `sm` — a width fact and
+ *  nothing else.  It used to be `below || coarse`; see the header for why the
+ *  pointer term left and where the pointer's own job went.
+ *
+ *  Read it only where the question really is "is this reading column
+ *  phone-narrow?" — a caption that should wrap rather than elide.  A question
+ *  about whether specific CONTENT fits belongs to `fitsRow()` below, which
+ *  compares a measured natural width against a measured available one. */
 export function useNarrowViewport(): boolean {
-  const coarse = useCoarsePointer();
-  const below =
-    useMediaQuery(belowQuery(NARROW_BREAKPOINT_EM), false, { getInitialValueInEffect: false }) ?? false;
-  return below || coarse;
+  return useMediaQuery(belowQuery(NARROW_BREAKPOINT_EM), false,
+                       { getInitialValueInEffect: false }) ?? false;
+}
+
+// ---- THE FIT RULE (one home) ------------------------------------------------
+
+/** Does a row whose content is `naturalWidthPx` wide fit `availableWidthPx`?
+ *
+ *  The whole rule, in one place, so no caller can invent its own variant of
+ *  it.  Both arguments are WIDTHS IN PX — one is what the content needs, the
+ *  other is what it has.  Neither is a breakpoint and neither is a pointer.
+ *
+ *  AN UNMEASURED WIDTH IS NOT A FAILURE TO FIT.  Before the first layout pass
+ *  (and in jsdom, which has no layout engine) a measurement reads 0; answering
+ *  "does not fit" there would collapse a desk row on its first frame because
+ *  nothing had been measured yet.  So a non-positive natural or available
+ *  width answers `true` — the uncollapsed shape — and the real answer arrives
+ *  with the measurement, in a layout effect, before anything is painted.
+ *
+ *  Pure and exported: the tests pin the rule itself, which is the part that
+ *  can be wrong without a browser to show it. */
+export function fitsRow(naturalWidthPx: number, availableWidthPx: number): boolean {
+  if (!Number.isFinite(naturalWidthPx) || naturalWidthPx <= 0) return true;
+  if (!Number.isFinite(availableWidthPx) || availableWidthPx <= 0) return true;
+  return availableWidthPx >= naturalWidthPx;
+}
+
+/** The live INNER width of a box, measured (ResizeObserver + one layout-effect
+ *  reading so the first paint already has it).  This is the "available" half
+ *  of `fitsRow` wherever a real container can be asked. */
+export function useMeasuredBoxWidth<T extends HTMLElement>(): {
+  ref: React.MutableRefObject<T | null>;
+  width: number;
+} {
+  const ref = useRef<T | null>(null);
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const read = () => setWidth((w) => {
+      const next = Math.floor(el.getBoundingClientRect().width);
+      return next === w ? w : next;
+    });
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return { ref, width };
+}
+
+/** The INTRINSIC width of a shape the layout does not currently render.
+ *
+ *  A row that has already collapsed is narrow BECAUSE it collapsed, so asking
+ *  the rendered row how wide it would like to be can only ever answer "this
+ *  wide" — and the row could never un-collapse when the window grew back.  The
+ *  measurement therefore rides a GHOST: the shape is rendered once, hidden
+ *  (`visibility: hidden`, out of the a11y tree and the tab order) and
+ *  absolutely positioned so it changes no layout, measured in a layout effect,
+ *  and then unmounted.  What is measured is the real markup at the real font,
+ *  never a sum of guessed control widths.
+ *
+ *  `signature` is what the shape depends on (the lineup of controls in it).
+ *  Change it and the ghost comes back for one pre-paint frame; leave it and
+ *  nothing is rendered at all.  A width of 0 means "not measured yet", which
+ *  `fitsRow` reads as "do not collapse". */
+export function useIntrinsicWidth(signature: string): {
+  ref: React.MutableRefObject<HTMLDivElement | null>;
+  width: number;
+  measuring: boolean;
+} {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [measured, setMeasured] = useState<{ sig: string; px: number } | null>(null);
+  const measuring = measured === null || measured.sig !== signature;
+  useLayoutEffect(() => {
+    if (!measuring) return;
+    const el = ref.current;
+    if (!el) return;                        // no layout engine (jsdom / SSR)
+    const px = Math.ceil(el.getBoundingClientRect().width);
+    if (px > 0) setMeasured({ sig: signature, px });
+  });
+  return { ref, width: measuring ? 0 : (measured as { sig: string; px: number }).px, measuring };
 }
 
 // ---- The setup bar's two postures ------------------------------------------
@@ -139,7 +248,16 @@ export function setupBarLayout(wrapped: boolean): {
  *  1400x900, so it lost three controls off the right edge THERE too — the
  *  design record's "and the desk is not innocent".  A `sm` breakpoint would
  *  never have caught that: the tool is simply wider than the window, and the
- *  question is whether it fits, not whether the screen is small. */
+ *  question is whether it fits, not whether the screen is small.
+ *
+ *  This is `fitsRow(naturalWidthPx, viewportWidth)` with the browser doing the
+ *  comparison: a `(min-width: Npx)` query IS "available >= natural", evaluated
+ *  without a resize listener and correct on the very first render.  The rule
+ *  is not restated here — the specialisation is which WIDTH plays "available"
+ *  (the viewport, because a setup bar spans it) and where the natural width
+ *  comes from (a constant recorded from a measurement, because a setup bar's
+ *  content is fixed; a row whose lineup changes with the case measures its own
+ *  through `useIntrinsicWidth`). */
 export function useFitsOneRow(naturalWidthPx: number): boolean {
   return useMediaQuery(`(min-width: ${naturalWidthPx}px)`, false,
                        { getInitialValueInEffect: false }) ?? false;

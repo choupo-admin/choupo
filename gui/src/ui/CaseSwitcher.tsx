@@ -55,6 +55,21 @@ export function CaseSwitcher() {
   const [dupOpen, setDupOpen] = useState(false);
   const [siblings, setSiblings] = useState<{ name: string; dir: string; description: string }[] | null>(null);
 
+  /* THE PATH ELLIPSIZES -- it does not run off the edge (2026-08-17).
+   *
+   * A case path is as long as the case is nested, and this Text sat in the top
+   * bar's identity cluster as a flex item with the default `min-width: auto`:
+   * it could not shrink, so it kept its full natural width and the cluster's
+   * `overflow: hidden` cut it mid-path with nothing to say it had.  Measured
+   * before the fix at 1400x900 with `steady/flash/flash01_benzene_toluene`
+   * open: the text box was 259 px wide and 76 px of it were behind the edge
+   * (252 px of it at 390x844).  `min-width: 0` lets it shrink; `truncate` puts
+   * an ellipsis where the loss is, so a cut path READS as cut.
+   *
+   * The `title` is the whole path, so the part the ellipsis eats is still
+   * reachable -- a truncation that loses the information rather than folding it
+   * would be a worse defect than the overflow. */
+
   // Blank boot: no case open.
   if (!tutorialName) {
     return <Text size="xs" ff="monospace" c="dimmed">No case open</Text>;
@@ -62,7 +77,11 @@ export function CaseSwitcher() {
 
   // A non-local case (tutorial / clipboard) has no sibling folders -> static.
   if (!dir) {
-    return <Text size="xs" ff="monospace" c="dimmed">{name}</Text>;
+    return (
+      <Text size="xs" ff="monospace" c="dimmed" truncate title={name} style={{ minWidth: 0 }}>
+        {name}
+      </Text>
+    );
   }
 
   const refresh = () => {
@@ -82,8 +101,9 @@ export function CaseSwitcher() {
       <Menu shadow="md" width={280} position="bottom-start" opened={opened}
         onChange={(o) => { setOpened(o); if (o) refresh(); }}>
         <Menu.Target>
-          <Group gap={3} wrap="nowrap" style={{ cursor: "pointer" }} title="Switch variant / duplicate">
-            <Text size="xs" ff="monospace" c="dimmed">{name}</Text>
+          <Group gap={3} wrap="nowrap" style={{ cursor: "pointer", minWidth: 0 }}
+            title={`${name} — switch variant / duplicate`}>
+            <Text size="xs" ff="monospace" c="dimmed" truncate style={{ minWidth: 0 }}>{name}</Text>
             <IconChevronDown size={12} color="light-dark(var(--mantine-color-gray-6), var(--mantine-color-dark-2))" />
           </Group>
         </Menu.Target>

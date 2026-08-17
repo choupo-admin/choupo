@@ -50,7 +50,7 @@ License
 
 import { Box } from "@mantine/core";
 import { useReducedMotion } from "@mantine/hooks";
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { AgentConsole } from "./AgentConsole.js";
@@ -63,7 +63,7 @@ import { CaseIntro } from "./CaseIntro.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
 import { LogWorkspace } from "./LogWorkspace.js";
 import { MenuBar } from "./MenuBar.js";
-import { useNarrowViewport } from "./methods/methodsChrome.js";
+import { fitsRow, useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import { ReportsWorkspace } from "./ReportsWorkspace.js";
 import { StreamsWorkspace } from "./StreamsWorkspace.js";
 import { VariablesWorkspace } from "./VariablesWorkspace.js";
@@ -156,15 +156,43 @@ export function AppShell() {
    * them are to hide controls or to hide them behind a sideways swipe.  Both
    * were rejected -- a control that disappears is not a control that works.
    *
-   * So below Mantine `sm` (or under a coarse pointer -- a phone held sideways
-   * is still a phone) the header takes TWO 32 px lines instead of one:
-   * brand + icons on top, navigation underneath.  It costs 32 px of a
-   * 844 px screen and buys back every control, with no gesture to discover.
-   * The desk keeps its single 32 px row, byte for byte.
+   * So when the two cannot share one line the header takes TWO 32 px lines
+   * instead of one: brand + icons on top, navigation underneath.  It costs
+   * 32 px of an 844 px screen and buys back every control, with no gesture to
+   * discover.  The desk keeps its single 32 px row, byte for byte.
    *
-   * `useNarrowViewport` is the project's ONE posture-detection home
-   * (methodsChrome.tsx); this deliberately does not introduce a second. */
-  const narrowHeader = useNarrowViewport();
+   * "CANNOT SHARE ONE LINE" IS MEASURED, NOT A BREAKPOINT (2026-08-17).  It
+   * used to be `useNarrowViewport()`, i.e. `width < sm || coarse pointer`, and
+   * the pointer term made a 1800 px tablet stack its header like a phone.
+   * Three live measurements decide it now, and none of them is a pointer:
+   *
+   *   headerWidth  -- this row's own box (ResizeObserver);
+   *   topBarMinPx  -- what TopBar must keep: its brand lockup + its icon
+   *                   CONTROLS, measured and reported by TopBar itself;
+   *   menuRowPx    -- what MenuBar's row needs in its CURRENT shape, measured
+   *                   and reported by MenuBar (its ghost, not a breakpoint).
+   *
+   * THE TWO DECISIONS ARE ORDERED, and the order is what keeps them stable.
+   * MenuBar is told what it may have -- `headerWidth - topBarMinPx`, always,
+   * stacked or not -- so its answer depends on the width alone.  The header
+   * then stacks only when even the row MenuBar settled on cannot share the
+   * line.  Collapsing is therefore PREFERRED over stacking, which is what the
+   * landscape phone wants (measured 2026-08-17: 844 px gives the navigation
+   * 844 - 330 = 514 px against an expanded row of 833, so the views collapse
+   * into their chooser and the 353 px that leaves shares the line easily).
+   * Writing it the other way round -- stack first, then let MenuBar have the
+   * whole width -- is bistable: at 1000 px both "expanded + stacked" and
+   * "collapsed + one line" satisfy it, and which one you get depends on the
+   * order the effects happened to run in.
+   *
+   * `fitsRow` is the project's ONE fit rule (methodsChrome.tsx); this
+   * deliberately does not introduce a second. */
+  const header = useMeasuredBoxWidth<HTMLDivElement>();
+  const [topBarMinPx, setTopBarMinPx] = useState(0);
+  const [menuRowPx, setMenuRowPx] = useState(0);
+  const headerWidth = header.width;
+  const menuAvailablePx = Math.max(0, headerWidth - topBarMinPx);
+  const narrowHeader = !fitsRow(menuRowPx + topBarMinPx, headerWidth);
   const headerRowPx = narrowHeader ? 64 : 32;
 
   // Esc closes whatever workspace is open, returning to the canvas-only
@@ -312,6 +340,7 @@ export function AppShell() {
           screen.  Capping the header at the column width lets the row lay
           itself out for the space it actually has. */}
       <Box
+        ref={header.ref}
         style={{
           gridArea: "header",
           display: "flex",
@@ -332,14 +361,14 @@ export function AppShell() {
             ? { flex: "1 1 100%", order: 2, height: 32, minWidth: 0 }
             : { flex: "0 1 auto", minWidth: 0 }}
         >
-          <MenuBar />
+          <MenuBar availableWidthPx={menuAvailablePx} onRowWidth={setMenuRowPx} />
         </Box>
         <Box
           style={narrowHeader
             ? { flex: "1 1 100%", order: 1, height: 32, minWidth: 0 }
             : { flex: 1, minWidth: 0 }}
         >
-          <TopBar />
+          <TopBar onMinWidth={setTopBarMinPx} />
         </Box>
       </Box>
 

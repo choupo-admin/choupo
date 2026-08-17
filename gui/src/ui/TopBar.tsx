@@ -49,7 +49,7 @@ import {
   IconRobot,
   IconClipboardCopy,
 } from "@tabler/icons-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
@@ -67,7 +67,27 @@ import { CaseSwitcher } from "./CaseSwitcher.js";
 
 interface EngineVersion { version: string; commit?: string }
 
-export function TopBar() {
+export function TopBar({ onMinWidth }: {
+  /* THE WIDTH THIS BAR MUST KEEP, measured and handed to the shell.
+   *
+   * The header is one line shared with the navigation, and something has to
+   * say how that line is divided.  Whatever the answer, it may not be a
+   * remembered number: this bar's own content decides it (the icon cluster
+   * grows a control when the case has unsaved tinkering), so a constant would
+   * be right on the day it was written and quietly wrong after.
+   *
+   * The minimum is the BRAND LOCKUP (also the Home control) plus the ICON
+   * CLUSTER (five to seven real controls, `flexShrink: 0` -- a control that
+   * disappears is not a control that works), plus the row's own padding and
+   * gap read off the live computed style rather than restated from Mantine's
+   * spacing scale.  Everything between them -- the version badge, the case
+   * path, the status pills -- is INFORMATION and is allowed to ellipsize;
+   * that is why the case path grew a `truncate` in the same change.
+   *
+   * Absent (a TopBar mounted outside the shell) nothing is reported and
+   * nothing depends on it. */
+  onMinWidth?: (px: number) => void;
+} = {}) {
   // The version badge reads wasm/version.json -- written by the WASM build
   // BESIDE the binaries this app loads, so the announced version and the
   // engine that runs can never disagree (a user landing on /app/ must know
@@ -326,9 +346,38 @@ export function TopBar() {
     };
   }, [onRun, onStop]);
 
+  /* THE MINIMUM, MEASURED (see the `onMinWidth` prop for what it is and why it
+   * is not a constant).  Read in a layout effect so the shell's header
+   * decision lands before the first paint, and re-read whenever the two
+   * clusters change size -- the icon cluster gains a control when a case picks
+   * up unsaved tinkering, and that is a real change of this bar's minimum. */
+  const rowRef = useRef<HTMLDivElement | null>(null);
+  const brandRef = useRef<HTMLDivElement | null>(null);
+  const iconsRef = useRef<HTMLDivElement | null>(null);
+  useLayoutEffect(() => {
+    if (!onMinWidth) return;
+    const read = () => {
+      const row = rowRef.current, brand = brandRef.current, icons = iconsRef.current;
+      if (!row || !brand || !icons) return;
+      const cs = getComputedStyle(row);
+      const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      const gap = parseFloat(cs.columnGap) || 0;
+      const px = Math.ceil(brand.getBoundingClientRect().width
+                         + icons.getBoundingClientRect().width + pad + gap);
+      if (px > 0) onMinWidth(px);
+    };
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(read);
+    if (brandRef.current) ro.observe(brandRef.current);
+    if (iconsRef.current) ro.observe(iconsRef.current);
+    return () => ro.disconnect();
+  }, [onMinWidth]);
+
   return (
     <>
     <Group
+      ref={rowRef}
       justify="space-between"
       px="sm"
       h="100%"
@@ -340,7 +389,7 @@ export function TopBar() {
         {/* The lockup doubles as "home": click -> the welcome screen.  (Back /
             forward is the browser's OWN -- the store mirrors navigation into
             history so Firefox's arrows navigate the app.) */}
-        <Group gap={7} align="center" wrap="nowrap" style={{ cursor: "pointer" }}
+        <Group ref={brandRef} gap={7} align="center" wrap="nowrap" style={{ cursor: "pointer" }}
           onClick={goHome} title="Home (welcome)">
           <img src={`${import.meta.env.BASE_URL}logo2-mark.png`} alt="" height={26} style={{ display: "block", width: "auto", marginBottom: 1 }} />
           <Text fw={700} size="md" style={{ letterSpacing: 0.3, lineHeight: 1 }}>
@@ -403,7 +452,7 @@ export function TopBar() {
         )}
       </Group>
 
-      <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+      <Group ref={iconsRef} gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
         {scratchCount > 0 && (
           <Tooltip label="Reset tinkering — drop all unsaved Properties-box edits and return to the file" withArrow>
             <ActionIcon
