@@ -123,35 +123,61 @@ export const OCCLUSION_PROBE = `(() => {
 })()`;
 
 /*---------------------------------------------------------------------------*\
-  THE SKIPPED PILE, RESOLVED -- and it is the phone that made this necessary.
+  THE SKIPPED PILE, RESOLVED -- and two false findings paid for on the way.
 
   The probe above counts an off-viewport control and moves on, correctly: a
   centre outside the viewport is where `elementFromPoint` is not defined, so
-  it is not evidence either way.  At 1400x900 that pile is small (1 control
-  across all twelve pages).  At 390x844 it is not: 33 controls, and on one
-  page 29 of 40.  Leaving that many in a bucket labelled "no evidence" and
-  then printing "clean" would be the harness making its own coverage collapse
-  look like a result.
+  it is not evidence either way.  At 1400x900 that pile is small.  At 390x844
+  it is not: 81 controls, and on one page 29 of 40.  Leaving that many in a
+  bucket labelled "no evidence" and then printing "clean" would be the harness
+  making its own coverage collapse look like a result.
 
   So each one is ASKED.  Scroll it into view, then put the same question:
-  would a click at its centre reach it?  Three answers, and they are different
-  findings:
+  would a click at its centre reach it?
 
+  TWO CORRECTIONS, both found by checking a finding instead of believing it,
+  and both had produced a confident, specific, WRONG report first:
+
+  (1) A CONTROL CLIPPED BY `overflow: hidden` IS HIDDEN ON PURPOSE.  The first
+      version reported `button "Copy propsDict"` as a covered control on
+      mccabe and psychro at BOTH viewports, named its blocker and exited 1.
+      At rest that button sits at y=920 in a 900-high viewport, inside a
+      COLLAPSED disclosure whose panel is clipped away by an ancestor's
+      `overflow: hidden`.  It is not covered; it is folded.  `scrollIntoView`
+      scrolls an `overflow: hidden` box quite happily -- a USER cannot -- so
+      the probe had manufactured the very state it then reported.  A control
+      is only asked the scroll question if every clipping ancestor between it
+      and the viewport can actually be scrolled by a user (`auto` or
+      `scroll`); anything behind a `hidden`/`clip` edge is classified
+      `clippedByOverflow` and NOT judged.  The count is still printed, because
+      "the app is hiding it" and "the app has lost it off the bottom of a
+      bounded box" look identical from here and only a human can tell them
+      apart.
+
+  (2) AN "AT REST" BOX MEASURED AFTER SCROLLING SOMETHING ELSE IS NOT AT REST.
+      The first version walked the pile scrolling to each in turn without
+      putting anything back.  The top bar's rightmost control is off the right
+      edge on a phone; scrolling to it moved a shared scroller 90 px, and
+      every box read afterwards came out 90 px to the left.  That is where the
+      report's `at rest (-78, 122)` boxes came from -- an artefact of the
+      previous measurement, reported as a property of the page.  Now EVERY
+      at-rest box is captured BEFORE anything is scrolled, and every scrollable
+      ancestor's scrollLeft/scrollTop is saved and restored around each test,
+      so the elements are asked in any order and answer the same.
+
+  Three verdicts remain, and they are different findings:
     * reachableAfterScroll -- off-screen at rest, fine once scrolled to.  Not
-      a defect by this harness's ONE check, but reported: a control 78 px off
-      the left edge of a phone at rest is something a human should see.
+      a defect by this harness's ONE check, but reported: a control whose
+      centre is outside the viewport when the page settles is worth a look.
     * coveredAfterScroll   -- brought into view and STILL not reachable at its
-      centre.  A real covered control that the at-rest pass could not report.
+      centre.  A real covered control the at-rest pass could not report.
     * unreachableByScroll  -- cannot be brought into the viewport at all.
 
   IT MUTATES THE PAGE (it scrolls it), so it runs LAST on a page, after every
-  at-rest measurement is already taken.  It restores the document scroll, but
-  not every inner container's -- stated rather than claimed, because a scroll
-  restore that quietly missed one would make the next reading wrong.
+  at-rest measurement is already taken.
 \*---------------------------------------------------------------------------*/
 export const OFFSCREEN_PROBE = `(() => {
   const SEL = ${JSON.stringify(INTERACTIVE_SELECTOR)};
-  const sx = window.scrollX, sy = window.scrollY;
 
   const describe = (el) => {
     const r = el.getBoundingClientRect();
@@ -166,37 +192,94 @@ export const OFFSCREEN_PROBE = `(() => {
     };
   };
 
-  const out = { reachableAfterScroll: [], coveredAfterScroll: [], unreachableByScroll: [] };
+  const inViewport = (r) => {
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    return cx >= 0 && cy >= 0 && cx < innerWidth && cy < innerHeight;
+  };
 
+  /** The first ancestor that CLIPS this element away behind an edge a user
+   *  cannot scroll.  Returns null when the element is merely out of view in
+   *  something scrollable (or in the document itself). */
+  const clippedBy = (el) => {
+    const r = el.getBoundingClientRect();
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      const ox = cs.overflowX, oy = cs.overflowY;
+      const hides = (o) => o === "hidden" || o === "clip";
+      if (!hides(ox) && !hides(oy)) continue;
+      const pr = p.getBoundingClientRect();
+      const outX = hides(ox) && (r.right <= pr.left + 1 || r.left >= pr.right - 1);
+      const outY = hides(oy) && (r.bottom <= pr.top + 1 || r.top >= pr.bottom - 1);
+      if (outX || outY) return p;
+    }
+    return null;
+  };
+
+  /** Every scrollable ancestor's scroll offsets, so a test can be undone. */
+  const scrollState = (el) => {
+    const st = [[document.scrollingElement || document.documentElement,
+                 window.scrollX, window.scrollY]];
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      st.push([p, p.scrollLeft, p.scrollTop]);
+    }
+    return st;
+  };
+  const restore = (st) => {
+    for (const [node, left, top] of st) {
+      if (node === document.scrollingElement || node === document.documentElement) {
+        window.scrollTo(left, top);
+      } else { node.scrollLeft = left; node.scrollTop = top; }
+    }
+  };
+
+  // -- PHASE 1: snapshot every off-viewport control BEFORE anything scrolls --
+  const pile = [];
   for (const el of document.querySelectorAll(SEL)) {
     const r = el.getBoundingClientRect();
     if (r.width < 2 || r.height < 2) continue;
     const cs = getComputedStyle(el);
     if (cs.visibility === "hidden" || cs.display === "none"
         || parseFloat(cs.opacity || "1") === 0) continue;
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    if (cx >= 0 && cy >= 0 && cx < innerWidth && cy < innerHeight) continue;  // already judged
-
-    const atRest = describe(el);
-    el.scrollIntoView({ block: "center", inline: "center" });
-    const r2 = el.getBoundingClientRect();
-    const cx2 = r2.left + r2.width / 2, cy2 = r2.top + r2.height / 2;
-    const now = describe(el);
-    const entry = { control: atRest, afterScroll: now.box };
-
-    if (cx2 < 0 || cy2 < 0 || cx2 >= innerWidth || cy2 >= innerHeight) {
-      out.unreachableByScroll.push(entry);
-      continue;
-    }
-    const hit = document.elementFromPoint(cx2, cy2);
-    if (hit === el || (hit && el.contains(hit))) { out.reachableAfterScroll.push(entry); continue; }
-    entry.blocker = hit ? describe(hit) : { tag: "(nothing)", text: "", box: null };
-    entry.relation = hit && hit.contains(el) ? "ancestor" : "overlay";
-    out.coveredAfterScroll.push(entry);
+    if (inViewport(r)) continue;                    // the at-rest pass judged it
+    pile.push({ el, atRest: describe(el), clipper: clippedBy(el) });
   }
 
-  window.scrollTo(sx, sy);
-  out.documentOverflowsX = document.documentElement.scrollWidth > document.documentElement.clientWidth;
+  const out = {
+    reachableAfterScroll: [], coveredAfterScroll: [],
+    unreachableByScroll: [], clippedByOverflow: [],
+  };
+
+  // -- PHASE 2: ask each one, and put the page back after each --------------
+  for (const item of pile) {
+    const entry = { control: item.atRest };
+    if (item.clipper) {
+      entry.clipper = describe(item.clipper);
+      out.clippedByOverflow.push(entry);
+      continue;                                     // hidden on purpose: not judged
+    }
+    const saved = scrollState(item.el);
+    item.el.scrollIntoView({ block: "center", inline: "center" });
+    const r2 = item.el.getBoundingClientRect();
+    const cx2 = r2.left + r2.width / 2, cy2 = r2.top + r2.height / 2;
+    entry.afterScroll = { x: Math.round(r2.x), y: Math.round(r2.y),
+                          w: Math.round(r2.width), h: Math.round(r2.height) };
+    if (!inViewport(r2)) {
+      out.unreachableByScroll.push(entry);
+    } else {
+      const hit = document.elementFromPoint(cx2, cy2);
+      if (hit === item.el || (hit && item.el.contains(hit))) {
+        out.reachableAfterScroll.push(entry);
+      } else {
+        entry.blocker = hit ? describe(hit) : { tag: "(nothing)", text: "", box: null };
+        entry.relation = hit && hit.contains(item.el) ? "ancestor" : "overlay";
+        out.coveredAfterScroll.push(entry);
+      }
+    }
+    restore(saved);
+  }
+
+  out.documentOverflowsX =
+    document.documentElement.scrollWidth > document.documentElement.clientWidth;
   out.scrollWidth = document.documentElement.scrollWidth;
   out.clientWidth = document.documentElement.clientWidth;
   return out;

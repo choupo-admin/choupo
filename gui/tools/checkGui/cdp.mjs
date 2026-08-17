@@ -110,7 +110,12 @@ export class Browser {
     });
   }
 
-  send(method, params = {}, sessionId) {
+  /** `timeoutMs` is a parameter and not a constant because it was observed to
+   *  matter: a renderer busy applying a burst of HMR updates (another editor
+   *  saving into gui/src while this runs) does not answer Runtime.evaluate
+   *  inside 30 s, and the harness died with a protocol error instead of
+   *  measuring anything.  A stall is not a defect. */
+  send(method, params = {}, sessionId, timeoutMs = 30000) {
     const id = ++this._id;
     const payload = { id, method, params };
     if (sessionId) payload.sessionId = sessionId;
@@ -118,8 +123,10 @@ export class Browser {
       this._pending.set(id, { resolve, reject, method });
       this.ws.send(JSON.stringify(payload));
       setTimeout(() => {
-        if (this._pending.delete(id)) reject(new Error(`${method}: CDP timeout (30 s)`));
-      }, 30000);
+        if (this._pending.delete(id)) {
+          reject(new Error(`${method}: CDP timeout (${(timeoutMs / 1000).toFixed(0)} s)`));
+        }
+      }, timeoutMs);
     });
   }
 
@@ -164,7 +171,9 @@ export class Page {
     this._childSessions = new Set();
   }
 
-  send(method, params) { return this.browser.send(method, params, this.sessionId); }
+  send(method, params, timeoutMs) {
+    return this.browser.send(method, params, this.sessionId, timeoutMs);
+  }
 
   /** Subscribe to the error channels of this target and of every sub-target
    *  (workers) the browser attaches for us. */
@@ -248,10 +257,10 @@ export class Page {
   }
 
   /** Evaluate an expression in the page and return its value. */
-  async evaluate(expression, { awaitPromise = false } = {}) {
+  async evaluate(expression, { awaitPromise = false, timeoutMs = 120000 } = {}) {
     const res = await this.send("Runtime.evaluate", {
       expression, returnByValue: true, awaitPromise,
-    });
+    }, timeoutMs);
     if (res.exceptionDetails) {
       const d = res.exceptionDetails;
       throw new Error(`page evaluate threw: ${d.exception?.description || d.text}`);

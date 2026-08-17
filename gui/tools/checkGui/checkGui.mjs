@@ -403,10 +403,13 @@ async function proveErrorChannel(page, log) {
      })()`,
   );
   // The worker has to spawn, run and have its message relayed; poll rather
-  // than sleep a guessed constant.
+  // than sleep a guessed constant.  The budget is 30 s and not 10 because 10
+  // was observed to fail on a dev server thrashing under another editor's
+  // saves -- the channel was fine, the machine was busy, and a self-test that
+  // refuses for load teaches people to pass --no-selftest.
   const t0 = Date.now();
   let heardPage = false, heardWorker = false;
-  while (Date.now() - t0 < 10000 && !(heardPage && heardWorker)) {
+  while (Date.now() - t0 < 30000 && !(heardPage && heardWorker)) {
     heardPage = page.consoleErrors.some((e) => e.text.includes(PAGE_MARK));
     heardWorker = page.consoleErrors.some((e) => e.text.includes(WORKER_MARK));
     if (heardPage && heardWorker) break;
@@ -558,7 +561,7 @@ async function main() {
         // (c) ARM 3 -- resolve what (a) had to skip.  LAST: it scrolls.
         const off = await page.evaluate(OFFSCREEN_PROBE);
         const offDefects = off.coveredAfterScroll.length + off.unreachableByScroll.length;
-        if (off.reachableAfterScroll.length || offDefects) {
+        if (off.reachableAfterScroll.length || offDefects || off.clippedByOverflow.length) {
           pass.offscreen.push({ tool: tool.id, url, ...off });
         }
 
@@ -569,6 +572,9 @@ async function main() {
         const bits = [];
         bits.push(r.covered.length === 0 ? "clean" : `${r.covered.length} COVERED`);
         if (offDefects) bits.push(`${offDefects} COVERED off-screen`);
+        if (off.clippedByOverflow.length) {
+          bits.push(`${off.clippedByOverflow.length} clipped (not judged)`);
+        }
         if (errs.length) bits.push(`${errs.length} PAGE ERROR${errs.length > 1 ? "S" : ""}`);
         const reach = exp.found ? `reach ${exp.reach}` : "reach n/a";
 
@@ -636,8 +642,8 @@ async function main() {
       }
       const names = e.covered.map((c) => `${c.tag} "${c.text || "(no text)"}"`);
       log(`  ${tag.padEnd(28)} reach ${String(e.reach).padStart(3)}`
-        + `   (target ${e.target.tag} ${fmtBox(e.target.box)}, `
-        + `${e.reachableBefore} reachable before)`);
+        + `   (container ${fmtBox(e.container.box)}, target ${e.target.tag} `
+        + `${fmtBox(e.target.box)}, ${e.reachableBefore} reachable before)`);
       if (e.reach > 0) log(`  ${" ".repeat(28)} covers: ${names.join(", ")}`);
       if (e.reach < MIN_SABOTAGE_REACH && pass.vp.gated) vacuous.push({ ...e, tag });
       else if (e.reach === MIN_SABOTAGE_REACH && pass.vp.gated) fragile.push({ ...e, tag });
@@ -688,8 +694,10 @@ async function main() {
     const offCovered = pass.offscreen.reduce(
       (n, o) => n + o.coveredAfterScroll.length + o.unreachableByScroll.length, 0);
     const offRest = pass.offscreen.reduce((n, o) => n + o.reachableAfterScroll.length, 0);
+    const clipped = pass.offscreen.reduce((n, o) => n + o.clippedByOverflow.length, 0);
     log(`    at-rest covered: ${covered}   off-screen covered/unreachable: ${offCovered}`
       + `   off-screen but reachable once scrolled to: ${offRest}`);
+    log(`    clipped behind an overflow:hidden edge (hidden on purpose, NOT judged): ${clipped}`);
     log(`    pages that errored: ${pass.errored.length}`);
   }
 
