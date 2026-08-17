@@ -5,3 +5,4 @@ dist/
 coverage/
 public/wasm/
 public/docs/
+tools/checkGui/artifacts/
