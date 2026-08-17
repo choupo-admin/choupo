@@ -53,6 +53,30 @@ License
   deleted.  So every precondition here -- node_modules, Chromium, the dev
   server, a non-empty tool registry, a workspace that actually mounted --
   EXITS 2 with the remedy named.  There is no skip.
+
+  THE SABOTAGE, PERFORMED -- and the qualification is the important half.
+  `position: absolute; inset: 0` was put back on MerkelTool's root (the exact
+  reverse of the fix in 61f93e5f) and the harness EXITED 1 on an occlusion
+  finding, not on a crash: it walked all 12 pages, called 11 clean, and on
+  merkel named the covered control (an `a`, 22x22 at 835,36 -- the Theory
+  Guide link), the blocker (`div`, 1400x44 at 0,32 -- the tool's own toolbar
+  strip) and wrote a screenshot.  Reverted, exit 0 with all 12 per-page lines
+  byte-identical to the baseline (359 controls).
+
+  BUT: yesterday that CSS covered the whole tool rail.  Today it covers ONE
+  control, because 9e5ff796 moved the rail into the top bar at y < 32, above
+  the workspace's own positioned container and out of the blast radius.  Had
+  the Theory link not existed, the same sabotage would have produced ZERO
+  findings and this harness would have passed a genuinely broken layout.  The
+  proof is real and it rests on a single control -- which is geometric luck,
+  not coverage, and is the first thing a phase-2 arm should remove.
+
+  ONE MORE THING THE SABOTAGE RUN SHOWED, unasked: the merkel page never
+  solves in a container whose bundled WASM predates the coolingTower unit
+  (`UnitOperation::New: unknown type 'coolingTower'`).  The harness walked a
+  page in its ERROR state and reported it clean.  `page.consoleErrors` is
+  collected and NOT read -- reading it is phase 2, and until then a green run
+  says nothing about whether the engine behind the page worked.
 \*---------------------------------------------------------------------------*/
 
 import { spawn } from "node:child_process";

@@ -1,6 +1,6 @@
 # Help opens at the section, in a tab — not as a download
 
-*Status: PROPOSED (measurement done, implementation not started).*
+*Status: SHIPPED 2026-08-17 (`892f7587`), with the measurements below.*
 *Raised by Vítor three times, escalating, against three different surfaces
 (the F1 key, the Help menu, the EduTools Theory button).  The third report is
 the one that made it an architecture question rather than a bug.*
@@ -142,6 +142,47 @@ The slice collapses them onto one builder and one opener; anything that wants a
 guide asks that builder.
 
 ---
+
+---
+
+## 3.2 What shipped, and what building it found
+
+`gui/public/guide.html` draws the guide; `gui/src/help/guideLinks.ts` is the
+single home for the URL and for the opening; the six builders and the six
+popup openers are gone.  pdf.js 4.10.38 (Apache-2.0) is staged into
+`public/pdfjs/` by `scripts/copyDocs.mjs`, gitignored like the PDFs, and its
+absence **refuses** rather than warning — a viewer that silently opens nothing
+is the failure mode this whole record is about.
+
+Verified by `gui/tools/checkGui/checkGuideViewer.mjs`, which drives the real
+browser and compares the landing page against the **document's own destination
+table**:
+
+```
+  ch:rotating        page 215  of 285  = the document's own destination page
+  ch:coolingTower    page 231  of 285  = the document's own destination page
+```
+
+**Three versions of that check were needed, and the two weak ones are the
+finding.**  The first asserted "the anchor moved the reader off page 1".  It
+passed — while the viewer put **both** anchors on page 208, against a document
+that places them at 215 and 231.  Off page 1, moved, wrong chapter, green.
+The second added "two anchors must land on different pages", and that is what
+failed and exposed it.  Only the third — *land exactly where the document says*
+— is worth keeping.
+
+The defect underneath was mine and generalises past this page: `page-width`
+scaling is computed from the container's `clientWidth`, the container was still
+`hidden` when the scale was set, **a hidden element measures zero**, and pdf.js
+accepted the resulting **negative** `--scale-factor`, laid out 18-pixel pages,
+and went on reporting the destination's page number while `scrollTop` never
+moved. The page counter said 208, the pixels said page 3, the DOM said 285
+pages existed. *Three surfaces, three different lies, no error anywhere.*  A
+check that reads only one surface would have believed it.
+
+Not wired into `bin/runTests`: it needs a dev server and a browser, exactly
+like `bin/checkGui`.  Wiring either one must follow the `gui-typecheck`
+posture — **SKIP loudly when the prerequisites are absent, never PASS**.
 
 ## 4. What would falsify this
 
