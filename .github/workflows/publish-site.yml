@@ -134,6 +134,27 @@ jobs:
           #  simulator the tutorials describe.
           grep -rqs flash17 "$d/assets/" \
             || { echo "the bundle does not carry the tutorial corpus"; exit 1; }
+          #  HELP IS LOAD-BEARING, so it is named here.  This list is what the
+          #  publish refuses over, and until now it named neither the manuals
+          #  nor the page that draws them -- so a site could ship with no
+          #  guides at all, or with a Help button that opens an empty page,
+          #  and this step would still print "site OK".
+          #
+          #  Choupo draws the guides itself (guide.html + the pdf.js runtime
+          #  staged by gui/scripts/copyDocs.mjs) because handing a PDF to the
+          #  browser makes opening it a property of the reader's own settings
+          #  -- see docs/design/help-opens-in-a-tab-not-a-download.md.  That
+          #  only holds while all three parts arrive together: miss one and
+          #  Help fails silently, which is the failure mode the whole design
+          #  exists to remove.
+          for f in guide.html pdfjs/pdf.min.mjs pdfjs/pdf_viewer.mjs \
+                   pdfjs/pdf_viewer.css docs/theoryGuide.pdf docs/userGuide.pdf; do
+            [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f -- Help would open nothing"; exit 1; }
+          done
+          #  The worker is megabytes; a stub renders no page at all.
+          wsz=$(stat -c%s "$d/pdfjs/pdf.worker.min.mjs" 2>/dev/null || echo 0)
+          [ "$wsz" -gt 500000 ] \
+            || { echo "pdf.worker.min.mjs is $wsz B -- not the real worker"; exit 1; }
           echo "site OK: $(du -sh $d | cut -f1)"
 
       #  ---- publish: push into the SITE repository -------------------------
