@@ -59,7 +59,7 @@ export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explo
         <Text size="sm">
           Its data was stashed by the parent case and is gone (storage
           cleared, or a different browser).  {kind === "explore"
-            ? "Reopen it from the Property Explorer — pick the two compounds, the McCabe-Thiele lens, and press “Pop out”."
+            ? "Reopen it from EduTools in the top bar — pick “Distillation (McCabe-Thiele)”, choose the two compounds, and press the pop-out button in its toolbar."
             : "Reopen it from the parent case — double-click the unit on the flowsheet."}
         </Text>
       </Alert>

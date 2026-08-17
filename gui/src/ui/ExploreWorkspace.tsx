@@ -19,11 +19,13 @@
   lands (Fase B) — never faked in TS.
 
   PROPERTY-PURE since 2026-08-15: the two METHOD CONSTRUCTIONS this workspace
-  used to host (McCabe-Thiele, the psychrometric chart) moved to the Methods
-  workspace (MethodsWorkspace.tsx).  Criterion: method-construction → Methods;
-  property-surface → Explorer.  The shared engine feeds live in
-  case/methodFeeds.ts — the T-x-y / γ(x) / flash lenses here consume the SAME
-  binaryVleSpec the Methods McCabe tool does (one home, no drift).
+  used to host (McCabe-Thiele, the psychrometric chart) moved to the EduTools
+  workspace (MethodsWorkspace.tsx — the module keeps its `methods` name, which
+  is the URL key and a deep-link contract; EduTools is the word on screen).
+  Criterion: method-construction → EduTools; property-surface → Explorer.  The
+  shared engine feeds live in case/methodFeeds.ts — the T-x-y / γ(x) / flash
+  lenses here consume the SAME binaryVleSpec the EduTools McCabe tool does (one
+  home, no drift).
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -278,7 +280,12 @@ function theoryAnchor(plotType: PlotKind, property: string): string {
     case "ternaryLle": return "ch:lle-gibbs"; // liquid-liquid / solubility
     case "phase": return "ch:vap";           // vapour pressure / saturation
     case "scaling": return "ch:electrolytes"; // ionic strength / activity / Pitzer
-    case "gibbsmap": return "ch:gibbs";       // equilibrium maps (forum 2026-07-02)
+    // `ch:gibbs` was never a label in any build of the Theory Guide, so this
+    // lens's Theory link opened the guide at page 1 and said nothing.  The
+    // real section is \label{sec:gibbs-maps}, "Equilibrium maps and the
+    // temperature approach" — the same destination modelDocs already gives
+    // the gibbsMap props op.
+    case "gibbsmap": return "sec:gibbs-maps"; // equilibrium maps (forum 2026-07-02)
     case "steam": return "ch:vap";           // saturation line / vapour pressure
     default:                                 // property scan
       if (property === "Psat") return "ch:vap";
@@ -536,7 +543,7 @@ export function ExploreWorkspace() {
     const hasWater = selected.includes("water");
     const hasElectrolyte = selected.some((c) => has(c)?.isElectrolyte);
     if (selected.length === 1 && vleCount === 1)
-      return "+1 VLE compound → boiling envelope, γ(x), binary flash (and McCabe-Thiele in Methods)";
+      return "+1 VLE compound → boiling envelope, γ(x), binary flash (and McCabe-Thiele in EduTools)";
     if (selected.length === 2 && allVle && !currentViews.has("ternary"))
       return "+1 VLE compound → ternary boiling surface";
     if (hasWater && !hasElectrolyte && !currentViews.has("scaling"))

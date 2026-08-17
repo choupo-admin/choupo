@@ -29,9 +29,11 @@ License
 /*---------------------------------------------------------------------------*\
   Help-topics pop-out: open a SEPARATE browser tab listing every indexed help
   topic (unit operations, workspaces, algorithms/solvers) as a deep link into
-  the theory/user/props guides.  Each link targets the PDF named destination
-  (`<guide>.pdf#nameddest=<anchor>`) so the student lands on the exact section
-  that derives that topic.
+  the theory/user/props guides.  Each link is built by `help/guideLinks` (the
+  ONE home for it) and targets the named destination in Choupo's own viewer
+  page — `guide.html?g=<guide>#nameddest=<anchor>` — so the student lands on
+  the exact section that derives that topic instead of being handed a PDF the
+  browser may decide to download.
 
   This is a VIEWER, not an editor surface (GUI credo): it only renders the
   tracked `docs/help-index.json` as a clickable table of contents and opens the

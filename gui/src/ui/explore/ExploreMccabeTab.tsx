@@ -10,9 +10,11 @@
   never silently degrade while the URL still claims to be a McCabe tab.
 
   Transience (what-if credo): the knobs in this tab are transient — closing the
-  tab IS the reset.  No save, no write-back to the inline Explorer; the two are
+  tab IS the reset.  No save, no write-back to the inline tool; the two are
   independent walks over the same frozen curve.  To change P or the γ model
-  (the only things that legitimately reshape y*(x)), return to the Explorer.
+  (the only things that legitimately reshape y*(x)), return to the McCabe-Thiele
+  tool in EduTools — the construction left the Property Explorer on 2026-08-15,
+  and it is the EduTools toolbar that pops this tab out now.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo } from "react";
@@ -54,7 +56,7 @@ export function ExploreMccabeTab() {
             is a snapshot, never a silent stale lens. */}
         <Text size="xs" c="dimmed">
           Equilibrium curve frozen at P = {(stash.P / 1e5).toFixed(3)} bar · {stash.model || "ideal"}.
-          To change P or the model, return to the Explorer and pop out again.
+          To change P or the model, return to the McCabe-Thiele tool in EduTools and pop out again.
         </Text>
         <Box style={{ flex: 1, minHeight: 0 }}>
           <McCabePlot csv={stash.csv} compA={stash.compA} compB={stash.compB} P={stash.P} allowWide />

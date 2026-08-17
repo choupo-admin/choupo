@@ -13,9 +13,11 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
 // "mccabe" and "psychro" LEFT this union 2026-08-15: they are METHOD
 // CONSTRUCTIONS (operating lines / a process-path chart), not property
-// surfaces, and now live in the Methods workspace (MethodsWorkspace.tsx,
-// fed by case/methodFeeds.ts).  Criterion: method-construction → Methods;
-// property-surface → Explorer (gui-credo §9).
+// surfaces, and now live in the EduTools workspace (MethodsWorkspace.tsx —
+// the module and the `methods` URL key are unchanged on purpose, a deep-link
+// contract; EduTools is the word on screen), fed by case/methodFeeds.ts.
+// Criterion: method-construction → EduTools; property-surface → Explorer
+// (gui-credo §9).
 export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "binaryLle" | "ternary"
   | "ternaryLle" | "phase" | "scaling" | "steam" | "gibbsmap";
 

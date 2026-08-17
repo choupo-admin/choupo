@@ -70,9 +70,10 @@ export function modelSection(type: string): string | null {
   return lines.slice(start, end).join("\n").trim();
 }
 
-// Unit-op type -> the theoryGuide.pdf named destination (\label in the .tex,
-// surfaced as a PDF dest by hyperref's destlabel option).  An external link
-// `docs/theoryGuide.pdf#nameddest=<dest>` opens the PDF at that exact section.
+// Unit-op type -> the Theory Guide named destination (\label in the .tex,
+// surfaced as a PDF dest by hyperref's destlabel option).  The URL itself is
+// built by `help/guideLinks` (the ONE home): it opens Choupo's own viewer page
+// at that exact section, never a bare .pdf the browser might download.
 // EVERY registered unit-op type maps to its Theory-Guide section.  Keep this in
 // sync with registerBuiltins() (src/unitOperations/UnitOperation.cpp) -- every
 // unit a student can place must point at the chapter that derives its model.
