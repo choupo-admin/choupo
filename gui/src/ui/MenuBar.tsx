@@ -324,16 +324,36 @@ export function MenuBar() {
     ["mod+Enter", () => { if (runStatus !== "running") fireRun(); }],
   ]);
 
+  /* THE NARROW ROW'S WIDTH BUDGET, measured rather than guessed.
+   *
+   * AppShell gives MenuBar a full-width 32 px line of its own on a phone, so
+   * the row has 390 px and must fit in it: Mantine's Group WRAPS by default,
+   * and a wrapped trigger lands below the header where the workspace paints
+   * over it (observed 2026-08-17 -- Help ended up under the case-description
+   * banner and read as COVERED, not as clipped).
+   *
+   * Measured at 390x844 with a steady case open, at px={10}:
+   *   File 43 + "Views: Flowsheet" 143 + Explore 66 + EduTools 75 + Help 49
+   *   = 376, + 4 gaps (8) + the Group's own xs padding (20) = 404.  Over by 14.
+   * The desk has no such problem (that row ends at x=824 of 1400), so the trim
+   * is narrow-only: 6 px of side padding per trigger and 4 on the Group brings
+   * it to ~352, and the longest possible value ("Views: Variables") is within
+   * a character of the one measured.
+   *
+   * The trim is padding, never a control and never a word: the whole point of
+   * the change above is that a phone shows MORE of the navigation, not less. */
+  const padX = narrow ? 6 : 10;
+
   return (
     <>
       <Group
         gap={2}
-        px="xs"
+        px={narrow ? 4 : "xs"}
         h="100%"
         align="center"
       >
         {/* --- File ----------------------------------------------------- */}
-        <TopMenu label="File">
+        <TopMenu label="File" px={padX}>
           <Menu.Item
             onClick={newCaseCtl.open}
             rightSection={<Shortcut k="Ctrl+Shift+N" />}
@@ -396,6 +416,7 @@ export function MenuBar() {
         {narrow && visibleViews.length > 0 && (
           <ViewsMenu
             views={visibleViews}
+            px={padX}
             isActive={isWorkspaceActive}
             isDisabled={isWorkspaceDisabled}
             disabledHint={PINCH_DISABLED_HINT}
@@ -412,6 +433,7 @@ export function MenuBar() {
             return (
               <EduToolsMenu
                 key={w.label}
+                px={padX}
                 active={activeWorkspace === "methods"}
                 onPick={() => setActiveWorkspace("methods")}
                 onClose={() => toggleWorkspace("methods")}
@@ -427,7 +449,7 @@ export function MenuBar() {
               variant={isActive ? "filled" : "subtle"}
               color={isActive ? "accent" : "gray"}
               size="compact-xs"
-              px={10}
+              px={padX}
               disabled={disabled}
               title={disabled ? PINCH_DISABLED_HINT : undefined}
               onClick={() => { if (!disabled) openWorkspace(w.label, w.key); }}
@@ -448,7 +470,7 @@ export function MenuBar() {
         })}
 
         {/* --- Help ----------------------------------------------------- */}
-        <TopMenu label="Help">
+        <TopMenu label="Help" px={padX}>
           {/* Context-sensitive: opens the guide AT the section for whatever is
               selected (a unit's type) or the active workspace.  Same resolution
               as the global F1 shortcut. */}
@@ -588,6 +610,7 @@ function TopMenu({
   width = 260,
   active = false,
   rightSection,
+  px = 10,
 }: {
   /** ReactNode, not string: a SELECTOR trigger renders its category and its
    *  value differently (`Views: Case`), and that is one label, not two
@@ -603,6 +626,9 @@ function TopMenu({
    *  decorative: it must never be an interactive element of its own, or the
    *  trigger becomes two tab stops for one action. */
   rightSection?: React.ReactNode;
+  /** Horizontal padding.  Trimmed in the narrow posture so the whole row fits
+   *  390 px — see the width budget in MenuBar. */
+  px?: number;
 }) {
   return (
     <Menu
@@ -620,7 +646,7 @@ function TopMenu({
           variant={active ? "filled" : "subtle"}
           color={active ? "accent" : "gray"}
           size="compact-xs"
-          px={10}
+          px={px}
           rightSection={rightSection}
           styles={{
             root: {
@@ -658,12 +684,13 @@ function TopMenu({
  *  silent.  So: the category is the label, the current view is its VALUE
  *  beside it, a chevron says it opens, and the fill is gone.  Where you are
  *  is still on screen; what else exists is now on screen too. */
-function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick }: {
+function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
   views: WorkspaceEntry[];
   isActive: (w: WorkspaceEntry) => boolean;
   isDisabled: (w: { key: WorkspaceKey | null }) => boolean;
   disabledHint: string;
   onPick: (label: string, key: WorkspaceKey | null) => void;
+  px: number;
 }) {
   const current = views.find((w) => isActive(w));
   const label = (
@@ -676,6 +703,7 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick }: {
     <TopMenu
       label={label}
       width={240}
+      px={px}
       rightSection={<IconChevronDown size={12} stroke={2} />}
     >
       <Menu.Label>Views of this case</Menu.Label>
@@ -713,14 +741,15 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick }: {
  *  Planned entries stay VISIBLE and disabled (the list is the roadmap, stated
  *  rather than implied) — there are none today, and the branch stays so that
  *  adding one is a registry edit, not a menu edit. */
-function EduToolsMenu({ active, onPick, onClose }: {
+function EduToolsMenu({ active, onPick, onClose, px }: {
   active: boolean;
   onPick: () => void;
   onClose: () => void;
+  px: number;
 }) {
   const tool = useActiveMethodTool();
   return (
-    <TopMenu label={EDUTOOLS_LABEL} width={330} active={active}>
+    <TopMenu label={EDUTOOLS_LABEL} width={330} active={active} px={px}>
       <Menu.Label>Classical method constructions</Menu.Label>
       {METHOD_TOOLS.map((m) => {
         // The check marks what is ON SCREEN, so it is shown only while the

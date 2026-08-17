@@ -581,6 +581,30 @@ async function main() {
         { id: "shell+case",
           url: `${BASE}?case=steady/flash/flash01_benzene_toluene`
              + "&workspace=methods&tool=mccabe" },
+        //  A BLIND SPOT THIS PAGE STILL HAS, named because it has already
+        //  cost something.  EduTools is open here, so NO VIEW is selected,
+        //  and the narrow view-chooser renders the shortest label it can ever
+        //  have (`Views: none`).  On 2026-08-17 the narrow top row overflowed
+        //  390 px with a real view name (`Views: Flowsheet`) and wrapped
+        //  `Help` onto a second line under the workspace, covered -- and this
+        //  page passed, because it walks that control at its narrowest.
+        //
+        //  Dropping the `workspace=` override was tried, so the page would
+        //  open on the Flowsheet where a view IS active.  It does not work
+        //  and the reason is worth keeping: that page's body is a React Flow
+        //  canvas, whose SVG `g[role=group]` nodes overlap each other by
+        //  design (4-5 reported COVERED, NOT diagnosed here), and its tool
+        //  mount IS the workspace container, so the exposure arm measures
+        //  reach 0 and REFUSES the run as vacuous.  Both refusals are the
+        //  instrument behaving correctly on a page shape it was not built
+        //  for.  Teaching it that shape is real work, not a flag.
+        //
+        //  The cheap fix is not here at all: `?workspace=` honours only
+        //  `explore`, `methods` and `control`, so nine of the ten case views
+        //  cannot be reached by URL -- which is also why this harness can
+        //  never walk them, and why gui-credo's "the address bar is a
+        //  shareable bookmark of what is on screen" is not true today.  Make
+        //  the views deep-linkable and this blind spot closes by itself.
       ];
 
       for (const tool of walk) {
