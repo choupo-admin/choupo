@@ -100,7 +100,7 @@ import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import {
   CONTROLS_COLLAPSED_KEY, setupBarLayout, useCoarsePointer, useCollapsedFlag,
-  useNarrowViewport, usePlotRefit,
+  useFitsOneRow, useNarrowViewport, usePlotRefit,
 } from "./methods/methodsChrome.js";
 import {
   METHOD_TOOLS, theoryUrl, useActiveMethodTool, type MethodTool,
@@ -588,6 +588,12 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
 // chart CSV arrives fully computed (saturation, RH, adiabatic-saturation and
 // true wet-bulb via the Lewis number) and PsychroPlot only draws it.
 
+/** The width the psychrometric setup bar needs to stay on one row: its
+ *  measured extent (1495 px at 390x844 on 2026-08-17) plus the padding around
+ *  it.  Declared beside the tool that owns the bar, not in the shared helper —
+ *  the helper answers "does it fit", the tool says what it needs. */
+const PSYCHRO_BAR_ONE_ROW_PX = 1520;
+
 function PsychroTool({ tool, catalogue, componentFiles }: {
   tool: MethodTool;
   catalogue: ComponentMeta[];
@@ -629,9 +635,18 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
   // Lecture fold — same shared key and posture as the McCabe tool.
   const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
   usePlotRefit(setup.collapsed);
-  // Widest setup bar in the corpus (1495 px at 390x844 before this): it
-  // reflows below `sm` rather than running off the side.
-  const bar = setupBarLayout(useNarrowViewport());
+  /* Widest setup bar in the corpus.  Measured 2026-08-17: it laid its controls
+   * out to x=1495, which overruns the phone AND the 1400x900 desk viewport —
+   * `hide setup controls` sat at x=1461 with nothing able to scroll to it.  So
+   * the wrap here is decided by whether the bar FITS, not by a phone
+   * breakpoint; 1520 is that measured 1495 plus the padding around it.
+   *
+   * Both hooks are called UNCONDITIONALLY and combined afterwards: `narrow ||
+   * !fits` would short-circuit past the second hook on a phone and change the
+   * hook order between renders. */
+  const psychroNarrow = useNarrowViewport();
+  const psychroFitsOneRow = useFitsOneRow(PSYCHRO_BAR_ONE_ROW_PX);
+  const bar = setupBarLayout(psychroNarrow || !psychroFitsOneRow);
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
