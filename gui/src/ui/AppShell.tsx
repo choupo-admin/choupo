@@ -275,16 +275,29 @@ export function AppShell() {
         background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
       }}
     >
+      {/* `minWidth: 0` is load-bearing, not tidying.  A grid item defaults to
+          `min-width: auto`, so the COLUMN sizes to the widest item's
+          min-content -- and this header row is the widest thing in the app.
+          Without it a 390px phone got a 480px grid column (the whole shell,
+          workspace included, laid out at 480 and clipped by the shell's own
+          `overflow: hidden` with no scroller).  Measured 2026-08-17: the
+          workspace container was 480x812 in a 390x844 viewport, which is why
+          controls INSIDE the tools were unreachable too -- their own
+          `overflow-x: auto` strips were nested in a box already wider than the
+          screen.  Capping the header at the column width lets the row lay
+          itself out for the space it actually has. */}
       <Box
         style={{
           gridArea: "header",
           display: "flex",
           alignItems: "stretch",
+          minWidth: 0,
+          overflow: "hidden",
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
           borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
         }}
       >
-        <Box style={{ flex: "0 0 auto" }}>
+        <Box style={{ flex: "0 1 auto", minWidth: 0 }}>
           <MenuBar />
         </Box>
         <Box style={{ flex: 1, minWidth: 0 }}>
