@@ -46,39 +46,54 @@ Three things fall out that the menu rule only mitigated:
   views cannot be reached by URL, so that sentence is false.  One tab per
   thing makes it true, and makes it testable.
 
-## 3. The hard consequence, stated before anything is built
+## 3. AMENDED THE SAME DAY — the tools do not talk to the flowsheet at all
 
-**Separate browser tabs do not share a JavaScript store.**  Ten of the twelve
-tools read the open case's run — every `*Tool.tsx` carries a
-`Classroom | Current run` toggle over `useStore(s => s.runResult)`.  A tool
-opened in its own tab has an empty store and can only ever be *Classroom*:
-someone else's absorber, not the student's.
+The first version of this section solved a problem this project no longer has.
+It said: ten of the twelve tools read the open case's run through a
+`Classroom | Current run` toggle, so a tool tab must be GIVEN the case in its
+address and re-solve it.
 
-That is the whole pedagogy of those ten tools, so it cannot be lost.  **The
-tool tab must be GIVEN the case and solve it itself**:
-`/app/?case=<path>&workspace=methods&tool=kremser`.  The solve is WebAssembly
-in that tab, like every other solve Choupo does; a tutorial case is seconds.
+**Vítor ruled otherwise, and the ruling is the simpler architecture:** *"Eu
+quero que o EduTools seja independente do flowsheet!  Não têm de comunicar!
+Aquilo é para apoiar as aulas!"*
 
-Two properties this buys, and they are the argument for it over the
-alternative:
+So the coupling goes.  A tool is fed by its OWN sealed witness tutorial, which
+it already clones and solves in the browser, and by nothing else.  Its address
+is `?workspace=methods&tool=<id>` — no `?case=`, no re-solve of a foreign
+case, no shared state, no provenance to disambiguate.
 
-* the tool tab becomes **shareable**.  A professor sends the URL and the
-  student sees the same comparison — which is exactly the thing the credo
-  promises and does not currently deliver;
-* there is **one mechanism**, not two.  A tool is fed by a case in its
-  address, whether that case came from the hub, from a case tab, or from a
-  link in a lecture.
+### Why this is right and not merely simpler
 
-**Rejected: synchronising state across tabs** (BroadcastChannel, a shared
-`localStorage` run).  It makes one tab's answer depend on another tab's
-lifetime, invisibly; it fails silently when the other tab is closed; and it
-would mean a tool showing a run whose provenance is not in its own address.
-A number on screen must be traceable to the address that produced it.
+A teaching instrument that changes behaviour depending on what happens to be
+open in another tab is **not stable**.  In a lecture the professor needs the
+tool to show the same thing to everyone, and a student following the same URL
+a week later needs the same figure.  Coupling made the tool's answer depend on
+a state its own address does not name — which is the property this project
+refuses everywhere else it appears.
 
-**A named cost, not hidden:** opening a bound tool re-solves the case, so the
-tool tab's run is a *re-run*, not the identical object the case tab holds.
-For a deterministic solver these agree, and where they would not, the fact
-that each tab states its own case and settings is the honest form.
+It also removes an ambiguity rather than housing it: a tool's `Pinch composite
+curves` is now unambiguously the classroom construction, and a case tab's
+`Pinch` view is unambiguously that case's.  Nothing has to explain which is
+which.
+
+### What is lost, said once
+
+The moment the pedagogy lens described — a student's `recovery_KPI` beside
+their own `Kremser(A, N)`, with the reason for the gap attached — stops being
+automatic.  The student reads their KPI and types it into the tool.  That is
+work moved from the machine to the learner, and there is a real argument that
+this is where it belongs.
+
+### And it settles the menu question the panel could not
+
+The three-lens panel kept EduTools in the case menu on ONE decisive fact:
+those ten tools read the loaded run, so the in-app entry was the only way to
+point a tool at the student's own result.  **That fact no longer holds**, so
+the argument expires with it: with the tools independent and living in their
+own tab with their own chooser, an EduTools entry in a case tab's menu is a
+plain duplicate.  Vítor's original instinct — *"não gosto de ver o EduTools e
+Explore quando abro o flowsheet"* — was right, and the panel's counter rested
+on a coupling he has now removed by decision.
 
 ## 4. What this requires before it can ship
 
