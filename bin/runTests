@@ -937,6 +937,28 @@ if [ "$#" -eq 0 ]; then
         printf "SKIP  %-40s  (gui/node_modules absent -- run npm install in gui/ to cover the site build; NOT counted as a pass)\n" "gui-typecheck"
     fi
 
+    #  EDUTOOLS ON THE LANDING (2026-08-17, docs/design/modes-and-views-in-the-
+    #  top-row.md 4a).  The landing advertises the classical-method tools, and
+    #  its list must BE the app's live registry -- both directions.  The ruling
+    #  named the failure mode this arm exists to catch: a thirteenth tool
+    #  appears in the app and not on the landing, or the reverse, and nothing
+    #  says so.  Like gui-typecheck it needs gui/node_modules (the registry is
+    #  TypeScript and is EVALUATED, not parsed), so exit 2 means CANNOT RUN and
+    #  is counted as neither pass nor fail.
+    "$ROOT/bin/curate/check_method_tools.py" > /tmp/mtools.$$ 2>&1
+    mt_rc=$?
+    if [ "$mt_rc" = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "method-tools-gate" "$(head -1 /tmp/mtools.$$)"
+        pass=$((pass+1))
+    elif [ "$mt_rc" = 2 ]; then
+        printf "SKIP  %-40s  (%s; NOT counted as a pass)\n" "method-tools-gate" "$(head -1 /tmp/mtools.$$)"
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_method_tools.py)\n" "method-tools-gate"
+        cat /tmp/mtools.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/mtools.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then

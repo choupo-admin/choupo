@@ -327,6 +327,10 @@
       "exit": 0,
       "claim": "check_mean_ionic: OK -- every published gamma_pm recomputed independently from the run's own per-ion gammas and the species charges (6 pair(s), 1:1 / 2:1 / 1:2 / 2:2 all covered), each with its derived nu+/nu- announced; the single-salt reduction identity holds; a backwards cation/anion pair and an unknown species both refuse by name.  NOT COVERED: whether any gamma_pm AGREES WITH MEASUREMENT -- it does not for 4 of the 6 seawater salts, which is a recorded finding in the case header and VALIDATION.md, not a gate; the single-ion gammas and the Pitzer kernel themselves; ops other than `speciate`."
     },
+    "check_method_tools": {
+      "exit": 0,
+      "claim": "check_method_tools: the landing's EduTools list IS the live registry -- 12 live tool(s) of 12 in gui/src/ui/methods/registry.ts, re-derived by importing the module; same 12 ids both ways, labels/blurbs/deep links identical, every href on the `?workspace=methods&tool=` contract; site/index.html fetches the artefact, carries no tool id, label or blurb of its own, and bin/buildSite publishes it.  BLIND SPOT: the page's JavaScript is never executed here, so this checks the DATA the landing fetches and the absence of a second list -- not that a browser paints 12 cards."
+    },
     "check_minerals": {
       "exit": 0,
       "claim": "electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK."

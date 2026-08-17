@@ -224,6 +224,18 @@
   .included a { color: inherit; text-decoration: none; display: block; }
   .included-note { margin: 22px 0 0; color: var(--muted); font-size: 14px; }
 
+  /* EduTools — the classical-method constructions, rendered from
+     /methodTools.json (generated from the app's own registry). */
+  .edutool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--line); border: 1px solid var(--line); }
+  .edutool { display: block; padding: 22px 20px; background: var(--white); text-decoration: none; }
+  .edutool:hover, .edutool:focus-visible { background: #eef8f5; }
+  .edutool h3 { margin: 0 0 8px; font-size: 17px; }
+  .edutool p { margin: 0; color: var(--muted); font-size: 14px; }
+  .edutool-go { display: inline-block; margin-top: 14px; color: var(--teal); font-size: 13px; font-weight: 800; }
+  .edutool-note { margin: 22px 0 0; color: var(--muted); font-size: 14px; }
+  .edutool-msg { grid-column: 1 / -1; margin: 0; padding: 30px 20px; color: var(--muted); background: var(--white); }
+
   /* "Choose how to run" tabs + cards */
   .run-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
   .run-tab { border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; color: var(--muted);
@@ -251,6 +263,7 @@
     .proof:nth-child(4) { border-top: 1px solid rgba(255, 255, 255, 0.14); }
     .principle-grid, .evidence-grid, .install-grid, .about, .run-grid { grid-template-columns: 1fr; gap: 34px; }
     .included-grid { grid-template-columns: repeat(2, 1fr); }
+    .edutool-grid { grid-template-columns: repeat(2, 1fr); }
     .workflow { grid-template-columns: 100px 1fr; }
     .workflow p { grid-column: 2; }
     .resource-grid { grid-template-columns: 1fr; }
@@ -276,6 +289,7 @@
     .proof strong { font-size: 23px; }
     .proof span { font-size: 12px; }
     .capability-grid { grid-template-columns: 1fr; }
+    .edutool-grid { grid-template-columns: 1fr; }
     .capability { min-height: 0; }
     .capability .number { margin-bottom: 24px; }
     .workflow { grid-template-columns: 1fr; gap: 8px; }
@@ -297,6 +311,7 @@
   <div class="wrap nav-inner">
     <a class="brand" href="#top"><img src="logo2-mark.png" alt=""><span>CHOUPO</span></a>
     <div class="nav-links">
+      <a href="#edutools">EduTools</a>
       <a href="#included">What's inside</a>
       <a href="#capabilities">Capabilities</a>
       <a href="/models/">Models</a>
@@ -335,6 +350,32 @@
 </header>
 
 <main>
+  <!-- EduTools: the front door for a visitor with nothing open.
+       The list is NEVER written here.  It is fetched from /methodTools.json,
+       which bin/curate/method_tools.mjs derives from the app's own registry
+       (gui/src/ui/methods/registry.ts) and bin/buildSite publishes beside this
+       page.  check_method_tools.py fails the suite if the two disagree in
+       either direction. -->
+  <section class="section" id="edutools">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">EduTools — nothing to install, no case to open</p>
+        <h2>Start with a classical method construction.</h2>
+        <!-- Filled from the artefact's `blurb`, which is the registry's own
+             EDUTOOLS_BLURB.  Deliberately EMPTY here: a placeholder sentence
+             would be a paraphrase of registry prose, i.e. a small second home
+             for it, and it would be the version a reader sees whenever the
+             fetch fails. -->
+        <p class="lede" id="edutoolsBlurb"></p>
+        <p class="lede">Each tool builds and solves its own worked example in your browser, so none of them needs a case open first. Pick one and it opens in Choupo, drawn beside the engine's own answer.</p>
+      </div>
+      <div class="edutool-grid" id="edutoolsGrid">
+        <p class="edutool-msg" id="edutoolsLoading">Loading the EduTools…</p>
+      </div>
+      <p class="edutool-note"><span id="edutoolsCount">…</span> live tools, generated from the application's own tool registry — this page cannot list a tool the app does not have, or miss one it does.</p>
+    </div>
+  </section>
+
   <section class="section" id="included" style="background:var(--white)">
     <div class="wrap">
       <div class="section-head">
@@ -644,6 +685,42 @@ https://www.choupo.org/app/
         });
       })
       .catch(function () {});
+  }());
+
+  // EduTools cards.  The tool list, the labels, the blurbs and the deep links
+  // all arrive from /methodTools.json -- derived from the app's registry by
+  // bin/curate/method_tools.mjs.  Nothing about a tool is written in this file:
+  // a hand-written card here would be a second home for the registry, and the
+  // day the two disagreed neither would say so.
+  (function () {
+    var host = document.getElementById("edutoolsGrid");
+    if (!host) return;
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+    fetch("/methodTools.json", { cache: "no-cache" })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (doc) {
+        var tools = (doc && doc.tools) || [];
+        if (!tools.length) throw 0;
+        host.innerHTML = tools.map(function (t) {
+          return '<a class="edutool" href="' + esc(t.href)
+            + '" target="choupo-app" rel="noopener">'
+            + '<h3>' + esc(t.label) + '</h3>'
+            + '<p>' + esc(t.teaches) + '</p>'
+            + '<span class="edutool-go">Open in Choupo &rarr;</span></a>';
+        }).join("");
+        var count = document.getElementById("edutoolsCount");
+        if (count) count.textContent = tools.length;
+        var blurb = document.getElementById("edutoolsBlurb");
+        if (blurb && doc.blurb) blurb.textContent = doc.blurb;
+      })
+      .catch(function () {
+        host.innerHTML = '<p class="edutool-msg">The EduTools list could not be '
+          + 'loaded. Open the app and choose EduTools from the top row.</p>';
+      });
   }());
 
   // "Choose how to run" tabs.

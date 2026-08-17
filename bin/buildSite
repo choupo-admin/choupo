@@ -142,6 +142,14 @@ cp "$root/generated/releaseInventory.json" "$dist/" 2>/dev/null || true
 mkdir -p "$dist/releases"
 cp "$root/generated/releases/"*.json "$dist/releases/" 2>/dev/null || true
 cp "$root/generated/modelsCatalogue.json"  "$dist/" 2>/dev/null || true
+#  The EduTools list the landing renders -- derived from the app's own registry
+#  (gui/src/ui/methods/registry.ts), never hand-written.  Regenerated here for
+#  the same reason releaseInventory is: what gets published should be counted
+#  from the tree being published.  A regeneration failure (no gui/node_modules
+#  on the publishing machine) leaves the COMMITTED artefact in place, which
+#  check_method_tools.py independently keeps equal to the registry.
+node "$root/bin/curate/method_tools.mjs" >/dev/null 2>&1 || true
+cp "$root/generated/methodTools.json" "$dist/" 2>/dev/null || true
 cp "$src"/*.svg "$dist/" 2>/dev/null || true
 cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art
 cp "$src"/*.webp "$dist/" 2>/dev/null || true   # compressed landing product imagery

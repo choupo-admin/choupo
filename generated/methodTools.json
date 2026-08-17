@@ -1,0 +1,82 @@
+{
+  "note": "DERIVED by transpiling and importing gui/src/ui/methods/registry.ts -- the array this file lists is the array the application itself renders.  DO NOT EDIT BY HAND: regenerate with bin/curate/method_tools.mjs.  Only `live` tools appear.",
+  "generatedFrom": "gui/src/ui/methods/registry.ts",
+  "label": "EduTools",
+  "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
+  "liveTools": 12,
+  "registryTools": 12,
+  "tools": [
+    {
+      "id": "mccabe",
+      "label": "Distillation (McCabe-Thiele)",
+      "teaches": "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
+      "href": "/app/?workspace=methods&tool=mccabe"
+    },
+    {
+      "id": "psychro",
+      "label": "Psychrometric chart",
+      "teaches": "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
+      "href": "/app/?workspace=methods&tool=psychro"
+    },
+    {
+      "id": "kremser",
+      "label": "Absorption (Kremser)",
+      "teaches": "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
+      "href": "/app/?workspace=methods&tool=kremser"
+    },
+    {
+      "id": "pinch-composite",
+      "label": "Pinch composite curves",
+      "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
+      "href": "/app/?workspace=methods&tool=pinch-composite"
+    },
+    {
+      "id": "entu",
+      "label": "Heat exchanger (ε-NTU)",
+      "teaches": "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
+      "href": "/app/?workspace=methods&tool=entu"
+    },
+    {
+      "id": "pump-system",
+      "label": "Pump vs system curve",
+      "teaches": "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
+      "href": "/app/?workspace=methods&tool=pump-system"
+    },
+    {
+      "id": "merkel",
+      "label": "Cooling tower (Merkel)",
+      "teaches": "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
+      "href": "/app/?workspace=methods&tool=merkel"
+    },
+    {
+      "id": "rayleigh",
+      "label": "Batch still (Rayleigh)",
+      "teaches": "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
+      "href": "/app/?workspace=methods&tool=rayleigh"
+    },
+    {
+      "id": "levenspiel",
+      "label": "Reactor sizing (Levenspiel)",
+      "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
+      "href": "/app/?workspace=methods&tool=levenspiel"
+    },
+    {
+      "id": "vanheerden",
+      "label": "Ignition / extinction (Van Heerden)",
+      "teaches": "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
+      "href": "/app/?workspace=methods&tool=vanheerden"
+    },
+    {
+      "id": "drying",
+      "label": "Drying curve (batch tray)",
+      "teaches": "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
+      "href": "/app/?workspace=methods&tool=drying"
+    },
+    {
+      "id": "breakthrough",
+      "label": "Adsorption breakthrough",
+      "teaches": "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
+      "href": "/app/?workspace=methods&tool=breakthrough"
+    }
+  ]
+}
