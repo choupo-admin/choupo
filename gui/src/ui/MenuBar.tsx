@@ -33,28 +33,42 @@ License
   in the right column of each item; wiring them globally lives in the
   individual handlers (or can be added later via useHotkeys).
 
-  EduTools (2026-08-16, Vítor's order) is the one workspace entry that is a
-  MENU rather than a toggle button.  Its tool list used to be a permanent
-  252px rail inside the workspace, and a tool panel painted over it — with the
-  rail covered there was nothing to select with.  A dropdown costs no width
-  when shut and cannot be painted over.  It renders from methods/registry.ts —
-  the SAME registry the workspace body reads, never a second hand-written list
-  here — and picking a tool opens the workspace on it.
+  THIS IS A CASE TAB'S MENU: File, its own views, and Help.  Nothing else
+  (docs/design/one-tab-one-thing.md, DECIDED 2026-08-17 by Vítor: "E no
+  flowsheet eu não quero no menu EduTools nem Explore!").
 
-  MODES AND VIEWS (2026-08-17, docs/design/modes-and-views-in-the-top-row.md).
-  The lineup and its `kind` live in workspaces.ts, NOT here: this file renders
-  it twice (wide row, narrow chooser) and must not own it, or the two postures
+  WHAT LEFT, AND WHAT REPLACED IT.  Until today this row also carried Explore
+  and an EduTools DROPDOWN — the twelve tools listed here, because the tool
+  rail inside the workspace had been ruled out on 2026-08-16 and a chooser had
+  to live somewhere.  Both are gone, and neither is merely deleted:
+
+    * Explore and EduTools are MODES, and a mode is now a TAB (workspaces.ts
+      MODE_TABS + ui/openInTab.ts).  The hub opens them; this menu, which
+      belongs to ONE case, has no business offering a thing that is not a view
+      of that case.
+    * The twelve tools are chosen INSIDE the EduTools tab now
+      (MethodsWorkspace's ToolChooser), which is where a chooser for that tab's
+      content belongs.  That in-body chooser was the PRECONDITION for removing
+      this dropdown: without it, a student reaching one tool could not reach
+      the other eleven.
+
+  The argument that had kept EduTools here expired by decision the same day —
+  record §3: the ten run-fed tools no longer read the loaded case, so an
+  in-app entry pointing a tool at "the student's own result" has nothing left
+  to point at.
+
+  THE LINEUP still lives in workspaces.ts, NOT here: this file renders it
+  twice (wide row, narrow chooser) and must not own it, or the two postures
   would each acquire a lineup to drift.  What this file adds is the POSTURE
-  rule the record decided — modes stay visible at every width, views collapse
-  into a chooser labelled for what it OPENS with the current view as its
-  VALUE.  The old collapsed control was labelled `Case`, which is a lit tab
-  saying *you are here* while ten destinations sat unannounced behind it.
+  rule — the views collapse into a chooser labelled for what it OPENS with the
+  current view as its VALUE.  The old collapsed control was labelled `Case`,
+  which is a lit tab saying *you are here* while ten destinations sat
+  unannounced behind it.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useLayoutEffect } from "react";
 import {
   Anchor,
-  Badge,
   Box,
   Button,
   Group,
@@ -69,7 +83,7 @@ import { IconCheck, IconChevronDown } from "@tabler/icons-react";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import {
-  WORKSPACES, splitWorkspaces, visibleWorkspacesFor, type WorkspaceEntry,
+  WORKSPACES, visibleWorkspacesFor, type WorkspaceEntry,
 } from "./workspaces.js";
 import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
@@ -83,10 +97,7 @@ import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.
 import { canComputePinch } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
-import {
-  EDUTOOLS_BLURB, EDUTOOLS_LABEL, METHOD_TOOLS, setActiveMethodTool,
-  useActiveMethodTool,
-} from "./methods/registry.js";
+import { caseTabSearch, openAppTab } from "./openInTab.js";
 import { fitsRow, useIntrinsicWidth } from "./methods/methodsChrome.js";
 
 /** How much side padding a trigger in the top row carries.  Two rungs, and
@@ -151,10 +162,11 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
     application,
     hasPid,
   }, WORKSPACES);
-  /* THE SPLIT, taken ONCE and consumed by both postures (workspaces.ts owns
-   * the property; this is only a rendering of it). */
-  const { views: visibleViews } = splitWorkspaces(visibleWorkspaces);
-  /* NARROW POSTURE: the VIEWS become one chooser; the MODES do not.
+  /* Every visible workspace is a VIEW of this case now — the two modes left
+   * the row for their own tabs (workspaces.ts).  The name is kept because the
+   * narrow chooser is labelled `Views:` and reads from this. */
+  const visibleViews = visibleWorkspaces;
+  /* NARROW POSTURE: the VIEWS become one chooser.
    *
    * Measured 2026-08-17 at 390x844 with a steady case open: eleven tabs laid
    * out to 833 px in a 390 px viewport, so Streams onward (seven whole
@@ -171,29 +183,20 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * is built from the SAME `visibleWorkspaces` array the wide posture renders
    * -- there is no second lineup to drift.
    *
-   * WHAT THE 2026-08-17 DECISION CHANGED, and why (docs/design/
-   * modes-and-views-in-the-top-row.md).  That first collapse swept ALL of it
-   * into the dropdown, MODES INCLUDED, and labelled the trigger with the
-   * current workspace.  Two consequences, both wrong:
+   * THE TRIGGER'S LABEL (2026-08-17, modes-and-views-in-the-top-row.md §4b).
+   * It used to read `Case`, i.e. a lit tab saying *you are here* over ten
+   * unannounced destinations.  It reads `Views: Case` now -- the category is
+   * the LABEL, the current view is its VALUE -- and it is styled as a selector
+   * rather than an active tab, because the fill was exactly the "arrived"
+   * signal that hid the ten.
    *
-   *   1. `Explore` -- one of only two things a visitor with nothing open can
-   *      do -- ended up inside a menu named after a view of a case.  The flat
-   *      strip had made that category error invisible; the dropdown made it
-   *      structural.  So MODES no longer collapse: they are few (two), they
-   *      never change with the case, and they are the whole offer on a blank
-   *      boot.  Only VIEWS go into the chooser.
-   *   2. The trigger read `Case`, i.e. a lit tab saying *you are here* over
-   *      ten unannounced destinations.  It now reads `Views: Case` -- the
-   *      category is the LABEL, the current view is its VALUE -- and it is
-   *      styled as a selector rather than an active tab, because the fill was
-   *      exactly the "arrived" signal that hid the ten.
-   *
-   * EduTools keeps its OWN trigger in both postures, because it is not merely
-   * a tab: its dropdown is the only chooser for the twelve tools (the rail
-   * moved into the top bar in 9e5ff796 and MethodsWorkspace renders no tool
-   * list of its own).  Folding it into a plain item would open the workspace
-   * with no way to change tool.  That was already true before it was also a
-   * mode; the two reasons agree.
+   * THE OTHER HALF OF THAT RECORD IS SUPERSEDED (one-tab-one-thing.md §6).
+   * It had ruled that MODES stay visible while views collapse, so that
+   * `Explore` -- one of only two things a caseless visitor could do -- would
+   * not end up filed inside a menu named after a view.  The modes are TABS
+   * now, so there are no modes in this row to keep visible and the rule has
+   * nothing left to govern.  What survives from it is the DISTINCTION, which
+   * this row expresses by carrying one side of it and nothing of the other.
    *
    * The WIDE posture is untouched: every workspace is its own entry there, in
    * declared order, so the split costs the desk nothing (§5 of the record --
@@ -478,9 +481,8 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             Top-level toggles.  Active workspace is highlighted; clicking
             it again closes back to the canvas-only default. */}
         {/* COLLAPSED: one chooser over the VIEWS (see the block above for why a
-            dropdown and not a scrolling strip, and why the modes stay out of
-            it).  The modes keep their own entries, rendered by the map below
-            in declared order. */}
+            dropdown and not a scrolling strip).  Everything in this row is a
+            view of the open case, so the chooser holds all of it. */}
         {shape.collapsed && visibleViews.length > 0 && (
           <ViewsMenu
             views={visibleViews}
@@ -492,23 +494,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           />
         )}
         {visibleWorkspaces.map((w) => {
-          // EduTools is a DROPDOWN in the same slot the other workspaces put a
-          // toggle button: the tool list is what the student is choosing, so
-          // the chooser belongs where the chooser is, not as a band inside the
-          // workspace it is supposed to be showing.  It survives the
-          // collapse for the same reason.
-          if (w.key === "methods") {
-            return (
-              <EduToolsMenu
-                key={w.label}
-                px={shape.padX}
-                active={activeWorkspace === "methods"}
-                onPick={() => setActiveWorkspace("methods")}
-                onClose={() => toggleWorkspace("methods")}
-              />
-            );
-          }
-          if (shape.collapsed && w.kind === "view") return null;   // in the chooser above
+          if (shape.collapsed) return null;   // all of them are in the chooser above
           const isActive = isWorkspaceActive(w);
           const disabled = isWorkspaceDisabled(w);
           return (
@@ -702,11 +688,17 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
         </Stack>
       </Modal>
 
+      {/* ONE TAB, ONE THING: the tutorials browser OPENS a case, so it opens a
+          TAB (one-tab-one-thing.md §4 — every "open" affordance, consistently).
+          It used to call `loadTutorial` and replace whatever was on screen,
+          which from the hub meant the hub stopped being the hub, and from a
+          case tab meant a converged run was overwritten by a click in a
+          gallery. */}
       <OpenTutorialModal
         opened={openTutorialOpen}
         onClose={openTutorialCtl.close}
         currentName={tutorialName}
-        onSelect={loadTutorial}
+        onSelect={(name) => openAppTab(caseTabSearch(name))}
       />
 
       <NewCaseModal opened={newCaseOpen} onClose={newCaseCtl.close} />
@@ -836,73 +828,6 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
           </Menu.Item>
         );
       })}
-    </TopMenu>
-  );
-}
-
-/** The EduTools dropdown — the classical method constructions, listed from
- *  methods/registry.ts (ONE registry; the workspace body reads the same array,
- *  so the menu and the workspace can never disagree about what exists).
- *
- *  Behaviour where the brief left a choice: clicking the top-bar item opens
- *  ONLY the menu; the workspace opens when a tool is PICKED.  Opening a
- *  workspace behind a menu the student has not chosen from yet would move the
- *  screen out from under them before they said what they wanted.
- *
- *  Planned entries stay VISIBLE and disabled (the list is the roadmap, stated
- *  rather than implied) — there are none today, and the branch stays so that
- *  adding one is a registry edit, not a menu edit. */
-function EduToolsMenu({ active, onPick, onClose, px }: {
-  active: boolean;
-  onPick: () => void;
-  onClose: () => void;
-  px: number;
-}) {
-  const tool = useActiveMethodTool();
-  return (
-    <TopMenu label={EDUTOOLS_LABEL} width={330} active={active} px={px}>
-      <Menu.Label>Classical method constructions</Menu.Label>
-      {METHOD_TOOLS.map((m) => {
-        // The check marks what is ON SCREEN, so it is shown only while the
-        // workspace is actually open: with EduTools closed, the registry still
-        // remembers a selection, but nothing is being displayed and a tick
-        // would claim otherwise.
-        const isCurrent = active && m.id === tool;
-        return (
-          <Menu.Item
-            key={m.id}
-            disabled={m.status === "planned"}
-            leftSection={
-              isCurrent
-                ? <IconCheck size={14} />
-                : <span style={{ display: "inline-block", width: 14 }} />
-            }
-            rightSection={m.status === "planned"
-              ? <Badge size="xs" variant="outline" color="gray" tt="none">planned</Badge>
-              : undefined}
-            onClick={() => {
-              if (m.status !== "live") return;
-              setActiveMethodTool(m.id);
-              onPick();
-            }}
-            styles={{ itemLabel: { fontWeight: isCurrent ? 600 : 400 } }}
-          >
-            {m.label}
-          </Menu.Item>
-        );
-      })}
-      {active && (
-        <>
-          <Menu.Divider />
-          <Menu.Item onClick={onClose}>Close {EDUTOOLS_LABEL}</Menu.Item>
-        </>
-      )}
-      <Menu.Divider />
-      <Menu.Item disabled>
-        <Text size="xs" c="dimmed" component="span" style={{ whiteSpace: "normal" }}>
-          {EDUTOOLS_BLURB}
-        </Text>
-      </Menu.Item>
     </TopMenu>
   );
 }

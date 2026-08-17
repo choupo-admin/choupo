@@ -48,21 +48,42 @@ License
   in the shared plotting kit.  The "Author → copy propsDict" hand-off stays:
   dict-on-disk remains the one authoring channel.
 
-  THE TOOL LIST IS NOT IN THIS FILE ANY MORE (2026-08-16, Vítor's order,
-  OVERRULING the rail design).  It was a permanent 252px left band, and an
-  absolutely-positioned tool panel painted straight over it — the cooling
-  tower did, and with the rail covered there was nothing left to select with.
-  The overlap is a bug and was fixed on its own; the RAIL is a separate
-  judgement, and the ruling is that a chooser does not get to own a permanent
-  band.  A classic top-bar DROPDOWN replaces it: zero pixels when shut, which
-  is the only width a chooser is entitled to, and nothing can be painted over
-  because there is nothing there.
+  THE CHOOSER IS BACK IN THIS FILE, AND IT IS NOT THE RAIL (2026-08-17).
 
-  The registry and the selection live in methods/registry.ts (one home, two
-  readers: this body and MenuBar's dropdown); the tool now gets the FULL width
-  of the workspace.  The narrow-viewport bottom sheet went with the rail: a
-  dropdown is already the touch-native chooser, and a second list below `sm`
-  would be a second home for the same registry.
+  Read the two rulings in order, because the second does not reverse the first.
+  On 2026-08-16 Vítor OVERRULED the rail design: the tool list had been a
+  permanent 252 px left band, an absolutely-positioned tool panel painted
+  straight over it (the cooling tower did), and with the rail covered there was
+  nothing left to select with.  The overlap was a bug and was fixed on its own;
+  the RAIL was a separate judgement, and the ruling was that **a chooser does
+  not get to own a permanent band**.  The top bar's EduTools dropdown replaced
+  it — zero pixels when shut.
+
+  On 2026-08-17 EduTools became its own TAB (docs/design/one-tab-one-thing.md),
+  and that top-bar dropdown left the case tab's menu with it: Vítor, "E no
+  flowsheet eu não quero no menu EduTools nem Explore!".  Which removes the
+  only chooser there was.  The record names this exactly (§4, and the third
+  falsifier written into modes-and-views-in-the-top-row.md §7.5 an hour before
+  the decision): "If the tools live in their own tab, that tab must be able to
+  change tool without the app's workspace menu."
+
+  So the chooser returns as ONE SLIM ROW IN NORMAL FLOW — a labelled `Select`,
+  ~34 px tall, capped at 340 px wide and shrinking to the viewport below that.
+  It obeys the 2026-08-16 ruling rather than working around it:
+
+    * it owns NO permanent band — a row, not a column, and the diagram keeps
+      the full width the rail's removal gave it;
+    * it CANNOT be painted over, because it is a flow sibling of the tool and
+      not a box the tool's absolute panels can be positioned above.  That was
+      the concrete failure the rail died of, and the fix is structural rather
+      than a z-index;
+    * its list is the SAME `METHOD_TOOLS` — one home, and the planned entries
+      stay VISIBLE and disabled, which is the registry's own stated rule (the
+      list is the roadmap, stated rather than implied).
+
+  A `Select` and not a Menu: it is a form control, so it is keyboard- and
+  touch-native without any of that being re-implemented, its closed footprint
+  is one row, and its dropdown is a portal that exists only while open.
 
   What stays: the one-line "teaches" caption + the Theory Guide link
   (TeachesLine, above every tool), and the in-file tools' setup-bar fold to a
@@ -103,7 +124,8 @@ import {
   useFitsOneRow, useNarrowViewport, usePlotRefit,
 } from "./methods/methodsChrome.js";
 import {
-  METHOD_TOOLS, theoryUrl, useActiveMethodTool, type MethodTool,
+  METHOD_TOOLS, setActiveMethodTool, theoryUrl, useActiveMethodTool,
+  type MethodTool, type MethodToolId,
 } from "./methods/registry.js";
 import { useStore } from "../state/store.js";
 import {
@@ -218,11 +240,12 @@ export function MethodsWorkspace() {
   const active = METHOD_TOOLS.find((m) => m.id === tool) ?? METHOD_TOOLS[0]!;
 
   return (
-    // The active tool gets the WHOLE workspace: with the chooser in the menu
-    // bar there is nothing beside it to reserve width for.  One column, no
-    // rail, no reopen strip.
+    // The active tool gets the WHOLE WIDTH of the workspace: the chooser is one
+    // row above it, never a band beside it.  One column, no rail, no reopen
+    // strip.
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
+      <ToolChooser tool={tool} />
       {tool === "mccabe" ? (
         <McCabeTool tool={active} catalogue={catalogue}
           localUnifac={localUnifac} componentFiles={componentFiles} />
@@ -258,6 +281,62 @@ export function MethodsWorkspace() {
           </Box>
         </>
       )}
+    </Box>
+  );
+}
+
+// ---- The tool chooser (this tab's own, see the file header) -----------------
+
+/** How wide the chooser is allowed to get.  A cap and not a width: below it
+ *  the Select takes what the viewport has (390 px phone → ~300 px of Select),
+ *  above it the row stops growing because a longer control does not read
+ *  better — the longest label in the registry ("Ignition / extinction (Van
+ *  Heerden)") sits inside 340 px at the `xs` font. */
+const TOOL_CHOOSER_MAX_PX = 340;
+
+/** The EduTools tab's own tool chooser: ONE row, in normal flow, above the
+ *  tool.  See the file header for why it is a row and not the 252 px rail that
+ *  was overruled, and why a Select rather than a Menu.
+ *
+ *  It reads `METHOD_TOOLS` — the ONE home — and does not keep a list of its
+ *  own; a `planned` entry is rendered and DISABLED rather than filtered out,
+ *  because the registry's rule is that the list is the roadmap, stated rather
+ *  than implied.  Picking writes through `setActiveMethodTool`, which is also
+ *  what updates the `?workspace=methods&tool=<id>` address — so the tab's URL
+ *  goes on being a shareable bookmark of what is on screen. */
+function ToolChooser({ tool }: { tool: MethodToolId }) {
+  // The pointer decides TARGET SIZE and nothing else (methodsChrome.tsx: the
+  // fit question and the pointer question are separate).  One Mantine size
+  // step up under a finger; the lineup is identical either way.
+  const coarse = useCoarsePointer();
+  const data = useMemo(
+    () => METHOD_TOOLS.map((m) => ({
+      value: m.id,
+      label: m.status === "live" ? m.label : `${m.label} (planned)`,
+      disabled: m.status !== "live",
+    })),
+    []);
+  return (
+    <Box style={{
+      flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
+      padding: "4px 12px", minWidth: 0,
+      borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+    }}>
+      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
+        Tool
+      </Text>
+      <Select
+        size={coarse ? "sm" : "xs"}
+        aria-label="choose an EduTools construction"
+        data={data}
+        value={tool}
+        onChange={(v) => { if (v) setActiveMethodTool(v as MethodToolId); }}
+        allowDeselect={false}
+        searchable
+        nothingFoundMessage="No construction by that name"
+        comboboxProps={{ withinPortal: true }}
+        style={{ flex: 1, minWidth: 0, maxWidth: TOOL_CHOOSER_MAX_PX }}
+      />
     </Box>
   );
 }

@@ -402,6 +402,22 @@ function bootCase(): {
   return BLANK_CASE;
 }
 
+// Boot the glass-box INTRO on-ramp: `?case=<id>&intro=1`.
+//
+// The intro is a NEWCOMER on-ramp, shown for the hub's "New here? Start with
+// one of these" cards and for nothing else.  Those cards used to call
+// `loadTutorial(id, { intro: true })` in the same tab; since 2026-08-17 they
+// OPEN A TAB (docs/design/one-tab-one-thing.md), and a tab cannot be handed a
+// call argument -- so the on-ramp travels in the address, which is where a
+// tab's whole identity has to live.  Every other way of opening a case
+// (Open Tutorial, Reopen, reload, drill-in) carries no `intro` and goes
+// straight to the case, exactly as before.
+function bootShowIntro(): boolean {
+  if (typeof window === "undefined") return false;
+  const q = new URLSearchParams(window.location.search);
+  return q.has("case") && q.get("intro") === "1";
+}
+
 // Boot workspace: the landing deep-links the Property Explorer via
 // `?workspace=explore` (a frictionless "try it" CTA).  The explorer is
 // standalone, so it opens with no case loaded.
@@ -453,7 +469,7 @@ export const useStore = create<AppState>((set, get) => ({
   scratchEdits: {},
   navStack: [{ name: initial.name, files: initial.files }],
   navPos: 0,
-  showIntro: false,
+  showIntro: bootShowIntro(),
   selectedNodeId: null,
   // A drilled-in tab may boot WITH the parent run's sliced result (see
   // bootCase): stored exactly as a finished run would be -- status "done",
@@ -796,6 +812,22 @@ export function lastCaseLabel(): string | null {
   if (!ref) return null;
   if (ref.kind === "tutorial") return ref.name.split("/").pop() || ref.name;
   return ref.dir.split("/").pop() || ref.dir;
+}
+
+/** The last case's TUTORIAL id, or null when there is none or it is a case on
+ *  the student's own disk.
+ *
+ *  It exists for ONE TAB, ONE THING (docs/design/one-tab-one-thing.md): the
+ *  hub opens the recent case in a NEW tab, and a tab needs an ADDRESS.  A
+ *  tutorial has one (`?case=<id>`, read by bootCase above); a `local:<dir>`
+ *  case has none, because there is no boot path that re-fetches a directory
+ *  through the bridge.  So this answers the question the caller actually has
+ *  — "can this be opened as a tab?" — instead of handing back a name the
+ *  caller would have to guess the kind of.  Returning null is not a failure:
+ *  it routes the caller to `reopenLastCase()`, which opens it here. */
+export function lastCaseTutorialName(): string | null {
+  const ref = loadSession()?.caseRef;
+  return ref && ref.kind === "tutorial" ? ref.name : null;
 }
 
 // Reopen the last case saved in the session: a tutorial by id (synchronous), or

@@ -27,34 +27,39 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  workspaces — the top row's ONE home: what the workspaces ARE, and which
-  kind each one is.
+  workspaces — the ONE home of what a case tab's menu carries, and (separately)
+  of the MODES that are tabs of their own.
 
-  THE DEFECT THIS FIXES (docs/design/modes-and-views-in-the-top-row.md,
-  DECIDED 2026-08-17).  The top row rendered two different kinds of thing as
-  peers.  Ten of them are VIEWS OF A CASE — Flowsheet, Streams, Pinch — and
-  two are MODES that need no case at all: Explore and EduTools each synthesize
-  their own transient case, which is why they are the only two things a blank
-  boot offers.  Collapsing the whole strip into one dropdown at 390 px was the
-  right move for the WIDTH and the wrong one for the MEANING: it filed a mode
-  inside a menu labelled with a view's name.
+  ONE TAB, ONE THING (docs/design/one-tab-one-thing.md, DECIDED 2026-08-17 by
+  Vítor, in his own words: "Eu disse que queria o EduTools, Explore e flowsheet
+  a abrirem num tab novo cada um deles!  E no flowsheet eu não quero no menu
+  EduTools nem Explore!").
 
-  THE ONE HOME, and the direction of derivation.  `kind` is DECLARED once per
-  entry here, and everything else is derived FROM it — including the label
-  sets each case type allows.  The blank-boot set used to be the hand-written
-  `new Set(["Explore", EduTools])` inside MenuBar, and every other set
-  hand-repeated the same two names; those were four copies of one fact, and
-  the fact is now stated once and read four times.  There is no second array
-  and no per-posture list: the wide row and the narrow dropdown are two
-  RENDERINGS of this one lineup, filtered by a property (the design record's
-  own words: "a rendering of WORKSPACES by a property, not a second array").
+  WHAT CHANGED HERE, AND WHY IT IS A DELETION.  This file used to declare a
+  `kind` per entry — `mode` for Explore and EduTools, `view` for the rest —
+  and derive from it which entries stayed visible when the row collapsed.  The
+  distinction was right and it SURVIVES; what changed is where it is drawn.
+  Record §6: "with modes in their own tabs there are no modes in the row to
+  keep visible."  A mode is now a TAB and a view is now a MENU ITEM, so the
+  distinction is STRUCTURAL — the browser draws it, in the one control every
+  user on earth already understands — and a `kind` field discriminating a set
+  that is always empty from a set that is always everything would be machinery
+  pretending to make a decision it no longer makes.
 
-  WHAT WOULD FALSIFY THE SPLIT (record §6): a workspace marked `mode` whose
-  availability turns out to depend on the loaded case.  The test is the one
-  the code already applies and `tests/workspaceKinds.test.ts` now pins — does
-  it survive a blank boot?  `allowedWorkspaceLabels` answers exactly the modes
-  there, so the day a mode needs a case, that test fails rather than the split
-  quietly becoming a lie.
+  So `WORKSPACES` below is the case tab's menu and NOTHING else: File, its own
+  views, and Help.  The two modes moved to `MODE_TABS`, which is the one home
+  of their labels and their addresses, read by the hub that opens them.  They
+  did not vanish and they were not hand-copied into a call site — they moved
+  list, and the list they moved to is in this same file so the two halves of
+  "what top-level things exist" stay side by side.
+
+  THE COUPLING THAT MADE THIS POSSIBLE, stated because the argument turned on
+  it (record §3, AMENDED the same day).  The panel that kept EduTools in the
+  case menu rested on ONE fact: ten of the tools read the loaded run, so the
+  in-app entry was the only way to point a tool at the student's own result.
+  Vítor removed that coupling by decision — "Eu quero que o EduTools seja
+  independente do flowsheet!  Não têm de comunicar!" — so the argument expires
+  with it and the entry is a plain duplicate of a tab.
 
   Pure and free of React/DOM/store imports (the `WorkspaceKey` import is
   type-only, hence erased), so the node test runner can exercise the whole
@@ -64,19 +69,44 @@ License
 import type { WorkspaceKey } from "../state/store.js";
 import { EDUTOOLS_LABEL } from "./methods/registry.js";
 
-/** MODE: needs no case — it synthesizes its own, so it is available on a
- *  blank boot and stays visible at every viewport width.
- *  VIEW: a view OF the loaded case — it exists only while a case does, and it
- *  is what collapses into a chooser when the row cannot hold everything. */
-export type WorkspaceKind = "mode" | "view";
-
 export interface WorkspaceEntry {
   label: string;
   /** The `?workspace=` deep-link key.  `null` = the flowsheet canvas itself
    *  (activeWorkspace === null), handled by label in openWorkspace. */
   key: WorkspaceKey | null;
-  kind: WorkspaceKind;
 }
+
+/** A MODE: a thing that needs no case — it synthesizes its own — and is
+ *  therefore its OWN TAB rather than an entry in a case tab's menu.
+ *
+ *  `search` is the address that IS this mode (record §1).  It is declared here
+ *  rather than at the button that opens it so the hub, a future landing card
+ *  and any in-app link cannot spell it three ways. */
+export interface ModeTab {
+  label: string;
+  search: string;
+  /** One line for the hub: what this tab is for. */
+  blurb: string;
+}
+
+/** The modes, in the order the hub offers them.  These are NOT in WORKSPACES
+ *  and must never be put back there: that is the whole decision. */
+export const MODE_TABS: ModeTab[] = [
+  {
+    label: "Explore",
+    search: "?workspace=explore",
+    blurb: "Property surfaces — T-x-y, γ(x), a Psat scan — over components you pick.",
+  },
+  {
+    // The label is the student-facing word; the URL key stays `methods`
+    // (?workspace=methods&tool=<id> is a deep-link contract, and a caption is
+    // not a reason to break a bookmark).
+    label: EDUTOOLS_LABEL,
+    search: "?workspace=methods",
+    blurb: "Classical graphical constructions — McCabe-Thiele, Kremser, pinch, "
+      + "psychrometrics — each fed by its own witness case.",
+  },
+];
 
 // Workspaces in the top menu.  Each is a top-level toggle:
 //   - implemented entries (`key` truthy) flip the global activeWorkspace
@@ -86,41 +116,23 @@ export interface WorkspaceEntry {
 // specially in openWorkspace (by label) so you can switch BACK from Props to
 // the flowsheet symmetrically, the mirror of "Simulate process ->".
 export const WORKSPACES: WorkspaceEntry[] = [
-  { label: "Flowsheet", key: null,      kind: "view" },
-  { label: "Props",     key: "props",   kind: "view" },   // right next to Flowsheet -- the two phases
-  { label: "Explore",   key: "explore", kind: "mode" },   // interactive property scratchpad (see, then decide)
-  // EduTools renders as a DROPDOWN, not a toggle button (see EduToolsMenu).
-  // The label is the student-facing word; the URL key stays `methods` --
-  // ?workspace=methods&tool=<id> is a deep-link contract, and a caption is not
-  // a reason to break a bookmark.
-  { label: EDUTOOLS_LABEL, key: "methods", kind: "mode" },
-  { label: "Streams",   key: "streams",   kind: "view" },
-  { label: "Variables", key: "variables", kind: "view" },
-  { label: "Control",   key: "control",   kind: "view" },  // PID tuning bench (choupoCtrl + a PID)
-  { label: "Plots",     key: "plots",     kind: "view" },
-  { label: "Log",       key: "log",       kind: "view" },
-  { label: "Case",      key: "case",      kind: "view" },
-  { label: "Pinch",     key: "pinch",     kind: "view" },  // greyed until a run yields heat duties
-  { label: "Reports",   key: "reports",   kind: "view" },  // utilities + global balances (post-run)
+  { label: "Flowsheet", key: null    },
+  { label: "Props",     key: "props" },   // right next to Flowsheet -- the two phases
+  { label: "Streams",   key: "streams"   },
+  { label: "Variables", key: "variables" },
+  { label: "Control",   key: "control"   },  // PID tuning bench (choupoCtrl + a PID)
+  { label: "Plots",     key: "plots"     },
+  { label: "Log",       key: "log"       },
+  { label: "Case",      key: "case"      },
+  { label: "Pinch",     key: "pinch"     },  // greyed until a run yields heat duties
+  { label: "Reports",   key: "reports"   },  // utilities + global balances (post-run)
 ];
 
-/** The lineup split by kind, ORDER PRESERVED within each half.  The two
- *  postures consume this same call, so a mode cannot be a mode in one and a
- *  view in the other. */
-export function splitWorkspaces(workspaces: readonly WorkspaceEntry[]): {
-  modes: WorkspaceEntry[];
-  views: WorkspaceEntry[];
-} {
-  return {
-    modes: workspaces.filter((w) => w.kind === "mode"),
-    views: workspaces.filter((w) => w.kind === "view"),
-  };
-}
-
-/** The mode labels, derived — never hand-listed.  This is what a blank boot
- *  offers and what every case type's set starts from. */
-export const MODE_LABELS: ReadonlySet<string> =
-  new Set(splitWorkspaces(WORKSPACES).modes.map((w) => w.label));
+/** The labels a case tab's menu may ever carry — every WORKSPACES entry and
+ *  nothing else.  Exported so a test can state the invariant that gives this
+ *  file its name: no mode is in the row. */
+export const VIEW_LABELS: ReadonlySet<string> =
+  new Set(WORKSPACES.map((w) => w.label));
 
 /** What the app knows about the open case when it decides the lineup. */
 export interface WorkspaceContext {
@@ -140,29 +152,29 @@ export interface WorkspaceContext {
  *
  *  The top tabs are CONTEXT-DEPENDENT: each case TYPE exposes only the
  *  workspaces that mean something for it, so a lit-but-dead button never
- *  shows.  Every branch starts from MODE_LABELS and adds the VIEWS that case
- *  type has — the modes are in every set BECAUSE they are modes, which is a
- *  derivation rather than four hand-repeated pairs of names.
- *    blank boot   -> the modes, and only the modes
+ *  shows.  Every branch is now VIEWS ONLY — the modes left the row for their
+ *  own tabs (MODE_TABS above), so there is nothing to add to each set.
+ *    blank boot   -> NOTHING.  A tab with no case is the HUB, and the hub's
+ *                    on-ramp is the WelcomeScreen's own, not a menu of views
+ *                    of a case that is not there.
  *    intro        -> nothing (the intro screen owns the window)
  *    choupoProps  -> Props · Plots · Log · Case       (no canvas/streams/duties)
  *    choupoSolve  -> the full steady set              (streams, variables, pinch)
  *    choupoBatch/Ctrl -> Flowsheet · Props · Plots · Log · Case
  *                        (no steady-only Streams/Variables/Pinch/Reports) */
 export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
-  if (!ctx.hasCase) return new Set(MODE_LABELS);
+  if (!ctx.hasCase) return new Set();
   if (ctx.showIntro) return new Set();
-  const withModes = (views: string[]) => new Set([...MODE_LABELS, ...views]);
   if (ctx.isPropsCase || ctx.application === "choupoProps") {
-    return withModes(["Props", "Plots", "Log", "Case"]);
+    return new Set(["Props", "Plots", "Log", "Case"]);
   }
   if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl") {
-    return withModes([
+    return new Set([
       "Flowsheet", "Props", "Plots", "Log", "Case",
       ...(ctx.hasPid ? ["Control"] : []),
     ]);
   }
-  return withModes([
+  return new Set([
     "Flowsheet", "Props", "Streams", "Variables", "Plots", "Log", "Case",
     "Pinch", "Reports",
   ]);

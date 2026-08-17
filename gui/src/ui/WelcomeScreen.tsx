@@ -38,8 +38,31 @@ License
 
   Modal-backed actions (New case / browse tutorials / open .zip) are owned by
   MenuBar; we fire a CustomEvent it listens for (the same decoupling as
-  `choupo:run`).  Direct actions (open a specific tutorial, reopen last) call the
-  store straight.
+  `choupo:run`).
+
+  THIS SCREEN IS THE HUB, AND THE HUB STAYS OPEN (2026-08-17,
+  docs/design/one-tab-one-thing.md, Vítor: "este tab tem que ficar sempre
+  aberto e pode-se voltar cá sempre que quisermos!  Quando se abre um
+  flowsheet, abre um tab novo.  E idem para o Explore e para os EduTools.").
+
+  So every affordance here that OPENS something opens a NEW TAB, through the
+  one home for that (ui/openInTab.ts) — the tutorial cards, the recent case,
+  and the two modes.  They used to call `loadTutorial` / `setActiveWorkspace`
+  and replace this screen with the thing they opened, which is precisely what
+  stops the hub being a hub.  Consistency is the requirement, not a
+  preference: record §4 warns that a mixture — some navigating in place, some
+  opening a tab — is worse than either, and the landing shipped that defect
+  once already (`target="choupo-app"` ate a student's converged run).
+
+  ONE GAP, STATED RATHER THAN PAPERED OVER.  A case has an address only when
+  it is a bundled TUTORIAL (`?case=<id>`, read by store.bootCase).  A case on
+  the student's own disk is `local:<dir>` and there is no boot path for it, so
+  "Create with Assistant" and "Open case" still land in THIS tab, and so does
+  "Reopen recent" when the recent case is a local one.  Giving those a tab
+  needs a `?localCase=<dir>` boot — an async fetch through the bridge, with an
+  honest refusal when the bridge is down — which is a store change and is NOT
+  in this slice.  The three that cannot open a tab are the three that write to
+  disk first; every read-only open is a tab.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useState } from "react";
@@ -54,7 +77,11 @@ import {
 } from "@tabler/icons-react";
 
 import { bridgeUp } from "../cases/workspace.js";
-import { useStore, reopenLastCase, lastCaseLabel } from "../state/store.js";
+import {
+  reopenLastCase, lastCaseLabel, lastCaseTutorialName,
+} from "../state/store.js";
+import { MODE_TABS } from "./workspaces.js";
+import { caseTabSearch, openAppTab } from "./openInTab.js";
 
 // A few tutorials that span the experience -- the student's first clicks.
 const SUGGESTED: { id: string; title: string; desc: string }[] = [
@@ -79,9 +106,10 @@ function fire(name: string): void {
 }
 
 export function WelcomeScreen() {
-  const loadTutorial = useStore((s) => s.loadTutorial);
-  const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const reopen = lastCaseLabel();
+  // A tutorial has an address, so it opens as a TAB; a case on the student's
+  // own disk does not (see the header's stated gap), so it reopens here.
+  const reopenTutorial = lastCaseTutorialName();
   // Capability-aware CTAs: creating a case on disk (and the folder chooser)
   // need the local bridge; a hosted browser session gets tutorials, Explore
   // and ZIP -- never a primary action that dead-ends in a terminal order.
@@ -145,10 +173,18 @@ export function WelcomeScreen() {
               Create with Assistant
             </Button>
           )}
-          <Button leftSection={<IconChartLine size={16} />} variant="default"
-            onClick={() => setActiveWorkspace("explore")}>
-            Explore properties
-          </Button>
+          {/* THE MODES, each its own tab.  Rendered from MODE_TABS rather than
+              written out here: the labels and the addresses have ONE home
+              (workspaces.ts), and this screen is now the only place in the app
+              that offers them — a hand-typed `?workspace=…` here would be a
+              second spelling of the contract with nothing checking it. */}
+          {MODE_TABS.map((m) => (
+            <Button key={m.label} leftSection={<IconChartLine size={16} />}
+              variant="default" title={m.blurb}
+              onClick={() => openAppTab(m.search)}>
+              {m.label}
+            </Button>
+          ))}
           <Button leftSection={<IconFolderOpen size={16} />} variant="default"
             title={hasBridge ? "Open a case folder from your workspace"
                              : "Open a case packed as a .zip"}
@@ -158,8 +194,13 @@ export function WelcomeScreen() {
           </Button>
           {reopen && (
             <Button leftSection={<IconHistory size={16} />} variant="subtle"
-              onClick={() => void reopenLastCase()}
-              title={`Reopen ${reopen}`}>
+              onClick={() => {
+                if (reopenTutorial) openAppTab(caseTabSearch(reopenTutorial));
+                else void reopenLastCase();
+              }}
+              title={reopenTutorial
+                ? `Open ${reopen} in a new tab`
+                : `Reopen ${reopen} here (a case on your disk has no tab address yet)`}>
               Reopen recent
               <Text span size="xs" c="dimmed" ml={6}>{reopen}</Text>
             </Button>
@@ -183,11 +224,11 @@ export function WelcomeScreen() {
                   background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))",
                   transition: "background 120ms, border-color 120ms, transform 120ms",
                 }}
-                onClick={() => loadTutorial(t.id, { intro: true })}
+                onClick={() => openAppTab(caseTabSearch(t.id, { intro: true }))}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    loadTutorial(t.id, { intro: true });
+                    openAppTab(caseTabSearch(t.id, { intro: true }));
                   }
                 }}
                 onMouseEnter={(e) => {
