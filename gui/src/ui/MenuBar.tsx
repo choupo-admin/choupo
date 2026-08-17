@@ -74,6 +74,7 @@ import {
   EDUTOOLS_BLURB, EDUTOOLS_LABEL, METHOD_TOOLS, setActiveMethodTool,
   useActiveMethodTool,
 } from "./methods/registry.js";
+import { useNarrowViewport } from "./methods/methodsChrome.js";
 
 // Workspaces in the top menu.  Each is a top-level toggle:
 //   - implemented entries (`key` truthy) flip the global activeWorkspace
@@ -156,9 +157,48 @@ export function MenuBar() {
     : application === "choupoBatch" || application === "choupoCtrl" ? SET_TIME
     : SET_SOLVE;                                                  // choupoSolve / default
   const visibleWorkspaces = WORKSPACES.filter((w) => allowedLabels.has(w.label));
+  /* NARROW POSTURE: the tab strip becomes ONE dropdown.
+   *
+   * Measured 2026-08-17 at 390x844 with a steady case open: eleven tabs laid
+   * out to 833 px in a 390 px viewport, so Streams onward (seven whole
+   * workspaces) plus Help sat behind an `overflow: hidden` edge with nothing
+   * to scroll.  A horizontal tab strip was considered and rejected here: a
+   * registry of DESTINATIONS is exactly the thing a student must be able to
+   * SEE, and a strip that scrolls hides "Reports" behind a swipe with no
+   * affordance saying it exists.  A dropdown shows all of them at once, by
+   * name, in one tap.
+   *
+   * This is the same conclusion methodsChrome.tsx already recorded for the
+   * EduTools registry ("a dropdown is already the touch-native chooser, and a
+   * second list below `sm` would be a second home for the registry"), and it
+   * is built from the SAME `visibleWorkspaces` array the wide posture renders
+   * -- there is no second lineup to drift.
+   *
+   * EduTools keeps its OWN trigger even here, because it is not merely a tab:
+   * its dropdown is the only chooser for the twelve tools (the rail moved into
+   * the top bar in 9e5ff796 and MethodsWorkspace renders no tool list of its
+   * own).  Folding it into a plain item would open the workspace with no way
+   * to change tool. */
+  const narrow = useNarrowViewport();
   const activeWorkspace = useStore((s) => s.activeWorkspace);
   const toggleWorkspace = useStore((s) => s.toggleWorkspace);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
+
+  /* The two postures render the same lineup through the same rules.  These
+   * live here, above both, so a wide tab and a narrow menu item can never
+   * disagree about which workspace is on screen or which is not yet runnable. */
+  const isWorkspaceActive = (w: { label: string; key: WorkspaceKey | null }): boolean =>
+    w.label === "Flowsheet"
+      ? activeWorkspace === null                 // the canvas itself
+      : isPropsCase && w.label === "Props"
+      // In a props case the centre is PropsView by default, so "Props" is the
+      // home (active when no other workspace is open).
+      ? activeWorkspace === null || activeWorkspace === "props"
+      : w.key !== null && w.key === activeWorkspace;
+  // Pinch needs a completed run with heat duties -> greyed until then.
+  const isWorkspaceDisabled = (w: { key: WorkspaceKey | null }): boolean =>
+    w.key === "pinch" && !pinchReady;
+  const PINCH_DISABLED_HINT = "Run the flowsheet first — pinch needs the converged duties";
 
   const openWorkspace = (label: string, key: WorkspaceKey | null) => {
     if (label === "Flowsheet") {
@@ -348,11 +388,24 @@ export function MenuBar() {
         {/* --- Workspaces -------------------------------------------------
             Top-level toggles.  Active workspace is highlighted; clicking
             it again closes back to the canvas-only default. */}
+        {/* NARROW: one dropdown over the whole lineup (see `narrow` above for
+            why a dropdown and not a scrolling strip).  EduTools still gets its
+            own trigger beside it -- it carries the tool chooser. */}
+        {narrow && visibleWorkspaces.length > 0 && (
+          <WorkspacesMenu
+            workspaces={visibleWorkspaces.filter((w) => w.key !== "methods")}
+            isActive={isWorkspaceActive}
+            isDisabled={isWorkspaceDisabled}
+            disabledHint={PINCH_DISABLED_HINT}
+            onPick={openWorkspace}
+          />
+        )}
         {visibleWorkspaces.map((w) => {
           // EduTools is a DROPDOWN in the same slot the other workspaces put a
           // toggle button: the tool list is what the student is choosing, so
           // the chooser belongs where the chooser is, not as a band inside the
-          // workspace it is supposed to be showing.
+          // workspace it is supposed to be showing.  It survives the narrow
+          // collapse for the same reason.
           if (w.key === "methods") {
             return (
               <EduToolsMenu
@@ -363,15 +416,9 @@ export function MenuBar() {
               />
             );
           }
-          // In a props case the centre is PropsView by default, so "Props" is
-          // the home (active when no other workspace is open).
-          const isActive = w.label === "Flowsheet"
-            ? activeWorkspace === null               // the canvas itself
-            : isPropsCase && w.label === "Props"
-            ? activeWorkspace === null || activeWorkspace === "props"
-            : w.key !== null && w.key === activeWorkspace;
-          // Pinch needs a completed run with heat duties -> greyed until then.
-          const disabled = w.key === "pinch" && !pinchReady;
+          if (narrow) return null;          // already in the dropdown above
+          const isActive = isWorkspaceActive(w);
+          const disabled = isWorkspaceDisabled(w);
           return (
             <Button
               key={w.label}
@@ -380,7 +427,7 @@ export function MenuBar() {
               size="compact-xs"
               px={10}
               disabled={disabled}
-              title={disabled ? "Run the flowsheet first — pinch needs the converged duties" : undefined}
+              title={disabled ? PINCH_DISABLED_HINT : undefined}
               onClick={() => { if (!disabled) openWorkspace(w.label, w.key); }}
               styles={{
                 root: {
@@ -580,6 +627,54 @@ function TopMenu({
       </Menu.Target>
       <Menu.Dropdown>{children}</Menu.Dropdown>
     </Menu>
+  );
+}
+
+/** The NARROW-posture workspace chooser: the whole tab lineup as one dropdown.
+ *
+ *  It is handed the SAME `visibleWorkspaces` array the wide posture maps over,
+ *  and the SAME active/disabled predicates — it owns no lineup of its own, so
+ *  the two postures cannot drift (the arity rule, applied to a menu).
+ *
+ *  The trigger says which workspace is on screen rather than just "Workspaces",
+ *  because a collapsed navigation that does not name where you are makes the
+ *  student open it to find out.  It renders in the `active` posture whenever a
+ *  workspace other than the canvas is open, mirroring the filled tab it
+ *  replaces. */
+function WorkspacesMenu({ workspaces, isActive, isDisabled, disabledHint, onPick }: {
+  workspaces: { label: string; key: WorkspaceKey | null }[];
+  isActive: (w: { label: string; key: WorkspaceKey | null }) => boolean;
+  isDisabled: (w: { key: WorkspaceKey | null }) => boolean;
+  disabledHint: string;
+  onPick: (label: string, key: WorkspaceKey | null) => void;
+}) {
+  const current = workspaces.find((w) => isActive(w));
+  // "Flowsheet" is the canvas -- the resting state, not a destination you are
+  // "in", so the trigger stays neutral there and only lights up for a real
+  // workspace.
+  const inWorkspace = Boolean(current && current.label !== "Flowsheet");
+  return (
+    <TopMenu label={current ? current.label : "Workspaces"} width={240} active={inWorkspace}>
+      <Menu.Label>Workspaces</Menu.Label>
+      {workspaces.map((w) => {
+        const active = isActive(w);
+        const disabled = isDisabled(w);
+        return (
+          <Menu.Item
+            key={w.label}
+            disabled={disabled}
+            title={disabled ? disabledHint : undefined}
+            leftSection={active
+              ? <IconCheck size={14} />
+              : <span style={{ display: "inline-block", width: 14 }} />}
+            onClick={() => { if (!disabled) onPick(w.label, w.key); }}
+            styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
+          >
+            {w.label}
+          </Menu.Item>
+        );
+      })}
+    </TopMenu>
   );
 }
 

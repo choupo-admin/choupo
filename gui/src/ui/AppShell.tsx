@@ -63,6 +63,7 @@ import { CaseIntro } from "./CaseIntro.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
 import { LogWorkspace } from "./LogWorkspace.js";
 import { MenuBar } from "./MenuBar.js";
+import { useNarrowViewport } from "./methods/methodsChrome.js";
 import { ReportsWorkspace } from "./ReportsWorkspace.js";
 import { StreamsWorkspace } from "./StreamsWorkspace.js";
 import { VariablesWorkspace } from "./VariablesWorkspace.js";
@@ -141,6 +142,30 @@ export function AppShell() {
   // the tutorial intro (it would clutter a student's first look).
   const consoleVisible = caseOpen && !showIntro;
   const dockRow = agentOpen && agentDocked && consoleVisible;
+
+  /* THE HEADER STACKS ON A PHONE, and it is not a style preference.
+   *
+   * The header is ONE nowrap row: the workspace tabs on the left, the brand +
+   * icon cluster on the right.  On a phone that row's intrinsic width is far
+   * more than the screen -- measured 2026-08-17 at 390x844 with a steady case
+   * open, the tab strip alone was 833 px and the rightmost control sat at
+   * x=1035, with 13 of 18 controls behind an `overflow: hidden` edge no
+   * gesture can reach.  Collapsing the tabs into one dropdown (MenuBar) fixes
+   * most of it but not all: File + Workspaces + EduTools + Help + the five
+   * icons still do not fit 390 px on ONE line, and the only ways to force
+   * them are to hide controls or to hide them behind a sideways swipe.  Both
+   * were rejected -- a control that disappears is not a control that works.
+   *
+   * So below Mantine `sm` (or under a coarse pointer -- a phone held sideways
+   * is still a phone) the header takes TWO 32 px lines instead of one:
+   * brand + icons on top, navigation underneath.  It costs 32 px of a
+   * 844 px screen and buys back every control, with no gesture to discover.
+   * The desk keeps its single 32 px row, byte for byte.
+   *
+   * `useNarrowViewport` is the project's ONE posture-detection home
+   * (methodsChrome.tsx); this deliberately does not introduce a second. */
+  const narrowHeader = useNarrowViewport();
+  const headerRowPx = narrowHeader ? 64 : 32;
 
   // Esc closes whatever workspace is open, returning to the canvas-only
   // default.  Intentionally NOT scoped to a particular element so the
@@ -262,8 +287,8 @@ export function AppShell() {
       style={{
         display: "grid",
         gridTemplateRows: dockRow
-          ? `32px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px`
-          : "32px 1fr",
+          ? `${headerRowPx}px 1fr ${agentRowPx(agentCollapsed, agentHeight)}px`
+          : `${headerRowPx}px 1fr`,
         gridTemplateColumns: "1fr",
         gridTemplateAreas: dockRow
           ? `"header" "center" "console"`
@@ -291,16 +316,29 @@ export function AppShell() {
           gridArea: "header",
           display: "flex",
           alignItems: "stretch",
+          flexWrap: narrowHeader ? "wrap" : "nowrap",
           minWidth: 0,
           overflow: "hidden",
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-7))",
           borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
         }}
       >
-        <Box style={{ flex: "0 1 auto", minWidth: 0 }}>
+        {/* `order` puts the brand line ON TOP when stacked without moving
+            either component in the DOM: the tab strip stays the first thing a
+            screen reader and the keyboard reach, which is what it should be
+            when it is the navigation. */}
+        <Box
+          style={narrowHeader
+            ? { flex: "1 1 100%", order: 2, height: 32, minWidth: 0 }
+            : { flex: "0 1 auto", minWidth: 0 }}
+        >
           <MenuBar />
         </Box>
-        <Box style={{ flex: 1, minWidth: 0 }}>
+        <Box
+          style={narrowHeader
+            ? { flex: "1 1 100%", order: 1, height: 32, minWidth: 0 }
+            : { flex: 1, minWidth: 0 }}
+        >
           <TopBar />
         </Box>
       </Box>
