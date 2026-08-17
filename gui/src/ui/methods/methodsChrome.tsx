@@ -96,6 +96,40 @@ export function useNarrowViewport(): boolean {
   return below || coarse;
 }
 
+// ---- The setup bar's two postures ------------------------------------------
+
+/** How a tool's setup bar lays itself out, in ONE home so the tools that
+ *  offer one cannot answer the question differently.
+ *
+ *  WIDE: a single nowrap row sized to its content (`fit-content`), with a
+ *  flexible spacer pushing the pop-out / collapse buttons to the right edge.
+ *  That row lives in a box with `overflow-x: auto`, so a desk window narrower
+ *  than the row still reaches every field by scrolling the strip.
+ *
+ *  NARROW: the row WRAPS instead.  Measured 2026-08-17 at 390x844, McCabe's
+ *  bar was 983 px wide and the psychrometric chart's 1495 px — 13 and 29
+ *  controls respectively laid out past the right edge.  The `overflow-x: auto`
+ *  strip is not the answer on a phone even though it technically scrolls: the
+ *  design record calls a student swiping sideways hunting for a field the
+ *  worst teaching outcome of the available fixes, and it is right — a field
+ *  you cannot see is a field you do not know to look for.  Wrapping keeps
+ *  every field on screen, in reading order, at the cost of bar height.
+ *
+ *  The spacer is dropped when wrapping: a `flex: 1` spacer in a wrapping row
+ *  consumes the whole remainder of its line and forces everything after it
+ *  onto the next one, which is a gap, not a layout.
+ *
+ *  Pure and exported so tests can pin both postures without a DOM. */
+export function setupBarLayout(narrow: boolean): {
+  wrap: "wrap" | "nowrap";
+  minWidth: number | "fit-content";
+  showSpacer: boolean;
+} {
+  return narrow
+    ? { wrap: "wrap", minWidth: 0, showSpacer: false }
+    : { wrap: "nowrap", minWidth: "fit-content", showSpacer: true };
+}
+
 // ---- Persistence -----------------------------------------------------------
 
 /** Read a persisted collapsed flag.  `defaultCollapsed` (default: EXPANDED,

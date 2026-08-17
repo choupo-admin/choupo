@@ -99,7 +99,7 @@ import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import {
-  CONTROLS_COLLAPSED_KEY, useCoarsePointer, useCollapsedFlag,
+  CONTROLS_COLLAPSED_KEY, setupBarLayout, useCoarsePointer, useCollapsedFlag,
   useNarrowViewport, usePlotRefit,
 } from "./methods/methodsChrome.js";
 import {
@@ -456,6 +456,8 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
   // width animation), so the refit rides a rAF instead of transitionend.
   const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
   usePlotRefit(setup.collapsed);
+  // The setup bar reflows below `sm` instead of running off the side.
+  const bar = setupBarLayout(useNarrowViewport());
   // The plot reads y_eq_<more volatile>: pass the pair in the SAME order the
   // spec ran it, so the curve lookup can never miss.
   const [vA, vB] = orderBinaryByVolatility([compA, compB], catalogue);
@@ -522,7 +524,7 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
         flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
         borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+        <Group gap="sm" wrap={bar.wrap} align="center" style={{ minWidth: bar.minWidth }}>
           <ToolField label="light">
             <Select size="xs" searchable data={vleNames} value={compA}
               onChange={(v) => setCompA(v ?? compA)} w={140} allowDeselect={false} />
@@ -558,7 +560,7 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
               <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
             </Group>
           )}
-          <Box style={{ flex: 1, minWidth: 8 }} />
+          {bar.showSpacer && <Box style={{ flex: 1, minWidth: 8 }} />}
           {mccabeCsv && (
             <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
               <ActionIcon variant="subtle" size="md" color="accent"
