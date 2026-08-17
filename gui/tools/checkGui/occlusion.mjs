@@ -138,21 +138,27 @@ export const OCCLUSION_PROBE = `(() => {
   TWO CORRECTIONS, both found by checking a finding instead of believing it,
   and both had produced a confident, specific, WRONG report first:
 
-  (1) A CONTROL CLIPPED BY `overflow: hidden` IS HIDDEN ON PURPOSE.  The first
-      version reported `button "Copy propsDict"` as a covered control on
-      mccabe and psychro at BOTH viewports, named its blocker and exited 1.
-      At rest that button sits at y=920 in a 900-high viewport, inside a
-      COLLAPSED disclosure whose panel is clipped away by an ancestor's
+  (1) A CONTROL BEHIND AN `overflow: hidden` EDGE MUST NOT BE SCROLLED TO AND
+      THEN REPORTED.  The first version called `button "Copy propsDict"` a
+      covered control on mccabe and psychro at BOTH viewports, named its
+      blocker and exited 1.  At rest that button sits at y=920 in a 900-high
+      viewport, inside a COLLAPSED disclosure clipped away by an ancestor's
       `overflow: hidden`.  It is not covered; it is folded.  `scrollIntoView`
       scrolls an `overflow: hidden` box quite happily -- a USER cannot -- so
       the probe had manufactured the very state it then reported.  A control
-      is only asked the scroll question if every clipping ancestor between it
-      and the viewport can actually be scrolled by a user (`auto` or
-      `scroll`); anything behind a `hidden`/`clip` edge is classified
-      `clippedByOverflow` and NOT judged.  The count is still printed, because
-      "the app is hiding it" and "the app has lost it off the bottom of a
-      bounded box" look identical from here and only a human can tell them
-      apart.
+      is now only asked the scroll question when every clipping ancestor
+      between it and the viewport is one a user can actually scroll (`auto`
+      or `scroll`); anything behind a `hidden`/`clip` edge is classified
+      `clippedByOverflow`.
+      THAT IS NOT A LICENCE TO CALL THEM DELIBERATE, and the phone proved it.
+      Measured at 390x844: the app's ROOT box is 390 wide, `overflow: hidden`,
+      with 480 px of content in it -- so the top bar's last controls (the
+      colour-scheme button, the clipboard bridge, and the Theory-Guide link
+      the whole exposure arm rests on) are clipped off the right with no way
+      to reach them.  A folded panel and a layout wider than the screen are
+      the same shape in the DOM.  So both are LISTED, with the axis and the
+      clipper, and NEITHER is judged: intent is not something a hit-test can
+      read.
 
   (2) AN "AT REST" BOX MEASURED AFTER SCROLLING SOMETHING ELSE IS NOT AT REST.
       The first version walked the pile scrolling to each in turn without
@@ -198,8 +204,16 @@ export const OFFSCREEN_PROBE = `(() => {
   };
 
   /** The first ancestor that CLIPS this element away behind an edge a user
-   *  cannot scroll.  Returns null when the element is merely out of view in
-   *  something scrollable (or in the document itself). */
+   *  cannot scroll, and on which AXIS.  Returns null when the element is
+   *  merely out of view in something scrollable (or in the document itself).
+   *
+   *  The axis is kept because it is the only mechanical signal that separates
+   *  the two very different things an 'overflow: hidden' edge can mean.  It is
+   *  a HINT and the report says so: a Y-clip is usually a folded panel (the
+   *  collapsed disclosure that produced this module's first false finding),
+   *  while an X-clip on a container laid out wider than the viewport is
+   *  content lost off the side.  Intent is not in the DOM, so neither is
+   *  judged here -- both are listed, with the clipper, for a human. */
   const clippedBy = (el) => {
     const r = el.getBoundingClientRect();
     for (let p = el.parentElement; p; p = p.parentElement) {
@@ -210,7 +224,10 @@ export const OFFSCREEN_PROBE = `(() => {
       const pr = p.getBoundingClientRect();
       const outX = hides(ox) && (r.right <= pr.left + 1 || r.left >= pr.right - 1);
       const outY = hides(oy) && (r.bottom <= pr.top + 1 || r.top >= pr.bottom - 1);
-      if (outX || outY) return p;
+      if (outX || outY) {
+        return { node: p, axis: (outX ? "X" : "") + (outY ? "Y" : ""),
+                 widerThanViewport: pr.width > innerWidth + 1 };
+      }
     }
     return null;
   };
@@ -253,9 +270,11 @@ export const OFFSCREEN_PROBE = `(() => {
   for (const item of pile) {
     const entry = { control: item.atRest };
     if (item.clipper) {
-      entry.clipper = describe(item.clipper);
+      entry.clipper = describe(item.clipper.node);
+      entry.clipAxis = item.clipper.axis;
+      entry.clipperWiderThanViewport = item.clipper.widerThanViewport;
       out.clippedByOverflow.push(entry);
-      continue;                                     // hidden on purpose: not judged
+      continue;         // behind an unscrollable edge: listed, never judged
     }
     const saved = scrollState(item.el);
     item.el.scrollIntoView({ block: "center", inline: "center" });
@@ -278,6 +297,23 @@ export const OFFSCREEN_PROBE = `(() => {
     restore(saved);
   }
 
+  // THE EXTENT -- one fact, no interpretation.  How far do the app's own
+  // interactive controls actually reach, against the viewport they are in?
+  // The document's scrollWidth cannot answer this: every overflowing edge here
+  // is 'overflow: hidden', so the document reports no overflow at all while
+  // controls sit at x = 1251 in a 390 px viewport.  A reader needs the number,
+  // not a boolean that a clipped layout makes false.
+  let right = 0, bottom = 0;
+  for (const el of document.querySelectorAll(SEL)) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === "hidden" || cs.display === "none"
+        || parseFloat(cs.opacity || "1") === 0) continue;
+    right = Math.max(right, Math.round(r.right));
+    bottom = Math.max(bottom, Math.round(r.bottom));
+  }
+  out.extent = { right, bottom, viewportW: innerWidth, viewportH: innerHeight };
   out.documentOverflowsX =
     document.documentElement.scrollWidth > document.documentElement.clientWidth;
   out.scrollWidth = document.documentElement.scrollWidth;

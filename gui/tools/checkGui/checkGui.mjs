@@ -185,6 +185,13 @@ const DESK_ONLY = args.includes("--desk-only");
  * feeds on and the refusal must fire.  A proof that has to be re-performed
  * from memory is a proof nobody re-performs. */
 const SELFTEST_EXPOSURE = args.includes("--selftest-exposure");
+/* ARM 2's sabotage.  The error CHANNEL is proved on every run, but that only
+ * shows the collector can hear -- not that hearing something changes the
+ * verdict.  No page in the corpus errors today (the coolingTower failure this
+ * harness was built around does not reproduce), so the only honest way to
+ * exercise the FAIL path is to put a real error on a real walked page and
+ * watch the run go red.  Labelled in the output; it can fool nobody. */
+const SELFTEST_ERROR = args.includes("--selftest-error");
 
 // ---- refusal ---------------------------------------------------------------
 
@@ -507,7 +514,7 @@ async function main() {
     for (const vp of viewports) {
       await page.setViewport(vp.w, vp.h, { mobile: vp.mobile, touch: vp.touch });
       const pass = {
-        vp, findings: [], errored: [], exposure: [],
+        vp, findings: [], errored: [], exposure: [], extents: [],
         offscreen: [], pagesChecked: 0, controlsChecked: 0, offViewport: 0,
       };
       passes.push(pass);
@@ -560,12 +567,19 @@ async function main() {
 
         // (c) ARM 3 -- resolve what (a) had to skip.  LAST: it scrolls.
         const off = await page.evaluate(OFFSCREEN_PROBE);
+        pass.extents.push({ tool: tool.id, ...off.extent });
         const offDefects = off.coveredAfterScroll.length + off.unreachableByScroll.length;
         if (off.reachableAfterScroll.length || offDefects || off.clippedByOverflow.length) {
           pass.offscreen.push({ tool: tool.id, url, ...off });
         }
 
         // (d) ARM 2 -- what did the page and its workers say?
+        if (SELFTEST_ERROR) {
+          await page.evaluate(
+            `console.error("checkGui --selftest-error: injected failure on ${tool.id}"), 1`,
+          );
+          await new Promise((r) => setTimeout(r, 300));
+        }
         const errs = dedupeErrors(page.consoleErrors);
         if (errs.length) pass.errored.push({ tool: tool.id, url, errors: errs });
 
@@ -697,8 +711,14 @@ async function main() {
     const clipped = pass.offscreen.reduce((n, o) => n + o.clippedByOverflow.length, 0);
     log(`    at-rest covered: ${covered}   off-screen covered/unreachable: ${offCovered}`
       + `   off-screen but reachable once scrolled to: ${offRest}`);
-    log(`    clipped behind an overflow:hidden edge (hidden on purpose, NOT judged): ${clipped}`);
+    log(`    clipped behind an overflow:hidden edge, unscrollable (listed, NOT judged): ${clipped}`);
     log(`    pages that errored: ${pass.errored.length}`);
+    const over = pass.extents.filter((e) => e.right > e.viewportW);
+    if (over.length > 0) {
+      const worst = over.reduce((a, b) => (b.right > a.right ? b : a));
+      log(`    controls laid out PAST the right edge on ${over.length} page(s); `
+        + `furthest ${worst.tool} reaches x=${worst.right} in a ${worst.viewportW}px viewport`);
+    }
   }
 
   if (warmUpErrors.length > 0) {
@@ -723,6 +743,46 @@ async function main() {
             + `"${e.control.text || "(no text)"}" at rest ${fmtBox(e.control.box)}`);
         }
       }
+    }
+  }
+
+  // -- clipped behind an unscrollable edge -----------------------------------
+  // NOT judged, and the reason is that intent is not in the DOM: a Y-clip is
+  // usually a folded panel (believing otherwise cost this harness a confident
+  // false FAIL on "Copy propsDict"), while an X-clip on a container laid out
+  // wider than the screen is content nobody can reach.  Both are listed, with
+  // the axis and the clipper, so a human can tell them apart in one read.
+  const clippedAll = passes.flatMap((p) =>
+    p.offscreen.flatMap((o) => o.clippedByOverflow.map((e) => ({ pass: p, tool: o.tool, e }))));
+  if (clippedAll.length > 0) {
+    const x = clippedAll.filter((c) => c.e.clipAxis.includes("X"));
+    log("");
+    log(`CLIPPED BEHIND AN OVERFLOW:HIDDEN EDGE: ${clippedAll.length} control(s) `
+      + `(${x.length} on the X axis).  A user cannot scroll to any of them.`);
+    log("  NOT judged: a folded panel and content lost off the side look identical");
+    log("  from here.  Axis and clipper are given so a human can tell which is which.");
+    for (const { pass, tool, e } of clippedAll) {
+      log(`    ${pass.vp.label}/${tool.padEnd(16)} [${e.clipAxis}] ${e.control.tag} `
+        + `"${e.control.text || "(no text)"}" ${fmtBox(e.control.box)}`);
+      log(`    ${" ".repeat(pass.vp.label.length + 18)}clipped by ${e.clipper.tag} `
+        + `${fmtBox(e.clipper.box)}`
+        + `${e.clipperWiderThanViewport ? " -- WIDER THAN THE VIEWPORT" : ""}`);
+    }
+  }
+
+  // -- the layout extent, as a fact ------------------------------------------
+  const overflowing = passes.flatMap((p) =>
+    p.extents.filter((e) => e.right > e.viewportW || e.bottom > e.viewportH)
+      .map((e) => ({ label: p.vp.label, ...e })));
+  if (overflowing.length > 0) {
+    log("");
+    log("LAYOUT EXTENT -- how far the app's own controls reach against the viewport.");
+    log("  The document reports NO overflow on these pages, because every overflowing");
+    log("  edge is `overflow: hidden`; the boolean is false and the controls are still");
+    log("  out there.  These are measurements, not verdicts:");
+    for (const e of overflowing) {
+      log(`    ${e.label}/${e.tool.padEnd(16)} controls reach x=${String(e.right).padStart(5)}, `
+        + `y=${String(e.bottom).padStart(4)}   viewport ${e.viewportW}x${e.viewportH}`);
     }
   }
 
