@@ -112,14 +112,20 @@ License
   ARM 3 -- THE PHONE.  A second pass at 390x844 with touch emulation, because
   the bug report that started all this was an iPhone screenshot.  It found no
   covered control at rest -- and that was NOT the finding.  The finding is
-  that the at-rest question could not be ASKED of 33 controls there (against 1
+  that the at-rest question could not be ASKED of 81 controls there (against 5
   at 1400x900): they sit outside the viewport, where `elementFromPoint` is
   undefined.  Reporting twelve clean pages over that would have been the
   harness's own coverage collapse wearing the word "clean".  So the skipped
-  pile is now resolved by scrolling to each and asking again -- see
-  occlusion.mjs -- which turned it into two real defects and thirty-one
-  at-rest-off-screen controls.  The phone pass REPORTS and does not gate; the
-  reason is stated at THE PHONE VERDICT below.
+  pile is resolved -- see occlusion.mjs -- and 80 of the 81 turn out to be
+  behind an `overflow: hidden` edge NO USER CAN SCROLL: the app's root box is
+  390 wide with 480 px of content in it, and every one of the twelve pages
+  lays its controls out past the right edge (psychro reaches x=1495).  Among
+  the casualties on all twelve pages: the colour-scheme button, the clipboard
+  bridge, and the Theory-Guide link.
+  The two "covered" controls an earlier version of this arm reported were
+  BOTH FALSE and are retracted; occlusion.mjs records what they were and what
+  produced them.  The phone pass REPORTS and does not gate -- see THE PHONE
+  VERDICT below.
 
   STILL NOT CLOSED, and named so no one has to rediscover it: this walks ONE
   workspace (EduTools) in its DEFAULT state.  Nothing is clicked, no menu is
@@ -583,13 +589,19 @@ async function main() {
         const errs = dedupeErrors(page.consoleErrors);
         if (errs.length) pass.errored.push({ tool: tool.id, url, errors: errs });
 
+        // The word "clean" is reserved for a page that was BOTH unoccluded and
+        // silent.  A page whose engine failed leads with that failure -- it
+        // must never read as clean-with-a-footnote, which is how the merkel
+        // page was walked in its error state and reported fine.
         const bits = [];
-        bits.push(r.covered.length === 0 ? "clean" : `${r.covered.length} COVERED`);
+        if (errs.length) bits.push(`${errs.length} PAGE ERROR${errs.length > 1 ? "S" : ""}`);
+        if (r.covered.length > 0) bits.push(`${r.covered.length} COVERED`);
+        else if (errs.length === 0) bits.push("clean");
+        else bits.push("no covered control");
         if (offDefects) bits.push(`${offDefects} COVERED off-screen`);
         if (off.clippedByOverflow.length) {
           bits.push(`${off.clippedByOverflow.length} clipped (not judged)`);
         }
-        if (errs.length) bits.push(`${errs.length} PAGE ERROR${errs.length > 1 ? "S" : ""}`);
         const reach = exp.found ? `reach ${exp.reach}` : "reach n/a";
 
         log(`  ${tool.id.padEnd(16)} ${String(r.checked).padStart(3)} checked `
@@ -838,9 +850,13 @@ async function main() {
         (n, o) => n + o.coveredAfterScroll.length + o.unreachableByScroll.length, 0);
       const cov = p.findings.reduce((n, f) => n + f.covered.length, 0);
       const err = p.errored.reduce((n, e) => n + e.errors.length, 0);
-      return off + cov + err > 0
+      const clipX = p.offscreen.reduce(
+        (n, o) => n + o.clippedByOverflow.filter((e) => e.clipAxis.includes("X")).length, 0);
+      const wide = p.extents.filter((e) => e.right > e.viewportW).length;
+      return off + cov + err + clipX + wide > 0
         ? [`${p.vp.label} ${p.vp.w}x${p.vp.h}: ${cov} covered at rest, ${off} covered `
-           + `off-screen, ${err} page error(s)`]
+           + `off-screen, ${err} page error(s), ${clipX} clipped off the side with no `
+           + `way to scroll to them, ${wide} page(s) laid out wider than the screen`]
         : [];
     });
   if (ungatedTrouble.length > 0) {
