@@ -104,12 +104,18 @@ describe("File leaves the tool tab", () => {
     expect(tabChromeFor(CASE).caseChrome).toBe(true);
   });
 
-  it("EXPLORE IS THE STATUS QUO, pinned so a change is a decision", () => {
-    // Explore is also a mode with no case and the same question applies to
-    // it -- but it is the owner's to answer, not a helper's on the way past.
-    // This pin fails the day the answer changes, which is the point: it makes
-    // that a deliberate edit rather than a drift.
-    expect(tabChromeFor(EXPLORE).caseChrome).toBe(true);
+  it("Explore carries no case chrome either -- it is a mode with no case", () => {
+    // The pin that stood here said Explore was the status quo "until the
+    // owner answers".  He answered by pointing out that the question was the
+    // architect's to settle: File is dead in Explore for exactly the reason
+    // it is dead in a tool tab, and "a student might want to open a case
+    // from here" answers itself -- under one-tab-one-thing you go back to
+    // the HUB to open a case.
+    expect(tabChromeFor(EXPLORE).caseChrome).toBe(false);
+    // Its HELP is a different question and keeps a different answer: Explore
+    // owns its F1 and resolves the ACTIVE PLOT's chapter, which no table
+    // entry could name.  Two questions, two answers, one table.
+    expect(tabChromeFor(EXPLORE).help).toBe("context");
   });
 
   it("every kind is in the table, and the table is the only home", () => {

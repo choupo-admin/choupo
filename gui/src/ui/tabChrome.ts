@@ -138,9 +138,18 @@ export interface TabChrome {
 export const TAB_CHROME: Record<TabKind, TabChrome> = {
   hub:     { caseChrome: true,  help: "context" },
   case:    { caseChrome: true,  help: "context" },
-  // UNCHANGED DELIBERATELY — Explore is a mode with no case and the same
-  // question applies to it, but it is the owner's to answer.  See the header.
-  explore: { caseChrome: true,  help: "context" },
+  //  Explore is a MODE: no case, so `File` -- opened case, local case files,
+  //  case name, "your work saves here", close -- is dead there for exactly
+  //  the reason it is dead in a tool tab.  The one counter-argument, "a
+  //  student might want to open a case from here", answers itself under
+  //  one-tab-one-thing: you go back to the HUB to open a case.  That is the
+  //  whole architecture, not a workaround for this row.
+  //
+  //  Its Help stays `context`, and that is not an oversight: WORKSPACE_HELP
+  //  gives Explore its own section, and ExploreWorkspace owns its F1 outright
+  //  (AppShell returns for it), resolving the chapter of the ACTIVE PLOT --
+  //  more specific than anything this table could name.
+  explore: { caseChrome: false, help: "context" },
   tool:    { caseChrome: false, help: "tool"    },
 };
 
