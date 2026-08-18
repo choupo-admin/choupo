@@ -848,6 +848,44 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**A DESTRUCTIVE GATE POISONED THE EVIDENCE, AND THE EVIDENCE WAS COMMITTED
+(2026-08-18).**  `check_gate_selftest` proves other gates can fail by
+SABOTAGING records and sources, REBUILDING the engine, and requiring the
+failure.  It restores inside `try/finally` — which is exception-safe and
+**not death-safe**: `gate_manifest.py` runs every gate through
+`subprocess.run(timeout=…)`, CPython kills the child with **SIGKILL**, and no
+`finally` runs against SIGKILL.  The gate was MEASURED at 250 s but exceeded
+the 600 s ceiling under concurrent load, was killed mid-sabotage, and left a
+**poisoned binary**; the alphabetical walk then recorded 7 later
+engine-running gates as FAILED, every one of which recovered from a single
+`make all` **with no source change**.  Two properties made it silent: the
+working tree was CLEAN (only the BINARY carried the damage, and
+`check_build_fresh` sits *earlier* in the alphabet), and **`gate_manifest`
+recorded failures as claims and wrote the file anyway** — 12 such entries
+were already in the manifest committed on 2026-08-17.  *A claim is what a
+gate says when it has something to say; a failure is the absence of one, and
+recording it as the gate's own account of itself answers "what does this
+project check?" wrongly, with authority.*  THE CORRECTION, three parts:
+(1) `bin/curate/destructive_session.py` — a **disk JOURNAL** (not a lock: the
+failure is one run dying, not two colliding) written before the first
+mutation and removed only on a verified restore, so it outlives SIGKILL;
+(2) **the campaign-invalidating rule** — `bin/runTests` (at the very top,
+before `check_workspace_truth`), `runTests --record` and both arms of
+`gate_manifest` REFUSE while a journal stands, the full manifest arm checking
+**between every gate** because the tree was clean when that run began; the
+refusal is spelled ONCE in Python and bash calls it through `--assert`;
+(3) `gate_manifest` **refuses to write** on any failure or timeout, and
+`TIMEOUT` is 3600 with each gate's elapsed seconds RECORDED, so the ceiling is
+judged against measurement rather than memory.  Sabotage-verified by
+reproducing the mechanism (SIGKILL mid-run): the journal survived, **`git
+status` reported nothing on all five files** — the incident's exact shape —
+and all three harnesses refused.  Deliberately NOT done: automatic repair (a
+mechanism that silently fixes a tree it does not understand destroys real
+edits) and reordering the walk (that hides the class instead of detecting
+it).  Goldens were verified UNCONTAMINATED by full regression against a clean
+build.  Record:
+[`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
+
 **THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).**
 `catalystLoading` is a unit conversion and never claimed to be more: a
 heterogeneous rate constant is reported per gram of dry catalyst and the bed

@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 74 records already exist
+## 1. Why an index, when 75 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 74 design records, **36 state a rejected alternative and 38 do not** —
+- Of 75 design records, **37 state a rejected alternative and 38 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -94,6 +94,7 @@ direction is an error.
 | [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **RATIFIED 2026-08-08** (queue ruling D2) — direction + recommended shape approved; build sequenced after the validation work |
 | [`where-a-finding-record-lives.md`](../design/where-a-finding-record-lives.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-05** — debt D7; records to `core`, audit to the engine; checked against DWSIM, which supplies the pattern (`DWSIM.Interfaces`, zero deps) and the counter-example (its solver's compile path to WinForms) |
 | [`problem-divergence-contract.md`](../design/problem-divergence-contract.md) | ADR | yes | **RULED + IMPLEMENTED 2026-08-11** — an approximation nobody authorised is REFUSED; one the case authorised runs and RIDES the result on three surfaces, above the KPIs and apart from the advisories.  Rejects filing the authorisation inside `activityModel {}` (a scientific concession is not an object's parameter) and rejects a new AdvisoryLog severity (a divergence is not a qualification).  Records the sabotage that caught nothing and what was changed because of it |
+| [`destructive-gate-contamination.md`](../design/destructive-gate-contamination.md) | ADR | yes | **SHIPPED 2026-08-18** — a destructive meta-gate killed by SIGKILL (the signal `subprocess.run`'s timeout sends, against which no `finally` runs) left a POISONED BINARY and 7 later gates recorded false FAILED claims into a manifest that was then committed; 12 such entries were already in the committed history.  A destructive gate now declares itself in a disk JOURNAL that only a verified restore removes, every evidence-producing harness REFUSES while it stands, and `gate_manifest` refuses to write on any failure or timeout because a failing gate makes no claim.  Rejects a lock (the failure is one run dying, not two colliding), automatic repair (a mechanism that silently fixes a tree it does not understand destroys real edits), and reordering the walk so the destructive gate runs last (that hides the class rather than detecting it) |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
 | [`reference-rung-refusal.md`](../design/reference-rung-refusal.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-06** — `h_pure_ig`/`s_pure_ig`/`g_pure_ig` refuse a non-gas `referenceState`; revised its own plan on the first measurement (the field was already parsed), and names the water-liquid-datum gap as NOT closed |
 | [`which-result-blocks-a-golden-can-read.md`](../design/which-result-blocks-a-golden-can-read.md) | ADR | yes | **FINDING + RULE, EXECUTED 2026-08-12** — a top-level result block the golden format cannot read arrives UNPINNED, silently, with no failure anywhere; three were found in one session (`validation`, `energyClosures`, `utilityAllocation` — the last on 77 cases) and closed with the `aad` / `closure` / `utility` kinds and a gate each (published ⇒ pinned AND pinned ⇒ published).  The rule is the Edwards lesson one layer up: add the kind in the same commit as the block.  §4 audits what is deliberately NOT pinned (residual histories, curves, words) with the reason for each.  Rejects a gate on the rule itself — a curve and a decision look identical to a script — and rejects regenerating goldens to add rows, which would silently rewrite every other row in 67 files |
@@ -228,7 +229,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**38 of 74 records state no rejected alternative.**  For a FORUM or a STUDY
+**38 of 75 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

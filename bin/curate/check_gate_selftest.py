@@ -61,6 +61,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from destructive_session import DestructiveSession
+
 ROOT = Path(__file__).resolve().parents[2]
 WATER = "data/standards/components/water.dat"
 
@@ -511,5 +514,34 @@ def main() -> int:
     return 0
 
 
+def guarded_main() -> int:
+    """Run main() inside a DECLARED destructive session.
+
+    WHY THIS WRAPPER EXISTS (2026-08-18).  Everything below the sabotage
+    loops is `try/finally` and byte-verified, which makes this gate
+    exception-safe.  It is not DEATH-safe, and on 2026-08-18 that distinction
+    cost a committed manifest: `gate_manifest.py` invokes every gate through
+    `subprocess.run(timeout=...)`, which kills with SIGKILL, and a `finally`
+    block does not run against SIGKILL.  Under machine load this gate went
+    from a measured 250 s to over the harness's 600 s ceiling, was killed
+    mid-sabotage, and left a POISONED BINARY behind -- after which seven
+    engine-running gates further down the alphabetical walk recorded FAILED
+    for reasons that had nothing to do with them.  All seven recovered from
+    one `make all`, with no source change.
+
+    The journal is on DISK, so it outlives this process however it dies, and
+    only a clean return removes it.  While it stands, every evidence-producing
+    harness refuses -- see destructive_session.py.
+
+    The session is opened around the WHOLE of main(), not around each
+    sabotage: the damage that mattered was to the BUILD, which is not restored
+    until the final rebuild near the end of main().  A per-sabotage session
+    would have declared the tree safe while the binary was still wrong.
+    """
+    files = sorted({s["file"] for s in SABOTAGES})
+    with DestructiveSession("check_gate_selftest", [ROOT / f for f in files]):
+        return main()
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(guarded_main())

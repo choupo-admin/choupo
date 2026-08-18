@@ -138,6 +138,24 @@
 set -uo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+
+#  THE CAMPAIGN-INVALIDATING RULE (2026-08-18).  A destructive gate
+#  (check_gate_selftest) sabotages sources and rebuilds the engine to prove
+#  other gates can fail.  Its cleanup is try/finally, which is exception-safe
+#  and NOT death-safe -- and gate_manifest kills gates with SIGKILL on
+#  timeout, against which no `finally` runs.  Killed mid-sabotage it leaves a
+#  POISONED BINARY, and a clean `git status` does not reveal it because the
+#  sources can already be back.
+#
+#  So a destructive gate now declares itself in a DISK JOURNAL that only a
+#  verified restore removes, and every harness that produces EVIDENCE refuses
+#  while it stands.  This is the most important of them: `--record` FREEZES an
+#  answer into a golden, and a golden recorded off a sabotaged engine is a
+#  wrong answer with the authority of a reference.
+#
+#  ONE spelling of the refusal, in Python, called from here -- a second
+#  implementation in bash is how two rules drift into disagreeing.
+python3 "$ROOT/bin/curate/destructive_session.py" --assert "runTests" || exit 1
 cd "$ROOT"
 
 # --- PREFLIGHT: is the build a build OF this tree? ------------------------
