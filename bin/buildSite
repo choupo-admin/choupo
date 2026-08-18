@@ -174,8 +174,27 @@ if command -v pdftotext >/dev/null 2>&1; then
     _want=$(sed -n 's/.*CHOUPO_VERSION[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
             "$root/src/core/Banner.H" | head -1)
     _bad=0
-    for _g in theoryGuide userGuide propsGuide developerGuide; do
-        [ -f "$dist/docs/$_g.pdf" ] || continue
+    #  THE GUIDE LIST HAS ONE HOME -- `DOCS` in docs/Makefile -- and this was
+    #  the fourth hand-written copy of it (after the Makefile, copyDocs.mjs and
+    #  guide.html's allowlist).  A verification loop that names its own subset
+    #  checks the guides someone remembered, which is exactly the guide a new
+    #  one is not.  Refuse rather than fall back: a silent default here would
+    #  publish an unverified manual.
+    _docs=$(sed -n 's/^DOCS[[:space:]]*:=[[:space:]]*//p' "$root/docs/Makefile")
+    if [ -z "$_docs" ]; then
+        echo "[buildSite] ERROR: cannot read \`DOCS :=\` from docs/Makefile -- that line" >&2
+        echo "[buildSite]        decides which guides are public, and this check will not" >&2
+        echo "[buildSite]        invent a list of its own." >&2
+        exit 1
+    fi
+    for _g in $_docs; do
+        #  A guide in DOCS that did not reach the dist is NOT a skip: it is a
+        #  manual the app will list and fail to open.
+        if [ ! -f "$dist/docs/$_g.pdf" ]; then
+            echo "[buildSite] ERROR: $_g is public per docs/Makefile but no PDF reached the site" >&2
+            _bad=1
+            continue
+        fi
         if ! pdftotext -f 1 -l 1 "$dist/docs/$_g.pdf" - 2>/dev/null | grep -qF "$_want"; then
             echo "[buildSite] ERROR: $_g.pdf about to be PUBLISHED does not carry '$_want' on its title page" >&2
             _bad=1

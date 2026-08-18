@@ -105,15 +105,6 @@
 <div id="viewerContainer" hidden><div id="viewer" class="pdfViewer"></div></div>
 
 <script type="module">
-//  The four manuals, by the name the app passes in `?g=`.  An ALLOWLIST, not
-//  a path: an unknown name is refused rather than fetched.
-const GUIDES = {
-  theoryGuide:    "Theory Guide",
-  propsGuide:     "Properties Guide",
-  userGuide:      "User Guide",
-  developerGuide: "Developer Guide",
-};
-
 const base   = new URL(".", location.href);          // works at / and under /app
 const params = new URLSearchParams(location.search);
 const key    = params.get("g") ?? "theoryGuide";
@@ -124,11 +115,37 @@ function fail(msg, detail) {
   status.innerHTML = msg + (detail ? ` <code>${detail}</code>` : "");
 }
 
-if (!Object.prototype.hasOwnProperty.call(GUIDES, key)) {
-  //  Name the four, so a wrong link is a readable mistake and not a blank page.
+//  THE ALLOWLIST IS FETCHED, NOT SPELLED HERE.  It used to be a literal object
+//  in this file, which made it the THIRD hand-maintained copy of "which guides
+//  are public" -- after `DOCS` in docs/Makefile and the staging list in
+//  gui/scripts/copyDocs.mjs.  The three drifted: docs/ carries built PDFs for
+//  designGuide, explorerGuide and tutorialsGuide, and this page could open
+//  none of them.
+//
+//  `docs/guides.json` is written by copyDocs from the Makefile's own line, so
+//  the list now has one home and this page reads it.  It is still an
+//  ALLOWLIST, not a path: an unknown name is refused rather than fetched.
+//
+//  A MISSING MANIFEST REFUSES.  Falling back to a built-in list would restore
+//  the second home at the one moment it matters -- when staging has gone wrong
+//  and the page is about to describe a set of guides that is not the set on
+//  disk.
+let GUIDES = null;
+try {
+  const r = await fetch(new URL("docs/guides.json", base).href, { cache: "no-cache" });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  GUIDES = await r.json();
+} catch (e) {
+  fail("The guide index could not be read, so this page cannot say which manuals exist. "
+     + "It is staged by <code>gui/scripts/copyDocs.mjs</code> on predev/prebuild:",
+       String(e && e.message ? e.message : e));
+}
+
+if (GUIDES && !Object.prototype.hasOwnProperty.call(GUIDES, key)) {
+  //  Name them, so a wrong link is a readable mistake and not a blank page.
   fail(`Unknown guide <code>${key}</code>. The guides are:`,
        Object.keys(GUIDES).join(", "));
-} else {
+} else if (GUIDES) {
   const pdfUrl = new URL(`docs/${key}.pdf`, base).href;
   //  Declared here, not beside its handler: a page event can fire between
   //  setDocument() and the end of this module, and a const read before its

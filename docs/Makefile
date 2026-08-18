@@ -10,8 +10,20 @@
 LATEX       := pdflatex
 LATEXFLAGS  := -interaction=nonstopmode -halt-on-error -file-line-error
 
-# The public guides.
-DOCS        := userGuide developerGuide theoryGuide propsGuide
+# THE PUBLIC GUIDES -- and this line is the ONE HOME for that list.
+#
+# It is not just the build list any more.  `gui/scripts/copyDocs.mjs` PARSES
+# this assignment to decide what to stage into the app and what to write into
+# `public/docs/guides.json`, which is the allowlist `gui/public/guide.html`
+# reads.  Before that, the same list was written out by hand in three places
+# and they had drifted: docs/ holds .tex + .pdf for designGuide, explorerGuide
+# and tutorialsGuide, none of which `make all` builds and none of which the
+# app can open -- three manuals that exist and are unreachable.
+#
+# Adding a guide here is therefore the whole edit.  Removing one un-publishes
+# it.  If you add a name, copyDocs REFUSES until it also has a display label,
+# because a guide with no label would appear in the app as a bare key.
+DOCS        := userGuide developerGuide theoryGuide propsGuide eduToolsGuide
 PDFS        := $(addsuffix .pdf, $(DOCS))
 
 .PHONY: all user dev theory props clean distclean

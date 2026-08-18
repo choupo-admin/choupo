@@ -148,8 +148,19 @@ jobs:
           #  Help fails silently, which is the failure mode the whole design
           #  exists to remove.
           for f in guide.html pdfjs/pdf.min.mjs pdfjs/pdf_viewer.mjs \
-                   pdfjs/pdf_viewer.css docs/theoryGuide.pdf docs/userGuide.pdf; do
+                   pdfjs/pdf_viewer.css docs/guides.json \
+                   docs/theoryGuide.pdf docs/userGuide.pdf; do
             [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f -- Help would open nothing"; exit 1; }
+          done
+          #  guide.html REFUSES without the manifest, so its absence is not a
+          #  degraded page but a blank one -- hence it is named above.  And
+          #  every guide the manifest ADVERTISES must actually be there: the
+          #  page lists what the manifest says, so a listed-but-absent manual
+          #  is a menu entry that opens nothing.  Derived from the manifest,
+          #  never a second list written out here.
+          for g in $(python3 -c "import json;print(' '.join(json.load(open('$d/docs/guides.json'))))"); do
+            [ -s "$d/docs/$g.pdf" ] \
+              || { echo "MISSING or EMPTY: docs/$g.pdf -- the guide index advertises it"; exit 1; }
           done
           #  The worker is megabytes; a stub renders no page at all.
           wsz=$(stat -c%s "$d/pdfjs/pdf.worker.min.mjs" 2>/dev/null || echo 0)

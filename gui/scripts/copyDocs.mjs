@@ -1,7 +1,7 @@
 // Copy the built guides into public/ so the GUI can serve them (and link into
 // their exact sections via #nameddest=).  Runs on predev + prebuild.  The PDFs
 // are LaTeX build artifacts (docs/Makefile); we don't commit the copies.
-import { mkdirSync, copyFileSync, existsSync } from "node:fs";
+import { mkdirSync, copyFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -9,10 +9,50 @@ const here = dirname(fileURLToPath(import.meta.url));
 const dstDir = resolve(here, "../public/docs");
 mkdirSync(dstDir, { recursive: true });
 
-// theoryGuide -> the unit-op Model-tab links; propsGuide -> the props theory
-// links; userGuide / developerGuide -> the Help menu (all four are LaTeX
-// build artifacts of docs/Makefile and are served from public/docs).
-for (const name of ["theoryGuide.pdf", "propsGuide.pdf", "userGuide.pdf", "developerGuide.pdf"]) {
+//  WHICH GUIDES ARE PUBLIC IS DECIDED IN ONE PLACE: `DOCS` in docs/Makefile.
+//
+//  It used to be decided in three -- there, here, and again in the allowlist
+//  inside gui/public/guide.html -- and the three had drifted apart from the
+//  tree they describe: docs/ carries .tex AND .pdf for designGuide,
+//  explorerGuide and tutorialsGuide, none of which `make all` builds and none
+//  of which the app can open.  Three manuals that exist and are unreachable,
+//  which is the arity sin with a reader on the other end of it.
+//
+//  So this PARSES the Makefile's own assignment and REFUSES if it cannot find
+//  it.  A build that silently fell back to a hardcoded list would recreate the
+//  second home this exists to remove -- and it would do it at the exact moment
+//  the two had diverged, which is the only moment it matters.
+const makefile = resolve(here, "../../docs/Makefile");
+const docsLine = /^DOCS\s*:=\s*(.+)$/m.exec(readFileSync(makefile, "utf8"));
+if (!docsLine) {
+  console.error("[copyDocs] cannot find the `DOCS :=` assignment in docs/Makefile -- "
+              + "that line is the one home for which guides are public, and without it "
+              + "this script would have to invent the list.  Refusing.");
+  process.exit(1);
+}
+const guides = docsLine[1].trim().split(/\s+/);
+
+//  The DISPLAY LABEL is this file's to own -- the Makefile has no business
+//  carrying UI strings.  A guide in DOCS with no label REFUSES rather than
+//  appearing in the app under its bare key: an unlabelled entry in a reader's
+//  menu is a defect they cannot report usefully.
+const LABELS = {
+  theoryGuide:    "Theory Guide",
+  propsGuide:     "Properties Guide",
+  userGuide:      "User Guide",
+  developerGuide: "Developer Guide",
+  eduToolsGuide:  "EduTools Guide",
+};
+const unlabelled = guides.filter((g) => !LABELS[g]);
+if (unlabelled.length > 0) {
+  console.error(`[copyDocs] no display label for: ${unlabelled.join(", ")} -- add it to `
+              + "LABELS in this file.  A guide the app lists under its bare key looks "
+              + "like a bug to the reader and cannot be reported as one.");
+  process.exit(1);
+}
+
+for (const guide of guides) {
+  const name = `${guide}.pdf`;
   const src = resolve(here, "../../docs", name);
   if (!existsSync(src)) {
     console.warn(`[copyDocs] ${name} missing — run 'make' in docs/ first; its in-app links will 404.`);
@@ -21,6 +61,11 @@ for (const name of ["theoryGuide.pdf", "propsGuide.pdf", "userGuide.pdf", "devel
   copyFileSync(src, resolve(dstDir, name));
   console.log(`[copyDocs] ${name} -> public/docs/`);
 }
+
+//  The manifest guide.html reads.  Derived here, never hand-written there.
+writeFileSync(resolve(dstDir, "guides.json"),
+  JSON.stringify(Object.fromEntries(guides.map((g) => [g, LABELS[g]])), null, 2) + "\n");
+console.log(`[copyDocs] guides.json -> ${guides.length} guide(s): ${guides.join(", ")}`);
 
 // ---------------------------------------------------------------------------
 //  The pdf.js runtime that guide.html draws with.
