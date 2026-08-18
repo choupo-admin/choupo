@@ -59,10 +59,11 @@ License
       belongs to ONE case, has no business offering a thing that is not a view
       of that case.
     * The twelve tools are chosen INSIDE the EduTools tab now
-      (MethodsWorkspace's ToolChooser), which is where a chooser for that tab's
-      content belongs.  That in-body chooser was the PRECONDITION for removing
-      this dropdown: without it, a student reaching one tool could not reach
-      the other eleven.
+      (MethodsWorkspace's ToolChooser — which on a TOOL tab has since become
+      `ToolMenu` in this row; see the next paragraph), which is where a chooser
+      for that tab's content belongs.  That in-body chooser was the PRECONDITION
+      for removing this dropdown: without it, a student reaching one tool could
+      not reach the other eleven.
 
   ONE OF THEM CAME BACK, AS THE TAB'S SUBJECT AND NOT AS AN APP MENU
   (2026-08-18).  The EduTools DROPDOWN that left was a list of twelve tools in
