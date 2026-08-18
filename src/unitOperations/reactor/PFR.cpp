@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "CatalystPellet.H"
 #include "PolymerKPIs.H"
 #include "ReactionHeat.H"
 #include "core/Constants.H"
@@ -450,6 +451,9 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
     // catalyst; the bed converts it to a volumetric rate.  Absent => already volumetric.
     const scalar catLoad   = operDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
     const scalar catFactor = (catLoad > 0.0) ? 1000.0 * catLoad : 1.0;
+    //  The conversion is all it is: the pellet stays a POINT and eta = 1 is
+    //  assumed.  Say so -- see reactor/CatalystPellet.H.
+    announceUnresolvedPellet("pfr", catLoad, verbosity);
 
     // Phase-aware molar heat capacity (the reactor is liquid-basis via Vliq).
     // The reaction enthalpy stays on the ideal-gas formation datum (as everywhere

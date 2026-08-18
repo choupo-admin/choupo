@@ -33,6 +33,7 @@ License
 #include "thermo/Component.H"
 #include "thermo/reaction/Reaction.H"
 #include "unitOperations/reactor/ReactionHeat.H"
+#include "unitOperations/reactor/CatalystPellet.H"
 #include "thermo/ThermoAnnounce.H"
 #include "solver/ODE/ODEIntegrator.H"
 
@@ -75,6 +76,10 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     // -----------------------------------------------------------------
     auto opDict = unitDict->subDict("operation");
     catalystLoading_ = opDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
+    //  The conversion is all it is: the pellet stays a POINT and eta = 1 is
+    //  assumed.  Say so -- see reactor/CatalystPellet.H.
+    announceUnresolvedPellet("batchReactor '" + name() + "'",
+                             catalystLoading_, thermoAnnounceLevel());
     const std::string mode = opDict->lookupWordOrDefault("mode", "isothermal");
     if (mode == "isothermal")
     {

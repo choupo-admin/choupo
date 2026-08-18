@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CSTR.H"
+#include "CatalystPellet.H"
 #include "core/Constants.H"
 #include "thermo/reaction/RateLaw.H"
 #include "thermo/reaction/Reaction.H"
@@ -459,6 +460,9 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     // Absent (the homogeneous case) the rate is already volumetric.
     const scalar catLoad   = operDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
     const scalar catFactor = (catLoad > 0.0) ? 1000.0 * catLoad : 1.0;
+    //  The conversion is all it is: the pellet stays a POINT and eta = 1 is
+    //  assumed.  Say so -- see reactor/CatalystPellet.H.
+    announceUnresolvedPellet("cstr", catLoad, verbosity);
 
     if (!isoT)
         for (std::size_t j = 0; j < R; ++j)

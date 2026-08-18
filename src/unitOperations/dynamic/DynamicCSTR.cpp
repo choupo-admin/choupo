@@ -30,6 +30,8 @@ License
 #include "core/Constants.H"
 #include "streams/Composition.H"
 #include "unitOperations/reactor/ReactionHeat.H"
+#include "unitOperations/reactor/CatalystPellet.H"
+#include "thermo/ThermoAnnounce.H"
 #include "thermo/reaction/Reaction.H"
 
 #include <algorithm>
@@ -76,6 +78,10 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
     // ---- Jacket -------------------------------------------------------
     auto opDict = unitDict->subDict("operation");
     catalystLoading_ = opDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
+    //  The conversion is all it is: the pellet stays a POINT and eta = 1 is
+    //  assumed.  Say so -- see reactor/CatalystPellet.H.
+    announceUnresolvedPellet("dynamicCSTR '" + name() + "'",
+                             catalystLoading_, thermoAnnounceLevel());
     UA_         = opDict->lookupScalarOrDefault("UA",       0.0);   // W/K
     T_jacket_   = opDict->lookupScalarOrDefault("T_jacket", T_);    // K
 

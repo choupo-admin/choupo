@@ -1708,6 +1708,29 @@ PYEOF
     fi
     rm -f /tmp/fworder.$$
 
+    # pellet-announcement gate (2026-08-18).  `catalystLoading` is a unit
+    # conversion, and the four reactors that read it then evaluate the rate at
+    # BULK conditions -- the effectiveness factor taken as eta = 1, which
+    # nothing said.  eta MULTIPLIES the rate (0.1867 for a first-order sphere
+    # at phi = 5), so a bed sized on it can be undersized several-fold,
+    # silently, at exit 0.  The engine cannot decide whether that is the
+    # reader's case -- a Weisz-Prater check needs the pellet dimension and a
+    # D_eff, and no case declares either -- so it announces and judges
+    # nothing.  Zero numbers moved.
+    # Sabotage-verified four ways, and two of the four found defects in the
+    # GATE rather than the engine: a negative that could not fire (the
+    # single-reaction CSTR path never reaches the call site) and a caveat-block
+    # arm the first sabotage could not reach.
+    if "$ROOT/bin/curate/check_pellet_announcement.py" > /tmp/pellet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pellet-announcement-gate" "$(tail -1 /tmp/pellet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pellet_announcement.py)\n" "pellet-announcement-gate"
+        cat /tmp/pellet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pellet.$$
+
     # verdict-parity gate (2026-08-11).  The Component Inspector draws the
     # curation dossier's five verdicts, so the vocabulary acquired three homes
     # -- verdictOf() in C++, a TS union, and the renderer's table -- and the

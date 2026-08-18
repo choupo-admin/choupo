@@ -848,6 +848,38 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).**
+`catalystLoading` is a unit conversion and never claimed to be more: a
+heterogeneous rate constant is reported per gram of dry catalyst and the bed
+makes it volumetric.  But the four reactors that read it — `cstr`, `pfr`,
+`batchReactor`, `dynamicCSTR` — then evaluate the rate at BULK conditions,
+which is the **effectiveness factor taken as η = 1**, and nothing in the
+engine, the dicts or the output said so.  η MULTIPLIES the rate (the
+first-order sphere gives η = 0.1867 at φ = 5), so a bed sized on it can be
+undersized several-fold, silently, at exit 0.  The engine cannot decide
+whether that is the reader's case — a Weisz-Prater check needs the pellet
+dimension and a D_eff, and no case declares either — so it ANNOUNCES and
+judges nothing, the same posture as the extrapolated sub-273 K Antoine and
+the sub-band Davies.  ONE home (`unitOperations/reactor/CatalystPellet.{H,cpp}`,
+on the `ReactionHeat.H` precedent that `batch/` and `dynamic/` already
+include), riding `AdvisoryLog` so it reaches the reader in the end-of-run
+caveat block and not only at its site.  **Zero numbers moved; no golden
+moved.**  Two things this slice paid for, both in the GATE rather than the
+engine, both found by the sabotage protocol: (1) the first negative was
+`cstr01`, a SINGLE-reaction case, and `catalystLoading` is read inside
+`solveMultiReaction` — so its silence was a property of the control flow and
+**a negative that cannot fire pins nothing** (the `check_true_ions` shape,
+caught the same day rather than a year later); (2) the suppression sabotage
+`continue`d past the caveat-block arm, leaving it unproven, so a fourth
+sabotage keeps the log line and drops the advisory — *"announced" without the
+replay is the slightly-louder-form-of-silence the summary block exists to
+end.*  NOT built, and named rather than implied: the pellet itself (a
+`kind catalyst;` asset record mirroring `Adsorbent`, a D_eff arity ruling, a
+rate multiplier in the same four reactors) — scope in
+[`docs/design/edutools-curriculum-survey.md`](docs/design/edutools-curriculum-survey.md) §6.1.
+Gate: `check_pellet_announcement` (4 sabotages; states the reach it does NOT
+have — no corpus case declares `catalystLoading` on a `pfr`).
+
 **THE REFERENCE RUNG — a declared field the hot path did not honour
 (2026-08-06).**  `standardThermochemistry.referenceState` (`idealGas` default ·
 `pureLiquid` · `pureSolid`) says which standard state `dHf_298` / `s_298` are
