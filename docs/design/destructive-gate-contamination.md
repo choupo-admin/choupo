@@ -193,6 +193,43 @@ The correction was verified by reproducing the incident's own mechanism:
 A control was run in the other direction: a **clean** `check_gate_selftest` run
 removes its own journal on success, and the harnesses stop refusing.
 
+### 5a. The correction's own defect, found within the hour
+
+**The first journal listed the wrong half of the damage, and it reproduced the
+incident.**  `check_gate_selftest` carries TWO sabotage lists — `SABOTAGES`
+(curated records) and `SOURCE_SABOTAGES` (engine sources, rebuilt).  The
+wrapper journalled only the first.  That is precisely backwards: the source
+tier is the one that damages the BUILD, and the build is what the whole
+mechanism exists to protect.
+
+The chain, all of it self-inflicted:
+
+1. the SIGKILL above left `src/unitOperations/separation/Absorber.cpp`
+   sabotaged — its `if (nonIso)` guard removed, so an isothermal column
+   announces a lumped-Cp approximation it is not making;
+2. the recovery procedure the refusal printed named **five record files** and
+   not that one, so it stayed sabotaged;
+3. `make all` baked it into the binary;
+4. the tree was declared clean.  It was not;
+5. the next `check_gate_selftest` found the file DIRTY and — by design, and
+   correctly for its own contract — **SKIPPED it and passed with reduced
+   coverage** rather than failing.
+
+**A journal that names an incomplete file list is worse than none:** it prints
+a recovery procedure that LOOKS complete and leaves damage behind — the
+slightly-louder-form-of-silence, one layer up.
+
+What caught it is the system working exactly as designed:
+`check_lumped_cp_note`, the gate written for that defect, detected that defect;
+and the new refusal in `gate_manifest` **declined to write the manifest**
+instead of recording the failure as a claim.  The cost was one manifest run and
+one regression started against the wrong binary; both were killed and their
+results discarded.
+
+Fixed: the journal now names the union of both tiers (eight files, including
+`Convergence.H`, `EnergyBalanceReport.cpp` and `Absorber.cpp`), verified by
+opening a session and reading back what it declares.
+
 ## 6. Current trustworthy state
 
 Recorded in the commit that carries this document — the full regression result

@@ -538,7 +538,27 @@ def guarded_main() -> int:
     until the final rebuild near the end of main().  A per-sabotage session
     would have declared the tree safe while the binary was still wrong.
     """
-    files = sorted({s["file"] for s in SABOTAGES})
+    #  BOTH TIERS, and the first version of this wrapper listed only the data
+    #  one -- a miss that reproduced the incident within the hour.
+    #
+    #  The journal named `SABOTAGES` (curated records) and NOT
+    #  `SOURCE_SABOTAGES` (engine sources), which is precisely backwards: the
+    #  SOURCE tier is the one that damages the BUILD, and the build is what
+    #  the whole mechanism exists to protect.  Killing this gate to prove the
+    #  journal worked left `Absorber.cpp` sabotaged; the recovery procedure
+    #  the refusal printed named only the five record files, so the guard
+    #  stayed off; `make all` then baked it into the binary; and because the
+    #  file was now DIRTY, the next selftest politely SKIPPED it and passed
+    #  with reduced coverage instead of shouting.  `check_lumped_cp_note`
+    #  caught it -- the gate written for exactly that defect, catching exactly
+    #  that defect -- but only after a manifest run and a regression had been
+    #  started against the wrong binary.
+    #
+    #  A journal that names an incomplete file list is worse than none: it
+    #  prints a recovery procedure that LOOKS complete and leaves damage
+    #  behind, which is the "slightly louder form of silence" one layer up.
+    files = sorted({s["file"] for s in SABOTAGES}
+                   | {s["file"] for s in SOURCE_SABOTAGES})
     with DestructiveSession("check_gate_selftest", [ROOT / f for f in files]):
         return main()
 
