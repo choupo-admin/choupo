@@ -61,6 +61,12 @@ License
   independente do flowsheet!  Não têm de comunicar!" — so the argument expires
   with it and the entry is a plain duplicate of a tab.
 
+  THE SAME DISTINCTION, ONE LEVEL UP, lives in `ui/tabChrome.ts` (2026-08-18):
+  this file says what a case tab's menu CONTAINS, that one says which tabs get
+  a case menu at all, where their Help goes, and whether the top bar carries a
+  case identity.  Two files because they answer two questions; neither repeats
+  the other's answer.
+
   Pure and free of React/DOM/store imports (the `WorkspaceKey` import is
   type-only, hence erased), so the node test runner can exercise the whole
   derivation without a browser.

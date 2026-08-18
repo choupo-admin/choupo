@@ -56,7 +56,8 @@ import { useStore, hasCaseOpen } from "../state/store.js";
 import { AgentConsole } from "./AgentConsole.js";
 import { agentRowPx } from "./panelFold.js";
 import { CaseWorkspace } from "./CaseWorkspace.js";
-import { resolveHelp, helpUrl } from "../help/helpMap.js";
+import { selectedUnitTypeIn, tabHelp, tabKindFor } from "./tabChrome.js";
+import { getActiveMethodTool } from "./methods/registry.js";
 import { FlowCanvas } from "./FlowCanvas.js";
 import { WelcomeScreen } from "./WelcomeScreen.js";
 import { CaseIntro } from "./CaseIntro.js";
@@ -210,10 +211,12 @@ export function AppShell() {
     return () => window.removeEventListener("keydown", onKey);
   }, [activeWorkspace, setActiveWorkspace]);
 
-  // F1 opens the guide AT the section for the current context (selected unit's
-  // type, else the active workspace).  Reads fresh store state inside the
-  // handler so the listener binds once.  preventDefault stops the browser's
-  // own F1 help.
+  // F1 opens the guide AT the section this TAB is about -- the selected unit's
+  // type or the active view in a case tab, the open EduTool's own theory
+  // section in a tool tab.  Which of those it is comes from ui/tabChrome.ts,
+  // the same one home the Help menu reads, so the key and the menu item can
+  // never answer differently.  Reads fresh store state inside the handler so
+  // the listener binds once; preventDefault stops the browser's own F1 help.
   useEffect(() => {
     const onKey = (ev: KeyboardEvent) => {
       if (ev.key !== "F1") return;
@@ -222,16 +225,16 @@ export function AppShell() {
       // The props workspace owns its F1 (the in-app "what does this case do?"
       // drawer, PropsView) -- two handlers here meant two help tabs per press.
       if (s.activeWorkspace === "props") return;
-      let selectedUnitType: string | null = null;
-      const sel = s.selectedNodeId;
-      if (sel && sel.startsWith("unit:") && s.caseFiles.flowsheet) {
-        const name = sel.slice(5);
-        const units = (s.caseFiles.flowsheet["units"] ?? []) as Array<Record<string, unknown>>;
-        const u = units.find((x) => x["name"] === name);
-        selectedUnitType = (u?.["type"] as string | undefined) ?? null;
-      }
-      const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
-      openGuide(helpUrl(target));
+      const kind = tabKindFor({
+        hasCase: hasCaseOpen(s.tutorialName),
+        activeWorkspace: s.activeWorkspace,
+      });
+      openGuide(tabHelp({
+        kind,
+        toolId: getActiveMethodTool(),
+        selectedUnitType: selectedUnitTypeIn(s.selectedNodeId, s.caseFiles.flowsheet),
+        activeWorkspace: s.activeWorkspace,
+      }).url);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

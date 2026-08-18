@@ -64,6 +64,7 @@ import { ColoursMenu } from "./ColoursMenu.js";
 import { ColorSchemeToggle } from "./ColorSchemeToggle.js";
 import { ClipboardBridge } from "./ClipboardBridge.js";
 import { CaseSwitcher } from "./CaseSwitcher.js";
+import { tabChromeFor } from "./tabChrome.js";
 
 interface EngineVersion { version: string; commit?: string }
 
@@ -119,6 +120,15 @@ export function TopBar({ onMinWidth }: {
   const toggleAgent = useStore((s) => s.toggleAgent);
   const goHome = useStore((s) => s.goHome);
   const [clipOpen, setClipOpen] = useState(false);
+  /* THE IDENTITY SLOT BELONGS TO A TAB THAT IS ABOUT A CASE (2026-08-18,
+   * ui/tabChrome.ts).  A tool tab has no case, so its "No case open" was
+   * reporting the absence of something that is not that tab's business -- the
+   * top-bar half of the same defect as the File menu, and it rides the SAME
+   * flag rather than a second condition spelled here. */
+  const activeWorkspace = useStore((s) => s.activeWorkspace);
+  const caseChrome = tabChromeFor({
+    hasCase: hasCaseOpen(tutorialName), activeWorkspace,
+  }).caseChrome;
   // The 🤖 console runs a REAL `claude -c` through the LOCAL bridge (port 7682),
   // which only exists when you run `bin/runGui` on your own machine.  On the
   // hosted site (a Tailscale/remote hostname) there is no bridge, so the robot
@@ -410,8 +420,15 @@ export function TopBar({ onMinWidth }: {
             </Badge>
           </Tooltip>
         )}
-        <Text c="dimmed">|</Text>
-        <CaseSwitcher />
+        {caseChrome && (
+          <>
+            {/* The separator belongs to the slot it separates: without the
+                case identity beside it, a lone "|" after the brand is a rule
+                between the brand and nothing. */}
+            <Text c="dimmed">|</Text>
+            <CaseSwitcher />
+          </>
+        )}
         {currentEntry?.unsupportedReason && (
           <Tooltip label={currentEntry.unsupportedReason} multiline w={300} withArrow>
             <Badge size="xs" radius="sm" variant="light" color="yellow">

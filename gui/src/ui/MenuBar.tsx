@@ -37,6 +37,18 @@ License
   (docs/design/one-tab-one-thing.md, DECIDED 2026-08-17 by Vítor: "E no
   flowsheet eu não quero no menu EduTools nem Explore!").
 
+  AND IT IS ONLY A CASE TAB'S MENU (2026-08-18).  This row renders in EVERY
+  tab, so the row itself must ask what the tab IS.  It does not decide that
+  here: `ui/tabChrome.ts` is the ONE home — `tabChromeFor()` says whether this
+  tab's chrome speaks about a case at all, and `tabHelp()` says where its Help
+  and its F1 go.  Vítor, opening an EduTools tab: "Porque raio há File no menu
+  se isto é uma tool?  Não podes gravar: é só para usar e aprender.  Depois
+  volta a aparecer o help genérico, quando só devia aparecer um help ou F1 a
+  remeter para a teoria deste tool!"  Every item File carries is a CASE
+  operation, so in a tool tab every one of them is dead or lying — File leaves,
+  its three shortcuts leave with it (a shortcut is the same menu by another
+  door), and Help points at the open tool's own Theory-Guide section.
+
   WHAT LEFT, AND WHAT REPLACED IT.  Until today this row also carried Explore
   and an EduTools DROPDOWN — the twelve tools listed here, because the tool
   rail inside the workspace had been ruled out on 2026-08-16 and a chooser had
@@ -85,8 +97,11 @@ import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, ty
 import {
   WORKSPACES, visibleWorkspacesFor, type WorkspaceEntry,
 } from "./workspaces.js";
-import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { popOutHelpTopics } from "./helpTopicsPopOut.js";
+import {
+  selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
+} from "./tabChrome.js";
+import { useActiveMethodTool } from "./methods/registry.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
@@ -222,6 +237,27 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const toggleWorkspace = useStore((s) => s.toggleWorkspace);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
 
+  /* WHAT THIS TAB IS, and therefore what this row carries.  Derived in ONE
+   * place (ui/tabChrome.ts) and read here; the alternative — an `if` per
+   * surface — is how the File menu and the "No case open" label came to
+   * disagree with the Help menu about whether a case exists.
+   *
+   * The selection is read as STATE rather than pulled out of the store inside
+   * the click handler, so the Help item's WORDING and its DESTINATION come
+   * from one `tabHelp` call.  Two calls (one to label, one to open) would be
+   * the same branch written twice, and a menu item whose text and target
+   * disagree is precisely the complaint being answered. */
+  const selectedNodeId = useStore((s) => s.selectedNodeId);
+  const activeTool = useActiveMethodTool();
+  const tabKind = tabKindFor({ hasCase: hasCaseOpen(tutorialName), activeWorkspace });
+  const chrome = TAB_CHROME[tabKind];
+  const help = tabHelp({
+    kind: tabKind,
+    toolId: activeTool,
+    selectedUnitType: selectedUnitTypeIn(selectedNodeId, flowsheet),
+    activeWorkspace,
+  });
+
   /* The two postures render the same lineup through the same rules.  These
    * live here, above both, so a wide tab and a narrow menu item can never
    * disagree about which workspace is on screen or which is not yet runnable. */
@@ -354,10 +390,23 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // Esc is intentionally NOT bound to Stop: it belongs to the FlowCanvas
   // for "deselect" (a more common need); use the Stop menu item or the
   // Stop button on the TopBar to interrupt a run.
+  //
+  // THE FILE SHORTCUTS LEAVE WITH THE FILE MENU (2026-08-18).  Ctrl+O,
+  // Ctrl+Shift+N and Ctrl+R are that menu's own items; leaving them bound in a
+  // tab that does not show the menu would be the same three case operations
+  // reachable by another door, in a tab with no case.  Ctrl+Enter is NOT one
+  // of them -- Run belongs to the view that owns it (TopBar orchestrates the
+  // `choupo:run` event) -- so it is left exactly as it was.
   useHotkeys([
-    ["mod+O", () => { if (!isolated) openTutorialCtl.open(); }],
-    ["mod+shift+N", (e) => { e.preventDefault(); newCaseCtl.open(); }],
-    ["mod+R", (e) => { e.preventDefault(); reloadCase(); }],
+    ["mod+O", () => { if (chrome.caseChrome && !isolated) openTutorialCtl.open(); }],
+    ["mod+shift+N", (e) => {
+      if (!chrome.caseChrome) return;
+      e.preventDefault(); newCaseCtl.open();
+    }],
+    ["mod+R", (e) => {
+      if (!chrome.caseChrome) return;
+      e.preventDefault(); reloadCase();
+    }],
     ["mod+Enter", () => { if (runStatus !== "running") fireRun(); }],
   ]);
 
@@ -400,9 +449,16 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * -- the active tab renders at `fontWeight: 600` and the collapsed chooser
    * puts the active view's NAME in its own label (`Views: Flowsheet` against
    * `Views: none`).  Leaving the active workspace out would have left both
-   * numbers quietly stale after every navigation. */
+   * numbers quietly stale after every navigation.
+   *
+   * THE TAB'S KIND IS IN THE SIGNATURE TOO (2026-08-18), and not because it
+   * might drift: `File` is ~43 px of this row and it renders only where the
+   * chrome speaks about a case, so the kind is one of the things the WIDTH of
+   * a shape depends on.  It is covered transitively today (a tab with no case
+   * has no visible workspaces either), and stating it is what keeps that
+   * accident from being load-bearing. */
   const lineupSignature =
-    `${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`;
+    `${tabKind}|${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`;
   const expandedRow  = useIntrinsicWidth(`expanded|${lineupSignature}`);
   const collapsedRow = useIntrinsicWidth(`collapsed|${lineupSignature}`);
 
@@ -423,7 +479,12 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * measured as one thing and drawn as another. */
   const rowItems = (shape: { collapsed: boolean; padX: number }) => (
     <>
-        {/* --- File ----------------------------------------------------- */}
+        {/* --- File -----------------------------------------------------
+            ONLY where the chrome speaks about a case (tabChrome.ts).  Every
+            item below is a case operation; in a tool tab there is no case, so
+            the whole menu goes rather than being rendered full of disabled
+            entries -- a greyed row still claims the operation exists here. */}
+        {chrome.caseChrome && (
         <TopMenu label="File" px={shape.padX}>
           <Menu.Item
             onClick={newCaseCtl.open}
@@ -474,6 +535,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
             </Text>
           </Menu.Item>
         </TopMenu>
+        )}
 
         {/* --- Run ------------------------------------------------------ */}
 
@@ -525,25 +587,19 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
 
         {/* --- Help ----------------------------------------------------- */}
         <TopMenu label="Help" px={shape.padX}>
-          {/* Context-sensitive: opens the guide AT the section for whatever is
-              selected (a unit's type) or the active workspace.  Same resolution
-              as the global F1 shortcut. */}
+          {/* WHERE HELP GOES IS THE TAB'S QUESTION (tabChrome.tabHelp).
+              In a case tab it stays what it was: the guide AT the section for
+              whatever is selected (a unit's type) or the active view.  In a
+              TOOL tab it is that tool's own Theory-Guide section, named in the
+              item -- `docs/help-index.json` has no `methods` entry, so the
+              context resolution fell through to the User Guide's GUI chapter
+              for all twelve tools, which is the "help genérico" of the
+              complaint.  The same resolution backs the global F1. */}
           <Menu.Item
             rightSection={<Text size="xs" c="dimmed">F1</Text>}
-            onClick={() => {
-              const s = useStore.getState();
-              let selectedUnitType: string | null = null;
-              const sel = s.selectedNodeId;
-              if (sel && sel.startsWith("unit:") && s.caseFiles.flowsheet) {
-                const name = sel.slice(5);
-                const units = (s.caseFiles.flowsheet["units"] ?? []) as Array<Record<string, unknown>>;
-                selectedUnitType = (units.find((x) => x["name"] === name)?.["type"] as string | undefined) ?? null;
-              }
-              const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
-              openGuide(helpUrl(target));
-            }}
+            onClick={() => openGuide(help.url)}
           >
-            Help on current view
+            {help.item}
           </Menu.Item>
           {/* The full topic -> guide-section index (docs/help-index.json),
               rendered as a deep-linking table of contents in a pop-out tab.
@@ -587,13 +643,21 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           </Menu.Item>
           <Menu.Divider />
           <Menu.Item onClick={aboutCtl.open}>About Choupo…</Menu.Item>
-          <Menu.Divider />
-          <Menu.Item disabled>
-            <Text size="xs" c="dimmed" component="span">
-              Keyboard shortcuts:  Ctrl+O open, Ctrl+R reload, Ctrl+Enter run,
-              F fit view, Esc deselect
-            </Text>
-          </Menu.Item>
+          {/* The shortcut card advertises the FILE menu's own bindings (and
+              the canvas's), so it rides the same flag they do: in a tool tab
+              those keys are not bound, and a card listing keys that do nothing
+              is the File menu's lie in smaller type. */}
+          {chrome.caseChrome && (
+            <>
+              <Menu.Divider />
+              <Menu.Item disabled>
+                <Text size="xs" c="dimmed" component="span">
+                  Keyboard shortcuts:  Ctrl+O open, Ctrl+R reload, Ctrl+Enter run,
+                  F fit view, Esc deselect
+                </Text>
+              </Menu.Item>
+            </>
+          )}
         </TopMenu>
     </>
   );
