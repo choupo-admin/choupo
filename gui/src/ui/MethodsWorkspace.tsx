@@ -85,6 +85,22 @@ License
   touch-native without any of that being re-implemented, its closed footprint
   is one row, and its dropdown is a portal that exists only while open.
 
+  AND ON A TOOL TAB THAT ROW IS GONE AGAIN (2026-08-18) — not reversed, moved.
+  The row above it had meanwhile lost `File` (ui/tabChrome.ts: a tool tab has
+  no case to operate on), which left a tool tab wearing TWO bands of chrome,
+  the upper one nearly empty: measured at 1400x900, one control in it (Help,
+  49 px) against the top bar's 293 px minimum — 362 px spoken for, 1038 px
+  free — over a second full-width band holding one Select and costing the
+  construction 39 px (45 px at 390x844, where the touch posture's input is
+  taller).  Vítor: "a selecção da tool escusa de ocupar uma linha, quando a
+  linha do menu de cima está quase vazia!"
+
+  So on a TOOL tab the chooser leads the chrome row (MenuBar's `ToolMenu`) and
+  this row does not render; on a CASE tab showing EduTools in its body it stays
+  exactly as described above, because that row belongs to the case.  The
+  placement is `tabKindFor` — the SAME derivation MenuBar reads, asked twice
+  rather than handed over — see the note at the render.
+
   What stays: the one-line "teaches" caption + the Theory Guide link
   (TeachesLine, above every tool), and the in-file tools' setup-bar fold to a
   slim restore strip (choupo.methods.controlsCollapsed) — on a projector every
@@ -127,7 +143,8 @@ import {
   METHOD_TOOLS, setActiveMethodTool, theoryUrl, useActiveMethodTool,
   type MethodTool, type MethodToolId,
 } from "./methods/registry.js";
-import { useStore } from "../state/store.js";
+import { hasCaseOpen, useStore } from "../state/store.js";
+import { tabKindFor } from "./tabChrome.js";
 import {
   kToDisplay, paToDisplay, parsePressure, parseTemperature,
   pressureLabel, temperatureLabel,
@@ -230,6 +247,27 @@ export function MethodsWorkspace() {
   // component, not a child.  One selection, two readers.
   const tool = useActiveMethodTool();
 
+  /* WHERE THE CHOOSER IS DRAWN, decided by the ONE derivation (2026-08-18).
+   *
+   * On a TOOL tab the chrome row is this tool's own -- no File, no views, one
+   * Help menu -- and it leads with `Tool: <name>` (MenuBar.ToolMenu).  The row
+   * below would then be a second home for one control, so it does not render
+   * at all and the construction gets the height back: measured the same day,
+   * 39 px at 1400x900 and 45 px at 390x844 (the touch posture's taller input).
+   *
+   * On a CASE tab showing EduTools in its body (`?case=…&workspace=methods`)
+   * the chrome row belongs to the CASE -- File, its nine views, Help -- so the
+   * chooser stays here, where it has been since it came back from the rail.
+   *
+   * Both readers ask `tabKindFor`, the same function MenuBar asks; neither
+   * tells the other what to draw.  A flag passed between them would be one
+   * decision with two homes, and the day they disagreed the tab would have two
+   * choosers or none. */
+  const tutorialName = useStore((s) => s.tutorialName);
+  const activeWorkspace = useStore((s) => s.activeWorkspace);
+  const chromeLeadsWithTheTool =
+    tabKindFor({ hasCase: hasCaseOpen(tutorialName), activeWorkspace }) === "tool";
+
   // Case-local components reach the runs exactly as in the Explorer: merged
   // into the name-lookup catalogue, and their .dat bodies shipped to MEMFS.
   const caseRaw = useStore((s) => s.caseFiles.rawFiles);
@@ -245,7 +283,7 @@ export function MethodsWorkspace() {
     // strip.
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
-      <ToolChooser tool={tool} />
+      {!chromeLeadsWithTheTool && <ToolChooser tool={tool} />}
       {tool === "mccabe" ? (
         <McCabeTool tool={active} catalogue={catalogue}
           localUnifac={localUnifac} componentFiles={componentFiles} />

@@ -64,6 +64,15 @@ License
       this dropdown: without it, a student reaching one tool could not reach
       the other eleven.
 
+  ONE OF THEM CAME BACK, AS THE TAB'S SUBJECT AND NOT AS AN APP MENU
+  (2026-08-18).  The EduTools DROPDOWN that left was a list of twelve tools in
+  a CASE tab's menu — a mode offered from a row that belongs to one case, which
+  is what one-tab-one-thing removed.  What renders here now is a different
+  control answering a different question: on a TOOL tab, and only there, the
+  row leads with `Tool: <name>` — which tool THIS tab is showing.  The
+  difference is not wording: the old entry appeared where the tool was not, and
+  this one appears where the tool is.
+
   The argument that had kept EduTools here expired by decision the same day —
   record §3: the ten run-fed tools no longer read the loaded case, so an
   in-app entry pointing a tool at "the student's own result" has nothing left
@@ -101,7 +110,9 @@ import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import {
   selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
-import { useActiveMethodTool } from "./methods/registry.js";
+import {
+  METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool, type MethodToolId,
+} from "./methods/registry.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
@@ -456,9 +467,20 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * chrome speaks about a case, so the kind is one of the things the WIDTH of
    * a shape depends on.  It is covered transitively today (a tab with no case
    * has no visible workspaces either), and stating it is what keeps that
-   * accident from being load-bearing. */
+   * accident from being load-bearing.
+   *
+   * AND SO IS THE OPEN TOOL (2026-08-18), for the same reason one level down:
+   * a tool tab's row LEADS with `Tool: <name>`, and the twelve names are not
+   * the same width -- measured in this row's own font (13px Inter), the
+   * shortest is "Psychrometric chart" at 157 px of text and the longest
+   * "Ignition / extinction (Van Heerden)" at 242 px.  85 px of difference
+   * decides whether a row fits a phone, so the tool belongs in the signature
+   * where it renders.  It is folded in only for a TOOL tab: on a case tab the
+   * trigger does not render, and re-measuring both ghosts on every tool switch
+   * would be measuring a shape nothing draws. */
   const lineupSignature =
-    `${tabKind}|${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`;
+    `${tabKind}|${visibleWorkspaces.map((w) => w.label).join(",")}@${activeWorkspace ?? "none"}`
+    + `|tool=${tabKind === "tool" ? activeTool : "-"}`;
   const expandedRow  = useIntrinsicWidth(`expanded|${lineupSignature}`);
   const collapsedRow = useIntrinsicWidth(`collapsed|${lineupSignature}`);
 
@@ -479,6 +501,42 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
    * measured as one thing and drawn as another. */
   const rowItems = (shape: { collapsed: boolean; padX: number }) => (
     <>
+        {/* --- Tool -----------------------------------------------------
+            THE TAB'S IDENTITY LEADS ITS OWN CHROME (2026-08-18).  Vítor, on an
+            EduTools tab: "Nas EduTools o menu de cima pode ser Settings, por
+            exemplo, e a selecção da tool escusa de ocupar uma linha, quando a
+            linha do menu de cima está quase vazia!"
+
+            He is describing a measurement, and it is worse than it looks.
+            Measured the same day at 1400x900 on a tool tab: this row held ONE
+            control (Help, 49 px) and the top bar's own minimum is 293 px, so
+            362 px of 1400 were spoken for and 1038 px were empty -- while a
+            SECOND full-width row underneath carried a single Select and cost
+            39 px of the teaching diagram's height (45 px at 390x844, where the
+            touch posture makes the input taller).  Two rows of chrome, one of
+            them all but blank, over the thing the student came to read.
+
+            So the chooser comes up here, first, where a tool tab's row has
+            nothing else to say.  It is not squeezed in beside the Help menu as
+            an afterthought: it is what this tab IS, so it reads as the row's
+            subject -- `Tool: Absorption (Kremser)`, the category dimmed and
+            the value in accent, which is the grammar ViewsMenu settled
+            yesterday for exactly this problem (a trigger must name what it
+            OPENS, with the current value beside it, or it reads as a lit tab
+            saying *you are here* over destinations nobody can see).
+
+            WHERE IT RENDERS IS THE TAB'S KIND, not a second question.  A CASE
+            tab showing EduTools in its body (`?case=…&workspace=methods`) has
+            a row that belongs to the case -- File, nine views, Help -- and
+            measured at 1400 that row plus this trigger plus the top bar's
+            minimum does not fit; more to the point the chrome there is not the
+            tool's to lead.  That tab keeps the in-body row, and
+            MethodsWorkspace decides it from the SAME `tabKindFor` call rather
+            than a flag one of us sets for the other. */}
+        {tabKind === "tool" && (
+          <ToolMenu tool={activeTool} px={shape.padX} />
+        )}
+
         {/* --- File -----------------------------------------------------
             ONLY where the chrome speaks about a case (tabChrome.ts).  Every
             item below is a case operation; in a tool tab there is no case, so
@@ -889,6 +947,70 @@ function ViewsMenu({ views, isActive, isDisabled, disabledHint, onPick, px }: {
             styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
           >
             {w.label}
+          </Menu.Item>
+        );
+      })}
+    </TopMenu>
+  );
+}
+
+/** THE EDUTOOLS TAB'S OWN CHOOSER, in the chrome row (2026-08-18).
+ *
+ *  Same shape as ViewsMenu directly above, and that is the point rather than
+ *  a coincidence: both answer "which of a declared registry is on screen, and
+ *  what else is there?", so they read as one grammar -- category dimmed, value
+ *  in accent, a chevron that says it opens.  Writing this one differently
+ *  would make two controls with one meaning look like two meanings.
+ *
+ *  It reads `METHOD_TOOLS`, the ONE home, and keeps no list of its own; a
+ *  `planned` entry is rendered DISABLED rather than filtered out, because the
+ *  registry's own rule is that the list is the roadmap, stated rather than
+ *  implied.  Picking writes through `setActiveMethodTool`, which is also what
+ *  updates `?workspace=methods&tool=<id>` -- so the tab's URL goes on being a
+ *  shareable bookmark of what is on screen.
+ *
+ *  WHAT MOVING IT HERE COSTS, said rather than discovered later: the in-body
+ *  row was a Mantine `Select` with `searchable`, and a menu does not search.
+ *  Over twelve entries, all of them visible at once in one tap, a search field
+ *  filters a list the reader can already see whole -- and a 30 px input with a
+ *  border inside a 32 px menu bar reads as a form field parked in the chrome,
+ *  which is the "unconsidered" the owner is objecting to in another form.  The
+ *  Select survives unchanged for the case tab that still hosts the chooser in
+ *  its body, so nothing is deleted; the day the registry outgrows a menu, that
+ *  is the shape to come back to. */
+function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
+  const current = METHOD_TOOLS.find((m) => m.id === tool);
+  const label = (
+    <Text span fz={13} fw={400} c="dimmed">
+      Tool:{" "}
+      <Text span fz={13} fw={600} c="accent">
+        {current ? current.label : "none"}
+      </Text>
+    </Text>
+  );
+  return (
+    <TopMenu
+      label={label}
+      width={300}
+      px={px}
+      rightSection={<IconChevronDown size={12} stroke={2} />}
+    >
+      <Menu.Label>Classical method constructions</Menu.Label>
+      {METHOD_TOOLS.map((m) => {
+        const active = m.id === tool;
+        const planned = m.status !== "live";
+        return (
+          <Menu.Item
+            key={m.id}
+            disabled={planned}
+            title={planned ? `Planned — fed by ${m.fedBy ?? "an engine output not shipped yet"}` : undefined}
+            leftSection={active
+              ? <IconCheck size={14} />
+              : <span style={{ display: "inline-block", width: 14 }} />}
+            onClick={() => { if (!planned) setActiveMethodTool(m.id); }}
+            styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
+          >
+            {planned ? `${m.label} (planned)` : m.label}
           </Menu.Item>
         );
       })}
