@@ -222,9 +222,22 @@ export function AppShell() {
       if (ev.key !== "F1") return;
       ev.preventDefault();
       const s = useStore.getState();
-      // The props workspace owns its F1 (the in-app "what does this case do?"
-      // drawer, PropsView) -- two handlers here meant two help tabs per press.
-      if (s.activeWorkspace === "props") return;
+      // A workspace that OWNS its F1 keeps it: two handlers here meant two
+      // help tabs per press.
+      //
+      // `props` was fixed when that was first found.  `explore` was not, and
+      // it stayed broken for the same reason a fix applied to an INSTANCE
+      // leaves the CLASS open -- measured 2026-08-18, one keypress in an
+      // Explore tab opened TWO tabs at two DIFFERENT chapters:
+      // theoryGuide#ch:criticals from here and #ch:vap from
+      // ExploreWorkspace's own handler.  Not a harmless duplicate; the
+      // student is shown two answers to one question.
+      //
+      // The more specific one wins, which is what "owns" means: Explore's
+      // handler resolves the section matching the ACTIVE PLOT, while this one
+      // can only know the workspace.  Adding a workspace with its own F1
+      // means adding it here.
+      if (s.activeWorkspace === "props" || s.activeWorkspace === "explore") return;
       const kind = tabKindFor({
         hasCase: hasCaseOpen(s.tutorialName),
         activeWorkspace: s.activeWorkspace,
