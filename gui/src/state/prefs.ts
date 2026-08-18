@@ -336,20 +336,6 @@ export const PANELS = {
 
 export type PanelId = keyof typeof PANELS;
 
-/** A single tool's own knob-panel fold.  THE RULE, not a literal per tool:
- *  every tool's key is `choupo.methods.<toolId>.controlsCollapsed`, so a tool
- *  cannot invent a spelling and a reader can predict the key from the id.
- *
- *  NO CALLER SINCE 2026-08-18: the twelve tool setup bars became ONE docked
- *  panel (`PANELS.methodKnobsRail`) with ONE fold, so the per-tool question is
- *  no longer asked.  The rule is left standing rather than removed by the
- *  slice that emptied it — a key registry is not a view's to prune — and it is
- *  named here as a decision for the owner: delete it, or keep it for the next
- *  per-tool preference. */
-export function methodsToolCollapsedKey(toolId: string): string {
-  return `choupo.methods.${toolId}.controlsCollapsed`;
-}
-
 /** Other reader-preference homes that are not panels.  Named here so the
  *  registry answers "what does this app store about the reader?" in one read. */
 export const PREF_KEYS = {

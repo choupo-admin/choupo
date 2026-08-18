@@ -152,13 +152,13 @@ describe("storage primitives: junk in, default out", () => {
 
 // ---------------------------------------------------------------------------
 describe("the key registry is the one home", () => {
-  it("derives every EduTools fold key from the tool id by one rule", async () => {
-    const { methodsToolCollapsedKey } = await import("../src/state/prefs.js");
-    expect(methodsToolCollapsedKey("pinch-composite"))
-      .toBe("choupo.methods.pinch-composite.controlsCollapsed");
-    expect(methodsToolCollapsedKey("pump-system"))
-      .toBe("choupo.methods.pump-system.controlsCollapsed");
-  });
+  //  The per-tool key rule was RETIRED with its subject on 2026-08-18: the
+  //  twelve setup bars became one docked panel with one fold, so nothing asks
+  //  the per-tool question any more.  The test that stood here pinned the
+  //  spelling of a key no screen writes -- a green assertion about a helper
+  //  nobody calls, which is the shape this project retires rather than keeps.
+  //  What still matters is the NEGATIVE, and it is the next case: the three
+  //  old homes must stay gone.
 
   it("T7: the three CONTROLS_COLLAPSED_KEY homes are gone — and so are the "
     + "per-tool ones", async () => {
