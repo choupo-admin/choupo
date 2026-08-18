@@ -71,6 +71,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { useReducedMotion } from "@mantine/hooks";
 import {
   ActionIcon,
   Box,
@@ -85,6 +86,12 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { parse, type DictEntry } from "../dict/index.js";
 import { useStore } from "../state/store.js";
 import { useFitsOneRow } from "./methods/methodsChrome.js";
+
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import {
+  CASE_FILES_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut,
+} from "./panelContract.js";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -199,11 +206,17 @@ function parseOutline(text: string): OutlineKey[] {
 
 // ---- The three panes, and the width they need -------------------------------
 
-/** The two FIXED columns of the wide layout.  They are declared once and used
- *  twice — by the grid template and by the threshold below — so the question
- *  "do the three columns fit?" can never be asked against numbers the layout
- *  no longer uses. */
-const FILES_COL_PX = 240;
+/** The outline column of the wide layout, declared once and used by both the
+ *  layout and the threshold below, so the question "do the three columns fit?"
+ *  can never be asked against a number the layout no longer uses.
+ *
+ *  THE FILES COLUMN IS NO LONGER A CONSTANT (2026-08-18).  It became a panel
+ *  the reader drags (ui/panelContract.tsx), so the threshold reads what that
+ *  panel can be narrowed TO — its declared minimum — rather than a fixed width
+ *  that would now be a second, stale copy of a number the layout stopped
+ *  using.  The threshold therefore moved with it, from 940 px to
+ *  200 + 480 + 220 = 900 px, which is the honest question: the three columns
+ *  fit as soon as the file list can be squeezed to its floor. */
 const OUTLINE_COL_PX = 220;
 
 /** The narrowest the code VIEWER may be and still be a viewer.  This one is a
@@ -216,7 +229,8 @@ const VIEWER_MIN_PX = 480;
 
 /** What the wide, three-column layout needs.  Two measured-from-the-layout
  *  terms plus the declared viewer minimum. */
-export const CASE_PANES_ONE_ROW_PX = FILES_COL_PX + VIEWER_MIN_PX + OUTLINE_COL_PX;
+export const CASE_PANES_ONE_ROW_PX =
+  CASE_FILES_PANEL.prefs.size.min + VIEWER_MIN_PX + OUTLINE_COL_PX;
 
 /** The three things the desk shows side by side, and the phone shows one at a
  *  time.  ONE home for the pane set: the chooser renders it and the body
@@ -286,6 +300,21 @@ export function CaseWorkspace() {
   const narrow = !useFitsOneRow(CASE_PANES_ONE_ROW_PX);
   const [pane, setPane] = useState<CasePane>("contents");
 
+  /* The file list is a PANEL CONTRACT rail (ui/panelContract.tsx) — draggable,
+   * foldable, remembered — but ONLY in the wide posture, and that exception is
+   * argued rather than assumed.  Narrow shows ONE pane at a time, chosen by the
+   * chooser above it: there the file list is not a rail beside a reading
+   * column, it IS the column, so folding it would leave the workspace showing
+   * nothing and resizing it would mean resizing the window.  The contract's own
+   * measured default would reach the same conclusion (it does not fit beside
+   * `contentMin`), but a fold the reader can trigger and then find empty is
+   * worse than no fold, so the wide branch is the only one that renders it. */
+  const railHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(CASE_FILES_PANEL, { availablePx: railHost.width });
+  usePanelShortcut(rail);
+  const reduceMotion = useReducedMotion();
+  const railBox = panelBoxProps(rail, !!reduceMotion);
+
   const selectFile = (path: string) => {
     setActivePath(path);
     setPane("contents");    // desk: no-op; phone: the tap has to go somewhere
@@ -326,28 +355,58 @@ export function CaseWorkspace() {
   /* The three panes, built ONCE and placed by the posture.  Wide puts them in
    * three grid columns; narrow shows one.  Only the dividing borders differ --
    * a full-width pane has no neighbour to be divided from. */
+  const filesTree = (
+    <ScrollArea
+      type="always"
+      scrollbarSize={10}
+      style={{ flex: 1, minHeight: 0 }}
+      styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
+    >
+      <FileTree
+        files={files}
+        active={active}
+        onSelect={selectFile}
+      />
+    </ScrollArea>
+  );
+
+  /** NARROW: the file list as the one visible pane — no rail chrome (see the
+   *  argued exception above). */
   const filesPane = (
     <Box
       style={{
-        borderRight: narrow ? undefined
-          : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
         background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
         overflow: "hidden",
         minHeight: 0,
+        display: "flex", flexDirection: "column",
       }}
     >
-      <ScrollArea
-        type="always"
-        scrollbarSize={10}
-        style={{ height: "100%" }}
-        styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
-      >
-        <FileTree
-          files={files}
-          active={active}
-          onSelect={selectFile}
-        />
-      </ScrollArea>
+      {filesTree}
+    </Box>
+  );
+
+  /** WIDE: the same tree as a contract panel. */
+  const filesRail = (
+    <Box
+      data-panel={railBox["data-panel"]}
+      style={{
+        ...railBox.style,
+        borderRight: rail.collapsed
+          ? "none"
+          : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+        background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
+        display: "flex", flexDirection: "column",
+      }}
+    >
+      <Group justify="space-between" align="center" wrap="nowrap" gap={4}
+        px="xs" py={4} style={{ flex: "0 0 auto" }}>
+        <Text size="xs" c="dimmed" tt="uppercase"
+          style={{ letterSpacing: 0.5, fontWeight: 600 }}>
+          Files
+        </Text>
+        <PanelCollapseButton panel={rail} />
+      </Group>
+      {filesTree}
     </Box>
   );
 
@@ -494,18 +553,23 @@ export function CaseWorkspace() {
 
   return (
     <Box
+      ref={railHost.ref}
       style={{
-        display: "grid",
-        gridTemplateColumns: `${FILES_COL_PX}px 1fr ${OUTLINE_COL_PX}px`,
-        gridTemplateRows: "1fr",
+        display: "flex",
         height: "100%",
         minHeight: 0,
       }}
     >
       {highlightCss}
-      {filesPane}
-      {contentsPane}
-      {outlinePane}
+      {rail.collapsed && <PanelReopenStrip panel={rail} scent="FILES" />}
+      {filesRail}
+      <PanelResizeHandle panel={rail} />
+      <Box style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
+        {contentsPane}
+      </Box>
+      <Box style={{ flex: `0 0 ${OUTLINE_COL_PX}px`, minWidth: 0, minHeight: 0 }}>
+        {outlinePane}
+      </Box>
     </Box>
   );
 }

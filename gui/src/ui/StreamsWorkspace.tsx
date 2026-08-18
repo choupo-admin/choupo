@@ -49,6 +49,7 @@ License
 
 import { compositeMembers, topologyFeedNames } from "../case/toGraph.js";
 import { useMemo, useState } from "react";
+import { useReducedMotion } from "@mantine/hooks";
 import {
   ActionIcon,
   Box,
@@ -83,6 +84,11 @@ import {
 import { streamPhases } from "../case/streamPhases.js";
 import { StreamsSummary } from "./StreamsSummary.js";
 import { StreamsTable } from "./StreamsTable.js";
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import {
+  STREAMS_NAV_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut,
+} from "./panelContract.js";
 import {
   type PhaseKind,
   PHASE_GLYPH,
@@ -122,6 +128,14 @@ export function StreamsWorkspace() {
   // Table = all streams side-by-side (the comparison view, and
   // the default); Detail = navigator + one stream's full numbers.
   const [view, setView] = useState<"table" | "detail">("table");
+  /* The Detail view's stream navigator is a PANEL CONTRACT rail
+   * (ui/panelContract.tsx).  It was a fixed 240 px grid column: no resize, no
+   * fold, nothing remembered. */
+  const railHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(STREAMS_NAV_PANEL, { availablePx: railHost.width });
+  usePanelShortcut(rail);
+  const reduceMotion = useReducedMotion();
+  const railBox = panelBoxProps(rail, !!reduceMotion);
 
   const tree = useMemo(() => buildTree(caseFiles), [caseFiles]);
 
@@ -170,26 +184,37 @@ export function StreamsWorkspace() {
         </Box>
       ) : (
       <Box
+        ref={railHost.ref}
         style={{
-          display: "grid",
-          gridTemplateColumns: "240px 1fr",
-          gridTemplateRows: "1fr",
+          display: "flex",
           flex: 1,
           minHeight: 0,
         }}
       >
+      {rail.collapsed && <PanelReopenStrip panel={rail} scent="STREAMS" />}
       <Box
+        data-panel={railBox["data-panel"]}
         style={{
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          ...railBox.style,
+          borderRight: rail.collapsed
+            ? "none"
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
-          overflow: "hidden",
-          minHeight: 0,
+          display: "flex", flexDirection: "column",
         }}
       >
+        <Group justify="space-between" align="center" wrap="nowrap" gap={4}
+          px="xs" py={4} style={{ flex: "0 0 auto" }}>
+          <Text size="xs" c="dimmed" tt="uppercase"
+            style={{ letterSpacing: 0.5, fontWeight: 600 }}>
+            Streams
+          </Text>
+          <PanelCollapseButton panel={rail} />
+        </Group>
         <ScrollArea
           type="always"
           scrollbarSize={10}
-          style={{ height: "100%" }}
+          style={{ flex: 1, minHeight: 0 }}
           styles={{
             // Make the scrollbar visible enough that "deslizar para baixo"
             // is an obvious affordance, not a hidden one.
@@ -208,9 +233,12 @@ export function StreamsWorkspace() {
           />
         </ScrollArea>
       </Box>
+      <PanelResizeHandle panel={rail} />
 
       <Box
         style={{
+          flex: 1,
+          minWidth: 0,
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))",
           overflow: "hidden",
           minHeight: 0,

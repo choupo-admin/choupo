@@ -148,6 +148,58 @@ the curve between them, which is the entire reason two phases exist.  The
 only view geometry is a straight segment between two published points.
 Zero engine work.  Theory anchor `ch:lle-gibbs` exists (*read*).
 
+#### A1 amendment, 2026-08-18 — the lens EXISTS, and the remaining gap is engine-side
+
+A1 reads as a proposal for a thirteenth EduTool.  It should not: the picture
+it describes is already on screen, and has been since before the 2026-08-15
+purge that moved McCabe-Thiele and the psychrometric chart OUT of Explore.
+It is the Explore lens `binaryLle` — "Binary LLE (g_mix + tangent)"
+(`gui/src/ui/ExploreWorkspace.tsx`), gated in `gui/src/case/exploreViews.ts`,
+fed by `propertyScanBinary` through `gui/src/case/exploreSynth.ts`, drawn by
+`gui/src/ui/plotting/BinaryLlePlot.tsx`, which renders the curve, the two
+engine binodal markers with their β, and the dashed chord through them.
+The purge applied this survey's own placement criterion
+(method-construction → EduTools; property-surface → Explorer) and left this
+lens where it was — so the criterion has already been run against this exact
+picture, and it came out Explorer.  A1 is banked, not pending; building a
+tool for it would be a second home for one picture.
+
+What is NOT banked is a slice of the physics the picture asserts, and it is
+**engine-side (C++), not view-side**.  Two published quantities are missing
+from `propertyScanBinary`'s `x1,gmix_J_per_mol,role,beta`:
+
+1. **The tangent slope per binodal row** — `dg/dx = R·T·ln(γ₁x₁/γ₂x₂)`,
+   evaluated at each of the two coexisting compositions from the same
+   activity model the flash used.  Published, it makes the construction
+   FALSIFIABLE on screen: two slopes that agree with each other and with the
+   chord's rise-over-run are the common-tangent condition, checked rather
+   than asserted.  Today the chord is drawn between two flash results and
+   nothing anywhere confirms it is tangent to the curve it crosses.
+2. **`role,spinodal` rows** — the compositions where `d²g/dx² = 0`, so the
+   metastable band between binodal and spinodal can be drawn.  It is
+   currently absent from the diagram, and the view says so in those words:
+   the engine publishes the curve and two compositions, no curvature.
+
+**Why this cannot be done in the view, and must not be attempted there.**
+ZERO physics in TypeScript is a settled contract, and this is a case where
+the contract has teeth rather than merely holding the line.  A finite
+difference across the published `role,curve` nodes near the butanol-rich
+binodal of `binary01` returns about **638 J/mol** where the chord's own slope
+is about **1247 J/mol** (a probe recorded 2026-08-18 and NOT re-measured in
+this slice — quoted for the size of the discrepancy, not as a pinned datum) —
+a factor of two apart, on a grid whose spacing the GUI chooses
+(`binaryLle: { n: … }`) and whose nodes do not land on the binodal
+compositions at all.  A reader shown 638 beside 1247 would conclude the
+construction had failed, when what failed is differentiating a coarse sample
+of a steep curve at a point it does not contain.  A number that LOOKS like a
+check and is not one is worse than the honest absence, because it is
+believed.  The activity model, the γ's and the flash all live in the engine;
+the slope belongs where they are.
+
+Both items are small — the γ's are already in hand at each binodal row where
+`PropertyScanBinary` writes it — and neither is authorised here.  This
+records the gap; the slice is Vítor's to call.
+
 ### A2. Ternary tie-triangle and the Hunter-Nash construction
 
 Two engine surfaces, already in the corpus and already agreeing:

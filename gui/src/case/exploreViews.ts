@@ -18,8 +18,16 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // contract; EduTools is the word on screen), fed by case/methodFeeds.ts.
 // Criterion: method-construction → EduTools; property-surface → Explorer
 // (gui-credo §9).
-export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "binaryLle" | "ternary"
-  | "ternaryLle" | "phase" | "scaling" | "steam" | "gibbsmap";
+// Kept as a RUNTIME list with the type derived from it, not the other way
+// round: a bare union cannot be enumerated by a test, so a gate over "every
+// plot kind" could only ever check the kinds somebody remembered to type out.
+// Adding a kind here makes it visible to `tests/exploreTheoryAnchors.test.ts`
+// the same day it is written, by nobody remembering.
+export const PLOT_KINDS = [
+  "scan", "txy", "flash", "gamma", "binaryLle", "ternary",
+  "ternaryLle", "phase", "scaling", "steam", "gibbsmap",
+] as const;
+export type PlotKind = (typeof PLOT_KINDS)[number];
 
 export type SelClass = "pure" | "organic-mixture" | "aqueous-organic"
   | "aqueous-electrolyte" | "humid-gas" | "mixed";

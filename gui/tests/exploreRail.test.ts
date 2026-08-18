@@ -1,7 +1,10 @@
 /*---------------------------------------------------------------------------*\
-  exploreRail — the Property Explorer's resizable-rail clamp/persist logic + the
-  McCabe pop-out state-carry.  Pure helpers (no DOM): a minimal window/local
-  Storage stub mirrors session.test.ts (the project ships no jsdom).
+  exploreRail — the Property Explorer's resizable-rail clamp/persist contract +
+  the McCabe pop-out state-carry.  Pure helpers (no DOM): a minimal
+  window/localStorage stub mirrors session.test.ts (the project ships no jsdom).
+
+  RE-AIMED 2026-08-18 at where the rail's preferences now live — see the note
+  above the first describe.  The claims are unchanged; the home is not.
 \*---------------------------------------------------------------------------*/
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -30,85 +33,92 @@ afterEach(() => {
   delete (globalThis as Record<string, unknown>).localStorage;
 });
 
-describe("rail width — clamp", () => {
+/* THE RAIL'S OWN PERSISTENCE MOVED, TWICE, ON THE SAME DAY (2026-08-18) — and
+ * these cases follow it rather than being deleted, because what they pin is
+ * still a live claim about the EXPLORER'S rail: it clamps to 200–460, defaults
+ * to 240, tolerates junk, and its fold is independent of its dragged width so
+ * re-opening is lossless.
+ *
+ * Where that now lives: the KEYS and the junk-tolerant reading are the reader-
+ * preference registry's (`state/prefs.ts`, PANELS.exploreRail — the legacy key
+ * spellings kept on purpose, so nobody's rail resets); the BEHAVIOUR built on
+ * top of them is the panel contract's (`ui/panelContract.tsx`).  The hook this
+ * file used to import, `explore/useRailWidth.ts`, is gone: its mechanics became
+ * the contract's, which is what let five other rails have them too.
+ */
+describe("Explorer rail — clamp", () => {
   it("clamps to [200, 460] and rounds", async () => {
-    const { clampRailWidth } = await import("../src/ui/explore/useRailWidth.js");
-    expect(clampRailWidth(50)).toBe(200);     // below MIN
-    expect(clampRailWidth(1000)).toBe(460);   // above MAX
-    expect(clampRailWidth(240)).toBe(240);    // in range
-    expect(clampRailWidth(333.7)).toBe(334);  // rounded
+    const { clampSize, PANELS } = await import("../src/state/prefs.js");
+    const spec = PANELS.exploreRail.size;
+    expect(spec).toEqual({ min: 200, max: 460, default: 240 });
+    expect(clampSize(50, spec)).toBe(200);      // below MIN
+    expect(clampSize(1000, spec)).toBe(460);    // above MAX
+    expect(clampSize(240, spec)).toBe(240);     // in range
+    expect(clampSize(333.7, spec)).toBe(334);   // rounded
   });
 
   it("falls back to the default on a non-finite candidate", async () => {
-    const { clampRailWidth, RAIL_DEFAULT } = await import("../src/ui/explore/useRailWidth.js");
-    expect(clampRailWidth(NaN)).toBe(RAIL_DEFAULT);       // non-finite -> default
-    expect(clampRailWidth(Infinity)).toBe(RAIL_DEFAULT);  // non-finite -> default
+    const { clampSize, PANELS } = await import("../src/state/prefs.js");
+    const spec = PANELS.exploreRail.size;
+    expect(clampSize(NaN, spec)).toBe(spec.default);
+    expect(clampSize(Infinity, spec)).toBe(spec.default);
   });
 });
 
-describe("rail width — persist round-trip", () => {
-  it("save then load returns the clamped value under the GLOBAL key", async () => {
-    const { saveRailWidth, loadRailWidth, RAIL_KEY } = await import("../src/ui/explore/useRailWidth.js");
-    saveRailWidth(300);
-    expect(ls.getItem(RAIL_KEY)).toBe("300");
-    expect(loadRailWidth()).toBe(300);
+describe("Explorer rail — persist round-trip", () => {
+  it("save then load returns the clamped value under the rail's key", async () => {
+    const { savePanelSize, loadPanelSize, PANELS } = await import("../src/state/prefs.js");
+    savePanelSize(PANELS.exploreRail, 300);
+    expect(ls.getItem(PANELS.exploreRail.sizeKey!)).toBe("300");
+    expect(loadPanelSize(PANELS.exploreRail)).toBe(300);
   });
 
   it("save clamps out-of-range before persisting", async () => {
-    const { saveRailWidth, loadRailWidth } = await import("../src/ui/explore/useRailWidth.js");
-    saveRailWidth(9999);
-    expect(loadRailWidth()).toBe(460);
-    saveRailWidth(10);
-    expect(loadRailWidth()).toBe(200);
+    const { savePanelSize, loadPanelSize, PANELS } = await import("../src/state/prefs.js");
+    savePanelSize(PANELS.exploreRail, 9999);
+    expect(loadPanelSize(PANELS.exploreRail)).toBe(460);
+    savePanelSize(PANELS.exploreRail, 10);
+    expect(loadPanelSize(PANELS.exploreRail)).toBe(200);
   });
 
   it("load returns the default when the key is absent or junk", async () => {
-    const { loadRailWidth, RAIL_DEFAULT, RAIL_KEY } = await import("../src/ui/explore/useRailWidth.js");
-    expect(loadRailWidth()).toBe(RAIL_DEFAULT);   // absent
-    ls.setItem(RAIL_KEY, "not-a-number");
-    expect(loadRailWidth()).toBe(RAIL_DEFAULT);   // junk
+    const { loadPanelSize, PANELS } = await import("../src/state/prefs.js");
+    expect(loadPanelSize(PANELS.exploreRail)).toBe(240);          // absent
+    ls.setItem(PANELS.exploreRail.sizeKey!, "not-a-number");
+    expect(loadPanelSize(PANELS.exploreRail)).toBe(240);          // junk
   });
 });
 
-describe("rail collapse — persist round-trip", () => {
+describe("Explorer rail — collapse round-trip", () => {
   it("defaults to EXPANDED (false) when the key is absent", async () => {
-    const { loadRailCollapsed } = await import("../src/ui/explore/useRailWidth.js");
-    expect(loadRailCollapsed()).toBe(false);
+    const { loadPanelCollapsed, PANELS } = await import("../src/state/prefs.js");
+    expect(loadPanelCollapsed(PANELS.exploreRail)).toBe(false);
   });
 
-  it("save(true) then load returns true under the GLOBAL collapsed key", async () => {
-    const { saveRailCollapsed, loadRailCollapsed, RAIL_COLLAPSED_KEY } =
-      await import("../src/ui/explore/useRailWidth.js");
-    saveRailCollapsed(true);
-    expect(ls.getItem(RAIL_COLLAPSED_KEY)).toBe("1");
-    expect(loadRailCollapsed()).toBe(true);
+  it("save(true) then load returns true under the collapsed key", async () => {
+    const { savePanelCollapsed, loadPanelCollapsed, PANELS } = await import("../src/state/prefs.js");
+    savePanelCollapsed(PANELS.exploreRail, true);
+    expect(ls.getItem(PANELS.exploreRail.collapsedKey!)).toBe("1");
+    expect(loadPanelCollapsed(PANELS.exploreRail)).toBe(true);
   });
 
-  it("save(false) round-trips and reads as EXPANDED", async () => {
-    const { saveRailCollapsed, loadRailCollapsed, RAIL_COLLAPSED_KEY } =
-      await import("../src/ui/explore/useRailWidth.js");
-    saveRailCollapsed(false);
-    expect(ls.getItem(RAIL_COLLAPSED_KEY)).toBe("0");
-    expect(loadRailCollapsed()).toBe(false);
-  });
-
-  it("treats any value other than \"1\" as EXPANDED (junk-tolerant)", async () => {
-    const { loadRailCollapsed, RAIL_COLLAPSED_KEY } =
-      await import("../src/ui/explore/useRailWidth.js");
-    ls.setItem(RAIL_COLLAPSED_KEY, "yes");
-    expect(loadRailCollapsed()).toBe(false);
+  it("treats any value other than \"1\"/\"0\" as the default (junk-tolerant)", async () => {
+    const { loadPanelCollapsed, PANELS } = await import("../src/state/prefs.js");
+    ls.setItem(PANELS.exploreRail.collapsedKey!, "yes");
+    expect(loadPanelCollapsed(PANELS.exploreRail)).toBe(false);
   });
 
   it("is INDEPENDENT of the dragged width (collapse is lossless)", async () => {
-    const { saveRailWidth, loadRailWidth, saveRailCollapsed, loadRailCollapsed } =
-      await import("../src/ui/explore/useRailWidth.js");
-    saveRailWidth(380);          // user drags the rail wide
-    saveRailCollapsed(true);     // then folds it
+    const { savePanelSize, loadPanelSize, savePanelCollapsed, loadPanelCollapsed, PANELS } =
+      await import("../src/state/prefs.js");
+    const p = PANELS.exploreRail;
+    savePanelSize(p, 380);            // the reader drags the rail wide
+    savePanelCollapsed(p, true);      // then folds it
     // the width is preserved verbatim — re-opening restores 380, not 0/default
-    expect(loadRailWidth()).toBe(380);
-    expect(loadRailCollapsed()).toBe(true);
-    saveRailCollapsed(false);    // re-open
-    expect(loadRailWidth()).toBe(380);
+    expect(loadPanelSize(p)).toBe(380);
+    expect(loadPanelCollapsed(p)).toBe(true);
+    savePanelCollapsed(p, false);     // re-open
+    expect(loadPanelSize(p)).toBe(380);
   });
 });
 

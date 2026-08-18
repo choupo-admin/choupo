@@ -51,6 +51,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useReducedMotion } from "@mantine/hooks";
 import {
   ActionIcon,
   Box,
@@ -63,6 +64,12 @@ import {
 import { IconChevronDown, IconChevronRight, IconSearch } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
+
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import {
+  LOG_JUMP_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut,
+} from "./panelContract.js";
 
 interface JumpEntry {
   unitIndex: number;        // C++ "[k]" in the banner
@@ -126,6 +133,15 @@ function groupBySector(jumps: JumpEntry[]): SectorGroup[] {
 }
 
 export function LogWorkspace() {
+  /* The jump list is a PANEL CONTRACT rail (ui/panelContract.tsx): draggable
+   * width, one-click fold to a keyboard-reachable strip, `[`, remembered.  It
+   * had none of those — a fixed 260 px grid column, and nothing to fold it
+   * with — which is the "algumas não têm" the owner reported. */
+  const railHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(LOG_JUMP_PANEL, { availablePx: railHost.width });
+  usePanelShortcut(rail);
+  const reduceMotion = useReducedMotion();
+  const railBox = panelBoxProps(rail, !!reduceMotion);
   const log = useStore((s) => s.runLog);
   const status = useStore((s) => s.runStatus);
   const [filter, setFilter] = useState("");
@@ -189,31 +205,35 @@ export function LogWorkspace() {
 
   return (
     <Box
+      ref={railHost.ref}
       style={{
-        display: "grid",
-        gridTemplateColumns: "260px 1fr",
-        gridTemplateRows: "1fr",
+        display: "flex",
         height: "100%",
         minHeight: 0,
       }}
     >
+      {rail.collapsed && <PanelReopenStrip panel={rail} scent="JUMP" />}
       {/* Jump list */}
       <Box
+        data-panel={railBox["data-panel"]}
         style={{
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          ...railBox.style,
+          borderRight: rail.collapsed
+            ? "none"
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
-          overflow: "hidden",
-          minHeight: 0,
-          height: "100%",
           display: "flex",
           flexDirection: "column",
         }}
       >
         <Box p="xs" style={{ flex: "0 0 auto" }}>
-          <Text size="xs" c="dimmed" tt="uppercase" mb={6}
-            style={{ letterSpacing: 0.5, fontWeight: 600 }}>
-            Jump to unit
-          </Text>
+          <Group justify="space-between" align="center" wrap="nowrap" gap={4} mb={6}>
+            <Text size="xs" c="dimmed" tt="uppercase"
+              style={{ letterSpacing: 0.5, fontWeight: 600 }}>
+              Jump to unit
+            </Text>
+            <PanelCollapseButton panel={rail} />
+          </Group>
           <TextInput
             size="xs"
             placeholder="Filter…"
@@ -317,10 +337,13 @@ export function LogWorkspace() {
           </ScrollArea>
         </Box>
       </Box>
+      <PanelResizeHandle panel={rail} />
 
       {/* Log viewer */}
       <Box
         style={{
+          flex: 1,
+          minWidth: 0,
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))",
           overflow: "hidden",
           minHeight: 0,

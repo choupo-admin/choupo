@@ -49,6 +49,9 @@ import "@xterm/xterm/css/xterm.css";
 
 import { useStore } from "../state/store.js";
 import {
+  BOTTOM_DOCK_PANEL, PanelResizeHandle, usePanel, usePanelShortcut,
+} from "./panelContract.js";
+import {
   asArtifactContent, asArtifactError, asArtifactMessage,
   dismissChip, pushChip, type ArtifactChip,
 } from "../agent/artifactChips.js";
@@ -116,26 +119,39 @@ export function AgentConsole() {
     top: Math.max(60, (typeof window !== "undefined" ? window.innerHeight : 800) - height - 40),
   };
 
-  // Drag the top edge to resize the console height (both modes).
-  const onResizeStart = (e: ReactMouseEvent) => {
-    e.preventDefault();
-    const startY = e.clientY;
-    const startH = height;
-    const startTop = pos.top;
-    const onMove = (ev: MouseEvent) => {
-      const dy = ev.clientY - startY;
-      setAgentHeight(startH - dy);            // drag up -> taller
-      if (!docked) setFloatPos({ left: pos.left, top: startTop + dy }); // keep bottom edge put
-    };
-    const onUp = () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
-      document.body.style.userSelect = "";
-    };
-    document.body.style.userSelect = "none";
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-  };
+  /* THE TOP EDGE IS A PANEL CONTRACT HANDLE (ui/panelContract.tsx).
+   *
+   * The height and the fold stay exactly where they were — store state backed
+   * by the reader-preference registry — so the panel is CONTROLLED and this
+   * file remains their only writer.  What the contract brings is the shared
+   * mechanism: pointer capture (a mouse-only `mousemove` pair lost the drag to
+   * any iframe or terminal the pointer crossed, and never worked under a
+   * finger at all), rAF throttling, an honest hit target, `role="separator"`
+   * with arrow keys, double-click to reset, and the `]` shortcut — bound from
+   * the same declaration that writes its tooltip.
+   *
+   * Measured before this change: the old 6 px strip sat at `top: -3` inside a
+   * container with `overflow: hidden`, so 3 of its 6 px were clipped away and
+   * the grab band a user could actually hit was 3 px tall. */
+  const dock = usePanel(BOTTOM_DOCK_PANEL, {
+    controlled: { value: height, onValue: setAgentHeight },
+    collapsedControl: { collapsed, toggle: toggleCollapsed },
+  });
+  usePanelShortcut(dock);
+
+  /* A FLOATING window keeps its bottom edge put while its top edge moves, so
+   * the drag has a second consequence there that belongs to this file (the
+   * contract knows nothing about a window's position).  It rides on the same
+   * gesture rather than a second one: the height is the contract's, the
+   * position follows it. */
+  const heightRef = useRef(height);
+  useEffect(() => {
+    if (docked) { heightRef.current = height; return; }
+    const dy = heightRef.current - height;      // taller -> the top edge rose
+    heightRef.current = height;
+    if (dy !== 0 && floatPos) setFloatPos({ left: floatPos.left, top: floatPos.top + dy });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [height, docked]);
 
   // Drag the header to move the floating window (no-op when docked).
   const onMoveStart = (e: ReactMouseEvent) => {
@@ -290,30 +306,34 @@ export function AgentConsole() {
         gridArea: "console", position: "relative", height: "100%", width: "100%",
         background: "light-dark(#ffffff, #151b1e)", borderTop: "2px solid var(--mantine-color-accent-7)",
         display: "flex", flexDirection: "column", minHeight: 0,
-        // Folded to the slim bar, the (still-mounted) terminal is clipped
-        // behind the header instead of painting over the canvas.
-        overflow: "hidden",
+        /* Folded to the slim bar, the (still-mounted) terminal must be clipped
+         * behind the header instead of painting over the canvas — so the
+         * clipping is exactly as strict as that need, and no stricter.  While
+         * the console is OPEN nothing of its own overflows (the terminal host
+         * clips itself), and `hidden` here was cutting the resize handle in
+         * half: the strip straddled the top border at `top: -3` and lost the 3
+         * px above it, measured.  A clip that also trims the one control the
+         * reader has to aim at is not free. */
+        overflow: collapsedBar ? "hidden" : "visible",
       }
     : {
         position: "fixed", left: pos.left, top: pos.top, width: FLOAT_W, height, zIndex: 300,
         background: "light-dark(#ffffff, #151b1e)", border: "1px solid var(--mantine-color-accent-7)", borderRadius: 8,
-        display: "flex", flexDirection: "column", overflow: "hidden",
+        display: "flex", flexDirection: "column",
+        /* `visible`, for the same reason as the docked branch: the resize
+         * handle straddles this edge and must not be trimmed to half a target.
+         * The header rounds its own top corners below, so nothing square is
+         * painted over the radius. */
+        overflow: "visible",
         boxShadow: "0 10px 30px rgba(0,0,0,0.55)",
       };
 
   return (
     <Box style={containerStyle}>
-      {/* drag the top edge to resize (not while folded to the slim bar) */}
-      {!collapsedBar && (
-        <Box
-          onMouseDown={onResizeStart}
-          title="Drag to resize"
-          style={{
-            position: "absolute", top: -3, left: 0, right: 0, height: 6,
-            cursor: "ns-resize", zIndex: 301,
-          }}
-        />
-      )}
+      {/* Drag the top edge to resize — the shared panel handle (not while
+          folded to the slim bar: there is nothing to resize then, and the bar
+          itself is the restore target). */}
+      {!collapsedBar && <PanelResizeHandle panel={dock} />}
       {/* Folded, the header row IS the slim restore handle: the whole bar is
           the click target (Fitts edge strip, like the Explorer's re-open
           tab); the buttons stopPropagation so X still just closes. */}
@@ -324,6 +344,8 @@ export function AgentConsole() {
         style={{
           background: "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-8))", borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           cursor: collapsedBar ? "pointer" : docked ? "default" : "grab",
+          borderTopLeftRadius: docked ? 0 : 7,
+          borderTopRightRadius: docked ? 0 : 7,
         }}>
         <Group gap={6} align="center">
           <IconRobot size={15} color="var(--mantine-color-accent-4)" />

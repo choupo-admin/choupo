@@ -310,7 +310,16 @@ describe("the module source carries the honesty annotations", () => {
     expect(src).toContain("range ( 0.4 1.6 );");
   });
 
-  it("persists the knob-panel fold under the agreed localStorage key", () => {
-    expect(src).toContain("choupo.methods.pump-system.controlsCollapsed");
+  // AMENDED 2026-08-18.  This used to scan the source for the literal key.  The
+  // literal is gone on purpose: three modules exported a `CONTROLS_COLLAPSED_KEY`
+  // with three different values, so the keys are now DERIVED from the tool id by
+  // one rule in `state/prefs.ts`.  The claim is unchanged and the check is
+  // stronger — it reads the rule's actual output rather than a string that
+  // happens to appear in the file.
+  it("persists the knob-panel fold under the agreed localStorage key", async () => {
+    const { methodsToolCollapsedKey } = await import("../src/state/prefs.js");
+    expect(methodsToolCollapsedKey("pump-system"))
+      .toBe("choupo.methods.pump-system.controlsCollapsed");
+    expect(src).toContain('methodsToolCollapsedKey("pump-system")');
   });
 });

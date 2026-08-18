@@ -48,6 +48,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useState } from "react";
+import { useReducedMotion } from "@mantine/hooks";
 import {
   ActionIcon,
   Box,
@@ -80,6 +81,12 @@ import { TxyPlot } from "./plotting/TxyPlot.js";
 import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { GanttPlot } from "./plotting/GanttPlot.js";
 
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import {
+  PLOTS_NAV_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut,
+} from "./panelContract.js";
+
 type PlotKey =
   | "trajectory"
   | "gantt"
@@ -111,6 +118,14 @@ interface PlotGroup {
 }
 
 export function PlotsWorkspace() {
+  /* The plot navigator is a PANEL CONTRACT rail (ui/panelContract.tsx): it was
+   * a fixed 240 px grid column with no way to resize it and no way to fold it
+   * away — the "algumas não têm" the owner reported. */
+  const railHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(PLOTS_NAV_PANEL, { availablePx: railHost.width });
+  usePanelShortcut(rail);
+  const reduceMotion = useReducedMotion();
+  const railBox = panelBoxProps(rail, !!reduceMotion);
   const result = useStore((s) => s.runResult);
   const prefs = useStore((s) => s.displayPrefs);
   const [view, setView] = useState<PlotKey>("profile");
@@ -343,22 +358,23 @@ export function PlotsWorkspace() {
 
   return (
     <Box
+      ref={railHost.ref}
       style={{
-        display: "grid",
-        gridTemplateColumns: "240px 1fr",
-        gridTemplateRows: "1fr",
+        display: "flex",
         height: "100%",
         minHeight: 0,
       }}
     >
+      {rail.collapsed && <PanelReopenStrip panel={rail} scent="PLOTS" />}
       {/* Navigator */}
       <Box
+        data-panel={railBox["data-panel"]}
         style={{
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
+          ...railBox.style,
+          borderRight: rail.collapsed
+            ? "none"
+            : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-5))",
           background: "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))",
-          overflow: "hidden",
-          minHeight: 0,
-          height: "100%",
         }}
       >
         <ScrollArea
@@ -368,10 +384,13 @@ export function PlotsWorkspace() {
           styles={{ thumb: { background: "light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3))" } }}
         >
           <Stack gap={0} p="xs">
-            <Text size="xs" c="dimmed" tt="uppercase" mb={6}
-              style={{ letterSpacing: 0.5, fontWeight: 600 }}>
-              Plot types
-            </Text>
+            <Group justify="space-between" align="center" wrap="nowrap" gap={4} mb={6}>
+              <Text size="xs" c="dimmed" tt="uppercase"
+                style={{ letterSpacing: 0.5, fontWeight: 600 }}>
+                Plot types
+              </Text>
+              <PanelCollapseButton panel={rail} />
+            </Group>
             {groups
               .map((g) => ({ ...g, items: g.items.filter(
                 (it) => it.available || !it.hideWhenUnavailable) }))
@@ -446,9 +465,13 @@ export function PlotsWorkspace() {
         </ScrollArea>
       </Box>
 
+      <PanelResizeHandle panel={rail} />
+
       {/* Plot area */}
       <Box
         style={{
+          flex: 1,
+          minWidth: 0,
           background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))",
           overflow: "hidden",
           minHeight: 0,

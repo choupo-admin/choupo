@@ -14163,6 +14163,109 @@ $\xv_\beta$ from the mass balance above.  An infeasible probe (one
 where some $x_{\beta, i}$ would come out negative) gets a large
 penalty so the optimiser steers back into the physical simplex.
 
+\subsection{The common tangent: where the two liquids come from}
+\label{sec:common-tangent}
+
+For a binary at fixed $T$ and $P$ the whole of liquid--liquid
+equilibrium can be read off one curve.  Write the molar Gibbs energy
+of mixing as a function of the mole fraction $x \equiv x_1$,
+\[
+    g(x) \;=\; RT\left[\,x \ln (\gamma_1 x) + (1-x)\ln(\gamma_2 (1-x))\,\right],
+\]
+the ideal part $RT[x\ln x + (1-x)\ln(1-x)]$ plus the excess part
+$\Gex = RT[x\ln\gamma_1 + (1-x)\ln\gamma_2]$ that the activity model
+supplies.
+
+\paragraph{The tangent line \emph{is} the pair of chemical
+potentials.}  The two partial molar quantities follow from $g$ and its
+slope alone,
+\[
+    \mu_1 - \mu_1^{\circ} \;=\; g + (1-x)\,\frac{\mathrm{d} g}{\mathrm{d} x},
+    \qquad
+    \mu_2 - \mu_2^{\circ} \;=\; g - x\,\frac{\mathrm{d} g}{\mathrm{d} x}.
+\]
+Both are values of the same straight line: the tangent to $g$ at $x$,
+extended, meets the axis $x = 1$ at $\mu_1 - \mu_1^{\circ}$ and the
+axis $x = 0$ at $\mu_2 - \mu_2^{\circ}$.  The tangent is therefore not
+an illustration of the chemical potentials --- it is a plot of them.
+
+\paragraph{Equilibrium therefore forces one shared tangent.}  Two
+liquid phases $\alpha$ and $\beta$ coexist when each component has the
+same chemical potential in both, $\mu_{i,\alpha} = \mu_{i,\beta}$ for
+$i = 1, 2$.  Read through the identities above, those two equations
+say that the tangent drawn at $x_\alpha$ and the tangent drawn at
+$x_\beta$ have the same intercept at $x = 1$ \emph{and} the same
+intercept at $x = 0$ --- two lines agreeing at two points are one
+line.  Hence the \emph{double-tangent} (or common-tangent)
+construction: the coexisting compositions are the two points at which
+a single straight line touches $g(x)$.  Equality of $\mu_1$ and
+$\mu_2$ is exactly equality of slope and of intercept, so the
+geometric statement and the thermodynamic one carry the same
+information; neither is an approximation of the other.
+
+\paragraph{Why the split lowers $G$.}  Take a feed of composition $z$
+lying between $x_\alpha$ and $x_\beta$.  If it stays homogeneous its
+molar Gibbs energy is $g(z)$, a point on the curve.  If it splits, the
+lever rule fixes the phase fraction,
+\[
+    \beta \;=\; \frac{z - x_\alpha}{x_\beta - x_\alpha},
+    \qquad
+    g_{\mathrm{split}}(z)
+    \;=\; (1-\beta)\,g(x_\alpha) + \beta\,g(x_\beta),
+\]
+which is the height of the \emph{chord} through the two tangent
+points, evaluated at $z$.  Wherever that chord runs below the curve,
+$g_{\mathrm{split}}(z) < g(z)$ and two liquids beat one.  The chord is
+the common tangent, so the construction simultaneously gives the two
+mutual solubilities (its touching points) and the amount of each phase
+(the lever rule along it).
+
+\paragraph{Convexity, and what the curve must do.}  A homogeneous
+mixture is locally stable against small composition fluctuations while
+\[
+    \frac{\mathrm{d}^2 g}{\mathrm{d} x^2} \;>\; 0 .
+\]
+The ideal contribution alone gives $\mathrm{d}^2 g/\mathrm{d} x^2 = RT/[x(1-x)] > 0$
+everywhere, and diverges at both pure ends: an ideal solution can
+never demix, and no real one demixes right up against a pure
+component.  A split therefore requires the excess part to be
+sufficiently positive --- repulsive unlike-pair interactions ---
+\emph{and} requires the model form to be capable of the resulting
+double well at all.  That is a property of the functional form, not of
+the fitted numbers: Wilson's single logarithm per term cannot produce
+it for any parameters, while NRTL and UNIQUAC can
+(Figure~\ref{fig:wilson-vs-nrtl-wells}).
+
+\paragraph{Binodal, spinodal, and the band between them.}  Two
+different conditions mark two different loci, and they must not be
+confused.  The \emph{binodal} is the common-tangent locus above:
+global, non-local, a statement about two compositions at once.  The
+\emph{spinodal} is where $\mathrm{d}^2 g/\mathrm{d} x^2 = 0$: local, a statement
+about one composition.  The spinodal always lies inside the binodal.
+Between them sits the metastable band --- a mixture there is stable to
+infinitesimal fluctuations (the curvature is still positive) yet has a
+lower-Gibbs two-phase state available to it, so it separates only by
+nucleation, and can be held homogeneous indefinitely if none occurs.
+Inside the spinodal the curvature is negative and even an
+infinitesimal fluctuation grows: separation is spontaneous everywhere
+at once (spinodal decomposition).  The two loci meet only at the
+critical solution point, where $\mathrm{d}^2 g/\mathrm{d} x^2 = \mathrm{d}^3 g/\mathrm{d} x^3 = 0$
+and the two coexisting compositions merge.  Neither locus can be
+recovered from the other: knowing the two tangent points says nothing
+about where the curvature changes sign, and knowing the spinodal does
+not locate the tangent.
+
+\paragraph{Beyond two components.}  For $n$ components the tangent
+line becomes a tangent \emph{hyperplane} to the $g$ surface over the
+composition simplex, and coexistence is the statement that one
+hyperplane touches the surface at two (or more) points.  This is
+precisely the object Michelsen's tangent-plane-distance test of
+Section~\ref{sec:tpd} probes: $\mathrm{tpd}(\xv) < 0$ says some trial
+composition dips below the tangent plane at the feed, so the feed
+cannot be the whole story.  The common-tangent picture and the
+stability test are the same geometry seen from two sides --- one
+constructs the answer, the other detects that an answer is missing.
+
 \subsection*{Why direct minimisation succeeds where Newton fails}
 
 At $\xv_\alpha = \xv_\beta = \xv_z$ (the K = 1 trivial), the equal-activity

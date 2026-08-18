@@ -32,13 +32,16 @@ License
   (right, FlowCanvas.tsx) and the DOCKED assistant console row (bottom,
   AppShell.tsx + AgentConsole.tsx).
 
-  Both fold the Explore-rail way (useRailWidth.ts is the precedent): a slim
+  Both fold the Explore-rail way (the mechanics are `ui/panelContract.tsx`,
+  where that rail's hook was generalised on 2026-08-18): a slim
   always-visible handle, a ~200 ms transition, reduced-motion → instant, and
-  the folded flag persisted so a reload keeps the tucked layout.  Where the
-  flag LIVES differs by ownership — the card fold is the store's
-  `panels.property` slot (the historical right-panel visibility key, session
-  `choupo.session.v1`); the console fold is `agentCollapsed` in the agent
-  cluster (same session blob).
+  the folded flag persisted so a reload keeps the tucked layout.  Both flags
+  are READER PREFERENCES and live in `state/prefs.ts` under their own keys
+  (`PANELS.selectionCard`, `PANELS.bottomDock`), read and written in EVERY tab
+  — the store surfaces them as `panels.property` and `agentCollapsed`.  They
+  used to ride the session blob, which the isolated-tab guard suppresses, so
+  from the day ONE TAB ONE THING shipped neither fold survived a reload in a
+  `?case=` tab; see the header of state/prefs.ts for the measurement.
 
   The card is an OVERLAY (position:absolute over the canvas), so it slides
   with `transform: translateX` — the canvas div never changes size and React

@@ -86,7 +86,9 @@ import {
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
+import { methodsToolCollapsedKey } from "../../state/prefs.js";
 import { useStore } from "../../state/store.js";
+import { useCollapsedFlag } from "./methodsChrome.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -545,9 +547,13 @@ export function pinchOverrides(
   }));
 }
 
-/** Where the knob panel's collapsed state persists across sessions. */
-export const CONTROLS_COLLAPSED_KEY =
-  "choupo.methods.pinch-composite.controlsCollapsed";
+/** Where the knob panel's collapsed state persists across sessions.  The key
+ *  is DERIVED from the tool id by the one rule in `state/prefs.ts`, and the
+ *  name says which panel it belongs to: three modules used to export
+ *  `CONTROLS_COLLAPSED_KEY` with three different values, so the name told a
+ *  reader nothing about which fold they had in hand. */
+export const PINCH_CONTROLS_COLLAPSED_KEY =
+  methodsToolCollapsedKey("pinch-composite");
 
 // ---- The workspace tool -----------------------------------------------------
 
@@ -566,16 +572,10 @@ export function PinchCompositeTool(): JSX.Element {
   // ---- Classroom knobs (values are session state; collapse persists). ------
   const [knobValues, setKnobValues] = useState<{ [id: string]: number }>(
     () => Object.fromEntries(PINCH_KNOBS.map((k) => [k.id, k.value])));
-  const [controlsCollapsed, setControlsCollapsed] = useState<boolean>(() => {
-    try { return window.localStorage.getItem(CONTROLS_COLLAPSED_KEY) === "1"; }
-    catch { return false; }
-  });
-  const toggleControls = (): void => setControlsCollapsed((c) => {
-    const next = !c;
-    try { window.localStorage.setItem(CONTROLS_COLLAPSED_KEY, next ? "1" : "0"); }
-    catch { /* storage unavailable — the collapse stays session-only */ }
-    return next;
-  });
+  // The fold reads and writes through the shared, junk-tolerant hook — this
+  // used to be a fourth hand-rolled copy of the same try/catch pair.
+  const { collapsed: controlsCollapsed, toggle: toggleControls } =
+    useCollapsedFlag(PINCH_CONTROLS_COLLAPSED_KEY);
 
   // ---- The classroom engine run: the witness with the knobs written in. ----
   const overridesKey = JSON.stringify(knobValues);

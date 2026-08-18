@@ -1244,8 +1244,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             width: the card is an overlay, the canvas div never resizes, so
             React Flow needs no nudge.  The React Flow wrapper's
             overflow:hidden clips the parked body.  Fold state persists via
-            panels.property (session), so the tucked layout survives reloads
-            and re-selections. */}
+            panels.property, which is a READER PREFERENCE with its own key
+            (state/prefs.ts) rather than a field of this tab's session -- so
+            the tucked layout survives a reload, a new tab, and the next case. */}
         {selectedNodeId && (
           <Box
             style={{

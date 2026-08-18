@@ -8,6 +8,14 @@
   the liquid-liquid split (the two mutual solubilities) straight off the picture,
   the concept the dome-style binodal only asserts.  Miscible system → no binodal
   rows → just a convex curve, honestly.
+
+  WHAT THE PICTURE CLAIMS AND WHAT IS ABSENT FROM IT (the spinodal and the
+  metastable band are not published by the engine, so they are not drawn) is
+  said ON SCREEN in ONE place: the binaryLle branch of ExploreWorkspace's
+  subtitle.  Do not restate it here — two wordings of one claim drift, and the
+  half a reader happens to see decides what they believe.  Nothing in this file
+  differentiates the curve: a slope computed in TypeScript would be physics in
+  the view, and a finite difference across these nodes is not the chord.
 \*---------------------------------------------------------------------------*/
 
 import { useComputedColorScheme } from "@mantine/core";

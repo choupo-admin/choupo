@@ -46,12 +46,12 @@ License
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group,
+  Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group,
   Loader, SegmentedControl, Slider, Stack, Text, Tooltip,
 } from "@mantine/core";
+import { useReducedMotion } from "@mantine/hooks";
 import {
-  IconAlertTriangle, IconChevronLeft, IconChevronRight, IconInfoCircle,
-  IconPin, IconPlayerPlay, IconRefresh,
+  IconAlertTriangle, IconInfoCircle, IconPin, IconPlayerPlay, IconRefresh,
 } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -73,8 +73,11 @@ import { serialize, fromJson, type JsonDict } from "../dict/index.js";
 import { useStore } from "../state/store.js";
 import { ClosedLoopPlot, type PinnedRun } from "./plotting/ClosedLoopPlot.js";
 import { PLOT_COLORS } from "./plotting/plotly.js";
-
-const COLLAPSE_KEY = "choupo.control.railCollapsed";
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
+import {
+  CONTROL_RAIL_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut,
+} from "./panelContract.js";
 
 // Slider ranges (the design's felt-lesson table).
 const KP_RANGE: [number, number] = [0, 30];
@@ -139,17 +142,21 @@ export function ControlWorkspace() {
   // The ordered component list of the seed composition (for the x0 slider).
   const icComps = useMemo(() => Object.keys(icKnobs?.composition ?? {}), [icKnobs]);
 
-  // --- collapsible rail ----------------------------------------------------
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    try { return window.localStorage.getItem(COLLAPSE_KEY) === "1"; } catch { return false; }
-  });
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed((c) => {
-      const next = !c;
-      try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); } catch { /* ignore */ }
-      return next;
-    });
-  }, []);
+  /* --- the tuning rail: a PANEL CONTRACT panel (ui/panelContract.tsx) ------
+   *
+   * It used to be a fold and nothing else: a hand-rolled try/catch pair around
+   * one localStorage key, a fixed 260 px width nobody could change, a re-open
+   * strip that only a mouse could reach, and TWO tooltips advertising "( [ )"
+   * for a key that was bound in ExploreWorkspace, for the Explorer's rail, and
+   * never here.  Measured 2026-08-18 in Chromium: pressing `[` with this
+   * workspace open did nothing at all.
+   *
+   * All four are the contract's now, and the shortcut is bound by the same
+   * declaration the tooltips are written from. */
+  const railHost = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(CONTROL_RAIL_PANEL, { availablePx: railHost.width });
+  usePanelShortcut(rail);
+  const reduceMotion = useReducedMotion();
 
   // --- tuning state (reset-on-close = component-local) ----------------------
   const baseline = useMemo<Tuning>(
@@ -485,7 +492,7 @@ export function ControlWorkspace() {
   const signalName = signalIsForcing ? sigKnobs!.name : undefined;
   const signalMv = signalIsForcing ? sigKnobs!.actuate?.mv : undefined;
 
-  const railW = collapsed ? 0 : 260;
+  const railBox = panelBoxProps(rail, !!reduceMotion);
 
   return (
     <Box style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
@@ -537,32 +544,25 @@ export function ControlWorkspace() {
       </Group>
 
       {/* ---- rail + plot ---- */}
-      <Box style={{ display: "flex", flex: 1, minHeight: 0, position: "relative" }}>
-        {collapsed ? (
-          <Box
-            onClick={toggleCollapsed}
-            title="Show tuning rail ( [ )"
+      <Box ref={railHost.ref} style={{ display: "flex", flex: 1, minHeight: 0, position: "relative" }}>
+        {rail.collapsed && (
+          <PanelReopenStrip panel={rail} scent="TUNING" />
+        )}
+        {/* The rail box is ALWAYS rendered — folding animates its width to 0,
+            which is what makes the fold lossless and the re-open smooth. */}
+        <Box
+            data-panel={railBox["data-panel"]}
             style={{
-              width: 28, flex: "0 0 28px", cursor: "pointer",
-              borderRight: "1px solid var(--mantine-color-dark-5)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
-            <IconChevronRight size={16} />
-          </Box>
-        ) : (
-          <Box
-            style={{
-              width: railW, flex: `0 0 ${railW}px`, minWidth: 0, overflowY: "auto",
-              borderRight: "1px solid var(--mantine-color-dark-5)",
+              ...railBox.style,
+              overflowY: rail.collapsed ? "hidden" : "auto",
+              borderRight: rail.collapsed
+                ? "none" : "1px solid var(--mantine-color-dark-5)",
             }}
           >
             <Stack gap={14} p="sm">
               <Group justify="space-between" align="center">
                 <Text size="xs" tt="uppercase" fw={700} c="dimmed">Tuning</Text>
-                <ActionIcon size="sm" variant="subtle" color="gray" onClick={toggleCollapsed} title="Hide rail ( [ )">
-                  <IconChevronLeft size={15} />
-                </ActionIcon>
+                <PanelCollapseButton panel={rail} />
               </Group>
 
               <KnobSlider
@@ -723,7 +723,7 @@ export function ControlWorkspace() {
               </Alert>
             </Stack>
           </Box>
-        )}
+        <PanelResizeHandle panel={rail} />
 
         {/* ---- the primary plot ---- */}
         <Box style={{ flex: 1, minWidth: 0, position: "relative" }}>

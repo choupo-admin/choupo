@@ -30,7 +30,8 @@ License
   methodsChrome — the EduTools workspace's collapse chrome, shared by every
   method tool (the McCabe / psychro setup bar and each run-fed tool's own
   panel fold).  The design is the Explorer's ratified fold-to-edge idiom
-  (useRailWidth.ts + LeftRail/RailReopenTab in ExploreWorkspace.tsx), reused
+  (the rail hook + LeftRail/RailReopenTab in ExploreWorkspace.tsx, all three
+  now generalised into ui/panelContract.tsx), reused
   rather than reinvented so the two workspaces feel like ONE application:
 
   * collapse persists under a GLOBAL localStorage key (the workspace is a
@@ -89,10 +90,26 @@ License
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMediaQuery } from "@mantine/hooks";
 
+import {
+  METHODS_SETUP_COLLAPSED_KEY,
+  hasFlag,
+  readFlag,
+  writeFlag,
+} from "../../state/prefs.js";
+
 /** The live tools' setup-bar fold (toolbar + teaches line + hand-off footer).
  *  ONE global key shared by every tool that offers the fold, so switching
- *  tools mid-lecture keeps the presentation posture instead of resetting it. */
-export const CONTROLS_COLLAPSED_KEY = "choupo.methods.controlsCollapsed";
+ *  tools mid-lecture keeps the presentation posture instead of resetting it.
+ *
+ *  THE VALUE NOW COMES FROM THE ONE KEY REGISTRY (state/prefs.ts), and the
+ *  re-export is kept because this name is what the workspace and its tests
+ *  already import.  Until 2026-08-18 three modules exported a
+ *  `CONTROLS_COLLAPSED_KEY` with three DIFFERENT values — this one, the pinch
+ *  tool's and the pump tool's — so what an importer got depended on which
+ *  module the import line happened to name.  The keys are distinct THINGS and
+ *  now carry distinct NAMES; only the storage spelling is shared, from one
+ *  home. */
+export const CONTROLS_COLLAPSED_KEY = METHODS_SETUP_COLLAPSED_KEY;
 
 // ---- Responsive posture (the ONE detection home) ---------------------------
 
@@ -265,44 +282,32 @@ export function useFitsOneRow(naturalWidthPx: number): boolean {
 
 // ---- Persistence -----------------------------------------------------------
 
+// THE READING AND WRITING MOVED DOWN A LAYER (2026-08-18).  The junk-tolerant
+// posture below was written here and was the best in the app, which is exactly
+// why it should not live in a view: a view that reads storage itself is a
+// second home for the decision "what does a corrupt value mean?".  It is now
+// `state/prefs.ts`, unchanged in behaviour, and these three keep their names
+// because the tools and their tests import them.
+
 /** Read a persisted collapsed flag.  `defaultCollapsed` (default: EXPANDED,
  *  false) answers when storage has nothing explicit to say: absent key, junk
  *  value, blocked storage, or no window at all.  Only a stored "1"/"0" — a
  *  real user toggle — overrides it. */
 export function loadCollapsed(key: string, defaultCollapsed = false): boolean {
-  if (typeof window === "undefined") return defaultCollapsed;
-  try {
-    const v = window.localStorage.getItem(key);
-    if (v === "1") return true;
-    if (v === "0") return false;
-    return defaultCollapsed;
-  } catch {
-    return defaultCollapsed;
-  }
+  return readFlag(key, defaultCollapsed);
 }
 
 /** Whether storage carries an EXPLICIT user toggle ("1" or "0") for the key.
  *  Junk, absence, or a blocked storage all read as "no" — the posture default
  *  keeps authority until the user actually toggles. */
 export function hasStoredCollapsed(key: string): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const v = window.localStorage.getItem(key);
-    return v === "1" || v === "0";
-  } catch {
-    return false;
-  }
+  return hasFlag(key);
 }
 
 /** Persist a collapsed flag.  Best-effort: a blocked storage keeps the state
  *  session-only rather than throwing into the render path. */
 export function saveCollapsed(key: string, collapsed: boolean): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, collapsed ? "1" : "0");
-  } catch {
-    /* storage blocked — collapse stays session-only */
-  }
+  writeFlag(key, collapsed);
 }
 
 /** A persisted collapse flag as component state: seeded from storage, toggled

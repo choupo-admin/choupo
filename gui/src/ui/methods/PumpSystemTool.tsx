@@ -92,7 +92,9 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
+import { methodsToolCollapsedKey } from "../../state/prefs.js";
 import { useStore } from "../../state/store.js";
+import { useCollapsedFlag } from "./methodsChrome.js";
 
 // ---- Detection: which sweep CSV feeds the tool ------------------------------
 
@@ -303,9 +305,12 @@ export const PUMP_PROVENANCE_LINE =
   "Runs tutorials/steady/hydraulics/pumpSystem01_operating_point "
   + "(13-point sweep) with your parameters, in your browser.";
 
-/** localStorage home of the knob-panel fold (persisted across sessions). */
-export const CONTROLS_COLLAPSED_KEY =
-  "choupo.methods.pump-system.controlsCollapsed";
+/** localStorage home of the knob-panel fold (persisted across sessions).  The
+ *  key is DERIVED from the tool id by the one rule in `state/prefs.ts`; the
+ *  name says WHICH fold, because three modules used to export the same name
+ *  for three different keys. */
+export const PUMP_CONTROLS_COLLAPSED_KEY =
+  methodsToolCollapsedKey("pump-system");
 
 // Slider bounds: UI affordances only — the range a classroom drag covers,
 // never a physical claim.  The engine judges whatever number arrives.
@@ -398,16 +403,9 @@ export function PumpSystemTool(): JSX.Element {
     appSweep ? sourceChoice : "classroom";
   const classroom = source === "classroom";
 
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    try { return window.localStorage.getItem(CONTROLS_COLLAPSED_KEY) === "1"; }
-    catch { return false; }
-  });
-  const toggleCollapsed = () => setCollapsed((c) => {
-    const next = !c;
-    try { window.localStorage.setItem(CONTROLS_COLLAPSED_KEY, next ? "1" : "0"); }
-    catch { /* storage blocked — the fold stays session-only */ }
-    return next;
-  });
+  // One shared, junk-tolerant fold hook instead of a hand-rolled try/catch pair.
+  const { collapsed, toggle: toggleCollapsed } =
+    useCollapsedFlag(PUMP_CONTROLS_COLLAPSED_KEY);
 
   const overridesKey = JSON.stringify(knobs);
   const overrides = useMemo(() => pumpSystemOverrides(knobs), [knobs]);

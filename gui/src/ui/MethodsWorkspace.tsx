@@ -408,7 +408,16 @@ function SetupCollapseButton({ onCollapse }: { onCollapse: () => void }) {
  *  committed setup stays SEEN (the Explorer's value-stays-visible rule), and
  *  alerts fold to a counted `⚠ N` pill rather than vanishing — the honesty
  *  credo allows folded, never silent.  The WHOLE strip is the click target
- *  (Fitts edge strip); keyboard: tabbable, Enter / Space restore. */
+ *  (Fitts edge strip); keyboard: tabbable, Enter / Space restore.
+ *
+ *  THIS IS ONE OF THE TWO STRIPS THE PANEL CONTRACT WAS DERIVED FROM (the
+ *  other being the Explorer's rail re-open tab), and it deliberately STAYS
+ *  here rather than becoming a `PanelReopenStrip`: a docked panel folds an
+ *  area that also has a SIZE the reader drags, and this bar has none — it is a
+ *  toolbar that gets out of the diagram's way.  What the contract took from it
+ *  is the posture: whole-strip target, a scent of what is folded, and a
+ *  keyboard path back.  Before writing a third one of these, read
+ *  ui/panelContract.tsx. */
 function SetupCollapsedStrip({ summary, busy, alertCount, onExpand }: {
   summary: string; busy: boolean; alertCount: number; onExpand: () => void;
 }) {

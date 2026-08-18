@@ -1,10 +1,17 @@
 /*---------------------------------------------------------------------------*\
   Session restore (slice 4): the GUI reopens exactly what was open when it was
-  last closed -- the case, the active workspace tab, the console, the panels.
+  last closed -- the case, the active workspace tab, the console.
   The store reads localStorage at module init, so each test resets modules and
   seeds a minimal window/localStorage stub BEFORE importing the store fresh
   (the project ships no jsdom; the store only needs window.localStorage +
   window.location.search).
+
+  AMENDED 2026-08-18.  The session used to carry the panel FOLDS as well, and
+  three cases here pinned that.  Folds are READER PREFERENCES: they belong to
+  the person, not to the tab, so they left this blob for their own keys — see
+  state/prefs.ts and tests/panelPrefs.test.ts, which pins the new contract
+  (including that an old blob carrying `panels.output` still loads).  What is
+  pinned HERE is what genuinely identifies a tab.
 \*---------------------------------------------------------------------------*/
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
@@ -66,14 +73,13 @@ afterEach(async () => {
 });
 
 describe("session restore", () => {
-  it("boots BLANK but restores workspace/console/panels; reopenLastCase loads the case", async () => {
+  it("boots BLANK but restores workspace/console; reopenLastCase loads the case", async () => {
     const { TUTORIALS } = await import("../src/cases/tutorials.js");
     const name = TUTORIALS[0]!.name;
     ls.setItem(KEY, JSON.stringify({
       caseRef: { kind: "tutorial", name },
       activeWorkspace: "props",
       agentOpen: true,
-      panels: { property: false, output: true },
     }));
 
     const { useStore, reopenLastCase } = await import("../src/state/store.js");
@@ -81,7 +87,6 @@ describe("session restore", () => {
     expect(s.tutorialName).toBe("");            // boots BLANK -- no auto-load
     expect(s.activeWorkspace).toBe("props");     // UI state IS still restored
     expect(s.agentOpen).toBe(true);
-    expect(s.panels).toEqual({ property: false, output: true });
     await reopenLastCase();                       // deliberate reopen (File menu)
     expect(useStore.getState().tutorialName).toBe(name);
   });
@@ -110,28 +115,16 @@ describe("session restore", () => {
     expect(useStore.getState().agentOpen).toBe(false);
   });
 
-  it("restores the panel folds (selection card + console) from the session", async () => {
-    ls.setItem(KEY, JSON.stringify({
-      caseRef: null,
-      activeWorkspace: null,
-      agentOpen: true,
-      agentDocked: true,
-      agentCollapsed: true,
-      panels: { property: false, output: true },
-    }));
+  it("does NOT carry the panel folds any more — they are the reader's, not the tab's", async () => {
     const { useStore } = await import("../src/state/store.js");
-    expect(useStore.getState().agentCollapsed).toBe(true);     // console folded
-    expect(useStore.getState().panels.property).toBe(false);   // card tucked away
-  });
-
-  it("persists the panel folds when toggled (card via togglePanel, console via toggleAgentCollapsed)", async () => {
-    const { useStore } = await import("../src/state/store.js");
-    expect(useStore.getState().agentCollapsed).toBe(false);    // defaults expanded
-    expect(useStore.getState().panels.property).toBe(true);
     useStore.getState().togglePanel("property");
     useStore.getState().toggleAgentCollapsed();
     const blob = JSON.parse(ls.getItem(KEY)!);
-    expect(blob.panels.property).toBe(false);
-    expect(blob.agentCollapsed).toBe(true);
+    expect("panels" in blob).toBe(false);
+    expect("agentCollapsed" in blob).toBe(false);
+    // Where they DID go, and that they are readable back, is pinned in
+    // tests/panelPrefs.test.ts — one contract, one suite.
+    expect(ls.getItem("choupo.panel.selectionCard.collapsed")).toBe("1");
+    expect(ls.getItem("choupo.panel.bottomDock.collapsed")).toBe("1");
   });
 });

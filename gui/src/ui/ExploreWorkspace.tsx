@@ -35,7 +35,7 @@ import {
 } from "@mantine/core";
 import { useReducedMotion } from "@mantine/hooks";
 import {
-  IconAdjustmentsHorizontal, IconBook, IconChevronDown, IconChevronLeft, IconChevronRight,
+  IconAdjustmentsHorizontal, IconBook, IconChevronDown,
 } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
@@ -53,10 +53,15 @@ import { dropCsvColumn } from "./plotting/csvShape.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
-import { useRailWidth, type RailWidthHandle } from "./explore/useRailWidth.js";
+import {
+  EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
+  panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
+} from "./panelContract.js";
+import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import { binaryVleSpec } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
+import { theoryUrl } from "../case/exploreTheory.js";
 import { hasPair } from "../case/pairsCatalogue.js";
 import { solidPhaseFor } from "../case/solidPhaseData.js";
 import { mergeTernaryCsvs, workerCount } from "../case/ternaryParallel.js";
@@ -66,7 +71,6 @@ import { useStore } from "../state/store.js";
 import {
   kToDisplay, paToDisplay, parseTemperature, parsePressure, temperatureLabel, pressureLabel,
 } from "../state/displayUnits.js";
-import { guideUrl } from "../help/guideLinks.js";
 
 interface PlotType {
   id: PlotKind;
@@ -266,37 +270,9 @@ function csvColumnEnds(csv: string, name: string): { first: number; last: number
   return Number.isFinite(first) && Number.isFinite(last) ? { first, last } : null;
 }
 
-// Map the active plot to the matching Theory Guide section (hyperref destlabel
-// turns each \label{...} into a PDF named destination, so #nameddest jumps
-// straight there).  The URL itself comes from `help/guideLinks`, the one
-// home for it -- this file used to hardcode a leading "/", which points
-// outside the app under a deployed base.
-function theoryAnchor(plotType: PlotKind, property: string): string {
-  switch (plotType) {
-    case "txy": return "ch:flash";          // binary VLE / bubble-dew
-    case "flash": return "ch:flash";        // binary flash: tie-line + lever rule
-    case "gamma": return "ch:activity";     // activity coefficients
-    case "ternary": return "sec:ternary";   // ternary boiling surface
-    case "ternaryLle": return "ch:lle-gibbs"; // liquid-liquid / solubility
-    case "phase": return "ch:vap";           // vapour pressure / saturation
-    case "scaling": return "ch:electrolytes"; // ionic strength / activity / Pitzer
-    // `ch:gibbs` was never a label in any build of the Theory Guide, so this
-    // lens's Theory link opened the guide at page 1 and said nothing.  The
-    // real section is \label{sec:gibbs-maps}, "Equilibrium maps and the
-    // temperature approach" — the same destination modelDocs already gives
-    // the gibbsMap props op.
-    case "gibbsmap": return "sec:gibbs-maps"; // equilibrium maps (forum 2026-07-02)
-    case "steam": return "ch:vap";           // saturation line / vapour pressure
-    default:                                 // property scan
-      if (property === "Psat") return "ch:vap";
-      if (property === "Cp_liquid" || property === "Cp_ig") return "ch:heat";
-      if (property === "viscosity_liquid" || property === "viscosity_gas") return "ch:viscosity";
-      if (property === "thermal_conductivity_liquid" || property === "thermal_conductivity") return "ch:thermal-cond";
-      return "ch:fugacity";                 // Z / v_molar / H / S → EoS departure
-  }
-}
-const theoryUrl = (plotType: PlotKind, property: string) =>
-  guideUrl("theoryGuide", theoryAnchor(plotType, property));
+// (theoryAnchor / theoryUrl moved to case/exploreTheory.ts on 2026-08-18 —
+// a pure decision a test can import without a React tree, which is what let it
+// be gated at last.  See that file's header and tests/exploreTheoryAnchors.)
 
 function num(v: number | string, fallback: number): number {
   const n = typeof v === "number" ? v : parseFloat(v);
@@ -306,9 +282,18 @@ function num(v: number | string, fallback: number): number {
 export function ExploreWorkspace() {
   const [selected, setSelected] = useState<string[]>([]);
   const [plotType, setPlotType] = useState<PlotKind>("scan");
-  // The resizable left-component-bar (Vítor's ask) — drag the right border,
-  // double-click to reset, persisted GLOBALLY.  See useRailWidth.ts.
-  const rail = useRailWidth();
+  /* The resizable left-component-bar (Vítor's ask) — drag the right border,
+   * double-click to reset, `[` to fold, persisted per reader.
+   *
+   * It USED to be `useRailWidth()`, a hook written for this rail alone with
+   * this rail's three numbers baked in.  Its mechanics were the best in the
+   * app and are exactly what `ui/panelContract.tsx` now gives every rail and
+   * the bottom window; what it could not do was be reused, which is why five
+   * other panels had no resize at all.  Nothing here changed for the reader:
+   * same keys, same clamp, same lossless fold. */
+  const host = useMeasuredBoxWidth<HTMLDivElement>();
+  const rail = usePanel(EXPLORE_SET_PANEL, { availablePx: host.width });
+  usePanelShortcut(rail);
   // scan controls
   const [property, setProperty] = useState("Psat");
   const [axisVar, setAxisVar] = useState<"T" | "P">("T");
@@ -896,24 +881,21 @@ export function ExploreWorkspace() {
 
   // F1 = open the Theory Guide at the section matching the active plot (a
   // keyboard accelerator; the visible "Theory" link is the primary path).
-  // `[` = fold / unfold the SET rail (guarded: ignored while a text field is
-  // focused, so typing "[" into the search box never collapses the browser).
+  //
+  // `[` USED to be handled here too, with its own text-field guard.  It is the
+  // panel contract's now (`usePanelShortcut` above), for the reason the
+  // contract exists: the Control Room advertised the same key in two tooltips
+  // and nothing bound it there, because the binding lived in this file and
+  // belonged to this rail.  A shortcut declared beside the panel it folds
+  // cannot go missing from another panel that claims it.
   const helpUrl = theoryUrl(plotType, property);
-  const toggleCollapsed = rail.toggleCollapsed;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "F1") { e.preventDefault(); window.open(helpUrl, "_blank"); return; }
-      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const t = e.target as HTMLElement | null;
-        const tag = t?.tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
-        e.preventDefault();
-        toggleCollapsed();
-      }
+      if (e.key === "F1") { e.preventDefault(); window.open(helpUrl, "_blank"); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [helpUrl, toggleCollapsed]);
+  }, [helpUrl]);
 
   // Components that can't yield the chosen pure property (so their curve won't
   // appear) — surfaced as a note instead of a silent gap.  Only Psat is
@@ -1029,6 +1011,24 @@ export function ExploreWorkspace() {
     ? steamMode === "saturation"
       ? `Saturated-steam table — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; regions 1/2 evaluated ON the region-4 saturation line (valid 0.01–350 °C). Mass-basis SI columns; pick the property family above.`
       : `Steam isobar at ${paToDisplay(steamP, Pu)} ${pressureLabel(Pu)} — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; h, s, v, cp vs T (mass-basis SI). A subcritical isobar jumps at the Tsat crossing — the engine announces it.`
+    : plotType === "binaryLle"
+    // WHAT THE PICTURE CLAIMS, and what is simply not in it.  This branch was
+    // missing until 2026-08-18, so a g_mix LLE diagram carried the property
+    // scan's caption — "Pure-component Psat vs T — composition has no effect"
+    // — over a curve that is nothing but a composition effect.
+    //
+    // The wording of the last sentence is deliberate.  The spinodal and the
+    // metastable band are ABSENT, not hidden: `propertyScanBinary` publishes
+    // x1, g_mix, role and beta, with role ∈ {curve, binodal} — there is no
+    // second derivative and no spinodal row to draw.  "Not shown for clarity"
+    // would describe a choice, and a reader who believes a curve was merely
+    // suppressed reads this picture as more complete than it is.  Choupo does
+    // NOT differentiate the published nodes here to supply one: a finite
+    // difference across them is arithmetic dressed as thermodynamics (ZERO
+    // physics in TypeScript), and it would disagree with the chord it appears
+    // to check.  Closing the gap is an engine slice — see
+    // docs/design/edutools-curriculum-survey.md.
+    ? `Binary liquid-liquid at ${kToDisplay(fixedT, Tu).toFixed(1)} ${temperatureLabel(Tu)}, ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the molar Gibbs energy of mixing g_mix(x) of ${selected[0] ?? "A"}/${selected[1] ?? "B"}; activity from UNIFAC (group contribution, no fitted pairs). The two markers are the compositions the engine's LL flash (Gibbs minimisation) returned, each with its phase fraction β; the dashed line is the chord through them — the common tangent that equal chemical potentials in both liquids require, drawn from the flash result rather than fitted to the curve. A feed between them splits, and its Gibbs energy is read ON the chord: where the chord runs below the curve, two liquids beat one. The spinodal (d²g/dx² = 0) and the metastable band between it and the binodal are NOT DRAWN: the engine publishes the curve and the two coexisting compositions, and no curvature — so there is nothing here to draw them from. No markers ⇒ the LL flash found no split at this T and P.`
     : plotType === "ternaryLle"
     ? `Ternary solubility (LLE) at ${kToDisplay(fixedT, Tu).toFixed(1)} ${temperatureLabel(Tu)}, ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — miscibility regions + tie-lines; activity from UNIFAC (group contribution, no fitted pairs)`
     : isTernary
@@ -1050,9 +1050,10 @@ export function ExploreWorkspace() {
   // ---- empty state (T3): no compounds picked yet ----
   if (selected.length === 0) {
     return (
-      <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
+      <Box ref={host.ref} style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
         <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} onInspect={openInspector} rail={rail} unlockLine={unlockLine} />
-        {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
+        <PanelResizeHandle panel={rail} />
+        {rail.collapsed && <PanelReopenStrip panel={rail} scent={`SET · ${selected.length}`} />}
         <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
         <InspectorPanel record={inspected} name={inspecting} onClose={() => setInspecting(null)} />
         <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
@@ -1087,9 +1088,10 @@ export function ExploreWorkspace() {
   ) : null;
 
   return (
-    <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
+    <Box ref={host.ref} style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
       <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} onInspect={openInspector} rail={rail} unlockLine={unlockLine} />
-      {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
+      <PanelResizeHandle panel={rail} />
+      {rail.collapsed && <PanelReopenStrip panel={rail} scent={`SET · ${selected.length}`} />}
       <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
       <InspectorPanel record={inspected} name={inspecting} onClose={() => setInspecting(null)} />
 
@@ -1708,12 +1710,15 @@ export function ExploreWorkspace() {
 }
 
 /** The compound browser rail (SET region) — shared by the empty state and the
- *  live view.  The width is draggable (the 6px col-resize splitter over the
- *  right border, reusing the AgentConsole pointer-capture idiom): clamp 200–460,
- *  double-click → snap to 240, persisted to the single GLOBAL key
- *  `choupo.explore.railWidth` (NOT case-keyed — the Explorer is a scratchpad
- *  over the same catalogue regardless of the open case).  Explorer-only; never
- *  an app-wide panel. */
+ *  live view.  Since 2026-08-18 it is a PANEL CONTRACT panel like every other
+ *  rail (ui/panelContract.tsx): the box geometry, the fold, the draggable width
+ *  and the `[` shortcut are the contract's, and what is left here is the rail's
+ *  own CONTENT — the SET header and the compound browser under it.
+ *
+ *  This rail is where the contract's drag came from; the only thing that
+ *  changed for it is that the splitter is no longer clipped to 3 px of its 6
+ *  (see rule 1 in the contract's header) and the collapse chevron's tooltip is
+ *  now derived from the same field that binds the key. */
 function LeftRail({
   selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, onInspect, rail, unlockLine,
 }: {
@@ -1724,10 +1729,9 @@ function LeftRail({
   caseComponents: ComponentMeta[];
   onEstimate: (name: string) => void;
   onInspect: (name: string) => void;
-  rail: RailWidthHandle;
+  rail: PanelHandle;
   unlockLine?: string | null;
 }) {
-  const [hover, setHover] = useState(false);
   const collapsed = rail.collapsed;
   // Animate WIDTH (not translateX — a transform would slide the rail OVER the
   // plot and the plot would jump at the end); reduced-motion → instant.  Fire
@@ -1741,48 +1745,27 @@ function LeftRail({
     const id = window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
     return () => window.cancelAnimationFrame(id);
   }, [collapsed, reduce]);
+  const box = panelBoxProps(rail, !!reduce);
   return (
     <Box
       onTransitionEnd={(e) => { if (e.propertyName === "width") window.dispatchEvent(new Event("resize")); }}
+      data-panel={box["data-panel"]}
       style={{
-      width: collapsed ? 0 : rail.width, flexShrink: 0, height: "100%",
-      padding: collapsed ? 0 : 12, overflow: "hidden", position: "relative",
-      transition: reduce ? "none" : "width 180ms ease, padding 180ms ease",
-      borderRight: collapsed
-        ? "none"
-        : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-    }}>
+        ...box.style,
+        padding: collapsed ? 0 : 12,
+        position: "relative",
+        transition: reduce ? "none" : "width 180ms ease, padding 180ms ease",
+        borderRight: collapsed
+          ? "none"
+          : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+      }}>
       <Group justify="space-between" align="center" mb={6} wrap="nowrap" gap={4}>
         <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>SET</Text>
-        <Tooltip label="Collapse the component browser (shortcut: [ )" withArrow>
-          <ActionIcon variant="subtle" size="sm" color="gray" aria-label="collapse component browser"
-            onClick={rail.toggleCollapsed}>
-            <IconChevronLeft size={15} />
-          </ActionIcon>
-        </Tooltip>
+        <PanelCollapseButton panel={rail} />
       </Group>
       <Box style={{ height: "calc(100% - 28px)" }}>
         <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} />
       </Box>
-      {/* 6px col-resize splitter over the rail's right border (drag to resize,
-          double-click to reset); the hover seam tints with the accent.  Hidden
-          when collapsed (the 28px re-open tab is the only left-edge affordance
-          then). */}
-      {!collapsed && (
-        <Box
-          onPointerDown={rail.onPointerDown}
-          onDoubleClick={rail.reset}
-          onPointerEnter={() => setHover(true)}
-          onPointerLeave={() => setHover(false)}
-          title="drag to resize · double-click to reset"
-          style={{
-            position: "absolute", top: 0, right: -3, width: 6, height: "100%",
-            cursor: "ew-resize", zIndex: 5,
-            background: hover ? `color-mix(in srgb, ${PLOT_COLORS.accent} 30%, transparent)` : "transparent",
-            transition: "background 120ms",
-          }}
-        />
-      )}
     </Box>
   );
 }
@@ -1871,37 +1854,11 @@ function ToolMenu({
   );
 }
 
-/** The 28px vertical re-open tab, flush to the plot's left edge, rendered ONLY
- *  when the rail is collapsed.  A `›` chevron + a rotated micro-label `SET · N`
- *  (N = the selected-set size = load-bearing scent: the SET is state, not just
- *  navigation).  The whole strip is the click target (a large Fitts edge strip,
- *  Linear/Notion idiom), mirroring the collapse chevron's corner. */
-function RailReopenTab({ count, onExpand }: { count: number; onExpand: () => void }) {
-  const [hover, setHover] = useState(false);
-  return (
-    <Tooltip label="Show the component browser (shortcut: [ )" withArrow position="right">
-      <Box
-        onClick={onExpand}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        role="button" aria-label="show component browser" tabIndex={0}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onExpand(); } }}
-        style={{
-          width: 28, flexShrink: 0, height: "100%", cursor: "pointer",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-          paddingTop: 10,
-          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-          background: hover
-            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
-            : "transparent",
-          transition: "background 120ms",
-        }}>
-        <IconChevronRight size={15} color="var(--mantine-color-dimmed)" />
-        <Text size="xs" fw={700} c="dimmed"
-          style={{ writingMode: "vertical-rl", letterSpacing: 0.5, userSelect: "none" }}>
-          SET · {count}
-        </Text>
-      </Box>
-    </Tooltip>
-  );
-}
+/* The 28 px vertical re-open tab MOVED to `PanelReopenStrip`
+ * (ui/panelContract.tsx) on 2026-08-18, unchanged in shape and behaviour: the
+ * whole strip is the click target, it carries the `SET · N` scent, and it is
+ * tabbable with Enter / Space.  It was one of the two implementations the
+ * contract was derived from — the other being MethodsWorkspace's
+ * SetupCollapsedStrip — and it is now what every folded panel leaves behind,
+ * including the Control Room's rail, whose own strip could not be reached
+ * without a mouse. */

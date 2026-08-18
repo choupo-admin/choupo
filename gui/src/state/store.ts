@@ -46,8 +46,21 @@ import {
   setDisplaySigFigs,
   type DisplayPrefs,
 } from "./displayUnits.js";
+import {
+  PANELS,
+  PREF_KEYS,
+  clampSize,
+  fitToViewport,
+  hasFlag,
+  loadPanelCollapsed,
+  loadPanelSize,
+  readFlag,
+  savePanelCollapsed,
+  savePanelSize,
+  writeFlag,
+} from "./prefs.js";
 
-const PREFS_STORAGE_KEY = "choupo.displayPrefs.v1";
+const PREFS_STORAGE_KEY = PREF_KEYS.display;
 
 function loadStoredPrefs(): DisplayPrefs {
   try {
@@ -78,14 +91,30 @@ function persistPrefs(p: DisplayPrefs): void {
   }
 }
 
-// ---- Session restore -------------------------------------------------------
-// On boot the GUI reopens exactly what was open when it was last closed: the
-// case, the active workspace tab, the console, and the panel layout.  This is
-// UI state ONLY -- the case CONTENT is always re-read from its source of truth
-// (the bundled glob for a tutorial; the bridge/disk for a workspace case), so
-// restore never resurrects stale dicts.  A pop-out / deep-link window (one with
-// a ?case= URL param) neither restores nor persists -- it shows its own target
-// and must not clobber the main window's session.
+// ---- Session restore: WHAT THIS TAB WAS DOING ------------------------------
+//
+// THE SESSION IS TAB STATE, NOT PREFERENCE (the line is drawn in state/prefs.ts
+// and this is its other half).  What lives here is what identifies THIS tab and
+// would be wrong to copy into another one: which case is open, which view is
+// showing, whether this tab's assistant console is running.  It is UI state
+// ONLY -- the case CONTENT is always re-read from its source of truth (the
+// bundled glob for a tutorial; the bridge/disk for a workspace case), so
+// restore never resurrects stale dicts.  A pop-out / deep-link tab (?case=,
+// ?focus=, ?internals=) neither restores nor persists it: it shows its own
+// target and must not clobber the hub's "what was I doing".
+//
+// WHAT LEFT THIS BLOB, and why it had to.  It used to also carry the
+// selection-card fold (`panels.property`) and the console's fold / dock —
+// LAYOUT PREFERENCES, which belong to the reader and not to a tab.  ONE TAB,
+// ONE THING made every opened case a `?case=` tab, and the isolated-tab guard
+// suppresses this whole blob, so those preferences were dead in every case tab
+// (measured: a tucked card came back untucked on F5).  They are keys of their
+// own now, read and written in every tab; see state/prefs.ts.
+//
+// `panels.output` left for a different reason: it named the bottom output panel
+// deleted on 2026-06-11.  A persisted key for a panel that does not exist is a
+// value no reader can ever act on.  A blob still carrying it loads fine — the
+// reader below takes the fields it knows and ignores the rest.
 const SESSION_KEY = "choupo.session.v1";
 
 interface PersistedSession {
@@ -95,10 +124,20 @@ interface PersistedSession {
     | { kind: "local"; dir: string }
     | null;
   activeWorkspace: WorkspaceKey | null;
+  /** Whether THIS tab had the assistant console open.  It stays tab state on
+   *  purpose: opening the console starts a real `claude -c` session through the
+   *  bridge, so "open" is something a tab DOES, not a shape the reader prefers.
+   *  Its height, fold and dock are preferences and live in prefs.ts. */
   agentOpen: boolean;
-  agentDocked: boolean;
-  agentCollapsed: boolean;
-  panels: { property: boolean; output: boolean };
+}
+
+/** The shape older builds wrote.  Read once, for migration only (below), and
+ *  never written again — a value with two homes is read from whichever wrote
+ *  last, which is the defect this split exists to end. */
+interface LegacySessionPrefs {
+  agentDocked?: boolean;
+  agentCollapsed?: boolean;
+  panels?: { property?: boolean; output?: boolean };
 }
 
 // A focus pop-out tab (?focus=<key>) shows a synthesised 1-unit mini-flowsheet;
@@ -133,6 +172,39 @@ function saveSession(s: PersistedSession): void {
   } catch { /* private mode -- ignore */ }
 }
 
+// ---- ONE-SHOT migration of the preferences that used to ride the session ----
+//
+// A student's browser already holds a `choupo.session.v1` with a card fold and
+// a console fold in it.  Splitting the homes must not reset what they set, so
+// the legacy blob is read ONCE per key and only where the new key has no
+// EXPLICIT answer yet ("1"/"0"); the moment the reader toggles anything, the
+// new key is present and the legacy value can never speak again.  Idempotent by
+// construction, and it runs in EVERY tab — including an isolated one, where the
+// session reader is deliberately blind, so it reads storage directly rather
+// than through loadSession().
+function migrateLegacySessionPrefs(): void {
+  if (typeof window === "undefined") return;
+  let legacy: LegacySessionPrefs | null = null;
+  try {
+    const raw = window.localStorage.getItem(SESSION_KEY);
+    legacy = raw ? (JSON.parse(raw) as LegacySessionPrefs) : null;
+  } catch { return; }              // no storage / corrupt blob -> defaults win
+  if (!legacy || typeof legacy !== "object") return;
+
+  // `panels.property` was OPEN; the panel registry stores COLLAPSED.
+  const openCard = legacy.panels?.property;
+  const cardKey = PANELS.selectionCard.collapsedKey;
+  if (typeof openCard === "boolean" && cardKey && !hasFlag(cardKey))
+    writeFlag(cardKey, !openCard);
+
+  const dockKey = PANELS.bottomDock.collapsedKey;
+  if (typeof legacy.agentCollapsed === "boolean" && dockKey && !hasFlag(dockKey))
+    writeFlag(dockKey, legacy.agentCollapsed);
+
+  if (typeof legacy.agentDocked === "boolean" && !hasFlag(PREF_KEYS.bottomDockDocked))
+    writeFlag(PREF_KEYS.bottomDockDocked, legacy.agentDocked);
+}
+
 // Map the store's `tutorialName` tag to a persisted case reference.  A
 // clipboard-uploaded "external:" case has no disk home -> not restorable.
 function caseRefOf(tutorialName: string): PersistedSession["caseRef"] {
@@ -144,13 +216,17 @@ function caseRefOf(tutorialName: string): PersistedSession["caseRef"] {
 
 export type RunStatus = "idle" | "running" | "done" | "error";
 
-/** Panel-visibility flags persisted in the session.  `property` drives the
- *  flowsheet's floating selection card: true = expanded beside its handle,
- *  false = slid away to the right edge (FlowCanvas.tsx + ui/panelFold.ts).
- *  `output` is the historical bottom-output-panel slot — kept in the session
- *  schema, currently unused (the bottom dock today is the assistant console,
- *  which folds via `agentCollapsed` below). */
-export type PanelKey = "property" | "output";
+/** Panel-visibility flags.  `property` drives the flowsheet's floating
+ *  selection card: true = expanded beside its handle, false = slid away to the
+ *  right edge (FlowCanvas.tsx + ui/panelFold.ts).  It is a READER PREFERENCE
+ *  and persists under its own key in every tab (state/prefs.ts,
+ *  `PANELS.selectionCard`), not in the session blob.
+ *
+ *  `output` is GONE (2026-08-18).  It named the bottom output panel deleted on
+ *  2026-06-11: a persisted flag for a panel that does not exist is a value
+ *  nobody can ever read back, and it survived three years of edits precisely
+ *  because nothing consumed it.  An old stored blob carrying it still loads. */
+export type PanelKey = "property";
 
 /** Top-menu workspaces (Fase B of the layout redesign).  At most one
  *  is active at a time; null means the canvas is the only view.
@@ -193,7 +269,10 @@ interface AppState {
   panels: { [K in PanelKey]: boolean };
   activeWorkspace: WorkspaceKey | null;
 
-  // Assistant console (a real `claude -c` session via the local bridge).
+  // Assistant console (a real `claude -c` session via the local bridge) — the
+  // BOTTOM DOCK of the shell.  Its SHAPE (dock / fold / height) is a reader
+  // preference persisted per key in every tab (PANELS.bottomDock); whether it
+  // is OPEN is this tab's business, because opening it starts a process.
   agentOpen: boolean;
   toggleAgent: () => void;
   /** Docked (pinned at the bottom, pushes content up so nothing hides behind
@@ -206,6 +285,9 @@ interface AppState {
    *  while floating (a floating window is moved or closed, not folded). */
   agentCollapsed: boolean;
   toggleAgentCollapsed: () => void;
+  /** The dock's height in px, as the reader dragged it.  Persisted (it was
+   *  not: before 2026-08-18 this was a plain 360 in memory, so every reload in
+   *  every tab threw the drag away). */
   agentHeight: number;
   setAgentHeight: (px: number) => void;
 
@@ -455,6 +537,10 @@ export function hasCaseOpen(tutorialName: string): boolean {
 }
 
 const initial = bootCase();
+// Preferences that used to ride the session blob are lifted to their own keys
+// BEFORE the store reads any of them, so an existing browser boots with the
+// folds its owner set rather than with the defaults.
+migrateLegacySessionPrefs();
 const bootSession = loadSession();
 
 // Set while goBack/goForward re-apply a snapshot, so the nav-history subscriber
@@ -481,7 +567,9 @@ export const useStore = create<AppState>((set, get) => ({
   runResult: initial.inherited ?? null,
   propsRunAt: 0,
   flowsheetRunAt: initial.inherited && initial.files.flowsheet ? 1 : 0,
-  panels: bootSession?.panels ?? { property: true, output: true },
+  // The card's fold comes from the READER's key, not from the session — so a
+  // `?case=` tab (every opened case, since ONE TAB ONE THING) gets it too.
+  panels: { property: !loadPanelCollapsed(PANELS.selectionCard) },
   // Workspace restore: the deep-link (?workspace=explore, the landing CTA) wins.
   // Otherwise restore the session's workspace -- EXCEPT a stale `explore` (or
   // `methods` -- also standalone) on a BLANK boot, which would hijack the
@@ -694,8 +782,17 @@ export const useStore = create<AppState>((set, get) => ({
   scrubIdx: null,
   setScrubIdx: (idx) => set({ scrubIdx: idx }),
 
+  // Every toggle below WRITES ITS PREFERENCE AT THE POINT OF THE TOGGLE, not
+  // through a subscriber that mirrors the state afterwards.  The subscriber
+  // pattern is right for the session (one blob, one snapshot of a tab); a
+  // preference is one key with one writer, and routing it through a mirror
+  // would put its value in two places again.
   togglePanel: (key) =>
-    set((s) => ({ panels: {...s.panels, [key]: !s.panels[key] } })),
+    set((s) => {
+      const next = !s.panels[key];
+      if (key === "property") savePanelCollapsed(PANELS.selectionCard, !next);
+      return { panels: {...s.panels, [key]: next } };
+    }),
 
   toggleWorkspace: (key) =>
     set((s) => ({
@@ -710,12 +807,33 @@ export const useStore = create<AppState>((set, get) => ({
 
   agentOpen: bootSession?.agentOpen ?? false,
   toggleAgent: () => set((s) => ({ agentOpen: !s.agentOpen })),
-  agentDocked: bootSession?.agentDocked ?? true,
-  toggleAgentDock: () => set((s) => ({ agentDocked: !s.agentDocked })),
-  agentCollapsed: bootSession?.agentCollapsed ?? false,
-  toggleAgentCollapsed: () => set((s) => ({ agentCollapsed: !s.agentCollapsed })),
-  agentHeight: 360,
-  setAgentHeight: (px) => set({ agentHeight: Math.max(140, Math.min(px, window.innerHeight - 80)) }),
+  agentDocked: readFlag(PREF_KEYS.bottomDockDocked, true),
+  toggleAgentDock: () =>
+    set((s) => {
+      const next = !s.agentDocked;
+      writeFlag(PREF_KEYS.bottomDockDocked, next);
+      return { agentDocked: next };
+    }),
+  agentCollapsed: loadPanelCollapsed(PANELS.bottomDock),
+  toggleAgentCollapsed: () =>
+    set((s) => {
+      const next = !s.agentCollapsed;
+      savePanelCollapsed(PANELS.bottomDock, next);
+      return { agentCollapsed: next };
+    }),
+  agentHeight: loadPanelSize(PANELS.bottomDock),
+  // The drag is bounded twice, and the two bounds are different questions: the
+  // PREFERENCE's range (clampSize, from the panel's spec) is what gets stored,
+  // while the window it is being dragged in is a fit, not a choice — so a
+  // height set on a tall screen is not destroyed by one session on a short one.
+  setAgentHeight: (px) => {
+    const wanted = clampSize(px, PANELS.bottomDock.size);
+    savePanelSize(PANELS.bottomDock, wanted);
+    // 80 px is the room the header and a usable sliver of canvas need above the
+    // dock; the FIT itself is the registry's one rule, not a second copy here.
+    const room = typeof window !== "undefined" ? window.innerHeight - 80 : 0;
+    set({ agentHeight: fitToViewport(wanted, room, PANELS.bottomDock.size) });
+  },
 
   // KEEP the last converged results visible while a new run is in flight: the
   // "running" status is the in-progress signal, and finishRun REPLACES the
@@ -736,9 +854,15 @@ export const useStore = create<AppState>((set, get) => ({
   setPlotsViewHint: (h) => set({ plotsViewHint: h }),
 }));
 
-// Persist the session (case + active workspace + console + panels) whenever it
-// changes, so the next boot reopens exactly what was open.  Skipped entirely in
-// a pop-out / deep-link window (?case=) so it never clobbers the main session.
+// Persist THIS TAB'S SESSION (case + active workspace + whether the console is
+// open) whenever it changes, so the next boot reopens what was open.  Skipped
+// entirely in a pop-out / deep-link tab (?case= / ?focus= / ?internals=) so it
+// never clobbers the hub's session.
+//
+// It no longer carries the folds: writing them here would give each of them a
+// second home, and the isolated-tab guard above would then keep switching them
+// off in exactly the tabs a student spends their day in.  They are written at
+// their toggles, into their own keys, in every tab.
 if (typeof window !== "undefined" && !isolatedTab()) {
   let prevKey = "";
   useStore.subscribe((s) => {
@@ -750,9 +874,6 @@ if (typeof window !== "undefined" && !isolatedTab()) {
         : (loadSession()?.caseRef ?? null),
       activeWorkspace: s.activeWorkspace,
       agentOpen: s.agentOpen,
-      agentDocked: s.agentDocked,
-      agentCollapsed: s.agentCollapsed,
-      panels: { property: s.panels.property, output: s.panels.output },
     };
     const key = JSON.stringify(blob);
     if (key !== prevKey) { prevKey = key; saveSession(blob); }
