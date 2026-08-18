@@ -80,15 +80,15 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Stack, Table, Text, Tooltip,
+  Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
+  Text, Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
-import { methodsToolCollapsedKey } from "../../state/prefs.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import {
+  KnobField, KnobNumber, MethodSetupRail, PanelNote,
+} from "./knobPanel.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -547,13 +547,13 @@ export function pinchOverrides(
   }));
 }
 
-/** Where the knob panel's collapsed state persists across sessions.  The key
- *  is DERIVED from the tool id by the one rule in `state/prefs.ts`, and the
- *  name says which panel it belongs to: three modules used to export
- *  `CONTROLS_COLLAPSED_KEY` with three different values, so the name told a
- *  reader nothing about which fold they had in hand. */
-export const PINCH_CONTROLS_COLLAPSED_KEY =
-  methodsToolCollapsedKey("pinch-composite");
+/* THE PER-TOOL FOLD KEY IS GONE (2026-08-18).  This tool's knobs are now in the
+ * shared EduTools setup panel (ui/methods/knobPanel.tsx), whose fold and width
+ * live under ONE registry entry — `PANELS.methodKnobsRail` — for all twelve
+ * tools.  The name that used to be exported here (PINCH_CONTROLS_COLLAPSED_KEY)
+ * answered "is THIS tool's knob strip folded?", and there is no longer a
+ * per-tool answer to give: a lecturer who folds the chrome away wants it folded
+ * on the next tool too. */
 
 // ---- The workspace tool -----------------------------------------------------
 
@@ -574,8 +574,6 @@ export function PinchCompositeTool(): JSX.Element {
     () => Object.fromEntries(PINCH_KNOBS.map((k) => [k.id, k.value])));
   // The fold reads and writes through the shared, junk-tolerant hook — this
   // used to be a fourth hand-rolled copy of the same try/catch pair.
-  const { collapsed: controlsCollapsed, toggle: toggleControls } =
-    useCollapsedFlag(PINCH_CONTROLS_COLLAPSED_KEY);
 
   // ---- The classroom engine run: the witness with the knobs written in. ----
   const overridesKey = JSON.stringify(knobValues);
@@ -620,20 +618,55 @@ export function PinchCompositeTool(): JSX.Element {
     `${c.key}: engine ${c.engine} · derived ${c.derived.toPrecision(10)}`
     + `  (Δ = ${c.deviation.toExponential(2)})`);
 
+  /* The setup panel's content: the source, the pane, the knobs and their reset,
+     the classroom provenance.  The engine's targets and the cross-check chip
+     stay beside the curves — they report, they do not set. */
+  const setup = (
+    <>
+      {showSourceToggle && (
+        <SegmentedControl size="xs" value={source} fullWidth
+          onChange={(v) => setSource(v as Source)}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
+      <KnobField label="view">
+        <SegmentedControl size="xs" value={pane} fullWidth orientation="vertical"
+          onChange={(v) => setPane(v as Pane)}
+          data={[
+            { label: "Composite curves", value: "composite" },
+            { label: "Grand composite", value: "gcc" },
+            { label: `Candidate matches (${matches.length})`, value: "matches" },
+          ]} />
+      </KnobField>
+      {source === "classroom" && (
+        <>
+          {PINCH_KNOBS.map((k) => (
+            <KnobNumber key={k.id} label={`${k.label} (${k.unit})`}
+              value={knobValues[k.id] ?? k.value} min={k.min} step={k.step}
+              onChange={(v) => setKnobValues((st) => ({ ...st, [k.id]: v }))} />
+          ))}
+          <Button size="compact-xs" variant="subtle" color="gray"
+            onClick={() => setKnobValues(Object.fromEntries(
+              PINCH_KNOBS.map((k) => [k.id, k.value])))}>
+            reset to the witness
+          </Button>
+          <PanelNote>
+            Classroom mode — standalone: choupoSolve (WASM) runs in the browser
+            on the witness case <code>tutorials/{PINCH_WITNESS}</code>, with the
+            knob values written into its own dicts; every number beside the
+            curves is the engine&apos;s output.
+          </PanelNote>
+        </>
+      )}
+    </>
+  );
+
   return (
-    <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
-      <Group justify="space-between" align="center" wrap="wrap">
-        <Group gap={8} align="center" wrap="wrap">
-          {/* Where the numbers come from: the self-fed classroom witness
-              (default) or the app's own run when it carries the artefacts. */}
-          {showSourceToggle && (
-            <SegmentedControl size="xs" value={source}
-              onChange={(v) => setSource(v as Source)}
-              data={[
-                { label: "Classroom", value: "classroom" },
-                { label: "Current run", value: "current" },
-              ]} />
-          )}
+    <MethodSetupRail title="pinch knobs" setup={setup}>
+      <Group gap={8} align="center" wrap="wrap" p="sm" pb={0}
+        style={{ flexShrink: 0 }}>
           {/* The engine's targets — the numbers of record, from the KPI row. */}
           {active && !emptyCurrentRun && (
           <Badge variant="light" color="gray" size="lg"
@@ -669,68 +702,15 @@ export function PinchCompositeTool(): JSX.Element {
               cross-check unavailable — no engine KPI row to compare against
             </Badge>
           )}
-        </Group>
-        <SegmentedControl size="xs" value={pane}
-          onChange={(v) => setPane(v as Pane)}
-          data={[
-            { label: "Composite curves", value: "composite" },
-            { label: "Grand composite", value: "gcc" },
-            { label: `Candidate matches (${matches.length})`, value: "matches" },
-          ]} />
       </Group>
 
-      {source === "classroom" && (
-        <Stack gap={4} style={{ flexShrink: 0 }}>
-          {/* Provenance: the standalone run names its witness. */}
-          <Text size="xs" c="dimmed">
-            Classroom mode — standalone: choupoSolve (WASM) runs in the browser
-            on the witness case <code>tutorials/{PINCH_WITNESS}</code>, with the
-            knob values written into its own dicts; every number above is the
-            engine&apos;s output.
+      {source === "classroom" && method.err && (
+        <Alert color="red" variant="light" p="xs" m="sm" mb={0}
+          title="engine error (verbatim)">
+          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
+            {method.err}
           </Text>
-          <Box>
-            <Group gap={6} align="center" wrap="wrap">
-              <ActionIcon variant="subtle" size="sm" color="gray"
-                onClick={toggleControls}
-                aria-label={controlsCollapsed
-                  ? "expand the knob panel" : "collapse the knob panel"}>
-                {controlsCollapsed
-                  ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-              </ActionIcon>
-              <Text size="xs" fw={500}>
-                Knobs — dict scalars of the witness, engine re-run on change
-              </Text>
-              <Button size="compact-xs" variant="subtle" color="gray"
-                onClick={() => setKnobValues(Object.fromEntries(
-                  PINCH_KNOBS.map((k) => [k.id, k.value])))}>
-                reset to the witness
-              </Button>
-            </Group>
-            <Collapse in={!controlsCollapsed}>
-              <Group gap="sm" wrap="wrap" pt={4}>
-                {PINCH_KNOBS.map((k) => (
-                  <NumberInput key={k.id} size="xs" w={124}
-                    label={`${k.label} (${k.unit})`}
-                    value={knobValues[k.id]}
-                    min={k.min} step={k.step}
-                    onChange={(v) => {
-                      const n = typeof v === "number" ? v : Number(v);
-                      if (Number.isFinite(n))
-                        setKnobValues((s) => ({ ...s, [k.id]: n }));
-                    }} />
-                ))}
-              </Group>
-            </Collapse>
-          </Box>
-          {method.err && (
-            <Alert color="red" variant="light" p="xs"
-              title="engine error (verbatim)">
-              <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
-                {method.err}
-              </Text>
-            </Alert>
-          )}
-        </Stack>
+        </Alert>
       )}
 
       <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
@@ -827,7 +807,7 @@ export function PinchCompositeTool(): JSX.Element {
         )}
       </Box>
 
-      <Text size="xs" c="dimmed">
+      <Text size="xs" c="dimmed" p="sm" pt={0} style={{ flexShrink: 0 }}>
         The composite overlap is the heat that process-to-process recovery can
         serve; the tails are the minimum utilities, fixed before any exchanger
         is drawn.  Pockets in the grand composite are internal recovery across
@@ -835,6 +815,6 @@ export function PinchCompositeTool(): JSX.Element {
         table printed in the run log); this view only re-reads its published
         curves.
       </Text>
-    </Stack>
+    </MethodSetupRail>
   );
 }

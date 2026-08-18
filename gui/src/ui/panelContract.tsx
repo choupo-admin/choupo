@@ -211,6 +211,26 @@ export const CASE_FILES_PANEL: PanelChrome = {
   contentMin: RAIL_CONTENT_MIN, shortcut: "[",
 };
 
+/** THE EDUTOOLS SETUP PANEL — every method tool's knobs, docked left of its
+ *  construction (ui/methods/knobPanel.tsx).
+ *
+ *  It is here because the reason it was left OUT has expired.  This file's
+ *  first version recorded, beside `SetupCollapsedStrip`, that the EduTools
+ *  setup bar "deliberately STAYS here rather than becoming a
+ *  `PanelReopenStrip`: a docked panel folds an area that also has a SIZE the
+ *  reader drags, and this bar has none — it is a toolbar that gets out of the
+ *  diagram's way."  That was true of a STRIP and is void for a PANEL: as a left
+ *  panel it has a size, which is exactly this contract's shape.  It was the
+ *  last docked surface outside the contract; there is now no other.
+ *
+ *  Its shortcut is `[` like every other left rail, and the "never two panels on
+ *  one key" argument holds unchanged: EduTools is a workspace, workspaces are
+ *  mutually exclusive, so no second left rail is mounted beside it. */
+export const METHOD_KNOBS_PANEL: PanelChrome = {
+  prefs: PANELS.methodKnobsRail, edge: "left", label: "setup panel",
+  contentMin: RAIL_CONTENT_MIN, shortcut: "[",
+};
+
 /** The bottom window.  Its size and fold are STORE state (backed by the same
  *  registry entry), so `usePanel` is given them as a controlled value and this
  *  entry's keys are never written from here — see the header.

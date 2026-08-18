@@ -49,7 +49,7 @@ import { describe, it, expect } from "vitest";
 import {
   BOTTOM_DOCK_PANEL, CASE_FILES_PANEL, CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
-  PLOTS_NAV_PANEL, STREAMS_NAV_PANEL,
+  METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, STREAMS_NAV_PANEL,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
@@ -62,6 +62,12 @@ const ALL: [string, PanelChrome][] = [
   ["plots navigator", PLOTS_NAV_PANEL],
   ["streams navigator", STREAMS_NAV_PANEL],
   ["case file list", CASE_FILES_PANEL],
+  // The EduTools setup panel joined the contract on 2026-08-18, when the
+  // twelve tools' horizontal knob strips became one docked left panel.  It is
+  // in this table for the same reason the other six are: the table IS the
+  // "every panel answers all three questions" claim, and a panel outside it is
+  // a panel nobody checked.
+  ["EduTools setup panel", METHOD_KNOBS_PANEL],
   ["bottom dock", BOTTOM_DOCK_PANEL],
 ];
 
@@ -105,6 +111,19 @@ describe("rule 3 — the collapse DEFAULT is measured, never a breakpoint", () =
     // frame — the uncollapsed shape is the honest answer until measured.
     expect(autoCollapseDefault(EXPLORE_SET_PANEL, 0)).toBe(false);
     expect(autoCollapseDefault(EXPLORE_SET_PANEL, NaN)).toBe(false);
+  });
+
+  it("the EduTools setup panel starts folded on a phone and open on the desk", () => {
+    // The measured default that keeps a 390 px screen usable: 240 (the panel's
+    // own minimum) + 360 (what a construction needs to be worth drawing) is
+    // 600, which 390 cannot give.  Nothing here reads a breakpoint or a
+    // pointer — the same two widths decide at every size.
+    const need = METHOD_KNOBS_PANEL.prefs.size.min + METHOD_KNOBS_PANEL.contentMin;
+    expect(need).toBe(600);
+    expect(autoCollapseDefault(METHOD_KNOBS_PANEL, 390)).toBe(true);
+    expect(autoCollapseDefault(METHOD_KNOBS_PANEL, 599)).toBe(true);
+    expect(autoCollapseDefault(METHOD_KNOBS_PANEL, 600)).toBe(false);
+    expect(autoCollapseDefault(METHOD_KNOBS_PANEL, 1368)).toBe(false);
   });
 
   it("a panel that declares no content minimum never auto-collapses", () => {

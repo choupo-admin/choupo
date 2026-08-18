@@ -73,14 +73,14 @@ License
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Collapse, Group, Loader, NumberInput, SegmentedControl,
-  Select, Slider, Text, Tooltip, UnstyledButton,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Text, Tooltip,
 } from "@mantine/core";
-import {
-  IconAlertTriangle, IconChevronDown, IconChevronRight,
-} from "@tabler/icons-react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
+import {
+  KnobField, KnobSlider, MethodSetupRail, PanelNote,
+} from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
@@ -234,8 +234,6 @@ const PROVENANCE =
   "Runs tutorials/steady/heat/coolingTower01_merkel with your parameters, "
   + "in your browser.";
 
-const COLLAPSE_KEY = "choupo.methods.merkel.controlsCollapsed";
-
 // ---- Chart frame (viewBox units, the sibling tools' conventions) ------------
 
 const FW = 640, FH = 420;
@@ -257,30 +255,6 @@ const fmtTick = (v: number) => String(Number(v.toPrecision(4)));
 const METHOD_HYPOTHESES =
   "Lewis = 1 · L constant inside the integral (loss reported) · saturated "
   + "exit air — the engine announces these on every solve.";
-
-// ---- One knob control (label + exact entry + slider) ------------------------
-
-function KnobControl({ k, value, onChange }: {
-  k: MerkelKnob;
-  value: number;
-  onChange: (v: number) => void;
-}): JSX.Element {
-  return (
-    <Box style={{ width: 168 }}>
-      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-        {k.label}{k.unit ? ` [${k.unit}]` : ""}
-      </Text>
-      <NumberInput size="xs" value={value} min={k.min} max={k.max}
-        step={k.step}
-        onChange={(v) => {
-          const n = typeof v === "number" ? v : Number(v);
-          if (Number.isFinite(n)) onChange(n);
-        }} />
-      <Slider size="xs" mt={4} value={value} min={k.min} max={k.max}
-        step={k.step} label={null} onChange={onChange} />
-    </Box>
-  );
-}
 
 // ---- The workspace tool -----------------------------------------------------
 
@@ -307,18 +281,9 @@ export function MerkelTool(): JSX.Element {
   const setKnob = useCallback((id: string, v: number) => {
     setKnobs((s) => ({ ...s, [id]: v }));
   }, []);
-  const [collapsed, setCollapsed] = useState<boolean>(() => {
-    try { return window.localStorage.getItem(COLLAPSE_KEY) === "1"; }
-    catch { return false; }
-  });
-  const toggleCollapsed = useCallback(() => {
-    setCollapsed((c) => {
-      const next = !c;
-      try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); }
-      catch { /* storage blocked — the session state still works */ }
-      return next;
-    });
-  }, []);
+  /* The fold and the width are the panel's (ui/methods/knobPanel.tsx).  This
+   * tool used to carry its own try/catch pair around localStorage — the fourth
+   * hand-rolled copy of a posture the state layer already owned. */
 
   // The self-run: debounced in-browser choupoSolve on the parameterized
   // witness.  Witness null in "Current run" mode — no engine run there.
@@ -337,7 +302,7 @@ export function MerkelTool(): JSX.Element {
     () => chebyshevDeviation(active?.kpis), [active]);
 
   const sourceToggle = showToggle ? (
-    <SegmentedControl size="xs" value={mode} style={{ flexShrink: 0 }}
+    <SegmentedControl size="xs" value={mode} fullWidth
       onChange={(v) => setSource(v as "classroom" | "current")}
       data={[
         { label: "Classroom", value: "classroom" },
@@ -345,18 +310,42 @@ export function MerkelTool(): JSX.Element {
       ]} />
   ) : null;
 
+  /* The setup panel's content: the source, the tower picker, the knobs and the
+     provenance.  The chips stay in the content column beside the diagram —
+     inputs left, published numbers right. */
+  const setup = (
+    <>
+      {sourceToggle}
+      {active && units.length > 1 && (
+        <KnobField label="tower">
+          <Select size="xs" data={units.map((u) => u.unit)} value={active.unit}
+            w="100%" onChange={(v) => setPicked(v)} allowDeselect={false} />
+        </KnobField>
+      )}
+      {mode === "classroom" && (
+        <>
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">re-solving the tower…</Text>
+            </Group>
+          )}
+          {MERKEL_KNOBS.map((k) => (
+            <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def}
+              onChange={(v) => setKnob(k.id, v)} />
+          ))}
+          <PanelNote>{PROVENANCE}</PanelNote>
+        </>
+      )}
+    </>
+  );
+
   // ---- Honest empty state — only inside "Current run" mode: no tower
   // profile in the app's run, no diagram (the classroom source never needs
   // one, it feeds itself). ----------------------------------------------------
   if (mode === "current" && !active) {
     return (
-      <Box style={{ width: "100%", height: "100%", display: "flex",
-        flexDirection: "column", overflow: "hidden" }}>
-        {sourceToggle && (
-          <Box style={{ flexShrink: 0, padding: "6px 12px" }}>
-            {sourceToggle}
-          </Box>
-        )}
+      <MethodSetupRail title="classroom parameters" setup={setup}>
         <Box style={{ flex: 1, display: "flex", alignItems: "center",
           justifyContent: "center", padding: 24 }}>
           <Text size="sm" c="dimmed" ta="center" maw={520}>
@@ -368,33 +357,23 @@ export function MerkelTool(): JSX.Element {
             return here.
           </Text>
         </Box>
-      </Box>
+      </MethodSetupRail>
     );
   }
 
   return (
-    <Box style={{ width: "100%", height: "100%", display: "flex",
-      flexDirection: "column", overflow: "hidden" }}>
-      {/* Toolbar: source toggle + the unit picker + the KPI chips + the
-          hand-method chip. */}
+    <MethodSetupRail title="classroom parameters" setup={setup}>
+      {/* The published numbers: the KPI line and the hand-method cross-check.
+          They report, so they stay beside the diagram, never in the panel. */}
       <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px",
-        overflowX: "auto", overflowY: "hidden",
+        flexShrink: 0, padding: "6px 12px",
         borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
-          {sourceToggle}
+        <Group gap="sm" wrap="wrap" align="center">
           {active && (
-            <Group gap={4} wrap="nowrap" align="center">
-              <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>tower</Text>
-              <Select size="xs" data={units.map((u) => u.unit)} value={active.unit}
-                w={180} onChange={(v) => setPicked(v)} allowDeselect={false}
-                disabled={units.length < 2} />
-            </Group>
-          )}
-          {active && (
-            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-              range {fmt(active.kpis?.["range_K"])} K
+            <Text size="xs" c="dimmed">
+              {active.unit}
+              {" "}· range {fmt(active.kpis?.["range_K"])} K
               {" "}· approach {fmt(active.kpis?.["approach_K"])} K (over T_wb)
               {" "}· Me {fmt(active.kpis?.["merkelNumber"])}
               {" "}· L/G {fmt(active.kpis?.["L_over_G"])}
@@ -420,35 +399,6 @@ export function MerkelTool(): JSX.Element {
         </Group>
       </Box>
 
-      {/* The classroom knob panel (collapsible, persisted) + provenance. */}
-      {mode === "classroom" && (
-        <Box style={{
-          flexShrink: 0, padding: "4px 12px",
-          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-        }}>
-          <Group justify="space-between" align="center" wrap="wrap" gap={6}>
-            <UnstyledButton onClick={toggleCollapsed}
-              style={{ display: "flex", alignItems: "center", gap: 4 }}
-              aria-expanded={!collapsed}>
-              {collapsed
-                ? <IconChevronRight size={14} />
-                : <IconChevronDown size={14} />}
-              <Text size="xs" fw={500}>Classroom parameters</Text>
-            </UnstyledButton>
-            <Text size="xs" c="dimmed">{PROVENANCE}</Text>
-          </Group>
-          <Collapse in={!collapsed}>
-            <Group gap="md" wrap="wrap" py={6} align="flex-end">
-              {MERKEL_KNOBS.map((k) => (
-                <KnobControl key={k.id} k={k}
-                  value={knobs[k.id] ?? k.def}
-                  onChange={(v) => setKnob(k.id, v)} />
-              ))}
-            </Group>
-          </Collapse>
-        </Box>
-      )}
-
       {/* The engine's refusal, verbatim — a pinched L/G or a below-wet-bulb
           construction refuses with a named message, and that refusal IS the
           pedagogy.  Nothing is rephrased. */}
@@ -473,7 +423,7 @@ export function MerkelTool(): JSX.Element {
           </Text>
         </Box>
       ) : null}
-    </Box>
+    </MethodSetupRail>
   );
 }
 

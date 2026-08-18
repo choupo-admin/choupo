@@ -198,38 +198,19 @@ describe("collapse flags — the optional posture default", () => {
   });
 });
 
-/* The setup bar's two postures (added 2026-08-17 with the phone fix).
+/* The setup bar's two postures — the `setupBarLayout` describe block that
+ * stood here is DELETED with the helper itself (2026-08-18).
  *
- * `setupBarLayout` is pure so the reflow rule can be pinned without a DOM, and
- * it is pinned here because the rule is what makes a phone usable: the McCabe
- * bar is 983 px wide and the psychrometric one 1495 px, so on a 390 px screen
- * a nowrap row put 13 and 29 controls behind an `overflow: hidden` edge with
- * no gesture able to reach them.
+ * The rule it pinned was real and its reason is worth keeping: on a 390 px
+ * screen a nowrap row put 13 (McCabe) and 29 (psychrometric) controls behind an
+ * `overflow: hidden` edge no gesture could reach.  What changed is that there
+ * is no row: every tool's setup controls are a docked left panel
+ * (ui/methods/knobPanel.tsx), which scrolls vertically and whose width the
+ * reader drags.
  *
- * The spacer clause is not cosmetic and gets its own assertion: a `flex: 1`
- * spacer inside a WRAPPING row eats the whole remainder of its line and pushes
- * everything after it onto the next one, so the collapse button would sit
- * alone on a row of its own. */
-describe("setup bar — the reflow rule", () => {
-  it("one row when it fits: nowrap, fit-content, spacer keeps the buttons right", async () => {
-    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
-    expect(setupBarLayout(false)).toEqual({
-      wrap: "nowrap", minWidth: "fit-content", showSpacer: true,
-    });
-  });
-
-  it("wrapped when it does not: wrap, no min width, and NO flexible spacer", async () => {
-    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
-    expect(setupBarLayout(true)).toEqual({
-      wrap: "wrap", minWidth: 0, showSpacer: false,
-    });
-  });
-
-  it("the two postures never agree on any of the three properties", async () => {
-    const { setupBarLayout } = await import("../src/ui/methods/methodsChrome.js");
-    const one = setupBarLayout(false), wrapped = setupBarLayout(true);
-    expect(one.wrap).not.toBe(wrapped.wrap);
-    expect(one.minWidth).not.toBe(wrapped.minWidth);
-    expect(one.showSpacer).not.toBe(wrapped.showSpacer);
-  });
-});
+ * Keeping the three assertions would have left a green test about a helper no
+ * screen calls — a pass that reports on nothing, which is the failure mode this
+ * project retired `check_true_ions` for.  The phone's own behaviour is not left
+ * untested by the deletion: it is now `autoCollapseDefault` in
+ * tests/panelContract.test.ts, asked of the panel's minimum against the
+ * measured host. */

@@ -58,7 +58,7 @@ import { guideUrl } from "../../help/guideLinks.js";
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden" | "drying";
+  | "vanheerden" | "drying" | "hunter-nash";
 
 export interface MethodTool {
   id: MethodToolId;
@@ -145,6 +145,37 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "breakthrough", label: "Adsorption breakthrough", status: "live",
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
     theory: "ch:adsorption",
+  },
+  // BUILT BUT NOT MOUNTED — read `fedBy` before changing this status.
+  //
+  // The tool exists: ui/methods/TieTriangleTool.tsx (the construction) over
+  // case/hunterNash.ts (the reading + the geometry), pinned by
+  // tests/hunterNash.test.ts, with its theory section written.  Both engine
+  // surfaces exist and were verified by running the two witnesses natively.
+  // What does NOT exist is the two lines in MethodsWorkspace.tsx that render
+  // it — the host's dispatch is a hand-written `tool === "…" ? <X/>` chain
+  // whose FALLBACK is the breakthrough tool, so flipping this entry to "live"
+  // before those lines land would publish a page captioned Hunter-Nash and
+  // drawing an adsorption breakthrough curve.  A visible gap is strictly
+  // better than an invisible falsehood, so it stays `planned` until mounted;
+  // the mount is:
+  //     const TieTriangleTool = lazy(() =>
+  //       import("./methods/TieTriangleTool.js")
+  //         .then((m) => ({ default: m.TieTriangleTool })));
+  //     … : tool === "hunter-nash" ? <TieTriangleTool />
+  // and then this `status` becomes "live".
+  {
+    id: "hunter-nash", label: "Extraction (Hunter-Nash)", status: "planned",
+    teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
+    theory: "sec:hunter-nash",
+    fedBy: "BUILT, not mounted: ui/methods/TieTriangleTool.tsx over "
+      + "case/hunterNash.ts.  Its engine feeds already exist and are verified — "
+      + "propertyScanTernary `mode lle` (x1,x2,x3,region,kind,tieline_id) from "
+      + "tutorials/props/scan/ternary03_lle_water_ethanol_benzene, and the "
+      + "extractor's stage profile (xE_<comp>/xR_<comp>) plus its terminal-flow "
+      + "KPIs from tutorials/steady/absorption/extract01_ethanol_water_benzene.  "
+      + "What is missing is the host dispatch in MethodsWorkspace.tsx (see the "
+      + "comment above this entry), not an engine output.",
   },
 ];
 

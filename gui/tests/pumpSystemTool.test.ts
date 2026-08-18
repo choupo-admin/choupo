@@ -310,16 +310,26 @@ describe("the module source carries the honesty annotations", () => {
     expect(src).toContain("range ( 0.4 1.6 );");
   });
 
-  // AMENDED 2026-08-18.  This used to scan the source for the literal key.  The
-  // literal is gone on purpose: three modules exported a `CONTROLS_COLLAPSED_KEY`
-  // with three different values, so the keys are now DERIVED from the tool id by
-  // one rule in `state/prefs.ts`.  The claim is unchanged and the check is
-  // stronger — it reads the rule's actual output rather than a string that
-  // happens to appear in the file.
-  it("persists the knob-panel fold under the agreed localStorage key", async () => {
-    const { methodsToolCollapsedKey } = await import("../src/state/prefs.js");
-    expect(methodsToolCollapsedKey("pump-system"))
-      .toBe("choupo.methods.pump-system.controlsCollapsed");
-    expect(src).toContain('methodsToolCollapsedKey("pump-system")');
+  // AMENDED TWICE ON 2026-08-18, and the second amendment changed the SUBJECT.
+  //
+  // Morning: the check stopped scanning for a literal key and asked the rule in
+  // `state/prefs.ts` for its output instead.  Afternoon: this tool's knobs
+  // became part of the ONE docked EduTools setup panel
+  // (ui/methods/knobPanel.tsx), whose fold and width live under a single
+  // registry entry for all twelve tools — so there is no per-tool fold left to
+  // persist, and a test that still demanded one would be demanding the defect.
+  //
+  // What is checked now is what the claim became: this tool declares NO fold
+  // key of its own, and the panel it docks in is the shared one.  The fold's
+  // own behaviour (storage, junk tolerance, the measured auto-collapse) is
+  // pinned where it lives, in tests/panelPrefs.test.ts and
+  // tests/panelContract.test.ts.
+  it("declares no fold key of its own — the panel owns the fold", async () => {
+    const mod = await import("../src/ui/methods/PumpSystemTool.js");
+    for (const name of Object.keys(mod)) {
+      expect(name).not.toMatch(/COLLAPSED_KEY$/);
+    }
+    expect(src).not.toContain("methodsToolCollapsedKey");
+    expect(src).toContain("MethodSetupRail");
   });
 });

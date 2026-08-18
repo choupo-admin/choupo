@@ -195,6 +195,15 @@ export function fitToViewport(px: number, available: number, spec: SizeSpec): nu
 // three different values, so what an importer got depended on which module the
 // import line named.  The names below are DISTINCT because the things are.
 
+/** The EduTools setup-panel fold, shared by every tool that offers one, so
+ *  switching tools mid-lecture keeps the presentation posture.
+ *
+ *  Declared ABOVE `PANELS` because the knob rail's entry references it: the
+ *  spelling already existed and already meant "is the EduTools setup chrome
+ *  folded away?", and minting a second one for the same question when that
+ *  chrome became a docked panel would be the arity sin. */
+export const METHODS_SETUP_COLLAPSED_KEY = "choupo.methods.controlsCollapsed";
+
 /** A shell / workspace panel whose size and fold the reader controls. */
 export interface PanelSpec {
   /** Stable id — the panel's name in this registry and in the store. */
@@ -302,17 +311,41 @@ export const PANELS = {
     size: { min: 200, max: 460, default: 240 },
     collapsedKey: "choupo.panel.caseFilesRail.collapsed",
   }),
+
+  /** THE EDUTOOLS SETUP PANEL — every method tool's knobs, on the left of its
+   *  construction (ui/methods/knobPanel.tsx).  It was a horizontal strip above
+   *  the diagram until 2026-08-18, so it had no width at all; what it had was
+   *  twelve fold keys, one per tool.  Now it has ONE of each.
+   *
+   *  The range is WIDER than the navigator rails' because the content is: a
+   *  navigator lists names, this one carries labelled number inputs whose
+   *  labels are sentences ("T_guess (K) — which branch is reported"), and 240
+   *  is where such a label stops needing three lines.  520 is where the widest
+   *  of them stops gaining anything.
+   *
+   *  The FOLD key is the one the registry already owned for this question —
+   *  see METHODS_SETUP_COLLAPSED_KEY above.  The twelve per-tool spellings it
+   *  replaces are dead; a reader who folded the McCabe setup bar keeps their
+   *  answer, on every tool. */
+  methodKnobsRail: panel("methodKnobsRail", {
+    sizeKey: "choupo.panel.methodKnobsRail.size",
+    size: { min: 240, max: 520, default: 300 },
+    collapsedKey: METHODS_SETUP_COLLAPSED_KEY,
+  }),
 } as const;
 
 export type PanelId = keyof typeof PANELS;
 
-/** The EduTools setup-bar fold, shared by every tool that offers one, so
- *  switching tools mid-lecture keeps the presentation posture. */
-export const METHODS_SETUP_COLLAPSED_KEY = "choupo.methods.controlsCollapsed";
-
 /** A single tool's own knob-panel fold.  THE RULE, not a literal per tool:
  *  every tool's key is `choupo.methods.<toolId>.controlsCollapsed`, so a tool
- *  cannot invent a spelling and a reader can predict the key from the id. */
+ *  cannot invent a spelling and a reader can predict the key from the id.
+ *
+ *  NO CALLER SINCE 2026-08-18: the twelve tool setup bars became ONE docked
+ *  panel (`PANELS.methodKnobsRail`) with ONE fold, so the per-tool question is
+ *  no longer asked.  The rule is left standing rather than removed by the
+ *  slice that emptied it — a key registry is not a view's to prune — and it is
+ *  named here as a decision for the owner: delete it, or keep it for the next
+ *  per-tool preference. */
 export function methodsToolCollapsedKey(toolId: string): string {
   return `choupo.methods.${toolId}.controlsCollapsed`;
 }

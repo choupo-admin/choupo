@@ -46,6 +46,8 @@ import {
   VAN_HEERDEN_WITNESS,
   axisDomain,
   classifySteadyStates,
+  estimateTextWidth,
+  placeCrossingLabel,
   defaultKnobValues,
   findVanHeerdenFeeds,
   ignitionSpan,
@@ -476,5 +478,76 @@ describe("interpolateAt — reads a published column, never finds a root", () =>
     expect(interpolateAt(xs, ys, NaN)).toBeNull();
     expect(interpolateAt([300], [1], 300)).toBeNull();
     expect(interpolateAt([300, 400], [1, NaN], 350)).toBeNull();
+  });
+});
+
+// ---- The annotation placement rule (the owner's 1368 px screenshot) --------
+//
+// THE DEFECT, measured: on the vanheerden tool at 1368 px the series legend
+// ("G(T) — heat generated" / "R(T) — heat removed"), anchored to the frame's
+// right edge in the top band, was painted over by the ignited crossing's
+// "405.9 K" label, which is drawn at the crossing's own x in the SAME band.
+// Both are SVG text: nothing in the platform notices, and the reader sees two
+// sentences on top of each other exactly where the answer is.
+//
+// The rule is checked as a rule, not on that one string: any label whose
+// horizontal extent reaches the legend's column drops below it, and any label
+// that would leave the frame flips to the other anchor.  Both use the label's
+// own estimated width, so a longer label moves too.
+
+describe("crossing labels are placed, not just positioned", () => {
+  // The tool's own frame (VanHeerdenSvg): FX1 = 606, FY0 = 16, and the legend
+  // is the two-line block ending at FY0 + 31.
+  const FRAME = { right: 606, top: 16 };
+  const legendWidth = estimateTextWidth("phi = R − G (engine residual)", 10);
+  const LEGEND = { left: 606 - 6 - legendWidth, bottom: 16 + 46 };
+
+  it("a crossing far from the legend keeps the plain alternating rows", () => {
+    const a = placeCrossingLabel(120, 60, 0, LEGEND, FRAME);
+    const b = placeCrossingLabel(160, 60, 1, LEGEND, FRAME);
+    expect(a).toEqual({ x: 124, y: 30, anchor: "start" });
+    expect(b).toEqual({ x: 164, y: 60, anchor: "start" });
+  });
+
+  it("a crossing under the legend's column drops BELOW the legend block", () => {
+    // The ignited root of the witness sits near the right of the domain, which
+    // is exactly where the legend is.
+    const p = placeCrossingLabel(520, 60, 0, LEGEND, FRAME);
+    expect(p.y).toBeGreaterThan(LEGEND.bottom);
+    expect(p.y).toBe(LEGEND.bottom + 13);
+  });
+
+  it("the SAME crossing with a shorter legend block rises again", () => {
+    // Turning phi off leaves two legend lines, so the block ends higher and
+    // the label follows it up: the rule reads the legend, it does not hardcode
+    // a row.
+    const twoLine = { left: LEGEND.left, bottom: 16 + 31 };
+    const p = placeCrossingLabel(520, 60, 0, twoLine, FRAME);
+    expect(p.y).toBe(twoLine.bottom + 13);
+    expect(p.y).toBeLessThan(placeCrossingLabel(520, 60, 0, LEGEND, FRAME).y);
+  });
+
+  it("a label that would run out of the frame flips its anchor", () => {
+    const p = placeCrossingLabel(600, 60, 0, LEGEND, FRAME);
+    expect(p.anchor).toBe("end");
+    expect(p.x).toBe(596);              // 4 px on the other side of the line
+  });
+
+  it("a LONGER label moves where a shorter one does not — the width decides", () => {
+    // The legend's left edge is 449.2 here (606 − 6 − its widest line).  At
+    // x = 400: 100 px of text reaches 504, inside that column; 20 px stops at
+    // 424, which is not.  Same crossing, same row, different answer — because
+    // the rule reads the label's own extent and nothing else.
+    const wide = placeCrossingLabel(400, 100, 0, LEGEND, FRAME);
+    const narrow = placeCrossingLabel(400, 20, 0, LEGEND, FRAME);
+    expect(LEGEND.left).toBeCloseTo(449.2, 6);
+    expect(wide.y).toBe(LEGEND.bottom + 13);
+    expect(narrow.y).toBe(30);
+  });
+
+  it("the width estimate is declared as one and is monotone in the text", () => {
+    expect(estimateTextWidth("405.9 K", 10))
+      .toBeLessThan(estimateTextWidth("405.9 K — reported", 10));
+    expect(estimateTextWidth("", 10)).toBe(0);
   });
 });

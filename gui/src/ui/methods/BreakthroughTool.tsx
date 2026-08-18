@@ -69,15 +69,13 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Box, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Stack, Switch, Table, Text,
+  Alert, Box, Group, Loader, SegmentedControl, Stack, Switch, Table, Text,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
 import {
   TrajectoryPlot, type EventMarker, type GhostTrace,
 } from "../plotting/TrajectoryPlot.js";
@@ -337,8 +335,6 @@ const PROVENANCE =
   `Runs tutorials/${BREAKTHROUGH_WITNESS} (15% CO2 in He on a zeolite-13X `
   + "fixed bed) with your parameters, in your browser (choupoBatch WASM).";
 
-const COLLAPSE_KEY = "choupo.methods.breakthrough.controlsCollapsed";
-
 // ---- Display formatting -----------------------------------------------------
 
 function fmt(v: number | undefined): string {
@@ -361,7 +357,6 @@ export function BreakthroughTool(): JSX.Element {
 
   // ---- Classroom knobs → witness overrides → in-browser choupoBatch --------
   const [knobs, setKnobs] = useState<BreakthroughKnobValues>(defaultKnobValues);
-  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
   const { result: classroom, err, busy } = useMethodRun(
     src === "classroom" ? BREAKTHROUGH_WITNESS : null,
     knobOverrides(knobs), JSON.stringify(knobs), "choupoBatch");
@@ -456,69 +451,48 @@ export function BreakthroughTool(): JSX.Element {
     };
   }, [trajectory, kpis, detection]);
 
-  // ---- The source + classroom-knob bar (always rendered) --------------------
+  // ---- The setup panel's content: source, overlay, knobs, provenance -------
+  const hasThermalColumns = detection.thermalColumns.length > 0;
   const controls = (
-    <Box style={{ flexShrink: 0, borderBottom:
-      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
-        {hasAppTrajectory && (
-          <SegmentedControl size="xs" value={src}
-            onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
-        {src === "classroom" && (
-          <>
-            <ActionIcon variant="subtle" size="sm" onClick={toggle}
-              aria-label={collapsed
-                ? "show the classroom knobs" : "hide the classroom knobs"}>
-              {collapsed
-                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-            </ActionIcon>
-            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
-              classroom knobs
-            </Text>
-            {busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  re-integrating — seconds, not instant
-                </Text>
-              </Group>
-            )}
-          </>
-        )}
-      </Group>
+    <>
+      {hasAppTrajectory && (
+        <SegmentedControl size="xs" value={src} fullWidth
+          onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
+      <Switch size="xs" label="thermal overlay (T_out / T_max)"
+        checked={thermal && hasThermalColumns} disabled={!hasThermalColumns}
+        onChange={(e) => setThermal(e.currentTarget.checked)} />
+      {!hasThermalColumns && (
+        <Text size="xs" c="dimmed">isothermal run — no thermal columns</Text>
+      )}
       {src === "classroom" && (
         <>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" px={12} pb={4} align="flex-end" wrap="wrap">
-              {BREAKTHROUGH_KNOBS.map((k) => (
-                <NumberInput key={k.id} size="xs" w={140}
-                  label={k.unit ? `${k.label} [${k.unit}]` : k.label}
-                  value={knobs[k.id]} min={k.min} max={k.max} step={k.step}
-                  onChange={(v) => {
-                    const num = typeof v === "number" ? v : Number(v);
-                    if (Number.isFinite(num))
-                      setKnobs((s) => ({ ...s, [k.id]: num }));
-                  }} />
-              ))}
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">re-integrating — seconds, not instant</Text>
             </Group>
-          </Collapse>
-          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE}</Text>
+          )}
+          {BREAKTHROUGH_KNOBS.map((k) => (
+            <KnobNumber key={k.id}
+              label={k.unit ? `${k.label} [${k.unit}]` : k.label}
+              value={knobs[k.id] ?? k.def} min={k.min} max={k.max} step={k.step}
+              onChange={(v) => setKnobs((st) => ({ ...st, [k.id]: v }))} />
+          ))}
+          <PanelNote>{PROVENANCE}</PanelNote>
         </>
       )}
-    </Box>
+    </>
   );
 
   // ---- No drawable view yet: per-source honest states -----------------------
   if (view === null) {
     return (
-      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-        minHeight: 0 }}>
-        {controls}
+      <MethodSetupRail title="classroom knobs" setup={controls}>
         {src === "classroom" && err !== null && (
           <Alert color="red" variant="light" m={12}
             title="The engine refused or failed — its message, verbatim">
@@ -557,21 +531,18 @@ export function BreakthroughTool(): JSX.Element {
             </Text>
           </Box>
         )}
-      </Box>
+      </MethodSetupRail>
     );
   }
 
-  const hasThermal = detection.thermalColumns.length > 0;
+  const hasThermal = hasThermalColumns;
   const filterVars = [
     ...view.plotted,
     ...(thermal && hasThermal ? detection.thermalColumns : []),
   ];
 
   return (
-    <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-      minHeight: 0 }}>
-      {controls}
-
+    <MethodSetupRail title="classroom knobs" setup={controls}>
       {/* A knob run that failed keeps the previous curve on screen — the
           engine's message rides above it, verbatim, never swallowed. */}
       {src === "classroom" && err !== null && (
@@ -582,18 +553,6 @@ export function BreakthroughTool(): JSX.Element {
           </Text>
         </Alert>
       )}
-
-      {/* Toolbar: the thermal overlay toggle, honest when there is nothing
-          to overlay. */}
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}
-        style={{ flexShrink: 0 }}>
-        <Switch size="xs" label="thermal overlay (T_out / T_max)"
-          checked={thermal && hasThermal} disabled={!hasThermal}
-          onChange={(e) => setThermal(e.currentTarget.checked)} />
-        {!hasThermal && (
-          <Text size="xs" c="dimmed">isothermal run — no thermal columns</Text>
-        )}
-      </Group>
 
       {/* The engine's curve + the KPI front construction. */}
       <Box style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: "hidden" }}>
@@ -654,6 +613,6 @@ export function BreakthroughTool(): JSX.Element {
           through.
         </Text>
       </Box>
-    </Box>
+    </MethodSetupRail>
   );
 }

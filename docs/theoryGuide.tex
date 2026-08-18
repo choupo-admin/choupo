@@ -14436,6 +14436,140 @@ usable for arbitrary mixtures whose groups are tabulated. A component without a
 group decomposition simply falls back to $\gamma=1$ (ideal) for itself; the
 model never invents data.
 
+\subsection{The tie-triangle and the Hunter--Nash construction}
+\label{sec:hunter-nash}
+
+The ternary map of \S\ref{sec:ternary} is a picture of \emph{phase
+behaviour}.  Laid over it, the same triangle becomes a picture of a
+\emph{process}: the whole material balance of a counter-current
+extraction column can be drawn on it with a straight-edge, and the
+number of equilibrium stages read off.  That construction is due to
+Hunter and Nash, and this section derives it --- as thermodynamics and
+as method --- independently of any particular implementation.
+
+\paragraph{Two kinds of line, and they must not be confused.}  A
+\emph{tie-line} joins two compositions that are \emph{in equilibrium}
+with each other: it is a statement about chemical potentials, and it
+comes from the activity model.  An \emph{operating line} joins two
+compositions related by a \emph{material balance} around some cut of
+the apparatus: it is a statement about bookkeeping, and it would be
+the same line if the thermodynamics were different.  The entire
+construction is the alternation of the two, exactly as
+McCabe--Thiele's staircase alternates an equilibrium curve with an
+operating line; the ternary case merely replaces ``curve'' by ``family
+of tie-lines'' and ``line'' by ``pencil of lines through one point''.
+
+\paragraph{The lever rule on a triangle.}  Let a stream be described
+by its total flow $F$ and its composition vector $\xv$ with
+$\sum_i x_i = 1$.  Because barycentric coordinates map affinely onto
+the plane, mixing is \emph{linear} on the diagram: combining
+$\mathbf{A}$ and $\mathbf{B}$ gives
+\begin{equation}
+   \mathbf{M} = \mathbf{A} + \mathbf{B},
+   \qquad
+   \xv_M = \frac{F_A\,\xv_A + F_B\,\xv_B}{F_A + F_B},
+   \label{eq:hn-mixing}
+\end{equation}
+so the mixing point $M$ lies \emph{on the segment} $AB$, and divides it
+in the inverse ratio of the flows: $\overline{AM}/\overline{MB} =
+F_B/F_A$.  That is the lever rule, and it is the only quantitative
+tool the construction needs.
+
+\paragraph{The overall balance fixes $M$ twice.}  A column contacts a
+feed $\mathbf{F}$ with a fresh solvent $\mathbf{S}$ and delivers an
+extract $\mathbf{E}_1$ and a raffinate $\mathbf{R}_N$
+(Fig.~\ref{fig:extraction-cascade} for the stage numbering).  The
+overall balance is
+\begin{equation}
+   \mathbf{F} + \mathbf{S} \;=\; \mathbf{E}_1 + \mathbf{R}_N
+   \;\equiv\; \mathbf{M},
+   \label{eq:hn-overall}
+\end{equation}
+so the \emph{same} point $M$ is the mix of the two feeds and the mix of
+the two products.  Geometrically: $M$ lies on the line $FS$ \emph{and}
+on the line $E_1R_N$, hence at their intersection.  This is the first
+and most useful thing the triangle does --- given three of the four
+terminal compositions, the fourth is a ruler construction, and given
+all four it is a \emph{check} on the balance rather than a
+determination.
+
+\paragraph{The difference point $\Delta$: a stream that is not
+there.}  Rearranging \eqref{eq:hn-overall} and, more generally, the
+balance around the envelope containing stages $1$ through $j$,
+\begin{equation}
+   \mathbf{F} + \mathbf{E}_{j+1} \;=\; \mathbf{R}_j + \mathbf{E}_1
+   \quad\Longrightarrow\quad
+   \boxed{\;\Delta \;\equiv\; \mathbf{F} - \mathbf{E}_1
+        \;=\; \mathbf{R}_j - \mathbf{E}_{j+1}
+        \;=\; \mathbf{R}_N - \mathbf{S}\;}
+   \label{eq:hn-delta}
+\end{equation}
+for \emph{every} $j = 1,\dots,N$.  The net flow $\Delta$ --- what
+passes any cut of the column in the raffinate direction, minus what
+passes it in the extract direction --- is the same at every cut.  It
+is not a physical stream: its flow $F_\Delta = F_F - F_{E_1}$ may be
+negative and its ``composition'' $\xv_\Delta = (\mathbf{F} -
+\mathbf{E}_1)/F_\Delta$ generally has components outside $[0,1]$, which
+is why $\Delta$ almost always plots \emph{outside} the triangle.  A
+difference obeys the lever rule with the same algebra as a sum, so the
+geometric content of \eqref{eq:hn-delta} is:
+\begin{quote}
+   $\Delta$, $\mathbf{R}_j$ and $\mathbf{E}_{j+1}$ are
+   \emph{collinear}, for every $j$.
+\end{quote}
+Every operating line of the column is therefore a line through one
+fixed point.  $\Delta$ is located as the intersection of the line
+$FE_1$ with the line $SR_N$ --- two instances of \eqref{eq:hn-delta}
+--- and the remaining $N-1$ instances are then predictions that can be
+checked.
+
+\paragraph{The stage staircase.}  With $\Delta$ in hand the stages are
+stepped off by alternating the two kinds of line:
+\begin{enumerate}[leftmargin=*]
+  \item start at $\mathbf{E}_1$, the extract leaving stage $1$;
+  \item follow the \emph{tie-line} through $\mathbf{E}_1$ to its
+        conjugate $\mathbf{R}_1$ --- one equilibrium stage, and the
+        only step in the whole construction that uses thermodynamics;
+  \item draw the \emph{operating line} $\Delta\mathbf{R}_1$ and follow
+        it to where it re-enters the binodal on the extract side: that
+        intersection is $\mathbf{E}_2$;
+  \item repeat until the raffinate composition reaches the specified
+        $\mathbf{R}_N$.  The number of tie-lines used is the number of
+        theoretical stages.
+\end{enumerate}
+Two limits are visible on the same drawing.  As the solvent rate falls,
+$M$ slides along $FS$ toward $F$, $\Delta$ moves, and at some rate an
+operating line coincides with a tie-line: the driving force vanishes
+there and the stage count diverges.  That is the \emph{minimum solvent}
+condition, and it is a \emph{pinch} in exactly the sense the
+minimum-reflux pinch is one.  At the other end, a duty whose $M$ falls
+outside the two-phase region cannot be run at all: the mixture does not
+split, and no number of stages helps.
+
+\paragraph{What the construction assumes, and where it stops being
+exact.}  Step 2 above requires a tie-line \emph{through an arbitrary
+composition}.  A chart carries finitely many, so the classical hand
+method \emph{interpolates} --- conventionally by a conjugate
+(Hand or Othmer--Tobias) curve fitted through the plotted tie-line
+ends.  That interpolation is the construction's real error source, and
+it is worst exactly where the tie-lines are shortest, near the plait
+point, because there the conjugate curve is steep and the tie-lines are
+crowding into nothing.  A computed cascade
+(Chapter~\ref{ch:extractor}) has no such step: it flashes each stage at
+the composition the stage actually has.  The honest relationship
+between the two is therefore not ``the diagram approximates the
+column''; it is that the diagram and the column share
+\eqref{eq:hn-delta} exactly, and differ only in how a conjugate
+composition is obtained --- read off a fitted curve, or solved.
+
+\paragraph{Why this is worth drawing when a rigorous cascade is
+available.}  Because \eqref{eq:hn-delta} is a \emph{structural} fact
+about counter-current contacting and the diagram makes it visible: one
+point controls every operating line, its position is set by the
+terminal specifications alone, and moving a specification moves it in a
+way the eye can follow.  A converged stage table shows that the answer
+came out; the triangle shows why it had to.
+
 % ---------------------------------------------------------------------
 \section{Counter-current liquid--liquid extraction}\label{ch:extractor}
 

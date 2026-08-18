@@ -79,10 +79,8 @@ License
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../../adapters/index.js";
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
@@ -94,7 +92,7 @@ import { eqCurveFromTxyCsv, type EqCurve } from "../../case/mccabeThiele.js";
 import { binaryVleSpec } from "../../case/methodFeeds.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
 import { TrajectoryPlot } from "../plotting/TrajectoryPlot.js";
 
 // ---- Activation -------------------------------------------------------------
@@ -423,8 +421,6 @@ const PROVENANCE =
   + "declaring the witness's own package (ideal γ, ideal-gas vapour) at "
   + "your P.";
 
-const COLLAPSE_KEY = "choupo.methods.rayleigh.controlsCollapsed";
-
 /** Points on the y*(x) sweep — also the trapezoid grid of the in-view area,
  *  which is exactly the "resolution of the graphical method" the deviation
  *  chip talks about. */
@@ -660,7 +656,6 @@ export function RayleighTool(): JSX.Element {
 
   // ---- Classroom knobs → witness overrides → in-browser choupoBatch --------
   const [knobs, setKnobs] = useState<RayleighKnobValues>(defaultKnobValues);
-  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
   const { result: classroom, err, busy } = useMethodRun(
     src === "classroom" ? RAYLEIGH_WITNESS : null,
     knobOverrides(knobs), JSON.stringify(knobs), "choupoBatch");
@@ -721,69 +716,43 @@ export function RayleighTool(): JSX.Element {
     };
   }, [trajectory, pot, detection]);
 
-  // ---- The source + classroom-knob bar (always rendered) --------------------
+  // ---- The setup panel's content: source, knobs, provenance ----------------
   const controls = (
-    <Box style={{ flexShrink: 0, borderBottom:
-      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
-        {(appDetection.active || source === "current") && (
-          <SegmentedControl size="xs" value={src}
-            onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
-        {src === "classroom" && (
-          <>
-            <ActionIcon variant="subtle" size="sm" onClick={toggle}
-              aria-label={collapsed
-                ? "show the classroom knobs" : "hide the classroom knobs"}>
-              {collapsed
-                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-            </ActionIcon>
-            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
-              classroom knobs
-            </Text>
-            {busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  re-integrating the still — seconds, not instant
-                </Text>
-              </Group>
-            )}
-            {curveBusy && !busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  sweeping y*(x)
-                </Text>
-              </Group>
-            )}
-          </>
-        )}
-      </Group>
+    <>
+      {(appDetection.active || source === "current") && (
+        <SegmentedControl size="xs" value={src} fullWidth
+          onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
       {src === "classroom" && (
         <>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" px={12} pb={4} align="flex-end" wrap="wrap">
-              {RAYLEIGH_KNOBS.map((k) => (
-                <NumberInput key={k.id} size="xs" w={170}
-                  label={k.unit ? `${k.label} [${k.unit}]` : k.label}
-                  value={knobs[k.id]} min={k.min} max={k.max} step={k.step}
-                  onChange={(v) => {
-                    const num = typeof v === "number" ? v : Number(v);
-                    if (Number.isFinite(num))
-                      setKnobs((s) => ({ ...s, [k.id]: num }));
-                  }} />
-              ))}
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">
+                re-integrating the still — seconds, not instant
+              </Text>
             </Group>
-          </Collapse>
-          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE}</Text>
+          )}
+          {curveBusy && !busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">sweeping y*(x)</Text>
+            </Group>
+          )}
+          {RAYLEIGH_KNOBS.map((k) => (
+            <KnobNumber key={k.id}
+              label={k.unit ? `${k.label} [${k.unit}]` : k.label}
+              value={knobs[k.id] ?? k.def} min={k.min} max={k.max} step={k.step}
+              onChange={(v) => setKnobs((st) => ({ ...st, [k.id]: v }))} />
+          ))}
+          <PanelNote>{PROVENANCE}</PanelNote>
         </>
       )}
-    </Box>
+    </>
   );
 
   // The engine's messages, verbatim — never rephrased, never swallowed.
@@ -811,9 +780,7 @@ export function RayleighTool(): JSX.Element {
   // ---- No drawable pot yet: per-source honest states ------------------------
   if (pot === null || trajView === null) {
     return (
-      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-        minHeight: 0 }}>
-        {controls}
+      <MethodSetupRail title="classroom knobs" setup={controls}>
         {alerts}
         <Box style={{ flex: 1, display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
@@ -837,14 +804,12 @@ export function RayleighTool(): JSX.Element {
             </Text>
           )}
         </Box>
-      </Box>
+      </MethodSetupRail>
     );
   }
 
   return (
-    <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-      minHeight: 0 }}>
-      {controls}
+    <MethodSetupRail title="classroom knobs" setup={controls}>
       {alerts}
 
       {/* Chips: the two sides of the identity + the window's far end. */}
@@ -951,6 +916,6 @@ export function RayleighTool(): JSX.Element {
         points).  W and x are display arithmetic on the trajectory&apos;s own
         mole columns; every y* and every holdup is the engine&apos;s.
       </Text>
-    </Box>
+    </MethodSetupRail>
   );
 }

@@ -160,34 +160,45 @@ describe("the key registry is the one home", () => {
       .toBe("choupo.methods.pump-system.controlsCollapsed");
   });
 
-  it("T7: the three CONTROLS_COLLAPSED_KEY homes are gone — one name each", async () => {
+  it("T7: the three CONTROLS_COLLAPSED_KEY homes are gone — and so are the "
+    + "per-tool ones", async () => {
     const prefs = await import("../src/state/prefs.js");
     const chrome = await import("../src/ui/methods/methodsChrome.js");
     const pinch = await import("../src/ui/methods/PinchCompositeTool.js");
     const pump = await import("../src/ui/methods/PumpSystemTool.js");
 
-    // The shared setup-bar key still carries its historical spelling (renaming
-    // a live key resets every student's browser), but it is spelled ONCE.
+    // The shared setup key still carries its historical spelling (renaming a
+    // live key resets every student's browser), and it is spelled ONCE.
     expect(chrome.CONTROLS_COLLAPSED_KEY).toBe(prefs.METHODS_SETUP_COLLAPSED_KEY);
     expect(prefs.METHODS_SETUP_COLLAPSED_KEY).toBe("choupo.methods.controlsCollapsed");
 
-    // The two tools no longer export a same-named, different-valued key.
-    expect("CONTROLS_COLLAPSED_KEY" in pinch).toBe(false);
-    expect("CONTROLS_COLLAPSED_KEY" in pump).toBe(false);
-    expect(pinch.PINCH_CONTROLS_COLLAPSED_KEY)
-      .toBe(prefs.methodsToolCollapsedKey("pinch-composite"));
-    expect(pump.PUMP_CONTROLS_COLLAPSED_KEY)
-      .toBe(prefs.methodsToolCollapsedKey("pump-system"));
-
-    // Three DIFFERENT storage locations, as they always were — what changed is
-    // that nothing pretends they are the same thing.
-    const keys = new Set([
-      chrome.CONTROLS_COLLAPSED_KEY,
-      pinch.PINCH_CONTROLS_COLLAPSED_KEY,
-      pump.PUMP_CONTROLS_COLLAPSED_KEY,
-    ]);
-    expect(keys.size).toBe(3);
+    // No tool exports a fold key of its own any more.  The three same-named,
+    // different-valued exports went first (2026-08-18, morning); the two
+    // distinctly-named ones went with the horizontal knob strips they folded
+    // (2026-08-18, this slice), when all twelve tools adopted ONE docked setup
+    // panel.  A tool that re-exported one would be re-opening a per-tool
+    // question the panel no longer asks.
+    for (const mod of [pinch, pump]) {
+      for (const name of Object.keys(mod)) {
+        expect(name).not.toMatch(/COLLAPSED_KEY$/);
+      }
+    }
   });
+
+  it("T7b: the EduTools setup panel's fold IS the registry's shared key",
+    async () => {
+      const prefs = await import("../src/state/prefs.js");
+      const contract = await import("../src/ui/panelContract.js");
+      // One entry, one width, one fold — for every tool in METHOD_TOOLS.
+      expect(prefs.PANELS.methodKnobsRail.collapsedKey)
+        .toBe(prefs.METHODS_SETUP_COLLAPSED_KEY);
+      expect(prefs.PANELS.methodKnobsRail.sizeKey)
+        .toBe("choupo.panel.methodKnobsRail.size");
+      expect(contract.METHOD_KNOBS_PANEL.prefs)
+        .toBe(prefs.PANELS.methodKnobsRail);
+      expect(contract.METHOD_KNOBS_PANEL.edge).toBe("left");
+      expect(contract.METHOD_KNOBS_PANEL.shortcut).toBe("[");
+    });
 
   it("methodsChrome's readers delegate to the state layer (no second copy)", async () => {
     const { loadCollapsed, saveCollapsed, hasStoredCollapsed } =

@@ -102,21 +102,29 @@ License
   rather than handed over — see the note at the render.
 
   What stays: the one-line "teaches" caption + the Theory Guide link
-  (TeachesLine, above every tool), and the in-file tools' setup-bar fold to a
-  slim restore strip (choupo.methods.controlsCollapsed) — on a projector every
-  freed pixel goes to the construction.  Alerts fold to a counted pill, never
-  silently.  The McCabe R/q controls pane is INSIDE the shared
-  plotting/McCabePlot.tsx and is not reachable from this host.
+  (TeachesLine), now rendered above EVERY tool from this one place.  The McCabe
+  R/q controls pane is INSIDE the shared plotting/McCabePlot.tsx and is not
+  reachable from this host.
+
+  THE SETUP CONTROLS ARE A LEFT PANEL (2026-08-18, Vítor's decision).  Every
+  tool's knobs used to be a horizontal strip above its diagram, folding to a
+  slim restore bar under `choupo.methods.controlsCollapsed`.  They are now the
+  docked, resizable, keyboard-reachable setup panel every other rail in this app
+  already had — ui/methods/knobPanel.tsx, declared once in ui/panelContract.tsx
+  as METHOD_KNOBS_PANEL, stored once in state/prefs.ts as PANELS.methodKnobsRail
+  (which KEEPS that same fold key: same question, same spelling, one home).  The
+  two tools in this file follow the same rule as the ten lazy ones — inputs on
+  the left, the construction and everything that reports a number on the right —
+  so `ToolField`, `SetupCollapseButton` and `SetupCollapsedStrip` left with the
+  strip they served; see the note where they stood.
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton,
+  ActionIcon, Alert, Box, Button, Code, Collapse, CopyButton,
   Group, Loader, NumberInput, Select, Stack, Text, Tooltip,
 } from "@mantine/core";
-import {
-  IconBook, IconChevronDown, IconChevronUp, IconExternalLink,
-} from "@tabler/icons-react";
+import { IconBook, IconExternalLink } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
 import {
@@ -135,10 +143,10 @@ import { dropCsvColumn } from "./plotting/csvShape.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
+import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
 import {
-  CONTROLS_COLLAPSED_KEY, setupBarLayout, useCoarsePointer, useCollapsedFlag,
-  useFitsOneRow, useNarrowViewport, usePlotRefit,
-} from "./methods/methodsChrome.js";
+  KnobField, KnobNumber, MethodSetupRail,
+} from "./methods/knobPanel.js";
 import {
   METHOD_TOOLS, setActiveMethodTool, theoryUrl, useActiveMethodTool,
   type MethodTool, type MethodToolId,
@@ -284,41 +292,46 @@ export function MethodsWorkspace() {
     <Box style={{ position: "absolute", inset: 0, display: "flex",
       flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden" }}>
       {!chromeLeadsWithTheTool && <ToolChooser tool={tool} />}
-      {tool === "mccabe" ? (
-        <McCabeTool tool={active} catalogue={catalogue}
-          localUnifac={localUnifac} componentFiles={componentFiles} />
-      ) : tool === "psychro" ? (
-        <PsychroTool tool={active} catalogue={catalogue}
-          componentFiles={componentFiles} />
-      ) : (
-        // The run-fed tools take no props, so the pedagogy line (teaches +
-        // the Theory Guide link) is rendered HERE, once for all of them —
-        // every tool states its theory destination or it is not finished.
-        <>
-          <TeachesLine tool={active} />
-          {/* A bounded full-height flex column for the run-fed tools: they
-              manage their own internal panels, and this container keeps them
-              inside the workspace whatever the viewport does — never reached
-              into, only sized. */}
-          <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
-            flexDirection: "column", overflow: "hidden" }}>
-            <Suspense fallback={
-              <Group justify="center" mt="xl"><Loader size="sm" /></Group>
-            }>
-              {tool === "kremser" ? <KremserTool />
-                : tool === "entu" ? <EpsilonNtuTool />
-                : tool === "pinch-composite" ? <PinchCompositeTool />
-                : tool === "pump-system" ? <PumpSystemTool />
-                : tool === "merkel" ? <MerkelTool />
-                : tool === "rayleigh" ? <RayleighTool />
-                : tool === "levenspiel" ? <LevenspielTool />
-                : tool === "vanheerden" ? <VanHeerdenTool />
-                : tool === "drying" ? <DryingCurveTool />
-                : <BreakthroughTool />}
-            </Suspense>
-          </Box>
-        </>
-      )}
+      {/* The pedagogy line (teaches + the Theory Guide link) is rendered HERE
+          for EVERY tool — every tool states its theory destination or it is
+          not finished.  It used to sit inside the two in-file tools' own
+          fragments and above the ten lazy ones; since the setup controls
+          became a docked left panel (ui/methods/knobPanel.tsx) the tools have
+          one shape, so this line has one home too.
+
+          IT ALSO KEEPS checkGui's SABOTAGE ARM NON-VACUOUS, which is worth
+          stating because it is load-bearing: the exposure probe puts `inset: 0`
+          on the workspace container's LAST element child and counts what that
+          covers.  With every control inside the tool's own subtree the count
+          would be 0 and the harness would refuse the run as vacuous.  This
+          caption sits OUTSIDE that last child, which is the one control the
+          other ten pages have always rested on (exposure.mjs: reach 1). */}
+      <TeachesLine tool={active} />
+      {/* A bounded full-height flex column for the tool: each manages its own
+          setup panel, and this container keeps it inside the workspace
+          whatever the viewport does — never reached into, only sized. */}
+      <Box style={{ flex: 1, minHeight: 0, minWidth: 0, display: "flex",
+        flexDirection: "column", overflow: "hidden" }}>
+        <Suspense fallback={
+          <Group justify="center" mt="xl"><Loader size="sm" /></Group>
+        }>
+          {tool === "mccabe" ? (
+            <McCabeTool catalogue={catalogue}
+              localUnifac={localUnifac} componentFiles={componentFiles} />
+          ) : tool === "psychro" ? (
+            <PsychroTool catalogue={catalogue} componentFiles={componentFiles} />
+          ) : tool === "kremser" ? <KremserTool />
+            : tool === "entu" ? <EpsilonNtuTool />
+            : tool === "pinch-composite" ? <PinchCompositeTool />
+            : tool === "pump-system" ? <PumpSystemTool />
+            : tool === "merkel" ? <MerkelTool />
+            : tool === "rayleigh" ? <RayleighTool />
+            : tool === "levenspiel" ? <LevenspielTool />
+            : tool === "vanheerden" ? <VanHeerdenTool />
+            : tool === "drying" ? <DryingCurveTool />
+            : <BreakthroughTool />}
+        </Suspense>
+      </Box>
     </Box>
   );
 }
@@ -380,82 +393,30 @@ function ToolChooser({ tool }: { tool: MethodToolId }) {
 }
 
 // ---- Shared panel chrome ----------------------------------------------------
-
-function ToolField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <Group gap={4} wrap="nowrap" align="center" style={{ flexShrink: 0 }}>
-      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>{label}</Text>
-      {children}
-    </Group>
-  );
-}
-
-/** The toolbar's fold affordance — rightmost slot of the setup bar.  One
- *  Mantine size step up under a coarse pointer (touch target). */
-function SetupCollapseButton({ onCollapse }: { onCollapse: () => void }) {
-  const coarse = useCoarsePointer();
-  return (
-    <Tooltip label="Hide the setup bar — the diagram takes the freed rows" withArrow>
-      <ActionIcon variant="subtle" size={coarse ? "lg" : "md"} color="gray"
-        aria-label="hide setup controls" onClick={onCollapse}>
-        <IconChevronUp size={coarse ? 18 : 16} />
-      </ActionIcon>
-    </Tooltip>
-  );
-}
-
-/** The slim strip a folded setup bar leaves behind (lecture mode): the
- *  committed setup stays SEEN (the Explorer's value-stays-visible rule), and
- *  alerts fold to a counted `⚠ N` pill rather than vanishing — the honesty
- *  credo allows folded, never silent.  The WHOLE strip is the click target
- *  (Fitts edge strip); keyboard: tabbable, Enter / Space restore.
- *
- *  THIS IS ONE OF THE TWO STRIPS THE PANEL CONTRACT WAS DERIVED FROM (the
- *  other being the Explorer's rail re-open tab), and it deliberately STAYS
- *  here rather than becoming a `PanelReopenStrip`: a docked panel folds an
- *  area that also has a SIZE the reader drags, and this bar has none — it is a
- *  toolbar that gets out of the diagram's way.  What the contract took from it
- *  is the posture: whole-strip target, a scent of what is folded, and a
- *  keyboard path back.  Before writing a third one of these, read
- *  ui/panelContract.tsx. */
-function SetupCollapsedStrip({ summary, busy, alertCount, onExpand }: {
-  summary: string; busy: boolean; alertCount: number; onExpand: () => void;
-}) {
-  const [hover, setHover] = useState(false);
-  return (
-    <Tooltip label="Show the setup bar" withArrow position="bottom">
-      <Box
-        onClick={onExpand}
-        onPointerEnter={() => setHover(true)}
-        onPointerLeave={() => setHover(false)}
-        role="button" tabIndex={0} aria-label="show setup controls"
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onExpand(); }
-        }}
-        style={{
-          flexShrink: 0, display: "flex", alignItems: "center", gap: 8,
-          padding: "3px 12px", cursor: "pointer",
-          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-          background: hover
-            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
-            : "transparent",
-          transition: "background 120ms",
-        }}>
-        <IconChevronDown size={14} color="var(--mantine-color-dimmed)" />
-        <Text size="xs" c="dimmed"
-          style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {summary}
-        </Text>
-        {busy && <Loader size="xs" />}
-        {alertCount > 0 && (
-          <Badge size="xs" color="orange" variant="light" style={{ flexShrink: 0 }}>
-            ⚠ {alertCount}
-          </Badge>
-        )}
-      </Box>
-    </Tooltip>
-  );
-}
+//
+// THREE PIECES LEFT WITH THE STRIP THEY SERVED (2026-08-18).  `ToolField` laid
+// a label beside its control in a horizontal row; `SetupCollapseButton` folded
+// that row; `SetupCollapsedStrip` was what the fold left behind.  All three are
+// now the panel contract's own — `KnobField`, `PanelCollapseButton`,
+// `PanelReopenStrip` — because the setup bar became a docked left panel
+// (ui/methods/knobPanel.tsx) and a panel has ONE answer to those questions for
+// the whole app.
+//
+// The note that used to sit on `SetupCollapsedStrip` said it "deliberately
+// STAYS here rather than becoming a `PanelReopenStrip`: a docked panel folds an
+// area that also has a SIZE the reader drags, and this bar has none".  That
+// reasoning was right about a strip and expired the moment the strip became a
+// panel; the record of it is in ui/panelContract.tsx beside METHOD_KNOBS_PANEL,
+// where the next reader will be standing when the question comes up again.
+//
+// What the contract took from this file is unchanged and worth restating: the
+// WHOLE strip is the click target, it carries a SCENT of what is folded away,
+// and it is keyboard-reachable.  What was LOST with the strip is its summary
+// line ("benzene / toluene · γ NRTL · P 1.013 bar") and its `⚠ N` alert pill:
+// the panel's scent is one word.  That is not a silent loss — the alerts
+// themselves never lived in the strip, they live in the content column and stay
+// on screen whether the panel is folded or not, which is strictly more visible
+// than a counted pill.
 
 /** The one-line "what this construction teaches" caption + the tool's Theory
  *  Guide link — rendered directly under the toolbar so the pedagogy is stated
@@ -546,17 +507,15 @@ function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: Rea
 // the equilibrium curve y*(x) arrives ALREADY COMPUTED by the engine; the R/q
 // staircase in McCabePlot is pure geometry over it, zero re-solve.
 
-/** The width the McCabe setup bar needs to stay on one row.  MEASURED
- *  2026-08-17 through the live DOM (every child at its own width, the flexible
- *  spacer excluded, plus the gaps and the strip's own padding): 970 px inside
- *  a strip inset 12 px each side = a 994 px extent, and 1020 leaves it the
- *  same ~26 px of slack the psychrometric constant below carries.  Declared
- *  beside the tool that owns the bar, not in the shared helper — the helper
- *  answers "does it fit", the tool says what it needs. */
-const MCCABE_BAR_ONE_ROW_PX = 1020;
+/* THE ONE-ROW CONSTANTS ARE GONE, with the row they measured.  This tool's
+ * setup bar needed 1020 px to stay on one line and the psychrometric one 1520 —
+ * numbers that existed to decide whether a horizontal strip should wrap.  A
+ * vertical panel does not wrap; it scrolls, and its width is the reader's.  The
+ * FIT RULE they fed (`fitsRow`) is not gone at all: it now decides whether the
+ * panel starts folded, asked of the panel's own minimum against the measured
+ * host (ui/panelContract.autoCollapseDefault). */
 
-function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
-  tool: MethodTool;
+function McCabeTool({ catalogue, localUnifac, componentFiles }: {
   catalogue: ComponentMeta[];
   localUnifac: LocalUnifac;
   componentFiles: Record<string, string>;
@@ -598,20 +557,6 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
   [pairOk, compA, compB, catalogue, activity, eos, P, nPts, localUnifac, componentFiles]);
 
   const { csv, err, busy, advisories } = useEngineCsv(spec);
-  // Lecture fold: the setup bar + teaches line + hand-off footer give their
-  // rows to the diagram.  ONE global key shared by the in-file tools, so
-  // switching tools keeps the presentation posture; the fold is instant (no
-  // width animation), so the refit rides a rAF instead of transitionend.
-  const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
-  usePlotRefit(setup.collapsed);
-  /* The setup bar reflows when it does NOT FIT, never because the screen is
-   * classified small (2026-08-17).  It used to read `useNarrowViewport()`,
-   * which carried a coarse-pointer term, so a 1180 px tablet wrapped a bar
-   * with 160 px to spare while the psychrometric tool beside it -- same
-   * workspace, same bar, same question -- already decided by fit.  Two homes
-   * for one question, and they disagreed.  One rule now, each tool declaring
-   * only what its own bar needs. */
-  const bar = setupBarLayout(!useFitsOneRow(MCCABE_BAR_ONE_ROW_PX));
   // The plot reads y_eq_<more volatile>: pass the pair in the SAME order the
   // spec ran it, so the curve lookup can never miss.
   const [vA, vB] = orderBinaryByVolatility([compA, compB], catalogue);
@@ -661,78 +606,49 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
     </Box>
   );
 
-  if (setup.collapsed) {
-    return (
-      <>
-        <SetupCollapsedStrip
-          summary={`${compA} / ${compB} · γ ${activity} · P ${paToDisplay(P, Pu)} ${pressureLabel(Pu)}`}
-          busy={busy} alertCount={alerts.length} onExpand={setup.toggle} />
-        {plotPane}
-      </>
-    );
-  }
-
   return (
-    <>
-      <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
-        <Group gap="sm" wrap={bar.wrap} align="center" style={{ minWidth: bar.minWidth }}>
-          <ToolField label="light">
-            <Select size="xs" searchable data={vleNames} value={compA}
-              onChange={(v) => setCompA(v ?? compA)} w={140} allowDeselect={false} />
-          </ToolField>
-          <ToolField label="heavy">
-            <Select size="xs" searchable data={vleNames} value={compB}
-              onChange={(v) => setCompB(v ?? compB)} w={140} allowDeselect={false} />
-          </ToolField>
-          <ToolField label="γ">
-            <Select size="xs" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
-              onChange={(v) => setActivity(v ?? "NRTL")} w={100} allowDeselect={false} />
-          </ToolField>
-          <ToolField label="EoS">
-            <Select size="xs" data={["idealGas", "SRK", "PR"]} value={eos}
-              onChange={(v) => setEos(v ?? "idealGas")} w={100} allowDeselect={false} />
-          </ToolField>
-          <ToolField label={`P (${pressureLabel(Pu)})`}>
-            <NumberInput size="xs" value={paToDisplay(P, Pu)} w={90}
-              onChange={(v) => {
-                const n = typeof v === "number" ? v : parseFloat(v);
-                if (Number.isFinite(n)) setP(parsePressure(n, Pu));
-              }} />
-          </ToolField>
-          <ToolField label="points">
-            <NumberInput size="xs" value={nPts} min={2} w={72}
-              onChange={(v) => {
-                const n = typeof v === "number" ? v : parseFloat(v);
-                if (Number.isFinite(n)) setNPts(n);
-              }} />
-          </ToolField>
-          {busy && (
-            <Group gap={6} wrap="nowrap">
-              <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
-            </Group>
-          )}
-          {bar.showSpacer && <Box style={{ flex: 1, minWidth: 8 }} />}
-          {mccabeCsv && (
-            <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
-              <ActionIcon variant="subtle" size="md" color="accent"
-                aria-label="pop out McCabe analyzer"
-                onClick={() => popOutExploreMccabe({
-                  csv: mccabeCsv, compA: vA, compB: vB, P, model: activity,
-                })}>
-                <IconExternalLink size={16} />
-              </ActionIcon>
-            </Tooltip>
-          )}
-          <SetupCollapseButton onCollapse={setup.toggle} />
-        </Group>
-      </Box>
-      <TeachesLine tool={tool} />
+    <MethodSetupRail title="setup" scent="SETUP" setup={
+      <>
+        <KnobField label="light">
+          <Select size="xs" searchable data={vleNames} value={compA} w="100%"
+            onChange={(v) => setCompA(v ?? compA)} allowDeselect={false} />
+        </KnobField>
+        <KnobField label="heavy">
+          <Select size="xs" searchable data={vleNames} value={compB} w="100%"
+            onChange={(v) => setCompB(v ?? compB)} allowDeselect={false} />
+        </KnobField>
+        <KnobField label="γ (activity model)">
+          <Select size="xs" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
+            onChange={(v) => setActivity(v ?? "NRTL")} w="100%" allowDeselect={false} />
+        </KnobField>
+        <KnobField label="EoS (vapour)">
+          <Select size="xs" data={["idealGas", "SRK", "PR"]} value={eos}
+            onChange={(v) => setEos(v ?? "idealGas")} w="100%" allowDeselect={false} />
+        </KnobField>
+        <KnobNumber label={`P (${pressureLabel(Pu)})`} value={paToDisplay(P, Pu)}
+          onChange={(v) => setP(parsePressure(v, Pu))} />
+        <KnobNumber label="points on the curve" value={nPts} min={2}
+          onChange={setNPts} />
+        {busy && (
+          <Group gap={6} wrap="nowrap">
+            <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
+          </Group>
+        )}
+        {mccabeCsv && (
+          <Button variant="light" size="compact-xs" color="accent"
+            leftSection={<IconExternalLink size={14} />}
+            aria-label="pop out McCabe analyzer"
+            onClick={() => popOutExploreMccabe({
+              csv: mccabeCsv, compA: vA, compB: vB, P, model: activity,
+            })}>
+            Pop out the analyzer
+          </Button>
+        )}
+      </>
+    }>
       {plotPane}
       <HandOffFooter spec={spec} alerts={alerts} />
-    </>
+    </MethodSetupRail>
   );
 }
 
@@ -742,17 +658,7 @@ function McCabeTool({ tool, catalogue, localUnifac, componentFiles }: {
 // chart CSV arrives fully computed (saturation, RH, adiabatic-saturation and
 // true wet-bulb via the Lewis number) and PsychroPlot only draws it.
 
-/** The width the psychrometric setup bar needs to stay on one row: its
- *  measured extent (1495 px at 390x844 on 2026-08-17) plus the padding around
- *  it.  Declared beside the tool that owns the bar, not in the shared helper —
- *  the helper answers "does it fit", the tool says what it needs.
- *  Re-measured 2026-08-17 through the live DOM by the same rule the McCabe
- *  constant above states: 1470 px of content inside a strip inset 12 px each
- *  side = a 1494 px extent, which is the 1495 already recorded here. */
-const PSYCHRO_BAR_ONE_ROW_PX = 1520;
-
-function PsychroTool({ tool, catalogue, componentFiles }: {
-  tool: MethodTool;
+function PsychroTool({ catalogue, componentFiles }: {
   catalogue: ComponentMeta[];
   componentFiles: Record<string, string>;
 }) {
@@ -789,23 +695,6 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
   [pairOk, carrier, condensable, catalogue, P, tFrom, tTo, rhFrom, rhTo, rhStep, wbStep, componentFiles]);
 
   const { csv, err, busy, advisories } = useEngineCsv(spec);
-  // Lecture fold — same shared key and posture as the McCabe tool.
-  const setup = useCollapsedFlag(CONTROLS_COLLAPSED_KEY);
-  usePlotRefit(setup.collapsed);
-  /* Widest setup bar in the corpus.  Measured 2026-08-17: it laid its controls
-   * out to x=1495, which overruns the phone AND the 1400x900 desk viewport —
-   * `hide setup controls` sat at x=1461 with nothing able to scroll to it.  So
-   * the wrap here is decided by whether the bar FITS, not by a phone
-   * breakpoint; 1520 is that measured 1495 plus the padding around it.
-   *
-   * The `useNarrowViewport() ||` term this line carried is GONE (2026-08-17).
-   * It could only ever add wrapping the fit question had not asked for, and
-   * that is exactly what it did on a tablet: coarse pointer at 1800 px, so
-   * `narrow` was true, so the bar wrapped with 280 px to spare while the fit
-   * question — the one this tool was given a measured constant for — said it
-   * fitted.  A second answer to a question that already had one can only
-   * disagree with it. */
-  const bar = setupBarLayout(!useFitsOneRow(PSYCHRO_BAR_ONE_ROW_PX));
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
@@ -842,77 +731,48 @@ function PsychroTool({ tool, catalogue, componentFiles }: {
     </Box>
   );
 
-  if (setup.collapsed) {
-    return (
-      <>
-        <SetupCollapsedStrip
-          summary={`${carrier} + ${condensable} · ${Number(kToDisplay(tFrom, Tu).toFixed(1))}–${Number(kToDisplay(tTo, Tu).toFixed(1))} ${temperatureLabel(Tu)} · P ${paToDisplay(P, Pu)} ${pressureLabel(Pu)}`}
-          busy={busy} alertCount={alerts.length} onExpand={setup.toggle} />
-        {plotPane}
-      </>
-    );
-  }
-
   return (
-    <>
-      <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
-        <Group gap="sm" wrap={bar.wrap} align="center" style={{ minWidth: bar.minWidth }}>
-          <ToolField label="carrier">
-            <Select size="xs" searchable data={carrierNames} value={carrier}
-              onChange={(v) => setCarrier(v ?? carrier)} w={110} allowDeselect={false} />
-          </ToolField>
-          <ToolField label="condensable">
-            <Select size="xs" searchable data={condensableNames} value={condensable}
-              onChange={(v) => setCondensable(v ?? condensable)} w={130} allowDeselect={false} />
-          </ToolField>
-          <ToolField label={`T from (${temperatureLabel(Tu)})`}>
-            <NumberInput size="xs" value={Number(kToDisplay(tFrom, Tu).toFixed(1))} w={84} step={5}
-              onChange={(v) => setTFrom(parseTemperature(num(v, kToDisplay(tFrom, Tu)), Tu))} />
-          </ToolField>
-          <ToolField label={`to (${temperatureLabel(Tu)})`}>
-            <NumberInput size="xs" value={Number(kToDisplay(tTo, Tu).toFixed(1))} w={84} step={5}
-              onChange={(v) => setTTo(parseTemperature(num(v, kToDisplay(tTo, Tu)), Tu))} />
-          </ToolField>
-          <ToolField label={`P (${pressureLabel(Pu)})`}>
-            <NumberInput size="xs" value={paToDisplay(P, Pu)} w={90}
-              onChange={(v) => setP(parsePressure(num(v, paToDisplay(P, Pu)), Pu))} />
-          </ToolField>
-          <ToolField label="RH % from/to/step">
-            <Group gap={4} wrap="nowrap">
-              <NumberInput size="xs" value={rhFrom} min={0} max={99} w={62}
-                onChange={(v) => setRhFrom(num(v, rhFrom))} />
-              <NumberInput size="xs" value={rhTo} min={1} max={99} w={62}
-                onChange={(v) => setRhTo(num(v, rhTo))} />
-              <NumberInput size="xs" value={rhStep} min={1} max={50} w={62}
-                onChange={(v) => setRhStep(num(v, rhStep))} />
-            </Group>
-          </ToolField>
-          <ToolField label="ΔT sat (°C)">
-            <NumberInput size="xs" value={wbStep} min={5} max={50} step={5} w={68}
-              onChange={(v) => setWbStep(num(v, wbStep))} />
-          </ToolField>
-          <ToolField label="Y max (0=auto)">
-            <NumberInput size="xs" value={yMax} min={0} step={0.05} decimalScale={3} w={80}
-              onChange={(v) => setYMax(num(v, yMax))} />
-          </ToolField>
-          {busy && (
-            <Group gap={6} wrap="nowrap">
-              <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
-            </Group>
-          )}
-          {/* Spacer + the fold affordance pinned to the toolbar's right end —
-              the same rightmost slot the McCabe toolbar gives it.  The spacer
-              goes when the bar wraps (see setupBarLayout). */}
-          {bar.showSpacer && <Box style={{ flex: 1, minWidth: 8 }} />}
-          <SetupCollapseButton onCollapse={setup.toggle} />
-        </Group>
-      </Box>
-      <TeachesLine tool={tool} />
+    <MethodSetupRail title="setup" scent="SETUP" setup={
+      <>
+        <KnobField label="carrier gas">
+          <Select size="xs" searchable data={carrierNames} value={carrier} w="100%"
+            onChange={(v) => setCarrier(v ?? carrier)} allowDeselect={false} />
+        </KnobField>
+        <KnobField label="condensable">
+          <Select size="xs" searchable data={condensableNames} value={condensable} w="100%"
+            onChange={(v) => setCondensable(v ?? condensable)} allowDeselect={false} />
+        </KnobField>
+        <KnobNumber label={`T from (${temperatureLabel(Tu)})`} step={5}
+          value={Number(kToDisplay(tFrom, Tu).toFixed(1))}
+          onChange={(v) => setTFrom(parseTemperature(v, Tu))} />
+        <KnobNumber label={`T to (${temperatureLabel(Tu)})`} step={5}
+          value={Number(kToDisplay(tTo, Tu).toFixed(1))}
+          onChange={(v) => setTTo(parseTemperature(v, Tu))} />
+        <KnobNumber label={`P (${pressureLabel(Pu)})`} value={paToDisplay(P, Pu)}
+          onChange={(v) => setP(parsePressure(v, Pu))} />
+        <KnobField label="RH % — from / to / step">
+          <Group gap={4} wrap="nowrap">
+            <NumberInput size="xs" value={rhFrom} min={0} max={99} style={{ flex: 1, minWidth: 0 }}
+              onChange={(v) => setRhFrom(num(v, rhFrom))} />
+            <NumberInput size="xs" value={rhTo} min={1} max={99} style={{ flex: 1, minWidth: 0 }}
+              onChange={(v) => setRhTo(num(v, rhTo))} />
+            <NumberInput size="xs" value={rhStep} min={1} max={50} style={{ flex: 1, minWidth: 0 }}
+              onChange={(v) => setRhStep(num(v, rhStep))} />
+          </Group>
+        </KnobField>
+        <KnobNumber label="ΔT between saturation anchor lines (°C)" value={wbStep}
+          min={5} max={50} step={5} onChange={setWbStep} />
+        <KnobNumber label="Y max, kg/kg (0 = auto)" value={yMax} min={0} step={0.05}
+          decimals={3} onChange={setYMax} />
+        {busy && (
+          <Group gap={6} wrap="nowrap">
+            <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
+          </Group>
+        )}
+      </>
+    }>
       {plotPane}
       <HandOffFooter spec={spec} alerts={alerts} />
-    </>
+    </MethodSetupRail>
   );
 }

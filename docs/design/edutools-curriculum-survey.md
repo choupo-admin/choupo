@@ -227,6 +227,66 @@ picture a lie.
 
 Zero engine work.  Theory anchor `ch:extractor` exists (*read*).
 
+#### A2 amendment, 2026-08-18 — BUILT, and the "no new physics" claim held with one named exception
+
+The tool exists: `gui/src/ui/methods/TieTriangleTool.tsx` (the construction)
+over `gui/src/case/hunterNash.ts` (the reading and the geometry), pinned by
+`gui/tests/hunterNash.test.ts`, with `sec:hunter-nash` written into the LLE
+chapter of the theory guide.  It is registered `planned` and NOT mounted —
+the reason is recorded beside the registry entry and is a host-dispatch
+question, not a physics one.
+
+**Verified by RUNNING, not reading** (which §9.1 says this survey did not do,
+and which this slice did):
+
+* `./choupoProps tutorials/props/scan/ternary03_lle_water_ethanol_benzene`
+  reproduces the case's committed `ternary.csv` **byte for byte** — 141 data
+  rows, 105 classified nodes, 18 tie-lines at the authored `tieStride 4`.
+* `./choupoSolve tutorials/steady/absorption/extract01_ethanol_water_benzene`
+  publishes the per-stage tie-lines the construction needs
+  (`xE_<comp>`/`xR_<comp>` over `stage`), the four terminal flows as KPIs, and
+  the two inlet stream compositions.
+* The Hunter-Nash colinearity — Δ, R_j, E_{j+1} on one line for every cut —
+  **holds on the engine's own cascade to 1.2e-4 of a triangle edge**, the same
+  ORDER as the extractor's own stopping tolerance (a relative mass closure of
+  1e-4).  That is an order-of-magnitude remark, not an identity: a mass closure
+  and a distance on a diagram are different quantities and are not claimed to
+  be the same one.  The
+  mixing point located as a line crossing agrees with the lever-rule point
+  computed from the published flows to 2.8e-4.  Both are now the tool's
+  headline numbers, and both are falsifiable rather than asserted.
+
+**§9.6 is upgraded.**  That caveat said the twin claim rested on one `diff` of
+two `thermoPhysPropDict` files and did not prove the records resolve
+identically.  They do: the two cases' sealed `constant/components/*.dat` and
+`constant/parameters/UNIFAC/**` are **byte-identical**, and the test suite pins
+that set-for-set rather than file-by-file, so a record added to one witness and
+not the other fails too.
+
+**The engine gap the build found, and it is the one the survey did not
+anticipate.**  `propertyScanTernary` publishes tie-lines only at the
+compositions its own grid sweep produced; there is no way to ask for **the
+tie-line through a GIVEN composition**.  The classical Hunter-Nash stage count
+needs exactly that — step 2 of the construction reads a conjugate composition
+off a tie-line interpolated between the plotted ones — so a *graphical stage
+count* cannot be drawn without inventing a flash nobody ran.  The tool
+therefore steps on the CASCADE's own stages and says so: it shows what the
+method claims about the stages the engine solved, and it cannot answer "how
+many stages would this duty need" graphically.  Closing the gap is a small
+props-op slice (an LL flash at a declared list of compositions, published in
+the same tie-row shape), and it is not authorised here.
+
+**A second finding, engine-side and pre-existing.**  Both witnesses raise the
+LL flash's own TPD advisory on their DEFAULT settings — 138 warnings on the map
+run, 340 on the 5-stage cascade — `converged phase L-alpha is TPD-unstable
+(tm ≈ -0.57) … the reported 2-phase answer may be a local minimum.  Consider
+phaseSet VLLE.`  The posture is deliberate (advisory since 2026-07-25,
+`IsothermalFlash.cpp`), it goes to stderr, and nothing in the corpus surfaces
+it.  Every tie-line the diagram draws is one of those answers, so the tool
+counts them and prints the engine's first line verbatim.  Whether a
+water/ethanol/benzene LL flash at 298 K *should* be flagged unstable is a
+question for the curator; this records that it is.
+
 ### A3. MSMPR crystal size distribution
 
 `Crystalliser` publishes `number_density`, `mass_density` and (on the
@@ -725,6 +785,9 @@ Stated plainly, because a survey that hides its gaps is worse than a shorter one
    `thermoPhysPropDict` files.  It does not prove the two cases' component
    records or pair parameters resolve identically at run time — only that the
    declarations match.  That is what a pinning test would have to establish.
+   **CLOSED 2026-08-18** (see the A2 amendment): the two witnesses' sealed
+   `constant/components/` and `constant/parameters/` trees are byte-identical,
+   and `gui/tests/hunterNash.test.ts` pins the whole set.
 7. **The Explore/EduTools boundary for A8** (compressibility chart) is a
    judgement call I made against the split criterion in `registry.ts:157-161`,
    not a decision anyone has taken.  It should be ruled on rather than assumed.

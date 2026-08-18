@@ -85,16 +85,14 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, SegmentedControl,
-  Slider, Stack, Table, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Table, Text,
+  Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
-import { methodsToolCollapsedKey } from "../../state/prefs.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
 
 // ---- Detection: which sweep CSV feeds the tool ------------------------------
 
@@ -305,12 +303,10 @@ export const PUMP_PROVENANCE_LINE =
   "Runs tutorials/steady/hydraulics/pumpSystem01_operating_point "
   + "(13-point sweep) with your parameters, in your browser.";
 
-/** localStorage home of the knob-panel fold (persisted across sessions).  The
- *  key is DERIVED from the tool id by the one rule in `state/prefs.ts`; the
- *  name says WHICH fold, because three modules used to export the same name
- *  for three different keys. */
-export const PUMP_CONTROLS_COLLAPSED_KEY =
-  methodsToolCollapsedKey("pump-system");
+/* The per-tool fold key is GONE (2026-08-18): the knobs moved into the shared
+ * EduTools setup panel (ui/methods/knobPanel.tsx), whose fold and width are ONE
+ * registry entry (`PANELS.methodKnobsRail`) for all twelve tools.  There is no
+ * per-tool answer left to store. */
 
 // Slider bounds: UI affordances only — the range a classroom drag covers,
 // never a physical claim.  The engine judges whatever number arrives.
@@ -365,26 +361,6 @@ const DERIVED_IN_VIEW_LABEL =
 
 // ---- One knob row (a labelled slider — writes a number, computes nothing) ---
 
-function KnobSlider(props: {
-  label: string; unit: string; min: number; max: number; step: number;
-  value: number; onChange: (v: number) => void;
-}): JSX.Element {
-  return (
-    <Box style={{ flex: 1, minWidth: 150 }}>
-      <Group justify="space-between" gap={4} wrap="nowrap">
-        <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-          {props.label}
-        </Text>
-        <Text size="xs" ff="monospace" style={{ whiteSpace: "nowrap" }}>
-          {props.value}{props.unit ? ` ${props.unit}` : ""}
-        </Text>
-      </Group>
-      <Slider size="xs" min={props.min} max={props.max} step={props.step}
-        value={props.value} onChange={props.onChange} label={null} />
-    </Box>
-  );
-}
-
 // ---- The workspace tool -----------------------------------------------------
 
 export function PumpSystemTool(): JSX.Element {
@@ -403,10 +379,6 @@ export function PumpSystemTool(): JSX.Element {
     appSweep ? sourceChoice : "classroom";
   const classroom = source === "classroom";
 
-  // One shared, junk-tolerant fold hook instead of a hand-rolled try/catch pair.
-  const { collapsed, toggle: toggleCollapsed } =
-    useCollapsedFlag(PUMP_CONTROLS_COLLAPSED_KEY);
-
   const overridesKey = JSON.stringify(knobs);
   const overrides = useMemo(() => pumpSystemOverrides(knobs), [knobs]);
   const { result: methodResult, err, busy } = useMethodRun(
@@ -422,64 +394,41 @@ export function PumpSystemTool(): JSX.Element {
     () => sweep ? classifyPumpCharacteristic(sweep.pumpDP) : null,
     [sweep]);
 
-  // ---- Top chrome: source toggle + the collapsible knob panel ---------------
+  // ---- The setup panel's content: source, knobs, provenance ----------------
   const chrome = (
-    <Box style={{
-      flexShrink: 0, padding: "6px 12px",
-      borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-    }}>
-      <Group gap="sm" wrap="nowrap" align="center">
-        {classroom && (
-          <ActionIcon variant="subtle" color="gray" size="sm"
-            onClick={toggleCollapsed}
-            aria-label={collapsed ? "expand parameter controls"
-                                  : "collapse parameter controls"}>
-            {collapsed ? <IconChevronRight size={14} />
-                       : <IconChevronDown size={14} />}
-          </ActionIcon>
-        )}
-        <Text size="xs" fw={600} style={{ whiteSpace: "nowrap" }}>
-          {classroom ? "Classroom parameters" : "Current run"}
-        </Text>
-        {appSweep && (
-          <SegmentedControl size="xs" value={source}
-            onChange={(v) =>
-              setSourceChoice(v === "current" ? "current" : "classroom")}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
-        <Text size="xs" c="dimmed" style={{
-          flex: 1, minWidth: 0, overflow: "hidden",
-          textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {classroom
-            ? PUMP_PROVENANCE_LINE
-            : "Reading the sweep CSV of the run you launched."}
-        </Text>
-      </Group>
-      {classroom && (
-        <Collapse in={!collapsed}>
-          <Group gap="md" wrap="wrap" pt={6} align="flex-end">
-            {KNOB_META.map((m) => (
-              <KnobSlider key={m.field} label={m.label} unit={m.unit}
-                min={m.min} max={m.max} step={m.step}
-                value={knobs[m.field]}
-                onChange={(v) =>
-                  setKnobs((k) => ({ ...k, [m.field]: v }))} />
-            ))}
-          </Group>
-          <Text size="xs" c="dimmed" pt={4}>
+    <>
+      {appSweep && (
+        <SegmentedControl size="xs" value={source} fullWidth
+          onChange={(v) =>
+            setSourceChoice(v === "current" ? "current" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
+      {classroom ? (
+        <>
+          {KNOB_META.map((m) => (
+            <KnobSlider key={m.field}
+              knob={{ id: m.field, label: m.label, unit: m.unit,
+                min: m.min, max: m.max, step: m.step }}
+              value={knobs[m.field]}
+              onChange={(v) => setKnobs((k) => ({ ...k, [m.field]: v }))} />
+          ))}
+          <PanelNote>{PUMP_PROVENANCE_LINE}</PanelNote>
+          <PanelNote>
             Each drag rewrites the declared dict scalar and re-solves the whole
             sweep in the engine — close the valve (raise L, drop D) and watch
             the operating point walk.  The swept flow window itself is fixed at
             the witness&apos;s 0.4–1.6 kmol/s: the outerDict declares{" "}
             <code>range ( 0.4 1.6 );</code>, a list, which the scalar-override
             channel cannot rewrite (v1).
-          </Text>
-        </Collapse>
+          </PanelNote>
+        </>
+      ) : (
+        <PanelNote>Reading the sweep CSV of the run you launched.</PanelNote>
       )}
-    </Box>
+    </>
   );
 
   // ---- Engine errors, verbatim ---------------------------------------------
@@ -767,11 +716,11 @@ export function PumpSystemTool(): JSX.Element {
   }
 
   return (
-    <Box style={{ width: "100%", height: "100%", display: "flex",
-      flexDirection: "column", overflow: "hidden" }}>
-      {chrome}
+    <MethodSetupRail
+      title={classroom ? "classroom parameters" : "current run"}
+      setup={chrome}>
       {errorAlert}
       {body}
-    </Box>
+    </MethodSetupRail>
   );
 }

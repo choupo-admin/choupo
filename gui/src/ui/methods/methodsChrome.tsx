@@ -222,39 +222,21 @@ export function useIntrinsicWidth(signature: string): {
   return { ref, width: measuring ? 0 : (measured as { sig: string; px: number }).px, measuring };
 }
 
-// ---- The setup bar's two postures ------------------------------------------
-
-/** How a tool's setup bar lays itself out, in ONE home so the tools that
- *  offer one cannot answer the question differently.
- *
- *  ONE ROW: sized to its content (`fit-content`), with a flexible spacer
- *  pushing the pop-out / collapse buttons to the right edge.  That row lives
- *  in a box with `overflow-x: auto`.
- *
- *  WRAPPED: the row reflows instead.  Measured 2026-08-17 at 390x844, McCabe's
- *  bar was 983 px wide and the psychrometric chart's 1495 px — 13 and 29
- *  controls respectively laid out past the right edge, behind an
- *  `overflow: hidden` ancestor.  The `overflow-x: auto` strip is not the
- *  answer even where it technically scrolls: the design record calls a student
- *  swiping sideways hunting for a field the worst teaching outcome of the
- *  available fixes, and it is right — a field you cannot see is a field you do
- *  not know to look for.  Wrapping keeps every field on screen, in reading
- *  order, at the cost of bar height.
- *
- *  The spacer is dropped when wrapping: a `flex: 1` spacer in a wrapping row
- *  consumes the whole remainder of its line and forces everything after it
- *  onto the next one, which is a gap, not a layout.
- *
- *  Pure and exported so tests can pin both postures without a DOM. */
-export function setupBarLayout(wrapped: boolean): {
-  wrap: "wrap" | "nowrap";
-  minWidth: number | "fit-content";
-  showSpacer: boolean;
-} {
-  return wrapped
-    ? { wrap: "wrap", minWidth: 0, showSpacer: false }
-    : { wrap: "nowrap", minWidth: "fit-content", showSpacer: true };
-}
+// ---- The setup bar's two postures — RETIRED 2026-08-18 ---------------------
+//
+// `setupBarLayout(wrapped)` chose between a one-row `nowrap` strip and a
+// wrapping one, and it existed because the tools' setup controls WERE a
+// horizontal strip above the diagram.  They are a docked left panel now
+// (ui/methods/knobPanel.tsx): a column does not wrap, it scrolls, and its width
+// is the reader's to drag.  The last caller went with the last strip.
+//
+// It is DELETED rather than left standing with its tests still green.  A pure
+// helper nothing calls, pinned by three passing assertions, is the shape this
+// project retired a gate for: the tests go on reporting PASS about a decision
+// no screen makes any more.  The rule it encoded is not lost — what remains of
+// it is `fitsRow`, which now answers whether the PANEL starts folded.
+//
+// `useFitsOneRow` below STAYS: the Case workspace's pane row is still a row.
 
 /** True when the viewport can give a setup bar of this natural width a single
  *  row.  `naturalWidthPx` is the bar's own measured extent — a tool declares

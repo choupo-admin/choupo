@@ -86,15 +86,15 @@ License
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Slider, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import {
+  KnobField, KnobSlider, MethodSetupRail, PanelNote,
+} from "./knobPanel.js";
 // The padded display domain is a pure view helper with ONE home already (the
 // Levenspiel-imports-Rayleigh precedent for sharing a helper between two
 // method tools) -- re-declaring it here would be a second copy of the same
@@ -581,7 +581,6 @@ const PROVENANCE =
   + "dryer's own trajectory columns; X_c, X_eq, T_wb, R_c and the break time "
   + "are its KPIs.";
 
-const COLLAPSE_KEY = "choupo.methods.drying.controlsCollapsed";
 
 // ---- Display formatting -----------------------------------------------------
 
@@ -846,32 +845,6 @@ function RversusXSvg({ X, R, segments, k, busyOverlay }: RxInput): JSX.Element {
   );
 }
 
-// ---- One knob control (label + exact entry + slider + its reason) -----------
-
-function KnobControl({ k, value, onChange }: {
-  k: DryingKnob;
-  value: number;
-  onChange: (v: number) => void;
-}): JSX.Element {
-  return (
-    <Tooltip withArrow multiline w={330} label={k.why}>
-      <Box style={{ width: 178 }}>
-        <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-          {k.label}{k.unit ? ` [${k.unit}]` : ""}
-        </Text>
-        <NumberInput size="xs" value={value} min={k.min} max={k.max}
-          step={k.step}
-          onChange={(v) => {
-            const n = typeof v === "number" ? v : Number(v);
-            if (Number.isFinite(n)) onChange(n);
-          }} />
-        <Slider size="xs" mt={4} value={value} min={k.min} max={k.max}
-          step={k.step} label={null} onChange={onChange} />
-      </Box>
-    </Tooltip>
-  );
-}
-
 // ---- The tool ---------------------------------------------------------------
 
 export function DryingCurveTool(): JSX.Element {
@@ -887,7 +860,6 @@ export function DryingCurveTool(): JSX.Element {
     hasAppTrajectory && source === "current" ? "current" : "classroom";
 
   const [knobs, setKnobs] = useState<DryingKnobValues>(defaultKnobValues);
-  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
   const setKnob = useCallback((id: string, v: number) => {
     setKnobs((s) => ({ ...s, [id]: v }));
   }, []);
@@ -928,61 +900,43 @@ export function DryingCurveTool(): JSX.Element {
     };
   }, [trajectory, kpis, detection, result]);
 
-  // ---- The source + classroom-knob bar (always rendered) --------------------
+  // ---- The setup panel's content: source, view, knobs, provenance ----------
   const controls = (
-    <Box style={{ flexShrink: 0, borderBottom:
-      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
-        {hasAppTrajectory && (
-          <SegmentedControl size="xs" value={src} style={{ flexShrink: 0 }}
-            onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
-        {src === "classroom" && (
-          <>
-            <ActionIcon variant="subtle" size="sm" onClick={toggle}
-              aria-label={collapsed
-                ? "show the classroom knobs" : "hide the classroom knobs"}>
-              {collapsed
-                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-            </ActionIcon>
-            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
-              classroom knobs
-            </Text>
-            {busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  re-integrating the tray — seconds, not instant
-                </Text>
-              </Group>
-            )}
-          </>
-        )}
-        <SegmentedControl size="xs" value={pane} style={{ flexShrink: 0 }}
+    <>
+      {hasAppTrajectory && (
+        <SegmentedControl size="xs" value={src} fullWidth
+          onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
+      <KnobField label="plot">
+        <SegmentedControl size="xs" value={pane} fullWidth
           onChange={(v) => setPane(v === "RX" ? "RX" : "Xt")}
           data={[
             { label: "X(t)", value: "Xt" },
             { label: "R(X)", value: "RX" },
           ]} />
-      </Group>
+      </KnobField>
       {src === "classroom" && (
         <>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" px={12} pb={6} align="flex-start" wrap="wrap">
-              {DRYING_KNOBS.map((k) => (
-                <KnobControl key={k.id} k={k} value={knobs[k.id] ?? k.def}
-                  onChange={(v) => setKnob(k.id, v)} />
-              ))}
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">
+                re-integrating the tray — seconds, not instant
+              </Text>
             </Group>
-          </Collapse>
-          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE}</Text>
+          )}
+          {DRYING_KNOBS.map((k) => (
+            <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def}
+              onChange={(v) => setKnob(k.id, v)} />
+          ))}
+          <PanelNote>{PROVENANCE}</PanelNote>
         </>
       )}
-    </Box>
+    </>
   );
 
   // The engine's message, verbatim — never rephrased, never swallowed.
@@ -998,9 +952,7 @@ export function DryingCurveTool(): JSX.Element {
   // ---- No drawable view yet: per-source honest states -----------------------
   if (view === null) {
     return (
-      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-        minHeight: 0 }}>
-        {controls}
+      <MethodSetupRail title="classroom knobs" setup={controls}>
         {alerts}
         <Box style={{ flex: 1, display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
@@ -1028,16 +980,14 @@ export function DryingCurveTool(): JSX.Element {
               </Text>
             )}
         </Box>
-      </Box>
+      </MethodSetupRail>
     );
   }
 
   const k = view.k;
 
   return (
-    <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-      minHeight: 0 }}>
-      {controls}
+    <MethodSetupRail title="classroom knobs" setup={controls}>
       {alerts}
 
       {/* Chips: each states WHAT it claims and on whose number. */}
@@ -1173,6 +1123,6 @@ export function DryingCurveTool(): JSX.Element {
               + "paraphrased when absent."}
         </Text>
       </Box>
-    </Box>
+    </MethodSetupRail>
   );
 }

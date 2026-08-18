@@ -75,12 +75,14 @@ License
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
 import {
-  Alert, Badge, Box, Collapse, Group, Loader, LoadingOverlay, NumberInput,
-  SegmentedControl, Stack, Text, Tooltip, UnstyledButton,
+  Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Text,
+  Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
+import {
+  KnobField, KnobNumber, MethodSetupRail, PanelNote,
+} from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 
@@ -350,19 +352,10 @@ const KNOB_FIELDS: {
   { id: "solventT", label: "Solvent T [K]", min: 274, max: 360, step: 1, decimals: 2 },
 ];
 
-// The collapsed/expanded preference for the knob panel, persisted so a
-// returning student finds the panel the way they left it.  localStorage may
-// be absent (node) or refused (private mode) -- the preference then simply
-// does not persist; never an error.
-const COLLAPSE_KEY = "choupo.methods.kremser.controlsCollapsed";
-function readCollapsedPref(): boolean {
-  try { return globalThis.localStorage?.getItem(COLLAPSE_KEY) === "1"; }
-  catch { return false; }
-}
-function writeCollapsedPref(v: boolean): void {
-  try { globalThis.localStorage?.setItem(COLLAPSE_KEY, v ? "1" : "0"); }
-  catch { /* not persistable here -- fine */ }
-}
+// The knob panel's fold and width are the PANEL's (ui/methods/knobPanel.tsx),
+// under the one key the preference registry owns.  This file used to carry its
+// own read/write pair around localStorage -- one of four such copies, each with
+// its own key.
 
 // ---- The tool --------------------------------------------------------------
 
@@ -375,14 +368,8 @@ export function KremserTool(): JSX.Element {
 
   const [source, setSource] = useState<Source>("classroom");
   const [knobs, setKnobs] = useState<KremserKnobValues>(KREMSER_KNOB_DEFAULTS);
-  const [collapsed, setCollapsedState] = useState<boolean>(readCollapsedPref);
   const [unitName, setUnitName] = useState<string>("");
   const [pane, setPane] = useState<"fan" | "profile">("fan");
-
-  const setCollapsed = (v: boolean) => {
-    setCollapsedState(v);
-    writeCollapsedPref(v);
-  };
 
   // The knob values ARE the override spec; the stable JSON is the change
   // signal useMethodRun debounces on.  Passing null in "Current run" mode
@@ -413,19 +400,56 @@ export function KremserTool(): JSX.Element {
     </Group>
   );
 
+  /* The setup panel's content: source, unit, plot pane, the column knobs and
+     the classroom provenance.  The result chips stay beside the plot. */
+  const setup = (
+    <>
+      {showSourceToggle && (
+        <SegmentedControl size="xs" value={source} fullWidth
+          onChange={(v) => setSource(v as Source)}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
+      {active && units.length > 1 && (
+        <KnobField label="absorber">
+          <SegmentedControl size="xs" value={active.unit} fullWidth
+            onChange={setUnitName}
+            data={units.map((u) => ({ label: u.unit, value: u.unit }))} />
+        </KnobField>
+      )}
+      <KnobField label="plot">
+        <SegmentedControl size="xs" value={pane} fullWidth
+          onChange={(v) => setPane(v as "fan" | "profile")}
+          data={[
+            { label: "Kremser fan", value: "fan" },
+            { label: "Stage profile", value: "profile" },
+          ]} />
+      </KnobField>
+      {source === "classroom" && (
+        <>
+          {KNOB_FIELDS.map((f) => (
+            <KnobNumber key={f.id} label={f.label} value={knobs[f.id]}
+              min={f.min} max={f.max} step={f.step} decimals={f.decimals}
+              onChange={(v) => setKnobs({ ...knobs, [f.id]: v })} />
+          ))}
+          <PanelNote>
+            Classroom mode: the engine runs in-browser on this tool&apos;s own
+            witness, <code>tutorials/{KREMSER_WITNESS}</code>, cloned with the
+            knob values above and solved by choupoSolve (WASM) — move a knob
+            and the column is re-solved.
+          </PanelNote>
+        </>
+      )}
+    </>
+  );
+
   // The pre-standalone empty state, kept verbatim -- but ONLY under
   // "Current run": the classroom never waits for a flowsheet.
   if (source === "current" && !active) {
     return (
-      <Stack gap="xs" p="sm">
-        {showSourceToggle && (
-          <SegmentedControl size="xs" value={source} w={220}
-            onChange={(v) => setSource(v as Source)}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
+      <MethodSetupRail title="column knobs" setup={setup}>
         <Box p="xl">
           <Text c="dimmed" size="sm" maw={560}>
             No absorber run to analyse. The Kremser construction reads a converged
@@ -439,103 +463,51 @@ export function KremserTool(): JSX.Element {
             case itself, in the browser.
           </Text>
         </Box>
-      </Stack>
+      </MethodSetupRail>
     );
   }
 
   return (
-    <Stack gap="xs" h="100%" style={{ minHeight: 0 }} p="sm">
-      <Group justify="space-between" align="center" wrap="wrap">
-        <Group gap={8} align="center" wrap="wrap">
-          {showSourceToggle && (
-            <SegmentedControl size="xs" value={source}
-              onChange={(v) => setSource(v as Source)}
-              data={[
-                { label: "Classroom", value: "classroom" },
-                { label: "Current run", value: "current" },
-              ]} />
-          )}
-          {active && units.length > 1 && (
-            <SegmentedControl size="xs" value={active.unit}
-              onChange={setUnitName}
-              data={units.map((u) => ({ label: u.unit, value: u.unit }))} />
-          )}
-          {active && (
-            <Badge variant="light" color="gray" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              {active.unit} · N = {active.stages} stages
+    <MethodSetupRail title="column knobs" setup={setup}>
+      <Group gap={8} align="center" wrap="wrap" p="sm" pb={0}
+        style={{ flexShrink: 0 }}>
+        {active && (
+          <Badge variant="light" color="gray" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            {active.unit} · N = {active.stages} stages
+          </Badge>
+        )}
+        {/* THE LESSON, as a labelled chip per solute: the engine's recovery
+            vs the closed form at the case's own (A_i, N). */}
+        {active?.components.map((c) => (
+          <Tooltip key={c.name} withArrow multiline w={300}
+            label={`|recovery_KPI − Kremser(A, N)| for ${c.name}: the closed form assumes ONE constant A = L/(K·V); the engine re-evaluates K on every stage, so the run leaves the curve.`}>
+            <Badge variant="light" size="lg"
+              color={c.deviation != null && c.deviation > 0.02 ? "orange" : "teal"}
+              styles={{ root: { textTransform: "none", cursor: "help" } }}>
+              {c.recovery != null && c.deviation != null
+                ? `${c.name} · Δ = ${c.deviation.toFixed(4)}  (run ${c.recovery.toFixed(4)} vs Kremser ${kremserRecovery(c.A, active.stages).toFixed(4)})`
+                : `${c.name} · A = ${c.A.toFixed(3)} (no recovery KPI)`}
             </Badge>
-          )}
-          {/* THE LESSON, as a labelled chip per solute: the engine's recovery
-              vs the closed form at the case's own (A_i, N). */}
-          {active?.components.map((c) => (
-            <Tooltip key={c.name} withArrow multiline w={300}
-              label={`|recovery_KPI − Kremser(A, N)| for ${c.name}: the closed form assumes ONE constant A = L/(K·V); the engine re-evaluates K on every stage, so the run leaves the curve.`}>
-              <Badge variant="light" size="lg"
-                color={c.deviation != null && c.deviation > 0.02 ? "orange" : "teal"}
-                styles={{ root: { textTransform: "none", cursor: "help" } }}>
-                {c.recovery != null && c.deviation != null
-                  ? `${c.name} · Δ = ${c.deviation.toFixed(4)}  (run ${c.recovery.toFixed(4)} vs Kremser ${kremserRecovery(c.A, active.stages).toFixed(4)})`
-                  : `${c.name} · A = ${c.A.toFixed(3)} (no recovery KPI)`}
-              </Badge>
-            </Tooltip>
-          ))}
-          {active?.nonIsothermal && (
-            <Badge variant="light" color="yellow" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              nonIsothermal = 1
-              {active.dTrise != null ? ` · ΔT rise ${active.dTrise.toFixed(1)} K` : ""}
-            </Badge>
-          )}
-        </Group>
-        <SegmentedControl size="xs" value={pane}
-          onChange={(v) => setPane(v as "fan" | "profile")}
-          data={[
-            { label: "Kremser fan", value: "fan" },
-            { label: "Stage profile", value: "profile" },
-          ]} />
+          </Tooltip>
+        ))}
+        {active?.nonIsothermal && (
+          <Badge variant="light" color="yellow" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            nonIsothermal = 1
+            {active.dTrise != null ? ` · ΔT rise ${active.dTrise.toFixed(1)} K` : ""}
+          </Badge>
+        )}
       </Group>
 
-      {source === "classroom" && (
-        <>
-          <UnstyledButton onClick={() => setCollapsed(!collapsed)}
-            aria-label={collapsed ? "expand the knob panel" : "collapse the knob panel"}>
-            <Group gap={6} align="center">
-              {collapsed
-                ? <IconChevronRight size={14} />
-                : <IconChevronDown size={14} />}
-              <Text size="xs" fw={600}>Column knobs</Text>
-              <Text size="xs" c="dimmed">
-                N = {Math.round(knobs.stages)} · water {knobs.solventFlow} kmol/h
-                · gas {knobs.nh3Flow} NH3 + {knobs.n2Flow} N2 kmol/h
-                · T {knobs.gasT} / {knobs.solventT} K
-              </Text>
-            </Group>
-          </UnstyledButton>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" align="flex-end" wrap="wrap">
-              {KNOB_FIELDS.map((f) => (
-                <NumberInput key={f.id} size="xs" w={160} label={f.label}
-                  value={knobs[f.id]}
-                  min={f.min} max={f.max} step={f.step}
-                  decimalScale={f.decimals} clampBehavior="strict"
-                  onChange={(v) => {
-                    if (typeof v === "number" && Number.isFinite(v))
-                      setKnobs({ ...knobs, [f.id]: v });
-                  }} />
-              ))}
-            </Group>
-          </Collapse>
-          {classroom.err && (
-            /* The engine's refusal/error, VERBATIM -- a refusal is a teaching
-               surface, never to be paraphrased away. */
-            <Alert color="red" variant="light" title="choupoSolve (WASM)">
-              <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-                {classroom.err}
-              </Text>
-            </Alert>
-          )}
-        </>
+      {source === "classroom" && classroom.err && (
+        /* The engine's refusal/error, VERBATIM -- a refusal is a teaching
+           surface, never to be paraphrased away. */
+        <Alert color="red" variant="light" m="sm" mb={0} title="choupoSolve (WASM)">
+          <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+            {classroom.err}
+          </Text>
+        </Alert>
       )}
 
       <Box pos="relative" style={{ flex: 1, minHeight: 0 }}>
@@ -569,16 +541,8 @@ export function KremserTool(): JSX.Element {
         ) : null}
       </Box>
 
-      {source === "classroom" && (
-        <Text size="xs" c="dimmed">
-          Classroom mode: the engine runs in-browser on this tool&apos;s own
-          witness, <code>tutorials/{KREMSER_WITNESS}</code>, cloned with the
-          knob values above and solved by choupoSolve (WASM) — move a knob and
-          the column is re-solved.
-        </Text>
-      )}
       {active && (
-        <Text size="xs" c="dimmed">
+        <Text size="xs" c="dimmed" p="sm" pt={0} style={{ flexShrink: 0 }}>
           Kremser assumes ONE constant absorption factor A = L/(K·V) — straight
           operating and equilibrium lines. The engine re-computes K stage by
           stage, so the run&apos;s recovery leaves the closed-form curve; each chip
@@ -588,6 +552,6 @@ export function KremserTool(): JSX.Element {
             " This run is non-isothermal: the solvent heats as it absorbs (dT_rise), and that temperature rise drives the K variation."}
         </Text>
       )}
-    </Stack>
+    </MethodSetupRail>
   );
 }

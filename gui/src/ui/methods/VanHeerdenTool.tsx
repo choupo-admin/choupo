@@ -88,15 +88,13 @@ License
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Slider, Switch, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Switch, Text, Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { ProfileMarker, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
 
 // ---- Detection: which engine surface feeds the tool -------------------------
 // The COLUMN PAIR is the contract, never a unit or a case name (the Merkel
@@ -382,7 +380,87 @@ const PROVENANCE =
   + "published profile columns over the engine's steady-state scan grid; "
   + "the crossings are the engine's own markers, never re-detected here.";
 
-const COLLAPSE_KEY = "choupo.methods.vanheerden.controlsCollapsed";
+// ---- AUTHORIZED view geometry 3: keeping two annotations off each other -----
+//
+// THE DEFECT THIS EXISTS FOR, from the owner's own screen (1368 px, the
+// vanheerden tool): the series legend sits at the frame's top-right, anchored
+// to FX1, and a crossing's "405.9 K" label is drawn at the crossing's own x in
+// the SAME top band.  When a root lands near the right of the temperature
+// domain — which is exactly where the IGNITED state lives, the one the reader
+// is looking for — the two are painted over each other.  SVG has no layout
+// engine to notice: text is placed where it is told and overlaps in silence.
+//
+// REPRODUCED AND MEASURED, in Chromium, on this frame's own geometry fed with
+// the REAL engine output (native choupoSolve on the witness
+// cstr05_multiplicity: T over 275–431.707 K, roots at 300.425 / 345.541 /
+// 405.904 K, the third reported).  In a 1021x637 mount at the app's own font:
+//
+//     OLD   "G(T) — heat generated"  x 778.5  w 156.7
+//           "405.9 K — reported"     x 806.0  w 132.3   ->  129.2 px of
+//                                                           horizontal overlap
+//                                                           over 14 px of rows
+//     NEW   the same label at x 661.6, y 77 (below the legend block)
+//           ->  0 collisions among all five annotations
+//
+// The browser measured the text; nothing above is an estimate.  The engine run
+// was native because the bundled WASM does not complete this witness in this
+// container — see the report accompanying the change.
+//
+// The rule below is a LAYOUT rule and not a nudge for one string: any label
+// whose horizontal extent reaches into the legend's column is pushed BELOW the
+// legend block, and any label that would run past the frame's right edge is
+// anchored on its other side instead.  Both are decided from the text's own
+// estimated width, so a longer label (a longer number, the " — unstable"
+// clause) moves too.
+
+/** Advance width of a string at `fontSize`, in viewBox units.
+ *
+ *  DECLARED AS AN ESTIMATE, because that is what it is: the browser knows the
+ *  real advance and nothing outside a layout pass can ask it.  0.52 em per
+ *  character is the measured mean for the digits, spaces and Latin letters
+ *  these annotations are made of in the UI's sans stack — it errs high on
+ *  punctuation, which is the safe direction here (an over-estimated label is
+ *  moved out of the way slightly too eagerly; an under-estimated one collides). */
+export const CHAR_ADVANCE_EM = 0.52;
+
+export function estimateTextWidth(text: string, fontSize: number): number {
+  return text.length * CHAR_ADVANCE_EM * fontSize;
+}
+
+export interface AnnotationPlacement {
+  x: number;
+  y: number;
+  anchor: "start" | "end";
+}
+
+/** Where a crossing's label goes, given what else is already on the frame.
+ *
+ *  `xPx` is the crossing's own x in viewBox units, `textPx` its estimated
+ *  width, `row` its position in the ladder of alternating rows the tool has
+ *  always used (so two adjacent crossings do not stack on one line), and
+ *  `legend` the block that must not be written over: its LEFT edge and the y
+ *  its last line ends at.
+ *
+ *  Pure and exported: the whole point of the rule is that it can be checked
+ *  without a browser, and the node test runner has no layout engine. */
+export function placeCrossingLabel(
+  xPx: number, textPx: number, row: number,
+  legend: { left: number; bottom: number },
+  frame: { right: number; top: number },
+): AnnotationPlacement {
+  const GAP = 4;
+  // Right edge first: a label that would run out of the frame is anchored on
+  // the other side of its own line rather than clipped by the viewBox.
+  const fitsRight = xPx + GAP + textPx <= frame.right;
+  const anchor: "start" | "end" = fitsRight ? "start" : "end";
+  const x = fitsRight ? xPx + GAP : xPx - GAP;
+  const right = fitsRight ? x + textPx : x;
+  const y = frame.top + 14 + (row % 2) * 30;
+  // Then the legend's column: an overlap in x means the two would share the
+  // band, so this one drops below the legend's last line.
+  const clearsLegend = right <= legend.left;
+  return { x, y: clearsLegend ? y : Math.max(y, legend.bottom + 13), anchor };
+}
 
 // ---- Display formatting -----------------------------------------------------
 
@@ -420,9 +498,33 @@ interface ChartInput {
   busyOverlay: boolean;
 }
 
+/** The legend's own wording, in ONE place: it is both drawn and MEASURED (the
+ *  block a crossing label must keep clear is as wide as its widest line), and
+ *  two copies of a string would let the drawing and the measurement disagree. */
+const LEGEND_TEXT = {
+  G: "G(T) — heat generated",
+  R: "R(T) — heat removed",
+  phi: "phi = R − G (engine residual)",
+} as const;
+
+/** The legend's three baselines, top-right of the frame. */
+const LEGEND_ROWS = [FY0 + 16, FY0 + 31, FY0 + 46] as const;
+
 function VanHeerdenSvg(
   { T, G, R, phi, states, T_guess, showPhi, busyOverlay }: ChartInput,
 ): JSX.Element {
+  /* The block the crossing labels must not be written over.  It is anchored to
+   * the frame's right edge, so its LEFT edge is that minus its widest line; its
+   * bottom is the last baseline actually drawn, which is the phi row only when
+   * phi is on — turning the residual off gives the labels a row back. */
+  const legendLines = showPhi && phi
+    ? [LEGEND_TEXT.G, LEGEND_TEXT.R, LEGEND_TEXT.phi]
+    : [LEGEND_TEXT.G, LEGEND_TEXT.R];
+  const legendBlock = {
+    left: FX1 - 6 - Math.max(...legendLines.map((t) => estimateTextWidth(t, 10))),
+    bottom: LEGEND_ROWS[legendLines.length - 1]!,
+  };
+
   const xDom = axisDomain([T], 0.02) ?? { lo: 0, hi: 1 };
   const yDom = axisDomain(
     showPhi && phi ? [G, R, phi] : [G, R], 0.08) ?? { lo: 0, hi: 1 };
@@ -498,8 +600,8 @@ function VanHeerdenSvg(
           <>
             <polyline points={line(phi)} fill="none" stroke={PHI_COLOR}
               strokeWidth={1.4} strokeDasharray="5 3" />
-            <text x={FX1 - 6} y={FY0 + 46} textAnchor="end" fontSize={10}
-              fill={PHI_COLOR}>phi = R − G (engine residual)</text>
+            <text x={FX1 - 6} y={LEGEND_ROWS[2]} textAnchor="end" fontSize={10}
+              fill={PHI_COLOR}>{LEGEND_TEXT.phi}</text>
           </>
         )}
 
@@ -508,10 +610,10 @@ function VanHeerdenSvg(
           strokeWidth={2} />
         <polyline points={line(G)} fill="none" stroke={G_COLOR}
           strokeWidth={2} />
-        <text x={FX1 - 6} y={FY0 + 16} textAnchor="end" fontSize={10}
-          fill={G_COLOR}>G(T) — heat generated</text>
-        <text x={FX1 - 6} y={FY0 + 31} textAnchor="end" fontSize={10}
-          fill={R_COLOR}>R(T) — heat removed</text>
+        <text x={FX1 - 6} y={LEGEND_ROWS[0]} textAnchor="end" fontSize={10}
+          fill={G_COLOR}>{LEGEND_TEXT.G}</text>
+        <text x={FX1 - 6} y={LEGEND_ROWS[1]} textAnchor="end" fontSize={10}
+          fill={R_COLOR}>{LEGEND_TEXT.R}</text>
 
         {/* T_guess: the engine's own KPI, and the whole reason ONE of the
             crossings below is the reported one */}
@@ -526,12 +628,19 @@ function VanHeerdenSvg(
           </g>
         )}
 
-        {/* the crossings — the ENGINE's markers, verbatim */}
+        {/* the crossings — the ENGINE's markers, verbatim.  Their labels are
+            PLACED (placeCrossingLabel): out of the legend's column and inside
+            the frame, both decided from the label's own estimated width. */}
         {states.map((s, i) => {
           const color = s.reported
             ? REPORTED_COLOR : s.unstable ? UNSTABLE_COLOR : INK;
           const gy = interpolateAt(T, G, s.T);
-          const labelY = FY0 + 14 + (i % 2) * 30;
+          const text = `${fmtTick(s.T)} K`
+            + (s.reported ? " — reported" : "")
+            + (s.unstable ? " — unstable" : "");
+          const spot = placeCrossingLabel(
+            toX(s.T), estimateTextWidth(text, 10), i, legendBlock,
+            { right: FX1, top: FY0 });
           return (
             <g key={`ss${i}`}>
               <line x1={toX(s.T)} y1={FY0} x2={toX(s.T)} y2={FY1}
@@ -542,14 +651,13 @@ function VanHeerdenSvg(
                   fill={s.reported ? color : "none"} stroke={color}
                   strokeWidth={1.6} />
               )}
-              <text x={toX(s.T) + 4} y={labelY} fontSize={10} fill={color}>
-                {fmtTick(s.T)} K
-                {s.reported ? " — reported" : ""}
-                {s.unstable ? " — unstable" : ""}
+              <text x={spot.x} y={spot.y} textAnchor={spot.anchor}
+                fontSize={10} fill={color}>
+                {text}
               </text>
               {s.unstable && (
-                <text x={toX(s.T) + 4} y={labelY + 12} fontSize={9}
-                  fill={color}>
+                <text x={spot.x} y={spot.y + 12} textAnchor={spot.anchor}
+                  fontSize={9} fill={color}>
                   no start-up procedure can hold it
                 </text>
               )}
@@ -558,32 +666,6 @@ function VanHeerdenSvg(
         })}
       </svg>
     </Box>
-  );
-}
-
-// ---- One knob control (label + exact entry + slider + its reason) -----------
-
-function KnobControl({ k, value, onChange }: {
-  k: VanHeerdenKnob;
-  value: number;
-  onChange: (v: number) => void;
-}): JSX.Element {
-  return (
-    <Tooltip withArrow multiline w={320} label={k.why}>
-      <Box style={{ width: 172 }}>
-        <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-          {k.label}{k.unit ? ` [${k.unit}]` : ""}
-        </Text>
-        <NumberInput size="xs" value={value} min={k.min} max={k.max}
-          step={k.step}
-          onChange={(v) => {
-            const n = typeof v === "number" ? v : Number(v);
-            if (Number.isFinite(n)) onChange(n);
-          }} />
-        <Slider size="xs" mt={4} value={value} min={k.min} max={k.max}
-          step={k.step} label={null} onChange={onChange} />
-      </Box>
-    </Tooltip>
   );
 }
 
@@ -606,7 +688,6 @@ export function VanHeerdenTool(): JSX.Element {
   // The classroom knobs (defaults = the witness's authored values) + the
   // persisted fold.
   const [knobs, setKnobs] = useState<VanHeerdenKnobValues>(defaultKnobValues);
-  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
   const setKnob = useCallback((id: string, v: number) => {
     setKnobs((s) => ({ ...s, [id]: v }));
   }, []);
@@ -653,7 +734,7 @@ export function VanHeerdenTool(): JSX.Element {
     && Math.round(kpiCount) !== view.states.length;
 
   const sourceToggle = showToggle ? (
-    <SegmentedControl size="xs" value={src} style={{ flexShrink: 0 }}
+    <SegmentedControl size="xs" value={src} fullWidth
       onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
       data={[
         { label: "Classroom", value: "classroom" },
@@ -661,49 +742,32 @@ export function VanHeerdenTool(): JSX.Element {
       ]} />
   ) : null;
 
+  /* The setup panel's content: the source, the option, the knobs, the
+     provenance.  It is a LIST of controls and nothing about the panel — the
+     panel is `MethodSetupRail` and it is the same one every tool docks. */
   const controls = (
-    <Box style={{ flexShrink: 0, borderBottom:
-      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
-        {sourceToggle}
-        {src === "classroom" && (
-          <>
-            <ActionIcon variant="subtle" size="sm" onClick={toggle}
-              aria-label={collapsed
-                ? "show the classroom knobs" : "hide the classroom knobs"}>
-              {collapsed
-                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-            </ActionIcon>
-            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
-              classroom knobs
-            </Text>
-            {busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  re-solving the reactor — seconds, not instant
-                </Text>
-              </Group>
-            )}
-          </>
-        )}
-        <Switch size="xs" checked={showPhi} label="phi = R − G"
-          onChange={(e) => setShowPhi(e.currentTarget.checked)} />
-      </Group>
+    <>
+      {sourceToggle}
+      <Switch size="xs" checked={showPhi} label="phi = R − G"
+        onChange={(e) => setShowPhi(e.currentTarget.checked)} />
       {src === "classroom" && (
         <>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" px={12} pb={6} align="flex-start" wrap="wrap">
-              {VAN_HEERDEN_KNOBS.map((k) => (
-                <KnobControl key={k.id} k={k} value={knobs[k.id] ?? k.def}
-                  onChange={(v) => setKnob(k.id, v)} />
-              ))}
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">
+                re-solving the reactor — seconds, not instant
+              </Text>
             </Group>
-          </Collapse>
-          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE}</Text>
+          )}
+          {VAN_HEERDEN_KNOBS.map((k) => (
+            <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def}
+              onChange={(v) => setKnob(k.id, v)} />
+          ))}
+          <PanelNote>{PROVENANCE}</PanelNote>
         </>
       )}
-    </Box>
+    </>
   );
 
   // The engine's message, verbatim — never rephrased, never swallowed.
@@ -718,9 +782,7 @@ export function VanHeerdenTool(): JSX.Element {
 
   if (view === null) {
     return (
-      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-        minHeight: 0 }}>
-        {controls}
+      <MethodSetupRail title="classroom knobs" setup={controls}>
         {alerts}
         <Box style={{ flex: 1, display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
@@ -748,7 +810,7 @@ export function VanHeerdenTool(): JSX.Element {
               </Text>
             )}
         </Box>
-      </Box>
+      </MethodSetupRail>
     );
   }
 
@@ -757,9 +819,7 @@ export function VanHeerdenTool(): JSX.Element {
   const T_guess = view.kpis?.["T_guess"];
 
   return (
-    <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-      minHeight: 0 }}>
-      {controls}
+    <MethodSetupRail title="classroom knobs" setup={controls}>
       {alerts}
 
       {/* Chips: what each one claims, and on whose number. */}
@@ -855,6 +915,6 @@ export function VanHeerdenTool(): JSX.Element {
           </Text>
         )}
       </Box>
-    </Box>
+    </MethodSetupRail>
   );
 }

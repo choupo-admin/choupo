@@ -65,12 +65,12 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Collapse, Group, Loader, SegmentedControl, Select,
-  Slider, Stack, Text, Tooltip, UnstyledButton,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
+  Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
+import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
 import type { ScalarOverride } from "../../case/methodRun.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
@@ -225,15 +225,9 @@ const KNOB_SPECS: {
   { id: "coldT_K", label: "cold inlet T", unit: "K", min: 275, max: 350, step: 1 },
 ];
 
-/** localStorage home of the knob panel's collapsed state. */
-export const ENTU_COLLAPSE_KEY = "choupo.methods.entu.controlsCollapsed";
-
-function loadCollapsed(): boolean {
-  try { return localStorage.getItem(ENTU_COLLAPSE_KEY) === "1"; } catch { return false; }
-}
-function saveCollapsed(c: boolean): void {
-  try { localStorage.setItem(ENTU_COLLAPSE_KEY, c ? "1" : "0"); } catch { /* private mode */ }
-}
+// The knob panel's fold and width are the PANEL's (ui/methods/knobPanel.tsx),
+// under the ONE key the preference registry owns.  This file's own key and its
+// try/catch pair are gone with the horizontal knob strip they served.
 
 // ---- Chart geometry (SVG helpers) -------------------------------------------
 
@@ -306,7 +300,6 @@ export function EpsilonNtuTool(): JSX.Element {
 
   // ---- The classroom knobs + the self-feeding engine run -------------------
   const [knobs, setKnobs] = useState<EntuKnobs>(ENTU_DEFAULT_KNOBS);
-  const [collapsed, setCollapsed] = useState<boolean>(loadCollapsed);
   const overridesKey = JSON.stringify(knobs);
   const overrides = useMemo(() => entuOverrides(knobs), [knobs]);
   const { result: classroomResult, err, busy } = useMethodRun(
@@ -330,69 +323,36 @@ export function EpsilonNtuTool(): JSX.Element {
   const profile = useMemo(
     () => findAreaProfile(result?.profiles, unit), [result, unit]);
 
-  const toggleCollapsed = () =>
-    setCollapsed((c) => { const next = !c; saveCollapsed(next); return next; });
+  /* The setup panel's content: the source, the exchanger knobs, the
+     provenance.  The unit picker and the cross-check chip stay in the content
+     column, where SolvedView renders them beside the chart. */
+  const setup = (
+    <>
+      {(appServable || source === "run") && (
+        <SegmentedControl size="xs" value={source} fullWidth
+          onChange={(v) => setSource(v === "run" ? "run" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "run" },
+          ]} />
+      )}
+      {source === "classroom" && (
+        <>
+          {KNOB_SPECS.map((spec) => (
+            <KnobSlider key={spec.id} knob={spec} value={knobs[spec.id]}
+              onChange={(v) => setKnobs((k) => ({ ...k, [spec.id]: v }))} />
+          ))}
+          <PanelNote>
+            Runs tutorials/steady/heat/heatExchanger01_water_water with your
+            parameters, in your browser.
+          </PanelNote>
+        </>
+      )}
+    </>
+  );
 
   return (
-    <Box style={{ width: "100%", height: "100%", display: "flex",
-      flexDirection: "column", overflow: "hidden" }}>
-      {/* Source strip: Classroom | Current run (toggle only when the app's
-          run can serve the tool) + the classroom provenance line. */}
-      <Box style={{ flexShrink: 0, padding: "6px 12px", borderBottom: HAIRLINE }}>
-        <Group gap="sm" wrap="wrap" align="center">
-          {(appServable || source === "run") && (
-            <SegmentedControl size="xs" value={source}
-              onChange={(v) => setSource(v === "run" ? "run" : "classroom")}
-              data={[
-                { label: "Classroom", value: "classroom" },
-                { label: "Current run", value: "run" },
-              ]} />
-          )}
-          {source === "classroom" && (
-            <Text size="xs" c="dimmed">
-              Runs tutorials/steady/heat/heatExchanger01_water_water with your
-              parameters, in your browser.
-            </Text>
-          )}
-        </Group>
-      </Box>
-
-      {/* The collapsible classroom knob panel. */}
-      {source === "classroom" && (
-        <Box style={{ flexShrink: 0, borderBottom: HAIRLINE }}>
-          <Group gap={8} px={12} py={4} wrap="nowrap" align="center">
-            <UnstyledButton onClick={toggleCollapsed}
-              aria-label={collapsed ? "expand the knob panel" : "collapse the knob panel"}
-              style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              {collapsed
-                ? <IconChevronRight size={14} stroke={1.6} />
-                : <IconChevronDown size={14} stroke={1.6} />}
-              <Text size="xs" fw={600}>Exchanger knobs</Text>
-            </UnstyledButton>
-            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap",
-              overflow: "hidden", textOverflow: "ellipsis" }}>
-              A {knobs.area_m2} m² · U {knobs.U_W_m2K} W/m²/K
-              {" "}· hot {knobs.hotFlow_kmolh} kmol/h at {knobs.hotT_K} K
-              {" "}· cold {knobs.coldFlow_kmolh} kmol/h at {knobs.coldT_K} K
-            </Text>
-          </Group>
-          <Collapse in={!collapsed}>
-            <Group px={12} pb={10} gap="lg" align="flex-start" wrap="wrap">
-              {KNOB_SPECS.map((s) => (
-                <Stack key={s.id} gap={2} w={150}>
-                  <Text size="xs" c="dimmed">
-                    {s.label}: <b>{knobs[s.id]}</b> {s.unit}
-                  </Text>
-                  <Slider size="xs" min={s.min} max={s.max} step={s.step}
-                    value={knobs[s.id]} label={null}
-                    onChange={(v) => setKnobs((k) => ({ ...k, [s.id]: v }))} />
-                </Stack>
-              ))}
-            </Group>
-          </Collapse>
-        </Box>
-      )}
-
+    <MethodSetupRail title="exchanger knobs" setup={setup}>
       {/* The engine's error, VERBATIM — never paraphrased. */}
       {source === "classroom" && err && (
         <Alert color="red" variant="light" mx={12} my={6} py={6}
@@ -435,7 +395,7 @@ export function EpsilonNtuTool(): JSX.Element {
           kpis={kpis} match={match} profile={profile}
           busy={source === "classroom" && busy} />
       )}
-    </Box>
+    </MethodSetupRail>
   );
 }
 

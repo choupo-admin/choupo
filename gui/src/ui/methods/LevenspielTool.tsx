@@ -75,15 +75,13 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Collapse, Group, Loader, NumberInput,
-  SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
 } from "@mantine/core";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { StreamResult, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { useCollapsedFlag } from "./methodsChrome.js";
+import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
 // The ONE existing trapezoid-integrator home in the Methods workspace (the
 // Rayleigh construction owns the same piecewise-linear area-in-view with the
 // same coverage refusal).  Reused rather than duplicated — the arity doctrine;
@@ -406,7 +404,6 @@ const PROVENANCE_TWINS =
   + "chart.  The CSTR keeps its authored V_R = 0.005 m³ (declared inline, "
   + "out of the override grammar's reach — a recorded knob absence).";
 
-const COLLAPSE_KEY = "choupo.methods.levenspiel.controlsCollapsed";
 
 // ---- Display formatting -----------------------------------------------------
 
@@ -597,7 +594,6 @@ export function LevenspielTool(): JSX.Element {
 
   // ---- Classroom knobs → per-witness overrides → TWO in-browser solves -----
   const [knobs, setKnobs] = useState<LevenspielKnobValues>(defaultKnobValues);
-  const { collapsed, toggle } = useCollapsedFlag(COLLAPSE_KEY);
   const knobsKey = JSON.stringify(knobs);
   const pfrRun = useMethodRun(
     src === "classroom" ? PFR_WITNESS : null,
@@ -676,62 +672,38 @@ export function LevenspielTool(): JSX.Element {
     return { areaAtX, ratio: cstrView.rect.specificVolume / areaAtX };
   }, [src, pfrView, cstrView]);
 
-  // ---- The source + classroom-knob bar (always rendered) --------------------
+  // ---- The setup panel's content: source, knobs, provenance ----------------
   const controls = (
-    <Box style={{ flexShrink: 0, borderBottom:
-      "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
-      <Group gap="sm" wrap="nowrap" align="center" px={12} py={6}>
-        {(appServable || source === "current") && (
-          <SegmentedControl size="xs" value={src}
-            onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
-            data={[
-              { label: "Classroom", value: "classroom" },
-              { label: "Current run", value: "current" },
-            ]} />
-        )}
-        {src === "classroom" && (
-          <>
-            <ActionIcon variant="subtle" size="sm" onClick={toggle}
-              aria-label={collapsed
-                ? "show the classroom knobs" : "hide the classroom knobs"}>
-              {collapsed
-                ? <IconChevronRight size={14} /> : <IconChevronDown size={14} />}
-            </ActionIcon>
-            <Text size="xs" fw={500} style={{ whiteSpace: "nowrap" }}>
-              classroom knobs
-            </Text>
-            {busy && (
-              <Group gap={6} wrap="nowrap" align="center">
-                <Loader size="xs" />
-                <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-                  re-solving both reactors — seconds, not instant
-                </Text>
-              </Group>
-            )}
-          </>
-        )}
-      </Group>
+    <>
+      {(appServable || source === "current") && (
+        <SegmentedControl size="xs" value={src} fullWidth
+          onChange={(v) => setSource(v === "current" ? "current" : "classroom")}
+          data={[
+            { label: "Classroom", value: "classroom" },
+            { label: "Current run", value: "current" },
+          ]} />
+      )}
       {src === "classroom" && (
         <>
-          <Collapse in={!collapsed}>
-            <Group gap="sm" px={12} pb={4} align="flex-end" wrap="wrap">
-              {LEVENSPIEL_KNOBS.map((k) => (
-                <NumberInput key={k.id} size="xs" w={160}
-                  label={k.unit ? `${k.label} [${k.unit}]` : k.label}
-                  value={knobs[k.id]} min={k.min} max={k.max} step={k.step}
-                  onChange={(v) => {
-                    const num = typeof v === "number" ? v : Number(v);
-                    if (Number.isFinite(num))
-                      setKnobs((s) => ({ ...s, [k.id]: num }));
-                  }} />
-              ))}
+          {busy && (
+            <Group gap={6} wrap="nowrap" align="center">
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">
+                re-solving both reactors — seconds, not instant
+              </Text>
             </Group>
-          </Collapse>
-          <Text size="xs" c="dimmed" px={12} pb={2}>{PROVENANCE_RUNS}</Text>
-          <Text size="xs" c="dimmed" px={12} pb={6}>{PROVENANCE_TWINS}</Text>
+          )}
+          {LEVENSPIEL_KNOBS.map((k) => (
+            <KnobNumber key={k.id}
+              label={k.unit ? `${k.label} [${k.unit}]` : k.label}
+              value={knobs[k.id] ?? k.def} min={k.min} max={k.max} step={k.step}
+              onChange={(v) => setKnobs((st) => ({ ...st, [k.id]: v }))} />
+          ))}
+          <PanelNote>{PROVENANCE_RUNS}</PanelNote>
+          <PanelNote>{PROVENANCE_TWINS}</PanelNote>
         </>
       )}
-    </Box>
+    </>
   );
 
   // The engines' messages, verbatim — never rephrased, never swallowed.
@@ -759,9 +731,7 @@ export function LevenspielTool(): JSX.Element {
   // ---- Nothing drawable yet: per-source honest states -----------------------
   if (pfrView === null && cstrView === null) {
     return (
-      <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-        minHeight: 0 }}>
-        {controls}
+      <MethodSetupRail title="classroom knobs" setup={controls}>
         {alerts}
         <Box style={{ flex: 1, display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
@@ -787,16 +757,14 @@ export function LevenspielTool(): JSX.Element {
             </Text>
           )}
         </Box>
-      </Box>
+      </MethodSetupRail>
     );
   }
 
   const limiting = pfrView?.limiting ?? cstrView?.limiting ?? "A";
 
   return (
-    <Box style={{ height: "100%", display: "flex", flexDirection: "column",
-      minHeight: 0 }}>
-      {controls}
+    <MethodSetupRail title="classroom knobs" setup={controls}>
       {alerts}
 
       {/* Chips: what each construction honestly claims. */}
@@ -920,6 +888,6 @@ export function LevenspielTool(): JSX.Element {
           </Text>
         )}
       </Box>
-    </Box>
+    </MethodSetupRail>
   );
 }
