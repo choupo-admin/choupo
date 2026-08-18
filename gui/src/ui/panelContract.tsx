@@ -534,7 +534,23 @@ export function usePanelShortcut(panel: PanelHandle): void {
  *
  *  `overflow: hidden` is REQUIRED here — a box animating to width 0 must clip
  *  its content — and it is exactly why the resize handle refuses to live inside
- *  this box.  See rule 1 in the header. */
+ *  this box.  See rule 1 in the header.
+ *
+ *  A FOLDED PANEL IS `visibility: hidden`, AND THAT LINE IS THE FIX FOR A REAL
+ *  DEFECT (measured 2026-08-18, on the EduTools setup panel at 390x844).
+ *  Clipping is not hiding: a box at width 0 with `overflow: hidden` still lays
+ *  its children out at their own widths, so every control inside a folded panel
+ *  keeps a real box, keeps its place in the TAB ORDER, and keeps answering
+ *  `elementFromPoint` — as something under whatever is painted over it.
+ *  checkGui reported 94 COVERED controls and 196 clipped at the phone viewport
+ *  against a baseline of 0 and 6, and every one of them was a knob in a folded
+ *  panel: a control the reader cannot see, cannot reach, and can still tab into.
+ *  `visibility: hidden` removes it from hit-testing and from the tab order
+ *  while leaving the box measurable, which is exactly what a fold means.
+ *
+ *  It is declared HERE and not in one host because all seven panels fold the
+ *  same way; the other six were never walked by the harness, so they carried
+ *  the same defect unmeasured. */
 export function panelBoxStyle(panel: PanelHandle, reduceMotion: boolean): React.CSSProperties {
   const axis = panel.chrome.edge === "left" ? "width" : "height";
   const cross = panel.chrome.edge === "left" ? "height" : "width";
@@ -543,6 +559,7 @@ export function panelBoxStyle(panel: PanelHandle, reduceMotion: boolean): React.
     [cross]: "100%",
     flexShrink: 0,
     overflow: "hidden",
+    visibility: panel.collapsed ? "hidden" : "visible",
     minWidth: 0,
     minHeight: 0,
     transition: reduceMotion ? "none" : `${axis} 180ms ease`,

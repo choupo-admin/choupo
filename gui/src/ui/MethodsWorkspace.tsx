@@ -182,6 +182,8 @@ const VanHeerdenTool = lazy(() =>
   import("./methods/VanHeerdenTool.js").then((m) => ({ default: m.VanHeerdenTool })));
 const DryingCurveTool = lazy(() =>
   import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
+const TieTriangleTool = lazy(() =>
+  import("./methods/TieTriangleTool.js").then((m) => ({ default: m.TieTriangleTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -315,6 +317,16 @@ export function MethodsWorkspace() {
         <Suspense fallback={
           <Group justify="center" mt="xl"><Loader size="sm" /></Group>
         }>
+          {/* THE DISPATCH REFUSES WHAT IT DOES NOT KNOW (2026-08-18).
+              This chain used to END in `<BreakthroughTool/>`, so ANY tool id it
+              did not name rendered the adsorption breakthrough curve under that
+              tool's caption, its "teaches" line and its Theory-Guide link — a
+              page that looks finished and draws someone else's physics.  It
+              nearly shipped: the Hunter-Nash tool was built, its registry entry
+              written, and the only thing that stopped a Hunter-Nash page
+              drawing a breakthrough curve was a human noticing.  A visible gap
+              is strictly better than an invisible falsehood, so an unmounted id
+              now SAYS SO, by name, where the construction would have been. */}
           {tool === "mccabe" ? (
             <McCabeTool catalogue={catalogue}
               localUnifac={localUnifac} componentFiles={componentFiles} />
@@ -329,9 +341,38 @@ export function MethodsWorkspace() {
             : tool === "levenspiel" ? <LevenspielTool />
             : tool === "vanheerden" ? <VanHeerdenTool />
             : tool === "drying" ? <DryingCurveTool />
-            : <BreakthroughTool />}
+            : tool === "breakthrough" ? <BreakthroughTool />
+            : tool === "hunter-nash" ? <TieTriangleTool />
+            : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>
+    </Box>
+  );
+}
+
+/** What a tool id the dispatch does not render shows instead of a diagram.
+ *
+ *  It names the id, says what is missing (the two lines in this file), and
+ *  draws nothing.  The registry is the roadmap — a `planned` entry is meant to
+ *  be selectable and honest about being planned — and this is the same posture
+ *  one layer down: the tool the reader asked for is not here, and no other
+ *  tool's construction is offered in its place. */
+function UnmountedTool({ tool }: { tool: MethodTool }): JSX.Element {
+  return (
+    <Box style={{ flex: 1, display: "flex", alignItems: "center",
+      justifyContent: "center", padding: 24 }}>
+      <Alert color="yellow" variant="light" maw={560}
+        title={`${tool.label} is not mounted in this build`}>
+        <Text size="sm">
+          The registry carries <code>{tool.id}</code>
+          {tool.status === "planned" ? " as PLANNED" : ""}, and this workspace
+          has no component wired to it — so there is nothing to draw.  It is
+          said here rather than drawn as some other tool&apos;s construction:
+          a page captioned with one method and showing another is worse than
+          an empty one.
+          {tool.fedBy ? ` What it waits on: ${tool.fedBy}` : ""}
+        </Text>
+      </Alert>
     </Box>
   );
 }

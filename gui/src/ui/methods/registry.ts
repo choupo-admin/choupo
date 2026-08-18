@@ -165,7 +165,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //     … : tool === "hunter-nash" ? <TieTriangleTool />
   // and then this `status` becomes "live".
   {
-    id: "hunter-nash", label: "Extraction (Hunter-Nash)", status: "planned",
+    id: "hunter-nash", label: "Extraction (Hunter-Nash)", status: "live",
     teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
     theory: "sec:hunter-nash",
     fedBy: "BUILT, not mounted: ui/methods/TieTriangleTool.tsx over "

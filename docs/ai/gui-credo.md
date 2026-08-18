@@ -454,17 +454,46 @@ home for a derived count is the arity sin).  Planned entries stay
 the rail and the narrow-viewport bottom sheet BOTH render the registry
 (`MethodToolList`), never a filtered subset.
 
-**Consolidated pattern — responsive rail (2026-08, panel-ratified).**  A
-rail-bearing workspace renders its registry as an inline collapsible rail on
-wide viewports, and as a click-opened bottom Drawer built from the SAME
-registry on narrow ones.  Detection is the shared hook pair in
-`gui/src/ui/methods/methodsChrome.tsx`: `useNarrowViewport()` (below
-Mantine `sm`, or a coarse pointer at any width) and `useCoarsePointer()`;
-between `sm` and `md` the rail still exists but its DEFAULT is collapsed —
-the media query supplies the default and a persisted user toggle wins.
+**Consolidated pattern — ONE PANEL CONTRACT (2026-08-18; supersedes the
+"responsive rail" paragraph that stood here).**  Every rail and the bottom
+window obey one declaration, `gui/src/ui/panelContract.tsx`, over one storage
+home, `gui/src/state/prefs.ts`.  A panel is resizable, auto-hideable,
+keyboard-reachable, and its width belongs to the READER (localStorage, every
+tab) while only which case/view/selection belongs to the TAB.  Three rules
+are enforced structurally rather than by convention: a handle you can SEE is
+a handle you can GRAB (it renders as a sibling of the clipping box, so no
+ancestor `overflow: hidden` can trim it); an ADVERTISED shortcut is a BOUND
+shortcut (one field derives both the hint and the binding); and collapse
+defaults by MEASUREMENT — `fitsRow(min + contentMin, measured host width)`,
+never a breakpoint and never `pointer: coarse`.
+
+What the superseded paragraph got wrong is worth keeping, because it is the
+project's standing lesson about posture: it made the DEFAULT a media query.
+Breakpoints and `pointer: coarse` have each produced a wrong answer on a real
+device here (a tablet treated as a phone), which is why the fit rule now
+answers from two measured widths and an unmeasured width answers "fits".
+
+The EduTools setup knobs were the LAST thing outside this contract — a
+horizontal strip above the diagram, excluded on the argument that it was "a
+fold with no size, so not the contract's shape".  True of a strip, void for a
+panel: as a left panel it HAS a size, which is exactly the contract's shape.
+Moving it returned the drawing its width (the strip cost 201 px of chrome
+height, and an aspect-fitted plot pays lost height in width: 913 px drawn
+becomes 1068 with zero side margin).  A square plot pays the opposite way,
+and dragging or folding recovers it.
+
+**A COLLAPSED PANEL MUST BE `visibility: hidden`, not merely `width: 0`.**
+Paid for once, across seven panels at once: `width: 0; overflow: hidden`
+clips PAINT only — the children keep boxes, tab order and hit-testing, so a
+keyboard user tabs into a panel that is not on screen and types into fields
+they cannot see.  It was invisible to the test suite (jsdom has no layout)
+and reached only by the browser harness, which reported 94 unreachable
+controls at 390 px.
+
 Planned entries are never filtered out by posture, and hover is never
-load-bearing: anything a rail tooltip says is a visible description in the
-Drawer.
+load-bearing: anything a tooltip says is a visible description in the panel.
+At 390 px the knobs panel starts folded by the measured default and opens as
+a sheet over the construction, saying so on the panel.
 
 **Ratified naming (2026-08 ballot).**  The rail header is **CLASSICAL
 METHODS**; tool labels are operation-first with the method in parentheses —

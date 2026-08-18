@@ -151,11 +151,15 @@ export function MethodSetupRail({ title, scent = "SETUP", setup, children }: {
    * `autoCollapseDefault` already asks `fitsRow(min + contentMin, host)` to
    * decide whether the panel STARTS folded — at 390 px that is 240 + 360
    * against 390, so it does, and the reader meets a 28 px strip rather than a
-   * panel that ate the construction.  But a default is only a default: the
-   * reader can open it, and then the same row must hold a 300 px panel and a
-   * diagram in 390 px.  Measured with the panel forced open at 390x844 before
-   * this branch existed: the construction's mount was 89 px wide and its
-   * drawing 89 px of a 640x420 viewBox — present, addressable, and unreadable.
+   * panel that ate the construction.  MEASURED at 390x844 (Chromium, touch
+   * emulation): strip 28x738, panel width 0, the construction column 362x738,
+   * and checkGui's own occlusion probe finds 0 covered controls with the 32
+   * folded knobs correctly counted as invisible.
+   *
+   * But a default is only a default: the reader can open it, and then the same
+   * row would have to hold a 300 px panel, an 11 px handle and a diagram in
+   * 390 px — 79 px of construction, by arithmetic on the two declared widths.
+   * Present, addressable, and unreadable.
    *
    * So when the pair does not fit, the panel is drawn as a SHEET over the
    * construction instead of beside it: the reader gets the full width for the
@@ -163,7 +167,13 @@ export function MethodSetupRail({ title, scent = "SETUP", setup, children }: {
    * the project's ONE fit rule on two measured widths — never a viewport
    * breakpoint and never `pointer: coarse`, both of which have given this
    * project wrong answers on real devices.  It says so on the panel, because a
-   * covered diagram that does not explain itself reads as a lost diagram. */
+   * covered diagram that does not explain itself reads as a lost diagram.
+   *
+   * MEASURED with the panel open at 390x844: the panel is 390x738 with
+   * `data-panel-sheet`, the construction column keeps its 390x738 box behind it
+   * (hidden, see below), and the occlusion probe finds 0 covered controls —
+   * every knob is in front, nothing of the diagram is left half-reachable
+   * underneath. */
   const sheet = !rail.collapsed
     && !fitsRow(rail.size + METHOD_KNOBS_PANEL.contentMin, host.width);
 
@@ -215,10 +225,19 @@ export function MethodSetupRail({ title, scent = "SETUP", setup, children }: {
       {!sheet && <PanelResizeHandle panel={rail} />}
       {/* The construction's column.  `data-panel-content` is not decoration:
           it is how a browser probe measures what the diagram was actually
-          given, which is the number this change is judged on. */}
+          given, which is the number this change is judged on.
+
+          UNDER A SHEET IT IS `visibility: hidden`, for the same reason a folded
+          panel is (see panelBoxStyle): the sheet covers it, so leaving it
+          "visible" would leave its controls in the tab order and in the hit
+          test, underneath — reachable by keyboard, unreachable by hand, which
+          is the worst of both.  The BOX keeps its size, so Plotly keeps its
+          layout and the construction is drawn at full width the moment the
+          sheet folds away. */}
       <Box data-panel-content="methodKnobsRail"
         style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex",
-          flexDirection: "column", overflow: "hidden" }}>
+          flexDirection: "column", overflow: "hidden",
+          visibility: sheet ? "hidden" : "visible" }}>
         {children}
       </Box>
     </Box>

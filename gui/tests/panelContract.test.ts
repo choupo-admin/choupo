@@ -49,7 +49,7 @@ import { describe, it, expect } from "vitest";
 import {
   BOTTOM_DOCK_PANEL, CASE_FILES_PANEL, CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
-  METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, STREAMS_NAV_PANEL,
+  METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, STREAMS_NAV_PANEL, panelBoxStyle,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
@@ -225,5 +225,44 @@ describe("handle geometry — the constants the measured hit target is built fro
     expect(HANDLE_SEAM_PX).toBeLessThan(HANDLE_HIT_PX);
     // odd total, so the band straddles the seam symmetrically
     expect((HANDLE_HIT_PX - HANDLE_SEAM_PX) % 2).toBe(0);
+  });
+});
+
+describe("a FOLDED panel is hidden, not merely clipped", () => {
+  /* THE DEFECT THIS PINS, measured 2026-08-18 by bin/checkGui at 390x844 while
+   * the EduTools setup panel was being adopted into this contract: 94 COVERED
+   * controls and 196 clipped, against a baseline of 0 and 6.  Every one was a
+   * knob inside a FOLDED panel.
+   *
+   * Width 0 with `overflow: hidden` clips the PAINT and nothing else: the
+   * children keep real boxes, keep their place in the tab order, and keep
+   * answering elementFromPoint — as something underneath whatever is drawn
+   * over them.  `visibility: hidden` is what a fold actually means, and it is
+   * the one line that made the phone numbers come back. */
+  const handle = (collapsed: boolean) => ({
+    chrome: EXPLORE_SET_PANEL,
+    size: 240, collapsed,
+    toggle: () => {}, expand: () => {}, reset: () => {},
+    onPointerDown: () => {}, onKeyDown: () => {},
+  });
+
+  it("folded: zero on its own axis AND out of the hit test", () => {
+    const st = panelBoxStyle(handle(true) as never, false);
+    expect(st.width).toBe(0);
+    expect(st.visibility).toBe("hidden");
+    expect(st.overflow).toBe("hidden");
+  });
+
+  it("open: its declared size, and visible", () => {
+    const st = panelBoxStyle(handle(false) as never, false);
+    expect(st.width).toBe(240);
+    expect(st.visibility).toBe("visible");
+  });
+
+  it("holds for a BOTTOM panel too — the rule is the fold's, not the edge's", () => {
+    const dock = { ...handle(true), chrome: BOTTOM_DOCK_PANEL };
+    const st = panelBoxStyle(dock as never, false);
+    expect(st.height).toBe(0);
+    expect(st.visibility).toBe("hidden");
   });
 });
