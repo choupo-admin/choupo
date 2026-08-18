@@ -5456,6 +5456,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/batch/BatchReactor.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
+   "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "src/unitOperations/batch/BatchStill.cpp": [
@@ -5656,6 +5657,7 @@
    "src/streams/Composition.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/reaction/RateLaw.H",
@@ -5663,6 +5665,7 @@
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
+   "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "src/unitOperations/dynamic/DynamicUnitOperation.cpp": [
@@ -6236,7 +6239,13 @@
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
-   "src/unitOperations/reactor/CSTR.H"
+   "src/unitOperations/reactor/CSTR.H",
+   "src/unitOperations/reactor/CatalystPellet.H"
+  ],
+  "src/unitOperations/reactor/CatalystPellet.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Types.H",
+   "src/unitOperations/reactor/CatalystPellet.H"
   ],
   "src/unitOperations/reactor/ConversionReactor.cpp": [
    "src/core/Dictionary.H",
@@ -6303,6 +6312,7 @@
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/reactor/CatalystPellet.H",
    "src/unitOperations/reactor/PFR.H",
    "src/unitOperations/reactor/PolymerKPIs.H",
    "src/unitOperations/reactor/ReactionHeat.H"
@@ -6869,6 +6879,7 @@
    "src/unitOperations/heatTransfer/Heater.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp"
@@ -8365,6 +8376,7 @@
    "src/unitOperations/mixer/Mixer.cpp",
    "src/unitOperations/mixer/Splitter.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/CatalystPellet.cpp",
    "src/unitOperations/reactor/ConversionReactor.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
    "src/unitOperations/reactor/GibbsReactor.cpp",
@@ -10062,6 +10074,7 @@
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
@@ -11276,6 +11289,13 @@
   "src/unitOperations/reactor/CSTR.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/reactor/CSTR.cpp"
+  ],
+  "src/unitOperations/reactor/CatalystPellet.H": [
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/CatalystPellet.cpp",
+   "src/unitOperations/reactor/PFR.cpp"
   ],
   "src/unitOperations/reactor/ConversionReactor.H": [
    "src/unitOperations/UnitOperation.cpp",

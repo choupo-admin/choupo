@@ -875,8 +875,8 @@ before `check_workspace_truth`), `runTests --record` and both arms of
 **between every gate** because the tree was clean when that run began; the
 refusal is spelled ONCE in Python and bash calls it through `--assert`;
 (3) `gate_manifest` **refuses to write** on any failure or timeout, and
-`TIMEOUT` is 3600 with each gate's elapsed seconds RECORDED, so the ceiling is
-judged against measurement rather than memory.  Sabotage-verified by
+`TIMEOUT` is 3600 s with each gate's elapsed seconds RECORDED, so the ceiling
+is judged against measurement rather than memory.  Sabotage-verified by
 reproducing the mechanism (SIGKILL mid-run): the journal survived, **`git
 status` reported nothing on all five files** — the incident's exact shape —
 and all three harnesses refused.  Deliberately NOT done: automatic repair (a
