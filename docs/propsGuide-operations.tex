@@ -565,3 +565,28 @@ Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-poten
 \file{tutorials/props/electrolyte/fpd01\_nacl\_freezing}
 \end{tutoriallink}
 
+\paragraph{\code{thielePellet}}
+The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset record and its effective diffusivity from the ONE home that owns that resolution, solves the isothermal first-order intraparticle boundary-value problem numerically, and VERIFIES that answer against the closed form. It publishes the concentration field c(r)/c\_s, the Thiele modulus phi with the effectiveness factor eta it produces, the Weisz-Prater observable modulus eta*phi\textasciicircum{}2, and — swept — the classical eta(phi) family over the three geometries. The physics is NOT here: it lives in unitOperations/reactor/pellet/PelletDiffusion, which the four reactors that today assume eta = 1 will reach. The op judges nothing: it publishes phi, eta and the field, announces what it assumed (isothermal, first-order, one pellet size, external film neglected), and leaves the reader to decide whether diffusion matters in their case. A run whose numerical answer misses the declared verification tolerances exits 1.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{P} & Pressure [Pa] \\
+\code{T}\textbf{*} & Temperature [K] \\
+\code{catalyst}\textbf{*} & Catalyst pellet \\
+\code{diffusion}\textbf{*} & Diffusion route \\
+\code{nodes} & Grid points [-] \\
+\code{output} & CSV output \\
+\code{rateConstant} & Rate constant, per pellet volume [1/s] \\
+\code{rateConstantMass} & Rate constant, per catalyst mass [m3/(kg.s)] \\
+\code{refinement} & Grid-refinement study \\
+\code{species}\textbf{*} & Diffusing species \\
+\code{sweep} & eta(phi) family \\
+\code{verification} & Verification tolerances \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/reactor/thiele01\_sphere\_first\_order}
+\end{tutoriallink}
+

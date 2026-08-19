@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*79 of 79 registered operations carry a schema and are documented below.*
+*80 of 80 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -935,6 +935,25 @@ Counter-current multistage gas stripper solved by the Kremser method (the invers
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `stages` | ✓ | number | - | Number of equilibrium stages. |
+
+## `thielePellet`  (thielePellet operation)
+
+The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset record and its effective diffusivity from the ONE home that owns that resolution, solves the isothermal first-order intraparticle boundary-value problem numerically, and VERIFIES that answer against the closed form. It publishes the concentration field c(r)/c_s, the Thiele modulus phi with the effectiveness factor eta it produces, the Weisz-Prater observable modulus eta*phi^2, and — swept — the classical eta(phi) family over the three geometries. The physics is NOT here: it lives in unitOperations/reactor/pellet/PelletDiffusion, which the four reactors that today assume eta = 1 will reach. The op judges nothing: it publishes phi, eta and the field, announces what it assumed (isothermal, first-order, one pellet size, external film neglected), and leaves the reader to decide whether diffusion matters in their case. A run whose numerical answer misses the declared verification tolerances exits 1.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `catalyst` | ✓ | string | — | Resolved by exact name in the assets catalogue (`kind catalyst;`), case-local `constant/assets/` or `data/standards/assets/`; an unknown … |
+| `species` | ✓ | string | — | The reactant whose intraparticle field is solved. It must be a component of the case's thermophysical system — otherwise no molecular dif… |
+| `T` | ✓ | number | K | The pellet temperature, at which the molecular diffusivity is evaluated. A non-positive value refuses. The model is ISOTHERMAL: the non-i… |
+| `P` |   | number | Pa | Gas route only. REQUIRED when `diffusion.medium` is `gas` and the effective diffusivity is derived (a gas binary diffusivity is pressure-… |
+| `rateConstant` |   | number | 1/s | The first-order rate constant on the basis the intraparticle balance is written on: per unit PELLET VOLUME. Declare this OR `rateConstant… |
+| `rateConstantMass` |   | number | m3/(kg.s) | The same first-order rate constant on the basis a heterogeneous kinetics paper usually reports: per unit CATALYST MASS. Converted as k_v … |
+| `diffusion` | ✓ | object | — | How the molecular diffusivity behind D_eff is obtained. D_eff itself is resolved by its ONE home and never declared here: a MEASURED reco… |
+| `nodes` |   | integer | - | Grid POINTS (not intervals) for the case's own pellet field; defaults to 401, announced when it defaults. Must be a whole number (a fract… |
+| `sweep` |   | object | — | Optional. The classical eta(phi) plot. It is a PARAMETRIC family over the generalised modulus, not a family of real pellets — it varies p… |
+| `refinement` |   | object | — | Optional. Re-solves the case's own pellet on a series of grids and reports the observed ORDER of convergence between the finest pair. A s… |
+| `verification` |   | object | — | Optional. The tolerances the run's PASS/FAIL verdict — and its exit code — are taken on. Omitting the block defaults them to field 1e-4, … |
+| `output` |   | object | — | Where the three data products are written, relative to the case directory. Each key is independent and each is optional — omit one and th… |
 
 ## `tsaTwinBed`  (tsaTwinBed operation)
 

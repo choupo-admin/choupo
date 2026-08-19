@@ -2116,6 +2116,48 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \goldmore{12}
 \end{tutgolden}
 
+\subsection{reactor}
+\grouptheory{reactor}
+\clearpage
+\tutentry{thiele01\_sphere\_first\_order}{tutorials/props/reactor/thiele01\_sphere\_first\_order}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{thiele\_CO\_alumina}\\[-1pt]{\tiny thielePellet}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Single catalyst pellet: intraparticle concentration field, effectiveness factor, and the eta(phi) family, each verified against the first-order isothermal closed form}
+\begin{tutnarrative}
+One thielePellet operation.
+
+THE RATE CONSTANT IS DECLARED HERE, and not on the catalyst record, because kinetics are equipment- and reaction-specific: the asset carries the SOLID, never the chemistry run on it. Two reactors loaded with the same catalyst would otherwise carry two copies of one rate constant and drift apart.
+
+k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 -- the transition region, where the field has a visible gradient and eta is neither \textasciitilde{}1 nor \textasciitilde{}1/phi. It is not measured and is not claimed to be.
+
+\end{tutnarrative}
+\tutreadme{Solves the intraparticle boundary-value problem for one porous catalyst pellet, publishes the concentration field, the effectiveness factor and the Thiele modulus, and checks every one of them against the closed form.}
+\tutreadme{With xi the normalised coordinate from the pellet centre (0) to its external surface (1) and u = c/c\_s:}
+\tutreadme{Both moduli are published because both conventions are in circulation and they differ by a factor of three for a sphere. The engine's own announcement in src/unitOperations/reactor/CatalystPellet.H uses the generalised one.}
+\tutreadme{The equation is discretised with second-order central differences and handed to the existing solver::newtonND (finite-difference Jacobian, LU with partial pivoting) --- no new dependency, no new solver, every step readable in src/unitOperations/reactor/pellet/PelletDiffusion.cpp.}
+\tutreadme{xi is one column, not two aliases: it is r/R for a sphere or a cylinder and x/L for a slab.}
+\tutreadme{First-order isothermal is the rare case that has a closed form in all three geometries, so the numerical answer is not merely produced --- it is checked:}
+\begin{tutgolden}
+\goldrow{diag}{thiele\_CO\_alumina}{phi}{1.0161e+00}
+\goldrow{diag}{thiele\_CO\_alumina}{phi\_char}{3.0483e+00}
+\goldrow{diag}{thiele\_CO\_alumina}{Lambda}{5.0000e-04}
+\goldrow{diag}{thiele\_CO\_alumina}{dimension}{1.5000e-03}
+\goldrow{diag}{thiele\_CO\_alumina}{epsilon\_p}{4.5000e-01}
+\goldrow{diag}{thiele\_CO\_alumina}{tau}{3.0000e+00}
+\goldrow{diag}{thiele\_CO\_alumina}{rateConstant}{4.0000e+01}
+\goldrow{diag}{thiele\_CO\_alumina}{T}{5.7315e+02}
+\goldrow{diag}{thiele\_CO\_alumina}{P}{1.01325e+05}
+\goldrow{diag}{thiele\_CO\_alumina}{D\_molecular}{6.45709e-05}
+\goldrow{diag}{thiele\_CO\_alumina}{D\_eff}{9.68564e-06}
+\goldrow{diag}{thiele\_CO\_alumina}{eta}{6.65742e-01}
+\goldrow{diag}{thiele\_CO\_alumina}{eta\_closedForm}{6.65742e-01}
+\goldrow{diag}{thiele\_CO\_alumina}{eta\_flux}{6.65731e-01}
+\goldmore{16}
+\end{tutgolden}
+
 \subsection{scan}
 \grouptheory{scan}
 \clearpage
