@@ -232,7 +232,8 @@ Zero engine work.  Theory anchor `ch:extractor` exists (*read*).
 The tool exists: `gui/src/ui/methods/TieTriangleTool.tsx` (the construction)
 over `gui/src/case/hunterNash.ts` (the reading and the geometry), pinned by
 `gui/tests/hunterNash.test.ts`, with `sec:hunter-nash` written into the LLE
-chapter of the theory guide.  It is registered `planned` and NOT mounted —
+chapter of the theory guide.  It was registered `planned` and unmounted while the host's dispatch fallback
+still drew another tool; both landed 2026-08-19 and it is `live` and mounted —
 the reason is recorded beside the registry entry and is a host-dispatch
 question, not a physics one.
 
