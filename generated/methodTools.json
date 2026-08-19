@@ -3,8 +3,8 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 13,
-  "registryTools": 13,
+  "liveTools": 14,
+  "registryTools": 14,
   "tools": [
     {
       "id": "mccabe",
@@ -83,6 +83,12 @@
       "label": "Extraction (Hunter-Nash)",
       "teaches": "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
       "href": "/app/?workspace=methods&tool=hunter-nash"
+    },
+    {
+      "id": "column-control",
+      "label": "Column control (structure & instruments)",
+      "teaches": "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
+      "href": "/app/?workspace=methods&tool=column-control"
     }
   ]
 }

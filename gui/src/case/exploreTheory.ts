@@ -43,6 +43,13 @@ export function theoryAnchor(plotType: PlotKind, property: string): string {
     case "binaryLle": return "ch:lle-gibbs";
     case "phase": return "ch:vap";           // vapour pressure / saturation
     case "scaling": return "ch:electrolytes"; // ionic strength / activity / Pitzer
+    // The species-distribution lens draws the mass-action network of
+    // \label{ch:speciation} swept along its pH closure, and inside that
+    // section \label{sec:bjerrum} is the subsection written for this diagram —
+    // including the one thing the picture must say, that an imposed pH is an
+    // undeclared titrant.  NOT ch:electrolytes: that chapter is the activity
+    // model the network CALLS, one rung below the distribution itself.
+    case "bjerrum": return "sec:bjerrum";
     // `ch:gibbs` was never a label in any build of the Theory Guide, so this
     // lens's Theory link opened the guide at page 1 and said nothing.  The
     // real section is \label{sec:gibbs-maps}, "Equilibrium maps and the

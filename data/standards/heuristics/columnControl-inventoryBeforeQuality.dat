@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  INVENTORY BEFORE QUALITY -- Choupo's own guidance, quoted.
+
+  AUTHORITY: the Design Guide, which carries an author on its title page.  A
+  guide is SIGNED; a record is CITED.  This record therefore QUOTES the guide
+  and POINTS at the section; it does not paraphrase the guide's paragraph into a
+  second home for it, and it does not dress authored engineering judgement up as
+  a literature result.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       inventoryBeforeQuality;
+
+claim      "Control every inventory -- level, pressure -- before any quality: an unbounded inventory shuts the plant down.";
+
+topics     ( inventory );
+
+validity   "Any continuous plant; stated as the first move of a control-structure design, before any pairing question is opened.";
+
+notCovered "It gives no order among the inventories themselves, and no rule for which stream holds which level -- that is the separate record beside it.";
+
+authority  choupoDesignGuide;
+source
+{
+    author       "see the guide's own title page -- docs/preamble.tex decides the authorship line, and this record does not copy its answer";
+    year         2026;
+    title        "Choupo Design Guide";
+    publication  "docs/designGuide.tex, section 'Process control & instrumentation heuristics'";
+    locus        "the paragraph headed 'Inventory first.'";
+    verification checkedCopy;
+    verificationNote "Read in the repository's own source of the guide.  This is Choupo's signed engineering judgement, not a cited literature result, and the tool renders it as such.";
+}

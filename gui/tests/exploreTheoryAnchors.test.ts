@@ -174,6 +174,13 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   scaling: "ch:electrolytes", // SI vs recovery — ionic strength and activity
   steam: "ch:vap",            // IF97 saturation line
   gibbsmap: "sec:gibbs-maps", // equilibrium maps over T × P
+  // Species distribution vs pH: the mass-action network of ch:speciation swept
+  // along its GIVEN-pH closure.  Inside that section, sec:bjerrum is the
+  // subsection written for this diagram — the crossings, the slopes, and the
+  // pitfall that an imposed pH is an undeclared titrant.  Deliberately NOT
+  // ch:electrolytes: that chapter is the activity model the network calls, one
+  // rung below the distribution the picture is about.
+  bjerrum: "sec:bjerrum",
 };
 
 /** The property-scan's own dispatch, declared independently of the switch. */

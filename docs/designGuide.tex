@@ -1691,10 +1691,36 @@ heuristics}\label{process-control--instrumentation-heuristics}}
 
 A flowsheet that balances on paper still must hold steady against
 disturbances. The Pareto question is not tuning --- it is \textbf{what
-to pair with what}. Choupo\textquotesingle s \texttt{choupoCtrl} + PID
-lets you test a pairing on a dynamic case before you trust it.
-\textbf{Hypothesis to run:} step a disturbance in \texttt{ctrl01} and
-watch whether your loop rejects it or fights another.
+to pair with what}.
+
+\textbf{What Choupo can and cannot check for you, stated before you rely on
+it.} An earlier version of this paragraph invited you to ``step a disturbance
+in \texttt{ctrl01} and watch whether your loop rejects it or fights another''.
+That invitation was false three ways, and it is corrected here rather than
+quietly deleted, because a manual that has promised something owes the reader
+the correction: \texttt{ctrl01} carries no disturbance at all (it is a
+setpoint-tracking case --- the disturbance cases are \texttt{ctrl02},
+\texttt{ctrl05}, \texttt{ctrl09}); \emph{no} case in the corpus carries more
+than one PID loop, so ``fights another'' cannot be watched anywhere; and this
+section is about \emph{column} pairing, while the dynamic tier has no column
+in it. A pairing for a column cannot be tested dynamically in Choupo today.
+
+What you \emph{can} do, and it answers the sharpest question in this section
+--- \emph{which tray carries the temperature measurement} --- is read it off
+the rigorous column you already ran. The steady profile gives the slope
+criterion directly, and re-solving with a manipulated variable nudged gives
+the sensitivity criterion. The EduTools \emph{Column control} tool does
+exactly that (\S\ref{sec:column-control}) and reports something a single
+answer would hide: on a 15-stage column the slope criterion picks stage~10,
+the reflux handle picks stage~11, and the distillate handle picks stage~5 ---
+a different section of the column, with a response fifteen times stronger. The
+same run shows the reflux response \emph{changing sign} between stages~6
+and~7, which no slope of the profile can reveal.
+
+Choupo computes no relative-gain array, at any frequency: there is no
+steady-state gain matrix in the engine. The pairing heuristics below argue in
+terms of relative gains, and that argument is the literature's, not a number
+this simulator produced.
 
 \textbf{Inventory first.} Control every inventory (level, pressure)
 before any quality --- an unbounded inventory shuts the plant down.

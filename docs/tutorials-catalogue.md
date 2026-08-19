@@ -211,4 +211,5 @@ can skip them; developers touching the guarded seam must keep them green.
 | `batch/reactor/batch04_transient_dirs` | transient instant-directory mechanics (0.01/ 0.02/ …) |
 | `batch/adsorber/batch14_transport_only` | isolated transport verification (no isotherm coupling) |
 | `batch/adsorber/batch15_mesh_study` | mesh-convergence verification of the adsorber column |
+| `props/reactor/thiele01_sphere_first_order` | the Thiele modulus and the INTRAPARTICLE CONCENTRATION FIELD: the pellet BVP by central differences on `NewtonND`, published beside its closed form so the method is seen being checked rather than trusted (field 1.4e-06 max abs, eta 1.3e-06 rel, observed order 2.0002).  Publishes both moduli -- generalised (Aris, Lambda = V/S) and characteristic -- because the textbooks use both and the difference is half the confusion.  Its catalyst record is case-local and carries `origin teachingSurrogate;`: epsilon_p and tau dominate eta and neither could be sourced to a primary, so an uncited value stays out of the frozen tree and is announced on every run |
 | `batch/adsorber/batch18_ergun_conservation` | mass conservation under the Ergun pressure-drop path |

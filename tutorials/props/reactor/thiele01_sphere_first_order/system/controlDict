@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  thiele01_sphere_first_order -- THE SINGLE CATALYST PELLET.
+
+    What the student SEES:
+
+      * the intraparticle CONCENTRATION FIELD c(r)/c_s from the pellet centre
+        to its external surface, solved NUMERICALLY (central differences on the
+        existing Newton + LU) and printed beside the CLOSED FORM at every node;
+      * the EFFECTIVENESS FACTOR eta, computed twice by two independent
+        functionals of the same field (the volume integral, and the surface
+        gradient) and compared with the analytical eta;
+      * the THIELE MODULUS in both of its conventions -- phi_char on the pellet
+        radius, and the generalised phi on Lambda = V_p/S_p = R/3;
+      * the classical eta(phi) FAMILY over all three geometries;
+      * an ORDER-OF-CONVERGENCE study: the deviation from the closed form falls
+        as h^2, which says the scheme is the one it claims to be rather than
+        merely close on one grid.
+
+    Read the README before quoting any number: the PELLET is a teaching
+    surrogate and says so in its own record.  What this case verifies is the
+    NUMERICS against the closed form, and that claim is independent of the
+    surrogate's values.                                                        */
+
+application   choupoProps;
+description   "Single catalyst pellet: intraparticle concentration field, effectiveness factor, and the eta(phi) family, each verified against the first-order isothermal closed form";
+verbosity     3;

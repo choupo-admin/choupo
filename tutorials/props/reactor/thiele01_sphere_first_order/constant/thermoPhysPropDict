@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  The thermophysical system exists here for ONE reason: to supply the
+    MOLECULAR diffusivity that the effective diffusivity is derived from.
+
+        D_eff = (epsilon_p / tau) * D_molecular
+
+    epsilon_p and tau are intrinsic to the pellet and live on the catalyst
+    asset (constant/assets/aluminaSphere3mm.dat); D_molecular is a property of
+    the species in the fluid and comes from the model DECLARED below -- Fuller's
+    correlation, evaluated on CO and N2's own `diffusionVolume` entries.  So no
+    effective diffusivity is stored anywhere: it is derived where it is used
+    and announced with the rule that produced it.
+
+    The phase equilibrium is declared and is not exercised: this case runs one
+    property operation over a solid pellet, and nothing flashes.               */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CO  N2 );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}
+
+transport
+{
+    vapour
+    {
+        //  The one the pellet needs.  Fuller is a low-pressure BINARY gas
+        //  correlation: it reads each component's Fuller diffusion volume and
+        //  molar mass and nothing else.
+        diffusivity { model Fuller; }
+
+        //  Declared rather than left to the engine's default, so nothing about
+        //  this package is chosen silently.  Nothing in this case reads it.
+        viscosity   { model Chung; }
+    }
+}

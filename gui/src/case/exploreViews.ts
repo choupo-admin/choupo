@@ -25,7 +25,7 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // the same day it is written, by nobody remembering.
 export const PLOT_KINDS = [
   "scan", "txy", "flash", "gamma", "binaryLle", "ternary",
-  "ternaryLle", "phase", "scaling", "steam", "gibbsmap",
+  "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
 ] as const;
 export type PlotKind = (typeof PLOT_KINDS)[number];
 
@@ -78,5 +78,15 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   // (humid-gas → the psychrometric chart also moved to Methods 2026-08-15;
   // classifySelection keeps the class — it still gates the VLE views OFF.)
   if (cls === "aqueous-electrolyte") out.add("scaling");
+  // Species distribution vs pH (the Bjerrum plot).  The acid/base FAMILY is
+  // declared in the lens panel — it is a master ion of the curated speciation
+  // network, not a flowsheet component — so the compound set only has to
+  // declare the SOLVENT.  Water alone qualifies, and that is not a shortcut:
+  // the corpus's own carbonate cases are `components ( water )`
+  // (tutorials/props/electrolyte/rainwater_air).  Water plus a dissolved salt
+  // qualifies too; water plus an organic does NOT, because the speciation
+  // stack is aqueous-only and would refuse a non-water solvent by name.
+  if (sel.includes("water") && (n === 1 || cls === "aqueous-electrolyte"))
+    out.add("bjerrum");
   return out;
 }

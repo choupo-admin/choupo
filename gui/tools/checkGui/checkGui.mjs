@@ -250,7 +250,13 @@ function discoverTools() {
   const src = readFileSync(path, "utf8");
   const body = src.slice(src.indexOf("export const METHOD_TOOLS"));
   const tools = [];
-  const re = /id:\s*"([a-z0-9-]+)"\s*,\s*label:\s*"([^"]*)"\s*,\s*status:\s*"(live|planned)"/g;
+  //  `kind:` sits between `label:` and `status:` since the SELECTION kind was
+  //  named (heuristics-as-a-third-kind, 2026-08-18), and the pattern that
+  //  required them ADJACENT parsed 0 tools the moment it landed — which this
+  //  harness reported as a REFUSAL rather than a pass, exactly as it should.
+  //  Anything between the two is skipped now, so a further registry field is a
+  //  field rather than an outage.
+  const re = /id:\s*"([a-z0-9-]+)"\s*,\s*label:\s*"([^"]*)"\s*,[^}]*?status:\s*"(live|planned)"/g;
   let m;
   while ((m = re.exec(body)) !== null) {
     tools.push({ id: m[1], label: m[2], status: m[3] });

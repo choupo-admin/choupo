@@ -6127,6 +6127,187 @@ has absorbed the lab error.  This is the simulator's no-silent-crutch
 rule applied to data quality --- the user is told what the number is
 carrying.
 
+\subsection{Distribution diagrams: the Bjerrum plot, and the titrant
+nobody declared}\label{sec:bjerrum}
+
+The two closures of the previous subsections are usually met one at a
+time: a case declares one pH and reads one answer.  Sweep the
+\emph{given}-pH closure instead --- solve the same network again and
+again, imposing a different pH at each point, and plot every species
+against it --- and the result is the oldest picture in aqueous chemistry,
+the \emph{distribution diagram} or \emph{Bjerrum plot}.  It is what the
+carbonate system, the ammonia system and every polyprotic acid
+\emph{are}, in one figure: which species carries the material at which
+pH, where the hand-over happens, and how sharp it is.
+
+\paragraph{Where the crossings come from.}  Nothing new is needed to read
+the shape --- it is \eqref{eq:spec-massaction} with $a_{\rm H}$ walked
+along the axis.  For a monoprotic acid $\mathrm{HA} = \mathrm{H}^+ +
+\mathrm{A}^-$ with $K_a = a_{\rm H}a_{\rm A}/a_{\rm HA}$, the ratio of
+the two bands is
+\begin{equation}
+   \frac{a_{\rm A^-}}{a_{\rm HA}} \;=\; \frac{K_a}{a_{\rm H}}
+   \qquad\Longrightarrow\qquad
+   \log_{10}\frac{a_{\rm A^-}}{a_{\rm HA}} \;=\; \mathrm{pH} - \mathrm{p}K_a ,
+   \label{eq:bjerrum-ratio}
+\end{equation}
+so the two curves \emph{cross at} $\mathrm{pH} = \mathrm{p}K_a$ and
+separate by one decade per pH unit on either side.  A diprotic acid gives
+two crossings, a triprotic three, and the plateaux between them are the
+buffer regions --- the same $\mathrm{p}K_a$ ladder read as a picture
+instead of a table.  Away from a crossing the minor band falls with a
+slope of $\pm1$ (or $\pm2$ for a species two protons away), which is why
+the diagram is drawn on a \emph{logarithmic} concentration axis: on a
+linear one, four of the five curves are indistinguishable from zero.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.80\linewidth, height=6.6cm,
+    xlabel={pH \ (\emph{imposed} --- one \code{speciate} solve per point)},
+    ylabel={$\log_{10} m_i$ \ [mol/kg water]},
+    xmin=2, xmax=12, ymin=-9, ymax=-1.4,
+    ytick={-9,-8,-7,-6,-5,-4,-3,-2},
+    grid=major, grid style={gray!25, dashed},
+    legend pos=south east, legend style={font=\footnotesize},
+]
+\addplot[domain=2:12, samples=200, blue!70!black, very thick]
+   ({x},{log10(2e-3/(1+pow(10,x-6.352)+pow(10,2*x-16.681)))});
+\addlegendentry{CO$_2$(aq)}
+\addplot[domain=2:12, samples=200, orange!85!black, very thick]
+   ({x},{log10(2e-3/(1+pow(10,6.352-x)+pow(10,x-10.329)))});
+\addlegendentry{HCO$_3^-$}
+\addplot[domain=2:12, samples=200, teal!70!black, very thick]
+   ({x},{log10(2e-3/(1+pow(10,10.329-x)+pow(10,16.681-2*x)))});
+\addlegendentry{CO$_3^{2-}$}
+\draw[gray!55!black, dashed] (axis cs:6.352,-9) -- (axis cs:6.352,-2.45);
+\draw[gray!55!black, dashed] (axis cs:10.329,-9) -- (axis cs:10.329,-2.45);
+\node[font=\footnotesize, text=gray!45!black, anchor=south]
+   at (axis cs:6.352,-2.4) {p$K_1$ 6.352};
+\node[font=\footnotesize, text=gray!45!black, anchor=south]
+   at (axis cs:10.329,-2.4) {p$K_2$ 10.329};
+\end{axis}
+\end{tikzpicture}
+\caption{A distribution diagram of the carbonate system, 2\,mmol/kg total
+carbonate: the three bands hand the material over at the two
+$\mathrm{p}K_a$'s and separate by one decade per pH unit,
+\eqref{eq:bjerrum-ratio}, while a band two protons from the dominant one
+falls at two decades per unit.  These curves are the \emph{closed form} at
+$\gamma_i = 1$, drawn from the two constants the curated records carry
+(\file{chemistry/CO2aq-formation.dat}, \file{chemistry/CO3-formation.dat};
+USGS PHREEQC, public domain).  A Choupo run does not draw this formula:
+its answer moves off these curves by the single-ion activity coefficients,
+by $K_s(T)$ away from 25\,\textdegree C, and by any ion pair the feed
+makes reachable (a sodium bicarbonate water forms NaHCO$_3$(aq), which
+this expression has no term for).  That gap is the reason the Explore
+lens plots the engine's own molalities instead --- but the \emph{shape},
+and where the crossings sit, is this.}
+\label{fig:bjerrum-carbonate}
+\end{figure}
+
+\paragraph{The two axes are not the same kind of thing.}  Read
+\eqref{eq:bjerrum-ratio} once more and notice what it does \emph{not}
+say: it fixes the \emph{ratio} of the bands, not their position on the
+axis.  What sets that is the total, and what sets the pH is --- in this
+diagram --- nothing.  The pH is an \emph{input}.  That is the whole
+difference between the two closures of
+Figure~\ref{fig:ph-closures}, and it is easy to lose sight of because the
+axis of a distribution diagram looks exactly like the axis of a measured
+titration.
+
+\begin{pitfall}
+\textbf{An imposed pH is a strong acid or base that no total declares.}
+Under the given-pH closure, $\text{H}^+$ is known and its mole balance is
+\emph{removed} from the system \eqref{eq:ph-given}.  Nothing then forces
+$\sum_i z_i m_i$ to zero --- the electroneutrality
+row~\eqref{eq:electroneutrality} is precisely the equation that was
+dropped.  The converged answer therefore carries a \emph{net charge},
+\begin{equation}
+   q \;\equiv\; \frac{\sum_i z_i\,m_i}{\sum_i |z_i|\,m_i} ,
+   \label{eq:bjerrum-titrant}
+\end{equation}
+summed over the species of the answer (H$^+$ and OH$^-$ included), and
+$q \neq 0$ is not an error: it is the charge that a strong acid or base
+would have had to bring in for the solution to sit at that pH.  Drive a
+$2$~mmol/kg bicarbonate water to pH~4 and the model reports
+$q \approx +0.99$ --- almost \emph{all} the ionic charge in the answer is
+unbalanced, because reaching pH~4 meant adding hydrochloric acid and the
+chloride was never declared.  The sign says which reagent: $q>0$ means an
+anion is missing (an acid was implied), $q<0$ means a cation is (a base).
+The classical Bjerrum plot is drawn exactly this way and is not wrong for
+it; \emph{drawing it without saying so} is the error, because the reader
+then takes an input for a measurement.
+\end{pitfall}
+
+Do not confuse $q$ with the percent error $\varepsilon_{\rm CB}$ of the
+previous subsection.  They answer different questions and are computed
+over different sets.  $\varepsilon_{\rm CB}$ is taken \emph{before} the
+solve, over the \emph{master totals} of the analysis, with
+$\text{H}^+/\text{OH}^-$ deliberately excluded, and it measures whether a
+\emph{lab sheet} balances; $q$ is taken \emph{after} the solve, over
+\emph{every species} including the protons, and under an imposed pH it
+measures the titrant the model silently supplied.  A perfectly balanced
+analysis ($\varepsilon_{\rm CB}=0$) still gives a large $q$ the moment the
+pH is imposed away from its natural value --- which is the normal
+condition of every point of a distribution diagram except one.  Under the
+\emph{solved}-pH closure the same quantity means the third thing:
+electroneutrality is then an equation of the system, so $q$ is its
+residual and belongs at round-off.  Choupo prints $q$ beside every
+speciation answer and states, in the same line, which of the two meanings
+it is carrying.
+
+\begin{keyidea}
+A distribution diagram is the given-pH closure \emph{swept}.  Its
+crossings are the $\mathrm{p}K_a$'s and its slopes are the
+stoichiometries, so the picture contains the whole mass-action network.
+Its horizontal axis, however, is an imposed input, not an observation:
+every point off the natural pH of the system is held there by an implicit
+strong acid or base, and the converged net charge
+\eqref{eq:bjerrum-titrant} is how much of it.
+\end{keyidea}
+
+\paragraph{Where the two closures meet.}  There is one pH on the axis at
+which no titrant is needed, and it is worth finding because it joins the
+two halves of this section.  Take a real feed --- 2\,mmol/kg of
+bicarbonate \emph{with} its 2\,mmol/kg of sodium, so the analysis is
+electroneutral to begin with --- and sweep it with the pH imposed.  The
+net charge \eqref{eq:bjerrum-titrant} falls from $+0.991$ at pH~4 through
+$+0.000687$ at pH~8.25 to $-0.0059$ at pH~8.50, vanishing at pH~8.276.
+Hand the \emph{same} feed to the solved-pH closure and it reports
+$\mathrm{pH} = 8.277$ from electroneutrality.  They agree because they are
+one statement read two ways: the point where the implicit titrant goes to
+zero is the point where $\sum_i z_i m_i = 0$ is satisfied without being
+imposed, which is the definition of the solved pH.  Everywhere else on
+the diagram, the vertical distance of the titrant curve from zero is how
+much strong acid or base the picture is quietly assuming.  A feed
+declared as a \emph{bare} ion --- bicarbonate with no cation at all ---
+has no such point: its net charge sits at one whole equivalent at every
+pH, correctly, because such a solution does not exist.
+
+\paragraph{In Choupo.}  There is no pH-sweep operation and there does not
+need to be one: a distribution diagram is a series of ordinary
+\code{speciate} operations that differ only in their \dict{pH} entry ---
+a number, never the word \dict{solve} --- so a sweep is written as an
+operation list and each point is a full speciation with its own
+announcements.  Opening the system, \dict{atmosphere \{ CO2 4.2e-4 atm;
+\}}, changes what the diagram is about: the pinned family's total stops
+being an input and becomes an outcome of Henry's law, so the bands move
+with the gas rather than conserving a declared inventory (the run says
+which mole balance the pin replaced).  Temperature moves everything at
+once --- $K_s(T)$ for each equilibrium and $A_{\rm DH}(T)$ in the
+activity model --- and across $0$--$100$\,\textdegree C the two do not
+travel on the same footing: some $K_s$ carry a fitted analytic $\log_{10}
+K(T)$, some only a constant-$\Delta H$ van't Hoff slope, and some are
+held at 25\,\textdegree C for want of either.  The run classifies and
+\emph{announces} each of them, and raises an advisory when an analytic
+form is used outside its fitted range, so the temperature knob of a
+distribution diagram is a demonstration of what the catalogue knows
+rather than a hazard.  The Explore workspace's species-distribution lens
+drives exactly this: one \code{speciate} run per pH point, the engine's
+own molalities on the log axis, and the net
+charge~\eqref{eq:bjerrum-titrant} drawn beside them.
+
 \subsection{The solution algorithm: Newton in log-molality}
 
 \begin{figure}[ht]
@@ -13366,6 +13547,313 @@ backmixing effect.
 \code{writeInterval} steps along the axial coordinate; the final
 $X = 0.667$ matches \eqref{eq:pfr-X-firstorder} to RK4 truncation
 error.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{The catalyst pellet: the Thiele modulus and the effectiveness
+factor}\label{ch:thiele}
+
+\begin{whatyoulllearn}
+Every reactor chapter so far has evaluated the rate at the conditions of the
+fluid \emph{outside} the catalyst.  Here we open the pellet.  Diffusion and
+reaction compete inside it, the reactant never reaches the centre at full
+strength, and the observed rate is the intrinsic rate multiplied by a number
+between $0$ and $1$: the effectiveness factor $\eta$.  You will learn where the
+Thiele modulus comes from (it is a ratio of two rates, not a fitted group), why
+the three pellet shapes nearly collapse onto one curve when the modulus is built
+on the right length, what the two asymptotes mean physically, and how the
+Weisz--Prater criterion lets you decide from \emph{measurable} quantities alone
+whether any of this matters in your reactor.
+\end{whatyoulllearn}
+
+\subsection{The balance inside one pellet}
+
+Take one porous pellet, isothermal, sitting in a fluid whose concentration of
+the reactant is $c_s$ at the pellet's external surface.  Inside the pellet the
+reactant must diffuse through the pore network while it is being consumed.  A
+shell balance on a differential element gives, for a first-order reaction and an
+effective diffusivity $D_e$ that does not vary with position,
+%
+\begin{equation}
+D_e \left( \frac{\mathrm{d}^2 c}{\mathrm{d} r^2}
+         + \frac{s}{r}\frac{\mathrm{d} c}{\mathrm{d} r} \right)
+\;=\; k\,c ,
+\label{eq:pellet-balance}
+\end{equation}
+%
+where $r$ is measured from the centre and the \emph{shape factor} $s$ is $0$ for
+a slab sealed on its edges, $1$ for a long cylinder and $2$ for a sphere.  It is
+worth noticing that the shape enters as one integer and nothing else.
+
+Two boundary conditions close it, and both are physical rather than
+mathematical: the pellet is symmetric about its centre, so no net flux crosses
+it,
+\[
+\left.\frac{\mathrm{d} c}{\mathrm{d} r}\right|_{r=0} = 0 ,
+\]
+and the surface is in contact with the fluid, so
+\[
+c(R) = c_s .
+\]
+The second one carries an assumption that is easy to forget: it says the
+\emph{external} film offers no resistance.  If it does, $c_s$ is not the bulk
+concentration and a second resistance sits in series with everything below.
+
+\subsection{The modulus is a ratio of rates}
+
+Normalise: let $u = c/c_s$ and $\xi = r/R$, with $R$ the characteristic
+dimension --- the half-thickness $L$ of a slab, the radius of a cylinder or a
+sphere.  Equation~\eqref{eq:pellet-balance} becomes
+%
+\begin{equation}
+\frac{\mathrm{d}^2 u}{\mathrm{d} \xi^2}
++ \frac{s}{\xi}\frac{\mathrm{d} u}{\mathrm{d} \xi}
+\;=\; \phi^2 \, u ,
+\qquad
+\left.\frac{\mathrm{d} u}{\mathrm{d} \xi}\right|_{0} = 0,
+\quad u(1) = 1 ,
+\label{eq:pellet-dimensionless}
+\end{equation}
+%
+and \emph{one} group survives:
+%
+\begin{equation}
+\phi \;=\; R\sqrt{\frac{k}{D_e}} .
+\label{eq:thiele-char}
+\end{equation}
+%
+This is the Thiele modulus \cite{Thiele1939}, and it is not an empirical
+correlation group.  Square it and read it as
+\[
+\phi^2 \;=\; \frac{k\,c_s\,R^2}{D_e\,c_s}
+       \;=\; \frac{\text{rate of reaction at surface conditions}}
+                  {\text{rate of diffusion into the pellet}} .
+\]
+Small $\phi$: diffusion wins the race and the pellet is uniform.  Large $\phi$:
+the reaction consumes the reactant before it has travelled far, and the interior
+sits idle.
+
+\begin{keyidea}
+The Thiele modulus compares two \emph{rates}, and both of them are rates the
+pellet would exhibit if the other did not exist.  That is why it is
+dimensionless without anyone making it so, and why a pellet twice as large has
+four times the squared modulus.
+\end{keyidea}
+
+\subsection{The three closed forms}
+
+Equation~\eqref{eq:pellet-dimensionless} is linear, so it can be solved in
+closed form for each shape.  The effectiveness factor is defined as
+%
+\begin{equation}
+\eta \;=\;
+\frac{\text{observed rate over the whole pellet}}
+     {\text{rate the whole pellet would show at } c_s}
+\;=\; \frac{1}{V_p}\int_{V_p} u \,\mathrm{d}V
+\;=\; (s+1)\int_0^1 \xi^{\,s} u(\xi)\, \mathrm{d}\xi ,
+\label{eq:eta-definition}
+\end{equation}
+%
+and the three results are
+%
+\begin{align}
+\text{slab:}\quad
+& u = \frac{\cosh(\phi\,\xi)}{\cosh\phi},
+& \eta &= \frac{\tanh\phi}{\phi},
+\label{eq:eta-slab}\\[2pt]
+\text{cylinder:}\quad
+& u = \frac{I_0(\phi\,\xi)}{I_0(\phi)},
+& \eta &= \frac{2\,I_1(\phi)}{\phi\,I_0(\phi)},
+\label{eq:eta-cylinder}\\[2pt]
+\text{sphere:}\quad
+& u = \frac{\sinh(\phi\,\xi)}{\xi\,\sinh\phi},
+& \eta &= \frac{3}{\phi}\left(\frac{1}{\tanh\phi} - \frac{1}{\phi}\right),
+\label{eq:eta-sphere}
+\end{align}
+%
+with $I_0$ and $I_1$ the modified Bessel functions of the first kind.  The
+sphere's field has a removable singularity at the centre, where
+$u(0) = \phi/\sinh\phi$; it is a finite number, and it is the concentration a
+measurement at the pellet's core would find.
+
+There is a second, equivalent route to $\eta$ that is worth carrying because it
+is an independent check: everything that reacts inside must have entered through
+the surface, so
+%
+\begin{equation}
+\eta \;=\; \frac{(s+1)}{\phi^2}\left.\frac{\mathrm{d} u}{\mathrm{d}\xi}\right|_{\xi=1} .
+\label{eq:eta-flux}
+\end{equation}
+%
+The volume integral and the surface gradient are different functionals of the
+same field.  If they disagree, the field is not a solution of the equation it
+was meant to solve --- which is exactly how Choupo checks its own numerical
+answer.
+
+\subsection{One length that almost erases the shape}
+
+Comparing Eqs.~\eqref{eq:eta-slab}--\eqref{eq:eta-sphere} at the same $\phi$ is
+misleading, because $R$ means a different thing in each.  Aris \cite{Aris1957}
+showed that the right length is the pellet's volume-to-surface ratio
+%
+\begin{equation}
+\Lambda \;=\; \frac{V_p}{S_p}
+\;=\;
+\begin{cases}
+L & \text{slab (half-thickness } L),\\[2pt]
+R/2 & \text{cylinder},\\[2pt]
+R/3 & \text{sphere},
+\end{cases}
+\qquad
+\phi_\Lambda \;=\; \Lambda\sqrt{\frac{k}{D_e}} .
+\label{eq:thiele-generalised}
+\end{equation}
+%
+On $\phi_\Lambda$ the three curves lie almost on top of one another over the
+whole range --- within a few per cent everywhere.  This is the modulus most
+textbooks and every Choupo message mean when they write $\phi$ without
+qualification; the sphere's result reads
+\[
+\eta \;=\; \frac{1}{\phi_\Lambda}
+\left(\frac{1}{\tanh 3\phi_\Lambda} - \frac{1}{3\phi_\Lambda}\right) ,
+\]
+which is Eq.~\eqref{eq:eta-sphere} with $\phi = 3\phi_\Lambda$.
+
+\begin{pitfall}
+\textbf{Two moduli, one symbol.}  A value of $\phi$ quoted without saying which
+length it was built on is a factor of three away from the other convention for a
+sphere.  Choupo publishes both and names them: \code{phi\_char} is
+Eq.~\eqref{eq:thiele-char} on the characteristic dimension, \code{phi} is
+Eq.~\eqref{eq:thiele-generalised} on $\Lambda$.  When you compare a Choupo number
+with a textbook one, check which is which before concluding anything.
+\end{pitfall}
+
+\subsection{The two asymptotes, and what they say about design}
+
+Expand Eq.~\eqref{eq:eta-sphere} at small and large argument:
+%
+\begin{equation}
+\eta \;\longrightarrow\; 1 - \frac{3\,\phi_\Lambda^2}{5} + \dots
+\quad (\phi_\Lambda \ll 1),
+\qquad
+\eta \;\longrightarrow\; \frac{1}{\phi_\Lambda}
+\quad (\phi_\Lambda \gg 1).
+\label{eq:eta-asymptotes}
+\end{equation}
+%
+The first says a small enough pellet is fully used, and that the penalty for
+growing it is second order at first --- which is why a modest increase in pellet
+size to cut pressure drop is often free.  The second is more consequential.  In
+the strong-diffusion limit $\eta \propto 1/\Lambda$, so the \emph{observed} rate
+per unit volume of bed becomes
+\[
+\eta\,k \;\propto\; \frac{1}{\Lambda}\sqrt{k D_e} \; ,
+\]
+i.e.\ it depends on $\sqrt{k}$ and not on $k$.  Two things follow, and both are
+laboratory experience: the apparent activation energy is \emph{half} the true
+one, because $k$ enters under a square root; and doubling the catalyst's
+intrinsic activity buys only a factor of $\sqrt 2$ until the pellet is made
+smaller.
+
+\begin{intuition}
+In the strong-diffusion regime the reaction lives in a shell of thickness about
+$\Lambda/\phi_\Lambda$ under the surface, and the rest of the pellet is inert
+ballast.  Everything the asymptote says follows from that picture: the rate is
+proportional to the surface area of the shell, so it scales with $1/\Lambda$;
+and the shell thickness itself is set by how far a molecule diffuses before
+reacting, $\sqrt{D_e/k}$, which is where the square root comes from.
+\end{intuition}
+
+\subsection{$\eta$ multiplies the rate --- and the size of the error}
+
+Wherever a reactor model writes a heterogeneous rate, the honest form is
+%
+\begin{equation}
+r_{\mathrm{observed}} \;=\; \eta \; r(c_{\mathrm{bulk}}, T) .
+\label{eq:eta-multiplies}
+\end{equation}
+%
+Taking $\eta = 1$ is a modelling assumption, not a neutral default.  At
+$\phi_\Lambda = 5$ the sphere gives $\eta = 0.1867$: a bed sized as though the
+reactant reached every pellet's centre would be undersized by more than a factor
+of five.  Choupo's four catalytic reactors do currently evaluate the rate at bulk
+conditions, and each of them says so out loud rather than leaving it to be
+discovered (Section~\ref{ch:lhhw}); the pellet calculation of this chapter is
+what will eventually supply the multiplier.
+
+\subsection{The Weisz--Prater criterion: deciding without knowing $k$}
+
+There is a catch in everything above.  The Thiele modulus contains the
+\emph{intrinsic} rate constant $k$ --- and if the pellet is diffusion-limited,
+$k$ is precisely the quantity the experiment cannot measure.  Weisz and Prater
+\cite{WeiszPrater1954} removed the circularity by forming a group out of
+observable quantities only:
+%
+\begin{equation}
+\Phi_{\mathrm{WP}}
+\;=\; \eta\,\phi_\Lambda^2
+\;=\; \frac{r_{\mathrm{observed}}\,\Lambda^2}{D_e\,c_s} .
+\label{eq:weisz-prater}
+\end{equation}
+%
+The middle expression contains $k$; the right-hand one does not.  Every quantity
+in it --- the measured rate per unit pellet volume, the pellet's
+volume-to-surface length, the effective diffusivity, the surface concentration
+--- is available without ever knowing the intrinsic kinetics.  That is what makes
+it a \emph{criterion} rather than a result: it is computed after the experiment,
+from the experiment.
+
+The conventional readings are $\Phi_{\mathrm{WP}} \ll 1$ for negligible internal
+resistance and $\Phi_{\mathrm{WP}} \gg 1$ for severe limitation, with the usual
+first-order thresholds quoted as $0.3$ and $6$.  Choupo publishes
+$\Phi_{\mathrm{WP}}$ and does not apply a threshold to it, for the same reason it
+announces an extrapolated vapour pressure rather than rejecting it: what counts
+as negligible depends on what the number is going to be used for, and that is the
+reader's judgement, not the simulator's.
+
+\subsection{What is deliberately not modelled}
+
+\begin{itemize}
+\item \textbf{The non-isothermal pellet.}  Release heat inside a particle with a
+finite thermal conductivity and the interior runs hotter than the surface; the
+Arrhenius factor then feeds back into Eq.~\eqref{eq:pellet-balance} through the
+Prater number, $\eta$ can exceed $1$, and for some parameter ranges
+\emph{three} steady states satisfy the same boundary-value problem at one
+$\phi$.  A Newton iteration returns whichever of the three the initial guess
+was nearest, which is a plausible number arrived at silently --- so this case is
+named rather than approximated.  The multiplicity lesson is carried, one scale
+up, by the Van Heerden construction for the CSTR.
+\item \textbf{Orders other than first.}  Equation~\eqref{eq:pellet-dimensionless}
+becomes nonlinear, $u$ can reach zero at a finite depth, and no closed form
+exists to check a numerical answer against.
+\item \textbf{Knudsen diffusion.}  $D_e$ is obtained here as
+$(\varepsilon_p/\tau)\,D_{\mathrm{molecular}}$.  In pores comparable with the
+mean free path a molecule collides with the wall more often than with another
+molecule, and the bulk value overstates the transport.
+\item \textbf{The external film, and a distribution of pellet sizes.}  One
+pellet, one size, $c_s$ equal to the bulk value.
+\end{itemize}
+
+\begin{pitfall}
+\textbf{$D_e$ is not a property of the catalyst.}  It belongs to a
+\emph{species} diffusing in a \emph{particular} pellet at a \emph{particular}
+temperature.  Choupo therefore refuses to store it on the catalyst record, where
+it would silently stand for every species in the mixture; the pellet carries
+$\varepsilon_p$ and $\tau$, the fluid model supplies $D_{\mathrm{molecular}}$,
+and the product is derived and announced at the point of use.  There is no
+default tortuosity: values between $2$ and $7$ are all conventional, and that
+spread alone moves $\eta$ by a factor of three.
+\end{pitfall}
+
+\begin{tutoriallink}
+\file{tutorials/props/reactor/thiele01\_sphere\_first\_order} --- solves
+Eq.~\eqref{eq:pellet-dimensionless} numerically by central differences on the
+same Newton and LU routines used everywhere else, prints the field beside
+Eqs.~\eqref{eq:eta-slab}--\eqref{eq:eta-sphere} node by node, reports $\eta$ both
+ways (Eqs.~\eqref{eq:eta-definition} and \eqref{eq:eta-flux}), sweeps the
+$\eta(\phi_\Lambda)$ family over all three shapes, and measures its own order of
+convergence.  The pellet in it is a declared teaching surrogate: what the case
+verifies is the numerics against the closed form, not the catalyst.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -21013,6 +21501,24 @@ acetic acid esterification with methanol and methyl acetate hydrolysis'',
 rate law, Table 11), the adsorption constants (Table 10), the UNIQUAC parameters
 they were regressed with (Tables 2--3), and the independent $K_a$ of Eq.~17.
 
+\bibitem{Thiele1939} Thiele, E.W., ``Relation between catalytic
+activity and size of particle'', \emph{Ind.\ Eng.\ Chem.} \textbf{31} (1939)
+916.  The pellet balance Eq.~\eqref{eq:pellet-balance}, the modulus
+Eq.~\eqref{eq:thiele-char} and the closed forms
+Eqs.~\eqref{eq:eta-slab}--\eqref{eq:eta-sphere}.
+
+\bibitem{WeiszPrater1954} Weisz, P.B.\ and Prater, C.D., ``Interpretation of
+measurements in experimental catalysis'', \emph{Advances in Catalysis}
+\textbf{6} (1954) 143.  The observable criterion Eq.~\eqref{eq:weisz-prater},
+which removes the intrinsic rate constant that a diffusion-limited experiment
+cannot measure.
+
+\bibitem{Aris1957} Aris, R., ``On shape factors for irregular particles~---
+I.\ The steady state problem.\ Diffusion and reaction'', \emph{Chemical
+Engineering Science} \textbf{6} (1957) 262.  The volume-to-surface length
+$\Lambda$ of Eq.~\eqref{eq:thiele-generalised}, on which the three geometries
+nearly collapse onto one $\eta(\phi)$ curve.
+
 \bibitem{SoudersBrown1934} Souders, M.\ and Brown, G.G., ``Design of
 fractionating columns.~I.\ Entrainment and capacity'', \emph{Industrial \&
 Engineering Chemistry} \textbf{26} (1934) 98.  The droplet-suspension argument
@@ -22836,6 +23342,253 @@ $\times$ 120\,s), the hand-derived sequence \code{000100110101111} in
 the case header matching the announce; seed 0 and non-maximal taps
 refuse aloud.
 \end{tutoriallink}
+
+
+% ---------------------------------------------------------------------
+\section{Choosing a column control structure, and where the instruments
+go}\label{sec:column-control}
+
+\begin{whatyoulllearn}
+A two-product distillation column has five valves and five things to
+hold, and the arithmetic of that sentence is the whole subject: pressure
+takes one valve and each of the two levels takes another, so exactly two
+are left for composition --- and the structure is \emph{named after those
+two}.  This section derives that count, names the candidate structures as
+the literature names them, states why a composition loop almost always
+measures a \emph{tray temperature} instead of a composition, and then
+answers the sharpest question a student asks: \emph{on which tray?}  Two
+classical criteria are given, both computable from a profile the rigorous
+MESH column of Section~\ref{ch:mesh} already writes, and on a worked
+column they select \emph{different trays} --- which is the lesson, not a
+defect.  What this section does not do is recommend one structure: the
+published authorities disagree, their conditions differ, and the
+disagreement is the material.
+\end{whatyoulllearn}
+
+\subsection*{Five valves, five inventories, and the naming convention}
+
+Around a two-product column with a total condenser there are five
+manipulable flows:
+
+\begin{itemize}
+\item the condenser duty (equivalently the coolant valve),
+\item the distillate $D$,
+\item the reflux $L$,
+\item the boilup $V$ (equivalently the reboiler steam valve),
+\item the bottoms $B$.
+\end{itemize}
+
+\noindent and five variables that must be held: the column pressure, the
+reflux-drum level, the sump (reboiler) level, and the two product
+compositions.  Pressure is settled first, on the condenser duty or a
+vent.  Each level must then be held by a stream \emph{leaving} the vessel
+it belongs to --- a level controlled by an inflow that also sets
+production is not self-regulating --- and that consumes two more valves.
+
+Two valves remain, and the convention is to name the structure after
+them.  Writing $\{\cdot\,\cdot\}$ for the pair left free for composition:
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+name & free for composition & drum level held by & sump level held by \\
+\midrule
+LV & $L$, $V$ & $D$ & $B$ \\
+LB & $L$, $B$ & $D$ & $V$ \\
+DV & $D$, $V$ & $L$ & $B$ \\
+DB & $D$, $B$ & $L$ & $V$ \\
+$(L/D)(V/B)$ & $L$, $V$ as \emph{ratios} & $D$ & $B$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent LV is the conventional arrangement --- each level held by the
+product stream leaving it --- and it is the one Skogestad recommends for
+most columns, in combination with a fast inner temperature loop
+(\emph{The dos and don'ts of distillation column control},
+\emph{Chem.\ Eng.\ Res.\ Des.} \textbf{85}(A1), 13--23, 2007).  DV moves
+the drum level onto the reflux, which is what a large reflux ratio
+invites: the rule of thumb is to hold a level with the \emph{larger}
+stream leaving that drum, and when $R = L/D$ is large that stream is the
+reflux, which frees $D$ for composition.  The $(L/D)(V/B)$ scheme keeps
+LV's levels but drives each composition loop through a ratio station, so
+a throughput change moves both members of a pair together.
+
+DB looks impossible on a steady-state material balance --- both products
+set independently, with no valve left to absorb the difference --- and
+this is the classic trap.  Skogestad, Lundstr\"om and Jacobsen
+(\emph{AIChE J.} \textbf{36}(5), 753--764, 1990) report that DB has an
+\emph{infinite} steady-state relative gain and can nonetheless be
+controlled well, because its high-frequency relative gain is close to
+one.  The lesson generalises far beyond distillation: a criterion can
+return a definite, dramatic number and still not settle the question,
+because it asked at the wrong frequency.
+
+\subsection*{Why the drawing carries the lesson}
+
+None of the above needs a transient.  Which measurement drives which
+valve is a \emph{drawing} question --- it is exactly what a piping and
+instrumentation diagram records --- and switching the structure moves
+lines on that drawing rather than changing any equation.  This is why
+Choupo's EduTool for this material is a \emph{cross-section} of the
+column with the instrument bubbles and the signal lines on it, over a
+steady solution: the reader changes the structure and watches the wiring
+move.
+
+What the drawing cannot honestly show is a level rising and falling.  A
+level that moves is an accumulation term; it needs a dynamic column, and
+Choupo has none --- the dynamic tier is the continuous stirred tank of
+Section~\ref{ch:dyn-cstr} and one reference plant, and no column
+anywhere in the corpus is under control.  A plausible-looking animation drawn from
+nothing would be worse than the static picture, because a moving image is
+more persuasive and would teach a specific wrong thing with confidence.
+
+\subsection*{The composition loop measures a temperature}
+
+An on-line composition analyser is slow and expensive, so a column's
+``composition'' loop almost always measures a \emph{sensitive tray
+temperature} instead.  For a binary at fixed pressure the substitution is
+exact: bubble-point temperature and liquid composition are in one-to-one
+correspondence (Section~\ref{ch:rr}), so
+\begin{equation}
+    T_n = T^{\mathrm{bub}}(x_n, P) \qquad\Longleftrightarrow\qquad
+    x_n = x(T_n, P) .
+\end{equation}
+With more than two components the correspondence fails --- many
+compositions share a bubble point --- and if the column pressure moves,
+the temperature moves with no composition change at all.  Both are
+limits of the substitution, not of the instrument.
+
+That substitution is what creates the question this section exists for.
+If we are going to measure a temperature, \emph{which tray}?
+
+\subsection*{Criterion 1: the slope}
+
+Read the converged profile and take the tray where it is steepest:
+\begin{equation}
+    n^{\star}_{\mathrm{slope}}
+        = \arg\max_{n} \; \bigl| T_{n+1} - T_{n} \bigr| ,
+    \label{eq:slope-criterion}
+\end{equation}
+the difference between \emph{adjacent} trays.  A steep profile means a
+large temperature change for a small composition change, so the
+measurement carries information; a flat region means the thermocouple is
+nearly blind.
+
+It costs one solve --- the profile is already on the screen --- and a
+student can apply it with a ruler.  What it cannot say is whether that
+tray's temperature actually \emph{moves} when the manipulated variable
+moves.
+
+\subsection*{Criterion 2: the sensitivity}
+
+Perturb the manipulated variable the loop will use, solve again, and take
+the tray that responded most:
+\begin{equation}
+    n^{\star}_{\mathrm{sens}}
+        = \arg\max_{n} \; \left| \frac{\partial T_n}{\partial u} \right|
+        \approx \arg\max_{n} \;
+          \left| \frac{T_n(u + \Delta u) - T_n(u)}{\Delta u} \right| .
+    \label{eq:sensitivity-criterion}
+\end{equation}
+This is a finite difference over two rigorous solutions --- no new
+physics, one extra solve --- and it is the criterion a simulator can
+offer that a table in a book cannot, because the number belongs to
+\emph{this} column at \emph{these} settings with \emph{this} handle.
+
+Note what $u$ smuggles in.  Equation~\eqref{eq:sensitivity-criterion} has
+no answer until the manipulated variable is named, and the answer moves
+with it.  The sign matters too: the derivative changes sign somewhere
+between the two ends of the column, and a sensor at the crossing is
+nearly deaf to the handle however steep the profile looks there ---
+something Equation~\eqref{eq:slope-criterion} cannot warn about, because
+it never asks the handle a question.
+
+\subsection*{Worked: the two criteria disagree}
+
+Take the benzene/toluene column of
+\code{tutorials/steady/distillation/column02\_simultaneous} --- 15 stages
+(stage 1 the condenser, stage 15 the reboiler), feed on stage 8,
+$R = 2.0$, $D = 50$\,kmol/h, rigorous MESH.  Its solved profile runs from
+354.21\,K at the top to 382.89\,K in the reboiler.  Restricting attention
+to the stages that are trays (neither the condenser nor the reboiler can
+carry a tray thermocouple):
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+criterion & handle & tray selected \\
+\midrule
+slope, Eq.~\eqref{eq:slope-criterion} & --- &
+  \textbf{10} \quad ($3.140$\,K to stage 11) \\
+sensitivity, Eq.~\eqref{eq:sensitivity-criterion} & reflux $L$ &
+  \textbf{11} \quad ($+0.0910$\,K per 1\,\% of $L$) \\
+sensitivity, Eq.~\eqref{eq:sensitivity-criterion} & distillate $D$ &
+  \textbf{5} \quad ($+1.336$\,K per 1\,\% of $D$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Three answers, one column.  The slope and the reflux
+sensitivity differ by one tray; the \emph{distillate} sensitivity moves
+the sensor into the rectifying section entirely --- five stages and a
+section boundary away from where the ruler pointed --- and it is fifteen
+times the size, because at fixed reflux the distillate rate is the strong
+handle on this split.  The reflux sensitivity also changes sign between
+stages 6 and 7: raising the reflux \emph{cools} everything above stage~7
+and \emph{heats} everything below it, and a thermocouple on either side
+of that crossing reads a gain near zero.
+
+Both numbers are differences of temperatures the engine published; nobody
+tuned anything to produce the disagreement.
+
+Two things follow, and they are the practical content of this section.
+First, a tray number quoted without naming the manipulated variable is
+incomplete.  Second, the pairing rule Skogestad states --- use a flow at
+the \emph{same end} of the column as the sensor --- is not a nicety: a
+sensor at stage~5 driven by a valve at the bottom of the column would be
+reading one section and acting on the other, with the whole cascade's lag
+in between.
+
+\subsection*{What is not settled, and by whom}
+
+Luyben (\emph{J.\ Process Control} \textbf{16}, 115--134, 2006) compares
+five criteria for this choice --- slope, sensitivity, singular value
+decomposition, invariant temperature, and minimum product variability ---
+over systems from ideal binary to azeotropic multicomponent, and
+concludes that singular value decomposition is a simple and effective
+method.  Choupo computes the first two and \emph{not} the one that
+comparison prefers: the SVD criterion (due to Moore, in \emph{Practical
+Distillation Control}, W.\,L.\ Luyben, ed., Van Nostrand Reinhold, 1992)
+needs a steady-state gain matrix over several perturbations, and nothing
+in the engine publishes one.  That is a stated gap, not an oversight.
+
+On the structure itself the disagreement is sharper, and it is a
+disagreement about \emph{conditions} rather than about facts.  Selecting
+a configuration on its steady-state relative gain rejects LV at high
+purity, because the two composition loops interact strongly; on a
+frequency-dependent analysis with optimal PI designs, Skogestad,
+Lundstr\"om and Jacobsen (1990) find $(L/D)(V/B)$ the best of four
+candidates for two-point composition control.  Seventeen years later
+Skogestad (2007) recommends plain LV for most columns --- and the reason
+the two are not in contradiction is that closing a fast temperature loop
+first collapses the steady-state relative gain of what remains, in his
+example from about 35 to below 2.  The 1990 result answers ``which
+configuration for dual composition control, judged in the frequency
+domain''; the 2007 recommendation answers ``what should most columns
+do'', with an inner loop that has already changed the question.
+
+A student who leaves knowing which rules exist, who stated them, and
+under what conditions each was asserted has gained the thing they came
+for.  A student handed one confident recommendation has gained a rule
+they will misapply the first time the conditions differ.
+
+\begin{pitfall}
+\textbf{Relative gain is not computed anywhere in Choupo.}  The
+paragraphs above quote published relative gains; the engine publishes no
+gain matrix, at any frequency, and the EduTool says so on its own face.
+Do not read a number here as something this simulator checked.
+\end{pitfall}
 
 % ====================================================================
 %  THREE NEW CHAPTERS (kinetics + stiff numerics + polymers)

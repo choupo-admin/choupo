@@ -53,6 +53,7 @@ License
 #include "ScalingScan.H"
 #include "Speciate.H"
 #include "SteamTables.H"
+#include "ThielePellet.H"
 #include "VaporPressureFit.H"
 #include "VleConsistency.H"
 #include "thermo/Database.H"
@@ -164,6 +165,12 @@ void PropertyOperation::registerBuiltins()
     // invariance).  The matching regression is fitParameters kind=isotherm.
     reg("isothermEval",   []{ return std::make_unique<IsothermEval>();   });
     reg("kinetics1D",     []{ return std::make_unique<Kinetics1D>();     });
+    //  The SINGLE CATALYST PELLET: the intraparticle concentration field, the
+    //  effectiveness factor and the Thiele modulus, each checked against the
+    //  first-order isothermal closed form.  The physics lives in
+    //  unitOperations/reactor/pellet/ -- this op is a bench over it, and the
+    //  four reactors that assume eta = 1 are the intended second caller.
+    reg("thielePellet",   []{ return std::make_unique<ThielePellet>();   });
     reg("vleConsistency", []{ return std::make_unique<VleConsistency>(); });
     reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });

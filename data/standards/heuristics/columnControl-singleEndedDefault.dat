@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  SINGLE-ENDED CONTROL IS THE ROBUST DEFAULT -- Choupo's own guidance, quoted.
+
+  It is also the record that names, in the guide's own words, WHY this whole
+  tool exists: "which is exactly why students find column control hard".
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       singleEndedDefault;
+
+claim      "Single-end control -- hold one composition and let the other float -- is the robust default; dual-composition control saves energy but the two loops interact strongly and usually need decoupling.";
+
+stances
+(
+    { structure singleEndedLV; stance favours; }
+    { structure LV;            stance conditional; }
+    { structure ratioLDVB;     stance conditional; }
+);
+topics     ( interaction );
+
+validity   "A two-product column whose second product has a specification loose enough to float, or whose energy penalty for over-purifying one end is acceptable.";
+
+notCovered "It does not say WHICH end to hold, and it does not quantify the energy the floating end costs.  It says nothing about a column whose two products are both on tight specification, where the default it recommends is not available.";
+
+authority  choupoDesignGuide;
+source
+{
+    author       "see the guide's own title page -- docs/preamble.tex decides the authorship line, and this record does not copy its answer";
+    year         2026;
+    title        "Choupo Design Guide";
+    publication  "docs/designGuide.tex, section 'Process control & instrumentation heuristics'";
+    locus        "the paragraph beginning 'Distillation is the hard one'";
+    verification checkedCopy;
+    verificationNote "Read in the repository's own source of the guide.  Choupo's signed engineering judgement, not a cited literature result.";
+}

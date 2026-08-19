@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  HOLD A LEVEL WITH THE LARGER STREAM LEAVING IT -- Choupo's own guidance,
+  quoted, and the reason it is not a cited record.
+
+  This is the rule that decides LV against DV: at a high reflux ratio the big
+  stream leaving the reflux drum is the REFLUX, so the drum level goes on reflux
+  and the distillate is freed for composition, which is the DV configuration.
+
+  The literature states the same rule with a NUMERIC THRESHOLD on the reflux
+  ratio, and the thresholds disagree across sources.  None could be pinned to a
+  page in a copy that was opened, so no threshold is shipped -- see
+  NOT-SHIPPED.md 1.  What is shipped is the general form, which is Choupo's own
+  and needs no threshold to be true: whichever stream is larger is larger.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       levelOnLargerLeavingStream;
+
+claim      "Each level must be held by an OUTFLOW, and by the LARGER stream leaving that drum -- so a high reflux ratio puts the reflux-drum level on the reflux and frees the distillate for composition.";
+
+stances
+(
+    { structure DV; stance favours; }
+    { structure LV; stance conditional; }
+);
+topics     ( inventory );
+
+validity   "A two-product column at a known reflux ratio; the guide states it as the rule that decides between the LV and DV arrangements.";
+
+notCovered "It gives no threshold: at what reflux ratio the reflux becomes 'the larger stream' in the sense that matters for level control is a question the general form does not answer, and Choupo ships no number for it.  It also says nothing about the reboiler end, where the same argument runs on the boilup against the bottoms.";
+
+authority  choupoDesignGuide;
+source
+{
+    author       "see the guide's own title page -- docs/preamble.tex decides the authorship line, and this record does not copy its answer";
+    year         2026;
+    title        "Choupo Design Guide";
+    publication  "docs/designGuide.tex, section 'Process control & instrumentation heuristics'";
+    locus        "the paragraph beginning 'Distillation is the hard one'";
+    verification checkedCopy;
+    verificationNote "Read in the repository's own source of the guide.  Choupo's signed engineering judgement, not a cited literature result.";
+}

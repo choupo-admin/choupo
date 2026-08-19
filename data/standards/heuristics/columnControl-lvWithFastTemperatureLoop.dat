@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE STANDARD RECOMMENDATION: LV levels plus a fast inner temperature loop.
+
+  The single most quoted recommendation in the modern distillation-control
+  literature, and the one a student should meet first -- not because it is
+  always right, but because it is the default the alternatives are argued
+  against.  It conflicts, on its face, with the ratio scheme the same author
+  group recommended for two-point composition control seventeen years earlier;
+  the conditions differ, and Choupo shows BOTH rather than choosing.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       lvWithFastTemperatureLoop;
+
+claim      "For most columns, use the standard LV configuration for the levels -- condensation on pressure, distillate on condenser level, bottoms on reboiler level -- combined with a fast temperature loop.";
+
+stances
+(
+    { structure LV;            stance favours; }
+    { structure singleEndedLV; stance favours; }
+);
+topics     ( sensorPlacement );
+
+validity   "Stated as the general recommendation for a two-product column, within a plantwide-control framework, with a temperature loop closed inside whatever composition or optimisation layer sits above it.";
+
+notCovered "It is a recommendation for MOST columns and names no test for the ones it is wrong for.  It does not say which tray the temperature loop should measure, and it does not claim LV is best for two-point composition control with no inner loop -- which is the case the conflicting record covers.";
+
+conflictsWith ( ratioBestForTwoPoint );
+
+authority  primaryLiterature;
+source
+{
+    author       "S. Skogestad";
+    year         2007;
+    title        "The dos and don'ts of distillation column control";
+    publication  "Chemical Engineering Research and Design, volume 85 (A1), pages 13-23 (2007)";
+    locus        "the abstract, on the article's first page, p. 13";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against publisher listings.  The recommendation and the LV definition it rests on were returned, in the paper's own words, by a literature search over the author's own copy; the document itself was NOT opened.  The page is claimed only because an abstract sits on an article's opening page, which here is 13 -- it is an inference from the page range, not a page that was read.";
+}

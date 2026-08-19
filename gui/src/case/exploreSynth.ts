@@ -19,6 +19,7 @@
 
 import type { CaseFiles } from "./types.js";
 import type { JsonDict } from "../dict/index.js";
+import { bjerrumOutput, bjerrumPhGrid } from "./bjerrumSweep.js";
 
 /** The swept axis: a single engine state variable over a range.
  *  `variable` is an engine keyword: "T", "P", or "x[<componentName>]". */
@@ -162,6 +163,36 @@ export interface ExploreSpec {
      *  without it the engine still gives mol/kg, kg/day simply absent. */
     feedFlowM3h?: number;
   };
+  /** Species distribution vs pH — the Bjerrum plot.  ONE `speciate` op PER pH
+   *  point (the engine has no pH-sweep op; `scalingScan` sweeps recovery), each
+   *  writing its own CSV, merged back by case/bjerrumSweep.ts.  The pH is
+   *  IMPOSED at every point (`pH <v>;`, never `pH solve;`), which is what the
+   *  classical distribution diagram is: the charge that closes the balance is
+   *  supplied by a strong acid or base nobody declared, and the view says so.
+   *  `atmosphere` (optional) opens the system — the pinned family's total then
+   *  becomes a solved OUTCOME and `total` is only its initial guess, which the
+   *  engine announces.  `T` is canonical SI (K), like every synthesized value;
+   *  the partial pressure carries the MANDATORY `atm` basis. */
+  bjerrum?: {
+    /** The master ion the family is declared through (BJERRUM_FAMILIES). */
+    master: string;
+    /** That master's total [mol/kg water]. */
+    total: number;
+    /** An additional declared total [mol/kg water] — in practice the salt's
+     *  counter-ion, so the feed can be neutral and the answer's net charge can
+     *  cross zero.  Just another `totals {}` entry; omitted when zero. */
+    counter?: { species: string; total: number };
+    pHfrom: number; pHto: number; n: number;
+    T: number;                                   // K
+    atmosphere?: { gas: string; pAtm: number };  // gasLiquid catalogue name, atm
+    /** GLOBAL index of this block's first point (see bjerrumChunks): the sweep
+     *  may be split over several runs so one refusing point cannot take the
+     *  whole diagram with it, and the op names + output files stay keyed by the
+     *  global index so the blocks reassemble unambiguously.  Absent = 0, which
+     *  is the whole-sweep case and the one the "Author this exploration"
+     *  hand-off emits. */
+    indexFrom?: number;
+  };
   /** Steam tables via the steamTables engine op (IAPWS-IF97, R7-97(2012)) —
    *  water ONLY (IF97 is the water formulation).  `saturation` scans the
    *  region-4 line (from/to in K, regions 1/2 evaluated ON the line);
@@ -221,6 +252,62 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       verbosity: 2,
     };
     return { propsDict, thermoPackage, controlDict };
+  }
+
+  // Species distribution vs pH: N `speciate` ops, one per grid point.  It gets
+  // its own early return because every other lens synthesizes exactly ONE
+  // operation and the chain below picks between them — a sweep of N is a
+  // different shape, not another link in that chain.  Same dict grammar as
+  // tutorials/props/electrolyte/rainwater_air, one op per pH instead of one
+  // op per temperature.
+  if (spec.bjerrum) {
+    const b = spec.bjerrum;
+    const base = b.indexFrom ?? 0;
+    const propsDict: JsonDict = {
+      operations: bjerrumPhGrid(b.pHfrom, b.pHto, b.n).map((pH, k) => ({
+        name: `pt${String(base + k).padStart(3, "0")}`,
+        type: "speciate",
+        // the mol/kg basis is MANDATORY engine-side (a water analysis must
+        // declare its basis); under an open atmosphere this entry is an
+        // initial guess and the run says so.
+        totals: {
+          [b.master]: `${b.total} mol/kg`,
+          ...(b.counter && b.counter.total > 0
+            ? { [b.counter.species]: `${b.counter.total} mol/kg` } : {}),
+        },
+        // A NUMBER, never the word `solve`: this lens draws the IMPOSED-pH
+        // closure on purpose (see the ExploreWorkspace caption and the axis).
+        pH,
+        ...(b.atmosphere
+          ? { atmosphere: { [b.atmosphere.gas]: `${b.atmosphere.pAtm} atm` } }
+          : {}),
+        temperature: b.T,                       // raw scalar = canonical SI (K)
+        output: { file: bjerrumOutput(base + k) },
+      })),
+    };
+    const thermoPackage: JsonDict = {
+      // The speciation stack reads the aqueous surface as physics; the
+      // activity model is declared here, exactly as the corpus cases do.
+      recordType: "thermophysicalPropertySystem",
+      schemaVersion: 2,
+      components: [...spec.components],
+      aqueousProperties: {
+        solvent: "water",
+        activityCoefficients: { model: "Davies", referenceBasis: "aqueousMolality" },
+      },
+    };
+    const controlDict: JsonDict = {
+      application: "choupoProps",
+      // verbosity 2 is LOAD-BEARING here, not a default carried along: the
+      // charge residual under an imposed pH and the K(T)-route announcements
+      // are printed at >= 2 and reach no other surface.
+      description: "Property Explorer -- species distribution vs pH (ephemeral)",
+      verbosity: 2,
+    };
+    const files: CaseFiles = { propsDict, thermoPackage, controlDict };
+    if (spec.componentFiles && Object.keys(spec.componentFiles).length > 0)
+      files.extraFiles = { ...spec.componentFiles };
+    return files;
   }
 
   const state: JsonDict = { composition: { ...spec.state.composition } };

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  WHY THE INTERACTION ARGUMENT AGAINST LV DOES NOT SETTLE IT.
+
+  The standard case against the LV configuration is that at high purity its
+  relative gain is enormous, so the two composition loops fight.  This record
+  carries the counter that the interaction is a property of the problem as POSED
+  -- pose it with a fast temperature loop already closed and the number collapses.
+
+  It is deliberately NOT filed as a resolution of the disagreement.  It is one
+  authority's argument, quoted as his, beside the other; the tool shows both and
+  the reader decides which set of conditions is theirs.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       fastLoopReducesRga;
+
+claim      "Closing a fast temperature loop collapses the steady-state relative gain of the composition problem that remains -- from about 35 to below 2 in the cited example -- and also reduces the overshoot from the inputs to the outputs.";
+
+stances
+(
+    { structure LV; stance favours; }
+);
+topics     ( interaction );
+
+validity   "A two-product column whose temperature loop is fast relative to the composition layer above it; the numbers quoted are the cited article's own example, not a general result.";
+
+notCovered "It is one example's arithmetic, not a bound: it does not say by how much the relative gain falls on any other column, and it does not claim the residual interaction is negligible.  It says nothing about a column run with no inner temperature loop, which is the case the conflicting records were written about.";
+
+conflictsWith ( ratioBestForTwoPoint );
+
+authority  primaryLiterature;
+source
+{
+    author       "S. Skogestad";
+    year         2007;
+    title        "The dos and don'ts of distillation column control";
+    publication  "Chemical Engineering Research and Design, volume 85 (A1), pages 13-23 (2007)";
+    locus        "the article's discussion of the temperature loop; a page inside 13-23 is NOT claimed";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against publisher listings.  The claim, including the 35-to-below-2 figures, was returned in the paper's own words by a literature search over the author's own copy; the document was NOT opened.";
+}

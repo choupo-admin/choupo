@@ -1,0 +1,135 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Two-product distillation column: the CANDIDATE CONTROL STRUCTURES.
+
+  This file is a VOCABULARY, not a heuristic.  It says what each named
+  structure IS -- which measurement drives which valve -- so that the EduTools
+  cross-section can be drawn from a record instead of from a table typed into a
+  component.  Nothing here recommends anything; the recommendations are the
+  `columnControl-*.dat` claims beside it, each with its own citation.
+
+  THE NAMING CONVENTION.  A two-product column has five valves (condenser duty,
+  distillate D, reflux L, boilup V, bottoms B) and five things to hold
+  (pressure, condenser level, reboiler level, and two compositions).  Pressure
+  takes one valve and each level takes another, which leaves TWO -- and the
+  structure is NAMED AFTER THOSE TWO.  "LV" therefore means: the levels are on D
+  and B, so reflux and boilup are what remains for composition.
+
+  THE ONE CITED DEFINITION.  Skogestad (2007), p. 13, defines the standard LV
+  configuration in exactly those terms: condensation flow controls pressure,
+  distillate flow controls condenser level, bottoms flow controls reboiler
+  level, so that reflux L and boilup V remain free for composition control.
+  The other four entries follow from the SAME convention applied to the other
+  choices of the two free valves -- they are the convention worked through, not
+  four further claims, and no source is quoted for them because none is needed
+  to say what a name means.
+
+  WHAT THE COMPOSITION LOOPS MEASURE.  Every composition loop here measures a
+  TRAY TEMPERATURE rather than a composition: an analyser is slow and expensive,
+  and the substitution is Choupo's own guidance (designGuide, "Process control
+  & instrumentation heuristics") and Skogestad's recommendation
+  (columnControl-lvWithFastTemperatureLoop.dat).  WHICH tray is not declared
+  here -- it is the diagnostic the tool computes on the reader's own column.
+\*---------------------------------------------------------------------------*/
+
+recordType controlStructureCatalogue;
+domain     distillationControl;
+apparatus  twoProductColumn;
+
+//  The measurement points and the valves the cross-section can draw.  A loop
+//  below may only name one of each; an unknown name is refused by the reader,
+//  because a signal line drawn to nowhere is worse than a missing one.
+measurementPoints ( overhead refluxDrum sump rectifyingTray strippingTray refluxLine feedLine );
+valves            ( condenserDuty distillate reflux boilup bottoms feed );
+
+structures
+(
+    {
+        name        LV;
+        label       "LV -- reflux and boilup";
+        summary     "The conventional structure: each level is held by the product stream leaving it, so reflux and boilup are what remain for composition.";
+        freeForComposition ( reflux boilup );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates distillate;    kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates bottoms;       kind inventory; }
+            { controlled topComposition;    measuredAt rectifyingTray; manipulates reflux;       kind quality; }
+            { controlled bottomComposition; measuredAt strippingTray;  manipulates boilup;       kind quality; }
+        );
+    }
+
+    {
+        name        LB;
+        label       "LB -- reflux and bottoms";
+        summary     "The reboiler level is held by boilup instead of by the bottoms product, which frees B for the bottom composition.";
+        freeForComposition ( reflux bottoms );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates distillate;    kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates boilup;        kind inventory; }
+            { controlled topComposition;    measuredAt rectifyingTray; manipulates reflux;       kind quality; }
+            { controlled bottomComposition; measuredAt strippingTray;  manipulates bottoms;      kind quality; }
+        );
+    }
+
+    {
+        name        DV;
+        label       "DV -- distillate and boilup";
+        summary     "The condenser level is held by reflux instead of by the distillate product, which frees D for the top composition -- the arrangement a high reflux ratio invites, because reflux is then the big stream leaving the drum.";
+        freeForComposition ( distillate boilup );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates reflux;        kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates bottoms;       kind inventory; }
+            { controlled topComposition;    measuredAt rectifyingTray; manipulates distillate;   kind quality; }
+            { controlled bottomComposition; measuredAt strippingTray;  manipulates boilup;       kind quality; }
+        );
+    }
+
+    {
+        name        DB;
+        label       "DB -- distillate and bottoms";
+        summary     "Both levels are held by the internal flows, leaving both PRODUCTS for composition -- the structure a steady-state material balance argues cannot work, and which the frequency-domain argument says can.";
+        freeForComposition ( distillate bottoms );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates reflux;        kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates boilup;        kind inventory; }
+            { controlled topComposition;    measuredAt rectifyingTray; manipulates distillate;   kind quality; }
+            { controlled bottomComposition; measuredAt strippingTray;  manipulates bottoms;      kind quality; }
+        );
+    }
+
+    {
+        name        ratioLDVB;
+        label       "(L/D)(V/B) -- the double ratio scheme";
+        summary     "The levels are held as in LV, but each composition loop sets a RATIO -- reflux to distillate, boilup to bottoms -- so a change in throughput moves both members of the pair together.";
+        freeForComposition ( reflux boilup );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates distillate;    kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates bottoms;       kind inventory; }
+            { controlled topComposition;    measuredAt rectifyingTray; manipulates reflux;       kind quality;  ratioWith distillate; }
+            { controlled bottomComposition; measuredAt strippingTray;  manipulates boilup;       kind quality;  ratioWith bottoms; }
+        );
+    }
+
+    {
+        name        singleEndedLV;
+        label       "Single-ended LV -- one composition loop";
+        summary     "LV with only ONE quality loop closed: the other end is left on a fixed flow and its composition floats, which costs energy and removes the interaction between the two quality loops entirely.";
+        freeForComposition ( boilup );
+        loops
+        (
+            { controlled pressure;          measuredAt overhead;      manipulates condenserDuty; kind inventory; }
+            { controlled condenserLevel;    measuredAt refluxDrum;    manipulates distillate;    kind inventory; }
+            { controlled reboilerLevel;     measuredAt sump;          manipulates bottoms;       kind inventory; }
+            { controlled refluxFlow;        measuredAt refluxLine;    manipulates reflux;        kind fixedFlow; }
+            { controlled bottomComposition; measuredAt strippingTray; manipulates boilup;        kind quality; }
+        );
+    }
+);

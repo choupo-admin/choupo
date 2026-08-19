@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE RATIO SCHEME (L/D)(V/B) FOR TWO-POINT COMPOSITION CONTROL.
+
+  The recommendation that does not match the later one from the same author
+  group -- and the pair is the most useful thing in this record set, because the
+  conditions are printed beside each and they are not the same conditions.  1990
+  asks "which configuration for TWO-POINT composition control, judged on
+  frequency-dependent relative gain"; 2007 asks "what should most columns do",
+  and answers with an inner temperature loop that changes the question.
+
+  Choupo displays both and resolves neither.  A weighting nobody published,
+  presented as a verdict, is the worst possible artefact for a reader who cannot
+  yet judge it.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       ratioBestForTwoPoint;
+
+claim      "Judged on frequency-dependent relative-gain analysis with optimal PI designs over four configurations, the (L/D)(V/B) double ratio scheme is the best choice for two-point composition control.";
+
+stances
+(
+    { structure ratioLDVB; stance favours; }
+    { structure LV;        stance warnsAgainst; }
+);
+topics     ( interaction );
+
+validity   "Two-point (dual) composition control of a two-product column, the four configurations compared in the cited study, with the loops tuned as optimal PI.";
+
+notCovered "It is a comparison among four candidates on the studied columns, not a proof of optimality over all structures or all columns.  It does not cover single-ended control, and it does not cover a column with a fast inner temperature loop already closed -- which is the case its conflicting record was written about.";
+
+conflictsWith ( lvWithFastTemperatureLoop );
+
+authority  primaryLiterature;
+source
+{
+    author       "S. Skogestad, P. Lundstrom and E. W. Jacobsen";
+    year         1990;
+    title        "Selecting the best distillation control configuration";
+    publication  "AIChE Journal, volume 36, issue 5, pages 753-764 (1990)";
+    locus        "the article's stated main finding; a page inside 753-764 is NOT claimed";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against the publisher's listing.  The finding was returned by a literature search over the paper's own abstract; the document was NOT opened.";
+}

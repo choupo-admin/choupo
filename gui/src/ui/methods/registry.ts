@@ -58,11 +58,28 @@ import { guideUrl } from "../../help/guideLinks.js";
 export type MethodToolId =
   | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden" | "drying" | "hunter-nash";
+  | "vanheerden" | "drying" | "hunter-nash" | "column-control";
+
+/** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
+ *  rather than to switch behaviour.
+ *
+ *  The settled placement criterion is *method-construction -> EduTools;
+ *  property-surface -> Explorer*, and it does real work: it settled the g_mix
+ *  tangent into Explore and moved McCabe-Thiele out of it.  A SELECTION aid is
+ *  NEITHER — it does not construct an answer from a diagram and it does not
+ *  show what a substance is; it helps a reader choose between defensible
+ *  alternatives.  Forcing it into `construction` to avoid adding a kind would
+ *  be the criterion bent by the first case that does not fit it, which is how a
+ *  boundary stops meaning anything (heuristics-as-a-third-kind, 1 and 7).
+ *
+ *  It lives inside EduTools and does NOT get a third top-level surface: one
+ *  building for one tenant is how a shell acquires rooms nobody visits. */
+export type MethodToolKind = "construction" | "selection";
 
 export interface MethodTool {
   id: MethodToolId;
   label: string;
+  kind: MethodToolKind;
   status: "live" | "planned";
   /** One line: what this construction teaches. */
   teaches: string;
@@ -87,62 +104,62 @@ export interface MethodTool {
 
 export const METHOD_TOOLS: MethodTool[] = [
   {
-    id: "mccabe", label: "Distillation (McCabe-Thiele)", status: "live",
+    id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
     theory: "ch:distillation",
   },
   {
-    id: "psychro", label: "Psychrometric chart", status: "live",
+    id: "psychro", label: "Psychrometric chart", kind: "construction", status: "live",
     teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
     theory: "ch:drying",
   },
   {
-    id: "kremser", label: "Absorption (Kremser)", status: "live",
+    id: "kremser", label: "Absorption (Kremser)", kind: "construction", status: "live",
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
     theory: "ch:absorber",
   },
   {
-    id: "pinch-composite", label: "Pinch composite curves", status: "live",
+    id: "pinch-composite", label: "Pinch composite curves", kind: "construction", status: "live",
     teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
     theory: "ch:pinch",
   },
   {
-    id: "entu", label: "Heat exchanger (ε-NTU)", status: "live",
+    id: "entu", label: "Heat exchanger (ε-NTU)", kind: "construction", status: "live",
     teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
     theory: "ch:hx-entu",
   },
   {
-    id: "pump-system", label: "Pump vs system curve", status: "live",
+    id: "pump-system", label: "Pump vs system curve", kind: "construction", status: "live",
     teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
   },
   {
-    id: "merkel", label: "Cooling tower (Merkel)", status: "live",
+    id: "merkel", label: "Cooling tower (Merkel)", kind: "construction", status: "live",
     teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
     theory: "ch:coolingTower",
   },
   {
-    id: "rayleigh", label: "Batch still (Rayleigh)", status: "live",
+    id: "rayleigh", label: "Batch still (Rayleigh)", kind: "construction", status: "live",
     teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
     theory: "ch:rayleigh",
   },
   {
-    id: "levenspiel", label: "Reactor sizing (Levenspiel)", status: "live",
+    id: "levenspiel", label: "Reactor sizing (Levenspiel)", kind: "construction", status: "live",
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
   },
   {
-    id: "vanheerden", label: "Ignition / extinction (Van Heerden)", status: "live",
+    id: "vanheerden", label: "Ignition / extinction (Van Heerden)", kind: "construction", status: "live",
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
     theory: "ch:cstr",
   },
   {
-    id: "drying", label: "Drying curve (batch tray)", status: "live",
+    id: "drying", label: "Drying curve (batch tray)", kind: "construction", status: "live",
     teaches: "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
   },
   {
-    id: "breakthrough", label: "Adsorption breakthrough", status: "live",
+    id: "breakthrough", label: "Adsorption breakthrough", kind: "construction", status: "live",
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
     theory: "ch:adsorption",
   },
@@ -155,7 +172,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the id — and the fallback itself REFUSES BY NAME, so the trap that made
   //  the caution necessary is closed for every tool after this one.
   {
-    id: "hunter-nash", label: "Extraction (Hunter-Nash)", status: "live",
+    id: "hunter-nash", label: "Extraction (Hunter-Nash)", kind: "construction", status: "live",
     teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
     theory: "sec:hunter-nash",
     fedBy: "ui/methods/TieTriangleTool.tsx over "
@@ -166,6 +183,19 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "KPIs from tutorials/steady/absorption/extract01_ethanol_water_benzene.  "
       + "What is missing is the host dispatch in MethodsWorkspace.tsx (see the "
       + "comment above this entry), not an engine output.",
+  },
+  //  THE FIRST TOOL OF THE SELECTION KIND (heuristics-as-a-third-kind, ruled
+  //  2026-08-18).  It constructs nothing and shows no property surface: it
+  //  helps a reader CHOOSE a control structure among the several defensible
+  //  ways of doing it, which is the difficulty the owner reported.  Its
+  //  content is curated records under data/standards/heuristics/ — zero
+  //  heuristics in TypeScript, the standing "zero physics in TS" rule applied
+  //  to guidance.
+  {
+    id: "column-control", label: "Column control (structure & instruments)",
+    kind: "selection", status: "live",
+    teaches: "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
+    theory: "sec:column-control",
   },
 ];
 

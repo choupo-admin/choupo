@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE SENSITIVITY CRITERION for locating a temperature-control tray.
+
+  The criterion a control engineer reaches for rather than a designer: not
+  "where does the profile change fastest" but "where does the profile RESPOND
+  most to the handle I am going to turn".  It costs a second solve, which is
+  exactly why it belongs in a simulator and not on a ruler.
+
+  It carries a question the slope criterion does not have: WHICH manipulated
+  variable.  The answer moves with it, and Choupo's tool shows it moving.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       sensitivityCriterion;
+
+claim      "Locate the temperature-control tray where the temperature changes most for a small change in the manipulated variable the loop will use.";
+
+topics     ( traySelection );
+
+validity   "One manipulated variable perturbed at a time, by a step small enough that the response is still linear, with every other column specification held.";
+
+notCovered "It does not say WHICH manipulated variable, and the tray it selects depends on that choice -- so an answer quoted without naming the handle is incomplete.  It also says nothing about the size of the perturbation, about interaction with a second loop, or about what happens where the gain changes sign.";
+
+authority  primaryLiterature;
+source
+{
+    author       "W. L. Luyben";
+    year         2006;
+    title        "Evaluation of criteria for selecting temperature control trays in distillation columns";
+    publication  "Journal of Process Control, volume 16, pages 115-134 (2006)";
+    locus        "the article, which sets out the sensitivity criterion as one of the five it compares";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against publisher listings; the list of five criteria (slope, sensitivity, singular value decomposition, invariant temperature, minimum product variability) was returned by a literature search over the paper's own text.  The paper was NOT opened; no page inside 115-134 is claimed for this sentence.";
+}

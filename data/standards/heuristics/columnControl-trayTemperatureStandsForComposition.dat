@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  A TRAY TEMPERATURE STANDS IN FOR A COMPOSITION -- Choupo's own guidance,
+  quoted, and the premise the whole tray-selection question rests on.
+
+  Every "composition loop" drawn in the cross-section actually measures a
+  temperature.  If that substitution were not made, the question "which tray?"
+  would not exist -- so this record is the one that has to be read before the
+  computed diagnostic means anything.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       trayTemperatureStandsForComposition;
+
+claim      "Infer a column composition from a SENSITIVE TRAY TEMPERATURE rather than from a composition analyser: the analyser is slow and expensive, and the tray temperature tracks the composition.";
+
+topics     ( sensorPlacement traySelection );
+
+validity   "A column whose temperature profile is sensitive to the composition being controlled -- which is what makes 'sensitive tray' part of the rule rather than decoration.";
+
+notCovered "The substitution is exact only for a binary at fixed pressure.  With more than two components a tray temperature no longer fixes the composition, and the guide's own statement does not cover what to do then; nor does it cover a column whose pressure moves, where the temperature shifts with no composition change at all.";
+
+authority  choupoDesignGuide;
+source
+{
+    author       "see the guide's own title page -- docs/preamble.tex decides the authorship line, and this record does not copy its answer";
+    year         2026;
+    title        "Choupo Design Guide";
+    publication  "docs/designGuide.tex, section 'Process control & instrumentation heuristics'";
+    locus        "the pairing table's last row, and the paragraph beginning 'Distillation is the hard one'";
+    verification checkedCopy;
+    verificationNote "Read in the repository's own source of the guide.  Choupo's signed engineering judgement; the same substitution is recommended in the cited literature (see columnControl-lvWithFastTemperatureLoop.dat), which is a corroboration and not this record's authority.";
+}

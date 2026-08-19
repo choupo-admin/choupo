@@ -348,6 +348,28 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     diag_["I"]  = res.I;
     diag_["aw"] = res.aw;
     diag_["pH"] = res.pH;     // solved (electroneutrality) or echoed (given)
+
+    //  THE CHARGE THE ANSWER CARRIES, and why it belongs HERE rather than only
+    //  in the log.  The solver already computes it -- sum(z_i m_i) /
+    //  sum(|z_i| m_i) over the converged rows -- and prints it at verbosity >= 2
+    //  with its meaning attached.  It was reaching NO machine-readable surface:
+    //  not this map, so not the CSV, so not the result JSON, so no golden could
+    //  pin it and no reader could act on it without scraping stdout.
+    //
+    //  That matters most under an IMPOSED pH, which is the case that makes the
+    //  quantity interesting.  `pH <number>;` fixes a_H and DROPS H+'s mole
+    //  balance, so the solution is electrically neutral only because of a strong
+    //  acid or base that no total declares -- and this residual IS that implicit
+    //  titrant, in equivalents.  A distribution diagram drawn across pH is
+    //  drawn across a titration nobody wrote down; publishing the number is what
+    //  lets the picture say so with a measurement instead of a sentence.
+    //
+    //  `chargeImposed` travels WITH it and is not decoration: the same number
+    //  means "the titrant" when the pH was given and "the convergence residual
+    //  of electroneutrality" when it was solved, and those are different claims.
+    //  A value whose meaning depends on a mode must carry the mode.
+    diag_["chargeResidual"] = res.chargeResidual;
+    diag_["chargeImposed"]  = res.chargeImposed ? 1.0 : 0.0;
     //  D-R1 label (Vitor's condition 2): a result from a reduced model is
     //  identifiable in the golden-master surface too, not only the console.
     if (res.restrictedNetwork)

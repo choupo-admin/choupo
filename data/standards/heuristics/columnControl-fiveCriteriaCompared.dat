@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  FIVE CRITERIA WERE COMPARED, AND THE ONE THE COMPARISON PREFERS IS THE ONE
+  CHOUPO DOES NOT COMPUTE.
+
+  This record exists so that the two criteria the EduTools tool DOES compute
+  cannot be read as "the" answer.  It carries the comparison and its stated
+  conclusion, including the half that is inconvenient here: the paper favours
+  the singular-value-decomposition criterion, which needs a steady-state gain
+  matrix the engine does not publish (see NOT-SHIPPED.md 2 and 4).
+
+  WHAT THIS RECORD DELIBERATELY DOES NOT SAY.  It does not claim, in the
+  paper's name, that the criteria select DIFFERENT trays.  That sentence is a
+  plausible reading of why a comparison was needed, and a plausible reading is
+  not a citation.  What Choupo can say about disagreement it says as its OWN
+  observation, computed on the reader's own column and shown beside the two
+  answers -- an observation carries the run that produced it, and needs no
+  author.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       fiveCriteriaCompared;
+
+claim      "Five criteria are in print for choosing a temperature-control tray -- slope, sensitivity, singular value decomposition, invariant temperature and minimum product variability -- and the comparison that evaluated their effectiveness concluded that singular value decomposition is a simple and effective method.";
+
+topics     ( traySelection );
+
+validity   "Established over systems ranging from ideal binary to azeotropic multicomponent in the cited comparison.";
+
+notCovered "It does not make the other four criteria wrong, and it gives no rule for reconciling them when they disagree on a particular column.  Choupo computes two of the five and does not compute this one's recommendation, so nothing on this screen is that comparison's preferred answer.";
+
+authority  primaryLiterature;
+source
+{
+    author       "W. L. Luyben";
+    year         2006;
+    title        "Evaluation of criteria for selecting temperature control trays in distillation columns";
+    publication  "Journal of Process Control, volume 16, pages 115-134 (2006)";
+    locus        "the article's stated purpose and conclusion -- a quantitative comparison of the effectiveness of the five alternative criteria over systems from ideal binary to azeotropic multicomponent";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against publisher listings.  The five criteria and the conclusion favouring singular value decomposition were returned by a literature search over the paper's own abstract; the paper was NOT opened, so the conclusion is attributed to the abstract rather than to a numbered page.";
+}

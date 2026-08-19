@@ -1749,6 +1749,32 @@ PYEOF
     fi
     rm -f /tmp/pellet.$$
 
+    # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
+    # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
+    # engine solves the pellet BVP by central differences on NewtonND and
+    # publishes the field, eta and the modulus; the gate RECOMPUTES the closed
+    # form independently in Python rather than reading the engine's own
+    # analytic column back.
+    # Sabotage-verified six ways, and three changed something.  Making the
+    # scheme first order produced ONE line, not the five predicted: the gate
+    # printed "the witness did not run" and RETURNED, skipping every
+    # independent arm -- the same skip-past-an-unproven-arm shape found in
+    # check_pellet_announcement the day before.  Designing the wrong-analytic-
+    # eta sabotage exposed an arm that did not exist (nothing read the
+    # engine's ANALYTIC eta).  And two sabotages leave the witness at exit 0
+    # while a published number is wrong -- Lambda/L for a sphere off by 1.5x
+    # is invisible to the case and caught only by the independent
+    # recomputation, which is the argument for this gate existing at all.
+    if "$ROOT/bin/curate/check_thiele_pellet.py" > /tmp/thiele.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "thiele-pellet-gate" "$(tail -1 /tmp/thiele.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_thiele_pellet.py)\n" "thiele-pellet-gate"
+        cat /tmp/thiele.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/thiele.$$
+
     # verdict-parity gate (2026-08-11).  The Component Inspector draws the
     # curation dossier's five verdicts, so the vocabulary acquired three homes
     # -- verdictOf() in C++, a TS union, and the renderer's table -- and the

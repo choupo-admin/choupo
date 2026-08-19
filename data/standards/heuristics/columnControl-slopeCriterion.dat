@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE SLOPE CRITERION for locating a temperature-control tray.
+
+  The oldest and cheapest of the published criteria: read the converged
+  temperature profile and take the tray where it is steepest.  It is the one a
+  student can apply with a ruler, and it is the one Choupo computes first,
+  because the profile is already on the screen.
+
+  Choupo's EduTools column-control tool applies it in the source's own form --
+  the difference between ADJACENT trays, T(n+1) - T(n) -- and never as a
+  smoothed or central difference, because a smoothing convention is a second
+  definition of somebody else's criterion.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       slopeCriterion;
+
+claim      "Locate the temperature-control tray where the steady-state temperature difference between adjacent trays is largest.";
+
+topics     ( traySelection );
+
+validity   "A converged steady-state profile at a fixed column pressure.  The criterion is a screening rule read off one operating point.";
+
+notCovered "It says nothing about whether that tray's temperature actually MOVES when the manipulated variable moves -- a tray can sit on the steepest part of the profile and still have a small gain, or a gain that changes sign.  It also says nothing about which manipulated variable the loop will use, about pressure variation along the column, or about the temperature-composition ambiguity that appears once more than two components are present.";
+
+authority  primaryLiterature;
+source
+{
+    author       "W. L. Luyben";
+    year         2006;
+    title        "Evaluation of criteria for selecting temperature control trays in distillation columns";
+    publication  "Journal of Process Control, volume 16, pages 115-134 (2006)";
+    locus        "the article, whose subject is the comparison of five such criteria; the slope criterion is stated there as selecting trays with large steady-state temperature change based on T(n+1) - T(n)";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record (journal, volume, page range, year) corroborated against publisher listings.  The criterion's wording above was returned by a literature search over the paper's own text; the paper was NOT opened, so no single page inside the 115-134 range is claimed for the sentence.";
+}

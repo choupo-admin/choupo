@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE DB CONFIGURATION HAS AN INFINITE STEADY-STATE RELATIVE GAIN -- AND CAN BE
+  CONTROLLED ANYWAY.
+
+  The sharpest single fact in this whole subject, and the one that teaches the
+  lesson the ruling is after: a criterion can return a definite, dramatic,
+  wrong-looking number and still not settle the question, because it asked at
+  the wrong frequency.  A student who has met this once will never again read a
+  relative gain as a verdict.
+
+  Choupo does NOT compute a relative gain for the reader's column (NOT-SHIPPED.md
+  4).  This claim is carried as literature and marked as such.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       steadyStateRgaMisleads;
+
+claim      "Selecting a configuration on the steady-state relative gain can mislead: the DB configuration has an infinite steady-state relative gain and can still be controlled well, because its high-frequency relative gain is close to one -- so the judgement belongs to the initial response, not to the steady state.";
+
+stances
+(
+    { structure DB; stance favours; }
+);
+topics     ( interaction );
+
+validity   "Two-point composition control, judged by frequency-dependent relative-gain analysis with optimal PI controllers, on the columns of the cited study.";
+
+notCovered "It does not say the DB configuration is a good choice, only that the steady-state number is not the reason to reject it.  It does not tell a designer which frequency to look at on their own column, and Choupo computes no relative gain at all, at any frequency.";
+
+authority  primaryLiterature;
+source
+{
+    author       "S. Skogestad, P. Lundstrom and E. W. Jacobsen";
+    year         1990;
+    title        "Selecting the best distillation control configuration";
+    publication  "AIChE Journal, volume 36, issue 5, pages 753-764 (1990)";
+    locus        "the article's argument about the steady-state relative gain and its conclusion that controller decisions should be based on the initial response; a page inside 753-764 is NOT claimed";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record (journal, volume, issue, page range, year) corroborated against the publisher's listing.  The claim was returned by a literature search over the paper's own abstract; the document was NOT opened.";
+}

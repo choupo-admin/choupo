@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  THE PLACEMENT RULE: pair the sensor with a flow at ITS OWN END.
+
+  This is the rule that makes the cross-section worth drawing.  A tray
+  temperature in the stripping section belongs to the boilup, one in the
+  rectifying section belongs to the reflux -- and when the tray a numerical
+  criterion selects sits at the far end from the handle the reader chose, the
+  drawing shows a signal line running the length of the column, which is the
+  defect made visible.
+\*---------------------------------------------------------------------------*/
+
+recordType controlHeuristic;
+domain     distillationControl;
+name       sensorAndFlowSameEnd;
+
+claim      "Use a flow at the SAME END of the column as the temperature sensor, and avoid a temperature loop whose manipulated flow can saturate -- control is then lost and setpoints from the layer above cannot be followed.";
+
+stances
+(
+    { structure LV;            stance favours; }
+    { structure singleEndedLV; stance favours; }
+);
+topics     ( sensorPlacement traySelection );
+
+validity   "A single-loop temperature controller inside a two-product column, under the plantwide framework of the cited article.";
+
+notCovered "It does not say WHICH tray at that end, so it constrains the answer without producing one -- it is a filter over the numerical criteria, not a substitute for them.  It says nothing about a column controlled from both ends at once, and nothing about how close to the end 'the same end' means.";
+
+authority  primaryLiterature;
+source
+{
+    author       "S. Skogestad";
+    year         2007;
+    title        "The dos and don'ts of distillation column control";
+    publication  "Chemical Engineering Research and Design, volume 85 (A1), pages 13-23 (2007)";
+    locus        "the article's guidelines on the temperature loop; a page inside 13-23 is NOT claimed";
+    verification searchIndexQuotation;
+    verificationNote "Bibliographic record corroborated against publisher listings.  Both halves of the claim -- 'an input (flow) in the same end as the temperature sensor should be used' and the warning about input saturation -- were returned in the paper's own words by a literature search over the author's own copy.  The document was NOT opened and the sentences could not be located on a numbered page.";
+}

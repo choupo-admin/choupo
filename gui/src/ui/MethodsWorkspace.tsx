@@ -184,6 +184,8 @@ const DryingCurveTool = lazy(() =>
   import("./methods/DryingCurveTool.js").then((m) => ({ default: m.DryingCurveTool })));
 const TieTriangleTool = lazy(() =>
   import("./methods/TieTriangleTool.js").then((m) => ({ default: m.TieTriangleTool })));
+const ColumnControlTool = lazy(() =>
+  import("./methods/ColumnControlTool.js").then((m) => ({ default: m.ColumnControlTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -343,6 +345,7 @@ export function MethodsWorkspace() {
             : tool === "drying" ? <DryingCurveTool />
             : tool === "breakthrough" ? <BreakthroughTool />
             : tool === "hunter-nash" ? <TieTriangleTool />
+            : tool === "column-control" ? <ColumnControlTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

@@ -65,6 +65,11 @@ import { theoryUrl } from "../case/exploreTheory.js";
 import { hasPair } from "../case/pairsCatalogue.js";
 import { solidPhaseFor } from "../case/solidPhaseData.js";
 import { mergeTernaryCsvs, workerCount } from "../case/ternaryParallel.js";
+import {
+  BJERRUM_FAMILIES, bjerrumChunks, bjerrumEngineNotes, bjerrumOutput, bjerrumPhGrid,
+  familyById, mergeBjerrumCsvs, parseChargeResiduals, parseRefusalPoint,
+} from "../case/bjerrumSweep.js";
+import { BjerrumPlot } from "./plotting/BjerrumPlot.js";
 import { familyForProperty, mergeMethodCsvs, methodSpread, specForModel } from "../case/methodCompare.js";
 import { PLOT_COLORS } from "./plotting/plotly.js";
 import { useStore } from "../state/store.js";
@@ -114,6 +119,13 @@ const PLOT_TYPES: PlotType[] = [
   // solvent); the ions are set in the analysis panel, not the compound set.
   { id: "scaling", label: "Scaling (SI vs recovery)", min: 1, max: 99, vle: false,
     why: "select water + a dissolved electrolyte (e.g. NaCl) — RO-scaling needs ions" },
+  // Species distribution vs pH — the Bjerrum plot (ruled into EXPLORE, not
+  // EduTools, 2026-08-18: a distribution diagram shows what a system IS, not a
+  // construction a student performs).  One `speciate` op per pH point over the
+  // curated chemistry network; the acid/base FAMILY is picked in the lens
+  // panel, like the scaling analysis, because a master ion is not a component.
+  { id: "bjerrum", label: "Species distribution vs pH (Bjerrum)", min: 1, max: 99, vle: false,
+    why: "select water (alone, or with a dissolved salt) — aqueous speciation needs the solvent" },
   // Gibbs equilibrium map (forum 2026-07-02): iso-lines of equilibrium
   // composition over T x P — why industrial reactors fix T and P.
   { id: "gibbsmap", label: "Equilibrium map (Gibbs)", min: 2, max: 12, vle: false,
@@ -131,7 +143,7 @@ const PLOT_TYPES: PlotType[] = [
 const LENS_SHORT: Record<PlotKind, string> = {
   scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
-  scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap",
+  scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap", bjerrum: "Bjerrum",
 };
 
 // PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
@@ -348,6 +360,36 @@ export function ExploreWorkspace() {
   const [scalingEquil, setScalingEquil] = useState(false);
   // Optional feed flow [m3/h] -> the kg/day scale-rate column (only with equil).
   const [scalingFeedFlow, setScalingFeedFlow] = useState(10);
+
+  // ---- Species distribution vs pH (Bjerrum) state --------------------------
+  // The FAMILY is a master ion of the curated speciation network, not a
+  // flowsheet component, so it lives here beside the scaling analysis rather
+  // than in the compound rail.  `bjTotal` is the master's total [mol/kg water]
+  // — under an OPEN atmosphere the engine announces that it is only an initial
+  // guess, because the pin then decides that total.
+  const [bjFamily, setBjFamily] = useState(BJERRUM_FAMILIES[0]!.id);
+  const [bjTotal, setBjTotal] = useState(BJERRUM_FAMILIES[0]!.total);   // mol/kg
+  // The salt's counter-ion, as a second `totals {}` entry.  Its DEFAULT makes
+  // the feed the neutral salt the family's note names; the number is the
+  // reader's to change, and setting it to 0 declares a bare master ion — which
+  // pins the net charge at a whole equivalent everywhere, honestly and
+  // uselessly.  See BjerrumFamily.counter for why it is offered.
+  const [bjCounter, setBjCounter] = useState(
+    (BJERRUM_FAMILIES[0]!.counter?.perMaster ?? 0) * BJERRUM_FAMILIES[0]!.total);
+  const [bjPhFrom, setBjPhFrom] = useState(2);
+  const [bjPhTo, setBjPhTo] = useState(12);
+  const [bjT, setBjT] = useState(298.15);                               // K
+  const [bjOpen, setBjOpen] = useState(false);
+  const [bjPgas, setBjPgas] = useState(4.2e-4);                         // atm
+  // What the last sweep actually delivered.  Counts, not booleans: "38 of 41
+  // points answered" and "41 of 41" are different facts, and so are "the
+  // titrant was measured at every point" and "at some".  `refusals` quotes the
+  // engine verbatim — a band the model refused is a STATED gap in the diagram,
+  // never a silently shortened curve.
+  const [bjRun, setBjRun] = useState<{
+    points: number; total: number; charged: number;
+    refusals: { pH: number; message: string }[];
+  } | null>(null);
 
   // ---- Gibbs equilibrium map state ----------------------------------------
   const [gmFeed, setGmFeed] = useState<{ [c: string]: number }>({});
@@ -625,6 +667,34 @@ export function ExploreWorkspace() {
       };
     }
 
+    if (plotType === "bjerrum") {
+      // The `speciate` op, once per pH point: the family's master ion lives in
+      // the op's `totals {}` (the analysis), NOT in the component set — water
+      // alone is the thermoPackage, exactly as the corpus carbonate cases are
+      // (tutorials/props/electrolyte/rainwater_air declares `components
+      // ( water )`).  The chemistry network resolves engine-side from the
+      // embedded data/standards/chemistry/ records.
+      const fam = familyById(bjFamily);
+      return {
+        components: ["water"],
+        properties: [],
+        axis: { variable: "T", from: 0, to: 1, n: 2 },   // unused
+        state: { composition: { water: 1 } },
+        bjerrum: {
+          master: fam.master,
+          total: bjTotal,
+          ...(fam.counter && bjCounter > 0
+            ? { counter: { species: fam.counter.species, total: bjCounter } } : {}),
+          pHfrom: bjPhFrom, pHto: bjPhTo, n: Math.max(2, Math.round(nPts)),
+          T: bjT,
+          // The atmosphere knob only exists for a family the gas-liquid
+          // catalogue can pin; a family without one keeps the closed system.
+          ...(bjOpen && fam.gas ? { atmosphere: { gas: fam.gas, pAtm: bjPgas } } : {}),
+        },
+        ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
+      };
+    }
+
     if (plotType === "steam") {
       // The steamTables op: IF97 is a water-only formulation — the op ignores
       // the thermoPackage models entirely; water alone is the component set.
@@ -738,7 +808,8 @@ export function ExploreWorkspace() {
       ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
     };
   }, [selected, plotType, property, axisVar, tFrom, tTo, pFrom, pTo, nPts, tieStride, fixedP, fixedT, eos, transportModel, activity, ionTotals, scalingPHMode, scalingPH, scalingAtm, scalingPCO2, scalingT, scalingActivity, scalingEquil, scalingFeedFlow, recFrom, recTo, steamMode, satFrom, satTo, isoFrom, isoTo, steamP, localUnifac, localComponentFiles, hasLocal,
-    gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmDeltaT, catalogue]);
+    gmFeed, gmTfrom, gmTto, gmPfrom, gmPto, gmMetricSp, gmDefaultSpecies, gmDeltaT, catalogue,
+    bjFamily, bjTotal, bjCounter, bjPhFrom, bjPhTo, bjT, bjOpen, bjPgas]);
 
   const snippet = useMemo(() => {
     try { return serialize(fromJson(synthesizeExploreCase(spec).propsDict!)); }
@@ -799,6 +870,66 @@ export function ExploreWorkspace() {
       }
       setCompareInfo(null);
 
+      // Species distribution vs pH: N `speciate` operations, N CSVs, run in a
+      // few contiguous BLOCKS.  The engine has no pH-sweep op, so the sweep IS
+      // the operation list; the worker harvests every *.csv the run left in
+      // MEMFS and the merge in case/bjerrumSweep.ts reshapes them.  The blocks
+      // exist because a non-converging point is FATAL for its whole process and
+      // the worker harvests nothing from a non-zero exit — see bjerrumChunks
+      // for why that point is easy to reach and is not a bug.  Its own branch
+      // because the rest of run() assumes exactly one output file.
+      if (plotType === "bjerrum" && spec.bjerrum) {
+        const b = spec.bjerrum;
+        const grid = bjerrumPhGrid(b.pHfrom, b.pHto, b.n);
+        const blocks = bjerrumChunks(grid.length);
+        const results = await Promise.all(blocks.map((blk) =>
+          resolved.adapter.run(
+            synthesizeExploreCase({ ...spec, bjerrum: {
+              ...b,
+              pHfrom: grid[blk.lo]!, pHto: grid[blk.hi - 1]!,
+              n: blk.hi - blk.lo, indexFrom: blk.lo,
+            } }),
+            () => {}, ctrl.signal, "choupoProps")));
+        if (seq !== runSeq.current) return;
+
+        const pts: { pH: number; csv: string; netCharge: number | null }[] = [];
+        const refusals: { pH: number; message: string }[] = [];
+        const notes: string[] = [];
+        results.forEach((r, bi) => {
+          const blk = blocks[bi]!;
+          //  READ, never computed: the charge residual the engine prints beside
+          //  every imposed-pH answer.  Operation indices restart per block, so
+          //  the parse is per block and mapped back through blk.lo.
+          const q = parseChargeResiduals(r.log, blk.hi - blk.lo);
+          for (let k = blk.lo; k < blk.hi; ++k) {
+            const csvText = r.csvFiles?.[bjerrumOutput(k)] ?? "";
+            if (csvText.trim().length === 0) continue;
+            pts.push({ pH: grid[k]!, csv: csvText, netCharge: q[k - blk.lo] ?? null });
+          }
+          const ref = parseRefusalPoint(r.log);
+          if (ref) refusals.push(ref);
+          notes.push(...bjerrumEngineNotes(r.log));
+        });
+        pts.sort((a, c) => a.pH - c.pH);
+        setBjRun({ points: pts.length, total: grid.length,
+                   charged: pts.filter((p) => p.netCharge !== null).length,
+                   refusals });
+        //  The engine's own sentences (K(T) route, activity-model scope, the
+        //  pH-scale statement, the Henry pin, every advisory), deduplicated —
+        //  the sweep prints each of them once PER POINT and once per block.
+        setOpAdvisories([...new Set(notes)]);
+        const merged = mergeBjerrumCsvs(pts);
+        if (merged) { setCsv(merged); setErr(null); }
+        else {
+          setCsv(null);
+          setErr(refusals.length > 0
+            ? `The engine answered none of the ${grid.length} points.  ${refusals[0]!.message}`
+            : "No species table came back from any point of the sweep.");
+        }
+        return;
+      }
+      setBjRun(null);
+
       let out: string | undefined;
       let notDone = false;
       let failureDetail: string | undefined;
@@ -854,7 +985,7 @@ export function ExploreWorkspace() {
       if (seq === runSeq.current) setBusy(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spec, activeReason, property, comparing, compareOn, compareModels, cmpFam]);
+  }, [spec, activeReason, property, comparing, compareOn, compareModels, cmpFam, plotType]);
 
   // Switching plot type clears the chart immediately: each plot kind owns a
   // DIFFERENT CSV schema (a scan is `T,prop`, psychro is `T_C,Y,curve`).  If a
@@ -900,7 +1031,11 @@ export function ExploreWorkspace() {
   // Components that can't yield the chosen pure property (so their curve won't
   // appear) — surfaced as a note instead of a silent gap.  Only Psat is
   // pre-checkable from the catalogue (vleAble = has vapour pressure).
-  const skipped = (!isVle && plotType !== "scaling" && property === "Psat")
+  // `bjerrum` joins `scaling` in the exemption for the same reason: neither
+  // lens reads the scan property at all, so listing the compounds that have no
+  // vapour pressure would be a warning about a curve nobody asked for.
+  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum"
+                   && property === "Psat")
     ? selected.filter((c) => !(metaByName(c, catalogue)?.vleAble ?? false))
     : [];
 
@@ -967,7 +1102,12 @@ export function ExploreWorkspace() {
   // The honesty footer re-expands whenever a NEW alert appears (an error,
   // advisory, or model-lie warning), so a folded footer never SWALLOWS a fresh
   // honesty signal — the student always SEES the new flag.
-  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy || plotType === "gibbsmap";
+  // `bjerrum` joins the list for the same reason `gibbsmap` did: its footer
+  // carries a standing statement (what the imposed pH costs in charge, and
+  // whether that cost was measured or only asserted), not an occasional alarm —
+  // and a folded footer must never be where that statement first appears.
+  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy
+    || plotType === "gibbsmap" || (plotType === "bjerrum" && !!bjRun);
   useEffect(() => { if (hasAlert) setFooterOpen(true); }, [hasAlert]);
 
   // context: which model pickers are physically relevant for the active plot
@@ -1007,6 +1147,28 @@ export function ExploreWorkspace() {
           ? ` Equilibrium ON: ${SCALING_EQUIL_MINERALS.join(", ")} driven to SI = 0 — plot SIeq_<m> (clamped) or scale_<m> (the deposit curve${scalingFeedFlow > 0 ? ", kgday_<m> rated by feed flow" : ""}). EQUILIBRIUM CEILING — the thermodynamic maximum, NOT a kinetic deposit prediction.`
           : ""
       }`
+    : plotType === "bjerrum"
+    // WHAT THE PICTURE CLAIMS.  The one thing this lens must say is that its
+    // x-axis is an INPUT: `pH` carries two meanings and the `speciate` op's own
+    // grammar separates them.  `pH solve;` makes it a RESULT of
+    // electroneutrality; a NUMBER imposes it, and imposing a pH asserts a
+    // strong acid or base nobody declared, supplying the charge that closes the
+    // balance.  The classical Bjerrum plot is drawn exactly the second way —
+    // drawing it without saying so is the defect, and it is the same class as
+    // the reduced-identity and η = 1 silences: a declared fact the reader never
+    // meets.  Said HERE and on the x-axis (BjerrumPlot); the axis carries the
+    // short form because that is what a reader is looking at.
+    ? `Species distribution vs pH — one \`speciate\` run per point over the curated `
+      + `chemistry network, at ${kToDisplay(bjT, Tu).toFixed(1)} ${temperatureLabel(Tu)}. `
+      + `THE pH IS IMPOSED, not solved: \`pH <number>;\` fixes a_H = 10^-pH and drops H⁺'s `
+      + `mole balance, so the solution is NOT neutral by itself — it is neutral because of `
+      + `an implicit strong acid or base that no total declares. `
+      + `${bjRun && bjRun.charged === bjRun.points && bjRun.points > 0
+          ? "The dashed curve on the right axis IS that titrant: the engine's own charge residual Σz·m / Σ|z|·m over the answer's species (positive ⇒ the acid's anion is missing, negative ⇒ the base's cation is).  Where it CROSSES ZERO no titrant is needed — that pH is the one `pH solve;` would have returned for this feed, so the two closures meet at a point you can read off the picture. "
+          : "The engine's per-point charge residual could not be read from this run, so the titrant is stated but not measured here — see the footer. "}`
+      + `Switch to \`pH solve;\` (the Scaling lens, or an authored case) to see the other `
+      + `closure, where the pH is the answer instead of the question. `
+      + `${familyById(bjFamily).note}.`
     : plotType === "steam"
     ? steamMode === "saturation"
       ? `Saturated-steam table — IAPWS-IF97 (R7-97(2012)), the industrial water formulation; regions 1/2 evaluated ON the region-4 saturation line (valid 0.01–350 °C). Mass-basis SI columns; pick the property family above.`
@@ -1322,6 +1484,103 @@ export function ExploreWorkspace() {
               </ToolMenu>
             </>
           )}
+          {plotType === "bjerrum" && (() => {
+            const fam = familyById(bjFamily);
+            return (
+              <>
+                {/* The FAMILY stays INLINE, on the same rule that keeps the
+                    Davies/Pitzer segment inline: it FORKS the curve (a
+                    different acid, a different set of bands, different
+                    crossings), and seeing the fork is the lesson.  Everything
+                    else folds into the popover so the one toolbar row cannot
+                    grow a second (gui-credo §3, the no-rebloat invariant). */}
+                {/* w=170 so the ONE toolbar row cannot be pushed into a second
+                    by a long family name; the full label is in the dropdown,
+                    the tooltip and the caption.  The comment sits OUTSIDE the
+                    Tooltip on purpose: Mantine's Tooltip takes exactly one
+                    child. */}
+                <ToolField label="family">
+                  <Tooltip label={`${fam.label} — ${fam.note}`} multiline w={300} withArrow openDelay={300}>
+                  <Select size="xs" w={170} allowDeselect={false}
+                    data={BJERRUM_FAMILIES.map((f) => ({ value: f.id, label: f.label }))}
+                    value={bjFamily}
+                    onChange={(v) => {
+                      const next = familyById(v ?? bjFamily);
+                      setBjFamily(next.id);
+                      setBjTotal(next.total);
+                      setBjCounter((next.counter?.perMaster ?? 0) * next.total);
+                      if (!next.gas) setBjOpen(false);   // no gas -> no open system
+                    }} />
+                  </Tooltip>
+                </ToolField>
+                <ToolMenu label="analysis"
+                  value={`${fam.master} · pH ${bjPhFrom}–${bjPhTo}`}
+                  wide
+                  tip="the family's MASTER total, the pH range the sweep imposes, the temperature every point is solved at, and (where a gas can pin the family) the open-system partial pressure">
+                  <Stack gap="xs" w={340}>
+                    <Tooltip multiline w={320} withArrow
+                      label="The total of the master ion the family is declared through — the same `totals { … }` entry an authored speciate case carries, on the mandatory mol/kg water basis.  Under an OPEN atmosphere the Henry pin REPLACES this mole balance and the engine says so: the entry is then only an initial guess.">
+                      <NumberInput label={`total ${fam.master} (mol/kg water)`}
+                        value={bjTotal} min={0} step={1e-3} decimalScale={6}
+                        onChange={(v) => setBjTotal(Math.max(0, num(v, bjTotal)))} />
+                    </Tooltip>
+                    {fam.counter && (
+                      <Tooltip multiline w={340} withArrow
+                        label={`A second totals{} entry, nothing more.  A master ion declared alone is a bare charge, so the answer's net charge sits at one whole equivalent at EVERY pH and the titrant curve teaches nothing.  Declare the counter-ion the salt actually brings and the curve CROSSES ZERO — and the pH where it crosses is the pH \`pH solve;\` would have returned for this feed.  The default makes the feed ${fam.counter.salt}; the number is yours to change, and 0 declares the bare ion.`}>
+                        <NumberInput
+                          label={`counter-ion ${fam.counter.species} (mol/kg) — default = ${fam.counter.salt}`}
+                          value={bjCounter} min={0} step={1e-3} decimalScale={6}
+                          onChange={(v) => setBjCounter(Math.max(0, num(v, bjCounter)))} />
+                      </Tooltip>
+                    )}
+                    <Group gap="xs" grow>
+                      <NumberInput label="pH from" value={bjPhFrom} min={0} max={14} step={0.5}
+                        onChange={(v) => setBjPhFrom(num(v, bjPhFrom))} />
+                      <NumberInput label="to" value={bjPhTo} min={0} max={14} step={0.5}
+                        onChange={(v) => setBjPhTo(num(v, bjPhTo))} />
+                    </Group>
+                    {/* 0–100 °C on purpose: the range CROSSES declared validity
+                        bands (each equilibrium's K(T) route, the activity
+                        model's own trust band), and the engine announces every
+                        crossing.  The announcements are lifted into the honesty
+                        footer, which turns the range from a hazard into the
+                        demonstration of numerical honesty it is. */}
+                    <Tooltip multiline w={320} withArrow
+                      label="0–100 °C crosses the declared validity bands: each equilibrium's K(T) is analytic, van't Hoff or held at 25 °C, and the activity model states its own trust range.  The engine announces all of it — read the footer below the plot, it is not decoration.">
+                      <NumberInput label={`T (${temperatureLabel(Tu)})`}
+                        value={Number(kToDisplay(bjT, Tu).toFixed(2))}
+                        min={kToDisplay(273.15, Tu)} max={kToDisplay(373.15, Tu)}
+                        onChange={(v) => setBjT(parseTemperature(num(v, kToDisplay(bjT, Tu)), Tu))} />
+                    </Tooltip>
+                    {fam.gas ? (
+                      <>
+                        <Tooltip multiline w={320} withArrow
+                          label={`open: the solution equilibrates with ${fam.gas}(g) by Henry's law — the pinned family's total stops being an input and becomes a solved OUTCOME (the engine announces which mole balance the pin replaced).  closed: the total above is held.`}>
+                          <Select label="system" allowDeselect={false}
+                            data={[
+                              { value: "closed", label: "closed — total held" },
+                              { value: "open", label: `open — ${fam.gas}(g) pins the family` },
+                            ]}
+                            value={bjOpen ? "open" : "closed"}
+                            onChange={(v) => setBjOpen(v === "open")} />
+                        </Tooltip>
+                        {bjOpen && (
+                          <NumberInput label={`p(${fam.gas}) (atm)`} value={bjPgas} min={0}
+                            step={1e-4} decimalScale={8}
+                            onChange={(v) => setBjPgas(Math.max(0, num(v, bjPgas)))} />
+                        )}
+                      </>
+                    ) : (
+                      <Text size="xs" c="dimmed">
+                        No gas in the gas–liquid catalogue pins this family, so the
+                        system is closed and the total above is held.
+                      </Text>
+                    )}
+                  </Stack>
+                </ToolMenu>
+              </>
+            );
+          })()}
           {plotType === "steam" && (() => {
             // Per-mode T range (different defaults + validity), shared inputs.
             // The mode (saturation|isobar) FORKS the table schema, so it stays
@@ -1445,6 +1704,7 @@ export function ExploreWorkspace() {
                   onChange={(v) => setNPts(num(v, nPts))} w={260} min={2}
                   description={isTernary ? "more = finer triangle, slower"
                     : plotType === "scaling" ? "recovery points across the scan"
+                    : plotType === "bjerrum" ? "pH points — ONE speciate run each"
                     : "samples along the axis"} />
                 {plotType === "ternaryLle" && (
                   <NumberInput label="tie-line stride" value={tieStride}
@@ -1516,6 +1776,15 @@ export function ExploreWorkspace() {
                 // lever rule gives V/F — pure TS, no WASM re-solve.
                 <FlashPlot csv={dropCsvColumn(csv, "liquid_stable")}
                   compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
+              ) : plotType === "bjerrum" && spec.bjerrum ? (
+                // Its own renderer, not CsvAutoPlot: the generic 1-D scan can
+                // draw these curves but cannot say on the axis that its x is an
+                // IMPOSED input, which is this picture's whole lesson.
+                <BjerrumPlot csv={csv} family={familyById(bjFamily).label}
+                  T={spec.bjerrum.T} master={spec.bjerrum.master}
+                  open={spec.bjerrum.atmosphere
+                    ? { gas: spec.bjerrum.atmosphere.gas, pAtm: spec.bjerrum.atmosphere.pAtm }
+                    : null} />
               ) : plotType === "gibbsmap" && spec.gibbsmap ? (
                 <GibbsMapPanel
                   op={{
@@ -1603,9 +1872,81 @@ export function ExploreWorkspace() {
           if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
           if (activeReason) alerts.push(<Alert key="reason" color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>);
           if (opAdvisories.length > 0) alerts.push(
-            <Alert key="adv" color="yellow" variant="light" title="Solver advisory">
+            <Alert key="adv" color="yellow" variant="light"
+              // The Bjerrum sweep lifts MORE than advisories: which K(T) route
+              // each equilibrium took over the 0–100 °C range, the activity
+              // model's own trust band, the scale the imposed pH is READ on,
+              // the Henry pin.  Calling all of that "Solver advisory" would
+              // under-title the honest half and over-title the routine half.
+              title={plotType === "bjerrum"
+                ? "What the engine announced (each line once — the sweep prints it per point)"
+                : "Solver advisory"}>
               {opAdvisories.map((a) => (<Text key={a} size="xs">{a}</Text>))}
             </Alert>);
+          if (plotType === "bjerrum" && bjRun) {
+            //  THE MEASUREMENT BESIDE THE CLAIM — or its absence, said plainly.
+            //  The engine DOES compute the imposed-pH charge residual
+            //  (SpeciationSolver::solve, `out.chargeResidual`) and prints it at
+            //  verbosity >= 2, but `Speciate::run` copies only I / aw / pH into
+            //  the operation diagnostics — so it reaches neither the CSV nor
+            //  the result JSON, and this lens reads it off the log.  When the
+            //  read is partial the curve is NOT drawn: a titrant curve covering
+            //  some of the points would be a worse claim than none.
+            const measured = bjRun.points > 0 && bjRun.charged === bjRun.points;
+            //  Nothing answered => nothing to say about the titrant; the error
+            //  banner and the refusal alert below carry that run on their own.
+            if (bjRun.points > 0) alerts.push(measured
+              ? (
+                <Alert key="titrant" color="blue" variant="light"
+                  title="The implicit titrant, measured">
+                  <Text size="xs">
+                    Every one of the {bjRun.points} answered points carries the engine's
+                    own charge balance on the answer, Σz·m / Σ|z|·m — the dashed curve on
+                    the right axis.  It is not zero because nothing forced it to be:
+                    with the pH imposed, H⁺ is known and its mole balance is dropped,
+                    so the net charge is whatever the analysis carries.  That charge is
+                    the strong acid or base the diagram assumes and no total declares.
+                    Read off the LOG, not the result: the solver computes this number
+                    and prints it, but the <Code>speciate</Code> op publishes only I,
+                    a_w and pH as diagnostics — the residual reaches no machine-readable
+                    surface (an engine gap, not a view choice).
+                  </Text>
+                </Alert>
+              )
+              : (
+                <Alert key="titrant" color="orange" variant="light"
+                  title="The implicit titrant is stated, NOT measured here">
+                  <Text size="xs">
+                    The engine's charge balance on the answer was read for {bjRun.charged} of
+                    the {bjRun.points} answered points, so the titrant curve is not drawn — a
+                    curve over some of the points would claim more than was read.  The
+                    number exists (<Code>SpeciationSolver</Code> computes Σz·m / Σ|z|·m and
+                    prints it beside every imposed-pH answer) but the <Code>speciate</Code> op
+                    publishes only I, a_w and pH as diagnostics, so this view has nothing to
+                    read but the log.  Nothing here recomputes it from the species list.
+                  </Text>
+                </Alert>
+              ));
+            //  A REFUSED BAND IS A STATED GAP, never a quietly shortened curve.
+            //  A point the model cannot answer is fatal for its whole block, so
+            //  the diagram loses that band — and the reader is told how many
+            //  points, from where, in the engine's own sentence.
+            if (bjRun.points < bjRun.total) alerts.push(
+              <Alert key="bjgap" color="yellow" variant="light"
+                title={`The model refused ${bjRun.total - bjRun.points} of ${bjRun.total} points — the diagram stops where it does`}>
+                <Text size="xs">
+                  {bjRun.refusals.length > 0
+                    ? <>The first refusal was at pH {bjRun.refusals[0]!.pH}: “{bjRun.refusals[0]!.message}”.  </>
+                    : <>The run returned no species table for those points and named no reason.  </>}
+                  This is usually the model meeting its own limit rather than a
+                  fault: an imposed pH far from neutrality asks for a mole of
+                  strong acid or base per kilogram, the ionic strength leaves the
+                  activity model’s band, and at 100 °C, where K<sub>w</sub> is
+                  10<sup>−12.24</sup>, pH 14 is not a solution at all.  Narrow the
+                  pH range, or move the temperature back toward 25 °C.
+                </Text>
+              </Alert>);
+          }
           if (idealLieWarning) alerts.push(
             <Alert key="ideal" color="orange" variant="light" title="Assuming ideal mixing — not your real system">
               <Text size="xs">{idealLieWarning}</Text>

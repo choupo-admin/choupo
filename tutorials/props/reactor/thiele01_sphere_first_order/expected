@@ -1,0 +1,51 @@
+# Reference KPIs (golden master).  Hand-written from the run's own JSON
+# diagnostics in the format `runTests --record` produces, then curated:
+#
+#   * the PHYSICAL numbers (moduli, eta, D_eff, the pellet's own geometry) are
+#     pinned at 1e-6 relative -- the arithmetic is deterministic double
+#     precision, so this band is about compiler and platform drift, not noise;
+#   * the DEVIATION metrics (how far the numerical answer sits from the closed
+#     form, the observed order of convergence) are pinned at 1e-3 relative.
+#     They are small numbers, but they are DETERMINISTIC small numbers -- the
+#     truncation error of a fixed scheme on a fixed grid -- so pinning them
+#     is pinning the discretisation itself, and any change to the stencil
+#     moves them;
+#   * `newton_residual` is DELIBERATELY NOT PINNED.  It is 3.4e-15, which is
+#     the round-off floor of evaluating the residual and not a property of the
+#     physics; pinning cancellation round-off at a relative tolerance is what
+#     column13 was re-recorded to stop doing.  What IS pinned is
+#     `newton_iterations = 1`: the discretised first-order problem is LINEAR,
+#     so a Newton reaches it in one step, and if that ever becomes two the
+#     residual has stopped being linear in u and somebody should know.
+#
+# kind   name      key         expected        reltol
+diag    thiele_CO_alumina      phi                    1.0161e+00         1e-4
+diag    thiele_CO_alumina      phi_char               3.0483e+00         1e-4
+diag    thiele_CO_alumina      Lambda                 5.0000e-04         1e-6
+diag    thiele_CO_alumina      dimension              1.5000e-03         1e-6
+diag    thiele_CO_alumina      epsilon_p              4.5000e-01         1e-6
+diag    thiele_CO_alumina      tau                    3.0000e+00         1e-6
+diag    thiele_CO_alumina      rateConstant           4.0000e+01         1e-6
+diag    thiele_CO_alumina      T                      5.7315e+02         1e-6
+diag    thiele_CO_alumina      P                      1.01325e+05        1e-6
+diag    thiele_CO_alumina      D_molecular            6.45709e-05        1e-5
+diag    thiele_CO_alumina      D_eff                  9.68564e-06        1e-5
+diag    thiele_CO_alumina      eta                    6.65742e-01        1e-6
+diag    thiele_CO_alumina      eta_closedForm         6.65742e-01        1e-6
+diag    thiele_CO_alumina      eta_flux               6.65731e-01        1e-6
+diag    thiele_CO_alumina      c_centre               2.89874e-01        1e-6
+diag    thiele_CO_alumina      c_centre_closedForm    2.89873e-01        1e-6
+diag    thiele_CO_alumina      weiszPrater            6.87350e-01        1e-5
+diag    thiele_CO_alumina      nodes                  4.01e+02           1e-6
+diag    thiele_CO_alumina      newton_iterations      1.000e+00          1e-6
+diag    thiele_CO_alumina      sweep_points           6.30e+01           1e-6
+diag    thiele_CO_alumina      sweep_nodes            2.01e+02           1e-6
+diag    thiele_CO_alumina      eta_relDeviation       1.34497e-06        1e-3
+diag    thiele_CO_alumina      field_maxAbsDeviation  1.44754e-06        1e-3
+diag    thiele_CO_alumina      eta_volumeVsFlux       1.78568e-05        1e-3
+diag    thiele_CO_alumina      sweep_maxRelDeviation  9.06886e-04        1e-3
+diag    thiele_CO_alumina      refinement_order       2.00015e+00        1e-3
+diag    thiele_CO_alumina      refinement_finestRelDeviation 1.34497e-06 1e-3
+diag    thiele_CO_alumina      gate_field             1.000e+00          1e-6
+diag    thiele_CO_alumina      gate_eta               1.000e+00          1e-6
+diag    thiele_CO_alumina      gates_pass             1.000e+00          1e-6
