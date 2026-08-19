@@ -1724,8 +1724,16 @@ split below).
   local C++ over dependency expansion.
 * **DOCS / MANUALS:** the guides/manuals under `docs/` are a separate
   documentary work authored, curated, and editorially maintained by Vítor
-  Geraldes and Pedro Mendes (except the Developer Guide, authored by Vítor
-  Geraldes alone). Their prose, figures, and explanatory text are
+  Geraldes and Pedro Mendes. **The AUTHORSHIP LINE OF EACH GUIDE IS DECIDED IN
+  ONE PLACE — `docs/preamble.tex`'s `\manualauthors`** (ruled 2026-08-18,
+  Vítor: *"fico só eu"*, on the EduTools Guide).  Today that macro gives Vítor
+  Geraldes + Pedro Mendes + Miguel Rodrigues to the Properties and Theory
+  Guides, and **Vítor Geraldes alone to every other guide**, the EduTools
+  Guide included.  This paragraph used to name the Developer Guide as the sole
+  sole-author exception, which had already drifted from the macro that decides
+  it — a second home for a fact about who answers for a work, which is the
+  worst kind to let drift.  Read `preamble.tex`; do not copy its answer back
+  here. Their prose, figures, and explanatory text are
   CC BY-SA 4.0. Code excerpts, Choupo case files, and other machine-readable
   examples included in the guides remain GPL-3.0-or-later. Do not put the
   manuals under GPL wholesale, and do not treat external project contributors

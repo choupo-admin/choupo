@@ -43,7 +43,31 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 BANNER = ROOT / "src" / "core" / "Banner.H"
-GUIDES = ["theoryGuide", "userGuide", "propsGuide", "developerGuide"]
+#  WHICH GUIDES ARE PUBLIC HAS ONE HOME: `DOCS` in docs/Makefile.  This list
+#  used to be spelled here too -- the FIFTH hand-written copy, after the
+#  Makefile, copyDocs.mjs, guide.html's allowlist and buildSite's loop -- and
+#  it is the copy that mattered most, because this is the gate that catches a
+#  stale title page.  It named four while the tree carried eight, so
+#  designGuide, explorerGuide and tutorialsGuide sat with an out-of-date
+#  version on their front page and NOTHING could report it: they were not
+#  checked because they were not listed, and they were not listed because
+#  nobody had listed them.  A guide outside the list cannot be caught lying
+#  about its own version.
+#
+#  Derived now, and REFUSING rather than falling back: a default list here
+#  would go stale exactly as the last one did, and would do it silently.
+def _public_guides():
+    line = re.search(r'^DOCS\s*:=\s*(.+)$',
+                     (ROOT / "docs" / "Makefile").read_text(), re.M)
+    if not line:
+        print("check_guide_pdf_version: FAILED\n  cannot read `DOCS :=` from "
+              "docs/Makefile -- that line decides which guides are public, and "
+              "this gate will not invent a list of its own.", file=sys.stderr)
+        sys.exit(1)
+    return line.group(1).split()
+
+
+GUIDES = _public_guides()
 
 
 def engine_version() -> str:

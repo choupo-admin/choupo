@@ -504,6 +504,49 @@ limitation about NRTL through an azeotrope).  Worth listing; not top five.
 
 ## 6. The owner's two named candidates
 
+### A-new. Species distribution vs pH (the Bjerrum plot) -- EXPLORE, ruled 2026-08-18
+
+Vitor proposed it and placed it himself: "um grafico em que se varia o pH e se
+mostram as especies que estao em fase aquosa (tb. se pode manipular o CO2 ou a
+T entre 0 e 100 graus)", then "isso talvez possa ficar no explore".  That is
+the settled criterion applied correctly -- a distribution diagram shows what a
+system IS, not a construction a student performs -- so it is an EXPLORE lens
+and not the fourteenth EduTool.
+
+**ZERO NEW PHYSICS, verified in the source rather than assumed.**  The
+`speciate` props op already declares all three knobs:
+`pH` (a number OR the word `solve`, `Speciate.cpp:193-200`), `atmosphere { CO2
+4.2e-4 atm; ... }` for the open system with a MANDATORY pressure unit
+(`:207-224`), and `temperature` (`:231`).  The lens is a sweep over an op the
+corpus already runs -- the same shape as every other Explore lens.
+
+**THE ONE THING THE VIEW MUST SAY, and it is the whole lesson.**  `pH` carries
+two different meanings and the op's own grammar separates them.  With `pH
+solve` it is a RESULT, from electroneutrality -- what every reactive case
+prints today ("speciation: SOLVED pH = ... (from electroneutrality)").  Given
+as a number it is IMPOSED, and imposing a pH asserts a strong acid or base
+that nobody declared, supplying the charge that closes the balance: the
+solution is no longer neutral by itself, it is neutral because of an implicit
+titrant.
+
+Neither is wrong -- the classical Bjerrum plot is drawn exactly the second way.
+Drawing it WITHOUT SAYING SO is what would be wrong, and it is the same defect
+class as the reduced-identity and the eta = 1 silences: a declared fact the
+reader never meets.  So the axis states that the pH is imposed and that the
+per-point charge imbalance IS the implicit titrant.  If the engine can publish
+that excess charge, it becomes a number on screen instead of a sentence, and
+that is the preferred form -- a claim with a measurement beside it.
+
+Named consequences, not yet slices:
+  * the 0-100 C range crosses declared validity bands (Davies' trust band, the
+    van't Hoff K(T) windows).  The engine already ANNOUNCES those; the lens
+    should surface the advisory rather than hide it, which makes the range a
+    demonstration of numerical honesty rather than a hazard.
+  * varying CO2 moves the equilibrium pH AND the carbonate/bicarbonate split at
+    once -- rainwater and ocean acidification on one pair of axes.
+  * whether the engine publishes the excess charge under an imposed pH is
+    UNVERIFIED here; check before promising it in the view.
+
 ### 6.1 Thiele modulus with concentration-field visualisation
 
 #### What the engine does today, and the silence in it

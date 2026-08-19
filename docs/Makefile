@@ -20,10 +20,21 @@ LATEXFLAGS  := -interaction=nonstopmode -halt-on-error -file-line-error
 # and tutorialsGuide, none of which `make all` builds and none of which the
 # app can open -- three manuals that exist and are unreachable.
 #
+# designGuide, explorerGuide and tutorialsGuide joined on 2026-08-18 by the
+# owner's ruling.  They had .tex AND built .pdf and were reachable from
+# nowhere; all three title pages were STALE (no CHOUPO_VERSION), which is why
+# publishing them is a rebuild and not a list edit -- buildSite refuses a guide
+# whose front page names a version it does not describe.
+#
+# KEEP IT ON ONE LINE.  Both readers take the assignment with `^DOCS\s*:=\s*(.+)$`,
+# so a backslash continuation hands them the first fragment and they stage a
+# SUBSET in silence -- caught here the minute it was written, which is the only
+# reason it is a comment and not an incident.
+#
 # Adding a guide here is therefore the whole edit.  Removing one un-publishes
 # it.  If you add a name, copyDocs REFUSES until it also has a display label,
 # because a guide with no label would appear in the app as a bare key.
-DOCS        := userGuide developerGuide theoryGuide propsGuide eduToolsGuide
+DOCS        := userGuide developerGuide theoryGuide propsGuide eduToolsGuide designGuide explorerGuide tutorialsGuide
 PDFS        := $(addsuffix .pdf, $(DOCS))
 
 .PHONY: all user dev theory props clean distclean

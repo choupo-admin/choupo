@@ -42,6 +42,9 @@ const LABELS = {
   userGuide:      "User Guide",
   developerGuide: "Developer Guide",
   eduToolsGuide:  "EduTools Guide",
+  designGuide:    "Design Guide",
+  explorerGuide:  "Explorer Guide",
+  tutorialsGuide: "Tutorials Guide",
 };
 const unlabelled = guides.filter((g) => !LABELS[g]);
 if (unlabelled.length > 0) {

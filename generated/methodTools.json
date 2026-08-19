@@ -3,8 +3,8 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 12,
-  "registryTools": 12,
+  "liveTools": 13,
+  "registryTools": 13,
   "tools": [
     {
       "id": "mccabe",
@@ -77,6 +77,12 @@
       "label": "Adsorption breakthrough",
       "teaches": "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
       "href": "/app/?workspace=methods&tool=breakthrough"
+    },
+    {
+      "id": "hunter-nash",
+      "label": "Extraction (Hunter-Nash)",
+      "teaches": "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
+      "href": "/app/?workspace=methods&tool=hunter-nash"
     }
   ]
 }
