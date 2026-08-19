@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/reactionCurve.schema.json",
+  "title": "reactionCurve operation",
+  "description": "OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV written by a choupoCtrl run, one column driven and one column watched, it cuts the record into step SEGMENTS, fits a first-order-plus-dead-time surrogate (K, tau, theta) to each by Nelder-Mead on the sum of squared residuals, and applies the classical tuning rules to the segment the reader nominates. It solves no plant and integrates nothing: the experiment must already exist on disk, and the op reads it. THE SURROGATE IS A SURROGATE — the record is whatever the plant did, an FOPDT is three numbers, and the statement that the second is standing in for the first reaches the reader at the site AND in the end-of-run caveat block. A segment whose response has not SETTLED yields no time constant, because both K and tau are read off the end of the curve; the steady-state test that decides this is declared, not assumed. A dead time smaller than the record's own sampling interval is UNRESOLVED, and every rule that divides by theta (Ziegler-Nichols, Cohen-Coon) is then REFUSED BY NAME for that segment — a controller gain computed from a number the experiment could not measure is a number with nothing behind it. IMC survives there, because its algebra never divides by theta. NOTHING IN CHOUPO EVER CLOSES A LOOP ON THESE SETTINGS: the published gains are what each rule says, not a claim that they work.",
+  "type": "object",
+  "properties": {
+    "trajectory": {
+      "type": "string",
+      "title": "The recorded experiment",
+      "description": "CSV written by a previous choupoCtrl run, relative to the case directory. Its first column is time; every other column is a signal named in the header. Defaults to `trajectory.csv`. The file must EXIST — this op records no experiment of its own."
+    },
+    "manipulated": {
+      "type": "string",
+      "title": "The driven column",
+      "description": "Header name of the column that was STEPPED (e.g. `JacketStep.MV`). A `scheduleController` puts its own driven value into the trajectory as a column, which is what makes the record open-loop AND self-contained. Refused if it names the same column as `measured`: regressing a signal onto itself identifies nothing."
+    },
+    "measured": {
+      "type": "string",
+      "title": "The watched column",
+      "description": "Header name of the response (e.g. `reactor.T`, `reactor.n_compB`). WHICH COLUMN THIS IS, IS THE EXPERIMENT: the same trajectory read as a composition loop and as a temperature loop gives two different honest answers, because the two responses have different dead times."
+    },
+    "settling": {
+      "type": "object",
+      "title": "The steady-state test",
+      "description": "Decides whether a segment's response has stopped moving, and therefore whether K and tau are reported at all. Absent, tolerance 0.005 over the final 0.15 of each segment is used AND ANNOUNCED — a defaulted tolerance still decides the answer, so it is a declaration worth making.",
+      "properties": {
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Residual motion allowed",
+          "description": "As a fraction of the step change the response made. 0.005 means the response must not still be moving by more than half a per cent of its own excursion.",
+          "unit": "-"
+        },
+        "window": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1,
+          "title": "Final fraction inspected",
+          "description": "The FINAL FRACTION of each segment the test looks at. Strictly between 0 and 1.",
+          "unit": "-"
+        }
+      }
+    },
+    "minimumPoints": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Shortest usable segment",
+      "description": "A segment carrying fewer samples than this is not identified. Default 20. Three parameters fitted to a handful of points is arithmetic, not an experiment.",
+      "unit": "-"
+    },
+    "reference": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Which segment the headline quotes",
+      "description": "1-based index into the step segments the record was cut into. THIS IS A CHOICE AND IT CHANGES THE ANSWER — a small step near the base operating point is the closest thing to a linearisation, and a large one identifies a different gain on the same plant. Every segment's own triple is published in the segments CSV regardless, and the spread across them is reported as `K_spread_relative`, which is what makes the choice safe to state out loud. Defaults to 1, announced when the record holds more than one segment. Refused if it selects a segment the record does not have."
+    },
+    "tuning": {
+      "type": "object",
+      "title": "Tuning rules to apply",
+      "description": "Applied to the identified triple of every settled segment. Omitting the block still runs Ziegler-Nichols and Cohen-Coon in PI and PID form.",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "title": "Rules",
+          "description": "Default `( zieglerNichols cohenCoon )`. Each published setting carries the year of its own primary. An unknown name is refused.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "zieglerNichols",
+              "cohenCoon",
+              "imcLambda"
+            ]
+          }
+        },
+        "forms": {
+          "type": "array",
+          "title": "Controller forms",
+          "description": "Default `( PI PID )`.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "P",
+              "PI",
+              "PID"
+            ]
+          }
+        },
+        "lambda": {
+          "type": "object",
+          "title": "The IMC closed-loop time constant",
+          "description": "REQUIRED when `imcLambda` is requested, and refused with the remedy when it is missing: lambda is the engineer's statement of how fast the loop SHOULD be, and no open-loop record can supply it. EXACTLY ONE of `value` or `relativeToTau` — both together are two homes for one number, neither leaves the closed-loop speed declared. Must be strictly positive: a loop cannot be asked to respond in zero time.",
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "title": "Absolute closed-loop time constant",
+              "unit": "s"
+            },
+            "relativeToTau": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "title": "Multiple of the identified tau",
+              "description": "Evaluated PER SEGMENT, so each segment's lambda follows its own plant. 1.0 asks for a closed loop no faster than the plant — the conservative end of the range.",
+              "unit": "-"
+            }
+          },
+          "oneOf": [
+            {
+              "required": [
+                "value"
+              ]
+            },
+            {
+              "required": [
+                "relativeToTau"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "Where the three tables are written, relative to the case directory. Each is optional; a name omitted writes no file.",
+      "properties": {
+        "segments": {
+          "type": "string",
+          "title": "Per-segment identification",
+          "description": "One row per step: the step itself, the settling metrics against the tolerance that judged them, the identified (K, tau, theta) with theta's sample-resolution flag, the fit quality (rmse, max residual, R2), the two-point cross-check, and the Nelder-Mead iteration record."
+        },
+        "curve": {
+          "type": "string",
+          "title": "The reaction curve itself",
+          "description": "The reference segment's measured response beside the FOPDT surrogate's, sample by sample — the two curves whose difference is what `surrogate` means."
+        },
+        "tuning": {
+          "type": "string",
+          "title": "Tuning settings",
+          "description": "One row per (segment, rule, form): Kc, Ti, Td where the form has them, or the refusal and its reason where the rule could not be applied. A refused setting is PUBLISHED as a refusal, never dropped."
+        }
+      }
+    }
+  },
+  "required": [
+    "manipulated",
+    "measured"
+  ],
+  "additionalProperties": false
+}

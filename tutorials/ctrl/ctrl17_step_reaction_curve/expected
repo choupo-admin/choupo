@@ -1,0 +1,20 @@
+# Reference KPIs (golden master).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+#
+# WHAT THIS FILE PINS, AND WHAT IT CANNOT.  The staircase returns the jacket to
+# its 320 K base at t = 12000 s, so by t_end the plant is back where it started
+# and these final-state numbers are close to the initial ones BY CONSTRUCTION.
+# They pin that the campaign ran, closed its material balance, and came back --
+# they do NOT pin the four reaction curves, which are the whole point of the
+# case.  Those are recomputed independently, from this run's own trajectory.csv,
+# by bin/curate/check_reaction_curve.py.  A golden that implied more than it
+# checks would be worse than one that says what it is.
+#
+# kind   name      key         expected        reltol
+kpi     JacketStep             MV_final         320                1e-4
+kpi     JacketStep             SP_final         320                1e-4
+kpi     reactor                T_final          320.759149686      1e-4
+kpi     reactor                n_compA_final    0.0117959393424    1e-4
+kpi     reactor                n_compB_final    0.000204060657576  1e-4
+kpi     reactor                F_in_final       5e-05              1e-4
+kpi     reactor                t_end            15000              1e-4

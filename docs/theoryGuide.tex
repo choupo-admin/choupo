@@ -20132,6 +20132,222 @@ $R=1.3R_{\min}$): $N_{\min}=10.07$, $R_{\min}=1.29$, $N=21.6$, feed
 stage 10.8.  The method assumes constant $\alpha$ --- it does
 \emph{not} handle azeotropes (use the MESH column for those).
 
+\subsection{Reading $N(R)$: two limits and a fit between
+them}\label{sec:fug-nr}
+
+The three correlations are usually met as three formulae in a row.  They
+are better read as \emph{one curve}, because that is what a designer
+actually uses them for: how many stages does this separation need, as a
+function of how hard I am willing to reflux?
+
+Both ends of that curve are limits with derivations behind them, and
+they are limits in \emph{opposite} directions.
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Total reflux} ($R\to\infty$, $D\to 0$): no product is
+        withdrawn, so the operating lines collapse onto the $45^\circ$
+        line and each stage buys a full factor of $\alpha$.  Stack them
+        and the separation factor is $\alpha^{N}$; asking for the
+        separation the keys' recoveries define and solving for $N$ gives
+        Fenske.  It is the \emph{fewest} stages the separation can ever
+        be done in, so it is the \textbf{horizontal asymptote}
+        $N \to N_{\min}$.
+  \item \textbf{Minimum reflux} ($N\to\infty$): reduce the reflux and
+        somewhere in the column a pinch appears --- a zone where the
+        operating and equilibrium lines touch and an extra stage changes
+        nothing.  The reflux at which the pinch first appears is
+        Underwood's $R_{\min}$, and no column, however tall, separates
+        below it.  It is the \textbf{vertical asymptote}
+        $R \to R_{\min}$.
+\end{itemize}
+
+\noindent Between them the curve is a hyperbola-like descent, and
+\textbf{Gilliland} is what fills it in.  The correlation is written in
+two normalised coordinates that put both limits at the origin and at
+$(1,1)$:
+\begin{equation}
+  X \;=\; \frac{R - R_{\min}}{R + 1},
+  \qquad
+  Y \;=\; \frac{N - N_{\min}}{N + 1},
+  \label{eq:gilliland-coords}
+\end{equation}
+so $X=0$ (operating at minimum reflux) forces $Y\to 1$ and $N\to\infty$,
+while $X\to 1$ (total reflux) forces $Y=0$ and $N=N_{\min}$.  Choupo uses
+the \textbf{Molokanov} closed form of the correlation,
+\begin{equation}
+  Y \;=\; 1 - \exp\!\left[
+      \left(\frac{1 + 54.4\,X}{11 + 117.2\,X}\right)
+      \frac{X - 1}{\sqrt{X}}
+    \right],
+  \label{eq:molokanov}
+\end{equation}
+and then inverts \eqref{eq:gilliland-coords} for the stage count,
+\begin{equation}
+  N \;=\; \frac{Y + N_{\min}}{1 - Y}.
+  \label{eq:gilliland-N}
+\end{equation}
+Equations \eqref{eq:gilliland-coords}--\eqref{eq:gilliland-N} are the
+whole of \code{ShortcutColumn}'s Gilliland step, in that order.
+
+\begin{pitfall}
+\textbf{$N_{\min}$ and $R_{\min}$ are theorems; Gilliland is a fit.}
+Fenske and Underwood are derived from the stage equations under stated
+assumptions --- they are what those assumptions \emph{imply}.
+Equation~\eqref{eq:molokanov} is not: it is an algebraic curve fitted
+through a scatter of plant and simulation points that Gilliland collected
+in 1940, tidied by Molokanov into a form a computer can evaluate.  It
+carries that scatter with it.  So the two \emph{ends} of the $N(R)$ curve
+are as good as their assumptions, and everything between them is as good
+as a correlation --- which is a different kind of statement, and the
+reason the disagreement with a rigorous column is not uniform along the
+curve (\S\ref{sec:fug-vs-mesh}).
+\end{pitfall}
+
+\subsection{What the shortcut returns --- and what it does
+not}\label{sec:fug-limits}
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Constant relative volatility.}  One $\alpha_{i,HK}$, for
+        the whole column, evaluated at the feed bubble point.  A real
+        column runs 30\,K colder at the top than at the bottom and its
+        $\alpha$ varies over that span; none of that is in these numbers.
+        The hard consequence is not inaccuracy but \emph{expressiveness}:
+        a constant $\alpha$ can never equal one, so \textbf{no azeotrope
+        is representable at all}.  A shortcut column applied to
+        ethanol/water will return a stage count, and the stage count will
+        be an answer to a system that does not exist.
+  \item \textbf{Constant molar overflow.}  Underwood's derivation assumes
+        equal molar latent heats, so the internal $V$ and $L$ do not
+        change from stage to stage.  This is the same CMO assumption the
+        Wang--Henke and \code{simultaneous} column models make
+        (\S\ref{ch:mesh}); \code{fullMESH} is where it is dropped.
+  \item \textbf{A stage count, not a design.}  FUG returns $N$,
+        $N_{\min}$, $R_{\min}$, the feed stage and the product splits.  It
+        returns no diameter, no tray spacing, no downcomer, no flooding
+        margin, no real trays at a Murphree efficiency --- and no capital
+        cost.  Sizing is a separate pass over a column that exists.
+  \item \textbf{An idealisation of the trays themselves.}  $N$ counts
+        \emph{equilibrium} stages: every stage leaves its two streams in
+        exact equilibrium.  Real trays do not, which is what the Murphree
+        efficiency exists to carry (\S\ref{ch:hydraulics}).
+\end{itemize}
+
+\noindent Because all four are true and none is visible in a stream
+table, Choupo does not leave declaring them to the author's memory.  A
+\code{shortcutColumn} emits a \textbf{declared approximation} on every
+run --- a \code{problemDivergence} record naming the unit, what was
+requested (``distillation separation''), what was solved
+(``Fenske--Underwood--Gilliland shortcut; constant relative volatility at
+the feed bubble point; no azeotrope representable'') and why (``the case
+declares \code{type shortcutColumn;}'').  It is not a warning and nothing
+is refused: FUG is what the case asked for.  It is a record that the
+question answered was the shortcut's question, printed above the
+caveats, emitted above the KPIs, and written to
+\file{converged/problemDivergence}.
+
+\subsection{Shortcut against rigorous: the benzene/toluene
+numbers}\label{sec:fug-vs-mesh}
+
+The claim ``FUG designs, the rigorous column verifies'' is only worth
+making with numbers attached, and the numbers are only worth reading if
+the two columns were asked the \emph{same} question.  Making them
+comparable takes four ties, and each one is a place where a careless
+comparison goes wrong.
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Same feed and same thermodynamics.}
+        \file{shortcut01\_benzene\_toluene} and
+        \file{column02\_simultaneous} both take 100\,kmol/h of a 50/50
+        benzene/toluene mixture at 1\,atm as a saturated liquid, and both
+        declare the same $\gamma$--$\varphi$ system (ideal liquid, ideal
+        gas).  The $K$-values are therefore the same function of $T$ and
+        $P$ in both runs.
+  \item \textbf{Same specification.}  A shortcut column is specified by
+        the key \emph{recoveries} and answers with a distillate rate; a
+        rigorous column is specified by the distillate \emph{rate} and
+        answers with purities.  Tying $r_{HK} = 1 - r_{LK}$ closes the
+        gap: on a 50/50 binary feed that fixes
+        $D = F(z_{LK}r_{LK} + z_{HK}r_{HK}) = F/2 = 50$\,kmol/h --- the
+        rate the rigorous case already declares --- and then
+        $x_{D,LK} = F z_{LK} r_{LK}/D = r_{LK}$ identically.  The
+        shortcut's recovery target and the rigorous column's distillate
+        purity become the same number.
+  \item \textbf{Same reflux.}  The rigorous column is run at the $R$ the
+        shortcut returned, not at its own authored value.  $R$ is an
+        input to Gilliland and an input to MESH; leaving them different
+        would compare two columns at two refluxes and blame the
+        difference on the method.
+  \item \textbf{Same feed location.}  Feed placement changes a column's
+        purity, so the rigorous column's feed is placed by the
+        shortcut's own Kirkbride answer, carried as a fraction of the
+        column ($\text{feed\_stage}/N$) and rounded to a tray.
+\end{enumerate}
+
+\noindent One more thing has to hold before stage counts can be compared
+at all: the two must \emph{count the same stages}.  They do, and this was
+established by measurement rather than assumed.  Run
+\file{column02\_simultaneous} at near-total reflux ($R = 1000$) and it
+first reaches the 99\,\%/99\,\% products at \code{nStages}~$=11$, while
+Fenske's $N_{\min}$ for the same separation is $10.07$ --- so
+$\lceil N_{\min}\rceil$ and \code{nStages} are the same count, with no
+offset.  That is also the cleanest single check in this section: at total
+reflux Gilliland is not involved at all ($X\to1$, $Y\to0$), so the
+agreement is Fenske's alone.
+
+The comparison itself: hold the 99\,\% / 1\,\% key recoveries fixed, walk
+the reflux, and for each reflux ask the rigorous column how many stages
+it needs to reach the \emph{same} products.  Every number below is a run
+of one of the two cases.
+
+\begin{center}\small
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$R/R_{\min}$ & $R$ & FUG $N$ & $\lceil N\rceil$ & rigorous \code{nStages} \\
+\midrule
+1.05  & 1.359  & 29.99 & 30 & 29 \\
+1.15  & 1.488  & 25.14 & 26 & 24 \\
+1.30  & 1.682  & 21.59 & 22 & 20 \\
+1.60  & 2.071  & 17.98 & 18 & 18 \\
+2.00  & 2.588  & 15.71 & 16 & 16 \\
+3.00  & 3.883  & 13.40 & 14 & 14 \\
+5.00  & 6.471  & 11.92 & 12 & 12 \\
+10.0  & 12.94  & 10.95 & 11 & 12 \\
+\midrule
+\multicolumn{2}{@{}l}{total reflux ($R=1000$)}
+      & \multicolumn{1}{r}{$N_{\min}=10.07$} & 11 & 11 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Read the last column against the one before it.  At the case's
+own operating point, $R = 1.3R_{\min}$, the shortcut asks for 22 trays
+and the rigorous column reaches the same products with 20: the shortcut
+is \emph{conservative} by two stages, which is the direction a
+preliminary design wants to err in.  Near total reflux the sign flips ---
+the shortcut says 11 and the rigorous column needs 12 --- and in the
+middle of the range the two agree exactly.
+
+The disagreement is therefore not a constant, and this guide does not
+attribute it to one cause, because the two candidates have not been
+separated on this system: Gilliland's fit carries scatter, and the frozen
+$\alpha$ is wrong by a different amount at every reflux (the column's
+temperature span changes with the internal flows).  What \emph{is}
+established is the bracket: over a factor of ten in reflux the shortcut
+is never wrong by more than two stages on this separation, and it is
+exact at the one end where Gilliland does not act.  That is what a
+shortcut is for --- the first number, close enough to start the rigorous
+column from, and never the number you build.
+
+\begin{tutoriallink}
+\file{tutorials/steady/distillation/shortcut01\_benzene\_toluene} --- the
+FUG column. \\
+\file{tutorials/steady/distillation/column02\_simultaneous} --- the same
+separation, rigorous. \\
+EduTools $\to$ \emph{Distillation shortcut (Fenske--Underwood--Gilliland)}
+--- both of the above, run in the browser: the $N(R)$ curve with its two
+asymptotes, and the rigorous stage ladder beside it.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Rigorous distillation by simultaneous MESH
 Newton}\label{ch:mesh}
@@ -20477,6 +20693,226 @@ overhead vapour.  The recombined stage comes back unchanged to about
 $10^{-9}$ relative --- \emph{and so does its ion inventory}, which is the
 half of the check that a comparison of apparent compositions alone would
 miss.
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{The enthalpy-concentration diagram: putting energy inside the
+geometry}\label{ch:ponchon}
+
+\begin{whatyoulllearn}
+McCabe--Thiele teaches a staircase between an equilibrium curve and an
+operating line, and it works because somebody quietly assumed the energy
+balance away.  Here we put the energy balance back --- not as an extra
+equation to solve, but as a second coordinate on the diagram.  You will learn
+what the enthalpy-concentration ($h$--$x$--$y$) plane is, why the total,
+component and energy balances collapse into a single statement that three
+points are \emph{collinear}, what the difference point $\Delta$ is and why the
+reflux ratio is a ratio of two lengths on the page, and exactly what constant
+molar overflow assumes --- stated as a property of the two saturation curves,
+so you can look at a real pair of them and see how far from true it is.
+\end{whatyoulllearn}
+
+\subsection{Two curves and the ties between them}
+
+Fix a pressure.  A saturated liquid of composition $x$ boils at its bubble
+temperature $T_{\rm bub}(x)$ and has, at that temperature, a molar enthalpy
+$h(x)$.  A saturated vapour of composition $y$ condenses at its dew
+temperature $T_{\rm dew}(y)$ with molar enthalpy $H(y)$.  Plot both against
+composition on one pair of axes --- composition across, enthalpy up --- and
+you have the \textbf{enthalpy-concentration diagram}: a lower curve $h(x)$,
+an upper curve $H(y)$, and between them the \textbf{tie lines}, each joining
+a liquid to the vapour that is in equilibrium \emph{with it}.
+
+Three things about that sentence are worth slowing down for.
+
+First, temperature does not appear on the diagram, yet it is everywhere in
+it: each point sits at its own saturation temperature, and the two ends of a
+tie line share one.  The diagram is drawn at constant $P$, and $T$ is the
+readout, not an axis.
+
+Second, a tie line is \emph{not} vertical.  The vapour in equilibrium with a
+liquid has a different composition --- that is what separation is --- so a
+tie line leans, and it leans by exactly the amount the equilibrium says.  The
+slope of the tie lines \emph{is} the equilibrium data.
+
+Third, both enthalpies must be measured from the \emph{same} zero.  This
+sounds like bookkeeping and is not: everything below is built from
+\emph{differences} of $h$ and $H$, so a constant offset cancels in every
+answer --- which means a diagram drawn on two inconsistent datums produces
+numbers that are wrong and a picture that looks exactly as convincing as a
+correct one.  Choupo carries one enthalpy base, the elements at
+298.15\,K, and Section~\ref{sec:ponchon-choupo} says what that means
+for the file the engine writes.
+
+\subsection{Why three balances become one straight line}
+
+Take any envelope cut across a column --- say everything above the cut between
+stage $n$ and stage $n+1$, with the condenser inside it.  Vapour $V_{n+1}$
+enters the envelope from below, liquid $L_n$ leaves it downward, distillate
+$D$ leaves at the top, and the condenser removes $Q_C$.  Three balances:
+%
+\begin{align}
+V_{n+1} &= L_n + D , \label{eq:ponchon-total}\\
+V_{n+1}\,y_{n+1} &= L_n\,x_n + D\,x_D , \label{eq:ponchon-comp}\\
+V_{n+1}\,H_{n+1} &= L_n\,h_n + D\,h_D + Q_C . \label{eq:ponchon-energy}
+\end{align}
+%
+Now define the \textbf{difference point}
+%
+\begin{equation}
+\Delta_D \;\equiv\; \left( x_D,\; h_D + \frac{Q_C}{D} \right) ,
+\label{eq:ponchon-delta}
+\end{equation}
+%
+a point on the same plane whose composition is the distillate's and whose
+``enthalpy'' is the distillate's plus the condenser duty spread over it.  It
+is not a stream.  It is the net flow leaving the top of the envelope, energy
+included, per mole --- and with it the three balances above read as one
+statement:
+%
+\begin{equation}
+V_{n+1}\begin{pmatrix} 1 \\ y_{n+1} \\ H_{n+1}\end{pmatrix}
+\;=\;
+L_n\begin{pmatrix} 1 \\ x_n \\ h_n\end{pmatrix}
+\;+\;
+D\begin{pmatrix} 1 \\ x_D \\ \Delta_D\end{pmatrix} .
+\label{eq:ponchon-triple}
+\end{equation}
+%
+Divide by $V_{n+1}$ and use \eqref{eq:ponchon-total}: the two coefficients
+$L_n/V_{n+1}$ and $D/V_{n+1}$ are non-negative and sum to one.  So the point
+$(y_{n+1}, H_{n+1})$ is a \emph{convex combination} of $(x_n, h_n)$ and
+$\Delta_D$ --- it lies on the segment joining them.  The three points are
+collinear, and the two weights are their barycentric coordinates:
+%
+\begin{equation}
+\frac{L_n}{V_{n+1}} = \frac{\overline{V\Delta}}{\overline{L\Delta}} ,
+\qquad
+\frac{D}{V_{n+1}} = \frac{\overline{LV}}{\overline{L\Delta}} ,
+\qquad
+R \;=\; \frac{L_n}{D} \;=\; \frac{\overline{V\Delta}}{\overline{LV}} .
+\label{eq:ponchon-lever}
+\end{equation}
+
+\begin{keyidea}
+The lever rule here is not an analogy with a see-saw.  A stream of $F$ moles
+at composition $x$ and enthalpy $h$ contributes the triple
+$F\,(1, x, h)$, and \emph{all three} balances are linear in that same triple.
+A linear relation among such triples whose first components cancel is exactly
+the statement that the three $(x,h)$ points are collinear with the flows as
+barycentric weights.  The energy balance is not solved on this diagram; it
+has been absorbed into where the points are allowed to sit.
+\end{keyidea}
+
+The construction then alternates two moves.  From a liquid $x_n$, the
+\emph{tie line} gives the vapour $y_n$ leaving the same stage --- that is
+equilibrium, and it comes from the diagram's own tie data.  From that vapour,
+the \emph{line through $\Delta_D$} gives the liquid $x_{n+1}$ passing it ---
+that is the three balances, and it comes from \eqref{eq:ponchon-lever}.
+Alternate, and you have counted stages.  It is McCabe--Thiele's staircase
+with the energy balance carried along in the geometry instead of assumed
+away, and the flows $L_n$, $V_{n+1}$ come out \emph{different on every stage}
+because \eqref{eq:ponchon-lever} says so.
+
+\subsection{What constant molar overflow actually assumes}
+
+McCabe--Thiele's operating line is straight in $x$--$y$ because $L$ and $V$
+are taken constant within a section.  Stated on the enthalpy-concentration
+plane, the assumption is a shape claim about the two saturation curves:
+%
+\begin{equation}
+h(x) \;=\; a + b\,x , \qquad H(y) \;=\; a + \lambda + b\,y ,
+\label{eq:ponchon-cmo}
+\end{equation}
+%
+two \emph{straight} lines, \emph{parallel}, a constant vertical distance
+$\lambda$ apart.  Substitute \eqref{eq:ponchon-cmo} into
+\eqref{eq:ponchon-energy} and use the other two balances: everything cancels
+except $\Delta_D = a + b\,x_D + \lambda V/D$.  The energy balance stops
+constraining $L/V$ --- it is implied by the first two --- and the enthalpy
+coordinate becomes redundant.  That is the whole of CMO, and the whole of
+why McCabe--Thiele can leave energy out.
+
+Reading \eqref{eq:ponchon-cmo} backwards gives the physical conditions,
+and each one is a place where a real mixture departs:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Equal molar latent heats.}  The vertical gap $\lambda$
+        between the curves is a heat of vaporisation; requiring it constant
+        requires the two pure components to have the same one, per mole.
+        This is why CMO is often defended on a molar basis for chemically
+        similar pairs and quietly fails for, say, ammonia--water.
+  \item \textbf{Negligible sensible heat.}  The curves are straight only if
+        $h$ is linear in $x$ --- but each point sits at its \emph{own}
+        bubble temperature, and that temperature sweeps across the diagram
+        between the two boiling points.  The sensible heat of that sweep
+        bends the lower curve.
+  \item \textbf{No heat of mixing.}  $h^{E}\!(x)$ adds curvature that no
+        straight line can carry.  It is the term most often left out of a
+        model, and it is exactly the term this diagram would show.
+  \item \textbf{Adiabatic, isobaric.}  Heat leaking through the shell, or a
+        tray-to-tray pressure drop, moves the saturation curves themselves
+        from stage to stage --- the diagram is drawn at one $P$.
+\end{itemize}
+
+\begin{pitfall}
+CMO is not a statement about the column, and it is not a small-error
+approximation you can bound by looking at the answer.  It is a statement
+about the \emph{thermophysical data}, and a McCabe--Thiele result carries no
+mark saying how false it was.  The enthalpy-concentration diagram is the
+cheapest honest test: draw the two saturation curves and look at whether
+they are straight and parallel.  If they are, use McCabe--Thiele and save
+yourself the work.  If they are not, you now know by how much.
+\end{pitfall}
+
+\subsection{What Choupo publishes, and what it does
+not}\label{sec:ponchon-choupo}
+
+The construction above needs data that no ordinary flash result contains:
+saturated-phase enthalpy \emph{against composition}, on both curves, with the
+equilibrium correspondence between them.  The \code{enthalpyConcentration}
+property operation publishes exactly that, for a binary at one declared
+pressure, and three of its choices matter to anyone drawing on it.
+
+\textbf{One datum.}  Both enthalpy columns come from the same two kernels
+every energy balance and duty in the engine is priced on ---
+\code{H\_liquid\_formation} for the liquid and
+\code{H\_stream\_formation} at unit vapour fraction for the vapour --- so the
+numbers are absolute on the elements datum at 298.15\,K.  A
+component that cannot be placed on that datum is refused \emph{by name}, with
+the remedy, rather than substituted with a heat-capacity integral from a
+private zero.  The refusal is the point: an inconsistent
+datum cancels out of nothing and shows up in nothing.
+
+\textbf{Every row is one equilibrium.}  A row of the table carries
+\emph{both} ends of a tie line --- $(x_1, h)$ and $(y_1, H)$ --- and the one
+temperature they share.  A drawing tool therefore never pairs rows by index
+and never interpolates one end of a tie, which are the two ways a diagram
+comes out smooth, closed and wrong.  The two saturation curves are simply the
+two ends read off the same rows.
+
+\textbf{One saturation kernel.}  The dew locus of a binary is the image of
+its bubble locus under the equilibrium map, so a dew node is found by
+inverting that map rather than by solving a second residual to a second
+tolerance.  Two independent solvers would leave the tie lines landing
+\emph{near} the vapour curve instead of on it --- and tie lines ending on
+that curve is the entire construction.
+
+What the engine does \emph{not} do is draw.  There is no difference point, no
+lever arm and no staircase anywhere in the simulator: those belong to a tool
+reading the published locus, and keeping the split there is what stops the
+geometry and the thermodynamics from drifting apart.
+
+\begin{tutoriallink}
+\file{tutorials/props/scan/hxy01\_ethanol\_water\_1atm} --- ethanol/water at
+1\,atm, NRTL from the curated DECHEMA pair, ideal vapour.  The bubble
+temperature runs from 372.5\,K at pure water to
+351.5\,K at pure ethanol, and the azeotrope shows as the one
+composition where the tie line becomes vertical.  The number to look at is
+the tie-line gap $\lambda = H(y^{*}) - h(x)$: it runs from
+40\,680\,J/mol to 45\,053\,J/mol across the
+composition range, an 11\,\% spread.  Constant molar overflow is
+the assumption that those two numbers are the same one.
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------

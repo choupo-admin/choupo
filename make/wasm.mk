@@ -104,6 +104,22 @@ WASM_ALL_OUT := $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) \
 #  earlier build had always made the directory, so the failure was invisible
 #  here and instant in CI: `cannot create gui/public/wasm/.version.tmp:
 #  Directory nonexistent`, first run, before a single object compiled.
+#  (The link rules gained their own `| $(WASM_DIR)` order-only prerequisite
+#  since, so the mkdir here is now belt-and-braces for a direct `make
+#  wasm-version` -- which is exactly what makes stamping LAST safe.)
+#
+#  THE STAMP IS WRITTEN LAST, AFTER THE BINARIES IT DESCRIBES (2026-08-19).
+#  It used to be the FIRST prerequisite of `wasm` and `wasm-gui`, so the file
+#  claiming which commit is in the bundles was written BEFORE a single object
+#  compiled.  Observed on 2026-08-19 at 10:16: version.json read `"commit":
+#  "9d5eda1c"` while the four .wasm files beside it were three weeks old, and
+#  it would have kept reading that if the build had then died -- the GUI
+#  announcing to the reader an engine version that is not the one running.
+#
+#  This is the destructive-gate contamination's shape one field over: A CLAIM
+#  WRITTEN BEFORE THE THING IT CLAIMS SURVIVES THE DEATH OF THAT THING.  A
+#  failed build now leaves the PREVIOUS stamp standing, which is the honest
+#  answer, because the previous binaries are still the ones on disk.
 .PHONY: wasm-version
 wasm-version:
 	@mkdir -p gui/public/wasm; \
@@ -115,14 +131,19 @@ wasm-version:
 	then rm gui/public/wasm/.version.tmp; \
 	else mv gui/public/wasm/.version.tmp gui/public/wasm/version.json; fi
 
-wasm: wasm-version $(WASM_ALL_OUT)
+#  A recursive $(MAKE) rather than a prerequisite: make gives no ordering
+#  guarantee among the prerequisites of one target (and -j reorders them
+#  freely), so "stamp after the binaries" cannot be expressed as a list.
+wasm: $(WASM_ALL_OUT)
+	@$(MAKE) --no-print-directory wasm-version
 
 # The GUI's FOUR binaries: the GUI dispatches by controlDict.application,
 # so all four must be present in gui/public/wasm/ for a transient case
 # (ctrl03 / batch04) to run in-browser and offer the time scrubber.  Same
 # set as `wasm`; the alias is kept because the bin/ scripts + docs refer
 # to it as THE GUI rebuild.
-wasm-gui: wasm-version $(WASM_ALL_OUT)
+wasm-gui: $(WASM_ALL_OUT)
+	@$(MAKE) --no-print-directory wasm-version
 
 # The steady + props pair alone -- the fast relink when the dynamic
 # binaries are already current in gui/public/wasm/.
@@ -176,16 +197,36 @@ $(WASM_OBJ)/%.o: %.cpp $(WASM_CXX_STAMP)
 # ---- link rules: common objects + the app's own, unique EXPORT_NAME --------
 #  Each binary's factory gets a UNIQUE name via -sEXPORT_NAME so loading
 #  multiple .wasm files into one worker scope does not clobber the global.
+#  THE OUTPUT IS NAMED, NEVER TAKEN FROM $@ (2026-08-19).  These are GROUPED
+#  targets, and make binds $@ to whichever MEMBER it was asked for -- so
+#  `rm gui/public/wasm/choupoSolve.wasm && make wasm-gui` ran this recipe with
+#  $@ = the .wasm and handed emcc `-o …choupoSolve.wasm`.  THAT IS A DIFFERENT
+#  OUTPUT KIND: emcc emits a standalone module and NO JavaScript glue, so the
+#  link "succeeded", the .wasm was rebuilt, and the .js beside it stayed at its
+#  previous mtime -- two halves of one link produced by two different
+#  invocations, which the GUI loads as a matched pair.
+#
+#  Observed while sabotage-testing the version stamp below: after deleting only
+#  the .wasm, the log read `EMLD gui/public/wasm/choupoSolve.wasm` where every
+#  other line in the same build read `… .js`, and `ls` showed the .js three
+#  minutes older than the .wasm it is supposed to have been emitted with.  The
+#  grouped-target comment was right that the link re-runs; what it did not say
+#  is that it re-runs BUILDING SOMETHING ELSE.
+#
+#  `$(@:.wasm=.js)` is idempotent: it leaves the .js member alone and rewrites
+#  the .wasm member to it, so the recipe asks emcc for the same artefact
+#  whichever member triggered it.
 define WASM_LINK
-	@printf "  EMLD  %s  (%d objects, %s)\n" $@ $(words $(filter %.o,$^)) $(WASM_MODE)
-	@$(EMXX) $(WASM_LDFLAGS) -sEXPORT_NAME=$(1) -o $@ \
+	@printf "  EMLD  %s  (%d objects, %s)\n" $(@:.wasm=.js) $(words $(filter %.o,$^)) $(WASM_MODE)
+	@$(EMXX) $(WASM_LDFLAGS) -sEXPORT_NAME=$(1) -o $(@:.wasm=.js) \
 		$(filter %.o,$^)
 	@printf "  -->   wasm: %s\n" $(@:.js=.wasm)
 endef
 
 #  Grouped targets (GNU Make 4.3 `&:`): the .js AND the .wasm are ONE link
 #  result -- a missing/corrupted .wasm beside a fresh .js re-runs the link
-#  instead of declaring everything current.
+#  instead of declaring everything current.  See WASM_LINK above for what that
+#  re-run used to produce.
 $(WASM_SOLVE_JS) $(WASM_SOLVE_JS:.js=.wasm) &: $(WASM_LIB_OBJS) $(WASM_SOLVE_OBJS) $(WASM_STANDARDS_STAMP) $(WASM_LD_STAMP) | $(WASM_DIR)
 	$(call WASM_LINK,createChoupoSolve)
 

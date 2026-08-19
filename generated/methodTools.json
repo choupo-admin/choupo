@@ -3,14 +3,20 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 14,
-  "registryTools": 14,
+  "liveTools": 16,
+  "registryTools": 16,
   "tools": [
     {
       "id": "mccabe",
       "label": "Distillation (McCabe-Thiele)",
       "teaches": "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
       "href": "/app/?workspace=methods&tool=mccabe"
+    },
+    {
+      "id": "fug",
+      "label": "Distillation shortcut (FUG)",
+      "teaches": "Where the first number you type into a rigorous column comes from: total reflux fixes N_min, minimum reflux fixes R_min, and Gilliland — a fit, not a derivation — interpolates N(R) between those two asymptotes, with the rigorous MESH column's own stage count for the same separation drawn beside it.",
+      "href": "/app/?workspace=methods&tool=fug"
     },
     {
       "id": "psychro",
@@ -83,6 +89,12 @@
       "label": "Extraction (Hunter-Nash)",
       "teaches": "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
       "href": "/app/?workspace=methods&tool=hunter-nash"
+    },
+    {
+      "id": "thiele",
+      "label": "Catalyst pellet (Thiele modulus)",
+      "teaches": "The concentration field INSIDE one pellet: turn the rate constant and watch it go from nearly flat — the whole pellet working — to a boundary layer hugging the surface over a dead core, with the effectiveness factor beside it as the consequence, and the closed form drawn over the numerical answer so the method is watched being checked.",
+      "href": "/app/?workspace=methods&tool=thiele"
     },
     {
       "id": "column-control",

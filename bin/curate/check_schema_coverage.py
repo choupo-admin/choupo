@@ -231,6 +231,29 @@ def main() -> int:
     for sf in schemas:
         op = sf.name[:-len(".schema.json")]
         s = json.loads(sf.read_text())
+
+        #  THE `$id` MUST NAME ITS OWN FILE, and the reason is not tidiness.
+        #  A schema in this directory is almost always started by copying a
+        #  neighbour, and a stale `$id` is the FINGERPRINT of that copy: it
+        #  says, in the file's own words, which operation the text was
+        #  originally about.  Found once (freezingPoint carrying
+        #  pitzerActivity's id) by a general writing an unrelated schema, and
+        #  nothing checked it -- so the one artefact that records where a file
+        #  came from was the one artefact nobody read.
+        #
+        #  This does NOT prove the body was rewritten; a schema can carry the
+        #  right id and the wrong properties.  What it catches is the copy that
+        #  was never re-aimed at all, which is the cheap half of the problem
+        #  and the half that leaves evidence.
+        sid = s.get("$id", "")
+        if sid and sid.rsplit("/", 1)[-1] != sf.name:
+            failures.append(
+                f"STALE $id: {sf.name} declares `{sid.rsplit('/', 1)[-1]}` -- a"
+                " schema started by copying a neighbour and never re-aimed."
+                " Point the $id at this file, and RE-READ the body against the"
+                " op's own source: the id is evidence of the copy, not proof"
+                " the properties were fixed")
+
         known = set(s.get("properties", {})) | STRUCTURAL
         required = set(s.get("required", []))
         uses = uses_in_flowsheets(op) + uses_in_props(op)

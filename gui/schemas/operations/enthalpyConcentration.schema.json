@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/enthalpyConcentration.schema.json",
+  "title": "enthalpyConcentration operation",
+  "description": "The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h_liquid, the vapour y1 with H_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. `role bubble` rows put x1 on the uniform grid, `role dew` rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity{} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H_vapour − h_liquid over the locus, the spread of which measures what constant molar overflow costs.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "The pressure of the diagram",
+      "description": "`{ P <p>; }` — REQUIRED, and P is its only entry. A whole enthalpy-concentration locus belongs to ONE pressure, so nothing is defaulted here. Temperature is NOT an input to this op: the bubble and dew temperatures ARE the answer at every node, and nothing reads a T written here.",
+      "properties": {
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        }
+      },
+      "required": [
+        "P"
+      ]
+    },
+    "grid": {
+      "type": "object",
+      "title": "Composition grid",
+      "description": "`{ n <intervals>; }` — intervals on the composition axis; both pure ends are nodes, so the table carries n+1 rows per role. Absent (or present without `n`), 40 intervals are used.",
+      "properties": {
+        "n": {
+          "type": "integer",
+          "minimum": 4,
+          "title": "Intervals",
+          "description": "Refused below 4.",
+          "unit": "-"
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` — where the per-row results are written, relative to the case directory: x1,y1,T_K,h_liquid_J_per_mol,H_vapour_J_per_mol,role,status. A `.meta` sidecar is written beside it (the `.csv` suffix replaced), stating the components, the pressure, THE DATUM both enthalpy columns are absolute on, which routes computed each column, whether the heat of mixing H^E is included, and the reason for every refused node.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "CSV file name"
+        }
+      },
+      "required": [
+        "file"
+      ]
+    }
+  },
+  "required": [
+    "state",
+    "output"
+  ],
+  "additionalProperties": false
+}

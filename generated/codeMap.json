@@ -436,6 +436,9 @@
   "EnergyWire": [
    "src/core/ResultRecords.H"
   ],
+  "EnthalpyConcentration": [
+   "src/propertyOps/EnthalpyConcentration.H"
+  ],
   "EquationOfState": [
    "src/thermo/equationOfState/EquationOfState.H"
   ],
@@ -973,6 +976,9 @@
   ],
   "Reaction": [
    "src/thermo/reaction/Reaction.H"
+  ],
+  "ReactionCurve": [
+   "src/propertyOps/ReactionCurve.H"
   ],
   "ReactionSpec": [
    "src/unitOperations/batch/BatchReactor.H",
@@ -1561,6 +1567,10 @@
     "type": "PropertyScanBinary"
    },
    {
+    "key": "enthalpyConcentration",
+    "type": "EnthalpyConcentration"
+   },
+   {
     "key": "purePhaseDiagram",
     "type": "PurePhaseDiagram"
    },
@@ -1631,6 +1641,10 @@
    {
     "key": "thielePellet",
     "type": "ThielePellet"
+   },
+   {
+    "key": "reactionCurve",
+    "type": "ReactionCurve"
    },
    {
     "key": "vleConsistency",
@@ -3308,6 +3322,25 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H"
   ],
+  "src/propertyOps/EnthalpyConcentration.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/EnthalpyConcentration.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/saturation/BubblePoint.H"
+  ],
   "src/propertyOps/EstimateComponent.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3564,6 +3597,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.H",
    "src/propertyOps/ElectrolytePackageActivity.H",
    "src/propertyOps/ElementCompositionOp.H",
+   "src/propertyOps/EnthalpyConcentration.H",
    "src/propertyOps/EstimateComponent.H",
    "src/propertyOps/Exchange.H",
    "src/propertyOps/FitParameters.H",
@@ -3584,6 +3618,7 @@
    "src/propertyOps/PropertyScanTernary.H",
    "src/propertyOps/PsychrometricChart.H",
    "src/propertyOps/PurePhaseDiagram.H",
+   "src/propertyOps/ReactionCurve.H",
    "src/propertyOps/ScalingScan.H",
    "src/propertyOps/Speciate.H",
    "src/propertyOps/SteamTables.H",
@@ -3717,6 +3752,15 @@
    "src/thermo/PackageAudit.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
+  ],
+  "src/propertyOps/ReactionCurve.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/ReactionCurve.H",
+   "src/solver/NelderMead.H"
   ],
   "src/propertyOps/RiaziDaubert.cpp": [
    "src/propertyOps/ConstantEstimator.H",
@@ -6902,11 +6946,13 @@
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -7109,6 +7155,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -7132,6 +7179,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
@@ -7369,6 +7417,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -7392,6 +7441,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
@@ -7688,6 +7738,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -7898,6 +7949,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -8295,6 +8347,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -8318,6 +8371,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
@@ -8771,6 +8825,10 @@
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/EnthalpyConcentration.H": [
+   "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/EstimateComponent.H": [
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -8846,6 +8904,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -8866,6 +8925,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
@@ -8900,6 +8960,10 @@
   "src/propertyOps/PurePhaseDiagram.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp"
+  ],
+  "src/propertyOps/ReactionCurve.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/ReactionCurve.cpp"
   ],
   "src/propertyOps/RiaziDaubert.H": [
    "src/propertyOps/ConstantEstimator.cpp",
@@ -9121,6 +9185,7 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -9234,6 +9299,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -9353,6 +9419,7 @@
   ],
   "src/solver/NelderMead.H": [
    "src/outerDriver/OptimizationDriver.cpp",
+   "src/propertyOps/ReactionCurve.cpp",
    "src/solver/NelderMead.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp"
@@ -9491,6 +9558,7 @@
    "src/postProcessing/sizing/SprayDryerSize.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -9666,6 +9734,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
@@ -9936,6 +10005,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -10248,6 +10318,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -10377,6 +10448,7 @@
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -11060,6 +11132,7 @@
   ],
   "src/unitOperations/UnitOperation.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
@@ -11515,6 +11588,7 @@
    "src/unitOperations/rotating/Turbine.cpp"
   ],
   "src/unitOperations/saturation/BubblePoint.H": [
+   "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",

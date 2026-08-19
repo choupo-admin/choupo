@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoCtrl;
+description   "Open-loop process reaction curve: the jacket steps +5, -5, +20 and -20 K from one settled base, and the four responses are the identification record for the FOPDT fit in system/propsDict";
+
+verbosity     3;
+
+// ---- Time integration ----
+//   FIVE holds of 3000 s each: one to settle from the authored 0/ state, then
+//   four steps.  3000 s is about 12 tau of the composition loop, which is what
+//   makes the settling test in the propsDict pass -- shorten it and the
+//   identification REFUSES by name rather than reporting a time constant read
+//   off an unfinished transient.  That refusal is deliberate and worth
+//   provoking once: set endTime to 12400 and run the pair again.
+startTime       0;        // s
+endTime         15000;    // s
+deltaT          1.0;      // s
+
+//   writeInterval is the RESOLUTION OF THE ANSWER, not a plotting choice.  The
+//   step is bracketed by two consecutive samples, so the identified dead time
+//   is an upper bound within one interval -- and a dead time smaller than one
+//   interval is refused as unresolved.  5 s against a theta of ~25 s is five
+//   intervals; the engine prints the bracket either way.
+writeInterval   5;        // s   (3001 rows)

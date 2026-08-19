@@ -68,12 +68,24 @@ private:
     //  rule is that provenance lives at boundaries, never in the inner loop.
     void noteRange(scalar T) const;
 
+    //  THE INTEGRAL IS A DIFFERENT CLAIM FROM THE POINT (2026-08-19).
+    //  `Cp(T)` asks the fit for ONE value; `H(T, Tref)` and `S(T, Tref)`
+    //  sweep the whole interval between the datum and the state, and an
+    //  interval leaves a window in a way a point cannot: it can start
+    //  inside and end outside, start outside and end inside, or straddle a
+    //  window narrower than itself.  Announcing an endpoint would name a
+    //  temperature the caller never asked about and hide how far the path
+    //  actually ran outside the fit, so the span gets its own sentence and
+    //  its own once-per-instance flag.
+    void noteSpan(scalar Tref, scalar T) const;
+
     sVector a_;
     scalar Tmin_ = 0.0, Tmax_ = 0.0;
     //  `Trange unknown;` -- a DECLARED absence, distinct from
     //  both a window and no key at all (AP3).
     bool   rangeUnknown_ = false;
     mutable bool announcedOutside_ = false;
+    mutable bool announcedSpan_ = false;
     mutable bool announcedBadWindow_ = false;
     std::string owner_;                 // for a message that names the record
     inline static const std::string name_ = "polynomial";

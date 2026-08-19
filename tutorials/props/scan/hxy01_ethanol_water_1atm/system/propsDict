@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      hxy;
+        type      enthalpyConcentration;
+
+        //  P is REQUIRED and T is not an input: a whole enthalpy-concentration
+        //  locus belongs to ONE pressure, and the bubble / dew temperatures
+        //  ARE the answer at every node.
+        state     { P 1 atm; }
+
+        //  Intervals on the composition axis; the two pure ends are nodes, so
+        //  the table carries n+1 rows per role.
+        grid      { n 40; }
+
+        //  The table, plus the `.meta` sidecar written beside it that states
+        //  the components, the pressure, THE DATUM, what is omitted, and the
+        //  reason for any refused node.
+        output    { file enthalpyConcentration.csv; }
+    }
+);

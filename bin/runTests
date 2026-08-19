@@ -1775,6 +1775,57 @@ PYEOF
     fi
     rm -f /tmp/thiele.$$
 
+    # enthalpy-concentration gate (2026-08-19).  The saturated-phase enthalpy
+    # loci a Ponchon-Savarit construction is DRAWN ON -- both curves, and the
+    # equilibrium tie carried explicitly on each row so no consumer ever pairs
+    # them by index.  The gate recomputes the whole locus from an independent
+    # Python implementation, parsing the constants out of the case's OWN sealed
+    # records rather than carrying a copy (a gate holding its own numbers masks
+    # a record edit instead of catching one).
+    # Sabotage-verified six ways, and the third is the one to know: pairing the
+    # dew rows BY INDEX fired 40 failures, every one in the incidence arm and
+    # ZERO in the enthalpy arm -- because that arm recomputes h_liquid at the
+    # row's own x1, so a row internally consistent about the WRONG liquid
+    # satisfies it perfectly.  An enthalpy check alone would wave a table of
+    # mispaired tie lines straight through: closed, smooth, and wrong
+    # everywhere.  A fourth sabotage exposed a defect in the gate itself (an
+    # arm that searched the whole run output for a component name the banner
+    # already prints, so it would have passed with the refusal deleted).
+    if "$ROOT/bin/curate/check_enthalpy_concentration.py" > /tmp/hxy.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "enthalpy-concentration-gate" "$(tail -1 /tmp/hxy.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_enthalpy_concentration.py)\n" "enthalpy-concentration-gate"
+        cat /tmp/hxy.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/hxy.$$
+
+    # reaction-curve gate (2026-08-19).  The FOPDT identification the classical
+    # tuning rules are computed from, re-derived here by an INDEPENDENT
+    # shrinking-grid search over the same objective -- the engine minimises with
+    # Nelder-Mead, so a shared optimiser bug could not hide behind a shared
+    # optimiser.
+    # THIS GATE IS THE ONLY PIN ON EVERY (K, tau, theta) IN THE CORPUS, and that
+    # is a property of the harness, not a choice: bin/runTests dispatches a case
+    # by its controlDict `application`, ctrl17 declares choupoCtrl, and the
+    # identification lives in the choupoProps half of the same case -- so the
+    # case's `expected` golden reads the trajectory's KPIs and CANNOT reach a
+    # single identified parameter.  A result nobody's golden can read arrives
+    # unpinned (the 2026-08-12 doctrine, one field over), and until a case runs
+    # both halves under the harness this line is what stands in for the row.
+    # What it does NOT claim: that the surrogate or any of the three rules is
+    # any GOOD.  No loop is ever closed on these settings anywhere in Choupo.
+    if "$ROOT/bin/curate/check_reaction_curve.py" > /tmp/rcurve.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reaction-curve-gate" "$(tail -1 /tmp/rcurve.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reaction_curve.py)\n" "reaction-curve-gate"
+        cat /tmp/rcurve.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rcurve.$$
+
     # verdict-parity gate (2026-08-11).  The Component Inspector draws the
     # curation dossier's five verdicts, so the vocabulary acquired three homes
     # -- verdictOf() in C++, a TS union, and the renderer's table -- and the

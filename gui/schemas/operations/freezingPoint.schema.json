@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://choupo.org/schemas/operations/pitzerActivity.schema.json",
+  "$id": "https://choupo.org/schemas/operations/freezingPoint.schema.json",
   "title": "Freezing-point curve (ice witness)",
   "description": "Freezing-point curve T_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f_solid(T) = a_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T_f and depression at the grid end, the dilute-limit slope against nu*K_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.",
   "type": "object",

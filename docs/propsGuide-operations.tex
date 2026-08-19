@@ -546,6 +546,22 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 
 \subsection{Other}
 
+\paragraph{\code{enthalpyConcentration}}
+The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour − h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{grid} & Composition grid \\
+\code{output}\textbf{*} & CSV output \\
+\code{state}\textbf{*} & The pressure of the diagram \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
+\end{tutoriallink}
+
 \paragraph{\code{freezingPoint}}
 Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-potential equality between an actual crystallising SolidPhase (ice) and the Pitzer surface's water activity: f\_solid(T) = a\_w(m,T)*Psat(T). The first case-reachable consumer of the crystal; its announced approximations (no dCp term, sub-freezing Psat extrapolation) fire on every run. Diagnostics: T\_f and depression at the grid end, the dilute-limit slope against nu*K\_f (the derived cryoscopic constant), and the depression AAD against a measured dataset via the standard validation block.
 
@@ -563,6 +579,27 @@ Freezing-point curve T\_f(m) of a single salt in water, solved as chemical-poten
 
 \begin{tutoriallink}
 \file{tutorials/props/electrolyte/fpd01\_nacl\_freezing}
+\end{tutoriallink}
+
+\paragraph{\code{reactionCurve}}
+OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV written by a choupoCtrl run, one column driven and one column watched, it cuts the record into step SEGMENTS, fits a first-order-plus-dead-time surrogate (K, tau, theta) to each by Nelder-Mead on the sum of squared residuals, and applies the classical tuning rules to the segment the reader nominates. It solves no plant and integrates nothing: the experiment must already exist on disk, and the op reads it. THE SURROGATE IS A SURROGATE — the record is whatever the plant did, an FOPDT is three numbers, and the statement that the second is standing in for the first reaches the reader at the site AND in the end-of-run caveat block. A segment whose response has not SETTLED yields no time constant, because both K and tau are read off the end of the curve; the steady-state test that decides this is declared, not assumed. A dead time smaller than the record's own sampling interval is UNRESOLVED, and every rule that divides by theta (Ziegler-Nichols, Cohen-Coon) is then REFUSED BY NAME for that segment — a controller gain computed from a number the experiment could not measure is a number with nothing behind it. IMC survives there, because its algebra never divides by theta. NOTHING IN CHOUPO EVER CLOSES A LOOP ON THESE SETTINGS: the published gains are what each rule says, not a claim that they work.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{manipulated}\textbf{*} & The driven column \\
+\code{measured}\textbf{*} & The watched column \\
+\code{minimumPoints} & Shortest usable segment [-] \\
+\code{output} & CSV output \\
+\code{reference} & Which segment the headline quotes \\
+\code{settling} & The steady-state test \\
+\code{trajectory} & The recorded experiment \\
+\code{tuning} & Tuning rules to apply \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
 \end{tutoriallink}
 
 \paragraph{\code{thielePellet}}

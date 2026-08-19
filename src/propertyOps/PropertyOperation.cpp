@@ -28,6 +28,7 @@ License
 
 #include "PropertyOperation.H"
 #include "ElementCompositionOp.H"
+#include "EnthalpyConcentration.H"
 #include "EstimateComponent.H"
 #include "Exchange.H"
 #include "FitParameters.H"
@@ -40,6 +41,7 @@ License
 #include "PropertyScanTernary.H"
 #include "PropertyScanBinary.H"
 #include "PurePhaseDiagram.H"
+#include "ReactionCurve.H"
 #include "PsychrometricChart.H"
 #include "HConsistency.H"
 #include "IsothermEval.H"
@@ -140,6 +142,13 @@ void PropertyOperation::registerBuiltins()
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
     reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
     reg("propertyScanBinary",  []{ return std::make_unique<PropertyScanBinary>(); });
+    //  THE ENTHALPY-CONCENTRATION LOCUS -- the first surface in the engine
+    //  that publishes SATURATED-PHASE ENTHALPY against composition, with the
+    //  equilibrium tie between the two curves carried explicitly on every
+    //  row.  It is the data an enthalpy-concentration (Ponchon-Savarit)
+    //  construction is drawn on; the construction itself is a drawing tool's.
+    reg("enthalpyConcentration",
+        []{ return std::make_unique<EnthalpyConcentration>(); });
     reg("purePhaseDiagram", []{ return std::make_unique<PurePhaseDiagram>(); });
     reg("psychrometricChart", []{ return std::make_unique<PsychrometricChart>(); });
     reg("pitzerActivity", []{ return std::make_unique<PitzerActivity>(); });
@@ -171,6 +180,7 @@ void PropertyOperation::registerBuiltins()
     //  unitOperations/reactor/pellet/ -- this op is a bench over it, and the
     //  four reactors that assume eta = 1 are the intended second caller.
     reg("thielePellet",   []{ return std::make_unique<ThielePellet>();   });
+    reg("reactionCurve",  []{ return std::make_unique<ReactionCurve>();  });
     reg("vleConsistency", []{ return std::make_unique<VleConsistency>(); });
     reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });

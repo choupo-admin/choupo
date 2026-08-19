@@ -2186,6 +2186,44 @@ The flash feed is set to z(water) = 0.80 (20 mol\% butanol), INSIDE the asymmetr
 \tutreadme{The numbers are inline here, fully provenanced above; the record is STAGED CASE-LOCALLY, not curated: it lives at tutorials/steady/flash/marcilla02\_lls\_ternary\_invariant/constant/parameters/UNIQUAC/nButanol-water.dat with reviewStatus interim, and promotion into data/standards/ is the maintainer's batch review. This README used to claim the numbers already lived under data/standards/ -- asserting a curation status that had been deliberately withheld, which is a worse error than saying nothing.}
 
 \clearpage
+\tutentry{hxy01\_ethanol\_water\_1atm}{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{hxy}\\[-1pt]{\tiny enthalpyConcentration}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Enthalpy-concentration locus (h-x-y) of ethanol/water at 1 atm on the elements datum -- the data a Ponchon-Savarit construction is drawn on}
+\begin{tutnarrative}
+The enthalpy-concentration locus of ethanol/water at 1 atm.
+
+McCabe-Thiele carries equilibrium and material balance under CONSTANT MOLAR OVERFLOW -- one mole condensing releases exactly what one mole vaporising absorbs, whatever the composition. This case publishes the quantity that assumption is about: the saturated-liquid enthalpy h(x) on its bubble line, the saturated-vapour enthalpy H(y) on its dew line, and the equilibrium tie between them, all on Choupo's ONE enthalpy datum (the elements at 298.15 K).
+
+lambda(x) = H(y$\ast$) - h(x) is the molar heat of vaporisation ALONG the locus. CMO says it is a constant. Read the two lambda diagnostics and decide for yourself.
+
+Run-only + KPI golden; see README.md for the provenance of every number and for what is NOT validated.
+
+\end{tutnarrative}
+\tutreadme{The saturated-liquid enthalpy on its bubble line, the saturated-vapour enthalpy on its dew line, and the equilibrium tie between them --- the data an enthalpy-concentration (Ponchon--Savarit) construction is drawn on, and the first thing the engine publishes that carries enthalpy against composition.}
+\tutreadme{enthalpyConcentration.csv --- a regular table, one header, homogeneous rows:}
+\tutreadme{Every row is one equilibrium. It carries $\ast$both$\ast$ ends of a tie line --- the liquid (x1, h\_liquid) and the vapour (y1, H\_vapour) that are in equilibrium with each other --- at the one temperature T\_K they share. So nothing downstream pairs rows by index and nothing interpolates one end of a tie. role says only which composition was the uniform grid node:}
+\tutreadme{The saturated-liquid curve is (x1, h\_liquid) over all rows; the saturated-vapour curve is (y1, H\_vapour) over all rows. status is ok or names a refusal; a refused node keeps its grid coordinate and leaves the solved fields empty, so a gap is visible rather than silently bridged.}
+\tutreadme{enthalpyConcentration.meta --- a key,value sidecar, written on every run. It states the two components, the pressure, which enthalpy datum the two columns are on, which kernel computed each, the tie contract, whether the heat of mixing is included, and the reason for every refused node. The construction's lever arms are enthalpy $\ast$differences$\ast$, so a constant offset cancels in the geometry --- which is exactly why the file has to say what its axis means instead of letting the next reader assume.}
+\tutreadme{Both enthalpy columns are absolute on Choupo's one enthalpy base, the elements at 298.15 K, from the same two kernels every energy balance and duty in the engine is priced on:}
+\begin{tutgolden}
+\goldrow{diag}{hxy}{H\_vapour\_pure1\_J\_per\_mol}{-231233.2}
+\goldrow{diag}{hxy}{H\_vapour\_pure2\_J\_per\_mol}{-239304.0}
+\goldrow{diag}{hxy}{P\_Pa}{101325.0}
+\goldrow{diag}{hxy}{T\_bubble\_pure1\_K}{351.5}
+\goldrow{diag}{hxy}{T\_bubble\_pure2\_K}{372.5}
+\goldrow{diag}{hxy}{h\_liquid\_pure1\_J\_per\_mol}{-271912.8}
+\goldrow{diag}{hxy}{h\_liquid\_pure2\_J\_per\_mol}{-280791.7}
+\goldrow{diag}{hxy}{lambda\_max\_J\_per\_mol}{45052.6}
+\goldrow{diag}{hxy}{lambda\_min\_J\_per\_mol}{40679.6}
+\goldrow{diag}{hxy}{n\_nodes}{82.0}
+\goldrow{diag}{hxy}{n\_refused}{0.0}
+\end{tutgolden}
+
+\clearpage
 \tutentry{phase01\_water\_full}{tutorials/props/scan/phase01\_water\_full}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

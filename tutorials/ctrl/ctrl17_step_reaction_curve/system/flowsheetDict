@@ -1,0 +1,102 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl17_step_reaction_curve  --  THE OPEN-LOOP STEP TEST, and nothing else.
+
+  This is the experiment a control course runs before it tunes anything: the
+  loop is OPEN (there is no PID in this file), the manipulated variable is
+  driven through a declared staircase of steps, and the plant's response is
+  written to trajectory.csv.  The identification that turns that record into a
+  model -- gain, time constant, dead time -- lives in `system/propsDict` and is
+  run by choupoProps AFTERWARDS, in this same directory:
+
+      runCase    tutorials/ctrl/ctrl17_step_reaction_curve    # the experiment
+      choupoProps tutorials/ctrl/ctrl17_step_reaction_curve   # the analysis
+
+  THE EXPERIMENT AND ITS ANALYSIS ARE SEPARATE ON PURPOSE.  choupoCtrl owns the
+  time loop; the props bench owns the regression.  Putting the fit inside the
+  dynamic binary would give the project a second reason to integrate, and
+  putting the integration inside the bench would give it a second time loop.
+  The price is two commands; the refusal you get for forgetting the first one
+  names the second.
+
+  THE PLANT is ctrl01's: a 1 L jacketed CSTR, pure compA feed at 320 K and
+  5e-5 kmol/s, a mildly exothermic first-order isomerisation compA -> compB,
+  UA = 50 W/K.  It is the SAME plant ctrl01 controls with a PID, which is the
+  point -- ctrl01 tunes by hand, this case identifies the model those settings
+  should have come from.
+
+  THE STAIRCASE: base 320 K, then +5, back, +20, back.  FOUR reaction curves
+  from one run, and they are not four copies of one another --
+
+    * the +5 K and the -5 K steps connect the SAME two steady states, so their
+      steady-state gains must agree by construction.  They do, to 5e-4, which
+      is a free consistency check on the whole chain (integration, sampling,
+      regression);
+    * the +/-20 K pair sits at a hotter operating point, and Arrhenius makes
+      the plant's gain LARGER there.  It is about 48 % larger, and that number
+      is the honest error bar on any single-step identification.  It is
+      published as `K_spread_relative`;
+    * the up-step and the down-step of the same size give different apparent
+      DEAD TIMES (31.4 s against 18.8 s on the +/-20 pair).  Neither is wrong;
+      the dead time of a plant that has none is an artefact of the curvature
+      the surrogate is trying to absorb, and it moves with the curvature.
+
+  WHY THERE IS NO CONTROLLER HERE.  A reaction curve is an OPEN-loop record: if
+  a controller were acting, the response would be the closed loop's and the
+  identified model would already contain the controller you were about to
+  design.  ctrl02 and ctrl05 step a disturbance with the PID running, which is
+  a different experiment (disturbance rejection); ctrl08 drives a PRBS with the
+  PID running, which is a third.  This one has one job.
+
+  The `Schedule` controller below is a controller only in the software sense --
+  it reads nothing, decides nothing, and writes a declared value onto the
+  jacket temperature at declared times.  That is what makes the record open
+  loop, and it is also what puts the driven signal into trajectory.csv as its
+  own column (`JacketStep.MV`), which is what the identification reads.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        operation
+        {
+            UA           50.0;             // W/K   (jacket coupling)
+            T_jacket     320.0 K;          // K     (the schedule overwrites it)
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         JacketStep;
+        type         Schedule;
+
+        actuator     { unit reactor;  mv T_jacket; }
+
+        //  Each hold is 3000 s.  The FIRST one is not a step: it lets the
+        //  reactor settle from the authored 0/ state, so that the first step
+        //  is applied to a plant that is standing still.  The bench checks
+        //  that (`preStepSteadyMetric`) and refuses if it was not.
+        schedule
+        (
+            { time 0;      value 320.0; }   // settle
+            { time 3000;   value 325.0; }   // +5 K
+            { time 6000;   value 320.0; }   // -5 K   (back)
+            { time 9000;   value 340.0; }   // +20 K
+            { time 12000;  value 320.0; }   // -20 K  (back)
+        );
+    }
+);

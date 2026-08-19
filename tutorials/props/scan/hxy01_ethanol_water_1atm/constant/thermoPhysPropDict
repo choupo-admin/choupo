@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermophysicalPropertySystem (v2) -- gammaPhi for ethanol/water.
+
+  This case DECLARES its caloric routes, and it must: an enthalpy-concentration
+  diagram is an ENERGY diagram, so the block that says how enthalpy is computed
+  is not optional decoration here.  `energyBasis elementsDatum` is the engine's
+  one enthalpy base (the elements at 298.15 K) -- the builder refuses any other
+  word, and the op publishes that same statement into the .meta sidecar beside
+  its table.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( ethanol water );
+
+equilibrium
+{
+    formulation gammaPhi;               // gamma (liquid) x phi (vapour)
+
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters            // declared WHERE consumed -- the pair
+            {                           // record carries the DECHEMA provenance
+                ethanol-water { source "data/standards/parameters/NRTL/ethanol-water.dat"; }
+            }
+        }
+        standardState pureLiquid;       // gamma_i -> 1 as x_i -> 1 (Raoult datum)
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;         // consistent with the pair regression
+    }                                   // (DECHEMA VLE-IG bank -- ideal-gas fit)
+}
+
+caloric
+{
+    energyBasis elementsDatum;          // ONE datum: the elements at 298.15 K
+
+    liquid { enthalpyRoute pureCpPlusExcess; }   // pure liquid legs + H^E; H^E
+                                                 // is ZERO here -- no pair of
+                                                 // this model declares
+                                                 // calorimetricFit, and the
+                                                 // sidecar says so
+    vapour { enthalpyRoute idealGasCp; }         // Hf_298 + INT Cp_ig dT
+}

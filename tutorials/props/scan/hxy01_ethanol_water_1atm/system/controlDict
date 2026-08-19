@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  The enthalpy-concentration locus of ethanol/water at 1 atm.
+
+    McCabe-Thiele carries equilibrium and material balance under CONSTANT
+    MOLAR OVERFLOW -- one mole condensing releases exactly what one mole
+    vaporising absorbs, whatever the composition.  This case publishes the
+    quantity that assumption is about: the saturated-liquid enthalpy h(x) on
+    its bubble line, the saturated-vapour enthalpy H(y) on its dew line, and
+    the equilibrium tie between them, all on Choupo's ONE enthalpy datum (the
+    elements at 298.15 K).
+
+    lambda(x) = H(y*) - h(x) is the molar heat of vaporisation ALONG the
+    locus.  CMO says it is a constant.  Read the two lambda diagnostics and
+    decide for yourself.
+
+    Run-only + KPI golden; see README.md for the provenance of every number
+    and for what is NOT validated. */
+application   choupoProps;
+description   "Enthalpy-concentration locus (h-x-y) of ethanol/water at 1 atm on the elements datum -- the data a Ponchon-Savarit construction is drawn on";
+verbosity     2;

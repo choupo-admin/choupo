@@ -1,0 +1,125 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE IDENTIFICATION, run over the trajectory the choupoCtrl half of this case
+  wrote.  Run the experiment first:
+
+      runCase     tutorials/ctrl/ctrl17_step_reaction_curve
+      choupoProps tutorials/ctrl/ctrl17_step_reaction_curve
+
+  TWO OPERATIONS OVER ONE EXPERIMENT, and the pair is the lesson.  Both read
+  the SAME four steps of the SAME jacket temperature; they differ only in which
+  response they call the controlled variable.
+
+    [0] the COMPOSITION loop (jacket -> product holdup).  Two lags in series --
+        the jacket heats the liquid, and the warmer liquid reacts faster --
+        so the response is S-shaped and an FOPDT surrogate finds a real
+        apparent dead time.  All three tuning rules apply.
+
+    [1] the TEMPERATURE loop (jacket -> reactor temperature).  One dominant
+        lag and no transport delay, so the identified theta comes out smaller
+        than the trajectory's own sampling interval.  The engine says so, and
+        REFUSES every Ziegler-Nichols and Cohen-Coon setting by name: both
+        rules put theta in a denominator, and a controller gain computed from
+        an unresolved number is a number with nothing behind it.  IMC survives,
+        because its algebra never divides by theta -- which is exactly why it
+        is the rule of choice for a lag-dominant loop.
+
+  Nothing was tuned to make that happen.  It is one plant, one experiment, and
+  two honest answers, and the difference between them is the whole reason the
+  reaction-curve method needs a dead time to work at all.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fopdt_jacket_to_composition;
+        type        reactionCurve;
+
+        trajectory  trajectory.csv;
+
+        manipulated JacketStep.MV;        // K       -- the jacket temperature
+        measured    reactor.n_compB;      // kmol    -- product holdup (V is
+                                          //            constant, so this is
+                                          //            the outlet composition
+                                          //            up to a fixed factor)
+
+        //  The steady-state test.  0.005 means: over the final 15 % of each
+        //  hold the response must not still be moving by more than half a per
+        //  cent of the step change it made.  Both K and tau are read off the
+        //  end of the curve, so this tolerance decides whether either number
+        //  is reported at all.
+        settling
+        {
+            tolerance   0.005;
+            window      0.15;
+        }
+
+        //  WHICH STEP THE HEADLINE QUOTES.  This is a choice and it changes
+        //  the answer -- segment 1 (+5 K) is the closest thing here to a
+        //  linearisation about the base operating point, and segment 3 (+20 K)
+        //  identifies a gain about 48 % larger.  The spread across all four is
+        //  published as K_spread_relative, which is the reason the choice does
+        //  not have to be hidden.
+        reference   1;
+
+        tuning
+        {
+            rules  ( zieglerNichols cohenCoon imcLambda );
+            forms  ( PI PID );
+
+            //  IMC needs a desired CLOSED-loop time constant, and no open-loop
+            //  record can supply one: it is the engineer's statement of how
+            //  fast the loop should be.  The bench refuses to invent it.
+            //  lambda = tau asks for a closed loop no faster than the plant --
+            //  the conservative end of the range Rivera, Morari & Skogestad
+            //  discuss.  Try relativeToTau 0.3 and watch Kc rise by 3.
+            lambda { relativeToTau 1.0; }
+        }
+
+        output
+        {
+            segments  reactionCurveSegments.csv;
+            curve     reactionCurve.csv;
+            tuning    reactionCurveTuning.csv;
+        }
+    }
+
+    {
+        name        fopdt_jacket_to_temperature;
+        type        reactionCurve;
+
+        trajectory  trajectory.csv;
+
+        manipulated JacketStep.MV;        // K
+        measured    reactor.T;            // K
+
+        settling
+        {
+            tolerance   0.005;
+            window      0.15;
+        }
+
+        reference   1;
+
+        tuning
+        {
+            rules  ( zieglerNichols cohenCoon imcLambda );
+            forms  ( PI PID );
+            lambda { relativeToTau 1.0; }
+        }
+
+        output
+        {
+            segments  reactionCurveSegmentsT.csv;
+            curve     reactionCurveT.csv;
+            tuning    reactionCurveTuningT.csv;
+        }
+    }
+);

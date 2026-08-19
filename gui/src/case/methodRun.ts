@@ -36,6 +36,22 @@ License
   `key value [unit];` scalar, keeping the unit word and the comment tail.
   It THROWS when a key is absent or matches more than once in the file --
   a silent no-op override would run the engine on the wrong question.
+
+  THREE OVERRIDE KINDS, ONE RULE (the word and the rename arrived 2026-08-19
+  with the Thiele pellet tool).  A knob that changes a pellet's SHAPE cannot be
+  a number: the catalyst record declares `geometry sphere;`, and the engine
+  REFUSES a record whose characteristic dimension is named by the wrong key --
+  `radius` for a sphere or a cylinder, `halfThickness` for a slab, and
+  declaring the other one refuses rather than being reinterpreted.  So the
+  shape knob is a WORD override plus a KEY RENAME, and both obey the same rule
+  the scalar always has: exactly one match, or throw.  Nothing here invents a
+  value -- the rename carries the record's own authored number and its unit
+  across, and the word is one of the three the engine accepts.
+
+  What is deliberately NOT here: a way to add, delete or re-nest a dict block.
+  A knob that needs one is a knob the witness case should declare, not one this
+  module should synthesize -- dict-on-disk is the authoring channel (credo
+  Q2), and a GUI that assembles blocks has become an editor.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useRef, useState } from "react";
@@ -57,44 +73,114 @@ export interface ScalarOverride {
   occurrence?: number;
 }
 
+/** One knob: replace the WORD of `key <word>;` in `file`.  Used where the
+ *  quantity a knob turns is not a number at all -- a pellet's `geometry`, a
+ *  model name.  Same uniqueness rule as the scalar. */
+export interface WordOverride {
+  file: string;
+  key: string;
+  word: string;
+  occurrence?: number;
+}
+
+/** Rename a declared key IN PLACE, keeping its value, its unit and its comment
+ *  tail untouched: `radius 1.5 mm;  // 3 mm pellet` -> `halfThickness 1.5 mm;
+ *  // 3 mm pellet`.  It moves no number and invents none; it exists because
+ *  some engine records name one quantity differently depending on a word
+ *  declared beside it, and refuse the other spelling rather than reinterpret
+ *  it. */
+export interface KeyRename {
+  file: string;
+  from: string;
+  to: string;
+  occurrence?: number;
+}
+
+export type DictOverride = ScalarOverride | WordOverride | KeyRename;
+
+const isScalar = (o: DictOverride): o is ScalarOverride => "value" in o;
+const isWord = (o: DictOverride): o is WordOverride => "word" in o;
+
+/** ONE home for "find the declared occurrences of this pattern, or refuse".
+ *  Every override kind goes through it, so they cannot disagree about what
+ *  "the key is not there" or "the key is there twice" means. */
+function locate(
+  text: string, re: RegExp, what: string, file: string, occurrence?: number,
+): RegExpMatchArray {
+  const matches = [...text.matchAll(re)];
+  if (matches.length === 0)
+    throw new Error(`override: ${what} not found in ${file}`);
+  if (matches.length > 1 && occurrence === undefined)
+    throw new Error(`override: ${what} matches ${matches.length} times`
+      + ` in ${file} -- pass 'occurrence' to pick one`);
+  const m = matches[(occurrence ?? 1) - 1];
+  if (!m || m.index === undefined)
+    throw new Error(`override: occurrence ${occurrence} of ${what}`
+      + ` not found in ${file} (${matches.length} present)`);
+  return m;
+}
+
+const escapeKey = (k: string): string => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 /** Replace the number of `key <number> [unit];` keeping unit + trailing
  *  comment.  Throws on zero matches, and on multiple matches unless
  *  `occurrence` picks one -- a knob that silently misses its dict runs the
  *  engine on the wrong question. */
 export function applyScalarOverride(text: string, o: ScalarOverride): string {
   const re = new RegExp(
-    "(^[ \\t]*" + o.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    "(^[ \\t]*" + escapeKey(o.key)
     + "[ \\t]+)([-+0-9.eE]+)([ \\t]*[A-Za-z/%0-9.^-]*[ \\t]*;)", "gm");
-  const matches = [...text.matchAll(re)];
-  if (matches.length === 0)
-    throw new Error(`override: key '${o.key}' not found in ${o.file}`);
-  if (matches.length > 1 && o.occurrence === undefined)
-    throw new Error(`override: key '${o.key}' matches ${matches.length} times`
-      + ` in ${o.file} -- pass 'occurrence' to pick one`);
-  const idx = (o.occurrence ?? 1) - 1;
-  const m = matches[idx];
-  if (!m || m.index === undefined)
-    throw new Error(`override: occurrence ${o.occurrence} of '${o.key}'`
-      + ` not found in ${o.file} (${matches.length} present)`);
+  const m = locate(text, re, `key '${o.key}'`, o.file, o.occurrence);
   return text.slice(0, m.index) + m[1] + String(o.value) + m[3]
-       + text.slice(m.index + m[0].length);
+       + text.slice(m.index! + m[0].length);
+}
+
+/** Replace the WORD of `key <word>;`, keeping the indentation and the comment
+ *  tail.  Same refusals as the scalar. */
+export function applyWordOverride(text: string, o: WordOverride): string {
+  const re = new RegExp(
+    "(^[ \\t]*" + escapeKey(o.key)
+    + "[ \\t]+)([A-Za-z][A-Za-z0-9_.-]*)([ \\t]*;)", "gm");
+  const m = locate(text, re, `word key '${o.key}'`, o.file, o.occurrence);
+  return text.slice(0, m.index) + m[1] + o.word + m[3]
+       + text.slice(m.index! + m[0].length);
+}
+
+/** Rename a declared key, leaving everything to the right of it alone. */
+export function applyKeyRename(text: string, o: KeyRename): string {
+  const re = new RegExp("(^[ \\t]*)" + escapeKey(o.from) + "(?=[ \\t])", "gm");
+  const m = locate(text, re, `key '${o.from}' (to rename)`, o.file, o.occurrence);
+  return text.slice(0, m.index) + m[1] + o.to
+       + text.slice(m.index! + m[0].length);
+}
+
+/** The ONE entry every caller uses: dispatch on which kind of override this
+ *  is.  A kind is identified by the field only it carries, so an object that
+ *  is none of the three refuses rather than being silently treated as one. */
+export function applyDictOverride(text: string, o: DictOverride): string {
+  if (isScalar(o)) return applyScalarOverride(text, o);
+  if (isWord(o)) return applyWordOverride(text, o);
+  return applyKeyRename(text, o);
 }
 
 /** Clone a bundled tutorial's raw files with overrides applied, and rebuild
  *  the parsed CaseFiles the adapter runs.  Throws if the witness is not in
  *  the bundled corpus (a build problem, not a user state). */
 export function methodCase(
-  witness: string, overrides: ScalarOverride[],
+  witness: string, overrides: readonly DictOverride[],
 ): CaseFiles {
   const entry = tutorialByName(witness);
   if (!entry?.files.rawFiles)
     throw new Error(`method witness '${witness}' is not in the bundled corpus`);
   const raw: { [rel: string]: string } = { ...entry.files.rawFiles };
+  // IN ORDER, deliberately: a rename and a scalar can address the same line
+  // (the Thiele slab renames `radius` to `halfThickness` and then writes the
+  // half-thickness), and the caller is the one that knows which comes first.
   for (const o of overrides) {
     const body = raw[o.file];
     if (body === undefined)
       throw new Error(`override: file '${o.file}' not in witness '${witness}'`);
-    raw[o.file] = applyScalarOverride(body, o);
+    raw[o.file] = applyDictOverride(body, o);
   }
   return filesToCaseFiles(witness, raw);
 }
@@ -106,7 +192,7 @@ export function methodCase(
  *  knob values is fine); a newer spec aborts the in-flight run. */
 export function useMethodRun(
   witness: string | null,
-  overrides: ScalarOverride[],
+  overrides: readonly DictOverride[],
   overridesKey: string,
   binary: "choupoSolve" | "choupoBatch" | "choupoCtrl" | "choupoProps",
 ): { result: RunResult | null; err: string | null; busy: boolean } {

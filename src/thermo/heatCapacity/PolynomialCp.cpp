@@ -187,6 +187,71 @@ void PolynomialCp::noteRange(scalar T) const
     }
 }
 
+//  THE SPAN.  Same rule as noteRange -- announced, never refused (I4) -- but a
+//  different fact, and the difference is what makes either of them readable.
+//
+//  MEASURED, not remembered (2026-08-19, and this is the number that decided
+//  the shape).  When H/S first started noting their endpoints through
+//  `noteRange`, a sweep of every steady tutorial that runs choupoSolve --
+//
+//      for d in tutorials/steady/*/*/; do ./choupoSolve "$d" | grep -q '^\[cp\]'
+//
+//  -- returned 100 LOUD of 210 cases.  Every one of those hundred is TRUE: the
+//  corpus's liquid-Cp fits are mostly regressed over ~280-350 K while process
+//  temperatures routinely run past them, and until this slice the integral was
+//  the route that never looked.  But the point message it borrowed said
+//  "evaluated at T = 370 K", which is not what happened: nothing evaluated
+//  anything at 370 K, an integral ran from the 298.15 K datum to 370 K and
+//  spent 20 K of that path outside the fit.  Naming an endpoint understates a
+//  long excursion and overstates a short one, and a hundred cases carrying the
+//  wrong sentence is worse than a hundred carrying none.
+//
+//  So the span says the span, and the reader can size the error from the
+//  message.  It does NOT judge: how much a 20 K excursion costs depends on the
+//  polynomial, and no gate here knows that.
+//
+//  THE CORPUS INCIDENCE IS A CURATION FINDING, not a defect in this file, and
+//  it is deliberately not fixed by widening any window -- inventing a validity
+//  domain converts "unsourced" into "falsely sourced", which no reader and no
+//  gate can detect.
+void PolynomialCp::noteSpan(scalar Tref, scalar T) const
+{
+    if (rangeUnknown_) return;                         // said at construction
+    if (Tmin_ == 0.0 && Tmax_ == 0.0) return;          // no window declared
+    if (announcedSpan_) return;
+
+    const scalar lo = (Tref < T) ? Tref : T;
+    const scalar hi = (Tref < T) ? T : Tref;
+    if (lo >= Tmin_ && hi <= Tmax_) return;            // the whole path is in
+
+    //  How much of the path fell outside, so the sentence carries a size and
+    //  not only a verdict.  A window lying strictly inside [lo, hi] leaves
+    //  BOTH ends out, and this arithmetic covers that without a special case.
+    const scalar inLo = (lo > Tmin_) ? lo : Tmin_;
+    const scalar inHi = (hi < Tmax_) ? hi : Tmax_;
+    const scalar inside  = (inHi > inLo) ? (inHi - inLo) : 0.0;
+    const scalar outside = (hi - lo) - inside;
+
+    announcedSpan_ = true;
+    const std::string who =
+        owner_.empty() ? "polynomial Cp" : "component '" + owner_ + "'";
+    const std::string span =
+        "integrated from " + trimNum(Tref) + " K to " + trimNum(T)
+      + " K, a path that LEAVES its declared Trange (" + trimNum(Tmin_) + " "
+      + trimNum(Tmax_) + ") over " + trimNum(outside) + " K of its "
+      + trimNum(hi - lo) + " K";
+
+    AdvisoryLog::instance().add(
+        "validity", "warning", who,
+        span + " -- extrapolated, still returned");
+    std::cerr << "[cp] polynomial Cp"
+              << (owner_.empty() ? std::string() : " for '" + owner_ + "'")
+              << " " << span << ".\n     The enthalpy/entropy difference is"
+                 " extrapolated over that part of the path: it is still"
+                 " returned (I4 -- extrapolation is a legitimate choice), but"
+                 " it is no longer covered by the fit.\n";
+}
+
 scalar PolynomialCp::Cp(scalar T) const
 {
     noteRange(T);
@@ -198,6 +263,27 @@ scalar PolynomialCp::Cp(scalar T) const
 
 scalar PolynomialCp::H(scalar T, scalar Tref) const
 {
+    //  THE INTEGRAL CROSSES THE WINDOW TOO, and until 2026-08-19 it crossed it
+    //  in SILENCE.  Only `Cp(T)` called `noteRange`, so evaluating the heat
+    //  capacity 0.5 K past a declared `Trange` announced, while INTEGRATING the
+    //  same polynomial across the same boundary said nothing -- and the
+    //  integral is the commoner call, because every enthalpy takes this road.
+    //
+    //  That is the shape this project has now paid for three times (the
+    //  `check_true_ions` and `check_ebullioscopic` cases, and this):
+    //  A GUARD ARMED ON ONE OF TWO ROUTES GUARDS NEITHER, because the
+    //  unguarded route is the one the answer actually travels.
+    //
+    //  Found by the enthalpy-concentration scan, which integrates ethanol's
+    //  liquid Cp 0.45 K past its declared window on the way to the azeotrope
+    //  and reported nothing.  The numerical cost there is under 50 J/mol; the
+    //  mechanism is general and the silence was the defect.
+    //
+    //  THE WHOLE PATH is what left the window, so `noteSpan` is what says so
+    //  -- see its definition above for why the endpoint message this first
+    //  used was the wrong sentence for a hundred cases at once.
+    noteSpan(Tref, T);
+
     // ∫ Cp dT = Σ a_k T^{k+1} / (k+1)
     auto integral = [&](scalar tau) {
         scalar s = 0.0;
@@ -214,6 +300,9 @@ scalar PolynomialCp::H(scalar T, scalar Tref) const
 
 scalar PolynomialCp::S(scalar T, scalar Tref) const
 {
+    //  Same crossing, same silence, same remedy -- see H() above.
+    noteSpan(Tref, T);
+
     //  ∫ Cp/T dT
     //  = a_0 · ln(T/Tref) + Σ_{k≥1} a_k · (T^k − Tref^k) / k
     if (a_.empty()) return 0.0;

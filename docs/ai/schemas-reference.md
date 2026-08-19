@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*80 of 80 registered operations carry a schema and are documented below.*
+*82 of 82 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -331,6 +331,16 @@ Multi-salt symmetric eNRTL bench: the mean-ionic gammas of two (or more) salts s
 | `tauEE` |   | number | - | The salt-salt interaction parameter; defaults to 0 (none fitted). |
 | `formulation` |   | string | — | published (default) = the industrial expressions as printed; refined = the Gibbs-Duhem-exact derivative of the same G_ex. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `enthalpyConcentration`  (enthalpyConcentration operation)
+
+The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h_liquid, the vapour y1 with H_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. `role bubble` rows put x1 on the uniform grid, `role dew` rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity{} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H_vapour − h_liquid over the locus, the spread of which measures what constant molar overflow costs.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — | `{ P <p>; }` — REQUIRED, and P is its only entry. A whole enthalpy-concentration locus belongs to ONE pressure, so nothing is defaulted h… |
+| `grid` |   | object | — | `{ n <intervals>; }` — intervals on the composition axis; both pure ends are nodes, so the table carries n+1 rows per role. Absent (or pr… |
+| `output` | ✓ | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory: x1,y1,T_K,h_liquid_J_per_mol,H_vapour_J_p… |
 
 ## `equilibriumReactor`  (equilibriumReactor operation)
 
@@ -810,6 +820,21 @@ Pure-component P-T phase diagram: the vapour-pressure curve from the component's
 | `grid` |   | object | — | `{ n <points>; }` — how finely the domain is sampled. |
 | `solid` |   | object | — | Declares the solid so the diagram gains its two solid boundaries. Raw SI values. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `reactionCurve`  (reactionCurve operation)
+
+OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV written by a choupoCtrl run, one column driven and one column watched, it cuts the record into step SEGMENTS, fits a first-order-plus-dead-time surrogate (K, tau, theta) to each by Nelder-Mead on the sum of squared residuals, and applies the classical tuning rules to the segment the reader nominates. It solves no plant and integrates nothing: the experiment must already exist on disk, and the op reads it. THE SURROGATE IS A SURROGATE — the record is whatever the plant did, an FOPDT is three numbers, and the statement that the second is standing in for the first reaches the reader at the site AND in the end-of-run caveat block. A segment whose response has not SETTLED yields no time constant, because both K and tau are read off the end of the curve; the steady-state test that decides this is declared, not assumed. A dead time smaller than the record's own sampling interval is UNRESOLVED, and every rule that divides by theta (Ziegler-Nichols, Cohen-Coon) is then REFUSED BY NAME for that segment — a controller gain computed from a number the experiment could not measure is a number with nothing behind it. IMC survives there, because its algebra never divides by theta. NOTHING IN CHOUPO EVER CLOSES A LOOP ON THESE SETTINGS: the published gains are what each rule says, not a claim that they work.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `trajectory` |   | string | — | CSV written by a previous choupoCtrl run, relative to the case directory. Its first column is time; every other column is a signal named … |
+| `manipulated` | ✓ | string | — | Header name of the column that was STEPPED (e.g. `JacketStep.MV`). A `scheduleController` puts its own driven value into the trajectory a… |
+| `measured` | ✓ | string | — | Header name of the response (e.g. `reactor.T`, `reactor.n_compB`). WHICH COLUMN THIS IS, IS THE EXPERIMENT: the same trajectory read as a… |
+| `settling` |   | object | — | Decides whether a segment's response has stopped moving, and therefore whether K and tau are reported at all. Absent, tolerance 0.005 ove… |
+| `minimumPoints` |   | integer | - | A segment carrying fewer samples than this is not identified. Default 20. Three parameters fitted to a handful of points is arithmetic, n… |
+| `reference` |   | integer | — | 1-based index into the step segments the record was cut into. THIS IS A CHOICE AND IT CHANGES THE ANSWER — a small step near the base ope… |
+| `tuning` |   | object | — | Applied to the identified triple of every settled segment. Omitting the block still runs Ziegler-Nichols and Cohen-Coon in PI and PID form. |
+| `output` |   | object | — | Where the three tables are written, relative to the case directory. Each is optional; a name omitted writes no file. |
 
 ## `scalingScan`  (scalingScan operation)
 

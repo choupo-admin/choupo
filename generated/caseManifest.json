@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 359,
+  "cases": 361,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -878,6 +878,24 @@
    "unitTypes": [
     "Schedule",
     "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl17_step_reaction_curve": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Schedule",
+    "dynamicCSTR"
+   ],
+   "ops": [
+    "reactionCurve"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -1899,6 +1917,20 @@
    },
    "roles": [],
    "hasGolden": false
+  },
+  "tutorials/props/scan/hxy01_ethanol_water_1atm": {
+   "application": "choupoProps",
+   "ops": [
+    "enthalpyConcentration"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   },
   "tutorials/props/scan/phase01_water_full": {
    "application": "choupoProps",
@@ -5292,7 +5324,8 @@
     "tutorials/ctrl/ctrl12_williams_otto",
     "tutorials/ctrl/ctrl13_williams_otto_step",
     "tutorials/ctrl/ctrl14_williams_otto_pi",
-    "tutorials/ctrl/ctrl16_williams_otto_optimal"
+    "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -5361,6 +5394,7 @@
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
+    "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/scan2d01_co2_compressibility",
     "tutorials/props/scan/ternary01_audit_vlle",
@@ -5618,7 +5652,8 @@
     "tutorials/ctrl/ctrl03_adaptive_disturbance",
     "tutorials/ctrl/ctrl05_disturbance_transient",
     "tutorials/ctrl/ctrl13_williams_otto_step",
-    "tutorials/ctrl/ctrl16_williams_otto_optimal"
+    "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "Signal": [
     "tutorials/ctrl/ctrl06_sine_disturbance",
@@ -5805,7 +5840,8 @@
     "tutorials/ctrl/ctrl08_prbs_ident",
     "tutorials/ctrl/ctrl09_stream_disturbance",
     "tutorials/ctrl/ctrl10_brine_concentration",
-    "tutorials/ctrl/ctrl11_esterification_jacket"
+    "tutorials/ctrl/ctrl11_esterification_jacket",
+    "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "electricLoad": [
     "tutorials/electrochem/ed01_nacl_desalination",
@@ -6103,6 +6139,7 @@
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
+    "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/ternary01_audit_vlle",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
@@ -6259,6 +6296,7 @@
     "tutorials/ctrl/ctrl13_williams_otto_step",
     "tutorials/ctrl/ctrl14_williams_otto_pi",
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
     "tutorials/plant/ChemicalPlantTutorial",
@@ -6480,6 +6518,9 @@
    "enrtlMultiSalt": [
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl"
    ],
+   "enthalpyConcentration": [
+    "tutorials/props/scan/hxy01_ethanol_water_1atm"
+   ],
    "estimateComponent": [
     "tutorials/plant/polycaprolactonePlant/properties",
     "tutorials/props/estimate/estimate_acetone",
@@ -6570,6 +6611,9 @@
    ],
    "purePhaseDiagram": [
     "tutorials/props/scan/phase01_water_full"
+   ],
+   "reactionCurve": [
+    "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "scalingScan": [
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

@@ -1,0 +1,19 @@
+key,value
+component1,ethanol
+component2,water
+composition_basis,"mole fraction of component1; x1 is the LIQUID, y1 the VAPOUR"
+pressure_Pa,101325
+enthalpy_datum,elements-298.15K
+enthalpy_datum_note,"both enthalpy columns are ABSOLUTE on Choupo's one enthalpy base: the elements at 298.15 K, i.e. each species carries its standardThermochemistry.dHf_298.  A constant offset cancels in the difference point and the lever arms of an enthalpy-concentration construction; it does NOT cancel if a consumer mixes these numbers with a different base."
+liquid_route,"ThermoPackage::H_liquid_formation(T_sat, x) -- the canonical per-species liquid leg (speciesPhaseEnthalpy)"
+vapour_route,"ThermoPackage::H_stream_formation(T_sat, P, vapourFraction 1, y)"
+temperature_meaning,"T_K is the ONE equilibrium temperature the row's two ends share: the bubble temperature of x1 and the dew temperature of y1"
+tie_contract,"every row carries BOTH ends of one tie line; pair nothing by index and interpolate nothing"
+saturation_kernel,"BubblePoint::compute for both roles; a dew node is the inversion y_eq(x) = y1 of the same kernel, so the ties land ON the vapour curve rather than near it"
+excess_enthalpy_included,0
+excess_enthalpy_note,"H^E is OMITTED: no pair of this activity model declares calorimetricFit, so the liquid line carries ideal mixing of the pure liquid legs.  A VLE-fitted G^E reproduces H^E only by differentiation, and consistency is not correctness -- see ActivityModel::calorimetricFit"
+grid_n,40
+rows_bubble,41
+rows_dew,41
+rows_ok,82
+rows_refused,0

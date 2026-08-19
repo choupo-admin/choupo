@@ -56,9 +56,9 @@ import { useSyncExternalStore } from "react";
 import { guideUrl } from "../../help/guideLinks.js";
 
 export type MethodToolId =
-  | "mccabe" | "psychro" | "kremser" | "pinch-composite" | "entu"
+  | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden" | "drying" | "hunter-nash" | "column-control";
+  | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -107,6 +107,38 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
     theory: "ch:distillation",
+  },
+  //  THE CAPABILITY WAS ALREADY IN THE SIMULATOR (2026-08-19).  `shortcutColumn`
+  //  has computed Fenske, Underwood and the Molokanov form of Gilliland since
+  //  long before this registry existed; what was missing was the LENS — the
+  //  student who types 22 into a rigorous column's `nStages` had nowhere to see
+  //  where that first number comes from.  So this entry adds no physics: both
+  //  curves it draws are engine runs of bundled tutorials
+  //  (shortcut01_benzene_toluene and column02_simultaneous), one solve per
+  //  point, and the juxtaposition it exists for — the shortcut's stage count
+  //  beside the rigorous column's — is two engine answers to one question, tied
+  //  together by the protocol written out in case/fugShortcut.ts.
+  //
+  //  THE LABEL IS SHORT BECAUSE THE ROW HAS A WIDTH BUDGET, and this entry
+  //  spent it.  A tool tab's menu row LEADS with `Tool: <label>` and the row is
+  //  a wrapping Group; MenuBar.tsx measured that budget at 390 px and named the
+  //  longest label it was sized for ("Ignition / extinction (Van Heerden)",
+  //  242 px of text).  This entry first read "Distillation shortcut
+  //  (Fenske-Underwood-Gilliland)" -- half as long again -- and checkGui found
+  //  exactly the failure that comment predicts: the row wrapped, `Help` landed
+  //  under the caption and came back COVERED at 390x844.  So the menu carries
+  //  the engine's own alias (`shortcutColumn`, alias `FUG`) and the three names
+  //  are spelled out one line below, in `teaches`, where there is room for
+  //  them.  Do not lengthen it back without re-running bin/checkGui.
+  {
+    id: "fug", label: "Distillation shortcut (FUG)",
+    kind: "construction", status: "live",
+    teaches: "Where the first number you type into a rigorous column comes "
+      + "from: total reflux fixes N_min, minimum reflux fixes R_min, and "
+      + "Gilliland — a fit, not a derivation — interpolates N(R) between those "
+      + "two asymptotes, with the rigorous MESH column's own stage count for "
+      + "the same separation drawn beside it.",
+    theory: "ch:fug",
   },
   {
     id: "psychro", label: "Psychrometric chart", kind: "construction", status: "live",
@@ -183,6 +215,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "KPIs from tutorials/steady/absorption/extract01_ethanol_water_benzene.  "
       + "What is missing is the host dispatch in MethodsWorkspace.tsx (see the "
       + "comment above this entry), not an engine output.",
+  },
+  //  THE ENGINE SHIPPED FIRST AND NOTHING DREW IT (2026-08-19).  The
+  //  `thielePellet` property operation solved the pellet BVP and published the
+  //  intraparticle field on the live site for a day with no tool in this
+  //  registry able to render it — a computed answer nobody could see.  This
+  //  entry arrives LIVE and MOUNTED in the same change: the dispatch in
+  //  MethodsWorkspace refuses an unmounted id by name now, so a `planned`
+  //  placeholder here would have helped nobody.
+  {
+    id: "thiele", label: "Catalyst pellet (Thiele modulus)", kind: "construction",
+    status: "live",
+    teaches: "The concentration field INSIDE one pellet: turn the rate "
+      + "constant and watch it go from nearly flat — the whole pellet working "
+      + "— to a boundary layer hugging the surface over a dead core, with the "
+      + "effectiveness factor beside it as the consequence, and the closed "
+      + "form drawn over the numerical answer so the method is watched being "
+      + "checked.",
+    theory: "ch:thiele",
   },
   //  THE FIRST TOOL OF THE SELECTION KIND (heuristics-as-a-third-kind, ruled
   //  2026-08-18).  It constructs nothing and shows no property surface: it

@@ -73,7 +73,27 @@ LOUD = "tutorials/steady/drying/solidDryer01_sugar"
 #  inside their declared windows, verified by running it.  If a future check
 #  finds something here too, repoint again and write down what it found --
 #  that is the gate working, not the gate breaking.
-SILENT = "tutorials/steady/flash/flash02_ethanol_water"
+#
+#  IT HAPPENED AGAIN, 2026-08-19, and the note above is the reason this is a
+#  two-line edit rather than an argument.  `PolynomialCp::H`/`S` integrate the
+#  polynomial from the 298.15 K datum to the state and had never once compared
+#  that PATH against the declared window -- only `Cp(T)` did, and the integral
+#  is the route every enthalpy actually travels.  flash02 flashes at 355 K and
+#  ethanol's liquid-Cp fit is declared over (280 351): the case had been
+#  integrating 4 K past the fit since it existed.  Its caveat block was empty
+#  for the same reason flash01's was in 2026-08: THE CHECK WAS NOT WIRED.
+#  Twice now, this gate's silent witness has been an unexamined case rather
+#  than a clean one -- which is this gate's own thesis about caveat blocks,
+#  landing on the gate itself.
+#
+#  heatExchanger01_water_water replaces it, and is chosen to EXERCISE the
+#  machinery rather than dodge it: a water/water exchanger integrates a liquid
+#  Cp on both sides, and water's window (273 373) contains the whole path from
+#  the datum to either stream temperature.  Silent because the physics is in
+#  range, not because nothing was computed.  Verified by running every case
+#  the corpus offers: 12 of the 110 that raise no Cp advisory also print
+#  "none raised", and this is one of them.
+SILENT = "tutorials/steady/heat/heatExchanger01_water_water"
 
 HEADER = "ASSUMPTIONS AND CAVEATS"
 NONE_LINE = "ASSUMPTIONS AND CAVEATS: none raised."

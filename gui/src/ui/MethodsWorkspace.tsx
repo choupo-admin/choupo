@@ -186,6 +186,10 @@ const TieTriangleTool = lazy(() =>
   import("./methods/TieTriangleTool.js").then((m) => ({ default: m.TieTriangleTool })));
 const ColumnControlTool = lazy(() =>
   import("./methods/ColumnControlTool.js").then((m) => ({ default: m.ColumnControlTool })));
+const ThielePelletTool = lazy(() =>
+  import("./methods/ThielePelletTool.js").then((m) => ({ default: m.ThielePelletTool })));
+const FugShortcutTool = lazy(() =>
+  import("./methods/FugShortcutTool.js").then((m) => ({ default: m.FugShortcutTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -346,6 +350,8 @@ export function MethodsWorkspace() {
             : tool === "breakthrough" ? <BreakthroughTool />
             : tool === "hunter-nash" ? <TieTriangleTool />
             : tool === "column-control" ? <ColumnControlTool />
+            : tool === "thiele" ? <ThielePelletTool />
+            : tool === "fug" ? <FugShortcutTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

@@ -503,3 +503,35 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \goldmore{40}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl17\_step\_reaction\_curve}{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Open-loop process reaction curve: the jacket steps +5, -5, +20 and -20 K from one settled base, and the four responses are the identification record for the FOPDT fit in system/propsDict}
+\begin{tutnarrative}
+THE IDENTIFICATION, run over the trajectory the choupoCtrl half of this case wrote. Run the experiment first:
+
+runCase tutorials/ctrl/ctrl17\_step\_reaction\_curve choupoProps tutorials/ctrl/ctrl17\_step\_reaction\_curve
+
+TWO OPERATIONS OVER ONE EXPERIMENT, and the pair is the lesson. Both read the SAME four steps of the SAME jacket temperature; they differ only in which response they call the controlled variable.
+
+[0] the COMPOSITION loop (jacket $\to$ product holdup). Two lags in series -- the jacket heats the liquid, and the warmer liquid reacts faster -- so the response is S-shaped and an FOPDT surrogate finds a real apparent dead time. All three tuning rules apply.
+
+[1] the TEMPERATURE loop (jacket $\to$ reactor temperature). One dominant lag and no transport delay, so the identified theta comes out smaller than the trajectory's own sampling interval. The engine says so, and REFUSES every Ziegler-Nichols and Cohen-Coon setting by name: both rules put theta in a denominator, and a controller gain computed from an unresolved number is a number with nothing behind it. IMC survives, because its algebra never divides by theta -- which is exactly why it is the rule of choice for a lag-dominant loop.
+
+Nothing was tuned to make that happen. It is one plant, one experiment, and two honest answers, and the difference between them is the whole reason the reaction-curve method needs a dead time to work at all.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{JacketStep}{MV\_final}{320}
+\goldrow{kpi}{JacketStep}{SP\_final}{320}
+\goldrow{kpi}{reactor}{T\_final}{320.759149686}
+\goldrow{kpi}{reactor}{n\_compA\_final}{0.0117959393424}
+\goldrow{kpi}{reactor}{n\_compB\_final}{0.000204060657576}
+\goldrow{kpi}{reactor}{F\_in\_final}{5e-05}
+\goldrow{kpi}{reactor}{t\_end}{15000}
+\end{tutgolden}
+
