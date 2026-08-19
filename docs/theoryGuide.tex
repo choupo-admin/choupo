@@ -23780,6 +23780,329 @@ refuse aloud.
 \end{tutoriallink}
 
 
+
+% ---------------------------------------------------------------------
+\section{The process reaction curve: identifying an FOPDT model, and
+tuning from it}\label{sec:reactioncurve}
+
+\begin{whatyoulllearn}
+Before a loop can be tuned it has to be \emph{measured}.  The classical
+measurement is the \emph{process reaction curve}: open the loop, step the
+manipulated variable once, and record what the plant does.  From that one
+curve a student reads three numbers --- a gain $K$, a time constant
+$\tau$, an apparent dead time $\theta$ --- and three published rules turn
+them into controller settings.  This section derives the model those
+three numbers belong to, gives both the hand construction and the
+regression Choupo runs, and then spends most of its length on the three
+questions that decide whether the answer means anything: \emph{has the
+response finished?}, \emph{is the dead time resolved by the record?}, and
+\emph{how much of the gain is a property of the plant rather than of the
+step you happened to ask with?}  The tuning rules themselves are two
+lines of algebra each; the disagreement between them --- a factor of
+eight on the worked case --- is the lesson.
+\end{whatyoulllearn}
+
+\subsection*{The experiment}
+
+The loop is \emph{open}.  If a controller is acting while the step is
+applied, the recorded response is the closed loop's, and the model
+identified from it already contains the controller you were about to
+design.  So: bring the plant to a steady state, hold it there long enough
+to be sure, change one manipulated variable by a declared amount, and
+record until the plant is steady again.
+
+Everything in this section rests on those two steady states.  The gain is
+the ratio of the change in the measured variable to the change in the
+manipulated one,
+\begin{equation}
+    K \;=\; \frac{\Delta y_\infty}{\Delta u}
+          \;=\; \frac{y(\infty) - y(0^-)}{\Delta u},
+    \label{eq:rc-gain}
+\end{equation}
+and both ends of that fraction are steady-state quantities.  A curve that
+has not finished has no $y(\infty)$ to put in the numerator, and a step
+applied to a plant that was still moving has no $y(0^-)$ to subtract.
+
+\subsection*{The model, and what it assumes}
+
+\emph{First-order plus dead time} (FOPDT) is the smallest model that can
+carry the two features a controller designer needs: a lag, and a delay.
+In the Laplace domain
+\begin{equation}
+    G(s) \;=\; \frac{K\,e^{-\theta s}}{\tau s + 1},
+    \label{eq:fopdt-tf}
+\end{equation}
+and in the time domain, for a step $\Delta u$ applied at $t=0$ from a
+steady state $y_0$,
+\begin{equation}
+    y(t) \;=\; y_0 \;+\; K\,\Delta u
+      \left[ 1 - e^{-(t-\theta)/\tau} \right] \, \mathbf{1}(t \ge \theta).
+    \label{eq:fopdt-step}
+\end{equation}
+
+\begin{keyidea}
+An FOPDT model is a \emph{surrogate}, not a description.  Almost no real
+plant is first order, and most plants with an apparent dead time have no
+transport delay at all --- what the fit calls $\theta$ is the curvature
+of the leading edge, absorbed into the only parameter that can hold it.
+The three numbers describe \emph{the response you showed the fit}, over
+\emph{the step you asked with}, at \emph{that operating point}.
+\end{keyidea}
+
+That is not a reason to distrust the method; it is the reason the method
+works.  A controller does not need to know the plant, only enough of it
+to be tuned.  But it is a reason to publish the \emph{residual} beside
+the three parameters, which Choupo does and this section insists on: a
+fitted parameter with no residual is a number the reader cannot judge.
+
+Where does an apparent dead time come from, if not from transport?  Put
+two first-order lags in series, $\tau_1 \ll \tau_2$.  The response starts
+flat --- the second lag sees nothing until the first has moved --- and
+then curves up.  An FOPDT fit reads that initial flatness as delay, and
+the delay it reports grows with $\tau_1/\tau_2$.  This is exactly the
+situation in the worked case below: the jacket heats the liquid (fast),
+and the warmer liquid reacts faster (slow), so the composition responds
+through two lags in series and carries a $\theta$ of about 25\,s, while
+the \emph{temperature} in the same experiment responds through one lag
+and carries no resolvable delay at all.
+
+\subsection*{Reading the curve by hand}
+
+Two constructions, both doable with a ruler on a printed curve, and both
+worth doing once before trusting any regression.
+
+\paragraph{The tangent construction (Ziegler and Nichols, 1942).}
+Draw the tangent to the reaction curve at its steepest point.  Call its
+slope $R$ (response per unit time per unit change in controller output)
+and call $L$ the time at which that tangent crosses the initial value.
+For an FOPDT model the steepest point is the instant the response begins,
+where the slope is $K/\tau$ per unit $\Delta u$ and the tangent crosses
+at $t=\theta$; so
+\begin{equation}
+    R = \frac{K}{\tau}, \qquad L = \theta .
+    \label{eq:rc-RL}
+\end{equation}
+This is the construction Ziegler and Nichols wrote their rules in terms
+of, which is why their settings are quoted below in both forms.  Its
+weakness is that a tangent slope is a \emph{derivative} read off a
+drawing: on a noisy record it is the least reliable quantity on the page.
+
+\paragraph{The two-point construction (Sundaresan and Krishnaswamy,
+1978).}  Instead of a slope, use two \emph{crossings}.  Let $t_{35.3}$
+and $t_{85.3}$ be the times at which the response has completed 35.3\,\%
+and 85.3\,\% of its total change.  Then
+\begin{equation}
+    \tau = 0.67\,(t_{85.3} - t_{35.3}),
+    \qquad
+    \theta = 1.3\,t_{35.3} - 0.29\,t_{85.3}.
+    \label{eq:rc-twopoint}
+\end{equation}
+Two readings, no derivative.  Choupo publishes this construction beside
+its regression on every segment, for two reasons: it is arithmetic a
+student can repeat, and a regression nobody can check by hand is a black
+box with a residual attached.
+
+\subsection*{Reading the curve by regression}
+
+The engine's answer is a least-squares fit of
+Equation~\eqref{eq:fopdt-step} to every sample in the segment:
+\begin{equation}
+    \min_{K,\;\tau,\;\theta \ge 0}
+      \;\; S(K,\tau,\theta)
+      \;=\; \sum_{i} \Bigl[\, y_i - y_0
+            - K\,\Delta u\, g(t_i;\tau,\theta) \,\Bigr]^2,
+    \qquad
+    g = \bigl[1 - e^{-(t-\theta)/\tau}\bigr]\mathbf{1}(t\ge\theta).
+    \label{eq:rc-lsq}
+\end{equation}
+Three parameters, but only two of them are awkward: for any trial
+$(\tau,\theta)$ the amplitude $a = K\,\Delta u$ enters
+\emph{linearly}, so it is eliminated in closed form,
+\begin{equation}
+    a^\star(\tau,\theta)
+      \;=\; \frac{\sum_i g_i \,(y_i - y_0)}{\sum_i g_i^{\,2}},
+    \label{eq:rc-amp}
+\end{equation}
+and the search runs over $(\tau,\theta)$ only.  Choupo drives it with the
+project's shared Nelder-Mead simplex, seeded from
+Equation~\eqref{eq:rc-twopoint}.
+
+\begin{pitfall}
+$\theta$ is bounded below at zero because a negative dead time is not
+causal, and that bound \emph{binds} on plants with no delay.  When it
+does, Choupo says so --- and then refuses every tuning rule that divides
+by $\theta$, by name.  A bound that silently absorbs a parameter is the
+crutch this project refuses to build; a bound that reports when it binds
+is a measurement.
+\end{pitfall}
+
+\begin{pitfall}
+The objective in Equation~\eqref{eq:rc-lsq} is a sum of squares in
+whatever units $y$ carries, so its absolute size is arbitrary --- on the
+worked case it is around $10^{-11}$, because $y$ is a holdup in kmol.  A
+solver whose convergence test compares that number against a fixed floor
+will stop far from the minimum and report success.  This is not
+hypothetical: it happened here, and the fit was 2.6\,\% off in sum of
+squares while announcing itself converged.  Normalise the objective by
+something of its own size before handing it to a general-purpose
+optimiser.
+\end{pitfall}
+
+\subsection*{Three questions the number has to survive}
+
+\paragraph{Has it settled?}  Both $K$ and $\tau$ are read off the end of
+the curve.  If the response is still moving when the record stops, $K$ is
+the change \emph{so far} rather than the change, and $\tau$ is whichever
+exponential happens to pass through an unfinished transient --- a number
+with a plausible magnitude and no meaning.  Choupo measures the largest
+excursion from the final value over the closing fraction of each segment,
+as a fraction of the step change, and \emph{refuses} to report a time
+constant when it exceeds a declared tolerance.
+
+\paragraph{Is $\theta$ resolved?}  The record is sampled.  A step that
+occurs between two samples is bracketed, not located, so the identified
+dead time is an upper bound within one sampling interval and cannot be
+narrowed by any amount of arithmetic --- only by sampling faster.  A
+$\theta$ smaller than the interval it was measured on is not a small dead
+time; it is no measurement at all, and Choupo treats it as such.
+
+\paragraph{How much of $K$ belongs to the plant?}  This is the question a
+single step cannot answer, and the one most often skipped.  A gain
+identified from one step and then quoted as \emph{the} gain of the plant
+is a remembered measurement dressed as a property.  Step the same plant
+by a different amount, or in the other direction, and a nonlinear plant
+answers differently.  The honest procedure is to run several steps in one
+experiment and publish the \emph{spread}; if only one step was run, the
+honest report says the sensitivity was not measured.
+
+\begin{intuition}
+Normalise each segment's response by its own total change and plot them
+together.  A linear plant gives one curve.  Where the normalised curves
+fail to superpose is exactly where the plant is nonlinear, and by how
+much.
+\end{intuition}
+
+\subsection*{The tuning rules}
+
+Three rules, all closed-form algebra on $(K,\tau,\theta)$, all published,
+and all different.  Write $r = \theta/\tau$.
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Rule & $K_c$ & $T_i$ & $T_d$ \\
+\midrule
+Z--N \ PI   & $0.9\,\tau/(K\theta)$ & $3.33\,\theta$ & --- \\
+Z--N \ PID  & $1.2\,\tau/(K\theta)$ & $2\theta$      & $0.5\theta$ \\
+C--C \ PI   & $\dfrac{\tau}{K\theta}\Bigl(0.9 + \dfrac{r}{12}\Bigr)$
+            & $\theta\,\dfrac{30 + 3r}{9 + 20r}$ & --- \\[2ex]
+C--C \ PID  & $\dfrac{\tau}{K\theta}\Bigl(\dfrac{4}{3} + \dfrac{r}{4}\Bigr)$
+            & $\theta\,\dfrac{32 + 6r}{13 + 8r}$
+            & $\theta\,\dfrac{4}{11 + 2r}$ \\[2ex]
+IMC \ PI    & $\dfrac{1}{K}\,\dfrac{\tau + \theta/2}{\lambda + \theta/2}$
+            & $\tau + \theta/2$ & --- \\[2ex]
+IMC \ PID   & $\dfrac{1}{K}\,\dfrac{\tau + \theta/2}{\lambda + \theta/2}$
+            & $\tau + \theta/2$
+            & $\dfrac{\tau\theta}{2\tau + \theta}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The sources, and they travel with the numbers in Choupo's published
+tuning table rather than living only here:
+
+\begin{itemize}
+\item \textbf{Ziegler, J.\,G. and Nichols, N.\,B.}, ``Optimum Settings
+      for Automatic Controllers'', \emph{Trans.\ ASME} \textbf{64}
+      (1942) 759--768.  Written in terms of the reaction curve's $R$ and
+      $L$ of Equation~\eqref{eq:rc-RL}: the PID gain is $1.2/(RL)$,
+      which is the table's $1.2\,\tau/(K\theta)$.
+\item \textbf{Cohen, G.\,H. and Coon, G.\,A.}, ``Theoretical
+      Consideration of Retarded Control'', \emph{Trans.\ ASME}
+      \textbf{75} (1953) 827--834.  The same family of objectives,
+      corrected for the ratio $r = \theta/\tau$ so that the settings
+      remain usable when the delay is a large fraction of the lag.
+\item \textbf{Rivera, D.\,E., Morari, M.\ and Skogestad, S.},
+      ``Internal Model Control: 4.\ PID Controller Design'',
+      \emph{Ind.\ Eng.\ Chem.\ Process Des.\ Dev.} \textbf{25} (1986)
+      252--265.  The FOPDT entry with a first-order Pad\'e
+      approximation of the delay.
+\item \textbf{Sundaresan, K.\,R. and Krishnaswamy, P.\,R.},
+      ``Estimation of time delay, time constant parameters in time,
+      frequency, and Laplace domains'', \emph{Can.\ J.\ Chem.\ Eng.}
+      \textbf{56} (1978) 257--262, for the two-point construction of
+      Equation~\eqref{eq:rc-twopoint}.
+\end{itemize}
+
+\subsection*{Why they disagree, and why that is the point}
+
+They disagree because they are answering different questions.
+
+Ziegler and Nichols aimed at a \emph{quarter-decay} response to a load
+disturbance: each swing a quarter of the last.  That is a fast loop and a
+poorly damped one, and the settings are correspondingly aggressive.
+Cohen and Coon stay in the same family but carry the ratio $r$ through
+the algebra, so their gains hold up where Ziegler--Nichols' assumption of
+a small delay does not.
+
+IMC asks something else entirely: \emph{how fast do you want the closed
+loop to be?}  The answer is the parameter $\lambda$, and it is not in the
+data.  No open-loop record can tell you how fast a loop should respond;
+that is a statement about the process's economics, its actuator, and how
+much model error you are willing to be wrong by.  Choupo therefore
+\emph{refuses} to run the IMC rule until $\lambda$ is declared.  A small
+$\lambda$ buys speed and spends robustness; a large one does the reverse.
+
+Two structural consequences follow, and both are visible in the worked
+case.  First, the two quarter-decay rules put $\theta$ in a
+\emph{denominator}, so they blow up as the delay vanishes --- and are
+undefined, not merely large, when it is unresolved.  The IMC gain does
+not: at $\theta \to 0$ it becomes $\tau/(K\lambda)$, perfectly finite.
+That is why IMC is the rule of choice for a lag-dominant loop, and it is
+not a matter of taste.  Second, when all three \emph{are} defined they
+still differ by a large factor, and the reader has to choose.  Choupo
+publishes all three with their sources and recommends none.
+
+\begin{keyidea}
+None of these settings has been tested by closing the loop.  Choupo
+identifies and publishes; it does not simulate the tuned controller and
+does not claim any of the three rules works.  A number obtained from an
+open-loop record and a published formula is a \emph{proposal}.
+\end{keyidea}
+
+\subsection*{The worked case}
+
+\begin{tutoriallink}{ctrl/ctrl17\_step\_reaction\_curve}
+One jacketed CSTR, open loop, and one staircase on the jacket
+temperature: $+5$, back, $+20$, back, each held 3000\,s.  Run
+\code{choupoCtrl} for the experiment, then \code{choupoProps} on the same
+directory for the identification.
+
+Read as a \emph{composition} loop (jacket $\to$ product holdup) the four
+steps identify $K = 1.240\times10^{-5}$ to $1.834\times10^{-5}$
+kmol\,K$^{-1}$, $\tau \approx 233$ to $240$\,s and $\theta \approx 19$ to
+$31$\,s, each with an r.m.s.\ residual under $0.35\,\%$ of its own step
+change.  The gain at the hotter operating point is \emph{48\,\% larger}
+than at the base --- Arrhenius, measured --- which is the honest error
+bar on any single-step identification and is published as
+\code{K\_spread\_relative}.  The $+5$ and $-5$ steps connect the same two
+steady states, so their steady-state gains must agree by construction;
+they do, to $3.5\times10^{-5}$ on the $\pm5$ pair and
+$1.9\times10^{-4}$ on the $\pm20$ pair, which is a free check on the
+whole chain --- integration, sampling and regression together.
+Ziegler--Nichols PI asks for $K_c = 6.68\times10^{5}$ where IMC at
+$\lambda = \tau$ asks for $8.07\times10^{4}$: a factor of eight, from
+one curve.
+
+Read as a \emph{temperature} loop (jacket $\to$ reactor temperature), the
+same experiment has one dominant lag and no resolvable delay: $\theta$
+comes back below the 5\,s sampling interval on every segment, and one of
+the four hits its lower bound of zero exactly.  Ziegler--Nichols and
+Cohen--Coon are refused by name; IMC still publishes.  One plant, one
+experiment, two honest answers.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Choosing a column control structure, and where the instruments
 go}\label{sec:column-control}
