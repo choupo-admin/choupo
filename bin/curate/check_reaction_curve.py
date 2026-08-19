@@ -42,7 +42,7 @@ WHAT THIS GATE CHECKS.
       (`fScale = max(1, |fBest|)`), so on an objective of order 1e-11 -- a sum
       of squared kmol residuals -- `tolF` stopped being a relative tolerance.
       The op reported `converged` after NINE iterations at a point this grid
-      search beat by 2.5 % in SSE.  The fix is in the op (it normalises its
+      search beat by 2.6 % in SSE.  The fix is in the op (it normalises its
       objective by the seed's value and restarts the simplex), not in the
       shared solver, whose other callers are unaffected.
 
@@ -97,23 +97,22 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
     column, a missing lambda and an unsettled response are each fired once,
     below, and nothing here says they are the only ways this op can be wrong.
 
-SABOTAGE-VERIFIED 2026-08-19, six times; OBSERVED output recorded below,
+SABOTAGE-VERIFIED 2026-08-19, SEVEN times; OBSERVED output recorded below,
 verbatim.  Sabotage 5 fired differently from the prediction and is the most
-useful line in this docstring -- see its note.
+useful line in this docstring -- see its note.  The seventh is the source-level
+one an earlier slice had named as the gap it could not close; it is at the end.
+
+The first SIX are applied to a COPY in a temporary directory: sabotages 1-4 are
+of the CASE and prove the ENGINE refuses, 5-6 are of the ENGINE'S PUBLISHED
+OUTPUT and prove THIS GATE compares.  The SEVENTH is different in kind and is
+the only one that touches the tree -- it edits `src/`, rebuilds, and is
+performed BY HAND under a destructive-session journal, never by this gate.
 
 Sabotage 1 -- the dynamic case's `endTime` cut from 15000 to 12400, so the
-final -20 K step has 400 s of a ~240 s time constant to settle in:
+final -20 K step has 400 s of a ~240 s time constant to settle in.  choupoProps
+exits 2 with:
 
-    check_reaction_curve: FAILED
-      S1 (unsettled response): choupoProps exited 0 -- a response that never settled was identified anyway
-
-  ... is what was predicted.  OBSERVED: the gate PASSED this arm, because
-  choupoProps exited 2 with
-
-      *** choupoProps fatal error: reactionCurve 'fopdt_jacket_to_composition': segment 4 NEVER SETTLED.  Over the final 60 s of the segment (t = 12340 to 12400 s) the output 'reactor.n_compB' was still moving by 7.3213e-02 of its own step change, against the declared `settling.tolerance` 0.005.
-
-  and the arm requires exactly that: a non-zero exit whose message names the
-  segment and quotes the metric.
+    *** choupoProps fatal error: reactionCurve 'fopdt_jacket_to_composition': segment 4 NEVER SETTLED.  Over the final 60 s of the segment (t = 12340 to 12400 s) the output 'reactor.n_compB' was still moving by 7.3213e-02 of its own step change, against the declared `settling.tolerance` 0.005.  The steady-state gain and the time constant are BOTH read off the end of the curve, so neither means anything here: K would be the change so far rather than the change, and tau would be whatever exponential happens to pass through an unfinished transient.  Hold this step longer (raise `endTime` in the dynamic case, or move the next schedule entry later), or -- if the plant really does not settle -- identify it with a method that does not assume it does.  This bench will not report a time constant for a response that has not finished.
 
 Sabotage 2 -- `measured reactor.n_compB;` changed to `measured reactor.n_compC;`
 (a column that does not exist):
@@ -123,7 +122,7 @@ Sabotage 2 -- `measured reactor.n_compB;` changed to `measured reactor.n_compC;`
 Sabotage 3 -- the `lambda { relativeToTau 1.0; }` block deleted while
 `imcLambda` stays in `rules`:
 
-    *** choupoProps fatal error: reactionCurve 'fopdt_jacket_to_composition': the `imcLambda` rule was requested but no `tuning.lambda {}` was declared.  Lambda is the desired CLOSED-LOOP time constant: it is the engineer's choice of how fast the loop should be, not something the open-loop record can tell you, and this bench will not invent one.
+    *** choupoProps fatal error: reactionCurve 'fopdt_jacket_to_composition': the `imcLambda` rule was requested but no `tuning.lambda {}` was declared.  Lambda is the desired CLOSED-LOOP time constant: it is the engineer's choice of how fast the loop should be, not something the open-loop record can tell you, and this bench will not invent one.  Declare `lambda { relativeToTau 1.0; }` (a closed loop as fast as the plant) or `lambda { value <t> s; }`.  Rivera, Morari & Skogestad (1986) recommend keeping lambda above roughly 0.8 theta for robustness; that recommendation is theirs to make and yours to apply.
 
 Sabotage 4 -- `trajectory.csv` deleted before choupoProps runs:
 
@@ -131,40 +130,56 @@ Sabotage 4 -- `trajectory.csv` deleted before choupoProps runs:
 
 Sabotage 5 -- THE ONE WORTH KNOWING.  `tau` in the published
 `reactionCurveSegments.csv` multiplied by 1.05 after the run, to prove arm (b)
-compares rather than transcribes.  PREDICTED: one failure, on tau.  OBSERVED:
-TWO, because the objective arm caught it as well and caught it far louder --
+compares rather than transcribes.  PREDICTED: one failure, naming tau.
+OBSERVED: TWO, and the second is much louder than the first --
 
-    check_reaction_curve: FAILED
-      S5 self-sabotage (tau x 1.05 in the published segments table) was NOT caught by arm (b)
+    composition segment 1: published tau 250.7423051460432 s against 238.8021897454546 s recomputed here (rel. dev. 5.000e-02, tolerance 5.0e-03)
+    composition segment 1: the published (K, tau, theta) gives SSE 1.07388e-10 against 1.81421e-11 at this gate's own optimum -- the published point is not the minimum of its own objective (excess 4.919e+00, tolerance 1.0e-06)
 
-  did not appear; instead the arm reported
+  A 5 % error in tau costs a FACTOR OF SIX in the sum of squares, because the
+  objective is quadratic about its minimum and 5 % is a long way out on it.
+  The objective arm would therefore have caught a tau error several hundred
+  times smaller than the parameter arm's own tolerance admits -- which means
+  the parameter tolerances are not what is protecting this gate, and TOL_TAU
+  could be loosened a great deal without weakening it.  The parameter arm is
+  kept anyway, because it names WHICH parameter moved and the objective arm
+  cannot.  Note also what did NOT fire: K is re-derived in closed form from
+  (tau, theta), so a doctored tau leaves the published K untouched and the K
+  arm silent.  A gate with only the K arm would have passed this sabotage.
 
-      composition segment 1: published tau 250.742305146043 s against 238.802195377184 s recomputed here (rel. dev. 5.000e-02, tolerance 5.0e-03)
-      composition segment 1: the published (K, tau, theta) gives SSE 2.03952e-11 against 1.81421e-11 at this gate's own optimum -- the published point is not the minimum of its own objective (excess 1.242e-01, tolerance 1.0e-06)
+Sabotage 6 -- `Kc` of the first row of the published `reactionCurveTuning.csv`
+multiplied by 1.01, to prove arm (c) recomputes the rule algebra:
 
-  The second line is the stronger check and it was not the one designed to
-  catch this: a 5 % error in tau costs 12 % in SSE, so the objective arm alone
-  would have found a tau error four times smaller than the parameter tolerance
-  admits.  The parameter arm is kept because it names WHICH parameter moved,
-  which the objective arm cannot.
+    composition segment 1 zieglerNichols PI: published Kc 675121.4099764667 against 668437.0395806619 recomputed from the engine's own (K, tau, theta) (rel. dev. 1.000e-02)
 
-Sabotage 6 -- the Ziegler-Nichols PID gain coefficient changed from 1.2 to 1.1
-in the engine (`st.Kc = 1.1 * tau / (K * th);`), rebuilt:
+  ONE line, where the sabotage touched one row -- as intended.  Arm (c) walks
+  every published row, so a systematic change to a rule's coefficient would
+  produce one line per segment.
 
-    check_reaction_curve: FAILED
-      composition segment 1 zieglerNichols PID: published Kc 840012.404129714 against 916377.168141506 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
-      composition segment 2 zieglerNichols PID: published Kc 929872.324744874 against 1014406.17608168 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
-      composition segment 3 zieglerNichols PID: published Kc 445379.478862621 against 485868.522395587 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
-      composition segment 4 zieglerNichols PID: published Kc 763012.52766904 against 832377.302912771 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
-      temperature: expected zieglerNichols to be refused for an unresolved theta, and it was, so this arm saw nothing -- the coefficient change is invisible on a loop whose rules are refused
+Sabotage 7 -- THE SOURCE-LEVEL ONE, performed 2026-08-19 after the slice that
+wrote arms (a)-(c) had named it as the gap it could not close (it had been told
+not to run `make` while the commit was held).  Ziegler-Nichols' PID gain
+coefficient changed in `src/propertyOps/ReactionCurve.cpp` from 1.2 to 1.1, the
+engine REBUILT, and the gate re-run:
 
-  The last line is the temperature op's arm reporting that it could not see the
-  sabotage, which is correct and is why the composition op is the one that
-  carries arm (c).
+    composition segment 1 zieglerNichols PID: published Kc 816978.603931917 against 891249.3861075492 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
+    composition segment 2 zieglerNichols PID: published Kc 942424.010592421 against 1028098.9206462814 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
+    composition segment 3 zieglerNichols PID: published Kc 443399.066805716 against 483708.0728789624 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
+    composition segment 4 zieglerNichols PID: published Kc 765738.127342158 against 835350.6843732595 recomputed from the engine's own (K, tau, theta) (rel. dev. 8.333e-02)
 
-  (Sabotage 6 is the only one that touches src/ and requires a rebuild.  It is
-  performed BY HAND when this gate changes, not by the gate: a gate that
-  rebuilds the engine is the shape that poisoned the tree on 2026-08-18.)
+  FOUR lines where sabotage 6's doctored CSV row produced one -- exactly the
+  systematic signature that docstring predicted, one per segment, at the
+  arithmetic deviation 0.1/1.2 = 8.333e-02.  Two silences are worth as much as
+  the four lines: the PI rows are untouched (only the PID branch was edited),
+  and the TEMPERATURE operation contributes nothing at all, because it refuses
+  every Ziegler-Nichols setting for an unresolved dead time and so has no ZN
+  row to be wrong.  This is what sabotage 6 could not establish: arm (c) reads
+  the ENGINE'S LIVE ALGEBRA, not merely an artefact that agrees with itself.
+
+  Performed under `bin/curate/destructive_session.py`, restored, rebuilt, and
+  the gate re-run to exit 0 -- which is the only proof the tree came back.  The
+  gate does NOT do this to itself: a gate that rebuilds the engine is the shape
+  that poisoned the tree on 2026-08-18.
 """
 
 import csv
