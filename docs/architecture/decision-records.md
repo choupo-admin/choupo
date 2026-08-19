@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 77 records already exist
+## 1. Why an index, when 78 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 77 design records, **39 state a rejected alternative and 38 do not** —
+- Of 78 design records, **39 state a rejected alternative and 39 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -97,6 +97,7 @@ direction is an error.
 | [`destructive-gate-contamination.md`](../design/destructive-gate-contamination.md) | ADR | yes | **SHIPPED 2026-08-18** — a destructive meta-gate killed by SIGKILL (the signal `subprocess.run`'s timeout sends, against which no `finally` runs) left a POISONED BINARY and 7 later gates recorded false FAILED claims into a manifest that was then committed; 12 such entries were already in the committed history.  A destructive gate now declares itself in a disk JOURNAL that only a verified restore removes, every evidence-producing harness REFUSES while it stands, and `gate_manifest` refuses to write on any failure or timeout because a failing gate makes no claim.  Rejects a lock (the failure is one run dying, not two colliding), automatic repair (a mechanism that silently fixes a tree it does not understand destroys real edits), and reordering the walk so the destructive gate runs last (that hides the class rather than detecting it) |
 | [`where-the-catalyst-pellet-lives.md`](../design/where-the-catalyst-pellet-lives.md) | ADR | yes | **RULED 2026-08-18, not built** — the pellet is an asset (`kind catalyst;`, mirroring `Adsorbent`), D_eff is a (catalyst, species) PAIR and never a field on the catalyst, and in the ordinary case it is stored NOWHERE: derived as `(epsilon_p/tau)*D_molecular` and announced with its rule, a `parameters/` record being for a MEASURED value only.  A missing route REFUSES rather than defaulting a tortuosity.  Rejects D_eff on the catalyst record (one number silently standing for every species), a `catalyst {}` block inside the reactor's `operation {}` (two reactors, two copies, drift), a default tortuosity, and kinetics on the asset |
 | [`heuristics-as-a-third-kind.md`](../design/heuristics-as-a-third-kind.md) | ADR | yes | **RULED 2026-08-18, not built** — a heuristic selection aid is NEITHER a method-construction nor a property surface, so the third kind is NAMED (`kind: "selection"`) rather than bent into an existing box.  Heuristics are CURATED RECORDS (claim + primary citation with page + validity domain + what it does not cover); an uncited one is REFUSED, on the unsourced-must-not-become-falsely-sourced rule.  The tool DISPLAYS conflicting authorities and never resolves them by an unpublished weighting — the disagreement is the pedagogy.  Three layers: cited rules and the RGA from the reader's own MESH column are buildable; the dynamic witness is NOT (verified: no column under control in the corpus and `choupoCtrl`'s dynamic tier is DynamicCSTR alone).  Rejects a third top-level surface, a scoring recommendation engine, uncited rules, a fabricated dynamic response, and filing it under `construction` to avoid adding a kind |
+| [`edutools-pareto-evidence.md`](../design/edutools-pareto-evidence.md) | EVIDENCE | no | **Search-backed curriculum evidence for the tool Pareto, 2026-08-19.**  Corrects a survey that ranked tools from memory while admitting it in its own SS9.  ITS FIRST SECTION IS ITS OWN LIMIT: the egress policy permits GitHub alone, so no catalogue or syllabus could be FETCHED; every line is marked [S] search summary / [T] tool summary / [U] URL only / [X] unreachable, and none claims a page anyone opened.  Contradicts the survey where it must: frequency-response control is the HIGHEST-recurrence item found and was filed 'Recommended OUT' on an engine argument welded to a curricular verdict, while control is the only core block with zero tools; MSMPR is over-ranked (no undergraduate syllabus); RTD is under-ranked and the engine has nothing.  Not an ADR: it decides nothing, it supplies the evidence a ranking should have had |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
 | [`reference-rung-refusal.md`](../design/reference-rung-refusal.md) | ADR | yes | **DECIDED + IMPLEMENTED 2026-08-06** — `h_pure_ig`/`s_pure_ig`/`g_pure_ig` refuse a non-gas `referenceState`; revised its own plan on the first measurement (the field was already parsed), and names the water-liquid-datum gap as NOT closed |
 | [`which-result-blocks-a-golden-can-read.md`](../design/which-result-blocks-a-golden-can-read.md) | ADR | yes | **FINDING + RULE, EXECUTED 2026-08-12** — a top-level result block the golden format cannot read arrives UNPINNED, silently, with no failure anywhere; three were found in one session (`validation`, `energyClosures`, `utilityAllocation` — the last on 77 cases) and closed with the `aad` / `closure` / `utility` kinds and a gate each (published ⇒ pinned AND pinned ⇒ published).  The rule is the Edwards lesson one layer up: add the kind in the same commit as the block.  §4 audits what is deliberately NOT pinned (residual histories, curves, words) with the reason for each.  Rejects a gate on the rule itself — a curve and a decision look identical to a script — and rejects regenerating goldens to add rows, which would silently rewrite every other row in 67 files |
@@ -231,7 +232,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**38 of 77 records state no rejected alternative.**  For a FORUM or a STUDY
+**39 of 78 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
