@@ -166,6 +166,12 @@
   "CashFlowYear": [
    "src/core/ResultRecords.H"
   ],
+  "Catalyst": [
+   "src/unitOperations/reactor/pellet/Catalyst.H"
+  ],
+  "CatalystRegistry": [
+   "src/unitOperations/reactor/pellet/CatalystRegistry.H"
+  ],
   "ChemistrySystem": [
    "src/thermo/ChemistrySystem.H"
   ],
@@ -301,6 +307,9 @@
   "Dictionary": [
    "src/core/Dictionary.H"
   ],
+  "DiffusionRequest": [
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H"
+  ],
   "DiffusivityModel": [
    "src/thermo/transport/DiffusivityModel.H"
   ],
@@ -369,6 +378,9 @@
   ],
   "EdwardsPitzerModel": [
    "src/thermo/electrolyte/EdwardsCatalogue.H"
+  ],
+  "EffectiveDiffusivityResult": [
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H"
   ],
   "ElectricLoad": [
    "src/unitOperations/rotating/ElectricLoad.H"
@@ -823,6 +835,9 @@
   "ParticleSizeDistribution": [
    "src/streams/ProcessStream.H"
   ],
+  "PelletSolution": [
+   "src/unitOperations/reactor/pellet/PelletDiffusion.H"
+  ],
   "Phase": [
    "src/thermo/phase/Phase.H"
   ],
@@ -1229,6 +1244,9 @@
   "ThermoResolutionLog": [
    "src/core/ThermoResolution.H"
   ],
+  "ThielePellet": [
+   "src/propertyOps/ThielePellet.H"
+  ],
   "TimelineEvent": [
    "src/result/SimulationResult.H"
   ],
@@ -1609,6 +1627,10 @@
    {
     "key": "kinetics1D",
     "type": "Kinetics1D"
+   },
+   {
+    "key": "thielePellet",
+    "type": "ThielePellet"
    },
    {
     "key": "vleConsistency",
@@ -3565,6 +3587,7 @@
    "src/propertyOps/ScalingScan.H",
    "src/propertyOps/Speciate.H",
    "src/propertyOps/SteamTables.H",
+   "src/propertyOps/ThielePellet.H",
    "src/propertyOps/VaporPressureFit.H",
    "src/propertyOps/VleConsistency.H",
    "src/solver/Convergence.H",
@@ -3757,6 +3780,25 @@
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/SteamTables.H",
    "src/thermo/iapws/IF97.H"
+  ],
+  "src/propertyOps/ThielePellet.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/ThielePellet.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/reactor/pellet/Catalyst.H",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.H",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.H"
   ],
   "src/propertyOps/VanKrevelen.cpp": [
    "src/core/Dictionary.H",
@@ -6406,6 +6448,49 @@
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H"
   ],
+  "src/unitOperations/reactor/pellet/Catalyst.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/reactor/pellet/Catalyst.H"
+  ],
+  "src/unitOperations/reactor/pellet/CatalystRegistry.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/RegistryScan.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/unitOperations/reactor/pellet/Catalyst.H",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.H"
+  ],
+  "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/reactor/pellet/Catalyst.H",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H"
+  ],
+  "src/unitOperations/reactor/pellet/PelletDiffusion.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/solver/NewtonND.H",
+   "src/unitOperations/reactor/pellet/Catalyst.H",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.H"
+  ],
   "src/unitOperations/rotating/Compressor.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -6823,6 +6908,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",
    "src/reporting/EconomicsReport.cpp",
@@ -6880,6 +6966,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp"
@@ -7048,6 +7135,7 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
@@ -7201,6 +7289,10 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/Catalyst.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -7303,6 +7395,7 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
@@ -7456,6 +7549,10 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/Catalyst.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -7613,6 +7710,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/propertyOps/Yang2020.cpp",
@@ -7729,6 +7827,8 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -7819,6 +7919,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/propertyOps/Yang2020.cpp",
@@ -7936,6 +8037,8 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -8018,7 +8121,8 @@
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/solution/SolutionRegistry.cpp",
-   "src/thermo/utility/UtilityCatalogue.cpp"
+   "src/thermo/utility/UtilityCatalogue.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp"
   ],
   "src/core/ResultRecords.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -8217,6 +8321,7 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
@@ -8387,6 +8492,10 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/Catalyst.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -8760,6 +8869,7 @@
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp"
   ],
@@ -8808,6 +8918,10 @@
   "src/propertyOps/SteamTables.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/SteamTables.cpp"
+  ],
+  "src/propertyOps/ThielePellet.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/ThielePellet.cpp"
   ],
   "src/propertyOps/VanKrevelen.H": [
    "src/propertyOps/ConstantEstimator.cpp",
@@ -9135,6 +9249,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",
@@ -9213,6 +9328,7 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -9254,7 +9370,8 @@
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
-   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp"
   ],
   "src/solver/NewtonRaphson.H": [
    "src/postProcessing/EconomicsPass.cpp",
@@ -9570,6 +9687,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/propertyOps/Yang2020.cpp",
@@ -9685,6 +9803,8 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -9720,6 +9840,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
    "src/propertyOps/Yang2020.cpp",
    "src/reporting/ModelBoundaryLedger.cpp",
@@ -9746,6 +9867,8 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/DerivedClosures.H": [
@@ -9828,6 +9951,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",
@@ -9906,6 +10030,7 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -9966,6 +10091,8 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/SaturationCurves.H": [
@@ -10136,6 +10263,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",
@@ -10213,6 +10341,7 @@
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/ElectricLoad.cpp",
    "src/unitOperations/rotating/IsentropicCore.cpp",
@@ -11344,6 +11473,25 @@
   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.H": [
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
    "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp"
+  ],
+  "src/unitOperations/reactor/pellet/Catalyst.H": [
+   "src/propertyOps/ThielePellet.cpp",
+   "src/unitOperations/reactor/pellet/Catalyst.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp"
+  ],
+  "src/unitOperations/reactor/pellet/CatalystRegistry.H": [
+   "src/propertyOps/ThielePellet.cpp",
+   "src/unitOperations/reactor/pellet/CatalystRegistry.cpp"
+  ],
+  "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H": [
+   "src/propertyOps/ThielePellet.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp"
+  ],
+  "src/unitOperations/reactor/pellet/PelletDiffusion.H": [
+   "src/propertyOps/ThielePellet.cpp",
+   "src/unitOperations/reactor/pellet/PelletDiffusion.cpp"
   ],
   "src/unitOperations/rotating/Compressor.H": [
    "src/unitOperations/UnitOperation.cpp",
