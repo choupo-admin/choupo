@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/thielePellet.schema.json",
+  "title": "thielePellet operation",
+  "description": "The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset record and its effective diffusivity from the ONE home that owns that resolution, solves the isothermal first-order intraparticle boundary-value problem numerically, and VERIFIES that answer against the closed form. It publishes the concentration field c(r)/c_s, the Thiele modulus phi with the effectiveness factor eta it produces, the Weisz-Prater observable modulus eta*phi^2, and — swept — the classical eta(phi) family over the three geometries. The physics is NOT here: it lives in unitOperations/reactor/pellet/PelletDiffusion, which the four reactors that today assume eta = 1 will reach. The op judges nothing: it publishes phi, eta and the field, announces what it assumed (isothermal, first-order, one pellet size, external film neglected), and leaves the reader to decide whether diffusion matters in their case. A run whose numerical answer misses the declared verification tolerances exits 1.",
+  "type": "object",
+  "properties": {
+    "catalyst": {
+      "type": "string",
+      "title": "Catalyst pellet",
+      "description": "Resolved by exact name in the assets catalogue (`kind catalyst;`), case-local `constant/assets/` or `data/standards/assets/`; an unknown name refuses, listing what was loaded. The PELLET is described on that record, never here: its `catalyst {}` block carries the geometry, the characteristic dimension NAMED by that geometry (`radius` for sphere and cylinder, `halfThickness` for slab — declaring the other one refuses rather than being reinterpreted), the densities, and the pair `epsilon_p`/`tau`. Refusals that live on the record and cannot be expressed here: a tortuosity below 1; a porosity outside (0,1); half the derivation route (one of `epsilon_p`/`tau` without the other); a record declaring `D_eff`, `effectiveDiffusivity` or `diffusivity` at EITHER nesting level (an effective diffusivity is a (catalyst, species) PAIR quantity and has two other homes); and a record declaring `kinetics`, `reactions`, `rateConstant` or `activationEnergy` (the asset carries the SOLID, never the chemistry run on it — which is why the rate constant is declared on THIS operation). The record's `provenance.identity.origin` and `reviewStatus` are parsed and announced on every run."
+    },
+    "species": {
+      "type": "string",
+      "title": "Diffusing species",
+      "description": "The reactant whose intraparticle field is solved. It must be a component of the case's thermophysical system — otherwise no molecular diffusivity can be asked for it, and the op refuses by name."
+    },
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "The pellet temperature, at which the molecular diffusivity is evaluated. A non-positive value refuses. The model is ISOTHERMAL: the non-isothermal pellet is not modelled, because coupled to Arrhenius it has up to three steady states for one phi and its answer is a SET.",
+      "unit": "K"
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Pressure",
+      "description": "Gas route only. REQUIRED when `diffusion.medium` is `gas` and the effective diffusivity is derived (a gas binary diffusivity is pressure-dependent); omitting it there refuses by name. Ignored by the liquid route, and not needed when a measured D_eff record supplies the answer.",
+      "unit": "Pa"
+    },
+    "rateConstant": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Rate constant, per pellet volume",
+      "description": "The first-order rate constant on the basis the intraparticle balance is written on: per unit PELLET VOLUME. Declare this OR `rateConstantMass`, never both — they are the same fact in two units, related by the pellet density, and two declarations of one fact drift. Declaring both refuses; declaring neither refuses; a non-positive value refuses. Orders other than first are not modelled: they have no closed form, hence no oracle to check the numerical answer against.",
+      "unit": "1/s"
+    },
+    "rateConstantMass": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Rate constant, per catalyst mass",
+      "description": "The same first-order rate constant on the basis a heterogeneous kinetics paper usually reports: per unit CATALYST MASS. Converted as k_v = k_m * rho_particle and announced with that arithmetic, so the conversion is visible rather than done for the reader in silence. Needs `rho_particle` on the catalyst record — without it the conversion refuses. Mutually exclusive with `rateConstant` (see there).",
+      "unit": "m3/(kg.s)"
+    },
+    "diffusion": {
+      "type": "object",
+      "title": "Diffusion route",
+      "description": "How the molecular diffusivity behind D_eff is obtained. D_eff itself is resolved by its ONE home and never declared here: a MEASURED record at `parameters/diffusion/effective/<catalyst>/<species>.dat` (case-local or catalogue) stands if one exists, otherwise D_eff = (epsilon_p/tau)*D_molecular is DERIVED from the catalyst record and announced with the rule that produced it — nothing is written to disk. With both, the measured value stands and the derived one cross-checks it aloud; a disagreement is a FINDING, never resolved by silently preferring either. With NEITHER, the op refuses naming what each route lacked; there is no default tortuosity. Refusals carried by a measured record and not expressible here: a record whose declared (catalyst, species) does not match its slot; a non-positive D_eff; a `Trange` word other than `unknown` (a real window is `Trange ( lo hi );`); and an impossible `Trange`. Use at a temperature outside a declared window is announced, not judged. The derivation uses the BULK molecular diffusivity alone — Knudsen diffusion is not modelled, and the run says so.",
+      "properties": {
+        "medium": {
+          "type": "string",
+          "enum": [
+            "gas",
+            "liquid"
+          ],
+          "title": "Medium",
+          "description": "`gas` reads the case's `transport { diffusivity {} }` model (and needs `P`); `liquid` reads `transport { liquidDiffusivity {} }`. Either one refuses by name when the case declares no such model. Any other word refuses — guessing which was meant would be a silent model choice."
+        },
+        "counterDiffusing": {
+          "type": "string",
+          "title": "Counter-diffusing partner",
+          "description": "The binary partner: the carrier gas, or the solvent. It must be a component of the case's thermophysical system, and it must DIFFER from `species` — naming the diffusing species itself refuses, since a binary diffusivity needs two different components."
+        }
+      },
+      "required": [
+        "medium",
+        "counterDiffusing"
+      ]
+    },
+    "nodes": {
+      "type": "integer",
+      "minimum": 5,
+      "not": {
+        "multipleOf": 2
+      },
+      "title": "Grid points",
+      "description": "Grid POINTS (not intervals) for the case's own pellet field; defaults to 401, announced when it defaults. Must be a whole number (a fractional value refuses), at least 5, and ODD — eta is the volume integral of the field by Simpson's rule, which needs an even number of INTERVALS, so an even point count refuses and names the next odd number. The scheme is second-order, so the error scales as (phi_char*h)^2; when phi_char*h exceeds 0.25 the boundary layer is spanned by fewer than four cells and the run warns, with the deviation from the closed form published beside the answer.",
+      "unit": "-"
+    },
+    "sweep": {
+      "type": "object",
+      "title": "eta(phi) family",
+      "description": "Optional. The classical eta(phi) plot. It is a PARAMETRIC family over the generalised modulus, not a family of real pellets — it varies phi directly and holds nothing else fixed, and the op announces that: only the case's own point above is built from the resolved rate constant, effective diffusivity and pellet dimension. Its maximum deviation from the closed form is held to `verification.sweep`.",
+      "properties": {
+        "phi": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "title": "Modulus range",
+          "description": "`( lo hi );` — the generalised modulus range, log-spaced with both endpoints included. The schema cannot express the ordering: the op refuses unless 0 < lo < hi, because a non-positive endpoint has no logarithm.",
+          "unit": "-"
+        },
+        "points": {
+          "type": "integer",
+          "minimum": 2,
+          "title": "Points per geometry",
+          "description": "Log-spaced points per geometry, endpoints included; defaults to 21. Fewer than 2 refuses — the two endpoints are the minimum.",
+          "unit": "-"
+        },
+        "geometries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "slab",
+              "cylinder",
+              "sphere"
+            ]
+          },
+          "minItems": 1,
+          "title": "Geometries swept",
+          "description": "Defaults to `( slab cylinder sphere )`. These three are the only ones solved, because they are the three that carry a CLOSED FORM to verify the numerical answer against; any other word refuses. On the generalised abscissa the three nearly collapse onto one curve, which is the lesson."
+        },
+        "nodes": {
+          "type": "integer",
+          "minimum": 5,
+          "not": {
+            "multipleOf": 2
+          },
+          "title": "Grid points per sweep point",
+          "description": "Defaults to 201, announced when it defaults. Whole, at least 5 and ODD, on the same grounds as the top-level `nodes`. The family spans the modulus, so its LARGEST phi decides whether the grid is enough — the per-point deviation from the closed form is published in the sweep CSV.",
+          "unit": "-"
+        }
+      },
+      "required": [
+        "phi"
+      ]
+    },
+    "refinement": {
+      "type": "object",
+      "title": "Grid-refinement study",
+      "description": "Optional. Re-solves the case's own pellet on a series of grids and reports the observed ORDER of convergence between the finest pair. A single tolerance says the answer is close enough on ONE grid; the observed order says the scheme is the one it claims to be (second-order central differences => 2).",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 5,
+            "not": {
+              "multipleOf": 2
+            }
+          },
+          "minItems": 2,
+          "title": "Grids to solve on",
+          "description": "`( 51 101 201 401 );` — every entry is solved, so every entry must itself be at least 5 and ODD. Fewer than two grids refuses: an order of convergence is measured BETWEEN grids, so one grid measures nothing."
+        }
+      },
+      "required": [
+        "nodes"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "title": "Verification tolerances",
+      "description": "Optional. The tolerances the run's PASS/FAIL verdict — and its exit code — are taken on. Omitting the block defaults them to field 1e-4, eta 1e-4, sweep 5e-3 and ANNOUNCES that it did; declaring it makes the verdict the case's own statement rather than the engine's fallback. Any key omitted inside the block keeps its default.",
+      "properties": {
+        "field": {
+          "type": "number",
+          "title": "Field tolerance",
+          "description": "Maximum absolute deviation allowed between the numerical c/c_s and the closed form over the whole field; defaults to 1e-4.",
+          "unit": "-"
+        },
+        "eta": {
+          "type": "number",
+          "title": "Effectiveness-factor tolerance",
+          "description": "Maximum relative deviation allowed between the numerical eta (the volume integral of the field) and the closed form; defaults to 1e-4.",
+          "unit": "-"
+        },
+        "sweep": {
+          "type": "number",
+          "title": "Sweep tolerance",
+          "description": "Maximum relative deviation allowed at any point of the eta(phi) family; defaults to 5e-3. Read only when a `sweep` block is declared.",
+          "unit": "-"
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "Where the three data products are written, relative to the case directory. Each key is independent and each is optional — omit one and that CSV is simply not written; a path that cannot be opened refuses. The sweep and refinement files are written only when their own blocks are declared.",
+      "properties": {
+        "field": {
+          "type": "string",
+          "title": "Concentration-field CSV",
+          "description": "Columns: geometry, phi, phi_char, xi, c_over_cs, c_over_cs_closedForm, absDeviation. `xi` is the normalised coordinate measured from the pellet CENTRE — r/R for a sphere or cylinder, x/L for a slab — as ONE column, never two aliases."
+        },
+        "sweep": {
+          "type": "string",
+          "title": "eta(phi) CSV",
+          "description": "Columns: geometry, phi, phi_char, eta, eta_closedForm, relDeviation, eta_flux."
+        },
+        "refinement": {
+          "type": "string",
+          "title": "Grid-refinement CSV",
+          "description": "Columns: geometry, phi, nodes, h, eta, eta_closedForm, relDeviation."
+        }
+      }
+    }
+  },
+  "required": [
+    "catalyst",
+    "species",
+    "T",
+    "diffusion"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "rateConstant"
+      ]
+    },
+    {
+      "required": [
+        "rateConstantMass"
+      ]
+    }
+  ],
+  "additionalProperties": false
+}
