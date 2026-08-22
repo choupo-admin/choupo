@@ -51,7 +51,10 @@ EquipmentSizing CycloneSize::size(const std::string&     unitName,
 
     const scalar Q_gas = q->second;     // m^3/s   (Guthrie sizeKey)
 
-    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+    const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
+        // 1 bar default costed pressure equipment as atmospheric while the
+        // identical omission on a stirredTank refused -- one decision, six
+        // homes, two answers (2026-08-22 fresh-eyes audit).
 
     EquipmentSizing d;
     d.unitName       = unitName;

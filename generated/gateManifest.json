@@ -136,6 +136,11 @@
       "claim": "cosmo-scrub gate: 645 external references (no values shipped), 5 open-licence profiles; 0 restricted values in the public tree (3772 records enumerated; an absent or collapsed scan root REFUSES)",
       "seconds": 0.4
     },
+    "check_costing_refusals": {
+      "exit": 0,
+      "claim": "costing-refusals: OK -- all three refusals fire from a real corpus case, each unit named FAILED, excluded, and the totals stamped INCOMPLETE, with their named remedies (declare pressureDesign; add sigma_y to the material record; pick a stronger material or lower the pressure).  NOT COVERED: the no-diameter ADVISORY (announced, not refused -- the caveat-surface gate owns announcement plumbing).",
+      "seconds": 0.1
+    },
     "check_cp_range_announced": {
       "exit": 0,
       "claim": "check_cp_range_announced: OK -- silent in-range control; the silent control speaks when its window is narrowed (the negative can fire); point extrapolation announced (solidDryer01_sugar, Trange 280-330); span extrapolation announced and its arithmetic recomputed (17.512679 K of 49.362679 K outside (280.0 330.0)).  An in-range case stays silent, its silence is PROVEN to be a property of the temperature rather than of an unreached branch, and an extrapolating one speaks in two distinct sentences -- the point and the span -- with the span's arithmetic recomputed here rather than read back.  NOT CHECKED: how much any extrapolation COSTS (that depends on the polynomial, and no gate here knows it), and the corpus-wide incidence -- measured at 100 loud of 210 steady cases on 2026-08-19 by the sweep in this file's docstring, recorded there rather than re-run per gate, and a CURATION finding about the catalogue's windows rather than a defect in the announcement.  The IMPOSSIBLE-window case is not checked here: it refuses now, and `check_validity_windows` owns that contract with its own engine probe -- one home, not two.",

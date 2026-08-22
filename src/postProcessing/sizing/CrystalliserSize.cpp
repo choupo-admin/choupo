@@ -53,7 +53,10 @@ EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
     // Magma (working) volume = liquor volumetric flow * mean residence time.
     const scalar V_magma = lf->second * rt->second;     // m^3
 
-    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+    const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
+        // 1 bar default costed pressure equipment as atmospheric while the
+        // identical omission on a stirredTank refused -- one decision, six
+        // homes, two answers (2026-08-22 fresh-eyes audit).
 
     EquipmentSizing d;
     d.unitName       = unitName;

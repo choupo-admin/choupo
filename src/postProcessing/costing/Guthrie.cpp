@@ -28,6 +28,8 @@ License
 
 #include "Guthrie.H"
 
+#include "core/Advisory.H"
+
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
@@ -181,6 +183,11 @@ scalar pressureFactor_poly(const EquipCoeffs& c, scalar P_bar)
 // Turton 4th ed., Eq. A.6 / A.7.
 scalar pressureFactor_vessel(scalar D_m, scalar P_gauge_bar, scalar sigma_MPa)
 {
+    // Preconditions (checked by the caller, which knows the material and
+    // unit NAMES): sigma_MPa > 0 and denom > 0.  Until 2026-08-22 all three
+    // missing-data paths returned F_P = 1.0 -- the CHEAPEST possible factor
+    // for exactly the vessels whose data was absent, including a material
+    // whose allowable stress cannot contain the design pressure at all.
     if (P_gauge_bar <= 0.0) return 1.0;
     const scalar sigma_bar = sigma_MPa * 10.0;     // MPa → bar
     const scalar denom = 2.0 * (sigma_bar - 0.6 * P_gauge_bar);
@@ -240,8 +247,32 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
     scalar F_P = 1.0;
     if (dim.equipmentType == "stirredTank" || dim.equipmentType == "vessel")
     {
-        // Use ASME thin-wall formula; needs D and σ_y of the material.
+        // ASME thin-wall formula; needs D and sigma_y.  A vessel under
+        // gauge pressure with NO declared allowable stress, or one whose
+        // stress cannot contain the pressure, is not priceable at the
+        // cheapest factor -- it is not priceable at all (I5).
+        if (P_gauge > 0.0 && mat.sigma_y <= 0.0)
+            throw std::runtime_error("Guthrie costing, unit '" + dim.unitName
+                + "': material '" + mat.name + "' declares no allowable"
+                " stress (sigma_y) and this is a pressure vessel at "
+                + std::to_string(P_des_bar) + " bar design -- the pressure"
+                " factor cannot be priced.  Add `sigma_y <MPa>;` to the"
+                " material record (see data/standards/assets/SS304.dat).");
+        if (P_gauge > 0.0 && 2.0 * (mat.sigma_y * 10.0 - 0.6 * P_gauge) <= 0.0)
+            throw std::runtime_error("Guthrie costing, unit '" + dim.unitName
+                + "': material '" + mat.name + "' (sigma_y "
+                + std::to_string(mat.sigma_y) + " MPa) cannot contain a "
+                + std::to_string(P_des_bar) + " bar design pressure -- the"
+                " ASME thin-wall denominator is non-positive, so no wall"
+                " thickness exists.  Pick a stronger material or lower"
+                " pressureDesign.");
         const scalar D_m   = dim.values.count("D") ? dim.values.at("D") : 0.0;
+        if (P_gauge > 0.0 && D_m <= 0.0)
+            AdvisoryLog::instance().add("costing", "warning",
+                "Guthrie " + dim.unitName,
+                "pressure vessel with no diameter in its sizing record: the"
+                " pressure factor is priced at its LOWER BOUND (F_P = 1.0),"
+                " so the bare-module cost is a floor, not an estimate.");
         F_P = pressureFactor_vessel(D_m, P_gauge, mat.sigma_y);
     }
     else

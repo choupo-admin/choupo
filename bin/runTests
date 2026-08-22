@@ -2071,6 +2071,20 @@ PYEOF
     fi
     rm -f /tmp/pidr.$$
 
+    # The three costing refusals fire and are handled by the AS6 posture:
+    # unit named FAILED, excluded, totals stamped INCOMPLETE (2026-08-22 --
+    # four sizers silently costed pressure equipment as atmospheric, and a
+    # material that cannot contain the pressure priced at the CHEAPEST factor).
+    if "$ROOT/bin/curate/check_costing_refusals.py" > /tmp/costr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "costing-refusals-gate" "$(tail -1 /tmp/costr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_costing_refusals.py)\n" "costing-refusals-gate"
+        cat /tmp/costr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/costr.$$
+
     # species-citation gate (AP5, 2026-08-05).  I3 -- "every value carries its
     # provenance" -- is the invariant a reader cannot check for himself: an
     # unsourced number is untraceable and looks exactly like a sourced one.

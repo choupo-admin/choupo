@@ -21,6 +21,7 @@ sizing
             material    SS304;
             designRules
             {
+                pressureDesign 1.0;   // bar -- atmospheric chamber (required key, 2026-08-22)
                 design
                 {
                     targetSize       40;      // um -- target powder Sauter mean d32

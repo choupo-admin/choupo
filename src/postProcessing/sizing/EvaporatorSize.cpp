@@ -52,7 +52,10 @@ EquipmentSizing EvaporatorSize::size(const std::string&     unitName,
         throw std::runtime_error("Evaporator: unit '" + unitName
             + "' has no 'A_m2' (or 'A') KPI -- is it an evaporator effect?");
 
-    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+    const scalar P_des = designRules->lookupScalar("pressureDesign");   // required: a silent
+        // 1 bar default costed pressure equipment as atmospheric while the
+        // identical omission on a stirredTank refused -- one decision, six
+        // homes, two answers (2026-08-22 fresh-eyes audit).
 
     EquipmentSizing d;
     d.unitName       = unitName;
