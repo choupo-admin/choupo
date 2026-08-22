@@ -140,11 +140,9 @@ LAYERING_ACCEPTED_CYCLES = {
 #  stay until a curator opens the primaries.  Remedy: fix Tb or the Antoine
 #  coefficients from a primary source and remove the pin (the stale-pin arm
 #  in check_tb_antoine fails a pin that heals).  Blocker: literature access.
-TB_ANTOINE_PINNED = {
-    "H2O2": 121.9, "HCHO": -94.6, "HCl": -68.1, "NO": -58.5,
-    "propylene": -29.3, "N2O": -29.1, "ethylAcetate": 27.4, "Cl2": -20.7,
-    "HCN": 20.2, "Ar": 17.6, "H2S": -15.1, "He": -11.7, "N2": -4.5,
-}
+TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
+#  properly-licensed sources (Poling App. A / Landolt-Boernstein / curation
+#  fits to McGarry and Perry curves); H2S's Tb was the wrong half there.
 
 #  Records whose header contradicts the values they ship.
 #

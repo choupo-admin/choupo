@@ -31,8 +31,13 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (5.06280   1340.530   -29.510);
-    Trange        (257  306);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // CURATION FIT (2026-08-23): least-squares Antoine to the Perry 8e
+    // 5-constant form over 260-330 K, max dev 0.05% (via the MIT-licensed
+    // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
+    // (Vitor))
+    coefficients  (4.65748   1330.447   -12.8);
+    Trange        (260  330);
 }
 
 idealGasHeatCapacity

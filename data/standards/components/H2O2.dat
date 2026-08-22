@@ -30,8 +30,12 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (4.9412   1763.3   -39.14);
-    Trange        (270  425);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Landolt-Boernstein Antoine set, converted from ln/Pa to log10/bar (via
+    // the MIT-licensed `chemicals` 1.5.2 data distribution; INTERIM pending
+    // primary review (Vitor))
+    coefficients  (5.09407   1886.760   -52.55);
+    Trange        (330  446);
 }
 
 idealGasHeatCapacity

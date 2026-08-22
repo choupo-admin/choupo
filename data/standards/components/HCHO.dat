@@ -30,8 +30,13 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (5.06430   1502.000   -16.500);
-    Trange        (254  280);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // CURATION FIT (2026-08-23): least-squares Antoine to the Wagner-25 curve
+    // of McGarry 1983 over 230-300 K, max dev 0.05% (via the MIT-licensed
+    // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
+    // (Vitor))
+    coefficients  (4.46075   1028.741   -23.0);
+    Trange        (230  300);
 }
 
 idealGasHeatCapacity

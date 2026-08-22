@@ -32,8 +32,11 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (3.92962   657.130   -23.350);
-    Trange        (168  310);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor))
+    coefficients  (4.12884   654.260   -25.99);
+    Trange        (181  197);
 }
 
 idealGasHeatCapacity

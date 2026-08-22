@@ -23,7 +23,9 @@ MW          34.082;            // kg/kmol
 Tc          373.40;             // K
 Pc          89.63;              // bar
 omega       0.090;              // [-]
-Tb          213.60;             // K
+Tb          212.85;             // K  HEOS reference EoS; two independent
+                                //    Psat curves (Poling, Perry) agree the
+                                //    old 213.60 sat above 1 atm (2026-08-23)             // K
 HvapTb      18670;              // J/mol
 Vliq        3.49e-5;            // m^3/mol
 
@@ -36,8 +38,12 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (4.22883   806.62   -25.770);
-    Trange        (188  340);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor)); consistent with
+    // Tb 212.85 K (HEOS), see Tb note
+    coefficients  (4.22882   806.933   -21.76);
+    Trange        (186  227);
 }
 
 idealGasHeatCapacity
