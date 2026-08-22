@@ -226,6 +226,17 @@ The lesson: at and just above Tc, BOTH cubics track CO2 well --- PR sits almost 
 Each operation overrides the global thermoPhysPropDict with a different EoS via the `thermo \{\}` per-op block. The three CSVs are independent, so the GUI overlays them on the same Plotly canvas (same X axis "P", same Y "Z"). The result is one figure with three curves, ready for the project report.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{z\_ideal}{n\_emptyCurves}{0}
+\goldrow{diag}{z\_ideal}{n\_failures}{0}
+\goldrow{diag}{z\_ideal}{n\_points}{50}
+\goldrow{diag}{z\_srk}{n\_emptyCurves}{0}
+\goldrow{diag}{z\_srk}{n\_failures}{0}
+\goldrow{diag}{z\_srk}{n\_points}{50}
+\goldrow{diag}{z\_pr}{n\_emptyCurves}{0}
+\goldrow{diag}{z\_pr}{n\_failures}{0}
+\goldrow{diag}{z\_pr}{n\_points}{50}
+\end{tutgolden}
 
 \clearpage
 \tutentry{compare\_kinetics\_order}{tutorials/props/compare/compare\_kinetics\_order}
@@ -274,6 +285,11 @@ This sweeps T = 270 $\to$ 360 K and tabulates four curves: Psat\_benzene -- fitt
 Open `psat\_aw\_vs\_antoine.csv` (GUI plot, or gnuplot). What you SEE: Near the normal boiling point (\textasciitilde{}350-360 K) BOTH agree to \textasciitilde{}1 \% -- corresponding states is anchored there and is excellent. Towards the cold end (270 K) the curves separate, and MORE for the associating ethanol than for non-polar benzene: benzene AW vs Antoine: +3.3 \% average, +8.9 \% at 270 K ethanol AW vs Antoine: +5.2 \% average, -16 \% at 270 K So corresponding states is a solid FREE first predictor (it makes an estimated component flashable with no data), best near Tb and degrading at low reduced temperature -- the degradation worse for hydrogen-bonding species. The lesson: prediction gets you started; for an associating species, or far below Tb, fit Antoine to data (choupoProps vaporPressureFit) before any design number.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{psat\_aw\_vs\_antoine}{n\_emptyCurves}{0}
+\goldrow{diag}{psat\_aw\_vs\_antoine}{n\_failures}{0}
+\goldrow{diag}{psat\_aw\_vs\_antoine}{n\_points}{46}
+\end{tutgolden}
 
 \clearpage
 \tutentry{compare\_transport\_water}{tutorials/props/compare/compare\_transport\_water}
@@ -325,6 +341,11 @@ Liquid-viscosity Andrade correlation for pure ammonia (NH3), 235-300 K. Coeffici
 Validation anchor: mu\_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC) is approx 0.255 mPa.s. This 2-point PROVISIONAL Andrade fit gives \textasciitilde{}0.277 mPa.s at 240 K -- about 9\% ABOVE the anchor, i.e. it does NOT yet pass through the cross-check point. That gap is the honest state of a provisional fit (see the provenance block in NH3.dat); refitting against more low-T data would close it. Note this case scans a SINGLE method (Andrade) -- it is a single-correlation curve, not a multi-method comparison. Ammonia is liquid only under pressure in this T window; viscosity\_liquid is a pure-T correlation, so the state P is immaterial to the value.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{mu\_andrade}{n\_emptyCurves}{0}
+\goldrow{diag}{mu\_andrade}{n\_failures}{0}
+\goldrow{diag}{mu\_andrade}{n\_points}{27}
+\end{tutgolden}
 
 \clearpage
 \tutentry{compare\_visc\_liquid\_water}{tutorials/props/compare/compare\_visc\_liquid\_water}
@@ -343,6 +364,14 @@ Andrade: ln($\mu$) = A + B/T --- 2-parameter, simplest fit, OK over a narrow T w
 Pedagogical point: for a project using water transport in a non-trivial T window (e.g. 25-90 $^\circ$C for a heated reactor), the student should know WHICH correlation he is committing to. Both correlations give viscosity FALLING with temperature (the physical trend): \textasciitilde{}1.3-1.4 mPa$\cdot$s near 280 K down to \textasciitilde{}0.32 mPa$\cdot$s at 360 K. This case shows the two models disagree MOST at the cold end (\textasciitilde{}6 \% at 280 K), are within \textasciitilde{}2 \% at room T, and agree BEST at the hot end (\textasciitilde{}1 \% at 360 K) --- the 2-parameter Andrade fit drifts where it is extrapolated coolest. Validate against the textbook value: $\mu$\_water @ 298 K $\approx$ 8.9 $\times$ 10?? Pa$\cdot$s --- Vogel reads 8.93 $\times$ 10?? (essentially on it), Andrade 9.09 $\times$ 10?? (\textasciitilde{}2 \% high).
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{mu\_andrade}{n\_emptyCurves}{0}
+\goldrow{diag}{mu\_andrade}{n\_failures}{0}
+\goldrow{diag}{mu\_andrade}{n\_points}{41}
+\goldrow{diag}{mu\_vogel}{n\_emptyCurves}{0}
+\goldrow{diag}{mu\_vogel}{n\_failures}{0}
+\goldrow{diag}{mu\_vogel}{n\_points}{41}
+\end{tutgolden}
 
 \clearpage
 \tutentry{compare\_vle\_etoh\_water}{tutorials/props/compare/compare\_vle\_etoh\_water}
@@ -795,6 +824,18 @@ constant/experiments/phiL\_25C\_parker1965.dat carries the MEASURED Phi\_L (Park
 \tutreadme{carries a water-activity leg. At 19.7 mol/kg the model gives a\_w = 0.11 (not 1!) --- which only the rigorous Pitzer-HMW osmotic coefficient delivers, not the $\varphi$ = 1 dilute shortcut. The lithiumChlorideH2O mineral Ksp (logK$_2$$_5$ = 4.984) is calibrated to Farelo's saturation $\ast$through$\ast$ that a\_w. The two pieces meet: the refitted $\gamma$ and the osmotic a\_w together reproduce the measured solubility.}
 \tutreadme{- electrolyte/pairs.dat: the Li--Cl Pitzer pair, refitted to Hamer--Wu + Farelo, valid to \textasciitilde{}19 mol/kg (supersedes the Appelo low-$\ast$m$\ast$ fit for concentrated LiCl). - electrolyte/minerals.dat: the LiCl$\cdot$H$_2$O hydrate Ksp, calibrated to Farelo. - constant/species/Li.dat: Li? aqueous formation datum (hfAq = -278.49 kJ/mol, CODATA).}
 \tutreadme{- The full measured dataset (this and the other five ternaries) is tabulated, cited, in constant/experimental/farelo\_solubility.csv. - The equilibrate round-trip (precipitate LiCl$\cdot$H$_2$O from a supersaturated feed) diverges at I $\approx$ 20 --- a known active-set / $\gamma$ fixed-point numerical limit at extreme ionic strength, $\ast$independent of the activity model$\ast$. The SI = 0 calibration at the saturation composition is exact; reaching it by precipitation is the convergence problem, not the thermodynamics. - The AlCl$_3$ systems from the same paper remain deferred: Al$^3$? hydrolyses (the paper notes pH < 2.75) and needs an Al speciation model Choupo does not yet carry.}
+\begin{tutgolden}
+\goldrow{diag}{farelo\_LiCl\_sat}{I}{19.7}
+\goldrow{diag}{farelo\_LiCl\_sat}{SI\_lithiumChlorideH2O}{1.18638e-05}
+\goldrow{diag}{farelo\_LiCl\_sat}{aw}{0.113466}
+\goldrow{diag}{farelo\_LiCl\_sat}{chargeImposed}{1}
+\goldrow{diag}{farelo\_LiCl\_sat}{chargeResidual}{5.04184e-14}
+\goldrow{diag}{farelo\_LiCl\_sat}{gamma\_Cl}{46.7905}
+\goldrow{diag}{farelo\_LiCl\_sat}{gamma\_Li}{46.7905}
+\goldrow{diag}{farelo\_LiCl\_sat}{m\_Cl}{19.7}
+\goldrow{diag}{farelo\_LiCl\_sat}{m\_Li}{19.7}
+\goldrow{diag}{farelo\_LiCl\_sat}{pH}{7.99525}
+\end{tutgolden}
 
 \clearpage
 \tutentry{farelo\_nacl\_nh4cl}{tutorials/props/electrolyte/farelo\_nacl\_nh4cl}
@@ -2184,6 +2225,10 @@ The flash feed is set to z(water) = 0.80 (20 mol\% butanol), INSIDE the asymmetr
 \tutreadme{- J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, $\ast$"Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol, oleic acid, water and n-heptane mixtures"$\ast$, Fluid Phase Equilibria 284 (2009) 71--79, doi:10.1016/j.fluid.2009.06.013.}
 \tutreadme{- Interaction parameters --- their Table 2 (p.73), binary 1-butanol(1)/water(3), valid 273--363 K, with the quadratic temperature correlation A\_ij(T) = a + b$\cdot$T + c$\cdot$T$^2$ (Eq. 10), $\tau$\_ij = exp(-A\_ij/T) (Eq. 7): - A\_1,3 (butanol$\to$water): a = 155.31, b = 1.0822, 10?$\cdot$c = -43.711 - A\_3,1 (water$\to$butanol): a = -579.36, b = 2.7517, 10?$\cdot$c = -6.7700 - Structural r, q --- their Table 1 (p.72): 1-butanol r = 3.9243, q = 3.668; water r = 0.9200, q = 1.400.}
 \tutreadme{The numbers are inline here, fully provenanced above; the record is STAGED CASE-LOCALLY, not curated: it lives at tutorials/steady/flash/marcilla02\_lls\_ternary\_invariant/constant/parameters/UNIQUAC/nButanol-water.dat with reviewStatus interim, and promotion into data/standards/ is the maintainer's batch review. This README used to claim the numbers already lived under data/standards/ -- asserting a curation status that had been deliberately withheld, which is a worse error than saying nothing.}
+\begin{tutgolden}
+\goldrow{diag}{lle}{T}{298.15}
+\goldrow{diag}{lle}{split}{1}
+\end{tutgolden}
 
 \clearpage
 \tutentry{hxy01\_ethanol\_water\_1atm}{tutorials/props/scan/hxy01\_ethanol\_water\_1atm}
@@ -2235,6 +2280,11 @@ Run-only + KPI golden; see README.md for the provenance of every number and for 
 Complete pure-compound P-T phase diagram of water: liquid-vapour saturation (to the critical point) + solid-vapour sublimation + solid-liquid fusion (the negative-slope ice line) + triple and critical points. Clapeyron physics in the purePhaseDiagram engine op; cited solid data in the solid\{\} block (IAPWS/CRC, see solidPhaseData.ts). Run-only smoke.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{pd}{Pc\_bar}{220.64}
+\goldrow{diag}{pd}{Tc}{647.14}
+\goldrow{diag}{pd}{has\_solid}{1}
+\end{tutgolden}
 
 \clearpage
 \tutentry{scan2d01\_co2\_compressibility}{tutorials/props/scan/scan2d01\_co2\_compressibility}
@@ -2277,6 +2327,15 @@ ILLUSTRATIVE / SYNTHETIC DATA. compA / compB / compC are NOT real species: they 
 Expected map (14 intervals/edge, 78 nodes): VLLE 36, LL 29, VL 0, 1-phase 13, 22 tie-lines, 0 failures. The point to SEE: a healthy spread of 3-phase (VLLE) and LL nodes with zero solver failures --- the classifier resolves the engineered gap node-by-node.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{lle}{failures}{0}
+\goldrow{diag}{lle}{n\_ll}{29}
+\goldrow{diag}{lle}{n\_nodes}{78}
+\goldrow{diag}{lle}{n\_onephase}{13}
+\goldrow{diag}{lle}{n\_tielines}{22}
+\goldrow{diag}{lle}{n\_vl}{0}
+\goldrow{diag}{lle}{n\_vlle}{36}
+\end{tutgolden}
 
 \clearpage
 \tutentry{ternary02\_bubbleT\_benzene\_toluene\_water}{tutorials/props/scan/ternary02\_bubbleT\_benzene\_toluene\_water}
@@ -2290,6 +2349,10 @@ Expected map (14 intervals/edge, 78 nodes): VLLE 36, LL 29, VL 0, 1-phase 13, 22
 Ternary boiling-temperature surface (T\_bubble over the composition triangle) via propertyScanTernary mode bubbleT --- reuses BubblePoint per simplex node. Works with ideal binaries (only the 3 Psat are needed). Run-only smoke.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{bt}{failures}{0}
+\goldrow{diag}{bt}{n\_nodes}{150}
+\end{tutgolden}
 
 \clearpage
 \tutentry{ternary03\_lle\_water\_ethanol\_benzene}{tutorials/props/scan/ternary03\_lle\_water\_ethanol\_benzene}
@@ -2303,6 +2366,15 @@ Ternary boiling-temperature surface (T\_bubble over the composition triangle) vi
 Ternary LIQUID-LIQUID solubility map (water / ethanol / benzene) --- the classic extraction triangle. Activity from UNIFAC (group contribution): NO fitted binary pairs needed --- gamma is predicted from molecular groups, so a real system shows a real miscibility gap with no curated pair data. mode lle uses the liquid-liquid flash (PhaseSet::LL): clean binodal + tie-lines, no spurious vapour. Run-only smoke (a phase map, not KPIs).
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{lle}{failures}{0}
+\goldrow{diag}{lle}{n\_ll}{69}
+\goldrow{diag}{lle}{n\_nodes}{105}
+\goldrow{diag}{lle}{n\_onephase}{36}
+\goldrow{diag}{lle}{n\_tielines}{18}
+\goldrow{diag}{lle}{n\_vl}{0}
+\goldrow{diag}{lle}{n\_vlle}{0}
+\end{tutgolden}
 
 \subsection{steam}
 \grouptheory{steam}

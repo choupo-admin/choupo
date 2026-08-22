@@ -1897,6 +1897,23 @@ dryingAir: 50 kmol/h of hot air (real air (N2/O2/Ar)) at 200 $^\circ$C, 1 bar. D
 The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{dryingAir}{F}{0.0138888888889}
+\goldrow{stream}{exhaustAir}{F}{0.0148058483112}
+\goldrow{stream}{feed}{F}{0.000957611111111}
+\goldrow{stream}{powder}{F}{4.06516887566e-05}
+\goldrow{kpi}{dryer}{Nu}{2.23180639411}
+\goldrow{kpi}{dryer}{Pr}{0.746977616919}
+\goldrow{kpi}{dryer}{Re}{0.181305061943}
+\goldrow{kpi}{dryer}{Sc}{0.6026290984}
+\goldrow{kpi}{dryer}{Sh}{2.21579410729}
+\goldrow{kpi}{dryer}{T\_out}{372.025243986}
+\goldrow{kpi}{dryer}{T\_wetbulb}{318.053221267}
+\goldrow{kpi}{dryer}{X\_critical}{0.15}
+\goldrow{kpi}{dryer}{X\_equilibrium}{0.0132756494842}
+\goldrow{kpi}{dryer}{X\_final}{0.0132756495467}
+\goldmore{32}
+\end{tutgolden}
 
 \clearpage
 \tutentry{sprayDryer03\_pressure\_nozzle}{tutorials/steady/drying/sprayDryer03\_pressure\_nozzle}
@@ -2131,6 +2148,23 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \tutreadme{Depreciation enters the DCF exactly once (it is $\ast$not$\ast$ in COM\_d) --- the classic textbook double-count is avoided. Working capital is an outflow at startup and is recovered untaxed at end-of-life.}
 \tutreadme{Market/time-specific data --- product and feed prices, labour rate, FX --- lives only in constant/economics, each value dated and primary-cited (an index/bulletin/agency named in a provenance\{\} block). The EconomicsPass refuses to run if a required price is absent, with a remedy message; set economics.refuseOnMissingPrice 0; in the postDict to switch to defaulted-but-loud. No price ever defaults to a literal in code.}
 \tutreadme{The economics pass also publishes its headline scalars into result.kpis["economics"] (IRR, NPV, paybackYears, FCI, TCI, COM\_d), which is what lets a sweep or optimisation read economics as an ordinary response --- see economics02\_irr\_sweep.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.138888888889}
+\goldrow{stream}{hotStream}{F}{0.138888888889}
+\goldrow{stream}{liqProd}{F}{0.127821700893}
+\goldrow{stream}{reactorOut}{F}{0.138888888889}
+\goldrow{stream}{vapProd}{F}{0.0110671879963}
+\goldrow{kpi}{economics}{COM\_d}{221203216.326}
+\goldrow{kpi}{economics}{FCI}{407855.018165}
+\goldrow{kpi}{economics}{NPV}{-967529879.105}
+\goldrow{kpi}{economics}{TCI}{469033.27089}
+\goldrow{kpi}{economics}{WC}{61178.2527248}
+\goldrow{kpi}{economics}{revenue}{21965928.5059}
+\goldrow{kpi}{heater}{F}{0.138888888889}
+\goldrow{kpi}{heater}{P}{101325}
+\goldrow{kpi}{heater}{Q}{300000}
+\goldmore{38}
+\end{tutgolden}
 
 \clearpage
 \tutentry{economics02\_irr\_sweep}{tutorials/steady/economics/economics02\_irr\_sweep}
@@ -2161,6 +2195,23 @@ Prices (product/raw-material/labour) live in constant/economics, each dated and 
 \tutreadme{The SweepDriver now runs the full post-processing chain (sizing $\to$ costing $\to$ economics) on each converged point, so the headline economic scalars the EconomicsPass publishes into result.kpis["economics"] resolve as ordinary unit.kpi responses. A sweep can finally $\ast$see cost$\ast$:}
 \tutreadme{A bigger reactor raises conversion (more product, more revenue) but raises CAPEX and feed throughput --- the IRR falls monotonically over this range, a trade-off invisible from a single CAPEX number.}
 \tutreadme{> The range floors at 4 m$^3$ on purpose: below \textasciitilde{}3 m$^3$ the lower conversion > drops the mixture bubble point and the fixed-duty heater would cross the > saturation dome (a heater is sensible-only) --- the deliberate validity edge.}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.138888888889}
+\goldrow{stream}{hotStream}{F}{0.138888888889}
+\goldrow{stream}{liqProd}{F}{0.127189911191}
+\goldrow{stream}{reactorOut}{F}{0.138888888889}
+\goldrow{stream}{vapProd}{F}{0.0116989776983}
+\goldrow{kpi}{economics}{COM\_d}{221216274.366}
+\goldrow{kpi}{economics}{FCI}{460663.338135}
+\goldrow{kpi}{economics}{NPV}{-958751879.276}
+\goldrow{kpi}{economics}{TCI}{529762.838855}
+\goldrow{kpi}{economics}{WC}{69099.5007202}
+\goldrow{kpi}{economics}{revenue}{23797734.1474}
+\goldrow{kpi}{heater}{F}{0.138888888889}
+\goldrow{kpi}{heater}{P}{101325}
+\goldrow{kpi}{heater}{Q}{300000}
+\goldmore{38}
+\end{tutgolden}
 
 \subsection{evaporation}
 \grouptheory{evaporation}
@@ -2972,6 +3023,23 @@ Toggle the units menu in the GUI to Mass-basis to see the F and composition flip
 the SAME 40/60 benzene/toluene isothermal flash as flash01 (100 kmol/h, 1 bar, Raoult); the T value below is only the BASE point -- system/outerDict sweeps it 360 $\to$ 385 K across the bubble$\to$dew window (\textasciitilde{}368..374 K) and reads the V/F S-curve + duty as responses.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.0110077140444}
+\goldrow{stream}{vapor}{F}{0.0167700637334}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0110077140444}
+\goldrow{kpi}{flash01}{F\_beta}{0.0167700637334}
+\goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flash01}{K\_benzene}{1.74456473693}
+\goldrow{kpi}{flash01}{K\_toluene}{0.716223951412}
+\goldrow{kpi}{flash01}{P}{100000}
+\goldrow{kpi}{flash01}{Q}{284075.447071}
+\goldrow{kpi}{flash01}{Q\_kW}{284.075447071}
+\goldrow{kpi}{flash01}{T}{372}
+\goldrow{kpi}{flash01}{V\_over\_F}{0.603722294402}
+\goldrow{kpi}{flash01}{phaseSet}{0}
+\goldmore{4}
+\end{tutgolden}
 
 \clearpage
 \tutentry{flash07\_gridsweep\_TP}{tutorials/steady/flash/flash07\_gridsweep\_TP}
@@ -2990,6 +3058,14 @@ one isothermal flash, benzene/toluene 40/60.
 The base point is 370 K, 1 bar. The gridSweep in system/outerDict overrides BOTH operation.T and operation.P across a grid, so V/F traces the flash envelope (V/F=0 bubble line, V/F=1 dew line) over the T x P plane.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{csv}{gridsweep\_TP.csv}{8:flashDrum.V\_over\_F}{0.235178}
+\goldrow{csv}{gridsweep\_TP.csv}{23:flashDrum.V\_over\_F}{0.303984}
+\goldrow{csv}{gridsweep\_TP.csv}{38:flashDrum.V\_over\_F}{0.641142}
+\goldrow{csv}{gridsweep\_TP.csv}{46:flashDrum.V\_over\_F}{0.385974}
+\goldrow{csv}{gridsweep\_TP.csv}{0:flashDrum.V\_over\_F}{1}
+\goldrow{csv}{gridsweep\_TP.csv}{1:flashDrum.V\_over\_F}{0}
+\end{tutgolden}
 
 \clearpage
 \tutentry{flash08\_co2\_water\_package}{tutorials/steady/flash/flash08\_co2\_water\_package}
@@ -3153,6 +3229,23 @@ Methane/propane, 273.15 K, 20 bar, z = 0.50/0.50. CH4 is supercritical (Tc = 190
 the same reactive flash as flash10, but the temperature specification is OWNED by system/outerDict: the sweep driver rewrites units[0].operation.T pass by pass (setScalarAtPath -- the dict IS the schema) and records the flash's reactive KPIs at each point. Topology, chemistry, and feed are identical to flash10\_acetic\_water\_reactive; see that case's header for the physics and for why the two-phase corner is refused.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.0277777777778}
+\goldrow{stream}{vapor}{F}{0}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0277777777778}
+\goldrow{kpi}{flash01}{F\_beta}{0}
+\goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flash01}{P}{101325}
+\goldrow{kpi}{flash01}{Q}{-43266.6666667}
+\goldrow{kpi}{flash01}{Q\_kW}{-43.2666666667}
+\goldrow{kpi}{flash01}{T}{348.15}
+\goldrow{kpi}{flash01}{V\_over\_F}{0}
+\goldrow{kpi}{flash01}{dimer\_share}{0.400229100843}
+\goldrow{kpi}{flash01}{pH}{2.15093435013}
+\goldrow{kpi}{flash01}{p\_dimer\_atm}{0.00943050769604}
+\goldmore{7}
+\end{tutgolden}
 
 \clearpage
 \tutentry{flash12\_nh3\_acetic\_ethanol\_reactive}{tutorials/steady/flash/flash12\_nh3\_acetic\_ethanol\_reactive}
@@ -3514,6 +3607,22 @@ polymer melt + residual solvent $\to$ flash (devolatiliser).
 The flash boils off the residual toluene (vapour) and leaves the polymer in the liquid. polystyrene is `role nonvolatile;`, so its K = 0: it stays 100 \% in the liquid by construction (no Psat needed for a nonvolatile lump).
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{liquid}{F}{0.00246249927126}
+\goldrow{stream}{meltFeed}{F}{0.00277777777778}
+\goldrow{stream}{vapor}{F}{0.000315278506519}
+\goldrow{kpi}{devol01}{F\_alpha}{0.00246249927126}
+\goldrow{kpi}{devol01}{F\_beta}{0.000315278506519}
+\goldrow{kpi}{devol01}{F\_in}{0.00277777777778}
+\goldrow{kpi}{devol01}{K\_polystyrene}{0}
+\goldrow{kpi}{devol01}{K\_toluene}{24.2878386162}
+\goldrow{kpi}{devol01}{P}{20000}
+\goldrow{kpi}{devol01}{Q}{0}
+\goldrow{kpi}{devol01}{Q\_kW}{0}
+\goldrow{kpi}{devol01}{T}{450}
+\goldrow{kpi}{devol01}{V\_over\_F}{0.113500262347}
+\goldrow{kpi}{devol01}{phaseSet}{0}
+\end{tutgolden}
 
 \clearpage
 \tutentry{flash\_pseudoComponent\_petCut}{tutorials/steady/flash/flash\_pseudoComponent\_petCut}
@@ -3534,6 +3643,23 @@ feed $\to$ isothermal flash $\to$ heater on the liquid.
 The flash splits the feed into vapour + liquid (the pseudo-component participates in VLE through its critical\{\} + Ambrose-Walton Psat). The heater then adds sensible heat to the liquid; energyBalance reports the implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure Cp. No reaction $\to$ no formation datum needed (matching the lump's omitted standardThermochemistry).
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{coldLiquid}{F}{0.00758956122005}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.00758956122005}
+\goldrow{stream}{vapor}{F}{0.0201882165577}
+\goldrow{kpi}{cooler01}{F}{0.00758956122005}
+\goldrow{kpi}{cooler01}{P}{100000}
+\goldrow{kpi}{cooler01}{Q}{-30000}
+\goldrow{kpi}{cooler01}{Q\_kW}{-30}
+\goldrow{kpi}{cooler01}{Q\_per\_mol}{-3952.79768226}
+\goldrow{kpi}{cooler01}{T\_in}{420}
+\goldrow{kpi}{cooler01}{T\_out}{405.894884539}
+\goldrow{kpi}{cooler01}{dT}{-14.1051154607}
+\goldrow{kpi}{cooler01}{vf\_out}{0}
+\goldrow{kpi}{flash01}{F\_alpha}{0.00758956122005}
+\goldmore{12}
+\end{tutgolden}
 
 \clearpage
 \tutentry{leaf01\_flash}{tutorials/steady/flash/leaf01\_flash}
@@ -4822,6 +4948,23 @@ Stoichiometric combustion of methane in air: CH4 + 2 (O2 + 3.76 N2) -$\to$ CO2 +
 / flowsheetDict Water-gas shift equilibrium swept over T = 600..1200 K (outerDict sweep on the Gibbs reactor): CO conversion falls as T rises -- exothermic equilibrium -- reproducing the textbook K(T) curve point by point.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.000277777777778}
+\goldrow{stream}{products}{F}{0.000277777777859}
+\goldrow{kpi}{wgs}{F\_in\_kmol\_h}{1}
+\goldrow{kpi}{wgs}{F\_out\_kmol\_h}{1.00000000029}
+\goldrow{kpi}{wgs}{N\_in\_mol\_s}{0.277777777778}
+\goldrow{kpi}{wgs}{N\_out\_mol\_s}{0.277777777859}
+\goldrow{kpi}{wgs}{P}{100000}
+\goldrow{kpi}{wgs}{Q\_kW}{-2.0000513466}
+\goldrow{kpi}{wgs}{T}{900}
+\goldrow{kpi}{wgs}{converged}{1}
+\goldrow{kpi}{wgs}{lambda\_C}{-12610.3166837}
+\goldrow{kpi}{wgs}{lambda\_H}{-69027.9700281}
+\goldrow{kpi}{wgs}{lambda\_O}{-299577.53726}
+\goldrow{kpi}{wgs}{y\_CO}{0.199139146827}
+\goldmore{3}
+\end{tutgolden}
 
 \clearpage
 \tutentry{gibbs05\_adiabatic\_flame}{tutorials/steady/gibbs/gibbs05\_adiabatic\_flame}
@@ -5867,6 +6010,16 @@ When k\_film is small (poor mixing, low velocity, dead zones), the solute concen
 This sweep illustrates why membrane-module designers obsess over spacer geometry and feed velocity --- they are not adjusting the membrane itself, they are adjusting k\_film.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.159722222222}
+\goldrow{stream}{permeate}{F}{0.0312284897591}
+\goldrow{stream}{retentate}{F}{0.128495408945}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{1.60743521195e-05}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.998356903981}
+\goldrow{kpi}{ROunit}{dP\_feed}{200000}
+\goldrow{kpi}{ROunit}{mass\_closure\_rel}{3.01635071855e-16}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.191065881266}
+\end{tutgolden}
 
 \clearpage
 \tutentry{membrane04\_spacer\_schock\_miquel}{tutorials/steady/membranes/membrane04\_spacer\_schock\_miquel}
@@ -6627,6 +6780,23 @@ sensitivity01\_column\_reflux -- the column01 benzene/toluene column (classical 
 the column01 benzene/toluene column (classical Raoult textbook problem, no azeotrope), reused UNCHANGED as the inner problem of a sensitivity sweep: system/outerDict varies units[0].operation.refluxRatio over R = 1.5 .. 5.0 (10 points) and reads T\_top, T\_bottom, x\_D\_LK, x\_B\_HK and V\_strip (the reboiler-duty proxy) -- the classic purity-vs-energy trade-off, one CSV row per R.
 
 \end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{bottoms}{F}{0.0138888888889}
+\goldrow{stream}{distillate}{F}{0.0138888888889}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{kpi}{column01}{B}{0.0138888888889}
+\goldrow{kpi}{column01}{D}{0.0138888888889}
+\goldrow{kpi}{column01}{L\_rect}{0.0424382716049}
+\goldrow{kpi}{column01}{L\_strip}{0.0702160493827}
+\goldrow{kpi}{column01}{Q\_condenser\_kW}{-1730.95769425}
+\goldrow{kpi}{column01}{Q\_reboiler\_kW}{1729.37389301}
+\goldrow{kpi}{column01}{R}{3.05555555556}
+\goldrow{kpi}{column01}{T\_bottom}{383.383107764}
+\goldrow{kpi}{column01}{T\_top}{353.679332066}
+\goldrow{kpi}{column01}{V\_rect}{0.0563271604938}
+\goldrow{kpi}{column01}{V\_strip}{0.0563271604938}
+\goldmore{12}
+\end{tutgolden}
 
 \clearpage
 \tutentry{sensitivity02\_feasibility\_map}{tutorials/steady/optimisation/sensitivity02\_feasibility\_map}
@@ -6726,6 +6896,23 @@ The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict) manipula
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Combined-cycle: Brayton (CH4 + air, Gibbs combustor) + HRSG + Rankine + 2 generators}
+\begin{tutgolden}
+\goldrow{stream}{combustorFeed}{F}{0.1025}
+\goldrow{stream}{flueGasHot}{F}{0.1025}
+\goldrow{stream}{gasFlueWarm}{F}{0.1025}
+\goldrow{stream}{gasTurbExhaust}{F}{0.1025}
+\goldrow{stream}{heatedSteam}{F}{0.01}
+\goldrow{stream}{steamCondensate}{F}{0.01}
+\goldrow{stream}{steamExhaust}{F}{0.01}
+\goldrow{stream}{steamFeed}{F}{0.01}
+\goldrow{kpi}{gasGenerator}{W\_electric}{582000}
+\goldrow{kpi}{gasGenerator}{W\_electric\_kW}{582}
+\goldrow{kpi}{gasGenerator}{W\_losses}{18000}
+\goldrow{kpi}{gasGenerator}{W\_shaft}{600000}
+\goldrow{kpi}{gasGenerator}{W\_shaft\_kW}{600}
+\goldrow{kpi}{gasGenerator}{eta\_generator}{0.97}
+\goldmore{90}
+\end{tutgolden}
 
 \clearpage
 \tutentry{combined02\_brayton\_rankine\_shaft}{tutorials/steady/power/combined02\_brayton\_rankine\_shaft}
@@ -8234,6 +8421,23 @@ The op is a SHORTCUT separator: a per-component recovery to the overhead. Here a
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{Dowtherm A loop preheats a hydrocarbon feed (eps-NTU)}
+\begin{tutgolden}
+\goldrow{stream}{hotOil}{F}{0.0416666666667}
+\goldrow{stream}{oilReturn}{F}{0.0416666666667}
+\goldrow{stream}{processFeed}{F}{0.0111111111111}
+\goldrow{stream}{processOut}{F}{0.0111111111111}
+\goldrow{kpi}{preheater}{C\_cold}{1088.88888889}
+\goldrow{kpi}{preheater}{C\_hot}{17585.1462551}
+\goldrow{kpi}{preheater}{C\_r}{0.061920945842}
+\goldrow{kpi}{preheater}{LMTD}{22.0063940236}
+\goldrow{kpi}{preheater}{NTU}{13.7755102041}
+\goldrow{kpi}{preheater}{Q}{330095.910352}
+\goldrow{kpi}{preheater}{Q\_kW}{330.095910352}
+\goldrow{kpi}{preheater}{T\_cold\_in}{320}
+\goldrow{kpi}{preheater}{T\_cold\_out}{623.149305425}
+\goldrow{kpi}{preheater}{T\_hot\_in}{623.15}
+\goldmore{6}
+\end{tutgolden}
 
 \clearpage
 \tutentry{utility02\_hitec\_csp\_heater}{tutorials/steady/utilities/utility02\_hitec\_csp\_heater}
@@ -8277,4 +8481,21 @@ The op is a SHORTCUT separator: a per-component recovery to the overhead. Here a
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{PG-30 brine sensibly cools an ethanol vapour stream from 330 K to \textasciitilde{}273 K (eps-NTU, no phase change), \textasciitilde{}20.8 kW duty}
+\begin{tutgolden}
+\goldrow{stream}{brineReturn}{F}{0.416666666667}
+\goldrow{stream}{brineSupply}{F}{0.416666666667}
+\goldrow{stream}{ethanolOut}{F}{0.00555555555556}
+\goldrow{stream}{ethanolVapour}{F}{0.00555555555556}
+\goldrow{kpi}{condChiller}{C\_cold}{57599.6888818}
+\goldrow{kpi}{condChiller}{C\_hot}{623.888888889}
+\goldrow{kpi}{condChiller}{C\_r}{0.0108314628256}
+\goldrow{kpi}{condChiller}{LMTD}{12.519257418}
+\goldrow{kpi}{condChiller}{NTU}{4.48797862867}
+\goldrow{kpi}{condChiller}{Q}{35053.9207703}
+\goldrow{kpi}{condChiller}{Q\_kW}{35.0539207703}
+\goldrow{kpi}{condChiller}{T\_cold\_in}{273.15}
+\goldrow{kpi}{condChiller}{T\_cold\_out}{273.758578301}
+\goldrow{kpi}{condChiller}{T\_hot\_in}{330}
+\goldmore{6}
+\end{tutgolden}
 

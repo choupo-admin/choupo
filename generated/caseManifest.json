@@ -1183,7 +1183,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_kinetics_order": {
    "application": "choupoProps",
@@ -1208,7 +1208,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_transport_water": {
    "application": "choupoProps",
@@ -1236,7 +1236,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_visc_liquid_water": {
    "application": "choupoProps",
@@ -1250,7 +1250,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/compare/compare_vle_etoh_water": {
    "application": "choupoProps",
@@ -1916,7 +1916,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/scan/hxy01_ethanol_water_1atm": {
    "application": "choupoProps",
@@ -1944,7 +1944,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/scan/scan2d01_co2_compressibility": {
    "application": "choupoProps",
@@ -1969,7 +1969,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water": {
    "application": "choupoProps",
@@ -1983,7 +1983,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/scan/ternary03_lle_water_ethanol_benzene": {
    "application": "choupoProps",
@@ -1997,7 +1997,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/props/steam/steam01_if97_verification": {
    "application": "choupoProps",
@@ -2714,7 +2714,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/drying/sprayDryer03_pressure_nozzle": {
    "application": "choupoSolve",
@@ -2809,7 +2809,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/economics/economics02_irr_sweep": {
    "application": "choupoSolve",
@@ -2825,7 +2825,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/evaporation/evaporator01_brine": {
    "application": "choupoSolve",
@@ -3131,7 +3131,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/flash/flash07_gridsweep_TP": {
    "application": "choupoSolve",
@@ -3145,7 +3145,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/flash/flash08_co2_water_package": {
    "application": "choupoSolve",
@@ -3227,7 +3227,7 @@
     "aqueousChemistry": true
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive": {
    "application": "choupoSolve",
@@ -3397,7 +3397,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/flash/flash_pseudoComponent_petCut": {
    "application": "choupoSolve",
@@ -3412,7 +3412,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/flash/leaf01_flash": {
    "application": "choupoSolve",
@@ -3907,7 +3907,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/gibbs/gibbs05_adiabatic_flame": {
    "application": "choupoSolve",
@@ -4316,7 +4316,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/membranes/membrane04_spacer_schock_miquel": {
    "application": "choupoSolve",
@@ -4579,7 +4579,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/optimisation/sensitivity02_feasibility_map": {
    "application": "choupoSolve",
@@ -4627,7 +4627,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/power/combined02_brayton_rankine_shaft": {
    "application": "choupoSolve",
@@ -5230,7 +5230,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/utilities/utility02_hitec_csp_heater": {
    "application": "choupoSolve",
@@ -5258,7 +5258,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   }
  },
  "indices": {
