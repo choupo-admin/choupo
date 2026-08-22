@@ -11,6 +11,14 @@ and prefer `generated/releaseInventory.json` to any number written in prose.*
 
 ---
 
+> **Development style (Vítor, 2026-08-23):** real problem -> fix the cause ->
+> smallest useful test -> stop.  No new gate, framework, manifest, tier or
+> policy without a real observed failure that demands it; remove machinery
+> whose purpose has ended; every piece of work explainable in plain language
+> (what was wrong, what changed, how we know it is better).  The verification
+> layer serves the simulator, never the reverse -- and no meta-mechanism to
+> enforce this rule: it is applied by judgement, which is the point.
+
 ## 1. Current state (facts, not history)
 
 - **Branches (revised 2026-07-29):** `main` **is** `Choupo-dev` — the default

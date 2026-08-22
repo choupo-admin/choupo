@@ -216,6 +216,11 @@
       "claim": "check_edwards_model: OK -- the model is reachable through the engine, a neutral solute gets a real gamma where Davies returns exactly 1, all 5 parameter rules are announced by name across 28 pairs, beta1 reproduces Eq 24 on every ion-ion pair and is zero on every molecular one, and the banner states this model's own scope",
       "seconds": 0.2
     },
+    "check_electrolyte_records": {
+      "exit": 0,
+      "claim": "electrolyte-records: OK -- monoliths absent, 55 pitzer-pairs, 65 pitzer-mixing, 3 eNRTL, 62 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired.",
+      "seconds": 0.0
+    },
     "check_electrolyte_sidecars": {
       "exit": 0,
       "claim": "check_electrolyte_sidecars: OK -- constant/electrolyte/ is fully retired: every leg refuses by name with its canonical remedy (species -> constant/species/, reactions -> constant/chemistry/, restriction -> networkScope restricted), the tartrate case builds its 9-activated network canonically, and the converted seawater case ships no sidecar",
@@ -235,11 +240,6 @@
       "exit": 0,
       "claim": "empty-dir gate: no empty directories under tutorials/ or data/standards/ (5581 dirs scanned; an absent or collapsed scan root REFUSES)",
       "seconds": 0.4
-    },
-    "check_enrtl": {
-      "exit": 0,
-      "claim": "electrolyte/enrtl.dat ABSENT -- eNRTL kind consolidated. OK.",
-      "seconds": 0.0
     },
     "check_enthalpy_concentration": {
       "exit": 0,
@@ -290,11 +290,6 @@
       "exit": 0,
       "claim": "check_forward_order: OK -- an undeclared forward order on a reactant is refused with its remedy in all 4 reactor kinds (cstr (ethanol), pfr (aceticAcid), batchReactor (aceticAcid), dynamicCSTR (compA)); an explicit `order 0;` is still honoured and a product with no order is still accepted",
       "seconds": 0.2
-    },
-    "check_gases": {
-      "exit": 0,
-      "claim": "electrolyte/gases.dat ABSENT -- gasLiquid kind consolidated. OK.",
-      "seconds": 0.0
     },
     "check_gate_selftest": {
       "exit": 0,
@@ -361,11 +356,6 @@
       "claim": "NaOH   ions-solid =   -44.50 kJ/mol   anchor =   -44.51   OK",
       "seconds": 0.2
     },
-    "check_ionexchange": {
-      "exit": 0,
-      "claim": "electrolyte/exchange.dat ABSENT -- ionExchange consolidated. OK.",
-      "seconds": 0.0
-    },
     "check_layering": {
       "exit": 0,
       "claim": "check_layering: OK -- 61 subsystem edge(s) measured across all 14 declared subsystems.",
@@ -421,16 +411,6 @@
       "claim": "check_method_tools: the landing's EduTools list IS the live registry -- 16 live tool(s) of 16 in gui/src/ui/methods/registry.ts, re-derived by importing the module; same 16 ids both ways, labels/blurbs/deep links identical, every href on the `?workspace=methods&tool=` contract; site/index.html fetches the artefact, carries no tool id, label or blurb of its own, and bin/buildSite publishes it.  BLIND SPOT: the page's JavaScript is never executed here, so this checks the DATA the landing fetches and the absence of a second list -- not that a browser paints 16 cards.",
       "seconds": 0.8
     },
-    "check_minerals": {
-      "exit": 0,
-      "claim": "electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK.",
-      "seconds": 0.0
-    },
-    "check_mixing": {
-      "exit": 0,
-      "claim": "electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK.",
-      "seconds": 0.0
-    },
     "check_model_boundary_ledger": {
       "exit": 0,
       "claim": "check_model_boundary_ledger: OK -- the raw imbalance, the declared model-boundary step and the remaining residual are three distinct fields in both the CSV and the result JSON and they agree; the entry names both worlds by their declared models plus the rule, sign, units and magnitude; the verdict is taken on the REMAINING residual under the declared normalized criteria (an unmeetable tolerance refuses the same step and the alarm returns); an imbalance with no declared override is credited nothing and still alarms; and a step that does not reproduce its imbalance is printed but not credited; and a unit declaring a world but NO duty (the ADIABATIC route) is audited rather than left n/a.  NOT claimed: that any step is physically correct, nor any coverage of the speciation / datum / reading refusals, which no corpus case exercises.",
@@ -485,11 +465,6 @@
       "exit": 0,
       "claim": "check_pinch_p2: OK -- 6 exhaustive pairs equal the independent duty bound, CP-rule wording exact, no 'optimal' anywhere, violations 120+260 == the 380 kW excess over target",
       "seconds": 0.1
-    },
-    "check_pitzer_pairs": {
-      "exit": 0,
-      "claim": "electrolyte/pairs.dat ABSENT -- pairs kind consolidated. OK.",
-      "seconds": 0.0
     },
     "check_problem_divergence": {
       "exit": 0,
@@ -620,11 +595,6 @@
       "exit": 0,
       "claim": "check_source_licence: OK -- 796 record(s) scanned (an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 4 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.",
       "seconds": 0.2
-    },
-    "check_speciation": {
-      "exit": 0,
-      "claim": "electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK.",
-      "seconds": 0.0
     },
     "check_species_citation": {
       "exit": 0,

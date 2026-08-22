@@ -2762,16 +2762,6 @@ PYEOF
     fi
     rm -f /tmp/check_estimates.$$
 
-    # the aqueous speciation network resolves as curated
-    if "$ROOT/bin/curate/check_speciation.py" > /tmp/check_speciation.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "speciation-gate" "$(tail -1 /tmp/check_speciation.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_speciation.py)\n" "speciation-gate"
-        cat /tmp/check_speciation.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_speciation.$$
     #  ion-records-gate RETIRED 2026-08-05.  It was a MIGRATION-time guard:
     #  it compared the per-ion records of the pre-2026-07-01 aqueous layout
     #  against electrolyte/ions.dat.  BOTH are gone -- that home was deleted
@@ -2788,60 +2778,22 @@ PYEOF
     #  inputs or to remove it, and inventing inputs for a finished migration
     #  is not curation.
 
-    # mineral records and their dissolution reactions
-    if "$ROOT/bin/curate/check_minerals.py" > /tmp/check_minerals.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "minerals-gate" "$(tail -1 /tmp/check_minerals.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_minerals.py)\n" "minerals-gate"
-        cat /tmp/check_minerals.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_minerals.$$
 
-    # the Pitzer pair catalogue
-    if "$ROOT/bin/curate/check_pitzer_pairs.py" > /tmp/check_pitzer_pairs.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "pitzer-pairs-gate" "$(tail -1 /tmp/check_pitzer_pairs.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_pitzer_pairs.py)\n" "pitzer-pairs-gate"
-        cat /tmp/check_pitzer_pairs.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_pitzer_pairs.$$
 
-    # the eNRTL pair catalogue
-    if "$ROOT/bin/curate/check_enrtl.py" > /tmp/check_enrtl.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "enrtl-gate" "$(tail -1 /tmp/check_enrtl.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_enrtl.py)\n" "enrtl-gate"
-        cat /tmp/check_enrtl.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_enrtl.$$
 
-    # the gas-liquid (Henry) records
-    if "$ROOT/bin/curate/check_gases.py" > /tmp/check_gases.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "gases-gate" "$(tail -1 /tmp/check_gases.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_gases.py)\n" "gases-gate"
-        cat /tmp/check_gases.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_gases.$$
 
-    # the mixing-rule records
-    if "$ROOT/bin/curate/check_mixing.py" > /tmp/check_mixing.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "mixing-gate" "$(tail -1 /tmp/check_mixing.$$)"
+
+    # ONE structural guard for the six electrolyte record populations
+    # (collapsed from seven clone gates, 2026-08-23 -- same coverage).
+    if "$ROOT/bin/curate/check_electrolyte_records.py" > /tmp/elrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "electrolyte-records-gate" "$(tail -1 /tmp/elrec.$$)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_mixing.py)\n" "mixing-gate"
-        cat /tmp/check_mixing.$$
+        printf "FAIL  %-40s  (run bin/curate/check_electrolyte_records.py)\n" "electrolyte-records-gate"
+        cat /tmp/elrec.$$
         fail=$((fail+1))
     fi
-    rm -f /tmp/check_mixing.$$
+    rm -f /tmp/elrec.$$
 
     # the group-contribution group table
     if "$ROOT/bin/curate/check_groups.py" > /tmp/check_groups.$$ 2>&1; then
@@ -2854,16 +2806,6 @@ PYEOF
     fi
     rm -f /tmp/check_groups.$$
 
-    # the ion-exchange resin records
-    if "$ROOT/bin/curate/check_ionexchange.py" > /tmp/check_ionexchange.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "ionexchange-gate" "$(tail -1 /tmp/check_ionexchange.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_ionexchange.py)\n" "ionexchange-gate"
-        cat /tmp/check_ionexchange.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/check_ionexchange.$$
 
     # flashComplex gate: the DESIGN-DRIVER case must keep closing.  It lives
     # in docs/design/, not tutorials/, because sealing it is an unresolved
