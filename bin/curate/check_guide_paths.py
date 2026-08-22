@@ -75,6 +75,11 @@ PLACEHOLDER_NEXT = set('<*{\\')
 #  directory is not a gate.  They are skipped, and that is stated below.
 RUN_OUTPUT_TAILS = ('/log', '/converged', '/reports', '/iterations', '/design',
                     '/economics')
+#  The per-application log is `log.<binary>` (runCase writes log.choupoSolve),
+#  which the tail list above cannot express with endswith -- found 2026-08-22
+#  when a fresh clone judged userGuide's `less .../log.choupoSolve` line by
+#  whether somebody had happened to run the case.
+RUN_OUTPUT_BASENAMES = re.compile(r'/log\.[A-Za-z]+$')
 
 #  Paths the reader is told to CREATE.  Each carries the recipe it belongs
 #  to; an entry with no reason is not allowed to sit here quietly.
@@ -126,6 +131,8 @@ def main():
                     #  gate's own first run, which is the argument for running
                     #  a new gate before believing its output.
                     if any(part.startswith('.') for part in tok.split('/')[1:]):
+                        continue
+                    if RUN_OUTPUT_BASENAMES.search(tok):
                         continue
                     if any(tok.endswith(t) for t in RUN_OUTPUT_TAILS):
                         continue

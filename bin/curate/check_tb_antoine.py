@@ -25,15 +25,11 @@ other vaporPressure models are outside this gate's reach.
 import re, sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import TB_ANTOINE_PINNED as PINNED   # waivers have ONE home
+
 repo = Path(__file__).resolve().parents[2]
 cdir = repo / "data/standards/components"
-
-PINNED = {
-    "H2O2": 121.9, "HCHO": -94.6, "HCl": -68.1, "NO": -58.5,
-    "propylene": -29.3, "N2O": -29.1, "ethylAcetate": 27.4, "Cl2": -20.7,
-    "HCN": 20.2, "Ar": 17.6, "H2S": -15.1, "He": -11.7, "N2": -4.5,
-}   # name -> deviation % observed 2026-08-22 (sign kept: a CHANGED defect
-    # is also a finding, not just a healed one)
 
 P0 = 1.01325   # bar
 fails, n_both, healed = [], 0, []

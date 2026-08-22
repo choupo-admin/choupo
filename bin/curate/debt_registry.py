@@ -131,6 +131,21 @@ LAYERING_ACCEPTED_CYCLES = {
 #  RECORD SELF-CONSISTENCY
 # ---------------------------------------------------------------------------
 
+#  Components whose declared Tb disagrees with their OWN Antoine set by more
+#  than 3 % in Psat(Tb), with Tb INSIDE the record's declared Trange
+#  (2026-08-22 fresh-eyes audit; value = the observed deviation in %, sign
+#  kept so a defect that MOVES is also a finding).
+#  Why tolerated: deciding WHICH half of each record is wrong needs primary
+#  literature -- unsourced must never become falsely sourced, so the values
+#  stay until a curator opens the primaries.  Remedy: fix Tb or the Antoine
+#  coefficients from a primary source and remove the pin (the stale-pin arm
+#  in check_tb_antoine fails a pin that heals).  Blocker: literature access.
+TB_ANTOINE_PINNED = {
+    "H2O2": 121.9, "HCHO": -94.6, "HCl": -68.1, "NO": -58.5,
+    "propylene": -29.3, "N2O": -29.1, "ethylAcetate": 27.4, "Cl2": -20.7,
+    "HCN": 20.2, "Ar": 17.6, "H2S": -15.1, "He": -11.7, "N2": -4.5,
+}
+
 #  Records whose header contradicts the values they ship.
 #
 #  EMPTY SINCE 2026-08-05: NF270's contradiction was resolved by removing the
