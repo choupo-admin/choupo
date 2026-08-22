@@ -466,6 +466,11 @@
       "claim": "ok   flash17: nested form, aqueous + organic, closes (worst benzene 1.9e-10 kmol/h)",
       "seconds": 22.4
     },
+    "check_pid_refusals": {
+      "exit": 0,
+      "claim": "pid-refusals: OK -- both gain refusals fire from a real corpus case with their named remedies (foreign key -> the Kc/tauI conversion; all-zero -> declare a gain or remove the controller).",
+      "seconds": 0.0
+    },
     "check_pinch_p1": {
       "exit": 0,
       "claim": "check_pinch_p1: OK -- witness targets equal the independent cascade (107.5 / 40 / 353.15), CSV coherent, negative silent, dTmin<=0 refused",

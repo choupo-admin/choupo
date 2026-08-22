@@ -2058,6 +2058,19 @@ PYEOF
     fi
     rm -f /tmp/tba.$$
 
+    # The two PID gain refusals fire with their named remedies (I5): the
+    # textbook Kc/tauI spelling used to run the loop with zero action at
+    # exit 0 (2026-08-22).
+    if "$ROOT/bin/curate/check_pid_refusals.py" > /tmp/pidr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pid-refusals-gate" "$(tail -1 /tmp/pidr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pid_refusals.py)\n" "pid-refusals-gate"
+        cat /tmp/pidr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pidr.$$
+
     # species-citation gate (AP5, 2026-08-05).  I3 -- "every value carries its
     # provenance" -- is the invariant a reader cannot check for himself: an
     # unsourced number is untraceable and looks exactly like a sourced one.

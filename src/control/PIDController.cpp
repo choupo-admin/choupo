@@ -58,10 +58,29 @@ void PIDController::initialise(const DictPtr&      ctrlDict,
     SP_ = ctrlDict->lookupScalar("setpoint");
 
     // ---- Gains -------------------------------------------------------
+    //  gains{} is small and CLOSED (Kp / Ki / Kd, parallel form), so a
+    //  foreign key is always a mistake: the textbook form
+    //  `gains { Kc 2.0; tauI 5.0; }` used to parse, default every gain to
+    //  zero, and run the loop with NO control action at exit 0 -- the
+    //  closed-loop plot was the open-loop response with a constant bias
+    //  (2026-08-22 fresh-eyes audit).  A MISSING key stays a declared
+    //  absence (an I-only controller is legitimate); a controller whose
+    //  declared gains are ALL zero would do nothing and refuses too.
     auto gd = ctrlDict->subDict("gains");
+    for (const auto& k : gd->keys())
+        if (k != "Kp" && k != "Ki" && k != "Kd")
+            throw std::runtime_error("PIDController '" + name_ + "': gains."
+                + k + " is not a gain this controller reads -- the keys are"
+                " Kp, Ki, Kd (parallel form).  Textbook Kc/tauI/tauD"
+                " converts as Kp = Kc; Ki = Kc/tauI; Kd = Kc*tauD.");
     Kp_ = gd->lookupScalarOrDefault("Kp", 0.0);
     Ki_ = gd->lookupScalarOrDefault("Ki", 0.0);
     Kd_ = gd->lookupScalarOrDefault("Kd", 0.0);
+    if (Kp_ == 0.0 && Ki_ == 0.0 && Kd_ == 0.0)
+        throw std::runtime_error("PIDController '" + name_ + "': every gain"
+            " in gains{} is zero (or absent) -- this controller would apply"
+            " no action at all.  Declare at least one nonzero Kp, Ki or Kd,"
+            " or remove the controller from the case.");
 
     // ---- Output limits / bias ---------------------------------------
     if (ctrlDict->found("output"))
