@@ -1,46 +1,67 @@
 #!/usr/bin/env python3
-"""Guard for the aqueousSpeciation kind (cross-name chains -> bit-exact mandatory).
-logK25/z/dH bit-exact + masters present + 1:1 bijection. Flips to ABSENT after."""
+"""Post-consolidation guard for the aqueous speciation equilibrium records.
+
+Two arms, both of which can FAIL:
+(1) the retired monolith data/standards/electrolyte/speciation.dat must stay
+    ABSENT -- its reintroduction would resurrect a second home for facts the
+    per-file corpus now owns (the arity sin);
+(2) every per-file record is structurally sound: it declares its recordType
+    and carries a logK25, a source "..." citation.
+A collapsed scan (fewer than 45 records where the 2026-08-22 census
+found 62) REFUSES instead of describing nothing.
+
+History: until 2026-08-22 this gate was a migration-faithfulness guard whose
+first act was to read the monolith; when the monolith was retired the gate
+began exiting 0 at that test with EVERY later arm unreachable -- a
+permanently-green gate, the check_true_ions shape.  Found by the fresh-eyes
+audit (docs/audit/2026-08-22-fresh-eyes/); this rewrite is the flip to
+"assert ABSENT" that the old docstring promised and never performed, plus
+the structural arm the migration's completion left possible.
+"""
 import re, sys
 from pathlib import Path
+
 repo = Path(__file__).resolve().parents[2]
-sf = repo / "data/standards/electrolyte/speciation.dat"
-sdir = repo / "data/standards/chemistry"
-if not sf.exists():
-    print("electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK."); sys.exit(0)
-body = re.search(r'reactions\s*\((.*)\)', sf.read_text(), re.S).group(1)
-def recs(s):
-    out=[];i=0
-    while True:
-        j=s.find("{",i)
-        if j<0:break
-        depth=0;k=j
-        while k<len(s):
-            if s[k]=="{":depth+=1
-            elif s[k]=="}":
-                depth-=1
-                if depth==0:break
-            k+=1
-        out.append(s[j+1:k]);i=k+1
-    return out
-def tok(b,k): m=re.search(rf'\b{k}\b\s+(-?[\d.eE+-]+)\s*;',b); return m.group(1) if m else None
-fails, seen=[],set()
-for rec in recs(body):
-    sm=re.search(r'\bspecies\s+(\w+)',rec)
-    if not sm: continue
-    sp=sm.group(1); seen.add(sp); f=sdir/f"{sp}.dat"
-    if not f.exists(): fails.append(f"MISSING {sp}.dat"); continue
-    txt=f.read_text()
-    for k in ("logK25","z","dH","nuWater"):
-        sv=tok(rec,k)
-        if sv is None: continue
-        fv=tok(txt,k)
-        if fv is None or abs(float(fv)-float(sv))>1e-12+1e-12*abs(float(sv)):
-            fails.append(f"{sp}.{k}: file={fv} src={sv}")
-    if "masters" in rec and "masters" not in txt: fails.append(f"{sp}: masters dropped")
-orph={p.stem for p in sdir.glob('*.dat') if 'recordType aqueousSpeciation;' in p.read_text()}-seen
-if orph: fails.append(f"ORPHAN {sorted(orph)}")
-print(f"checked {len(seen)} speciation reactions vs speciation.dat")
+monolith = repo / "data/standards/electrolyte/speciation.dat"
+fails = []
+
+# -- arm 1: the monolith stays retired ---------------------------------------
+if monolith.exists():
+    fails.append(f"{monolith} EXISTS again -- the aqueous speciation equilibrium kind was"
+                 " consolidated into per-file records; a resurrected monolith"
+                 " is a second home that will silently drift (arity, I1)")
+
+# -- arm 2: structural soundness of the per-file corpus ----------------------
+DIRS = ['chemistry']
+SELECT = 'recordType aqueousSpeciation'          # None = every .dat; else only records carrying it
+REQUIRED = [('\\blogK25\\b', 'a logK25'), ('source\\s+"', 'a source "..." citation')]      # (regex, what a miss means)
+
+n = 0
+for d in DIRS:
+    base = repo / "data/standards" / d
+    if not base.is_dir():
+        fails.append(f"record home data/standards/{d} is MISSING -- the scan"
+                     " surface has collapsed")
+        continue
+    for f in sorted(base.glob("*.dat")):
+        txt = f.read_text(encoding="utf-8", errors="replace")
+        if SELECT and not re.search(SELECT, txt):
+            continue
+        n += 1
+        for pat, meaning in REQUIRED:
+            if not re.search(pat, txt):
+                fails.append(f"{f.relative_to(repo)}: missing {meaning}"
+                             f" (no match for {pat!r})")
+
+if n < 45:
+    fails.append(f"only {n} aqueous speciation equilibrium record(s) scanned (floor 45,"
+                 f" census 62) -- a verdict over a collapsed scan"
+                 " would describe nothing")
+
 if fails:
-    for x in fails[:30]: print("  FAIL",x); sys.exit(1)
-print("all aqueousSpeciation faithful + 1:1 bijection.")
+    print("speciation FAILED:")
+    for x in fails[:40]:
+        print("  -", x)
+    sys.exit(1)
+print(f"speciation: OK -- monolith absent, {n} aqueous speciation equilibrium record(s) structurally"
+      " sound (recordType + required fields + source).")

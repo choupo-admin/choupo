@@ -1,47 +1,56 @@
 #!/usr/bin/env python3
-"""Faithfulness guard for the mineralSolubility kind (golden coverage THIN -- 14
-case-local minerals.dat eclipse the standard).  Bit-exact logK25/dH/nuWater +
-masters present + 1:1 bijection.  Flips to ABSENT after delete."""
-import re, sys
+"""Retirement guard for the mineralSolubility KIND.
+
+The kind is RETIRED: a mineral's dissolution data lives in the owning
+component's own solidPhases{} block (64 components carry one at the
+2026-08-22 census), never in a standalone chemistry/ record.  Two arms,
+both of which can FAIL:
+
+(1) the retired monolith data/standards/electrolyte/minerals.dat must stay
+    ABSENT -- its reintroduction would resurrect a second home (arity, I1);
+(2) no record under data/standards/chemistry/ may declare
+    `recordType mineralSolubility` -- the kind has no reader, so such a
+    record would be data the engine can never reach, filed where a curator
+    would trust it.
+
+History: until 2026-08-22 this gate was DOUBLY dead -- its first act read
+the retired monolith and exited 0, and even its unreachable arms pointed at
+a directory (chemistry/mineralSolubility) that never matched a file.  Found
+by the fresh-eyes audit (docs/audit/2026-08-22-fresh-eyes/).
+"""
+import sys
 from pathlib import Path
+
 repo = Path(__file__).resolve().parents[2]
-mf = repo / "data/standards/electrolyte/minerals.dat"
-mdir = repo / "data/standards/chemistry/mineralSolubility"
-if not mf.exists():
-    print("electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK."); sys.exit(0)
-body = re.search(r'minerals\s*\((.*)\)', mf.read_text(), re.S).group(1)
-def recs(s):
-    out=[]; i=0
-    while True:
-        j=s.find("{",i)
-        if j<0: break
-        depth=0;k=j
-        while k<len(s):
-            if s[k]=="{":depth+=1
-            elif s[k]=="}":
-                depth-=1
-                if depth==0:break
-            k+=1
-        out.append(s[j+1:k]);i=k+1
-    return out
-def tok(b,k): m=re.search(rf'\b{k}\b\s+(-?[\d.eE+-]+)\s*;',b); return m.group(1) if m else None
-fails, seen = [], set()
-for rec in recs(body):
-    mm=re.search(r'\bmineral\s+(\w+)', rec)
-    if not mm: continue
-    mn=mm.group(1); seen.add(mn); f=mdir/f"{mn}.dat"
-    if not f.exists(): fails.append(f"MISSING {mn}.dat"); continue
-    txt=f.read_text()
-    for k in ("logK25","dH","nuWater"):
-        sv=tok(rec,k)
-        if sv is None: continue
-        fv=tok(txt,k)
-        if fv is None or abs(float(fv)-float(sv))>1e-12+1e-12*abs(float(sv)):
-            fails.append(f"{mn}.{k}: file={fv} src={sv}")
-    if "masters" in rec and "masters" not in txt: fails.append(f"{mn}: masters dropped")
-orph={p.stem for p in mdir.glob('*.dat')}-seen
-if orph: fails.append(f"ORPHAN {sorted(orph)}")
-print(f"checked {len(seen)} minerals vs minerals.dat")
+fails = []
+
+monolith = repo / "data/standards/electrolyte/minerals.dat"
+if monolith.exists():
+    fails.append(f"{monolith} EXISTS again -- mineral dissolution data lives"
+                 " in the owning component's solidPhases{} block, and a"
+                 " resurrected monolith is a second home that will drift")
+
+chem = repo / "data/standards/chemistry"
+if not chem.is_dir():
+    fails.append("data/standards/chemistry is MISSING -- scan surface collapsed")
+else:
+    n = 0
+    for f in sorted(chem.glob("*.dat")):
+        n += 1
+        if "recordType mineralSolubility" in f.read_text(encoding="utf-8",
+                                                         errors="replace"):
+            fails.append(f"{f.relative_to(repo)}: declares recordType"
+                         " mineralSolubility -- a RETIRED kind with no reader;"
+                         " put the dissolution data in the owning component's"
+                         " solidPhases{} block")
+    if n < 45:   # census 2026-08-22: 77 chemistry records
+        fails.append(f"only {n} chemistry record(s) scanned (floor 45,"
+                     " census 77) -- collapsed scan")
+
 if fails:
-    for x in fails[:30]: print("  FAIL",x); sys.exit(1)
-print("all mineralSolubility faithful + 1:1 bijection.")
+    print("minerals-retirement FAILED:")
+    for x in fails[:20]:
+        print("  -", x)
+    sys.exit(1)
+print("minerals-retirement: OK -- monolith absent, and no chemistry/ record"
+      " resurrects the retired mineralSolubility kind.")

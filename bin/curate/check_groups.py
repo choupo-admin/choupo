@@ -91,8 +91,10 @@ def main():
     else:
         print("[check_groups] OK -- every enforced compound declares its groups.")
 
-    if args.strict and missing:
-        return 1
+    if missing:
+        return 1   # strict is the ONLY mode: a missing groups block fails (2026-08-22,
+                    # fresh-eyes audit -- the old opt-in --strict left the suite's
+                    # wiring scoring a report-only run as PASS)
     return 0
 
 

@@ -1,51 +1,67 @@
 #!/usr/bin/env python3
-"""EXHAUSTIVE guard for the mixing kind (golden coverage is thin -- mixing matters
-only multi-ion, and those cases are self-contained -- so this guard, NOT the 202,
-is the safety net).  For EVERY mixing.dat entry it SIMULATES the repointed reader's
-order-independent per-file resolution and asserts the value is found, bit-exact;
-plus a 1:1 bijection.  Runs while mixing.dat exists; flips to ABSENT after."""
+"""Post-consolidation guard for the Pitzer ternary/mixing (theta, psi, lambda, zeta) records.
+
+Two arms, both of which can FAIL:
+(1) the retired monolith data/standards/electrolyte/mixing.dat must stay
+    ABSENT -- its reintroduction would resurrect a second home for facts the
+    per-file corpus now owns (the arity sin);
+(2) every per-file record is structurally sound: it declares its recordType
+    and carries recordType electrolyteMixingParameter, a source "..." citation.
+A collapsed scan (fewer than 45 records where the 2026-08-22 census
+found 65) REFUSES instead of describing nothing.
+
+History: until 2026-08-22 this gate was a migration-faithfulness guard whose
+first act was to read the monolith; when the monolith was retired the gate
+began exiting 0 at that test with EVERY later arm unreachable -- a
+permanently-green gate, the check_true_ions shape.  Found by the fresh-eyes
+audit (docs/audit/2026-08-22-fresh-eyes/); this rewrite is the flip to
+"assert ABSENT" that the old docstring promised and never performed, plus
+the structural arm the migration's completion left possible.
+"""
 import re, sys
 from pathlib import Path
+
 repo = Path(__file__).resolve().parents[2]
-mf = repo / "data/standards/electrolyte/mixing.dat"
-base = repo / "data/standards/parameters/Pitzer/mixing"
-if not mf.exists():
-    print("electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK."); sys.exit(0)
-body = re.search(r'mixing\s*\((.*)\)', mf.read_text(), re.S).group(1)
-def tok(b,k):
-    m = re.search(rf'\b{k}\b\s+(-?[\w.+()-]+)\s*;', b); return m.group(1) if m else None
-def fileval(p):
-    if not p.exists(): return None
-    m = re.search(r'\bvalue\s+(-?[\d.eE+-]+)', p.read_text()); return float(m.group(1)) if m else None
-fails, seen = [], set()
-for row in re.finditer(r'\{([^{}]*)\}', body):
-    b = row.group(1); kind = tok(b,"kind")
-    if not kind: continue
-    v = float(tok(b,kind))
-    if kind == "theta":
-        a,bb = tok(b,"a"),tok(b,"b")
-        cands = [base/"theta"/f"{a}-{bb}.dat", base/"theta"/f"{bb}-{a}.dat"]   # order-indep
-        key = ("theta", frozenset((a,bb)))
-    elif kind == "psi":
-        a,bb,c = tok(b,"a"),tok(b,"b"),tok(b,"c")
-        cands = [base/"psi"/f"{a}-{bb}-{c}.dat", base/"psi"/f"{bb}-{a}-{c}.dat"]  # (a,b) order-indep
-        key = ("psi", frozenset((a,bb)), c)
-    elif kind == "lambda":
-        nn,ion = tok(b,"n"),tok(b,"ion")
-        cands = [base/"lambda"/f"{nn}-{ion}.dat"]; key = ("lambda", nn, ion)
-    elif kind == "zeta":
-        nn,c,a = tok(b,"n"),tok(b,"c"),tok(b,"a")
-        cands = [base/"zeta"/f"{nn}-{c}-{a}.dat"]; key = ("zeta", nn, c, a)
-    else: continue
-    if key in seen: fails.append(f"DUPLICATE entry {key}")
-    seen.add(key)
-    fv = next((fileval(p) for p in cands if fileval(p) is not None), None)
-    if fv is None: fails.append(f"{kind} {key}: no per-file resolves")
-    elif abs(fv - v) > 1e-12 + 1e-12*abs(v): fails.append(f"{kind} {key}: file={fv} src={v}")
-nfiles = sum(1 for _ in base.rglob("*.dat"))
-if nfiles != len(seen): fails.append(f"bijection: {nfiles} per-files vs {len(seen)} entries")
-print(f"checked {len(seen)} mixing terms (order-indep resolution + bit-exact value + bijection)")
+monolith = repo / "data/standards/electrolyte/mixing.dat"
+fails = []
+
+# -- arm 1: the monolith stays retired ---------------------------------------
+if monolith.exists():
+    fails.append(f"{monolith} EXISTS again -- the Pitzer ternary/mixing (theta, psi, lambda, zeta) kind was"
+                 " consolidated into per-file records; a resurrected monolith"
+                 " is a second home that will silently drift (arity, I1)")
+
+# -- arm 2: structural soundness of the per-file corpus ----------------------
+DIRS = ['parameters/Pitzer/theta', 'parameters/Pitzer/psi', 'parameters/Pitzer/lambda', 'parameters/Pitzer/zeta']
+SELECT = None          # None = every .dat; else only records carrying it
+REQUIRED = [('recordType electrolyteMixingParameter', 'recordType electrolyteMixingParameter'), ('source\\s+"', 'a source "..." citation')]      # (regex, what a miss means)
+
+n = 0
+for d in DIRS:
+    base = repo / "data/standards" / d
+    if not base.is_dir():
+        fails.append(f"record home data/standards/{d} is MISSING -- the scan"
+                     " surface has collapsed")
+        continue
+    for f in sorted(base.glob("*.dat")):
+        txt = f.read_text(encoding="utf-8", errors="replace")
+        if SELECT and not re.search(SELECT, txt):
+            continue
+        n += 1
+        for pat, meaning in REQUIRED:
+            if not re.search(pat, txt):
+                fails.append(f"{f.relative_to(repo)}: missing {meaning}"
+                             f" (no match for {pat!r})")
+
+if n < 45:
+    fails.append(f"only {n} Pitzer ternary/mixing (theta, psi, lambda, zeta) record(s) scanned (floor 45,"
+                 f" census 65) -- a verdict over a collapsed scan"
+                 " would describe nothing")
+
 if fails:
-    for x in fails[:40]: print("  FAIL", x)
+    print("pitzer-mixing FAILED:")
+    for x in fails[:40]:
+        print("  -", x)
     sys.exit(1)
-print("all mixing terms faithful + resolvable + 1:1.")
+print(f"pitzer-mixing: OK -- monolith absent, {n} Pitzer ternary/mixing (theta, psi, lambda, zeta) record(s) structurally"
+      " sound (recordType + required fields + source).")
