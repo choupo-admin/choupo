@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch01b_first_order_eulersi
+  ============================
+
+  GREEN WITNESS for the EulerSI integrator: batch01's mild isothermal
+  esterification, integrated by semi-implicit (linearly-implicit) Euler
+  instead of the RK4 default.  On a non-stiff problem the first-order
+  method simply works, and the golden pins that its answer agrees with the
+  physics batch01 already pins.  Its EXPECTED-FAILURE twin is
+  ignition01_h2o2_eulersi (stiff nonlinear ignition, where first order
+  goes unphysical and the engine refuses by name).  Registered model no
+  case selected until 2026-08-22 (invariant I8).
+*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        solver { integrator EulerSI; }   // the WITNESS subject: A-stable
+                                         // first order, exact-fit here
+
+        reaction    esterification_etac;
+    }
+);

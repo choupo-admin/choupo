@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ignition01_h2o2_eulersi
+  =======================
+
+  WITNESS for the EulerSI integrator (semi-implicit Euler) -- an EXPECTED
+  FAILURE: see .expect-nonconvergence for why first order at this step
+  goes unphysical and how the engine now refuses instead of exiting 0.
+  Registered model no case selected until 2026-08-22 (invariant I8).
+*/
+
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        operation
+        {
+            mode      adiabatic;
+            energy    gasConstantV;         // closed fixed-V gas; heat from Hf
+        }
+
+        solver
+        {
+            integrator  EulerSI;             // semi-implicit Euler -- the WITNESS subject
+            verbosity   3;                  // announce the stiffness verdict
+        }
+
+        reactions
+        (
+            2O_M_O2_M  O_H_M_OH_M  O_H2_H_OH
+            O_HO2_OH_O2  O_H2O2_OH_HO2  H_O2_M_HO2_M
+            H_2O2_HO2_O2  H_O2_H2O_HO2_H2O  H_O2_N2_HO2_N2
+            H_O2_O_OH  2H_M_H2_M  2H_H2_2H2
+            2H_H2O_H2_H2O  H_OH_M_H2O_M  H_HO2_O_H2O
+            H_HO2_O2_H2  H_HO2_2OH  H_H2O2_HO2_H2
+            H_H2O2_OH_H2O  OH_H2_H_H2O  2OH_M_H2O2_M
+            2OH_O_H2O  OH_HO2_O2_H2O  OH_H2O2_HO2_H2O
+            OH_H2O2_HO2_H2O_dup2  2HO2_O2_H2O2  2HO2_O2_H2O2_dup2
+            OH_HO2_O2_H2O_dup2
+        );
+    }
+);

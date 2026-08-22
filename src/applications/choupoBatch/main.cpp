@@ -176,16 +176,21 @@ try
         dataRoot = launchCwd / "data";
     Database db(dataRoot.empty() ? "" : dataRoot.string());
 
-    if (!dataRoot.empty())
-    {
-                MaterialRegistry::loadFrom(dataRoot.string());
-        HenrysLawRegistry::loadFrom(dataRoot.string());
-
-        SolutionRegistry::loadFrom(dataRoot.string());
-        UtilityCatalogue::loadFrom(dataRoot.string());
-    }
-
     fs::current_path(caseDir);
+
+    //  Registry loads run UNGUARDED and AFTER entering the case, the shape
+    //  choupoSolve always had: each loadFrom is existence-guarded on the
+    //  standards side and scans the case-local constant/ tier by walking up
+    //  from the CWD -- so a SEALED case run with the catalogue hidden still
+    //  reads its own mirrored records.  Until 2026-08-22 this block was
+    //  guarded by !dataRoot.empty() and ran BEFORE the chdir: hidden-mode
+    //  skipped every registry entirely, one decision in four homes with two
+    //  answers (found when no sealed case with utility golden rows survived
+    //  a re-seal).
+    MaterialRegistry::loadFrom(dataRoot.string());
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
     std::cout << "Case directory: " << fs::current_path().string() << "\n"
               << "Database root:  " << db.root() << "\n\n";
 

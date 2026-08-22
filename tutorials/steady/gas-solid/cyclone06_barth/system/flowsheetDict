@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  cyclone06_barth
+  ==============
+
+  WITNESS for the Barth (1956) cyclone model -- the static-pressure /
+  equilibrium-orbit correlation -- on the SAME Stairmand high-efficiency
+  geometry and design point as cyclone05_dirgo_leith_validation (D = 0.305 m,
+  0.139 m^3/s, Vi ~ 15 m/s, mineral-oil aerosol rho_p = 860 kg/m^3).
+
+  THIS IS A WITNESS, NOT A VALIDATION: its golden is self-recorded, so a
+  PASS means Barth's answer has not moved -- never that it is right.  The
+  validation discussion (the ~3x d50 spread across the five correlations,
+  and Dirgo & Leith's measured curves) lives in cyclone05's header; this
+  case exists because Barth was a registered model that NO case selected,
+  which invariant I8 names as not-a-capability (2026-08-22 fresh-eyes
+  audit).  Until today its only exercise was an invitation in a comment.
+*/
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        cyclone;
+        type        cyclone;
+        model       Barth;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { bodyDiameter 0.305 m;  numberOfTurns 5;  beta 3.5; }
+    }
+);

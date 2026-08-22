@@ -4777,6 +4777,41 @@ This case reproduces THOSE conditions and runs the flow-pattern Iozia-Leith (198
 \end{tutgolden}
 
 \clearpage
+\tutentry{cyclone06\_barth}{tutorials/steady/gas-solid/cyclone06\_barth}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (cyclone) at (0.0,-0.0) {\textbf{cyclone}\\[-1pt]{\tiny cyclone}};
+  \draw[->] ($(cyclone.west)+(-1.05,0.00)$) -- ($(cyclone.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(cyclone.east)+(0,-0.17)$) -- ($(cyclone.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {cleanGas};
+  \draw[->] ($(cyclone.east)+(0,0.17)$) -- ($(cyclone.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {capturedSolids};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WITNESS: the Barth (1956) equilibrium-orbit cyclone model on the Dirgo \& Leith Stairmand geometry (same design point as cyclone05); self-recorded golden -- exercises a registered model no case selected.}
+\begin{tutnarrative}
+WITNESS for the Barth (1956) cyclone model -- the static-pressure / equilibrium-orbit correlation -- on the SAME Stairmand high-efficiency geometry and design point as cyclone05\_dirgo\_leith\_validation (D = 0.305 m, 0.139 m\textasciicircum{}3/s, Vi \textasciitilde{} 15 m/s, mineral-oil aerosol rho\_p = 860 kg/m\textasciicircum{}3).
+
+THIS IS A WITNESS, NOT A VALIDATION: its golden is self-recorded, so a PASS means Barth's answer has not moved -- never that it is right. The validation discussion (the \textasciitilde{}3x d50 spread across the five correlations, and Dirgo \& Leith's measured curves) lives in cyclone05's header; this case exists because Barth was a registered model that NO case selected, which invariant I8 names as not-a-capability (2026-08-22 fresh-eyes audit). Until today its only exercise was an invitation in a comment.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{capturedSolids}{F}{2.14047701787e-05}
+\goldrow{stream}{cleanGas}{F}{0.00571647833746}
+\goldrow{stream}{feed}{F}{0.00573788310764}
+\goldrow{kpi}{cyclone}{Q\_gas}{0.138813700633}
+\goldrow{kpi}{cyclone}{bodyDiameter}{0.305}
+\goldrow{kpi}{cyclone}{d50}{6.49490874523e-06}
+\goldrow{kpi}{cyclone}{d50\_micron}{6.49490874523}
+\goldrow{kpi}{cyclone}{dP\_cyclone}{648.673413872}
+\goldrow{kpi}{cyclone}{efficiency}{0.216222426411}
+\goldrow{kpi}{cyclone}{eulerNumber}{8}
+\goldrow{kpi}{cyclone}{inletVelocity}{11.9377544216}
+\goldrow{kpi}{cyclone}{loading}{0.00879253984757}
+\goldrow{kpi}{cyclone}{mu\_gas}{1.78433840676e-05}
+\goldrow{kpi}{cyclone}{numberOfTurns}{5}
+\goldmore{5}
+\end{tutgolden}
+
+\clearpage
 \tutentry{gasSolidSplitter01\_ideal}{tutorials/steady/gas-solid/gasSolidSplitter01\_ideal}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 361,
+  "cases": 364,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -280,6 +280,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/combustion/ignition01_h2o2_eulersi": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/batch/combustion/ignition01_h2o2_rk4": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -369,6 +385,20 @@
    "hasGolden": true
   },
   "tutorials/batch/reactor/batch01_first_order": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch01b_first_order_eulersi": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchReactor"
@@ -3825,6 +3855,23 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gas-solid/cyclone06_barth": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cyclone"
+   ],
+   "unitModels": [
+    "Barth"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/gas-solid/gasSolidSplitter01_ideal": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5283,6 +5330,7 @@
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
@@ -5290,6 +5338,7 @@
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
     "tutorials/batch/reactor/batch03_consecutive",
     "tutorials/batch/reactor/batch04_reversible_wgs",
@@ -5537,6 +5586,7 @@
     "tutorials/steady/gas-solid/cyclone03_iozia_leith",
     "tutorials/steady/gas-solid/cyclone04_high_loading",
     "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation",
+    "tutorials/steady/gas-solid/cyclone06_barth",
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
@@ -5696,10 +5746,12 @@
    ],
    "batchReactor": [
     "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
     "tutorials/batch/reactor/batch03_consecutive",
     "tutorials/batch/reactor/batch04_reversible_wgs",
@@ -5795,7 +5847,8 @@
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
     "tutorials/steady/gas-solid/cyclone03_iozia_leith",
     "tutorials/steady/gas-solid/cyclone04_high_loading",
-    "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation"
+    "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation",
+    "tutorials/steady/gas-solid/cyclone06_barth"
    ],
    "dewT": [
     "tutorials/steady/flash/dewT01_ethanol_water"
@@ -6261,11 +6314,13 @@
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
     "tutorials/batch/combustion/ignition01_h2o2",
+    "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
     "tutorials/batch/combustion/ignition02_h2air_slack",
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/reactor/batch01_first_order",
+    "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
     "tutorials/batch/reactor/batch03_consecutive",
     "tutorials/batch/reactor/batch04_reversible_wgs",
@@ -6405,6 +6460,7 @@
     "tutorials/steady/gas-solid/cyclone03_iozia_leith",
     "tutorials/steady/gas-solid/cyclone04_high_loading",
     "tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation",
+    "tutorials/steady/gas-solid/cyclone06_barth",
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",

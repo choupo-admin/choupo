@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: oilDroplet -- the mineral-oil aerosol of Dirgo & Leith (1985).
+  Arcoprime 200 nebulised droplets (spherical, non-bouncing), the test
+  aerosol for their Stairmand high-efficiency cyclone.  Treated as a
+  NON-VOLATILE pseudo-solid: the cyclone separates it MECHANICALLY, and the
+  only property that enters the d50 is the droplet density rho_p.
+  rho_p = 860 kg/m^3 (mineral oil, Dirgo & Leith 1985, p.408).
+\*---------------------------------------------------------------------------*/
+name        oilDroplet;
+formula     CH2;              // lumped mineral-oil surrogate
+CAS         8012-95-1;        // mineral oil (Arcoprime family)
+MW          14.03;            // kg/kmol per CH2 (lumped; mass basis only)
+role        nonvolatile;
+solid
+{
+    rho_p   860.0;            // droplet density [kg/m^3]
+}

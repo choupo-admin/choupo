@@ -71,7 +71,14 @@ ODEStats EulerSI::integrate(sVector& y, scalar t0, scalar t1,
         t += h;
         ++st.steps;
         ++st.accepted;
+        //  A fixed-step method cannot REJECT a step, so a violation of the
+        //  declared positivity contract, or a non-finite row, is the method
+        //  giving up -- reported through st.ok, never sailed past.  (Until
+        //  2026-08-22 nPositive was silently ignored here: the declared
+        //  control the caller handed in simply did not apply.)
         bool bad = false;
+        for (std::size_t i = 0; i < ctrl.nPositive && i < n; ++i)
+            if (y[i] < 0.0) { bad = true; break; }
         for (scalar v : y) if (!std::isfinite(v)) { bad = true; break; }
         if (bad) { st.ok = false; break; }
     }

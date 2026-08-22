@@ -224,16 +224,15 @@ try
     else if (fs::exists(launchCwd / "data" / "standards" / "components"))
         dataRoot = launchCwd / "data";
     Database db(dataRoot.empty() ? "" : dataRoot.string());
-    if (!dataRoot.empty())
-    {
-                MaterialRegistry::loadFrom(dataRoot.string());
-        HenrysLawRegistry::loadFrom(dataRoot.string());
-
-        SolutionRegistry::loadFrom(dataRoot.string());
-        UtilityCatalogue::loadFrom(dataRoot.string());
-    }
-
     fs::current_path(caseDir);
+
+    //  Unguarded + after the chdir -- the choupoSolve shape; see the note in
+    //  choupoBatch/main.cpp (2026-08-22).
+    MaterialRegistry::loadFrom(dataRoot.string());
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
     std::cout << "Case directory: " << fs::current_path().string() << "\n"
               << "Database root:  " << db.root() << "\n\n";
 

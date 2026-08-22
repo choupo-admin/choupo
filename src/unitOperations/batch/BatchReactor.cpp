@@ -936,7 +936,20 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
         ctrl.rtol      = 1.0e-7;
         ctrl.nPositive = n;                 // mole numbers must stay >= 0 (T free)
         ctrl.verbosity = verbosity_;
-        integ->integrate(y0, 0.0, dt, f, ctrl);
+        const auto st = integ->integrate(y0, 0.0, dt, f, ctrl);
+        //  The integrator REPORTS when it gave up (maxSteps / hMin / a
+        //  positivity or finiteness violation on a fixed step) -- and until
+        //  2026-08-22 this return value was DISCARDED, so an EulerSI ignition
+        //  that blew up to T = -1610 K sailed on to exit 0.  An accepted
+        //  state that is infeasible is fatal (Constitution SS6).
+        if (!st.ok)
+            throw std::runtime_error("BatchReactor '" + name_ + "': the '"
+                + integrator_ + "' integrator GAVE UP inside a "
+                + std::to_string(dt) + " s step (accepted " 
+                + std::to_string(st.accepted) + " sub-step(s) before a"
+                " positivity/finiteness violation or step-floor).  Use a"
+                " smaller deltaT or a stiff integrator"
+                " (integrator Rosenbrock23;).");
     }
 
     // Unpack and guard against numerical drift below zero on the mole
@@ -944,6 +957,16 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
     for (std::size_t i = 0; i < n; ++i)
         state_.n[i] = std::max<scalar>(y0[i], 0.0);
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
+    //  An ACCEPTED state must be physical: a finite but negative or zero
+    //  absolute temperature is not an extrapolation, it is a blown
+    //  integration, and it used to sail into the thermo (which dutifully
+    //  announced Cp "extrapolated to -1610 K, still returned") at exit 0.
+    if (!std::isfinite(state_.T) || state_.T <= 0.0)
+        throw std::runtime_error("BatchReactor '" + name_ + "': accepted"
+            " state has unphysical T = " + std::to_string(state_.T)
+            + " K after a " + integrator_ + " step -- the integration blew"
+            " up.  Use a smaller deltaT or a stiff integrator"
+            " (integrator Rosenbrock23;).");
 }
 
 // ---- Packed-ODE form (the adaptive driver) ------------------------------

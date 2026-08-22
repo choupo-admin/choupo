@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+EXPECTED FAILURE -- and the failure is the lesson, twice over.
+
+Semi-implicit (linearly-implicit) Euler is A-STABLE, so unlike the RK4
+sibling it does not oscillate to infinity -- but it is FIRST-ORDER, and on
+the strongly nonlinear H2/O2 ignition transient one 1e-6 s linearised step
+is wrong enough to drive the packed state unphysical.  The engine REFUSES:
+the integrator reports it gave up (a positivity/finiteness violation on a
+fixed step) and the reactor turns that report into a named error instead of
+exit 0.
+
+Until 2026-08-22 this exact run reached T = -1610 K and EXITED 0: EulerSI
+ignored the declared positivity contract, the reactor DISCARDED the
+integrator's own ok flag, and the thermo dutifully announced Cp
+"extrapolated to -1610 K, still returned".  A finite absurdity passed the
+NaN guard.  This case witnesses the refusal that closed all three holes --
+and, with ignition01_h2o2 (Rosenbrock23) and ignition01_h2o2_rk4, completes
+the integrator lesson: L-stable second order converges, explicit fourth
+order blows up loudly, and A-stable first order fails HONESTLY.

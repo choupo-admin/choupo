@@ -29,8 +29,10 @@ License
 #include "UtilityCatalogue.H"
 #include "core/Dictionary.H"
 #include "core/RegistryScan.H"
+#include "thermo/RecordResolver.H"
 
 #include <filesystem>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <stdexcept>
@@ -88,18 +90,32 @@ Utility readUtilityFile(const fs::path& file)
 
 void UtilityCatalogue::loadFrom(const std::string& dataRoot)
 {
-    fs::path dir = fs::path(dataRoot) / "standards" / "utilities";
-    if (!fs::exists(dir)) return;
-
-    records::ScanGuard guard("UtilityCatalogue", "utility");
-    for (auto& e : fs::directory_iterator(dir))
+    //  Two tiers, the same shape MaterialRegistry has: the standards
+    //  catalogue, then the case's MIRRORED constant/utilities/ scanned OVER
+    //  it (the case record wins by name).  The local tier is what lets a
+    //  SEALED case keep its utility allocation with the catalogue hidden --
+    //  until 2026-08-22 no local tier existed, so the seal could not mirror
+    //  utilities at all and every sealed case with utility golden rows
+    //  failed a RE-seal (found by the batch01b witness; the utility row
+    //  kind of 2026-08-12 never taught the importer its record home -- the
+    //  Edwards lesson, one catalogue over).
+    auto scan = [](const fs::path& dir)
     {
-        if (!e.is_regular_file()) continue;
-        if (e.path().extension() != ".dat") continue;
-        Utility u = readUtilityFile(e.path());
-        guard.claim(u.name, e.path().string());
-        registry()[u.name] = u;
-    }
+        if (!fs::exists(dir)) return;
+        records::ScanGuard guard("UtilityCatalogue", "utility");
+        for (auto& e : fs::directory_iterator(dir))
+        {
+            if (!e.is_regular_file()) continue;
+            if (e.path().extension() != ".dat") continue;
+            Utility u = readUtilityFile(e.path());
+            guard.claim(u.name, e.path().string());
+            registry()[u.name] = u;
+        }
+    };
+    scan(fs::path(dataRoot) / "standards" / "utilities");
+    bool legacy = false;
+    const fs::path local = records::localScanDir("utilities", legacy);
+    if (!local.empty()) scan(local);
 }
 
 const Utility& UtilityCatalogue::byName(const std::string& name)

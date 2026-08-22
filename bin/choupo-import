@@ -1454,6 +1454,29 @@ def main():
                 want_plant("parameters/adsorption/equilibria/"
                            + name + "/" + f.name)
 
+    # ---- the utility catalogue (pickForDuty's candidate set) ---------------
+    # The allocator picks a utility for each duty from the WHOLE lineup, so
+    # the pick is a function of the complete candidate set: the closure is
+    # every data/standards/utilities/*.dat, mirrored whenever the case's own
+    # golden publishes an allocation (utility rows / utility_* KPIs) or a
+    # system dict asks for the utilities report.  Added 2026-08-22: the
+    # utility row kind (2026-08-12) never taught this importer its record
+    # home -- the Edwards lesson one catalogue over -- so no seal could keep
+    # its allocation with the catalogue hidden, and every sealed case with
+    # utility golden rows failed a RE-seal (found by the batch01b witness).
+    golden_txt = read(Path(caseDir) / "expected") or ""
+    wants_utilities = bool(re.search(r'^\s*utility\s|\butility_\w+', golden_txt, re.M))
+    if not wants_utilities:
+        for sd_dict in Path(caseDir).rglob("system/*Dict"):
+            if re.search(r'utilities', read(sd_dict) or ""):
+                wants_utilities = True
+                break
+    if wants_utilities:
+        udir = std / "utilities"
+        if udir.is_dir():
+            for f in sorted(udir.glob("*.dat")):
+                want_plant("utilities/" + f.name)
+
     # ---- per-context install content --------------------------------------
 
     def install_map(recs, ions, wantAll):

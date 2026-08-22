@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "GREEN WITNESS: semi-implicit Euler (EulerSI) on batch01 mild isothermal esterification -- first order suffices off-stiffness; twin of the ignition01_h2o2_eulersi expected failure.";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s   (10 min --- well past 5*tau for fast kinetics)
+deltaT          1.0;      // s   (RK4 step)
+writeInterval   30;       // s   (trajectory snapshot every 30 s)
+
+
+// ---------------------------------------------------------------------
+//   Optional: pick the units the log + Streams table print in.
+//   Omit this block for the chem-eng defaults (bar / K / kmol/h).
+//   The simulator internals stay in SI either way --- only formatting
+//   changes.  See userGuide section "Composition basis" for the full
+//   list of accepted unit aliases.
+//
+//   units
+//   {
+//       pressure       bar;      // bar, Pa, kPa, MPa, atm, psi, mmHg
+//       temperature    K;        // K  or  degC
+//       flow           kmol/h;   // molar:  kmol/h, kmol/s, mol/h, mol/s
+//                                // mass:   kg/h,   kg/s,   g/h,   g/s
+//   }
+// ---------------------------------------------------------------------
+
+// ---------------------------------------------------------------------
+//   Optional: decimal precision of the printed values.  Omit any key
+//   to keep its default (pressure 3, temperature 2, flow 4, composition
+//   4, etc.).  `flow` is a shorthand that sets both molarFlow and
+//   massFlow at once.
+//
+//   precision
+//   {
+//       pressure       3;
+//       temperature    2;
+//       flow           4;     // shorthand: molarFlow + massFlow
+//       composition    4;
+//   }
+// ---------------------------------------------------------------------
