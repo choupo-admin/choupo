@@ -204,3 +204,125 @@ Stated as a hypothesis with its evidence, not as a conclusion.  What would
 confirm or refute it: whether those 149 gates share a small number of common
 shapes that could be expressed once, or whether each genuinely needs its own
 code.  That is measurable and is not yet measured.
+
+---
+
+## A4. A record can contradict ITSELF about when its substance boils — 13 do
+
+Reported by the arity auditor; **re-derived independently here** rather than
+accepted, then corrected in one material respect.
+
+**The identity.**  A component record may carry both a normal boiling point
+`Tb` and an Antoine vapour-pressure set.  These are not independent: Antoine
+evaluated at `Tb` must give one atmosphere.  The engine states the identity in
+its own words at `src/propertyOps/EstimateComponent.cpp:534` — *"Psat(Tb) is the
+self-consistency check (should sit near 1 atm)"* — and prints the deviation for
+ESTIMATED components.  Curated records are never checked against it.
+
+**The convention was verified before the arithmetic was trusted.**
+`src/thermo/vaporPressure/Antoine.cpp:59-63`:
+
+    // Antoine published convention: log10(Psat[bar]) = A − B / (T+C).
+    const scalar Psat_bar = std::pow(10.0, A_ - B_ / (T + C_));
+    return Psat_bar * units::bar_to_Pa;
+
+**Independent sweep of all 247 curated component records** (own script, not the
+auditor's): 105 carry both `Tb` and an Antoine set; **19 deviate by more than
+3 % in pressure at `Tb`; 16 of those have `Tb` INSIDE the record's own declared
+`Trange`**, so extrapolation is not the excuse.
+
+**THE CORRECTION.**  The three largest deviations are `compC`, `compA` and
+`compB`, and they are not defects.  `data/standards/components/compA.dat`
+declares itself:
+
+    Component: compA  -- synthetic PSEUDO-component for VLLE algorithm audit.
+    Antoine tuned so Psat ≈ 5 bar at 350 K …
+    NOT A REAL SUBSTANCE -- a numerical test stand-in (formula "A", CAS 00-00-0).
+
+Their disagreement is deliberate and documented.  Excluding the three synthetic
+stand-ins leaves **13 real substances**:
+
+| record | `Tb` declared | Psat at `Tb` | deviation | `Tb` implied by Antoine | ΔT |
+|---|---|---|---|---|---|
+| `H2O2` | 423.35 K | 2.2479 bar | +121.9 % | 396.41 K | −26.9 K |
+| `HCHO` | 254.05 K | 0.0551 bar | −94.6 % | 313.42 K | **+59.4 K** |
+| `HCl` | 188.00 K | 0.3232 bar | −68.1 % | 207.61 K | +19.6 K |
+| `NO` | 121.40 K | 0.4204 bar | −58.5 % | 130.14 K | +8.7 K |
+| `propylene` | 225.46 K | 0.7167 bar | −29.3 % | 233.20 K | +7.7 K |
+| `N2O` | 184.67 K | 0.7181 bar | −29.1 % | 190.82 K | +6.1 K |
+| `ethylAcetate` | 350.21 K | 1.2908 bar | +27.4 % | 342.64 K | −7.6 K |
+| `Cl2` | 239.18 K | 0.8033 bar | −20.7 % | 244.42 K | +5.2 K |
+| `HCN` | 298.85 K | 1.2182 bar | +20.2 % | 294.59 K | −4.3 K |
+| `Ar` | 87.30 K | 1.1918 bar | +17.6 % | 85.88 K | −1.4 K |
+| `H2S` | 213.60 K | 0.8598 bar | −15.1 % | 216.77 K | +3.2 K |
+| `He` | 4.22 K | 0.8946 bar | −11.7 % | 4.40 K | +0.2 K |
+| `N2` | 77.35 K | 0.9673 bar | −4.5 % | 77.73 K | +0.4 K |
+
+**Both homes are live consumers.**  `Tb` feeds the Watson ΔHvap scaling and the
+derived `K_b` (`src/thermo/Component.H:403`); the Antoine set feeds every flash
+and every bubble point.
+
+**Failure scenario.**  A student runs a 1 atm bubble point on ethyl acetate and
+gets ≈342.6 K, then reads `Tb 350.21;` seven lines above the coefficients in the
+very record the run loaded.  The simulator contradicts its own datasheet by
+7.6 K with no announcement.  Nobody notices, because the golden pins the flash
+result and not the record's self-consistency, and no gate evaluates Psat(`Tb`).
+The case is not hypothetical: the sealed
+`tutorials/plant/esterification2sector` mirrors the same ethyl-acetate record,
+and its separation sector is a flash whose split those coefficients set.
+
+**WHICH HALF IS WRONG IS NOT DECIDED HERE, deliberately.**  Determining whether
+`Tb` or the Antoine set is the bad number requires the primary literature, which
+cannot be opened from this environment.  Under the calibration rule
+(`development-governance.md` §4) that claim would have to be marked unverified,
+so it is not made.  What IS checkable from here, and is asserted: **the record
+disagrees with itself, inside its own declared validity window.**  Notably
+`H2O2` and `HCHO` both already carry the header *"primary re-citation pending
+(IST review)"*.
+
+**Category, per philosophy §5a**: this is a DATA GAP, and possibly a missing
+VALIDATION gate.  It is not architectural incompleteness — the identity is
+already stated in the engine's own source and merely never applied to curated
+records.
+
+## A5. The abstraction count the accretion survey reported is wrong, and the correction reverses its meaning
+
+The accretion auditor reported "70 % of abstract bases (28/40) have ≤3
+subclasses; 16 have ≤2; one has zero", with
+`src/thermo/electrolyte/AqueousVolumetric.H` named as the zero.  A base with no
+implementation would be a strong signature of abstraction built ahead of need —
+exactly what a Gall's Law assessment looks for.
+
+**It is wrong.**  `AqueousVolumetricModel` has two implementations:
+
+    src/thermo/electrolyte/AqueousVolumetric.cpp:90   class DiluteVolume : public AqueousVolumetricModel
+    src/thermo/electrolyte/AqueousVolumetric.cpp:115  class StandardStateVolumes : public AqueousVolumetricModel
+
+and one pure virtual, not seven.  **The cause is systematic**: the auditor
+counted subclasses by grepping headers only, and this project routinely defines
+implementation classes inside the `.cpp`, keeping them out of the public
+interface.  Every count in that table is therefore an undercount, not just this
+one.
+
+**Recount including `.cpp` definitions**, over all abstract bases:
+
+Bases with a SINGLE implementation: `CostingModel` (Guthrie) · `DiffusivityModel`
+(Fuller) · `PureFluidModel` (IF97WaterFluid) · `SurfaceTensionModel` (BrockBird)
+· `ThermalConductivityModel` (Eucken) · `ElectrolyteModel`.  **Six, not
+twenty-eight.**  The rest carry 2 to 42 — `UnitOperation` 42,
+`PropertyOperation` 31, `Report` 12, `EquipmentSize` 8, `ActivityModel` 7,
+`BatchUnitOperation` 7, `Signal` 6, `CycloneModel` 5, `OuterDriver` 5.
+
+**Why this matters for the consolidation question.**  Six single-implementation
+factories in a simulator whose stated purpose is that a student can add their
+own model is a set of extension points, not premature abstraction — each is a
+model FAMILY (costing methods, diffusivity correlations, surface-tension
+correlations) where further members are the obvious next contribution.  The
+undercounted version supported the opposite conclusion, and it would have been
+the more dramatic one to report.
+
+**Standing lesson for this campaign, and it has now fired twice:** a fleet
+finding is evidence, never a conclusion.  Both auditor claims checked so far
+needed correction — one materially wrong (this), one materially incomplete
+(A4's synthetic stand-ins).  Nothing reaches the architect's findings file
+without being re-derived here.
