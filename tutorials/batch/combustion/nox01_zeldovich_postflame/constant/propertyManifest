@@ -21,8 +21,8 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
-    importerVersion    "2";
+    importedAt         "2026-08-22";
+    importerVersion    "3";
     records
     {
         "components/H.dat"
@@ -42,10 +42,10 @@ propertyManifest
         "components/H2O2.dat"
         {
             type          imported;
-            sha256        "9716a2a1a3cd22b3c101d2d86158fd4cbee059260ef3d011a54819c4372d0fe3";
-            computationalSha256 "83a99314abfc92ba391cd7406e097ea78f0bda6110b9ed601d5d157c4d73ed63";
+            sha256        "3f5ef244976e209c76783916979f67dad17ec1e98b07ea6f1bd56d53453d3bd6";
+            computationalSha256 "eb0e399f91c2e419e612b04cfcce965ba56d38fe0a22864839c31daff02749b3";
             origin        "data/standards/components/H2O2.dat";
-            originSha256  "13d571eb720a98461be4797263527733955d5c8bb9ac42e420bda16c7e9d2355";
+            originSha256  "c1e1384850dbbb96295eef140e962c0e189947ca3b404ac709cb9166e131ccf8";
             release       Choupo-2607;
         }
         "components/HO2.dat"

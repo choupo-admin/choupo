@@ -71,6 +71,20 @@ uniquac
                     // O'Connell, 5th ed., UNIQUAC r,q)
 }
 
+pcsaft
+{
+    // Associating (2B: one donor + one acceptor, the alcohol OH) -- the
+    // ethanol set of Gross & Sadowski 2002, fitted WITH the association
+    // term; the segment trio below is meaningless without assocScheme 2B.
+    m           2.3827;
+    sigma       3.1771;
+    epsilonK    198.24;
+    assocScheme 2B;
+    epsAB_K     2653.4;
+    kappaAB     0.032384;
+    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (2B ethanol)";
+}
+
 groups
 {
     joback ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
@@ -88,3 +102,10 @@ cosmo
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: ethanol does NOT participate in the aqueous speciation
+// network at this thermodynamic level (pKa ~ 15.9 -- negligible).  This
+// says nothing about aqueous reactions in general (esterification etc.
+// belong to reaction sets, not to equilibrium speciation).
+aqueousSpeciation  none;

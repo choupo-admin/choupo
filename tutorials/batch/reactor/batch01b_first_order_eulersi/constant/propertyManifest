@@ -64,10 +64,10 @@ propertyManifest
         "components/ethylAcetate.dat"
         {
             type          imported;
-            sha256        "76ae06b7a29934ba7d2cfbf322c5ac7aad4a2d7605e8f3c5adea0164ccc6371f";
-            computationalSha256 "566ca92262a5bee249b38da72a1723af6e4a6c5015f49c3f189d849853affdf8";
+            sha256        "b3e235fd94652be0acd9d5ce77023ba76e447fd4729030ae65ddc56ba866ac88";
+            computationalSha256 "0594c94a889d3b1067a477fe0a81076975a26b9ce2146d4610de7c1a0d06a9ae";
             origin        "data/standards/components/ethylAcetate.dat";
-            originSha256  "635adb496feb0fccbfecf7bf30ce19356687c14615feec781b8a172e8dfcdfbb";
+            originSha256  "8f2acd646669112f190d5fe0d14a05d78ed111d3e7d0f9a4a2542243f0e1d258";
             release       Choupo-2607;
         }
         "components/water.dat"

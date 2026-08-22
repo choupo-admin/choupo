@@ -64,3 +64,9 @@ liquidHeatCapacity
 
 // Friendly-name aliases (resolved to this file via the generated ALIASES index).
 aliases ( carbonDioxide );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// CO2 + H2O = HCO3- + H+ (CO2aq-formation): the carbonate
+// set, master HCO3.
+aqueousSpeciation  carbonate;
+aqueousMapping ( { species HCO3; nu 1; } { species H; nu 1; } );

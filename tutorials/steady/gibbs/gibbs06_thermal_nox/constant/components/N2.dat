@@ -33,8 +33,11 @@ standardThermochemistry
 vaporPressure
 {
     model         Antoine;
-    coefficients  (3.7362   264.651   -6.788);
-    Trange        (50  126);
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
+    // distribution; INTERIM pending primary review (Vitor))
+    coefficients  (3.61947   255.680   -6.6);
+    Trange        (61  84);
 }
 
 idealGasHeatCapacity
@@ -59,3 +62,7 @@ liquidHeatCapacity
 
 // Friendly-name aliases (resolved to this file via the generated ALIASES index).
 aliases ( nitrogen );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// dissolved nitrogen: neutral master, no aqueous equilibria.
+aqueousSpeciation  none;

@@ -79,7 +79,11 @@ units
         in          reactorOut;
         outputs     ( liqOut  vapProd );
 
-        operation   { T 360.0 K;  P 1.0 bar; }    // hot enough to vaporise some of this water-rich mix
+        operation   { T 364.0 K;  P 1.0 bar; }
+        // retuned 360 -> 364 K (2026-08-23): the corrected ethylAcetate /
+        // ethanol Antoine sets (audit fix) put this water-rich mix's bubble
+        // point just above the old 360 K, so the flash went subcooled and a
+        // recycle tutorial had no recycle; 364 K restores V/F ~ 0.45
     }
 
     {

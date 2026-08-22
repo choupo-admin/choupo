@@ -47,3 +47,8 @@ idealGasHeatCapacity
 
 // Friendly-name aliases (resolved to this file via the generated ALIASES index).
 aliases ( oxygen );
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// dissolved oxygen: neutral master, no aqueous equilibria
+// in the standard network.
+aqueousSpeciation  none;

@@ -73,3 +73,8 @@ pcsaft
     epsilonK 150.03;
     source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
 }
+
+// ---- Aqueous-speciation FACT (substance-level, classifier-read) ----
+// dissolved methane is a NEUTRAL master (no aqueous
+// equilibria beyond dissolution); role solute carries the Henry route.
+aqueousSpeciation  none;
