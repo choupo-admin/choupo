@@ -29,9 +29,13 @@ applications
 
 **A subsystem may depend downward and sideways within its band.  It may not
 depend upward, and the graph must be acyclic.**  These are invariants I17 and
-I18 in [`global-invariants.md`](global-invariants.md), and both are currently
-violated by measured code (§5, §6) — stated as violations with removal
-conditions, never as licence.
+I18 in [`global-invariants.md`](global-invariants.md).  Both HOLD as of
+2026-08-05 — the five violations the first measurement found (§5, §6) were
+repaid the next day, and `check_layering` now ASSERTS the invariants rather
+than bounding them.  (Until 2026-08-22 this paragraph still said "currently
+violated": the prose froze at the measurement while the ledger beside it
+recorded the repayments — the known shape of a paragraph asserting the
+opposite of what the machinery beside it observes.)
 
 **Three placements, 2026-08-05, closing D1 and D6.**  The diagram above drew
 five bands over twelve subsystems while `src/` held fourteen; `io` and
@@ -331,7 +335,10 @@ shared concept filed inside one of its two consumers, and each was paid by
   the moved code referenced no `propertyOps` symbol at all.
 * `reporting` ↔ `postProcessing`: `OdsWriter` is a spreadsheet serialiser
   whose header includes `<string>` and whose body includes `core/MiniZip.H`.
-  It moved to `io`, below both consumers.
+  It moved to `core`, beside the zip writer it was already using (as §5
+  above and `check_layering`'s own note record; this line used to say `io`,
+  which is where it was first PROPOSED to go — the second home for a
+  decision, drifted).
 
 A third cycle appeared and was paid in the same pass: moving `SimulationResult`
 into `result/` left it including `unitOperations/UnitProfile.H` while

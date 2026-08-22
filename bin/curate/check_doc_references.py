@@ -55,6 +55,12 @@ ALLOWED_PATHS = {
     "data/standards/components/true/aqueous/": "RETIRED layout, named as banned",
     "generated/indexes/":  "never built; named in CLAUDE.md as a correction, so\n"
                            "                          the next reader stops looking for it",
+    # Build outputs: created by a build, absent from a fresh clone.  The doc
+    # is DESCRIBING where a build lands, which is exactly a path that is
+    # absent by design until `make wasm-gui` runs.  (Found 2026-08-22: the
+    # gate was RED on every clean checkout over this line, and a standing
+    # red teaches readers that failure is normal.)
+    "gui/public/wasm/":  "WASM build output (make wasm-gui); absent on a fresh clone",
     # Hypothetical names in worked examples.
     "tutorials/plant/myPlant/":                  "placeholder in a worked example",
     "tutorials/plant/myPlant":                   "placeholder in a worked example",

@@ -111,7 +111,7 @@ turns four known problems from folklore into stated inconsistencies.
 
 | # | correspondence | rule | status |
 |---|---|---|---|
-| **C1** | V3 ↔ the source | the layering in `module-boundaries.md` §1 shall match the measured include graph | **INCONSISTENT** — 4 upward edges, 3 cycles (I17, I18) |
+| **C1** | V3 ↔ the source | the layering in `module-boundaries.md` §1 shall match the measured include graph | consistent since 2026-08-05 — `check_layering` ASSERTS I17 (zero upward edges) and I18 up to the one accepted `solver` ↔ `thermo` cycle |
 | **C2** | V2 ↔ V7 | every invariant shall have an engine refusal and a case that fires it | **INCONSISTENT** — I17, I18, I19 have neither |
 | **C3** | V7 ↔ the corpus | a contract with no firing case is marked *described, not consolidated* | consistent (the map marks them) |
 | **C4** | any view ↔ a generated artefact | a generated number has a generator and a staleness gate, never a copy | consistent (4 gates) |
@@ -119,7 +119,7 @@ turns four known problems from folklore into stated inconsistencies.
 | **C6** | V4/V5/V6 ↔ the guides | every path and case name in an AI-facing doc shall resolve | consistent (`check_doc_references`, 234 paths) |
 | **C7** | V9 ↔ the tree | a banned wording shall not appear in a live document or identifier | **INCONSISTENT** — one of six bans is gated; and one ban is contradicted by level-1 text and by engine comments (glossary G7) |
 
-Four of seven are inconsistent, and they are stated here rather
+Three of seven are inconsistent, and they are stated here rather
 than in a footnote.  A correspondence set that reported seven greens on a
 codebase with three violated invariants would be a negative witness that cannot
 fail.

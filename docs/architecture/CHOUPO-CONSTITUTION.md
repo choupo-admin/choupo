@@ -220,7 +220,7 @@ that ΔH:
 
 ```
 OuterDriver     src/outerDriver/     sensitivity / optim / PE / fit — reruns the pass
-Simulator core  src/{thermo,solver,streams,unitOperations,flowsheet}  Flowsheet → SimulationResult
+Simulator core  src/{thermo,solver,streams,unitOperations (incl. flowsheet/)}  Flowsheet → SimulationResult
 PostProcessor   src/postProcessing/  sizing / costing / reporting — augments after a pass
 ```
 

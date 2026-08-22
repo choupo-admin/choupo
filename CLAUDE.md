@@ -162,7 +162,7 @@ multi-sector shape) → [`docs/ai/case-layout.md`](docs/ai/case-layout.md) and
 │   (sensitivity, optim, parameter estimation, MC)
 │   Repeatedly runs the simulator with modified inputs.
 │
-├── Simulator core       src/{thermo, solver, streams, unitOperations, flowsheet}
+├── Simulator core       src/{thermo, solver, streams, unitOperations (incl. flowsheet/)}
 │   ONE pass:  Flowsheet → SimulationResult (streams + KPIs).
 │
 └── PostProcessor         src/postProcessing/
@@ -179,7 +179,7 @@ function, used by both the direct path and every outer driver.
 
 ```
 src/
-├── core/                Dictionary, SimulationResult, Types, Constants
+├── core/                Dictionary, Types, Constants  (SimulationResult moved to result/, 2026-08-05)
 ├── streams/             ProcessStream  (T, P, F, z, vf — what travels between units)
 ├── thermo/              Component, ThermoPackage, Database, phase/, vaporPressure/,
 │                         activityCoefficient/, equationOfState/, heatCapacity/,
