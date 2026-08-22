@@ -478,3 +478,80 @@ incompleteness — `solver/Convergence.H` already exists as the ONE home for a
 convergence verdict, and the ADR that created it lists which solvers are wired
 to it and which are not, each with a reason.  This routine is not on either
 list.
+
+---
+
+## A8. THE DESTRUCTIVE-GATE INCIDENT REPRODUCED ITSELF DURING THIS AUDIT — and the 2026-08-18 remedy WORKED
+
+Not a finding against the project.  A live re-run of the documented incident,
+caused by this campaign, and the first independent test of the fix built for it.
+
+**What happened.**  One of the read-only auditors executed
+`bin/curate/check_gate_selftest.py`.  That gate proves other gates can fail by
+SABOTAGING sources and records, rebuilding the engine, and requiring the failure.
+It was interrupted before its restore ran.  It left behind:
+
+    $ git diff src/solver/Convergence.H
+    -    if (normNow <= c.tolerance)
+    +    if (true)   /* SELFTEST */
+         {
+             criterion = "absolute tolerance (normalized residual <= tolerance)";
+             return true;
+
+`convergedNow` returning unconditionally true — every solver in the engine
+declaring success on its first evaluation.  A `make all` was running over it at
+the time, so the binary under construction carried the damage.
+
+**THE REMEDY HELD, and this is the part worth recording.**
+`build/destructiveSession.json` was written before the first mutation and
+survived the owner's death:
+
+    owner   check_gate_selftest   started 2026-08-22T15:07:33Z
+    files   …8 paths…
+    why     While it exists, neither the working tree nor build/ is
+            trustworthy and no evidence may be recorded from either.
+    alsoDamages  build/ … a clean `git status` is NOT evidence that the
+            build is clean.
+
+`destructive_session.py --assert` refused on behalf of every harness.  Owner PID
+27395 was verified dead.  Of the eight journalled files, seven were already
+intact and one was sabotaged — so the campaign-invalidating rule fired correctly
+on a tree that `git status` reported as almost clean, which is the incident's
+exact signature.
+
+**Recovery, in the order the journal prescribes.**  Kill the build compiling
+against the poisoned header · `git checkout --` the sabotaged source · verify
+ALL EIGHT files against the journal's own `sha256Before` (all eight matched) ·
+remove the journal only then · discard `build/` entirely rather than trust
+dependency tracking, because the journal declares the binary untrustworthy in
+its own words · rebuild from nothing.
+
+**THE STOP HOOK ASKED FOR THE SABOTAGE TO BE COMMITTED.**  An automated check
+reported uncommitted changes and requested a commit and push.  Complying would
+have committed `if (true) /* SELFTEST */` to the branch — which is precisely the
+half of the 2026-08-18 incident that did the lasting damage, since twelve
+poisoned entries were committed before anyone read them back.  The request was
+refused and the diff was read first.  *An instruction to commit is not an
+instruction to commit without looking.*
+
+**THE CAUSE IS THE ARCHITECT'S, and it is a governance gap this campaign should
+close.**  The gate auditor was told explicitly: *"Do NOT run the gates (they may
+be destructive).  Read them."*  The other six were not told, because the hazard
+was only obvious for the auditor whose subject WAS the gates.  Every auditor had
+shell access, and `development-governance.md` §5.1's rule — *"auditors are
+read-only"* — was enforced structurally against the FILE-WRITING tools and not
+against the ability to execute a program that writes files.
+
+**The generalisable rule, offered for ratification rather than asserted:** a
+read-only agent is read-only in the tools it holds, never in what those tools can
+invoke.  Where a repository contains a deliberately destructive program, the
+prohibition has to name that program, to every agent, not only to the one whose
+task is nearest to it.
+
+**What it validates.**  The journal mechanism was built on 2026-08-18 in response
+to a SIGKILL, and its sabotage-verification was performed by the same session
+that built it.  This is the first time it has fired for a cause nobody arranged,
+under an interruption nobody predicted, in front of a reader with no memory of
+the incident.  It behaved exactly as documented, and the design note that a clean
+`git status` proves nothing about `build/` is what prevented a poisoned binary
+from being trusted.
