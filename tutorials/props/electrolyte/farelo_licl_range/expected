@@ -1,2 +1,12 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
+diag    farelo_LiCl_sat        I                19.7             1e-4
+diag    farelo_LiCl_sat        SI_lithiumChlorideH2O 1.18638e-05      1e-4
+diag    farelo_LiCl_sat        aw               0.113466         1e-4
+diag    farelo_LiCl_sat        chargeImposed    1                1e-4
+diag    farelo_LiCl_sat        chargeResidual   5.04184e-14      1e-4
+diag    farelo_LiCl_sat        gamma_Cl         46.7905          1e-4
+diag    farelo_LiCl_sat        gamma_Li         46.7905          1e-4
+diag    farelo_LiCl_sat        m_Cl             19.7             1e-4
+diag    farelo_LiCl_sat        m_Li             19.7             1e-4
+diag    farelo_LiCl_sat        pH               7.99525          1e-4

@@ -397,7 +397,21 @@ get_any() {
     elif [ "$kind" = aad     ]; then get_aad     "$out" "$name" "$key"
     elif [ "$kind" = closure ]; then get_closure "$out" "$name" "$key"
     elif [ "$kind" = utility ]; then get_utility "$out" "$name" "$key"
+    elif [ "$kind" = csv     ]; then get_csv     "${5:-}" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
+}
+
+#  csv <file> <rowIdx:colName> -- reads one cell of a case-emitted CSV (the
+#  sweep drivers publish their whole answer as a CSV no JSON block carries;
+#  a published number a golden cannot reach is the defect class closed three
+#  times already -- 2026-08-22, the fourth).  rowIdx is the 0-based DATA row;
+#  colName must match the header exactly.  A missing file, row or column
+#  yields empty -> the row reports MISSING, never a silent pass.
+get_csv() {
+    awk -F, -v spec="$3" '
+        NR==1 { n=split(spec,a,":"); ri=a[1]; cn=a[2];
+                for (i=1;i<=NF;i++) if ($i==cn) ci=i; next }
+        NR==ri+2 { if (ci) print $ci }' "$1/$2" 2>/dev/null
 }
 
 # --- catalogue identity + CAS audit (curation guard, NOT the hot path) ----
@@ -3476,18 +3490,27 @@ for case_dir in "${CASES[@]}"; do
     #     vacuously).  Without this, an errored-but-exit-0 run, or one whose
     #     result-begin/result-end markers never appeared, would slip through.
     if [ -f "$case_dir/expected" ] && [ "$have_block" -eq 0 ]; then
-        printf "FAIL  %-40s  (no result block, but ships a golden 'expected')\n" "$name_short"
-        fail=$((fail+1)); continue
+        #  A golden of ONLY `csv` rows needs no result block: the sweep
+        #  drivers publish their whole answer as a CSV and emit none, which
+        #  is why the kind exists (2026-08-22).  Any other kind present
+        #  keeps the refusal -- those rows read the block that never came.
+        if awk '$1!~/^#/ && NF>=5 && $1!="csv" {exit 1}' "$case_dir/expected"; then
+            :
+        else
+            printf "FAIL  %-40s  (no result block, but ships a golden 'expected')\n" "$name_short"
+            fail=$((fail+1)); continue
+        fi
     fi
 
     # (3) reference KPIs
     if [ -f "$case_dir/expected" ]; then
-        bad=""; anchors_ok=0
+        bad=""; anchors_ok=0; golden_rows=0
         while read -r line; do
             case "$line" in ''|\#*) continue;; esac
             read -r kind name key exp_v tol claim _ <<< "$line"
             [ -z "${tol:-}" ] && continue
-            act=$(get_any "$out" "$kind" "$name" "$key")
+            golden_rows=$((golden_rows+1))
+            act=$(get_any "$out" "$kind" "$name" "$key" "$case_dir")
             within_tol "$act" "$exp_v" "$tol"
             case $? in
               0) [ "${claim:-}" = anchor ] && anchors_ok=$((anchors_ok+1)); ;;
@@ -3504,6 +3527,13 @@ for case_dir in "${CASES[@]}"; do
                  else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)"; fi;;
             esac
         done < "$case_dir/expected"
+        #  A golden with ZERO data rows pinned nothing and still printed the
+        #  suite's STRONGEST verdict ("checked vs reference") -- observed on
+        #  farelo_licl_range, 2026-08-22.  Checked-vacuously is not checked.
+        if [ "$golden_rows" -eq 0 ]; then
+            printf "FAIL  %-40s  (golden 'expected' has 0 rows -- pins nothing; record rows or remove the file)\n" "$name_short"
+            fail=$((fail+1)); continue
+        fi
         if [ -n "$bad" ]; then
             printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf "$bad\n"; fail=$((fail+1)); continue
         fi

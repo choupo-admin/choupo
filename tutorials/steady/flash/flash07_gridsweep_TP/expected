@@ -1,0 +1,11 @@
+# Reference KPIs (golden master).  This case's whole answer is the sweep CSV
+# (49 grid points of V/F over TxP); no JSON block carries it, so the rows
+# below pin four interior points -- both phase boundaries crossed and two
+# genuinely two-phase cells -- through the `csv` kind (2026-08-22).
+# kind   name      key         expected        reltol
+csv     gridsweep_TP.csv       8:flashDrum.V_over_F  0.235178  1e-4
+csv     gridsweep_TP.csv       23:flashDrum.V_over_F 0.303984  1e-4
+csv     gridsweep_TP.csv       38:flashDrum.V_over_F 0.641142  1e-4
+csv     gridsweep_TP.csv       46:flashDrum.V_over_F 0.385974  1e-4
+csv     gridsweep_TP.csv       0:flashDrum.V_over_F  1         1e-4
+csv     gridsweep_TP.csv       1:flashDrum.V_over_F  0         1e-4

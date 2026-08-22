@@ -1,0 +1,23 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  hotOil                 F                0.0416666666667    1e-4
+stream  oilReturn              F                0.0416666666667    1e-4
+stream  processFeed            F                0.0111111111111    1e-4
+stream  processOut             F                0.0111111111111    1e-4
+kpi     preheater              C_cold           1088.88888889      1e-4
+kpi     preheater              C_hot            17585.1462551      1e-4
+kpi     preheater              C_r              0.061920945842     1e-4
+kpi     preheater              LMTD             22.0063940236      1e-4
+kpi     preheater              NTU              13.7755102041      1e-4
+kpi     preheater              Q                330095.910352      1e-4
+kpi     preheater              Q_kW             330.095910352      1e-4
+kpi     preheater              T_cold_in        320                1e-4
+kpi     preheater              T_cold_out       623.149305425      1e-4
+kpi     preheater              T_hot_in         623.15             1e-4
+kpi     preheater              T_hot_out        604.378708277      1e-4
+kpi     preheater              U                600                1e-4
+kpi     preheater              UA               15000              1e-4
+kpi     preheater              area             25                 1e-4
+kpi     preheater              effectiveness    0.999997708808     1e-4
+utility preheater              heating.-.unserved 1                  1e-4

@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  liquid                 F                0.00246249927126   1e-4
+stream  meltFeed               F                0.00277777777778   1e-4
+stream  vapor                  F                0.000315278506519  1e-4
+kpi     devol01                F_alpha          0.00246249927126   1e-4
+kpi     devol01                F_beta           0.000315278506519  1e-4
+kpi     devol01                F_in             0.00277777777778   1e-4
+kpi     devol01                K_polystyrene    0                  1e-4
+kpi     devol01                K_toluene        24.2878386162      1e-4
+kpi     devol01                P                20000              1e-4
+kpi     devol01                Q                0                  1e-4
+kpi     devol01                Q_kW             0                  1e-4
+kpi     devol01                T                450                1e-4
+kpi     devol01                V_over_F         0.113500262347     1e-4
+kpi     devol01                phaseSet         0                  1e-4

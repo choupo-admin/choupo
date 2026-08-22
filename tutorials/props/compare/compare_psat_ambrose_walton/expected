@@ -1,0 +1,6 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    psat_aw_vs_antoine     n_emptyCurves    0                  1e-4
+diag    psat_aw_vs_antoine     n_failures       0                  1e-4
+diag    psat_aw_vs_antoine     n_points         46                 1e-4

@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  coldLiquid             F                0.00758956122005   1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  liquid                 F                0.00758956122005   1e-4
+stream  vapor                  F                0.0201882165577    1e-4
+kpi     cooler01               F                0.00758956122005   1e-4
+kpi     cooler01               P                100000             1e-4
+kpi     cooler01               Q                -30000             1e-4
+kpi     cooler01               Q_kW             -30                1e-4
+kpi     cooler01               Q_per_mol        -3952.79768226     1e-4
+kpi     cooler01               T_in             420                1e-4
+kpi     cooler01               T_out            405.894884539      1e-4
+kpi     cooler01               dT               -14.1051154607     1e-4
+kpi     cooler01               vf_out           0                  1e-4
+kpi     flash01                F_alpha          0.00758956122005   1e-4
+kpi     flash01                F_beta           0.0201882165577    1e-4
+kpi     flash01                F_in             0.0277777777778    1e-4
+kpi     flash01                K_petCut_C7plus  0.458062541946     1e-4
+kpi     flash01                K_toluene        2.56194974207      1e-4
+kpi     flash01                P                100000             1e-4
+kpi     flash01                T                420                1e-4
+kpi     flash01                V_over_F         0.726775796078     1e-4
+kpi     flash01                phaseSet         0                  1e-4
+utility cooler01               cooling.coolingWater.duty_kW -30                1e-4
+utility cooler01               cooling.coolingWater.T 405.894884539      1e-4
+utility cooler01               cooling.coolingWater.kg_s 0.717703349282     1e-4
+utility cooler01               cooling.coolingWater.eur_h 0.0432             1e-4

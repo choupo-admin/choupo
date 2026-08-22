@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  products               F                0.000277777777859  1e-4
+kpi     wgs                    F_in_kmol_h      1                  1e-4
+kpi     wgs                    F_out_kmol_h     1.00000000029      1e-4
+kpi     wgs                    N_in_mol_s       0.277777777778     1e-4
+kpi     wgs                    N_out_mol_s      0.277777777859     1e-4
+kpi     wgs                    P                100000             1e-4
+kpi     wgs                    Q_kW             -2.0000513466      1e-4
+kpi     wgs                    T                900                1e-4
+kpi     wgs                    converged        1                  1e-4
+kpi     wgs                    lambda_C         -12610.3166837     1e-4
+kpi     wgs                    lambda_H         -69027.9700281     1e-4
+kpi     wgs                    lambda_O         -299577.53726      1e-4
+kpi     wgs                    y_CO             0.199139146827     1e-4
+kpi     wgs                    y_CO2            0.300860853173     1e-4
+kpi     wgs                    y_H2             0.300860853173     1e-4
+kpi     wgs                    y_water          0.199139146827     1e-4

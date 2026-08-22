@@ -1,0 +1,6 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    pd                     Pc_bar           220.64             1e-4
+diag    pd                     Tc               647.14             1e-4
+diag    pd                     has_solid        1                  1e-4
