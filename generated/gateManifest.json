@@ -661,6 +661,11 @@
       "claim": "check_stream_transport_closure: OK -- one stream, one semantics, verified live on 6 stream(s) of 2 fresh-run witnesses: sum(x) = 1; JSON F*x equals converged/<stream> component by component; the file's phases{} blocks sum back to its overall componentMolarFlows (flash19: dissolved + crystal CaCO3 = 0.03 exactly); H_kW = F*H as one pair; the derived aqueous side is nonnegative.  NOT CHECKED: report CSVs, GUI rendering (gui/tests), and streams outside the two witnesses.",
       "seconds": 17.6
     },
+    "check_tb_antoine": {
+      "exit": 0,
+      "claim": "tb-antoine: OK -- 98 record(s) checked for Psat(Tb) ~ 1 atm; 13 known defects pinned with their observed deviation (fix needs primary literature; the list cannot grow or heal in silence).  NOT COVERED: non-Antoine vapour-pressure models.",
+      "seconds": 0.0
+    },
     "check_temporal_utilities": {
       "exit": 0,
       "claim": "check_temporal_utilities: profile==ledger + peaks + impulse exclusion + 3 sabotages refused + unprofiled listing OK",

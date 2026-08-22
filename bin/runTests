@@ -2020,6 +2020,21 @@ PYEOF
     fi
     rm -f /tmp/rsc.$$
 
+    # Tb <-> Antoine self-consistency: a record's declared boiling point must
+    # agree with its own Antoine set at 1 atm (2026-08-22 fresh-eyes audit:
+    # 13 records disagreed inside their own Trange, formaldehyde by 59 K).
+    # The 13 are PINNED with their observed deviation -- fixing needs primary
+    # literature -- and the list can neither grow nor heal in silence.
+    if "$ROOT/bin/curate/check_tb_antoine.py" > /tmp/tba.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "tb-antoine-gate" "$(tail -1 /tmp/tba.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_tb_antoine.py)\n" "tb-antoine-gate"
+        cat /tmp/tba.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tba.$$
+
     # species-citation gate (AP5, 2026-08-05).  I3 -- "every value carries its
     # provenance" -- is the invariant a reader cannot check for himself: an
     # unsourced number is untraceable and looks exactly like a sourced one.
