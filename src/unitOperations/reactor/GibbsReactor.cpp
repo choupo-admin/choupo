@@ -293,8 +293,12 @@ int GibbsReactor::solve(const DictPtr& dict,
         kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
     }
 
-    for (std::size_t j = 0; j < M; ++j)
-        kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;
+    // lambda_* only when the method actually produced element potentials --
+    // an empty pi is an absent claim, never a row of zeros (2026-08-22:
+    // directMin published M fabricated zeros here and a golden pinned them).
+    if (eq.pi.size() == M)
+        for (std::size_t j = 0; j < M; ++j)
+            kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;
     if (prob.dTapproach != 0.0)
         kpis_["temperatureApproach_K"] = prob.dTapproach;
     for (std::size_t i = 0; i < N; ++i)
@@ -318,12 +322,17 @@ int GibbsReactor::solve(const DictPtr& dict,
               << "  T:            " << std::setprecision(2) << T_final << " K"
               << (mode == "adiabatic" ? "   (adiabatic flame T)" : "   (isothermal)") << "\n"
               << "  Conv.:        " << (eq.converged ? "yes" : "NO")
-              << "   in " << eq.iterations << " Newton-ND iters\n";
+              << "   in " << eq.iterations
+              << (eq.stopReason.empty() ? " Newton-ND iters\n"
+                                        : " simplex iters\n");
     if (mode == "adiabatic")
         std::cout << "  Outer conv.:  in " << outerIter << " Newton-1D iters on T\n";
-    std::cout << "  Final |F|:    " << std::scientific << std::setprecision(3)
-              << eq.residual << "\n\n"
-              << "  Species         n_in [mol/s]    n_gas [mol/s]   n_liq [mol/s]\n"
+    if (eq.stopReason.empty())
+        std::cout << "  Final |F|:    " << std::scientific
+                  << std::setprecision(3) << eq.residual << "\n\n";
+    else   // a derivative-free route has no |F|; print the claim it earned
+        std::cout << "  Stop:         " << eq.stopReason << "\n\n";
+    std::cout << "  Species         n_in [mol/s]    n_gas [mol/s]   n_liq [mol/s]\n"
               << "  ----------------------------------------------------------------\n";
     for (std::size_t i = 0; i < N; ++i)
         std::cout << "  " << std::left << std::setw(14) << specNames[i]

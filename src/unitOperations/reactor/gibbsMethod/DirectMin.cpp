@@ -28,6 +28,7 @@ License
 
 #include "DirectMin.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "solver/NelderMead.H"
 #include "solver/NewtonND.H"
@@ -35,6 +36,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
@@ -196,27 +198,57 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     { sVector s = xc; for (std::size_t a = 0; a < K; ++a) s[R + a] = 0.5; starts.push_back(s); }
 
     sVector xBest; scalar fBest = PENALTY;
+    solver::NMResult best{};
     for (const auto& s : starts)
     {
         auto res = solver::nelderMead(Gobj, s, lo, hi, nmo);
-        if (res.f < fBest) { fBest = res.f; xBest = res.x; }
+        if (res.f < fBest) { fBest = res.f; xBest = res.x; best = res; }
     }
 
     // ---- Reconstruct the answer ----------------------------------------
     sVector nV, nL;
     if (xBest.empty() || !unpack(xBest, nV, nL) || fBest >= 0.5 * PENALTY)
-        return gas;                              // fall back to gas-only
+    {
+        // The two-phase minimisation failed; the answer returned is the
+        // GAS-ONLY equilibrium, and the substitution is ANNOUNCED -- a
+        // failed optimiser bit-identical to a success at the call site was
+        // the silent-fallback shape this project treats most seriously
+        // (found 2026-08-22, fresh-eyes audit).
+        if (AdvisoryLog::instance().add("solver", "warning",
+                "gibbs directMin",
+                "the two-phase direct minimisation failed to produce a"
+                " usable point; the GAS-ONLY equilibrium is returned"
+                " instead.  If a condensed phase matters here, use"
+                " `model elementPotential;` or `model reactiveFlash;`."))
+            std::cerr << "[solver] gibbs directMin: two-phase minimisation"
+                         " failed -- returning the gas-only equilibrium"
+                         " (announced).\n";
+        gas.stopReason = "two-phase minimisation failed; gas-only answer"
+                         " (announced)";
+        return gas;
+    }
 
     GibbsEquilibrium eq;
     eq.nGas = nV; eq.nLiq = nL;
     scalar NV = 0.0, NL = 0.0;
     for (std::size_t i = 0; i < N; ++i) { NV += nV[i]; NL += nL[i]; }
     eq.Ntotal_gas = NV; eq.Ntotal_liq = NL;
-    eq.pi.assign(M, 0.0);                          // not produced by direct min
-    eq.twoPhase  = (NL > 1.0e-10 * (NV + NL));
-    eq.converged = true;
-    eq.iterations = 0;
-    eq.residual   = 0.0;
+    // pi stays EMPTY: a derivative-free minimisation produces no element
+    // potentials, and an absent claim must stay absent -- until 2026-08-22
+    // this line assigned M zeros, the reactor published them as lambda_*
+    // KPIs, and a golden pinned the fabrication.
+    (void)M;
+    AdvisoryLog::instance().add("solver", "info",
+        "gibbs directMin",
+        "derivative-free route: no element potentials (lambda_*) and no"
+        " residual norm are produced; convergence is the Nelder-Mead"
+        " simplex criterion, reported as its own stopping reason.");
+    eq.twoPhase   = (NL > 1.0e-10 * (NV + NL));
+    eq.converged  = best.converged;
+    eq.iterations = best.iterations;
+    eq.residual   = 0.0;                     // no |F| exists on this route
+    eq.stopReason = "Nelder-Mead (" + best.reason + "), best of "
+                  + std::to_string(starts.size()) + " starts";
     return eq;
 }
 

@@ -12,9 +12,6 @@ kpi     wgs                    N_out_mol_s      0.277777777778   1e-4
 kpi     wgs                    P                100000           1e-4
 kpi     wgs                    T                350              1e-4
 kpi     wgs                    converged        1                1e-4
-kpi     wgs                    lambda_C         0                1e-4
-kpi     wgs                    lambda_H         0                1e-4
-kpi     wgs                    lambda_O         0                1e-4
 kpi     wgs                    liquidFraction   0.135779645985   1e-4
 kpi     wgs                    twoPhase         1                1e-4
 kpi     wgs                    x_CO             6.39685660913e-06 1e-4
@@ -25,3 +22,4 @@ kpi     wgs                    y_CO             1.47205380973e-05 1e-4
 kpi     wgs                    y_CO2            0.289219653948   1e-4
 kpi     wgs                    y_H2             0.289235931536   1e-4
 kpi     wgs                    y_water          0.421529693979   1e-4
+kpi     wgs                    Q_kW             -4.44252474317   1e-4

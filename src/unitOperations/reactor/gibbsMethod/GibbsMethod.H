@@ -102,6 +102,11 @@ struct GibbsEquilibrium
     bool                converged = false;
     int                 iterations = 0;
     scalar              residual   = 0.0;
+    // Empty on the Newton routes (residual is a real |F|).  A derivative-free
+    // route fills it with its own stopping reason INSTEAD of fabricating a
+    // residual -- the consumer prints whichever claim the method actually
+    // earned (2026-08-22; directMin used to assert converged/0 iters/|F|=0).
+    std::string         stopReason;
 };
 
 // Shared single-gas-phase Gibbs solve (the element-potential Newton),
