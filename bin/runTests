@@ -453,13 +453,22 @@ audit_catalogue() {
     return "$problems"
 }
 
-# --- numeric compare: |a-e|/|e| <= tol  (absolute fallback when e ~ 0)
+# --- numeric compare: |a-e|/|e| <= tol, EXCEPT near zero.
+#  A golden value below 1e-9 is cancellation/consumption residue, not an
+#  answer: a relative band on it pins the last bits of an ODE step order or a
+#  libm, and fails on a compiler flag while catching no physics.  Such a row
+#  therefore asserts "this quantity is ~ZERO", compared ABSOLUTELY against
+#  tol -- the same claim an exact-0 row has always made.  (Until 2026-08-22
+#  the cliff sat at 1e-30: 225 rows between 1e-30 and 1e-9 carried brittle
+#  relative bands, and 6 rows below it silently got the loose absolute one --
+#  two semantics, chosen by which side of an undocumented constant the
+#  recorded noise happened to land.  Fresh-eyes audit, finding C4/C5.)
 within_tol() {
     awk -v a="$1" -v e="$2" -v t="$3" 'BEGIN{
         if (a == "" )            { exit 2 }       # missing
         ae = (e<0)?-e:e
         diff = a-e; if (diff<0) diff=-diff
-        rel = (ae > 1e-30) ? diff/ae : diff
+        rel = (ae > 1e-9) ? diff/ae : diff
         exit (rel <= t) ? 0 : 1
     }'
 }
