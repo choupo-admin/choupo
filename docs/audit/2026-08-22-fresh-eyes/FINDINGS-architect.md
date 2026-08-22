@@ -326,3 +326,155 @@ finding is evidence, never a conclusion.  Both auditor claims checked so far
 needed correction — one materially wrong (this), one materially incomplete
 (A4's synthetic stand-ins).  Nothing reaches the architect's findings file
 without being re-derived here.
+
+---
+
+## A6. SEVEN gates guard 200 curated records and NONE of them can fail
+
+Found by the gate auditor; **every element re-verified here.**
+
+`data/standards/electrolyte/` was retired (commit `c07f5c9a9`, *"retire the
+vestigial data/standards/electrolyte/ dir"*).  Seven gates read a file in that
+directory as their FIRST act, and on not finding it print a reassuring line and
+`sys.exit(0)`:
+
+    $ ls data/standards/electrolyte/
+    ls: cannot access 'data/standards/electrolyte/': No such file or directory
+
+| gate | line | the construct |
+|---|---|---|
+| `check_pitzer_pairs.py` | 11 | `print("electrolyte/pairs.dat ABSENT -- pairs kind consolidated. OK."); sys.exit(0)` |
+| `check_enrtl.py` | 10 | `print("electrolyte/enrtl.dat ABSENT -- eNRTL kind consolidated. OK."); sys.exit(0)` |
+| `check_speciation.py` | 10 | `print("electrolyte/speciation.dat ABSENT -- aqueousSpeciation consolidated. OK."); sys.exit(0)` |
+| `check_gases.py` | 11 | `print("electrolyte/gases.dat ABSENT -- gasLiquid kind consolidated. OK."); sys.exit(0)` |
+| `check_ionexchange.py` | 10 | `print("electrolyte/exchange.dat ABSENT -- ionExchange consolidated. OK."); sys.exit(0)` |
+| `check_minerals.py` | 11 | `print("electrolyte/minerals.dat ABSENT -- mineralSolubility consolidated. OK."); sys.exit(0)` |
+| `check_mixing.py` | 13 | `print("electrolyte/mixing.dat ABSENT -- mixing kind consolidated. OK."); sys.exit(0)` |
+
+**Everything else in each script sits BELOW that line** — including the ORPHAN
+arm, which is the only check on the per-file corpus itself.  The docstrings
+promise a flip to "assert the file is ABSENT"; the post-flip arm asserts nothing.
+
+**They are all wired into `bin/runTests`, and the wiring converts exit 0 into
+the word PASS** (`bin/runTests:2738-2745`, the pattern is identical for all
+seven):
+
+    if "$ROOT/bin/curate/check_pitzer_pairs.py" > /tmp/… 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pitzer-pairs-gate" "$(tail -1 /tmp/…)"
+
+So the suite prints seven PASS lines, each with a sentence explaining why
+everything is fine.
+
+**What is left unguarded — counted here, not taken from the auditor:**
+
+| catalogue | records |
+|---|---|
+| `parameters/Pitzer/pairs/` | 55 |
+| `parameters/Pitzer/{theta,psi,lambda,zeta}/` | 65 |
+| `chemistry/` `recordType aqueousSpeciation` | 62 |
+| `chemistry/` `recordType gasLiquidEquilibrium` | 9 |
+| `chemistry/` `recordType ionExchangeEquilibrium` | 6 |
+| `parameters/eNRTL/` | 3 |
+| **total** | **200** |
+
+Two are **doubly dead**: `check_minerals` also points at
+`data/standards/chemistry/mineralSolubility`, which does not exist, and
+`check_mixing` at `parameters/Pitzer/mixing`, which does not exist either — its
+records live in four sibling directories.  `check_mixing`'s bijection assertion
+was therefore already broken BEFORE its input was deleted.
+
+**Failure scenario.**  Any `beta0`, `beta1`, `Cphi`, `alpha1` or `logK25` in
+those 200 records can be edited — by a curation script, a bad merge, or a hand
+slip — and nothing recomputes or compares it.  The corpus goldens pin the
+ANSWERS of the cases that happen to reach a given parameter, so a record no
+tutorial exercises is unprotected in both directions at once.
+`check_gases`'s own docstring states that it is *"the SOLE net"* for its nine
+records, which have *"zero golden coverage"*.
+
+### A6b. An eighth gate: the only failing branch is behind a flag nobody passes
+
+`bin/curate/check_groups.py:94-96`:
+
+    if args.strict and missing:
+        return 1
+    return 0
+
+`--strict` is opt-in (`check_groups.py:61`).  `bin/runTests:2782` invokes the
+script bare.  The gate can print `[check_groups] MISSING a UNIFAC groups block`
+and still be scored `PASS groups-gate`.  Its own docstring says *"It is NOT
+wired into bin/runTests"* — but it is, at line 2782, as a scored gate.
+
+**Category, per philosophy §5a**: BUG, in the verification machinery.  Not
+architectural incompleteness — the correct form exists three files away
+(`check_caveat_surface.py:131-134` returns 1 for exactly this condition, saying
+*"a check that cannot run must not pass"*).
+
+## A7. THE GIBBS DIRECT MINIMISER REPORTS A CONVERGENCE IT NEVER COMPUTED — and a golden pins the fabrication
+
+The sharpest finding of the campaign.  Verified verbatim.
+
+`src/unitOperations/reactor/gibbsMethod/DirectMin.cpp:205-219`:
+
+    sVector nV, nL;
+    if (xBest.empty() || !unpack(xBest, nV, nL) || fBest >= 0.5 * PENALTY)
+        return gas;                              // fall back to gas-only
+
+    GibbsEquilibrium eq;
+    …
+    eq.pi.assign(M, 0.0);                          // not produced by direct min
+    eq.twoPhase  = (NL > 1.0e-10 * (NV + NL));
+    eq.converged = true;
+    eq.iterations = 0;
+    eq.residual   = 0.0;
+    return eq;
+
+Three separate claims are asserted rather than measured — `converged`,
+`iterations`, `residual` — by a routine that ran a multi-start Nelder-Mead and
+terminated on a simplex-size criterion, never on a residual.  A fourth,
+`pi` (the element potentials), is filled with zeros and the comment says why.
+
+**No announcement exists at any verbosity.**  The whole file is 223 lines and
+
+    $ grep -cE 'cout|cerr|Advisory|throw' src/unitOperations/reactor/gibbsMethod/DirectMin.cpp
+    0
+
+There is no verbosity gate to argue about, because there is no message.
+
+**The fabrications then reach the reader as fact.**
+`src/unitOperations/reactor/GibbsReactor.cpp:320-325` prints
+`Conv.: yes   in 0 Newton-ND iters` and `Final |F|: 0.000e+00`; line 297 emits
+`kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;` unconditionally, so every
+element potential is published as exactly zero.
+
+**And the corpus has baselined it.**
+`tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin/expected:15-17`:
+
+    kpi     wgs                    lambda_C         0                1e-4
+    kpi     wgs                    lambda_H         0                1e-4
+    kpi     wgs                    lambda_O         0                1e-4
+
+The regression suite now ENFORCES the fabricated values.  A future correction
+that computes real element potentials will be reported as a FAILURE.
+
+**Failure scenario.**  A student comparing the three Gibbs routes on the shipped
+`gibbs09` water-gas-shift case reads `lambda_C = 0 J/mol` beside
+`elementPotential`'s genuine λ_C of order −10⁵ J/mol, and — because
+`Final |F| = 0.000e+00` is the tightest residual on the page — concludes that
+the direct minimiser is the MORE accurate method and that the carbon element
+potential of a WGS mixture is zero.
+
+**Why this one matters beyond its own numbers.**  It is the exact failure the
+project names as the one it treats most seriously — *"a warning that lets a
+wrong answer through with exit code 0"* (philosophy §2a) — except that there is
+not even a warning.  It contradicts the founding anti-crutch principle in its
+own words: *"the solver ANNOUNCES what it does to converge and never disguises
+it."*  And the secondary branch is worse than the primary: on optimiser failure
+`return gas` hands back the gas-only equilibrium still carrying
+`converged = true` from its own Newton, so a failed two-phase minimisation is
+bit-for-bit indistinguishable at the call site from a successful one.
+
+**Category, per philosophy §5a**: BUG.  Emphatically not architectural
+incompleteness — `solver/Convergence.H` already exists as the ONE home for a
+convergence verdict, and the ADR that created it lists which solvers are wired
+to it and which are not, each with a reason.  This routine is not on either
+list.
