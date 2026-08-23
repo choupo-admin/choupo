@@ -2231,6 +2231,7 @@
   "src/applications/choupoBatch/wasmEntry.cpp": [],
   "src/applications/choupoCtrl/main.cpp": [
    "src/control/Controller.H",
+   "src/control/SignalController.H",
    "src/control/signal/Signal.H",
    "src/core/Advisory.H",
    "src/core/AdvisorySummary.H",
@@ -6863,6 +6864,7 @@
    "src/control/ScheduleController.cpp"
   ],
   "src/control/SignalController.H": [
+   "src/applications/choupoCtrl/main.cpp",
    "src/control/Controller.cpp",
    "src/control/SignalController.cpp"
   ],

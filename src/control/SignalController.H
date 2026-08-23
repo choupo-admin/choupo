@@ -84,6 +84,7 @@ public:
     scalar lastCV()   const override { return 0.0; }   // open loop, no PV
     scalar lastMV()   const override { return lastMV_; }
     scalar setpoint() const override { return lastMV_; }
+    const Signal* signal() const { return signal_.get(); }
 
 private:
     inline static const std::string type_ = "Signal";

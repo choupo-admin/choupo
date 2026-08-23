@@ -57,6 +57,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "control/Controller.H"
+#include "control/SignalController.H"
 #include "control/signal/Signal.H"
 #include "core/Advisory.H"
 #include "core/AdvisorySummary.H"
@@ -538,7 +539,29 @@ try
         auto fd = controlDict->subDict("frequencyResponse");
         fr.unitName   = fd->lookupWord("unit");
         fr.tracerName = fd->lookupWord("tracer");
-        fr.freqHz     = fd->lookupScalar("frequency");
+        //  `frequency` XOR `reference <signalController>` -- with a
+        //  reference the frequency is READ FROM THE DRIVE, its one home,
+        //  which is what lets an outer sweep vary the drive alone.
+        const bool hasF = fd->found("frequency");
+        const bool hasR = fd->found("reference");
+        if (hasF == hasR)
+            throw std::runtime_error("frequencyResponse: declare `frequency`"
+                " XOR `reference <signalControllerName>` (with a reference"
+                " the frequency is read from the drive itself).");
+        if (hasF)
+            fr.freqHz = fd->lookupScalar("frequency");
+        else
+        {
+            const std::string ref = fd->lookupWord("reference");
+            for (const auto& c : controllers)
+                if (c->name() == ref)
+                    if (auto* sc = dynamic_cast<SignalController*>(c.get()))
+                        fr.freqHz = sc->signal()->frequencyHz();
+            if (fr.freqHz <= 0.0)
+                throw std::runtime_error("frequencyResponse: reference '"
+                    + ref + "' is not a Signal controller with a periodic"
+                    " signal -- name the sine drive.");
+        }
         const scalar nDisc = fd->lookupScalar("discardCycles");
         const scalar nFit  = fd->lookupScalar("fitCycles");
         if (fr.freqHz <= 0.0 || nDisc < 0.0 || nFit <= 0.0)

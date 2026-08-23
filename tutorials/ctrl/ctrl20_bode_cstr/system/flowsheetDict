@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl20_bode_cstr
+  ================
+
+  THE BODE TABLE of the LTI mixing tank (tau = 240 s): an outer sweep
+  drives the sinusoidal tracer substitution at four frequencies,
+  omega*tau = 0.5, 2.0, 3.5, 5.0 (linear grid in f), and the engine's
+  frequencyResponse fit measures amplitude and phase at each -- the
+  sweep CSV IS the Bode table.  The measurement block references the
+  drive, so each pass's fit window adapts to that pass's own period, and
+  the sweep varies ONE datum (the drive frequency, mirrored to the
+  carrier by linkedTargets -- the same value, lockstep, never a second
+  independent number).
+
+  ANCHORS: the exact first-order closed forms at each grid point,
+  AR = 1/sqrt(1+(wt)^2), phase = -atan(wt):
+      wt=0.5: |out| = 2e-6*0.894427 = 1.788854e-6,  phi = -0.463648 rad
+      wt=2.0: |out| = 2e-6*0.447214 = 8.944272e-7,  phi = -1.107149 rad
+      wt=3.5: |out| = 2e-6*0.274721 = 5.494423e-7,  phi = -1.292497 rad
+      wt=5.0: |out| = 2e-6*0.196116 = 3.922323e-7,  phi = -1.373401 rad
+  Phase bands cover the omega*dt/2 half-sample bias, which grows with
+  omega (0.10 to 1.0 mrad here) -- stated, not hidden.
+*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     330.0 K;
+        }
+
+    }
+);
+
+controllers
+(
+    //  Tracer SUBSTITUTION at constant total flow: compB up by exactly
+    //  what compA goes down, so F never moves and tau stays 240 s.
+    //  Tracer SUBSTITUTION, sinusoidal: compB swings +-2e-6 kmol/s about a
+    //  4e-6 mean, compA mirrors it about 4.6e-5 -- total F pinned at 5e-5.
+    {
+        name         TracerSine;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compB; }
+        signal
+        {
+            type       sinusoidal;
+            mean       4.0e-6;        // kmol/s
+            amplitude  2.0e-6;        // kmol/s
+            frequency  6.6314559622e-04;   // Hz  (omega*tau = 1)
+        }
+    }
+
+    {
+        name         CarrierMirror;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compA; }
+        signal
+        {
+            type       sinusoidal;
+            mean       4.6e-5;        // kmol/s
+            amplitude  -2.0e-6;       // the exact mirror
+            frequency  6.6314559622e-04;   // Hz
+        }
+    }
+
+);

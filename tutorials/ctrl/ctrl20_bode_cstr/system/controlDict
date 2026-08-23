@@ -25,12 +25,12 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoCtrl;
-description   "Frequency response of the LTI mixing tank at omega*tau = 1: engine-fitted amplitude and phase against the exact first-order closed forms (AR = 1/sqrt(2), phase = -45 deg).";
+description   "Bode table of the LTI mixing tank: outer frequency sweep (one datum, lockstep mirror) over the engine frequency-response fit; anchors are the exact first-order closed forms at each point.";
 
 verbosity     3;
 
 startTime       0;        // s
-endTime         13873;    // s  (9.2 periods: 5 discarded + 4 fitted + margin)
+endTime         27747;    // s  (9.2 periods of the SLOWEST point, wt = 0.5)
 deltaT          1.0;      // s
 writeInterval   10;       // s
 

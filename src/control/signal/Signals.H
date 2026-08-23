@@ -130,6 +130,7 @@ public:
     const std::string& type() const override { return type_; }
     void   initialise(const DictPtr& d) override;
     scalar value(scalar t) const override;
+    scalar frequencyHz() const override { return 1.0 / period_; }
 
 private:
     inline static const std::string type_ = "sine";

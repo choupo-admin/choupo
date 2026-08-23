@@ -45,6 +45,8 @@ SweepDriver::SweepDriver(const DictPtr& dict)
 {
     auto pdict = dict->subDict("parameter");
     targetPath_  = pdict->lookupWord("target");
+    if (pdict->found("linkedTargets"))
+        linkedTargets_ = pdict->lookupWordList("linkedTargets");
     auto rng     = pdict->lookupList("range");
     if (rng.size() != 2)
         throw std::runtime_error("SweepDriver: 'range' needs (min max)");
@@ -142,6 +144,8 @@ int SweepDriver::run()
         }
         else
             clone->setScalarAtPath(targetPath_, val);
+        for (const auto& lp : linkedTargets_)
+            clone->setScalarAtPath(lp, val);        // lockstep, same datum
 
         SimulationResult result;
         try { result = simulator_(clone, ov); }

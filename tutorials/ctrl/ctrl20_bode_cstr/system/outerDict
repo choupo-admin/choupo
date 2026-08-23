@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  outerDict -- the Bode sweep: four drive frequencies, one datum.
+\*-----------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target         controllers[0].signal.frequency;
+    //  The carrier mirror carries the SAME frequency -- swept in lockstep,
+    //  never as an independent number (linkedTargets, 2026-08-23).
+    linkedTargets  ( controllers[1].signal.frequency );
+    range          ( 3.3157279811e-04  3.3157279811e-03 );   // Hz: omega*tau = 0.5 .. 5.0
+    nPoints        4;                              // linear -> wt = 0.5, 2.0, 3.5, 5.0
+}
+
+responses
+(
+    frequencyResponse.out_amplitude_kmol_s
+    frequencyResponse.out_phase_rad
+    frequencyResponse.fit_residual_rel
+);
+
+report
+{
+    format    csv;
+    file      sweep_results.csv;
+}

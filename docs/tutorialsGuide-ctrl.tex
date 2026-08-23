@@ -629,3 +629,28 @@ THE ANCHORS ARE THE FIRST-ORDER CLOSED FORMS (any process-control text; at omega
 \goldmore{14}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl20\_bode\_cstr}{tutorials/ctrl/ctrl20\_bode\_cstr}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Bode table of the LTI mixing tank: outer frequency sweep (one datum, lockstep mirror) over the engine frequency-response fit; anchors are the exact first-order closed forms at each point.}
+\begin{tutnarrative}
+THE BODE TABLE of the LTI mixing tank (tau = 240 s): an outer sweep drives the sinusoidal tracer substitution at four frequencies, omega$\ast$tau = 0.5, 2.0, 3.5, 5.0 (linear grid in f), and the engine's frequencyResponse fit measures amplitude and phase at each -- the sweep CSV IS the Bode table. The measurement block references the drive, so each pass's fit window adapts to that pass's own period, and the sweep varies ONE datum (the drive frequency, mirrored to the carrier by linkedTargets -- the same value, lockstep, never a second independent number).
+
+ANCHORS: the exact first-order closed forms at each grid point, AR = 1/sqrt(1+(wt)\textasciicircum{}2), phase = -atan(wt): wt=0.5: |out| = 2e-6$\ast$0.894427 = 1.788854e-6, phi = -0.463648 rad wt=2.0: |out| = 2e-6$\ast$0.447214 = 8.944272e-7, phi = -1.107149 rad wt=3.5: |out| = 2e-6$\ast$0.274721 = 5.494423e-7, phi = -1.292497 rad wt=5.0: |out| = 2e-6$\ast$0.196116 = 3.922323e-7, phi = -1.373401 rad Phase bands cover the omega$\ast$dt/2 half-sample bias, which grows with omega (0.10 to 1.0 mrad here) -- stated, not hidden.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{csv}{sweep\_results.csv}{0:frequencyResponse.out\_amplitude\_kmol\_s}{1.788854e-6}
+\goldrow{csv}{sweep\_results.csv}{1:frequencyResponse.out\_amplitude\_kmol\_s}{8.944272e-7}
+\goldrow{csv}{sweep\_results.csv}{2:frequencyResponse.out\_amplitude\_kmol\_s}{5.494423e-7}
+\goldrow{csv}{sweep\_results.csv}{3:frequencyResponse.out\_amplitude\_kmol\_s}{3.922323e-7}
+\goldrow{csv}{sweep\_results.csv}{0:frequencyResponse.out\_phase\_rad}{-0.463648}
+\goldrow{csv}{sweep\_results.csv}{1:frequencyResponse.out\_phase\_rad}{-1.107149}
+\goldrow{csv}{sweep\_results.csv}{2:frequencyResponse.out\_phase\_rad}{-1.292497}
+\goldrow{csv}{sweep\_results.csv}{3:frequencyResponse.out\_phase\_rad}{-1.373401}
+\end{tutgolden}
+

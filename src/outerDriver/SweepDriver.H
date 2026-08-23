@@ -81,6 +81,12 @@ private:
     inline static const std::string type_ = "sweep";
 
     std::string              targetPath_;
+    //  Optional LINKED targets: the SAME swept value is written to every
+    //  path here after targetPath_ (2026-08-23, for the Bode case: one
+    //  frequency datum lives in the drive, its mirror and the measurement
+    //  block, and sweeping them apart would measure a mismatch, not a
+    //  process).
+    std::vector<std::string> linkedTargets_;
     scalar                   rangeMin_ = 0.0;
     scalar                   rangeMax_ = 0.0;
     std::size_t              nPoints_  = 0;

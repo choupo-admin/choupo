@@ -88,6 +88,12 @@ public:
     // The deterministic forcing value at time t [s].
     virtual scalar value(scalar t) const = 0;
 
+    //  The signal's own frequency [Hz] where it HAS one (sine); 0 for
+    //  aperiodic shapes.  One home for the datum: a measurement block that
+    //  references its drive reads the frequency from HERE instead of
+    //  carrying a copy that can drift (2026-08-23, the Bode sweep).
+    virtual scalar frequencyHz() const { return 0.0; }
+
     // ---- Factory (explicit registry) ----
     using Factory = std::function<std::unique_ptr<Signal>()>;
 

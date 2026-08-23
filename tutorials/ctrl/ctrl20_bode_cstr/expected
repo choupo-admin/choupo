@@ -1,0 +1,16 @@
+# Reference KPIs (golden master).  A sweep case's whole answer is its CSV --
+# the Bode table -- pinned by the `csv` kind.  ANCHORS: the exact first-order
+# closed forms AR = 1/sqrt(1+(wt)^2) (on the 2e-6 kmol/s drive) and
+# phase = -atan(wt), at the four grid points wt = 0.5, 2.0, 3.5, 5.0.
+# Phase bands cover the omega*dt/2 half-sample bias, VERIFIED to follow that
+# formula at all four frequencies (1.04/4.17/7.28/10.3 mrad); amplitude
+# bands are truncation-only.
+# kind   name      key         expected        reltol
+csv     sweep_results.csv      0:frequencyResponse.out_amplitude_kmol_s 1.788854e-6 1e-3 anchor
+csv     sweep_results.csv      1:frequencyResponse.out_amplitude_kmol_s 8.944272e-7 1e-3 anchor
+csv     sweep_results.csv      2:frequencyResponse.out_amplitude_kmol_s 5.494423e-7 1e-3 anchor
+csv     sweep_results.csv      3:frequencyResponse.out_amplitude_kmol_s 3.922323e-7 1e-3 anchor
+csv     sweep_results.csv      0:frequencyResponse.out_phase_rad -0.463648 5e-3  anchor
+csv     sweep_results.csv      1:frequencyResponse.out_phase_rad -1.107149 6e-3  anchor
+csv     sweep_results.csv      2:frequencyResponse.out_phase_rad -1.292497 8e-3  anchor
+csv     sweep_results.csv      3:frequencyResponse.out_phase_rad -1.373401 1.2e-2 anchor
