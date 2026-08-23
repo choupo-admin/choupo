@@ -114,6 +114,7 @@ def parse_component(path: Path) -> dict:
         # `vaporPressure { model Antoine; ... }` in the .dat files
         # (NOT `Antoine { ... }`).
         "vaporPressure": _has_block(text, "vaporPressure"),
+        "psatRange": _psat_range(text),
         "cpIg": _has_block(text, "idealGasHeatCapacity"),
         "cpLiq": _has_block(text, "liquidHeatCapacity"),
         "gibbs": _has_block(text, "standardThermochemistry"),
@@ -123,6 +124,23 @@ def parse_component(path: Path) -> dict:
         "liquidViscosity": _has_block(text, "liquidViscosity"),
     }
     return info
+
+
+def _psat_range(text: str) -> str:
+    """The vaporPressure block's declared Trange, rendered "288-354" [K].
+
+    S6 of the electrolyte-authoring-seams scope (2026-08-23 LLM benchmark,
+    finding F5): the inventory showed only a tick for Psat, so an author
+    could not know that a bread-and-butter benzene flash at 370 K sits
+    16 K outside the curated Antoine fit until the run's advisory said so.
+    The window IS the datum an author picks conditions against; a tick is
+    not.  A block with no declared Trange renders as a bare tick still --
+    absence must keep meaning absence."""
+    m = re.search(r"vaporPressure\s*\{[^}]*?Trange\s*\(\s*([\d.]+)\s+([\d.]+)\s*\)",
+                  text, re.DOTALL)
+    if not m:
+        return ""
+    return f"{float(m.group(1)):.0f}-{float(m.group(2)):.0f}"
 
 
 def _classify(c: dict) -> str:
@@ -203,7 +221,7 @@ def render_components_md() -> str:
         out.append(f"### {cat}")
         out.append("")
         out.append(
-            "| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry"
+            "| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry"
             " | solid | solubility | sorption | Vliq | Notes |"
         )
         out.append("|---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|")
@@ -224,7 +242,7 @@ def render_components_md() -> str:
             notes = ", ".join(notes_bits) or " "
             row = (
                 f"| `{c['name']}` | {mw} | {role} | "
-                f"{'✓' if c['vaporPressure'] else '—'} | "
+                f"{(c['psatRange'] or '✓') if c['vaporPressure'] else '—'} | "
                 f"{'✓' if c['cpIg']       else '—'} | "
                 f"{'✓' if c['cpLiq']      else '—'} | "
                 f"{'✓' if c['gibbs']      else '—'} | "
@@ -269,6 +287,14 @@ def _components_footer() -> str:
         REPO / "data" / "standards" / "parameters" / "Henry",
         "One `<gas>-<solvent>.dat` per pair; each ships its temperature "
         "dependence and its convention profile.",
+    ) + "\n" + _list_section(
+        "## SRK binary-interaction (kij) pairs",
+        REPO / "data" / "standards" / "parameters" / "SRK",
+        "One `<a>-<b>.dat` per pair, declarable from a phiPhi case's "
+        "`binaryInteractions`; a pair NOT listed here runs kij = 0 "
+        "(announced), and a declared-but-missing file refuses.  (S6 of the "
+        "authoring-seams scope: the catalogue listed every Henry pair and "
+        "no kij home, so an author could not know what may be declared.)",
     ) + "\n" + _kind_section(
         "## Membranes",
         ("NF", "RO", "IEM"),

@@ -61,113 +61,113 @@ level up.)
 
 ### Volatile (curated for VLE)
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| `1Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `aceticAcid` | 60.052 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `acetone` | 58.080 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
-| `acetylene` | 26.038 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `Ar` | 39.948 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `benzene` | 78.114 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `carbonylSulfide` | 60.0751 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `cis2Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `CO` | 28.010 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
-| `compA` | 30.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `compB` | 50.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `compC` | 50.0 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `cyclohexane` | 84.1595 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `cyclopentane` | 70.1329 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `cyclopropane` | 42.0810 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `D2` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `Dichloroethane` | 98.9590 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `diethylEther` | 74.1216 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `dimethylCarbonate` | 90.0779 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `dimethylEther` | 46.0684 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ethane` | 30.070 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `ethanol` | 46.069 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `ethylAcetate` | 88.106 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ethylBenzene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ethylene` | 28.054 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `ethyleneOxide` | 44.0526 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `fluorine` | 37.9968 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `H2` | 2.016 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
-| `H2O2` | 34.0147 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `HCHO` | 30.026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `HCN` | 27.026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `He` | 4.0026 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `heavyWater` | 20.0275 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `hexamethyldisiloxane` | 162.3775 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `hfe143m` | 100.0400 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isoButane` | 58.1222 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isoButene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isohexane` | 86.1754 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isopentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `krypton` | 83.7980 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
-| `MD3M` | 384.8390 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `MD4M` | 458.9933 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `MDM` | 236.5315 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `methanol` | 32.042 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `methylAcetate` | 74.079 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylLinoleate` | 294.4721 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylLinolenate` | 292.4562 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylOleate` | 296.4879 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylPalmitate` | 270.4507 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `methylStearate` | 298.5038 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `mXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `N2` | 28.013 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
-| `N2O` | 44.013 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `nButane` | 58.123 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nButanol` | 74.122 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nDecane` | 142.2817 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nDodecane` | 170.3348 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `neon` | 20.1790 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `neopentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nHeptane` | 100.2020 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nHexane` | 86.178 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nNonane` | 128.2551 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `NO` | 30.006 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `NO2` | 46.006 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `nOctane` | 114.231 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `novec649` | 316.0438 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nPentane` | 72.1488 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `nUndecane` | 156.3083 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `O2` | 31.999 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
-| `O3` | 47.9982 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `OrthoDeuterium` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
-| `OrthoHydrogen` | 2.0159 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
-| `oXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ParaDeuterium` | 4.0282 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
-| `ParaHydrogen` | 2.0159 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
-| `propane` | 44.096 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `propylene` | 42.081 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `propyne` | 40.0600 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `pXylene` | 106.1650 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R11` | 137.3680 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R113` | 187.3750 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R12` | 120.9130 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R1234yf` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R1234zeE` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R1234zeZ` | 114.0416 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R134a` | 102.0320 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R13I1` | 195.9104 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R143a` | 84.0410 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R21` | 102.9227 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R218` | 188.0193 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R22` | 86.4680 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R236EA` | 152.0384 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R245fa` | 134.0479 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R32` | 52.0240 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `R365MFC` | 148.0745 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `RC318` | 200.0312 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `SF6` | 146.0554 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `toluene` | 92.141 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
-| `trans2Butene` | 56.1063 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `water` | 18.015 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
-| `Xe` | 131.2930 | (volatile) | ✓ | ✓ | ✓ | — | — | — | — | — |   |
+| `1Butene` | 56.1063 | (volatile) | 189-411 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `aceticAcid` | 60.052 | (volatile) | 290-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `acetone` | 58.080 | (volatile) | 259-508 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
+| `acetylene` | 26.038 | (volatile) | 192-308 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `Ar` | 39.948 | (volatile) | 83-94 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `benzene` | 78.114 | (volatile) | 288-354 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
+| `carbonylSulfide` | 60.0751 | (volatile) | 170-371 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `cis2Butene` | 56.1063 | (volatile) | 196-427 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `CO` | 28.010 | (volatile) | 68-132 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
+| `compA` | 30.0 | (volatile) | 300-400 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `compB` | 50.0 | (volatile) | 300-400 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `compC` | 50.0 | (volatile) | 300-400 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `cyclohexane` | 84.1595 | (volatile) | 280-543 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclopentane` | 70.1329 | (volatile) | 230-501 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclopropane` | 42.0810 | (volatile) | 274-391 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `D2` | 4.0282 | (volatile) | 19-38 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `Dichloroethane` | 98.9590 | (volatile) | 253-550 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `diethylEther` | 74.1216 | (volatile) | 270-459 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `dimethylCarbonate` | 90.0779 | (volatile) | 278-546 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `dimethylEther` | 46.0684 | (volatile) | 180-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethane` | 30.070 | (volatile) | 168-305 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `ethanol` | 46.069 | (volatile) | 273-369 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
+| `ethylAcetate` | 88.106 | (volatile) | 266-373 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylBenzene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylene` | 28.054 | (volatile) | 150-283 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `ethyleneOxide` | 44.0526 | (volatile) | 211-460 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `fluorine` | 37.9968 | (volatile) | 65-142 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `H2` | 2.016 | (volatile) | 14-25 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
+| `H2O2` | 34.0147 | (volatile) | 330-446 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `HCHO` | 30.026 | (volatile) | 230-300 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `HCN` | 27.026 | (volatile) | 260-330 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `He` | 4.0026 | (volatile) | 2-5 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `heavyWater` | 20.0275 | (volatile) | 290-631 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `hexamethyldisiloxane` | 162.3775 | (volatile) | 233-508 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `hfe143m` | 100.0400 | (volatile) | 240-370 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isoButane` | 58.1222 | (volatile) | 184-400 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isoButene` | 56.1063 | (volatile) | 188-410 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isohexane` | 86.1754 | (volatile) | 224-488 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isopentane` | 72.1488 | (volatile) | 207-451 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `krypton` | 83.7980 | (volatile) | 116-205 | ✓ | ✓ | — | — | — | — | — |   |
+| `MD3M` | 384.8390 | (volatile) | 283-615 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `MD4M` | 458.9933 | (volatile) | 294-640 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `MDM` | 236.5315 | (volatile) | 254-554 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `methanol` | 32.042 | (volatile) | 288-356 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
+| `methylAcetate` | 74.079 | (volatile) | 260-380 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylLinoleate` | 294.4721 | (volatile) | 360-783 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylLinolenate` | 292.4562 | (volatile) | 347-757 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylOleate` | 296.4879 | (volatile) | 352-766 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylPalmitate` | 270.4507 | (volatile) | 340-740 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `methylStearate` | 298.5038 | (volatile) | 349-760 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `mXylene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `N2` | 28.013 | (volatile) | 61-84 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
+| `N2O` | 44.013 | (volatile) | 181-197 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `nButane` | 58.123 | (volatile) | 273-425 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nButanol` | 74.122 | (volatile) | 295-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nDecane` | 142.2817 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nDodecane` | 170.3348 | (volatile) | 296-645 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `neon` | 20.1790 | (volatile) | 25-44 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `neopentane` | 72.1488 | (volatile) | 257-425 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nHeptane` | 100.2020 | (volatile) | 244-530 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nHexane` | 86.178 | (volatile) | 286-343 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nNonane` | 128.2551 | (volatile) | 268-583 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `NO` | 30.006 | (volatile) | 107-128 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `NO2` | 46.006 | (volatile) | 250-294 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `nOctane` | 114.231 | (volatile) | 326-399 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `novec649` | 316.0438 | (volatile) | 199-433 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nPentane` | 72.1488 | (volatile) | 211-460 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nUndecane` | 156.3083 | (volatile) | 287-626 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `O2` | 31.999 | (volatile) | 54-154 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
+| `O3` | 47.9982 | (volatile) | 80-161 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `OrthoDeuterium` | 4.0282 | (volatile) | 19-38 | ✓ | ✓ | — | — | — | — | — |   |
+| `OrthoHydrogen` | 2.0159 | (volatile) | 15-33 | ✓ | ✓ | — | — | — | — | — |   |
+| `oXylene` | 106.1650 | (volatile) | 284-618 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ParaDeuterium` | 4.0282 | (volatile) | 19-38 | ✓ | ✓ | — | — | — | — | — |   |
+| `ParaHydrogen` | 2.0159 | (volatile) | 15-32 | ✓ | ✓ | — | — | — | — | — |   |
+| `propane` | 44.096 | (volatile) | 231-321 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `propylene` | 42.081 | (volatile) | 165-242 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `propyne` | 40.0600 | (volatile) | 274-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `pXylene` | 106.1650 | (volatile) | 287-604 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R11` | 137.3680 | (volatile) | 212-462 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R113` | 187.3750 | (volatile) | 237-477 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R12` | 120.9130 | (volatile) | 173-377 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234yf` | 114.0416 | (volatile) | 220-360 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234zeE` | 114.0416 | (volatile) | 172-375 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R1234zeZ` | 114.0416 | (volatile) | 274-415 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R134a` | 102.0320 | (volatile) | 170-367 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R13I1` | 195.9104 | (volatile) | 178-389 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R143a` | 84.0410 | (volatile) | 162-339 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R21` | 102.9227 | (volatile) | 204-444 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R218` | 188.0193 | (volatile) | 155-338 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R22` | 86.4680 | (volatile) | 166-362 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R236EA` | 152.0384 | (volatile) | 244-404 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R245fa` | 134.0479 | (volatile) | 192-418 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R32` | 52.0240 | (volatile) | 158-344 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `R365MFC` | 148.0745 | (volatile) | 240-451 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `RC318` | 200.0312 | (volatile) | 234-381 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `SF6` | 146.0554 | (volatile) | 224-312 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `toluene` | 92.141 | (volatile) | 273-380 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
+| `trans2Butene` | 56.1063 | (volatile) | 193-420 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `water` | 18.015 | (volatile) | 273-373 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
+| `Xe` | 131.2930 | (volatile) | 162-284 | ✓ | ✓ | — | — | — | — | — |   |
 
 ### Permanent gas / combustion species
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `H2SO4` | 98.079 | (volatile) | — | — | ✓ | ✓ | — | — | — | ✓ |   |
 | `H3PO4` | 97.995 | (volatile) | — | — | — | ✓ | ✓ | — | — | — |   |
@@ -175,19 +175,19 @@ level up.)
 
 ### Soluble gas (Henry)
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| `CH4` | 16.043 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
-| `Cl2` | 70.906 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `CO2` | 44.010 | solute | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
-| `H2S` | 34.082 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `HCl` | 36.461 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
-| `NH3` | 17.030 | solute | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `SO2` | 64.065 | solute | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `CH4` | 16.043 | solute | 91-190 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
+| `Cl2` | 70.906 | solute | 176-256 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `CO2` | 44.010 | solute | 154-204 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
+| `H2S` | 34.082 | solute | 186-227 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `HCl` | 36.461 | solute | 160-201 | ✓ | — | ✓ | — | — | — | ✓ |   |
+| `NH3` | 17.030 | solute | 195-371 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `SO2` | 64.065 | solute | 199-263 | ✓ | — | ✓ | — | — | — | ✓ |   |
 
 ### Non-volatile solute
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `acetaldehyde` | 44.053 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `C` | 12.011 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -259,7 +259,7 @@ level up.)
 
 ### Crystallising solute
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `KCl` | 74.551 | nonvolatile | — | — | ✓ | — | ✓ | ✓ | — | — | ν=2 |
 | `potassiumBitartrate` | 188.177 | nonvolatile | — | — | ✓ | — | ✓ | ✓ | — | — | ν=2 |
@@ -267,7 +267,7 @@ level up.)
 
 ### Solids-only / pseudo-component
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `CaCO3` | 100.0869 | nonvolatile | — | — | — | ✓ | ✓ | — | — | — |   |
 | `calciumHydroxide` | 74.093 | nonvolatile | — | — | ✓ | ✓ | ✓ | — | — | — |   |
@@ -286,7 +286,7 @@ level up.)
 
 ### Other
 
-| Name | MW | role | Psat | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
+| Name | MW | role | Psat (Trange, K) | Cp_ig | Cp_liq | standardThermochemistry | solid | solubility | sorption | Vliq | Notes |
 |---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
 | `akermanite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
 | `anthophyllite` | — | (volatile) | — | — | — | — | — | — | — | — |   |
@@ -552,6 +552,13 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `valericAcid-water` |
 | `vinylAcetate-water` |
 | `vinylChloride-water` |
+## SRK binary-interaction (kij) pairs
+
+One `<a>-<b>.dat` per pair, declarable from a phiPhi case's `binaryInteractions`; a pair NOT listed here runs kij = 0 (announced), and a declared-but-missing file refuses.  (S6 of the authoring-seams scope: the catalogue listed every Henry pair and no kij home, so an author could not know what may be declared.)
+
+| Name |
+|---|
+| `N2-CH4` |
 ## Membranes
 
 Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO); the ion-exchange pair carries its transport numbers.
