@@ -1,8 +1,12 @@
 # The electrolyte authoring seams — scope (F3 of the LLM benchmark)
 
-**Status: SCOPE, awaiting Vítor's alignment on items marked [ARCHITECT];
-the plain doc/data items are authorised by the benchmark's evidence and
-will proceed.**  Evidence:
+**Status: the authorised slices are BUILT (S1+S2 2026-08-23, S4+S6 the
+same night — S4's reproduction found the better truth: not an echoing
+diagnostic but a DUPLICATED species row, the declared master's phantom
+inventory beside the network's solved value; the collision now refuses
+with both remedies and the round-5 pin message names the master).
+S3 and S5 [ARCHITECT] await Vítor.  The success criterion (a fresh-agent
+re-run of benchmark case D) is measured below.**  Evidence:
 [`llm-authoring-benchmark-2026-08-23.md`](llm-authoring-benchmark-2026-08-23.md)
 case D — eight rounds to author a NaCl-brine-open-to-CO₂ speciation, with
 every round powered by an error message because the kit could not carry it.
