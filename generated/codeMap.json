@@ -205,17 +205,11 @@
   "ConservationConstraint": [
    "src/streams/AnalysisReconciler.H"
   ],
-  "ConstantDrop": [
-   "src/unitOperations/membrane/pressureDrop/ConstantDrop.H"
-  ],
   "ConstantEstimate": [
    "src/propertyOps/ConstantEstimator.H"
   ],
   "ConstantEstimator": [
    "src/propertyOps/ConstantEstimator.H"
-  ],
-  "ConstantKfilm": [
-   "src/unitOperations/membrane/massTransfer/ConstantKfilm.H"
   ],
   "Constraint": [
    "src/streams/ProcessStream.H"
@@ -655,9 +649,6 @@
   "Lapple": [
    "src/unitOperations/separation/cycloneModel/Lapple.H"
   ],
-  "Latini": [
-   "src/thermo/transport/Latini.H"
-  ],
   "Ledger": [
    "src/thermo/RecordResolver.H"
   ],
@@ -1076,9 +1067,6 @@
   "ScheduleController": [
    "src/control/ScheduleController.H"
   ],
-  "Scheibel": [
-   "src/thermo/transport/Scheibel.H"
-  ],
   "SchockMiquel": [
    "src/unitOperations/membrane/massTransfer/SchockMiquel.H"
   ],
@@ -1277,9 +1265,6 @@
   ],
   "Turbine": [
    "src/unitOperations/rotating/Turbine.H"
-  ],
-  "TwinFluidAtomizer": [
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.H"
   ],
   "UNIFAC": [
    "src/thermo/activityCoefficient/UNIFAC.H"
@@ -2061,14 +2046,6 @@
    {
     "key": "pressureSwirl",
     "type": "PressureSwirlAtomizer"
-   },
-   {
-    "key": "twinFluid",
-    "type": "TwinFluidAtomizer"
-   },
-   {
-    "key": "airblast",
-    "type": "TwinFluidAtomizer"
    }
   ],
   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp": [
@@ -2101,10 +2078,6 @@
   ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp": [
    {
-    "key": "constant",
-    "type": "ConstantKfilm"
-   },
-   {
     "key": "SchockMiquel",
     "type": "SchockMiquel"
    }
@@ -2120,10 +2093,6 @@
    }
   ],
   "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp": [
-   {
-    "key": "constant",
-    "type": "ConstantDrop"
-   },
    {
     "key": "SchockMiquel",
     "type": "SchockMiquelDrop"
@@ -5232,30 +5201,34 @@
    "src/thermo/transport/DiffusivityModel.H",
    "src/thermo/transport/Fuller.H"
   ],
-  "src/thermo/transport/Latini.cpp": [
+  "src/thermo/transport/LiquidConductivityModel.H": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
-   "src/thermo/Component.H",
-   "src/thermo/transport/Latini.H",
-   "src/thermo/transport/LiquidConductivityModel.H"
+   "src/thermo/Component.H"
   ],
   "src/thermo/transport/LiquidConductivityModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
-   "src/thermo/transport/Latini.H",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/SatoRiedel.H"
+  ],
+  "src/thermo/transport/LiquidDiffusivityModel.H": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H"
   ],
   "src/thermo/transport/LiquidDiffusivityModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
-   "src/thermo/transport/Scheibel.H",
    "src/thermo/transport/WilkeChang.H"
   ],
   "src/thermo/transport/LiquidViscosityModel.cpp": [
@@ -5275,16 +5248,6 @@
    "src/thermo/Component.H",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/SatoRiedel.H"
-  ],
-  "src/thermo/transport/Scheibel.cpp": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Identifiers.H",
-   "src/core/Origin.H",
-   "src/core/Types.H",
-   "src/thermo/Component.H",
-   "src/thermo/transport/LiquidDiffusivityModel.H",
-   "src/thermo/transport/Scheibel.H"
   ],
   "src/thermo/transport/ThermalConductivityModel.cpp": [
    "src/core/Dictionary.H",
@@ -6092,14 +6055,18 @@
    "src/unitOperations/heatTransfer/SprayDryer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H"
   ],
+  "src/unitOperations/heatTransfer/atomizer/Atomizer.H": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H"
+  ],
   "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.H",
-   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.H"
+   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H"
   ],
   "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp": [
    "src/core/Dictionary.H",
@@ -6114,13 +6081,6 @@
    "src/core/Types.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H"
-  ],
-  "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp": [
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Types.H",
-   "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.H"
   ],
   "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp": [
    "src/core/Dictionary.H",
@@ -6212,7 +6172,6 @@
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/thermo/Dimensionless.H",
-   "src/unitOperations/membrane/massTransfer/ConstantKfilm.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/SchockMiquel.H"
   ],
@@ -6228,7 +6187,6 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
-   "src/unitOperations/membrane/pressureDrop/ConstantDrop.H",
    "src/unitOperations/membrane/pressureDrop/PressureDropModel.H",
    "src/unitOperations/membrane/pressureDrop/SchockMiquelDrop.H"
   ],
@@ -7271,12 +7229,12 @@
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidConductivityModel.cpp",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -7316,10 +7274,10 @@
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
@@ -7533,12 +7491,12 @@
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidConductivityModel.cpp",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -7578,10 +7536,10 @@
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
@@ -7832,9 +7790,9 @@
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -8044,9 +8002,9 @@
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -8481,12 +8439,12 @@
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidConductivityModel.cpp",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -8526,10 +8484,10 @@
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/heatTransfer/atomizer/Atomizer.H",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp",
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
@@ -9828,9 +9786,9 @@
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
-   "src/thermo/transport/Latini.cpp",
+   "src/thermo/transport/LiquidConductivityModel.H",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/SatoRiedel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -11010,17 +10968,12 @@
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Fuller.cpp"
   ],
-  "src/thermo/transport/Latini.H": [
-   "src/thermo/transport/Latini.cpp",
-   "src/thermo/transport/LiquidConductivityModel.cpp"
-  ],
   "src/thermo/transport/LiquidConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/thermo/ThermoPackage.cpp",
-   "src/thermo/transport/Latini.cpp",
    "src/thermo/transport/LiquidConductivityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp"
   ],
@@ -11031,7 +10984,6 @@
    "src/applications/choupoSolve/main.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
-   "src/thermo/transport/Scheibel.cpp",
    "src/thermo/transport/WilkeChang.cpp"
   ],
   "src/thermo/transport/LiquidViscosityModel.H": [
@@ -11047,10 +10999,6 @@
   "src/thermo/transport/SatoRiedel.H": [
    "src/thermo/transport/LiquidConductivityModel.cpp",
    "src/thermo/transport/SatoRiedel.cpp"
-  ],
-  "src/thermo/transport/Scheibel.H": [
-   "src/thermo/transport/LiquidDiffusivityModel.cpp",
-   "src/thermo/transport/Scheibel.cpp"
   ],
   "src/thermo/transport/ThermalConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -11382,8 +11330,7 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp"
+   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp"
   ],
   "src/unitOperations/heatTransfer/atomizer/PressureSwirlAtomizer.H": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
@@ -11392,10 +11339,6 @@
   "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.H": [
    "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
    "src/unitOperations/heatTransfer/atomizer/RotaryAtomizer.cpp"
-  ],
-  "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.H": [
-   "src/unitOperations/heatTransfer/atomizer/Atomizer.cpp",
-   "src/unitOperations/heatTransfer/atomizer/TwinFluidAtomizer.cpp"
   ],
   "src/unitOperations/heatTransfer/htc/DittusBoelter.H": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.cpp"
@@ -11441,9 +11384,6 @@
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
-  "src/unitOperations/membrane/massTransfer/ConstantKfilm.H": [
-   "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp"
-  ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
@@ -11462,9 +11402,6 @@
   ],
   "src/unitOperations/membrane/osmotic/VanHoff.H": [
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp"
-  ],
-  "src/unitOperations/membrane/pressureDrop/ConstantDrop.H": [
-   "src/unitOperations/membrane/pressureDrop/PressureDropModel.cpp"
   ],
   "src/unitOperations/membrane/pressureDrop/PressureDropModel.H": [
    "src/unitOperations/UnitOperation.cpp",

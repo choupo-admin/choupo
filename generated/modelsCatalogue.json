@@ -242,25 +242,9 @@
         "tutorials": []
       },
       {
-        "key": "Latini",
-        "name": "Latini liquid thermal conductivity",
-        "source": "src/thermo/transport/Latini.cpp",
-        "engine": "all",
-        "phases": "liquid",
-        "tutorials": []
-      },
-      {
         "key": "SatoRiedel",
         "name": "Sato-Riedel liquid thermal conductivity",
         "source": "src/thermo/transport/SatoRiedel.cpp",
-        "engine": "all",
-        "phases": "liquid",
-        "tutorials": []
-      },
-      {
-        "key": "Scheibel",
-        "name": "Scheibel liquid diffusivity",
-        "source": "src/thermo/transport/Scheibel.cpp",
         "engine": "all",
         "phases": "liquid",
         "tutorials": []

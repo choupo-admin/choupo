@@ -27,7 +27,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PressureDropModel.H"
-#include "ConstantDrop.H"
 #include "SchockMiquelDrop.H"
 
 #include <map>
@@ -69,7 +68,6 @@ std::vector<std::string> PressureDropModel::availableTypes()
 
 void PressureDropModel::registerBuiltins()
 {
-    registerType("constant",     []{ return std::make_unique<ConstantDrop>();     });
     registerType("SchockMiquel", []{ return std::make_unique<SchockMiquelDrop>(); });
 }
 

@@ -28,7 +28,6 @@ License
 
 #include "LiquidConductivityModel.H"
 #include "SatoRiedel.H"
-#include "Latini.H"
 
 #include <map>
 #include <memory>
@@ -61,8 +60,6 @@ void LiquidConductivityModel::registerBuiltins()
 {
     registerModel("SatoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
     registerModel("satoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
-    registerModel("Latini",     [](const DictPtr& d) { return std::make_unique<Latini>(d); });
-    registerModel("latini",     [](const DictPtr& d) { return std::make_unique<Latini>(d); });
 }
 
 std::vector<std::string> LiquidConductivityModel::availableModels()

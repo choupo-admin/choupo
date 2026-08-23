@@ -28,7 +28,6 @@ License
 
 #include "LiquidDiffusivityModel.H"
 #include "WilkeChang.H"
-#include "Scheibel.H"
 
 #include <map>
 #include <memory>
@@ -61,8 +60,6 @@ void LiquidDiffusivityModel::registerBuiltins()
 {
     registerModel("WilkeChang", [](const DictPtr& d) { return std::make_unique<WilkeChang>(d); });
     registerModel("wilkeChang", [](const DictPtr& d) { return std::make_unique<WilkeChang>(d); });
-    registerModel("Scheibel",   [](const DictPtr& d) { return std::make_unique<Scheibel>(d); });
-    registerModel("scheibel",   [](const DictPtr& d) { return std::make_unique<Scheibel>(d); });
 }
 
 std::vector<std::string> LiquidDiffusivityModel::availableModels()

@@ -15,8 +15,10 @@
   FALLS along the channel as the retentate flow drops (the profile column
   `k_film` shows this).  At the inlet u ~ 0.26 m/s gives k_film ~ 7e-5 m/s,
   a touch above membrane01's fixed 5e-5 (better mixing -> less polarisation
-  -> slightly higher recovery/rejection).  Set `model constant; value ...;`
-  to recover the membrane01 behaviour.
+  -> slightly higher recovery/rejection).  Declare a bare `k_film <value>;`
+  (no massTransfer block) to recover membrane01's fixed-coefficient
+  behaviour -- the ONE way to pin it (the redundant `model constant;`
+  route was removed 2026-08-23).
 
   membrane01_RO_NaCl_seawater  --  the canonical first-membrane case.
 

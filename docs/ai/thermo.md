@@ -300,8 +300,8 @@ transport
     liquid
     {
         viscosity           { model Vogel; }      // or Andrade
-        thermalConductivity { model SatoRiedel; } // or Latini
-        diffusivity         { model WilkeChang; } // or Scheibel
+        thermalConductivity { model SatoRiedel; }
+        diffusivity         { model WilkeChang; }
     }
 
     interface
@@ -319,8 +319,8 @@ Pick by need:
 | Gas thermal conductivity | **`Eucken`** — `λ = (Cp+5R/4)·μ/M`, no extra data. |
 | Gas binary diffusivity | **`Fuller`** — needs `diffusionVolume` on each component (water/N2/O2/CO2/CH4/H2/CO ship it). |
 | Liquid viscosity | **`Vogel`** (3-param `ln μ = A+B/(T-C)`, water 0.2 % RMS) or **`Andrade`** (2-param). |
-| Liquid thermal conductivity | **`SatoRiedel`** (parameter-free, organics) or **`Latini`** (family-tuned). |
-| Liquid binary diffusivity | **`WilkeChang`** (needs `associationFactor`) or **`Scheibel`** (no association). |
+| Liquid thermal conductivity | **`SatoRiedel`** (parameter-free, organics). |
+| Liquid binary diffusivity | **`WilkeChang`** (needs `associationFactor`). |
 | Surface tension | **`BrockBird`** (corresponding states). |
 
 When a unit op needs a transport property the system doesn't supply, the

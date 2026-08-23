@@ -40,7 +40,7 @@ Description
             liquidConductivity { model SatoRiedel; }
         }
 
-    Both built-ins (SatoRiedel, Latini) are PREDICTIVE corresponding-states
+    The built-in (SatoRiedel) is a PREDICTIVE corresponding-states
     methods that use only data already on Component (MW, Tb, Tc) --- no new
     per-component data.  They are excellent for organic liquids and poor for
     water (anomalous, hydrogen-bonded): that contrast is the pedagogical

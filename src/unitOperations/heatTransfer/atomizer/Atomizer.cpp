@@ -29,7 +29,6 @@ License
 #include "Atomizer.H"
 #include "RotaryAtomizer.H"
 #include "PressureSwirlAtomizer.H"
-#include "TwinFluidAtomizer.H"
 
 #include <map>
 #include <memory>
@@ -56,7 +55,7 @@ std::unique_ptr<Atomizer> Atomizer::New(const DictPtr& dict)
     auto it = registry().find(model);
     if (it == registry().end())
         throw std::runtime_error("Atomizer::New: unknown atomiser model '" + model
-            + "'.  Available: rotary, pressureNozzle, twinFluid "
+            + "'.  Available: rotary, pressureNozzle "
               "(register in Atomizer::registerBuiltins).");
     return it->second(dict);
 }
@@ -67,8 +66,6 @@ void Atomizer::registerBuiltins()
     registerType("wheel",          [](const DictPtr& d){ return std::make_unique<RotaryAtomizer>(d);        }); // alias
     registerType("pressureNozzle", [](const DictPtr& d){ return std::make_unique<PressureSwirlAtomizer>(d); });
     registerType("pressureSwirl",  [](const DictPtr& d){ return std::make_unique<PressureSwirlAtomizer>(d); }); // alias
-    registerType("twinFluid",      [](const DictPtr& d){ return std::make_unique<TwinFluidAtomizer>(d);     });
-    registerType("airblast",       [](const DictPtr& d){ return std::make_unique<TwinFluidAtomizer>(d);     }); // alias
 }
 
 } // namespace Choupo

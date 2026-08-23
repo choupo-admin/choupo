@@ -27,7 +27,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "MassTransferModel.H"
-#include "ConstantKfilm.H"
 #include "SchockMiquel.H"
 
 #include <map>
@@ -69,7 +68,6 @@ std::vector<std::string> MassTransferModel::availableTypes()
 
 void MassTransferModel::registerBuiltins()
 {
-    registerType("constant",     []{ return std::make_unique<ConstantKfilm>(); });
     registerType("SchockMiquel", []{ return std::make_unique<SchockMiquel>();  });
 }
 
