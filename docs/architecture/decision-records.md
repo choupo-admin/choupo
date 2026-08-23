@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 80 records already exist
+## 1. Why an index, when 81 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 80 design records, **40 state a rejected alternative and 40 do not** —
+- Of 81 design records, **41 state a rejected alternative and 40 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -98,6 +98,7 @@ direction is an error.
 | [`where-the-catalyst-pellet-lives.md`](../design/where-the-catalyst-pellet-lives.md) | ADR | yes | **RULED 2026-08-18, not built** — the pellet is an asset (`kind catalyst;`, mirroring `Adsorbent`), D_eff is a (catalyst, species) PAIR and never a field on the catalyst, and in the ordinary case it is stored NOWHERE: derived as `(epsilon_p/tau)*D_molecular` and announced with its rule, a `parameters/` record being for a MEASURED value only.  A missing route REFUSES rather than defaulting a tortuosity.  Rejects D_eff on the catalyst record (one number silently standing for every species), a `catalyst {}` block inside the reactor's `operation {}` (two reactors, two copies, drift), a default tortuosity, and kinetics on the asset |
 | [`dynamic-unit-chaining-proposal.md`](../design/dynamic-unit-chaining-proposal.md) | PROPOSAL | yes | **DRAFT 2026-08-23, awaiting the architect -- not built, not authorised.**  The ctrl driver routes nothing unit-to-unit, so tanks-in-series (the second half of the RTD lesson) cannot run; the one-page proposal is one-step-explicit forward routing over the connections the flowsheet already declares, announced, with refusals and an Erlang-3 closed-form witness.  Rejected within it: implicit-in-time coupling (a DAE architecture question), back-pressure, flow networks |
 | [`heuristics-as-a-third-kind.md`](../design/heuristics-as-a-third-kind.md) | ADR | yes | **RULED 2026-08-18, not built** — a heuristic selection aid is NEITHER a method-construction nor a property surface, so the third kind is NAMED (`kind: "selection"`) rather than bent into an existing box.  Heuristics are CURATED RECORDS (claim + primary citation with page + validity domain + what it does not cover); an uncited one is REFUSED, on the unsourced-must-not-become-falsely-sourced rule.  The tool DISPLAYS conflicting authorities and never resolves them by an unpublished weighting — the disagreement is the pedagogy.  Three layers: cited rules and the RGA from the reader's own MESH column are buildable; the dynamic witness is NOT (verified: no column under control in the corpus and `choupoCtrl`'s dynamic tier is DynamicCSTR alone).  Rejects a third top-level surface, a scoring recommendation engine, uncited rules, a fabricated dynamic response, and filing it under `construction` to avoid adding a kind |
+| [`electrolyte-authoring-seams-scope.md`](../design/electrolyte-authoring-seams-scope.md) | SCOPE | yes | **OPEN 2026-08-23 — S5 (grammar seam) and S3 (CO2aq record promotion) await the architect; S1/S2/S4/S6 authorised on the benchmark's evidence.**  Six seams from benchmark case D's eight rounds; rejects narrowing the grammar to buy consistency (removing a working capability is backwards); success criterion is the measured re-run round-count, not impression |
 | [`llm-authoring-benchmark-2026-08-23.md`](../design/llm-authoring-benchmark-2026-08-23.md) | EVIDENCE | no | **Five fresh agents, the llmctx kit alone, 2026-08-23** — the constitution's LLM-assembles/student-reads bet, measured: molecular surfaces converge in 1–2 rounds (no rollback indicated), the electrolyte authoring surface took 8 (three required keys in no document, the kit's own example refused by the engine, a missing standards record) and earns the make-it-one-thing-again treatment rather than more documentation.  Two spurious ENERGY BALANCE FAILED banners on correct cases and one silent phase-mislabel doc defect (hit twice independently) head the ranked fix list.  Decides nothing by itself: it is the evidence the fixes and the one grammar pass stand on |
 | [`edutools-pareto-evidence.md`](../design/edutools-pareto-evidence.md) | EVIDENCE | no | **Search-backed curriculum evidence for the tool Pareto, 2026-08-19.**  Corrects a survey that ranked tools from memory while admitting it in its own SS9.  ITS FIRST SECTION IS ITS OWN LIMIT: the egress policy permits GitHub alone, so no catalogue or syllabus could be FETCHED; every line is marked [S] search summary / [T] tool summary / [U] URL only / [X] unreachable, and none claims a page anyone opened.  Contradicts the survey where it must: frequency-response control is the HIGHEST-recurrence item found and was filed 'Recommended OUT' on an engine argument welded to a curricular verdict, while control is the only core block with zero tools; MSMPR is over-ranked (no undergraduate syllabus); RTD is under-ranked and the engine has nothing.  Not an ADR: it decides nothing, it supplies the evidence a ranking should have had |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
@@ -234,7 +235,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**40 of 80 records state no rejected alternative.**  For a FORUM or a STUDY
+**40 of 81 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
