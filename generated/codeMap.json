@@ -766,6 +766,9 @@
   "NRTrace": [
    "src/solver/NewtonRaphson.H"
   ],
+  "NonConvergence": [
+   "src/thermo/electrolyte/ReactiveVLE.H"
+  ],
   "Normalization": [
    "src/solver/Convergence.H"
   ],

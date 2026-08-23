@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 371,
+  "cases": 372,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 9
@@ -2755,6 +2755,24 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/stripper01_sour_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "simultaneous"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "davies"
+    ],
+    "aqueousChemistry": true
    },
    "roles": [],
    "hasGolden": true
@@ -5623,6 +5641,7 @@
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
+    "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/drying/evapDryer01_nacl",
     "tutorials/steady/drying/evapDryer02_energy_limited",
     "tutorials/steady/drying/solidDryer01_sugar",
@@ -5997,6 +6016,7 @@
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/column14_klemola_c4_splitter",
     "tutorials/steady/distillation/column15_klemola_ideal_trays",
+    "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
@@ -6401,6 +6421,7 @@
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
+    "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
     "tutorials/steady/flash/analysis02_weighted_least_squares",
     "tutorials/steady/flash/flash09_nh3_water_reactive",
