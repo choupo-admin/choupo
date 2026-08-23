@@ -1265,6 +1265,8 @@ def validate_staged_agrees(staged, out):
              for o in res.get("operationResults", [])}
     kpis = res.get("kpis", {}) or {}
     bad = []
+    skipped = 0
+    compared = 0
     for line in exp.read_text().splitlines():
         line = line.split("#")[0].strip()
         if not line:
@@ -1294,8 +1296,28 @@ def validate_staged_agrees(staged, out):
             #  work it was meant to protect.
             got = kpis.get(name, {}).get(key) if isinstance(kpis.get(name), dict) \
                   else kpis.get(key)
+        elif kind == "stream":
+            got = (res.get("streams") or {}).get(name, {}).get(key)
+        elif kind == "closure":
+            got = (res.get("energyClosures") or {}).get(name, {}).get(key)
+        elif kind == "utility":
+            #  utility <unit> <tier.utility.field> -- the allocation table is
+            #  a LIST.  Added 2026-08-23: esterification2sector resealed as
+            #  "agreeing" while its stream and utility rows had moved 17-20%,
+            #  because this reader silently skipped every kind it did not
+            #  know -- the Edwards gap inside the checker built to close it.
+            parts = key.split(".")
+            got = None
+            if len(parts) == 3:
+                for e in (res.get("utilityAllocation") or []):
+                    if (e.get("unit") == name and e.get("tier") == parts[0]
+                            and e.get("utility") == parts[1]):
+                        got = e.get(parts[2])
+                        break
         else:
-            continue                       # stream rows: not in this reader
+            skipped += 1                   # aad/csv: file- or dataset-based,
+            continue                       # not readable from this JSON
+        compared += 1
         if got is None:
             bad.append("%s %s.%s MISSING from the sealed run" % (kind, name, key))
             continue
@@ -1311,9 +1333,10 @@ def validate_staged_agrees(staged, out):
             " about a record home this case's models read.\n  "
             + "\n  ".join(bad[:12]))
     print("  validation: staged case ran with the catalogue hidden AND"
-          " reproduced its `expected` golden (%d row(s))"
-          % sum(1 for l in exp.read_text().splitlines()
-                if l.split('#')[0].strip()))
+          " reproduced its `expected` golden (%d row(s) compared%s)"
+          % (compared,
+             (", %d aad/csv row(s) outside this reader" % skipped)
+             if skipped else ""))
 
 
 # ---------------------------------------------------------------------------

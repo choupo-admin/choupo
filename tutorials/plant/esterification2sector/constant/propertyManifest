@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-08-22";
+    importedAt         "2026-08-23";
     importerVersion    "3";
     records
     {

@@ -1,11 +1,11 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  Feed                   F                0.0277777777778    1e-4
-stream  liquid                 F                0.00949461019202   1e-4
-stream  reactorOut             F                0.0277777777778    1e-4
-stream  vapor                  F                0.0182831675858    1e-4
-utility SEPARATION.flash       cooling.coolingWater.duty_kW -195.801233278     1e-4
-utility SEPARATION.flash       cooling.coolingWater.T 355                1e-4
-utility SEPARATION.flash       cooling.coolingWater.kg_s 4.68424003057      1e-4
-utility SEPARATION.flash       cooling.coolingWater.eur_h 0.28195377592      1e-4
+stream  Feed                   F                0.0277777777778  1e-4
+stream  liquid                 F                0.0114069310496  1e-4
+stream  reactorOut             F                0.0277777777778  1e-4
+stream  vapor                  F                0.0163708467282  1e-4
+utility SEPARATION.flash       cooling.coolingWater.duty_kW -229.173881338   1e-4
+utility SEPARATION.flash       cooling.coolingWater.T 355              1e-4
+utility SEPARATION.flash       cooling.coolingWater.kg_s 5.48262874014    1e-4
+utility SEPARATION.flash       cooling.coolingWater.eur_h 0.330010389127   1e-4

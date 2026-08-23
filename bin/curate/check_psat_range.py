@@ -104,11 +104,21 @@ def main() -> int:
         fail.append(f"(a) {Path(SUPERCRITICAL).name} exited {rc}")
     else:
         lines = psat_lines(out)
-        if not lines:
+        #  Arm (a)'s subject is the FLAME evaluation (2400 K, far above every
+        #  Tc there).  The same case may legitimately announce a below-window
+        #  extrapolation at its 298 K initial state -- first seen 2026-08-23,
+        #  when H2O2's Trange became the honest Landolt window (330-446 K)
+        #  and its ambient evaluation started saying so.  Those lines belong
+        #  to arm (b)'s class, not this one, so the filter keeps only
+        #  evaluations hot enough that no saturation curve can exist.
+        hot = [l for l in lines
+               if (m := re.search(r"T = ([0-9.]+)", l)) and float(m.group(1)) >= 1000.0]
+        if not hot:
             fail.append("(a) a flame at 2400 K raised no vapour-pressure "
                         "advisory at all -- every species there is hundreds of "
                         "kelvin above its critical temperature")
         else:
+            lines = hot
             bad = [l for l in lines if "ABOVE its critical temperature" not in l]
             if bad:
                 fail.append("(a) a supercritical evaluation did not use the "
