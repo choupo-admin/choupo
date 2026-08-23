@@ -109,6 +109,8 @@ Description
 #include <map>
 #include <memory>
 #include <set>
+#include <stdexcept>    // NonConvergence : std::runtime_error (g++ lends it
+                        // transitively; emscripten's libc++ does not)
 #include <string>
 #include <vector>
 
