@@ -118,23 +118,31 @@ inside a stage now names the trial (T, z) that provoked it, so
 "the chemistry set does not form species X" no longer sends a student
 auditing curated records that are perfectly correct.
 
-## What this case does NOT claim
+## Both halves of the identity (since 2026-08-23)
 
 `column12` re-flashes **adiabatically**, so recovering the stage
-temperature there is a *result* of an energy balance.  This case re-flashes
-**isothermally** at a declared temperature, because the adiabatic flash
-brackets T by marching up from 200 K and the reactive VLE does not
-converge down there (`|r|max = 4.74 after 21 outer iterations`).  So:
+temperature there is a *result* of an energy balance.  This case now does
+the same.  It could not at first: the adiabatic flash's outer Newton had no
+strategy for a trial temperature the reactive package cannot answer, and
+its very first trial is the mixer's fictitious dominant-phase readout
+(483 K on a 367 K stage — the carried enthalpy is exact, the temperature is
+not), where the ReactiveVLE has no liquid to speciate and refuses
+(`|r|max = 4.74 after 21 outer iterations`).  The flash now treats an
+unanswerable trial as **above** the answer (H rises with T; the reactive
+path loses its liquid on the high side), announces every such trial, and
+re-seeds by bisection.  Watch the log: 483.33 K refused, re-seeded at
+341.66 K, one more refusal at the dew-point edge (372.16 K), then a clean
+Newton to 367.3398 K — the column's own stage-2 temperature, recovered as a
+result.  So:
 
-* the **equilibrium** half of the identity is claimed here;
-* the **energy** half is claimed by column12 and not by this case;
-* the declared temperature is not a free parameter — the gate reads stage
-  2's temperature out of the column's own `profile.csv` and refuses any
-  disagreement, so if the stage moves this case fails loudly.
-
-A reactive adiabatic flash needs its bracket seeded from the feed rather
-than from a constant.  That is a named gap, not something this case
-pretends to have.
+* the **equilibrium** half of the identity is claimed here (R1: the ion
+  inventories match species by species);
+* the **energy** half is claimed here too (R2: the adiabatically solved T
+  must equal stage 2's own, read from `profile.csv` — two results of two
+  independent balances, no typed temperature anywhere);
+* an unanswerable trial that is *not* on the high side would walk the
+  search to the lower bound and fail there loudly — misclassification
+  degrades to a visible non-convergence, never to a wrong answer.
 
 ## Running it
 

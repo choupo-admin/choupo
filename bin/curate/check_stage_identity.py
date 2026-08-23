@@ -46,16 +46,18 @@ definition of ours.  It adds two claims and drops one:
       apparent compositions.  This is the claim that would catch an
       effective K reproducing the apparent split on top of a different
       chemistry.
-  R2  THE DECLARED TEMPERATURE IS THE COLUMN'S OWN.  The reacting twin
-      re-flashes ISOTHERMALLY (see its header: the adiabatic bracket
-      starts at 200 K, where the reactive VLE does not converge), so its
-      flash temperature is typed in.  A typed number that must equal a
-      computed one is a pinned result, not a free parameter -- so the gate
-      reads stage 2's temperature out of the column's own profile.csv and
-      refuses any disagreement.
-  I1 is therefore WEAKER on the twin than on column12: recovering the
-      temperature is an input there rather than a result.  The energy half
-      of the identity lives in column12 and is not claimed here.
+  R2  THE SOLVED TEMPERATURE IS THE COLUMN'S OWN.  Since 2026-08-23 the
+      reacting twin re-flashes ADIABATICALLY, exactly like column12: the
+      adiabatic flash survived a trial temperature the reactive package
+      cannot answer (each such trial announced and treated as the high
+      side of the bracket), so its outlet T is SOLVED from the energy
+      balance -- no temperature is typed into the case any more.  The gate
+      reads the re-flash's converged T off converged/checkLiquid and stage
+      2's temperature out of the column's own profile.csv and refuses any
+      disagreement.  Both halves of the identity -- equilibrium AND energy
+      -- are therefore claimed on the reacting twin now.  (Until then the
+      twin was isothermal with a pinned declared T, and the energy half
+      lived only in column12.)
 
 Tolerances are 1e-6 relative, stated in the witness README with the
 measurement that justifies them: the observed agreement is ~1e-7, limited
@@ -255,28 +257,34 @@ def main() -> int:
                     if not close(a, b):
                         fail(f"R1: species {s} {a:.12g} vs {b:.12g}")
 
-            # R2 -- the declared flash T is the column's own stage-2 T
+            # R2 -- the ADIABATICALLY SOLVED flash T is the column's own
+            # stage-2 T.  Read off the re-flash's own converged product
+            # stream, never off the dict: since 2026-08-23 no temperature
+            # is typed into the case (the flash is adiabatic, like
+            # column12's), so what is compared here is a RESULT of the
+            # energy balance against a RESULT of the MESH -- the energy
+            # half of the identity, on the reacting twin.
             prof = rx / "reports" / "unitOperations" / "tower" / "profile.csv"
-            m = re.search(r'T\s+([\d.eE+-]+)\s*K\s*;',
-                          (rx / "system" / "flowsheetDict").read_text()
-                          [(rx / "system" / "flowsheetDict").read_text()
-                           .find("name        restage;"):])
+            m = re.search(r'^T\s+([\d.eE+-]+)\s*K\s*;',
+                          (rx / "converged" / "checkLiquid").read_text(),
+                          re.M)
             if not prof.exists():
-                fail("R2: the column wrote no profile.csv, so the declared "
+                fail("R2: the column wrote no profile.csv, so the solved "
                      "flash temperature cannot be checked against anything")
             elif not m:
-                fail("R2: could not read the declared flash temperature")
+                fail("R2: could not read the solved flash temperature off "
+                     "converged/checkLiquid")
             else:
                 rows = prof.read_text().strip().splitlines()
                 head = rows[0].split(",")
                 iT = head.index("T")
                 stageT = float(rows[2].split(",")[iT])   # stage 2
                 if not close(float(m.group(1)), stageT, 1.0e-7):
-                    fail(f"R2: the flash declares T = {m.group(1)} K but the "
-                         f"column's stage 2 converged at {stageT} K -- a "
-                         "declared temperature that is not the column's own "
-                         "makes the identity a comparison of two different "
-                         "states")
+                    fail(f"R2: the adiabatic re-flash solved T = "
+                         f"{m.group(1)} K but the column's stage 2 converged "
+                         f"at {stageT} K -- the energy balance and the MESH "
+                         "disagree about the same state, which is exactly "
+                         "what this identity exists to catch")
 
             # R3 -- the twin must really be reacting: a pH, and ions
             if "pH" not in (rx / "converged" / "stageLiquid").read_text():

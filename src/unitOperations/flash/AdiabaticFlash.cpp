@@ -138,17 +138,67 @@ int AdiabaticFlash::solve(const DictPtr& dict,
         return IsothermalFlash::solveCore(in, thermo, iopts);
     };
 
+    //  A TRIAL TEMPERATURE THE PACKAGE CANNOT ANSWER MUST NOT KILL THE
+    //  SEARCH.  The molecular isothermal flash answers anywhere in the
+    //  bracket, so the outer Newton never noticed it had no strategy for an
+    //  inner failure -- until a REACTIVE package met a trial far above its
+    //  two-phase band (the ReactiveVLE has no liquid to speciate there and
+    //  refuses, correctly).  The named case: column13's re-flash arm, whose
+    //  mixer inlet carries a two-phase enthalpy under a FICTITIOUS
+    //  dominant-phase temperature (483 K on a 367 K stage -- the enthalpy is
+    //  exact, the readout is not, and the case header says so), so the very
+    //  first evaluation sat 110 K above the dew point.
+    //
+    //  The rule, stated because it is a modelling claim and not a
+    //  convenience: H_out(T) rises with T, and the reactive path fails on
+    //  the HIGH side (superheated: the liquid it must speciate is gone), so
+    //  an unanswerable trial is treated as ABOVE the answer -- it tightens
+    //  the upper bracket exactly as f > 0 would.  Every such trial is
+    //  ANNOUNCED.  A failure that is NOT of that kind (an unanswerable
+    //  trial at the bottom of the bracket) walks the search to the lower
+    //  bound and fails THERE, loudly -- misclassification degrades to a
+    //  visible non-convergence, never to a wrong answer.
+    bool trialUnanswerable = false;             // set by f, read by df
     auto f = [&](scalar T)
     {
-        lastSol = flashAt(T);
+        try
+        {
+            lastSol = flashAt(T);
+        }
+        catch (const std::exception& e)
+        {
+            trialUnanswerable = true;
+            if (verbosity >= 1)
+                std::cout << "  [adiabaticFlash] trial T = " << std::fixed
+                          << std::setprecision(2) << T << " K: the package"
+                          << " could not answer (" << e.what() << ")\n"
+                          << "  [adiabaticFlash] treated as ABOVE the answer"
+                             " (H rises with T; the reactive path loses its"
+                             " liquid on the high side) -- upper bracket"
+                             " tightened\n";
+            return 1.0e12;                      // f > 0: tightens the upper edge
+        }
+        trialUnanswerable = false;
         scalar Hout = splitH(T, Pout, lastSol);
         return Hout - Hreq;
     };
     auto df = [&](scalar T)
     {
+        //  Central difference; one-sided when a probe is unanswerable, and a
+        //  positive unit slope when both are -- the monotone bracket logic
+        //  then advances by bisection alone, which is the honest thing left.
         const scalar dT = 0.5;
         scalar fph = f(T + dT);
+        const bool phBad = trialUnanswerable;
         scalar fmh = f(T - dT);
+        const bool mhBad = trialUnanswerable;
+        if (phBad && mhBad) return 1.0;
+        if (phBad || mhBad)
+        {
+            scalar fT = f(T);
+            if (trialUnanswerable) return 1.0;
+            return phBad ? (fT - fmh) / dT : (fph - fT) / dT;
+        }
         return (fph - fmh) / (2.0 * dT);
     };
 
@@ -182,7 +232,41 @@ int AdiabaticFlash::solve(const DictPtr& dict,
         }
     };
 
-    auto r = solver::newton1D(f, df, Tfeed, nro);
+    //  SEED FROM THE FEED, THEN PROVE THE SEED ANSWERS.  The inlet T is the
+    //  natural start -- except when it is a mixer's fictitious dominant-phase
+    //  readout, in which case the first trial may sit above everything the
+    //  package can answer.  Bisect toward the lower bound until a trial
+    //  answers (each unanswerable trial tightens the upper bracket under the
+    //  high-side rule above); a bracket with no answerable point anywhere
+    //  refuses naming both ends, because there is nothing honest to return.
+    scalar Tstart = std::clamp(Tfeed, nro.lower, nro.upper);
+    {
+        int probe = 0;
+        for (; probe < 24; ++probe)
+        {
+            f(Tstart);
+            if (!trialUnanswerable) break;
+            nro.upper = Tstart;
+            Tstart    = 0.5 * (nro.lower + Tstart);
+        }
+        if (trialUnanswerable)
+            throw std::runtime_error("adiabaticFlash: no trial temperature in ["
+                + std::to_string(nro.lower) + ", "
+                + std::to_string(std::clamp(Tfeed, nro.lower, nro.upper))
+                + "] K was answerable by the package -- the energy balance"
+                  " has nothing to search on.  Check the feed state and the"
+                  " package's validity range.");
+        if (probe > 0 && verbosity >= 1)
+            std::cout << "  [adiabaticFlash] the inlet's stated T ("
+                      << std::fixed << std::setprecision(2) << Tfeed
+                      << " K) was not answerable by the package (a mixer"
+                         " carrying a two-phase enthalpy reports a fictitious"
+                         " dominant-phase T); search re-seeded at "
+                      << Tstart << " K after " << probe
+                      << " bisection probe(s)\n";
+    }
+
+    auto r = solver::newton1D(f, df, Tstart, nro);
 
     // Final flash at converged T
     lastSol = flashAt(r.x);

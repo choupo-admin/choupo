@@ -125,9 +125,11 @@ ones for day-to-day work:
    sabotage-verified.  Fixed on the way: `adiabaticFlash` priced EVERY
    inlet as a sub-cooled liquid regardless of its vapour fraction.
    **NAMED GAPS**, neither of them papered over:
-   * a reactive ADIABATIC flash needs its bracket seeded from the feed and
-     not from 200 K — until then column13 claims the equilibrium half of
-     the identity and column12 keeps the energy half;
+   * ~~the reactive adiabatic flash~~ — **CLOSED 2026-08-23**: the
+     adiabatic flash's outer Newton survives a trial T the package cannot
+     answer (announced, treated as the high side, re-seeded by bisection
+     from the feed), so column13 re-flashes ADIABATICALLY and claims BOTH
+     halves of the identity;
    * S2 proper (a taller stripper, wider loading range so the mechanism
      check has more than four points) is NOT built.  ~~S3~~ — the model
      addition S3 waited on shipped 2026-08-04 (`edwardsPitzer`), and **S3

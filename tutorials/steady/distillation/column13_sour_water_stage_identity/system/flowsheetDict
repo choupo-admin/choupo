@@ -134,32 +134,27 @@ units
     }
 
     {
-        //  The independent path.  ISOTHERMAL, and the difference from
-        //  column12 is a limitation worth stating rather than hiding.
-        //
-        //  column12 re-flashes ADIABATICALLY, so its outlet temperature is
-        //  solved from an energy balance and recovering the stage's T is a
-        //  result rather than an input.  That route is not available here
-        //  yet: the adiabatic flash brackets T by marching up from 200 K,
-        //  and the reactive VLE does not converge down there (measured:
-        //  "|r|max = 4.74 after 21 outer iterations" on the first trial).
-        //  The honest options were to weaken the claim or to fake the
-        //  bracket, and weakening it is the smaller loss -- so this case
-        //  checks the EQUILIBRIUM identity and column12 keeps the ENERGY
-        //  one.  A reactive adiabatic flash needs a bracket seeded from
-        //  the feed rather than from a constant, and that is a named gap,
-        //  not a thing this case pretends to have.
-        //
-        //  The declared T is therefore the one number here that is typed
-        //  in -- and the gate REFUSES it if it is not the column's own
-        //  converged stage-2 temperature, read from the profile.  A number
-        //  that has to match a computed one is a pinned result, not a
-        //  free parameter; if the stage moves, this case fails loudly,
-        //  which is exactly what it is for.
+        //  The independent path.  ADIABATIC, like column12's -- since 2026-08-23 this case claims
+        //  BOTH halves of the identity.  It could not until then: the
+        //  adiabatic flash's outer Newton had no strategy for a trial
+        //  temperature the reactive package cannot answer, and its first
+        //  trial is the mixer's fictitious 483 K readout (the enthalpy is
+        //  exact, the temperature is not -- see column12's header), 110 K
+        //  above anything the ReactiveVLE can speciate.  The flash now
+        //  treats an unanswerable trial as ABOVE the answer (H rises with
+        //  T; the reactive path loses its liquid on the high side),
+        //  announces each such trial, and re-seeds by bisection -- watch
+        //  the log: 483.33 K refused, re-seeded at 341.66 K, one more
+        //  refusal at the dew-point edge (372.16 K), then a clean Newton
+        //  to 367.3398 K.  That number is SOLVED from the energy balance
+        //  and must equal the column's own converged stage-2 temperature
+        //  -- the energy half of the identity, on a flash whose K-values
+        //  come out of a chemistry.  The gate reads both from the run and
+        //  refuses a mismatch; no temperature is typed in here any more.
         name        restage;
-        type        isothermalFlash;
+        type        adiabaticFlash;
         in          stageMix;
         outputs     ( checkLiquid  checkVapour );
-        operation   { T 367.3397849 K;  P 1.01325 bar; }
+        operation   { P 1.01325 bar; }
     }
 );

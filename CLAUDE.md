@@ -1078,11 +1078,14 @@ names the trial (T, z) that provoked it.  Witnesses: `column12_stage_is_a_flash`
 and `column13_sour_water_stage_identity` (NH3+CO2/water, 7 Newton iters to
 |F| 8e-10, identity closing at 1e-9 **on the ions too**).  Gate:
 `check_stage_identity` (4 identity claims + 2 guards + the off-stage negative;
-R1 speciation, R2 the declared T read back from the column's own profile.csv,
-R3 the twin really reacts), sabotage-verified twice.  Named gap: a reactive
-ADIABATIC flash needs its bracket seeded from the feed, not from 200 K — until
-then the reacting twin claims the equilibrium half of the identity and
-column12 keeps the energy half.  Also fixed on the way: `adiabaticFlash`
+R1 speciation, R2 the SOLVED adiabatic T against the column's own profile.csv,
+R3 the twin really reacts), sabotage-verified twice.  The named gap CLOSED
+2026-08-23: the adiabatic flash's outer Newton now survives a trial T the
+package cannot answer (announced, treated as the HIGH side — the reactive path
+loses its liquid there — and re-seeded by bisection when the inlet's own T is
+unanswerable, e.g. a mixer's fictitious dominant-phase readout), so column13
+re-flashes ADIABATICALLY and claims BOTH halves of the identity (T solved to
+367.3398 K against the stage's own).  Also fixed on the way: `adiabaticFlash`
 priced EVERY inlet as a sub-cooled liquid regardless of its vapour fraction
 (silent — it converges, to the wrong temperature); it now reads the stream's
 `vf`.  Scope + the record of what the one-stage identity turned into and why:
