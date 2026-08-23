@@ -42,3 +42,16 @@ transport
 radius { value 2.82e-10; unit m;}
 D0     { value 9.31e-09;     unit m2/s;}
 }
+
+volumetric
+{
+    //  STANDARD-STATE (infinite-dilution) partial molar volume,
+    //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
+    //  only electroneutral sums are physical).
+    //  the convention's anchor: exactly 0 by definition.
+    V0          { value 0.0; unit cm3/mol; }
+    convention  MilleroConventional-v1;
+    Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
+    source      "Millero, Chem. Rev. 71 (1971) 147 -- INTERIM transcription, staged for batch primary review";
+    reviewStatus interim;
+}

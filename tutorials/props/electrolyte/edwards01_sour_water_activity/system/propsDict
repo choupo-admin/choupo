@@ -60,9 +60,10 @@
 
   WHAT THIS CASE IS *NOT*.  It is not the Table 7 anchor.  Reproducing Table 7
   needs the vapour side -- Henry's constants on the paper's own convention,
-  the two-phase equilibrium, the total pressure -- and that is the named next
-  slice (docs/design/sour-water-stripper-scope.md).  This case validates the
-  ACTIVITY SURFACE alone, which is the piece the model owns.
+  the two-phase equilibrium, the total pressure -- and that slice is BUILT:
+  `edwards02_table7_vle` (2026-08-23; record in
+  docs/design/sour-water-stripper-scope.md section 6c).  This case validates
+  the ACTIVITY SURFACE alone, which is the piece the model owns.
 
   WHAT IS AND IS NOT VALIDATED HERE.  This case is a STRUCTURAL witness: it
   proves the model is wired, that its five parameter rules fire and are
@@ -70,7 +71,7 @@
   number against data -- there is no measurement in it.  The kernel itself is
   separately checked against two closed forms the paper supplies (the Eq 8a
   low-dissociation limit and the Debye-Huckel limiting law), and the
-  measured-vs-computed comparison is Table 7, which needs the vapour side.
+  measured-vs-computed comparison is Table 7 -- edwards02_table7_vle.
   A green run here means "the machine is right", never "the answer is right".
 
   HONESTY ABOUT THE PARAMETERS.  Edwards measured exactly one family: beta0

@@ -42,6 +42,8 @@ standardThermochemistry
 {
     dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
     s_298     188.834;         // J/(mol·K)  -- third-law absolute
+    referenceState idealGas;   // explicit: these two are the GAS-phase datum
+
 }
 vaporPressure
 {
@@ -68,10 +70,68 @@ liquidHeatCapacity
 //   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
 //   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
 // Reference: individual literature values -- primary re-citation pending (IST review).
+//
+// K_b IS AN ANCHOR, NOT THE ANSWER (2026-08-05).  The engine DERIVES it from
+// this record's own Tb / MW / HvapTb -- K_b = R*Tb^2*M/dHvap -- and uses the
+// value below only to validate that derivation, announcing the comparison.
+// The two had drifted 0.18 % apart, which fed straight into every BPE.
+//
+// K_f IS AN ANCHOR TOO, since 2026-08-07 -- and it reached that status by the
+// route its own note demanded.  For one day this paragraph said K_f was
+// REFERENCE-ONLY: parsed, consumed by nothing, and underivable because no
+// record in the tree declared a heat of fusion.  Both halves stopped being
+// true the moment the `sublimation { Hfus }` and `triplePoint { T }` blocks
+// below were curated.  The engine now derives
+//
+//     K_f = R * Tf^2 * M / dHfus  =  1.8603 K.kg/mol
+//
+// from this record's own triple-point temperature, MW and Hfus, and the 1.853
+// below validates that derivation exactly as 0.512 validates K_b.  They are
+// 0.39 % apart: two independent primaries disagreeing is a FINDING, not an
+// error, and the calorimetric datum is the one that wins.
+//  ---- FUSION: the datum the freezing model needs -------------------------
+//  Added 2026-08-07 for SolidPhase's pure-crystal reference fugacity.  Before
+//  this, ZERO of the 247 component records carried a fusion enthalpy -- the
+//  two apparent matches in the tree were both COMMENTS explaining its absence,
+//  including the one twelve lines above.
+//
+//  CROSS-CHECKED AGAINST THIS RECORD'S OWN K_f, which is the point of putting
+//  them in the same file:
+//
+//      K_f = R Tf^2 M / dHfus = 8.3145 x 273.15^2 x 0.0180153 / 6008
+//          = 1.8602        against the declared K_f 1.853
+//
+//  0.4 % apart.  Two independent primaries disagreeing is a FINDING, not an
+//  error, and the direction is settled by the K_b precedent (2026-08-05):
+//  dHfus is the MEASURED calorimetric datum and K_f is the DERIVED dilute
+//  limit, so K_f became the validating anchor and stopped being a status
+//  note -- which is what the paragraph above now records.
+triplePoint
+{
+    T    273.16;        // K
+    P    611.657;       // Pa
+    //  source: IAPWS, the triple point of ordinary water; T is the pre-2019
+    //  defining fixed point of the kelvin and is still the accepted value.
+}
+
+sublimation
+{
+    Hfus   6008.0;      // J/mol at the melting point
+    //  source: IAPWS -- enthalpy of fusion of ice Ih, 333.4 J/g x 18.0153
+    //  g/mol.  Quoted as 6.01 kJ/mol in the usual handbooks.
+    //
+    //  NOTE THE 0.01 K APPROXIMATION, since nothing else will say it: the
+    //  fusion model uses `triplePoint.T` (273.16 K) as the melting
+    //  temperature, while fusion at 1 bar is at 273.15 K.  There is no Tfus
+    //  field in the grammar.  The error in dG_fus is under 0.3 J/mol and is
+    //  announced here rather than hidden; if a case ever needs better, the
+    //  remedy is a Tfus field, not a fudged Hfus.
+}
+
 ebulioscopic
 {
     K_b   0.512;
-    K_f   1.853;
+    K_f   1.853;    // ANCHOR: the engine derives 1.8603 from Hfus/triplePoint
 }
 
 // Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
