@@ -681,9 +681,9 @@ THE SPECIATION MOVES TOO, and by far more than the gammas: the answer is I = 2.7
 
 Neither number here is validated against measurement -- see below.
 
-WHAT THIS CASE IS $\ast$NOT$\ast$. It is not the Table 7 anchor. Reproducing Table 7 needs the vapour side -- Henry's constants on the paper's own convention, the two-phase equilibrium, the total pressure -- and that is the named next slice (docs/design/sour-water-stripper-scope.md). This case validates the ACTIVITY SURFACE alone, which is the piece the model owns.
+WHAT THIS CASE IS $\ast$NOT$\ast$. It is not the Table 7 anchor. Reproducing Table 7 needs the vapour side -- Henry's constants on the paper's own convention, the two-phase equilibrium, the total pressure -- and that slice is BUILT: `edwards02\_table7\_vle` (2026-08-23; record in docs/design/sour-water-stripper-scope.md section 6c). This case validates the ACTIVITY SURFACE alone, which is the piece the model owns.
 
-WHAT IS AND IS NOT VALIDATED HERE. This case is a STRUCTURAL witness: it proves the model is wired, that its five parameter rules fire and are labelled, and that a neutral solute gets a gamma. It does NOT validate any number against data -- there is no measurement in it. The kernel itself is separately checked against two closed forms the paper supplies (the Eq 8a low-dissociation limit and the Debye-Huckel limiting law), and the measured-vs-computed comparison is Table 7, which needs the vapour side. A green run here means "the machine is right", never "the answer is right".
+WHAT IS AND IS NOT VALIDATED HERE. This case is a STRUCTURAL witness: it proves the model is wired, that its five parameter rules fire and are labelled, and that a neutral solute gets a gamma. It does NOT validate any number against data -- there is no measurement in it. The kernel itself is separately checked against two closed forms the paper supplies (the Eq 8a low-dissociation limit and the Debye-Huckel limiting law), and the measured-vs-computed comparison is Table 7 -- edwards02\_table7\_vle. A green run here means "the machine is right", never "the answer is right".
 
 HONESTY ABOUT THE PARAMETERS. Edwards measured exactly one family: beta0 for LIKE molecule pairs (Eq 14, Table 4). Every other entry in the matrix Eq 8 sums over is ESTIMATED from those by his Eqs 21-24, and the paper calls both of its parameter tables "preliminary results subject to change as more and better data become available". The engine prints, at verbosity >= 3, WHICH RULE produced each number -- one measured family and four estimation routes -- so nothing here can be mistaken for a measured constant.
 
@@ -708,6 +708,57 @@ Sealing this case is where the importer's dependency closure was found not to kn
 \goldrow{diag}{sourWater\_edwards}{pH}{9}
 \goldrow{diag}{sourWater\_davies}{I}{1.77822}
 \goldmore{12}
+\end{tutgolden}
+
+\clearpage
+\tutentry{edwards02\_table7\_vle}{tutorials/props/electrolyte/edwards02\_table7\_vle}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{table7\_row1}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{table7\_row2}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{table7\_row3}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{row1\_nocarbamate}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Edwards (1978) Table 7 anchor: NH3-CO2-H2O VLE at 100 degC -- the paper's own predictions reproduced from its own equations, the experiment quoted as context.}
+\begin{tutnarrative}
+the LITERATURE ANCHOR for the edwardsPitzer model: Table 7 of Edwards, Maurer, Newman \& Prausnitz, AIChE J. 24(6):966-976 (1978) -- NH3-CO2-H2O at 100 degC, three points.
+
+edwards01 is the STRUCTURAL witness: it proves the activity surface is wired, and its own header says none of its numbers is validated against anything. This case is the validation it points at. For each Table 7 point the paper states the total molalities of ammonia and carbon dioxide in the LIQUID and predicts the speciation (molecular NH3 and CO2, ionic strength) and the VAPOUR above it (y\_NH3, y\_CO2, total pressure). The whole model stack here is the paper's own:
+
+liquid activities Eq 8/10 (edwardsPitzer, the case surface) equilibria K(T) Eq 7 / Table 1 + Eq 20 (case-local chemistry/) Henry's constants Eq 13 / Table 3 (parameters/EdwardsPitzer/henry-$\ast$) pressure correction Eq 11 / Table 2 (vInfinity in the same records) vapour side Eq 5/6 (the speciate op's vapour\{\} block)
+
+WHAT IS COMPARED, AND AGAINST WHAT. Table 7 carries TWO different columns and conflating them would be dishonest:
+
+the paper's own PREDICTIONS (column I) -- a code-to-code comparison. Those are the golden values here, with ONE declared gap: the paper computes vapour-phase fugacity coefficients from a model its transcription does not carry, so this case declares `fugacity ideal;` (phi = 1) and the residual disagreement is expected to be of the size of that correction (a few percent at 2-3 atm), plus the numerical difference between two implementations of Eqs 7-24.
+
+the EXPERIMENT (Otsuka et al. 1960) -- quoted below as CONTEXT, never as a target. The paper's OWN agreement with it is rough (first row: y\_NH3 0.066 measured vs 0.123 predicted -- a factor of two) and the paper says so plainly. A student reading this case sees a correlation reproduced closely and its real-world agreement stated honestly, which is the opposite of a tool that prints one number.
+
+Table 7, the paper's column I (the golden targets here): row mNH3tot mCO2tot m\_NH3 m\_CO2 I y\_NH3 y\_CO2 P[atm] 1 2.90 1.45 1.245 0.014 1.50 0.123 0.494 2.51 2 3.71 1.14 2.279 0.0056 1.26 0.293 0.230 1.98 3 4.30 0.907 3.087 0.0030 1.01 0.407 0.116 1.97 The experiment (Otsuka 1960, context only): 1 0.066 0.506 3.15 2 0.274 0.202 2.08 3 0.355 0.095 2.00
+
+THE CARBAMATE ENTERS THE CATALOGUE HERE (case-local): NH2COO- with Eq 20's equilibrium. Without it, an ammonia-rich carbonated water reports molecular molalities the paper's own predictions contradict -- it holds a substantial share of the dissolved CO2 at these conditions. Eq 20 is fitted 20-60 degC and used at 100 degC exactly as the paper uses it, with the extrapolation ANNOUNCED and the paper's own sensitivity argument in the record header (halving K20 moves P by under 2 \%).
+
+DECLARED APPROXIMATIONS, each announced by the run: `fugacity ideal;` -- phi = 1 on all vapour species (see above); the solvent Poynting factor of Eq 6 is omitted (< 0.2 \% below 4 atm); Eq 20 extrapolated 60 $\to$ 100 degC (the paper's own move); water's Psat comes from the case catalogue's own curated Antoine, not from a value the paper does not print.
+
+DATA SCOPE: sealed (bin/choupo-import); every record named and verified by constant/propertyManifest.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{table7\_row1}{I}{1.547}
+\goldrow{diag}{table7\_row1}{P\_atm}{2.51337}
+\goldrow{diag}{table7\_row1}{aw}{0.946304}
+\goldrow{diag}{table7\_row1}{chargeImposed}{1}
+\goldrow{diag}{table7\_row1}{chargeResidual}{2.5541e-13}
+\goldrow{diag}{table7\_row1}{gamma\_CO2aq}{0.919147}
+\goldrow{diag}{table7\_row1}{gamma\_CO3}{0.022685}
+\goldrow{diag}{table7\_row1}{gamma\_HCO3}{0.268386}
+\goldrow{diag}{table7\_row1}{gamma\_NH2COO}{0.528413}
+\goldrow{diag}{table7\_row1}{gamma\_NH3aq}{0.989831}
+\goldrow{diag}{table7\_row1}{gamma\_NH4}{0.318905}
+\goldrow{diag}{table7\_row1}{m\_CO2aq}{0.0141073}
+\goldrow{diag}{table7\_row1}{m\_CO3}{0.0555284}
+\goldrow{diag}{table7\_row1}{m\_HCO3}{1.09498}
+\goldmore{99}
 \end{tutgolden}
 
 \clearpage
