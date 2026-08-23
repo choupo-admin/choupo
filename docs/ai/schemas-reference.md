@@ -882,7 +882,7 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `analyticalTotals` |   | object | — | `{ Na 0.486 mol/kg; Cl 0.566 mol/kg; ... }` — the element/master totals the solution is made of. `totals` is accepted as a synonym. |
 | `totals` |   | object | — | Synonym of `analyticalTotals`. |
 | `composition` |   | object | — | Alternative to the totals block for a case that states the solution as a composition. |
-| `pH` |   | number | - | Fixes the proton balance. Read on the single-ion convention of the activity parameterisation in use — a meter reading is NBS and the run … |
+| `pH` | ✓ | number | - | Fixes the proton balance. Read on the single-ion convention of the activity parameterisation in use — a meter reading is NBS and the run … |
 | `temperature` |   | number | K | Defaults to 298.15 K. |
 | `totalsBasis` |   | string | — | `analytical` (default): a measured ion analysis, where a feed charge imbalance is evidence of lab error and the solved-pH advisory says s… |
 | `atmosphere` |   | object | — | `{ pCO2 4.2e-4 atm; ... }` — every key is a gas the solution equilibrates WITH, so the system is open to it. Each value MUST carry a pres… |

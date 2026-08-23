@@ -152,6 +152,8 @@
    "description": "Optional. Prices the equilibrium vapour over the solved liquid: each declared molecular solute by p = m · γ · H (its named Henry record, kg·atm/mol, Krichevsky–Kasarnovsky correction from the record's vInfinity), the solvent by p_w = a_w · Psat. `fugacity ideal;` is REQUIRED — φ = 1 is a declared approximation the case owns, never a default. Emits P_atm, p_<species>_atm, y_<species>. The anchor case is edwards02_table7_vle (Table 7 of Edwards et al. 1978)."
   }
  },
- "required": [],
+ "required": [
+  "pH"
+ ],
  "additionalProperties": false
 }

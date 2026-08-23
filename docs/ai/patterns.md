@@ -670,3 +670,91 @@ those need a fit or a corresponding-states correlation, a separate step.
 
 Tutorials: `estimate_acetone` (validated vs NIST), `estimate_ethanol_benzene`
 (the method's spread — ethanol weak, benzene good).  Theory: `docs/propsGuide.pdf`.
+
+## 14. Aqueous speciation OPEN to a gas — brine + atmospheric CO2  (choupoProps)
+
+The full working pair for "NaCl 0.5 mol/kg in equilibrium with atmospheric
+CO2 at 25 degC: pH, ionic strength, activity coefficients".  Transcribed
+from a run that works (the 2026-08-23 LLM benchmark's case D, which took
+eight rounds WITHOUT this pattern — every key below that carries a comment
+was a round).
+
+`constant/thermoPhysPropDict`:
+
+```
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water  NaCl  CO2 );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;    # aqueous electrolyte x ideal vapour
+    aqueous
+    {
+        solvent            water;
+        apparentComponents ( NaCl );    # the stream carries the salt
+        activityModel { model davies; } # REACTIVE electrolyteGammaPhi serves
+                                        # davies here (a Pitzer line is
+                                        # REFUSED on this slice); the op below
+                                        # still runs pitzerHMW for the
+                                        # SPECIATION itself -- the op-level
+                                        # activityModel is the contrast knob
+        compositionBasis molality;
+    }
+    volatiles ( water CO2 );            # REQUIRED at equilibrium{} level (not
+                                        # inside aqueous{}): which components
+                                        # may enter the vapour
+    vapour { fugacityModel idealGas; }
+}
+```
+
+`system/propsDict`:
+
+```
+operations
+(
+    {
+        name saltyWater;
+        type speciate;
+
+        analyticalTotals
+        {
+            Na    0.5     mol/kg;
+            Cl    0.5     mol/kg;
+            CO2aq 1.0e-5  mol/kg;   # REQUIRED with an atmosphere{} pinning
+                                    # CO2: in an OPEN system this is only the
+                                    # INITIAL GUESS -- the dissolved amount is
+                                    # a solved outcome of the Henry pin
+            HCO3  1.0e-5  mol/kg;   # the carbonate MASTER: a family's
+                                    # equilibria activate only when its master
+                                    # is in the feed ("N unreachable from this
+                                    # feed" in the log = a family whose master
+                                    # is absent).  Tiny is fine; it is solved.
+        }
+
+        temperature  298.15 K;
+        pH           solve;         # REQUIRED key on speciate (a number =
+                                    # given; `solve` = electroneutrality
+                                    # closes it -- the right choice whenever
+                                    # nothing measured a pH)
+        atmosphere   { pCO2 4.0e-4 atm; }   # OPEN system: pins dissolved CO2
+        activityModel  pitzerHMW;   # brine at I ~ 0.5: Pitzer, not davies
+
+        diagSpecies   ( Na Cl H OH HCO3 CO3 CO2aq );
+        diagMeanIonic ( { cation Na; anion Cl; } );
+        output        { file speciation.csv; }
+    }
+);
+```
+
+Checks on the answer (all from the benchmark run): gamma_pm(NaCl) = 0.681
+at 0.5 mol/kg — the literature value; pH 5.58 (slightly acid, as an open-CO2
+brine must be); I = 0.500.  KNOWN WART, reported: the `m_CO2aq` DIAGNOSTIC
+currently echoes the authored guess; the SOLVED value is in the CSV (fix
+tracked in `docs/design/electrolyte-authoring-seams-scope.md` S4).
+
+One more thing this system needs today: `species/CO2aq.dat` is not yet in
+the standards catalogue, so the case carries a case-local
+`constant/species/CO2aq.dat` (name, `charge 0`, MW; promotion is tracked in
+the same scope, S3).
