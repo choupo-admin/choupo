@@ -274,6 +274,29 @@ model is reformulated.  The GUI's "Dynamic balance" and batch "Campaign
 balance" plots draw these engine-owned numbers verbatim — no physics in the
 front-end.
 
+**Tracer experiments (choupoCtrl, 2026-08-23)** — two measurement blocks in
+`system/controlDict`, both integrating the OUTLET tracer molar flow of a
+declared unit on the same accepted-step trapezoid as the balance ledger.
+`rtd { unit; tracer; }` publishes the response moments (`kpis.rtd`: area,
+t̄ = S1/S0, σ² = S2/S0 − t̄², plus a truncation-honesty ratio) and the E(t)
+curve (`reports/rtd/E.csv`); the engine measures, it never deconvolves — the
+case header does the τ arithmetic.  `frequencyResponse { unit; tracer;
+reference <sineController> XOR frequency; discardCycles; fitCycles; }`
+least-squares fits a + b·sin + c·cos over the fit window and publishes
+amplitude, phase and an unexplained-variance residual (`kpis.
+frequencyResponse`) — with `reference`, the frequency is read from the drive
+itself (one datum, one home), which is what lets an outer sweep vary the
+drive alone and each pass's fit window follow its own period.  The sweep
+driver's `linkedTargets` writes the swept value to listed sibling paths in
+lockstep (the Bode case's carrier mirror).  Witnesses with closed-form
+anchors: `ctrl18_rtd_pulse_cstr` (Levenspiel moment additivity, t̄ and σ²
+within stated truncation of the exact values), `ctrl19_freq_response_cstr`
+(AR = 1/√2, φ = −45° at ωτ = 1) and `ctrl20_bode_cstr` (the four-point Bode
+table, phase bias verified to follow the ω·Δt/2 half-sample formula at every
+frequency).  Dynamic units are NOT chained unit-to-unit (each reads its own
+declared feed), so tanks-in-series awaits the routing slice — said here so
+nobody reads the single-vessel witnesses as more.
+
 ---
 
 ## 7. Fractal multi-sector flowsheets
