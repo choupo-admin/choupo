@@ -1,0 +1,83 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl18_rtd_pulse_cstr
+  =====================
+
+  RESIDENCE-TIME DISTRIBUTION by pulse tracer -- the engine's first RTD
+  tool (2026-08-23).  A pure mixing tank (the ctrl09 vessel, reaction and
+  controller stripped) holds N = 0.012 kmol and is fed F = 5e-5 kmol/s,
+  so tau = N/F = 240 s exactly.  For 30 s starting at t = 100 s the feed
+  SWAPS 1e-5 kmol/s of carrier for tracer -- compB pulses up by exactly
+  what compA pulses down -- so the total flow never moves and the vessel
+  is rigorously linear and time-invariant in the tracer.
+
+  THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction
+  Engineering, ch. 13-14 -- moment additivity of a linear vessel, exact
+  for ANY inlet shape):
+      tbar_out   = tbar_in + tau     = (100 + 15) + 240   = 355 s
+      sigma2_out = sigma2_in + tau^2 = 30^2/12 + 240^2    = 57675 s^2
+      area       = amplitude x width = 1e-5 * 30          = 3.0e-4 kmol
+  The engine measures the outlet response moments (rtd KPIs, trapezoid on
+  the accepted-step grid, reports/rtd/E.csv); the arithmetic above is the
+  case's, stated here.  Deviations from the anchors are integration
+  truncation (run = 2600 s ~ 10.4 tau past the pulse; e^-10.4 ~ 3e-5)
+  plus the finite step -- both stated, neither hidden.
+*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     330.0 K;
+        }
+
+    }
+);
+
+controllers
+(
+    //  Tracer SUBSTITUTION at constant total flow: compB up by exactly
+    //  what compA goes down, so F never moves and tau stays 240 s.
+    {
+        name         TracerPulse;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compB; }
+        signal
+        {
+            type       pulse;
+            mean       0.0;
+            amplitude  1.0e-5;        // kmol/s
+            tStart     100.0;         // s
+            width      30.0;          // s
+        }
+    }
+
+    {
+        name         CarrierDip;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compA; }
+        signal
+        {
+            type       pulse;
+            mean       5.0e-5;        // kmol/s  (the WHOLE feed is carrier)
+            amplitude  -1.0e-5;       // the exact mirror of the tracer
+            tStart     100.0;
+            width      30.0;
+        }
+    }
+
+);

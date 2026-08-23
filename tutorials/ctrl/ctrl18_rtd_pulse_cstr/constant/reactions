@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Same mild-exotherm Arrhenius as ctrl01.
+\*---------------------------------------------------------------------------*/
+
+compA_to_compB
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e4;
+        Ea     5.0e4;
+    }
+
+    dH_rxn  -5.0e4;
+}

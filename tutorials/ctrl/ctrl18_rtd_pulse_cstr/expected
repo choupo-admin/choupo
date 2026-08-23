@@ -1,0 +1,35 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     CarrierDip             MV_final         5e-05              1e-4
+kpi     CarrierDip             PV_final         0                  1e-4
+kpi     CarrierDip             SP_final         5e-05              1e-4
+kpi     TracerPulse            MV_final         0                  1e-4
+kpi     TracerPulse            PV_final         0                  1e-4
+kpi     TracerPulse            SP_final         0                  1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 4.73695157173e-14  1e-4
+kpi     balance                mass_kg_final    0.36               1e-4
+kpi     balance                mass_kg_in_cum   3.9                1e-4
+kpi     balance                mass_kg_initial  0.36               1e-4
+kpi     balance                mass_kg_out_cum  3.9                1e-4
+kpi     balance                mass_residual_kg 1.84741111298e-13  1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     reactor                F_in_final       5e-05              1e-4
+kpi     reactor                T_final          330                1e-4
+kpi     reactor                n_compA_final    0.0119999904358    1e-4
+kpi     reactor                n_compB_final    9.56415297086e-09  1e-4
+kpi     reactor                t_end            2600               1e-4
+kpi     reactor                z_in_compA_final 1                  1e-4
+kpi     reactor                z_in_compB_final 0                  1e-4
+kpi     rtd                    area_kmol        0.000299990435833  1e-4
+kpi     rtd                    sigma2_s2        57477.953743       1e-4
+kpi     rtd                    tbar_s           354.921121515      1e-4
+kpi     rtd                    truncation_final_over_peak 3.39145420463e-05  1e-4
+# ANCHORS: Levenspiel closed forms (moment additivity of a linear vessel,
+# exact for any inlet shape).  area = amplitude*width; tbar = tbar_in + tau;
+# sigma2 = sigma2_in + tau^2 with tau = N/F = 240 s.  Bands cover the stated
+# integration truncation (10.4 tau) and the 1 s step, nothing else.
+kpi     rtd                    area_kmol        3.0e-4           1e-3  anchor
+kpi     rtd                    tbar_s           355.0            1e-3  anchor
+kpi     rtd                    sigma2_s2        57675.0          5e-3  anchor

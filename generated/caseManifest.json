@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 367,
+  "cases": 368,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 5
+  "anchored": 6
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -953,6 +953,24 @@
     ]
    },
    "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl18_rtd_pulse_cstr": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Signal",
+    "dynamicCSTR",
+    "pulse"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/electrochem/ed01_nacl_desalination": {
@@ -5422,7 +5440,8 @@
     "tutorials/ctrl/ctrl14_williams_otto_pi",
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
     "tutorials/ctrl/ctrl17_signal_shapes",
-    "tutorials/ctrl/ctrl17_step_reaction_curve"
+    "tutorials/ctrl/ctrl17_step_reaction_curve",
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -5760,7 +5779,8 @@
     "tutorials/ctrl/ctrl06_sine_disturbance",
     "tutorials/ctrl/ctrl08_prbs_ident",
     "tutorials/ctrl/ctrl09_stream_disturbance",
-    "tutorials/ctrl/ctrl17_signal_shapes"
+    "tutorials/ctrl/ctrl17_signal_shapes",
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -5947,7 +5967,8 @@
     "tutorials/ctrl/ctrl10_brine_concentration",
     "tutorials/ctrl/ctrl11_esterification_jacket",
     "tutorials/ctrl/ctrl17_signal_shapes",
-    "tutorials/ctrl/ctrl17_step_reaction_curve"
+    "tutorials/ctrl/ctrl17_step_reaction_curve",
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
    ],
    "electricLoad": [
     "tutorials/electrochem/ed01_nacl_desalination",
@@ -6159,7 +6180,8 @@
     "tutorials/steady/separation/psa01_h2_psa"
    ],
    "pulse": [
-    "tutorials/ctrl/ctrl17_signal_shapes"
+    "tutorials/ctrl/ctrl17_signal_shapes",
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
    ],
    "pump": [
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
@@ -6417,6 +6439,7 @@
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
     "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve",
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
     "tutorials/plant/ChemicalPlantTutorial",

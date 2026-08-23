@@ -469,6 +469,76 @@ try
             fs::current_path().string(), solutionCtl, std::move(compNames));
     }
 
+    // ---- RTD tracer-experiment accumulator (2026-08-23) -------------
+    //  Declared: `rtd { unit <name>; tracer <component>; }` in controlDict.
+    //  The engine integrates the OUTLET tracer molar flow on the SAME
+    //  accepted-step trapezoid as the balance ledger (a different
+    //  quadrature would make the moments a numerics artefact) and reports
+    //  the response moments: area S0 = int n dt, tbar = S1/S0,
+    //  sigma2 = S2/S0 - tbar^2.  The case header does the RTD arithmetic
+    //  (moment additivity: tbar_out = tbar_in + tau for ANY inlet shape on
+    //  a linear vessel) -- the engine measures, it does not deconvolve.
+    struct RtdAcc
+    {
+        bool   on = false;
+        DynamicUnitOperation* unit = nullptr;
+        std::size_t tracer = 0;
+        std::string unitName, tracerName;
+        bool   havePrev = false;
+        scalar prevT = 0.0, prevN = 0.0, peakN = 0.0;
+        scalar S0 = 0.0, S1 = 0.0, S2 = 0.0;
+        std::vector<std::pair<scalar,scalar>> trace;   // (t, n_tracer)
+    } rtd;
+    if (controlDict->found("rtd"))
+    {
+        auto rd = controlDict->subDict("rtd");
+        rtd.unitName   = rd->lookupWord("unit");
+        rtd.tracerName = rd->lookupWord("tracer");
+        for (const auto& u : units)
+            if (u->name() == rtd.unitName) rtd.unit = u.get();
+        if (!rtd.unit)
+            throw std::runtime_error("rtd: unit '" + rtd.unitName
+                + "' is not a dynamic unit of this case -- name one of the"
+                " flowsheet's units.");
+        bool found = false;
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).name() == rtd.tracerName)
+            { rtd.tracer = i; found = true; }
+        if (!found)
+            throw std::runtime_error("rtd: tracer '" + rtd.tracerName
+                + "' is not a component of this case's thermophysical"
+                " system -- declare it there (an RTD tracer is a component"
+                " like any other, ideally inert).");
+        rtd.on = true;
+        std::cout << "[rtd] tracer experiment armed: outlet of '"
+                  << rtd.unitName << "', tracer '" << rtd.tracerName
+                  << "' -- moments on the accepted-step trapezoid\n";
+    }
+    auto rtdAccept = [&](scalar tNow)
+    {
+        if (!rtd.on) return;
+        const ContinuousStream out = rtd.unit->outletStream();
+        const scalar n = out.F * out.component(rtd.tracer);   // kmol/s
+        if (rtd.havePrev)
+        {
+            const scalar dt2 = tNow - rtd.prevT;
+            if (dt2 > 0.0)
+            {
+                const scalar nm  = 0.5 * (rtd.prevN + n);
+                const scalar tm  = 0.5 * (rtd.prevT + tNow);
+                rtd.S0 += nm * dt2;
+                rtd.S1 += nm * tm * dt2;
+                //  t^2 by the trapezoid of t^2*n, not tm^2*nm -- second
+                //  moments are where midpoint shortcuts bite.
+                rtd.S2 += 0.5 * (rtd.prevN * rtd.prevT * rtd.prevT
+                                 + n * tNow * tNow) * dt2;
+            }
+        }
+        rtd.peakN = std::max(rtd.peakN, n);
+        rtd.trace.emplace_back(tNow, n);
+        rtd.prevT = tNow; rtd.prevN = n; rtd.havePrev = true;
+    };
+
     // ---- Trajectory CSV header --------------------------------------
     std::ofstream csv;
     if (writeOutputs) csv.open("trajectory.csv");
@@ -1001,6 +1071,7 @@ try
 
             t += dt;
             ledgerAccept(t);
+            rtdAccept(t);
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
             {
@@ -1086,9 +1157,10 @@ try
             if (!odeUnits.empty())
                 stepper.advance(odeUnits, t, tNext, onStep,
                     [&](scalar tEnd, scalar /*hTaken*/)
-                    { ledgerAccept(tEnd); });
+                    { ledgerAccept(tEnd); rtdAccept(tEnd); });
             else
                 ledgerAccept(tNext);
+                rtdAccept(tNext);
 
             t = tNext;
 
@@ -1145,6 +1217,43 @@ try
             k["SP_final"] = c->setpoint();
             k["PV_final"] = c->lastCV();
             k["MV_final"] = c->lastMV();
+        }
+
+        // ---- RTD moments (engine-owned; the case header does the
+        //      tau arithmetic) -----------------------------------------
+        if (rtd.on)
+        {
+            if (rtd.S0 <= 0.0)
+                throw std::runtime_error("rtd: the outlet of '"
+                    + rtd.unitName + "' carried NO '" + rtd.tracerName
+                    + "' over the whole run (S0 = 0) -- the experiment"
+                    " never happened.  Drive the tracer with a signal"
+                    " (e.g. a pulse on inletField componentMolarFlow."
+                    + rtd.tracerName + ").");
+            const scalar tbar   = rtd.S1 / rtd.S0;
+            const scalar sigma2 = rtd.S2 / rtd.S0 - tbar * tbar;
+            auto& rk = result.kpis["rtd"];
+            rk["area_kmol"] = rtd.S0;
+            rk["tbar_s"]    = tbar;
+            rk["sigma2_s2"] = sigma2;
+            //  Truncation honesty: the tail the run did not integrate.  A
+            //  final flow still a large fraction of the peak means tbar and
+            //  sigma2 are biased low, and the number says by how much the
+            //  experiment was cut, not how much the moments are off.
+            rk["truncation_final_over_peak"] =
+                (rtd.peakN > 0.0) ? rtd.prevN / rtd.peakN : 0.0;
+            if (writeOutputs)
+            {
+                std::filesystem::create_directories("reports/rtd");
+                std::ofstream ef("reports/rtd/E.csv");
+                ef << "t_s,n_tracer_kmol_s,E_per_s\n";
+                for (const auto& [tt, nn] : rtd.trace)
+                    ef << tt << "," << nn << "," << (nn / rtd.S0) << "\n";
+            }
+            std::cout << "[rtd] response moments: area " << rtd.S0
+                      << " kmol, tbar " << tbar << " s, sigma2 " << sigma2
+                      << " s^2 (final/peak " << rk["truncation_final_over_peak"]
+                      << ")\n";
         }
 
         // ---- Balance-ledger KPIs (engine-owned; the GUI only draws) -----

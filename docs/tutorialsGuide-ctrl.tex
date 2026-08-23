@@ -565,3 +565,35 @@ Nothing was tuned to make that happen. It is one plant, one experiment, and two 
 \goldrow{kpi}{reactor}{t\_end}{15000}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl18\_rtd\_pulse\_cstr}{tutorials/ctrl/ctrl18\_rtd\_pulse\_cstr}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{RTD by pulse tracer on a pure mixing tank: tracer substitution at constant flow, tau = N/F = 240 s; engine-measured moments against Levenspiel closed-form anchors.}
+\begin{tutnarrative}
+RESIDENCE-TIME DISTRIBUTION by pulse tracer -- the engine's first RTD tool (2026-08-23). A pure mixing tank (the ctrl09 vessel, reaction and controller stripped) holds N = 0.012 kmol and is fed F = 5e-5 kmol/s, so tau = N/F = 240 s exactly. For 30 s starting at t = 100 s the feed SWAPS 1e-5 kmol/s of carrier for tracer -- compB pulses up by exactly what compA pulses down -- so the total flow never moves and the vessel is rigorously linear and time-invariant in the tracer.
+
+THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction Engineering, ch. 13-14 -- moment additivity of a linear vessel, exact for ANY inlet shape): tbar\_out = tbar\_in + tau = (100 + 15) + 240 = 355 s sigma2\_out = sigma2\_in + tau\textasciicircum{}2 = 30\textasciicircum{}2/12 + 240\textasciicircum{}2 = 57675 s\textasciicircum{}2 area = amplitude x width = 1e-5 $\ast$ 30 = 3.0e-4 kmol The engine measures the outlet response moments (rtd KPIs, trapezoid on the accepted-step grid, reports/rtd/E.csv); the arithmetic above is the case's, stated here. Deviations from the anchors are integration truncation (run = 2600 s \textasciitilde{} 10.4 tau past the pulse; e\textasciicircum{}-10.4 \textasciitilde{} 3e-5) plus the finite step -- both stated, neither hidden.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{CarrierDip}{MV\_final}{5e-05}
+\goldrow{kpi}{CarrierDip}{PV\_final}{0}
+\goldrow{kpi}{CarrierDip}{SP\_final}{5e-05}
+\goldrow{kpi}{TracerPulse}{MV\_final}{0}
+\goldrow{kpi}{TracerPulse}{PV\_final}{0}
+\goldrow{kpi}{TracerPulse}{SP\_final}{0}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{4.73695157173e-14}
+\goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{3.9}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{3.9}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{1.84741111298e-13}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldmore{14}
+\end{tutgolden}
+

@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl09_stream_disturbance / system/controlDict
+
+  WHAT THIS CASE IS: the INLET-FIELD actuator test (design forum
+  #100.4/#101/#103).  A Signal controller steps the inlet's
+  componentMolarFlow.compA while compB's molar flow stays untouched ---
+  and the golden PROVES the derived pair changed by the arithmetic, not
+  merely that the reactor responded:
+
+      before:  nA = 3.5e-5, nB = 1.5e-5  =>  F = 5.0e-5,  z_A = 0.70
+      after :  nA = 5.25e-5 (stepped)    =>  F = 6.75e-5, z_A = 7/9 = 0.7778
+
+  The trajectory carries F_in and z_in_* as first-class columns; the
+  final-state KPIs pin them to the hand-derived values.
+
+  Narrative: system/flowsheetDict header.  Run log: log.choupoCtrl.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "RTD by pulse tracer on a pure mixing tank: tracer substitution at constant flow, tau = N/F = 240 s; engine-measured moments against Levenspiel closed-form anchors.";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         2600;     // s  (~10.4 tau past the pulse)
+deltaT          1.0;      // s
+writeInterval   10;       // s
+
+//  The RTD experiment: outlet tracer moments on the accepted-step grid.
+rtd
+{
+    unit    reactor;
+    tracer  compB;
+}
