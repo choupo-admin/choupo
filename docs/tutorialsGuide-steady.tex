@@ -1356,7 +1356,7 @@ WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liqui
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tower) at (0.0,-0.0) {\textbf{tower}\\[-1pt]{\tiny distillationColumn}};
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (recombine) at (2.9,-0.0) {\textbf{recombine}\\[-1pt]{\tiny mixer}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (restage) at (5.8,-0.0) {\textbf{restage}\\[-1pt]{\tiny isothermalFlash}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (restage) at (5.8,-0.0) {\textbf{restage}\\[-1pt]{\tiny adiabaticFlash}};
   \draw[->] ($(tower.west)+(-1.05,0.00)$) -- ($(tower.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
   \draw[->] (tower) -- (recombine) node[midway, above, font=\tiny] {stageLiquid};
   \draw[->] (tower) -- (recombine) node[midway, above, font=\tiny] {stageVapour};
@@ -1402,8 +1402,8 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \tutreadme{The ion inventories agreeing is the claim that a comparison of apparent compositions alone would miss: an effective K could reproduce the apparent split while resting on a different chemistry underneath.}
 \begin{tutgolden}
 \goldrow{stream}{bottoms}{F}{0.0259166666667}
-\goldrow{stream}{checkLiquid}{F}{0.00041666666663}
-\goldrow{stream}{checkVapour}{F}{0.000138888888925}
+\goldrow{stream}{checkLiquid}{F}{0.00041666665957}
+\goldrow{stream}{checkVapour}{F}{0.000138888895986}
 \goldrow{stream}{distillate}{F}{0.000833333333333}
 \goldrow{stream}{feed}{F}{0.0273055555556}
 \goldrow{stream}{stageLiquid}{F}{0.000416666666667}
@@ -1414,8 +1414,8 @@ WHAT THE COLUMN ACTUALLY DOES, since it is worth reading the profile. It converg
 \goldrow{kpi}{recombine}{T\_out}{483.325341357}
 \goldrow{kpi}{recombine}{n\_in}{2}
 \goldrow{kpi}{recombine}{vf}{0}
-\goldrow{kpi}{restage}{F\_alpha}{0.00041666666663}
-\goldmore{31}
+\goldrow{kpi}{restage}{F\_in}{0.000555555555556}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage

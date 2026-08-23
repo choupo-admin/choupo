@@ -2691,8 +2691,8 @@
   "tutorials/steady/distillation/column13_sour_water_stage_identity": {
    "application": "choupoSolve",
    "unitTypes": [
+    "adiabaticFlash",
     "distillationColumn",
-    "isothermalFlash",
     "mixer"
    ],
    "unitModels": [
@@ -5840,6 +5840,7 @@
    ],
    "adiabaticFlash": [
     "tutorials/steady/distillation/column12_stage_is_a_flash",
+    "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene"
    ],
    "bagFilter": [
@@ -6138,7 +6139,6 @@
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/steady/absorption/absorption01_CO2_water",
     "tutorials/steady/absorption/extraction01_waterButanol",
-    "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/economics/economics01_esterification_dcf",
     "tutorials/steady/economics/economics02_irr_sweep",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
