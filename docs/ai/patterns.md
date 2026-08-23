@@ -722,15 +722,19 @@ operations
         {
             Na    0.5     mol/kg;
             Cl    0.5     mol/kg;
-            CO2aq 1.0e-5  mol/kg;   # REQUIRED with an atmosphere{} pinning
-                                    # CO2: in an OPEN system this is only the
-                                    # INITIAL GUESS -- the dissolved amount is
-                                    # a solved outcome of the Henry pin
             HCO3  1.0e-5  mol/kg;   # the carbonate MASTER: a family's
                                     # equilibria activate only when its master
                                     # is in the feed ("N unreachable from this
                                     # feed" in the log = a family whose master
-                                    # is absent).  Tiny is fine; it is solved.
+                                    # is absent).  Tiny is fine; the amount is
+                                    # a solved outcome of the CO2 pin.
+                                    # Do NOT also declare CO2aq here -- it is
+                                    # a COMPUTED species of this network, and
+                                    # a totals entry for it declares a second
+                                    # inventory under the same name (refused).
+                                    # An INERT gas with no formation record
+                                    # (O2, N2) is the opposite case: there the
+                                    # gas's own species entry IS the key.
         }
 
         temperature  298.15 K;
@@ -750,9 +754,7 @@ operations
 
 Checks on the answer (all from the benchmark run): gamma_pm(NaCl) = 0.681
 at 0.5 mol/kg — the literature value; pH 5.58 (slightly acid, as an open-CO2
-brine must be); I = 0.500.  KNOWN WART, reported: the `m_CO2aq` DIAGNOSTIC
-currently echoes the authored guess; the SOLVED value is in the CSV (fix
-tracked in `docs/design/electrolyte-authoring-seams-scope.md` S4).
+brine must be); I = 0.500; m_CO2aq = 1.257e-5 (solved from the pin).
 
 One more thing this system needs today: `species/CO2aq.dat` is not yet in
 the standards catalogue, so the case carries a case-local

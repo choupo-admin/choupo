@@ -986,6 +986,32 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                 "master '" + missing + "' not present in this system", false});
             continue;
         }
+        //  ONE NAME MAY NOT BE TWO QUANTITIES.  A species the active network
+        //  COMPUTES (this reaction is reachable) that is ALSO a declared
+        //  master would put two rows with one name in the answer: the
+        //  master's own closed inventory (which conserves whatever the totals
+        //  entry guessed) beside the network's solved value.  Every reader
+        //  then gets whichever row comes first -- the 2026-08-23 LLM
+        //  benchmark's case D published its authored CO2aq GUESS as the
+        //  m_CO2aq diagnostic this way, at exit 0, beside a CSV holding both.
+        //  The tartaric pattern shows the honest resolution already exists:
+        //  curate the INVERSE record and the reachability closure picks one
+        //  direction (declare H2Tart and Tart-formation activates while
+        //  H2Tart-formation stays off).  So a live collision is refused with
+        //  both remedies, never carried in silence.
+        if (masterIndex(r.species) >= 0)
+            throw std::runtime_error("speciation: '" + r.species + "' is"
+                " DECLARED in totals (a master with its own conserved"
+                " inventory) AND is computed by the active network ("
+                + r.species + " from " + (need.empty() ? "the solvent" : need)
+                + ") -- one name, two different quantities.  If the totals"
+                " entry meant the FAMILY total, declare it on the family's"
+                " master (" + (need.empty() ? "see the formation record" : need)
+                + ") and drop the '" + r.species + "' entry -- its amount is"
+                " a solved outcome.  If this species' inventory is genuinely"
+                " independent here, curate the inverse formation record so"
+                " the network direction matches the declared basis (the"
+                " H2Tart/Tart pattern).");
         // solve-pH mode: H+ is unknown number iH -- fold its stoichiometry
         // into the idx machinery so the mass action / Jacobian see it like
         // any other unknown (a.nuH stays authoritative for the given-pH path).
@@ -1162,11 +1188,43 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             // (b) the dissolved species is a master itself (inert neutral)
             pin.row = masterIndex(pin.gas->species);
             if (pin.row < 0)
+            {
+                //  THE REMEDY MUST NAME THE RIGHT KEY.  This message used to
+                //  demand a totals entry for the SPECIES unconditionally --
+                //  and when a formation record exists but its family master
+                //  is absent (case D of the 2026-08-23 benchmark: open CO2
+                //  with no HCO3 in the totals), obeying it plants exactly
+                //  the master/computed-species collision the activation loop
+                //  now refuses.  The species-entry remedy is right ONLY for
+                //  an inert gas with no formation record (O2, N2); when a
+                //  formation exists, the remedy is the family's master.
+                std::string viaMasters;
+                for (const auto& r : reactions_)
+                    if (r.species == pin.gas->species)
+                    {
+                        for (const auto& [ion, nu] : r.masters)
+                        { (void)nu; if (ion != "H")
+                              viaMasters += (viaMasters.empty()?"":" + ") + ion; }
+                        break;
+                    }
+                if (!viaMasters.empty())
+                    throw std::runtime_error("speciation: open-" + gasName
+                        + " pins '" + pin.gas->species + "', which the"
+                        " curated network COMPUTES from " + viaMasters
+                        + " -- but that family's master is not in `totals`,"
+                        " so the network is unreachable from this feed."
+                        "  Add the master (e.g. `" + viaMasters
+                        + " 1.0e-5 mol/kg;` -- tiny is fine, it is a solved"
+                        " outcome) to activate it.  Do NOT add a '"
+                        + pin.gas->species + "' entry instead: that declares"
+                        " a second, independent inventory under the computed"
+                        " species' own name, which is refused.");
                 throw std::runtime_error("speciation: open-" + gasName
                     + " needs the pinned species '" + pin.gas->species
                     + "' active -- give a " + pin.gas->species + " entry in "
                     "`totals` (in an OPEN system it is only the initial "
                     "guess; the dissolved amount is a solved outcome)");
+            }
         }
         if (pinOfRow[std::size_t(pin.row)] >= 0)
             throw std::runtime_error("speciation: atmosphere gases " + gasName
