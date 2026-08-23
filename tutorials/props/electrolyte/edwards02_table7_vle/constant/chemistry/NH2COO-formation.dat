@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the CARBAMATE equilibrium, from Edwards (1978)
+  Eq 20, combined with the Table 1 ammonia rows into the formation direction.
+
+  The paper writes Eq 20 for
+      NH3 + HCO3- = NH2COO- + H2O        ln K20 = -8.6 + 2900/T
+  (formation exothermic, dH = -2900 R = -24.1 kJ/mol; K20 = 3.09 at 25 degC,
+  0.44 at 100 degC).  The formation of NH2COO from the masters is
+      NH4+ + HCO3- = NH2COO- + H+ + H2O      K_f = (Kw/K1) * K20
+  so the coefficient vector is the NH3aq-formation one (H2O row minus NH3
+  row, see that record) PLUS (2900/T - 8.6), all divided by ln 10.
+
+  RANGE, stated as the paper states it: Eq 20 is fitted 20-60 degC and the
+  paper uses it at 100 degC "without ceremony", quoting its own sensitivity
+  check -- halving K20 moves the Table 7 total pressure by under 2 %.  The
+  Trange below is the FITTED range, so the run announces the extrapolation
+  the paper also made; the insensitivity is why the answer survives it.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species NH2COO; masters ( { ion NH4; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); nuWater -1;
+      logK25 -8.7550; analytic ( 56.272405 0.016093477 -3131.35007 -23.97440 ); Trange ( 20 60 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Eq 20 + Table 1 (NH3, H2O rows), combined as derived in the header; INTERIM pending primary review";

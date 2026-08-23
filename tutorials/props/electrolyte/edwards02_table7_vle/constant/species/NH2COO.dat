@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/NH2COO.dat -- the CARBAMATE ion, CASE-LOCAL.
+
+  The carbamate is the species that makes an ammonia-rich carbonated water
+  different from a carbonate water: at Table 7's conditions it holds a
+  substantial share of the dissolved CO2, and a network without it reports
+  molecular molalities the paper's own predictions contradict.  It enters the
+  catalogue here, beside the one case that exercises it, rather than in
+  data/standards/ -- promotion of a species record is a curation act, and the
+  standards tree is not edited as a side effect of building an anchor case.
+
+  Identity only: no aqueousThermo block, because Edwards (1978) publishes the
+  equilibrium (Eq 20), not a formation enthalpy on the elements datum, and an
+  absent datum must keep meaning absent (any energy path that needs it will
+  refuse by name, which is correct).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    NH2COO;
+formula     "NH2COO-";
+charge  -1;
+MW { value 60.032; unit g/mol;}   // N 14.007 + H2 2.016 + C 12.011 + O2 31.998

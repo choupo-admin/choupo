@@ -647,11 +647,18 @@ Two traps this slice paid for, both worth generalising:
 
 Gate: `check_edwards_model` (reachability through the engine, the neutral gamma
 with its exactly-1 Davies negative, all five rules announced, Eq 24 recomputed
-from the printed beta0, the banner).  Reference case:
+from the printed beta0, the banner).  Reference cases:
 `tutorials/props/electrolyte/edwards01_sour_water_activity` — a STRUCTURAL
-witness only; no number in it is validated against measurement.  The measured
-comparison is the paper's Table 7, which needs the vapour side
-(`docs/design/sour-water-stripper-scope.md`).
+witness only; no number in it is validated against measurement — and, since
+2026-08-23, **`edwards02_table7_vle`**: the Table 7 comparison itself, the
+vapour side built as the speciate op's `vapour {}` block (Eqs 5/6/11 over the
+solved speciation; `fugacity ideal;` REQUIRED — the paper's own φ model is
+not transcribed), the carbamate curated case-locally, 18 anchor rows against
+the paper's prediction column I with bands sized to the measured residual
+(P within 3.2 %, the molecular molalities within 10 %, the residual
+concentrated where the carbamate share is largest and bracketed by a
+carbamate-free sensitivity op).  Record:
+`docs/design/sour-water-stripper-scope.md` §6c.
 
 **THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not
 merely that the case runs (2026-08-04).**  Adding an activity model without

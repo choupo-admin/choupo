@@ -1,0 +1,164 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edwards02_table7_vle --- the LITERATURE ANCHOR for the edwardsPitzer model:
+  Table 7 of Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976
+  (1978) -- NH3-CO2-H2O at 100 degC, three points.
+
+  edwards01 is the STRUCTURAL witness: it proves the activity surface is
+  wired, and its own header says none of its numbers is validated against
+  anything.  This case is the validation it points at.  For each Table 7
+  point the paper states the total molalities of ammonia and carbon dioxide
+  in the LIQUID and predicts the speciation (molecular NH3 and CO2, ionic
+  strength) and the VAPOUR above it (y_NH3, y_CO2, total pressure).  The
+  whole model stack here is the paper's own:
+
+      liquid activities   Eq 8/10          (edwardsPitzer, the case surface)
+      equilibria K(T)     Eq 7 / Table 1 + Eq 20   (case-local chemistry/)
+      Henry's constants   Eq 13 / Table 3  (parameters/EdwardsPitzer/henry-*)
+      pressure correction Eq 11 / Table 2  (vInfinity in the same records)
+      vapour side         Eq 5/6           (the speciate op's vapour{} block)
+
+  WHAT IS COMPARED, AND AGAINST WHAT.  Table 7 carries TWO different columns
+  and conflating them would be dishonest:
+
+    * the paper's own PREDICTIONS (column I) -- a code-to-code comparison.
+      Those are the golden values here, with ONE declared gap: the paper
+      computes vapour-phase fugacity coefficients from a model its
+      transcription does not carry, so this case declares `fugacity ideal;`
+      (phi = 1) and the residual disagreement is expected to be of the size
+      of that correction (a few percent at 2-3 atm), plus the numerical
+      difference between two implementations of Eqs 7-24.
+
+    * the EXPERIMENT (Otsuka et al. 1960) -- quoted below as CONTEXT, never
+      as a target.  The paper's OWN agreement with it is rough (first row:
+      y_NH3 0.066 measured vs 0.123 predicted -- a factor of two) and the
+      paper says so plainly.  A student reading this case sees a correlation
+      reproduced closely and its real-world agreement stated honestly, which
+      is the opposite of a tool that prints one number.
+
+          Table 7, the paper's column I (the golden targets here):
+              row  mNH3tot  mCO2tot   m_NH3    m_CO2    I     y_NH3  y_CO2  P[atm]
+              1    2.90     1.45      1.245    0.014    1.50  0.123  0.494  2.51
+              2    3.71     1.14      2.279    0.0056   1.26  0.293  0.230  1.98
+              3    4.30     0.907     3.087    0.0030   1.01  0.407  0.116  1.97
+          The experiment (Otsuka 1960, context only):
+              1                                               0.066  0.506  3.15
+              2                                               0.274  0.202  2.08
+              3                                               0.355  0.095  2.00
+
+  THE CARBAMATE ENTERS THE CATALOGUE HERE (case-local): NH2COO- with Eq 20's
+  equilibrium.  Without it, an ammonia-rich carbonated water reports
+  molecular molalities the paper's own predictions contradict -- it holds a
+  substantial share of the dissolved CO2 at these conditions.  Eq 20 is
+  fitted 20-60 degC and used at 100 degC exactly as the paper uses it, with
+  the extrapolation ANNOUNCED and the paper's own sensitivity argument in the
+  record header (halving K20 moves P by under 2 %).
+
+  DECLARED APPROXIMATIONS, each announced by the run:
+    * `fugacity ideal;` -- phi = 1 on all vapour species (see above);
+    * the solvent Poynting factor of Eq 6 is omitted (< 0.2 % below 4 atm);
+    * Eq 20 extrapolated 60 -> 100 degC (the paper's own move);
+    * water's Psat comes from the case catalogue's own curated Antoine, not
+      from a value the paper does not print.
+
+  DATA SCOPE: sealed (bin/choupo-import); every record named and verified by
+  constant/propertyManifest.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        table7_row1;
+        type        speciate;
+        temperature 373.15;
+        totals { NH4 2.90 mol/kg; HCO3 1.45 mol/kg; }
+        totalsBasis stoichiometric;   // family totals of NEUTRAL feeds (NH3, CO2)
+        pH          solve;
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq NH2COO );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species CO2aq; henry henry-CO2-water; }
+            );
+        }
+        output      { file table7_row1.csv; }
+    }
+
+    {
+        name        table7_row2;
+        type        speciate;
+        temperature 373.15;
+        totals { NH4 3.71 mol/kg; HCO3 1.14 mol/kg; }
+        totalsBasis stoichiometric;
+        pH          solve;
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq NH2COO );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species CO2aq; henry henry-CO2-water; }
+            );
+        }
+        output      { file table7_row2.csv; }
+    }
+
+    {
+        name        table7_row3;
+        type        speciate;
+        temperature 373.15;
+        totals { NH4 4.30 mol/kg; HCO3 0.907 mol/kg; }
+        totalsBasis stoichiometric;
+        pH          solve;
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq NH2COO );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species CO2aq; henry henry-CO2-water; }
+            );
+        }
+        output      { file table7_row3.csv; }
+    }
+
+    // -- SENSITIVITY, measured: row 1 with the carbamate REMOVED.  The paper
+    //    claims Table 7 is insensitive to K20 (halving it moves P by < 2 %);
+    //    this op measures the FULL swing: without NH2COO the answer brackets
+    //    the paper's from the other side (m_NH3 1.375 above its 1.245 where
+    //    the full network sits at 1.123 below; P moves 2.2 %).  The residual
+    //    disagreement of this case is concentrated exactly in that bracket.
+    {
+        name        row1_nocarbamate;
+        type        speciate;
+        temperature 373.15;
+        totals { NH4 2.90 mol/kg; HCO3 1.45 mol/kg; }
+        totalsBasis stoichiometric;
+        pH          solve;
+        networkScope restricted;
+        network     ( NH3aq-formation CO2aq-formation CO3-formation water-dissociation );
+        reason      "sensitivity arm: the carbamate equilibrium removed, bracketing the paper's prediction from above";
+        diagSpecies ( NH4 HCO3 CO3 NH3aq CO2aq );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species CO2aq; henry henry-CO2-water; }
+            );
+        }
+        output      { file row1_nocarbamate.csv; }
+    }
+);

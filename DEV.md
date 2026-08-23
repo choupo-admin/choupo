@@ -129,12 +129,13 @@ ones for day-to-day work:
      not from 200 K — until then column13 claims the equilibrium half of
      the identity and column12 keeps the energy half;
    * S2 proper (a taller stripper, wider loading range so the mechanism
-     check has more than four points) and S3 (the Edwards 1978 literature
-     anchor, whose data is transcribed in
-     `docs/design/sour-water-stripper-scope.md` Appendix A) are NOT built.
-     S3 needs a decision first: Edwards' activity model is a Pitzer
-     truncation, not `davies`, so it is a MODEL addition and not only a
-     curation act.
+     check has more than four points) is NOT built.  ~~S3~~ — the model
+     addition S3 waited on shipped 2026-08-04 (`edwardsPitzer`), and **S3
+     itself shipped 2026-08-23**: `edwards02_table7_vle` reproduces the
+     paper's Table 7 predictions (18 anchors, bands sized to the measured
+     residual, the carbamate curated case-locally, the vapour side as the
+     speciate op's `vapour {}` block).  Record:
+     `docs/design/sour-water-stripper-scope.md` §6c.
 
 1. ~~**Ctrl physical energy**~~ — **DONE 2026-08-01.**  `dynamicCSTR` is
    reformulated on a stored `H(n,T)` (elements datum): the inlet term is the

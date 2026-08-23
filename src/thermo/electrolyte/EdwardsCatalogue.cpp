@@ -309,5 +309,79 @@ void EdwardsPitzerModel::announceParameters(const IonState& st,
     assembleEdwardsParameters(st.name, st.charge, st.T, &os);
 }
 
+double EdwardsHenry::H(double T) const
+{
+    return std::exp(B1 / T + B2 * std::log(T) + B3 * T + B4);
+}
+
+double EdwardsHenry::vInfinityAt(double T) const
+{
+    //  The loader refused an empty or unsorted table, so front/back are safe.
+    if (T <= vInfinity.front().first) return vInfinity.front().second;
+    if (T >= vInfinity.back().first)  return vInfinity.back().second;
+    for (std::size_t i = 1; i < vInfinity.size(); ++i)
+        if (T <= vInfinity[i].first)
+        {
+            const auto& [T0, v0] = vInfinity[i - 1];
+            const auto& [T1, v1] = vInfinity[i];
+            return v0 + (v1 - v0) * (T - T0) / (T1 - T0);
+        }
+    return vInfinity.back().second;   // unreachable; keeps the compiler honest
+}
+
+EdwardsHenry loadEdwardsHenry(const std::string& stem)
+{
+    const DictPtr* d = record(stem);
+    if (!d)
+        throw std::runtime_error("EdwardsPitzer Henry record parameters/"
+            "EdwardsPitzer/" + stem + ".dat not found -- the vapour side's one"
+            " datum per solute is the curated Henry constant, and there is"
+            " nothing to default it from.  Curate the record (Eq 13"
+            " coefficients + convention), or drop the solute from vapour{}.");
+
+    EdwardsHenry h;
+    h.stem       = stem;
+    h.solute     = (*d)->lookupWord("solute");
+    h.solvent    = (*d)->lookupWord("solvent");
+    h.convention = (*d)->lookupWord("convention");
+    const auto p = (*d)->subDict("parameters");
+    h.B1 = p->lookupScalar("B1");
+    h.B2 = p->lookupScalar("B2");
+    h.B3 = p->lookupScalar("B3");
+    h.B4 = p->lookupScalar("B4");
+    if ((*d)->found("Trange"))
+    {
+        const auto r = (*d)->lookupList("Trange");
+        if (r.size() >= 2) { h.Tlo = r[0]; h.Thi = r[1]; }
+    }
+
+    //  Table 2 for Eq 11, OPTIONAL: absence means the pressure correction is
+    //  unavailable, and the consumer announces that rather than assuming 0.
+    if ((*d)->found("vInfinity"))
+    {
+        const auto vi = (*d)->subDict("vInfinity");
+        const std::string units = vi->lookupWord("units");
+        if (units != "cm3/mol")
+            throw std::runtime_error(stem + ".dat vInfinity.units is '" + units
+                + "' -- this reader speaks cm3/mol only (Table 2's own unit);"
+                  " convert the record, not the reader");
+        for (const auto& e : vi->lookupDictList("points"))
+            h.vInfinity.emplace_back(e->lookupScalar("T"),
+                                     e->lookupScalar("value"));
+        if (h.vInfinity.empty())
+            throw std::runtime_error(stem + ".dat vInfinity.points is empty --"
+                " drop the block entirely if the table is not curated (absence"
+                " must keep meaning absence)");
+        for (std::size_t i = 1; i < h.vInfinity.size(); ++i)
+            if (!(h.vInfinity[i].first > h.vInfinity[i - 1].first))
+                throw std::runtime_error(stem + ".dat vInfinity.points must be"
+                    " strictly increasing in T");
+    }
+
+    //  Trange is checked by the CONSUMER at its evaluation T (the announced-
+    //  extrapolation posture) -- loading a record is not yet using it.
+    return h;
+}
+
 } // namespace electrolyte
 } // namespace Choupo

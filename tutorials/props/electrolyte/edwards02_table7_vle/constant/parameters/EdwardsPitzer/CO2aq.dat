@@ -1,0 +1,30 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/CO2aq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Edwards (1978) molecule-molecule interaction parameter for CARBON DIOXIDE.
+
+  Role: beta0_aa of the Pitzer truncation of Eq 8, for the like pair
+  (CO2, CO2).  Consumed by the `edwardsPitzer` activity engine.
+
+  Eq 14:  beta0_aa = E + F/T      [kg/mol],  T in KELVIN.
+
+  beta1 is NOT stored: for any pair involving a MOLECULAR species the paper
+  sets beta1 = 0 ("because experimental data are inadequate").  A zero that
+  the model applies by rule is not a datum, and writing it here would invite
+  someone to change it.
+\*-----------------------------------------------------------------------------*/
+recordType    electrolytePairParameters;
+schemaVersion 1;
+
+model         edwardsPitzer;
+convention    Edwards-Hkgatm-v1;
+
+pair { molecule CO2aq; molecule2 CO2aq; }
+
+parameters
+{
+    E   -0.4922;      // kg/mol
+    F   149.20;       // (kg/mol) K
+}
+
+Trange ( 273.15 373.15 );   // 0-100 degC -- Table 4 footnotes CO2 SPECIFICALLY as narrower
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 4";

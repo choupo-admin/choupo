@@ -1,9 +1,12 @@
 # Sour-water stripper — a distillation column under speciation (scope)
 
-**Status: SCOPE, awaiting Vítor's alignment.  No code is authorised by this
-document.**  Requested 2026-08-04 ("podemos fazer o caso 1?"); this states
-what the case is, what the engine must gain, what can be validated WITHOUT
-the primary source, and the one thing only Vítor can supply.
+**Status: the shape was approved and is being delivered in stages — S1 (the
+effective-K seam) 2026-08-04 (§6a), S3 (the Table 7 literature anchor)
+2026-08-23 (§6c); S2 proper (the taller stripper) and S4 (H₂S) remain the
+named gaps.**  Originally requested 2026-08-04 ("podemos fazer o caso 1?") as
+a scope awaiting alignment; §§2 and 5 record the sourcing problem as it stood
+then — Appendix A holds the tables Vítor supplied, so §5's request is
+satisfied.
 
 ---
 
@@ -130,6 +133,7 @@ enough; I will not need the PDF.
   per-tray speciation reported, conservation + direction gated.
 * **S3** — the literature anchor, once the tables exist: goldens locked on
   the paper's numbers, provenance of every value in the case header.
+  **BUILT 2026-08-23** — `edwards02_table7_vle`, see §6c.
 * **S4 (deferred, named)** — H₂S as the third volatile weak electrolyte.
   The paper covers it; the corpus has no H₂S network records, so it is a
   curation slice of its own and must not ride along silently.
@@ -216,6 +220,53 @@ a second place — but with the records moved it guards nothing, and
 unused machinery with three passing sabotage tests is a hole waiting for
 somebody to walk through it.  When parameterisation SELECTION is built,
 that assumption must be lifted with it; this paragraph is the reminder.
+
+## 6c. S3 as built (2026-08-23): `edwards02_table7_vle`
+
+The vapour side is a `vapour {}` block on the speciate op — Eqs 5/6/11 over
+the SOLVED speciation: each declared molecular solute priced
+`p = m · γ* · H` (its named Henry record, Eq 13, with the
+Krichevsky–Kasarnovsky correction from the record's new PARSED `vInfinity`
+block — Table 2 sat in a header comment until now, which is a field the
+engine cannot see), the solvent `p_w = a_w · Psat`, the total closed by a
+trivially convergent fixed point over Eq 11's P-dependence.
+`fugacity ideal;` is REQUIRED and refused when absent: the paper computes φ
+from a vapour model this transcription does not carry, so φ = 1 is the one
+route available and the case must own it in writing.  A Henry record whose
+`convention` names Edwards' standard state refuses any other activity model
+(the γ* scale does not mix).  The case-local `constant/chemistry/` carries
+Table 1 + Eq 20 (the eclipse rule makes the whole network the paper's), and
+the CARBAMATE enters the catalogue case-locally (`NH2COO`, Eq 20 formation
+direction — verified exothermic, K25 = 3.09 kg/mol against the ~3 the
+literature quotes).
+
+**What the three-point comparison against prediction column I measured**
+(anchor rows in the case's `expected`, bands sized to these residuals):
+P within 0.1–3.2 %, I within 3.1 %, y_NH3 −10.2 % (row 1) improving to
+−1.7 % (row 3), m_NH3 −9.8 % improving to −4.2 %, the m_CO2 traces to
+15.3 %.  The residual is CONCENTRATED where the carbamate share is largest,
+and a fourth op (`row1_nocarbamate`, `networkScope restricted`) brackets the
+paper from the other side: m_NH3 1.375 above the paper's 1.245 where the
+full network sits at 1.123 below, with P swinging 2.2 % — consistent with
+the paper's own claim that halving K20 moves P by under 2 %.  Beyond the
+declared φ = 1 gap, the split cannot be attributed further: the paper's
+per-species γ and speciation are unpublished, so §"what the anchor can
+claim"'s *exact* code-to-code aspiration is bounded by what the
+transcription carries.  Recorded, never tuned.
+
+**Two engine fixes rode the slice.**  (1) The solve-pH feed-imbalance
+advisory called these totals "a lab analysis error" and the solved pH "NOT
+trustworthy" — false for family totals of neutral feeds (2.90 NH3 + 1.45 CO2
+is electroneutral; the +1.45 eq is the FORMAL charge of the master basis).
+The solver already had the distinction (`stoichiometricTotals`, set by the
+ReactiveVLE bridge); the op gained `totalsBasis stoichiometric;` so a case
+can declare it.  (2) The importer's EdwardsPitzer closure filtered Henry
+stems by participant tokens — but `henry-NH3-water`'s tokens are COMPONENT
+names and `reach` holds SPECIES names, so the records were never staged and
+the first seal REFUSED (the agree-checker doing exactly the job the 2026-08-04
+defect taught it).  Suffix-matching the two name spaces would be the
+name-identity F2 bans; the closure now reads the case's own `henry <stem>;`
+declarations verbatim.
 
 ## 7. Decision requested
 

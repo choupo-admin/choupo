@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the Edwards (1978) aqueous activity surface, as
+  in edwards01; here it prices the LIQUID side of the Table 7 VLE anchor.
+  The whole model stack is the paper's own: this dict selects Eq 8/10 for the
+  activities, the case-local constant/chemistry/ carries Table 1 for the
+  equilibria, and the vapour{} blocks in system/propsDict carry Table 3 (H)
+  and Table 2 (v_inf) -- so no number in the comparison arrives from another
+  database.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+aqueousProperties
+{
+    activityCoefficients
+    {
+        model          EdwardsPitzer;
+        referenceBasis aqueousMolality;
+    }
+}

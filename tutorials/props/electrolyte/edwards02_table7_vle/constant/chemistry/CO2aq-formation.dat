@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the Edwards (1978) parameterisation of the first
+  carbonate equilibrium (Table 1, CO2 row), formation direction (see
+  NH3aq-formation.dat for why the whole network is the paper's).
+
+  Table 1 tabulates the dissociation
+      CO2 + H2O = H+ + HCO3-     a -12092.1  b -36.7816  c 0  d 235.482
+  The formation of CO2aq from the masters is its REVERSE, so every Eq 7
+  coefficient negates, then divides by ln 10 for the analytic form.
+  Check: logK25 = +6.359 against the PHREEQC record's +6.352.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species CO2aq; ion "CO2"; z 0; masters ( { ion H; nu 1; } { ion HCO3; nu 1; } ); nuWater -1;
+      logK25 6.3589; analytic ( -102.268533 0 5251.53230 36.78160 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (CO2 row, reversed); INTERIM pending primary review";

@@ -116,5 +116,42 @@ public:
                             std::ostream& os) const override;
 };
 
+//  One Henry's-constant record of the SAME parameterisation family
+//  (parameters/EdwardsPitzer/henry-<solute>-<solvent>.dat).  It lives here and
+//  not in HenrysLawRegistry deliberately: the registry keys by (solute,
+//  solvent) and scanning a second parameterisation of the same pair into it
+//  silently overwrites the first (docs/design/sour-water-stripper-scope.md
+//  section 6b).  Edwards' H is MOLAL (kg-atm/mol), referenced to the
+//  saturation pressure of water, and rides the unsymmetric gamma* of Eq 8 --
+//  the record's `convention` names that standard state and the consumer must
+//  refuse a mismatched activity model rather than mix scales.
+struct EdwardsHenry
+{
+    std::string stem;         // the record stem it was loaded from
+    std::string solute, solvent, convention;
+    double B1 = 0, B2 = 0, B3 = 0, B4 = 0;   // Eq 13 coefficients
+    double Tlo = 0, Thi = 0;                 // declared Trange [K]; 0,0 = none
+
+    //  (T [K], v_inf [cm3/mol]) -- Table 2, for the Krichevsky-Kasarnovsky
+    //  pressure correction (Eq 11).  May be empty: the correction is then
+    //  UNAVAILABLE and the consumer says so, never a silent 0.
+    std::vector<std::pair<double, double>> vInfinity;
+
+    //  Eq 13:  ln H = B1/T + B2 ln T + B3 T + B4     [kg-atm/mol], T in K.
+    double H(double T) const;
+
+    bool hasVInfinity() const { return !vInfinity.empty(); }
+
+    //  Piecewise-linear in T between the tabulated points, CLAMPED to the end
+    //  values outside them (the table spans the record's own Trange, so the
+    //  clamp only engages where the Trange announcement already fired).
+    double vInfinityAt(double T) const;
+};
+
+//  Load parameters/EdwardsPitzer/<stem>.dat through the sealed-aware record
+//  resolver.  A missing record REFUSES by name -- a Henry constant is the
+//  vapour side's one datum, not an estimate the catalogue can default.
+EdwardsHenry loadEdwardsHenry(const std::string& stem);
+
 } // namespace electrolyte
 } // namespace Choupo

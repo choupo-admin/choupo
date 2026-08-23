@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/henry-CO2-water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Henry's constant for CO2 in water -- the EDWARDS (1978) parameterisation.
 

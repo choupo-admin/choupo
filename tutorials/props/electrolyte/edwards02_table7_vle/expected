@@ -1,0 +1,136 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    table7_row1            I                1.547              1e-4
+diag    table7_row1            P_atm            2.51337            1e-4
+diag    table7_row1            aw               0.946304           1e-4
+diag    table7_row1            chargeImposed    1                  1e-4
+diag    table7_row1            chargeResidual   2.5541e-13         1e-4
+diag    table7_row1            gamma_CO2aq      0.919147           1e-4
+diag    table7_row1            gamma_CO3        0.022685           1e-4
+diag    table7_row1            gamma_HCO3       0.268386           1e-4
+diag    table7_row1            gamma_NH2COO     0.528413           1e-4
+diag    table7_row1            gamma_NH3aq      0.989831           1e-4
+diag    table7_row1            gamma_NH4        0.318905           1e-4
+diag    table7_row1            m_CO2aq          0.0141073          1e-4
+diag    table7_row1            m_CO3            0.0555284          1e-4
+diag    table7_row1            m_HCO3           1.09498            1e-4
+diag    table7_row1            m_NH2COO         0.285381           1e-4
+diag    table7_row1            m_NH3aq          1.12314            1e-4
+diag    table7_row1            m_NH4            1.49147            1e-4
+diag    table7_row1            pH               7.78231            1e-4
+diag    table7_row1            p_CO2aq_atm      1.26515            1e-4
+diag    table7_row1            p_NH3aq_atm      0.277628           1e-4
+diag    table7_row1            p_water_atm      0.970594           1e-4
+diag    table7_row1            y_CO2aq          0.503367           1e-4
+diag    table7_row1            y_NH3aq          0.11046            1e-4
+diag    table7_row1            y_water          0.386172           1e-4
+diag    table7_row2            I                1.247              1e-4
+diag    table7_row2            P_atm            1.91882            1e-4
+diag    table7_row2            aw               0.933746           1e-4
+diag    table7_row2            chargeImposed    1                  1e-4
+diag    table7_row2            chargeResidual   6.37283e-17        1e-4
+diag    table7_row2            gamma_CO2aq      0.846548           1e-4
+diag    table7_row2            gamma_CO3        0.0321054          1e-4
+diag    table7_row2            gamma_HCO3       0.289328           1e-4
+diag    table7_row2            gamma_NH2COO     0.530465           1e-4
+diag    table7_row2            gamma_NH3aq      1.0162             1e-4
+diag    table7_row2            gamma_NH4        0.373353           1e-4
+diag    table7_row2            m_CO2aq          0.00508574         1e-4
+diag    table7_row2            m_CO3            0.0559935          1e-4
+diag    table7_row2            m_HCO3           0.694537           1e-4
+diag    table7_row2            m_NH2COO         0.384383           1e-4
+diag    table7_row2            m_NH3aq          2.13461            1e-4
+diag    table7_row2            m_NH4            1.19101            1e-4
+diag    table7_row2            pH               8.10186            1e-4
+diag    table7_row2            p_CO2aq_atm      0.419754           1e-4
+diag    table7_row2            p_NH3aq_atm      0.541351           1e-4
+diag    table7_row2            p_water_atm      0.957715           1e-4
+diag    table7_row2            y_CO2aq          0.218756           1e-4
+diag    table7_row2            y_NH3aq          0.282127           1e-4
+diag    table7_row2            y_water          0.499117           1e-4
+diag    table7_row3            I                0.995665           1e-4
+diag    table7_row3            P_atm            1.9063             1e-4
+diag    table7_row3            aw               0.923999           1e-4
+diag    table7_row3            chargeImposed    1                  1e-4
+diag    table7_row3            chargeResidual   3.29779e-17        1e-4
+diag    table7_row3            gamma_CO2aq      0.78901            1e-4
+diag    table7_row3            gamma_CO3        0.0453317          1e-4
+diag    table7_row3            gamma_HCO3       0.312751           1e-4
+diag    table7_row3            gamma_NH2COO     0.53977            1e-4
+diag    table7_row3            gamma_NH3aq      1.0335             1e-4
+diag    table7_row3            gamma_NH4        0.418005           1e-4
+diag    table7_row3            m_CO2aq          0.00254215         1e-4
+diag    table7_row3            m_CO3            0.045531           1e-4
+diag    table7_row3            m_HCO3           0.46746            1e-4
+diag    table7_row3            m_NH2COO         0.391467           1e-4
+diag    table7_row3            m_NH3aq          2.9584             1e-4
+diag    table7_row3            m_NH4            0.950134           1e-4
+diag    table7_row3            pH               8.29999            1e-4
+diag    table7_row3            p_CO2aq_atm      0.195554           1e-4
+diag    table7_row3            p_NH3aq_atm      0.763028           1e-4
+diag    table7_row3            p_water_atm      0.947717           1e-4
+diag    table7_row3            y_CO2aq          0.102583           1e-4
+diag    table7_row3            y_NH3aq          0.400267           1e-4
+diag    table7_row3            y_water          0.49715            1e-4
+diag    row1_nocarbamate       I                1.61255            1e-4
+diag    row1_nocarbamate       P_atm            2.45924            1e-4
+diag    row1_nocarbamate       aw               0.944546           1e-4
+diag    row1_nocarbamate       chargeImposed    1                  1e-4
+diag    row1_nocarbamate       chargeResidual   -6.9594e-17        1e-4
+diag    row1_nocarbamate       gamma_CO2aq      0.891109           1e-4
+diag    row1_nocarbamate       gamma_CO3        0.0235414          1e-4
+diag    row1_nocarbamate       gamma_HCO3       0.265973           1e-4
+diag    row1_nocarbamate       gamma_NH3aq      0.990032           1e-4
+diag    row1_nocarbamate       gamma_NH4        0.284077           1e-4
+diag    row1_nocarbamate       m_CO2aq          0.0132327          1e-4
+diag    row1_nocarbamate       m_CO3            0.0878582          1e-4
+diag    row1_nocarbamate       m_HCO3           1.34891            1e-4
+diag    row1_nocarbamate       m_NH3aq          1.37531            1e-4
+diag    row1_nocarbamate       m_NH4            1.52469            1e-4
+diag    row1_nocarbamate       networkRestricted 1                  1e-4
+diag    row1_nocarbamate       pH               7.91102            1e-4
+diag    row1_nocarbamate       p_CO2aq_atm      1.15044            1e-4
+diag    row1_nocarbamate       p_NH3aq_atm      0.340008           1e-4
+diag    row1_nocarbamate       p_water_atm      0.968792           1e-4
+diag    row1_nocarbamate       y_CO2aq          0.467803           1e-4
+diag    row1_nocarbamate       y_NH3aq          0.138257           1e-4
+diag    row1_nocarbamate       y_water          0.39394            1e-4
+# ANCHORS: Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978),
+# Table 7, prediction column I -- the paper's OWN multisolute calculation at
+# 100 degC, reproduced here from the same Eqs 5-24 and the same Tables 1-6.
+# The EXPERIMENT (Otsuka 1960) is context in the case header, never a target:
+# the paper's own agreement with it is a factor of two on row 1's y_NH3.
+#
+# BANDS: sized to the OBSERVED residual of this implementation against the
+# paper's numbers, each stated here so a regression that widens the gap fails.
+# The residual has two NAMED, unresolved contributors -- the paper's vapour
+# fugacity model is not in the transcription (this case declares phi = 1),
+# and the paper's 1978 solver's per-species split is unpublished, so the
+# remaining liquid-side difference (largest where the carbamate share is
+# largest: m_NH3 -9.8 % on row 1, falling to -4.2 % on row 3) cannot be
+# attributed further without it.  The row1_nocarbamate op brackets the
+# paper's m_NH3 from above (+10.4 %), measuring the carbamate's whole
+# leverage; the paper's own K20 sensitivity claim (halving K20 moves P by
+# < 2 %) is consistent with that measured 2.2 % full swing on P.
+# Worst observed agreement per quantity, stated: P within 3.2 %, I within
+# 3.1 %, y_NH3 within 10.2 %, y_CO2 within 11.6 %, m_NH3 within 9.8 %,
+# m_CO2 within 15.3 % (a 0.0030 mol/kg trace).
+diag    table7_row1            m_NH3aq          1.245            0.11   anchor
+diag    table7_row1            m_CO2aq          0.014            0.02   anchor
+diag    table7_row1            I                1.50             0.04   anchor
+diag    table7_row1            y_NH3aq          0.123            0.11   anchor
+diag    table7_row1            y_CO2aq          0.494            0.025  anchor
+diag    table7_row1            P_atm            2.51             0.01   anchor
+diag    table7_row2            m_NH3aq          2.279            0.07   anchor
+diag    table7_row2            m_CO2aq          0.0056           0.10   anchor
+diag    table7_row2            I                1.26             0.02   anchor
+diag    table7_row2            y_NH3aq          0.293            0.05   anchor
+diag    table7_row2            y_CO2aq          0.230            0.06   anchor
+diag    table7_row2            P_atm            1.98             0.04   anchor
+diag    table7_row3            m_NH3aq          3.087            0.05   anchor
+diag    table7_row3            m_CO2aq          0.0030           0.17   anchor
+diag    table7_row3            I                1.01             0.02   anchor
+diag    table7_row3            y_NH3aq          0.407            0.025  anchor
+diag    table7_row3            y_CO2aq          0.116            0.13   anchor
+diag    table7_row3            P_atm            1.97             0.04   anchor

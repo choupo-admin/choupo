@@ -852,15 +852,17 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     }
     if (solveH && in.stoichiometricTotals)
     {
-        // Component-derived totals (the ReactiveVLE bridge): the feed is
-        // neutral molecules, so charge balance holds by construction and the
-        // water-analysis imbalance convention (which excludes H/OH) would
+        // Stoichiometric totals (the ReactiveVLE bridge's component-derived
+        // ones, or an op's declared `totalsBasis stoichiometric;`): the feed
+        // is neutral molecules, so charge balance holds by construction and
+        // the water-analysis imbalance convention (which excludes H/OH) would
         // fabricate an imbalance out of the conjugate base.  Not an error to
         // absorb -- the electroneutrality equation IS the weak-acid/base pH.
         if (verbosity >= 3)
             std::cout << "  speciation: totals are stoichiometric"
-                         " (component-derived) -- the water-analysis charge"
-                         " imbalance check does not apply\n";
+                         " (neutral-molecule feeds on the master basis) -- the"
+                         " water-analysis charge imbalance check does not"
+                         " apply\n";
     }
     else if (solveH)
     {

@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the Edwards (1978) parameterisation of the second
+  carbonate equilibrium (Table 1, HCO3- row), formation direction (see
+  NH3aq-formation.dat for why the whole network is the paper's).
+
+      HCO3- = H+ + CO3=       a -12431.7  b -35.4819  c 0  d 220.067
+  CO3 = HCO3 - H is exactly that dissociation, so the coefficients carry
+  over directly (divided by ln 10).
+  Check: logK25 = -10.332 against the PHREEQC record's -10.329.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species CO3; masters ( { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -10.3322; analytic ( 95.573884 0 -5399.01871 -35.48190 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (HCO3- row); INTERIM pending primary review";

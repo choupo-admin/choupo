@@ -953,6 +953,21 @@ def closure_of(pp_path, caseDir, std, AQ):
                 if not reach or toks <= reach:
                     want("parameters/EdwardsPitzer/" + f.name)
 
+    # ---- vapour{} Henry records (2026-08-23) ---------------------------------
+    # The speciate op's vapour block NAMES its Henry record per solute
+    # (`henry henry-NH3-water;`), and a Henry stem's tokens are COMPONENT
+    # names (NH3, water) while `reach` holds SPECIES names (NH3aq, NH4), so
+    # the participant filter above never admits them -- the first staged seal
+    # of edwards02 refused with the record missing, which is the fail-closed
+    # outcome the agree-checker exists for.  Matching the two name spaces by
+    # suffix-stripping would be the name-identity crossing the F2 contract
+    # bans; the case's own DECLARATION is the closure, read verbatim.
+    for henry_stem in sorted(set(
+            re.findall(r'\bhenry\s+([A-Za-z0-9-]+)\s*;', props_ops))):
+        if (std / "parameters" / "EdwardsPitzer"
+                / (henry_stem + ".dat")).is_file():
+            want("parameters/EdwardsPitzer/" + henry_stem + ".dat")
+
     # the ion Cp(T) tier (Criss-Cobble nodes): consumed by the ENTHALPY route
     # of an electrolyte WORLD (buildElectrolyte ion Cp), never by the
     # speciation ops -- seal it only when a flowsheet/single-salt electrolyte

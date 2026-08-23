@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/henry-NH3-water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Henry's constant for NH3 in water -- the EDWARDS (1978) parameterisation.
 

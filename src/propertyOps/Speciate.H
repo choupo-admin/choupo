@@ -57,13 +57,33 @@ License
                 O2   0.2095 atm;
             }
             temperature 298.15;             // [K] optional, default 25 C
+            totalsBasis stoichiometric;     // optional: totals are FAMILY totals
+                                            //   of neutral weak-electrolyte feeds
+                                            //   (NH3 declared as NH4), so the
+                                            //   master basis carries formal
+                                            //   charge and the feed-imbalance
+                                            //   advisory does not apply.
+                                            //   Default `analytical` (a measured
+                                            //   ion analysis).
             diagSpecies ( OH CaSO4aq );     // optional: emit m_<name> diagnostics
+            vapour                          // optional: Eq 5/6/11 of Edwards
+            {                               //   (1978) over the solved liquid --
+                fugacity ideal;             //   REQUIRED declared approximation
+                solutes                     //   (phi = 1; nothing else curated)
+                (
+                    { species NH3aq; henry henry-NH3-water; }
+                );                          //   each solute names its curated
+            }                               //   Henry record (kg-atm/mol, KK
+                                            //   correction from its vInfinity)
             output    { file speciation.csv; }
         }
 
   CSV columns: species, molality, activity, gamma.  Diagnostics: I, aw, pH
   (solved or echoed), one SI_<mineral> per available mineral, and m_<name>
-  per diagSpecies entry --- the golden master locks all of them.
+  per diagSpecies entry --- the golden master locks all of them.  With a
+  vapour{} block also: P_atm, p_<species>_atm, y_<species>, p_water_atm,
+  y_water (partial pressures of the declared volatiles by p = m gamma H, the
+  solvent by p_w = a_w Psat; the anchor case is edwards02_table7_vle).
 \*---------------------------------------------------------------------------*/
 
 #pragma once

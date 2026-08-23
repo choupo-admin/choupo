@@ -1,0 +1,32 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/ion-HCO3.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Edwards (1978) single-ion interaction parameter for bicarbonate (HCO3).
+
+  Role: the SINGLE-ION contribution beta_pm(0) of Table 5.  An ion-ion
+  beta(0) is NOT stored anywhere: it is DERIVED at assembly time by
+  Bromley's additivity, Eq 22,  beta(0)_+- = beta_+(0) + beta_-(0).
+  Storing the sums as well would be two homes for one fact.
+
+  The paper assumes interaction parameters between ions of LIKE SIGN are
+  ZERO (Bronsted 1922/1923), and calls the whole table "preliminary results
+  subject to change as more and better data become available".  A case
+  using these may not present them as measured constants.
+
+  Temperature dependence is assumed NEGLIGIBLE for the ion contributions --
+  the paper says so explicitly, supported by beta(1) data for strong
+  electrolytes at various temperatures.
+\*-----------------------------------------------------------------------------*/
+recordType    electrolytePairParameters;
+schemaVersion 1;
+
+model         edwardsPitzer;
+convention    Edwards-Hkgatm-v1;
+
+ion HCO3;
+
+parameters
+{
+    beta0_ion  -0.049;   // kg/mol
+}
+
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 5";

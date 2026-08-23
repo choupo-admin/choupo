@@ -29,7 +29,10 @@ License
 #include "Speciate.H"
 #include "CasePackage.H"
 
+#include "core/Advisory.H"                          // the caveat surface
+#include "core/Constants.H"                         // R
 #include "core/Units.H"                             // atm_to_Pa
+#include "thermo/electrolyte/EdwardsCatalogue.H"    // loadEdwardsHenry (Eq 13)
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // ionMW (ions.dat)
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
@@ -40,6 +43,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <variant>
 #include "thermo/activityCoefficient/ActivityModel.H"
@@ -184,6 +188,27 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
                     "electroneutral (Sum nu*charge = " + std::to_string(netCharge)
                     + ") -- fix components/" + salt + ".dat.");
         }
+    }
+
+    //  totalsBasis: what the totals ARE.  `analytical` (default) = a measured
+    //  ion analysis, where a feed charge imbalance is evidence of lab error
+    //  and the solve-pH advisory says so.  `stoichiometric` = FAMILY totals of
+    //  neutral weak-electrolyte feeds expressed on the master basis (2.90
+    //  mol/kg NH3 declared as `NH4 2.90`): the master basis then carries a
+    //  FORMAL net charge that no lab measured, electroneutrality is the exact
+    //  physical closure, and the imbalance check does not apply -- the same
+    //  claim the ReactiveVLE bridge makes for its component-derived totals,
+    //  here DECLARED by the case, which owns what its numbers mean.
+    {
+        const std::string tb =
+            dict->lookupWordOrDefault("totalsBasis", "analytical");
+        if (tb == "stoichiometric")
+            in.stoichiometricTotals = true;
+        else if (tb != "analytical")
+            throw std::runtime_error("totalsBasis '" + tb + "': expected"
+                " `analytical` (a measured ion analysis -- the default) or"
+                " `stoichiometric` (family totals of neutral feeds on the"
+                " master basis)");
     }
 
     // pH: `pH 7.8;` (given) or `pH solve;` (charge-balance closure)
@@ -455,6 +480,177 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
                           << cat << ") = " << rc->z << ", z(" << ani << ") = "
                           << ra->z << "\n";
         }
+
+    //  -- vapour side (optional `vapour {}`) -- Eqs 5/6/11 of Edwards et al.
+    //  (1978) over the SOLVED speciation: the equilibrium partial pressure of
+    //  each declared molecular solute and of the solvent, hence the total
+    //  pressure and the vapour composition.  This is what turns the activity
+    //  surface into a comparable VLE point (the Table 7 anchor):
+    //
+    //      p_a * phi_a = m_a gamma_a* H_a^(P)                        (Eq 5)
+    //      p_w * phi_w = a_w Psat_w phi_w^s exp[v_w (P-Psat_w)/RT]   (Eq 6)
+    //      ln H^(P) = ln H^(Psat_w) + v_a_inf (P - Psat_w)/RT        (Eq 11)
+    //
+    //  phi = 1 is a DECLARED approximation (`fugacity ideal;`, refused when
+    //  absent): the reference computes phi from a vapour model its
+    //  transcription does not carry, so nothing else is available -- and the
+    //  case must own that in writing.  The solvent Poynting factor of Eq 6 is
+    //  OMITTED and announced: no v_w(T) is curated, and at the pressures this
+    //  block serves (a few atm) it is below 0.2 %.
+    if (dict->found("vapour"))
+    {
+        const auto vap = dict->subDict("vapour");
+
+        const std::string fug = vap->lookupWordOrDefault("fugacity", "");
+        if (fug.empty())
+            throw std::runtime_error("vapour{}: `fugacity ideal;` must be"
+                " DECLARED.  phi = 1 is an approximation the case owns, not a"
+                " default the engine assumes (no silent crutch).");
+        if (fug != "ideal")
+            throw std::runtime_error("vapour.fugacity '" + fug + "': only"
+                " `ideal` (phi = 1) is implemented -- the Edwards (1978)"
+                " reference's own vapour-fugacity model is not transcribed,"
+                " and no other is curated.");
+
+        if (!vap->found("solutes"))
+            throw std::runtime_error("vapour{}: needs `solutes ( { species"
+                " <name>; henry <record-stem>; } ... );` -- the volatile"
+                " molecular species, each with the curated Henry record that"
+                " prices it.");
+
+        struct VapSolute
+        {
+            const electrolyte::SpeciesRow* row;
+            electrolyte::EdwardsHenry      rec;
+            double                         H = 0;   // at T, before Eq 11
+            double                         p = 0;   // partial pressure [atm]
+        };
+        std::vector<VapSolute> sol;
+        for (const auto& e : vap->lookupDictList("solutes"))
+        {
+            VapSolute s;
+            const std::string name = e->lookupWord("species");
+            s.row = res.find(name);
+            if (!s.row)
+                throw std::runtime_error("vapour.solutes: species '" + name
+                    + "' is not in the computed species table");
+            if (s.row->z != 0.0)
+                throw std::runtime_error("vapour.solutes: '" + name
+                    + "' carries charge z = " + std::to_string(s.row->z)
+                    + " -- Eq 5 prices a MOLECULAR solute; an ion has no"
+                      " vapour pressure of its own");
+            s.rec = electrolyte::loadEdwardsHenry(e->lookupWord("henry"));
+
+            //  The record names its standard state, and the standard state
+            //  is the ACTIVITY MODEL's: Edwards' H is molal, referenced to
+            //  Psat(water), riding the unsymmetric gamma* of Eq 8.  Reading
+            //  it against another model's gamma silently mixes scales.
+            if (s.rec.convention.rfind("Edwards", 0) == 0
+                && model != "edwardsPitzer")
+                throw std::runtime_error("vapour.solutes." + name + ": Henry"
+                    " record '" + s.rec.stem + "' declares convention '"
+                    + s.rec.convention + "', which rides the unsymmetric"
+                    " gamma* of activityModel edwardsPitzer -- the active"
+                    " model here is '" + model + "'.  Standard states do not"
+                    " mix; select the matching model or the matching record.");
+
+            s.H = s.rec.H(in.T);
+            if (s.rec.Thi > s.rec.Tlo
+                && (in.T < s.rec.Tlo || in.T > s.rec.Thi))
+            {
+                std::ostringstream msg;
+                msg << "EdwardsPitzer Henry record " << s.rec.stem
+                    << " evaluated at T = " << std::fixed
+                    << std::setprecision(2) << in.T
+                    << " K, outside its declared validity " << s.rec.Tlo
+                    << "-" << s.rec.Thi << " K -- extrapolated";
+                if (AdvisoryLog::instance().add("model", "warning",
+                                               "speciate vapour", msg.str()))
+                    std::cout << "  [advisory] " << msg.str() << "\n";
+            }
+            sol.push_back(std::move(s));
+        }
+        if (sol.empty())
+            throw std::runtime_error("vapour.solutes: empty -- name at least"
+                " one volatile molecular species");
+
+        //  The solvent leg: a_w * Psat(T) on the solvent's OWN curated vapour-
+        //  pressure model (the same record every flash reads, so the two
+        //  surfaces cannot drift apart).
+        const scalar PsatPa =
+            database()->loadComponent("water").vp().Psat_Pa(in.T);
+        const double PsAtm  = PsatPa / units::atm_to_Pa;
+        const double pWater = res.aw * PsAtm;
+
+        //  Eq 11 couples H to the total pressure the sum is trying to find, so
+        //  the closure is a fixed point.  The derivative dP/dP through the
+        //  exponential is ~ v_inf P/(RT) ~ 1e-3 at a few atm, so plain
+        //  substitution converges in a handful of passes; 50 is a ceiling,
+        //  not an expectation.
+        double P = pWater;
+        for (const auto& s : sol) P += s.row->molality * s.row->gamma * s.H;
+        for (int it = 0; it < 50; ++it)
+        {
+            double Pnew = pWater;
+            for (auto& s : sol)
+            {
+                double kk = 1.0;
+                if (s.rec.hasVInfinity())
+                {
+                    const double vSI = s.rec.vInfinityAt(in.T) * 1.0e-6;
+                    kk = std::exp(vSI * (P - PsAtm) * units::atm_to_Pa
+                                  / (constant::R * in.T));
+                }
+                s.p  = s.row->molality * s.row->gamma * s.H * kk;
+                Pnew += s.p;
+            }
+            const bool done = std::fabs(Pnew - P) <= 1.0e-12 * std::fabs(Pnew);
+            P = Pnew;
+            if (done) break;
+        }
+
+        diag_["P_atm"]       = P;
+        diag_["p_water_atm"] = pWater;
+        diag_["y_water"]     = pWater / P;
+        for (const auto& s : sol)
+        {
+            diag_["p_" + s.row->name + "_atm"] = s.p;
+            diag_["y_" + s.row->name]          = s.p / P;
+        }
+
+        {
+            std::ostringstream msg;
+            msg << "vapour{} priced with phi = 1 (`fugacity ideal`, the"
+                   " case's declared approximation); solvent Poynting factor"
+                   " omitted (no curated v_w(T); < 0.2 % below 4 atm)";
+            if (AdvisoryLog::instance().add("model", "info",
+                                            "speciate vapour", msg.str())
+                && verbosity >= 2)
+                std::cout << "  [vapour] " << msg.str() << "\n";
+        }
+        if (verbosity >= 2)
+        {
+            std::cout << "  [vapour] solvent: a_w = " << std::fixed
+                      << std::setprecision(6) << res.aw << ", Psat = "
+                      << PsAtm << " atm -> p_w = " << pWater << " atm\n";
+            for (const auto& s : sol)
+            {
+                std::cout << "  [vapour] " << s.row->name << ": m = "
+                          << s.row->molality << ", gamma = " << s.row->gamma
+                          << ", H(T) = " << s.H << " kg-atm/mol ("
+                          << s.rec.stem << ")";
+                if (s.rec.hasVInfinity())
+                    std::cout << ", Eq 11 at v_inf = "
+                              << s.rec.vInfinityAt(in.T) << " cm3/mol";
+                else
+                    std::cout << ", Eq 11 UNAVAILABLE (no vInfinity in"
+                                 " record; H taken at Psat_w)";
+                std::cout << " -> p = " << s.p << " atm\n";
+            }
+            std::cout << "  [vapour] P = " << P << " atm; y_water = "
+                      << pWater / P << std::defaultfloat << "\n";
+        }
+    }
 
     if (verbosity >= 2)
         std::cout << "speciate: " << res.rows.size() << " species -> "
