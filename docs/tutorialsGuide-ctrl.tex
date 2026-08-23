@@ -504,6 +504,36 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \end{tutgolden}
 
 \clearpage
+\tutentry{ctrl17\_signal\_shapes}{tutorials/ctrl/ctrl17\_signal\_shapes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WITNESS: ramp + pulse + staircase signals on three feed handles, with the temperature PID rejecting all three at once; the three registered shapes no case selected.}
+\begin{tutnarrative}
+WITNESS: the ramp, pulse and staircase SIGNALS, each on its own feed handle of the ctrl09 CSTR, with the ctrl09 temperature PID still in the loop rejecting all three at once -- compA ramps +28.6 \% over 1000 s, compB takes a 300 s rectangular pulse, the feed temperature walks a three-step staircase. These three registered signal shapes were selected by no case until 2026-08-23 (invariant I8). Self-recorded.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{FeedPulseB}{MV\_final}{1.5e-05}
+\goldrow{kpi}{FeedPulseB}{PV\_final}{0}
+\goldrow{kpi}{FeedPulseB}{SP\_final}{1.5e-05}
+\goldrow{kpi}{FeedRampA}{MV\_final}{4.5e-05}
+\goldrow{kpi}{FeedRampA}{PV\_final}{0}
+\goldrow{kpi}{FeedRampA}{SP\_final}{4.5e-05}
+\goldrow{kpi}{FeedStairT}{MV\_final}{348}
+\goldrow{kpi}{FeedStairT}{PV\_final}{0}
+\goldrow{kpi}{FeedStairT}{SP\_final}{348}
+\goldrow{kpi}{TC1}{MV\_final}{347.378942902}
+\goldrow{kpi}{TC1}{PV\_final}{349.993146257}
+\goldrow{kpi}{TC1}{SP\_final}{350}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{2.98582911041e-14}
+\goldmore{13}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ctrl17\_step\_reaction\_curve}{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

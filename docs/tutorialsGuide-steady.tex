@@ -4876,6 +4876,66 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \goldrow{kpi}{separator}{solidsRecovery}{0.9}
 \end{tutgolden}
 
+\clearpage
+\tutentry{gasSolidSplitter03\_tabular\_psd}{tutorials/steady/gas-solid/gasSolidSplitter03\_tabular\_psd}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (0.0,-0.0) {\textbf{separator}\\[-1pt]{\tiny gasSolidSplitter}};
+  \draw[->] ($(separator.west)+(-1.05,0.00)$) -- ($(separator.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(separator.east)+(0,-0.17)$) -- ($(separator.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {cleanGas};
+  \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {capturedSolids};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WITNESS: tabular (sieve-analysis) particle-size distribution on the gas-solid splitter; sibling of gasSolidSplitter02 (Rosin-Rammler).}
+\begin{tutnarrative}
+The same dusty gas as cyclone01 / bagFilter01 (N2 + 50 kg/h silica), but through an IDEAL, spec-driven separator: you SET the recovery (90 \% of the solids to capturedSolids), no efficiency physics, no size classification.
+
+Use it when a physics model is overkill ("assume 90 \% capture"), as a placeholder, or to bound a design. Contrast: the cyclone COMPUTES \textasciitilde{}82 \% by size, the bag filter COMPUTES \textasciitilde{}99.9 \%; here the number is whatever you declare.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{capturedSolids}{F}{0.000208055925425}
+\goldrow{stream}{cleanGas}{F}{0.0416897839917}
+\goldrow{stream}{feed}{F}{0.0418978399171}
+\goldrow{kpi}{separator}{gasCarryover}{0}
+\goldrow{kpi}{separator}{gasToCleanGas}{0.0416666666667}
+\goldrow{kpi}{separator}{gasToSolids}{0}
+\goldrow{kpi}{separator}{solidsCaptured\_mass}{0.0124999999995}
+\goldrow{kpi}{separator}{solidsEscaped\_mass}{0.00138888888884}
+\goldrow{kpi}{separator}{solidsIn\_mass}{0.0138888888884}
+\goldrow{kpi}{separator}{solidsRecovery}{0.9}
+\end{tutgolden}
+
+\clearpage
+\tutentry{gasSolidSplitter04\_lognormal\_psd}{tutorials/steady/gas-solid/gasSolidSplitter04\_lognormal\_psd}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (separator) at (0.0,-0.0) {\textbf{separator}\\[-1pt]{\tiny gasSolidSplitter}};
+  \draw[->] ($(separator.west)+(-1.05,0.00)$) -- ($(separator.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(separator.east)+(0,-0.17)$) -- ($(separator.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {cleanGas};
+  \draw[->] ($(separator.east)+(0,0.17)$) -- ($(separator.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {capturedSolids};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WITNESS: log-normal particle-size distribution (dgm, sigmaG) on the gas-solid splitter; sibling of gasSolidSplitter02.}
+\begin{tutnarrative}
+The same dusty gas as cyclone01 / bagFilter01 (N2 + 50 kg/h silica), but through an IDEAL, spec-driven separator: you SET the recovery (90 \% of the solids to capturedSolids), no efficiency physics, no size classification.
+
+Use it when a physics model is overkill ("assume 90 \% capture"), as a placeholder, or to bound a design. Contrast: the cyclone COMPUTES \textasciitilde{}82 \% by size, the bag filter COMPUTES \textasciitilde{}99.9 \%; here the number is whatever you declare.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{capturedSolids}{F}{0.000208055925425}
+\goldrow{stream}{cleanGas}{F}{0.0416897839917}
+\goldrow{stream}{feed}{F}{0.0418978399171}
+\goldrow{kpi}{separator}{gasCarryover}{0}
+\goldrow{kpi}{separator}{gasToCleanGas}{0.0416666666667}
+\goldrow{kpi}{separator}{gasToSolids}{0}
+\goldrow{kpi}{separator}{solidsCaptured\_mass}{0.0124999999995}
+\goldrow{kpi}{separator}{solidsEscaped\_mass}{0.00138888888884}
+\goldrow{kpi}{separator}{solidsIn\_mass}{0.0138888888884}
+\goldrow{kpi}{separator}{solidsRecovery}{0.9}
+\end{tutgolden}
+
 \subsection{gibbs}
 \grouptheory{gibbs}
 \clearpage

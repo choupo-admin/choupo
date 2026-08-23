@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  gasSolidSplitter01_ideal
+  ========================
+
+  The same dusty gas as cyclone01 / bagFilter01 (N2 + 50 kg/h silica), but
+  through an IDEAL, spec-driven separator: you SET the recovery (90 % of the
+  solids to capturedSolids), no efficiency physics, no size classification.
+
+  Use it when a physics model is overkill ("assume 90 % capture"), as a
+  placeholder, or to bound a design.  Contrast: the cyclone COMPUTES ~82 %
+  by size, the bag filter COMPUTES ~99.9 %; here the number is whatever you
+  declare.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        separator;
+        type        gasSolidSplitter;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { solidsRecovery 0.90;  gasCarryover 0.0; }
+    }
+);

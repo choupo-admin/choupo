@@ -1,0 +1,30 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     FeedPulseB             MV_final         1.5e-05            1e-4
+kpi     FeedPulseB             PV_final         0                  1e-4
+kpi     FeedPulseB             SP_final         1.5e-05            1e-4
+kpi     FeedRampA              MV_final         4.5e-05            1e-4
+kpi     FeedRampA              PV_final         0                  1e-4
+kpi     FeedRampA              SP_final         4.5e-05            1e-4
+kpi     FeedStairT             MV_final         348                1e-4
+kpi     FeedStairT             PV_final         0                  1e-4
+kpi     FeedStairT             SP_final         348                1e-4
+kpi     TC1                    MV_final         347.378942902      1e-4
+kpi     TC1                    PV_final         349.993146257      1e-4
+kpi     TC1                    SP_final         350                1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 2.98582911041e-14  1e-4
+kpi     balance                mass_kg_final    0.36               1e-4
+kpi     balance                mass_kg_in_cum   3.09735            1e-4
+kpi     balance                mass_kg_initial  0.36               1e-4
+kpi     balance                mass_kg_out_cum  3.09735            1e-4
+kpi     balance                mass_residual_kg -9.24815779513e-14 1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     reactor                F_in_final       6e-05              1e-4
+kpi     reactor                T_final          349.993206421      1e-4
+kpi     reactor                n_compA_final    0.00841272465058   1e-4
+kpi     reactor                n_compB_final    0.00358727534942   1e-4
+kpi     reactor                t_end            1800               1e-4
+kpi     reactor                z_in_compA_final 0.75               1e-4
+kpi     reactor                z_in_compB_final 0.25               1e-4

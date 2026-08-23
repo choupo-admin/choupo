@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 364,
+  "cases": 367,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 5
@@ -908,6 +908,25 @@
    "unitTypes": [
     "Schedule",
     "williamsOttoPlant"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl17_signal_shapes": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "PID",
+    "Signal",
+    "dynamicCSTR",
+    "pulse",
+    "ramp",
+    "staircase"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -3900,6 +3919,34 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gasSolidSplitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gasSolidSplitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/gibbs/gibbs01_water_gas_shift": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5374,6 +5421,7 @@
     "tutorials/ctrl/ctrl13_williams_otto_step",
     "tutorials/ctrl/ctrl14_williams_otto_pi",
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "choupoProps": [
@@ -5589,6 +5637,8 @@
     "tutorials/steady/gas-solid/cyclone06_barth",
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
+    "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd",
+    "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
     "tutorials/steady/gibbs/gibbs02_steam_reforming",
     "tutorials/steady/gibbs/gibbs03_methane_combustion",
@@ -5695,7 +5745,8 @@
     "tutorials/ctrl/ctrl09_stream_disturbance",
     "tutorials/ctrl/ctrl10_brine_concentration",
     "tutorials/ctrl/ctrl11_esterification_jacket",
-    "tutorials/ctrl/ctrl14_williams_otto_pi"
+    "tutorials/ctrl/ctrl14_williams_otto_pi",
+    "tutorials/ctrl/ctrl17_signal_shapes"
    ],
    "Schedule": [
     "tutorials/ctrl/ctrl02_disturbance_rejection",
@@ -5708,7 +5759,8 @@
    "Signal": [
     "tutorials/ctrl/ctrl06_sine_disturbance",
     "tutorials/ctrl/ctrl08_prbs_ident",
-    "tutorials/ctrl/ctrl09_stream_disturbance"
+    "tutorials/ctrl/ctrl09_stream_disturbance",
+    "tutorials/ctrl/ctrl17_signal_shapes"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -5894,6 +5946,7 @@
     "tutorials/ctrl/ctrl09_stream_disturbance",
     "tutorials/ctrl/ctrl10_brine_concentration",
     "tutorials/ctrl/ctrl11_esterification_jacket",
+    "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve"
    ],
    "electricLoad": [
@@ -5950,7 +6003,9 @@
    ],
    "gasSolidSplitter": [
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
-    "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler"
+    "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
+    "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd",
+    "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd"
    ],
    "gibbsReactor": [
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
@@ -6103,11 +6158,17 @@
    "psa": [
     "tutorials/steady/separation/psa01_h2_psa"
    ],
+   "pulse": [
+    "tutorials/ctrl/ctrl17_signal_shapes"
+   ],
    "pump": [
     "tutorials/steady/hydraulics/pumpSystem01_operating_point",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
     "tutorials/steady/rotating/pump02_pressure_spec"
+   ],
+   "ramp": [
+    "tutorials/ctrl/ctrl17_signal_shapes"
    ],
    "shortcutColumn": [
     "tutorials/steady/distillation/shortcut01_benzene_toluene"
@@ -6148,6 +6209,9 @@
     "tutorials/steady/drying/sprayDryer05_whey",
     "tutorials/steady/drying/sprayDryer06_rea",
     "tutorials/steady/drying/sprayDryer07_design"
+   ],
+   "staircase": [
+    "tutorials/ctrl/ctrl17_signal_shapes"
    ],
    "step": [
     "tutorials/ctrl/ctrl09_stream_disturbance"
@@ -6351,6 +6415,7 @@
     "tutorials/ctrl/ctrl13_williams_otto_step",
     "tutorials/ctrl/ctrl14_williams_otto_pi",
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
+    "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
@@ -6463,6 +6528,8 @@
     "tutorials/steady/gas-solid/cyclone06_barth",
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
+    "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd",
+    "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
     "tutorials/steady/gibbs/gibbs02_steam_reforming",
     "tutorials/steady/gibbs/gibbs03_methane_combustion",

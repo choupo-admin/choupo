@@ -1,0 +1,47 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2607 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2607;
+    importedAt         "2026-08-23";
+    importerVersion    "3";
+    records
+    {
+        "components/N2.dat"
+        {
+            type          imported;
+            sha256        "abfd3190bc742a2fda3aa24b1883ea3efd4b24b7c581455f134273ce2cfe9379";
+            computationalSha256 "f4f5cfe7fc5efcff9cc8f8ee46391d0820292c1484e1f47650cc4ed20503b02e";
+            origin        "data/standards/components/N2.dat";
+            originSha256  "484778b1fba3cdea799657dcd2333a429ca0539cb9b0ee3874aec595e54247b7";
+            release       Choupo-2607;
+        }
+        "components/silica.dat"
+        {
+            type          imported;
+            sha256        "3b91b657077305b7c0c4413d375f95fa1f9fccb8a049287b16eb2d525f0356f5";
+            computationalSha256 "fd56271b9d77d5ab62534d6324355e0571dcc4f74ec6ab1602f7842161fe70b4";
+            origin        "data/standards/components/silica.dat";
+            originSha256  "f20791395f7a3dc447e0f893796fdd54197f3e15a9a7eb21f3fca9a69151f95a";
+            release       Choupo-2607;
+        }
+    }
+}

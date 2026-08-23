@@ -1,0 +1,112 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ctrl17_signal_shapes
+  ====================
+
+  WITNESS: the ramp, pulse and staircase SIGNALS, each on its own feed
+  handle of the ctrl09 CSTR, with the ctrl09 temperature PID still in the
+  loop rejecting all three at once -- compA ramps +28.6 % over 1000 s,
+  compB takes a 300 s rectangular pulse, the feed temperature walks a
+  three-step staircase.  These three registered signal shapes were
+  selected by no case until 2026-08-23 (invariant I8).  Self-recorded.
+*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     330.0 K;
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    //  THREE signal shapes on three independent feed handles -- the WITNESS
+    //  for ramp, pulse and staircase (registered signal shapes no case
+    //  selected until 2026-08-23, invariant I8).  TC1 below still rejects,
+    //  so the case also shows a PID riding three simultaneous disturbances.
+    {
+        name         FeedRampA;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compA; }
+        signal
+        {
+            type    ramp;
+            mean    3.5e-5;           // kmol/s of compA
+            slope   1.0e-8;           // kmol/s per s  (+28.6 % over 1000 s)
+            tStart  200.0;            // s
+            tEnd    1200.0;           // s -- holds the ramped value after
+        }
+    }
+
+    {
+        name         FeedPulseB;
+        type         Signal;
+        actuator     { unit reactor;  inletField componentMolarFlow.compB; }
+        signal
+        {
+            type       pulse;
+            mean       1.5e-5;        // kmol/s of compB
+            amplitude  0.75e-5;       // +50 % during the pulse
+            tStart     400.0;         // s
+            width      300.0;         // s
+        }
+    }
+
+    {
+        name         FeedStairT;
+        type         Signal;
+        actuator     { unit reactor;  inletField T; }
+        signal
+        {
+            type      staircase;
+            schedule
+            (
+                { time 0.0;     value 350.0; }
+                { time 700.0;   value 355.0; }
+                { time 1400.0;  value 348.0; }
+            );
+        }
+    }
+
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     330.0;
+        }
+    }
+);
