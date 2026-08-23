@@ -402,9 +402,22 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         //  what they were before this existed.
         if (r.declares && std::abs(adjClosure - 100.0) > reporting::energyBandPct)
         {
+            //  The commonest cause deserves its name (2026-08-23 LLM
+            //  benchmark: two correctly-authored cases drew this banner, and
+            //  both times the residual was the latent heat of a stream
+            //  priced in the wrong phase -- an unpinned all-vapour inlet
+            //  priced vf = 0, and a unit stamping its outlet's phase).  The
+            //  hint names the CHECK, not a verdict: the reader compares the
+            //  residual against a latent-heat magnitude and reads the vf
+            //  column, which is evidence this report cannot weigh for them.
             std::string remedy =
                 "An UNEXPLAINED first-law residual: inspect the unit's "
-                "enthalpy paths.  Ledger: "
+                "enthalpy paths.  A residual of LATENT-HEAT size usually "
+                "means a stream priced in the wrong phase: an inlet with no "
+                "vaporFraction/phase key is priced as liquid (vf = 0; declare "
+                "`phase gas;` in its 0/ file if it is not), and some units "
+                "stamp their outlet's phase -- check the stream table's vf "
+                "column against what you fed and expect.  Ledger: "
                 "reports/balances/energyBalance_byUnit.csv";
             if (le && le->status != "none")
                 remedy = "The model-boundary audit did NOT account for this "
