@@ -552,6 +552,32 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `valericAcid-water` |
 | `vinylAcetate-water` |
 | `vinylChloride-water` |
+## Friendly-name aliases
+
+A component name is resolved EXACT-FIRST against the table above; on a miss, these aliases map a friendly spelling to its canonical record (`methane` -> `CH4`).  Either spelling works in a case.
+
+| Alias | Canonical |
+|---|---|
+| `C2H2` | `acetylene` |
+| `C2H4` | `ethylene` |
+| `C2H6` | `ethane` |
+| `C3H6` | `propylene` |
+| `C4H10` | `nButane` |
+| `C8H18` | `nOctane` |
+| `butane` | `nButane` |
+| `carbonDioxide` | `CO2` |
+| `carbonMonoxide` | `CO` |
+| `chlorine` | `Cl2` |
+| `ethene` | `ethylene` |
+| `ethyne` | `acetylene` |
+| `hydrogen` | `H2` |
+| `hydrogenPeroxide` | `H2O2` |
+| `methane` | `CH4` |
+| `nitrogen` | `N2` |
+| `octane` | `nOctane` |
+| `oxygen` | `O2` |
+| `propene` | `propylene` |
+
 ## SRK binary-interaction (kij) pairs
 
 One `<a>-<b>.dat` per pair, declarable from a phiPhi case's `binaryInteractions`; a pair NOT listed here runs kij = 0 (announced), and a declared-but-missing file refuses.  (S6 of the authoring-seams scope: the catalogue listed every Henry pair and no kij home, so an author could not know what may be declared.)

@@ -287,7 +287,7 @@ def _components_footer() -> str:
         REPO / "data" / "standards" / "parameters" / "Henry",
         "One `<gas>-<solvent>.dat` per pair; each ships its temperature "
         "dependence and its convention profile.",
-    ) + "\n" + _list_section(
+    ) + "\n" + _aliases_section() + "\n" + _list_section(
         "## SRK binary-interaction (kij) pairs",
         REPO / "data" / "standards" / "parameters" / "SRK",
         "One `<a>-<b>.dat` per pair, declarable from a phiPhi case's "
@@ -309,6 +309,35 @@ def _components_footer() -> str:
         ("constructionMaterial",),
         "Each carries ρ, F_M (Guthrie), σ_y, max T, max P.",
     ) + "\n\n" + _glossary()
+
+
+def _aliases_section() -> str:
+    """The friendly-name table, rendered from components/ALIASES.
+
+    Benchmark agent E (2026-08-23) reported "methane is a trap: there is no
+    methane component, it ships as CH4" -- but `methane` RESOLVES, through
+    this table, and only the catalogue failed to say so.  Rendered from the
+    generated ALIASES file itself (never hand-carried); its absence is an
+    error exactly as for the pair directories."""
+    path = REPO / "data" / "standards" / "components" / "ALIASES"
+    if not path.is_file():
+        raise SystemExit(
+            "regen-llm-docs: data/standards/components/ALIASES does not "
+            "exist.  This generator's input moved; fix the path here rather "
+            "than publishing a catalogue section that says nothing ships."
+        )
+    pairs = re.findall(r"^\s*(\w+)\s+(\w+);", path.read_text(), re.M)
+    out = [
+        "## Friendly-name aliases",
+        "",
+        "A component name is resolved EXACT-FIRST against the table above; "
+        "on a miss, these aliases map a friendly spelling to its canonical "
+        "record (`methane` -> `CH4`).  Either spelling works in a case.",
+        "",
+        "| Alias | Canonical |", "|---|---|",
+    ]
+    out += [f"| `{a}` | `{c}` |" for a, c in sorted(pairs)]
+    return "\n".join(out) + "\n"
 
 
 def _rows(title: str, blurb: str, items: list[str]) -> str:
