@@ -152,12 +152,20 @@ decomposition goes in a case-local component overlay
 component lacks a decomposition is an ERROR with the remedy — never a silent
 γ = 1.
 
-**Pair coverage (no silent crutch).**  NRTL/UNIQUAC/Wilson need a pair for
-EVERY binary (N components ⇒ N(N−1)/2 pairs).  An uncovered pair does NOT
-abort the run — it **defaults to ideal** (τ = 0) so you can build the
-foundation pair-by-pair — but it is never silent: each ideal-defaulted pair
-is announced (a `[thermo]` log line + a run-JSON advisory the GUI shows), and
-the GUI's pair-coverage matrix colours every pair by where it resolved.
+**Pair coverage (no silent crutch — REVISED 2026-08-11 by the
+problem-divergence contract; this paragraph said "defaults to ideal" until
+2026-08-23, which had been false for twelve days).**  NRTL/UNIQUAC/Wilson
+need a pair for EVERY binary (N components ⇒ N(N−1)/2 pairs).  An uncovered
+pair is **REFUSED** — running ideal where the case declared NRTL answers a
+different question than the one posed — unless the case AUTHORISES the
+approximation at the top level of its `thermoPhysPropDict`
+(`approximations { idealBinaryPair { pairs ( a-b ); reason "…"; } }`
+— the refusal message prints the paste-ready block, and the block sits
+beside `idealMolecularVLE`, a statement about the CASE and never a model
+parameter).  An authorised ideal
+pair runs, is announced, and rides the result as a recorded divergence
+(above the KPIs, never buried).  The GUI's pair-coverage matrix colours
+every pair by where it resolved.
 Resolution order for an uncovered pair: the owning node's
 `constant/parameters/<MODEL>/<i>-<j>.dat` → the case root's → the standard
 catalogue `data/standards/parameters/<MODEL>/` → the private, gitignored
