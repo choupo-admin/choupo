@@ -71,15 +71,15 @@ never in the dicts the C++ solver reads.
 ## The four standard `controlDict` keys
 
 ```
-application   choupoSolve;          # | choupoBatch | choupoCtrl | choupoProps
-description   "one-line label";      # printed in the run header
-verbosity     3;                     # 0 silent, 3 default (Newton iters visible)
+application   choupoSolve;          // | choupoBatch | choupoCtrl | choupoProps
+description   "one-line label";      // printed in the run header
+verbosity     3;                     // 0 silent, 3 default (Newton iters visible)
 reports
 {
     streamTable {}
     massBalance {}
     energyBalance {}
-    spreadsheet {}                   # writes a coloured.ods
+    spreadsheet {}                   // writes a coloured.ods
     #... see CLAUDE.md for the rest (utilities/profiles/design/economics/computed)
 }
 ```
@@ -126,9 +126,9 @@ For display preferences (units shown in printed output):
 ```
 units
 {
-    pressure   bar;       # default Pa
-    flow       kmol/h;    # default kmol/s
-    temperature degC;     # default K
+    pressure   bar;       // default Pa
+    flow       kmol/h;    // default kmol/s
+    temperature degC;     // default K
 }
 ```
 
@@ -348,8 +348,8 @@ tearStreams`); the tool writes every remaining stream file by explicit
 propagation, announced and inspectable:
 
 ```
-bin/choupo-init0 <caseDir>            # writes the missing 0/ files
-bin/choupo-init0 <caseDir> --force    # regenerates existing internal/outlet estimates
+bin/choupo-init0 <caseDir>            // writes the missing 0/ files
+bin/choupo-init0 <caseDir> --force    // regenerates existing internal/outlet estimates
 ```
 
 Rules: an inlet file is never touched; an unseeded recycle is a hard error
@@ -367,7 +367,7 @@ duplicate unit names, two producers of one stream), then stops before
 anything solves or writes.  Strictly read-only.
 
 ```
-bin/choupo-lint <caseDir>     # exit 0 = will run as declared; 1 = findings; 2 = load refusal
+bin/choupo-lint <caseDir>     // exit 0 = will run as declared; 1 = findings; 2 = load refusal
 ```
 
 It also prints the topology-inferred stream ROLES (no producer → INLET;

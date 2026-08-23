@@ -32,11 +32,11 @@ Drivers mutate the flowsheetDict between passes via
 `Dictionary::setScalarAtPath(path, value)` — dot-and-bracket notation:
 
 ```
-units[0].operation.refluxRatio       # the first unit's reflux (0-indexed list)
-units[2].operation.T                 # third unit
-reactions.myRxn.kinetics.A           # an Arrhenius prefactor
-variables.A                          # a top-level $variable
-streams.feed.F                       # a feed flow
+units[0].operation.refluxRatio       // the first unit's reflux (0-indexed list)
+units[2].operation.T                 // third unit
+reactions.myRxn.kinetics.A           // an Arrhenius prefactor
+variables.A                          // a top-level $variable
+streams.feed.F                       // a feed flow
 ```
 
 Each pass re-reads the case from disk, writes the new value at that path,
@@ -46,8 +46,8 @@ so write it in the SI units of the target (e.g. `( 360.0 385.0 )` for a T in
 K).  *Reading* results back uses a different, dotted RESULT path:
 
 ```
-<unitName>.<kpiName>        # e.g. flash01.V_over_F  (any KPI the unit reports)
-<streamName>.<field>        # field ∈ F, T, P, vf  (+ F_mass in designSpec only)
+<unitName>.<kpiName>        // e.g. flash01.V_over_F  (any KPI the unit reports)
+<streamName>.<field>        // field ∈ F, T, P, vf  (+ F_mass in designSpec only)
 ```
 
 KPI names are whatever the unit op publishes (run the case once at

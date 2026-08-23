@@ -13,9 +13,9 @@ Author the fresh feed in `0/freshFeed` and the cycle-breaking initial guess in
 `0/recycle`.  The values do not belong in `flowsheetDict`.
 
 ```
-tearStreams   (recycle );             # one or more tear stream names
-recycleSolver Newton;                  # default; alt: Wegstein
-recycleTol    1e-8;                    # relative tol, default 1e-5
+tearStreams   (recycle );             // one or more tear stream names
+recycleSolver Newton;                  // default; alt: Wegstein
+recycleTol    1e-8;                    // relative tol, default 1e-5
 
 units
 (
@@ -28,12 +28,12 @@ units
       reaction  esterification_etac; }
 
     { name flash1;  type isothermalFlash;
-      in reacted;  outputs (recycle  vapor );   # position 0 IS the liquid --
-      operation { T 350 K; P 1 bar; } }         # the liquid recycles, as the
-                                                # prose above says (this snippet
-                                                # had them swapped until
-                                                # 2026-08-23; the real
-                                                # process03_recycle was right)
+      in reacted;  outputs (recycle  vapor );   // position 0 IS the liquid --
+      operation { T 350 K; P 1 bar; } }         // the liquid recycles, as the
+                                                // prose above says (this snippet
+                                                // had them swapped until
+                                                // 2026-08-23; the real
+                                                // process03_recycle was right)
 );
 ```
 
@@ -64,7 +64,7 @@ responses
 (
     column01.T_top
     column01.x_D_LK
-    column01.V_strip          # the swept response(s): <unit>.<kpi>
+    column01.V_strip          // the swept response(s): <unit>.<kpi>
 );
 
 report
@@ -110,8 +110,8 @@ manipulate
 
 targets
 (
-    { path  L3.F_mass;   value 4500.0 kg/h;  tol 1.0 kg/h; }   # <stream>.<field>
-    { path  effect3.P;   value 15000 Pa;     tol 50 Pa;    }   # <unit>.<kpi>
+    { path  L3.F_mass;   value 4500.0 kg/h;  tol 1.0 kg/h; }   // <stream>.<field>
+    { path  effect3.P;   value 15000 Pa;     tol 50 Pa;    }   // <unit>.<kpi>
 );
 
 options
@@ -201,10 +201,10 @@ In any dict (typically controlDict or flowsheetDict):
 ```
 variables
 {
-    # Inputs (plain numbers):
+    // Inputs (plain numbers):
     A       100.0;
 
-    # Computed (post-solve arithmetic over KPIs / stream fields / other vars):
+    // Computed (post-solve arithmetic over KPIs / stream fields / other vars):
     Q_total       { compute "effect1.duty + effect2.duty + effect3.duty"; unit kW; }
     water_evap    { compute "effect1.F_vap_mass + effect2.F_vap_mass + effect3.F_vap_mass"; unit kg/h; }
     economy       { compute "water_evap / effect1.F_steam"; }
@@ -214,7 +214,7 @@ reports
 {
     streamTable {}
     massBalance {}
-    computed    {}        # emits reports/computed/values.csv
+    computed    {}        // emits reports/computed/values.csv
 }
 ```
 
@@ -283,7 +283,7 @@ variables { A 17; F_steam 1500 kg/h; }
 
 tearStreams    (V_1  V_2 );
 recycleSolver  Wegstein;
-recycleQmin    -0.7;            # extra damping for counter-current
+recycleQmin    -0.7;            // extra damping for counter-current
 
 units
 (
@@ -292,7 +292,7 @@ units
       operation { area $A m2; U 800; Tref 298.15; } }
 
     { name effect2; type evaporator;  inputs (liq3 V_1 );
-      outputs (liq2 V_2_out cond2 );      # V_2_out IS the tear V_2
+      outputs (liq2 V_2_out cond2 );      // V_2_out IS the tear V_2
       operation { area $A m2; U 800; Tref 298.15; } }
 ...
 );
@@ -348,12 +348,12 @@ tutorials/plant/myPlant/
 ### A LEAF (one unit — a folder with a `type`)
 
 ```
-# sectors/REACTION/unitOperations/reactor/system/flowsheetDict
+// sectors/REACTION/unitOperations/reactor/system/flowsheetDict
 type        conversionReactor;
-reaction    hda;                  # resolved from REACTION/constant/reactions (cascade)
+reaction    hda;                  // resolved from REACTION/constant/reactions (cascade)
 operation   { conversion 0.75;  T 900 K; }
-inputs      ( feed );             # the streams this unit MENTIONS
-outputs     ( product );          # (a legacy boundary{inlets/outlets} is still read)
+inputs      ( feed );             // the streams this unit MENTIONS
+outputs     ( product );          // (a legacy boundary{inlets/outlets} is still read)
 ```
 
 The input/output NAMES are the leaf's PORTS.  Wire them from outside as
@@ -364,16 +364,16 @@ write a `feed {}` or `composition {}` block on the unit.
 ### A SECTOR (composite — wires its members)
 
 ```
-# sectors/REACTION/system/flowsheetDict
-units ( mix reactor );            # ordered member folders (ONE list; a root
-                                  # mixing `units` AND `sectors` REFUSES)
+// sectors/REACTION/system/flowsheetDict
+units ( mix reactor );            // ordered member folders (ONE list; a root
+                                  // mixing `units` AND `sectors` REFUSES)
 
-connections                       # NAMED EDGES: the key IS the stream identity
+connections                       // NAMED EDGES: the key IS the stream identity
 {
-    tolueneIn  { to mix/tolueneIn; }              # sector inlet -> leaf port
+    tolueneIn  { to mix/tolueneIn; }              // sector inlet -> leaf port
     h2In       { to mix/h2In; }
     mixed      { from mix/mixed;       to reactor/feed; }
-    reactorOut { from reactor/product; }          # sector outlet
+    reactorOut { from reactor/product; }          // sector outlet
 }
 ```
 
@@ -385,8 +385,8 @@ identities.
 ### Run any level
 
 ```
-runCase tutorials/plant/myPlant                     # the whole plant
-choupoSolve tutorials/plant/myPlant/sectors/REACTION  # one sector, standalone
+runCase tutorials/plant/myPlant                     // the whole plant
+choupoSolve tutorials/plant/myPlant/sectors/REACTION  // one sector, standalone
 ```
 
 A child runs standalone because `constant/thermoPhysPropDict`, `controlDict` and
@@ -426,10 +426,10 @@ A case may ship its own C++ unit op:
 ```
 case/
 ├── code/
-│   ├── YieldReactor.{H,cpp}     # the new unit
-│   └── registerUserTypes.cpp    # explicit factory registration
+│   ├── YieldReactor.{H,cpp}     // the new unit
+│   └── registerUserTypes.cpp    // explicit factory registration
 ├── system/
-│   └── flowsheetDict            # uses `type yieldReactor;`
+│   └── flowsheetDict            // uses `type yieldReactor;`
 └──...
 ```
 
@@ -451,7 +451,7 @@ Author `0/feed` and `0/coldProcess` separately.  The topology remains:
 ```
 units
 (
-    # PRODUCER listed FIRST so it solves before the consumer reads its KPI.
+    // PRODUCER listed FIRST so it solves before the consumer reads its KPI.
     { name column01;  type distillationColumn;
       in feed;  outputs (distillate  bottoms );
       operation { nStages 15; feedStage 8; refluxRatio 2.0;
@@ -459,7 +459,7 @@ units
 
     { name preheater; type heater;
       in coldProcess;  outputs (warmedProcess );
-      operation { }                       # Q is supplied by the heat-link
+      operation { }                       // Q is supplied by the heat-link
       energyInputs
       (
           { from column01.condenser;  kind heat;  target Q; }
@@ -689,22 +689,22 @@ components ( water  NaCl  CO2 );
 
 equilibrium
 {
-    formulation electrolyteGammaPhi;    # aqueous electrolyte x ideal vapour
+    formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour
     aqueous
     {
         solvent            water;
-        apparentComponents ( NaCl );    # the stream carries the salt
-        activityModel { model davies; } # REACTIVE electrolyteGammaPhi serves
-                                        # davies here (a Pitzer line is
-                                        # REFUSED on this slice); the op below
-                                        # still runs pitzerHMW for the
-                                        # SPECIATION itself -- the op-level
-                                        # activityModel is the contrast knob
+        apparentComponents ( NaCl );    // the stream carries the salt
+        activityModel { model davies; } // REACTIVE electrolyteGammaPhi serves
+                                        // davies here (a Pitzer line is
+                                        // REFUSED on this slice); the op below
+                                        // still runs pitzerHMW for the
+                                        // SPECIATION itself -- the op-level
+                                        // activityModel is the contrast knob
         compositionBasis molality;
     }
-    volatiles ( water CO2 );            # REQUIRED at equilibrium{} level (not
-                                        # inside aqueous{}): which components
-                                        # may enter the vapour
+    volatiles ( water CO2 );            // REQUIRED at equilibrium{} level (not
+                                        // inside aqueous{}): which components
+                                        // may enter the vapour
     vapour { fugacityModel idealGas; }
 }
 ```
@@ -722,28 +722,28 @@ operations
         {
             Na    0.5     mol/kg;
             Cl    0.5     mol/kg;
-            HCO3  1.0e-5  mol/kg;   # the carbonate MASTER: a family's
-                                    # equilibria activate only when its master
-                                    # is in the feed ("N unreachable from this
-                                    # feed" in the log = a family whose master
-                                    # is absent).  Tiny is fine; the amount is
-                                    # a solved outcome of the CO2 pin.
-                                    # Do NOT also declare CO2aq here -- it is
-                                    # a COMPUTED species of this network, and
-                                    # a totals entry for it declares a second
-                                    # inventory under the same name (refused).
-                                    # An INERT gas with no formation record
-                                    # (O2, N2) is the opposite case: there the
-                                    # gas's own species entry IS the key.
+            HCO3  1.0e-5  mol/kg;   // the carbonate MASTER: a family's
+                                    // equilibria activate only when its master
+                                    // is in the feed ("N unreachable from this
+                                    // feed" in the log = a family whose master
+                                    // is absent).  Tiny is fine; the amount is
+                                    // a solved outcome of the CO2 pin.
+                                    // Do NOT also declare CO2aq here -- it is
+                                    // a COMPUTED species of this network, and
+                                    // a totals entry for it declares a second
+                                    // inventory under the same name (refused).
+                                    // An INERT gas with no formation record
+                                    // (O2, N2) is the opposite case: there the
+                                    // gas's own species entry IS the key.
         }
 
         temperature  298.15 K;
-        pH           solve;         # REQUIRED key on speciate (a number =
-                                    # given; `solve` = electroneutrality
-                                    # closes it -- the right choice whenever
-                                    # nothing measured a pH)
-        atmosphere   { pCO2 4.0e-4 atm; }   # OPEN system: pins dissolved CO2
-        activityModel  pitzerHMW;   # brine at I ~ 0.5: Pitzer, not davies
+        pH           solve;         // REQUIRED key on speciate (a number =
+                                    // given; `solve` = electroneutrality
+                                    // closes it -- the right choice whenever
+                                    // nothing measured a pH)
+        atmosphere   { pCO2 4.0e-4 atm; }   // OPEN system: pins dissolved CO2
+        activityModel  pitzerHMW;   // brine at I ~ 0.5: Pitzer, not davies
 
         diagSpecies   ( Na Cl H OH HCO3 CO3 CO2aq );
         diagMeanIonic ( { cation Na; anion Cl; } );
@@ -758,5 +758,18 @@ brine must be); I = 0.500; m_CO2aq = 1.257e-5 (solved from the pin).
 
 One more thing this system needs today: `species/CO2aq.dat` is not yet in
 the standards catalogue, so the case carries a case-local
-`constant/species/CO2aq.dat` (name, `charge 0`, MW; promotion is tracked in
-the same scope, S3).
+`constant/species/CO2aq.dat`, in full (promotion is tracked in the same
+scope, S3):
+
+```
+recordType modelSpecies;
+schemaVersion 1;
+
+name    CO2aq;
+formula     "CO2";
+charge  0;
+MW { value 44.009; unit g/mol;}
+```
+
+And a props case has NO streams and NO `0/` directory -- the analysis lives
+in the op's own `totals`, and `choupoProps` never asks for a state tree.

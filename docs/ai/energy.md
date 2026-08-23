@@ -101,7 +101,7 @@ header to get a balanced flowsheet.
 Add the report in `controlDict`:
 
 ```
-reports { utilityAllocation { dTmin 10; } }     # dTmin optional (default 10 K)
+reports { utilityAllocation { dTmin 10; } }     // dTmin optional (default 10 K)
 ```
 
 For each duty `Q` at process temperature `T` it picks the lowest-grade
@@ -171,7 +171,7 @@ downstream unit.  Wire it like any energy link, on the CONSUMER:
 
 ```
 { name preheater; type heater;  in coldFeed;  outputs (warmFeed );
-  operation { }                                   # Q comes from the link
+  operation { }                                   // Q comes from the link
   energyInputs ( { from column01.condenser;  kind heat;  target Q; } ) }
 ```
 

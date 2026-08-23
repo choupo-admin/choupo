@@ -47,14 +47,14 @@ The value is one token (a number with optional unit, a word, or a
 quoted string).  Examples:
 
 ```
-verbosity    3;                       # integer
-T            293.15 K;                # number + named unit
-T_init       293.15;                  # raw number (SI; parser stores
-                                       # dimensions as expected)
-P            [1 -1 -2 0 0]  101325;   # bracket form: M L T Theta N exps
-                                       # + raw SI value
-fluid        water;                   # word
-description  "isothermal flash";      # quoted string
+verbosity    3;                       // integer
+T            293.15 K;                // number + named unit
+T_init       293.15;                  // raw number (SI; parser stores
+                                       // dimensions as expected)
+P            [1 -1 -2 0 0]  101325;   // bracket form: M L T Theta N exps
+                                       // + raw SI value
+fluid        water;                   // word
+description  "isothermal flash";      // quoted string
 ```
 
 ### 2. Sub-dictionaries
@@ -123,6 +123,11 @@ units
    comment */
 ```
 
+**`#` is NOT a comment character.**  The tokenizer knows only the two forms
+above; a pasted `# note` line parses as tokens and errors.  (Until
+2026-08-23 this kit's own examples used `#` inline comments -- 203 of them,
+converted after the benchmark re-run flagged the inconsistency.)
+
 ## FoamFile header (optional, skipped)
 
 A `FoamFile` header at the top is tolerated for compatibility with files
@@ -158,9 +163,9 @@ area                35.0 m2;
 volume               5.0 m3;
 length               1.0 m;
 mu                 1.0e-3 Pa.s;
-A_w                1.0e-6 m/s/bar;         # water permeability of a membrane (SW30HR RO)
+A_w                1.0e-6 m/s/bar;         // water permeability of a membrane (SW30HR RO)
 k_film             5.0e-5 m/s;
-W_shaft           10000.0 W;                # or `10 kW`
+W_shaft           10000.0 W;                // or `10 kW`
 duty                160.0 kW;
 ```
 
@@ -208,8 +213,8 @@ keyword  [M L T Theta N]  value_SI;
 The value is in canonical SI; the brackets declare its dimensions:
 
 ```
-A_w   [-1 2 1 0 0]   1.0e-11;     # M^-1 L^2 T^1: kg^-1 m^2 s ≡ m/(Pa·s)
-                                  # (= 1.0e-6 m/s/bar, the SW30HR value above)
+A_w   [-1 2 1 0 0]   1.0e-11;     // M^-1 L^2 T^1: kg^-1 m^2 s ≡ m/(Pa·s)
+                                  // (= 1.0e-6 m/s/bar, the SW30HR value above)
 ```
 
 Useful for uncommon dimensions where a named unit would be invented
@@ -218,7 +223,7 @@ just for one parameter.
 ### Raw SI (caller-asserts)
 
 ```
-keyword  value;          # no unit suffix
+keyword  value;          // no unit suffix
 ```
 
 Accepted: the parser stores the number with **expected dimensions**.
@@ -254,7 +259,7 @@ units
 
     { name effect2; type evaporator;
       in concentrated; outputs (... );
-      operation { area $A m2;... } }   # SAME $A
+      operation { area $A m2;... } }   // SAME $A
 )
 ```
 
@@ -292,10 +297,10 @@ When an outer driver mutates a value, it uses dot-and-bracket
 notation:
 
 ```
-units[0].operation.refluxRatio       # the first unit's reflux
-reactions.myRxn.kinetics.A           # an Arrhenius prefactor
-variables.A                          # a top-level $variable
-streams.feed.F                       # a feed flow
+units[0].operation.refluxRatio       // the first unit's reflux
+reactions.myRxn.kinetics.A           // an Arrhenius prefactor
+variables.A                          // a top-level $variable
+streams.feed.F                       // a feed flow
 ```
 
 A reaction sub-dict carries its `kinetics { … }` (Arrhenius); the **heat of
@@ -596,7 +601,7 @@ global system's models for that unit only (components stay global):
 ```
 { name turbine; type turbine;  in feed;  outputs (expanded );
   operation { W_shaft -3 kW; eta 0.8; }
-  thermo    { equationOfState { model SRK; } } }     # real gas here only
+  thermo    { equationOfState { model SRK; } } }     // real gas here only
 ```
 
 A stream crossing from a unit with model X into one with model Y is

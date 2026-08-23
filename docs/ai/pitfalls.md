@@ -93,9 +93,9 @@ They point to a NAMED block in the corresponding `constant/<library>`
 file:
 
 ```
-reaction         my_kinetics;          # -> constant/reactions
-crystallisation  sugarKinetics;        # -> constant/crystallisation
-dryingCurve      sucroseDrying;         # -> constant/dryingKinetics
+reaction         my_kinetics;          // -> constant/reactions
+crystallisation  sugarKinetics;        // -> constant/crystallisation
+dryingCurve      sucroseDrying;         // -> constant/dryingKinetics
 ```
 
 Not the kinetics themselves inline.

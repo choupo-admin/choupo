@@ -30,13 +30,13 @@ Vapour-liquid (or LL, or VLLE) flash at fixed (T, P).  Newton in V/F
 
 `operation` — all optional (a flash is a KNOB-LESS separator):
 ```
-operation { }            # inherits T and P from the feed, just separates
+operation { }            // inherits T and P from the feed, just separates
 ```
 or pin the drum's state:
 ```
-T  <K>;     # optional; omitted -> inherits the feed T
-P  <Pa>;    # optional; omitted -> inherits the feed P (use a valve upstream to drop P)
-phaseSet  VL;    # default; also LL or VLLE
+T  <K>;     // optional; omitted -> inherits the feed T
+P  <Pa>;    // optional; omitted -> inherits the feed P (use a valve upstream to drop P)
+phaseSet  VL;    // default; also LL or VLLE
 ```
 The flash reports its duty as a `Q` KPI (the heat to hold T): + heating,
 - cooling.  A knob-less flash that just separates an equilibrated feed reads
@@ -87,8 +87,8 @@ Continuous stirred-tank reactor.  **One or many reactions.**
 
 ```
 operation { V_R  <m^3>; }
-reaction  <name>;              # single         -> constant/reactions
-reactions ( r1 r2 ... );       # MULTI (same grammar as batch/dynamicCSTR)
+reaction  <name>;              // single         -> constant/reactions
+reactions ( r1 r2 ... );       // MULTI (same grammar as batch/dynamicCSTR)
 ```
 Reversible: add `reversible true;` to a reaction entry — detailed balance
 `k_rev = k_fwd / K_eq(T)`.  Duty from the enthalpy balance (formation datum).
@@ -155,8 +155,8 @@ reactions.  **One or many reactions** — with many it marches
 `dF_i/dV = Σ_j ν_ij r_j(F)` (an IVP, no Newton).
 ```
 operation { V_R  <m^3>; nSteps  100; }
-reaction  <name>;              # single
-reactions ( r1 r2 ... );       # MULTI
+reaction  <name>;              // single
+reactions ( r1 r2 ... );       // MULTI
 ```
 For a SERIES network the PFR beats the CSTR (no back-mixing keeps the intermediate):
 `pfr03_series_selectivity` gives 79 % of B where `cstr03` gives 53 %, same τ.
@@ -199,7 +199,7 @@ reaction  <name>;        // needs only stoichiometry + limitingReactant (no kine
 shown nowhere until 2026-08-23 -- an LLM benchmark agent had to guess it):
 
 ```
-esterification_etac                       # one block per NAMED reaction
+esterification_etac                       // one block per NAMED reaction
 {
     stoichiometry
     (
@@ -208,8 +208,8 @@ esterification_etac                       # one block per NAMED reaction
         { component ethylAcetate; nu  1; }
         { component water;        nu  1; }
     );
-    limitingReactant  aceticAcid;         # conversionReactor: required
-    # kinetics { A ...; Ea ...; }         # cstr/pfr/batch only
+    limitingReactant  aceticAcid;         // conversionReactor: required
+    // kinetics { A ...; Ea ...; }         // cstr/pfr/batch only
 }
 ```
 Reactants carry `nu < 0`, products `nu > 0`; the block's NAME is what
@@ -224,13 +224,13 @@ and the reported dHrxn is the GAS-phase value.  Until the posture is ruled
 on, read Q_reaction from the KPI and expect the balance warning on
 liquid-phase use.
 ```
-operation                                     # MULTI -- a PARALLEL network
+operation                                     // MULTI -- a PARALLEL network
 {
     T <K>;
     conversions
     (
-        { reaction r1;  conversion 0.60; }    # fraction of the FEED limiting reactant
-        { reaction r2;  extent 0.04; }        # ... or a direct extent [kmol/s]
+        { reaction r1;  conversion 0.60; }    // fraction of the FEED limiting reactant
+        { reaction r2;  extent 0.04; }        // ... or a direct extent [kmol/s]
     );
 }
 reactions ( r1 r2 );
@@ -301,7 +301,7 @@ Single-stream heater/cooler.  Operation block carries the absolute
 thermal power Q (W); T_out is a RESULT.  Phase-aware: gas
 streams integrate H_ig, liquid uses H_liquid.
 ```
-operation { Q  <W>; }   # positive heats, negative cools
+operation { Q  <W>; }   // positive heats, negative cools
 ```
 For "I need T_out = 360 K", wrap in a DesignSpec on `$Q`.  The heater is the
 unit that **takes** a Q (its hardware knob); a flash **gives** one.  That makes
@@ -328,14 +328,14 @@ self-target inverse solve (Choupo announces it — no `outerDict` needed):
 ```
 operation
 {
-    P            <Pa>;   # optional; held from inlet otherwise
-    # --- pick exactly ONE of: ---
-    Q            <W>;            # duty given → T_out, vf_out are results
-    outletT      <K>;           # → Q result
-    outletQuality <0..1>;       # target vapour fraction (partial b/c) → Q
-    outletState  saturatedVapour;   # or saturatedLiquid → Q
-    superheat    <K>;           # T = Tsat(P) + ΔK (vapour side) → Q
-    subcool      <K>;           # T = Tsat(P) − ΔK (liquid side) → Q
+    P            <Pa>;   // optional; held from inlet otherwise
+    // --- pick exactly ONE of: ---
+    Q            <W>;            // duty given → T_out, vf_out are results
+    outletT      <K>;           // → Q result
+    outletQuality <0..1>;       // target vapour fraction (partial b/c) → Q
+    outletState  saturatedVapour;   // or saturatedLiquid → Q
+    superheat    <K>;           // T = Tsat(P) + ΔK (vapour side) → Q
+    subcool      <K>;           // T = Tsat(P) − ΔK (liquid side) → Q
 }
 ```
 For an area/HTC **rating** (duty EMERGES from geometry + a coolant/heating
@@ -356,7 +356,7 @@ operation
 {
     area   <m^2>;
     U      <W/m^2/K>;
-    flow   counter;     # or `co` / `cocurrent`; default counter
+    flow   counter;     // or `co` / `cocurrent`; default counter
 }
 ```
 
@@ -372,7 +372,7 @@ operation
 {
     area      <m^2>;
     U         <W/m^2/K>;
-    Tref      <K>;        # enthalpy reference (default 298.15)
+    Tref      <K>;        // enthalpy reference (default 298.15)
 }
 ```
 
@@ -385,8 +385,8 @@ matching isentropic enthalpy; P_out / T_out are RESULTS.
 ```
 operation
 {
-    W_shaft  <W>;     # positive (energy in)
-    eta      0.75;    # isentropic efficiency
+    W_shaft  <W>;     // positive (energy in)
+    eta      0.75;    // isentropic efficiency
 }
 ```
 
@@ -400,9 +400,9 @@ feed), tiny dissipation `dT = (1-η) w_real / Cp_liq`.  Closed form, no
 EoS, no Newton.  Because the relation inverts in closed form
 (`W_shaft = Q_vol·ΔP/η`), give `eta` **plus exactly ONE** of:
 ```
-operation { eta 0.65;  P_out 30 bar; }   # header it feeds -> W_shaft is the RESULT (common)
-operation { eta 0.65;  dP    29 bar; }   # rise it adds    -> W_shaft is the RESULT
-operation { eta 0.65;  W_shaft 2 kW;  }  # motor power      -> P_out/dP is the RESULT
+operation { eta 0.65;  P_out 30 bar; }   // header it feeds -> W_shaft is the RESULT (common)
+operation { eta 0.65;  dP    29 bar; }   // rise it adds    -> W_shaft is the RESULT
+operation { eta 0.65;  W_shaft 2 kW;  }  // motor power      -> P_out/dP is the RESULT
 ```
 Specifying `P_out` is NOT a DesignSpec (the target is local, one-shot) ---
 the natural way to size a plant's many pumps without an outer loop each.
@@ -413,7 +413,7 @@ A stream-less sink for the shaft work a turbine produces (or any `work`
 energy port).  No material streams; it just consumes the wired W.
 ```
 { name G1; type electricLoad;
-  operation   { eta  0.97; }                       # generator efficiency
+  operation   { eta  0.97; }                       // generator efficiency
   energyInputs ( { from turbine01.shaft;  kind work;  target W_shaft; } ) }
 ```
 KPIs: `W_in`, `W_electric` (= η·W_in).  See [`energy.md`](energy.md).
@@ -448,17 +448,17 @@ Naphtali & Sandholm, *AIChE J.* 17 (1971) 148.
 ```
 operation
 {
-    nStages          12;           # (NOT `stages`).  nStages counts ALL
-                                   # equilibrium stages INCLUDING the total
-                                   # condenser (stage 1) and the reboiler
-                                   # (stage nStages): "12 pratos" = nStages 12,
-                                   # profile.csv has 12 rows
+    nStages          12;           // (NOT `stages`).  nStages counts ALL
+                                   // equilibrium stages INCLUDING the total
+                                   // condenser (stage 1) and the reboiler
+                                   // (stage nStages): "12 pratos" = nStages 12,
+                                   // profile.csv has 12 rows
     feedStage         6;
-    refluxRatio      2.5;          # refluxRatio is REQUIRED; beside it give
-    distillateRate 50 kmol/h;      # distillateRate XOR distillateRecovery
-                                   # (the XOR is between those two, NOT with
-                                   # refluxRatio -- a stray comment here said
-                                   # otherwise until 2026-08-23)
+    refluxRatio      2.5;          // refluxRatio is REQUIRED; beside it give
+    distillateRate 50 kmol/h;      // distillateRate XOR distillateRecovery
+                                   // (the XOR is between those two, NOT with
+                                   // refluxRatio -- a stray comment here said
+                                   // otherwise until 2026-08-23)
     P              1.01325 bar;
 }
 ```
@@ -473,8 +473,8 @@ than physics.  What a design actually fixes is usually a recovery.
 operation
 {
     nStages 66;  feedStage 54;  refluxRatio 2.78;  P 1 atm;
-    distillateRecovery { component acetone;  fraction 0.97; }   # XOR distillateRate
-    # optional: tolerance 1e-6;  maxIter 40;
+    distillateRecovery { component acetone;  fraction 0.97; }   // XOR distillateRate
+    // optional: tolerance 1e-6;  maxIter 40;
 }
 ```
 
@@ -505,14 +505,14 @@ in the operation; they follow distillate + bottoms in `outputs`, in stage order)
 CMO flow profile `L[j], V[j]` is rebuilt per stage; one feed + no draw reduces exactly
 to the single-feed case (existing cases unchanged).
 ```
-# each feed is a real stream with its OWN authored 0/ file (0/feed, 0/feed2)
+// each feed is a real stream with its OWN authored 0/ file (0/feed, 0/feed2)
 units ( { ... inputs ( feed feed2 );  outputs ( distillate bottoms intermediateCut );
   operation
   {
     nStages 15;  refluxRatio 3.0;  distillateRate 42 kmol/h;  P 1.013 bar;
-    feeds      ( { stream feed;  stage 5;  quality 1.0; }      # stream -> stage
+    feeds      ( { stream feed;  stage 5;  quality 1.0; }      // stream -> stage
                  { stream feed2; stage 11; quality 1.0; } );
-    sideDraws  ( { stage 8;  phase liquid;  rate 15 kmol/h; } );   # phase liquid|vapor
+    sideDraws  ( { stage 8;  phase liquid;  rate 15 kmol/h; } );   // phase liquid|vapor
   } } )
 ```
 (A single feed keeps the legacy `in feed;` + `feedStage`.)
@@ -535,18 +535,18 @@ not-a-tray, so the condenser and reboiler drop out on their own.
 ```
 hydraulics
 {
-    trayType               sieve;    # only sieve
-    diameter               1.10;     # m -- GIVE it => RATING;  OMIT it => DESIGN
-    traySpacing            0.50;     # m
-    weirHeight             0.050;    # m
-    holeDiameter           5.0e-3;   # m
-    holeAreaFraction       0.10;     # A_holes / A_active
-    downcomerAreaFraction  0.12;     # A_downcomer / A_tower
-    weirLengthFraction     0.77;     # l_weir / D
-    orificeCoefficient     0.84;     # C_o -- a CHART (Liebson 1957); declared, printed back
-    floodFraction          0.80;     # design target
-    K2                     30.7;     # optional CHART constant; absent => weep check skipped
-    # sigma                0.021;    # N/m; else the package must supply surfaceTension
+    trayType               sieve;    // only sieve
+    diameter               1.10;     // m -- GIVE it => RATING;  OMIT it => DESIGN
+    traySpacing            0.50;     // m
+    weirHeight             0.050;    // m
+    holeDiameter           5.0e-3;   // m
+    holeAreaFraction       0.10;     // A_holes / A_active
+    downcomerAreaFraction  0.12;     // A_downcomer / A_tower
+    weirLengthFraction     0.77;     // l_weir / D
+    orificeCoefficient     0.84;     // C_o -- a CHART (Liebson 1957); declared, printed back
+    floodFraction          0.80;     // design target
+    K2                     30.7;     // optional CHART constant; absent => weep check skipped
+    // sigma                0.021;    // N/m; else the package must supply surfaceTension
 }
 ```
 Flooding: Souders-Brown `u_flood = C_SB (σ/20)^0.2 √((ρL−ρV)/ρV)` on the net area, with
@@ -575,7 +575,7 @@ reaction
     stoichiometry ( { component methanol; nu -1; } { component aceticAcid; nu -1; }
                     { component methylAcetate; nu 1; } { component water; nu 1; } );
     reactiveStages ( 11 12 13 14 15 16 17 18 19 );
-    equilibrium { Ka 5.2; }       # activity-based equilibrium constant
+    equilibrium { Ka 5.2; }       // activity-based equilibrium constant
 }
 ```
 Compared against Pöpken, Steinigeweg & Gmehling, *Ind. Eng. Chem. Res.* 40
@@ -590,11 +590,11 @@ becomes `rate × catalyst mass` (no extent unknown):
 ```
 kinetics
 {
-    model adsorption;                       # or pseudoHomogeneous
-    forward { A 8.497e6; Ea 60470; }        # mol/(g_cat·s), J/mol
+    model adsorption;                       // or pseudoHomogeneous
+    forward { A 8.497e6; Ea 60470; }        // mol/(g_cat·s), J/mol
     reverse { A 6.127e5; Ea 63730; }
-    adsorption ( { component aceticAcid; K 3.15; } ... );   # K_i for a'_i = K_i a_i / M_i
-    catalystMass 0.45 kg;                   # total over the reactive stages
+    adsorption ( { component aceticAcid; K 3.15; } ... );   // K_i for a'_i = K_i a_i / M_i
+    catalystMass 0.45 kg;                   // total over the reactive stages
 }
 ```
 Caveat: for a **fast** rate (catalyst-rich, near-equilibrium) the explicit rate is
@@ -609,10 +609,10 @@ sized to a plant utility by temperature level (the `utilityAllocation`
 report — steam grade for the reboiler, cooling water for the condenser).
 Name one explicitly, or reuse the heat by a forward heat-link:
 ```
-operation { ...  condenser { utility coolingWater; } }   # name the utility
-# or, reuse the condenser heat downstream (heat integration) — wire it on
-# the CONSUMER, like any energy link:
-#   energyInputs ( { from column01.condenser; kind heat; target Q; } )
+operation { ...  condenser { utility coolingWater; } }   // name the utility
+// or, reuse the condenser heat downstream (heat integration) — wire it on
+// the CONSUMER, like any energy link:
+//   energyInputs ( { from column01.condenser; kind heat; target Q; } )
 ```
 See [`energy.md`](energy.md) for the heat-port / heat-link / utility model.
 
@@ -633,7 +633,7 @@ operation
     HK_component   toluene;
     recovery_LK    0.99;
     recovery_HK    0.01;
-    refluxFactor   1.3;            # = R / R_min
+    refluxFactor   1.3;            // = R / R_min
     P              1.01325 bar;
 }
 ```
@@ -662,25 +662,25 @@ operation { stages  6; }
 ```
 operation
 {
-    membrane         SW30HR;        # -> data/standards/assets/<name>.dat
-    area             35 m2;          # per element
+    membrane         SW30HR;        // -> data/standards/assets/<name>.dat
+    area             35 m2;          // per element
     length           1 m;
-    elements         1;              # for a train
-    interElementDP   0.5 bar;        # gap loss between elements
+    elements         1;              // for a train
+    interElementDP   0.5 bar;        // gap loss between elements
     P_perm           1.01325 bar;
-    dP_feed_total    2 bar;          # constant model (default); see below
+    dP_feed_total    2 bar;          // constant model (default); see below
 
-    # Selectable sub-models (factory pattern):
+    // Selectable sub-models (factory pattern):
     massTransfer
     {
-        model         SchockMiquel;  # or `constant`; default constant
+        model         SchockMiquel;  // or `constant`; default constant
         channelHeight 0.7 mm;
         spacerPorosity 0.9;
-        diffusivity   1.6e-9 m2/s;   # solute D
+        diffusivity   1.6e-9 m2/s;   // solute D
         viscosity     1.0e-3 Pa.s;
     }
-    pressureDrop  { model SchockMiquel; }   # or `constant`; default constant
-    osmotic       { model Pitzer; }         # or `vanHoff` (default)
+    pressureDrop  { model SchockMiquel; }   // or `constant`; default constant
+    osmotic       { model Pitzer; }         // or `vanHoff` (default)
 }
 ```
 
@@ -709,8 +709,8 @@ Cake-dominated, near-total collection.  Headline KPI is `dP_filter`.
 operation
 {
     filterArea   30 m2;
-    arealDustLoad 0.5;  # kg/m^2
-    K1  1e9;  K2 1e10;  # Darcy resistances
+    arealDustLoad 0.5;  // kg/m^2
+    K1  1e9;  K2 1e10;  // Darcy resistances
     penetration0 0.02;  dCharacteristic 1 um;
 }
 ```
@@ -735,9 +735,9 @@ every velocity, the suspended density and ΔP are results.  Needs a
 component's `solid { rho_p; }`.
 ```
 type      pneumaticConveyor;
-operation { geometry { D 0.1 m;  L 50 m;  dz 10 m; } }   # diameter, length, rise
-# feed stream declares solids as solidFlows (mass) + a PSD:
-#   solids { solidFlows { silica 282 kg/h; } diameters (...); massFractions (...); }
+operation { geometry { D 0.1 m;  L 50 m;  dz 10 m; } }   // diameter, length, rise
+// feed stream declares solids as solidFlows (mass) + a PSD:
+//   solids { solidFlows { silica 282 kg/h; } diameters (...); massFractions (...); }
 ```
 KPIs: `deltaP` (+ the five-way breakdown), `u_gas`, `u_particle`,
 `u_terminal`, `u_saltation`, `solidsLoading`, `suspensionDensity`.
@@ -762,9 +762,9 @@ operation
     wheelSpeed     20000 1/min;
     chamberDiameter  1 m;
     chamberHeight    5 m;
-    flow  co;                       # or counter
+    flow  co;                       // or counter
 }
-dryingCurve  sucroseDrying;          # -> constant/dryingKinetics
+dryingCurve  sucroseDrying;          // -> constant/dryingKinetics
 ```
 Component must have a `sorption {}` block (typically case-local
 overlay per axiom 4) for the GAB isotherm + Xc.
@@ -845,11 +845,11 @@ Omit `solute` and the unit auto-picks (the electrolyte salt, else the lone
 operation
 {
     operatingTemperature  293.15 K;
-    volume                5.0 m3;        # MSMPR only
-    cakeMoisture          0.10;          # kg liquor / kg dry solid (two-output mode; default 0.10)
-    solidsRecovery        1.0;           # fraction of crystals to the cake (two-output mode)
+    volume                5.0 m3;        // MSMPR only
+    cakeMoisture          0.10;          // kg liquor / kg dry solid (two-output mode; default 0.10)
+    solidsRecovery        1.0;           // fraction of crystals to the cake (two-output mode)
 }
-crystallisation  sucroseKinetics;        # MSMPR only -> constant/crystallisation
+crystallisation  sucroseKinetics;        // MSMPR only -> constant/crystallisation
 ```
 KPIs (two-output mode): `cakeMoisture`, `cakeWetness_pct`,
 `soluteInCake_mass` (dissolved solute leaving on the wet cake — the
@@ -885,8 +885,8 @@ the gas basis can push the 1-D Newton in T off its bracket.  Mixing
 and here the author owns it.
 ```
 inputs  (s1  s2  s3 );  outputs (merged );
-operation {}                  # adiabatic: T_out is a result
-operation { T 330 K; }        # isothermal: T_out declared, energy balance skipped
+operation {}                  // adiabatic: T_out is a result
+operation { T 330 K; }        // isothermal: T_out declared, energy balance skipped
 ```
 
 ### `splitter`
@@ -904,7 +904,7 @@ and the vapour fraction are RESULTS (a real-gas EoS flashes the let-down).
 Use it upstream of a flash to set the drum pressure.  Warns if `P >= P_in`.
 ```
 in  feed;  outputs (throttled );
-operation { P  1.0 bar; }          # the downstream pressure (the only knob)
+operation { P  1.0 bar; }          // the downstream pressure (the only knob)
 ```
 
 ## Hydraulics
@@ -1278,7 +1278,7 @@ cold inlets exchange in one shell.  Each inlet declares its OUTLET target
 T in the `outlet {}` block except one, which the enthalpy balance closes.
 ```
 operation { outlet { hot1 { T 330.0 K; }  hot2 { T 340.0 K; } } }
-                       # the cold stream's outlet is the balance's result
+                       // the cold stream's outlet is the balance's result
 ```
 Example: `mheatx01_two_hot_one_cold`.
 
@@ -1349,11 +1349,11 @@ Examples: `ed01_nacl_desalination`, `ed02_over_limiting_current`.
 type       sweep;
 parameter
 {
-    target    units[0].operation.T;      # dot-path into the flowsheetDict
-    range     ( 360.0  385.0 );          # (min max)
+    target    units[0].operation.T;      // dot-path into the flowsheetDict
+    range     ( 360.0  385.0 );          // (min max)
     nPoints   26;
 }
-responses  ( flash01.V_over_F  vapor.F );  # unit.kpi or stream.field per point
+responses  ( flash01.V_over_F  vapor.F );  // unit.kpi or stream.field per point
 report     { file  sweep_flashT.csv; }
 ```
 A `streams.<name>.<field>` target is applied through the StreamOverrides
@@ -1385,8 +1385,8 @@ manipulate
 );
 targets
 (
-    { path productConc.F_mass;  value 5000 kg/h;  tol 0.01; }   # value form
-    { lhs  effect1.area;  rhs effect2.area;       tol 0.001; }  # equality form
+    { path productConc.F_mass;  value 5000 kg/h;  tol 0.01; }   // value form
+    { lhs  effect1.area;  rhs effect2.area;       tol 0.001; }  // equality form
 );
 ```
 

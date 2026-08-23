@@ -83,3 +83,15 @@ that lies (S4), curates one record (S3), or asks the architect the one
 question the seam poses (S5).  The benchmark re-runs (same protocol, fresh
 agents) after S1+S2 land — the measured round-count for case D is the
 success criterion, not anyone's impression.
+
+## The measured result (2026-08-23, same night)
+
+A fresh agent, the regenerated kit, the identical request: **GREEN in ONE
+round** against the first run's eight.  The agent transcribed Pattern 14
+nearly verbatim, reproduced all four stated check numbers exactly
+(γ±(NaCl) 0.681, pH 5.584, I 0.500, m_CO2aq 1.257e-5 — the SOLVED value,
+post-S4), and reported three residual gaps, all closed the same night:
+the `modelSpecies` record shown in full, the `#`-comment inconsistency
+(203 `#` comments across the kit's own examples converted to `//`, and
+the Comments section now says `#` is not a comment character), and the
+no-`0/`-for-props sentence.  S3 and S5 remain the architect's.
