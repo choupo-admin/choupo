@@ -135,9 +135,25 @@ enough; I will not need the PDF.
 * **S3** — the literature anchor, once the tables exist: goldens locked on
   the paper's numbers, provenance of every value in the case header.
   **BUILT 2026-08-23** — `edwards02_table7_vle`, see §6c.
-* **S4 (deferred, named)** — H₂S as the third volatile weak electrolyte.
-  The paper covers it; the corpus has no H₂S network records, so it is a
-  curation slice of its own and must not ride along silently.
+* **S4** — H₂S as the third volatile weak electrolyte.  **The premise
+  went stale and the prototype already converges (2026-08-23):** the
+  catalogue DOES carry the sulfide network now (`H2S-dissolution`,
+  `H2Saq-formation`, `species/HS`, and H2S.dat declares
+  `aqueousSpeciation sulfide` with its bridge), and an 8-tray THREE-family
+  stripper (NH₃ 2.5 + CO₂ 1.0 + H₂S 0.5 kmol/h in 96 water) converges in
+  10 MESH iterations first try, showing the selectivity lesson: CO₂
+  strips overhead (loading 0.195 → 1e-5) while H₂S CONCENTRATES downward
+  (0.18 → 0.51 per NH₃) and the pH falls 8.49 → 7.61 — the opposite pH
+  story to the two-family stripper.  Found by the prototype: a tray whose
+  H₂S trace converged to numerical zero has the sulfide family EXCLUDED
+  at the speciation intake (a zero total), and the per-tray profile then
+  prints NaN — but NaN is reserved for "chemistry unresolved" and the
+  true statement is 0 exact; writer fix queued.  What S4 still NEEDS from
+  Vítor: (1) the paper's **Table 6 H₂S/HS⁻ molecule-ion rows** (the
+  transcription deferred them, and running Eq 23 estimates where the
+  paper tabulates values would knowingly diverge from it), for the
+  Edwards-parameterisation arm; (2) the usual INTERIM review of any new
+  records.  The PHREEQC-parameterisation case needs neither and can ship.
 
 ## 6a. The one-stage identity, as built (2026-08-04)
 
