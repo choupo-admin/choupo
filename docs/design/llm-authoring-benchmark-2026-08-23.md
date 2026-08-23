@@ -91,9 +91,11 @@ reactive-distillation snippet and got lucky).  Referenced ~10 times, shown
 never.  *Fix: one worked `constant/reactions` example in unit-ops.md.*
 
 **F5 — small but universal:** direct binary invocation (`choupoSolve
-<caseDir>`) undocumented (all five agents guessed it); `choupo-lint` printed
-a completeness ERROR yet exited 0 against its own contract (B — verify and
-fix); component inventory lacks validity windows (A ran benzene 16 K outside
+<caseDir>`) undocumented (all five agents guessed it); `choupo-lint` was REPORTED (B)
+as printing a completeness ERROR at exit 0 — **refuted on verification**:
+both the flash and B's own column shape exit 2 with the ERROR; the agent
+mis-captured the code, and the auditor rule (nothing lands unverified) is
+why this line is a refutation and not a fix; component inventory lacks validity windows (A ran benzene 16 K outside
 its Antoine range and only the run said so); no SRK/PR kij pair inventory in
 the catalogue (E); `CH4`-not-`methane` and the role-solute-as-EoS-component
 doubt (E); `nStages` semantics buried (B); unsealed-is-fine never stated

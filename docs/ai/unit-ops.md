@@ -195,6 +195,34 @@ rule in `energy.md`).
 operation { conversion  <0..1>;  T  <K>; }   // SINGLE (T optional; default = feed T)
 reaction  <name>;        // needs only stoichiometry + limitingReactant (no kinetics)
 ```
+**The `constant/reactions` library file itself** (referenced everywhere,
+shown nowhere until 2026-08-23 -- an LLM benchmark agent had to guess it):
+
+```
+esterification_etac                       # one block per NAMED reaction
+{
+    stoichiometry
+    (
+        { component ethanol;      nu -1; }
+        { component aceticAcid;   nu -1; }
+        { component ethylAcetate; nu  1; }
+        { component water;        nu  1; }
+    );
+    limitingReactant  aceticAcid;         # conversionReactor: required
+    # kinetics { A ...; Ea ...; }         # cstr/pfr/batch only
+}
+```
+Reactants carry `nu < 0`, products `nu > 0`; the block's NAME is what
+`reaction <name>;` / `reactions ( ... )` select.
+
+**THE OUTLET IS PRICED ON THE GAS BASIS** -- the unit is gas-phase-honest
+and stamps its product `phase gas;` (undocumented until the 2026-08-23
+benchmark).  Feed it a liquid-phase duty (an esterification at 350 K) and
+the composition/flow answers stay exact stoichiometry, but the energy report
+will show an "unexplained" residual equal to the latent heat of that stamp,
+and the reported dHrxn is the GAS-phase value.  Until the posture is ruled
+on, read Q_reaction from the KPI and expect the balance warning on
+liquid-phase use.
 ```
 operation                                     # MULTI -- a PARALLEL network
 {
@@ -420,10 +448,17 @@ Naphtali & Sandholm, *AIChE J.* 17 (1971) 148.
 ```
 operation
 {
-    nStages          12;           # (NOT `stages`)
+    nStages          12;           # (NOT `stages`).  nStages counts ALL
+                                   # equilibrium stages INCLUDING the total
+                                   # condenser (stage 1) and the reboiler
+                                   # (stage nStages): "12 pratos" = nStages 12,
+                                   # profile.csv has 12 rows
     feedStage         6;
-    refluxRatio      2.5;          # XOR with distillateRate
-    # distillateRate 50 kmol/h;
+    refluxRatio      2.5;          # refluxRatio is REQUIRED; beside it give
+    distillateRate 50 kmol/h;      # distillateRate XOR distillateRecovery
+                                   # (the XOR is between those two, NOT with
+                                   # refluxRatio -- a stray comment here said
+                                   # otherwise until 2026-08-23)
     P              1.01325 bar;
 }
 ```

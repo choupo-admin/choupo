@@ -577,6 +577,22 @@ ports, the `utilityAllocation` report).
 
 ## State / streams
 
+### An unpinned gas feed manufactures an "ENERGY BALANCE FAILED" banner
+A stream file with no `vaporFraction` / `phase` key is priced as a
+**sub-cooled liquid** (vf = 0).  Feed a flash an all-vapour mixture that way
+(natural gas at 250 K / 60 bar: every species except methane is
+sub-critical, so the Tc screen cannot prove it gaseous) and the unit's
+energy report shows an "unexplained" first-law residual — the latent heat of
+the mispriced feed — under a red `ENERGY BALANCE FAILED` banner, at exit 0,
+on a case whose composition answers are perfectly right.  The fix is one
+declared line in the `0/` file: `phase gas;` (see dict-syntax "Pinning the
+phase of an inlet").  Rule of thumb: **any feed that is not a liquid at its
+(T, P) needs its phase pinned**, and a FAILED energy banner whose residual
+is latent-heat-sized is usually a mispriced inlet, not a broken unit.
+(Found by the 2026-08-23 LLM benchmark, which also hit the
+`conversionReactor` gas-stamp variant of the same banner — see that unit's
+entry in unit-ops.md.)
+
 ### Writing a saturated steam feed — there is no `state` keyword to forget
 A "saturated steam at 200 kPa" feed is written in its own `0/<stream>` file,
 with the saturation temperature stated and the phase pinned:

@@ -81,7 +81,7 @@ keyword  (v1 v2 v3... );
 The values are tokens (numbers or words):
 
 ```
-outputs    (vapor  liquid );
+outputs    ( liquid  vapor );
 components (water  ethanol  sucrose );
 fractions  ( 0.6  0.4 );
 ```
@@ -104,7 +104,7 @@ events, equality targets):
 units
 (
     { name flash01; type isothermalFlash;
-      in feed; outputs (vapor liquid );
+      in feed; outputs (liquid vapor );
       operation { T 370 K; P 1 bar; } }
 
     { name cstr01;  type cstr;
@@ -356,12 +356,20 @@ single most common source of "why is my product mislabelled?" — learn it once.
 
   | unit | `producedStreams()` order |
   |---|---|
-  | `isothermalFlash` / `flash` | `vapor`, `liquid` |
+  | `isothermalFlash` / `flash` (VL) | **`liquid`, `vapor`** |
   | `isothermalFlash` in LL mode (the decanter) | `liquid_alpha`, `liquid_beta` |
+  | `isothermalFlash` in VLLE mode | `vapor`, `liquid_alpha`, `liquid_beta` — note the vapour moves FIRST here |
   | `extractor` | `extract`, `raffinate` |
   | `crystalliser` | `crystals`, `motherLiquor` |
-  | `cyclone` | `overflow` (gas), `underflow` (solids) |
-  | `distillationColumn` | `distillate`, `bottoms`, then side draws by **ascending stage** |
+  | `cyclone` | `cleanGas`, `capturedSolids` |
+  | `distillationColumn` | `distillate`, `bottoms`, then side draws by **ascending stage** (on one stage: liquid draw before vapour draw) |
+
+  This table was WRONG once — until 2026-08-23 the flash row said `vapor,
+  liquid`, and two independent LLM-authored cases shipped with exit 0 and the
+  phase labels silently swapped (the vf column of the run's own stream table
+  is what exposed it).  Each row above is now transcribed from the emitting
+  code itself.  If a run's `vf` disagrees with your label, trust the vf and
+  swap your `outputs` — and please report the row.
 
   Example — a 4-way column `outputs ( distillate bottoms drawC4 drawC5 )` with
   side draws declared at stage 13 then 23: `drawC4` (position 2) binds to the

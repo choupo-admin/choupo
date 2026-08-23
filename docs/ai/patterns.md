@@ -28,8 +28,12 @@ units
       reaction  esterification_etac; }
 
     { name flash1;  type isothermalFlash;
-      in reacted;  outputs (vapor  recycle );
-      operation { T 350 K; P 1 bar; } }
+      in reacted;  outputs (recycle  vapor );   # position 0 IS the liquid --
+      operation { T 350 K; P 1 bar; } }         # the liquid recycles, as the
+                                                # prose above says (this snippet
+                                                # had them swapped until
+                                                # 2026-08-23; the real
+                                                # process03_recycle was right)
 );
 ```
 
