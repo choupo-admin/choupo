@@ -1553,6 +1553,24 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
             }
             catch (const std::exception&) { /* NaN stands, see above */ }
         }
+        //  A SOLVED TRAY WITH AN EMPTY FAMILY IS A ZERO, NOT A NaN.  A
+        //  species column is discovered on whichever tray first reports it,
+        //  and a tray whose family total converged to numerical zero has
+        //  that family EXCLUDED at the speciation intake -- so its cells
+        //  stayed at the NaN the column was initialised with.  But this
+        //  report's NaN is a CLAIM ("this tray's chemistry could not be
+        //  resolved"), and on a tray whose speciation SOLVED (its pH is a
+        //  number) the truth about an absent family is exact: no atoms, so
+        //  every one of its species is 0.  Found by the three-family
+        //  sour-water prototype (2026-08-23): the top tray had stripped its
+        //  H2S to -3e-25, and the sulfide columns read NaN beside a solved
+        //  pH of 8.49.  NaN stays exactly where it was meant: a tray whose
+        //  own speciation failed keeps NaN in EVERY chemistry column, pH
+        //  included, so the two states cannot be confused.
+        for (auto& kv : mSpecies)
+            for (std::size_t j = 0; j < N; ++j)
+                if (kv.second[j] != kv.second[j] && pHcol[j] == pHcol[j])
+                    kv.second[j] = 0.0;
         profile_.columns["pH"]            = pHcol;
         profile_.columns["ionicStrength"] = Icol;
         for (auto& kv : mSpecies)

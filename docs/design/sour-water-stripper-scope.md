@@ -153,7 +153,13 @@ enough; I will not need the PDF.
   transcription deferred them, and running Eq 23 estimates where the
   paper tabulates values would knowingly diverge from it), for the
   Edwards-parameterisation arm; (2) the usual INTERIM review of any new
-  records.  The PHREEQC-parameterisation case needs neither and can ship.
+  records.  The PHREEQC-parameterisation case needs neither — and SHIPPED
+  the same night: `stripper02_sour_water_h2s`, sealed, its selectivity
+  claims pinned as golden `csv` rows on the converged profile (CO₂'s
+  m_HCO3 falls five decades tray 2 → reboiler while m_HS holds and the
+  molecular H₂S grows; pH 8.21 → 7.61), and tray 1's sulfide 0 doubling
+  as the witness of the profile-writer fix (a solved tray with an empty
+  family reports 0 exactly; NaN stays reserved for a failed speciation).
 
 ## 6a. The one-stage identity, as built (2026-08-04)
 

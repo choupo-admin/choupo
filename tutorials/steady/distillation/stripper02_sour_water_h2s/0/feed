@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|  stripper01/0/feed -- sour water on the apparent component basis.             |
+|                                                                              |
+|  The same three roles as column13 (water the solvent, NH3 the cation route,   |
+|  CO2 the anion route + the molecular CO2aq), fed UNEQUAL on purpose so the    |
+|  charge balance is a real test and not a symmetry.  The load is heavier than  |
+|  column13's (2.5 mol% NH3, 1 mol% CO2): a stripper feed, not a trace.         |
+\*-----------------------------------------------------------------------------*/
+componentMolarFlows
+{
+    NH3       2.5   kmol/h;
+    CO2       1.0   kmol/h;
+    H2S       0.5   kmol/h;
+    water    96.0   kmol/h;
+}
+
+T               360.0 K;
+P               101325 Pa;

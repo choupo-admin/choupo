@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+tier         tutorial;
+description   "The three-family sour water: CO2 strips overhead while H2S concentrates downward and the pH FALLS -- the selectivity lesson the two-family stripper cannot teach.";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+}

@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE BASIS-RECONCILIATION WITNESS (spike S2, ratified 2026-08-03 --
+  docs/design/basis-reconciliation-spike.md).
+
+  The sour-water system: ammonia and carbon dioxide in water.  The package is
+  MINIMAL BUT NOT COINCIDENTAL -- each of the five roles the spike names is
+  filled by exactly one component, so no check below can pass by an accident
+  of symmetry:
+
+      water     the solvent
+      NH3       the CATION route: its declared bridge is
+                `aqueousMapping ( { species NH4; nu 1; } { species H; nu -1; } )`
+                -- one component, one cation row in the block
+      CO2       the ANION route (HCO3-, CO3--) and, at the same time, the
+                AQUEOUS MOLECULAR species in equilibrium (CO2aq)
+      ethanol   a neutral molecular VOLATILE, nonionising and CONDENSABLE --
+                it sits on the Raoult backbone and gets NO species row
+      N2        nonionising and NONCONDENSABLE -- a permanent gas, so it
+                takes the HENRY rung through its own gas-liquid record and
+                DOES get a species row: the dissolved N2
+
+  THE TWO NONIONISING COMPONENTS BEHAVE DIFFERENTLY, and that is the point
+  of having both.  `aqueousSpeciation none;` says a component does not join
+  the ionic NETWORK -- it does not say the component is absent from the
+  aqueous phase.  Ethanol is condensable and priced on the backbone, so the
+  block has nothing to say about it; N2 is a permanent gas dissolved by
+  Henry, so the block carries a NEUTRAL `N2` row that must collapse to
+  itself and contribute exactly zero to Sum z*n.  One file shows both, which
+  is cheaper than a paragraph explaining that "nonionising" is a statement
+  about charge and not about presence.
+
+  Why not fewer.  A single symmetric salt closes the charge balance by
+  symmetry and a sign error would be invisible; here the cation (NH4+) and
+  the anion (HCO3-) come from DIFFERENT components, in different amounts, so
+  Sum z*n is a real test.  Two networks are active at once (`ammonia` and
+  `carbonate`), which is also what makes the pH a solved quantity rather than
+  a constant.
+
+  WHY EVERY COMPONENT IS MOLECULAR.  The chain hands this material to a unit
+  running a plain molecular world (see system/flowsheetDict).  A dissolved
+  SALT could not cross that boundary at all -- a nonvolatile salt has no
+  route through the ideal-gas reference, and the engine refuses rather than
+  invent one.  Choosing NH3/CO2 for the ionic roles keeps the boundary
+  crossable while still putting a genuine cation and a genuine anion in the
+  block: the chemistry is the ions', the components stay molecular.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+//  THREE COMPONENTS, and the two that basis01 also carries are DELIBERATELY
+//  absent.  basis01 is a basis-carriage witness and needs a nonionising
+//  condensable (ethanol) and a permanent gas (N2) to show that "nonionising"
+//  is a statement about charge and not about presence.  This case is a
+//  numerical identity witness on a COLUMN, and a column solver is a very
+//  different customer: it takes finite differences, so it asks for
+//  equilibrium at hundreds of trial compositions nobody authored, and a
+//  component present at 5e-4 goes NEGATIVE on the way (measured, not feared:
+//  N2 = -5.7e-05 at T = 353.8 K on the first Newton excursion, with the
+//  reactive VLE refusing by name that a dissolved species was absent).
+//  The refusal is right.  Feeding a trace to a Newton and then blaming the
+//  chemistry would be wrong.  So the case carries the system it is actually
+//  about -- ammonia and carbon dioxide in water -- and nothing else.
+//
+//  COMPONENT ORDER IS NUMERICAL: the MESH carries n-1 mole fractions per
+//  stage and closes the last by difference, so the closure belongs on the
+//  LARGEST component.  Water is 0.97 of this feed, so water goes last.
+components    ( NH3  CO2  H2S  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { model davies; }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( NH3  CO2  water );
+}

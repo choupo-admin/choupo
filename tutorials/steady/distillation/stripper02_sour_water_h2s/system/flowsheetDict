@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  stripper02_sour_water_h2s --- the THREE-family sour water: NH3 + CO2 + H2S,
+  and the SELECTIVITY lesson the two-family stripper cannot teach.
+
+  stripper01 shows the mechanism: CO2 strips, pH rises, ammonia frees.  Add
+  the third volatile weak electrolyte and the story INVERTS in the most
+  instructive way, measured on this converged profile:
+
+    * CO2 still strips overhead, hard: its loading falls from 0.195 to 1e-5
+      (per mol of ammonia species) between tray 2 and the reboiler;
+    * H2S does NOT follow -- its loading RISES down the column, 0.18 to
+      0.51: the H2S/CO2 selectivity of a sour-water stripper at these
+      conditions favours CO2 removal, and the sulfide concentrates in the
+      liquid heading for the bottoms;
+    * and the pH FALLS down the column (8.49 -> 7.61), the OPPOSITE of
+      stripper01's climb: the departing ammonia and the accumulating
+      sulfide acidify faster than the departing CO2 alkalinises.
+
+  A student who has read stripper01 should predict a rising pH here and be
+  wrong -- that is the point.  The chemistry is the same machinery (three
+  networks at once: ammonia, carbonate, sulfide -- the H2S bridge is
+  `aqueousSpeciation sulfide`, HS- + H+, declared on the component), and
+  the per-tray profile carries all three families' molalities.
+
+  Same column as stripper01 otherwise: 8 reactive trays, feed on tray 2,
+  reflux 0.5, D = 5 of 100 kmol/h, `model simultaneous` (one reactive
+  flash per stage per residual evaluation; the Jacobian sees apparent
+  components only).
+
+  DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/
+  and sha256-verified by constant/propertyManifest.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tower;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        8;
+            feedStage      2;
+            refluxRatio    0.5;
+            distillateRate 5.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+    }
+);

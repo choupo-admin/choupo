@@ -1,0 +1,45 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0263888888889    1e-4
+stream  distillate             F                0.00138888888889   1e-4
+stream  feed                   F                0.0277777777778    1e-4
+kpi     tower                  B                0.0263888888889    1e-4
+kpi     tower                  D                0.00138888888889   1e-4
+kpi     tower                  Q_condenser_kW   -52.339216667      1e-4
+kpi     tower                  Q_reboiler_kW    76.4475297294      1e-4
+kpi     tower                  R                0.5                1e-4
+kpi     tower                  T_bottom         372.031545214      1e-4
+kpi     tower                  T_top            356.430868411      1e-4
+kpi     tower                  feedStage        2                  1e-4
+kpi     tower                  nFeeds           1                  1e-4
+kpi     tower                  nSideDraws       0                  1e-4
+kpi     tower                  nStages          8                  1e-4
+kpi     tower                  x_B_HK           0.984357974047     1e-4
+kpi     tower                  x_D_LK           0.302803507572     1e-4
+utility tower                  heating.steamLP.duty_kW 76.4475297294      1e-4
+utility tower                  heating.steamLP.T 372.031545214      1e-4
+utility tower                  heating.steamLP.kg_s 0.0349714225661    1e-4
+utility tower                  heating.steamLP.eur_h 3.30253328431      1e-4
+utility tower                  cooling.coolingWater.duty_kW -52.339216667      1e-4
+utility tower                  cooling.coolingWater.T 356.430868411      1e-4
+utility tower                  cooling.coolingWater.kg_s 1.25213437002      1e-4
+utility tower                  cooling.coolingWater.eur_h 0.0753684720004    1e-4
+# THE SELECTIVITY LESSON, pinned on the converged per-tray profile (self-
+# recorded rows -- the claims of the case header, held numerically):
+# CO2 strips overhead (m_HCO3 falls 5 decades tray 2 -> reboiler), H2S does
+# NOT (m_HS holds ~0.28-0.29 and its molecular form GROWS downward), and the
+# pH FALLS 8.21 -> 7.61 below the top tray -- the opposite direction to
+# stripper01, same machinery.  Tray 1's sulfide 0 is the writer-fix witness:
+# a SOLVED tray with an empty family reports 0 exactly, never NaN (a zero
+# expected value asserts ~zero, the near-zero golden semantic).
+csv     reports/unitOperations/tower/profile.csv  0:pH        8.4947876    1e-4
+csv     reports/unitOperations/tower/profile.csv  0:m_H2Saq   0            1e-4
+csv     reports/unitOperations/tower/profile.csv  0:m_HS      0            1e-4
+csv     reports/unitOperations/tower/profile.csv  1:pH        8.2089848    1e-4
+csv     reports/unitOperations/tower/profile.csv  1:m_HS      0.27828666   1e-4
+csv     reports/unitOperations/tower/profile.csv  1:m_HCO3    0.14620364   1e-4
+csv     reports/unitOperations/tower/profile.csv  7:pH        7.6090598    1e-4
+csv     reports/unitOperations/tower/profile.csv  7:m_HS      0.28854884   1e-4
+csv     reports/unitOperations/tower/profile.csv  7:m_HCO3    5.6325275e-06 1e-4
+csv     reports/unitOperations/tower/profile.csv  7:m_H2Saq   0.008247863  1e-4
