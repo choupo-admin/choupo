@@ -884,6 +884,7 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `composition` |   | object | — | Alternative to the totals block for a case that states the solution as a composition. |
 | `pH` |   | number | - | Fixes the proton balance. Read on the single-ion convention of the activity parameterisation in use — a meter reading is NBS and the run … |
 | `temperature` |   | number | K | Defaults to 298.15 K. |
+| `totalsBasis` |   | string | — | `analytical` (default): a measured ion analysis, where a feed charge imbalance is evidence of lab error and the solved-pH advisory says s… |
 | `atmosphere` |   | object | — | `{ pCO2 4.2e-4 atm; ... }` — every key is a gas the solution equilibrates WITH, so the system is open to it. Each value MUST carry a pres… |
 | `activityModel` |   | string | — | Which per-ion model prices the gammas, e.g. davies or pitzerHMW. The model is the experiment's subject here, which is why a props BENCH m… |
 | `equilibrate` |   | object | — | Present = let the named solids precipitate to SI = 0. `minerals` is the ONLY key accepted inside; an empty list is refused, and so is any… |
@@ -894,6 +895,7 @@ Aqueous speciation: distributes the declared analytical totals over the curated 
 | `networkScope` |   | string | — | full (default): every curated chemistry record reachable from the feed. restricted: only the records admitted in network ( ... ) -- requi… |
 | `network` |   | array[string] | — | Record file stems (e.g. water-dissociation) admitted when networkScope is restricted. Every name must resolve to a loaded chemistry recor… |
 | `reason` |   | string | — | Required with networkScope restricted: WHY the network is deliberately smaller (e.g. HMW theta/psi were fitted to a non-pairing treatment… |
+| `vapour` |   | object | — | Optional. Prices the equilibrium vapour over the solved liquid: each declared molecular solute by p = m · γ · H (its named Henry record, … |
 
 ## `spiralWoundModule`  (spiralWoundModule operation)
 

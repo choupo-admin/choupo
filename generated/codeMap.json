@@ -364,6 +364,9 @@
   "EconomicsSummary": [
    "src/core/ResultRecords.H"
   ],
+  "EdwardsHenry": [
+   "src/thermo/electrolyte/EdwardsCatalogue.H"
+  ],
   "EdwardsParameters": [
    "src/thermo/electrolyte/EdwardsPitzer.H"
   ],
@@ -3776,6 +3779,8 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/electrolyte/AqueousActivity.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
+   "src/thermo/electrolyte/EdwardsCatalogue.H",
+   "src/thermo/electrolyte/EdwardsPitzer.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerHMW.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
@@ -10567,10 +10572,12 @@
    "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/electrolyte/EdwardsCatalogue.H": [
+   "src/propertyOps/Speciate.cpp",
    "src/thermo/electrolyte/AqueousActivity.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp"
   ],
   "src/thermo/electrolyte/EdwardsPitzer.H": [
+   "src/propertyOps/Speciate.cpp",
    "src/thermo/electrolyte/AqueousActivity.cpp",
    "src/thermo/electrolyte/EdwardsCatalogue.cpp",
    "src/thermo/electrolyte/EdwardsPitzer.cpp"
