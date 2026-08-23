@@ -130,8 +130,15 @@ ones for day-to-day work:
      answer (announced, treated as the high side, re-seeded by bisection
      from the feed), so column13 re-flashes ADIABATICALLY and claims BOTH
      halves of the identity;
-   * S2 proper (a taller stripper, wider loading range so the mechanism
-     check has more than four points) is NOT built.  ~~S3~~ — the model
+   * ~~S2 proper~~ — **BUILT 2026-08-23**: `stripper01_sour_water`, eight
+     reactive trays, the mechanism strict across an order of magnitude of
+     carbonate loading, plus the pinned free-ammonia SURGE below the feed
+     (check_tray_chemistry T5).  Building it closed two engine holes: the
+     MESH initial ramp vs the two-phase band (stageK's incipient fallback
+     on the typed NonConvergence) and the per-tray chemistry report
+     flashing a liquid pinned to its own bubble point (now speciated as a
+     liquid).  Record: `docs/design/sour-water-stripper-scope.md` §6d.
+     ~~S3~~ — the model
      addition S3 waited on shipped 2026-08-04 (`edwardsPitzer`), and **S3
      itself shipped 2026-08-23**: `edwards02_table7_vle` reproduces the
      paper's Table 7 predictions (18 anchors, bands sized to the measured

@@ -167,8 +167,10 @@ void ThermoPackage::setReactiveConvergence(
 { if (reactive_) reactive_->setConvergence(c, defaulted); }
 
 electrolyte::ReactiveVLEResult ThermoPackage::equilibrate(scalar T_K,
-    scalar P_Pa, scalar F, const sVector& zApparent, int verbosity) const
-{ return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity); }
+    scalar P_Pa, scalar F, const sVector& zApparent, int verbosity,
+    bool subsaturatedProbe) const
+{ return reactive_->solve(T_K, P_Pa, F, zApparent, verbosity,
+                          subsaturatedProbe); }
 
 const electrolyte::ReactiveVLEConfig* ThermoPackage::reactiveConfig() const
 { return reactive_ ? &reactive_->config() : nullptr; }
@@ -809,12 +811,7 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
         }
     }
 
-    electrolyte::ReactiveVLEResult r;
-    try
-    {
-        r = equilibrate(T, P, 1.0, zTrial, 0);
-    }
-    catch (const std::exception& ex)
+    auto withStageState = [&](const std::exception& ex) -> std::runtime_error
     {
         std::ostringstream st;
         st << ex.what() << "\n  [stage state] T = " << T << " K, P = "
@@ -825,7 +822,65 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
               " composition the solver proposed -- not by the case's own"
               " input.  A negative or vanishing amount here is a solver"
               " excursion, not a curation gap.)";
-        throw std::runtime_error(st.str());
+        return std::runtime_error(st.str());
+    };
+
+    electrolyte::ReactiveVLEResult r;
+    try
+    {
+        r = equilibrate(T, P, 1.0, zTrial, 0);
+    }
+    catch (const electrolyte::ReactiveVLE::NonConvergence&)
+    {
+        //  THE TWO-PHASE NEWTON HAS NO INTERIOR ANSWER AT EVERY TRIAL A
+        //  COLUMN PROPOSES.  A MESH initialisation ramps T across the
+        //  column, and the hot end of the ramp can sit ABOVE the mixture's
+        //  two-phase band -- there is no V/F in (0,1) there, and the
+        //  reactive Newton stalls (measured: stripper01's 8-stage ramp put
+        //  its bottom guess at Tf + 15 = 375 K on a feed whose band ends
+        //  lower; column13's 4-stage ramp never visited such a point, which
+        //  is why the hole was invisible).  Refusing to price the trial
+        //  refuses to solve the column, exactly like the subsaturated case.
+        //
+        //  So the SAME construction is used from the other side: the stage K
+        //  is taken INCIPIENT over the fully speciated v = 0 liquid --
+        //  hypothetical at this T, in precisely the sense gamma*Psat above
+        //  the bubble point is -- through the probe that skips the two-phase
+        //  Newton.  K_i = (p_i^eq/P)/x_i, the formula the subsaturated
+        //  branch below already applies; the K surface is then continuous
+        //  across the whole band and the MESH can walk home.  At a CONVERGED
+        //  stage the bubble-point residual pins the state to saturation,
+        //  where the incipient and two-phase constructions agree -- so this
+        //  aid shapes the path, never the answer.  Announced once (the
+        //  no-silent-crutch rule); a REFUSAL (missing record, unpriceable
+        //  species) is NOT of this type and is never absorbed here.
+        if (!stageIncipientAnnounced_)
+        {
+            stageIncipientAnnounced_ = true;
+            std::cout << "  [stageK] a trial state's two-phase equilibrium"
+                         " did not converge (a trial T outside the mixture's"
+                         " two-phase band -- no interior V/F exists there)."
+                         "  K taken INCIPIENT over the hypothetical speciated"
+                         " liquid, the same construction the subsaturated"
+                         " branch uses, so the K surface is continuous and"
+                         " the MESH can walk home.\n"
+                         "           Announced once, and declared: this aid"
+                         " shapes the solver's path, never the answer -- a"
+                         " converged stage sits at saturation, where the two"
+                         " constructions agree.\n";
+        }
+        try
+        {
+            r = equilibrate(T, P, 1.0, zTrial, 0, /*subsaturatedProbe*/ true);
+        }
+        catch (const std::exception& ex2)
+        {
+            throw withStageState(ex2);
+        }
+    }
+    catch (const std::exception& ex)
+    {
+        throw withStageState(ex);
     }
 
     //  A STAGE K-VALUE IS AN INCIPIENT QUANTITY.  This is the definition,

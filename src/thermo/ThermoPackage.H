@@ -474,7 +474,8 @@ public:
     void setReactiveConvergence(const solver::ConvergenceControls& c,
                                 bool defaulted);                    // .cpp
     electrolyte::ReactiveVLEResult equilibrate(scalar T_K, scalar P_Pa,
-        scalar F, const sVector& zApparent, int verbosity) const;   // .cpp
+        scalar F, const sVector& zApparent, int verbosity,
+        bool subsaturatedProbe = false) const;                      // .cpp
 
     //  The DECLARED component -> master bridge, read-only, for the code that
     //  has to cross the basis at the STREAM boundary: a feed written in the
@@ -691,6 +692,7 @@ private:
     //  once per trial: a column solver proposes hundreds of them and the
     //  student needs to know it happened, not to read it hundreds of times.
     mutable bool stageProjectionAnnounced_ = false;
+    mutable bool stageIncipientAnnounced_  = false;
 };
 
 } // namespace Choupo

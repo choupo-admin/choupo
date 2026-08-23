@@ -1068,7 +1068,16 @@ returns a column of ZEROS the moment a trial state is subsaturated — residual
 untouched guess.  The subsaturated branch uses the equilibrium partial
 pressures over the fully speciated liquid, K_i = (p_i/P)/x_i (published per
 apparent component as `ReactiveVLE`'s `pEqAtm`; a declared dimer contributes
-on the monomer basis).  The branches agree where they meet.  **A trial
+on the monomer basis).  The branches agree where they meet.  **The SAME
+construction closes the HIGH side too (2026-08-23):** a MESH initial ramp can
+visit trial T's ABOVE the two-phase band, where the reactive Newton has no
+interior V/F — it throws the TYPED `ReactiveVLE::NonConvergence` (the
+singular-Jacobian degeneracy at a simplex-corner trial is the same class),
+and `stageK` catches exactly that type and prices the trial incipient over
+the hypothetical speciated liquid (`solve(..., subsaturatedProbe = true)`),
+announced once; a REFUSAL is a different type and is never absorbed.  A
+converged stage sits at saturation, where the constructions agree — the aid
+shapes the path, never the answer.  **A trial
 composition can leave the simplex** — the Newton overshoots the minor
 component first (CO2 at −8.5e-4 against a feed of 8e-3) — so `stageK` projects
 onto the simplex and ANNOUNCES it once: negatives clamped (overshoot), exact

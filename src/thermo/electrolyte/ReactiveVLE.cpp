@@ -867,7 +867,8 @@ void ReactiveVLE::noteSubcriticalGases(scalar T_K) const
 }
 
 ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
-                                     const sVector& zApp, int verbosity) const
+                                     const sVector& zApp, int verbosity,
+                                     bool subsaturatedProbe) const
 {
     noteSubcriticalGases(T_K);
 
@@ -1303,7 +1304,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             }
         }
         res.pEqSumAtm = pSum;
-        if (pSum * kAtm <= P_Pa)
+        if (subsaturatedProbe || pSum * kAtm <= P_Pa)
         {
             scalar nTot = 0.0; for (auto x : n) nTot += x;
             for (std::size_t i = 0; i < nApp; ++i) res.xApp[i] = n[i]/nTot;
@@ -1311,8 +1312,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             res.trueState = sr;
             res.pH        = sr.pH;
             res.converged = true;
-            res.diagnostic = "single liquid (sum of equilibrium partial"
-                " pressures " + std::to_string(pSum) + " atm below P)";
+            res.diagnostic = (subsaturatedProbe && pSum * kAtm > P_Pa)
+                ? "subsaturated PROBE: the fully speciated v = 0 liquid,"
+                  " HYPOTHETICAL at this (T, P) (sum p_eq "
+                  + std::to_string(pSum) + " atm exceeds P) -- an incipient"
+                  " basis, not a flash answer"
+                : "single liquid (sum of equilibrium partial"
+                  " pressures " + std::to_string(pSum) + " atm below P)";
             //  THE SECOND LIQUID OF A SUBSATURATED ANSWER (2026-08-10,
             //  found by marcilla02, the first case whose organic is PRESENT
             //  with no vapour): v0 IS the answer here, ls0 already carries
@@ -1382,10 +1388,17 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                                   ? res.pDimerAtm
                                     / (res.pMonoAtm + res.pDimerAtm) : 0.0)
                               << "\n";
-                std::cout << "  [reactive] subsaturated liquid at (T,P):"
-                             " no vapour phase forms at the specified"
-                             " pressure (sum p_eq = "
-                          << std::setprecision(4) << pSum << " atm)\n";
+                if (subsaturatedProbe && pSum * kAtm > P_Pa)
+                    std::cout << "  [reactive] subsaturated PROBE at (T,P):"
+                                 " the v = 0 liquid is HYPOTHETICAL here"
+                                 " (sum p_eq = " << std::setprecision(4)
+                              << pSum << " atm exceeds P) -- returned as an"
+                                 " incipient basis, not as a flash answer\n";
+                else
+                    std::cout << "  [reactive] subsaturated liquid at (T,P):"
+                                 " no vapour phase forms at the specified"
+                                 " pressure (sum p_eq = "
+                              << std::setprecision(4) << pSum << " atm)\n";
             }
             return res;
         }
@@ -1805,7 +1818,13 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                     if (std::abs(A[i2][c]) > std::abs(A[piv][c])) piv = i2;
                 std::swap(A[c], A[piv]); std::swap(b[c], b[piv]);
                 if (std::abs(A[c][c]) < 1.0e-300)
-                    throw std::runtime_error("ReactiveVLE: singular outer"
+                    //  NonConvergence, not a refusal: a degenerate interior
+                    //  system is the phase split having no answer AT THIS
+                    //  TRIAL STATE (a simplex corner, a band edge) -- the
+                    //  same kind of failure as the stalled Newton below, and
+                    //  the same legitimate continuation applies (stageK's
+                    //  incipient probe).  Nothing about the CASE is wrong.
+                    throw NonConvergence("ReactiveVLE: singular outer"
                         " Jacobian -- the phase-equilibrium system is"
                         " degenerate at this state.");
                 for (std::size_t i2 = c+1; i2 < nV; ++i2)
@@ -2023,7 +2042,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
             os << std::scientific << std::setprecision(4) << v;
             return os.str();
         };
-        throw std::runtime_error("ReactiveVLE: coupled speciation + phase"
+        throw NonConvergence("ReactiveVLE: coupled speciation + phase"
             " equilibrium did NOT converge (|r|max = " + std::to_string(rMax)
             + " after " + std::to_string(sol.iterations) + " outer"
             " iterations) -- no partial answer is returned."

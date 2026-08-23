@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  stripper01_sour_water --- S2 of the sour-water programme: a REAL multi-stage
+  column over the chemistry, not a two-stage identity rig.
+
+  column13 proved the machinery: one reactive flash per stage per residual,
+  the apparent components the state, the ions internal to each tray.  This
+  case is what the machinery exists FOR -- a sour-water stripper: feed near
+  the top, most of the trays below it stripping, the reboiler making the
+  vapour that carries NH3 and CO2 overhead.
+
+  THE MECHANISM IS THE LESSON (docs/design/sour-water-stripper-scope.md §4.3):
+  stripping CO2 RAISES the liquid pH down the column, and the rising pH
+  converts NH4+ back to free NH3, which then strips.  The separation and the
+  speciation are the same problem.  Eight trays instead of column13's four
+  give the mechanism room to show, and it shows STRICTLY, measured on this
+  converged profile: the carbonate loading falls tray by tray from 0.524
+  mol/kg (top) to 0.024 (reboiler) -- over an order of magnitude -- while
+  the free-ammonia fraction rises 0.802 -> 0.947 with no exception, and the
+  pH climbs 8.46 -> 8.80 below the top tray.  (The top tray itself sits
+  ~7 K colder than tray 2 and its pH reads higher for the temperature of
+  its own Kw -- comparing pH across that jump compares two water
+  dissociations, which is why the pH claim starts at tray 2.)
+  check_tray_chemistry's ordering claim is tested across this whole span
+  rather than across four points.
+
+  WHAT BUILDING IT FOUND, because the first honest run is an instrument
+  (both fixes are the engine's, recorded in the scope doc §6d):
+    * a MESH initialisation ramps T across the column, and an 8-stage ramp
+      visits temperatures a 4-stage ramp never did -- including ones above
+      the feed's two-phase band, where the reactive Newton has no interior
+      V/F and stalled.  stageK now prices such a trial INCIPIENT over the
+      hypothetical speciated liquid (announced once), the same construction
+      its subsaturated branch always used -- continuous K, and the aid
+      shapes the path, never the answer (a converged stage sits at
+      saturation, where the constructions agree);
+    * the per-tray chemistry report used to FLASH each converged tray
+      liquid -- a liquid pinned by the MESH to its own bubble point, i.e.
+      the flash's degenerate corner -- and at reflux 0.5 five trays of
+      eight printed NaN for chemistry the package resolves easily.  The
+      report now asks the right question (speciate the LIQUID), and NaN is
+      reserved for a tray whose speciation itself fails.
+
+  WHAT THIS CASE DECLARES, said plainly (the column12/13 rule):
+    * `model simultaneous;` -- the rigorous MESH, whose per-stage equilibrium
+      is `ThermoPackage::stageK`: for this reactive package, one reactive
+      flash per stage per residual evaluation.  Nested, not a species-basis
+      MESH -- the Jacobian sees apparent components only.
+    * the per-tray chemistry (pH, ionic strength, every molality) rides in
+      reports/unitOperations/tower/profile.csv -- engine-owned, the same
+      surface column13 writes.
+
+  DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/
+  and sha256-verified by constant/propertyManifest.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        tower;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        8;
+            feedStage      2;
+            refluxRatio    0.5;
+            distillateRate 5.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+    }
+);

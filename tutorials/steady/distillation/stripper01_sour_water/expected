@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0263888888889    1e-4
+stream  distillate             F                0.00138888888889   1e-4
+stream  feed                   F                0.0277777777778    1e-4
+kpi     tower                  B                0.0263888888889    1e-4
+kpi     tower                  D                0.00138888888889   1e-4
+kpi     tower                  Q_condenser_kW   -51.4325432244     1e-4
+kpi     tower                  Q_reboiler_kW    71.9165526448      1e-4
+kpi     tower                  R                0.5                1e-4
+kpi     tower                  T_bottom         370.531146763      1e-4
+kpi     tower                  T_top            355.393273713      1e-4
+kpi     tower                  feedStage        2                  1e-4
+kpi     tower                  nFeeds           1                  1e-4
+kpi     tower                  nSideDraws       0                  1e-4
+kpi     tower                  nStages          8                  1e-4
+kpi     tower                  x_B_HK           0.990834326335     1e-4
+kpi     tower                  x_D_LK           0.333953827521     1e-4
+utility tower                  heating.steamLP.duty_kW 71.9165526448      1e-4
+utility tower                  heating.steamLP.T 370.531146763      1e-4
+utility tower                  heating.steamLP.kg_s 0.0328986974587    1e-4
+utility tower                  heating.steamLP.eur_h 3.10679507426      1e-4
+utility tower                  cooling.coolingWater.duty_kW -51.4325432244     1e-4
+utility tower                  cooling.coolingWater.T 355.393273713      1e-4
+utility tower                  cooling.coolingWater.kg_s 1.23044361781      1e-4
+utility tower                  cooling.coolingWater.eur_h 0.0740628622432    1e-4

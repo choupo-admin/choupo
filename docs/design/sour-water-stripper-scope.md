@@ -1,9 +1,9 @@
 # Sour-water stripper — a distillation column under speciation (scope)
 
-**Status: the shape was approved and is being delivered in stages — S1 (the
-effective-K seam) 2026-08-04 (§6a), S3 (the Table 7 literature anchor)
-2026-08-23 (§6c); S2 proper (the taller stripper) and S4 (H₂S) remain the
-named gaps.**  Originally requested 2026-08-04 ("podemos fazer o caso 1?") as
+**Status: the shape was approved and is delivered — S1 (the effective-K
+seam) 2026-08-04 (§6a), S2 (the eight-tray stripper) 2026-08-23 (§6d), S3
+(the Table 7 literature anchor) 2026-08-23 (§6c); S4 (H₂S) remains the
+named gap.**  Originally requested 2026-08-04 ("podemos fazer o caso 1?") as
 a scope awaiting alignment; §§2 and 5 record the sourcing problem as it stood
 then — Appendix A holds the tables Vítor supplied, so §5's request is
 satisfied.
@@ -131,6 +131,7 @@ enough; I will not need the PDF.
   turned into and why.
 * **S2** — the stripper case: a real multi-stage sour-water column, the
   per-tray speciation reported, conservation + direction gated.
+  **BUILT 2026-08-23** — `stripper01_sour_water`, see §6d.
 * **S3** — the literature anchor, once the tables exist: goldens locked on
   the paper's numbers, provenance of every value in the case header.
   **BUILT 2026-08-23** — `edwards02_table7_vle`, see §6c.
@@ -267,6 +268,57 @@ the first seal REFUSED (the agree-checker doing exactly the job the 2026-08-04
 defect taught it).  Suffix-matching the two name spaces would be the
 name-identity F2 bans; the closure now reads the case's own `henry <stem>;`
 declarations verbatim.
+
+## 6d. S2 as built (2026-08-23): `stripper01_sour_water`
+
+Eight reactive trays, feed on tray 2, reflux 0.5, D = 5 of 100 kmol/h on a
+2.5 mol% NH₃ / 1 mol% CO₂ sour water.  Converges in 9 MESH Newton
+iterations; distillate 33.4 mol% NH₃ at 355 K, bottoms 99.1 % water.  The
+mechanism §4.3 names is MEASURED on the converged profile, strictly: the
+carbonate loading falls tray by tray across an order of magnitude
+(0.52 → 0.024 mol/kg) while the free-ammonia fraction rises 0.802 → 0.947
+with no exception, and `check_tray_chemistry` now runs BOTH witnesses (T3
+across the whole span; on the stripper, T4 hands `m_NH3aq` to a new T5).
+
+**T5, the surge — a finding, then a pinned claim.**  Free ammonia is not
+merely stripped; it is PRODUCED by the deprotonation the falling carbonate
+allows, and just below the feed the production outruns the stripping:
+`m_NH3aq` rises 1.316 → 1.424 from tray 2 to tray 3 and only then falls
+strictly to the reboiler (0.464).  The first instinct — exempt `m_NH3aq`
+from T4's "everything falls" — would have hidden the mechanism's own
+signature; it is pinned instead (sabotage-verified: moving the feed to
+tray 5 kills the tray-2→3 surge and T5 alone fires).
+
+**Hole 1 — the MESH initialisation vs the two-phase band.**  A column's
+initial guess ramps T linearly and an 8-stage ramp visits temperatures a
+4-stage ramp never did — including Tf + 15 K, ABOVE the feed's two-phase
+band, where the reactive Newton has no interior V/F and stalled (the
+first stripper run died before its first iteration printed; the
+`[stage state]` suffix named T = 375 K).  `stageK` now catches the typed
+`ReactiveVLE::NonConvergence` (a class the singular-Jacobian degeneracy
+also joins — a simplex-corner trial with both volatiles floored is the
+same "no interior answer") and prices the trial INCIPIENT over the
+hypothetical speciated liquid via a new `subsaturatedProbe` — the same
+K_i = (p_i^eq/P)/x_i its subsaturated branch always used, so the K surface
+is continuous across the band.  Announced once; a REFUSAL is a different
+type and is never absorbed.  At a converged stage the bubble-point
+residual pins the state to saturation, where the two constructions agree —
+the aid shapes the path, never the answer.
+
+**Hole 2 — the per-tray chemistry report flashed a liquid pinned to its
+own bubble point.**  The report ran the FULL two-phase equilibrate on each
+converged tray liquid — but the MESH's own residual (Σy = 1) places that
+liquid EXACTLY at its bubble point, the flash's degenerate corner, and at
+reflux 0.5 five trays of eight printed NaN for chemistry the package
+resolves without difficulty.  The question was posed to the wrong tool:
+the report wants the LIQUID's speciation, and now asks exactly that
+(`speciateReactiveAsLiquid`).  NaN remains reserved for a tray whose
+speciation itself fails.  column13's four trays reproduce unmoved under
+the new instrument.
+
+Also claimed by the case: conservation rides the default element-balance
+reports, and the sealed copy reproduces its golden with the catalogue
+hidden (24 rows).
 
 ## 7. Decision requested
 

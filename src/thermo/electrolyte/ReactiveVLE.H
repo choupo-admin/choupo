@@ -379,12 +379,30 @@ public:
     explicit ReactiveVLE(ReactiveVLEConfig cfg);
     ~ReactiveVLE();
 
+    //  The two-phase Newton's own failure, as a TYPE: a caller that has a
+    //  legitimate continuation (stageK's incipient-K fallback) must be able
+    //  to tell "the interior phase split does not exist / did not converge
+    //  at this trial state" apart from a refusal (a missing record, an
+    //  unpriceable species), which no fallback may paper over.  Matching
+    //  the message text would be the fragile version of this type.
+    struct NonConvergence : public std::runtime_error
+    { using std::runtime_error::runtime_error; };
+
     // TP equilibrium of an apparent feed: F [kmol/s] with apparent mole
     // fractions z.  Returns the apparent phase split + the internal true
-    // state.  Throws (named) on non-convergence -- never a silent partial
-    // answer.
+    // state.  Throws (named; NonConvergence for the outer Newton's own
+    // failure) -- never a silent partial answer.
+    //
+    //  `subsaturatedProbe`: return the saturation pre-check's OWN state --
+    //  the fully speciated v = 0 liquid with its equilibrium partial
+    //  pressures (pEqAtm, pEqSumAtm) -- WITHOUT running the two-phase
+    //  Newton, even when sum p_eq exceeds P.  That liquid is HYPOTHETICAL
+    //  above the band (the same sense in which gamma*Psat above the bubble
+    //  point is), which is exactly what an incipient stage K needs; it is
+    //  not a flash answer and V_over_F = 0 there is a basis, not a claim.
     ReactiveVLEResult solve(scalar T_K, scalar P_Pa, scalar F,
-                            const sVector& zApp, int verbosity) const;
+                            const sVector& zApp, int verbosity,
+                            bool subsaturatedProbe = false) const;
 
     const ReactiveVLEConfig& config() const { return cfg_; }
 

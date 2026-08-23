@@ -1517,6 +1517,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  rather than a plausible zero -- an unsolved pH is not pH 0, and a
     //  column that quietly printed one would be lying in the one place
     //  this report exists to tell the truth.
+    //
+    //  SPECIATED AS A LIQUID, not flashed (2026-08-23).  The first version
+    //  ran the full two-phase equilibrate on each tray liquid -- but a
+    //  converged tray liquid sits EXACTLY at its bubble point (the MESH's
+    //  own residual pins sum y = 1 there), which is the two-phase Newton's
+    //  degenerate corner: V/F = 0 on the boundary.  On stripper01 at reflux
+    //  0.5 it stalled on five trays of eight and this report printed NaN
+    //  for chemistry the package resolves without difficulty -- the
+    //  question was merely posed to the wrong tool.  The report wants the
+    //  LIQUID's speciation, and speciateReactiveAsLiquid asks exactly that
+    //  (no phase split posed at all).  NaN still stands for a tray whose
+    //  SPECIATION fails, which is what it was meant for.
     if (thermo.hasReactiveEquilibrium())
     {
         std::vector<scalar> pHcol(N, std::numeric_limits<scalar>::quiet_NaN());
@@ -1527,11 +1539,11 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             try
             {
-                const auto r = thermo.equilibrate(T[j], P, 1.0, x[j], 0);
-                pHcol[j] = r.pH;
-                Icol[j]  = r.trueState.I;
-                Iany     = std::max(Iany, r.trueState.I);
-                for (const auto& row : r.trueState.rows)
+                const auto sr = thermo.speciateReactiveAsLiquid(T[j], x[j]);
+                pHcol[j] = sr.pH;
+                Icol[j]  = sr.I;
+                Iany     = std::max(Iany, sr.I);
+                for (const auto& row : sr.rows)
                 {
                     auto& col = mSpecies[row.name];
                     if (col.empty())

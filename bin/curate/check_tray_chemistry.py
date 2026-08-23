@@ -2,7 +2,14 @@
 """PER-TRAY CHEMISTRY on a reacting column -- the physics-direction gate
 (2026-08-04; sour-water programme S2, docs/design/sour-water-stripper-scope.md §4).
 
-Witness: tutorials/steady/distillation/column13_sour_water_stage_identity.
+Witnesses: tutorials/steady/distillation/column13_sour_water_stage_identity
+(4 trays, the identity rig) and, since 2026-08-23,
+tutorials/steady/distillation/stripper01_sour_water (8 trays -- T3 across an
+order of magnitude of carbonate loading, plus T5: the stripper pins the
+free-ammonia SURGE just below its feed, where deprotonation outruns
+stripping -- m_NH3aq rises 1.316 -> 1.424 and then falls strictly to the
+reboiler.  On the stripper T4 therefore covers the carbonate species and
+NH4 and hands m_NH3aq to T5: pinned, never silently exempted).
 
 A reacting column's profile is incomplete without its chemistry.  The whole
 reason the separation and the speciation are the same problem is that
@@ -64,8 +71,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
+#  TWO witnesses since 2026-08-23 (S2): the four-tray identity rig and the
+#  eight-tray stripper.  The second is what widens T3 from four points to a
+#  full order of magnitude of carbonate loading (0.52 -> 0.024 mol/kg).
 CASE = (ROOT / "tutorials" / "steady" / "distillation"
         / "column13_sour_water_stage_identity")
+CASE2 = (ROOT / "tutorials" / "steady" / "distillation"
+         / "stripper01_sour_water")
 PROFILE = Path("reports") / "unitOperations" / "tower" / "profile.csv"
 
 #  INDEPENDENT charge table -- hand-written here on purpose.  A gate that
@@ -85,25 +97,35 @@ def main() -> int:
         print(f"check_tray_chemistry: {SOLVE} missing -- build first")
         return 1
 
+    cur_tag = [""]
+
     def fail(m):
-        failures.append(m)
+        failures.append(f"[{cur_tag[0]}] " + m)
 
-    with tempfile.TemporaryDirectory() as td:
-        case = Path(td) / "c"
-        shutil.copytree(CASE, case, ignore=shutil.ignore_patterns(
-            "converged", "reports", "log.*", "resultJson*"))
-        p = subprocess.run([str(SOLVE), "."], cwd=case, capture_output=True,
-                           text=True, timeout=900)
-        if p.returncode != 0:
-            print("check_tray_chemistry: the witness did not run\n"
-                  + (p.stdout + p.stderr)[-2500:])
-            return 1
+    def run_witness(src, tag):
+        with tempfile.TemporaryDirectory() as td:
+            case = Path(td) / "c"
+            shutil.copytree(src, case, ignore=shutil.ignore_patterns(
+                "converged", "reports", "log.*", "resultJson*"))
+            p = subprocess.run([str(SOLVE), "."], cwd=case,
+                               capture_output=True, text=True, timeout=900)
+            if p.returncode != 0:
+                print(f"check_tray_chemistry: witness {tag} did not run\n"
+                      + (p.stdout + p.stderr)[-2500:])
+                return None
+            f = case / PROFILE
+            if not f.exists():
+                print(f"check_tray_chemistry: {tag} wrote no profile.csv")
+                return None
+            return list(csv.DictReader(f.open()))
 
-        f = case / PROFILE
-        if not f.exists():
-            print("check_tray_chemistry: no profile.csv was written")
+    n_trays = {}
+    for src, tag in ((CASE, "column13"), (CASE2, "stripper01")):
+        cur_tag[0] = tag
+        rows = run_witness(src, tag)
+        if rows is None:
             return 1
-        rows = list(csv.DictReader(f.open()))
+        n_trays[tag] = len(rows)
 
         # ---- T1: the columns exist and carry numbers --------------------
         need = ["pH", "ionicStrength"] + ["m_" + s for s in CHARGE]
@@ -163,7 +185,17 @@ def main() -> int:
                      "ammonia as ammonium, not less")
 
         # ---- T4: the SOLUTES are being stripped -------------------------
-        for s in CARBONATE + AMMONIA:
+        #  On the stripper, m_NH3aq is DELIBERATELY excluded and asserted
+        #  separately below: free ammonia is not merely stripped, it is also
+        #  PRODUCED by the deprotonation the falling carbonate allows, and
+        #  just below the feed the production outruns the stripping.  That
+        #  non-monotonicity is the mechanism's own signature, not a defect
+        #  -- so it is PINNED (T5), never exempted in silence.  column13's
+        #  four trays never showed it (all its solutes fall), so its
+        #  original all-species claim stands there unchanged.
+        t4_species = (CARBONATE + AMMONIA) if tag == "column13" \
+                     else (CARBONATE + ("NH4",))
+        for s in t4_species:
             col = [v["m_" + s] for v in vals]
             for j in range(len(col) - 1):
                 if not col[j + 1] < col[j]:
@@ -173,16 +205,39 @@ def main() -> int:
                          "down this column")
                     break
 
+        # ---- T5 (stripper only): the free-ammonia SURGE below the feed --
+        #  m_NH3aq must RISE from tray 2 (the feed tray) to tray 3 -- the
+        #  deprotonation surge -- and then fall strictly to the reboiler.
+        #  Measured on the recorded profile: 1.316 -> 1.424, then
+        #  monotonically down to 0.464.
+        if tag == "stripper01" and len(vals) >= 4:
+            col = [v["m_NH3aq"] for v in vals]
+            if not col[2] > col[1]:
+                fail(f"T5: m_NH3aq did not rise below the feed "
+                     f"({col[1]:.6g} -> {col[2]:.6g}) -- the deprotonation "
+                     "surge, the mechanism's own signature, is gone")
+            for j in range(2, len(col) - 1):
+                if not col[j + 1] < col[j]:
+                    fail(f"T5: m_NH3aq did not fall from stage {j+1} "
+                         f"({col[j]:.6g}) to {j+2} ({col[j+1]:.6g}) below "
+                         "the surge")
+                    break
+
     if failures:
         print("check_tray_chemistry: FAIL")
         for x in failures:
             print("  - " + x)
         return 1
-    print("check_tray_chemistry: OK -- every tray reports its own pH, ionic "
-          "strength and species; charge closes per tray on an independent "
-          "table; and ordering the trays by carbonate loading orders the "
-          "free-ammonia fraction strictly the other way (the sour-water "
-          "mechanism, measured rather than assumed)")
+    print("check_tray_chemistry: OK -- two witnesses "
+          f"(column13: {n_trays.get('column13', 0)} trays, stripper01: "
+          f"{n_trays.get('stripper01', 0)} trays): every tray reports its own "
+          "pH, ionic strength and species; charge closes per tray on an "
+          "independent table; ordering the trays by carbonate loading orders "
+          "the free-ammonia fraction strictly the other way on BOTH (the "
+          "sour-water mechanism across an order of magnitude of loading); "
+          "and the stripper pins the free-ammonia SURGE below its feed "
+          "(deprotonation outrunning stripping) before the strict fall to "
+          "the reboiler")
     return 0
 
 
