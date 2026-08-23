@@ -555,3 +555,22 @@ under an interruption nobody predicted, in front of a reader with no memory of
 the incident.  It behaved exactly as documented, and the design note that a clean
 `git status` proves nothing about `build/` is what prevented a poisoned binary
 from being trusted.
+
+---
+
+## A8. lithiumBrinePlant cannot RE-seal, and the cause is a policy question (DEFERRED to Vitor)
+
+The plant runs green under its existing seal.  A re-seal refreshes its
+component mirrors from today's catalogue, where at least one component now
+declares `aqueousSpeciation <set>` -- the ThermoResolver dispatch
+(ThermoPackageBuilder.cpp:1873) then classifies the system as reactive-shaped,
+and the reactive electrolyteGammaPhi slice serves ionic davies only, refusing
+the plant's declared Pitzer by name (line 514).  Both behaviours are settled
+contracts individually; their collision is new: a SEALED case whose
+formulation was legal under the records it sealed cannot re-seal under
+today's records without either changing physics (davies) or a formulation
+ruling.  Options, for the architect: (a) the plant declares the
+davies-rung speciation and re-records; (b) the reactive-shape dispatch
+learns to respect a case that declares a NON-speciating formulation
+explicitly; (c) the plant stays on its old seal, documented.  (c) is the
+state as of 2026-08-23.

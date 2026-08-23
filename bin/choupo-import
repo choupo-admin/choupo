@@ -1169,8 +1169,11 @@ def validate_staged(root, staged):
         die("validation FAILED: the staged sealed case does not run with the"
             " catalogue hidden (exit %d) -- nothing was installed.\n"
             "--- last lines ---\n%s" % (r.returncode, tail))
-    validate_closure_complete(root, staged, ledger)
+    missing = validate_closure_complete(root, staged, ledger)
+    if missing:
+        return missing            # the caller learns the closure ONCE, restages
     validate_staged_agrees(staged, r.stdout)
+    return []
 
 
 def validate_closure_complete(root, staged, ledger):
@@ -1215,15 +1218,10 @@ def validate_closure_complete(root, staged, ledger):
         if (Path(root) / "data" / "standards" / sub).exists():
             missing.append(sub)
     if missing:
-        die("validation: the sealed run ASKED for %d record(s) the closure did"
-            " not stage, and the catalogue HAS them -- the seal would answer"
-            " with those records missing.  Nothing was installed.\n"
-            "  %s\n"
-            "REMEDY: teach this script's closure the record home(s) above, in"
-            " the same commit that introduced whatever reads them."
-            % (len(missing), "\n  ".join(sorted(missing)[:20])))
+        return missing
     print("  closure: the sealed run asked for no catalogue record the seal"
           " omitted (observed at the resolver seam, not inferred)")
+    return []
 
 
 def validate_staged_agrees(staged, out):
@@ -1656,7 +1654,54 @@ def main():
                               "context: " + (ctxDir.name if ctxDir != caseDir
                                              else "case root"),
                               repo_root=root, const_dir=sconst))
-        validate_staged(root, staged)
+        missing = validate_staged(root, staged)
+        learn_pass = 0
+        while missing and learn_pass < 4:
+            learn_pass += 1
+            #  THE CLOSURE LEARNS FROM OBSERVATION, ONCE (2026-08-23).  The
+            #  guess-regexes above go stale as the engine grows readers -- the
+            #  lumped-evaporator rule said "never opens species/Na.dat" until
+            #  the ebullioscopic path started opening it.  The consumption
+            #  ledger already records the truth, so instead of refining the
+            #  guess each time, the missing catalogue records join the ROOT
+            #  closure and the staging validates ONCE more, still fail-closed:
+            #  a second incomplete pass refuses exactly as before.
+            print("  closure: learning %d record(s) from the observed ledger:"
+                  % len(missing))
+            rootDir, rootInstalls, _rootRemovals, rootEntries = plans[0]
+            sconst = staged / rootDir.relative_to(caseDir) / "constant"
+            for rel in sorted(missing):
+                print("    +", rel)
+                src = std / rel
+                body = strip_install_paths(src.read_text())
+                stamp = ('// [imported] origin "data/standards/%s" (%s'
+                         ' release) -- owned + sha256-verified by'
+                         ' constant/propertyManifest\n' % (rel, release))
+                content = stamp + body
+                rootInstalls[rel] = (content, "data/standards/" + rel,
+                                     sha_file(src))
+                rootEntries[rel] = {"type": "imported",
+                                    "sha256": sha(content),
+                                    "origin": "data/standards/" + rel,
+                                    "originSha256": sha_file(src),
+                                    "release": release}
+                dst = sconst / rel
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                dst.write_text(content)
+            (sconst / "propertyManifest").write_text(
+                manifest_text(rootEntries, release, "context: case root",
+                              repo_root=root, const_dir=sconst))
+            missing = validate_staged(root, staged)
+        if missing:
+                die("validation: the sealed run STILL asked for %d record(s)"
+                    " after 4 ledger-learning passes -- a cascade this deep is a"
+                    " defect, not a closure; the seal"
+                    " would answer with those records missing.  Nothing was"
+                    " installed.\n  %s\n"
+                    "REMEDY: teach this script's closure the record home(s)"
+                    " above, in the same commit that introduced whatever"
+                    " reads them."
+                    % (len(missing), "\n  ".join(sorted(missing)[:20])))
 
     # ---- install (validated): files first, each manifest LAST -------------
     n_inst = n_adopt = n_rm = 0
