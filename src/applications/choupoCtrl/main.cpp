@@ -1242,9 +1242,11 @@ try
                     [&](scalar tEnd, scalar /*hTaken*/)
                     { ledgerAccept(tEnd); rtdAccept(tEnd); frAccept(tEnd); });
             else
+            {
                 ledgerAccept(tNext);
                 rtdAccept(tNext);
                 frAccept(tNext);
+            }
 
             t = tNext;
 
