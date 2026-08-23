@@ -96,6 +96,7 @@ Description
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
 #include "thermo/ElementComposition.H"
 #include "io/SolutionWriter.H"
+#include "solver/NewtonND.H"
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ResultEmitter.H"
 
@@ -514,6 +515,64 @@ try
                   << rtd.unitName << "', tracer '" << rtd.tracerName
                   << "' -- moments on the accepted-step trapezoid\n";
     }
+    // ---- Frequency-response measurement (2026-08-23) -----------------
+    //  Declared: `frequencyResponse { unit <u>; tracer <c>; frequency <Hz>;
+    //  discardCycles <n>; fitCycles <m>; }`.  The engine samples the outlet
+    //  tracer molar flow on the accepted-step grid, discards the start-up
+    //  transient, and least-squares fits a + b sin(wt) + c cos(wt) over the
+    //  fit window -- amplitude ratio and phase lag against the case's own
+    //  declared drive (mean/amplitude/frequency are the CASE's numbers; a
+    //  frequency that does not match the drive shows up as a large fit
+    //  residual, which is REPORTED, not hidden).
+    struct FrAcc
+    {
+        bool on = false;
+        DynamicUnitOperation* unit = nullptr;
+        std::size_t tracer = 0;
+        std::string unitName, tracerName;
+        scalar freqHz = 0.0, tFitStart = 0.0, tFitEnd = 0.0;
+        std::vector<std::pair<scalar,scalar>> samples;   // (t, n_tracer)
+    } fr;
+    if (controlDict->found("frequencyResponse"))
+    {
+        auto fd = controlDict->subDict("frequencyResponse");
+        fr.unitName   = fd->lookupWord("unit");
+        fr.tracerName = fd->lookupWord("tracer");
+        fr.freqHz     = fd->lookupScalar("frequency");
+        const scalar nDisc = fd->lookupScalar("discardCycles");
+        const scalar nFit  = fd->lookupScalar("fitCycles");
+        if (fr.freqHz <= 0.0 || nDisc < 0.0 || nFit <= 0.0)
+            throw std::runtime_error("frequencyResponse: frequency and"
+                " fitCycles must be positive (discardCycles >= 0).");
+        for (const auto& u : units)
+            if (u->name() == fr.unitName) fr.unit = u.get();
+        if (!fr.unit)
+            throw std::runtime_error("frequencyResponse: unit '" + fr.unitName
+                + "' is not a dynamic unit of this case.");
+        bool found = false;
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            if (thermo.comp(i).name() == fr.tracerName)
+            { fr.tracer = i; found = true; }
+        if (!found)
+            throw std::runtime_error("frequencyResponse: tracer '"
+                + fr.tracerName + "' is not a component of this case.");
+        const scalar period = 1.0 / fr.freqHz;
+        fr.tFitStart = nDisc * period;
+        fr.tFitEnd   = (nDisc + nFit) * period;
+        fr.on = true;
+        std::cout << "[frequencyResponse] armed: outlet of '" << fr.unitName
+                  << "', tracer '" << fr.tracerName << "', f = " << fr.freqHz
+                  << " Hz; fit window [" << fr.tFitStart << ", " << fr.tFitEnd
+                  << "] s (" << nDisc << " cycles discarded, " << nFit
+                  << " fitted)\n";
+    }
+    auto frAccept = [&](scalar tNow)
+    {
+        if (!fr.on || tNow < fr.tFitStart || tNow > fr.tFitEnd) return;
+        const ContinuousStream out = fr.unit->outletStream();
+        fr.samples.emplace_back(tNow, out.F * out.component(fr.tracer));
+    };
+
     auto rtdAccept = [&](scalar tNow)
     {
         if (!rtd.on) return;
@@ -1072,6 +1131,7 @@ try
             t += dt;
             ledgerAccept(t);
             rtdAccept(t);
+            frAccept(t);
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
             {
@@ -1157,10 +1217,11 @@ try
             if (!odeUnits.empty())
                 stepper.advance(odeUnits, t, tNext, onStep,
                     [&](scalar tEnd, scalar /*hTaken*/)
-                    { ledgerAccept(tEnd); rtdAccept(tEnd); });
+                    { ledgerAccept(tEnd); rtdAccept(tEnd); frAccept(tEnd); });
             else
                 ledgerAccept(tNext);
                 rtdAccept(tNext);
+                frAccept(tNext);
 
             t = tNext;
 
@@ -1254,6 +1315,55 @@ try
                       << " kmol, tbar " << tbar << " s, sigma2 " << sigma2
                       << " s^2 (final/peak " << rk["truncation_final_over_peak"]
                       << ")\n";
+        }
+
+        // ---- Frequency-response fit (engine-owned) ----------------------
+        if (fr.on)
+        {
+            if (fr.samples.size() < 8)
+                throw std::runtime_error("frequencyResponse: only "
+                    + std::to_string(fr.samples.size()) + " sample(s) in the"
+                    " fit window -- endTime must reach past (discardCycles +"
+                    " fitCycles) periods.");
+            //  Normal equations of y ~ a + b sin(wt) + c cos(wt): 3x3,
+            //  solved in closed form via solver::gaussSolve.
+            const scalar w = 2.0 * M_PI * fr.freqHz;
+            std::vector<sVector> A(3, sVector(3, 0.0));
+            sVector rhs(3, 0.0);
+            for (const auto& [tt, yy] : fr.samples)
+            {
+                const sVector base = {1.0, std::sin(w*tt), std::cos(w*tt)};
+                for (int i = 0; i < 3; ++i)
+                {
+                    for (int j = 0; j < 3; ++j) A[i][j] += base[i]*base[j];
+                    rhs[i] += base[i]*yy;
+                }
+            }
+            const sVector abc = solver::gaussSolve(A, rhs);
+            const scalar amp = std::hypot(abc[1], abc[2]);
+            //  y = amp*sin(wt + phi): phi = atan2(c, b).
+            const scalar phi = std::atan2(abc[2], abc[1]);
+            scalar ss = 0.0, sy = 0.0;
+            for (const auto& [tt, yy] : fr.samples)
+            {
+                const scalar fit = abc[0] + abc[1]*std::sin(w*tt)
+                                          + abc[2]*std::cos(w*tt);
+                ss += (yy - fit) * (yy - fit);
+                sy += (yy - abc[0]) * (yy - abc[0]);
+            }
+            auto& fk = result.kpis["frequencyResponse"];
+            fk["frequency_Hz"]     = fr.freqHz;
+            fk["out_amplitude_kmol_s"] = amp;
+            fk["out_phase_rad"]    = phi;
+            fk["out_mean_kmol_s"]  = abc[0];
+            //  Fit honesty: the share of the output variance the single
+            //  sinusoid does NOT explain -- nonlinearity, leftover
+            //  transient, or a frequency that is not the drive's.
+            fk["fit_residual_rel"] = (sy > 0.0) ? std::sqrt(ss / sy) : 0.0;
+            std::cout << "[frequencyResponse] fit: amplitude " << amp
+                      << " kmol/s, phase " << (phi * 180.0 / M_PI)
+                      << " deg, mean " << abc[0] << " kmol/s, residual "
+                      << fk["fit_residual_rel"] << "\n";
         }
 
         // ---- Balance-ledger KPIs (engine-owned; the GUI only draws) -----

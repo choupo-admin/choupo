@@ -597,3 +597,35 @@ THE ANCHORS ARE CLOSED FORMS (Levenspiel, Chemical Reaction Engineering, ch. 13-
 \goldmore{14}
 \end{tutgolden}
 
+\clearpage
+\tutentry{ctrl19\_freq\_response\_cstr}{tutorials/ctrl/ctrl19\_freq\_response\_cstr}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny dynamicCSTR}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Frequency response of the LTI mixing tank at omega$\ast$tau = 1: engine-fitted amplitude and phase against the exact first-order closed forms (AR = 1/sqrt(2), phase = -45 deg).}
+\begin{tutnarrative}
+FREQUENCY RESPONSE of the same LTI mixing tank (tau = N/F = 240 s): the tracer feed oscillates sinusoidally at omega$\ast$tau = 1 -- again as a SUBSTITUTION against the carrier, so total flow never moves and the vessel is rigorously first order in the tracer. The engine fits a + b sin + c cos over 4 cycles after discarding 5 (transient e\textasciicircum{}-t/tau through 5 periods = e\textasciicircum{}-31 -- gone), and reports amplitude, phase and the unexplained-variance residual.
+
+THE ANCHORS ARE THE FIRST-ORDER CLOSED FORMS (any process-control text; at omega$\ast$tau = 1 exactly): AR = 1/sqrt(1 + (omega tau)\textasciicircum{}2) = 1/sqrt(2) $\to$ out amplitude = 2.0e-6 $\ast$ 0.7071068 = 1.4142136e-6 kmol/s phase = -atan(omega tau) = -45 deg = -0.7853982 rad (the drive is sin(w(t-tStart)) with tStart 0, so the fitted phase IS the lag). The measured amplitude lands within 1e-6 relative of the closed form and the fit residual is \textasciitilde{}7e-15 (the vessel really is LTI); the phase carries a bias of EXACTLY omega$\ast$dt/2 = 0.00208 rad = 0.12 deg -- the half-sample lag of reading accepted states on a 1 s grid, the measurement system's own phase contribution, worth teaching in itself. The anchor band covers it and this header names it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{CarrierMirror}{MV\_final}{4.41011922784e-05}
+\goldrow{kpi}{CarrierMirror}{PV\_final}{0}
+\goldrow{kpi}{CarrierMirror}{SP\_final}{4.41011922784e-05}
+\goldrow{kpi}{TracerSine}{MV\_final}{5.89880772158e-06}
+\goldrow{kpi}{TracerSine}{PV\_final}{0}
+\goldrow{kpi}{TracerSine}{SP\_final}{5.89880772158e-06}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{2.91033739366e-15}
+\goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{20.8095}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{20.8095}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{-6.05626659933e-14}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldmore{14}
+\end{tutgolden}
+

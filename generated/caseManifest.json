@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 368,
+  "cases": 369,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 6
+  "anchored": 7
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -961,6 +961,24 @@
     "Signal",
     "dynamicCSTR",
     "pulse"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/ctrl/ctrl19_freq_response_cstr": {
+   "application": "choupoCtrl",
+   "unitTypes": [
+    "Signal",
+    "dynamicCSTR",
+    "sinusoidal"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -5441,7 +5459,8 @@
     "tutorials/ctrl/ctrl16_williams_otto_optimal",
     "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve",
-    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
+    "tutorials/ctrl/ctrl19_freq_response_cstr"
    ],
    "choupoProps": [
     "tutorials/plant/polycaprolactonePlant/properties",
@@ -5780,7 +5799,8 @@
     "tutorials/ctrl/ctrl08_prbs_ident",
     "tutorials/ctrl/ctrl09_stream_disturbance",
     "tutorials/ctrl/ctrl17_signal_shapes",
-    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
+    "tutorials/ctrl/ctrl19_freq_response_cstr"
    ],
    "absorber": [
     "tutorials/plant/acetonePlant",
@@ -5968,7 +5988,8 @@
     "tutorials/ctrl/ctrl11_esterification_jacket",
     "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve",
-    "tutorials/ctrl/ctrl18_rtd_pulse_cstr"
+    "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
+    "tutorials/ctrl/ctrl19_freq_response_cstr"
    ],
    "electricLoad": [
     "tutorials/electrochem/ed01_nacl_desalination",
@@ -6196,7 +6217,8 @@
     "tutorials/steady/distillation/shortcut01_benzene_toluene"
    ],
    "sinusoidal": [
-    "tutorials/ctrl/ctrl06_sine_disturbance"
+    "tutorials/ctrl/ctrl06_sine_disturbance",
+    "tutorials/ctrl/ctrl19_freq_response_cstr"
    ],
    "solidDryer": [
     "tutorials/steady/drying/solidDryer01_sugar"
@@ -6440,6 +6462,7 @@
     "tutorials/ctrl/ctrl17_signal_shapes",
     "tutorials/ctrl/ctrl17_step_reaction_curve",
     "tutorials/ctrl/ctrl18_rtd_pulse_cstr",
+    "tutorials/ctrl/ctrl19_freq_response_cstr",
     "tutorials/electrochem/ed01_nacl_desalination",
     "tutorials/electrochem/ed02_over_limiting_current",
     "tutorials/plant/ChemicalPlantTutorial",

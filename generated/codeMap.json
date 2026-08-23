@@ -2256,6 +2256,7 @@
    "src/result/SimulationResult.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/NewtonND.H",
    "src/solver/ODE/AdaptiveTimeStep.H",
    "src/solver/ODE/ODEIntegrator.H",
    "src/streams/ProcessStream.H",
@@ -9392,6 +9393,7 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp"
   ],
   "src/solver/NewtonND.H": [
+   "src/applications/choupoCtrl/main.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/ActiveSetQP.cpp",
    "src/solver/NewtonND.cpp",

@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     CarrierMirror          MV_final         4.41011922784e-05  1e-4
+kpi     CarrierMirror          PV_final         0                  1e-4
+kpi     CarrierMirror          SP_final         4.41011922784e-05  1e-4
+kpi     TracerSine             MV_final         5.89880772158e-06  1e-4
+kpi     TracerSine             PV_final         0                  1e-4
+kpi     TracerSine             SP_final         5.89880772158e-06  1e-4
+kpi     balance                energy_balance_available 0                  1e-4
+kpi     balance                mass_closure_rel 2.91033739366e-15  1e-4
+kpi     balance                mass_kg_final    0.36               1e-4
+kpi     balance                mass_kg_in_cum   20.8095            1e-4
+kpi     balance                mass_kg_initial  0.36               1e-4
+kpi     balance                mass_kg_out_cum  20.8095            1e-4
+kpi     balance                mass_residual_kg -6.05626659933e-14 1e-4
+kpi     balance                material_available 1                  1e-4
+kpi     frequencyResponse      fit_residual_rel 7.22581905975e-15  1e-4
+kpi     frequencyResponse      frequency_Hz     0.00066314559622   1e-4
+kpi     frequencyResponse      out_amplitude_kmol_s 1.41421458538e-06  1e-4
+kpi     frequencyResponse      out_mean_kmol_s  4e-06              1e-4
+kpi     frequencyResponse      out_phase_rad    -0.787482943494    1e-4
+kpi     reactor                F_in_final       5e-05              1e-4
+kpi     reactor                T_final          330                1e-4
+kpi     reactor                n_compA_final    0.0108868858762    1e-4
+kpi     reactor                n_compB_final    0.00111311412376   1e-4
+kpi     reactor                t_end            13873              1e-4
+kpi     reactor                z_in_compA_final 0.882023845568     1e-4
+kpi     reactor                z_in_compB_final 0.117976154432     1e-4
+# ANCHORS: exact first-order closed forms at omega*tau = 1 (any process-
+# control text).  AR = 1/sqrt(2) on the 2e-6 kmol/s drive; phase = -pi/4.
+# The phase band covers the stated omega*dt/2 half-sample bias (0.27%).
+kpi     frequencyResponse      out_amplitude_kmol_s 1.4142136e-6  1e-4  anchor
+kpi     frequencyResponse      out_phase_rad    -0.7853982       5e-3  anchor
