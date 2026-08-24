@@ -410,15 +410,77 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             //  hint names the CHECK, not a verdict: the reader compares the
             //  residual against a latent-heat magnitude and reads the vf
             //  column, which is evidence this report cannot weigh for them.
+            //  A CHECK THAT CAN RUN MUST NOT STAY A GUESS (2026-08-24,
+            //  the glass-box reading benchmark).  The paragraph below used
+            //  to ADVISE the reader to compare the residual against a
+            //  latent heat and read the vf column -- while this report
+            //  holds the thermo package and can do exactly that itself.
+            //  It found the wrong culprit on esterification2sector, where
+            //  the 808 kW is an INLET whose declared phase is impossible
+            //  at its own (T, P, z): Rachford-Rice's own g(V) says so, and
+            //  the flash prints it three lines later.
+            //
+            //  The test is the incipient one, no iteration: for a stream
+            //  labelled LIQUID, g(0) = SUM z_i (K_i - 1) > 0 means it is
+            //  already above its bubble point; for one labelled VAPOUR,
+            //  g(1) = SUM z_i (1 - 1/K_i) < 0 means it is below its dew
+            //  point.  Either way the label the report priced is one the
+            //  fluid cannot hold.  A package that cannot answer (a
+            //  reactive or electrolyte surface at a trial state) simply
+            //  declines -- the guess-free remedy still prints.
+            std::string impossible;
+            for (const ProcessStream* sp : r.ins)
+            {
+                if (!sp || sp->z.empty()) continue;
+                if (sp->vf > 1.0e-9 && sp->vf < 1.0 - 1.0e-9) continue; // two-phase: nothing claimed
+                try {
+                    const sVector K = ctx.thermo.Kvec(sp->T, sp->P, sp->z, sp->z);
+                    if (K.size() != sp->z.size()) continue;
+                    scalar g = 0.0;
+                    const bool asLiquid = (sp->vf <= 1.0e-9);
+                    for (std::size_t i = 0; i < K.size(); ++i)
+                    {
+                        if (!(K[i] > 0.0) || !std::isfinite(K[i])) { g = 0.0; break; }
+                        g += asLiquid ? sp->z[i] * (K[i] - 1.0)
+                                      : sp->z[i] * (1.0 - 1.0 / K[i]);
+                    }
+                    const bool bad = asLiquid ? (g > 1.0e-6) : (g < -1.0e-6);
+                    if (bad)
+                    {
+                        std::ostringstream o;
+                        o << "  IMPOSSIBLE INLET PHASE, found by this report rather than guessed: stream '"
+                          << sp->name << "' is priced as "
+                          << (asLiquid ? "LIQUID (vf = 0)" : "VAPOUR (vf = 1)")
+                          << " at T = " << sp->T << " K, P = " << (sp->P * 1.0e-5)
+                          << " bar, but its own Rachford-Rice residual there is g("
+                          << (asLiquid ? "V=0" : "V=1") << ") = " << g
+                          << ", i.e. the fluid is "
+                          << (asLiquid ? "ABOVE its bubble point" : "BELOW its dew point")
+                          << " and cannot hold that label.  The enthalpy this report "
+                             "charged for it is missing (or inventing) that phase change, "
+                             "which is a residual of latent-heat size.  Fix the STREAM "
+                             "(declare its real `vaporFraction`/`phase` in 0/, or feed it "
+                             "at a state where the label is true), not this unit.\n";
+                        impossible += o.str();
+                    }
+                } catch (const std::exception&) { /* package cannot answer here */ }
+            }
+
             std::string remedy =
-                "An UNEXPLAINED first-law residual: inspect the unit's "
-                "enthalpy paths.  A residual of LATENT-HEAT size usually "
-                "means a stream priced in the wrong phase: an inlet with no "
-                "vaporFraction/phase key is priced as liquid (vf = 0; declare "
-                "`phase gas;` in its 0/ file if it is not), and some units "
-                "stamp their outlet's phase -- check the stream table's vf "
-                "column against what you fed and expect.  Ledger: "
-                "reports/balances/energyBalance_byUnit.csv";
+                impossible.empty()
+                ? std::string(
+                "A first-law residual this report cannot attribute.  Every "
+                "inlet's declared phase was CHECKED against equilibrium IN "
+                "THIS REPORT'S OWN WORLD and each one is possible there -- "
+                "which rules the commonest cause out of THAT world only.  A "
+                "unit that computes in its own (a per-unit `thermo {}` "
+                "override) can hold the same stream to be a different phase, "
+                "and the latent heat of that disagreement is exactly a "
+                "residual of this size: read the model-boundary row below "
+                "before concluding anything, and note whether the auditor "
+                "could READ this unit's world at all.  Ledger: ")
+                : (impossible + "Ledger: ");
+            remedy += "reports/balances/energyBalance_byUnit.csv";
             if (le && le->status != "none")
                 remedy = "The model-boundary audit did NOT account for this "
                          "residual (" + le->status + "): " + le->reason

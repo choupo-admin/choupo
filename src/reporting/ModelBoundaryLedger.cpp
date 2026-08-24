@@ -298,7 +298,27 @@ std::vector<EnergyClosureRecord> ModelBoundaryLedger::audit(
         e.sign         = "0";
         e.upstreamWorld   = reportWorld_;
         e.downstreamWorld = "<none declared>";
-        e.rule            = "no model boundary declared for this unit";
+        //  TWO DIFFERENT SILENCES, and the reader was shown only one
+        //  (2026-08-24, the glass-box reading benchmark).  `declarations_`
+        //  holds every unit this auditor could SEE inline.  A unit absent
+        //  from it was reached through a folder / word reference, whose
+        //  world resolves at flatten time from disk with an
+        //  engine-injected context no dict on disk carries -- the reach
+        //  this file's own header declines, deliberately.  Saying "no
+        //  model boundary declared" there states as FACT something the
+        //  auditor never looked at: esterification2sector's flash carries
+        //  `thermo { equilibrium { liquid { activityModel NRTL } } }` in
+        //  its own folder, and the row said none while an 808 kW
+        //  latent-heat-sized residual stood under a red UNEXPLAINED alarm.
+        //  A NAMED GAP IS WORTH MORE THAN A MISTAKEN CERTAINTY.
+        e.rule = declarations_.count(in.unit)
+               ? "no model boundary declared for this unit"
+               : "UNREADABLE BY THIS AUDITOR: the unit was reached through a"
+                 " folder/word reference, whose world is resolved at flatten"
+                 " time from disk.  A per-unit `thermo {}` override may well"
+                 " exist and is NOT credited here -- inline the unit's"
+                 " declaration, or read its own flowsheetDict, before"
+                 " concluding the residual is unexplained";
 
         //  NOTHING ABOVE OR BELOW THIS POINT LOOKS AT `raw_kW` TO DECIDE
         //  WHETHER A BOUNDARY EXISTS.  A boundary is a DECLARATION; an
