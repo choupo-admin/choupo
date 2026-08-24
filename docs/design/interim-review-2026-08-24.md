@@ -111,6 +111,39 @@ nothing demonstrable, so the values stand and the pending re-citation
 stays pending — with the fact now recorded that Poling cannot close it,
 because these are a different fit.
 
+## Round 3 — the NBS primary page, read (same evening)
+
+Vítor supplied page **2-83** of the NBS Tables (Table 23:C, CARBON,
+J. Phys. Chem. Ref. Data 11, Suppl. 2, 1982) — the `ao` (aqueous) rows.
+It settles more than it was asked to:
+
+| species | page 2-83 | our record | verdict |
+|---|---|---|---|
+| CO2 ao | ΔfH −413.80 kJ/mol, S° 117.6 J/mol/K | −413800 J/mol, 117.6 | **exact** |
+| HCO3⁻ ao | ΔfH −691.99, S° 91.2 | −691990, 91.2 | **exact** |
+| CO3²⁻ ao | ΔfH −677.14, S° −56.9 | −677140, −56.9 | **exact** |
+
+* **`species/CO2aq.dat` is PROMOTED.**  Its INTERIM mark sat exactly on
+  this datum, the primary page has now been READ rather than transcribed
+  at second hand, and both values agree to the digit.
+* **A second finding, unasked for:** `HCO3` and `CO3` carried **no
+  citation of their own** on `hfAq`/`sAq`.  They passed
+  `check_species_citation` because the Criss–Cobble source of the
+  neighbouring Cp block satisfied its search — the same shape that gate's
+  own docstring records for a `volumetric` block, one field over.  The
+  page verifies both values exactly, so the citation is now theirs.  The
+  gate's blind spot (a block-level source vouching for a neighbour) is
+  NAMED here, not patched: widening it is a gate change, and this
+  session did not make one on its own initiative.
+* **MW is NOT from this table.**  NBS 1982 lists 44.0100 on its own era's
+  atomic weights — that very page prints C = 12.0112 — while the record's
+  44.0095 is the modern IUPAC sum.  Both are right for their era; the
+  record now says so, so nobody "corrects" one into the other.
+
+Still open after round 3: the eleven Millero V0 blocks (paywalled
+primary), the acetic vapour-dimer ΔH tension (Chao & Zwolinski), and the
+upstream question on the three non-Poling Antoine records.
+
 ## The 78 sealed mirrors
 
 78 sealed cases mirror the six clamped Antoine windows at their old
@@ -125,7 +158,7 @@ are the review's own subject.)
 | group | review outcome | promotion decision |
 |---|---|---|
 | 33 EdwardsPitzer + 8 case-local chemistry | verified against the primary in hand, twice over | **PROMOTED 2026-08-24** on the owner's delegation ("Avança como achares melhor e de acordo com a filosofia de Gall") — the 8 case-local source strings now cite this dossier instead of "INTERIM pending"; both cases resealed, goldens intact.  The 33 standards records never carried a parsed mark; this dossier and the commit record are their review record. |
-| species/CO2aq.dat | consistent with two open secondaries; NBS row unsighted | KEPT INTERIM — the claim "reviewed against the primary" would be false by one unsighted page |
+| species/CO2aq.dat | **primary page 2-83 READ 2026-08-24; both values exact** | **PROMOTED** — and the same page gave HCO3⁻ and CO3²⁻ the citation their own numbers lacked |
 | 13 Antoine blocks | transcription fully verified vs the cited distribution | KEPT INTERIM — the marks describe the UPSTREAM question (Poling/Perry/Landolt as primaries), and that question is still true |
 | 11 Millero V0 | 3 confirmed, 8 plausible-unreached | KEPT INTERIM — needs the paywalled primary |
 | acetic dimer ΔH | tension pinned | KEPT INTERIM — recheck first |

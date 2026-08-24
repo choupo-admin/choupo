@@ -13,6 +13,12 @@ charge  -1;
 MW { value 61.02; unit g/mol;}
 aqueousThermo
 {
+//  These two carried NO citation of their own: the gate saw the
+//  Criss-Cobble source of the Cp block below and counted the record
+//  as sourced -- the same shape its own docstring records for a
+//  volumetric block.  The primary page was read 2026-08-24 and both
+//  values agree exactly, so the citation is now theirs.
+source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row "HCO3- bicarbonate, ao" -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
 hfAq { value -691990; unit J/mol;}
 sAq  { value 91.2;  unit J/mol/K;}
         // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
