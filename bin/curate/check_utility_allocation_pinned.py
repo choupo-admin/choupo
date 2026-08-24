@@ -39,6 +39,7 @@ WHAT THIS DOES NOT CHECK, said plainly:
     sectors and the like); they are counted and named in the OK line rather
     than silently dropped, but nothing is demanded of them.
 """
+import os
 import re
 import subprocess
 import sys
@@ -46,6 +47,26 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 FIELDS = ("duty_kW", "T", "kg_s", "eur_h")
+
+#  Single-pass cache (2026-08-24): when bin/runTests invokes this gate it
+#  hands the directory where the suite's OWN case pass saved each clean
+#  run's stdout -- the same output this sweep used to recompute by re-running
+#  the corpus.  Freshness is by construction (the dir is cleared and written
+#  by the very run that invokes us).  Standalone invocations see no env var
+#  and run live, exactly as before; a case absent from the cache (run-only
+#  plant showcases, non-zero exits) is run live, never silently skipped.
+_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
+
+
+def cached_stdout(case: Path):
+    if not _CACHE:
+        return None
+    rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
+    f = Path(_CACHE) / (rel + ".out")
+    try:
+        return f.read_text(errors="replace")
+    except OSError:
+        return None
 
 
 def norm(s: str) -> str:
@@ -88,10 +109,13 @@ def published(case: Path):
             app = m.group(1)
     if not (ROOT / app).exists():
         return set(), None
-    proc = subprocess.run([str(ROOT / app), str(case)], capture_output=True, text=True)
-    if proc.returncode != 0:
-        return set(), None      # a failing case is the suite's problem, not this gate's
-    line = next((l for l in proc.stdout.splitlines()
+    txt = cached_stdout(case)   # cache-present implies ran-clean (exit 0)
+    if txt is None:
+        proc = subprocess.run([str(ROOT / app), str(case)], capture_output=True, text=True)
+        if proc.returncode != 0:
+            return set(), None  # a failing case is the suite's problem, not this gate's
+        txt = proc.stdout
+    line = next((l for l in txt.splitlines()
                  if '"utilityAllocation":' in l), None)
     if line is None:
         return set(), None

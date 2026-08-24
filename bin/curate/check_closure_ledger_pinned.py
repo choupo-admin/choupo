@@ -53,12 +53,29 @@ WHAT THIS DOES NOT CHECK, said plainly:
     today and the ledger's own rule string says none can, but the discovery
     above would not see one.  Arm (b) still covers any case already pinned.
 """
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  Single-pass cache (2026-08-24): under bin/runTests this sweep reads the
+#  suite's own case pass (env CHOUPO_SUITE_OUTPUTS; cache-present implies
+#  ran-clean); standalone it runs live; anything absent runs live.
+_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
+
+
+def cached_stdout(case: Path):
+    if not _CACHE:
+        return None
+    rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
+    f = Path(_CACHE) / (rel + ".out")
+    try:
+        return f.read_text(errors="replace")
+    except OSError:
+        return None
 FIELDS = ("raw_kW", "step_kW", "remaining_kW")
 
 
@@ -86,10 +103,13 @@ def published(case: Path):
         m = re.search(r'^\s*application\s+(\w+)', cd.read_text(errors="replace"), re.M)
         if m:
             app = m.group(1)
-    proc = subprocess.run([str(ROOT / app), str(case)], capture_output=True, text=True)
-    if proc.returncode != 0:
-        return None, f"the case exits {proc.returncode}"
-    line = next((l for l in proc.stdout.splitlines() if '"energyClosures":' in l), None)
+    txt = cached_stdout(case)
+    if txt is None:
+        proc = subprocess.run([str(ROOT / app), str(case)], capture_output=True, text=True)
+        if proc.returncode != 0:
+            return None, f"the case exits {proc.returncode}"
+        txt = proc.stdout
+    line = next((l for l in txt.splitlines() if '"energyClosures":' in l), None)
     if line is None:
         return set(), None          # no ledger emitted: nothing to pin
     keys = set()

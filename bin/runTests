@@ -576,6 +576,24 @@ else
     fi
 fi
 
+# --- suite single-pass output cache (2026-08-24) ----------------------------
+#  The corpus-sweeping meta-gates (unread-keys, closure-ledger, utility-
+#  allocation) used to RE-RUN the corpus, each for its own sweep -- the same
+#  work in four homes, and measured at half the suite's wall clock.  The
+#  check loop below now saves each clean case run's stdout here, and those
+#  three gates -- moved AFTER the loop -- read the pass the suite already
+#  made (env CHOUPO_SUITE_OUTPUTS).  Freshness is by construction, never by
+#  judgement: the directory is cleared at the start of THIS run and handed
+#  only to gates invoked by it; a standalone gate invocation sees no env var
+#  and runs the corpus live, exactly as before.  A case absent from the
+#  cache (run-only plant showcases, a case that exited non-zero) is run
+#  live by the gate -- never silently skipped.
+SUITE_OUT_DIR=""
+if [ "$#" -eq 0 ] && [ -z "$RECORD" ]; then
+    SUITE_OUT_DIR="$ROOT/build/suiteOutputs"
+    rm -rf "$SUITE_OUT_DIR"; mkdir -p "$SUITE_OUT_DIR"
+fi
+
 # --- auto-generate an expected from a run (steady cases only) -------------
 #  Pulls every numeric KPI of every unit (skipping the volatile
 #  `iterations`) plus each stream's F, at a default relative tolerance.
@@ -1272,19 +1290,8 @@ PYEOF
     fi
     rm -f /tmp/solutebasis.$$
 
-    # Unread-key gate: a key written and never read is a value that did
-    # nothing while the author believes it did.  `murphreeEficiency` -- one
-    # letter short -- ran the column ideal-tray and moved the distillate
-    # toluene 2.47 -> 0.94 kmol/h in silence.
-    if "$ROOT/bin/curate/check_unread_keys.py" > /tmp/unread.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "unread-keys-gate" "$(tail -1 /tmp/unread.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_unread_keys.py)\n" "unread-keys-gate"
-        cat /tmp/unread.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/unread.$$
+    # Unread-key gate: MOVED to the post-loop section (single-pass cache,
+    # 2026-08-24) -- its corpus arm reads the suite's own case pass.
 
     # Drill-in gate: the drilled sub-case must RUN, not merely be produced.
     # choupo-drill carried five defects at once and had never completed on
@@ -3284,15 +3291,8 @@ PYEOF
     # is credited only when an INDEPENDENTLY assembled package reproduces the
     # imbalance; if that path drifted, remaining_kW would climb from 9e-9 to
     # the full 2.99 kW with the suite green.
-    if "$ROOT/bin/curate/check_closure_ledger_pinned.py" > /tmp/clopin.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "closure-ledger-gate" "$(grep -m1 ': OK' /tmp/clopin.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_closure_ledger_pinned.py)\n" "closure-ledger-gate"
-        cat /tmp/clopin.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/clopin.$$
+    #  (invocation MOVED to the post-loop section -- single-pass cache,
+    #   2026-08-24: the sweep reads the suite's own case pass.)
 
     # Utility-allocation gate (2026-08-12), the third instance of the same
     # question in one session: which blocks of the result JSON can a golden
@@ -3300,15 +3300,8 @@ PYEOF
     # flow and cost -- went into a top-level `utilityAllocation` array that
     # nothing could reach, on 77 cases.  The unit's own Q_kW does not move
     # when the picker does: the duty is the same, the service is not.
-    if "$ROOT/bin/curate/check_utility_allocation_pinned.py" > /tmp/utilpin.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "utility-allocation-gate" "$(grep -m1 ': OK' /tmp/utilpin.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_utility_allocation_pinned.py)\n" "utility-allocation-gate"
-        cat /tmp/utilpin.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/utilpin.$$
+    #  (invocation MOVED to the post-loop section -- single-pass cache,
+    #   2026-08-24: the sweep reads the suite's own case pass.)
 
     # Props operations-reference gate: the propsGuide's operations chapter is
     # RENDERED from gui/schemas/operations/, so adding or changing an op
@@ -3437,6 +3430,14 @@ for case_dir in "${CASES[@]}"; do
         printf "FAIL  %-40s  (compile failed)\n" "$name_short"; fail=$((fail+1)); continue
     fi
 
+    #  Single-pass cache: a CLEAN run's stdout is kept for the post-loop
+    #  meta-gates (see the cache header above).  Only exit-0 runs are
+    #  cached, so cache-present implies ran-clean.
+    if [ -n "$SUITE_OUT_DIR" ] && [ "$rc" -eq 0 ]; then
+        rel_key="${case_dir#"$ROOT"/}"; rel_key="${rel_key//\//__}"
+        printf '%s\n' "$out" > "$SUITE_OUT_DIR/$rel_key.out"
+    fi
+
     # (0) exit-code guard -- a non-zero exit (a crashed / aborted run) is a FAIL.
     #     This is the §10 fix: a crash that emits no result block used to fall
     #     through to a vacuous "smoke pass"; it no longer can.
@@ -3532,6 +3533,54 @@ done
 #  pilot-scoped (only on the full sweep) -- a general standalone-branch sweep
 #  would be too broad while the fractal layout is still a pilot.
 if [ "$#" -eq 0 ]; then
+    # --- the corpus-sweeping meta-gates, on the suite's OWN case pass -------
+    #  Moved here from the pre-loop gate section (2026-08-24): each used to
+    #  re-run the corpus for its sweep.  They now read the single-pass cache
+    #  written by the loop above; anything the cache lacks they run live.
+    #  Their witness and sabotage arms are untouched -- always live.
+    [ -n "$SUITE_OUT_DIR" ] && export CHOUPO_SUITE_OUTPUTS="$SUITE_OUT_DIR"
+
+    # Unread-key gate: a key written and never read is a value that did
+    # nothing while the author believes it did.  `murphreeEficiency` -- one
+    # letter short -- ran the column ideal-tray and moved the distillate
+    # toluene 2.47 -> 0.94 kmol/h in silence.
+    if "$ROOT/bin/curate/check_unread_keys.py" > /tmp/unread.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unread-keys-gate" "$(tail -1 /tmp/unread.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unread_keys.py)\n" "unread-keys-gate"
+        cat /tmp/unread.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unread.$$
+
+    # Model-boundary ledger gate (2026-08-12): the ledger's three quantities
+    # live in a top-level `energyClosures` array; published => pinned AND
+    # pinned => published.
+    if "$ROOT/bin/curate/check_closure_ledger_pinned.py" > /tmp/clopin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "closure-ledger-gate" "$(grep -m1 ': OK' /tmp/clopin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_closure_ledger_pinned.py)\n" "closure-ledger-gate"
+        cat /tmp/clopin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/clopin.$$
+
+    # Utility-allocation gate (2026-08-12): `pickForDuty`'s choice, kg/s and
+    # eur/h ride a top-level `utilityAllocation` array; published => pinned
+    # AND pinned => published.
+    if "$ROOT/bin/curate/check_utility_allocation_pinned.py" > /tmp/utilpin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "utility-allocation-gate" "$(grep -m1 ': OK' /tmp/utilpin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_utility_allocation_pinned.py)\n" "utility-allocation-gate"
+        cat /tmp/utilpin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/utilpin.$$
+    unset CHOUPO_SUITE_OUTPUTS
+
     branch="tutorials/plant/ChemicalPlantTutorial/FERMENTATION"
     if [ -f "$branch/flowsheetDict" ]; then
         sb_out=$("$ROOT/choupoSolve" "$branch" 2>&1); sb_rc=$?

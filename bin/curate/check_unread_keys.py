@@ -95,6 +95,25 @@ def run(case):
     return subprocess.run([SOLVER, case], capture_output=True, text=True, cwd=ROOT)
 
 
+#  Single-pass cache (2026-08-24): under bin/runTests the CORPUS ARM below
+#  reads the suite's own case pass (env CHOUPO_SUITE_OUTPUTS -- the cached
+#  file holds stdout+stderr merged, which is what this arm greps).  The
+#  witness and negative arms above it ALWAYS run live -- they mutate a copy
+#  and need a fresh run by construction.  Standalone invocations see no env
+#  var; a case absent from the cache is run live, never silently skipped.
+_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
+
+
+def corpus_output(case):
+    if _CACHE:
+        rel = os.path.relpath(case, ROOT).replace(os.sep, "__")
+        f = os.path.join(_CACHE, rel + ".out")
+        if os.path.isfile(f):
+            return open(f, errors="replace").read()
+    o = run(case)
+    return o.stdout + o.stderr
+
+
 if not os.path.exists(SOLVER):
     print("SKIP  no choupoSolve binary -- build first (make)")
     sys.exit(0)
@@ -160,8 +179,7 @@ for base, dirs, files in os.walk(os.path.join(ROOT, "tutorials")):
 
 dead = []
 for c in cases:
-    o = run(c)
-    for line in (o.stdout + o.stderr).splitlines():
+    for line in corpus_output(c).splitlines():
         if line.startswith("[dict]   "):
             dead.append((os.path.relpath(c, ROOT), line.strip()))
 
