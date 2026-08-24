@@ -35,7 +35,7 @@ vaporPressure
     // mistranscribed (-53.118 for -60.680) -- the 7.6 K self-contradiction
     // the 2026-08-22 audit pinned
     coefficients  (4.13361   1195.130   -60.68);
-    Trange        (266  373);
+    Trange        (266  372.51);      // upper clamped to the source fit range (review 2026-08-24)
 }
 
 idealGasHeatCapacity
