@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 82 records already exist
+## 1. Why an index, when 83 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 82 design records, **41 state a rejected alternative and 41 do not** —
+- Of 83 design records, **41 state a rejected alternative and 42 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -100,6 +100,7 @@ direction is an error.
 | [`heuristics-as-a-third-kind.md`](../design/heuristics-as-a-third-kind.md) | ADR | yes | **RULED 2026-08-18, not built** — a heuristic selection aid is NEITHER a method-construction nor a property surface, so the third kind is NAMED (`kind: "selection"`) rather than bent into an existing box.  Heuristics are CURATED RECORDS (claim + primary citation with page + validity domain + what it does not cover); an uncited one is REFUSED, on the unsourced-must-not-become-falsely-sourced rule.  The tool DISPLAYS conflicting authorities and never resolves them by an unpublished weighting — the disagreement is the pedagogy.  Three layers: cited rules and the RGA from the reader's own MESH column are buildable; the dynamic witness is NOT (verified: no column under control in the corpus and `choupoCtrl`'s dynamic tier is DynamicCSTR alone).  Rejects a third top-level surface, a scoring recommendation engine, uncited rules, a fabricated dynamic response, and filing it under `construction` to avoid adding a kind |
 | [`electrolyte-authoring-seams-scope.md`](../design/electrolyte-authoring-seams-scope.md) | SCOPE | yes | **ALL SIX SEAMS CLOSED (S3+S5 executed 2026-08-24 on the architect's close-the-seams ruling; the rest 2026-08-23).**  S5 took option (b): the davies-only guard was the ONLY code between the declared and the served grammar; the reactive slice now serves pitzerHMW, with edwardsPitzer refused on standard-state coherence and the composite routes kept davies-only (witness `flash21_brine_co2_pitzer`).  Rejects narrowing the grammar to buy consistency; success criterion was the measured re-run round-count |
 | [`interim-review-2026-08-24.md`](../design/interim-review-2026-08-24.md) | EVIDENCE | no | **The delegated INTERIM review, 2026-08-24** — three independent blind-protocol reviewers over the primaries in hand, every finding audited before landing.  Edwards set exact against the paper (one real find: two Eq 14 windows claimed Figure 4's span, corrected); 13 Antoine blocks verified against their cited distribution (six windows clamped, one fit-form word fixed); Millero V0 and the acetic dimer honestly out of reach.  Promotion executed for the verified group ONLY, on the owner's delegation; every mark that still tells the truth kept |
+| [`glass-box-reading-benchmark-2026-08-24.md`](../design/glass-box-reading-benchmark-2026-08-24.md) | EVIDENCE | no | **Four fresh READERS, the output alone, 2026-08-24** — the mirror of the authoring benchmark, measuring the half the STUDENT owns: given only a case's output, can a reader understand, verify and correctly distrust it?  Three readers re-derived the engine's own arithmetic by hand (Antoine + Rachford-Rice to ten digits; Davies charge balance and ionic strength on four trays; Erlang-3 moments off the E-curve) and the divergence block correctly stopped one from quoting any separation number.  Six findings, each audited before recording: an impossible inlet phase label that costs 808 kW and is never checked though the engine prints the test (F1 — and it CORRECTS this session's own earlier misdiagnosis); a caveat surface defeated by 99 unattributed copies of one warning while the one describing the answer hides among them (F2); chemistry records with no validity domain at all, two of whose K-routes disagree by a factor of 2.22 (F3); an identity case whose golden pins no speciation number (F4); five small truths the run knew and did not say, four now FIXED (F5); and three case narratives that contradict their own runs while every number beside them is pinned to 1e-4 (F6).  Decides nothing by itself: it is the evidence the next slice stands on |
 | [`llm-authoring-benchmark-2026-08-23.md`](../design/llm-authoring-benchmark-2026-08-23.md) | EVIDENCE | no | **Five fresh agents, the llmctx kit alone, 2026-08-23** — the constitution's LLM-assembles/student-reads bet, measured: molecular surfaces converge in 1–2 rounds (no rollback indicated), the electrolyte authoring surface took 8 (three required keys in no document, the kit's own example refused by the engine, a missing standards record) and earns the make-it-one-thing-again treatment rather than more documentation.  Two spurious ENERGY BALANCE FAILED banners on correct cases and one silent phase-mislabel doc defect (hit twice independently) head the ranked fix list.  Decides nothing by itself: it is the evidence the fixes and the one grammar pass stand on |
 | [`edutools-pareto-evidence.md`](../design/edutools-pareto-evidence.md) | EVIDENCE | no | **Search-backed curriculum evidence for the tool Pareto, 2026-08-19.**  Corrects a survey that ranked tools from memory while admitting it in its own SS9.  ITS FIRST SECTION IS ITS OWN LIMIT: the egress policy permits GitHub alone, so no catalogue or syllabus could be FETCHED; every line is marked [S] search summary / [T] tool summary / [U] URL only / [X] unreachable, and none claims a page anyone opened.  Contradicts the survey where it must: frequency-response control is the HIGHEST-recurrence item found and was filed 'Recommended OUT' on an engine argument welded to a curricular verdict, while control is the only core block with zero tools; MSMPR is over-ranked (no undergraduate syllabus); RTD is under-ranked and the engine has nothing.  Not an ADR: it decides nothing, it supplies the evidence a ranking should have had |
 | [`ice-as-a-solid-phase-of-the-solvent.md`](../design/ice-as-a-solid-phase-of-the-solvent.md) | ADR | yes | **DESIGN DECIDED 2026-08-06** — one condition (mu equality), not six solvers; ice falls out of `gStd(T)` as an interface rather than a seventh special case.  Its own first draft is recorded as the rejected alternative |
@@ -236,7 +237,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**41 of 82 records state no rejected alternative.**  For a FORUM or a STUDY
+**42 of 83 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

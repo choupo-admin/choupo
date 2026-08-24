@@ -1,51 +1,65 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     balance                energy_balance_available 0                  1e-4
-kpi     balance                mass_closure_rel 2.15876699233e-16  1e-4
-kpi     balance                mass_kg_final    0.36               1e-4
-kpi     balance                mass_kg_in_cum   7.2                1e-4
-kpi     balance                mass_kg_initial  0.36               1e-4
-kpi     balance                mass_kg_out_cum  7.2                1e-4
+kpi     balance                energy_balance_available 0                1e-4
+kpi     balance                mass_closure_rel 2.15876699233e-16 1e-4
+kpi     balance                mass_kg_final    0.36             1e-4
+kpi     balance                mass_kg_in_cum   7.2              1e-4
+kpi     balance                mass_kg_initial  0.36             1e-4
+kpi     balance                mass_kg_out_cum  7.2              1e-4
 kpi     balance                mass_residual_kg -1.55431223448e-15 1e-4
-kpi     balance                material_available 1                  1e-4
-kpi     rtd                    area_kmol        0.000198752512114  1e-4
-kpi     rtd                    sigma2_s2        19198.7859557      1e-4
-kpi     rtd                    tbar_s           241.502454857      1e-4
-kpi     rtd                    truncation_final_over_peak 1.54894525802e-06  1e-4
-kpi     tank1                  F_in_final       5e-05              1e-4
-kpi     tank1                  T_final          330                1e-4
-kpi     tank1                  n_compA_final    0.00399999999959   1e-4
-kpi     tank1                  n_compB_final    4.12230726183e-13  1e-4
-kpi     tank1                  t_end            1600               1e-4
-kpi     tank1                  z_in_compA_final 1                  1e-4
-kpi     tank1                  z_in_compB_final 0                  1e-4
-kpi     tank2                  F_in_final       5e-05              1e-4
-kpi     tank2                  T_final          330                1e-4
-kpi     tank2                  n_compA_final    0.00399999999171   1e-4
-kpi     tank2                  n_compB_final    8.29117351463e-12  1e-4
-kpi     tank2                  t_end            1600               1e-4
-kpi     tank2                  z_in_compA_final 0.999999999897     1e-4
-kpi     tank2                  z_in_compB_final 1.03057681546e-10  1e-4
-kpi     tank3                  F_in_final       5e-05              1e-4
-kpi     tank3                  T_final          330                1e-4
-kpi     tank3                  n_compA_final    0.00399999991667   1e-4
-kpi     tank3                  n_compB_final    8.33278092735e-11  1e-4
-kpi     tank3                  t_end            1600               1e-4
-kpi     tank3                  z_in_compA_final 0.999999997927     1e-4
-kpi     tank3                  z_in_compB_final 2.07279337866e-09  1e-4
+kpi     balance                material_available 1                1e-4
+kpi     rtd                    area_kmol        0.000198752512114 1e-4
+kpi     rtd                    sigma2_s2        19198.7859557    1e-4
+kpi     rtd                    tbar_s           241.502454857    1e-4
+kpi     rtd                    truncation_final_over_peak 1.54894525802e-06 1e-4
+kpi     tank1                  F_in_final       5e-05            1e-4
+kpi     tank1                  T_final          330              1e-4
+kpi     tank1                  n_compA_final    0.00399999999959 1e-4
+kpi     tank1                  n_compB_final    4.12230726183e-13 1e-4
+kpi     tank1                  t_end            1600             1e-4
+kpi     tank1                  z_in_compA_final 1                1e-4
+kpi     tank1                  z_in_compB_final 0                1e-4
+kpi     tank2                  F_in_final       5e-05            1e-4
+kpi     tank2                  T_final          330              1e-4
+kpi     tank2                  n_compA_final    0.00399999999171 1e-4
+kpi     tank2                  n_compB_final    8.29117351463e-12 1e-4
+kpi     tank2                  t_end            1600             1e-4
+kpi     tank2                  z_in_compA_final 0.999999999897   1e-4
+kpi     tank2                  z_in_compB_final 1.03057681546e-10 1e-4
+kpi     tank3                  F_in_final       5e-05            1e-4
+kpi     tank3                  T_final          330              1e-4
+kpi     tank3                  n_compA_final    0.00399999991667 1e-4
+kpi     tank3                  n_compB_final    8.33278092735e-11 1e-4
+kpi     tank3                  t_end            1600             1e-4
+kpi     tank3                  z_in_compA_final 0.999999997927   1e-4
+kpi     tank3                  z_in_compB_final 2.07279337866e-09 1e-4
 # ANCHORS: Levenspiel closed forms for the tanks-in-series model (Chemical
 # Reaction Engineering, ch. 14), Erlang-3 response of three equal tanks
 # (tau = 80 s each) to a perfect impulse in tank 1:
 #     tbar = 3 tau = 240 s;  sigma2 = 3 tau^2 = 19200 s^2;  area = the
 #     0.0002 kmol injected.
-# BANDS, sized to the UNDERSTOOD residuals and stated: the router's
-# one-step-explicit scheme adds one driver step (1 s) of transport delay
-# per connection (+2 s on tbar, +0.63 %) and loses the first step's
-# in-flight tracer at each hand-off (-0.62 % on area); the trapezoid
-# moments on the 1 s grid and the 1600 s truncation (tail mass ~ 5e-7)
-# are both far smaller.  sigma2 is untouched by a pure delay and lands
-# at 0.006 %.
-kpi     rtd                    tbar_s           240              0.01   anchor
-kpi     rtd                    sigma2_s2        19200            0.005  anchor
-kpi     rtd                    area_kmol        2.0e-4           0.01   anchor
+# BANDS, sized to the MEASURED residuals -- and the first version of this
+# rationale was CORRECTED 2026-08-24 after an independent reader did the
+# arithmetic: it claimed "+2 s on tbar, +0.63 %", and 2 s of 240 is
+# 0.83 %, not 0.63 %.  A predicted delay and an observed one were glued
+# together with a comma.  The OBSERVED excess is +1.5025 s = +0.626 %.
+#
+# What the explicit router costs, MEASURED by halving the driver step
+# (the case header shows the student how to reproduce this):
+#     deltaT     tracer recovered      loss
+#      2.00 s    1.975103e-04 kmol    1.245 %
+#      1.00 s    1.987525e-04 kmol    0.624 %   <- this golden
+#      0.50 s    1.993756e-04 kmol    0.312 %
+#      0.25 s    1.996876e-04 kmol    0.156 %
+# The loss HALVES with the step: first order in deltaT, exactly the
+# order the one-step-explicit hand-off has.  It is the material the
+# downstream tank does not yet see while its inlet still holds the
+# step's starting value -- real, bounded, and refinable, never hidden.
+# The trapezoid moments on the 1 s grid and the 1600 s truncation (tail
+# mass ~ 5e-7) are both far smaller.  sigma2 is untouched by a pure
+# delay and lands at 0.006 %.
+kpi     rtd                    tbar_s           240              0.01     anchor
+kpi     rtd                    sigma2_s2        19200            0.005    anchor
+kpi     rtd                    area_kmol        2.0e-4           0.01     anchor
+kpi     rtd                    variance_ratio   0.329177897779   1e-4

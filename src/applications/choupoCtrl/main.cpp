@@ -1421,6 +1421,16 @@ try
             //  experiment was cut, not how much the moments are off.
             rk["truncation_final_over_peak"] =
                 (rtd.peakN > 0.0) ? rtd.prevN / rtd.peakN : 0.0;
+            //  THE DIMENSIONLESS SPREAD, published because it is the one
+            //  number the RTD lesson is ABOUT and the engine was making the
+            //  reader divide two KPIs to get it (found by an independent
+            //  glass-box reading, 2026-08-24).  sigma2/tbar^2 is a property
+            //  of the MEASURED distribution -- no model is assumed by it.
+            //  Its reading as 1/N is the tanks-in-series MODEL's, and the
+            //  line below states that as an interpretation, never as a
+            //  measurement: a real vessel is not N tanks.
+            const scalar varRatio = (tbar > 0.0) ? sigma2 / (tbar * tbar) : 0.0;
+            rk["variance_ratio"] = varRatio;
             if (writeOutputs)
             {
                 std::filesystem::create_directories("reports/rtd");
@@ -1428,11 +1438,26 @@ try
                 ef << "t_s,n_tracer_kmol_s,E_per_s\n";
                 for (const auto& [tt, nn] : rtd.trace)
                     ef << tt << "," << nn << "," << (nn / rtd.S0) << "\n";
+                //  SAY THE ARTEFACT EXISTS.  It was written and never
+                //  named, so a reader following the output alone never
+                //  learned the E-curve was on disk -- and the curve, not
+                //  its moments, is what the RTD lesson is looking at
+                //  (found by an independent glass-box reading, 2026-08-24).
+                std::cout << "[rtd] response CURVE -> reports/rtd/E.csv"
+                             "  (" << rtd.trace.size() << " rows:"
+                             " t_s, n_tracer_kmol_s, E_per_s)\n";
             }
             std::cout << "[rtd] response moments: area " << rtd.S0
                       << " kmol, tbar " << tbar << " s, sigma2 " << sigma2
                       << " s^2 (final/peak " << rk["truncation_final_over_peak"]
                       << ")\n";
+            std::cout << "[rtd] spread: sigma2/tbar^2 = " << varRatio
+                      << " (dimensionless -- a property of the measured"
+                      << " distribution).  READ THROUGH the tanks-in-series"
+                      << " MODEL this is 1/N, i.e. N = "
+                      << ((varRatio > 0.0) ? 1.0 / varRatio : 0.0)
+                      << " equal tanks; 1 = one mixed tank, 0 = plug flow."
+                      << "  The model is the reading, not the measurement.\n";
         }
 
         // ---- Frequency-response fit (engine-owned) ----------------------
@@ -1526,6 +1551,27 @@ try
                           << (mF - m0) << " kg vs integral(in-out) = "
                           << (mIn - mOut) << " kg, closure "
                           << bk["mass_closure_rel"] << "\n";
+                //  WHAT THIS CLOSURE CANNOT SEE, said where it is printed
+                //  (2026-08-24, an independent glass-box reading of the
+                //  tanks-in-series case).  This is a TOTAL-MASS ledger over
+                //  the domain boundary.  A routed hand-off is explicit and
+                //  one step lagged, so the material a downstream unit
+                //  receives is not exactly what the upstream unit emitted
+                //  over the same step -- a first-order-in-deltaT
+                //  discrepancy INTERNAL to the chain.  Total mass can be
+                //  conserved to machine precision while that is happening
+                //  (it is, whenever the species share a molar mass), so a
+                //  tiny closure here must NOT be read as "every component
+                //  is conserved across the chain".  Halve deltaT and the
+                //  discrepancy halves: that is how to size it.
+                if (!routes.empty())
+                    std::cout << "[balance] NOTE: " << routes.size()
+                              << " routed hand-off(s) are explicit and one"
+                                 " step lagged.  This closure is the DOMAIN"
+                                 " BOUNDARY total mass; it does not audit"
+                                 " what crosses a route, where a"
+                                 " first-order-in-deltaT discrepancy lives."
+                                 "  Halve deltaT to size it.\n";
 
                 // Elements: the SAME resolver truth the ledger promoted --
                 // compAtoms (resolver atoms) + the relevance-gated

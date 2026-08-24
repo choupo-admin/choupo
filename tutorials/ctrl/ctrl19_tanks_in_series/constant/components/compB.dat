@@ -47,3 +47,15 @@ liquidHeatCapacity
     coefficients  (120.0);
     Trange        (300  400);
 }
+
+//  PROVENANCE.  compB is the TRACER of this experiment and is as synthetic
+//  as compA -- declared in a PARSED block, not only in the banner above,
+//  because a field the engine cannot see is a comment: until 2026-08-24
+//  the end-of-run caveat block counted ONE synthetic component in this
+//  case and the one it missed was the measured species itself.  Found by
+//  an independent glass-box reading of this case's output.
+provenance
+{
+    source   synthetic;
+    reason   "numerical stand-in for an algorithm audit; no physical primary exists";
+}
