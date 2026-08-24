@@ -70,7 +70,8 @@ int ConversionReactor::solve(const DictPtr& dict,
     //  Each reaction's extent is SPECIFIED (a conversion or a direct extent);
     //  the single-reaction path below is untouched.
     if (dict->hasDictList("reactions"))
-        return solveMultiReaction(dict, thermo, verbosity, F_in, T, T_feed, P, z);
+        return solveMultiReaction(dict, thermo, verbosity, F_in, T, T_feed, P,
+                                  feedDict->lookupScalarOrDefault("vf", 1.0), z);
 
     auto rxnDict = dict->subDict("reaction");
 
@@ -153,9 +154,9 @@ int ConversionReactor::solve(const DictPtr& dict,
     const scalar Q_W     = Q_rxn_W + Q_sens_W;
 
     //  THE RUNG THE DUTY IS PRICED ON, announced when it can differ from the
-    //  stream's own.  This reactor is gas-basis by construction (it emits
-    //  vf = 1.0 and its dH_rxn is an ideal-gas quantity), so both terms above
-    //  use h_pure_ig.  If the INLET stream arrives as anything but a vapour,
+    //  stream's own.  This reactor's DUTY is gas-basis by construction
+    //  (dH_rxn is an ideal-gas quantity), so both terms above use
+    //  h_pure_ig.  If the INLET stream arrives as anything but a vapour,
     //  the sensible term is missing that inlet's latent heat and Q will not
     //  reconcile with the flowsheet's per-unit energy ledger by exactly that
     //  amount.  Saying so is the whole point: the number is still the honest
@@ -175,12 +176,23 @@ int ConversionReactor::solve(const DictPtr& dict,
     const scalar vf_in = feedDict->lookupScalarOrDefault("vf", 1.0);
     const bool   offRung = haveDuty && T_feed != T && vf_in < 1.0;
 
-    // ---- Outlet stream (gas-phase reactor effluent) -----------------
+    // ---- Outlet stream ----------------------------------------------
+    //  THE OUTLET CARRIES THE INLET'S PHASE STATE (ruled 2026-08-24, the
+    //  benchmark's F2 posture question).  This unit is a stoichiometric
+    //  bookkeeper with NO phase model: it used to hard-stamp vf = 1 ("gas
+    //  reactor"), which made a perfectly-authored liquid-phase duty (the
+    //  esterification at 350 K) show a spurious ENERGY BALANCE FAILED
+    //  banner equal to the latent heat of the stamp -- the report priced
+    //  an outlet vapour that never existed.  A unit that does not model
+    //  phase must not INVENT one; it forwards what it was handed, and a
+    //  downstream flash owns any split.  The DUTY stays priced on the
+    //  ideal-gas rung (dH_rxn is an ideal-gas quantity here), which the
+    //  [rating] line below announces whenever that can differ.
     produced_.clear();
     ProcessStream s;
     s.name = "out";
     s.F = F_out; s.T = T; s.P = P; s.z = zout;
-    s.vf = 1.0;                               // gas reactor; a downstream flash re-splits
+    s.vf = vf_in;                             // carried, never invented
     produced_.push_back(s);
 
     kpis_["conversion"]    = X;
@@ -217,11 +229,13 @@ int ConversionReactor::solve(const DictPtr& dict,
                           << T_feed << " K\n";
             if (offRung)
                 std::cout << "  [rating] the duty above is priced on the"
-                             " IDEAL-GAS rung (this reactor is gas-basis and"
-                             " emits vf = 1) while this inlet arrives at vf = "
+                             " IDEAL-GAS rung (dH_rxn is an ideal-gas"
+                             " quantity here) while this inlet arrives at vf = "
                           << vf_in << " -- the sensible term omits its latent"
                              " heat, so the per-unit energy ledger will differ"
-                             " from Q by that amount\n";
+                             " from Q by that amount.  The outlet carries the"
+                             " inlet's phase state (no phase model in this"
+                             " unit)\n";
             std::cout << "\n";
         }
         else
@@ -246,6 +260,7 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
                                           scalar               T,
                                           scalar               T_feed,
                                           scalar               P,
+                                          scalar               vf_in,
                                           const sVector&       z)
 {
     const std::size_t n = thermo.n();
@@ -357,7 +372,9 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
     produced_.clear();
     ProcessStream out;
     out.name = "out";
-    out.F = F_out; out.T = T; out.P = P; out.z = zout; out.vf = 1.0;
+    //  Carried from the inlet, never invented -- the F2 ruling (see the
+    //  single-reaction site's comment).
+    out.F = F_out; out.T = T; out.P = P; out.z = zout; out.vf = vf_in;
     produced_.push_back(out);
 
     // ---- KPIs -----------------------------------------------------------

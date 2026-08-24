@@ -88,6 +88,7 @@ private:
                            scalar               T,
                            scalar               T_feed,
                            scalar               P,
+                           scalar               vf_in,
                            const sVector&       z);
 
     inline static const std::string type_ = "conversionReactor";

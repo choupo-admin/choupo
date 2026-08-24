@@ -225,14 +225,15 @@ esterification_etac                       // one block per NAMED reaction
 Reactants carry `nu < 0`, products `nu > 0`; the block's NAME is what
 `reaction <name>;` / `reactions ( ... )` select.
 
-**THE OUTLET IS PRICED ON THE GAS BASIS** -- the unit is gas-phase-honest
-and stamps its product `phase gas;` (undocumented until the 2026-08-23
-benchmark).  Feed it a liquid-phase duty (an esterification at 350 K) and
-the composition/flow answers stay exact stoichiometry, but the energy report
-will show an "unexplained" residual equal to the latent heat of that stamp,
-and the reported dHrxn is the GAS-phase value.  Until the posture is ruled
-on, read Q_reaction from the KPI and expect the balance warning on
-liquid-phase use.
+**THE OUTLET CARRIES THE INLET'S PHASE STATE (ruled 2026-08-24)** -- this
+unit is a stoichiometric bookkeeper with no phase model, so it forwards the
+feed's `vf` unchanged instead of inventing a vapour (it used to hard-stamp
+`phase gas;`, which put a spurious ENERGY BALANCE FAILED banner on
+perfectly-authored liquid-phase duties).  A downstream flash owns any
+split.  The DUTY is still priced on the ideal-gas rung (`dHrxn` is the
+GAS-phase value), and the run announces that whenever the inlet is not a
+vapour -- on liquid-phase use read `Q_reaction` as a gas-basis number and
+expect the announced rung difference, not a red banner.
 ```
 operation                                     // MULTI -- a PARALLEL network
 {

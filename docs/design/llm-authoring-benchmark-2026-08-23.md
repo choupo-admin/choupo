@@ -77,6 +77,15 @@ on a perfect case teaches a student to distrust the simulator, not the
 stamp.  *Fix: engine-side wording/attribution for C's class (the residual is
 explainable and should say so), a pitfall each; C's stamp itself is a
 modelling-posture question for Vítor.*
+**RESOLVED 2026-08-24 (Vítor's ruling): the stamp is gone.**  The
+conversionReactor is a stoichiometric bookkeeper with no phase model, so
+its outlet now CARRIES the inlet's phase state instead of inventing a
+vapour; the duty stays gas-basis, announced whenever the inlet is not one.
+Measured on the liquid esterification: the reactor's ledger row closes at
+100.00 % (raw imbalance 0.0000 kW) where the stamp had manufactured the
+latent-heat residual; the six vapour-fed corpus cases are byte-identical
+(vf carried = vf 1); the flash's separate, case-declared residual is
+untouched by A/B measurement.
 
 **F3 — the electrolyte D-list (one campaign, one slice each):** the missing
 worked speciate example (propsDict + thermoPhysPropDict pair); `volatiles`;

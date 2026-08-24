@@ -589,8 +589,9 @@ declared line in the `0/` file: `phase gas;` (see dict-syntax "Pinning the
 phase of an inlet").  Rule of thumb: **any feed that is not a liquid at its
 (T, P) needs its phase pinned**, and a FAILED energy banner whose residual
 is latent-heat-sized is usually a mispriced inlet, not a broken unit.
-(Found by the 2026-08-23 LLM benchmark, which also hit the
-`conversionReactor` gas-stamp variant of the same banner — see that unit's
+(Found by the 2026-08-23 LLM benchmark, which also hit a
+`conversionReactor` variant of the same banner — RESOLVED 2026-08-24: that
+unit now carries its inlet's phase state instead of stamping gas; see its
 entry in unit-ops.md.)
 
 ### Writing a saturated steam feed — there is no `state` keyword to forget
