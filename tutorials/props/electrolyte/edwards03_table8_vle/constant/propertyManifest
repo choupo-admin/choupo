@@ -52,19 +52,19 @@ propertyManifest
         "parameters/EdwardsPitzer/H2Saq.dat"
         {
             type          imported;
-            sha256        "196eed356c0af3b38346e053fa8c6495166656a3f4542e04673d56238b1e6d69";
-            computationalSha256 "3f904ac3d11caca1e4097621fd02607a9a346389e3d1512905da9cb1e3f33852";
+            sha256        "07d3b7a0ba978117f767c774a1165239bdad1a6dc763d578144627374a2bf5e6";
+            computationalSha256 "79c4f4b203cf8b3ad3d3b50f86c31977249ca617e576b649961afdc869017e0a";
             origin        "data/standards/parameters/EdwardsPitzer/H2Saq.dat";
-            originSha256  "527e3a8aa469742c657f4131603de4394acff585ec1fd6e31ae28c9b7c9ef89c";
+            originSha256  "7407c670ee978a1b886ed3ae0e651b935cd1252524c0379d89dc9005f0a68a02";
             release       Choupo-2607;
         }
         "parameters/EdwardsPitzer/NH3aq.dat"
         {
             type          imported;
-            sha256        "01023e5dc15cf43ec9a7396c5918af3ce93d26990fe66620b036a67113b4f1ff";
-            computationalSha256 "43a47398ef82199fd8e21d8d1bed469f2fea35d9556d0f433c4a3504fd72dce5";
+            sha256        "4ebb74af07d64acb7b18fc80b068c5d2c26b622d612a21aae0f969780ba5ea36";
+            computationalSha256 "fe5e5a2b3817143340501b64fa5b0ac4c8b55152027ac59f5501d73b7270e1a1";
             origin        "data/standards/parameters/EdwardsPitzer/NH3aq.dat";
-            originSha256  "aa1c03de27145f0c835bd45a6d64e8588f0ba8052fda965b867d1b2305bc4acb";
+            originSha256  "894d9f426723522b58ee5e9ec612aab3fe1014a776eac0ad49403bd90302b023";
             release       Choupo-2607;
         }
         "parameters/EdwardsPitzer/henry-H2S-water.dat"

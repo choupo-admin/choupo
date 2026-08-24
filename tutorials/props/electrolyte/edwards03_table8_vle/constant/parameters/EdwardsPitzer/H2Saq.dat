@@ -26,5 +26,10 @@ parameters
     F   61.56;        // (kg/mol) K
 }
 
-Trange ( 273.15 443.15 );   // 0-170 degC, the paper's stated correlation range
+Trange ( 273.15 423.15 );   // 0-150 degC: Eq 14 is valid "for the same
+                            // temperature range as that used for Henry's
+                            // constants", and Table 3's H2S row says 0-150.
+                            // (Corrected 2026-08-24 from 0-170, which is the
+                            // FIGURE 4 span, not the correlation's -- found
+                            // by the independent review against the paper.)
 source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 4";

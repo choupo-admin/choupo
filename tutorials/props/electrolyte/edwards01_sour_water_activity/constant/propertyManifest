@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-08-23";
+    importedAt         "2026-08-24";
     importerVersion    "3";
     records
     {
         "chemistry/CO2aq-formation.dat"
         {
             type          imported;
-            sha256        "064dc1f8695407573153f7cb94b62bfbeb9dcade879e4a92f5ebe300d072d701";
-            computationalSha256 "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
+            sha256        "5ec52b9a022754f797be35da14e6621782bcca2393e144be663c8fb2cd7f377e";
+            computationalSha256 "397e6b7932ce2cea42a683af87bfde75872eb68d1ced992e2d9ad03e4a1c83ca";
             origin        "data/standards/chemistry/CO2aq-formation.dat";
-            originSha256  "23b5195333523b65f320ef9d0362539449fecf0fd48ad1520b3728c54bec07a6";
+            originSha256  "f0f209e6dd7cca9e6999c19d30394b0a088d9f0710ac0c6dd6145bae31612f8e";
             release       Choupo-2607;
         }
         "chemistry/CO3-formation.dat"
@@ -82,10 +82,10 @@ propertyManifest
         "parameters/EdwardsPitzer/NH3aq.dat"
         {
             type          imported;
-            sha256        "01023e5dc15cf43ec9a7396c5918af3ce93d26990fe66620b036a67113b4f1ff";
-            computationalSha256 "43a47398ef82199fd8e21d8d1bed469f2fea35d9556d0f433c4a3504fd72dce5";
+            sha256        "4ebb74af07d64acb7b18fc80b068c5d2c26b622d612a21aae0f969780ba5ea36";
+            computationalSha256 "fe5e5a2b3817143340501b64fa5b0ac4c8b55152027ac59f5501d73b7270e1a1";
             origin        "data/standards/parameters/EdwardsPitzer/NH3aq.dat";
-            originSha256  "aa1c03de27145f0c835bd45a6d64e8588f0ba8052fda965b867d1b2305bc4acb";
+            originSha256  "894d9f426723522b58ee5e9ec612aab3fe1014a776eac0ad49403bd90302b023";
             release       Choupo-2607;
         }
         "parameters/EdwardsPitzer/ion-CO3.dat"
@@ -221,6 +221,15 @@ propertyManifest
             computationalSha256 "59a0ecda61714efbb8d9f119daaf86154e4c86a70cd47434e3a203c62bef5a56";
             origin        "data/standards/parameters/EdwardsPitzer/mi-NH3aq-OH.dat";
             originSha256  "e9ddba8b8352ccda170c6f89829eb83871417380f6b771d481d2ebdebcbe66ae";
+            release       Choupo-2607;
+        }
+        "species/CO2aq.dat"
+        {
+            type          imported;
+            sha256        "80d945d829fe10f6c028130165a1064fce54051ae6f204c8014362f861176cad";
+            computationalSha256 "88c202a15601c66c824bd39238df064c3aae2ceddc7f83b48b23c77bf98efda7";
+            origin        "data/standards/species/CO2aq.dat";
+            originSha256  "80d945d829fe10f6c028130165a1064fce54051ae6f204c8014362f861176cad";
             release       Choupo-2607;
         }
         "species/CO3.dat"
