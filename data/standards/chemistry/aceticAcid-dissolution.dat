@@ -24,39 +24,40 @@ reaction "CH3COOH(g) = CH3COOH";
 
 // VAPOUR dimerisation of acetic acid (the carboxylic-acid signature):
 //   2 CH3COOH(g) = (CH3COOH)2(g),  K_dim = p_D/p_M^2 [atm^-1]
-// K25 ~ 1.4e3 atm^-1 (logK25 3.146), dH ~ -58.5 kJ/mol.
+// K25 = 10^2.555 = 359 atm^-1, dH = -63.18 kJ/mol (Chao & Zwolinski 1978,
+// adopted 2026-08-24 -- the note in the block below records what moved).
 vapourDimerisation
 {
-    logK25  3.146;
-    dH      -58500;
-    //  THE RE-CHECK THIS BLOCK ASKED FOR WAS DONE (2026-08-24, primary in
-    //  hand), AND IT DOES NOT CONFIRM THESE NUMBERS.  Chao & Zwolinski's
-    //  own Table 14 ("Reported enthalpies of dimerization for ethanoic
-    //  acid", p. 373) gives, on its "Derived from calculation / This work"
-    //  row at 298.15 K, -dH_d = 15.10 kcal/mol = -63.18 kJ/mol; and the
-    //  paper's own tabulated formation properties (monomer dfH -378.57,
-    //  dfG -351.00, log Kf 61.494; dimer dfH -820.94, dfG -716.59, log Kf
-    //  125.543 kJ/mol at 298.15 K) give dH_dim = -63.80 kJ/mol and
-    //  log K_dim = 2.555 -- against the -58.5 and 3.146 stored here.
+    logK25  2.555;
+    dH      -63180;
+    //  ADOPTED FROM THE PRIMARY, 2026-08-24.  This block asked for a
+    //  re-check; the re-check was done with the paper in hand and the
+    //  stored pair (-58.5 kJ/mol, logK 3.146) was NOT the paper's.  On
+    //  the owner's ruling the paper's own numbers are now carried:
     //
-    //  THE VALUES ARE LEFT UNTOUCHED and the CITATION is corrected, which
-    //  is the only honest move available tonight: changing them moves the
-    //  acetic vapour association in 35 cases, and that is the owner's
-    //  call, not a reviewer's.  What is fixed is the false attribution --
-    //  the record claimed a primary that does not carry its numbers, and
-    //  an unsourced value is strictly better than a falsely sourced one.
+    //    dH_dim  = -63.18 kJ/mol   Table 14 (p. 373), "Derived from
+    //                              calculation / This work", 15.10 kcal/mol
+    //                              at 298.15 K.  (The paper's own formation
+    //                              properties give -63.80; the 0.6 kJ is
+    //                              two-decimal kJ against two-decimal kcal.)
+    //    logK25  = 2.555           from the paper's tabulated log Kf
+    //                              (dimer 125.543 - 2 x monomer 61.494);
+    //                              cross-checked on its dfG values
+    //                              (-716.59 - 2 x -351.00 = -14.59 kJ/mol
+    //                              -> log K 2.556).
     //
-    //  For the record, -58.5 kJ/mol = 13.98 kcal/mol is NOT an outlier: it
-    //  sits inside the literature spread the same Table 14 tabulates
-    //  (11.4 to 17.0 kcal/mol across ten studies).  It is simply not the
-    //  paper's own recommendation, and this record said it was.
-    provenance
-    {
-        source   unknown;
-        reason   "the numbers' origin is not established; the cited primary was READ 2026-08-24 and does not carry them (see the note above)";
-    }
-    primarySourceRecheck  done2026-08-24-disagrees;
-    source  "PROVENANCE UNRESOLVED -- these values are NOT from Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363, though this record cited it until 2026-08-24.  That paper gives -63.18 kJ/mol (its own Table 14) and log K_dim 2.555 (from its own formation properties).  Decision pending: docs/design/interim-review-2026-08-24.md";
+    //  What the change costs, MEASURED on flash13 before adopting: the
+    //  compositions and pH do not move at all; V/F goes 0.5804 -> 0.5766
+    //  (-0.7 %), the flash duty 669.3 -> 665.8 kW (-0.5 %), and the dimer
+    //  ASSOCIATION heat 4x smaller (-1.0278 -> -0.2506 kW) because a
+    //  4x smaller K forms 4x less dimer.  35 cases mirror this record and
+    //  were resealed and re-recorded with it.
+    //
+    //  The retired pair is not disowned: -58.5 kJ/mol = 13.98 kcal/mol sits
+    //  inside the spread of ten studies the same Table 14 lists (11.4 to
+    //  17.0 kcal/mol).  It was simply never this paper's, and this record
+    //  said it was.
+    source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363, Table 14 (dH, 'This work' row) and the tabulated ideal-gas properties of the ethanoic acid monomer and dimer (logK) -- PRIMARY PAGES READ 2026-08-24; record: docs/design/interim-review-2026-08-24.md";
 }
 
 // Structured review metadata (D6 v2, 2026-07-26): preferred over the

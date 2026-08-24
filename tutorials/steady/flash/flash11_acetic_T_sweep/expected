@@ -1,24 +1,24 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  feed                   F                0.0277777777778    1e-4
-stream  liquid                 F                0.0277777777778    1e-4
-stream  vapor                  F                0                  1e-4
-kpi     flash01                F_alpha          0.0277777777778    1e-4
-kpi     flash01                F_beta           0                  1e-4
-kpi     flash01                F_in             0.0277777777778    1e-4
-kpi     flash01                P                101325             1e-4
-kpi     flash01                Q                -43266.6666667     1e-4
-kpi     flash01                Q_kW             -43.2666666667     1e-4
-kpi     flash01                T                348.15             1e-4
-kpi     flash01                V_over_F         0                  1e-4
-kpi     flash01                dimer_share      0.400229100843     1e-4
-kpi     flash01                pH               2.15093435013      1e-4
-kpi     flash01                p_dimer_atm      0.00943050769604   1e-4
-kpi     flash01                p_eq_sum_atm     0.379197895875     1e-4
-kpi     flash01                p_mono_atm       0.0141322659158    1e-4
-kpi     flash01                phaseSet         0                  1e-4
-utility flash01                cooling.coolingWater.duty_kW -43.2666666667     1e-4
-utility flash01                cooling.coolingWater.T 348.15             1e-4
-utility flash01                cooling.coolingWater.kg_s 1.0350877193       1e-4
-utility flash01                cooling.coolingWater.eur_h 0.062304           1e-4
+stream  feed                   F                0.0277777777778  1e-4
+stream  liquid                 F                0.0277777777778  1e-4
+stream  vapor                  F                0                1e-4
+kpi     flash01                F_alpha          0.0277777777778  1e-4
+kpi     flash01                F_beta           0                1e-4
+kpi     flash01                F_in             0.0277777777778  1e-4
+kpi     flash01                P                101325           1e-4
+kpi     flash01                Q                -43266.6666667   1e-4
+kpi     flash01                Q_kW             -43.2666666667   1e-4
+kpi     flash01                T                348.15           1e-4
+kpi     flash01                V_over_F         0                1e-4
+kpi     flash01                dimer_share      0.115426638388   1e-4
+kpi     flash01                pH               2.15093435013    1e-4
+kpi     flash01                p_dimer_atm      0.00184409797792 1e-4
+kpi     flash01                p_eq_sum_atm     0.371611486157   1e-4
+kpi     flash01                p_mono_atm       0.0141322659158  1e-4
+kpi     flash01                phaseSet         0                1e-4
+utility flash01                cooling.coolingWater.duty_kW -43.2666666667   1e-4
+utility flash01                cooling.coolingWater.T 348.15           1e-4
+utility flash01                cooling.coolingWater.kg_s 1.0350877193     1e-4
+utility flash01                cooling.coolingWater.eur_h 0.062304         1e-4

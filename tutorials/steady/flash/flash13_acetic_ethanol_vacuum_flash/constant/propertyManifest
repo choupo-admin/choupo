@@ -21,8 +21,8 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2607;
-    importedAt         "2026-07-26";
-    importerVersion    "2";
+    importedAt         "2026-08-24";
+    importerVersion    "3";
     records
     {
         "chemistry/HAc-formation.dat"
@@ -54,12 +54,8 @@ propertyManifest
         }
         "chemistry/aceticAcid-dissolution.dat"
         {
-            type          imported;
-            sha256        "b5d651fb9dcabe74aea935ef1126faa1420f6262ef264225b2f40c38ed82b7ac";
-            computationalSha256 "43756461dcce83bd1d9e27b9bdd14a4a697fb526ae8b5bfa238141df16d5e892";
-            origin        "data/standards/chemistry/aceticAcid-dissolution.dat";
-            originSha256  "9ecd5a12f31ce7ed92276a31fac5a6cb5a69fab673d656b60fe7fe054087d44a";
-            release       Choupo-2607;
+            type          adopted;
+            adoptedAt     "2026-08-24";
         }
         "chemistry/water-dissociation.dat"
         {
@@ -100,19 +96,19 @@ propertyManifest
         "components/ethanol.dat"
         {
             type          imported;
-            sha256        "74deafe861d657881887071276552fc99b4b5a7f17135cb683508a090686f9a9";
-            computationalSha256 "a4f8756bb96958ab663694a9b4fe55a720ea3938dc784d4eaeef692022c082a5";
+            sha256        "f88d7206fdb602a8aa14f76892242af8405aa6591f3eb92420e40e6d98cec092";
+            computationalSha256 "1db414b216101a40565c68af1324a6d2fa54c479369cf8f41e612f158eb89ef8";
             origin        "data/standards/components/ethanol.dat";
-            originSha256  "29609267bbcd43a09d915f94aaead90bc1fd9907314209e6a95ecf8e587cb93b";
+            originSha256  "995ae4d0c991bf371811c0fdef8c3e024687ca0b15e3ee97412b61b6e428b6a8";
             release       Choupo-2607;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
-            computationalSha256 "3e8c44ab80e0523c199c4f6771e67607ef4d2193ac8f673b1781baeb13b0bd89";
+            sha256        "8cc87e6cd7e32e02046dde621edb6d3fc382246b580098a25d87498f6e9e7b9e";
+            computationalSha256 "991ff5537012a205dfcc49305c28302ebb1d52b0668d8094f395a1f9b907fec9";
             origin        "data/standards/components/water.dat";
-            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            originSha256  "88c0f73f76a12f0c277cddd933fe464e61b08e8b7c68d40105ce738c78da7852";
             release       Choupo-2607;
         }
         "parameters/NRTL/ethanol-water.dat"
@@ -136,28 +132,109 @@ propertyManifest
         "species/H.dat"
         {
             type          imported;
-            sha256        "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
-            computationalSha256 "f8bc7c69e327342f330a3541a9d33d6c985e1b10b22553472a14b3ae69fee9d5";
+            sha256        "546c4d1c26d87018865e3c5a7a8c4ccf4d40282251a050d65b60e03da18380e7";
+            computationalSha256 "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
             origin        "data/standards/species/H.dat";
-            originSha256  "5f7f840a1531361ef597c17d69da45c4688596c5f7e1b53b9cb4e6f9d452dac3";
+            originSha256  "546c4d1c26d87018865e3c5a7a8c4ccf4d40282251a050d65b60e03da18380e7";
             release       Choupo-2607;
         }
         "species/NH4.dat"
         {
             type          imported;
-            sha256        "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
-            computationalSha256 "b71a10fcbb01895c0df8d8059e1c23f621dfb43e1ac0aa0d90ea8ad63e405899";
+            sha256        "cf967874daee3008f8ab16c3a6b2ce47eb688a2795d12f4256f71d3129f35769";
+            computationalSha256 "e3fb70c91adf134109cb912bb27fea8bf8f8cd23db72ca9671ab816b392ba3fe";
             origin        "data/standards/species/NH4.dat";
-            originSha256  "f332c2b2fb562681f41c6cf3830327999d5a607b2c3d46d4a3e834c3261fa65b";
+            originSha256  "cf967874daee3008f8ab16c3a6b2ce47eb688a2795d12f4256f71d3129f35769";
             release       Choupo-2607;
         }
         "species/OH.dat"
         {
             type          imported;
-            sha256        "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
-            computationalSha256 "5a06c59147ab12cb832bfa5258560ebcfd9e764cf1fb2e6d0faada7b3f349529";
+            sha256        "fc86085954e51b32832ac542b63cfe3618ade2b000b056558424025632d2f1dd";
+            computationalSha256 "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";
             origin        "data/standards/species/OH.dat";
-            originSha256  "28ff219ee9665fceed266e921d37f5e1603213f9fc69ed39b9135526c884ab85";
+            originSha256  "fc86085954e51b32832ac542b63cfe3618ade2b000b056558424025632d2f1dd";
+            release       Choupo-2607;
+        }
+        "utilities/chilledWater.dat"
+        {
+            type          imported;
+            sha256        "068627c44be253ab93fa276f54e1b81ad1734f618ffa00ed27b26cbe14e474a1";
+            computationalSha256 "dcab5f38dfc376a9bdff3dbc020d61718cd6c4a73c63a3737cfa35b580affa12";
+            origin        "data/standards/utilities/chilledWater.dat";
+            originSha256  "97591655c711fde1586ec6e9fa0e0ffc0a6d83ba89164ceea774dcbef7ec97c4";
+            release       Choupo-2607;
+        }
+        "utilities/coolingWater.dat"
+        {
+            type          imported;
+            sha256        "c592b36f13afcd2788f2db9ba7a374ee0972e38d3c306b1f2089015a15ec973a";
+            computationalSha256 "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
+            origin        "data/standards/utilities/coolingWater.dat";
+            originSha256  "b678a27eccd295f418c7439984401490725175c5895afe5e63f9d1a07c7790ff";
+            release       Choupo-2607;
+        }
+        "utilities/dowthermA.dat"
+        {
+            type          imported;
+            sha256        "cc7db8cd0193d975a28e4c55473628528f073db368a2e26daf185e389eb642f7";
+            computationalSha256 "b6644547a8fe4d87564d07c4b1f1ecf79b880bf2f9907ab1e8d38aae6ab22dd0";
+            origin        "data/standards/utilities/dowthermA.dat";
+            originSha256  "9b454bc37b2821bb13f0957e256a701f4a9e78cdae556858dbb3bf019d0f7798";
+            release       Choupo-2607;
+        }
+        "utilities/electricity.dat"
+        {
+            type          imported;
+            sha256        "5f4232381db8583d91481a84a3bff9a48e6976cacee5483299cb32d7eba83c47";
+            computationalSha256 "05317a957413165722c1f4ab1fffc523c459c9354f2afb234c2cab3768fbb392";
+            origin        "data/standards/utilities/electricity.dat";
+            originSha256  "6839043b19d131e4e9f5c4f4309ec16e24c4274489df76616a31a6e361b24f9a";
+            release       Choupo-2607;
+        }
+        "utilities/hitecSalt.dat"
+        {
+            type          imported;
+            sha256        "38d41e60eae670df05aa815d6ea0a1c003479615f7c5f7b8fdd738269faec061";
+            computationalSha256 "f6f8d56a490db4a73190d258c39d3a2deb4f27489d1a6fae7df9b3b66476c478";
+            origin        "data/standards/utilities/hitecSalt.dat";
+            originSha256  "68511f2b7d5f0aaa6193c0f5a3777e6f3c17e6e0e89ccc689216a0be9d99b061";
+            release       Choupo-2607;
+        }
+        "utilities/refrigerationPG.dat"
+        {
+            type          imported;
+            sha256        "d7d9fd7c9c9e6c50b3cef786f6bf0fe10a79f5463c0920f686bc4f03d84c9fce";
+            computationalSha256 "3c6de0f3c4563c63c1bd3a67b9914328d7d75f63c98895b03e8cdaa80f1d5155";
+            origin        "data/standards/utilities/refrigerationPG.dat";
+            originSha256  "bd3a0c01ecb2ee646f1633c55a42f1bcfed69853ad81305c577f3a38360d98da";
+            release       Choupo-2607;
+        }
+        "utilities/steamHP.dat"
+        {
+            type          imported;
+            sha256        "f0d566a5a472123a4c68f9810a7654ecc8b0ffd1bee714e5acaa068a61362df7";
+            computationalSha256 "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
+            origin        "data/standards/utilities/steamHP.dat";
+            originSha256  "35152776bb2726eb5cfd2302d93ce07f21b6b7221b8146e52ff4ad59f4378269";
+            release       Choupo-2607;
+        }
+        "utilities/steamLP.dat"
+        {
+            type          imported;
+            sha256        "6d16f11a450c4741e4e7f5cd528c6d3c559d9ac9b96752fe230944682465b952";
+            computationalSha256 "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
+            origin        "data/standards/utilities/steamLP.dat";
+            originSha256  "8e13b36ae876a787096f8a8864fd1c31afc6184f9dfac5d4e33343bf785654da";
+            release       Choupo-2607;
+        }
+        "utilities/steamMP.dat"
+        {
+            type          imported;
+            sha256        "7d73be3753c2d2a36702c452fb3de5d24f989a5f92cfb43b3dd1c23235e0ceb4";
+            computationalSha256 "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
+            origin        "data/standards/utilities/steamMP.dat";
+            originSha256  "dce067c7b9b9e327dbe309a0f09e77f63216649f82bb75e81758f42c1bb6525e";
             release       Choupo-2607;
         }
     }

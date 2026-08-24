@@ -107,7 +107,7 @@ level up.)
 | `MD4M` | 458.9933 | (volatile) | 294-640 | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `MDM` | 236.5315 | (volatile) | 254-554 | ✓ | ✓ | — | — | — | — | ✓ |   |
 | `methanol` | 32.042 | (volatile) | 288-356 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `methylAcetate` | 74.079 | (volatile) | 260-380 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylAcetate` | 74.079 | (volatile) | 250-351 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `methylLinoleate` | 294.4721 | (volatile) | 360-783 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `methylLinolenate` | 292.4562 | (volatile) | 347-757 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `methylOleate` | 296.4879 | (volatile) | 352-766 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |

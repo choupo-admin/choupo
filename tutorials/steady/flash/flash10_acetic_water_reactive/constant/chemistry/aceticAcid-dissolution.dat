@@ -28,8 +28,8 @@ reaction "CH3COOH(g) = CH3COOH";
 // K25 ~ 1.4e3 atm^-1 (logK25 3.146), dH ~ -58.5 kJ/mol.
 vapourDimerisation
 {
-    logK25  3.146;
-    dH      -58500;
+    logK25  2.555;
+    dH      -63180;
     source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363 (acetic acid vapour association) -- INTERIM: primary re-check pending (IST review)";
 }
 

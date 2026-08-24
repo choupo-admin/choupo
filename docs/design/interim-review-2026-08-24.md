@@ -222,10 +222,35 @@ an outlier.  The same Table 14 tabulates ten studies spanning 11.4 to
 17.0 kcal/mol, and values of 13.8, 14.5, 14.6 and 14.8 sit around it.  It
 is simply not the paper's own recommendation, and this record said it was.
 
-**THE DECISION, for the architect:** adopt Chao & Zwolinski's own pair
-(−63.18 kJ/mol, log K 2.555) and re-record the 35 cases' goldens, or keep
-the present values and give them a source that is true.  Either closes the
-record; only the first changes physics.
+**DECIDED AND EXECUTED the same evening (Vítor):** the paper's own pair is
+adopted — ΔH_dim = −63.18 kJ/mol, log K25 = 2.555 — so the record and its
+citation now say the same thing.
+
+**What it moved, measured by the goldens' own diff rather than asserted:**
+
+| quantity | before | after | move |
+|---|---|---|---|
+| p_dimer (atm) | 5.711e-4 / 7.091e-4 | 1.067e-4 / 1.610e-4 | **−81 % / −77 %** |
+| dimer share of vapour | 0.1102 / 0.1213 | 0.0226 / 0.0276 | **−79 % / −77 %** |
+| p_monomer (atm) | 5.138e-3 | 5.664e-3 | +10.2 % |
+| pH, flows, duties | — | — | ≤ 0.9 % |
+| all 29 compared values | — | — | **median 0.083 %** |
+
+The parameter governs the dimer, and it moved the dimer by ~80 % while the
+rest of the answer barely felt it — which is what a correctly-scoped
+constant should do.
+
+**Of the 35 cases that mirror the record, only 5 actually move** — the
+acetic-acid VLE cases (flash10, flash11, flash12, flash13, flash17).  The
+other 30 carry the record without their answers depending on it, and
+resealed unchanged.
+
+**The importer refused the five, and was RIGHT to.**  `choupo-import`
+validates that a seal never changes physics; here the physics changed by
+intent, so the check fired.  There is no bypass flag and there should not
+be: the order it demands is mirror → re-record → reseal, and the seal's
+agree-check then passes on the new answer.  A deliberate curation change
+has to be visible as a golden diff, and this one is.
 
 ## The 78 sealed mirrors
 
