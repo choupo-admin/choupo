@@ -36,6 +36,7 @@ License
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <sstream>
 
 namespace Choupo {
 
@@ -352,6 +353,30 @@ SRK::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
     const std::size_t n = comps.size();
     std::vector<std::vector<scalar>> kij(n, std::vector<scalar>(n, 0.0));
+
+    //  THE ABSENT LIST IS ANNOUNCED, not only the declared entries.  The
+    //  per-entry announcement below fires once per DECLARED kij -- so a case
+    //  with NO binaryInteractions block ran every pair at kij = 0 in silence,
+    //  while the authoring kit promised "kij = 0, announced".  The 2026-08-23
+    //  LLM benchmark (case E, natural gas on SRK) read that promise,
+    //  found no line in the log, and reported the kit as overselling; the
+    //  kit was right about what SHOULD happen.  kij = 0 is a legitimate
+    //  predictive default, but predictive-degraded is a fact the reader
+    //  needs, with the remedy named.  One line for the whole mixture, never
+    //  one per pair -- N(N-1)/2 identical lines teach nothing.
+    if (n > 1 && !eosDict->found("binaryInteractions"))
+    {
+        std::ostringstream msg;
+        msg << "SRK: no binaryInteractions declared -- all "
+            << (n * (n - 1) / 2) << " binary pair(s) run kij = 0"
+               " (predictive-degraded; curated pairs, where they exist, live"
+               " in parameters/SRK/ and are declared via the case's"
+               " binaryInteractions block)";
+        if (thermoAnnounce()
+            && AdvisoryLog::instance().add("thermo", "info",
+                   "SRK kij", msg.str()))
+            std::cout << "[eos] " << msg.str() << "\n";
+    }
 
     if (eosDict->found("binaryInteractions"))
     {

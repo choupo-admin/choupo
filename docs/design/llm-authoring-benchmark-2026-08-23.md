@@ -115,5 +115,25 @@ a checklist.  Nothing here calls for rolling back the engine; one slice of
 grammar (the electrolyte authoring seams) calls for being made one thing
 again rather than documented harder.
 
+## The re-run scoreboard (same night, fresh agents, the fixed kit)
+
+| Case | first run | re-run | what carried it |
+|---|---|---|---|
+| A | 2 | **1** | the corrected producedStreams table placed the labels right first try |
+| B | 1 | (not re-run) | already one round |
+| C | 1 | **1**, zero guesses | the reactions grammar found verbatim; the energy banner PRE-explained, and the agent briefed the student on the gas-stamp caveat correctly |
+| D | 8 | **1** | Pattern 14 transcribed nearly verbatim; all four check numbers exact |
+| E | 2 | **1** | both pitfalls avoided pre-emptively (the kit's own natural-gas example) |
+
+**Every case now converges in one round.**  The re-runs also kept earning:
+C caught thermo.md still promising the pre-2026-08-11 "defaults to ideal"
+for an uncovered NRTL pair (fixed, with the authorisation grammar verified
+against the shipped esterification2sector block rather than recalled); E
+caught the kit promising a kij = 0 announcement the engine never made — the
+kit was right about what SHOULD happen, and SRK/PR now announce the absent
+binaryInteractions list once, with the remedy named (predictive-degraded is
+a fact the reader needs); and E's single-phase flash outcome (the incipient
+sense of the printed K column) is now stated in the isothermalFlash entry.
+
 Agent reports (verbatim, with every error and attribution) are preserved in
 the session transcripts; this record carries everything actionable.

@@ -54,6 +54,16 @@ Outputs convention: `(liquid vapor )` for VL; `(vapor liquid_alpha liquid_beta )
 for VLLE (the absent phase carries F=0 so the contract stays fixed).
 LL: `(liquid_alpha liquid_beta )`.
 
+**When the answer is SINGLE-PHASE** (the (T, P) sits outside the two-phase
+band), the flash does not refuse: it reports the regime (`Regime:
+superheated vapor` / `subcooled liquid`), the absent phase leaves with
+F = 0, and V/F reads 1 (or 0) exactly.  The K column it still prints is
+then the INCIPIENT ratio (phi_L/phi_V evaluated at the converged state --
+"what the split would be at the phase boundary"), NOT a ratio of two
+coexisting phases; read it as the direction the split would open from, and
+move T or P to enter the band if a real split is what you wanted.
+
+
 ### `adiabaticFlash`
 Same as isothermalFlash but the outer Newton finds T such that
 `H_out = H_in`.  Spec the pressure only:
