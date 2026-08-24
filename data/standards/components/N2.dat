@@ -36,7 +36,7 @@ vaporPressure
     // Poling 5e App. A (via the MIT-licensed `chemicals` 1.5.2 data
     // distribution; INTERIM pending primary review (Vitor))
     coefficients  (3.61947   255.680   -6.6);
-    Trange        (61  84);
+    Trange        (61  83.65);        // upper clamped to the source fit range (review 2026-08-24)
 }
 
 idealGasHeatCapacity

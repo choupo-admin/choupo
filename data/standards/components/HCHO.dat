@@ -31,7 +31,7 @@ vaporPressure
 {
     model         Antoine;
     // log10(Psat [bar]) = A - B / (T[K] + C)
-    // CURATION FIT (2026-08-23): least-squares Antoine to the Wagner-25 curve
+    // CURATION FIT (2026-08-23): least-squares Antoine to the Wagner-ORIGINAL (3-6 form) curve of McGarry 1983
     // of McGarry 1983 over 230-300 K, max dev 0.05% (via the MIT-licensed
     // `chemicals` 1.5.2 data distribution; INTERIM pending primary review
     // (Vitor))
