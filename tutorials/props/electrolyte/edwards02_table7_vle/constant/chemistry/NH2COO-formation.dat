@@ -20,4 +20,4 @@ recordType aqueousSpeciation;
 schemaVersion 1;
 
 species NH2COO; masters ( { ion NH4; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); nuWater -1;
-      logK25 -8.7550; analytic ( 56.272405 0.016093477 -3131.35007 -23.97440 ); Trange ( 20 60 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Eq 20 + Table 1 (NH3, H2O rows), combined as derived in the header; INTERIM pending primary review";
+      logK25 -8.7550; analytic ( 56.272405 0.016093477 -3131.35007 -23.97440 ); Trange ( 20 60 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Eq 20 + Table 1 (NH3, H2O rows), combined as derived in the header; primary reviewed 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";

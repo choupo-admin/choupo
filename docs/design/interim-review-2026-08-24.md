@@ -87,10 +87,13 @@ are the review's own subject.)
 
 ## What promotion would mean, per group
 
-| group | review outcome | promotion-ready? |
+| group | review outcome | promotion decision |
 |---|---|---|
-| 33 EdwardsPitzer + 8 case-local chemistry | verified against the primary in hand, twice over | YES — one word from the owner |
-| species/CO2aq.dat | consistent with two open secondaries; NBS row unsighted | owner's call (or one NIST-PDF sitting first) |
-| 13 Antoine blocks | transcription fully verified vs the cited distribution | transcription-level YES; upstream primaries stay as the marks describe |
-| 11 Millero V0 | 3 confirmed, 8 plausible-unreached | NO — needs the paywalled primary |
-| acetic dimer ΔH | tension pinned | NO — recheck first |
+| 33 EdwardsPitzer + 8 case-local chemistry | verified against the primary in hand, twice over | **PROMOTED 2026-08-24** on the owner's delegation ("Avança como achares melhor e de acordo com a filosofia de Gall") — the 8 case-local source strings now cite this dossier instead of "INTERIM pending"; both cases resealed, goldens intact.  The 33 standards records never carried a parsed mark; this dossier and the commit record are their review record. |
+| species/CO2aq.dat | consistent with two open secondaries; NBS row unsighted | KEPT INTERIM — the claim "reviewed against the primary" would be false by one unsighted page |
+| 13 Antoine blocks | transcription fully verified vs the cited distribution | KEPT INTERIM — the marks describe the UPSTREAM question (Poling/Perry/Landolt as primaries), and that question is still true |
+| 11 Millero V0 | 3 confirmed, 8 plausible-unreached | KEPT INTERIM — needs the paywalled primary |
+| acetic dimer ΔH | tension pinned | KEPT INTERIM — recheck first |
+
+The promotion boundary IS the Gall reading of the delegation: claim exactly
+what was verified, keep every mark that still tells the truth.

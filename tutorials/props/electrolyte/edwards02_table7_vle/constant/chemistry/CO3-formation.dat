@@ -12,4 +12,4 @@ recordType aqueousSpeciation;
 schemaVersion 1;
 
 species CO3; masters ( { ion HCO3; nu 1; } { ion H; nu -1; } );
-      logK25 -10.3322; analytic ( 95.573884 0 -5399.01871 -35.48190 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (HCO3- row); INTERIM pending primary review";
+      logK25 -10.3322; analytic ( 95.573884 0 -5399.01871 -35.48190 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (HCO3- row); primary reviewed 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";

@@ -27,4 +27,4 @@ recordType aqueousSpeciation;
 schemaVersion 1;
 
 species NH3aq; ion "NH3"; z 0; masters ( { ion NH4; nu 1; } { ion H; nu -1; } );
-      logK25 -9.2443; analytic ( 60.007337 0.016093477 -4390.80407 -23.97440 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (NH3 and H2O rows, combined as derived in the header); INTERIM pending primary review";
+      logK25 -9.2443; analytic ( 60.007337 0.016093477 -4390.80407 -23.97440 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (NH3 and H2O rows, combined as derived in the header); primary reviewed 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";

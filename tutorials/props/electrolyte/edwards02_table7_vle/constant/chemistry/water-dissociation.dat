@@ -12,4 +12,4 @@ recordType aqueousSpeciation;
 schemaVersion 1;
 
 species OH; masters ( { ion H; nu -1; } ); nuWater 1;
-      logK25 -13.9983; analytic ( 61.205990 0 -5839.48017 -22.47730 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (H2O row); INTERIM pending primary review";
+      logK25 -13.9983; analytic ( 61.205990 0 -5839.48017 -22.47730 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (H2O row); primary reviewed 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
