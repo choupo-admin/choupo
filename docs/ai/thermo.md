@@ -277,8 +277,30 @@ caloric
 
 The stream carries the SALT (the flowsheet/component basis); the model
 activates its ions from the component's `dissociatesTo` and the ion records
-in `species/`.  Multi-ion speciation (`pitzerHMW`, `davies`) is a propsDict
-`speciate` operation, not a flowsheet formulation.
+in `species/`.
+
+**The REACTIVE shape** (a speciation network + volatiles, as in the
+brine-CO₂ and sour-water flashes) declares its IONIC rung inside
+`aqueous {}` and the engine serves what its speciation kernel serves:
+
+```
+    aqueous
+    {
+        activityModel { ionic davies; }      // charge-only teaching rung
+        // or:
+        activityModel { ionic pitzerHMW; }   // curated-pair engine (since
+                                             //   2026-08-24) -- what a
+                                             //   2 mol/kg brine needs
+    }
+    volatiles ( CO2 water );                 // at equilibrium{} level
+```
+
+`edwardsPitzer` is deliberately NOT served on this path (its Henry records
+are a different convention — use a propsDict `speciate` op with a
+`vapour {}` block for the Edwards stack), and the composite routes
+(`molecular` backbone, `organic {}` second liquid) are ratified on
+`ionic davies` only — each refusal names its remedy.  Witness case:
+`flash21_brine_co2_pitzer`.
 
 ## caloric — the energy routes
 

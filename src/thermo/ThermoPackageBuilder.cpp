@@ -487,12 +487,28 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                                               const DictPtr& aq,
                                               const ChemistrySystem* chem)
 {
-    // (a) models of the two phases -- this slice serves ionic davies (the
-    //     speciation kernel's rung) + an OPTIONAL molecular backbone model
+    // (a) models of the two phases -- the IONIC rung is the DECLARED model,
+    //     verified against what the speciation kernel actually serves
+    //     (davies, pitzerHMW), + an OPTIONAL molecular backbone model
     //     (mixed-solvent v1: `activityModel { ionic davies; molecular
     //     NRTL; }`); anything else refuses NAMED (never a silent
     //     downgrade).  The legacy single-word `model davies;` stays valid
     //     (ionic davies, no molecular model).
+    //
+    //     S5(b), 2026-08-24, the architect's close-the-seams ruling.  A
+    //     davies-only guard stood here while cfg.activityModel already
+    //     flowed through to the SpeciationSolver, whose factory serves
+    //     pitzerHMW as well -- so the guard was the ONLY thing between the
+    //     declared grammar and the served grammar, and the LLM-authoring
+    //     benchmark found the drift (the engine refused the kit's own
+    //     example).  edwardsPitzer stays refused HERE, and the reason is
+    //     STANDARD-STATE COHERENCE, not capability: its Henry records are
+    //     the Edwards-Hkgatm convention (served by the speciate op's
+    //     vapour{} block), while this path's volatility comes from the
+    //     gas-liquid chemistry records on the PHREEQC-gasMolal convention
+    //     -- serving it would mix standard states silently, which is the
+    //     D2 identity contract's one unforgivable (a hybrid nobody
+    //     published).
     std::string actModel = "davies";
     std::string molecularModel;                    // "" = none declared
     {
@@ -508,11 +524,40 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                 molecularModel = am->lookupWord("molecular");
         }
     }
-    if (actModel != "davies")
+    if (actModel == "edwardsPitzer")
         throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
-            " electrolyteGammaPhi slice serves ionic davies (the"
-            " speciation kernel's rung); '" + actModel + "' joins in a later"
-            " slice -- declare davies or drop the speciation block.");
+            " electrolyteGammaPhi slice does not serve edwardsPitzer, and"
+            " the reason is standard-state coherence, not capability: its"
+            " Henry records are the Edwards-Hkgatm convention (referenced to"
+            " the water saturation pressure, unsymmetric Eq 8 gamma*),"
+            " while this path's volatility comes from the gas-liquid"
+            " chemistry records on the PHREEQC-gasMolal convention --"
+            " mixing them would price a hybrid nobody published.  For the"
+            " Edwards stack use a choupoProps speciate op with a vapour{}"
+            " block (see edwards02_table7_vle); for this path declare"
+            " `ionic davies;` or `ionic pitzerHMW;`.");
+    if (actModel != "davies" && actModel != "pitzerHMW")
+        throw std::runtime_error("thermophysicalPropertySystem: the REACTIVE"
+            " electrolyteGammaPhi slice serves ionic davies or ionic"
+            " pitzerHMW (the speciation kernel's registered engines); '"
+            + actModel + "' declared.");
+    //  The COMPOSITE routes were ratified ON DAVIES (mixed-solvent v1's
+    //  multiplicative a_w decomposition and the second liquid's equality
+    //  both carry Davies-validated postures) -- running pitzerHMW under
+    //  either would be a physics claim nobody checked.  Refused by name,
+    //  never silently narrowed.
+    if (actModel == "pitzerHMW" && !molecularModel.empty())
+        throw std::runtime_error("thermophysicalPropertySystem: the composite"
+            " mixed-solvent route (`activityModel { ionic ...; molecular"
+            " ...; }`) is ratified on ionic davies; pitzerHMW under the"
+            " molecular backbone is its own slice (unvalidated) -- declare"
+            " `ionic davies;` with the backbone, or drop the backbone.");
+    if (actModel == "pitzerHMW" && eq->found("organic"))
+        throw std::runtime_error("thermophysicalPropertySystem: the reactive"
+            " second liquid (`equilibrium { organic {...} }`) is ratified on"
+            " ionic davies; pitzerHMW under the organic split is its own"
+            " slice (unvalidated) -- declare `ionic davies;` with the"
+            " organic block, or drop it.");
     //  The backbone serves the models it can actually WIRE.  NRTL and
     //  UNIQUAC need a curated record per pair (parameters/NRTL/ and
     //  parameters/UNIQUAC/ -- UNIQUAC added 2026-08-10 for the Marcilla S5b
@@ -1418,9 +1463,14 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
             " declared -- a reactive VLE with no transferable species is a"
             " speciation-only problem (use the props speciate op).");
 
+    //  The banner states the model that RUNS, never a fixed word (the
+    //  Edwards lesson, 2026-08-04: a banner keyed on one model and
+    //  defaulting for the rest describes a model that is not running --
+    //  this line said "davies" verbatim on the first pitzerHMW run).
     if (thermoAnnounce())
         std::cout << "[v2 native] equilibrium electrolyteGammaPhi (REACTIVE"
-                     " speciation shape): aqueous davies speciation network +"
+                     " speciation shape): aqueous " << actModel
+                  << " speciation network +"
                      " gas-liquid transfer records; ions excluded from the"
                      " vapour; streams stay on the APPARENT component basis"
                      " (unit-local speciation, section 6b).\n";

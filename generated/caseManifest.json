@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 374,
+  "cases": 375,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 10
@@ -3530,6 +3530,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/flash/flash21_brine_co2_pitzer": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "isothermalFlash"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "pitzerHMW"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/flash/flash21_freeze_concentration": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5721,6 +5736,7 @@
     "tutorials/steady/flash/flash18_water_analysis_basis",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
+    "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
@@ -6216,6 +6232,7 @@
     "tutorials/steady/flash/flash18_water_analysis_basis",
     "tutorials/steady/flash/flash19_organic_and_precipitate",
     "tutorials/steady/flash/flash20_ethanol_water_pcsaft",
+    "tutorials/steady/flash/flash21_brine_co2_pitzer",
     "tutorials/steady/flash/flash21_freeze_concentration",
     "tutorials/steady/flash/flash_polymer_devolatilisation",
     "tutorials/steady/flash/flash_pseudoComponent_petCut",
@@ -6755,7 +6772,8 @@
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
-    "tutorials/props/electrolyte/tartaricAcid_acidulation"
+    "tutorials/props/electrolyte/tartaricAcid_acidulation",
+    "tutorials/steady/flash/flash21_brine_co2_pitzer"
    ]
   },
   "byOp": {

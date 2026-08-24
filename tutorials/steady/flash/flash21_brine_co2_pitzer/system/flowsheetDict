@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flash21_brine_co2_pitzer -- the S5(b) witness: a 2 mol/kg NaCl brine with
+  dissolved CO2, flashed at 313.15 K / 1 atm, with the aqueous speciation
+  priced by pitzerHMW (curated Na-Cl / Na-HCO3 / Na-CO3 / Na-OH / H-Cl
+  pairs) instead of the charge-only Davies correlation that has no business
+  at I = 2.  The salt stays in the liquid by construction (nonvolatile,
+  complete dissociation through its declared bridge); CO2 partitions
+  against its ionised fraction exactly as in flash09's ammonia lesson --
+  speciation and phase split solved TOGETHER, never in sequence.
+
+  WHAT THE MODEL CHOICE MOVES, measured at build time (2026-08-24) against
+  an otherwise identical davies twin: the liquid pH (3.84 here vs 3.96
+  under davies -- the charge-only bracket is out of its band at I = 2 and
+  the Davies advisory says so on that run), while V/F barely moves (0.0211
+  vs 0.0210): the vapour is set by the NEUTRAL CO2aq, which Davies prices
+  at exactly gamma = 1 and HMW at its real specific-interaction value.
+
+  A CAVEAT THIS CASE ANNOUNCES AND DOES NOT HIDE: the energy report tries
+  to re-resolve every stream's own equilibrium, and the VAPOUR stream
+  (93 % CO2, 7 % water, zero salt) read as an aqueous liquid has an
+  implied molality near 770 mol/kg -- outside any aqueous model's domain.
+  pitzerHMW fails there loudly (singular Jacobian) and the report falls
+  back to the carried state, announced in the caveat block.  Davies
+  returns a number at the same absurd state, which is not a virtue: a
+  charge-only correlation cannot know it is out of its depth.  The
+  answer's own streams are unaffected.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 313.15 K;  P 1.0 atm; }
+    }
+);

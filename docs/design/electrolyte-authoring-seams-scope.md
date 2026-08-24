@@ -1,12 +1,15 @@
 # The electrolyte authoring seams — scope (F3 of the LLM benchmark)
 
-**Status: the authorised slices are BUILT (S1+S2 2026-08-23, S4+S6 the
-same night — S4's reproduction found the better truth: not an echoing
+**Status: ALL SIX SEAMS CLOSED.  S1+S2 built 2026-08-23, S4+S6 the same
+night — S4's reproduction found the better truth: not an echoing
 diagnostic but a DUPLICATED species row, the declared master's phantom
 inventory beside the network's solved value; the collision now refuses
-with both remedies and the round-5 pin message names the master).
-S3 and S5 [ARCHITECT] await Vítor.  The success criterion (a fresh-agent
-re-run of benchmark case D) is measured below.**  Evidence:
+with both remedies and the round-5 pin message names the master.
+S3 and S5 executed 2026-08-24 on Vítor's ruling ("retrocede onde for
+preciso para evitar remendos"): S3 = `species/CO2aq.dat` promoted to
+standards (Wagman 1982 cited, INTERIM); S5 = option (b), see below.
+The success criterion (a fresh-agent re-run of benchmark case D) is
+measured below.**  Evidence:
 [`llm-authoring-benchmark-2026-08-23.md`](llm-authoring-benchmark-2026-08-23.md)
 case D — eight rounds to author a NaCl-brine-open-to-CO₂ speciation, with
 every round powered by an error message because the kit could not carry it.
@@ -68,6 +71,35 @@ ruling rather than decided here:
   Recommendation: (a) now (it rides S2), (b) as the named next engine
   slice when the sour-water programme's S4 (H₂S) forces the same routing
   question anyway.  Decision requested.
+
+  **DECIDED AND EXECUTED (b), 2026-08-24 — Vítor's close-the-seams ruling.**
+  What the cut found: `cfg.activityModel` already flowed from the case
+  declaration into the `SpeciationSolver`, whose factory already served
+  `pitzerHMW` — the davies-only guard was the ONLY code between the
+  declared grammar and the served grammar, which is the purest form of
+  the seam this scope describes.  The guard now admits {davies,
+  pitzerHMW}; three refusals were added where honesty demands them, each
+  naming its remedy and each fired by probe: `edwardsPitzer` (standard-
+  state coherence — its Henry records are Edwards-Hkgatm, this path's
+  gas-liquid records are PHREEQC-gasMolal; a hybrid nobody published),
+  and pitzerHMW under the `molecular` backbone or the `organic {}`
+  second liquid (both composite routes were ratified ON davies; serving
+  them unvalidated would be a physics claim nobody checked).  One
+  Edwards-lesson bug fell out on the first pitzerHMW run: the
+  `[v2 native]` banner said "aqueous davies speciation network" verbatim
+  while pitzerHMW ran — it now prints the declared model.  Witness:
+  `flash21_brine_co2_pitzer` (2 mol/kg NaCl + CO₂ reactive flash,
+  I = 2.00, liquid pH 3.84 vs 3.96 under an otherwise identical davies
+  twin, V/F essentially unmoved at 0.0211 — the vapour is set by the
+  NEUTRAL CO2aq, and the case header says which number the model choice
+  moves and why); its golden pins the seam shut, so a reintroduced
+  guard fails the suite.  The kit's thermo.md and Pattern 14 now teach
+  the served set.  A pitzerHMW-specific honesty note, announced by the
+  engine and recorded in the case: the energy report's re-resolution of
+  the VAPOUR stream (implied molality ~770 mol/kg) fails loudly under
+  HMW and falls back to the carried state, where davies returns a
+  number at the same absurd state — the loud failure is the better
+  behaviour.
 
 **S6 (catalogue view, authorised)** — the generated inventory learns the
 parameter-pair homes it omits: SRK/PR kij pairs (E could not know what may

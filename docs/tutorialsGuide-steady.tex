@@ -3660,6 +3660,43 @@ A model boundary note: the two units run DIFFERENT thermo worlds on the same glo
 \end{tutgolden}
 
 \clearpage
+\tutentry{flash21\_brine\_co2\_pitzer}{tutorials/steady/flash/flash21\_brine\_co2\_pitzer}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (flash01) at (0.0,-0.0) {\textbf{flash01}\\[-1pt]{\tiny isothermalFlash}};
+  \draw[->] ($(flash01.west)+(-1.05,0.00)$) -- ($(flash01.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(flash01.east)+(0,-0.17)$) -- ($(flash01.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {liquid};
+  \draw[->] ($(flash01.east)+(0,0.17)$) -- ($(flash01.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {vapor};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{NaCl brine + CO2 reactive flash under the pitzerHMW ionic rung -- seam S5(b) witness: the declared model IS the served model.}
+\begin{tutnarrative}
+the S5(b) witness: a 2 mol/kg NaCl brine with dissolved CO2, flashed at 313.15 K / 1 atm, with the aqueous speciation priced by pitzerHMW (curated Na-Cl / Na-HCO3 / Na-CO3 / Na-OH / H-Cl pairs) instead of the charge-only Davies correlation that has no business at I = 2. The salt stays in the liquid by construction (nonvolatile, complete dissociation through its declared bridge); CO2 partitions against its ionised fraction exactly as in flash09's ammonia lesson -- speciation and phase split solved TOGETHER, never in sequence.
+
+WHAT THE MODEL CHOICE MOVES, measured at build time (2026-08-24) against an otherwise identical davies twin: the liquid pH (3.84 here vs 3.96 under davies -- the charge-only bracket is out of its band at I = 2 and the Davies advisory says so on that run), while V/F barely moves (0.0211 vs 0.0210): the vapour is set by the NEUTRAL CO2aq, which Davies prices at exactly gamma = 1 and HMW at its real specific-interaction value.
+
+A CAVEAT THIS CASE ANNOUNCES AND DOES NOT HIDE: the energy report tries to re-resolve every stream's own equilibrium, and the VAPOUR stream (93 \% CO2, 7 \% water, zero salt) read as an aqueous liquid has an implied molality near 770 mol/kg -- outside any aqueous model's domain. pitzerHMW fails there loudly (singular Jacobian) and the report falls back to the carried state, announced in the caveat block. Davies returns a number at the same absurd state, which is not a virtue: a charge-only correlation cannot know it is out of its depth. The answer's own streams are unaffected.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.0277777777778}
+\goldrow{stream}{liquid}{F}{0.0271904240052}
+\goldrow{stream}{vapor}{F}{0.000587353772572}
+\goldrow{kpi}{flash01}{F\_alpha}{0.0271904240052}
+\goldrow{kpi}{flash01}{F\_beta}{0.000587353772572}
+\goldrow{kpi}{flash01}{F\_in}{0.0277777777778}
+\goldrow{kpi}{flash01}{K\_CO2}{3299.5218183}
+\goldrow{kpi}{flash01}{K\_NaCl}{0}
+\goldrow{kpi}{flash01}{K\_water}{0.0696646141595}
+\goldrow{kpi}{flash01}{P}{101325}
+\goldrow{kpi}{flash01}{T}{313.15}
+\goldrow{kpi}{flash01}{V\_over\_F}{0.0211447358126}
+\goldrow{kpi}{flash01}{pH}{3.83985178539}
+\goldrow{kpi}{flash01}{p\_eq\_sum\_atm}{1}
+\goldmore{1}
+\end{tutgolden}
+
+\clearpage
 \tutentry{flash21\_freeze\_concentration}{tutorials/steady/flash/flash21\_freeze\_concentration}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

@@ -694,12 +694,14 @@ equilibrium
     {
         solvent            water;
         apparentComponents ( NaCl );    // the stream carries the salt
-        activityModel { model davies; } // REACTIVE electrolyteGammaPhi serves
-                                        // davies here (a Pitzer line is
-                                        // REFUSED on this slice); the op below
-                                        // still runs pitzerHMW for the
-                                        // SPECIATION itself -- the op-level
-                                        // activityModel is the contrast knob
+        activityModel { ionic davies; } // the REACTIVE ionic rung: davies or
+                                        // pitzerHMW (served since 2026-08-24;
+                                        // edwardsPitzer is refused here -- its
+                                        // Henry convention belongs to the
+                                        // speciate op's vapour{} block); the
+                                        // op below still picks its own model
+                                        // -- the op-level activityModel is the
+                                        // contrast knob
         compositionBasis molality;
     }
     volatiles ( water CO2 );            // REQUIRED at equilibrium{} level (not

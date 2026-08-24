@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The REACTIVE electrolyteGammaPhi shape under the pitzerHMW ionic rung
+  (seam S5(b), closed 2026-08-24 on the architect's ruling): the declared
+  ionic model reaches the speciation kernel unfiltered -- the davies-only
+  guard that stood in the builder was the LLM-authoring benchmark's finding
+  (the engine refused the kit's own example).  Davies remains the default
+  teaching rung; pitzerHMW is the curated-pair engine a 2 mol/kg brine
+  actually needs (the Davies advisory fires beyond I = 0.5).
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( NaCl  CO2  water );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+
+    aqueous
+    {
+        activityModel { ionic pitzerHMW; }
+    }
+
+    vapour    { fugacityModel idealGas; }
+
+    volatiles ( CO2  water );
+}
