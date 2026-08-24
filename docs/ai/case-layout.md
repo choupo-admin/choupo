@@ -118,6 +118,20 @@ In `choupoCtrl` the digital controller still samples on the fixed `deltaT`
 grid; the adaptive integrator sub-steps the plant BETWEEN samples with the
 manipulated variable held.  Worked examples: `tutorials/batch/reactor/
 batch06_adaptive_runaway` and `tutorials/ctrl/ctrl03_adaptive_disturbance`.
+
+**Chaining dynamic units (tanks-in-series, since 2026-08-24).**  `choupoCtrl`
+units may declare the SAME `in <stream>;` / `outputs ( <stream> );` topology
+every steady flowsheet uses; matching names form a route, and at every
+accepted driver step the downstream unit's inlet face is overwritten with
+the upstream outlet at the step's START (one-step-explicit: a transport
+delay of one driver step, announced by `[routing]` lines at startup).  The
+declared `0/streamFaces` entry stays the t = 0 state of a routed inlet and
+the whole state of an unconnected one — a case that declares no topology is
+byte-identical to before.  Forward series/parallel routing only: a
+self-loop, two producers of one stream name, and a controller actuating a
+ROUTED inlet field all refuse by name.  Worked example:
+`tutorials/ctrl/ctrl19_tanks_in_series` (three equal tanks, impulse in
+tank 1, Erlang-3 moments at tank 3 against Levenspiel closed forms).
 Only units with a clean packed-ODE form (`batchReactor`, `dynamicCSTR`) take
 the adaptive sweep; any other vessel takes one fixed sub-step per interval.
 

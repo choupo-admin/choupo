@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/streamFaces -- DYNAMIC face state.  tank1.feed is the domain inlet;
+  tank2/tank3 faces are the t = 0 state of the ROUTED inlets (the router
+  overwrites them from the first accepted step on).
+\*-----------------------------------------------------------------------------*/
+time            0;
+faces
+{
+    "tank1.feed"
+    {
+        bc          inlet;
+        T           330.0;
+        P           101325.0;
+        molarFlows
+        {
+            compA   5.0e-05;
+            compB   0.0;
+        }
+    }
+    "tank2.feed"
+    {
+        bc          inlet;
+        T           330.0;
+        P           101325.0;
+        molarFlows
+        {
+            compA   5.0e-05;
+            compB   0.0;
+        }
+    }
+    "tank3.feed"
+    {
+        bc          inlet;
+        T           330.0;
+        P           101325.0;
+        molarFlows
+        {
+            compA   5.0e-05;
+            compB   0.0;
+        }
+    }
+}

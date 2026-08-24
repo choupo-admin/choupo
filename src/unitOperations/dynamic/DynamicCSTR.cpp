@@ -330,6 +330,30 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
 //  fast thermal mode and the relaxation diverges).  The horizon is then many
 //  slow-mode residence times so the composition fully equilibrates.
 // ---------------------------------------------------------------------------
+//  Routed inlet (tanks-in-series).  nDotIn_ is the authoritative
+//  per-component molar flow; F_in_ and z_in_ are derived views of it, so
+//  the three stay coherent by construction.  T_in_ follows the routed
+//  stream.  P is NOT taken: this vessel's pressure is its own operating
+//  datum, and the proposal's scope is forward routing, not a flow network.
+void DynamicCSTR::setInletStream(const ContinuousStream& s)
+{
+    if (s.z.size() != nDotIn_.size())
+        throw std::runtime_error("DynamicCSTR '" + name_ + "': routed inlet"
+            " carries " + std::to_string(s.z.size()) + " components against"
+            " this unit's " + std::to_string(nDotIn_.size())
+            + " -- one global component set is the ctrl contract");
+    for (std::size_t i = 0; i < nDotIn_.size(); ++i)
+        nDotIn_[i] = s.F * s.z[i];
+    F_in_ = 0.0;
+    for (auto v : nDotIn_) F_in_ += v;
+    if (F_in_ > 0.0)
+        for (std::size_t i = 0; i < z_in_.size(); ++i)
+            z_in_[i] = nDotIn_[i] / F_in_;
+    else
+        std::fill(z_in_.begin(), z_in_.end(), 0.0);
+    T_in_ = s.T;
+}
+
 void DynamicCSTR::seedFromSteady()
 {
     const std::size_t N = n_.size();

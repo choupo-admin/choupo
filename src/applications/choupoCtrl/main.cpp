@@ -429,6 +429,75 @@ try
     for (const auto& n : unitNames) std::cout << "  " << n;
     std::cout << "\n";
 
+    // ---- Unit-to-unit routing (tanks-in-series, ruled 2026-08-24) ------
+    //  The steady grammar's own topology declaration -- `in <stream>;` +
+    //  `outputs ( <stream> );` on a unit -- now serves the ctrl path too:
+    //  matching names form a route a -> b, applied ONE-STEP-EXPLICITLY at
+    //  each accepted driver step (b integrates [t, t+dt] on a's outlet AT
+    //  t: a transport delay of one driver step, announced below).  No new
+    //  grammar.  Units that declare neither are untouched -- an
+    //  unconnected case is byte-identical by construction.  The declared
+    //  0/streamFaces face stays the t = 0 inlet state and the face of
+    //  every unconnected inlet.  Scope, per the ratified proposal:
+    //  forward series/parallel routing only -- no implicit-in-time
+    //  coupling, no back-pressure, no flow networks.
+    struct CtrlRoute { std::size_t from = 0, to = 0; std::string stream; };
+    std::vector<CtrlRoute> routes;
+    {
+        std::map<std::string, std::size_t> producerOf;
+        for (std::size_t i = 0; i < unitList.size(); ++i)
+            if (unitList[i]->found("outputs"))
+                for (const auto& w : unitList[i]->lookupWordList("outputs"))
+                {
+                    if (producerOf.count(w))
+                        throw std::runtime_error("choupoCtrl routing: stream '"
+                            + w + "' is produced by BOTH '"
+                            + unitNames[producerOf[w]] + "' and '"
+                            + unitNames[i] + "' -- two connections into one"
+                            " name have no meaning on the forward-routing"
+                            " path (merge them with an explicit mixer unit"
+                            " when one exists)");
+                    producerOf[w] = i;
+                }
+        for (std::size_t i = 0; i < unitList.size(); ++i)
+        {
+            if (!unitList[i]->found("in")) continue;
+            const std::string src = unitList[i]->lookupWord("in");
+            auto it = producerOf.find(src);
+            if (it == producerOf.end()) continue;   // domain inlet: 0/ face
+            if (it->second == i)
+                throw std::runtime_error("choupoCtrl routing: unit '"
+                    + unitNames[i] + "' declares its own output '" + src
+                    + "' as its inlet -- a self-loop needs the recycle"
+                    " machinery the steady path owns, not forward routing");
+            //  REACH, stated honestly (the check_true_ions discipline): as
+            //  of 2026-08-24 this refusal cannot fire in practice -- the
+            //  only registered dynamic type without a routable inlet
+            //  (williamsOttoPlant) owns its own component set and refuses
+            //  earlier, at initialise.  It stands for the next dynamic
+            //  type, and claims no probe today.
+            if (!units[i]->acceptsRoutedInlet())
+                throw std::runtime_error("choupoCtrl routing: unit '"
+                    + unitNames[i] + "' (type " + units[i]->type()
+                    + ") is the target of routed stream '" + src
+                    + "' but has no routable inlet face -- only units that"
+                    " model a feed (e.g. dynamicCSTR) can be chained");
+            routes.push_back({ it->second, i, src });
+        }
+        for (const auto& r : routes)
+            std::cout << "[routing] " << unitNames[r.from] << " -> "
+                      << unitNames[r.to] << "  (stream '" << r.stream
+                      << "'; ONE-STEP-EXPLICIT: the downstream unit"
+                         " integrates each driver step on the upstream"
+                         " outlet at the step's start -- a transport delay"
+                         " of one driver step)\n";
+    }
+    auto applyRoutes = [&]()
+    {
+        for (const auto& r : routes)
+            units[r.to]->setInletStream(units[r.from]->outletStream());
+    };
+
     // ---- Build controllers -------------------------------------------
     std::vector<std::unique_ptr<Controller>> controllers;
     std::vector<std::string>                  ctrlNames;
@@ -441,6 +510,24 @@ try
         {
             const std::string cname = cDict->lookupWord("name");
             const std::string ctype = cDict->lookupWord("type");
+            //  A routed inlet and a controller actuator on the SAME feed
+            //  face would fight silently (the route re-writes the face at
+            //  every accepted step, after the controller fired) -- refused
+            //  by name, never resolved by ordering.
+            if (!routes.empty() && cDict->found("actuator"))
+            {
+                auto act = cDict->subDict("actuator");
+                const std::string tgt = act->lookupWordOrDefault("unit", "");
+                for (const auto& r : routes)
+                    if (unitNames[r.to] == tgt && act->found("inletField"))
+                        throw std::runtime_error("choupoCtrl routing:"
+                            " controller '" + cname + "' actuates an inlet"
+                            " field of unit '" + tgt + "', whose inlet is"
+                            " ROUTED from '" + unitNames[r.from] + "' --"
+                            " the route would overwrite the controller at"
+                            " every step.  Actuate the UPSTREAM unit's"
+                            " inlet, or drop the route.");
+            }
             auto c = Controller::New(ctype);
             c->setName(cname);
             c->initialise(cDict, findUnit);
@@ -1155,6 +1242,7 @@ try
             ledgerAccept(t);
             rtdAccept(t);
             frAccept(t);
+            applyRoutes();     // next step's inlet = this step's outlet
 
             if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
             {
@@ -1247,6 +1335,11 @@ try
                 rtdAccept(tNext);
                 frAccept(tNext);
             }
+            //  Routing on the DRIVER grid, not the integrator's sub-steps:
+            //  the routed inlet is held across each [t, tNext] exactly as
+            //  the MVs are (zero-order hold), so the transport delay is
+            //  one driver step under either integrator.
+            applyRoutes();
 
             t = tNext;
 

@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoCtrl;
+description   "Tanks-in-series RTD: three equal mixing tanks chained by the ctrl router; impulse in tank 1 -> Erlang-3 response at tank 3 (tbar = 3 tau, sigma2/tbar2 = 1/3), Levenspiel closed forms as anchors.";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         1600;     // s  (= 6.7 total tau; Erlang-3 tail mass ~ 5e-7)
+deltaT          1.0;      // s
+writeInterval   20;       // s
+
+//  The RTD experiment: outlet tracer moments of the LAST tank.
+rtd
+{
+    unit    tank3;
+    tracer  compB;
+}

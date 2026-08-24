@@ -112,6 +112,12 @@ public:
     // Accessors for diagnostic prints.
     scalar T()          const { return T_; }
     scalar T_jacket()   const { return T_jacket_; }
+    //  Routed inlet: nDotIn_ is the AUTHORITATIVE per-component molar
+    //  flow (F_in_/z_in_ are derived views of it), so the route writes
+    //  there -- the same authority a controller's inletField writes.
+    bool acceptsRoutedInlet() const override { return true; }
+    void setInletStream(const ContinuousStream& s) override;
+
     scalar T_in()       const { return T_in_; }
     scalar F_in()       const { return F_in_; }
     const sVector& n()  const { return n_; }

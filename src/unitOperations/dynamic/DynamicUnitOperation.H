@@ -60,6 +60,7 @@ Description
 #include <functional>
 #include <map>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -135,6 +136,22 @@ public:
     // already holds.  `hasInlet` lets a unit opt in without forcing one.
     virtual bool             hasInlet() const { return false; }
     virtual ContinuousStream inletStream() const { return {}; }
+
+    //  ---- Routed inlet (tanks-in-series, ruled 2026-08-24) --------------
+    //  The ctrl driver may ROUTE one unit's outlet onto another's inlet
+    //  face at each accepted driver step: one-step-EXPLICIT forward
+    //  routing, so the downstream unit integrates [t, t+dt] on the
+    //  upstream outlet AT t -- a transport delay of one driver step,
+    //  announced once by the driver.  A unit that models a feed face opts
+    //  in by overriding both members; the default refuses BY NAME so a
+    //  connection into a unit with no routable inlet is a load-time
+    //  error, never a silent no-op.
+    virtual bool acceptsRoutedInlet() const { return false; }
+    virtual void setInletStream(const ContinuousStream& /*s*/)
+    {
+        throw std::runtime_error("DynamicUnitOperation: unit '" + name_
+            + "' (" + type() + ") has no routable inlet face");
+    }
 
     // ---- Manipulated / Controlled Variables (the controller API) -----
     //   MV: a controller writes a numeric value into a named knob.

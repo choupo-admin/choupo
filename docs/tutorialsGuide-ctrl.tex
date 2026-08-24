@@ -630,6 +630,50 @@ THE ANCHORS ARE THE FIRST-ORDER CLOSED FORMS (any process-control text; at omega
 \end{tutgolden}
 
 \clearpage
+\tutentry{ctrl19\_tanks\_in\_series}{tutorials/ctrl/ctrl19\_tanks\_in\_series}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank1) at (0.0,-0.0) {\textbf{tank1}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank2) at (2.9,-0.0) {\textbf{tank2}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tank3) at (5.8,-0.0) {\textbf{tank3}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(tank1.west)+(-1.05,0.00)$) -- ($(tank1.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (tank1) -- (tank2) node[midway, above, font=\tiny] {s12};
+  \draw[->] (tank2) -- (tank3) node[midway, above, font=\tiny] {s23};
+  \draw[->] ($(tank3.east)+(0,0.00)$) -- ($(tank3.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Tanks-in-series RTD: three equal mixing tanks chained by the ctrl router; impulse in tank 1 $\to$ Erlang-3 response at tank 3 (tbar = 3 tau, sigma2/tbar2 = 1/3), Levenspiel closed forms as anchors.}
+\begin{tutnarrative}
+the SECOND HALF of the RTD lesson, unlocked by the ctrl router (ruled 2026-08-24): three EQUAL mixing tanks in series, each tau = n/F = 0.004/5e-5 = 80 s, chained by the same `in`/`outputs` topology grammar every steady flowsheet already uses. The router applies each connection ONE-STEP-EXPLICITLY: at every accepted driver step the downstream tank integrates on the upstream outlet at the step's START -- a transport delay of one driver step (1 s here, against tau = 80 s), announced by the [routing] lines at startup.
+
+THE EXPERIMENT. The tracer impulse is an INITIAL-CONDITION substitution in tank 1 only (compB 0.0002 of the 0.004 kmol holdup -- substitution, not addition, so every tank holds exactly tau = 80 s and the closed forms are exact). An initial holdup m in tank 1 is mathematically a perfect impulse into tank 1 at t = 0, so tank 3's outlet is the Erlang-3 density:
+
+E(t) = t\textasciicircum{}2 e\textasciicircum{}(-t/tau) / (2 tau\textasciicircum{}3) tbar = 3 tau = 240 s sigma2 = 3 tau\textasciicircum{}2 = 19200 s\textasciicircum{}2 (sigma2/tbar2 = 1/3 exactly) peak at 2 tau = 160 s (visible in trajectory.csv)
+
+Levenspiel, Chemical Reaction Engineering, ch. 14 (the tanks-in-series model): the variance ratio 1/N is THE diagnostic the lesson teaches -- one tank gives 1, three give 1/3, a PFR gives 0. ctrl18 is the N = 1 control; this case is N = 3 on identical tanks.
+
+WHAT THE ANCHORS TOLERATE, stated: the engine measures moments by trapezoid on the accepted 1 s grid and truncates at 1600 s (= 20 tau of one tank); both effects are far inside the anchor bands, and the router adds a one-step transport delay per connection (2 s total on tbar's 240 s -- inside the 1 \% band, and the honest price of an explicit scheme, stated rather than hidden).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{balance}{energy\_balance\_available}{0}
+\goldrow{kpi}{balance}{mass\_closure\_rel}{2.15876699233e-16}
+\goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_in\_cum}{7.2}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{7.2}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{-1.55431223448e-15}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldrow{kpi}{rtd}{area\_kmol}{0.000198752512114}
+\goldrow{kpi}{rtd}{sigma2\_s2}{19198.7859557}
+\goldrow{kpi}{rtd}{tbar\_s}{241.502454857}
+\goldrow{kpi}{rtd}{truncation\_final\_over\_peak}{1.54894525802e-06}
+\goldrow{kpi}{tank1}{F\_in\_final}{5e-05}
+\goldrow{kpi}{tank1}{T\_final}{330}
+\goldmore{22}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ctrl20\_bode\_cstr}{tutorials/ctrl/ctrl20\_bode\_cstr}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
