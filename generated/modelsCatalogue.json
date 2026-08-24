@@ -1118,7 +1118,7 @@
         "key": "parameters.EdwardsPitzer",
         "name": "Edwards et al. (1978) truncated-Pitzer pairs",
         "source": "data/standards/parameters/EdwardsPitzer/",
-        "count": 22
+        "count": 34
       },
       {
         "key": "parameters.SRK",

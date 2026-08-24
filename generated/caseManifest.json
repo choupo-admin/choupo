@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 373,
+  "cases": 374,
   "witnesses": 15,
   "validationOp": 6,
-  "anchored": 9
+  "anchored": 10
  },
  "cases": {
   "tutorials/batch/adsorber/batch09_adsorber_co2": {
@@ -1459,6 +1459,16 @@
    "hasGolden": true
   },
   "tutorials/props/electrolyte/edwards02_table7_vle": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/edwards03_table8_vle": {
    "application": "choupoProps",
    "ops": [
     "speciate"
@@ -5550,6 +5560,7 @@
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
+    "tutorials/props/electrolyte/edwards03_table8_vle",
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
@@ -6870,6 +6881,7 @@
    "speciate": [
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
+    "tutorials/props/electrolyte/edwards03_table8_vle",
     "tutorials/props/electrolyte/ksp_temperature",
     "tutorials/props/electrolyte/pb82_calcite_open_co2",
     "tutorials/props/electrolyte/pitzer_calcite_brine",
