@@ -44,6 +44,7 @@ speciesNavigation
     // --- carbonate --------------------------------------------------------
     HCO3  { familyRoots ( carbonate );  }
     CO3   { familyRoots ( carbonate );  }
+    CO2aq { familyRoots ( carbonate );  }
 
     // --- sulfate / sulfide ------------------------------------------------
     SO4   { familyRoots ( sulfate );    }

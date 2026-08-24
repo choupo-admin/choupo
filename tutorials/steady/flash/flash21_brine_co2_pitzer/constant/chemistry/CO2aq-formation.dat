@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/chemistry/CO2aq-formation.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
 recordType aqueousSpeciation;
 schemaVersion 1;
 

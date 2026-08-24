@@ -410,6 +410,28 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     for (const auto& rec : records)
                         if (rec->lookupWordOrDefault("ion", "") == dissolved)
                         { g.species = rec->lookupWord("species"); break; }
+                    //  IDENTITY HAS ONE HOME (F2): a species promoted to its
+                    //  own species/<id>.dat no longer carries `ion` inline in
+                    //  its reaction record, so the gas alias resolves through
+                    //  the identity file's own `formula` (species/CO2aq.dat
+                    //  says formula "CO2") -- the same one-home route the
+                    //  z-lookup below already follows.  The reduced-identity
+                    //  rule, one field later: a fact moved to its one home
+                    //  must still reach every reader that read the old copy.
+                    if (g.species == dissolved)
+                        for (const auto& rec : records)
+                        {
+                            const std::string sp =
+                                rec->lookupWordOrDefault("species", "");
+                            if (sp.empty() || rec->found("ion")) continue;
+                            if (DictPtr idr = rawSpeciesRecord(sp))
+                                if (idr->lookupWordOrDefault("formula", "")
+                                        == dissolved
+                                    && static_cast<int>(idr->
+                                        lookupScalarOrDefault("charge", 1.0))
+                                        == 0)
+                                { g.species = sp; break; }
+                        }
                     g.logK25  = e->lookupScalar("logK25");
                     g.hasDH   = e->found("dH");
                     if (g.hasDH) g.dH = e->lookupScalar("dH");

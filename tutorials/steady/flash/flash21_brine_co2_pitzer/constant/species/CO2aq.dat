@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/CO2aq.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+
+  WHY THIS RECORD EXISTS (seam S3 of the electrolyte authoring scope,
+  promoted 2026-08-24 on the architect's close-the-seams ruling): the
+  open-CO2 authoring path pins CO2aq as an active master, and the catalogue
+  shipped only the chemistry record (CO2aq-formation.dat) -- so every case
+  had to author this identity locally.  The LLM-authoring benchmark's case D
+  hit exactly that hole; this record closes it.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    CO2aq;
+formula     "CO2";
+charge  0;
+MW { value 44.0095; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -413800; unit J/mol;}
+sAq  { value 117.6;  unit J/mol/K;}
+source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), CO2(aq) -- INTERIM transcription, staged for batch primary review";
+reviewStatus interim;
+}
