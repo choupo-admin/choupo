@@ -22,7 +22,7 @@ aqueousThermo
 {
 hfAq { value -413800; unit J/mol;}
 sAq  { value 117.6;  unit J/mol/K;}
-source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row "CO2 ao" -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
+source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row 'CO2 ao' -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
 //  PROMOTED 2026-08-24: the primary page was READ, not transcribed at
 //  second hand -- dfH -413.80 kJ/mol and S 117.6 J/mol/K agree exactly
 //  with the stored values.  The MW does NOT come from this table: NBS

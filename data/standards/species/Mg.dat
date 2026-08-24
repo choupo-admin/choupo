@@ -50,6 +50,5 @@ volumetric
     V0          { value -21.17; unit cm3/mol; }
     convention  MilleroConventional-v1;
     Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
-    source      "Millero, Chem. Rev. 71 (1971) 147 -- INTERIM transcription, staged for batch primary review";
-    reviewStatus interim;
+    source      "Millero, Chem. Rev. 71 (1971) 147, Table III (Conventional Partial Molal Volumes of Ions in Water at 0, 25 and 50 degC), 25 degC block, p. 162 -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md).  Millero states the table is itself taken from the compilation of his ref 81";
 }

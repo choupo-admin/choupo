@@ -18,7 +18,7 @@ aqueousThermo
 //  as sourced -- the same shape its own docstring records for a
 //  volumetric block.  The primary page was read 2026-08-24 and both
 //  values agree exactly, so the citation is now theirs.
-source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row "HCO3- bicarbonate, ao" -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
+source "Wagman et al., The NBS Tables of Chemical Thermodynamic Properties, J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982), Table 23:C (CARBON), p. 2-83, row 'HCO3- bicarbonate, ao' -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md)";
 hfAq { value -691990; unit J/mol;}
 sAq  { value 91.2;  unit J/mol/K;}
         // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
@@ -49,10 +49,13 @@ volumetric
     //  STANDARD-STATE (infinite-dilution) partial molar volume,
     //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
     //  only electroneutral sums are physical).
-    //  lower transcription confidence than the majors -- review first.
-    V0          { value 24.29; unit cm3/mol; }
+    //  CORRECTED 2026-08-24 against the primary page: the stored 24.29 is
+//  not in Millero's Table III, which gives 23.4 at 25 degC (and to one
+//  decimal, not two).  This record's own flag -- 'lower transcription
+//  confidence than the majors, review first' -- was RIGHT, and it is
+//  the only one of the eleven that was.
+    V0          { value 23.4; unit cm3/mol; }
     convention  MilleroConventional-v1;
     Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
-    source      "Millero, Chem. Rev. 71 (1971) 147 -- INTERIM transcription, staged for batch primary review";
-    reviewStatus interim;
+    source "Millero, Chem. Rev. 71 (1971) 147, Table III (Conventional Partial Molal Volumes of Ions in Water at 0, 25 and 50 degC), 25 degC block, p. 162 -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md).  Millero states the table is itself taken from the compilation of his ref 81";
 }

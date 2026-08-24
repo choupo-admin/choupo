@@ -144,6 +144,50 @@ Still open after round 3: the eleven Millero V0 blocks (paywalled
 primary), the acetic vapour-dimer ΔH tension (Chao & Zwolinski), and the
 upstream question on the three non-Poling Antoine records.
 
+## Round 4 — Millero's own Table III, read (same evening)
+
+Vítor supplied the paper.  Table III, *Conventional Partial Molal Volumes
+of Ions in Water at 0, 25 and 50 °C*, p. 162, 25 °C block — read from the
+page image, because the text extraction had dropped one column's labels
+and a mangled column is exactly how a wrong number gets promoted.
+
+**TEN of the eleven are EXACT**: H⁺ 0.00, Na⁺ −1.21, K⁺ 9.02, NH4⁺ 17.86,
+Mg²⁺ −21.17, Ca²⁺ −17.85, Cl⁻ 17.83, OH⁻ −4.04, NO3⁻ 29.00, SO4²⁻ 13.98.
+
+**The eleventh is WRONG — and it is the one the record itself flagged.**
+`HCO3.dat` carried `V0 24.29` under its own note *"lower transcription
+confidence than the majors — review first"*.  Millero gives **23.4**, and
+to ONE decimal, not two: the stored value has a precision the source does
+not offer, which is a second sign it did not come from this table.
+Corrected.  The honest self-flag was right, and it was right about
+exactly one of eleven.
+
+The Millero blocks are **PROMOTED** (all eleven `reviewStatus interim`
+marks lifted, the citation now naming the table, the page and the fact
+that Millero states the table is itself taken from the compilation of his
+ref 81 — a primary for THIS convention, not for the underlying
+measurements).
+
+**Exposure of the correction, measured rather than assumed:** no corpus
+case declares a `densityMethod`, so the V0-consuming density route is not
+exercised anywhere today — the eleven values are curated data that
+nothing currently reads.  33 sealed mirrors still carry `24.29`; they
+pick the correction up at their next natural reseal, and the exposure
+until then is zero.
+
+### What this round cost, recorded because it is the session's own error
+
+The three citations added in round 3 were written with **nested double
+quotes** (`row "CO2 ao"`), which the dict parser cannot take.  All three
+standards records were left unparseable, and `check_species_citation`,
+the four cases tested by hand and every sealed case passed anyway —
+because sealed cases read their own mirrors, not the catalogue.  The
+break was caught by `overlay01_nacl_ksp`, the ONE corpus case that reads
+the standards catalogue LIVE, and it was caught by the FULL SUITE, not by
+the targeted gates run before committing.  Two lessons, both already the
+project's own doctrine and both ignored here: a targeted gate run is not
+a suite, and the tree must not be edited while a suite is in flight.
+
 ## The 78 sealed mirrors
 
 78 sealed cases mirror the six clamped Antoine windows at their old
@@ -160,7 +204,7 @@ are the review's own subject.)
 | 33 EdwardsPitzer + 8 case-local chemistry | verified against the primary in hand, twice over | **PROMOTED 2026-08-24** on the owner's delegation ("Avança como achares melhor e de acordo com a filosofia de Gall") — the 8 case-local source strings now cite this dossier instead of "INTERIM pending"; both cases resealed, goldens intact.  The 33 standards records never carried a parsed mark; this dossier and the commit record are their review record. |
 | species/CO2aq.dat | **primary page 2-83 READ 2026-08-24; both values exact** | **PROMOTED** — and the same page gave HCO3⁻ and CO3²⁻ the citation their own numbers lacked |
 | 13 Antoine blocks | transcription fully verified vs the cited distribution | KEPT INTERIM — the marks describe the UPSTREAM question (Poling/Perry/Landolt as primaries), and that question is still true |
-| 11 Millero V0 | 3 confirmed, 8 plausible-unreached | KEPT INTERIM — needs the paywalled primary |
+| 11 Millero V0 | **primary Table III READ 2026-08-24: ten exact, one wrong** | **PROMOTED** — and `HCO3⁻` corrected 24.29 → 23.4, which is precisely the one its own record flagged for review |
 | acetic dimer ΔH | tension pinned | KEPT INTERIM — recheck first |
 
 The promotion boundary IS the Gall reading of the delegation: claim exactly
