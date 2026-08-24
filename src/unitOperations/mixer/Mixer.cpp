@@ -81,6 +81,7 @@ int Mixer::solve(const DictPtr& dict,
     sVector s_out(n, 0.0);
     scalar  Hin_total = 0.0;            // Σ F_k · h_k   [(kmol/s)(J/mol)]
     scalar  vfw       = 0.0;            // Σ F_k · vf_k  (flow-weighted vf)
+    int     nLiquidInlets = 0;          // vf < 0.5 count (the emulsion line)
     scalar  P_out     = std::numeric_limits<scalar>::infinity();
     scalar  T_first   = 0.0;
     bool    haveFirst = false;
@@ -138,8 +139,27 @@ int Mixer::solve(const DictPtr& dict,
         if (P < P_out) P_out = P;
         Hin_total += F * hInlet(T, P, vf, z);
         vfw       += F * vf;
+        if (vf < 0.5) ++nLiquidInlets;
         if (!haveFirst) { T_first = T; haveFirst = true; }
     }
+
+    //  THE UNSOLVED DECOMPOSITION, said at its site (DEV.md item 9, the
+    //  lithium plant's emulsion; announcement authorised 2026-08-24, the
+    //  stream-grammar half stays with the C3 uniform-phases review).  A
+    //  mixer merges and never solves a phase split, so two liquid inlets
+    //  leave as ONE apparent liquid whether they are miscible or not --
+    //  and the outlet FILE cannot say which.  This line says so where the
+    //  merge happens.  LOG-ONLY, deliberately: it is true of every
+    //  liquid+liquid merge (no immiscibility is claimed or checked --
+    //  that would be a phase model this unit does not have), so riding
+    //  the durable caveat surface would put a conditional sentence in
+    //  every converged result; the file-level answer is C3's.
+    if (verbosity >= 2 && nLiquidInlets >= 2)
+        std::cout << "  [mixer] " << nLiquidInlets << " liquid inlets merged"
+                     " as ONE apparent liquid -- no phase split is solved"
+                     " here; if these liquids are immiscible the outlet is"
+                     " an unresolved emulsion until a downstream unit"
+                     " (settler / flash) owns the split\n";
 
     if (F_out <= 0.0)
         throw std::runtime_error("Mixer: total inlet flow is zero");

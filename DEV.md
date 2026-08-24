@@ -1037,6 +1037,14 @@ accepts today, and that is a policy call.
    file alone.  Review belongs with the C3 uniform-`phases` grammar work /
    the solid-equilibrium migration, where phase declaration is already on
    the table; do not add a new stream field ad hoc for it.
+   **Half closed 2026-08-24 (announcement authorised on the architect's
+   ruling):** the Mixer now says it at the site -- a log line whenever
+   two or more liquid inlets merge ("no phase split is solved here; if
+   immiscible the outlet is an unresolved emulsion until a downstream
+   unit owns the split"), log-only deliberately, since it is true of
+   every liquid+liquid merge and claims no immiscibility check.  The
+   FILE-level ambiguity -- the stream grammar half -- stays exactly
+   where this item put it: C3.
 
 ## 5b. If you are working in a HOSTED session, read this first
 
