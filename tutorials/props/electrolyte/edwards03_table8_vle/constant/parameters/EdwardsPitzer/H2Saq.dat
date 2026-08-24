@@ -1,0 +1,30 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/H2Saq.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Edwards (1978) molecule-molecule interaction parameter for HYDROGEN SULFIDE.
+
+  Role: beta0_aa of the Pitzer truncation of Eq 8, for the like pair
+  (H2Saq, H2Saq).  Consumed by the `edwardsPitzer` activity engine.
+
+  Eq 14:  beta0_aa = E + F/T      [kg/mol],  T in KELVIN.
+
+  beta1 is NOT stored: for any pair involving a MOLECULAR species the paper
+  sets beta1 = 0 ("because experimental data are inadequate").  A zero that
+  the model applies by rule is not a datum, and writing it here would invite
+  someone to change it.
+\*-----------------------------------------------------------------------------*/
+recordType    electrolytePairParameters;
+schemaVersion 1;
+
+model         edwardsPitzer;
+convention    Edwards-Hkgatm-v1;
+
+pair { molecule H2Saq; molecule2 H2Saq; }
+
+parameters
+{
+    E   -0.2106;      // kg/mol
+    F   61.56;        // (kg/mol) K
+}
+
+Trange ( 273.15 443.15 );   // 0-170 degC, the paper's stated correlation range
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 4";

@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the Edwards (1978) parameterisation of the ammonia
+  equilibrium, NOT the standards-tree PHREEQC one.
+
+  This case reproduces the paper's own Table 7 predictions, so the K(T) it
+  runs must be the paper's own Eq 7 / Table 1 -- quoting Edwards' vapour side
+  over another database's liquid equilibria would compare a hybrid nobody
+  published.  Placing the whole network case-locally uses the declared
+  eclipse rule: constant/chemistry/ is taken WHOLE, so every K in this run is
+  Edwards' and none arrives silently from the catalogue.
+
+  DERIVATION (formation direction, recorded because the tree never stores an
+  unexplained number).  Table 1 tabulates the NH3 row as the BASE dissociation
+      K1:  NH3 + H2O = NH4+ + OH-      ln K1 = a/T + b lnT + cT + d
+      a -3335.7   b 1.4971   c -0.0370566   d 2.76        (0-225 degC)
+  and the H2O row as Kw.  The formation of NH3aq from the masters is
+      NH4+ = NH3 + H+       K_f = Kw / K1
+  so the Eq 7 coefficient vectors SUBTRACT (H2O row minus NH3 row), and the
+  PHREEQC analytic form below is that difference divided by ln 10:
+      log10 K = A1 + A2 T + A3/T + A4 log10 T
+      A1 = (140.932-2.76)/ln10       A3 = (-13445.9+3335.7)/ln10
+      A2 = (0+0.0370566)/ln10        A4 = (-22.4773-1.4971)
+  Check: logK25 = -9.244 against the independently curated PHREEQC -9.252 --
+  two parameterisations of one equilibrium, 0.008 apart.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species NH3aq; ion "NH3"; z 0; masters ( { ion NH4; nu 1; } { ion H; nu -1; } );
+      logK25 -9.2443; analytic ( 60.007337 0.016093477 -4390.80407 -23.97440 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (NH3 and H2O rows, combined as derived in the header); INTERIM pending primary review";

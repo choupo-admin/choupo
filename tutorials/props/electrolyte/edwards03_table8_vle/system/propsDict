@@ -1,0 +1,112 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  edwards03_table8_vle --- the SECOND literature anchor for the Edwards
+  (1978) model stack: Table 8 of the paper, ammonia + hydrogen sulfide in
+  water at 80 degC, against the paper's OWN prediction column I.
+
+  WHY A SECOND ANCHOR.  edwards02 (Table 7) pins the NH3-CO2 system, where
+  the difficulty is the carbonate/carbamate network.  Table 8 exercises what
+  Table 7 cannot: the SULFIDE family (the mi-H2Saq-* molecule-ion records
+  curated 2026-08-24 from the paper's Table 6, including its two TABULATED
+  ZEROS), a different temperature (80 degC, so every T-polynomial is read off
+  its 25 degC calibration point), and ionic strengths up to 7.8 mol/kg --
+  beyond the 6-molal Pitzer validity the paper itself quotes.  Rows 2 and 3
+  are code-to-code targets and NOT physical claims; the paper runs them and
+  says so ("if ionization is extensive, the upper limit is necessarily
+  lower").
+
+  WHAT IS COMPARED, AND AGAINST WHAT.  Exactly the edwards02 posture:
+
+    * the paper's own PREDICTIONS (column I: all beta0 from Tables 4 and 6,
+      the configuration these curated records carry) are the anchor targets;
+    * the EXPERIMENT (Miles & Wilson 1975) is CONTEXT, never a target.  The
+      paper's own worst multisolute disagreement lives here: rows 2 and 3
+      measure 16.50 and 13.20 atm against predictions of 12.91 and
+      12.64 atm (22-28 %), and its Table 9 sensitivity analysis shows the
+      liquid-composition error needed to close such gaps.
+
+  THE CHEMISTRY IS THE PAPER'S OWN: case-local constant/chemistry/ carries
+  Table 1 (H2O, NH3 and H2S rows) in the formation direction, each header
+  recording the derivation.  The H2S formation logK25 is 7.0033 against the
+  independently curated PHREEQC 6.994 -- two primaries 0.009 apart, a
+  finding, not an error.
+
+  DECLARED GAPS, the same list as edwards02 plus none:
+    * `fugacity ideal;` -- the paper's own vapour-phi model is not
+      transcribed; the residual is expected to carry that correction
+      (largest on rows 2-3 at 13-16 atm);
+    * the solvent Poynting factor of Eq 6 is omitted;
+    * water's Psat comes from the case catalogue's own curated Antoine.
+
+  DATA SCOPE: sealed (bin/choupo-import); every record named and verified by
+  constant/propertyManifest.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        table8_row1;
+        type        speciate;
+        temperature 353.15;
+        totals { NH4 5.11 mol/kg; HS 1.14 mol/kg; }
+        totalsBasis stoichiometric;   // family totals of NEUTRAL feeds (NH3, H2S)
+        pH          solve;
+        diagSpecies ( NH4 HS NH3aq H2Saq );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species H2Saq; henry henry-H2S-water; }
+            );
+        }
+        output      { file table8_row1.csv; }
+    }
+
+    {
+        name        table8_row2;
+        type        speciate;
+        temperature 353.15;
+        totals { NH4 5.56 mol/kg; HS 5.30 mol/kg; }
+        totalsBasis stoichiometric;
+        pH          solve;
+        diagSpecies ( NH4 HS NH3aq H2Saq );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species H2Saq; henry henry-H2S-water; }
+            );
+        }
+        output      { file table8_row2.csv; }
+    }
+
+    {
+        name        table8_row3;
+        type        speciate;
+        temperature 353.15;
+        totals { NH4 9.24 mol/kg; HS 7.93 mol/kg; }
+        totalsBasis stoichiometric;
+        pH          solve;
+        diagSpecies ( NH4 HS NH3aq H2Saq );
+        vapour
+        {
+            fugacity ideal;
+            solutes
+            (
+                { species NH3aq; henry henry-NH3-water; }
+                { species H2Saq; henry henry-H2S-water; }
+            );
+        }
+        output      { file table8_row3.csv; }
+    }
+);

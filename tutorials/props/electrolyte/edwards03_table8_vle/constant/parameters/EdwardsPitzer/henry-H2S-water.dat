@@ -1,0 +1,53 @@
+// [imported] origin "data/standards/parameters/EdwardsPitzer/henry-H2S-water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Henry's constant for H2S in water -- the EDWARDS (1978) parameterisation.
+
+  THIS IS NOT A REPLACEMENT for any Sander-convention H2S record: the D2
+  identity contract (ADR 2026-07-26) makes a PARAMETERISATION the unit of
+  identity, so records of the same physical pair coexist, each naming its
+  own convention, and a case selects one.
+
+  Edwards' H is MOLAL (kg-atm/mol), referenced to the saturation pressure
+  of water rather than 1 atm, and rides an UNSYMMETRIC gamma* from Eq 8 --
+  so it is only meaningful alongside `activityModel edwardsPitzer`.
+
+  Eq 13:  ln H = B1/T + B2 ln T + B3 T + B4     [kg-atm/mol], T in KELVIN.
+  Eq 11 carries it to the system pressure (Krichevsky-Kasarnovsky) using the
+  infinite-dilution partial molar volume of Table 2:
+      34.8 (0 C), 36.5 (50 C), 41.1 (100 C), 48.8 (150 C)  cm3/mol
+\*-----------------------------------------------------------------------------*/
+solute      H2S;
+solvent     water;
+
+gasSpecies        H2S;
+dissolvedSpecies  H2S;
+convention        Edwards-Hkgatm-v1;
+
+model       EdwardsEq13;
+parameters
+{
+    B1  -13236.8;
+    B2  -55.0551;
+    B3  0.0595651;
+    B4  342.595;
+}
+
+Trange ( 273.15 423.15 );   // 0-150 degC, the paper's stated range for H2S
+
+//  Table 2: infinite-dilution partial molar volume, for the Krichevsky-
+//  Kasarnovsky pressure correction (Eq 11).  Parsed data, not a header
+//  comment -- a field the engine cannot see is a comment (2026-08-05 rule).
+vInfinity
+{
+    units  "cm3/mol";
+    points
+    (
+        { T 273.15; value 34.8; }
+        { T 323.15; value 36.5; }
+        { T 373.15; value 41.1; }
+        { T 423.15; value 48.8; }
+    );
+    source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 2";
+}
+
+source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 3";

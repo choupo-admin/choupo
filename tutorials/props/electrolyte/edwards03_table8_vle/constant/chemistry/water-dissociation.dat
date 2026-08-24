@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the Edwards (1978) parameterisation of the water
+  dissociation (Table 1, H2O row), replacing the PHREEQC record for this case
+  only (see NH3aq-formation.dat for why the whole network is the paper's).
+
+      H2O = H+ + OH-      ln Kw = -13445.9/T - 22.4773 lnT + 140.932
+  Converted to the PHREEQC analytic form (divide by ln 10; the lnT term
+  becomes A4 = -22.4773 directly since b lnT / ln10 = b log10 T).
+  Check: logK25 = -13.998 against PHREEQC's -14.00.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species OH; masters ( { ion H; nu -1; } ); nuWater 1;
+      logK25 -13.9983; analytic ( 61.205990 0 -5839.48017 -22.47730 ); Trange ( 0 225 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (H2O row); INTERIM pending primary review";

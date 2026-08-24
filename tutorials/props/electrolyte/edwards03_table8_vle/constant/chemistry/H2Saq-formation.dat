@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CASE-LOCAL chemistry -- the Edwards (1978) parameterisation of the hydrogen
+  sulfide equilibrium, NOT the standards-tree PHREEQC one.
+
+  This case reproduces the paper's own Table 8 predictions, so the K(T) it
+  runs must be the paper's own Eq 7 / Table 1 -- quoting Edwards' vapour side
+  over another database's liquid equilibria would compare a hybrid nobody
+  published.  Placing the whole network case-locally uses the declared
+  eclipse rule: constant/chemistry/ is taken WHOLE, so every K in this run is
+  Edwards' and none arrives silently from the catalogue.
+
+  DERIVATION (formation direction, recorded because the tree never stores an
+  unexplained number).  Table 1 tabulates the H2S row as the BASE dissociation
+      K1:  H2S = H+ + HS-      ln K1 = a/T + b lnT + cT + d
+      a -12995.4   b -33.5471   c 0   d 218.599        (0-150 degC)
+  The formation of H2Saq from the masters is the inverse,
+      HS- + H+ = H2Saq       K_f = 1 / K1
+  so the Eq 7 coefficient vector NEGATES, and the PHREEQC analytic form
+  below is that negation divided by ln 10:
+      log10 K = A1 + A2 T + A3/T + A4 log10 T
+      A1 = -218.599/ln10 = -94.936339     A3 = +12995.4/ln10 = +5643.83051
+      A2 = 0                              A4 = +33.5471
+  Check: logK25 = +7.0033 against the independently curated PHREEQC +6.994 --
+  two parameterisations of one equilibrium, 0.009 apart (a finding, not an
+  error: independent primaries).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Saq; ion "H2S"; z 0; masters ( { ion HS; nu 1; } { ion H; nu 1; } );
+      logK25 7.0033; analytic ( -94.936339 0 5643.83051 33.5471 ); Trange ( 0 150 ); source "Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978), Table 1 (H2S row, inverted as derived in the header); INTERIM pending primary review";

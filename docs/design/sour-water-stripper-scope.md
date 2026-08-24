@@ -156,12 +156,25 @@ enough; I will not need the PDF.
   dissociation only, so it would be a record with no reader) — and a
   scratch smoke proved all three consumed end to end (H(298 K) = 9.74
   kg·atm/mol, v∞ interpolated 35.65 cm³/mol, β⁰(H2Saq,H2Saq) = −0.004127
-  by Eq 14, HS⁻ priced through Eq 22/23).  What S4 still NEEDS from
-  Vítor: (1) the paper's **Table 6 H₂S molecule-ion rows** — now the ONLY
-  missing datum (the transcription deferred them, and running Eq 23
-  estimates where the paper tabulates values would knowingly diverge from
-  it; the smoke labels exactly those pairs `[Eq 23, estimated]`); (2) the
-  usual INTERIM review of the three new records.  The PHREEQC-parameterisation case needs neither — and SHIPPED
+  by Eq 14, HS⁻ priced through Eq 22/23).  **Table 6 CLOSED the same day:**
+  Vítor supplied the primary PDF, the nine sulfide molecule-ion pairs were
+  read off the page image (including the two TABULATED ZEROS, H2S–HS⁻ and
+  CO2–HS⁻, which the Eq 23 estimate had been getting qualitatively wrong —
+  γ_H2Saq moved from 0.80 salting-IN to 1.55 salting-OUT when the tabulated
+  rows replaced the estimates), and **the Edwards arm SHIPPED as
+  `edwards03_table8_vle`**: the Table 8 anchor (NH₃–H₂S–water at 80 °C,
+  Miles & Wilson 1975 experiment as context, prediction column I as the
+  target), 60 self-recorded rows + 18 anchor rows, sealed with the
+  agree-check green.  The residual against the paper is SYSTEMATIC and
+  seated in the molecular H₂S share (+30–41 %; P follows it to +31 % on
+  row 3 at 16 atm) with two named contributors — φ = 1 where the paper
+  priced 13–16 atm with a real fugacity model, and the 1978 solver's
+  unpublished per-species split; the γ_H2S implied by the paper's own
+  row 2 sits within 7 % of this run's, so the activity surface is not
+  where the gap lives.  All bands sized to the observed residual and
+  stated in the golden.  What remains for Vítor: the usual INTERIM
+  review of the twelve new Edwards records and the case-local H2Saq
+  formation.  The PHREEQC-parameterisation case needs neither — and SHIPPED
   the same night: `stripper02_sour_water_h2s`, sealed, its selectivity
   claims pinned as golden `csv` rows on the converged profile (CO₂'s
   m_HCO3 falls five decades tray 2 → reboiler while m_HS holds and the
