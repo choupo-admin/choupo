@@ -76,6 +76,41 @@ the defect was in the briefing.
   `primarySourceRecheck` is where this gets settled.  DO NOT adjust the
   value on this dossier's authority.
 
+## Round 2 — the primary in hand: Poling 5e, Appendix A (same evening)
+
+Vítor supplied the book's Appendix A, so the UPSTREAM question the 13
+Antoine marks describe was put to the source itself.  The book's Section D
+states Antoine in the °C form (log10 P/bar = A − B/(t + C)); the records
+use kelvin, so C_record = C_book − 273.15 — the conversion was verified
+component by component rather than assumed.
+
+**Eleven records cite Poling; NINE reproduce the primary exactly** —
+coefficients to the last digit and windows inside the book's stated fit
+range: Ar, Cl2, H2S, HCl, N2, N2O, NO, ethylAcetate, propylene.  (Six of
+those nine are the windows clamped earlier the same day from the cited
+distribution; the book confirms every clamp.)
+
+**methylAcetate — CORRECTED.**  Coefficients exactly the book's, but the
+declared window read `(260 380)` where the fit runs **249.90–351.11 K**:
+the upper end 29 K beyond the correlation.  The same error class as the
+two Edwards windows and the six clamps, and the largest of them — the
+reactive-distillation case was telling its reader it extrapolated
+**0.9 K** when the true excursion is **30 K**.  Window set to the source's
+own range; the three sealed cases that mirror the record resealed
+(agree-checks green, no golden moved, the announcements now honest).
+
+**ethanol — a FINDING, deliberately not a correction.**  Its Antoine set
+is NOT the book's (ours 5.37229 / 1670.409 / −40.191; Poling 5.33675 /
+1648.220 / −42.232), and the record already says so in its own words:
+*"individual literature values — primary re-citation pending"*.  The
+difference was measured before deciding: **0.11–0.18 %** across 298–369 K,
+and the SHIPPED set reproduces the normal boiling point BETTER than the
+book's (1.01274 vs 1.01460 bar at 351.44 K, against 1.01325 actual).
+Switching would move ethanol numbers across the corpus in exchange for
+nothing demonstrable, so the values stand and the pending re-citation
+stays pending — with the fact now recorded that Poling cannot close it,
+because these are a different fit.
+
 ## The 78 sealed mirrors
 
 78 sealed cases mirror the six clamped Antoine windows at their old

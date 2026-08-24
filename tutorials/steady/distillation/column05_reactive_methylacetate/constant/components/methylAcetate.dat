@@ -35,7 +35,14 @@ vaporPressure
 {
     model         Antoine;     // log10(P/bar) = A - B/(T/K + C)
     coefficients  (4.18621   1156.43   -53.461);
-    Trange        (260  380);
+    //  CORRECTED 2026-08-24 against the primary in hand (Poling 5e,
+    //  Appendix A, section D, methyl ethanoate, CAS 79-20-9): the
+    //  coefficients are the book's exactly, but the declared window read
+    //  (260 380) where the FIT runs 249.90-351.11 K.  The upper end was
+    //  29 K beyond the correlation -- the direction that SILENCES an
+    //  extrapolation announcement the reader is owed.  Now the source's
+    //  own range; cases above 351.11 K announce, as they should.
+    Trange        (249.9  351.11);
 }
 
 idealGasHeatCapacity
