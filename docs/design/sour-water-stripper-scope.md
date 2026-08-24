@@ -148,12 +148,20 @@ enough; I will not need the PDF.
   H₂S trace converged to numerical zero has the sulfide family EXCLUDED
   at the speciation intake (a zero total), and the per-tray profile then
   prints NaN — but NaN is reserved for "chemistry unresolved" and the
-  true statement is 0 exact; writer fix queued.  What S4 still NEEDS from
-  Vítor: (1) the paper's **Table 6 H₂S/HS⁻ molecule-ion rows** (the
-  transcription deferred them, and running Eq 23 estimates where the
-  paper tabulates values would knowingly diverge from it), for the
-  Edwards-parameterisation arm; (2) the usual INTERIM review of any new
-  records.  The PHREEQC-parameterisation case needs neither — and SHIPPED
+  true statement is 0 exact; writer fix queued.  **The Edwards base
+  records SHIPPED 2026-08-24** from Appendix A's own transcription —
+  `henry-H2S-water.dat` (Table 3 + Table 2 v∞), `H2Saq.dat` (Table 4
+  self-term) and `ion-HS.dat` (Table 5; the S²⁻ entry deliberately NOT
+  curated: no species/S exists and the shipped network carries the first
+  dissociation only, so it would be a record with no reader) — and a
+  scratch smoke proved all three consumed end to end (H(298 K) = 9.74
+  kg·atm/mol, v∞ interpolated 35.65 cm³/mol, β⁰(H2Saq,H2Saq) = −0.004127
+  by Eq 14, HS⁻ priced through Eq 22/23).  What S4 still NEEDS from
+  Vítor: (1) the paper's **Table 6 H₂S molecule-ion rows** — now the ONLY
+  missing datum (the transcription deferred them, and running Eq 23
+  estimates where the paper tabulates values would knowingly diverge from
+  it; the smoke labels exactly those pairs `[Eq 23, estimated]`); (2) the
+  usual INTERIM review of the three new records.  The PHREEQC-parameterisation case needs neither — and SHIPPED
   the same night: `stripper02_sour_water_h2s`, sealed, its selectivity
   claims pinned as golden `csv` rows on the converged profile (CO₂'s
   m_HCO3 falls five decades tray 2 → reboiler while m_HS holds and the
