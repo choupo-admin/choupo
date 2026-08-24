@@ -508,20 +508,35 @@ is *derived* from the ammonium-ion one, not tabulated separately.
     (interaction parameters between ions of LIKE sign are assumed zero)
 
 ### Table 6 — molecule-ion (salting-out) β⁰, kg/mol, 0–170 °C
-NH3/CO2 subset only — the H2S/SO2/HCN rows are deferred with S4.
+NH3/CO2/H2S families complete (the H2S and sulfide-ion rows added
+2026-08-24, read from the primary PDF Vítor supplied); the SO2/HCN rows
+stay untranscribed — no consumer exists and their curation would be
+records with no reader.
 
     NH3-NH4+     0
     NH3-HCO3-    0.135 - 1.165e-3 T + 2.05e-6 T²
     NH3-CO3=     0.06
+    NH3-HS-      0.16 - 1.24e-3 T + 2.20e-6 T²
+    NH3-S=       0.032
     NH3-NH2COO-  0
     NH3-H+       0.015
     NH3-OH-      0.227 - 1.47e-3 T + 2.6e-6 T²
     CO2-NH4+     0.037 - 2.38e-4 T + 3.83e-7 T²
+    CO2-HS-      0
+    CO2-S=       0.053
     CO2-HCO3-    0
     CO2-CO3=     0
     CO2-NH2COO-  0.017
     CO2-H+       0.033
     CO2-OH-      0.26 - 1.62e-3 T + 2.89e-6 T²
+    H2S-NH4+     0.120 - 2.46e-4 T + 3.99e-7 T²
+    H2S-HCO3-    -0.037
+    H2S-CO3=     0.077
+    H2S-NH2COO-  -0.032
+    H2S-H+       0.017
+    H2S-OH-      0.26 - 1.72e-3 T + 3.07e-6 T²
+    H2S-HS-      0        (tabulated zero -- a datum, not an absence)
+    H2S-S=       0        (tabulated zero)
 
 **THE TEMPERATURE SCALE: KELVIN.  Settled 2026-08-04, arithmetically,
 from the paper's own worked number — no longer a flag.**
@@ -639,6 +654,42 @@ reports it per prediction column.)
 > have propagated into the temperature scale of every Table 6 parameter.
 > Caught only because the check was carried out arithmetically instead of
 > being read past.
+
+### Table 8 — the SECOND anchor.  NH3–H2S–H2O at 80 °C (transcribed 2026-08-24)
+
+Experimental data from Miles and Wilson (1975).  Same structure as
+Table 7: columns **I** and **II** are the paper's OWN predictions, I with
+all β⁰ from Tables 4 and 6 (the configuration Choupo's curated records
+reproduce), II re-estimating one parameter as footnoted below.  Three
+points again — a trend, not a coincidence.
+
+| total m(NH3) | total m(H2S) | | m(NH3) mol. | m(H2S) mol. | I | y(NH3) | y(H2S) | P [atm] |
+|---|---|---|---|---|---|---|---|---|
+| 5.11 | 1.14 | **exp** | — | — | | 0.58 | 0.095 | 1.30 |
+| | | **I** | 3.97 | 0.0028 | I = 1.14 | 0.543 | 0.064 | 1.08 |
+| | | **II** | 3.97 | 0.0034 | I = 1.14 | 0.558 | 0.076 | 1.16 |
+| 5.56 | 5.30 | **exp** | — | — | | 0.0058 | 0.970 | 16.50 |
+| | | **I** | 0.48 | 0.22 | I = 5.08 | 0.0053 | 0.961 | 12.91 |
+| | | **II** | 0.43 | 0.17 | I = 5.13 | 0.009 | 0.948 | 10.05 |
+| 9.24 | 7.93 | **exp** | — | — | | 0.021 | 0.950 | 13.20 |
+| | | **I** | 1.45 | 0.14 | I = 7.79 | 0.016 | 0.953 | 12.64 |
+| | | **II** | 1.40 | 0.087 | I = 7.84 | 0.045 | 0.910 | 8.10 |
+
+**Column II differs from I in exactly one parameter:**
+
+    β⁰(NH3,NH4+) = ½β⁰(NH3,NH3) + ½β⁰(CO2,NH4+) − ½β⁰(CO2,CO2) = 0.04
+
+(the same consistency relation as Table 7's, evaluated at 80 °C — a
+second arithmetic witness of the kelvin reading.)
+
+Two honesty notes the case must carry: rows 2 and 3 sit at ionic
+strengths 5.1 and 7.8 mol/kg — the second beyond the 6-molal Pitzer
+validity the paper itself quotes ("if ionization is extensive, the upper
+limit is necessarily lower"), and the paper runs them anyway, which is
+exactly what makes them a code-to-code target and NOT a physical claim.
+And the paper's own row-2/row-3 experimental pressures (16.50 and
+13.20 atm) sit 22–28 % above prediction I, its worst multisolute
+disagreement — quoted as context, never as a target.
 
 ### What the anchor can and cannot claim — read this before locking a golden
 
