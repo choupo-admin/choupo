@@ -188,6 +188,45 @@ the targeted gates run before committing.  Two lessons, both already the
 project's own doctrine and both ignored here: a targeted gate run is not
 a suite, and the tree must not be edited while a suite is in flight.
 
+## Round 5 — Chao & Zwolinski read, and the citation does not survive it
+
+The record's own `vapourDimerisation` block asked for this: *"INTERIM:
+primary re-check pending"*.  The re-check was done, and **it does not
+confirm the numbers**.
+
+| quantity | stored | Chao & Zwolinski (1978) |
+|---|---|---|
+| ΔH_dim (298.15 K) | −58.5 kJ/mol | **−63.18** kJ/mol — Table 14, "Derived from calculation / This work", 15.10 kcal/mol |
+| log K_dim (298.15 K) | 3.146 | **2.555** — from the paper's own formation properties (see below) |
+
+The second row is derived twice and agrees with itself: the paper's
+tabulated log Kf (dimer 125.543, monomer 61.494) differ by 2.555, and its
+ΔfG values (−716.59, −351.00) give ΔG_dim = −14.59 kJ/mol → log K = 2.556.
+Its ΔfH values (−820.94, −378.57) give ΔH_dim = −63.80 kJ/mol, 0.6 kJ from
+the paper's own Table 14 figure — the rounding of two-decimal kJ against
+two-decimal kcal.
+
+**The values were LEFT UNTOUCHED and the CITATION was corrected.**  That is
+the only honest move available: the block is read by the engine
+(`IsothermalFlash`, `ReactiveVLE`) and carried by **35 cases**, so changing
+it moves the acetic vapour association across the corpus — the owner's
+call, not a reviewer's.  What was fixed is the false attribution: the
+record claimed a primary that does not carry its numbers, and *an unsourced
+value is strictly better than a falsely sourced one* (the doctrine's own
+words).  `source` now reads PROVENANCE UNRESOLVED and states what the paper
+actually says; a `provenance { source unknown; }` block and
+`primarySourceRecheck done2026-08-24-disagrees` make it machine-visible.
+
+**In fairness to the stored number:** −58.5 kJ/mol = 13.98 kcal/mol is NOT
+an outlier.  The same Table 14 tabulates ten studies spanning 11.4 to
+17.0 kcal/mol, and values of 13.8, 14.5, 14.6 and 14.8 sit around it.  It
+is simply not the paper's own recommendation, and this record said it was.
+
+**THE DECISION, for the architect:** adopt Chao & Zwolinski's own pair
+(−63.18 kJ/mol, log K 2.555) and re-record the 35 cases' goldens, or keep
+the present values and give them a source that is true.  Either closes the
+record; only the first changes physics.
+
 ## The 78 sealed mirrors
 
 78 sealed cases mirror the six clamped Antoine windows at their old
@@ -205,7 +244,7 @@ are the review's own subject.)
 | species/CO2aq.dat | **primary page 2-83 READ 2026-08-24; both values exact** | **PROMOTED** — and the same page gave HCO3⁻ and CO3²⁻ the citation their own numbers lacked |
 | 13 Antoine blocks | transcription fully verified vs the cited distribution | KEPT INTERIM — the marks describe the UPSTREAM question (Poling/Perry/Landolt as primaries), and that question is still true |
 | 11 Millero V0 | **primary Table III READ 2026-08-24: ten exact, one wrong** | **PROMOTED** — and `HCO3⁻` corrected 24.29 → 23.4, which is precisely the one its own record flagged for review |
-| acetic dimer ΔH | tension pinned | KEPT INTERIM — recheck first |
+| acetic dimer ΔH | **primary READ 2026-08-24: the stored pair is NOT the paper's** | **CITATION CORRECTED, values untouched** — adopting the paper's numbers moves physics in 35 cases and is the architect's call (round 5) |
 
 The promotion boundary IS the Gall reading of the delegation: claim exactly
 what was verified, keep every mark that still tells the truth.
