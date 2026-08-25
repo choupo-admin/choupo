@@ -2179,6 +2179,24 @@ PYEOF
     fi
     rm -f /tmp/caveat.$$
 
+    # advisory-attribution gate (2026-08-24).  The caveat block's own failure
+    # mode, arriving from the other side: not too few announcements, too many.
+    # An iterative solver evaluates the physics at states it invents and
+    # discards, and column13 printed 103 advisories of which 95 described
+    # compositions its answer does not contain.  An advisory now carries WHICH
+    # STATE it is about, stamped by the sink from the innermost open
+    # AdvisoryFrame.  Five sabotages; the first SURVIVED and is recorded as
+    # such, which is why there is a fifth attacking the mechanism itself.
+    if "$ROOT/bin/curate/check_advisory_attribution.py" > /tmp/advattr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "advisory-attribution-gate" "$(head -1 /tmp/advattr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_advisory_attribution.py)\n" "advisory-attribution-gate"
+        cat /tmp/advattr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/advattr.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

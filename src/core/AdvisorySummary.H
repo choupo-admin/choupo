@@ -63,6 +63,35 @@ Description
     AND IT SAYS WHEN IT HAS NOTHING TO SAY.  A run with no advisories prints
     one line confirming that -- silence from this block must mean "the engine
     raised nothing", never "the block did not run".
+
+    THE PATH IS NOT THE ANSWER (2026-08-24).  An iterative solver evaluates the
+    physics at states it invents and mostly discards, and each of those can
+    raise an advisory.  Enumerating them here defeats the block: column13
+    printed 99 Davies warnings, of which ONE describes the converged column and
+    98 describe compositions the answer does not contain.  Ninety-nine
+    near-identical sentences are read by nobody, so the true caveat was
+    delivered and not received -- the exact failure this block was built to
+    end, arriving by a different road.
+
+    So the block is about THE ANSWER.  Advisories a solver stamped `trial`
+    (see `core/Advisory.H`) are not enumerated; they are COUNTED, under their
+    own heading, with the frame that raised them named.  The count is not a
+    footnote -- it is the honest form of the fact, which is "the solver's path
+    went out of band N times on its way here", not N separate cautions about
+    the result.
+
+    THIS IS A PARTITION, NOT A DEDUPLICATION.  Nothing here inspects two
+    messages and decides they mean the same thing.  It reads one field the
+    engine stamped at the moment of the raise.  And because the default is
+    `accepted`, a run whose solvers open no frames prints exactly what it
+    printed before this existed.
+
+    WHAT IS DELIBERATELY NOT DONE.  The counted line does not summarise the
+    RANGE the trials spanned ("I from 0.59 to 2.39"), because the sink stores
+    the advisory's text and not the number inside it, and recovering the
+    number would mean parsing the sentence -- a second, weaker home for a
+    quantity the raising site already had in hand.  The trials ride in full in
+    the result JSON, where a reader who wants the path can read the path.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -108,20 +137,61 @@ inline void printAdvisorySummary(const std::vector<Advisory>& advs,
     //  same block -- a summary that reorders itself between runs is diffed by
     //  nobody.
     std::map<std::string, std::vector<const Advisory*>> byHeading;
+    //  The path, counted per frame that walked it (see the header).
+    std::map<std::string, std::size_t> trialsByFrame;
+    std::size_t nTrial = 0;
+
     for (const auto& a : advs)
-        byHeading[advisoryHeading(a.category)].push_back(&a);
-
-    os << "\n" << rule << "\n"
-       << "ASSUMPTIONS AND CAVEATS -- what this run announced along the way\n"
-       << "  Every line below was already printed at its site.  It is repeated "
-          "here because a\n  warning a thousand lines above the answer has been "
-          "delivered, not received.\n";
-
-    for (const auto& [heading, items] : byHeading)
     {
-        os << "\n  " << heading << "  (" << items.size() << ")\n";
-        for (const auto* a : items)
-            os << "    - " << a->locus << ": " << a->message << "\n";
+        if (a.status == "trial")
+        {
+            ++nTrial;
+            ++trialsByFrame[a.where.empty() ? std::string("(unnamed solve)")
+                                            : a.where];
+            continue;
+        }
+        byHeading[advisoryHeading(a.category)].push_back(&a);
+    }
+
+    //  Every advisory this run raised was about a state it walked through and
+    //  discarded.  Say that plainly rather than printing a headed block with
+    //  nothing under it, and say it in the same shape as the no-advisory line
+    //  so its absence still cannot be read as "nothing looked".
+    if (byHeading.empty())
+    {
+        os << "\n" << rule << "\n"
+           << "ASSUMPTIONS AND CAVEATS: none raised about the answer.\n";
+    }
+    else
+    {
+        os << "\n" << rule << "\n"
+           << "ASSUMPTIONS AND CAVEATS -- what this run announced along the way\n"
+           << "  Every line below was already printed at its site.  It is repeated "
+              "here because a\n  warning a thousand lines above the answer has been "
+              "delivered, not received.\n";
+
+        for (const auto& [heading, items] : byHeading)
+        {
+            os << "\n  " << heading << "  (" << items.size() << ")\n";
+            for (const auto* a : items)
+            {
+                os << "    - " << a->locus << ": " << a->message;
+                if (!a->where.empty()) os << "  [" << a->where << "]";
+                os << "\n";
+            }
+        }
+    }
+
+    if (nTrial > 0)
+    {
+        os << "\n  THE SOLVER'S PATH  (" << nTrial << ")\n"
+           << "    Raised while evaluating states a solver visited and did NOT "
+              "publish.\n    They caution about no number in this run's answer;"
+              " they describe how it\n    was reached.  Full text in the result"
+              " JSON (status \"trial\").\n";
+        for (const auto& [frame, n] : trialsByFrame)
+            os << "    - " << frame << ": " << n
+               << (n == 1 ? " advisory\n" : " advisories\n");
     }
     os << rule << "\n";
 }

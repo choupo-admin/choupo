@@ -1558,6 +1558,49 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
     //  that ends somewhere its own phase set is not the stable one hands the
     //  new set to the next pass.  Announced, both ways.  This is the standard
     //  structure; what it must never become is a branch inside the residual.
+    //  THE OUTER NEWTON WALKS, AND SAYS SO (2026-08-24).
+    //
+    //  This is where the reactive path's advisories are BORN.  Every trial
+    //  below runs a full inner speciation at a composition the damped Newton
+    //  invented -- seeds, backtracks, caged steps, finite-difference columns,
+    //  whole discarded phase passes -- and an electrolyte kernel raises an
+    //  out-of-band caveat on most of them.  On column13 that is where the
+    //  ionic strengths of 8.01, 7.93 and 6.77 mol/kg come from: states no
+    //  sour water is in, reported to the reader as though they qualified the
+    //  answer.
+    //
+    //  Framing it HERE rather than at each caller is the whole point.  The
+    //  column's MESH, the adiabatic flash's T search and the energy report's
+    //  per-stream pricing all reach the same Newton; one frame at the search
+    //  covers every one of them, and a caller that never heard of advisories
+    //  gets the right answer anyway.
+    //
+    //  This is the SAME first/middle/final structure `innerVerbosity` already
+    //  uses a thousand lines above -- and for the same reason.  That switch
+    //  was fixed in 2026-07-27 because the block reported the INITIAL GUESS's
+    //  pH as though it were the answer; the advisories had the identical
+    //  defect and kept it three fields longer.  The frame closes right before
+    //  the JOINT acceptance below, which re-evaluates everything AT the
+    //  answer, so that evaluation's caveats are `accepted`.
+    //
+    //  AND THAT CLOSE IS, TODAY, INERT -- measured, not assumed.  Removing it
+    //  entirely leaves column13's advisory tally BYTE-IDENTICAL (12 accepted,
+    //  95 trial, same frames).  Every accepted caveat on that case arrives by
+    //  a path that opens no frame at all: the post-solve pass in
+    //  `Flowsheet::solve` that speciates each converged stream as a liquid,
+    //  which raises the same sentences and reaches the reader anyway.
+    //
+    //  It stays for two reasons that are not "it might help".  First, that
+    //  pass speciates a stream's OVERALL composition as a liquid, which for a
+    //  two-phase stream is a different state from the converged equilibrium
+    //  liquid this Newton just solved -- they coincide on this corpus and are
+    //  not the same computation.  Second, and decisive: without the close,
+    //  whether a reader is told anything about the answer would depend on an
+    //  unrelated pass in another subsystem continuing to exist.  A contract
+    //  that holds by coincidence is not a contract.  What is NOT claimed is
+    //  that any corpus case demonstrates it; none does, and the gate says so.
+    AdvisoryFrame walk("reactive equilibrium: outer Newton search");
+
     for (int phasePass = 0; ; ++phasePass)
     {
     //  Pass 0 seeds from the feed; a LATER pass continues from where the
@@ -1948,6 +1991,8 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         twoLiquids = next;
     }
     }
+
+    walk.close();       // the search is over; what follows IS the answer
 
     // ---- JOINT acceptance: re-evaluate EVERYTHING at the answer -----------
     //  And REPORT it: this is the call whose numbers are the answer, so it is

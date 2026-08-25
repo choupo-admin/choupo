@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "AdiabaticFlash.H"
+#include "core/Advisory.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -239,6 +240,19 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  answers (each unanswerable trial tightens the upper bracket under the
     //  high-side rule above); a bracket with no answerable point anywhere
     //  refuses naming both ends, because there is nothing honest to return.
+    //  THE T SEARCH WALKS, AND SAYS SO.
+    //
+    //  Every trial temperature below is a full flash at a state this unit
+    //  invented, and all but the last are discarded -- the bisection probes,
+    //  the bracketing, and the two extra flashes the central-difference dH/dT
+    //  costs per iteration.  On an electrolyte feed each of those raises its
+    //  own out-of-band advisory, so an unframed search buries the handful
+    //  that describe the CONVERGED outlet.  (Measured on column13: 96 of the
+    //  run's 103 advisories were raised here, and none of them is about the
+    //  answer.)  The frame closes below, before the final flash at the
+    //  converged T -- that one IS the answer and speaks in full.
+    AdvisoryFrame walk("adiabaticFlash outlet-T search");
+
     scalar Tstart = std::clamp(Tfeed, nro.lower, nro.upper);
     {
         int probe = 0;
@@ -267,6 +281,8 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     }
 
     auto r = solver::newton1D(f, df, Tstart, nro);
+
+    walk.close();                       // the search is over; what follows is the answer
 
     // Final flash at converged T
     lastSol = flashAt(r.x);

@@ -39,6 +39,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <limits>
 #include <map>
 #include <stdexcept>
@@ -1181,6 +1182,27 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         opts.onIter = [this](const solver::NDTrace& tr) {
             recordResidual(tr.normF);
         };
+    //  THE MESH NEWTON WALKS, AND SAYS SO.
+    //
+    //  Every residual evaluation below prices a stage at a composition the
+    //  Newton invented, and all but the last are thrown away.  Advisories
+    //  raised in here are facts about the PATH -- on a reactive column,
+    //  ~99 of them for four stages -- and the caveat block would otherwise
+    //  bury the handful that describe the converged profile among them.
+    //
+    //  The frame is opened around the whole campaign, on this thread, never
+    //  inside the residual: `opts.parallel` runs the finite-difference
+    //  Jacobian on a pool, and the workers raising advisories underneath are
+    //  exactly who this frame speaks for (core/Advisory.H).  It closes here,
+    //  so the reporting passes below -- which re-price every stage at the
+    //  CONVERGED profile -- raise their advisories unmarked, and those are
+    //  the ones a reader meets in full.
+    //  Named from the flowsheet's own `name` where the author declared one,
+    //  so two columns in one flowsheet are told apart; the type is the
+    //  honest fallback when nothing named it.
+    AdvisoryFrame walk(
+        "column '" + dict->lookupWordOrDefault("name", type()) + "' MESH search");
+
     auto res = solver::newtonND(residual, u0, opts);   // phase 1: reaction OFF (robust)
     if (reactive)
     {
@@ -1291,6 +1313,14 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     // ========================================================================
 
     // Distillate (total condenser): x_D = K_1·x_1, normalised.
+    //  THE SEARCH IS OVER.  Everything from here re-prices the stages at the
+    //  CONVERGED profile, so its advisories are about the answer and are
+    //  reported in full.  The reset must sit BELOW the full-MESH refinement
+    //  above -- placed between the two Newtons it left the second one's ~96
+    //  discarded states marked `accepted`, which is the defect wearing the
+    //  fix's clothes.
+    walk.close();
+
     auto K0 = thermo.stageK(T[0], P, x[0], x[0], x[0]);
     sVector xD(n);
     { scalar s = 0.0;

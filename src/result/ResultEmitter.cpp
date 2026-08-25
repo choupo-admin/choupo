@@ -907,7 +907,16 @@ std::string advisoriesJson(const std::vector<Advisory>& advs)
              + "    { \"category\": " + esc(advs[i].category)
              + ", \"severity\": " + esc(advs[i].severity)
              + ", \"locus\": " + esc(advs[i].locus)
-             + ", \"message\": " + esc(advs[i].message) + " }";
+             + ", \"message\": " + esc(advs[i].message)
+             //  WHICH STATE this is about -- see core/Advisory.H.  `status`
+             //  is always written (a reader must never have to infer
+             //  "accepted" from a missing key); `where` only when a solver
+             //  named its frame.
+             + ", \"status\": " + esc(advs[i].status)
+             + (advs[i].where.empty()
+                    ? std::string()
+                    : ", \"where\": " + esc(advs[i].where))
+             + " }";
     out += "\n  ]";
     return out;
 }
