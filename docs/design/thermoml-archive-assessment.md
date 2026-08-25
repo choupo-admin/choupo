@@ -89,6 +89,31 @@ assistant's, and a confident wrong answer here would be worse than the gap.
 | **Point values, cited to the ORIGINAL article**, checked against it when the paper is in hand | **YES** | This is the constitution's own rule ("cite the PRIMARY source per value, never the aggregator's arrangement") applied as written.  The archive locates; the article sources. |
 | **Bulk import of values into `data/standards/`** | **VÍTOR + COUNSEL** | The open licence argues for; the third-party disclaimer, the publishers' named permission, and the provenance-laundering clause of Choupo's own licence policy argue against.  Not an assistant's call in either direction. |
 
+## 4b. The public API is metadata-only BY THE ARCHIVE'S OWN DESIGN (found 2026-08-25, after the tiers above were written)
+
+The archive's search application documents its own API thus:
+
+> "The designed purpose of the API is to provide searching capability on
+> ThermoML metadata, not the actual numerical data points.  Thus, the
+> ThermoML JSON files are modified to contain no data points before they
+> are posted to Cordra; the data points are replaced with a summary of the
+> data point counts."
+
+So tier 1 is not merely permitted — it is the use the service was BUILT
+for, and a tool that queries it cannot import a value even by accident.
+The full data files live separately (data.nist.gov bulk download), which
+is exactly the tier-3 boundary: crossing from the API to the bulk files is
+a deliberate act, not a slippery slope.
+
+The tool: `bin/curate/thermoml_locate.py <compound> [<compound>...]` —
+prints authors, title, journal, year, DOI and the archive's own
+data-point summary per property.  Cordra REST + Lucene at
+trc.nist.gov/ThermoML-API.  First real use, same day: located five
+candidate primaries (with DOIs) for `HCHO.dat`'s "primary re-citation
+pending" mark, including Albert/Hasse/Kuhnert/Maurer JCED 2005 and
+Grutzner/Hasse JCED 2004.  The papers still have to be READ before any
+record moves — the tool ends its own output with that sentence.
+
 ## 5. What was verified vs what was not
 
 Verified on 2026-08-25 over live network: the three quotations above; the
