@@ -871,6 +871,164 @@ and is the fullest written statement of the construction in the tree; the
 tool quotes it.}
 
 % =====================================================================
+\section{The correlation library, and how to read a disagreement}
+\label{sec:edu-correlations}
+
+Every construction in \S\ref{sec:edu-tools} rests on correlations, and a
+simulator normally hides them.  It picks one, computes with it, and prints
+a number.  The student learns that the friction factor \emph{is} $0.0223$,
+in the same tone of voice the simulator uses for the molar mass of water.
+
+It is not.  It is one correlation's answer, and which one was chosen is
+part of the answer.
+
+This section is about the instruments that make that visible.  They are
+not charts --- they run under \code{choupoProps} and print --- but they
+teach something no chart can, because the thing to be seen is a
+\emph{disagreement between authorities}, and a chart of one curve cannot
+show it.
+
+\subsection{What a correlation carries}
+
+A correlation in Choupo is an object, and it is required to answer four
+questions about itself:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{What am I?} --- the expression, evaluated.
+  \item \textbf{Where do I stop being valid?} --- the window its own
+        authors stated, in words, printed on every run.
+  \item \textbf{Who says so?} --- a dated primary citation.  A correlation
+        whose source lives in a code comment is one the reader cannot
+        check.
+  \item \textbf{Can I still prove it?} --- a \emph{verify} against a
+        published anchor, re-run every time, with the deviation printed
+        beside the source.
+\end{itemize}
+
+The fourth is the unusual one.  A self-check that nobody wires up is a
+promise, not a check; running it on every use is what turns it into one.
+
+\subsection{The friction factor: four answers to one question}
+\label{sec:edu-friction}
+
+\declaredanchor{ch:hydraulics-pressure}
+
+\subsubsection*{The question}
+
+\emph{Water at $\mathrm{Re} = 10^{5}$ in a commercial steel line,
+$\varepsilon/D = 10^{-3}$.  What is the Darcy friction factor?}
+
+Run \code{tutorials/props/hydraulics/moody01\_friction\_correlations} and
+four correlations answer:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+correlation & $f$ & \\
+\midrule
+Blasius     & $0.017770$ & \textbf{outside its window} \\
+Churchill   & $0.022343$ & \\
+Colebrook   & $0.022175$ & \\
+Haaland     & $0.021966$ & \\
+\midrule
+\multicolumn{2}{l}{spread over all four} & $25.74\,\%$ \\
+\multicolumn{2}{l}{spread over the three inside their windows} & $1.72\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection*{The two numbers, and why there are two}
+
+Read the last two rows together, because either one alone is misleading.
+
+\emph{The correlations disagree by 26\,\%} is what the first row says, and
+it is false.  Three of them agree within $1.7\,\%$ --- which for a
+correlated quantity is agreement, not disagreement.
+
+What produces the $25.74\,\%$ is Blasius, and Blasius is not wrong.  It is
+being \emph{misused}.  Blasius carries no roughness term at all: it was
+fitted to smooth pipes and knows nothing about a wall.  Asked about
+$\varepsilon/D = 10^{-3}$ it answers anyway, confidently, twenty per cent
+low, and there is nothing about the number $0.017770$ that looks wrong.
+
+That is the whole content of a validity window, and it is why this run
+prints one for every correlation on every call.  The window is not
+bureaucracy attached to the formula.  It is the only thing standing
+between a plausible number and a reader.
+
+\begin{tryit}
+Set \code{relRough} to $0$ --- a hydraulically smooth pipe --- and run
+again.  Blasius comes back inside its window, the two spreads collapse
+onto each other, and the four answers agree to a few per cent.  Now raise
+\code{relRough} to $10^{-2}$ and watch the gap between the two spreads
+widen: the more the wall matters, the more expensive Blasius's silence
+about it becomes.
+
+Then set \code{Re} to $1500$.  Three of the four announce that they have
+substituted the exact laminar law $f = 64/\mathrm{Re}$, because they are
+turbulent fits and say so.  Churchill does not need to: its single
+expression contains the laminar law as its own limit, which is why it is
+the default and why its self-check is anchored there.
+\end{tryit}
+
+\subsubsection*{What the anchors actually test --- and it differs}
+
+The run prints a deviation for each correlation against a published
+anchor.  It would be easy to read four small numbers as four validations.
+They are not the same kind of statement, and the output says which is
+which:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Blasius} is checked against its own closed form.  This
+        tests the \emph{arithmetic} and nothing else --- and the run says
+        so, so that a deviation of $0.000\,\%$ cannot be mistaken for
+        agreement with a measurement.
+  \item \textbf{Colebrook} is checked in the fully-rough limit, where its
+        implicit equation collapses to a closed form.  This tests that the
+        fixed-point iteration \emph{arrives}.
+  \item \textbf{Haaland} is checked against \emph{Colebrook}, because
+        agreement within about $2\,\%$ is precisely the claim Haaland
+        published.  Anchoring him to anything else would be checking a
+        claim nobody made.
+  \item \textbf{Churchill} is checked against the exact laminar law.  This
+        is the strongest of the four: it is a property the expression was
+        built to have and that no coding error preserves by accident.
+\end{itemize}
+
+\subsubsection*{What the picture does not say}
+
+\textbf{None of these four is checked against experimental data.}  Choupo
+carries no friction measurements at all.  Two of the anchors are
+self-consistency by construction and one is agreement with another
+correlation; only Colebrook's tests an algorithm against a closed form the
+equation itself provides.  The run passes, and what it establishes is that
+the code computes what the papers wrote --- not that the papers are right.
+
+The bench also never says which correlation to use.  That depends on the
+pipe: its roughness, whether the flow is developed, whether the duct is
+even circular.  A tool that ranked them would be making the engineer's
+decision quietly, which is exactly what a silent default does.
+
+And nothing here speaks about the transition band,
+$2300 < \mathrm{Re} < 4000$, where no correlation was regressed and the
+flow itself is not single-valued.  Correlations evaluated there are marked
+outside their window, and that mark is the entire answer available.
+
+\subsection{One family so far}
+
+This discipline covers the convective heat-transfer correlations
+(\code{heatTransferBench}) and, since 2026-08-25, the friction factor
+(\code{frictionBench}).  It does \emph{not} yet cover the rest: the engine
+computes Wilke--Chang, Chilton--Colburn, Thiele, Weisz, Joback,
+Lee--Kesler, Rackett and Watson, and those remain internal to the
+operations that use them --- correct, cited in comments, and invisible to a
+student.
+
+Saying so is the point.  A guide that implied an exhaustive catalogue
+where two families exist would be committing the error this whole section
+is about: presenting one answer as though it were the only one.
+
+% =====================================================================
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 Six live tools are \emph{not} written up above.  They are listed here with

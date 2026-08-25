@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*82 of 82 registered operations carry a schema and are documented below.*
+*83 of 83 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -458,6 +458,15 @@ Freezing-point curve T_f(m) of a single salt in water, solved as chemical-potent
 | `temperature` |   | number | K | Defaults to 298.15 K. Whether the parameters actually vary with T depends on the pair record's declared temperature form. |
 | `validation` |   | object | — | Published values to compare against, so the run reports a deviation rather than a bare curve. |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `frictionBench`  (frictionBench operation)
+
+The Darcy friction factor's correlation library, in two parts. VERIFY (always): every registered correlation — Blasius, Colebrook-White, Haaland, Churchill — reproduces its own published anchor, and the deviation is printed beside the correlation's validity window and its primary citation. COMPARE (optional): all four are evaluated at the SAME Re and roughness, and the spread is published TWICE — over all of them, and over only those inside their stated windows. The two are reported apart because collapsing them would say 'the correlations disagree by 26 %' when the truth is 'three agree within 2 % and one was asked a question it was never fitted for'. The bench never says which correlation is right: that depends on the pipe, and ranking them would hide the choice the engineer has to make.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `deviationTolerance` |   | number | - | Allowed relative deviation of each correlation from its own published anchor; defaults to 0.03. Exists to honour the anchors' own roundin… |
+| `compare` |   | object | — | Optional. Evaluate every registered correlation at one hydraulic state and publish the spread. Omitting the block leaves only the verific… |
 
 ## `gasSolidSplitter`  (gasSolidSplitter operation)
 
