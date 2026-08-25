@@ -942,6 +942,38 @@ balance is UNAVAILABLE rather than closed with a term quietly zero).  Gate:
 `check_diafiltration` (5 sabotages, two of which attack the driver and the unit
 separately because the declaration can be lost on either side of the hook).
 
+**FOULING FOLLOWED THE SAME DAY, and the "largest gap" sentence above is now
+PARTLY PAID.**  Resistance in series on the permeance the unit hands the
+transport law -- `1/A_eff = 1/A_w + r_f(v)`, `v = V_permeated/A`, `r_f` growing
+by one of HERMIA'S BLOCKING LAWS (Hermia 1982; `cake` and `intermediate`
+implemented).  **Applied where the transport CONTEXT is assembled, not inside a
+transport law**: both `solutionDiffusion` and `DSPM_DE` read `ctx.A_w`, so ONE
+home serves both and neither is modified -- and fouling is a property of what
+the membrane has been asked to do OVER TIME, which is why the steady module
+cannot carry it and this unit is the only place in the tree that does.  **A
+BLOCKING LAW IS A CLAIM ABOUT A MECHANISM**, not a fitting exponent, so the
+block REQUIRES a `reason` (the engine cannot know whether a deposited layer or
+a covered pore describes a feed) and `standard`/`complete` REFUSE by name
+rather than being approximated by a neighbour their lumped permeance cannot
+represent.  Absent the block there is no fouling and the run is byte-identical.
+The constant is EQUIPMENT-AND-FEED data (axiom 3) and lives in the case -- **no
+catalogue record is touched, so no curation decision rides on it**.  Witness
+`diafilter02_fouling_decline`, the SAME operation as diafilter01 with only the
+fouling added, so the difference IS the fouling: the flux turns round (233 ->
+196 LMH where the clean twin rises to 256), permeance falls to 72.5 % of clean,
+and the same 160 s buys 4.74 diavolumes instead of 5.44, leaving 53.4 % of the
+NaCl behind against 50.2 %.  Its `k` is declared HYPOTHETICAL in its own header:
+a fully dissolved brine has nothing to deposit, so the case demonstrates the
+CONSEQUENCE of a declared decline, never this feed's fouling -- a structural
+witness on the `edwards01` precedent.  STILL not modelled: any MEASURED fouling
+(the tree carries no fouling data at all), critical flux, gel layers, cleaning
+or backwash cycles, and any prediction of `k` itself.  **Sabotage 8 SURVIVED its
+first run** -- it removed the `reason` requirement and the gate said OK, because
+the shipped witness declares one: *a guard whose only case satisfies it is a
+guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
+`standard` requested, a law nobody implemented) and requires each to refuse AND
+name why.  8 sabotages total, two of which survived first contact.
+
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  The caveat
 block exists because *a warning a thousand lines above the answer has been
 delivered and not received* — and the reactive path reintroduced that exact

@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  diafilter02_fouling_decline  --  the same diafiltration, with the membrane
+  losing permeance as it works.
+
+  WHY THIS CASE EXISTS.  diafilter01's flux RISES during the run (233 -> 256
+  LMH): the salt leaves, the osmotic pressure falls, the driving force grows.
+  That is the physics the model has.  It is not what a rig does.  On real
+  equipment the flux falls, because the membrane fouls, and every schedule a
+  student will ever write is sized on that decline.
+
+  THE MODEL.  Resistance in series on the permeance the unit hands the
+  transport law:
+
+      1 / A_eff  =  1 / A_w  +  r_f(v),      v = V_permeated / A
+
+  with r_f growing by one of HERMIA'S BLOCKING LAWS (Hermia, Trans. IChemE
+  60:183-187, 1982).  Here `cake`:  r_f = k v, the deposited-layer form.
+  Applied where the transport CONTEXT is assembled, so solution-diffusion and
+  DSPM-DE are served alike and neither is modified.
+
+  ** THE CONSTANT IN THIS CASE IS HYPOTHETICAL AND IS NOT A FITTED VALUE FOR
+  THIS SYSTEM. **  A brine of NaCl and MgSO4 is fully dissolved; there is no
+  suspended matter to deposit, so `cake` is not a mechanism this feed can
+  honestly claim.  What this case demonstrates is the CONSEQUENCE of a
+  declared decline on a diafiltration schedule -- how many more minutes the
+  same washout costs -- on a system whose other numbers are already pinned by
+  diafilter01, so the difference between the two runs is the fouling and
+  nothing else.  It is a STRUCTURAL witness, in the same sense as
+  edwards01_sour_water_activity: no number in it is validated against a
+  measured fouling experiment, and the tree carries no fouling data at all.
+
+  A fouling constant belongs to a RIG AND A MATERIAL, not to a membrane, so
+  it is declared here in the case and no catalogue record is touched.
+
+  WHAT TO READ.  `A_eff_over_A_w` in the trajectory is the permeance the
+  membrane still has, as a fraction of clean.  Put diafilter01 and
+  diafilter02 side by side: same charge, same area, same pressure, and the
+  diavolume count at t = 160 s is the whole lesson.
+\*-----------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        retentate;
+        type        batchDiafilter;
+
+        operation
+        {
+            membrane     NF270;              // the curated asset record
+            transport    solutionDiffusion;  // the baseline local law
+            mode         constantVolume;     // make-up solvent at the permeate rate
+
+            area         5.0;                 // m2 -- membrane area
+            P_feed       10 bar;             // transmembrane driving pressure
+            P_permeate   0 bar;              // atmospheric permeate side
+            rho          1000;                // kg/m3 -- declared, never defaulted
+
+            //  DECLARED, because this unit is told no geometry.  1.0e-4 m/s
+            //  is a well-stirred laboratory cell; lowering it makes the
+            //  polarisation bite and the two curves part sooner.
+            k_film       1.0e-4 m/s;
+
+            osmotic
+            {
+                model    vanHoff;
+            }
+
+            //  Hermia's cake law.  `reason` is REQUIRED: a blocking law is a
+            //  claim about a mechanism, and the engine cannot know which one
+            //  describes a given feed.
+            fouling
+            {
+                law      cake;
+                k        4.0e11;    // s.Pa/m2 per (m3/m2) -- HYPOTHETICAL,
+                                    //   see the header; sized to halve the
+                                    //   permeance over this run, not fitted
+                reason   "HYPOTHETICAL -- this brine is fully dissolved and has nothing to deposit; the constant is chosen to make the CONSEQUENCE of a declared decline visible against diafilter01, not to describe this feed";
+            }
+        }
+    }
+);

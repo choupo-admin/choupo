@@ -94,12 +94,44 @@ Description
     law it has not closed.  An unpriced term declared aloud is a gap; the same
     term omitted silently is a wrong answer.
 
-    NOT MODELLED, said here so the green run cannot imply it: fouling and flux
-    decline with time (the single largest gap between this and a real rig),
-    the concentration-polarisation coefficient as a function of stirring (the
-    case DECLARES k_film and the unit refuses without it rather than inventing
-    a correlation for a geometry it was not told), any temperature transient,
-    and gel-layer or critical-flux behaviour.
+    FOULING, and why it lives HERE and not in a transport law.  Both transport
+    models read `ctx.A_w`, so a fouling resistance applied where the CONTEXT is
+    assembled serves solution-diffusion and DSPM-DE alike and changes neither.
+    Fouling is a property of what the membrane has been ASKED TO DO over time,
+    not of the local flux law, and a steady module has no time in which to
+    accumulate one -- which is why this is the only unit in the tree that
+    carries it.
+
+    The form is resistance in series, on the permeance the unit hands the law:
+
+        1 / A_eff  =  1 / A_w  +  r_f(v),        v = V_permeated / A
+
+    with `r_f` growing by one of HERMIA'S BLOCKING LAWS (Hermia, Trans. IChemE
+    60:183-187, 1982), which is how flux decline is classified from data:
+
+        law `cake`          r_f = k v            (a deposited layer)
+        law `intermediate`  1/A_eff = e^{k v}/A_w  (progressive pore blocking)
+
+    Two, not four.  `standard` and `complete` describe pore-INTERNAL geometry
+    changes that this unit's lumped permeance cannot represent honestly, and
+    they refuse by name rather than being approximated by a neighbour.
+
+    **A BLOCKING LAW IS A CLAIM ABOUT A MECHANISM**, not a fitting exponent:
+    `cake` asserts a deposited layer, `intermediate` asserts pores being
+    covered.  A case cannot know which applies to its feed from the engine, so
+    the block REQUIRES a `reason` -- the author states in writing why this law
+    fits this material.  Absent the whole `fouling {}` block there is no
+    fouling and the run is byte-identical to one built before this existed: an
+    absence goes on meaning what it meant.
+
+    NOT MODELLED, said here so the green run cannot imply it: the
+    concentration-polarisation coefficient as a function of stirring (the case
+    DECLARES k_film and the unit refuses without it rather than inventing a
+    correlation for a geometry it was not told), any temperature transient,
+    critical-flux behaviour, cleaning or backwash cycles, and any prediction of
+    `k` itself -- the fouling constant is EQUIPMENT-AND-FEED data that belongs
+    to a rig and a material, so the case declares it and no catalogue record is
+    touched.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -198,6 +230,14 @@ private:
     scalar P_feed_    = 0.0;   // Pa
     scalar P_perm_    = 0.0;   // Pa
     scalar kFilm_     = 0.0;   // m/s
+
+    //  Fouling: absent by default, so a case that declares nothing runs
+    //  exactly as it did before this existed.
+    enum class FoulingLaw { None, Cake, Intermediate };
+    FoulingLaw foulingLaw_ = FoulingLaw::None;
+    scalar     foulingK_   = 0.0;
+    std::string foulingReason_;
+    scalar     effectivePermeance(scalar Vperm) const;
     scalar rho_       = 0.0;   // kg/m^3
     scalar rhoDia_    = 0.0;   // kg/m^3, the diafiltrate
     bool   constantVolume_ = false;

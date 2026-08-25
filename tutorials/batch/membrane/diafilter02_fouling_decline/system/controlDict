@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  diafilter02_fouling_decline / system/controlDict
+
+  Constant-volume diafiltration: solvent is made up as fast as it
+  permeates, so the vessel volume is held and the poorly-rejected solute
+  washes out while the well-rejected one stays.
+
+  The clock is chosen from the process, not from the numerics.  ONE
+  DIAVOLUME is V0 / Q_p seconds of permeation, and the run's own start-up
+  line gives the numbers it is computed from:
+
+      J_w(0) = 233 LMH = 6.47e-5 m/s   over  A = 5 m2
+      Q_p(0) = 3.24e-4 m3/s            V0 = 1.0036e-2 m3
+      one diavolume ~ 31 s
+
+  so endTime 160 s is ~5 diavolumes -- where the monovalent solute is
+  essentially gone and the two rejections have had room to part.  (The
+  first draft of this case ran 12000 s, which is 388 diavolumes: the
+  divalent solute was half washed out too and the lesson was buried
+  under an operation nobody would run.)
+
+  deltaT is the adaptive driver's STARTING step; the unit exposes a clean
+  ODE form, so the stiff sweep owns the stepping from there.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "The same diafiltration with a DECLARED Hermia cake-law decline: what fouling costs a washout schedule";
+
+verbosity     3;
+
+startTime       0;
+endTime         160;       // s   (~5 diavolumes)
+deltaT          1;         // s   (adaptive; the unit is in ODE form)
+writeInterval   5;         // s

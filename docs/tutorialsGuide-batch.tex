@@ -970,6 +970,50 @@ WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives; NOT
 \goldmore{34}
 \end{tutgolden}
 
+\clearpage
+\tutentry{diafilter02\_fouling\_decline}{tutorials/batch/membrane/diafilter02\_fouling\_decline}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (retentate) at (0.0,-0.0) {\textbf{retentate}\\[-1pt]{\tiny batchDiafilter}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The same diafiltration with a DECLARED Hermia cake-law decline: what fouling costs a washout schedule}
+\begin{tutnarrative}
+the same diafiltration, with the membrane losing permeance as it works.
+
+WHY THIS CASE EXISTS. diafilter01's flux RISES during the run (233 $\to$ 256 LMH): the salt leaves, the osmotic pressure falls, the driving force grows. That is the physics the model has. It is not what a rig does. On real equipment the flux falls, because the membrane fouls, and every schedule a student will ever write is sized on that decline.
+
+THE MODEL. Resistance in series on the permeance the unit hands the transport law:
+
+1 / A\_eff = 1 / A\_w + r\_f(v), v = V\_permeated / A
+
+with r\_f growing by one of HERMIA'S BLOCKING LAWS (Hermia, Trans. IChemE 60:183-187, 1982). Here `cake`: r\_f = k v, the deposited-layer form. Applied where the transport CONTEXT is assembled, so solution-diffusion and DSPM-DE are served alike and neither is modified.
+
+THE CONSTANT IN THIS CASE IS HYPOTHETICAL AND IS NOT A FITTED VALUE FOR THIS SYSTEM. $\ast$$\ast$ A brine of NaCl and MgSO4 is fully dissolved; there is no suspended matter to deposit, so `cake` is not a mechanism this feed can honestly claim. What this case demonstrates is the CONSEQUENCE of a declared decline on a diafiltration schedule -- how many more minutes the same washout costs -- on a system whose other numbers are already pinned by diafilter01, so the difference between the two runs is the fouling and nothing else. It is a STRUCTURAL witness, in the same sense as edwards01\_sour\_water\_activity: no number in it is validated against a measured fouling experiment, and the tree carries no fouling data at all.
+
+A fouling constant belongs to a RIG AND A MATERIAL, not to a membrane, so it is declared here in the case and no catalogue record is touched.
+
+WHAT TO READ. `A\_eff\_over\_A\_w` in the trajectory is the permeance the membrane still has, as a fraction of clean. Put diafilter01 and diafilter02 side by side: same charge, same area, same pressure, and the diavolume count at t = 160 s is the whole lesson.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{4.17214965497e-16}
+\goldrow{kpi}{campaign}{element\_Mg\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{4.17110477583e-16}
+\goldrow{kpi}{campaign}{element\_S\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{4.17214965497e-16}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{3.70318765373e-16}
+\goldrow{kpi}{campaign}{mass\_kg\_amend\_in}{47.5260962641}
+\goldrow{kpi}{campaign}{mass\_kg\_amend\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{47.5260962641}
+\goldmore{35}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage

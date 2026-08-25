@@ -155,6 +155,47 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     }
     rhoDia_ = op->lookupScalarOrDefault("rho_diafiltrate", rho_, Dims::density);
 
+    // ---- fouling: absent unless declared -----------------------------------
+    if (op->found("fouling"))
+    {
+        auto fd = op->subDict("fouling");
+        const std::string law = fd->lookupWord("law");
+        if (law == "cake")              foulingLaw_ = FoulingLaw::Cake;
+        else if (law == "intermediate") foulingLaw_ = FoulingLaw::Intermediate;
+        else if (law == "standard" || law == "complete")
+            throw std::runtime_error(
+                "batchDiafilter '" + name() + "': Hermia's `" + law + "` law"
+                " describes a change in pore-INTERNAL geometry, which this"
+                " unit's lumped permeance (one A_eff for the whole membrane)"
+                " cannot represent honestly.  It is REFUSED rather than"
+                " approximated by a neighbouring law that would fit the data"
+                " and mean something else.  Declare `cake` (a deposited layer)"
+                " or `intermediate` (progressive pore blocking) if either"
+                " describes your feed.");
+        else
+            throw std::runtime_error(
+                "batchDiafilter '" + name() + "': unknown fouling law '" + law
+                + "'.  Implemented: `cake`, `intermediate` (Hermia 1982);"
+                  " `standard` and `complete` refuse by name with the reason.");
+
+        foulingK_ = fd->lookupScalar("k");
+
+        //  A BLOCKING LAW IS A CLAIM ABOUT A MECHANISM.  The engine cannot
+        //  know whether a deposited layer or a blocked pore describes this
+        //  feed, and picking one silently would put a mechanism in the
+        //  reader's mouth.  The author states it, in writing, beside the
+        //  number.
+        if (!fd->found("reason"))
+            throw std::runtime_error(
+                "batchDiafilter '" + name() + "': the `fouling {}` block needs"
+                " a `reason \"...\";`.  A blocking law is a claim about a"
+                " MECHANISM -- `cake` asserts a deposited layer, `intermediate`"
+                " asserts pores being covered -- and nothing in this engine can"
+                " tell which describes your material.  Say why this law fits"
+                " this feed, so a reader of the answer can judge it.");
+        foulingReason_ = fd->lookupWordOrDefault("reason", "");
+    }
+
     const std::string mode = op->lookupWordOrDefault("mode", "concentration");
     if (mode == "constantVolume")      constantVolume_ = true;
     else if (mode == "concentration")  constantVolume_ = false;
@@ -238,6 +279,23 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
                   << "  area       " << area_ << " m2"
                   << "   TMP " << (P_feed_ - P_perm_) / 1.0e5 << " bar"
                   << "   k_film " << kFilm_ << " m/s\n"
+                  //  A DECLARED model choice is announced with the reason
+                  //  the author gave for it: a blocking law names a
+                  //  mechanism, and the reader must be able to weigh it.
+                  << (foulingLaw_ == FoulingLaw::None
+                        ? std::string("  fouling    NONE declared -- the flux"
+                                      " declines only through the physics"
+                                      " (osmotic pressure, polarisation)\n")
+                        : "  fouling    Hermia "
+                          + std::string(foulingLaw_ == FoulingLaw::Cake
+                                          ? "CAKE (a deposited layer)"
+                                          : "INTERMEDIATE (pore blocking)")
+                          + ", k = " + [&]{ std::ostringstream o;
+                              o << std::scientific
+                                << std::setprecision(3) << foulingK_;
+                              return o.str(); }()
+                          + "\n             declared because: " + foulingReason_
+                          + "\n")
                   << "  V0         " << std::scientific << std::setprecision(4)
                   << V0_ << " m3" << std::defaultfloat
                   << "   J_w(0) " << f0.J_w * 3.6e6 << " LMH\n";
@@ -260,6 +318,28 @@ scalar BatchDiafilter::volumeOf(const sVector& n) const
     return mass / rho_;
 }
 
+//  1/A_eff = 1/A_w + r_f(v),  v = permeated volume per unit area.
+//  Applied where the CONTEXT is assembled, so both transport laws are served
+//  and neither is touched -- see BatchDiafilter.H.
+scalar BatchDiafilter::effectivePermeance(scalar Vperm) const
+{
+    const scalar Aw = membrane_->A_w();
+    if (foulingLaw_ == FoulingLaw::None || area_ <= 0.0) return Aw;
+
+    const scalar v = std::max(Vperm, 0.0) / area_;      // m3/m2 = m
+    switch (foulingLaw_)
+    {
+        case FoulingLaw::Cake:
+            //  r_f grows in proportion to what has been filtered.
+            return 1.0 / (1.0 / Aw + foulingK_ * v);
+        case FoulingLaw::Intermediate:
+            //  the resistance grows in proportion to itself.
+            return Aw * std::exp(-foulingK_ * v);
+        default:
+            return Aw;
+    }
+}
+
 BatchDiafilter::Fluxes BatchDiafilter::evaluate(const sVector& n) const
 {
     const std::size_t N  = n.size();
@@ -280,7 +360,7 @@ BatchDiafilter::Fluxes BatchDiafilter::evaluate(const sVector& n) const
     for (std::size_t s = 0; s < Ns; ++s) f.c_b[s] = bulk.c[soluteIdx_[s]];
 
     membrane::TransportContext ctx{ *thermo_, soluteIdx_, B_s_,
-                                    membrane_->A_w(), kFilm_,
+                                    effectivePermeance(Vperm_), kFilm_,
                                     P_feed_, P_perm_, state_.T, f.c_b,
                                     *osmotic_, membrane_, nullptr };
     const auto sol = transport_->localFluxes(ctx);
@@ -447,6 +527,9 @@ BatchDiafilter::trajectoryExtras() const
     x.emplace_back("Q_p_m3s",     f.Q_p);
     x.emplace_back("diavolumes",  diavolumes());
     x.emplace_back("V_perm_m3",   Vperm_);
+    if (foulingLaw_ != FoulingLaw::None)
+        x.emplace_back("A_eff_over_A_w",
+                       effectivePermeance(Vperm_) / membrane_->A_w());
     x.emplace_back("TMP_bar",     (P_feed_ - P_perm_) / 1.0e5);
     for (std::size_t s = 0; s < soluteIdx_.size(); ++s)
     {
@@ -470,6 +553,9 @@ std::map<std::string, scalar> BatchDiafilter::kpis() const
     k["concentrationFactor"] = (f.V > 0.0) ? V0_ / f.V : 0.0;
     k["diavolumes"]          = diavolumes();
     k["V_permeated_m3"]      = Vperm_;
+    if (foulingLaw_ != FoulingLaw::None)
+        k["A_eff_over_A_w_final"] =
+            effectivePermeance(Vperm_) / membrane_->A_w();
     k["J_w_final_LMH"]       = f.J_w * 3.6e6;
 
     for (std::size_t s = 0; s < soluteIdx_.size(); ++s)

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 377,
+  "cases": 378,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -385,6 +385,23 @@
    "hasGolden": true
   },
   "tutorials/batch/membrane/diafilter01_nf_desalting": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchDiafilter"
+   ],
+   "unitModels": [
+    "vanHoff"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/membrane/diafilter02_fouling_decline": {
    "application": "choupoBatch",
    "unitTypes": [
     "batchDiafilter"
@@ -5543,6 +5560,7 @@
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
+    "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",
@@ -5966,7 +5984,8 @@
     "tutorials/batch/reactor/batch05_crystalliser"
    ],
    "batchDiafilter": [
-    "tutorials/batch/membrane/diafilter01_nf_desalting"
+    "tutorials/batch/membrane/diafilter01_nf_desalting",
+    "tutorials/batch/membrane/diafilter02_fouling_decline"
    ],
    "batchDryer": [
     "tutorials/batch/drying/dryer01_sucrose_tray"
@@ -6570,6 +6589,7 @@
     "tutorials/batch/combustion/nox01_zeldovich_postflame",
     "tutorials/batch/drying/dryer01_sucrose_tray",
     "tutorials/batch/membrane/diafilter01_nf_desalting",
+    "tutorials/batch/membrane/diafilter02_fouling_decline",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",

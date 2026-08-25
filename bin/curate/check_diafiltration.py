@@ -78,7 +78,7 @@ branch (deliberately absent, a different law) rests on the source and not on a
 run.  And the film coefficient is DECLARED by the case, so nothing here tests
 a polarisation correlation -- there is none.
 
-SABOTAGE-VERIFIED 2026-08-25, five times; OBSERVED output recorded below,
+SABOTAGE-VERIFIED 2026-08-25, eight times; OBSERVED output recorded below,
 verbatim.
 
 Sabotage 1 -- `takeContinuousIntake` returns nothing, so the vessel drinks in
@@ -117,6 +117,40 @@ the assumption the whole case exists to break:
     check_diafiltration: FAILED
       NaCl: the observed rejection did not move (R 0.87140054802 -> 0.87140054802). The entire lesson is that R is not a constant; if it is one here, the comparison in (d) is measuring rounding
 
+Sabotage 6 -- a declared fouling law parsed and NOT honoured
+(effectivePermeance returns the clean value):
+
+    check_diafiltration: FAILED
+      the effective permeance ended at 1 of clean -- a declared cake law that leaves the membrane unchanged is a block the engine parsed and did not honour
+      the fouled run reached 5.437 diavolumes against the clean twin's 5.437 -- fouling must COST throughput, or it is not being applied
+      the fouled run washed out MORE NaCl than the clean twin ...
+      the fouled run's final flux is not below the clean twin's
+
+Sabotage 7 -- the mechanism applied but never announced:
+
+    check_diafiltration: FAILED
+      the fouling law did not announce `fouling    Hermia` ...
+      the fouling law did not announce `CAKE` ...
+      the fouling law did not announce `declared because:` ...
+
+Sabotage 8 -- `reason` stops being required, so a mechanism can be claimed
+in silence.  IT SURVIVED THE FIRST TIME, and for a reason worth keeping:
+the shipped witness DECLARES a reason, so removing the requirement changes
+nothing about it.  A guard whose only case satisfies it is a guard nothing
+tests.  Arm (h) now BUILDS the offending cases -- a fouling block with the
+reason stripped, one asking for Hermia's `standard`, one asking for a law
+nobody implemented -- and requires each to refuse AND to name why.  With
+that arm present:
+
+    check_diafiltration: FAILED
+      probe `reason`: a case declaring a mechanism claimed with no stated reason RAN and exited 0 -- the refusal is not there
+
+    This is the second arm in one day that could not fail until it was made
+    to (see sabotage 1).  The lesson is not about this gate: a claim in an
+    OK line -- "refuses by name" -- is not evidence, and the corpus will
+    not supply the negative because a shipped case is by construction a
+    valid one.
+
 Sabotage 5 -- the DRIVER stops draining the intake (the unit is innocent).
 Same signature as sabotage 1, which is correct and is why both exist: the
 declaration can be lost on either side of the hook, and a gate that only
@@ -137,6 +171,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 CASE = "tutorials/batch/membrane/diafilter01_nf_desalting"
+#  The SAME operation with a declared Hermia cake-law decline.  Everything
+#  else is identical, so the difference between the two runs IS the fouling.
+FOULED = "tutorials/batch/membrane/diafilter02_fouling_decline"
 
 WASHED = "NaCl"      # poorly rejected: it must leave
 RETAINED = "MgSO4"   # well rejected:  it must stay
@@ -147,9 +184,13 @@ CLOSURE_MAX = 1.0e-12
 
 def main():
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    p = subprocess.run([str(BUILD / "choupoBatch"), str(ROOT / CASE)],
-                       capture_output=True, text=True, timeout=900, env=env)
-    out = p.stdout + p.stderr
+
+    def run(case):
+        r = subprocess.run([str(BUILD / "choupoBatch"), str(ROOT / case)],
+                           capture_output=True, text=True, timeout=900, env=env)
+        return r.stdout + r.stderr
+
+    out = run(CASE)
     if "<<<Choupo:result-begin>>>" not in out:
         print("check_diafiltration: FAILED")
         print("  the case produced no result block:\n" + out[-1500:])
@@ -233,6 +274,109 @@ def main():
         failures.append(f"{RETAINED} was not retained (recovery {rr:.4g}) -- "
                         "the well rejected solute must stay")
 
+    # ---- (g) fouling: the declared decline actually bites ----------------
+    fout = run(FOULED)
+    if "<<<Choupo:result-begin>>>" not in fout:
+        failures.append(f"{FOULED}: produced no result block")
+        fk = {}
+    else:
+        fj = json.loads(fout.split("<<<Choupo:result-begin>>>")[1]
+                            .split("<<<Choupo:result-end>>>")[0])
+        fk = fj["kpis"]["retentate"]
+
+        #  It must ANNOUNCE, with the mechanism and the author's reason.  A
+        #  blocking law is a claim, and a claim made in silence is the
+        #  no-silent-crutch violation this project exists to avoid.
+        for want in ("fouling    Hermia", "CAKE", "declared because:"):
+            if want not in fout:
+                failures.append(
+                    f"the fouling law did not announce `{want}` -- a blocking "
+                    "law names a MECHANISM and must reach the reader with the "
+                    "reason the author gave for it")
+
+        #  The permeance must actually be LOST, and the run must feel it.
+        aeff = fk.get("A_eff_over_A_w_final")
+        if aeff is None or not (0.05 < aeff < 0.99):
+            failures.append(
+                f"the effective permeance ended at {aeff} of clean -- a "
+                "declared cake law that leaves the membrane unchanged is a "
+                "block the engine parsed and did not honour")
+
+        #  And the CONSEQUENCE, which is the whole reason to model it: the
+        #  same clock buys fewer diavolumes and leaves more solute behind.
+        #  Compared against the clean twin, so the difference is the fouling
+        #  and not a different operation.
+        if k.get("diavolumes") and fk.get("diavolumes"):
+            if not (fk["diavolumes"] < k["diavolumes"]):
+                failures.append(
+                    f"the fouled run reached {fk['diavolumes']:.4g} diavolumes "
+                    f"against the clean twin's {k['diavolumes']:.4g} -- fouling "
+                    "must COST throughput, or it is not being applied")
+        if k.get("recovery_" + WASHED) and fk.get("recovery_" + WASHED):
+            if not (fk["recovery_" + WASHED] > k["recovery_" + WASHED]):
+                failures.append(
+                    f"the fouled run washed out MORE {WASHED} than the clean "
+                    "twin -- fewer diavolumes must leave more solute behind")
+
+        #  The flux must turn round.  Without fouling this run's flux RISES
+        #  (the osmotic pressure falls as the salt leaves); with it, the
+        #  decline must overwhelm that, which is the observable a reader
+        #  recognises from a real rig.
+        if k.get("J_w_final_LMH") and fk.get("J_w_final_LMH"):
+            if not (fk["J_w_final_LMH"] < k["J_w_final_LMH"]):
+                failures.append(
+                    "the fouled run's final flux is not below the clean twin's")
+
+        #  Conservation must survive the extra model.
+        fcamp = fj["kpis"]["campaign"]
+        if fcamp.get("element_worst_closure_rel", 1.0) > CLOSURE_MAX:
+            failures.append(
+                f"the fouled run's element closure is "
+                f"{fcamp.get('element_worst_closure_rel')}, above "
+                f"{CLOSURE_MAX:g}")
+
+    # ---- (h) the REFUSALS fire, on cases built here ----------------------
+    #  Without these the gate would pass just as happily with the refusals
+    #  deleted: the shipped witness declares a valid law AND a reason, so
+    #  nothing in the corpus exercises either guard.  Sabotage 8 proved
+    #  exactly that -- it removed the `reason` requirement and this gate
+    #  said OK.
+    import shutil, tempfile, re as _re
+    probes = [
+        ("reason", _re.compile(r'\n\s*reason\s+"[^"]*";'), "",
+         "reason", "a mechanism claimed with no stated reason"),
+        ("law", _re.compile(r'law\s+cake;'), "law      standard;",
+         "pore-INTERNAL geometry",
+         "Hermia's `standard`, which this lumped permeance cannot represent"),
+        ("unknown", _re.compile(r'law\s+cake;'), "law      wishful;",
+         "unknown fouling law", "a law nobody implemented"),
+    ]
+    with tempfile.TemporaryDirectory() as td:
+        for tag, pat, repl, want, why in probes:
+            dst = Path(td) / ("probe_" + tag)
+            shutil.copytree(ROOT / FOULED, dst)
+            fd = dst / "system" / "flowsheetDict"
+            txt = fd.read_text()
+            new_txt = pat.sub(repl, txt, count=1)
+            if new_txt == txt:
+                failures.append(f"probe `{tag}`: could not build it -- its "
+                                "anchor is gone from the witness, so the "
+                                "refusal it tests is unproven")
+                continue
+            fd.write_text(new_txt)
+            r = subprocess.run([str(BUILD / "choupoBatch"), str(dst)],
+                               capture_output=True, text=True, timeout=900,
+                               env=env)
+            blob = r.stdout + r.stderr
+            if r.returncode == 0:
+                failures.append(
+                    f"probe `{tag}`: a case declaring {why} RAN and exited 0 "
+                    "-- the refusal is not there")
+            elif want not in blob:
+                failures.append(
+                    f"probe `{tag}`: refused, but without saying `{want}` -- "
+                    "a refusal that does not name its reason teaches nothing")
+
     if failures:
         print("check_diafiltration: FAILED")
         for f in failures:
@@ -247,11 +391,22 @@ def main():
           f"MOVES ({R0:.4f} -> {Rf:.4f}), so the actual washout {a:.6g} is "
           f"slower than the constant-R law's {i:.6g} -- an idealisation "
           "recomputed here from the run's own R_initial and diavolume count, "
-          "not read back from the engine.  NOT COVERED: agreement with any "
-          "measured diafiltration (the NF270 set is the record's own "
-          "case-fitted pedagogical one), fouling and flux decline (not "
-          "modelled), the `concentration` mode (no corpus case), and any "
-          "polarisation correlation (k_film is declared by the case).")
+          "not read back from the engine.  A declared Hermia CAKE law on the "
+          f"same operation announces its mechanism and reason, ends at "
+          f"{fk.get('A_eff_over_A_w_final', float('nan')):.4f} of clean "
+          f"permeance, and COSTS what fouling must cost: "
+          f"{fk.get('diavolumes', float('nan')):.4g} diavolumes against the "
+          f"clean twin's {N:.4g}, a final flux BELOW the twin's instead of "
+          f"above it, and {fk.get('recovery_' + WASHED, float('nan')):.4f} of "
+          f"the {WASHED} left behind against {rw:.4f} -- with conservation "
+          "unharmed.  NOT COVERED: agreement with any MEASURED "
+          "diafiltration or any measured fouling (the NF270 set is the "
+          "record's own case-fitted pedagogical one and diafilter02's k is "
+          "declared HYPOTHETICAL in its own header -- the tree carries no "
+          "fouling data at all), Hermia's `standard` and `complete` laws "
+          "(refused by name, not implemented), the `concentration` mode (no "
+          "corpus case), and any polarisation correlation (k_film is declared "
+          "by the case).")
     return 0
 
 
