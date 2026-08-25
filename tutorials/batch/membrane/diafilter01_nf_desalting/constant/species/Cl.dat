@@ -1,0 +1,56 @@
+// [imported] origin "data/standards/species/Cl.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Cl.dat -- ONE model species, ONE typed file (the 2026-07-18
+  structural decision: the aqueous monolith dismantled; a sealed case copies
+  exactly the species it reaches, so the student sees the facts in use).
+  Body fields verbatim from the curated catalogue record (citations ride).
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Cl;
+formula     "Cl-";
+charge  -1;
+MW { value 35.453; unit g/mol;}
+aqueousThermo
+{
+hfAq { value -167160; unit J/mol;}
+sAq  { value 56.5;  unit J/mol/K;}
+cpAq { value -136.4; unit J/mol/K;}
+        // Criss-Cobble 1964 (JACS 86, 5390, Table II, verbatim):
+// T-AVERAGED partial molal heat capacity Cp-bar]_298^T,
+// cal/mol/K on the CC ABSOLUTE single-ion scale (Cp(H+) =
+// 28 cal at 25 C -- cancels in any NEUTRAL salt sum, the
+// only thing the engine consumes).
+cpAvg298
+{
+    model  crissCobble1964;
+    scale  crissCobbleAbsolute;
+    units  "cal/mol/K";
+    averageFrom298
+    (
+        { T 298.15; value -59; }
+        { T 333.15; value -51; }
+        { T 373.15; value -58; }
+        { T 423.15; value -62; }
+        { T 473.15; value -66; }
+    );
+    source "Criss & Cobble, JACS 86 (1964) 5390, Table II";
+}
+}
+transport
+{
+radius { value 3.32e-10; unit m;}
+D0     { value 2.03e-09;     unit m2/s;}
+}
+
+volumetric
+{
+    //  STANDARD-STATE (infinite-dilution) partial molar volume,
+    //  CONVENTIONAL scale V0(H+) = 0 (see the convention profile:
+    //  only electroneutral sums are physical).
+    V0          { value 17.83; unit cm3/mol; }
+    convention  MilleroConventional-v1;
+    Trange      ( 293 303 );   // 25 C table; +-5 K working band, extrapolation announced by the consumer's domain refusals
+    source      "Millero, Chem. Rev. 71 (1971) 147, Table III (Conventional Partial Molal Volumes of Ions in Water at 0, 25 and 50 degC), 25 degC block, p. 162 -- PRIMARY PAGE READ 2026-08-24 (delegated review, docs/design/interim-review-2026-08-24.md).  Millero states the table is itself taken from the compilation of his ref 81";
+}

@@ -930,7 +930,7 @@ be the arithmetic that decided**: `[campaign] mass balance` omitted the drawn-in
 and returned amendment terms the verdict has always used, so an open campaign
 printed `m0 = mF + external` with tens of kilograms missing and then said
 "(closed)".  Also: `toBulk` left its anonymous namespace inside
-`SpiralWoundModule.cpp` for `membrane/BulkConversion.H` when the second caller
+`SpiralWoundModule.cpp` for `src/unitOperations/membrane/BulkConversion.H` when the second caller
 arrived (11/11 membrane goldens unmoved), and `choupoBatch` now loads
 `MembraneRegistry` and the membrane sub-model factories -- *a unit is not
 installed until everything it constructs is*.  NOT modelled, said plainly:
