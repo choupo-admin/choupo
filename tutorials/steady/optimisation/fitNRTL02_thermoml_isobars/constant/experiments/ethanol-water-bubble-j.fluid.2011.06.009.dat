@@ -14,6 +14,21 @@
   The role this evidence plays -- fit or held-out validation -- is NOT
   set here.  It is declared in the operation that consumes it, before
   any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  CHECKED AGAINST THE ARTICLE, 2026-08-25.  Every value below was read
+  back against Table 1 of the cited paper (Voutsas, Pappa, Boukouvalas,
+  Magoulas & Tassios, Fluid Phase Equilibria 308 (2011) 135-141) -- the
+  DOI on the article's own first page confirming the one declared here.
+  All 45 rows agree digit for digit, and the per-isobar counts agree
+  too: Table 1 carries 17 / 18 / 16 rows at 13.15 / 19.71 / 32.86 kPa,
+  of which 15 / 16 / 14 lie strictly inside 0 < x1 < 1.
+
+  THE ENDPOINTS ARE DELIBERATELY ABSENT.  Table 1 brackets each isobar
+  with x1 = 0 and x1 = 1.  A bubble point on a pure component carries no
+  information about a binary pair -- the NRTL activity coefficients are
+  both exactly 1 there and the residual measures the pure-component
+  Antoine fit instead.  Their omission is a SELECTION, stated here so it
+  is not mistaken for a transcription that lost two rows per isobar.
 \*--------------------------------------------------------------------------*/
 
 property     binaryVLE.T_bubble;
@@ -22,7 +37,7 @@ system       ( ethanol water );
 provenance
 {
     source       measured;
-    reviewStatus transcribedNotCheckedAgainstArticle;
+    reviewStatus checked;
     archiveFile  "j.fluid.2011.06.009.xml";
     doi          "10.1016/j.fluid.2011.06.009";
     sha256       "288bc73f24c1c1e54f8f5685a6b1353d92378f093fd15271a27337b3a32e899d";

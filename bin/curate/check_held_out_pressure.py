@@ -52,18 +52,29 @@ WHAT THIS GATE CHECKS, on `tutorials/steady/optimisation/fitNRTL02_thermoml_isob
       The column form cannot make that mistake (its unit is in the `columns`
       block), so the scalar form must not be allowed to either.
 
-  (f) THE UNCHECKED TRANSCRIPTION IS ANNOUNCED.  Both datasets declare
-      `reviewStatus transcribedNotCheckedAgainstArticle`, and the run must say
-      so on the console AND carry it into the result JSON's advisories.  A
-      citation says where numbers are supposed to come from, not that anybody
-      looked, and a transcribed file carries the DOI from birth -- which is
-      exactly what makes the unchecked state look checked.
+  (f) BOTH REVIEW STATES ARE ANNOUNCED, AND THEY ARE ANNOUNCED DIFFERENTLY.
+      Since 2026-08-25 both datasets declare `reviewStatus checked` -- Vitor
+      supplied the two articles and every value was read back against them
+      (Voutsas Table 1, Kamihama Table 3; see the datasets' own headers and
+      docs/design/held-out-pressure.md Sec. 5).  So the shipped case must print
+      a `checked` line for each AND raise NO provenance advisory: a caveat
+      block that reports a discharged caveat teaches the reader to skim it.
+
+      That leaves the unchecked branch with no live case, which is the shape
+      that cost sabotage 8 of check_diafiltration -- a guard whose only case
+      satisfies it is a guard nothing tests.  So this arm BUILDS a probe with
+      the mark flipped back and requires the console line AND the advisory.
+      Both directions, both surfaces.
 
 WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
 
-  * It does not check that the two datasets match their publications.  Nothing
-      in this repository can: that needs the articles, and arm (f) exists
-      precisely because it has not been done.
+  * It does not itself compare the datasets against their publications, and
+      it cannot: the articles are copyrighted and are not in this repository.
+      What arm (f) checks is that the CLAIM the datasets make about their own
+      review state reaches the reader intact.  The comparison behind that
+      claim was performed once, by hand, on 2026-08-25, and its method and
+      result are recorded in docs/design/held-out-pressure.md Sec. 5 -- where a
+      future reader can rerun it against the same two articles.
   * It says nothing about whether the FITTED pair is good.  The case's own
       finding is that it predicts 101.3 kPa 4.7x WORSE than the catalogue pair
       it started from; those four numbers are pinned in `expected`, not here.
@@ -125,6 +136,29 @@ what the end-of-run caveat block exists to fix.
 
     fitNRTL02: 'reviewStatus' announced on the console but only 0 of 2
     reached the result JSON advisories -- a caveat that does not reach the
+    summary block
+
+The next two were performed when the datasets were flipped to `checked`, and
+they attack the two directions the flip created.
+
+S6 -- the `checked` branch made silent again (`if (... == "checked") continue;`,
+the pre-flip shape).  This is the sabotage worth knowing, because nothing
+about it looks like a defect: the run is quieter, every number is unchanged,
+and no caveat is lost.  What is lost is the DIFFERENCE between a dataset a
+curator has read back and one that declares nothing -- both print nothing, so
+the reader cannot tell them apart.
+
+    fitNRTL02: no `[reviewStatus] ... checked` line for
+    constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat -- a
+    discharged review state that says nothing is indistinguishable from one
+    nobody declared
+
+S7 -- the unchecked branch's AdvisoryLog raise deleted, its console line kept.
+Invisible to the shipped case, which declares `checked` and raises nothing
+either way; caught only because arm (f) builds the flipped-back probe.
+
+    probe 'reviewStatusUnchecked': only 0 of 2 unchecked datasets reached the
+    result JSON advisories -- a caveat that does not reach the end-of-run
     summary block
 """
 import json
@@ -233,17 +267,47 @@ def main():
         fails.append(f"{VALSET.name}: no held-constant `pressure <v> kPa;` --"
                      " the scalar form is no longer exercised")
 
-    # ---- (f) the unchecked transcription is announced, twice ---------------
+    # ---- (f) both review states are announced, and announced DIFFERENTLY ----
+    #  The shipped case: `checked`, on the console, with NO advisory.
     for ds in (FITSET, VALSET):
         rel = f"constant/experiments/{ds.name}"
-        if f"[reviewStatus] {rel}" not in out:
-            fails.append(f"fitNRTL02: no [reviewStatus] line for {rel}")
+        if not re.search(rf"\[reviewStatus\] {re.escape(rel)}: checked\b", out):
+            fails.append(f"fitNRTL02: no `[reviewStatus] ... checked` line for"
+                         f" {rel} -- a discharged review state that says nothing"
+                         " is indistinguishable from one nobody declared")
     advs = (js or {}).get("advisories", [])
     nRev = sum(1 for a in advs if "reviewStatus" in a.get("message", ""))
-    if "[reviewStatus]" in out and nRev < 2:
-        fails.append("fitNRTL02: 'reviewStatus' announced on the console but"
-                     f" only {nRev} of 2 reached the result JSON advisories --"
-                     " a caveat that does not reach the summary block")
+    if nRev:
+        fails.append(f"fitNRTL02: {nRev} reviewStatus advisor(y/ies) raised on"
+                     " datasets that declare `checked` -- a caveat block that"
+                     " reports a discharged caveat teaches the reader to skim it")
+
+    #  The unchecked branch now has no live case, so BUILD one.  Flipping the
+    #  mark back must reinstate BOTH surfaces: the console line and the
+    #  advisory.  A run that merely prints has delivered and not been received.
+    unchk = ROOT / "generated/probes/heldOutPressure/reviewStatusUnchecked"
+    shutil.rmtree(unchk.parent, ignore_errors=True)
+    shutil.copytree(CASE, unchk, ignore=shutil.ignore_patterns(
+        "*.csv", "log.*", "expected"))
+    for ds in (FITSET, VALSET):
+        p = unchk / "constant/experiments" / ds.name
+        p.write_text(p.read_text().replace(
+            "reviewStatus checked;",
+            "reviewStatus transcribedNotCheckedAgainstArticle;"))
+    uout, ujs = run(unchk)
+    for ds in (FITSET, VALSET):
+        rel = f"constant/experiments/{ds.name}"
+        if f"[reviewStatus] {rel}: transcribedNotCheckedAgainstArticle" not in uout:
+            fails.append(f"probe 'reviewStatusUnchecked': no unchecked"
+                         f" [reviewStatus] line for {rel} -- flipping the mark"
+                         " back left the run silent about it")
+    uAdv = sum(1 for a in (ujs or {}).get("advisories", [])
+               if "reviewStatus" in a.get("message", ""))
+    if uAdv < 2:
+        fails.append(f"probe 'reviewStatusUnchecked': only {uAdv} of 2 unchecked"
+                     " datasets reached the result JSON advisories -- a caveat"
+                     " that does not reach the end-of-run summary block")
+    shutil.rmtree(unchk.parent, ignore_errors=True)
 
     # ---- (d) + (e) the refusals, on probe cases BUILT here ------------------
     probes = ROOT / "generated/probes/heldOutPressure"
@@ -271,12 +335,18 @@ def main():
           f" isobars ({pLo:.4f}..{pHi:.4f} bar, recounted from the dataset, not"
           f" read from the log), prices its {nHeld} held-out points at the"
           f" held-constant they declare (AAD {aad:.4f} %), announces both"
-          " datasets as transcribed-but-unchecked on the console AND in the"
-          f" advisories, and refuses {len(PROBES)} built probe(s): a scalar"
-          " pressure beside evidence that carries one, a half-priced held-out"
-          " set, and an unqualified held-constant.  NOT CHECKED: that either"
-          " dataset matches its publication (that needs the articles -- which"
-          " is what the reviewStatus says), whether the fitted pair is any"
+          " datasets as `checked` while raising no caveat about them, restores"
+          " BOTH announcement surfaces on a built probe with the mark flipped"
+          f" back to unchecked, and refuses {len(PROBES)} further built"
+          " probe(s): a scalar pressure beside evidence that carries one, a"
+          " half-priced held-out set, and an unqualified held-constant."
+          "  NOT CHECKED: that either dataset matches its publication -- the"
+          " articles are not in this repository, so what is verified here is"
+          " that the datasets' CLAIM about their own review state reaches the"
+          " reader; the comparison behind that claim was done by hand on"
+          " 2026-08-25 and its method is recorded in"
+          " docs/design/held-out-pressure.md Sec. 5.  Also not checked:"
+          " whether the fitted pair is any"
           " good (the case's own goldens carry that, and its finding is that"
           " the fit predicts WORSE), and the bubble-point Newton's initial"
           " guess, whose two caveats this run still reports as though they"

@@ -81,14 +81,25 @@ held-out column before believing the in-sample one.
               doi:10.1021/je2008704              21 points, 101.3 kPa
 
 Both files were written by `bin/choupo-thermoml extract-vle` from a local
-mirror of the archive, and both declare
-`reviewStatus transcribedNotCheckedAgainstArticle` — **the values have not
-been read back against the publications they cite.**  The run says so on
-the console and in its end-of-run caveat block.  A citation says where
-numbers are supposed to come from, not that anybody looked; a transcribed
-file carries the DOI from birth, which is exactly what makes the unchecked
-state look checked.  A curator who reads the two papers and confirms the
-numbers edits that field to `checked`.
+mirror of the archive, so both were born declaring
+`reviewStatus transcribedNotCheckedAgainstArticle` — a citation says where
+numbers are supposed to come from, not that anybody looked, and a
+transcribed file carries the DOI from birth, which is exactly what makes
+the unchecked state look checked.
+
+**On 2026-08-25 both were read back against their articles**, and both now
+declare `reviewStatus checked`: all 45 fit points against Voutsas's Table 1
+and all 21 held-out points against Kamihama's Table 3, agreeing digit for
+digit, with the per-isobar counts checked too.  The run announces the
+`checked` state and raises no caveat about it.  The method and the row
+counts are in `docs/design/held-out-pressure.md` §5a; each dataset's header
+states which table it was checked against.
+
+Both datasets omit the pure-component endpoints their tables carry
+(x₁ = 0 and x₁ = 1).  That is a **selection**, stated in the headers so it
+is not read as two rows lost per isobar: with a pure component both NRTL
+activity coefficients are exactly 1, so such a point measures the Antoine
+fit rather than the pair being regressed.
 
 The two extrapolation caveats the run reports — ethanol's Antoine
 correlation at 371.8 K and 372.8 K, outside its declared 273–369 K window

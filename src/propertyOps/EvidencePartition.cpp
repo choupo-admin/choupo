@@ -426,10 +426,30 @@ void EvidencePartition::announce(const std::string& opLabel, int verbosity) cons
     //  draws for a component record, and it rides the AdvisoryLog so it also
     //  reaches the end-of-run caveat block -- a line here, a thousand lines
     //  above the answer, has been delivered and not received.
+    //
+    //  THREE STATES, AND `checked` MUST NOT BE SILENT (2026-08-25).  The first
+    //  version had two branches -- announce the unchecked state, say nothing
+    //  otherwise -- which made a dataset a curator has read back against its
+    //  article indistinguishable, in the output, from one that declares no
+    //  review at all.  That is the absence-reads-as-affirmation shape, and it
+    //  costs exactly what it always costs: the reader who sees nothing cannot
+    //  tell whether the check was done or was never claimed.  So `checked`
+    //  ANNOUNCES, on the console only -- there is no caveat to carry, and an
+    //  advisory whose content is "nothing is wrong" would dilute the block
+    //  that exists to say what is.  An UNDECLARED reviewStatus stays silent:
+    //  it makes no claim in either direction, and inventing an announcement
+    //  about datasets that predate the field would be a claim about them.
     for (const auto* set : { &fit_, &validation_ })
         for (const auto& d : *set)
         {
-            if (d.reviewStatus.empty() || d.reviewStatus == "checked") continue;
+            if (d.reviewStatus.empty()) continue;
+            if (d.reviewStatus == "checked")
+            {
+                std::cout << "      [reviewStatus] " << d.path << ": checked"
+                             " -- a curator has read these values back against"
+                             " the publication cited above.\n";
+                continue;
+            }
             AdvisoryLog::instance().add(
                 "provenance", "warning", "dataset '" + d.path + "'",
                 "declares `reviewStatus " + d.reviewStatus + "` -- its values"

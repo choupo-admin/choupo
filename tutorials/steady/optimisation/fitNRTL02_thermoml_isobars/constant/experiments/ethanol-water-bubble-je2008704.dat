@@ -14,6 +14,17 @@
   The role this evidence plays -- fit or held-out validation -- is NOT
   set here.  It is declared in the operation that consumes it, before
   any fitting runs (src/propertyOps/EvidencePartition.H).
+
+  CHECKED AGAINST THE ARTICLE, 2026-08-25.  Every value below was read
+  back against Table 3 of the cited paper (Kamihama, Matsuda, Kurihara,
+  Tochigi & Oba, J. Chem. Eng. Data 57 (2012) 339-344) -- the DOI in the
+  article's own running footer confirming the one declared here.  All 21
+  rows agree digit for digit AND in order: Table 3 carries 23 rows, of
+  which 21 lie strictly inside 0 < x1 < 1.
+
+  THE ENDPOINTS ARE DELIBERATELY ABSENT, for the reason given in the
+  companion fit set: a bubble point on a pure component measures the
+  Antoine fit, not the pair being scored.
 \*--------------------------------------------------------------------------*/
 
 property     binaryVLE.T_bubble;
@@ -23,7 +34,7 @@ pressure     101.3 kPa;
 provenance
 {
     source       measured;
-    reviewStatus transcribedNotCheckedAgainstArticle;
+    reviewStatus checked;
     archiveFile  "je2008704.xml";
     doi          "10.1021/je2008704";
     sha256       "f24eca1286fb3d1fc4611eaf05bc771813d0dc41e81cf37c0c49b3ea9b871758";

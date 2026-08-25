@@ -135,6 +135,56 @@ a thousand lines above the answer has been delivered and not received.
 A curator who reads the papers and confirms the numbers edits the field to
 `checked`.  Nothing automatic may.
 
+### 5a  The check was performed — 2026-08-25
+
+Vítor supplied both articles the same day the mark was written, and the
+comparison was done.  Both datasets now declare `reviewStatus checked`.
+
+**Method**, recorded so a later reader can repeat it rather than take it on
+trust.  Each PDF was rendered with `pdftotext -layout`, the relevant table
+read off by **column position** (not by whitespace splitting — the last
+rows of Voutsas's Table 1 are ragged, and a token-order parser silently
+assigns the 19.71 kPa endpoint to the 13.15 kPa column), and compared
+against the `.dat` by an independent local parser, in both directions:
+nothing in the dataset absent from the table, nothing in the table's
+interior absent from the dataset.
+
+**Result: both exact.**
+
+| dataset | table | rows in table | interior (0 < x₁ < 1) | in dataset | disagreements |
+|---|---|---|---|---|---|
+| Voutsas 2011, `10.1016/j.fluid.2011.06.009` | Table 1 | 17 / 18 / 16 at 13.15 / 19.71 / 32.86 kPa | 15 / 16 / 14 = **45** | 45 | **0** |
+| Kamihama 2012, `10.1021/je2008704` | Table 3 | 23 at 101.3 kPa | **21** | 21, same order | **0** |
+
+Both DOIs were confirmed against the articles' own pages rather than
+against the archive metadata that produced them — `doi:10.1016/j.fluid.
+2011.06.009` on the Voutsas first page, `dx.doi.org/10.1021/je2008704` in
+the Kamihama running footer.
+
+**The endpoints are deliberately absent**, and that is a selection rather
+than a transcription loss.  Both tables bracket each isobar with x₁ = 0 and
+x₁ = 1; a bubble point on a pure component has both NRTL activity
+coefficients exactly 1, so its residual measures the pure-component Antoine
+fit and not the pair being regressed.  Each dataset's header now says so,
+because a reader who counts the article's rows and the file's rows will
+find them differing by two per isobar and is owed the reason.
+
+**`checked` must not be silent.**  The first implementation had two
+branches — announce the unchecked state, say nothing otherwise — so a
+dataset a curator had read back was indistinguishable, *in the output*,
+from one declaring no review at all.  That is the absence-reads-as-
+affirmation shape, and it costs what it always costs.  `checked` now
+announces on the console; it raises **no** advisory, because there is no
+caveat to carry and a caveat block reporting a discharged caveat teaches
+the reader to skim it.  An **undeclared** `reviewStatus` stays silent: it
+makes no claim in either direction, and announcing something about the
+datasets that predate the field would be a claim about them.
+
+The flip left the unchecked branch with no live case — the shape that cost
+`check_diafiltration` its eighth sabotage — so `check_held_out_pressure`
+arm (f) builds a probe with the mark flipped back and requires **both**
+surfaces to return.  Sabotages S6 and S7 attack the two directions.
+
 Two smaller provenance fixes rode along.  The extractor's citation used to
 live only in the file's **banner comment**, which the parser discards —
 the 2026-08-05 shape, *a field the engine cannot see is a comment*; it now
