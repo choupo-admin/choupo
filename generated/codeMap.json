@@ -3356,6 +3356,7 @@
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/EvidencePartition.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
@@ -6977,6 +6978,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",

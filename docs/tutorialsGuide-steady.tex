@@ -6727,6 +6727,68 @@ Data: transcribed from constant/experiments/ethanol-water-101kPa (the raw- data 
 \end{tutgolden}
 
 \clearpage
+\tutentry{fitNRTL02\_thermoml\_isobars}{tutorials/steady/optimisation/fitNRTL02\_thermoml\_isobars}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{fit\_NRTL\_across\_isobars}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{score\_catalogue\_pair\_at\_101kPa}\\[-1pt]{\tiny fitParameters}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{score\_catalogue\_pair\_at\_vacuum}\\[-1pt]{\tiny fitParameters}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Fit the ethanol/water NRTL pair across three measured isobars, then predict a fourth held out from a different laboratory}
+\begin{tutnarrative}
+fitNRTL02 -- A GOOD FIT THAT PREDICTS WORSE. The ethanol/water NRTL pair regressed across three measured vacuum isobars, then asked about a fourth isobar, at atmospheric pressure, from a different laboratory.
+
+THE RESULT FIRST, BECAUSE IT IS NOT THE ONE THE CASE WAS BUILT EXPECTING. The regression converges in 19 iterations to a reduced chi-square of 0.023 over 45 points -- an in-sample rms of 0.144 K, which is at the scatter of the measurements. Every number on the fit's own report says it went well. Then the fitted pair meets 21 points it never saw, at 101.3 kPa, and its average absolute deviation is 0.386 K. The pair the case STARTED from -- the catalogue's DECHEMA set, adjusted by nothing -- manages 0.082 K on the same 21 points. The fit made the model 4.7 times worse where it was not looking.
+
+The two control operations below make that symmetric rather than a one-sided accusation. All four numbers, each measured by this run:
+
+vacuum data atmospheric data (Voutsas, 13-33 kPa) (Kamihama, 101.3 kPa) catalogue pair rms 0.1619 K aad 0.0821 K pair fitted here rms 0.1438 K (in-sample) aad 0.3857 K
+
+Each pair is at its best where its evidence was taken. The regression bought an 11 \% improvement where it looked, and lost a factor of 4.7 where it did not. A student who reads only `converged 1`, `chi2\_reduced 0.023` and `rms 0.144 K` would ship the new pair; the held-out column is the only thing in the run that says not to.
+
+WHY IT HAPPENS, AND THE SECOND LESSON. NRTL's interaction is tau = a + b/T, so identifying `a` and `b` separately needs data that span 1/T. Three isobars from 13 to 33 kPa span about 28 K around 320 K, which moves 1/T by roughly 9 \% -- better than the 12 K of a single isobar (fitNRTL01), and it shows: the condition number of J'J falls from 3.6e11 to 5.6e9, two orders of magnitude. But `max|correlation|` is still 1.000 and the run still reports `identifiable 0`. Two orders of magnitude of conditioning did NOT buy identifiability, and the confidence intervals say why: b\_ij = -539 +/- 456, b\_ji = 682 +/- 768. The parameters are a correlated pair that happens to describe the vacuum data; nothing pins either one, so nothing constrains what they do at 101 kPa. The catalogue record's own declared validity window is 298-373 K -- it was fitted where it is being asked, and this fit was not.
+
+THE EVIDENCE, AND WHERE IT CAME FROM. Both datasets were read out of the NIST/TRC ThermoML Archive by `bin/curate/thermoml\_extract.py` and carry the citation of the article they were measured in, as a field the engine reads rather than a comment it discards:
+
+FIT Voutsas, Pamouktsis, Argyris \& Pappa, Fluid Phase Equilib. (2011), doi:10.1016/j.fluid.2011.06.009 -- 45 points on three isobars, 13.15 / 19.71 / 32.86 kPa.
+
+HELD OUT Kamihama, Matsuda, Kurihara, Tochigi \& Oba, J. Chem. Eng. Data (2012), doi:10.1021/je2008704 -- 21 points at 101.3 kPa.
+
+The held-out set is not a slice withheld from the same measurement: it is a DIFFERENT LABORATORY, a different journal, a different year, at a pressure a full decade above anything the fitter was shown. That is what makes its number mean something the in-sample one cannot. The identity collision the engine CAN settle (the same DOI in both roles) is settled by construction here, because the DOIs differ; whether two studies are scientifically independent stays a human judgement, and the run announces what it knows rather than adjudicating it.
+
+ITS NEIGHBOUR, AND WHAT IS DIFFERENT. `tutorials/props/curation/ curate02\_vle\_heldout\_ethanol\_water` already holds out three of eleven measured points on this same system, and already reports the same identifiability finding -- it was the first place in the corpus where a fitted binary pair met real evidence it had not been handed, and this case does not claim that. What is new here is the SHAPE of the test: curate02 withholds points from ONE series at ONE pressure, so it asks whether the model interpolates within a study. This case withholds an ENTIRE INDEPENDENT STUDY at a pressure a decade away, which asks whether the model transfers at all -- and the two questions get different answers. Read curate02 first; it is the cleaner statement of the contract.
+
+NO ACCEPTANCE BAND IS DECLARED, deliberately. This run REPORTS the held-out residual and claims no pass or fail on it, because a limit chosen after seeing the residual is not a limit. Every number quoted above is pinned in `expected`, so none of them can move unnoticed -- including the ones that make the fit look bad. Nothing here was tuned to produce this outcome: the fit is the catalogue pair as its starting point, the bounds are fitNRTL01's, and the two datasets were the only ethanol+water bubble-temperature studies in the mirror that suited the roles.
+
+WHAT THE RUN'S TWO CAVEATS ARE ABOUT, said plainly. The end-of-run block reports ethanol's Antoine correlation evaluated at 371.8 K and 372.8 K, outside its declared 273-369 K window. Both are the bubble-point Newton's STARTING temperature -- the mole-fraction-weighted normal boiling point of the first datum in each set -- and neither is a state any published answer contains. The mechanism that would say so (`AdvisoryFrame`) is opened around this operation's parameter search but NOT yet inside the bubble-point Newton itself, so those two lines are reported as though they qualified the answer. That gap is named in docs/design/advisory-attribution.md rather than papered over here.
+
+\end{tutnarrative}
+\tutreadme{Regress the ethanol/water NRTL pair against 45 bubble points measured on three vacuum isobars, then ask the fitted pair about 21 points at atmospheric pressure, measured by a different laboratory in a different year. Both datasets come out of the NIST/TRC ThermoML Archive and carry the citation of the article they were published in.}
+\tutreadme{The regression converges in 19 iterations to a reduced chi-square of 0.023 over 45 points --- an in-sample rms of 0.144 K, which is at the scatter of the measurements. Everything on the fit's own report says it went well.}
+\tutreadme{The regression bought an 11 \% improvement where it looked, and lost a factor of 4.7 where it did not. A reader who saw only converged 1, chi2\_reduced 0.023 and rms 0.144 K would ship the new pair.}
+\tutreadme{Each pair is at its best where its evidence was taken. The two evaluate operations in system/propsDict are what make that symmetric rather than an accusation: they score the $\ast$catalogue$\ast$ pair on both datasets, so all four numbers come from this one run.}
+\tutreadme{NRTL's interaction is tau = a + b/T, so separating a from b needs data that span 1/T. Three isobars from 13 to 33 kPa span about 28 K around 320 K --- better than the 12 K of the single-isobar twin (fitNRTL01), and it shows: the condition number of J'J falls from 3.6e11 to 5.6e9. But max is still 1.000 and the run still reports identifiable 0. Two orders of magnitude of conditioning did not buy identifiability, and the confidence intervals say why --- b\_ij = -539 $\pm$ 456, b\_ji = 682 $\pm$ 768. The parameters are a correlated pair that happens to describe the vacuum data; nothing pins either one, so nothing constrains what they do at 101 kPa.}
+\tutreadme{The catalogue record's own declared validity window is 298--373 K. It was fitted where it is being asked; this fit was not.}
+\begin{tutgolden}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{aad\_heldout\_K}{0.3857}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{aad\_heldout\_pct}{0.1088}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{chi2}{0.9303}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{chi2\_in\_sample}{0.9303}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{chi2\_reduced}{0.0227}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{cond\_JtJ}{5604973889.6716}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{converged}{1.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{corr\_computed}{1.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{dof}{41.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{identifiable}{0.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{invertible}{1.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{iter}{19.0000}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{max\_abs\_corr}{0.9995}
+\goldrow{diag}{fit\_NRTL\_across\_isobars}{max\_abs\_resid}{0.3678}
+\goldmore{32}
+\end{tutgolden}
+
+\clearpage
 \tutentry{optim01\_column\_reflux}{tutorials/steady/optimisation/optim01\_column\_reflux}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

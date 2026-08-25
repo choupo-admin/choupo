@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 378,
+  "cases": 379,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -4746,6 +4746,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars": {
+   "application": "choupoProps",
+   "ops": [
+    "fitParameters"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/optimisation/optim01_column_reflux": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -5685,7 +5699,8 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
-    "tutorials/steady/optimisation/fitNRTL01_ethanol_water"
+    "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
+    "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
    ],
    "choupoSolve": [
     "tutorials/electrochem/ed01_nacl_desalination",
@@ -6472,6 +6487,7 @@
     "tutorials/steady/flash/vlle03_audit_artificial",
     "tutorials/steady/flowsheets/process04_research_workflow",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
+    "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "Pitzer": [
@@ -6875,7 +6891,8 @@
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
-    "tutorials/steady/optimisation/fitNRTL01_ethanol_water"
+    "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
+    "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
    ],
    "freezingPoint": [
     "tutorials/props/electrolyte/fpd01_nacl_freezing"

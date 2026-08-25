@@ -62,10 +62,15 @@ operations
             origin  "PLUMBING tolerance for a synthetic structural fixture -- the numbers are invented, so this band bounds the extract/partition/regress path and states nothing about experimental accuracy";
         }
 
+        //  NO `P` HERE (2026-08-25).  Both fixtures declare `pressure
+        //  101.325 kPa;` themselves, which is the same 101 325 Pa this line
+        //  used to repeat -- and since the reader began pricing each point at
+        //  the pressure its own dataset declares, repeating it in the case
+        //  became a second home for one fact and is refused by name.  Nothing
+        //  numeric moved: the two values were always identical.
         residual
         {
             kind        T_bubble;
-            P           1.01325 bar;
             components  ( ethanol water );
         }
 

@@ -193,6 +193,10 @@
         }
       }
     },
+    "dataset": {
+      "type": "string",
+      "description": "The LEGACY single-dataset form: one file, every point fitted, NO validation claimed (src/propertyOps/EvidencePartition.H). Mutually exclusive with `evidence` -- declaring both is refused rather than resolved by an undeclared precedence. Wired into kind=T_bubble on 2026-08-25 so a `mode evaluate` op can SCORE an existing pair against a measured file without transcribing the numbers into the dict; fitNRTL02_thermoml_isobars uses it for its two catalogue controls."
+    },
     "acceptance": {
       "type": "object",
       "additionalProperties": false,

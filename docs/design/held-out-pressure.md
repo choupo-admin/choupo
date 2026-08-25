@@ -196,6 +196,43 @@ suppress the re-announcement.  Recorded in
 cover" section, and written into the witness's own header.  A visible gap
 is strictly better than an invisible falsehood.
 
+## 7b  THE ARITY SIN INVERTED: one key, two meanings
+
+Caught by the full regression, not by any of the five sabotages, and it is
+the most instructive failure of the slice.
+
+`curate03_thermoml_fixture_bubble` — an existing, passing case — began
+REFUSING with the new "two homes for one fact" message.  The diagnosis was
+not what the message implied: its fixtures carry **no `Pressure` column
+at all**.  What they carry is a top-level `pressure 101.325 kPa;`, and
+that key already had a meaning — `readOwnProvenance` reads it as
+DOSSIER METADATA, so a finding can say at what pressure it rests.
+
+My `zNames = {"P", "Pressure", "pressure"}` gave that existing key a
+SECOND meaning: a solver input.  The case then looked like it declared
+the pressure twice, because after my change it did.
+
+**The arity doctrine is usually about one fact with two homes.  This is
+the inversion: one home given two meanings.**  It is harder to see,
+because nothing is duplicated — the duplication is created by the reader.
+The test to apply before reusing a key: *does this name already answer a
+question, and is it the same question I am about to ask it?*
+
+Here it genuinely is the same question — "at what pressure was this
+measured?" — so the reader keeps it, and the two consumers (the dossier
+and the residual) read ONE home.  What had to go was the case's own
+repetition of it, and the remedy is exactly the one the refusal names:
+`residual.P` deleted from curate03.  **Nothing numeric moved** — the
+scalar was 1.01325 bar and the dataset's is 101.325 kPa, the same 101 325
+Pa — and the case passes byte-identical against its unchanged golden.
+
+The alternative considered and REJECTED: dropping lowercase `pressure`
+from `zNames` and keeping only `P`/`Pressure`.  That would have left
+curate03 untouched with no case edit at all, and it is the wrong fix —
+it makes capitalisation carry the difference between metadata and a
+solver input, which is a trap laid for the next author rather than a
+contract.
+
 ## 8  A DEBT THIS SLICE UNCOVERED IN MY OWN WORK: two ThermoML toolchains
 
 Found while checking whether the witness duplicated an existing case — it
