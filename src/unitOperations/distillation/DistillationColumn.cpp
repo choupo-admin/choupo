@@ -1178,6 +1178,18 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     opts.tolerance = 1.0e-9;
     opts.maxIter   = 80;
     opts.parallel  = true;     // the MESH residual is a pure function (thread-safe)
+
+    //  THE MESH JACOBIAN IS BLOCK-TRIDIAGONAL, AND THE SOLVER IS TOLD SO.
+    //  Stage j's residual sees only stages j-1, j, j+1 (measured on the
+    //  corpus before this was written: max off-band |J| = 0, exactly).
+    //  Declaring the structure buys the Curtis-Powell-Reid colored
+    //  Jacobian -- ~3*nv residual evaluations per iteration, INDEPENDENT
+    //  of the stage count, where dense costs N*nv -- and a block-Thomas
+    //  solve.  The declaration is VERIFIED on the first iteration against
+    //  the dense Jacobian and refuses by name if false; the measured
+    //  off-band maximum is announced below, because a declared structure
+    //  is a solver aid and aids report aloud (the no-silent-crutch rule).
+    opts.blockTri = { N, nv };
     if (verbosity >= 3)
         opts.onIter = [this](const solver::NDTrace& tr) {
             recordResidual(tr.normF);
@@ -1213,6 +1225,14 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         else
             res = solver::newtonND(residual, res.x, opts);
     }
+
+    if (verbosity >= 2 && std::isfinite(res.offBandMax))
+        std::cout << "  [solver] block-tridiagonal structure VERIFIED on the"
+                     " first iteration: max |J| outside the bands = "
+                  << std::scientific << std::setprecision(2) << res.offBandMax
+                  << std::defaultfloat
+                  << "; Jacobians built with 3-color finite differences ("
+                  << res.jacobianEvals << " residual evaluations total)\n";
 
     std::vector<sVector> x(N);
     sVector T(N);

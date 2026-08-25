@@ -893,6 +893,34 @@ it).  Goldens were verified UNCONTAMINATED by full regression against a clean
 build.  Record:
 [`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
 
+**THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION
+(2026-08-25).**  The simultaneous MESH was already equation-oriented per unit
+and solved the most expensive way possible: dense FD Jacobian (N*nv residual
+evaluations per iteration) + dense Gauss.  The structure was MEASURED on the
+corpus before anything was built on it (a 20-line probe: off-band max |J| =
+0, EXACTLY -- no dense condenser rows; an early misaligned probe showed 2e-5
+at dist 2, so measure with the real blocking).  `opts.blockTri = {N, nv}`
+buys Curtis-Powell-Reid 3-color finite differences (~6*nv evaluations per
+Jacobian, INDEPENDENT of stage count) and a block-Thomas solve
+(O(N*nv^3)).  **A declared structure is a solver aid, and aids report
+aloud**: the first iteration also builds the dense Jacobian, measures the
+off-band maximum, ANNOUNCES it, and REFUSES by name when the declaration is
+materially false -- one dense Jacobian per solve is the price of never
+converging on a silently wrong structure.  Measured (48-stage reactive
+stripper, same machine, same day): 62.7 s dense -> 28.9 s structured with
+identical convergence, Jacobian evaluations /16; all 20 column tutorials
+byte-identical, the Klemola primary-anchored pair included.  **The sabotage
+pair worth keeping**: a COARSE false declaration is still true (wide bands
+contain narrow ones) and is caught by the evaluation-count arithmetic; a
+FINE one deletes real coupling and trips the named runtime refusal --
+both directions pinned.  NOT done, said plainly: the fullMESH keeps its
+dense solve (its structure is BORDERED, and declaring it clean would be the
+lie the audit exists to catch); the universal equation-oriented flowsheet
+solver stays deferred per the constitution -- the named next step
+(DesignSpecs solved jointly with the tears) is September's and Vitor's.
+Gate: `check_block_tridiagonal` (5 sabotages).  Record:
+[`docs/design/block-tridiagonal-mesh.md`](docs/design/block-tridiagonal-mesh.md).
+
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the
 solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,

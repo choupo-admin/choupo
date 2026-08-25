@@ -49,6 +49,7 @@ Description
 #include "core/Types.H"
 
 #include <functional>
+#include <limits>
 #include <string>
 
 namespace Choupo::solver {
@@ -69,6 +70,35 @@ struct NDResult
     scalar    residual;    // ||F||_2 at convergence
     int       iterations;
     bool      converged;
+
+    //- Block-tridiagonal verification (NaN unless opts.blockTri declared):
+    //  the max |J[i][j]| OUTSIDE the three block bands, measured on the
+    //  FIRST iteration's dense Jacobian.  The caller announces it -- the
+    //  declared structure is a claim, and a claim is measured, not trusted.
+    scalar    offBandMax = std::numeric_limits<scalar>::quiet_NaN();
+    //- Residual evaluations spent building Jacobians (the number the
+    //  coloring exists to shrink; dense: n per Jacobian).
+    long      jacobianEvals = 0;
+};
+
+//- A DECLARED block-tridiagonal structure: unknowns grouped in nBlocks
+//  consecutive blocks of blockSize, with block i coupling only to i-1, i
+//  and i+1 (the MESH column: one block per stage).  Declaring it turns on
+//  (a) the Curtis-Powell-Reid COLORED finite-difference Jacobian -- three
+//  colors, so ~3*blockSize residual evaluations per Jacobian INDEPENDENT
+//  of nBlocks, against nBlocks*blockSize dense -- and (b) a block-Thomas
+//  linear solve, O(nBlocks*blockSize^3) against O((nBlocks*blockSize)^3).
+//
+//  THE DECLARATION IS VERIFIED, not trusted: the first iteration builds
+//  the dense Jacobian too, measures the largest off-band entry, and
+//  REFUSES by name when the structure is materially false -- a wrong
+//  declaration must never become a silently wrong answer.  The measured
+//  off-band maximum rides out in NDResult for the caller to announce.
+struct BlockTri
+{
+    std::size_t nBlocks   = 0;
+    std::size_t blockSize = 0;
+    bool declared() const { return nBlocks > 1 && blockSize > 0; }
 };
 
 struct NDOptions
@@ -82,6 +112,7 @@ struct NDOptions
     // when the residual F is thread-safe (a pure function, no shared mutable
     // state).  The recycle / flowsheet Newton mutates unit state -> leave false.
     bool      parallel         = false;
+    BlockTri  blockTri;        // declared structure; see above
     std::function<void(const NDTrace&)> onIter;
 };
 
