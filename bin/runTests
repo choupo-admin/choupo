@@ -2247,6 +2247,24 @@ PYEOF
     fi
     rm -f /tmp/heldoutp.$$
 
+    # friction-correlation gate (2026-08-25).  The Darcy factor's four
+    # correlations became a registered family with declared windows, primary
+    # citations and published anchors -- the HeatTransferCorrelation pattern
+    # applied to a second family.  The gate recomputes BOTH spreads (all four
+    # vs the three inside their windows) rather than reading them from the
+    # log, and reads Pipe.cpp's source to prove the decision has one home.
+    # Four sabotages; they also found a false diagnosis in the gate's own
+    # pipe-golden arm, which now says "could not run" instead of "moved".
+    if "$ROOT/bin/curate/check_friction_correlations.py" > /tmp/friction.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "friction-correlations-gate" "$(head -1 /tmp/friction.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_friction_correlations.py)\n" "friction-correlations-gate"
+        cat /tmp/friction.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/friction.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

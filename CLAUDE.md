@@ -1053,6 +1053,58 @@ something false, with authority.*  The witness's two datasets were re-extracted
 through the consolidated tool and **every number in its golden is unchanged**.
 Record: [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
 
+**A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR — the
+pattern applied to a SECOND family (2026-08-25).**  `HeatTransferCorrelation`
+has had the right shape since it was written (declared validity window +
+`verify()` pinned to a published anchor + a bench that runs them all and
+prints the deviation beside the source; *"an unwired self-check is itself a
+no-silent-crutch violation -- this op is the wire"*).  It covered exactly ONE
+family.  Everywhere else Choupo's ~20 named correlations are free functions
+inside the unit op that uses them — correct, cited IN COMMENTS, unreachable.
+`FrictionFactorCorrelation` fixes that for the Darcy factor: Blasius,
+Colebrook-White, Haaland and Churchill leave `Pipe.cpp` and become registered
+objects, plus one property the heat family did not need — `citation()`, because
+*a correlation whose source is a comment is one the reader cannot check* (the
+2026-08-05 rule applied to a formula instead of a datum).  **THE ANCHORS ARE
+DELIBERATELY OF DIFFERENT KINDS**, because what CAN be checked differs:
+Blasius against its own closed form (the **arithmetic**, and the output says
+so — a 0.000 % deviation must not read as a validation); Colebrook against the
+fully-rough von Karman limit (that the **fixed-point iteration** arrives);
+Haaland against **Colebrook**, because agreement within ~2 % is the claim
+Haaland published and anchoring him elsewhere would check a claim nobody made;
+Churchill against the **exact** laminar law his single expression contains as
+its own limit — the strongest, since a mis-typed exponent fails there while
+the turbulent branch still looks plausible (sabotage S1: 12.5 % off, turbulent
+branch untouched).  **THE WITNESS PUBLISHES TWO SPREADS AND NEVER ONE**
+(`moody01_friction_correlations`, Re 1e5 / eps/D 1e-3): **25.74 % over all
+four, 1.72 % over the three inside their windows.**  One headline number would
+say "the correlations disagree by 26 %" when the truth is "three agree within
+2 % and one was asked a question it was never fitted for" — different lessons,
+both worth having, and collapsing them is the true-sounding statement this
+project refuses.  Blasius ANSWERS at eps/D > 0, confidently, 20 % low, with
+nothing wrong-looking about the number: only its window stands between that
+answer and a reader, which is what a window is FOR.  The bench never ranks
+them — that depends on the pipe, and ranking would hide the choice the
+engineer has to make, which is exactly what a silent default does.  `Pipe`
+reads the same objects at BOTH its call sites (it dispatched the model TWICE,
+300 lines apart in one file — one decision, two transcriptions); all three
+hydraulics goldens are byte-identical, because *a refactor that moves an
+answer is not a refactor*.  **NOT ESTABLISHED, said plainly:** no correlation
+here is checked against MEASURED data — two anchors are self-consistency by
+construction, Haaland's is agreement with Colebrook, and the corpus holds no
+friction measurements at all; the gate's OK line says so rather than letting
+four PASSes imply validation.  Also out: the transition band, Ergun, and the
+two-phase multipliers.  Gate: `check_friction_correlations` (4 sabotages —
+S4 is the one to know: a private `f_churchill` restored beside the factory
+call moved NO golden, because both computed the same thing, and only reading
+the SOURCE can see a second home that happens to agree).  **The sabotages also
+found a defect in the gate**: three of four reported "pipe01's golden moved"
+having touched nothing the pipe computes, because `bin/runTests` REFUSES while
+a destructive journal is open and the arm read that absence as a moved answer
+— *a check that cannot run must not pass, and must not fail with a FALSE
+REASON either*; it distinguishes the two now.  Record:
+[`docs/design/correlations-as-objects.md`](docs/design/correlations-as-objects.md).
+
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the
 solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,

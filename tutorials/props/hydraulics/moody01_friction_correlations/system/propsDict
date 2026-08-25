@@ -1,0 +1,79 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  moody01 -- FOUR CORRELATIONS, ONE QUESTION, FOUR ANSWERS.
+
+  The Darcy friction factor is the most-used correlated quantity in chemical
+  engineering, and every simulator computes it.  What none of them shows is
+  that the answer DEPENDS ON WHICH CORRELATION YOU PICKED.
+
+  Choupo has computed Blasius, Colebrook-White, Haaland and Churchill since
+  the pipe unit was written -- correctly, with their citations in comments,
+  as free functions nobody could name or reach.  This case is what happens
+  when they become objects: each states the window its own authors gave it,
+  each carries its primary citation, each reproduces a published anchor on
+  every run, and all four can be asked the same question at once.
+
+  WHAT THE RUN DOES, IN TWO PARTS.
+
+  (1) VERIFY.  Each correlation reproduces its own anchor, and the anchors
+      are deliberately of DIFFERENT KINDS, because what can be checked
+      differs:
+
+        Blasius     against its own closed form.  This checks the ARITHMETIC
+                    and nothing else, and the bench says so rather than
+                    letting a 0.000 % deviation look like a validation.
+        Colebrook   against the fully-rough von Karman limit, where the
+                    implicit equation has a closed form.  This checks that
+                    the FIXED-POINT ITERATION reaches the answer it must.
+        Haaland     against COLEBROOK at the same point -- because Haaland's
+                    own published claim is "I reproduce that equation within
+                    about 2 %".  Anchoring it to anything else would be
+                    checking a claim nobody made.
+        Churchill   against the EXACT laminar law f = 64/Re, which its single
+                    expression contains as its own low-Re limit.  This is the
+                    strongest of the four: a mis-typed exponent fails here
+                    while the turbulent branch still looks plausible.
+
+  (2) COMPARE.  All four are evaluated at Re = 1e5, eps/D = 1e-3 -- an
+      ordinary turbulent water line in a commercial steel pipe -- and the
+      spread is published as a number.
+
+  WHAT TO READ IN THE OUTPUT.  Blasius is the one to watch: it carries NO
+  roughness term at all, so at eps/D = 1e-3 it answers as though the wall
+  were smooth, and it is simply wrong.  It says so on its own line.  That is
+  the whole lesson of a validity window -- not that the correlation is bad,
+  but that it was asked a question it was never fitted for, and only the
+  window can tell you.
+
+  WHAT THIS CASE DOES NOT DO.  It does not say which correlation is right.
+  That depends on the pipe -- its roughness, whether the flow is developed,
+  whether the duct is even circular -- and a bench that ranked them would
+  hide the choice the engineer has to make, which is exactly what a default
+  does today in every tool that has one.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name     moody;
+        type     frictionBench;
+
+        //  An ordinary turbulent water line: Re = 1e5 in commercial steel
+        //  (eps ~ 0.045 mm in a 45 mm pipe gives eps/D ~ 1e-3).  Chosen to
+        //  sit where all four correlations CLAIM to work, so the spread is
+        //  a disagreement between valid answers -- except Blasius, whose
+        //  own window excludes it and which says so.
+        compare
+        {
+            Re        1e5;
+            relRough  1e-3;
+        }
+    }
+);

@@ -33,6 +33,7 @@ License
 #include "Exchange.H"
 #include "FitParameters.H"
 #include "HeatCapacityFit.H"
+#include "FrictionBench.H"
 #include "HeatTransferBench.H"
 #include "Kinetics1D.H"
 #include "PropertyPoint.H"
@@ -185,6 +186,7 @@ void PropertyOperation::registerBuiltins()
     reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });
     reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
     reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
+    reg("frictionBench", []{ return std::make_unique<FrictionBench>(); });
     reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
     reg("elementalComposition", []{ return std::make_unique<ElementCompositionOp>(); });
 }

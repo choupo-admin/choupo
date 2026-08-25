@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/frictionBench.schema.json",
+  "title": "frictionBench operation",
+  "description": "The Darcy friction factor's correlation library, in two parts. VERIFY (always): every registered correlation — Blasius, Colebrook-White, Haaland, Churchill — reproduces its own published anchor, and the deviation is printed beside the correlation's validity window and its primary citation. COMPARE (optional): all four are evaluated at the SAME Re and roughness, and the spread is published TWICE — over all of them, and over only those inside their stated windows. The two are reported apart because collapsing them would say 'the correlations disagree by 26 %' when the truth is 'three agree within 2 % and one was asked a question it was never fitted for'. The bench never says which correlation is right: that depends on the pipe, and ranking them would hide the choice the engineer has to make.",
+  "type": "object",
+  "properties": {
+    "deviationTolerance": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Anchor deviation tolerance",
+      "description": "Allowed relative deviation of each correlation from its own published anchor; defaults to 0.03. Exists to honour the anchors' own rounding, never to let a failing correlation through — a coefficient that drifts should be fixed, not accommodated.",
+      "unit": "-"
+    },
+    "compare": {
+      "type": "object",
+      "title": "Comparison point",
+      "description": "Optional. Evaluate every registered correlation at one hydraulic state and publish the spread. Omitting the block leaves only the verification half.",
+      "properties": {
+        "Re": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Reynolds number",
+          "description": "The Reynolds number to compare at. Must be positive: a Reynolds number of zero is not a flow, and every correlation here divides by it.",
+          "unit": "-"
+        },
+        "relRough": {
+          "type": "number",
+          "minimum": 0,
+          "title": "Relative roughness eps/D",
+          "description": "Wall roughness over diameter; defaults to 0 (hydraulically smooth). A non-zero value is what puts Blasius outside its window, since it carries no roughness term at all.",
+          "unit": "-"
+        }
+      },
+      "required": ["Re"],
+      "additionalProperties": false
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

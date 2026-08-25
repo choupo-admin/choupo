@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 379,
+  "cases": 380,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -1953,6 +1953,20 @@
    "application": "choupoProps",
    "ops": [
     "psychrometricChart"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/hydraulics/moody01_friction_correlations": {
+   "application": "choupoProps",
+   "ops": [
+    "frictionBench"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -5678,6 +5692,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
     "tutorials/props/molecular/eval_nrtl_catalogue",
@@ -6686,6 +6701,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/scan/phase01_water_full",
@@ -6896,6 +6912,9 @@
    ],
    "freezingPoint": [
     "tutorials/props/electrolyte/fpd01_nacl_freezing"
+   ],
+   "frictionBench": [
+    "tutorials/props/hydraulics/moody01_friction_correlations"
    ],
    "gibbsMap": [
     "tutorials/props/gibbs/nh3_equilibrium_map"

@@ -29,6 +29,7 @@ License
 #include "Pipe.H"
 #include "core/Constants.H"
 #include "unitOperations/flash/IsothermalFlash.H"   // feed-flash for the gas-liquid split
+#include "unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
 
 #include <cmath>
 #include <iomanip>
@@ -48,62 +49,18 @@ constexpr scalar g_standard = 9.80665;
 constexpr scalar Re_laminar = 2300.0;   // below: surely laminar
 constexpr scalar Re_turb    = 4000.0;   // above: surely turbulent
 
-// Darcy friction factor in the LAMINAR regime: f = 64 / Re.  Exact for
-// fully-developed laminar pipe flow; the wall roughness plays no role.
-scalar f_laminar(scalar Re)
-{
-    return 64.0 / Re;
-}
-
-// --- Haaland (1983) -------------------------------------------------------
-//   1/sqrt(f) = -1.8 log10[ (eps/D / 3.7)^1.11 + 6.9/Re ]
-//   Explicit, ~2 % of the implicit Colebrook over the turbulent range.
-scalar f_haaland(scalar Re, scalar relRough)
-{
-    const scalar t = std::pow(relRough / 3.7, 1.11) + 6.9 / Re;
-    const scalar inv_sqrt = -1.8 * std::log10(t);
-    return 1.0 / (inv_sqrt * inv_sqrt);
-}
-
-// --- Colebrook-White (implicit) -------------------------------------------
-//   1/sqrt(f) = -2 log10[ eps/D / 3.7 + 2.51 / (Re sqrt(f)) ]
-//   Solved by fixed-point iteration on x = 1/sqrt(f), seeded with Haaland
-//   (so it converges in a handful of steps).  This is the classical
-//   turbulent reference the explicit fits approximate.
-scalar f_colebrook(scalar Re, scalar relRough)
-{
-    scalar x = 1.0 / std::sqrt(f_haaland(Re, relRough));   // seed
-    for (int it = 0; it < 50; ++it)
-    {
-        const scalar x_new =
-            -2.0 * std::log10(relRough / 3.7 + 2.51 * x / Re);
-        if (std::abs(x_new - x) < 1.0e-10)
-        {
-            x = x_new;
-            break;
-        }
-        x = x_new;
-    }
-    return 1.0 / (x * x);
-}
-
-// --- Churchill (1977) -----------------------------------------------------
-//   A single explicit expression valid for ALL Re (laminar, transition,
-//   turbulent) and all eps/D:
-//      f = 8 [ (8/Re)^12 + 1/(A+B)^1.5 ]^(1/12)
-//   with
-//      A = { -2.457 ln[ (7/Re)^0.9 + 0.27 eps/D ] }^16
-//      B = ( 37530 / Re )^16
-//   Returns the Darcy factor directly (no laminar branch needed).
-scalar f_churchill(scalar Re, scalar relRough)
-{
-    const scalar a_inner = std::pow(7.0 / Re, 0.9) + 0.27 * relRough;
-    const scalar A = std::pow(-2.457 * std::log(a_inner), 16.0);
-    const scalar B = std::pow(37530.0 / Re, 16.0);
-    const scalar term = std::pow(8.0 / Re, 12.0)
-                      + 1.0 / std::pow(A + B, 1.5);
-    return 8.0 * std::pow(term, 1.0 / 12.0);
-}
+//  THE FOUR FRICTION-FACTOR EXPRESSIONS THAT USED TO LIVE HERE -- the exact
+//  laminar law, Blasius, Haaland, Colebrook-White and Churchill -- moved on
+//  2026-08-25 to `friction/FrictionFactorCorrelation.{H,cpp}`, where each one
+//  is a registered object carrying the window its own authors stated, its
+//  primary citation, and a verify() against a published anchor.
+//
+//  They were correct here and unreachable: a student could not name one,
+//  could not evaluate it without building a pipe around it, and had no way
+//  to discover that the four disagree.  `choupoProps frictionBench` now
+//  answers all of that, and this unit reads the same objects it does.
+//
+//  The numbers did not move: all three hydraulics goldens are byte-identical.
 
 } // anonymous namespace
 
@@ -183,11 +140,18 @@ int Pipe::solve(const DictPtr& dict,
             const std::string fricModel = dict->lookupWordOrDefault("model",
                 operDict->lookupWordOrDefault("model", "Churchill"));
             const scalar relRough2 = eps / D;
-            auto fricF = [&](scalar Re) -> scalar {
-                if (Re < Re_laminar)          return f_laminar(Re);
-                if (fricModel == "Haaland")   return f_haaland(Re, relRough2);
-                if (fricModel == "Colebrook") return f_colebrook(Re, relRough2);
-                return f_churchill(Re, relRough2);
+            //  THE SAME ONE HOME.  This lambda used to repeat the model
+            //  if-chain that sat 300 lines below it -- one file, one
+            //  decision, two transcriptions, and the two could drift the
+            //  moment a fifth correlation was added to only one of them.
+            //  Both go through the factory now.
+            FrictionFactorCorrelation::registerBuiltins();     // idempotent
+            auto fricCorr = FrictionFactorCorrelation::New(fricModel);
+            auto fricF = [&, relRough2](scalar Re) -> scalar {
+                FrictionContext fc;
+                fc.Re = Re;
+                fc.relRough = relRough2;
+                return fricCorr->evaluate(fc).f;
             };
 
             // Phase compositions, molar masses, mass flows
@@ -479,25 +443,28 @@ int Pipe::solve(const DictPtr& dict,
     else if (Re < Re_turb)    { regimeCode = 1; regime = "transition"; }
     else                      { regimeCode = 2; regime = "turbulent";  }
 
+    //  ONE HOME FOR THE FRICTION FACTOR (2026-08-25).  These four
+    //  expressions used to live as free functions in this file, reachable
+    //  only by building a pipe around them: a student could not name them,
+    //  evaluate one, or learn that they DISAGREE.  They are a registered
+    //  family now (FrictionFactorCorrelation), each carrying the window its
+    //  own authors stated, its primary citation, and a verify() against a
+    //  published anchor -- the same discipline the Nusselt family has had
+    //  since it was written, applied to a second family instead of being
+    //  admired in the first.
+    //
+    //  The NUMBERS ARE UNCHANGED and that is checked, not asserted: the
+    //  correlations substitute the exact laminar law below Re = 2300 exactly
+    //  as this if-chain did, and every pipe golden in the corpus is
+    //  byte-identical.  A refactor that moves an answer is not a refactor.
+    FrictionFactorCorrelation::registerBuiltins();      // idempotent
     scalar f;
-    if (modelName == "Churchill")
     {
-        // Churchill spans every regime in one expression.
-        f = f_churchill(Re, relRough);
-    }
-    else if (modelName == "Haaland")
-    {
-        f = (Re < Re_laminar) ? f_laminar(Re) : f_haaland(Re, relRough);
-    }
-    else if (modelName == "Colebrook")
-    {
-        f = (Re < Re_laminar) ? f_laminar(Re) : f_colebrook(Re, relRough);
-    }
-    else
-    {
-        throw std::runtime_error(
-            "Pipe: unknown friction model '" + modelName + "'.  Choose "
-            "Churchill (default) | Haaland | Colebrook.");
+        auto corr = FrictionFactorCorrelation::New(modelName);
+        FrictionContext fc;
+        fc.Re = Re;
+        fc.relRough = relRough;
+        f = corr->evaluate(fc).f;
     }
 
     // ---- Mechanical energy balance: the three ΔP contributions ----------

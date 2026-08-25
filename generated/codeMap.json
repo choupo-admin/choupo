@@ -535,6 +535,18 @@
   "FreezingPoint": [
    "src/propertyOps/FreezingPoint.H"
   ],
+  "FrictionBench": [
+   "src/propertyOps/FrictionBench.H"
+  ],
+  "FrictionContext": [
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
+  ],
+  "FrictionFactorCorrelation": [
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
+  ],
+  "FrictionResult": [
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
+  ],
   "Fuller": [
    "src/thermo/transport/Fuller.H"
   ],
@@ -1352,7 +1364,8 @@
   ],
   "VerifyResult": [
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
-   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H"
+   "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.H",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "VesselSize": [
    "src/postProcessing/sizing/VesselSize.H"
@@ -1667,6 +1680,10 @@
    {
     "key": "heatTransferBench",
     "type": "HeatTransferBench"
+   },
+   {
+    "key": "frictionBench",
+    "type": "FrictionBench"
    },
    {
     "key": "estimateComponent",
@@ -2099,6 +2116,24 @@
    {
     "key": "Rohsenow",
     "type": "Rohsenow"
+   }
+  ],
+  "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp": [
+   {
+    "key": "Blasius",
+    "type": "Blasius"
+   },
+   {
+    "key": "Colebrook",
+    "type": "Colebrook"
+   },
+   {
+    "key": "Haaland",
+    "type": "Haaland"
+   },
+   {
+    "key": "Churchill",
+    "type": "Churchill"
    }
   ],
   "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp": [
@@ -3438,6 +3473,14 @@
    "src/thermo/phase/SolidPhase.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
+  "src/propertyOps/FrictionBench.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/propertyOps/FrictionBench.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
+  ],
   "src/propertyOps/GibbsMapOp.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3601,6 +3644,7 @@
    "src/propertyOps/Exchange.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FreezingPoint.H",
+   "src/propertyOps/FrictionBench.H",
    "src/propertyOps/GibbsMapOp.H",
    "src/propertyOps/HConsistency.H",
    "src/propertyOps/HeatCapacityFit.H",
@@ -6181,7 +6225,8 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
-   "src/unitOperations/hydraulics/Pipe.H"
+   "src/unitOperations/hydraulics/Pipe.H",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/unitOperations/hydraulics/PneumaticConveyor.cpp": [
    "src/core/Dictionary.H",
@@ -6197,6 +6242,12 @@
    "src/thermo/ThermoPackage.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
+  ],
+  "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/unitOperations/membrane/SpiralWoundModule.cpp": [
    "src/core/Advisory.H",
@@ -7196,6 +7247,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -7353,6 +7405,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
@@ -7459,6 +7512,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -7616,6 +7670,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
@@ -8398,6 +8453,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -8571,6 +8627,7 @@
    "src/unitOperations/heatTransfer/htc/PhaseChangeHTC.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.cpp",
    "src/unitOperations/membrane/osmotic/OsmoticModel.cpp",
@@ -8902,6 +8959,10 @@
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/FrictionBench.H": [
+   "src/propertyOps/FrictionBench.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/GibbsMapOp.H": [
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -8955,6 +9016,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/FrictionBench.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
@@ -11480,6 +11542,11 @@
   "src/unitOperations/hydraulics/PneumaticConveyor.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/hydraulics/PneumaticConveyor.cpp"
+  ],
+  "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H": [
+   "src/propertyOps/FrictionBench.cpp",
+   "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp"
   ],
   "src/unitOperations/membrane/BulkConversion.H": [
    "src/unitOperations/batch/BatchDiafilter.cpp",

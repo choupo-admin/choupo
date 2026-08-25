@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    moody                  allPass          1                  1e-4
+diag    moody                  dev_Blasius      0                  1e-4
+diag    moody                  dev_Churchill    1.73472e-16        1e-4
+diag    moody                  dev_Colebrook    1.61329e-05        1e-4
+diag    moody                  dev_Haaland      0.0134393          1e-4
+diag    moody                  f_Blasius        0.01777            1e-4
+diag    moody                  f_Churchill      0.0223432          1e-4
+diag    moody                  f_Colebrook      0.0221745          1e-4
+diag    moody                  f_Haaland        0.0219662          1e-4
+diag    moody                  f_max            0.0223432          1e-4
+diag    moody                  f_min            0.01777            1e-4
+diag    moody                  n_outside_window 1                  1e-4
+diag    moody                  spread_inWindow_pct 1.71637            1e-4
+diag    moody                  spread_pct       25.7358            1e-4
