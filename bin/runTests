@@ -2197,6 +2197,24 @@ PYEOF
     fi
     rm -f /tmp/advattr.$$
 
+    # diafiltration gate (2026-08-25).  The tree's first BATCH membrane is
+    # open in both directions at once -- permeate out, make-up solvent in --
+    # so its ledger has to agree with the accepted state on two boundary
+    # flows at every step.  Machine-level closure is pinned, not a tolerance:
+    # the O(dt) defect this gate was built after closes at 5e-4, which a
+    # careful-sounding 1e-3 would have waved through.  It also recomputes the
+    # constant-R washout idealisation independently and requires the model to
+    # DISOBEY it -- a lesson that agrees with itself teaches nothing.
+    if "$ROOT/bin/curate/check_diafiltration.py" > /tmp/diafil.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "diafiltration-gate" "$(head -1 /tmp/diafil.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_diafiltration.py)\n" "diafiltration-gate"
+        cat /tmp/diafil.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/diafil.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

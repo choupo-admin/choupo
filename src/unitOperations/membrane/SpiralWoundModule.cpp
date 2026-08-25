@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SpiralWoundModule.H"
+#include "BulkConversion.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -57,40 +58,9 @@ namespace Choupo {
 namespace {
 
 // Convert composition (mole fractions z) + total molar flow F [kmol/s] +
-// per-component molar mass MW [kg/kmol] + solution mass density rho [kg/m³]
-// into per-component concentrations c_i [kmol/m³] and the volumetric flow Q
-// [m³/s].
-//
-// Closure: `rho` is the SOLUTION mass density (constant, the dilute-aqueous
-// approximation).  The volumetric flow is the TRUE mass flow over rho ---
-//   Q = (Σ z_i F · MW_i) / rho ---
-// so the reconstructed mass density Σ c_i · MW_i equals rho EXACTLY and mass
-// is conserved through the module.  (The earlier shortcut took Q with
-// MW_avg ≈ MW_water AND pinned the downstream water concentration to the
-// PURE-water value rho/MW_water; the two together added the solute mass on
-// top of a full pure-water mass and CREATED ~1 % mass across an element --
-// the closure assertion below now catches any such drift.)
-struct BulkState
-{
-    scalar Q;                       // m³/s
-    std::vector<scalar> c;          // kmol/m³ per component
-};
-
-BulkState toBulk(scalar F_kmols, const sVector& z, const sVector& MW,
-                 scalar rho_kgm3, std::size_t Ncomp)
-{
-    // Mass flow [kg/s] = F [kmol/s] · MW_avg [kg/kmol];  Q = mass / rho.
-    scalar MW_avg = 0.0;
-    for (std::size_t i = 0; i < Ncomp; ++i) MW_avg += z[i] * MW[i];
-    const scalar Q = F_kmols * MW_avg / rho_kgm3;
-    // c_i [kmol/m³] = (F_i [kmol/s]) / Q [m³/s] = (z_i F) / Q
-    BulkState s;
-    s.Q = Q;
-    s.c.assign(Ncomp, 0.0);
-    for (std::size_t i = 0; i < Ncomp; ++i)
-        s.c[i] = z[i] * F_kmols / Q;
-    return s;
-}
+//  toBulk / BulkState moved to membrane/BulkConversion.H when the batch
+//  diafilter became its second caller -- same arithmetic, same closure,
+//  one home.  See that header for the mass-density derivation.
 
 } // anonymous namespace
 
@@ -387,7 +357,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar dz = L / nNodes;
 
     // Initial bulk state from the inlet stream.
-    auto bulk0 = toBulk(F_in, z_in, MW, rho, Ncomp);
+    auto bulk0 = membrane::toBulk(F_in, z_in, MW, rho, Ncomp);
     // Pack into per-solute bulk concentrations (the local solver only
     // needs the solute c values).
     std::vector<scalar> c_b(Ns, 0.0);

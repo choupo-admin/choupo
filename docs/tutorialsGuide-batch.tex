@@ -922,6 +922,54 @@ Method hypotheses, each announced at run time: Lewis = 1 in the adiabatic-satura
 \goldmore{21}
 \end{tutgolden}
 
+\subsection{membrane}
+\grouptheory{membrane}
+\clearpage
+\tutentry{diafilter01\_nf\_desalting}{tutorials/batch/membrane/diafilter01\_nf\_desalting}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (retentate) at (0.0,-0.0) {\textbf{retentate}\\[-1pt]{\tiny batchDiafilter}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Constant-volume NF diafiltration: NaCl washed out of an MgSO4 retentate, with the OBSERVED rejection published beside the constant-R washout law it violates}
+\begin{tutnarrative}
+constant-volume diafiltration on a loose NF membrane, and the exponential washout law failing in a way you can watch.
+
+THE OPERATION. 10 litres of a brine carrying TWO salts sit behind 5 m2 of NF270 at 10 bar. Solvent is made up as fast as it permeates, so the volume is held and the run is measured in DIAVOLUMES -- how many vessel volumes of wash water have passed through. NaCl is poorly rejected by this membrane and leaves; MgSO4 is well rejected and stays. That is the whole point of a nanofiltration desalting step, and it is the same arithmetic whether the retained species is a divalent salt, a sugar or a protein.
+
+THE LESSON. Derive the washout by hand. Over a constant volume V, with the permeate carrying c\_p = (1 - R) c,
+
+V dc/dt = -Q\_p (1 - R) c , N = Q\_p t / V => c/c\_0 = exp( -(1 - R) N )
+
+which is a straight line on a log axis against N. The derivation needs R to be CONSTANT. It is not:
+
+as NaCl leaves, the osmotic pressure of the retentate falls, so the driving force rises and so does the water flux; a higher flux sweeps more solute to the wall, so the polarisation factor rises and the WALL concentration is no longer the bulk one; the observed rejection is measured against the bulk, so it moves even when the membrane's own permeability has not changed.
+
+The run therefore publishes R\_obs for each solute at every instant, beside the diavolumes, and -- because this is constant-volume mode -- two KPIs per solute: `washoutActual\_<name>` (what the vessel did) and `washoutIdeal\_<name>` (what exp(-(1-R)N) predicts using THIS run's own initial R). The idealisation is computed from the run, not declared, so the gap between them cannot have been arranged.
+
+Read them together. Where the two agree, the hand derivation was safe. Where they part, the R\_obs column says which assumption failed and when.
+
+WHAT IS PINNED AND WHAT IS NOT. The golden pins the answer this model gives; NOTHING here is validated against a measured diafiltration. The NF270 permeabilities are the case-fitted pedagogical set the record declares (`provenance fittedToCase`, fitted against membrane02\_NF\_sugar), so the rejections are representative of a loose NF membrane and are not a claim about a particular element. Fouling is NOT modelled -- the flux in a real rig would decline with time and this one does not.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{element\_Cl\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.23912409123e-16}
+\goldrow{kpi}{campaign}{element\_Mg\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_Na\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.23884758239e-16}
+\goldrow{kpi}{campaign}{element\_S\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.23912409123e-16}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_amend\_in}{54.5637624826}
+\goldrow{kpi}{campaign}{mass\_kg\_amend\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{54.5637624826}
+\goldmore{34}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage

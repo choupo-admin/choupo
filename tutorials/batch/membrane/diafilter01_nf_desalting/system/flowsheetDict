@@ -1,0 +1,85 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  diafilter01_nf_desalting  --  constant-volume diafiltration on a loose NF
+  membrane, and the exponential washout law failing in a way you can watch.
+
+  THE OPERATION.  10 litres of a brine carrying TWO salts sit behind 5 m2
+  of NF270 at 10 bar.  Solvent is made up as fast as it permeates, so the
+  volume is held and the run is measured in DIAVOLUMES -- how many vessel
+  volumes of wash water have passed through.  NaCl is poorly rejected by
+  this membrane and leaves; MgSO4 is well rejected and stays.  That is
+  the whole point of a nanofiltration desalting step, and it is the same
+  arithmetic whether the retained species is a divalent salt, a sugar or
+  a protein.
+
+  THE LESSON.  Derive the washout by hand.  Over a constant volume V, with
+  the permeate carrying c_p = (1 - R) c,
+
+      V dc/dt = -Q_p (1 - R) c ,     N = Q_p t / V
+      =>  c/c_0 = exp( -(1 - R) N )
+
+  which is a straight line on a log axis against N.  The derivation needs
+  R to be CONSTANT.  It is not:
+
+    * as NaCl leaves, the osmotic pressure of the retentate falls, so the
+      driving force rises and so does the water flux;
+    * a higher flux sweeps more solute to the wall, so the polarisation
+      factor rises and the WALL concentration is no longer the bulk one;
+    * the observed rejection is measured against the bulk, so it moves
+      even when the membrane's own permeability has not changed.
+
+  The run therefore publishes R_obs for each solute at every instant,
+  beside the diavolumes, and -- because this is constant-volume mode --
+  two KPIs per solute: `washoutActual_<name>` (what the vessel did) and
+  `washoutIdeal_<name>` (what exp(-(1-R)N) predicts using THIS run's own
+  initial R).  The idealisation is computed from the run, not declared,
+  so the gap between them cannot have been arranged.
+
+  Read them together.  Where the two agree, the hand derivation was safe.
+  Where they part, the R_obs column says which assumption failed and when.
+
+  WHAT IS PINNED AND WHAT IS NOT.  The golden pins the answer this model
+  gives; NOTHING here is validated against a measured diafiltration.  The
+  NF270 permeabilities are the case-fitted pedagogical set the record
+  declares (`provenance fittedToCase`, fitted against membrane02_NF_sugar),
+  so the rejections are representative of a loose NF membrane and are not
+  a claim about a particular element.  Fouling is NOT modelled -- the flux
+  in a real rig would decline with time and this one does not.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        retentate;
+        type        batchDiafilter;
+
+        operation
+        {
+            membrane     NF270;              // the curated asset record
+            transport    solutionDiffusion;  // the baseline local law
+            mode         constantVolume;     // make-up solvent at the permeate rate
+
+            area         5.0;                 // m2 -- membrane area
+            P_feed       10 bar;             // transmembrane driving pressure
+            P_permeate   0 bar;              // atmospheric permeate side
+            rho          1000;                // kg/m3 -- declared, never defaulted
+
+            //  DECLARED, because this unit is told no geometry.  1.0e-4 m/s
+            //  is a well-stirred laboratory cell; lowering it makes the
+            //  polarisation bite and the two curves part sooner.
+            k_film       1.0e-4 m/s;
+
+            osmotic
+            {
+                model    vanHoff;
+            }
+        }
+    }
+);

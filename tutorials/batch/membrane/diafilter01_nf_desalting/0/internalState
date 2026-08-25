@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  0/internalState -- the retentate vessel's initial holdup, the SINGLE
+  source of truth (an inline initial{} block in flowsheetDict is refused).
+
+  10 litres of water carrying 0.02 kmol/m3 of each salt.  In the mole
+  fractions the engine works in, 10 L of water is 0.5551 kmol and each
+  salt is 2.0e-4 kmol, so the salts are 3.6e-4 of the inventory each --
+  a dilute brine, which is the regime the van't Hoff osmotic model and
+  the constant solution density are honest in.
+\*---------------------------------------------------------------------------*/
+
+time            0;
+application     batch;
+
+units
+{
+    "retentate"
+    {
+        T            298.15 K;
+        P            10 bar;
+        V            0.010;                // m^3 (10 litres)
+        totalMoles   0.5555;               // kmol
+        molarComposition
+        {
+            water    0.99928;
+            NaCl     0.00036;
+            MgSO4    0.00036;
+        }
+    }
+}

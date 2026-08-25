@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- the membrane units work on an aqueous liquid
+  and never flash, so the liquid model is the whole declaration.  Ideal
+  activity is DECLARED, not defaulted: at 0.02 kmol/m3 the salts are far
+  enough apart that gamma = 1 is a defensible statement, and stating it
+  is how a reader knows it was a choice.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water  NaCl  MgSO4 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

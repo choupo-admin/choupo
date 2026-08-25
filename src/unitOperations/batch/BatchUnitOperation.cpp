@@ -30,6 +30,9 @@ License
 #include "BatchAccumulator.H"
 #include "BatchAdsorber.H"
 #include "BatchCrystalliser.H"
+#include "BatchDiafilter.H"
+#include "unitOperations/membrane/osmotic/OsmoticModel.H"
+#include "unitOperations/membrane/transport/TransportModel.H"
 #include "BatchDryer.H"
 #include "BatchReactor.H"
 #include "BatchStill.H"
@@ -100,6 +103,22 @@ void BatchUnitOperation::registerBuiltins()
     registerType("fixedBedAdsorber",
         []() -> std::unique_ptr<BatchUnitOperation>
         { return std::make_unique<FixedBedAdsorber>(); });
+
+    //  The batch half of the pressure-driven separation: a stirred
+    //  retentate vessel asking the SAME transport law the steady spiral
+    //  module asks, once per instant instead of once per channel node.
+    //
+    //  Its sub-model registries are populated HERE, mirroring what
+    //  `UnitOperation::registerBuiltins()` does for the steady side.  They
+    //  were reachable only from that one, so `batchDiafilter` was
+    //  registered, its case was valid, and the run died on an empty osmotic
+    //  factory -- a unit is not installed until everything it constructs is.
+    OsmoticModel::registerBuiltins();
+    membrane::TransportModel::registerBuiltins();
+
+    registerType("batchDiafilter",
+        []() -> std::unique_ptr<BatchUnitOperation>
+        { return std::make_unique<BatchDiafilter>(); });
 
     registerType("batchDryer",
         []() -> std::unique_ptr<BatchUnitOperation>

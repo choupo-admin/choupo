@@ -336,6 +336,30 @@ public:
     };
     virtual std::vector<DatumAmendment> takeDatumAmendments() { return {}; }
 
+    //  CONTINUOUS INTAKE -- the mirror of takeContinuousDischarge.
+    //
+    //  Matter this vessel has drawn IN across the campaign boundary since
+    //  the last call, as ONE package.  A diafilter's make-up solvent is the
+    //  first user: it enters at the permeate rate, continuously, and a
+    //  vessel that consumed it without declaring it would read to the
+    //  campaign balance as a vessel fabricating mass -- which is exactly
+    //  what the first run of `diafilter01` reported (closure 0.998, 4996 kg
+    //  unaccounted).  The balance was right and the unit was wrong.
+    //
+    //  WHY NOT `takeDatumAmendments`, whose struct says the same words.
+    //  That hook is drained ONLY inside the recipe's `setParameter`
+    //  handler, because its subject is a CHANGED DECLARATION (the fixed
+    //  bed's feed commitment jumping at a switch).  This one is drained on
+    //  every accepted step, beside the discharge, because its subject is a
+    //  FLOW.  They accumulate into the same `amendIn` bucket -- drawn-in
+    //  matter is drawn-in matter -- but they are recorded under different
+    //  kind words so the timeline can tell a wash-water make-up from a
+    //  re-declared feed.
+    //
+    //  Default: nothing.  A closed vessel draws nothing in, and its
+    //  behaviour is unchanged by this hook existing.
+    virtual BatchState takeContinuousIntake(scalar /*tNow*/) { return {}; }
+
     // ---- Thermo attachment (phase (b), forum #98.3-1) --------------------
     //  The driver attaches the case's thermo package right after
     //  initialise(), so the BASE chargeFrom can price packages on the

@@ -893,6 +893,55 @@ it).  Goldens were verified UNCONTAMINATED by full regression against a clean
 build.  Record:
 [`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
 
+**A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
+(2026-08-25).**  Everything a membrane needs was already here -- the
+solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,
+film polarisation, the asset records -- and ALL of it served exactly one unit,
+the steady spiral-wound module.  Diafiltration and batch concentration are how
+membranes are actually run at laboratory and pilot scale and how they are
+taught; `choupoBatch` had no membrane at all.  `batchDiafilter` adds NO
+architecture: it is a `BatchUnitOperation` asking `TransportModel::localFluxes`
+the same question the module asks, once per instant instead of once per channel
+node, in two modes (`concentration`, `constantVolume`).  **The lesson is the
+point.**  The hand derivation `c/c0 = exp(-(1-R)N)` assumes the rejection is
+CONSTANT; it is not (the solute leaves, the osmotic pressure falls, the flux
+climbs, the observed rejection rises), so the unit publishes `R_obs_<solute>`
+at every instant and, in constant-volume mode, `washoutActual_` beside
+`washoutIdeal_` **evaluated from THIS RUN's own initial R** -- an idealisation
+computed from the run, never declared, so the gap cannot have been arranged.
+Witness `diafilter01_nf_desalting` (5.44 diavolumes: NaCl to 50.2 %, MgSO4 held
+at 99.2 %, flux 233 -> 256 LMH, R 0.8714 -> 0.8748, actual 0.5015 vs ideal
+0.4970).  **Three things this slice paid for.**  (1) A vessel OPEN IN BOTH
+DIRECTIONS needs its intake declared: the first run reported 4996 kg
+unaccounted, and *the balance was right and the unit was wrong* -- hence
+`BatchUnitOperation::takeContinuousIntake`, the mirror of the discharge, drained
+per accepted step (`takeDatumAmendments` could not serve: it is drained only
+inside the recipe's `setParameter` handler because its subject is a CHANGED
+DECLARATION, not a flow) and recorded under its own kind word `externalIntake`
+so a wash-water make-up is not filed as a re-declared feed.  (2) **A LEDGER
+BUILT BY RE-INTEGRATING A FLUX DISAGREES WITH THE STATE THE INTEGRATOR
+ACCEPTED**, at O(dt): the first version closed at 1.9e-3 while its own comment
+claimed it read the inventory.  The permeated VOLUME is now an integrated state
+and every record is a DIFFERENCE against the accepted inventory -- closure
+1.2e-16, and the sabotage that restores the quadrature closes at 5e-4, which a
+careful-sounding 1e-3 tolerance would have waved through (which is why the gate
+pins MACHINE level, not a tolerance).  (3) **The printed balance equation must
+be the arithmetic that decided**: `[campaign] mass balance` omitted the drawn-in
+and returned amendment terms the verdict has always used, so an open campaign
+printed `m0 = mF + external` with tens of kilograms missing and then said
+"(closed)".  Also: `toBulk` left its anonymous namespace inside
+`SpiralWoundModule.cpp` for `membrane/BulkConversion.H` when the second caller
+arrived (11/11 membrane goldens unmoved), and `choupoBatch` now loads
+`MembraneRegistry` and the membrane sub-model factories -- *a unit is not
+installed until everything it constructs is*.  NOT modelled, said plainly:
+fouling and flux decline (the largest gap to a real rig), any k_film
+correlation (the case DECLARES it and the unit refuses without it rather than
+inventing a geometry), temperature transients, gel-layer/critical-flux
+behaviour, and the pump work (`energyLedgerGap` names it; the campaign energy
+balance is UNAVAILABLE rather than closed with a term quietly zero).  Gate:
+`check_diafiltration` (5 sabotages, two of which attack the driver and the unit
+separately because the declaration can be lost on either side of the hook).
+
 **AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  The caveat
 block exists because *a warning a thousand lines above the answer has been
 delivered and not received* — and the reactive path reintroduced that exact

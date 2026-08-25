@@ -57,6 +57,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
+#include "thermo/membrane/MembraneRegistry.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
 #include "thermo/solution/SolutionRegistry.H"
@@ -188,6 +189,11 @@ try
     //  answers (found when no sealed case with utility golden rows survived
     //  a re-seal).
     MaterialRegistry::loadFrom(dataRoot.string());
+    //  The membrane asset records: needed since `batchDiafilter` gave this
+    //  binary a membrane to host.  A registry a unit reads must be loaded by
+    //  every binary that can construct that unit -- otherwise the unit is
+    //  registered, the case is valid, and the run dies on an empty catalogue.
+    MembraneRegistry::loadFrom(dataRoot.string());
     HenrysLawRegistry::loadFrom(dataRoot.string());
     SolutionRegistry::loadFrom(dataRoot.string());
     UtilityCatalogue::loadFrom(dataRoot.string());
@@ -829,6 +835,10 @@ if (flowsheetDict->found("cycle"))
     // A vessel that sheds material with NO receiver is an EXTERNAL outlet --
     // an UNROUTED PRODUCT stream, not an emission (forum #99: '(vented)'
     // turned product into a vent).  The role is neutral and explicit.
+    //  Format a number the way the surrounding stream would, for the
+    //  optional terms spliced into the balance line.
+    auto fmtNum = [](scalar v)
+    { std::ostringstream o; o << v; return o.str(); };
     auto recordVented = [&](std::size_t i, scalar tNow, const BatchState& pkg)
     {
         if (pkg.totalMoles() <= 0.0) return;
@@ -847,6 +857,35 @@ if (flowsheetDict->found("cycle"))
             ventSlot[i] = transfers.size();
             transfers.push_back(std::move(tr));
             it = ventSlot.find(i);
+        }
+        addPackage(transfers[it->second], tNow, pkg);
+    };
+    //  The mirror of recordVented: matter a vessel DRAWS IN across the
+    //  campaign boundary, continuously.  It lands in the same `amendIn`
+    //  bucket a recipe's feed amendment does -- drawn-in matter is drawn-in
+    //  matter, and the closures already read that bucket on the initial
+    //  side -- but under its own kind word, because a diafilter's wash
+    //  water and a re-declared feed are different events and the timeline
+    //  must not call them the same thing.  One accumulating record per
+    //  vessel, not one per step.
+    std::map<std::size_t, std::size_t> intakeSlot;
+    auto recordIntake = [&](std::size_t i, scalar tNow, const BatchState& pkg)
+    {
+        if (pkg.totalMoles() <= 0.0) return;
+        if (amendIn.size() != thermo.n()) amendIn.assign(thermo.n(), 0.0);
+        for (std::size_t c = 0; c < thermo.n() && c < pkg.n.size(); ++c)
+            amendIn[c] += pkg.n[c];
+        auto it = intakeSlot.find(i);
+        if (it == intakeSlot.end())
+        {
+            SimulationResult::TransferRecord tr;
+            tr.tStart = tNow; tr.tEnd = tNow;
+            tr.from = "(external boundary)";
+            tr.to   = unitNames[i];
+            tr.kind = "externalIntake";
+            intakeSlot[i] = transfers.size();
+            transfers.push_back(std::move(tr));
+            it = intakeSlot.find(i);
         }
         addPackage(transfers[it->second], tNow, pkg);
     };
@@ -1109,6 +1148,12 @@ if (flowsheetDict->found("cycle"))
             }
             else
                 recordVented(i, tNow, units[i]->takeContinuousDischarge(tNow));
+
+        //  ... and what they drew IN over the same window.  AFTER the
+        //  discharge, so a vessel that sizes its make-up on what it just
+        //  lost has already lost it.
+        for (std::size_t i = 0; i < units.size(); ++i)
+            recordIntake(i, tNow, units[i]->takeContinuousIntake(tNow));
     };
 
     // Recipe events whose trigger has elapsed.  Runs AFTER noteTimeAdvanced:
@@ -1703,8 +1748,21 @@ if (flowsheetDict->found("cycle"))
                              " by the closures below (never discounted"
                              " silently).";
             if (verbosity >= 2)
+                //  THE PRINTED EQUATION IS THE ARITHMETIC THAT DECIDED.
+                //  It used to omit the drawn-in and returned amendment
+                //  terms, which the verdict above HAS always used -- so a
+                //  campaign that draws matter from the boundary (a
+                //  diafilter's make-up solvent, a fixed bed's re-declared
+                //  feed) printed `m0 = mF + external` with tens of
+                //  kilograms unaccounted, read as a visibly false equation,
+                //  and then said "(closed)".  A reader who checks the line
+                //  by eye must reach the verdict the code reached.
                 std::cout << "\n[campaign] mass balance: m0 = " << m0
+                          << (mAmendIn != 0.0
+                                ? " + drawn-in " + fmtNum(mAmendIn) : "")
                           << " kg = mF " << mF << " + external " << mOut
+                          << (mAmendOut != 0.0
+                                ? " + returned " + fmtNum(mAmendOut) : "")
                           << " kg, closure " << std::scientific << rel
                           << (unparsed.empty()
                                 ? ", worst element " : ", elements n/a ")
@@ -1790,12 +1848,13 @@ if (flowsheetDict->found("cycle"))
                                  // (+ signed datum amendments, A5)
             for (const auto& tr : transfers)
             {
-                if (tr.kind != "external" && tr.kind != "feedAmendment")
+                if (tr.kind != "external" && tr.kind != "feedAmendment"
+                    && tr.kind != "externalIntake")
                     continue;
                 //  A feedAmendment record drawn IN from the boundary
                 //  carries enthalpy INTO the datum -- signed by direction.
                 const scalar sgn =
-                    (tr.kind == "feedAmendment"
+                    ((tr.kind == "feedAmendment" || tr.kind == "externalIntake")
                      && tr.to != "(external boundary)") ? -1.0 : 1.0;
                 if (tr.H_valid) Hext += sgn * tr.H_kJ;
                 else eMissing.push_back(
