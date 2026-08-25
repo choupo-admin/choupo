@@ -160,6 +160,9 @@
   "BinaryTxy": [
    "src/thermo/SaturationCurves.H"
   ],
+  "BlockTri": [
+   "src/solver/NewtonND.H"
+  ],
   "BrockBird": [
    "src/thermo/transport/BrockBird.H"
   ],
