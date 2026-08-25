@@ -114,6 +114,25 @@ pending" mark, including Albert/Hasse/Kuhnert/Maurer JCED 2005 and
 Grutzner/Hasse JCED 2004.  The papers still have to be READ before any
 record moves — the tool ends its own output with that sentence.
 
+## 4c. The private mirror (built 2026-08-25, same day, on Vítor's go)
+
+`bin/choupo-import-thermoml`, on the `choupo-import-cosmo` precedent: the
+user downloads the archive FROM NIST DIRECTLY (Choupo redistributes
+nothing), the tool verifies the tarball against the sha256 published in the
+same NIST record before unpacking (a mirror whose integrity was assumed
+would poison every citation drawn from it; a mismatch deletes the download
+and refuses), unpacks into the gitignored `data/local/thermoml/`, and
+builds `citations.jsonl` — one line per article file, with authors, title,
+journal, year, DOI, compound names and property names, streamed out of the
+XML with the elements cleared as they are read.
+
+`thermoml_locate.py --local` then answers offline, and names the on-disk
+XML file that holds the numbers — tier 2 exactly: the numbers are on the
+user's machine, obtained by the user from NIST, and every record they may
+feed still cites the article.  No automatic conversion into Choupo records
+exists ANYWHERE in this path, deliberately: an outside format is never the
+base of a record, and a mass translation would be curation by machinery.
+
 ## 5. What was verified vs what was not
 
 Verified on 2026-08-25 over live network: the three quotations above; the

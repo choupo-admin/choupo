@@ -43,3 +43,24 @@ ever being redistributed by the public repository.  The public repo ships
 Choupo's OWN open group-contribution ESTIMATES (`data/groupEstimative/`, clearly
 flagged) rather than any third-party values; you import measured or curated
 third-party data here privately.
+
+## The ThermoML mirror (`thermoml/`)
+
+`bin/choupo-import-thermoml` installs a complete, private mirror of the
+NIST/TRC ThermoML Archive here — ~190 MB downloaded from data.nist.gov,
+sha256-verified against the checksum published in the same NIST record,
+plus a local citation index (`citations.jsonl`).
+
+**The runtime never reads this directory.**  The loader resolves records by
+exact name under `data/local/{components,parameters,...}/` and walks
+nothing, so the mirror cannot change a simulation result by one bit.  It is
+a *bibliographic instrument*: `bin/curate/thermoml_locate.py --local
+<compound>...` answers "which article measured this", offline, and names
+the XML file on your disk that holds the numbers.
+
+A value moves from the mirror into a Choupo record only by a human act of
+curation, one value at a time, **citing the original article** the mirror
+names beside it — never this index, never the archive.  The licence
+assessment behind that boundary: `docs/design/thermoml-archive-assessment.md`.
+If you use the resource in published work, NIST asks that you cite
+doi:10.18434/mds2-2422.

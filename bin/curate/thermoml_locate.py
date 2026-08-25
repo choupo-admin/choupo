@@ -4,6 +4,14 @@
     bin/curate/thermoml_locate.py water octanol
     bin/curate/thermoml_locate.py formaldehyde water --max 10
     bin/curate/thermoml_locate.py CO2 --raw-query 'type:TRCTml4 AND ...'
+    bin/curate/thermoml_locate.py --local formaldehyde water
+
+TWO MODES.  Online (default): the NIST Cordra API, metadata only by the
+archive's own design.  --local: the user's private mirror installed by
+`bin/choupo-import-thermoml` into data/local/thermoml/ -- offline, and the
+named XML file beside each hit CONTAINS the numerical data, on your disk,
+downloaded by you from NIST.  Either way the output ends the same:
+the article is the source; read it and cite IT.
 
 WHAT THIS IS.  A curation-time bibliographic tool: it asks the NIST/TRC
 ThermoML Archive's public search API "which journal articles report
@@ -109,6 +117,52 @@ def property_summary(content):
     return out
 
 
+def local_search(a):
+    """Offline search over the private mirror's citation index."""
+    from pathlib import Path
+    idx = (Path(__file__).resolve().parents[2]
+           / "data" / "local" / "thermoml" / "citations.jsonl")
+    if not idx.exists():
+        sys.exit("thermoml_locate: no local mirror (data/local/thermoml/"
+                 " carries no citations.jsonl).  Install one with"
+                 " `bin/choupo-import-thermoml`, or drop --local to query"
+                 " the NIST API online.")
+    want = [c.lower() for c in a.compounds]
+    if not want:
+        sys.exit("thermoml_locate: --local needs compound names (the raw"
+                 " Lucene form belongs to the online API, not the mirror).")
+    hits, total = [], 0
+    with open(idx, encoding="utf-8") as f:
+        for line in f:
+            c = json.loads(line)
+            names = [n.lower() for n in c.get("compounds", [])]
+            if all(any(w in n for n in names) for w in want):
+                total += 1
+                if len(hits) < a.max_n:
+                    hits.append(c)
+    if a.json:
+        print(json.dumps({"total": total, "shown": len(hits),
+                          "results": hits}, indent=2))
+        return
+    print(f"local mirror: {total} article(s) for {' + '.join(a.compounds)}"
+          f"  (showing {len(hits)})")
+    for r in hits:
+        au = "; ".join(r.get("authors", [])[:4])
+        if len(r.get("authors", [])) > 4:
+            au += " et al."
+        print(f"\n  {au} ({r.get('year', '?')})")
+        print(f"    {r.get('title', '?')[:96]}")
+        print(f"    {r.get('journal', '?')}"
+              + (f"  doi:{r['doi']}" if r.get("doi") else ""))
+        props = r.get("properties", [])[:4]
+        if props:
+            print("    properties: " + "; ".join(props))
+        print(f"    data file:  data/local/thermoml/{r.get('file', '?')}")
+    print("\n  The article is the source.  Read it, cite IT -- never this "
+          "index -- and\n  record the value with the paper's own units and "
+          "uncertainty.")
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="Find primary articles in the ThermoML Archive "
@@ -120,9 +174,15 @@ def main():
                     help="full Lucene query, verbatim (overrides compounds)")
     ap.add_argument("--json", action="store_true",
                     help="machine-readable output")
+    ap.add_argument("--local", action="store_true",
+                    help="search the private mirror in data/local/thermoml/"
+                         " instead of the NIST API (offline)")
     a = ap.parse_args()
     if not a.compounds and not a.raw_query:
         ap.error("name at least one compound, or pass --raw-query")
+
+    if a.local:
+        return local_search(a)
 
     q = build_query(a.compounds, a.raw_query)
     d = fetch(q, a.max_n)
