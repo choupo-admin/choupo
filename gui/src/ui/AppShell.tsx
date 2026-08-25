@@ -63,6 +63,7 @@ import { WelcomeScreen } from "./WelcomeScreen.js";
 import { CaseIntro } from "./CaseIntro.js";
 import { ExpiredTabPanel } from "./ExpiredTabPanel.js";
 import { LogWorkspace } from "./LogWorkspace.js";
+import { LiteratureWorkspace } from "./LiteratureWorkspace.js";
 import { MenuBar } from "./MenuBar.js";
 import { fitsRow, useMeasuredBoxWidth } from "./methods/methodsChrome.js";
 import { ReportsWorkspace } from "./ReportsWorkspace.js";
@@ -414,6 +415,8 @@ export function AppShell() {
           // sense alongside the property views.  Everything else IS PropsView.
           activeWorkspace === "log" ? (
             <LogWorkspace />
+          ) : activeWorkspace === "literature" ? (
+            <LiteratureWorkspace />
           ) : activeWorkspace === "case" ? (
             <CaseWorkspace />
           ) : activeWorkspace === "explore" ? (
@@ -437,6 +440,8 @@ export function AppShell() {
           <CaseWorkspace />
         ) : activeWorkspace === "log" ? (
           <LogWorkspace />
+        ) : activeWorkspace === "literature" ? (
+          <LiteratureWorkspace />
         ) : activeWorkspace === "plots" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <PlotsWorkspace />

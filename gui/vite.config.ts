@@ -1,9 +1,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
+import { thermomlIndexPlugin } from "./scripts/thermomlIndexPlugin.js";
 
 export default defineConfig({
-  plugins: [localCataloguePlugin(), react()],
+  plugins: [localCataloguePlugin(), thermomlIndexPlugin(), react()],
   server: {
     port: 5173,
     // strictPort: a stale vite left on 5173 used to make the new one drift to

@@ -132,6 +132,9 @@ export const WORKSPACES: WorkspaceEntry[] = [
   { label: "Case",      key: "case"      },
   { label: "Pinch",     key: "pinch"     },  // greyed until a run yields heat duties
   { label: "Reports",   key: "reports"   },  // utilities + global balances (post-run)
+  //  "Who measured this?" -- citations from the user's private ThermoML
+  //  mirror (bin/choupo-import-thermoml).  A reading list, never a value.
+  { label: "Literature", key: "literature" },
 ];
 
 /** The labels a case tab's menu may ever carry — every WORKSPACES entry and
@@ -172,17 +175,17 @@ export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
   if (!ctx.hasCase) return new Set();
   if (ctx.showIntro) return new Set();
   if (ctx.isPropsCase || ctx.application === "choupoProps") {
-    return new Set(["Props", "Plots", "Log", "Case"]);
+    return new Set(["Props", "Plots", "Log", "Case", "Literature"]);
   }
   if (ctx.application === "choupoBatch" || ctx.application === "choupoCtrl") {
     return new Set([
-      "Flowsheet", "Props", "Plots", "Log", "Case",
+      "Flowsheet", "Props", "Plots", "Log", "Case", "Literature",
       ...(ctx.hasPid ? ["Control"] : []),
     ]);
   }
   return new Set([
     "Flowsheet", "Props", "Streams", "Variables", "Plots", "Log", "Case",
-    "Pinch", "Reports",
+    "Pinch", "Reports", "Literature",
   ]);
 }
 

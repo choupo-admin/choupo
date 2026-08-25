@@ -242,7 +242,8 @@ export type WorkspaceKey =
   | "control"
   | "case"
   | "reports"
-  | "pinch";
+  | "pinch"
+  | "literature";
 
 interface AppState {
   tutorialName: string;

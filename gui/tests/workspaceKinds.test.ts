@@ -190,15 +190,15 @@ describe("allowedWorkspaceLabels", () => {
     // steady: the full set
     expect(visibleWorkspacesFor(SOLVE).map((w) => w.label)).toEqual([
       "Flowsheet", "Props", "Streams", "Variables",
-      "Plots", "Log", "Case", "Pinch", "Reports",
+      "Plots", "Log", "Case", "Pinch", "Reports", "Literature",
     ]);
     // props-only: no canvas, no streams, no duties
     expect(visibleWorkspacesFor(PROPS).map((w) => w.label)).toEqual([
-      "Props", "Plots", "Log", "Case",
+      "Props", "Plots", "Log", "Case", "Literature",
     ]);
     // time-dependent: no steady-only views; Control only with a declared PID
     expect(visibleWorkspacesFor(CTRL_PID).map((w) => w.label)).toEqual([
-      "Flowsheet", "Props", "Control", "Plots", "Log", "Case",
+      "Flowsheet", "Props", "Control", "Plots", "Log", "Case", "Literature",
     ]);
     expect(visibleWorkspacesFor(CTRL_NO_PID).map((w) => w.label))
       .not.toContain("Control");
@@ -218,7 +218,7 @@ describe("what the narrow posture renders", () => {
     // Before today the narrow row was [Views chooser] + the modes, and the
     // chooser deliberately excluded them.  There is nothing to exclude now.
     const visible = visibleWorkspacesFor(SOLVE);
-    expect(visible.length).toBe(9);
+    expect(visible.length).toBe(10);
     for (const w of visible) expect(VIEW_LABELS.has(w.label)).toBe(true);
   });
 
