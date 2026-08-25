@@ -67,6 +67,9 @@
   "Advisory": [
    "src/core/Advisory.H"
   ],
+  "AdvisoryFrame": [
+   "src/core/Advisory.H"
+  ],
   "AdvisoryLog": [
    "src/core/Advisory.H"
   ],
@@ -5793,6 +5796,7 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.H"
   ],
   "src/unitOperations/flash/AdiabaticFlash.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -6980,6 +6984,7 @@
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/flash/AdiabaticFlash.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/heatTransfer/Evaporator.cpp",

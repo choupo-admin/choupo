@@ -243,10 +243,33 @@ private:
 //  `newtonND` propagates a residual's throw out of its thread pool, and a
 //  frame left open there would mark the rest of the run as a discarded trial.
 //
-//  CONTRACT: open it on the thread that OWNS the solve, around the whole
-//  call -- never inside a residual, and never on a worker.  The frame
-//  describes an evaluation campaign, not one evaluation, and the workers
-//  raising advisories underneath it are precisely who it is speaking for.
+//  CONTRACT: open it around a whole search, never around one evaluation.  The
+//  frame describes a CAMPAIGN.
+//
+//  THE STACK IS PROCESS-WIDE AND SHARED, and that is deliberate rather than
+//  careless: the MESH column opens its frame on the thread that owns the
+//  solve, and the advisories it is speaking for are raised by the pool
+//  threads of `newtonND`'s finite-difference Jacobian.  A thread-local stack
+//  would be invisible to exactly the workers it exists to cover.
+//
+//  So a frame can also be opened ON a worker -- `ReactiveVLE`'s outer Newton
+//  does, because the MESH residual reaches it from the pool.  That is SAFE:
+//  every push, pop and read is under the mutex, and a frame is popped BY
+//  IDENTITY, so interleaved opens and closes cannot close each other's
+//  campaigns.  Two consequences follow, and neither is hidden:
+//
+//    * `status` is the OR over every open frame.  With several searches
+//      genuinely running at once, an advisory raised under any of them is a
+//      trial.  That is the conservative direction for the flood and the
+//      dangerous one for the answer -- but the owning thread is blocked in
+//      `join()` for the whole parallel region and raises nothing there, so
+//      no accepted advisory is demoted by a sibling's frame.
+//    * `where` is the innermost frame at the moment of the raise, which
+//      under concurrency may name a SIBLING search rather than the exact
+//      one.  Every concurrent frame today is a trial frame with a
+//      near-identical label, so the reported attribution is right; what is
+//      not claimed is that it would stay right if two differently-named
+//      searches ever ran side by side.
 class AdvisoryFrame
 {
 public:

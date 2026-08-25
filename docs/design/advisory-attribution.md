@@ -251,7 +251,34 @@ that.*
 * **It does not deduplicate.**  Two differently-worded advisories are never
   judged "the same fact".
 
-## 8  Numbers moved
+## 8  What the corpus says
+
+Full suite, 365 cases compared against their pre-change output:
+
+| | cases |
+|---|---|
+| **untouched** — same caveats, no path section at all | **326** |
+| changed | 17 |
+| **silenced** — accepted advisories went to zero | **0** |
+
+The 326 are the design's central claim holding: a case whose solvers open no
+frame prints exactly what it printed before this existed.  The zero is the
+arm that mattered — no case lost a caveat about its answer.
+
+The worst offender was never column13:
+
+| case | before | about the answer | attributed to a search |
+|---|---|---|---|
+| `stripper02_sour_water_h2s` | 385 | 12 | 375 |
+| `stripper01_sour_water` | 120 | 7 | 114 |
+| `column13_sour_water_stage_identity` | 107 | 12 | 95 |
+| `flash13_acetic_ethanol_vacuum_flash` | 29 | 5 | 24 |
+| `column08_radfrac_multidraw` | 16 | 8 | 8 |
+| `basis01_two_unit_chain` | 15 | 9 | 6 |
+
+Every remaining case in the changed set moves by single digits.
+
+## 9  Numbers moved
 
 **None.**  `bin/runTests --witnesses` 15/15 unchanged; the advisory list is a
 top-level result block that no golden row kind can read, so no `expected` file

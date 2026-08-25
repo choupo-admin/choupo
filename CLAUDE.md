@@ -893,6 +893,57 @@ it).  Goldens were verified UNCONTAMINATED by full regression against a clean
 build.  Record:
 [`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
 
+**AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  The caveat
+block exists because *a warning a thousand lines above the answer has been
+delivered and not received* — and the reactive path reintroduced that exact
+failure from the other side: not too few announcements, too many.  An
+iterative solver WALKS: it evaluates the physics at compositions it invented
+and throws nearly all of them away, and on an electrolyte feed most of those
+states raise a caveat.  `column13` ended with **103 advisories, 95 of which
+describe compositions its answer does not contain** (ionic strengths of 8.01,
+7.93, 6.77 mol/kg — states no sour water is in); the twelve that qualify
+PUBLISHED numbers sat among them, indistinguishable and unread.  An advisory
+now carries `where` (the innermost open `AdvisoryFrame`) and `status`
+(`accepted` | `trial`), **both stamped by the SINK, not by the 111 sites that
+raise them**.  THE DEFAULT IS `accepted`: a site that says nothing keeps
+exactly its old behaviour, so nothing is silently demoted by a mechanism
+nobody opted into.  Status only ever moves TOWARD the answer (an accepted add
+PROMOTES a matching trial entry; a trial never demotes an accepted one) —
+otherwise iteration order would decide whether a caveat is about the result.
+The block PARTITIONS on that stamped field; it never decides two differently
+-worded advisories are "the same fact" (a similarity heuristic, and
+heuristics rot).  103 lines became 12, and across the corpus **326 of 365 cases are
+UNTOUCHED** (no frame opened) while **none lost a caveat about its answer**;
+`column13` was not even the worst -- `stripper02_sour_water_h2s` printed 385.
+**Frame the search where the search
+IS, not at every caller**: the first draft framed the MESH column (7 of 103),
+the second added the adiabatic flash's T loop (42), and only the third — at
+`ReactiveVLE`'s outer Newton, where the advisories are BORN — reached 12,
+because the column, the flash and the energy report all pass through it.  The
+prior art was already in the file: `innerVerbosity` had solved the identical
+problem for the inner speciation on 2026-07-27 (first call traced, middle
+silent, FINAL call on the converged state carries the diagnostics), fixed then
+because the block reported the INITIAL GUESS's pH as the answer.  **A DATA
+RACE rode along and is closed**: the sink is written from `newtonND`'s
+PARALLEL finite-difference Jacobian, and an unguarded `push_back` from N
+threads is UB — it did not manifest in 18 consecutive runs on a two-thread box
+(identical count and order), which is evidence about that machine and not
+about the contract.  Two things measured rather than assumed: **`walk.close()`
+in `ReactiveVLE` is TODAY INERT** (removing it leaves column13 byte-identical
+— every accepted advisory arrives by the unframed post-solve pass in
+`Flowsheet::solve`; it stays because otherwise the reader's caveats would
+depend on an unrelated subsystem continuing to exist, and a contract that
+holds by coincidence is not a contract), and the `I = 8.01` block is REAL (four
+streams carry 1.4-1.9 mol of water).  NOT covered, said plainly: the recycle
+Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still
+report their paths as answers.  Gate: `check_advisory_attribution` — five
+sabotages, of which **the first SURVIVED** (it attacked one caller when the
+over-demotion arm needed the MECHANISM attacked), and sabotage 5's first run
+found a defect INSIDE the gate: the accepted counter matched the path
+section's own lines, reading 15 where the truth is 12 and keeping the
+`accepted == 0` clause from ever firing.  Record:
+[`docs/design/advisory-attribution.md`](docs/design/advisory-attribution.md).
+
 **THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).**
 `catalystLoading` is a unit conversion and never claimed to be more: a
 heterogeneous rate constant is reported per gram of dry catalyst and the bed
