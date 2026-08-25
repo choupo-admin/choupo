@@ -47,10 +47,28 @@ fi
 export CHOUPO_WORKSPACE
 
 # ----- PATH ----------------------------------------------------------------
-# Prepend project root (binary symlink) and bin/ (scripts) — but only once.
+# bin/ (the scripts) goes FIRST; the project root goes LAST.
+#
+# THE ROOT MUST NOT COME BEFORE THE SYSTEM DIRECTORIES, and the reason is a
+# bug this file used to cause.  The root holds a directory named `make/`.
+# A shell's PATH search skips directories, so `make` from the prompt was
+# fine -- but GNU make execs a recursive `$(MAKE)` DIRECTLY, without a
+# shell, and its own PATH search does NOT skip them.  So it found
+# $CHOUPO_HOME/make, a directory, and every recursive target died with
+#
+#     make: make: Permission denied
+#     make: *** [make/wasm.mk:138: wasm] Error 127
+#
+# which names a line that is perfectly correct and sends the reader to the
+# wrong file.  It hit `make wasm`, `make MODE=debug` and `make PLATFORM=
+# win64MinGW` -- and only after sourcing this file, which is what made it
+# look like a broken build rather than a broken PATH.
+#
+# The root is on PATH ONLY for the ./choupoSolve-style symlinks, which
+# shadow nothing, so last is where it belongs.
 case ":$PATH:" in
     *":$CHOUPO_HOME:"*) ;;
-    *) export PATH="$CHOUPO_HOME:$CHOUPO_HOME/bin:$PATH" ;;
+    *) export PATH="$CHOUPO_HOME/bin:$PATH:$CHOUPO_HOME" ;;
 esac
 
 # ----- Convenience aliases --------------------------------------------------

@@ -2247,6 +2247,25 @@ PYEOF
     fi
     rm -f /tmp/heldoutp.$$
 
+    # bashrc-PATH gate (2026-08-25).  `source etc/bashrc` used to BREAK every
+    # recursive make target -- the project root went on PATH ahead of the
+    # system directories and the root holds a directory named `make/`.  A
+    # shell's PATH search skips directories; GNU make's, when it execs
+    # `$(MAKE)` without a shell, does not.  So `make wasm`, `make MODE=debug`
+    # and `make PLATFORM=win64MinGW` all died with `make: make: Permission
+    # denied`, naming a line of wasm.mk that was entirely correct.  Reported
+    # by Vitor from his own laptop.  The gate probes the MECHANISM (a
+    # throwaway project with its own make/ directory), not the PATH order.
+    if "$ROOT/bin/curate/check_bashrc_path.py" > /tmp/bashrcpath.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "bashrc-path-gate" "$(head -1 /tmp/bashrcpath.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_bashrc_path.py)\n" "bashrc-path-gate"
+        cat /tmp/bashrcpath.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bashrcpath.$$
+
     # friction-correlation gate (2026-08-25).  The Darcy factor's four
     # correlations became a registered family with declared windows, primary
     # citations and published anchors -- the HeatTransferCorrelation pattern
