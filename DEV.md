@@ -705,6 +705,36 @@ accepts today, and that is a policy call.
    closure) land as their own slices on top.  Countercurrent steps (P3)
    stay refused — that boundary changes KIND.
 
+> **2026-08-25 — EVIDENCE ARRIVED UNDER TWO STANDING QUESTIONS.  Neither is
+> ruled; both are now askable with numbers instead of impressions.**
+>
+> **(a) The two ThermoML datasets are CHECKED.**  Vítor supplied the Voutsas
+> 2011 and Kamihama 2012 articles, and every value in
+> `fitNRTL02_thermoml_isobars` was read back against them: 45 fit points
+> against Table 1 and 21 held-out points against Table 3, digit for digit,
+> per-isobar counts included, DOIs confirmed off the articles' own pages.
+> Both datasets now declare `reviewStatus checked`; no number moved and the
+> golden is unchanged.  Method, counts and the two rules the flip produced
+> (`checked` must announce; the unchecked branch needs a built probe once no
+> live case exercises it):
+> [`held-out-pressure.md`](docs/design/held-out-pressure.md) §5a.
+>
+> **(b) The CoolProp-provenance question has data under it — and is STILL
+> VÍTOR'S.**  `bin/curate/verify_against_poling.py` reads a curator's own copy
+> of Poling App. A and compares the catalogue against it.  Of 158 CAS-bearing
+> records the appendix lists 75; across them **238 values reproduce it to its
+> printed precision**, 105 differ by under 1 %, and 37 by more.  So the
+> CoolProp-sourced constants are a faithful transcription of the same lineage
+> — which is a fact, not yet a ruling on whether that constitutes provenance.
+> **Nothing was changed and no `reviewStatus` was flipped**, deliberately: the
+> notable disagreements are mostly ours being NEWER (helium's Tb 4.22 K
+> against the book's 4.30, where 4.222 is modern; neon's ω −0.03549 against
+> −0.016), so editing toward the appendix would have aged the catalogue.  The
+> tool is NOT a gate and must not become one — the book cannot live in this
+> repository, so a `check_*` would be permanently green in CI, which is the
+> retired `check_true_ions` shape.  Record:
+> [`verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
+
 ## 5. Known debts (severity-ish)
 
 000. **EDITORIAL, for Vítor and Pedro: the theory guide treats DRYING twice.**

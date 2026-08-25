@@ -66,3 +66,37 @@ it.  On a machine without PHREEQC it exits with a clear install-or-set message
 (`CHOUPO_PHREEQC` / `CHOUPO_PHREEQC_DB` env overrides).  Writes nothing — the
 `--markdown` block is *printed*; promoting it into `VALIDATION.md` is a human
 curation act.
+
+## Catalogue vs Poling App. A (a book you own, not a file we ship)
+
+```bash
+bin/curate/verify_against_poling.py ~/books/poling-appendix-A.pdf
+bin/curate/verify_against_poling.py ~/books/poling-appendix-A.pdf --write-report
+```
+
+Reads **your own copy** of Appendix A of Poling, Prausnitz & O'Connell,
+*The Properties of Gases and Liquids* (5th ed.) and compares
+`data/standards/components/` against it — MW, Tc, Pc, ω, Tb, ΔHvap(Tb), Vliq,
+matched **by CAS number, never by name**.
+
+**Not a gate, and it must not become one.**  The appendix is copyrighted and
+cannot live in this repository, so the check cannot run in CI — and *a check
+that cannot run must not pass*.  A skip-when-absent gate would be permanently
+green exactly where it matters.  This prints a report; accepting its
+conclusions is a curator's act.
+
+Nothing from the appendix is written into the tree: the script holds no value
+from it, and `--write-report` writes to `data/local/` (the gitignored private
+tier), never to the committed `generated/`.
+
+Results are banded, because a third-decimal difference in an acentric factor
+is *two compilations* and not an error, while a 15 % gap in a heat of
+vaporisation is a question — reporting them together hides the second and
+slanders the first.  Table A rows are confirmed against the appendix's own
+redundant Zc = PcVc/RTc column and a row that fails is dropped and counted;
+Table B has no such column, so its values are marked unaudited **per value**,
+never per record.
+
+Findings from the 2026-08-25 run, and the three false findings the parser
+produced before it stopped:
+[`docs/design/verifying-the-catalogue-against-a-book.md`](../../docs/design/verifying-the-catalogue-against-a-book.md).

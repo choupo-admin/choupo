@@ -855,6 +855,49 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
+(2026-08-25).**  Every record carrying critical constants had gone its whole
+life uncompared with a published table, for the banal reason that the compilation
+they descend from (Poling/Prausnitz/O'Connell App. A) is copyrighted and
+cannot live here.  Vítor supplied his own copy, so
+`bin/curate/verify_against_poling.py` reads the CURATOR's file, matches by
+**CAS never by name**, and prints a report to `data/local/` (gitignored — a
+`generated/` file rebuildable only from a book this repo lacks would go stale
+with nothing able to notice).  It is NOT wired into `bin/runTests` and never
+will be: it structurally cannot run in CI, and *a check that cannot run must
+not pass* — a skip-when-absent gate would be permanently green exactly where
+it matters (the `check_true_ions` shape).  Of 158 CAS-bearing records the
+appendix lists 75; across them **238 values reproduce it to its printed
+precision, 105 differ by under 1 % (a different compilation, not an error),
+37 by more**, and 19 Vliq comparisons are REFUSED rather than counted either
+way because the appendix states its volume at the measurement temperature and
+ours is at 25 °C.  **The finding is the opposite of the usual one: no
+transcription error, and the notable disagreements are mostly OURS BEING
+NEWER** (helium's Tb 4.22 vs the book's 4.30, where 4.222 is modern; neon's
+ω −0.03549 vs −0.016) — which is why nothing was changed and no
+`reviewStatus` was flipped.  **THE SHARPEST RESULT IS PER QUANTITY, and the
+tool computes that table itself rather than letting it be remembered into
+prose:** molecular weight agrees on every substance, **not one critical
+temperature disagrees by as much as 1 %**, and every notable difference is in
+Pc, ω or ΔHvap(Tb) — the hard-to-measure and the DERIVED (ω is regressed from
+a vapour-pressure correlation, so it is a parameter of a model as much as a
+property of a substance).  A Tc difference would be a transcription error and
+there are none; an ω difference is a question about which correlation each
+compilation used, resolved by reading and never by picking.  It also puts evidence under the reserved
+CoolProp-provenance ruling without pre-empting it.  **THE PARSE INVENTED
+THREE FINDINGS BEFORE IT STOPPED**, each plausible: the form feed is not the
+page (half the table orphaned, 209 rows of 440, silently); a ragged row slides
+(CO2 sublimes, so its ΔHvap cell is empty and the report announced its GIBBS
+ENERGY OF FORMATION as a 106 % disagreement); and **the header names the
+columns but does not position them** (R-245fa's *critical temperature* of
+427 K read as a normal boiling point).  What made any of it detectable is the
+REDUNDANT COLUMN — Table A prints Zc = PcVc/RTc, so a mis-assignment cannot
+survive recomputation (311 of 393 rows confirmed, 75 rejected and counted);
+Table B has none, so its every value is marked unaudited **per value, not per
+record**, and columns are now calibrated from each block's own complete rows.
+Record:
+[`docs/design/verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
+
 **A DESTRUCTIVE GATE POISONED THE EVIDENCE, AND THE EVIDENCE WAS COMMITTED
 (2026-08-18).**  `check_gate_selftest` proves other gates can fail by
 SABOTAGING records and sources, REBUILDING the engine, and requiring the
@@ -963,14 +1006,33 @@ so nothing constrains 101 kPa.  Also: `aad_heldout_K` beside
 comparison the units make wrong), a `P_Pa` column in the parity CSV, and the
 LEGACY single `dataset "<path>";` form wired into this path so a control op
 can SCORE a pair against a measured file without transcribing it.
-**`reviewStatus` ON A DATASET (same slice):** the archive assessment admits
-point values "cited to the ORIGINAL article, CHECKED against it when the
-paper is in hand", and the second half is UNMET here — so the extractor
-writes `provenance { reviewStatus transcribedNotCheckedAgainstArticle; }`,
-the partition reads it, and the run announces it on the console AND on the
-`AdvisoryLog`.  A transcribed file carries the DOI from birth, which is
-exactly what makes the unchecked state look checked; *a citation says where
-numbers are supposed to come from, not that anybody looked.*  Two smaller
+**`reviewStatus` ON A DATASET (same slice), AND THE CHECK PERFORMED THE SAME
+DAY:** the archive assessment admits point values "cited to the ORIGINAL
+article, CHECKED against it when the paper is in hand", and the second half
+was unmet at birth — so the extractor writes `provenance { reviewStatus
+transcribedNotCheckedAgainstArticle; }`, the partition reads it, and the run
+announces it on the console AND on the `AdvisoryLog`.  A transcribed file
+carries the DOI from birth, which is exactly what makes the unchecked state
+look checked; *a citation says where numbers are supposed to come from, not
+that anybody looked.*  **Vítor then supplied both articles and the values
+were read back**: all 45 fit points against Voutsas's Table 1 and all 21
+held-out points against Kamihama's Table 3, digit for digit, per-isobar
+counts included, DOIs confirmed off the articles' own pages — both datasets
+declare `reviewStatus checked` (method and counts:
+[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §5a).
+Two rules came out of the flip.  **`checked` MUST NOT BE SILENT** — the first
+implementation announced only the unchecked state, so a dataset a curator had
+verified was indistinguishable IN THE OUTPUT from one declaring no review at
+all (the absence-reads-as-affirmation shape); it announces on the console and
+raises NO advisory, because a caveat block that reports a discharged caveat
+teaches the reader to skim it, while an UNDECLARED status stays silent (it
+makes no claim either way).  And the flip left the unchecked branch with no
+live case — the `check_diafiltration` sabotage-8 shape — so arm (f) BUILDS a
+probe with the mark flipped back and requires both surfaces to return (S6/S7).
+The endpoints both articles bracket their isobars with are deliberately
+OMITTED and each header says so: with a pure component both NRTL activity
+coefficients are exactly 1, so the residual measures the Antoine fit and not
+the pair — a selection, never two rows lost.  Two smaller
 provenance fixes rode along: the extractor's citation lived only in a banner
 COMMENT the parser discards (the 2026-08-05 shape) and is now a
 machine-readable `provenance {}` + `system ( )` block; and
