@@ -431,6 +431,7 @@ Levenberg-Marquardt regression of thermophysical-model parameters against experi
 | `options` |   | object | — | Levenberg-Marquardt controls. Every one is an explicit, announced aid — never a silent default that hides a hard fit. |
 | `output` |   | object | — | Where the fit artefacts go. `proposal` additionally writes a promotable record into the PRIVATE tier (data/local/), never into the curate… |
 | `evidence` |   | array[object] | — | The FIT / HELD-OUT partition (src/propertyOps/EvidencePartition.H). Each entry names a dataset and DECLARES its role; `role` has no defau… |
+| `dataset` |   | string | — | The LEGACY single-dataset form: one file, every point fitted, NO validation claimed (src/propertyOps/EvidencePartition.H). Mutually exclu… |
 | `acceptance` |   | object | — | The acceptance band, DECLARED BEFORE the fit. `origin` is mandatory: a limit with no stated provenance cannot be told apart from one chos… |
 
 ## `flash`  (flash operation)

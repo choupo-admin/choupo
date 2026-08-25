@@ -292,6 +292,24 @@ DOC_SCAN = ["CLAUDE.md", "AGENTS.md", "README.md",
 #  are named here instead.  The fix is to GENERATE that table, as the site
 #  pages already are; recorded as AR5.
 DOC_COUNT_ALLOW = [
+    #  BOTH OF THESE WERE HIDDEN BY AN EARLIER ARM, and that is worth knowing
+    #  before trusting this list's length.  `--check` tests staleness FIRST and
+    #  exits; the prose scan below it never ran while the inventory was stale.
+    #  These two sentences were written on 2026-08-25 and 2026-08-24, and the
+    #  scan met them for the first time on 2026-08-25, the moment the inventory
+    #  was regenerated.  A check placed after an exiting one is a check that
+    #  does not run -- the same family as a permanently-green gate, by a
+    #  different road.
+    ("CLAUDE.md", "all 20 column tutorials",
+     "the number of column tutorials that were BYTE-IDENTICAL across one "
+     "solver change, measured on 2026-08-25.  A property of that slice's "
+     "evidence, fixed for ever; the live count of column tutorials is not "
+     "what the sentence is about, and would not make it truer or falser."),
+    ("CLAUDE.md", "326 of 365 cases are",
+     "the corpus impact of ONE slice, measured on the day: how many cases the "
+     "advisory-attribution change left untouched, out of how many existed "
+     "then.  Both halves are historical; updating either to a live tally "
+     "would destroy the measurement rather than refresh it."),
     ("CLAUDE.md", "67 records carried",
      "a CLOSED migration's size, fixed for ever -- not a corpus tally that "
      "can drift.  The live count of what remains unreviewed is in "
