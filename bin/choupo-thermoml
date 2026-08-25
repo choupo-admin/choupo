@@ -758,7 +758,7 @@ def cmd_extract_vle(a):
         "  The role this evidence plays -- fit or held-out validation -- is NOT",
         "  set here.  It is declared in the operation that consumes it, before",
         "  any fitting runs (src/propertyOps/EvidencePartition.H).",
-        "\*--------------------------------------------------------------------------*/",
+        "\\*--------------------------------------------------------------------------*/",
         "",
         "property     binaryVLE.T_bubble;",
         f"system       ( {rec['system'][0]} {rec['system'][1]} );",
