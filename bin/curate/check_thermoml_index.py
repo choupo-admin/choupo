@@ -56,22 +56,34 @@ ARMS:
       clean, empty archive -- which is not the same as a working one, and is
       the shape of a check that cannot run reporting success.
 
-  A6  A HAND-PLACED CACHE SAYS SO.  Until a file NIST actually served has
-      passed through it, the published-dialect reader is unverified and the
-      run must announce that rather than imply coverage it does not have.
+  A6  A CACHE WITH NO SYNC STAMP SAYS SO.  `index` must announce the absence
+      rather than imply a provenance it cannot show -- and it reads what the
+      stamp CLAIMS, not merely that a stamp exists, because `sync
+      --index-only` can write one over a cache nobody downloaded.
 
 WHAT THIS GATE DOES NOT CHECK, stated plainly:
-  * that the PUBLISHED-dialect reader matches the real archive.  Its fixture
-    was written from the documented element names, because every NIST host is
-    unreachable from the environment this was built in.  Matching is by local
-    element NAME rather than by path precisely so a nesting difference costs
-    an adjustment instead of producing plausible wrong numbers -- but only a
-    real archive file can settle it, and A6 is the standing admission that
-    none has passed through yet.
-  * the download.  `sync` refuses rather than inventing a URL and a checksum
-    it could not read.
-  * any NUMBER.  This gate reads identity and property NAMES; extracting
-    values is the next slice.
+  * that the PUBLISHED-dialect reader matches the real archive.  It CANNOT
+    check that here: the archive is gitignored and absent from every clean
+    checkout, so the gate runs on fixtures by construction.
+
+    This used to read "only a real archive file can settle it, and A6 is the
+    standing admission that none has passed through yet", which was true when
+    written and is not any more.  On 2026-08-25 the archive was synced and
+    indexed: **11 921 of its 11 923 files parsed**, all published dialect,
+    25 546 searchable identifiers.  The two refusals are malformed XML IN THE
+    ARCHIVE and are listed with the parse error rather than dropped.  The
+    by-name matching held against the real thing at scale; the measurement
+    lives in bin/choupo-thermoml's docstring, beside the reader it describes.
+
+    So the correct statement is that this gate cannot settle it, NOT that it
+    is unsettled -- and a gate whose blind-spot list quietly outlives the
+    blind spot is telling the reader something false with authority.
+  * the download itself.  `sync` now performs it (verified against the
+    checksum published in the same NIST record), and nothing here exercises
+    the network.
+  * the v5 dialect AT SCALE.  One file, still.
+  * any NUMBER.  This gate reads identity and property NAMES; the extraction
+    arms A7-A9 check shape and refusal, never a value.
 
 Exit 0 on success, 1 with the failing arm named.
 """
@@ -224,15 +236,18 @@ def main():
           "the index; declared property types Choupo cannot read yet are "
           "LISTED rather than dropped; an empty cache refuses instead of "
           "reporting a clean empty archive; and a hand-placed cache announces "
-          "that the published-dialect reader has never seen a file NIST "
-          "served.  NOT COVERED, and it is the important gap: whether the "
-          "PUBLISHED reader matches the real archive -- its fixture was "
-          "written from documented element names because every NIST host is "
-          "unreachable from here, matching is by local element NAME so a "
-          "nesting difference costs an adjustment rather than producing wrong "
-          "numbers, and only a real archive file can settle it.  Also not "
-          "covered: the download itself, and any numeric VALUE (this gate "
-          "reads identity and property names only, plus the extraction arms A7-A9).")
+          "that it carries no sync stamp.  NOT COVERED BY THIS GATE, and the "
+          "distinction matters: whether the PUBLISHED reader matches the REAL "
+          "archive cannot be checked here, because the archive is gitignored "
+          "and absent from every clean checkout.  It is no longer UNSETTLED, "
+          "though -- it was settled out of band on 2026-08-25, when 11 921 of "
+          "the archive's 11 923 files parsed (the two refusals are malformed "
+          "XML in the archive itself, listed with the parse error); the "
+          "measurement is recorded in bin/choupo-thermoml's own docstring, "
+          "which is where the reader lives.  Still genuinely unexercised: the "
+          "v5 dialect at scale (one file), the download itself, and any "
+          "numeric VALUE (this gate reads identity and property names only, "
+          "plus the extraction arms A7-A9).")
     return 0
 
 

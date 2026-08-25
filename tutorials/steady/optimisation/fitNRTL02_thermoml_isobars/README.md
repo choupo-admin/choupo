@@ -80,7 +80,7 @@ held-out column before believing the in-sample one.
     HELD OUT  Kamihama, Matsuda, Kurihara, Tochigi & Oba, J. Chem. Eng. Data (2012)
               doi:10.1021/je2008704              21 points, 101.3 kPa
 
-Both files were written by `bin/curate/thermoml_extract.py` from a local
+Both files were written by `bin/choupo-thermoml extract-vle` from a local
 mirror of the archive, and both declare
 `reviewStatus transcribedNotCheckedAgainstArticle` — **the values have not
 been read back against the publications they cite.**  The run says so on

@@ -44,23 +44,23 @@ Choupo's OWN open group-contribution ESTIMATES (`data/groupEstimative/`, clearly
 flagged) rather than any third-party values; you import measured or curated
 third-party data here privately.
 
-## The ThermoML mirror (`thermoml/`)
+## The ThermoML cache is NOT here (moved 2026-08-25)
 
-`bin/choupo-import-thermoml` installs a complete, private mirror of the
-NIST/TRC ThermoML Archive here — ~190 MB downloaded from data.nist.gov,
-sha256-verified against the checksum published in the same NIST record,
-plus a local citation index (`citations.jsonl`).
+It lives in **`thirdParty/thermoml/`**, installed by
+`bin/choupo-thermoml sync`.  It was briefly under `data/local/thermoml/`
+and that was the wrong tier: `thirdParty/` is this project's declared home
+for *original third-party databank files kept locally as import sources*,
+while `data/local/` is for **Choupo records** you hold privately — imported,
+licensed or unverified `.dat` entries the loader can resolve by name.  A
+4 GB tree of NIST XML is the former, not the latter.
 
-**The runtime never reads this directory.**  The loader resolves records by
-exact name under `data/local/{components,parameters,...}/` and walks
-nothing, so the mirror cannot change a simulation result by one bit.  It is
-a *bibliographic instrument*: `bin/curate/thermoml_locate.py --local
-<compound>...` answers "which article measured this", offline, and names
-the XML file on your disk that holds the numbers.
+The distinction matters beyond tidiness: the loader RESOLVES records under
+`data/local/{components,parameters,...}` by exact name, so anything that
+lands there is in the runtime's reach by construction.  The archive must
+never be, and putting it one directory away from the resolver was a
+correctness risk as well as a filing error.
 
-A value moves from the mirror into a Choupo record only by a human act of
-curation, one value at a time, **citing the original article** the mirror
-names beside it — never this index, never the archive.  The licence
-assessment behind that boundary: `docs/design/thermoml-archive-assessment.md`.
+See `thirdParty/README.md`, and the licence assessment behind the boundary:
+`docs/design/thermoml-archive-assessment.md`.
 If you use the resource in published work, NIST asks that you cite
 doi:10.18434/mds2-2422.

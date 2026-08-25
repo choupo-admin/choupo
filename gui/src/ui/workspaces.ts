@@ -133,7 +133,7 @@ export const WORKSPACES: WorkspaceEntry[] = [
   { label: "Pinch",     key: "pinch"     },  // greyed until a run yields heat duties
   { label: "Reports",   key: "reports"   },  // utilities + global balances (post-run)
   //  "Who measured this?" -- citations from the user's private ThermoML
-  //  mirror (bin/choupo-import-thermoml).  A reading list, never a value.
+  //  cache (bin/choupo-thermoml sync).  A reading list, never a value.
   { label: "Literature", key: "literature" },
 ];
 

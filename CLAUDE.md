@@ -1006,6 +1006,53 @@ isobars` TRUTHFULLY, because the span is computed from the loaded points
 while the pressure is used in the residual).  Record:
 [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md).
 
+**ONE THERMOML TOOLCHAIN, NOT TWO — my own arity sin, found and paid the same
+day (2026-08-25).**  `bin/choupo-thermoml` has existed since 2026-08-11 with
+`sync` · `index` · `search` · `extract` · `extract-vle`; on 2026-08-25 I built
+`choupo-import-thermoml`, `thermoml_locate.py` and `thermoml_extract.py`
+without finding it.  All three are DELETED and the one tool absorbed them.
+`sync` now PERFORMS the download it had described and deliberately refused to
+fake (verified against the sha256 NIST publishes in the same record, deleting
+on mismatch, path-traversal-checked before extracting a single member) —
+*that refusal was right on the day it was written, and became a gap to close
+rather than a position to hold when the network opened.*  `extract-vle` reads
+the VARIABLE-PRESSURE geometry it used to refuse, because its refusal was
+never about the file but about the CONSUMER, and the per-point pressure above
+removes it.  The cache moved to **`thirdParty/thermoml/`**, which is where
+CLAUDE.md §7 always said third-party databank originals live: `data/local/` is
+for Choupo RECORDS held privately, and the loader RESOLVES that tree by name,
+so 4 GB of NIST XML one directory from the resolver was a correctness risk and
+not merely a filing error.  The GUI reads the ONE index, PROJECTED by the
+dev-server middleware (70 MB of CAS/InChI down to the ~7 MB of citation the
+Literature panel shows) — a second slim file on disk would have been the same
+sin again.  The online Cordra query survived as `search --online`: it was never
+duplication, because *"what does my cache hold?"* and *"what has anybody
+measured?"* are two questions, so they are two flags on one command.
+**THREE PRE-EXISTING DEFECTS FELL OUT OF THE FOLD**, all found by pointing the
+older tool at a real article for the first time: (1) `system` was emitted in
+the file's `<Compound>` order while `x1` followed the BLOCK's `<Component>`
+order — they coincide in most files, which is why the fixture never caught it,
+and in `j.fluid.2011.06.009` they do not, so the tool wrote `x1 is water` over
+an x_ethanol column with the DATA CORRECT UNDERNEATH; *a mislabelled axis is a
+wrong answer nothing downstream can detect*, and an unresolvable component now
+REFUSES rather than being guessed; (2) a multi-block article was refused on its
+FIRST block (its own "no interpretable dataset found" line was dead code the
+loop could never reach) — every block is examined now and the refusals
+COLLECTED, one interpretable block used, several LISTED by index demanding
+`--block N` because choosing is the curator's act; (3) an ISOBARIC set was
+unreachable, because the reader looked only at ThermoML *Variables* and never
+at *Constraints* — the commonest form of VLE there is, refused with a message
+that was true and useless.  **AND A STALE CLAIM CLOSED:** the tool and its gate
+both said the published-dialect reader was "unverified until a real archive
+file has passed through it"; **11 921 of the archive's 11 923 files now parse**
+(the two refusals are malformed XML IN THE ARCHIVE, listed with the parse
+error), so the by-name matching held at scale, and the gate's blind-spot list
+was corrected to say it CANNOT CHECK this rather than that it is UNSETTLED —
+*a gate whose blind-spot list outlives the blind spot tells the reader
+something false, with authority.*  The witness's two datasets were re-extracted
+through the consolidated tool and **every number in its golden is unchanged**.
+Record: [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
+
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the
 solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,

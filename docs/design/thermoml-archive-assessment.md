@@ -105,7 +105,7 @@ The full data files live separately (data.nist.gov bulk download), which
 is exactly the tier-3 boundary: crossing from the API to the bulk files is
 a deliberate act, not a slippery slope.
 
-The tool: `bin/curate/thermoml_locate.py <compound> [<compound>...]` —
+The tool: `bin/choupo-thermoml search <compound> --online` —
 prints authors, title, journal, year, DOI and the archive's own
 data-point summary per property.  Cordra REST + Lucene at
 trc.nist.gov/ThermoML-API.  First real use, same day: located five
@@ -116,17 +116,17 @@ record moves — the tool ends its own output with that sentence.
 
 ## 4c. The private mirror (built 2026-08-25, same day, on Vítor's go)
 
-`bin/choupo-import-thermoml`, on the `choupo-import-cosmo` precedent: the
+`bin/choupo-thermoml sync`, on the `choupo-import-cosmo` precedent: the
 user downloads the archive FROM NIST DIRECTLY (Choupo redistributes
 nothing), the tool verifies the tarball against the sha256 published in the
 same NIST record before unpacking (a mirror whose integrity was assumed
 would poison every citation drawn from it; a mismatch deletes the download
-and refuses), unpacks into the gitignored `data/local/thermoml/`, and
+and refuses), unpacks into the gitignored `thirdParty/thermoml/`, and
 builds `citations.jsonl` — one line per article file, with authors, title,
 journal, year, DOI, compound names and property names, streamed out of the
 XML with the elements cleared as they are read.
 
-`thermoml_locate.py --local` then answers offline, and names the on-disk
+`choupo-thermoml search` then answers offline, and names the on-disk
 XML file that holds the numbers — tier 2 exactly: the numbers are on the
 user's machine, obtained by the user from NIST, and every record they may
 feed still cites the article.  No automatic conversion into Choupo records

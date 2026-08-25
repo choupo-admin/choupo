@@ -36,25 +36,28 @@ property binaryVLE.T_bubble
 
     evidence
     {
-        partitionFingerprint  "7179460aebc37a0c";   // frozen before the fit
+        partitionFingerprint  "faae7fa065484f47";   // frozen before the fit
 
         datasets
         (
         {
             role      fit;
-            dataset   "constant/experiments/voutsas2011-ethanol-water.dat";
+            dataset   "constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat";
             doi       "10.1016/j.fluid.2011.06.009";
+            sha256    "288bc73f24c1c1e54f8f5685a6b1353d92378f093fd15271a27337b3a32e899d";
             provenance measured;
-            archiveFile "data/local/thermoml/xml/10.1016/j.fluid.2011.06.009.xml";
+            archiveFile "j.fluid.2011.06.009.xml";
             system    "ethanol + water";
         }
         {
             role      validation;
-            dataset   "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+            dataset   "constant/experiments/ethanol-water-bubble-je2008704.dat";
             doi       "10.1021/je2008704";
+            sha256    "f24eca1286fb3d1fc4611eaf05bc771813d0dc41e81cf37c0c49b3ea9b871758";
             provenance measured;
-            archiveFile "data/local/thermoml/xml/10.1021/je2008704.xml";
+            archiveFile "je2008704.xml";
             system    "ethanol + water";
+            pressure  "101300.000000 Pa";
         }
         );
 

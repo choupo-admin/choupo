@@ -116,7 +116,7 @@ S4 -- `readOwnProvenance` no longer reads `reviewStatus`.  Arm (f), both
 datasets:
 
     fitNRTL02: no [reviewStatus] line for
-    constant/experiments/voutsas2011-ethanol-water.dat
+    constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat
 
 S5 -- the reviewStatus announcement kept on the console but NOT raised on the
 AdvisoryLog.  Arm (f)'s second half, and the reason it has two halves: a line
@@ -136,8 +136,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
-FITSET = CASE / "constant/experiments/voutsas2011-ethanol-water.dat"
-VALSET = CASE / "constant/experiments/kamihama2012-ethanol-water-101kPa.dat"
+FITSET = CASE / "constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat"
+VALSET = CASE / "constant/experiments/ethanol-water-bubble-je2008704.dat"
 BIN = ROOT / "choupoProps"
 
 fails = []
@@ -226,8 +226,11 @@ def main():
     if nHeld != 21:
         fails.append(f"fitNRTL02: n_heldout is {nHeld}, expected 21")
     #  and the held-out set really does use the scalar form
-    if not re.search(r"^Pressure\s+[\d.]+\s+kPa\s*;", VALSET.read_text(), re.M):
-        fails.append(f"{VALSET.name}: no held-constant `Pressure <v> kPa;` --"
+    #  Case-insensitive on the KEY: the reader accepts `P` / `Pressure` /
+    #  `pressure`, and `choupo-thermoml extract-vle` writes the lowercase one.
+    #  A gate that assumed a capital passed only against a hand-written file.
+    if not re.search(r"^[Pp]ressure\s+[\d.]+\s+kPa\s*;", VALSET.read_text(), re.M):
+        fails.append(f"{VALSET.name}: no held-constant `pressure <v> kPa;` --"
                      " the scalar form is no longer exercised")
 
     # ---- (f) the unchecked transcription is announced, twice ---------------
@@ -297,8 +300,8 @@ def _probe_scalar_beside_column(d):
 def _probe_heldout_without_pressure(d):
     #  Strip the held-constant from the validation set only: the fit set keeps
     #  its column, so the two subsets would be priced differently.
-    p = d / "constant/experiments/kamihama2012-ethanol-water-101kPa.dat"
-    p.write_text(re.sub(r"^Pressure\s+.*$", "", p.read_text(), flags=re.M))
+    p = d / "constant/experiments/ethanol-water-bubble-je2008704.dat"
+    p.write_text(re.sub(r"^[Pp]ressure\s+.*$", "", p.read_text(), flags=re.M))
 
 
 def _probe_unqualified_constant(d):
@@ -306,8 +309,8 @@ def _probe_unqualified_constant(d):
     #  its column, so the all-or-none arm is satisfied and the only thing wrong
     #  with this case is the missing unit -- which is what makes the refusal
     #  name it (see S3: without this, the probe refused for another reason).
-    p = d / "constant/experiments/kamihama2012-ethanol-water-101kPa.dat"
-    p.write_text(re.sub(r"^Pressure\s+([\d.]+)\s+kPa\s*;.*$", r"Pressure    \1;",
+    p = d / "constant/experiments/ethanol-water-bubble-je2008704.dat"
+    p.write_text(re.sub(r"^([Pp]ressure)\s+([\d.]+)\s+kPa\s*;.*$", r"\1    \2;",
                         p.read_text(), flags=re.M))
 
 

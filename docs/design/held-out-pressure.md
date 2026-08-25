@@ -262,19 +262,83 @@ So the consolidation is not merely tidying: `extract-vle` should now
 accept the geometry it refuses, which is precisely the Voutsas set this
 witness is built on.
 
-THE FIX, and it is one slice, not this one: fold all three into
-`bin/choupo-thermoml` — `sync` gains the verified download,
-`extract-vle` gains the variable-pressure geometry plus the
-`provenance {}` / `reviewStatus` block, `search --local` reads the
-existing `index` rather than a parallel `citations.jsonl`, and my three
-files are deleted.  One cache root (`CHOUPO_THERMOML_HOME`), not two.
+THE FIX — **EXECUTED the same day**, and it turned out to be more than
+tidying.  All three files are deleted; `bin/choupo-thermoml` is the only
+ThermoML tool in the tree.  What the fold cost, and what it found:
 
-RECORDED RATHER THAN QUIETLY FIXED because the case and the engine
-change stand on their own: the two datasets are committed static files,
-so nothing at run time depends on which tool wrote them.  But a second
-home for a subsystem is the arity sin, and finding it inside work done
-to *enforce* that doctrine is worth the paragraph rather than a silent
-cleanup.
+* **`sync` performs the download it had described and refused to fake.**  It
+  fetches the tarball, verifies it against the sha256 NIST publishes in the
+  same record, refuses and DELETES on a mismatch, checks every tarball member
+  for path traversal before extracting one, and writes the `SYNC.json` stamp
+  the index already looked for.  `--index-only` stamps a cache that is
+  already unpacked — and it VERIFIES anyway when it can, because otherwise it
+  would silently promote a hand-placed cache to "synced"; the index reads what
+  the stamp *claims*, not merely that it exists.
+
+* **`extract-vle` reads the geometry it used to refuse**, since this slice
+  removed the reason.  Its refusal ("VARIABLE PRESSURE is a different
+  geometry") was never about the file: it was about the CONSUMER, which could
+  price only one pressure.  A varied pressure now becomes a COLUMN and a held
+  one stays a SCALAR — the same Variable/Constraint distinction the reader
+  makes, and the two halves have to agree or a faithful transcription could be
+  written and not read.
+
+* **The cache moved to `thirdParty/thermoml/`, which is where it always
+  belonged.**  `data/local/` is for Choupo RECORDS held privately — and the
+  loader RESOLVES that tree by name, so anything there is in the runtime's
+  reach by construction.  A 4 GB tree of third-party XML one directory from
+  the resolver was a correctness risk, not just a filing error.
+
+* **The GUI reads the one index.**  `index.json` is 70 MB (it keeps CAS,
+  InChI and InChIKey so `search` can match any of them); the Literature panel
+  needs ~7 MB of citation.  The dev-server middleware PROJECTS it, once,
+  in memory.  Writing a second slim file beside it would have been this
+  section's own sin again.
+
+* **The online Cordra query survived as `search --online`.**  That half was
+  never duplication: `search` needs a 4 GB cache to answer anything, and the
+  API needs none — "what does my cache hold?" and "what has anybody
+  measured?" are two questions, so they are two flags on one command rather
+  than two commands.
+
+TWO PRE-EXISTING DEFECTS FELL OUT OF THE FOLD, both found by pointing the
+older tool at a real article for the first time:
+
+1. **A WRONG AXIS LABEL ON RIGHT NUMBERS.**  `system` was emitted in the
+   file's `<Compound>` order while `x1` followed the BLOCK's `<Component>`
+   order.  They coincide in most files — which is why the fixture never
+   caught it — and in `j.fluid.2011.06.009` they do not: the file declares
+   water then ethanol, the block declares Components (2, 1), and the mole
+   fraction is ethanol's.  The tool wrote `x1 is water` above an x_ethanol
+   column, with the data correct underneath.  *A mislabelled axis is a wrong
+   answer that nothing downstream can detect.*  The names follow `members`
+   now, and a component that cannot be resolved to a name REFUSES rather than
+   being guessed.
+
+2. **A MULTI-BLOCK ARTICLE WAS REFUSED ON ITS FIRST BLOCK.**  The loop raised
+   at the first `<PureOrMixtureData>` that was not a binary bubble curve, so
+   a paper reporting a ternary before its binaries was refused *for the
+   ternary* — and its own "no interpretable dataset found" line was dead code
+   the loop could never reach.  Every block is examined now and the refusals
+   are COLLECTED: exactly one interpretable block is used, several are listed
+   by index with a demand for `--block N` (choosing is the curator's act),
+   none produces each block's own reason.  Kamihama 2012 goes from an
+   unhelpful "declares 1 component(s)" to three named candidates.
+
+3. **An ISOBARIC set was unreachable.**  The reader looked only at ThermoML
+   *Variables* and never at *Constraints*, so a study that fixed its pressure
+   — the commonest form of VLE there is — was refused with "the declared
+   variables are ['composition']", which is true and useless: the pressure
+   was three lines away.
+
+AND A STALE CLAIM CLOSED.  Both the tool and its gate said the
+published-dialect reader was "unverified until a real archive file has passed
+through it".  11 921 of the archive's 11 923 files now parse (the two
+refusals are malformed XML *in the archive*, listed with the parse error), so
+the by-name matching held against the real thing at scale.  The gate's
+blind-spot list was corrected to say it **cannot check** this rather than
+that it is **unsettled** — *a gate whose blind-spot list outlives the blind
+spot tells the reader something false, with authority.*
 
 ## 9  What is pinned, and where
 

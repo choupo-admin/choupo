@@ -5,8 +5,8 @@
  * the tree names the article it came from.  This workspace puts that
  * question one click from the flowsheet: search the user's PRIVATE mirror
  * of the NIST/TRC ThermoML Archive (11 923 articles from five journals,
- * installed by `bin/choupo-import-thermoml` into the gitignored
- * data/local/thermoml/) by compound name, and get authors, journal, year,
+ * installed by `bin/choupo-thermoml sync` into the gitignored
+ * thirdParty/thermoml/) by compound name, and get authors, journal, year,
  * DOI and the measured properties -- a READING LIST, never a value.
  *
  * THE CREDO'S THREE QUESTIONS, answered at the door:
@@ -25,7 +25,7 @@
  * does not exist.  The published site has no dev server and no mirror, so
  * it always shows the status panel -- correctly: the mirror is personal.
  *
- * The search is the same rule as `thermoml_locate.py --local`: every typed
+ * The search is the same rule as `choupo-thermoml search`: every typed
  * word must substring-match some compound name in the entry (case-blind).
  * Chips offer the open case's own components as one-click terms, so the
  * common question -- "who measured MY system?" -- is zero typing.
@@ -79,20 +79,17 @@ export function LiteratureWorkspace() {
 
   useEffect(() => {
     let dead = false;
-    fetch("/__thermoml/citations.jsonl")
+    //  ONE INDEX (2026-08-25).  This panel used to read a parallel
+    //  citations.jsonl built by a second toolchain over a second copy of the
+    //  cache; there is one index now, `bin/choupo-thermoml index`.  The dev
+    //  server PROJECTS it (70 MB of CAS/InChI down to the ~7 MB of citation
+    //  this panel shows) -- see thermomlIndexPlugin -- so what arrives here is
+    //  already the shape below.
+    fetch("/__thermoml/index.json")
       .then(async (r) => {
         if (!r.ok) throw new Error(String(r.status));
-        const text = await r.text();
-        const entries: Citation[] = [];
-        for (const line of text.split("\n")) {
-          if (!line.trim()) continue;
-          try {
-            entries.push(JSON.parse(line));
-          } catch {
-            /* a malformed line loses one entry, never the panel */
-          }
-        }
-        if (!dead) setMirror({ kind: "ready", entries });
+        const raw = (await r.json()) as { entries?: Citation[] };
+        if (!dead) setMirror({ kind: "ready", entries: raw.entries ?? [] });
       })
       .catch(() => {
         if (!dead) setMirror({ kind: "absent" });
@@ -138,7 +135,7 @@ export function LiteratureWorkspace() {
           your machine (data/local is never committed) and the runtime
           never reads it. Install it once with:
         </Text>
-        <Code>bin/choupo-import-thermoml</Code>
+        <Code>bin/choupo-thermoml sync</Code>
         <Text size="xs" c="dimmed" ta="center" maw={560}>
           ~190 MB from data.nist.gov, checksum-verified against the NIST
           record. If you use it in published work, NIST asks that you cite
@@ -235,7 +232,7 @@ export function LiteratureWorkspace() {
           </ScrollArea>
           <Text size="xs" c="dimmed">
             The article is the source: read it and cite it — never this
-            index. The numerical data files sit in data/local/thermoml/ on
+            index. The numerical data files sit in thirdParty/thermoml/ on
             your machine.
           </Text>
         </>

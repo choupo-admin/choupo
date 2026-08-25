@@ -1,0 +1,85 @@
+/*--------------------------------------------------------------------------*\
+  MULTI-ISOBAR BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML
+  file by bin/choupo-thermoml extract-vle.
+
+  system       ethanol + water   (x1 is ethanol)
+  pressure     3 isobars, 13.15 .. 32.86 kPa   (a COLUMN: each point at its own)
+  points       45
+
+  The identity below is DECLARED AS FIELDS, not only described here:
+  a header is a comment the parser discards, and the dossier must be
+  able to say which archive file, which publication and which system
+  a verdict rests on.
+
+  The role this evidence plays -- fit or held-out validation -- is NOT
+  set here.  It is declared in the operation that consumes it, before
+  any fitting runs (src/propertyOps/EvidencePartition.H).
+\*--------------------------------------------------------------------------*/
+
+property     binaryVLE.T_bubble;
+system       ( ethanol water );
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    archiveFile  "j.fluid.2011.06.009.xml";
+    doi          "10.1016/j.fluid.2011.06.009";
+    sha256       "288bc73f24c1c1e54f8f5685a6b1353d92378f093fd15271a27337b3a32e899d";
+}
+
+columns
+(
+    { name x1;  unit -;  }
+    { name Pressure;  unit kPa; }
+    { name T;   unit K;  }
+);
+
+data
+(
+      0.0630     32.8600  335.16
+      0.0760     19.7100  323.53
+      0.1040     32.8600  332.54
+      0.1170     13.1500  313.71
+      0.1410     19.7100  320.52
+      0.1500     32.8600  330.96
+      0.2410     13.1500  310.7
+      0.2480     32.8600  329.26
+      0.2600     19.7100  318.05
+      0.3830     13.1500  309.53
+      0.3900     19.7100  317.04
+      0.4540     32.8600  326.77
+      0.4920     13.1500  308.82
+      0.4990     19.7100  316.35
+      0.5810     32.8600  326.1
+      0.5900     13.1500  308.36
+      0.5990     19.7100  315.9
+      0.6560     13.1500  308.1
+      0.6570     32.8600  325.89
+      0.6880     19.7100  315.55
+      0.7600     32.8600  325.67
+      0.7710     13.1500  307.7
+      0.7990     19.7100  315.29
+      0.8050     19.7100  315.26
+      0.8390     32.8600  325.53
+      0.8400     13.1500  307.54
+      0.8410     19.7100  315.19
+      0.8540     32.8600  325.51
+      0.8640     13.1500  307.56
+      0.8830     19.7100  315.15
+      0.8970     13.1500  307.51
+      0.9080     13.1500  307.46
+      0.9110     13.1500  307.5
+      0.9130     19.7100  315.16
+      0.9130     32.8600  325.46
+      0.9310     19.7100  315.13
+      0.9310     32.8600  325.43
+      0.9320     32.8600  325.42
+      0.9340     13.1500  307.48
+      0.9450     19.7100  315.13
+      0.9470     13.1500  307.45
+      0.9600     19.7100  315.14
+      0.9640     19.7100  315.14
+      0.9650     32.8600  325.45
+      0.9710     13.1500  307.44
+);

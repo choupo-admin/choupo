@@ -36,23 +36,39 @@ REFUSED BY NAME.  If NIST ever migrates the archive to v5 -- and publishing a
 v5 schema suggests they intend to -- Choupo refuses instead of silently
 misreading, which is the whole point of detecting rather than assuming.
 
-MATCHING IS BY LOCAL ELEMENT NAME, NOT BY PATH.  The exact nesting of the
-published dialect could not be verified from this environment (every NIST host
-is unreachable behind the proxy here), so the extractor searches for elements
-by name anywhere beneath their parent and REFUSES when a required name is
-absent.  A nesting difference then costs an adjustment; it does not produce
-plausible wrong numbers.
+MATCHING IS BY LOCAL ELEMENT NAME, NOT BY PATH.  The extractor searches for
+elements by name anywhere beneath their parent and REFUSES when a required
+name is absent.  A nesting difference then costs an adjustment; it does not
+produce plausible wrong numbers.  That choice was made when the real archive
+could not be reached, and it is the reason nothing had to be rewritten when it
+finally was.
 
-STATUS.  The v5 path is exercised against a REAL NIST file.  The published
-path is exercised against a FIXTURE written from the documented element names
-and is marked unverified until a real archive file has passed through it --
-`index` says so on every run over a cache with no provenance stamp.
+STATUS -- and this paragraph used to say the opposite, correctly, until
+2026-08-25.  It read: "the published path is exercised against a FIXTURE
+written from the documented element names and is marked unverified until a
+real archive file has passed through it."  Real archive files have now passed
+through it: **11 921 of the archive's 11 923 files parse**, every one of them
+the published dialect, yielding 25 546 searchable identifiers.  The two
+refusals are malformed XML IN THE ARCHIVE (`j.fluid.2018.07.020.xml` and
+`.021`, both an invalid token mid-file) and are LISTED with the parse error
+rather than dropped -- which is the behaviour the reader was written for.
+
+So the by-name matching held against the real thing at scale.  What is STILL
+unexercised is the v5 dialect at scale (one file), and every property this
+tool does not read: `index` lists 92 declared property types Choupo cannot
+consume yet, and listing them is the whole point -- a reader that quietly
+ignored them would be indistinguishable from one that found nothing.
 """
 
 import argparse
 import hashlib
 import json
 import os
+import re
+import ssl
+import tarfile
+import urllib.parse
+import urllib.request
 import pathlib
 import sys
 import xml.etree.ElementTree as ET
@@ -62,6 +78,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 ARCHIVE_DOI = "10.18434/mds2-2422"
 ARCHIVE_LANDING = "https://data.nist.gov/od/id/mds2-2422"
 SCHEMA_URL = "https://trc.nist.gov/ThermoML.xsd"
+
+#  The distribution facts, READ FROM THE RECORD on 2026-08-25, not guessed.
+SYNC_BASE = "https://data.nist.gov/od/ds/mds2-2422"
+SYNC_TARBALL = "ThermoML.v2020-09-30.tgz"
+#  The proxy's CA is not in the system store, and this host rejects urllib's
+#  default User-Agent with a 403 that curl does not receive.  Both are
+#  environment facts, discovered by hitting them.
+CA_BUNDLE = os.environ.get("SSL_CERT_FILE") or "/root/.ccr/ca-bundle.crt"
+SYNC_UA = "choupo-thermoml/1.0 (private mirror; doi:10.18434/mds2-2422)"
 
 #  The property names Choupo can consume today.  Anything else is LISTED and
 #  skipped, never silently dropped: a reader that quietly ignores two thirds of
@@ -170,14 +195,28 @@ def classify(prop_name: str):
 def read_file(path: pathlib.Path):
     root = ET.parse(path).getroot()
     dialect = detect_dialect(root)
+    #  THE CITATION FIELDS ARE PART OF THE INDEX (2026-08-25).  They were not,
+    #  and their absence is why a SECOND index (a parallel citations.jsonl) got
+    #  built beside this one: the Literature workspace needs authors, journal
+    #  and year to show a reader WHICH PAPER to go and read, and this index
+    #  carried only doi + title.  Two indexes over one cache is the arity sin;
+    #  the fix is for the one index to answer the question.
     if dialect == "published":
         comps, props = compounds_published(root), properties_published(root)
         doi = find_text(root, "sDOI")
         title = find_text(root, "sTitle")
+        authors = [e.text.strip() for e in find_all(root, "sAuthor")
+                   if e.text and e.text.strip()]
+        journal = find_text(root, "sPubName")
+        year = find_text(root, "yrPubYr")
     else:
         comps, props = compounds_v5(root), properties_v5(root)
         doi = find_text(root, "DOI")
         title = find_text(root, "title")
+        authors = [e.text.strip() for e in find_all(root, "author")
+                   if e.text and e.text.strip()]
+        journal = find_text(root, "publicationName")
+        year = find_text(root, "publicationYear")
 
     supported, unsupported = [], []
     for p in props:
@@ -188,6 +227,9 @@ def read_file(path: pathlib.Path):
         "dialect": dialect,
         "doi": doi,
         "title": title,
+        "authors": authors,
+        "journal": journal,
+        "year": year,
         "compounds": comps,
         "propertiesSupported": sorted({classify(p) for p in supported}),
         "propertiesDeclared": sorted(set(props)),
@@ -306,10 +348,30 @@ def _var_kind(v):
     return kind, unit, org
 
 
-def extract_binary_bubble(root, path):
-    """One fixed-P binary bubble series, or a BubbleRefusal naming the shape.
+def extract_binary_bubble(root, path, block=None):
+    """One binary bubble series, or a BubbleRefusal naming the shape.
 
-    Returns {system, doi, P_kPa, points[(x1, T)], nComponents}."""
+    ONE ARTICLE, SEVERAL DATASETS (2026-08-25).  This used to loop over the
+    file's <PureOrMixtureData> blocks and raise on the FIRST one that was not a
+    binary bubble curve -- so a paper that reports a ternary before its two
+    binaries was refused for the ternary, and the binaries were unreachable.
+    Its own "no interpretable dataset found" line was dead code, because the
+    loop could never reach it.
+
+    Every block is examined now, and the refusals are COLLECTED rather than
+    thrown at the first one.  Then:
+
+      exactly one interpretable  -> use it; there is nothing to choose
+      several                    -> REFUSE, listing them by index, and require
+                                    `--block N`.  Picking one would be guessing
+                                    which experiment the curator meant
+      none                       -> REFUSE, naming each block's own reason
+
+    `block` names an index into the file's blocks (not into the interpretable
+    subset, which would shift as the reader improves).
+
+    Returns {system, doi, points[(x1, T)], and either P_kPa or
+    P_kPa_perPoint + isobars}."""
     comps = compounds_published(root)
     doi = find_text(root, "sDOI")
 
@@ -317,93 +379,215 @@ def extract_binary_bubble(root, path):
     if not poms:
         raise BubbleRefusal("the file declares no <PureOrMixtureData> block")
 
-    for pom in poms:
-        members = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
-        if len(members) != 2:
+    if block is not None:
+        if not 0 <= block < len(poms):
             raise BubbleRefusal(
-                f"this dataset declares {len(members)} component(s).  "
-                f"Only BINARY systems are interpreted.")
+                f"--block {block} is out of range: this file has "
+                f"{len(poms)} dataset block(s), numbered 0..{len(poms)-1}")
+        poms = [poms[block]]
 
-        #  The property must be temperature, and there must be exactly one.
-        props = {}
-        for pr in find_all(pom, "Property"):
-            num, name = find_text(pr, "nPropNumber"), find_text(pr, "ePropName")
-            if num and name:
-                props[num] = name
-        if len(props) != 1:
-            raise BubbleRefusal(
-                f"this dataset declares {len(props)} properties "
-                f"({', '.join(sorted(props.values())) or 'none'}).  A bubble "
-                f"series carries exactly one: the temperature.")
-        pnum, pname = next(iter(props.items()))
-        if "temperature" not in pname.lower():
-            raise BubbleRefusal(
-                f"the measured property is '{pname}'.  This extractor reads "
-                f"the BUBBLE TEMPERATURE; a dataset whose property is a "
-                f"pressure or a composition is a different geometry.")
+    ok, refusals = [], []
+    for idx, pom in enumerate(poms):
+        try:
+            ok.append((block if block is not None else idx,
+                       _one_bubble_block(root, pom, comps, doi)))
+        except BubbleRefusal as ex:
+            refusals.append((block if block is not None else idx, str(ex)))
 
-        #  The variables must be exactly {pressure, composition}.
-        kinds = {}
-        for v in find_all(pom, "Variable"):
-            num = find_text(v, "nVarNumber")
-            if num:
-                kinds[num] = _var_kind(v)
-        kindset = sorted(k for k, _, _ in kinds.values())
-        if kindset != ["composition", "pressure"]:
-            raise BubbleRefusal(
-                f"the declared variables are {kindset or ['none']}.  This "
-                f"extractor requires EXACTLY a pressure and a liquid "
-                f"composition -- it does not choose among the variables "
-                f"present, because choosing is guessing.")
+    if len(ok) == 1:
+        return ok[0][1]
+    if len(ok) > 1:
+        listing = "\n".join(
+            f"      --block {i}   {r['system'][0]} + {r['system'][1]}, "
+            f"{len(r['points'])} points, "
+            + (f"{len(r['isobars'])} isobars {min(r['isobars'])}"
+               f"..{max(r['isobars'])} kPa" if "isobars" in r
+               else f"{r['P_kPa']} kPa")
+            for i, r in ok)
+        raise BubbleRefusal(
+            f"this file carries {len(ok)} interpretable bubble-point"
+            f" dataset(s), and choosing among them is the CURATOR's act, not"
+            f" this tool's:\n" + listing +
+            "\n    Name one with `--block N`.")
+    detail = "\n".join(f"      block {i}: {why}" for i, why in refusals)
+    raise BubbleRefusal(
+        f"none of this file's {len(refusals)} dataset block(s) is a binary"
+        f" bubble-point series:\n" + detail)
 
-        pvar = next(n for n, (k, _, _) in kinds.items() if k == "pressure")
-        xvar = next(n for n, (k, _, _) in kinds.items() if k == "composition")
-        xorg = kinds[xvar][2]
-        if xorg and xorg != members[0]:
-            #  The composition names a component; x1 must be the FIRST, or the
-            #  series would be reported against the wrong axis.
-            members = [members[1], members[0]]
 
+def _one_bubble_block(root, pom, comps, doi):
+    """Interpret ONE <PureOrMixtureData> block, or raise BubbleRefusal."""
+    members = [find_text(c, "nOrgNum") for c in find_all(pom, "Component")]
+    if len(members) != 2:
+        raise BubbleRefusal(
+            f"this dataset declares {len(members)} component(s).  "
+            f"Only BINARY systems are interpreted.")
+
+    #  The property must be temperature, and there must be exactly one.
+    props = {}
+    for pr in find_all(pom, "Property"):
+        num, name = find_text(pr, "nPropNumber"), find_text(pr, "ePropName")
+        if num and name:
+            props[num] = name
+    if len(props) != 1:
+        raise BubbleRefusal(
+            f"this dataset declares {len(props)} properties "
+            f"({', '.join(sorted(props.values())) or 'none'}).  A bubble "
+            f"series carries exactly one: the temperature.")
+    pnum, pname = next(iter(props.items()))
+    if "temperature" not in pname.lower():
+        raise BubbleRefusal(
+            f"the measured property is '{pname}'.  This extractor reads "
+            f"the BUBBLE TEMPERATURE; a dataset whose property is a "
+            f"pressure or a composition is a different geometry.")
+
+    #  The variables must be exactly {pressure, composition}.
+    kinds = {}
+    for v in find_all(pom, "Variable"):
+        num = find_text(v, "nVarNumber")
+        if num:
+            kinds[num] = _var_kind(v)
+    kindset = sorted(k for k, _, _ in kinds.values())
+
+    #  A HELD-CONSTANT PRESSURE IS STILL A PRESSURE (2026-08-25).  ThermoML
+    #  draws a first-class distinction between a Variable (measured per point)
+    #  and a Constraint (fixed for the series), and an ISOBARIC study -- the
+    #  commonest form of VLE there is -- declares its pressure as a
+    #  CONSTRAINT.  This reader looked only at Variables, so it refused every
+    #  such file with "the declared variables are ['composition']", which is
+    #  true and unhelpful: the pressure was three lines away.
+    #
+    #  It is the same distinction EvidencePartition::loadColumns makes on the
+    #  reading side, and the two halves have to agree or a faithful
+    #  transcription of an isobar could be written and not read.
+    pconst_kPa = None
+    if "pressure" not in kindset:
+        for c in find_all(pom, "Constraint"):
+            unit = ""
+            for e in c.iter():
+                t = local(e.tag)
+                if t == "ePressure" and e.text:
+                    unit = e.text.strip()
+            if not unit:
+                continue
+            if "kpa" not in unit.lower():
+                raise BubbleRefusal(
+                    f"the held-constant pressure is declared in '{unit}'.  "
+                    f"Only kPa is read today; a unit conversion here would be "
+                    f"a silent one.")
+            val = find_text(c, "nConstraintValue")
+            if val:
+                pconst_kPa = float(val)
+                kindset = sorted(kindset + ["pressure"])
+                break
+
+    if kindset != ["composition", "pressure"]:
+        raise BubbleRefusal(
+            f"the declared variables are {sorted(k for k, _, _ in kinds.values()) or ['none']}"
+            f" and no held-constant pressure was found among the Constraints."
+            f"  This extractor requires a liquid composition and a pressure "
+            f"(either form) -- it does not choose among the variables "
+            f"present, because choosing is guessing.")
+
+    pvar = next((n for n, (k, _, _) in kinds.items() if k == "pressure"), None)
+    xvar = next(n for n, (k, _, _) in kinds.items() if k == "composition")
+    xorg = kinds[xvar][2]
+    if xorg and xorg != members[0]:
+        #  The composition names a component; x1 must be the FIRST, or the
+        #  series would be reported against the wrong axis.
+        members = [members[1], members[0]]
+
+    if pvar is not None:
         punit = kinds[pvar][1]
         if "kpa" not in punit.lower():
             raise BubbleRefusal(
                 f"the pressure is declared in '{punit}'.  Only kPa is read "
                 f"today; a unit conversion here would be a silent one.")
 
-        pressures, points = set(), []
-        for nv in find_all(pom, "NumValues"):
-            xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
-                  for x in find_all(nv, "VariableValue")}
-            if pvar not in xs or xvar not in xs:
-                raise BubbleRefusal(
-                    "a data point declares only one of the two required "
-                    "variables -- the series is not a fixed-P bubble curve.")
-            tval = ""
-            for pv in find_all(nv, "PropertyValue"):
-                if find_text(pv, "nPropNumber") == pnum:
-                    tval = find_text(pv, "nPropValue")
-            if not tval:
-                continue
-            pressures.add(round(float(xs[pvar]), 6))
-            points.append((float(xs[xvar]), float(tval)))
-
-        if len(pressures) != 1:
+    pressures, points, pressures_per_point = set(), [], []
+    for nv in find_all(pom, "NumValues"):
+        xs = {find_text(x, "nVarNumber"): find_text(x, "nVarValue")
+              for x in find_all(nv, "VariableValue")}
+        if xvar not in xs or (pvar is not None and pvar not in xs):
             raise BubbleRefusal(
-                f"the series spans {len(pressures)} distinct pressures "
-                f"({sorted(pressures)}).  VARIABLE PRESSURE is a different "
-                f"geometry; this extractor reads a curve at ONE pressure.")
-        if len(points) < 2:
-            raise BubbleRefusal("fewer than two usable points")
+                "a data point declares only one of the two required "
+                "variables -- the series is not a bubble curve.")
+        if pvar is None:
+            xs = dict(xs, **{"__const_P__": str(pconst_kPa)})
+        tval = ""
+        for pv in find_all(nv, "PropertyValue"):
+            if find_text(pv, "nPropNumber") == pnum:
+                tval = find_text(pv, "nPropValue")
+        if not tval:
+            continue
+        pk = float(xs[pvar] if pvar is not None else xs["__const_P__"])
+        pressures.add(round(pk, 6))
+        points.append((float(xs[xvar]), float(tval)))
+        pressures_per_point.append(pk)
 
-        names = [c["name"] for c in comps] or ["component1", "component2"]
-        return {
-            "system": names[:2],
-            "doi": doi,
-            "P_kPa": next(iter(pressures)),
-            "points": sorted(points),
-        }
+    #  VARIABLE PRESSURE IS NOW READ (2026-08-25), and the refusal that
+    #  stood here was right on the day it was written.  It said: "the
+    #  series spans N distinct pressures.  VARIABLE PRESSURE is a
+    #  different geometry; this extractor reads a curve at ONE pressure."
+    #  The reason was not the file -- it was the CONSUMER: `fitParameters
+    #  (kind T_bubble)` read one scalar `residual.P` and priced every point
+    #  at it, so a multi-isobar series could only have been fitted by
+    #  discarding all but one pressure.  Writing it out would have handed
+    #  the fit points it could not price.
+    #
+    #  The fit now takes a pressure PER POINT (docs/design/held-out-
+    #  pressure.md), so the geometry is representable and the refusal has
+    #  lost its reason.  Removing a guard because its cause is gone is a
+    #  different act from weakening one, and this comment is here so the
+    #  next reader can tell which happened.
+    if len(points) < 2:
+        raise BubbleRefusal("fewer than two usable points")
 
-    raise BubbleRefusal("no interpretable dataset found")
+    #  THE NAMES MUST FOLLOW `members`, NOT THE DOCUMENT ORDER.  Found
+    #  2026-08-25 on the first real multi-isobar file, and it is a
+    #  pre-existing defect of exactly the class this project polices: a
+    #  plausible number on the wrong axis.
+    #
+    #  `members` is the BLOCK's <Component> order, already swapped above so
+    #  that members[0] is the compound the composition variable names.
+    #  `comps` is the FILE's <Compound> order.  They coincide in most
+    #  files -- which is why the fixture never caught this -- and in
+    #  j.fluid.2011.06.009 they do not: the file declares water(1) then
+    #  ethanol(2), the block declares Components (2, 1), and the mole
+    #  fraction is ethanol's.  Taking `comps[:2]` therefore labelled an
+    #  x_ethanol column `x1 is water`, with the data untouched and correct
+    #  underneath it.  A wrong axis label on right numbers is worse than
+    #  wrong numbers, because nothing downstream can detect it.
+    by_org = {}
+    for c, org in zip(comps, [find_text(x, "nOrgNum")
+                              for x in find_all(root, "Compound")]):
+        if org:
+            by_org[org] = c["name"]
+    names = [by_org.get(m, "") for m in members]
+    if not all(names):
+        raise BubbleRefusal(
+            "a component of this dataset could not be resolved to a "
+            "compound name by its RegNum.  The axis of x1 would be a "
+            "guess, and a mislabelled axis is a wrong answer that nothing "
+            "downstream can detect.")
+    rec = {
+        "system": names[:2],
+        "doi": doi,
+        "points": sorted(points),
+    }
+    if len(pressures) == 1:
+        #  Held CONSTANT: keep it a scalar, which is what ThermoML's own
+        #  Constraint means and what a faithful transcription writes.
+        rec["P_kPa"] = next(iter(pressures))
+    else:
+        #  VARIED: it becomes a column, one value per point, in the same
+        #  order as `points`.  A study that measured three isobars has
+        #  said something a single-isobar study cannot, and flattening it
+        #  to a mean would destroy exactly that.
+        rec["P_kPa_perPoint"] = [p for _, p in sorted(
+            zip(points, pressures_per_point), key=lambda z: z[0])]
+        rec["isobars"] = sorted(pressures)
+    return rec
 
 
 def cmd_extract(a):
@@ -525,7 +709,7 @@ def cmd_extract_vle(a):
         return 1
 
     try:
-        rec = extract_binary_bubble(root, src)
+        rec = extract_binary_bubble(root, src, block=a.block)
     except BubbleRefusal as ex:
         #  THE REFUSAL NAMES WHAT IS SUPPORTED, so it carries its own remedy.
         print(f"choupo-thermoml extract-vle: REFUSED\n"
@@ -545,13 +729,25 @@ def cmd_extract_vle(a):
     sysname = "-".join(rec["system"]).replace(" ", "_")
     out = dest / f"{sysname}-bubble-{src.stem}.dat"
 
+    varying = "P_kPa_perPoint" in rec
+    if varying:
+        lo, hi = min(rec["isobars"]), max(rec["isobars"])
+        head = ("MULTI-ISOBAR BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
+                "  file by bin/choupo-thermoml extract-vle.")
+        pline = (f"  pressure     {len(rec['isobars'])} isobars, {lo} .. {hi} kPa"
+                 f"   (a COLUMN: each point at its own)")
+    else:
+        head = ("FIXED-PRESSURE BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
+                "  file by bin/choupo-thermoml extract-vle.")
+        pline = f"  pressure     {rec['P_kPa']} kPa   (CONSTANT across the series)"
+
     lines = [
         "/*--------------------------------------------------------------------------*\\",
-        "  FIXED-PRESSURE BINARY BUBBLE-POINT EVIDENCE, extracted from a ThermoML",
-        "  file by bin/choupo-thermoml extract-vle.",
+        "  " + head[0],
+        head[1],
         "",
         f"  system       {rec['system'][0]} + {rec['system'][1]}   (x1 is {rec['system'][0]})",
-        f"  pressure     {rec['P_kPa']} kPa   (CONSTANT across the series)",
+        pline,
         f"  points       {len(rec['points'])}",
         "",
         "  The identity below is DECLARED AS FIELDS, not only described here:",
@@ -566,12 +762,31 @@ def cmd_extract_vle(a):
         "",
         "property     binaryVLE.T_bubble;",
         f"system       ( {rec['system'][0]} {rec['system'][1]} );",
-        f"pressure     {rec['P_kPa']} kPa;",
+    ]
+    if not varying:
+        #  The held-constant form.  THE UNIT IS NEVER OMITTED: an unqualified
+        #  number is read as canonical SI, so a bare `pressure 101.325;` would
+        #  become 101 Pa and the fit would converge to a vacuum with no other
+        #  symptom (EvidencePartition refuses it, and this is the writer's half
+        #  of that contract).
+        lines.append(f"pressure     {rec['P_kPa']} kPa;")
+    lines += [
         "",
         "provenance",
         "{",
         f"    source       {a.provenance};",
     ]
+    if not syn:
+        #  THE CONDITION THE TIER RULING ATTACHES.  docs/design/thermoml-
+        #  archive-assessment.md admits point values "cited to the ORIGINAL
+        #  article, CHECKED AGAINST IT when the paper is in hand".  This tool
+        #  transcribes from the archive and has never seen the article, so the
+        #  second half is unmet at the moment of writing -- and a file that did
+        #  not say so would let a reader assume it had been done, because the
+        #  DOI is there from birth and the file looks fully sourced.  A curator
+        #  who reads the paper and confirms the numbers edits this to
+        #  `checked`; nothing automatic may.
+        lines.append("    reviewStatus transcribedNotCheckedAgainstArticle;")
     if syn:
         lines.append('    note         "STRUCTURAL FIXTURE -- generated, never measured.  '
                      'Any verdict computed from it is about the machinery, not physics";')
@@ -584,20 +799,32 @@ def cmd_extract_vle(a):
         "columns",
         "(",
         "    { name x1;  unit -;  }",
+    ]
+    if varying:
+        lines.append("    { name Pressure;  unit kPa; }")
+    lines += [
         "    { name T;   unit K;  }",
         ");",
         "",
         "data",
         "(",
     ]
-    for x, t in rec["points"]:
-        lines.append(f"    {x:8.4f}  {t:.6g}")
+    if varying:
+        for (x, t), pk in zip(rec["points"], rec["P_kPa_perPoint"]):
+            lines.append(f"    {x:8.4f}  {pk:10.4f}  {t:.6g}")
+    else:
+        for x, t in rec["points"]:
+            lines.append(f"    {x:8.4f}  {t:.6g}")
     lines += [");", ""]
     out.write_text("\n".join(lines))
 
     print(f"choupo-thermoml extract-vle: {out}  ({len(rec['points'])} points)")
     print(f"  system    {rec['system'][0]} + {rec['system'][1]}")
-    print(f"  pressure  {rec['P_kPa']} kPa (constant)")
+    if varying:
+        print(f"  pressure  {len(rec['isobars'])} isobars, "
+              f"{min(rec['isobars'])} .. {max(rec['isobars'])} kPa (a column)")
+    else:
+        print(f"  pressure  {rec['P_kPa']} kPa (constant)")
     print(f"  doi       {rec['doi'] or '(none declared)'}")
     if syn:
         print("  provenance synthetic -- GENERATED.  Any verdict from this "
@@ -607,32 +834,160 @@ def cmd_extract_vle(a):
     return 0
 
 
+def _fetch(url, dest=None, text=False):
+    """One HTTP GET.  An explicit User-Agent and an explicit CA bundle,
+    because the defaults fail here in two different ways: urllib's default
+    agent is rejected by the host with a 403 that curl does not get, and the
+    proxy's CA is not in the system store."""
+    req = urllib.request.Request(url, headers={"User-Agent": SYNC_UA})
+    ctx = ssl.create_default_context(cafile=CA_BUNDLE
+                                     if os.path.exists(CA_BUNDLE) else None)
+    with urllib.request.urlopen(req, timeout=120, context=ctx) as r:
+        if text:
+            return r.read().decode("utf-8", "replace")
+        total = int(r.headers.get("Content-Length") or 0)
+        done = 0
+        with open(dest, "wb") as f:
+            while True:
+                chunk = r.read(1 << 20)
+                if not chunk:
+                    break
+                f.write(chunk)
+                done += len(chunk)
+                if total:
+                    sys.stderr.write(f"\r  {done/1e6:8.1f} / {total/1e6:.1f} MB")
+        sys.stderr.write("\n")
+
+
+def _sha256_of(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def cmd_sync(a):
+    """Download the archive FROM NIST and unpack it into the cache.
+
+    IMPLEMENTED 2026-08-25, and this is the half the original slice
+    deliberately left undone.  It used to print a refusal and exit 2, because
+    the distribution URL and its checksum could not be read from the
+    environment it was written in and *inventing them would have shipped a
+    sync that fails at the only moment it matters*.  That was the right call.
+    The network became reachable, the two facts were read from the record, and
+    the refusal became a gap to close rather than a position to hold.
+
+    INTEGRITY, exactly as that refusal promised: the tarball is verified
+    against the sha256 NIST publishes IN THE SAME RECORD, before it is
+    unpacked.  A mismatch DELETES the download -- a mirror that fails its own
+    integrity check must not exist half-installed, because every citation
+    drawn from it afterwards would inherit the doubt silently.
+    """
     cache = cache_root()
-    print(f"choupo-thermoml sync")
+    cache.mkdir(parents=True, exist_ok=True)
+    print("choupo-thermoml sync")
     print(f"  cache      {cache}")
     print(f"  archive    doi:{ARCHIVE_DOI}")
     print(f"  landing    {ARCHIVE_LANDING}")
-    print(f"  schema     {SCHEMA_URL}")
     print()
-    print("  NOT IMPLEMENTED IN THIS SLICE, and refusing rather than pretending:")
-    print("  the download itself is written against the archive's published")
-    print("  distribution URL and checksum, and neither could be read from the")
-    print("  environment this tool was built in -- every NIST host is")
-    print("  unreachable behind its proxy.  Fetching them is one command on a")
-    print("  normal network; inventing them here would ship a sync that fails")
-    print("  at the only moment it matters.")
+
+    tgz = cache / SYNC_TARBALL
+    if a.index_only:
+        print("  --index-only: skipping the download entirely")
+    else:
+        want = _fetch(f"{SYNC_BASE}/{SYNC_TARBALL}.sha256", text=True).split()[0].lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", want):
+            print(f"  REFUSED: the published checksum does not look like a"
+                  f" sha256: {want!r}")
+            return 1
+        if tgz.exists() and _sha256_of(tgz) == want:
+            print(f"  {SYNC_TARBALL} already present and verified -- not re-downloaded")
+        else:
+            print(f"  downloading {SYNC_TARBALL} (~190 MB) from data.nist.gov ...")
+            _fetch(f"{SYNC_BASE}/{SYNC_TARBALL}", dest=tgz)
+            got = _sha256_of(tgz)
+            if got != want:
+                tgz.unlink()
+                print("  REFUSED: sha256 MISMATCH against the checksum published"
+                      f" in the same NIST record:\n    expected {want}\n"
+                      f"    got      {got}\n"
+                      "  The download was DELETED.  A mirror that fails its own"
+                      " integrity check must not exist half-installed.")
+                return 1
+            print(f"  sha256 verified against the record's own {SYNC_TARBALL}.sha256")
+
+        print("  unpacking (this is the slow part) ...")
+        with tarfile.open(tgz) as t:
+            #  A hostile tarball must not write outside the cache.  Checked for
+            #  EVERY member before a single one is extracted, so a refusal
+            #  leaves nothing behind.
+            for m in t.getmembers():
+                p = (cache / m.name).resolve()
+                if not str(p).startswith(str(cache.resolve())):
+                    print(f"  REFUSED: tarball member escapes the cache: {m.name}")
+                    return 1
+            t.extractall(cache)
+        print("  unpacked")
+
+    #  THE STAMP THE INDEX ALREADY LOOKS FOR.  `cmd_index` reports a cache
+    #  with no SYNC.json as `[unverified] ... placed by hand`, which was the
+    #  honest state while this command refused.  Writing it is what turns that
+    #  line off, and it must therefore record what was actually verified --
+    #  never merely that the command ran.
+    #  `--index-only` must not silently UPGRADE a hand-placed cache to
+    #  "synced".  If the tarball is here it is verified against the published
+    #  checksum anyway (one small GET); if that cannot be fetched, or there is
+    #  no tarball, the stamp records what was obtained and says plainly that
+    #  no verification was performed.  The original refusal's own wording:
+    #  a record of what was obtained is never a verification that was not.
+    local_sha = _sha256_of(tgz) if tgz.exists() else None
+    if not a.index_only:
+        integrity = "verified against the checksum published in the same NIST record"
+    elif local_sha is None:
+        integrity = ("NOT VERIFIED -- no tarball in the cache; these files were"
+                     " placed by hand and nothing establishes where they came"
+                     " from")
+    else:
+        try:
+            pub = _fetch(f"{SYNC_BASE}/{SYNC_TARBALL}.sha256", text=True).split()[0].lower()
+            integrity = ("verified against the checksum published in the same"
+                         " NIST record" if pub == local_sha else
+                         f"MISMATCH -- the cached tarball hashes {local_sha},"
+                         f" the record publishes {pub}")
+        except Exception as exc:
+            integrity = ("NOT VERIFIED -- the published checksum could not be"
+                         f" fetched ({type(exc).__name__}); the sha256 below is"
+                         " what is on disk, not a verification")
+    stamp = {
+        "archiveDoi": ARCHIVE_DOI,
+        "landing": ARCHIVE_LANDING,
+        "tarball": SYNC_TARBALL,
+        "integrity": integrity,
+        "sha256": local_sha,
+    }
+    (cache / "SYNC.json").write_text(json.dumps(stamp, indent=2, sort_keys=True))
+    print(f"  wrote {cache / 'SYNC.json'}")
     print()
-    print(f"  Meanwhile: place archive .xml files under {cache} by hand and")
-    print(f"  `choupo-thermoml index` reads them.  Set CHOUPO_THERMOML_HOME to")
-    print(f"  share one copy across a class.")
-    print()
-    print("  INTEGRITY, when it lands: if NIST publishes a checksum the sync")
-    print("  verifies against it and records `integrity verified`; if not it")
-    print("  hashes what it received and records `integrity recorded` -- a")
-    print("  record of what was obtained, never a verification that was not")
-    print("  performed.")
-    return 2
+    print("  The cache is PRIVATE (thirdParty/ is gitignored) and the RUNTIME")
+    print("  NEVER READS IT.  Next: `choupo-thermoml index`, then `search`.")
+    print("  A value moves into a Choupo record only by reading and citing the")
+    print("  ORIGINAL ARTICLE the cache names beside it.")
+    return 0
+
+
+def _sync_provenance(cache) -> str:
+    """What the cache's own stamp claims about where it came from."""
+    stamp = cache / "SYNC.json"
+    if not stamp.exists():
+        return "hand-placed"
+    try:
+        integrity = json.loads(stamp.read_text()).get("integrity", "")
+    except (ValueError, OSError):
+        return "stamp-unreadable"
+    if integrity.startswith("verified"):
+        return "synced"
+    return "stamped-but-unverified"
 
 
 def cmd_index(a):
@@ -683,8 +1038,11 @@ def cmd_index(a):
         "dialects": dialects,
         "entries": entries,
         "byKey": by_key,
-        "provenance": "hand-placed" if not (cache / "SYNC.json").exists()
-                      else "synced",
+        #  READ THE STAMP, do not merely notice it.  `sync --index-only` can
+        #  write a SYNC.json over a cache nobody downloaded, so the existence
+        #  of the file says only that somebody ran the command; what it SAYS
+        #  is the fact.
+        "provenance": _sync_provenance(cache),
     }
     out = cache / "index.json"
     out.write_text(json.dumps(index, indent=2, sort_keys=True))
@@ -709,6 +1067,101 @@ def cmd_index(a):
               "exercised against\n"
               "              a file NIST actually served.")
     print(f"  wrote {out}")
+    return 0
+
+
+#  ---------------------------------------------------------------------------
+#  THE ONLINE BIBLIOGRAPHIC QUERY (folded in 2026-08-25).
+#
+#  `search` reads the local index and needs a 4 GB cache to answer anything.
+#  The archive ALSO publishes a metadata search API, and querying it needs no
+#  cache at all -- which is the difference between "what does my mirror hold?"
+#  and "what has anybody measured?".  Those are two questions, so they are two
+#  flags on one command rather than two commands.
+#
+#  THE API IS METADATA-ONLY BY THE ARCHIVE'S OWN DESIGN.  NIST documents that
+#  the JSON served here has its data points REPLACED BY COUNTS before posting,
+#  so this path cannot import a value even by accident.  That is why it needs
+#  no licence reasoning that `sync` does: crossing to the bulk files is a
+#  deliberate, separate act.
+#  ---------------------------------------------------------------------------
+ONLINE_API = "https://trc.nist.gov/ThermoML-API/objects"
+
+
+def _online_query(compounds, raw):
+    if raw:
+        return raw
+    terms = " AND ".join(r"/Compound/\_/sCommonName/\_:" + c.lower()
+                         for c in compounds)
+    return f"type:TRCTml4 AND ({terms})"
+
+
+def _online_fetch(query, page_size):
+    url = (ONLINE_API + "?" + urllib.parse.urlencode(
+        {"query": query, "pageNum": 0, "pageSize": page_size}))
+    req = urllib.request.Request(
+        url, headers={"Accept": "application/json", "User-Agent": SYNC_UA})
+    ctx = ssl.create_default_context(
+        cafile=CA_BUNDLE if os.path.exists(CA_BUNDLE) else None)
+    try:
+        with urllib.request.urlopen(req, timeout=45, context=ctx) as r:
+            return json.load(r)
+    except Exception as e:
+        #  AN OFFLINE SESSION MUST SAY SO.  An empty list here would read as
+        #  "nobody measured this", which is a different claim entirely.
+        raise SystemExit(
+            f"choupo-thermoml search --online: the archive is unreachable"
+            f" ({e}).\n  This needs network egress to trc.nist.gov.  Use"
+            f" `search` without --online to query the local cache.")
+
+
+def _online_points(content):
+    """The archive's own data-point counts, per property name."""
+    out = {}
+
+    def walk(node):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(v, dict) and "data_points" in v:
+                    out[k] = out.get(k, 0) + v.get("data_points", 0)
+                else:
+                    walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(content.get("summary") or content.get("Summary") or {})
+    return out
+
+
+def cmd_search_online(a):
+    q = _online_query([a.query] if a.query else [], a.raw_query)
+    d = _online_fetch(q, a.max_n)
+    total = d.get("size", 0)
+    print(f"ThermoML API: {total} entr{'y' if total == 1 else 'ies'} for"
+          f" {a.query or a.raw_query}  (showing at most {a.max_n}; five"
+          f" journals, ~2003-2019 -- absence here is not absence of"
+          f" literature)")
+    for r in d.get("results", []):
+        c = r.get("content", {})
+        cit = c.get("Citation", {})
+        au = cit.get("sAuthor") or []
+        if isinstance(au, str):
+            au = [au]
+        names = "; ".join(x.split("[")[0].strip() for x in au[:4])
+        if len(au) > 4:
+            names += " et al."
+        print(f"\n  {names} ({cit.get('yrPubYr', '?')})")
+        print(f"    {str(cit.get('sTitle', '?'))[:96]}")
+        print(f"    {cit.get('sPubName', '?')}"
+              + (f"  doi:{cit['sDOI']}" if cit.get("sDOI") else ""))
+        pts = _online_points(c)
+        if pts:
+            top = sorted(pts.items(), key=lambda kv: -kv[1])[:3]
+            print("    measured: " + "; ".join(f"{k} ({v} pts)" for k, v in top))
+    print("\n  The ARTICLE is the source.  Read it, cite IT -- never this"
+          " index -- and\n  record the value with the paper's own units and"
+          " uncertainty.")
     return 0
 
 
@@ -742,13 +1195,33 @@ def cmd_search(a):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("sync", help="download the official NIST archive")
+    sy = sub.add_parser("sync", help="download the official NIST archive")
+    sy.add_argument("--index-only", action="store_true",
+                    help="skip the download; stamp a cache already unpacked "
+                         "by hand or by an earlier sync")
     sub.add_parser("index", help="build the local index over the cache")
     s = sub.add_parser("search", help="search by name / CAS / InChI / InChIKey")
     s.add_argument("query")
+    s.add_argument("--online", action="store_true",
+                   help="query the NIST metadata API instead of the local "
+                        "cache -- answers 'what has anybody measured?' rather "
+                        "than 'what does my cache hold?', and needs no cache "
+                        "(the API serves citations with the data points "
+                        "stripped, by the archive's own design)")
+    s.add_argument("--raw-query", default="",
+                   help="a Lucene query passed to the API verbatim "
+                        "(implies --online)")
+    s.add_argument("--max-n", type=int, default=10,
+                   help="how many results to show (--online only)")
     ev = sub.add_parser("extract-vle",
-                        help="write ONE dataset from a fixed-P binary bubble-point file")
+                        help="write ONE dataset from a binary bubble-point file")
     ev.add_argument("file", help="the ThermoML .xml to read")
+    ev.add_argument("--block", type=int, default=None,
+                    help="which <PureOrMixtureData> block to read, when the "
+                         "file carries more than one interpretable dataset.  "
+                         "Omit it and the tool uses the only one there is, or "
+                         "REFUSES with the list -- choosing among several is "
+                         "the curator's act, not the tool's")
     ev.add_argument("--into", required=True, help="destination directory")
     ev.add_argument("--provenance", default="measured",
                     choices=["measured", "synthetic"],
@@ -758,6 +1231,9 @@ def main():
     e.add_argument("query")
     e.add_argument("--into", default="constant/experiments")
     a = ap.parse_args()
+    if a.cmd == "search" and (getattr(a, "online", False)
+                              or getattr(a, "raw_query", "")):
+        return cmd_search_online(a)
     return {"sync": cmd_sync, "index": cmd_index, "search": cmd_search,
             "extract": cmd_extract, "extract-vle": cmd_extract_vle}[a.cmd](a)
 

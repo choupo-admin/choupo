@@ -6749,7 +6749,7 @@ Each pair is at its best where its evidence was taken. The regression bought an 
 
 WHY IT HAPPENS, AND THE SECOND LESSON. NRTL's interaction is tau = a + b/T, so identifying `a` and `b` separately needs data that span 1/T. Three isobars from 13 to 33 kPa span about 28 K around 320 K, which moves 1/T by roughly 9 \% -- better than the 12 K of a single isobar (fitNRTL01), and it shows: the condition number of J'J falls from 3.6e11 to 5.6e9, two orders of magnitude. But `max|correlation|` is still 1.000 and the run still reports `identifiable 0`. Two orders of magnitude of conditioning did NOT buy identifiability, and the confidence intervals say why: b\_ij = -539 +/- 456, b\_ji = 682 +/- 768. The parameters are a correlated pair that happens to describe the vacuum data; nothing pins either one, so nothing constrains what they do at 101 kPa. The catalogue record's own declared validity window is 298-373 K -- it was fitted where it is being asked, and this fit was not.
 
-THE EVIDENCE, AND WHERE IT CAME FROM. Both datasets were read out of the NIST/TRC ThermoML Archive by `bin/curate/thermoml\_extract.py` and carry the citation of the article they were measured in, as a field the engine reads rather than a comment it discards:
+THE EVIDENCE, AND WHERE IT CAME FROM. Both datasets were read out of the NIST/TRC ThermoML Archive by `bin/choupo-thermoml extract-vle` and carry the citation of the article they were measured in, as a field the engine reads rather than a comment it discards:
 
 FIT Voutsas, Pamouktsis, Argyris \& Pappa, Fluid Phase Equilib. (2011), doi:10.1016/j.fluid.2011.06.009 -- 45 points on three isobars, 13.15 / 19.71 / 32.86 kPa.
 

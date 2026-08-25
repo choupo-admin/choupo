@@ -50,7 +50,7 @@
   it is being asked, and this fit was not.
 
   THE EVIDENCE, AND WHERE IT CAME FROM.  Both datasets were read out of the
-  NIST/TRC ThermoML Archive by `bin/curate/thermoml_extract.py` and carry the
+  NIST/TRC ThermoML Archive by `bin/choupo-thermoml extract-vle` and carry the
   citation of the article they were measured in, as a field the engine reads
   rather than a comment it discards:
 
@@ -140,11 +140,11 @@ operations
         evidence
         (
             {
-                dataset  "constant/experiments/voutsas2011-ethanol-water.dat";
+                dataset  "constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat";
                 role     fit;
             }
             {
-                dataset  "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+                dataset  "constant/experiments/ethanol-water-bubble-je2008704.dat";
                 role     validation;
             }
         );
@@ -194,7 +194,7 @@ operations
             components  ( ethanol  water );
         }
 
-        dataset  "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+        dataset  "constant/experiments/ethanol-water-bubble-je2008704.dat";
 
         output
         {
@@ -219,7 +219,7 @@ operations
             components  ( ethanol  water );
         }
 
-        dataset  "constant/experiments/voutsas2011-ethanol-water.dat";
+        dataset  "constant/experiments/ethanol-water-bubble-j.fluid.2011.06.009.dat";
 
         output
         {
