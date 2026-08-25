@@ -138,7 +138,9 @@ Description
 #include "core/Dictionary.H"
 #include "core/Types.H"
 
+#include <cmath>
 #include <cstddef>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -170,13 +172,40 @@ struct EvidenceDataset
     std::string archiveFile;   // the ThermoML file it was extracted from
     std::string system;        // "ethanol + water"
     std::string pressure;      // as declared, with its unit
+    //  `provenance { reviewStatus ...; }`, on the same footing as a component
+    //  record's.  A dataset TRANSCRIBED from a compilation and not yet checked
+    //  against the article it cites is in a different state from one a curator
+    //  has verified, and the difference must reach the run: a citation says
+    //  where the numbers are supposed to come from, not that anybody looked.
+    //  Empty = the dataset declares none, announced exactly as a missing DOI.
+    std::string reviewStatus;
 };
 
-//  A loaded (x, y) pair from a dataset's declared columns.
+//  A loaded (x, y) pair from a dataset's declared columns, plus an OPTIONAL
+//  third coordinate `z`.
+//
+//  WHY A THIRD COORDINATE, AND WHY IT IS OPTIONAL (2026-08-25).  A pure-
+//  property datum is genuinely two-dimensional: (T, Psat), (T, Cp).  A BINARY
+//  VLE datum is not -- a bubble point is (x, P, T), and which two of the three
+//  are the independent pair is the experimenter's choice, not the model's.
+//  Until this field existed, `fitParameters(T_bubble)` read a single scalar
+//  `residual.P` and priced every point at it, so a dataset spanning three
+//  isobars could only be fitted by discarding two of them.  That is not a
+//  small loss: the temperature dependence of an NRTL pair (b_ij) is
+//  identifiable only from data that SPAN temperature, and a single isobar
+//  spans almost none.
+//
+//  It is a quiet NaN when the dataset declares no such column, and NOT zero.
+//  Zero is a pressure; NaN is the absence of one, and the caller must be able
+//  to tell "the author declared 0 Pa" from "the author declared nothing" --
+//  the same distinction `Trange unknown;` draws for a validity window.
 struct EvidencePoint
 {
     scalar x = 0.0;
     scalar y = 0.0;
+    scalar z = std::numeric_limits<scalar>::quiet_NaN();
+
+    bool hasZ() const { return !std::isnan(z); }
 };
 
 class EvidencePartition
@@ -267,20 +296,32 @@ public:
     //  held-out evidence through the SAME reader -- two readers could differ,
     //  and a difference between them would look like a model error.
     //  `xNames` / `yNames` are the accepted spellings, in preference order.
+    //  `zNames` is the OPTIONAL third coordinate (see EvidencePoint): when it
+    //  is empty, or when no column matches, every point comes back with
+    //  `hasZ() == false` and the two-column behaviour is unchanged to the bit.
+    //  A caller that does not pass it cannot be affected by this parameter --
+    //  which is why it was added as a default rather than as a second loader.
     static std::vector<EvidencePoint>
     loadColumns(const EvidenceDataset& ds,
                 const std::vector<std::string>& xNames,
                 const std::vector<std::string>& yNames,
-                const std::string& opLabel);
+                const std::string& opLabel,
+                const std::vector<std::string>& zNames = {});
 
     //  Concatenate a role's datasets through loadColumns().
     static std::vector<EvidencePoint>
     loadAll(const std::vector<EvidenceDataset>& sets,
             const std::vector<std::string>& xNames,
             const std::vector<std::string>& yNames,
-            const std::string& opLabel);
+            const std::string& opLabel,
+            const std::vector<std::string>& zNames = {});
 
 private:
+    //  Fill a dataset's identity from the dataset FILE's own `provenance {}`,
+    //  `system ( )` and `pressure`.  Shared by both declaration forms.
+    static void readOwnProvenance(EvidenceDataset& d,
+                                  const std::string& opLabel);
+
     bool                         engaged_ = false;
     bool                         hasAcceptance_ = false;
     std::string                  acceptanceOrigin_;

@@ -237,10 +237,42 @@ that.*
 
 ## 7  What this does NOT do — named, not implied
 
-* **Most iterative solvers are still unframed.**  Three opt in.  The recycle
-  Wegstein, the Gibbs multi-start, the MESH's Wang-Henke sweep, and both time
-  integrators still report their paths as though they were their answers.
-  This is a deliberate boundary of the slice, not a claim of completeness.
+* **Most iterative solvers are still unframed.**  Four opt in
+  (`fitParameters`'s Levenberg-Marquardt search joined on 2026-08-25).  The
+  recycle Wegstein, the Gibbs multi-start, the MESH's Wang-Henke sweep, and
+  both time integrators still report their paths as though they were their
+  answers.  This is a deliberate boundary of the slice, not a claim of
+  completeness.
+* **THE BUBBLE-POINT NEWTON IS THE ONE THAT MATTERS MOST, and it is open.**
+  Found 2026-08-25 while building `fitNRTL02_thermoml_isobars`, which reports
+  two extrapolation caveats — ethanol's Antoine correlation at 371.8 K and
+  372.8 K, outside its declared 273–369 K window — *neither of which is a
+  state the run publishes*.  Both are `BubblePoint::compute`'s initial guess,
+  the mole-fraction-weighted normal boiling point of the first datum in each
+  dataset: 371.782 K where the answer is 335 K, at a pressure of 32.86 kPa.
+  Framing the fitter's search does not fix it, because the parity pass and the
+  held-out pass re-provoke the same guess with the frame closed, and the
+  promotion rule then correctly moves the entry to `accepted` — the mechanism
+  working perfectly on a raise site scoped one level too high.  The fix is a
+  frame *inside* `newton1D`'s T loop, plus a re-evaluation at the converged T
+  so a genuinely out-of-range ANSWER still announces; that requires
+  restructuring `VaporPressureModel`'s per-instance `announcedOutside_` latch,
+  which today would suppress the re-announcement.  Not done here, and not
+  implied by any green line: `check_held_out_pressure` states it in its own
+  "does NOT cover" section and the witness says it in its header.
+* **A related defect WAS fixed the same day, and generalises.**  The console
+  echo of the out-of-range advisory was gated on that per-instance latch, and
+  an instance's lifetime is the caller's business: Levenberg-Marquardt rebuilds
+  the whole thermo package once per iteration and once per finite-difference
+  perturbation, so "announce once" became "announce once per rebuild" — **102
+  identical paragraphs in one run**, all about the same temperature.  The echo
+  now asks `AdvisoryLog::add`, which outlives every rebuild and is the only
+  thing in the process that can answer *has this been said?*  102 became 2.
+  The lesson is the arity doctrine applied to an announcement rather than a
+  value: **a guard scoped to an object the caller recreates in a loop guards
+  nothing.**  The instance latch stays as the cheap hot-path early-out, so one
+  instance still reports only its FIRST excursion — a pre-existing blind spot,
+  recorded rather than widened.
 * **It does not judge whether a `trial` advisory is uninteresting.**  They ride
   in full in the JSON precisely because neither the engine nor the gate can
   make that judgement.

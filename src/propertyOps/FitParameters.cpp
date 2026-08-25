@@ -83,9 +83,17 @@ std::string isoDateUtc()
 // Compute the residual vector at the current parameter values.
 //
 // Algorithm:
-//   For each (x_1, T_exp) point in the dataset, build x = (x_1, 1-x_1),
-//   run BubblePoint::compute(thermo, x, P_data), capture T_bub_model,
+//   For each (x_1, P_k, T_exp) point in the dataset, build x = (x_1, 1-x_1),
+//   run BubblePoint::compute(thermo, x, P_k), capture T_bub_model,
 //   residual_i = T_bub_model - T_exp.
+//
+// THE PRESSURE IS PER POINT (2026-08-25), and it used to be one scalar for the
+// whole dataset.  A bubble point is (x, P, T); which two are independent is the
+// experimenter's choice, and a study that measured three isobars has told us
+// something a single-isobar study cannot: how the pair behaves ACROSS
+// temperature.  With one scalar P, `pData` is that scalar repeated and the
+// arithmetic is identical to what it was -- which is why every legacy case is
+// byte-unchanged.
 //
 // If the bubble-T solver fails to converge at a point, we mark that
 // row with a fixed 1.0e3 K penalty residual (NOT a NaN); the LM loop is
@@ -94,7 +102,7 @@ std::string isoDateUtc()
 //
 // chi2 = Σ residual_i^2.
 scalar computeResiduals(const ThermoPackage& thermo,
-                        scalar P_Pa,
+                        const sVector& pData_Pa,
                         const sVector& xData_first,
                         const sVector& tData_exp,
                         sVector& residualsOut,
@@ -114,7 +122,7 @@ scalar computeResiduals(const ThermoPackage& thermo,
         x[i1] = xData_first[k];
         x[i2] = 1.0 - xData_first[k];
 
-        auto r = BubblePoint::compute(thermo, x, P_Pa);
+        auto r = BubblePoint::compute(thermo, x, pData_Pa[k]);
         scalar res = r.converged ? (r.T - tData_exp[k]) : 1.0e3;
         if (!r.converged && nFailed) ++(*nFailed);
         residualsOut[k] = res;
@@ -308,7 +316,10 @@ int FitParameters::run(const DictPtr& dict,
     if (kind != "T_bubble")
         throw std::runtime_error("fitParameters: only kind=T_bubble is "
                                  "supported  (got '" + kind + "')");
-    const scalar P_data = resDict->lookupScalar("P", Dims::pressure);
+    //  `residual.P` is now CONDITIONAL: it is the pressure when the evidence
+    //  does not carry one per point, and it is REFUSED beside evidence that
+    //  does (see the arity rule below).  Read lazily, after the evidence.
+    const bool hasScalarP = resDict->found("P");
 
     // -- explicit components (forum #63-3).  T_bubble historically assumed
     //  indices 0/1 -- an ORDER-DEPENDENT silent default.  evaluate REQUIRES
@@ -363,31 +374,78 @@ int FitParameters::run(const DictPtr& dict,
     //  has a THIRD, older form (`residual.data ( x1 T ... )`, inline), and
     //  calling read() unconditionally refused every legacy case in the corpus.
     //  Caught by three tutorials going red, which is what they are for.
-    const bool engaged = dict->found("evidence");
-    if (engaged && resDict->found("data"))
-        throw std::runtime_error("fitParameters: `evidence ( )` and "
-            "`residual.data ( )` are BOTH declared -- the first says which "
-            "points are held out, the second says every point is fitted, and "
-            "they cannot both be true.  Declare one.");
+    //  THREE FORMS, and the third is the LEGACY single `dataset "<path>";`.
+    //  It reads one file, treats every point as fitting evidence and claims no
+    //  validation -- exactly what the pure-property fits have always accepted,
+    //  and what this path needed so that a case can SCORE an existing pair
+    //  against a measured file without transcribing the numbers into the dict.
+    //  Transcription is the arity sin, and a case built to demonstrate
+    //  provenance must not commit it in its second operation.
+    const bool engaged   = dict->found("evidence");
+    const bool fromFiles = engaged || dict->found("dataset");
+    if (fromFiles && resDict->found("data"))
+        throw std::runtime_error("fitParameters: a dataset FILE and an inline "
+            "`residual.data ( )` are BOTH declared.  One of them is the "
+            "evidence and the other is a copy of it; a copy is where they "
+            "start to disagree.  Declare one.");
+
+    //  THE ACCEPTED COLUMN SPELLINGS, in one place because the fit subset and
+    //  the held-out subset MUST be read by the same names -- a difference
+    //  between the two readers would look like a model error.
+    //
+    //  `x_<comp1>` is derived from the case's own `residual.components`, and
+    //  that is not a guess: the case has NAMED which component carries x, so a
+    //  column called `x_ethanol` in a case declaring `components ( ethanol
+    //  water )` is unambiguously that component's mole fraction.  It exists so
+    //  a dataset extracted from the ThermoML archive -- which names its
+    //  columns after the actual compounds and after ThermoML's own property
+    //  vocabulary -- drops into a case without a hand edit, and a hand edit of
+    //  a measured file is exactly what must not become routine.
+    std::vector<std::string> xNames{"x1", "x", "liquidMoleFraction"};
+    if (!comp1Name.empty()) xNames.push_back("x_" + comp1Name);
+    const std::vector<std::string> yNames{
+        "T", "Tbubble", "temperature",
+        "Boiling_temperature_at_pressure_P"};   // ThermoML's own property name
+    const std::vector<std::string> zNames{"P", "Pressure", "pressure"};
 
     std::unique_ptr<EvidencePartition> partPtr;
-    sVector xExp, tExp;
-    if (engaged)
+    sVector xExp, tExp, pExp;
+    //  How the fit's pressure was established, for the announcement and for
+    //  the arity refusal below.
+    bool evidenceCarriesP = false;
+    if (fromFiles)
     {
         partPtr = std::make_unique<EvidencePartition>(
             EvidencePartition::read(dict, "fitParameters(" + kind + ")"));
         const EvidencePartition& part = *partPtr;
         //  The fitter is HANDED only the fit subset.  It is not forbidden to
         //  touch a validation point; it is never given one.
+        std::size_t nWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
-                 part.fit(), {"x1", "x", "liquidMoleFraction"},
-                 {"T", "Tbubble", "temperature"},
-                 "fitParameters(" + kind + ")"))
-        { xExp.push_back(pt.x); tExp.push_back(pt.y); }
+                 part.fit(), xNames, yNames,
+                 "fitParameters(" + kind + ")", zNames))
+        {
+            xExp.push_back(pt.x); tExp.push_back(pt.y);
+            pExp.push_back(pt.z);
+            if (pt.hasZ()) ++nWithP;
+        }
         if (xExp.empty())
             throw std::runtime_error("fitParameters: the fit evidence loaded "
                 "ZERO points -- check the declared column names (x1 and T) "
                 "and units in the datasets carrying `role fit`.");
+        //  ALL OR NONE.  A partition whose datasets disagree about whether
+        //  they carry a pressure would silently price half the residual at the
+        //  declared scalar and half at its own -- two pressures for one fit,
+        //  chosen by which file a point came from.
+        if (nWithP != 0 && nWithP != xExp.size())
+            throw std::runtime_error("fitParameters(T_bubble): " +
+                std::to_string(nWithP) + " of " + std::to_string(xExp.size())
+                + " fit points carry a pressure column and the rest do not."
+                  "  Half a residual priced at the datasets' own pressures and"
+                  " half at the declared scalar is two experiments reported as"
+                  " one.  Give every `role fit` dataset a pressure column, or"
+                  " none of them.");
+        evidenceCarriesP = (nWithP != 0);
         part.announce("fitParameters(" + kind + ")", verbosity);
     }
     else
@@ -398,6 +456,7 @@ int FitParameters::run(const DictPtr& dict,
                                      "flat (x1 T x1 T...) list of even length");
         const std::size_t nIn = flat.size() / 2;
         xExp.resize(nIn); tExp.resize(nIn);
+        pExp.assign(nIn, std::numeric_limits<scalar>::quiet_NaN());
         for (std::size_t k = 0; k < nIn; ++k)
         {
             xExp[k] = flat[2*k    ];
@@ -405,6 +464,67 @@ int FitParameters::run(const DictPtr& dict,
         }
     }
     const std::size_t N = xExp.size();
+
+    // -- THE PRESSURE: one scalar, or one per point, never both ------------
+    //
+    //  ARITY.  A pressure declared in the case AND a pressure measured in the
+    //  dataset are two homes for one fact, and the drift they permit is not
+    //  cosmetic: the case's copy is what the header and the console print,
+    //  while the dataset's copy is what the bubble points are computed at.  A
+    //  reader would be told 101.325 kPa about a fit performed at 13.15.  So
+    //  the two forms are exclusive and the collision is refused by name --
+    //  never resolved by an undeclared precedence.
+    if (evidenceCarriesP && hasScalarP)
+        throw std::runtime_error("fitParameters(T_bubble): `residual.P` is "
+            "declared AND the fit evidence carries its own pressure column."
+            "  Two homes for one fact: the declared scalar is what the report"
+            " would print and the dataset's column is what the bubble points"
+            " would be computed at, so a reader could be told one pressure"
+            " about a fit performed at another.  Delete `residual.P;` -- the"
+            " measurement already says where it was made.");
+    if (!evidenceCarriesP)
+    {
+        if (!hasScalarP)
+            throw std::runtime_error("fitParameters(T_bubble): no pressure."
+                "  A bubble temperature is meaningless without one.  Declare"
+                " `residual.P <value> <unit>;`, or give the evidence a column"
+                " named P / Pressure so each point carries the pressure it was"
+                " measured at.");
+        const scalar Pscalar = resDict->lookupScalar("P", Dims::pressure);
+        pExp.assign(N, Pscalar);
+    }
+    //  The span, for the header and for the identifiability note below.  A
+    //  pair regressed over ONE isobar and a pair regressed over three are
+    //  different claims about b_ij, and the run must not report them alike.
+    scalar pLo = pExp.empty() ? 0.0 : pExp[0];
+    scalar pHi = pLo;
+    for (const scalar pv : pExp) { pLo = std::min(pLo, pv); pHi = std::max(pHi, pv); }
+    std::size_t nIsobars = 0;
+    {
+        sVector distinct;
+        for (const scalar pv : pExp)
+        {
+            bool seen = false;
+            //  Distinct to 1 Pa: these are declared set-points, not solved
+            //  quantities, so an exact-equality count would be honest too --
+            //  the band is here only so a unit conversion's last bit cannot
+            //  split one isobar into two.
+            for (const scalar q : distinct) if (std::fabs(q - pv) < 1.0) { seen = true; break; }
+            if (!seen) distinct.push_back(pv);
+        }
+        nIsobars = distinct.size();
+    }
+    //  ONE wording of the pressure, used by every line that prints it -- the
+    //  header, the evaluate header, the summary.  Three transcriptions of one
+    //  sentence drift exactly as three copies of a number do.
+    auto pressureSpan = [&]() {
+        std::ostringstream os;
+        os << std::fixed << std::setprecision(4);
+        if (nIsobars <= 1) { os << "at P = " << (pLo/1.0e5) << " bar"; return os.str(); }
+        os << "across " << nIsobars << " isobars, P = " << (pLo/1.0e5)
+           << " .. " << (pHi/1.0e5) << " bar";
+        return os.str();
+    };
 
     // -- options -----------------------------------------------------------
     int    maxIter = 40;
@@ -468,8 +588,8 @@ int FitParameters::run(const DictPtr& dict,
     {
         std::cout << "\n==========================  FitParameters  ==========================\n"
                   << "  Kind:        " << kind << "\n"
-                  << "  Data:        " << N << " (x_1, T_exp) pairs at P = "
-                  << (P_data/1.0e5) << " bar\n"
+                  << "  Data:        " << N << " (x_1, T_exp) pairs "
+                  << pressureSpan() << "\n"
                   << "  Parameters:  " << P << "\n";
         for (const auto& ps : params)
             std::cout << "    " << ps.path << " = "
@@ -559,7 +679,7 @@ int FitParameters::run(const DictPtr& dict,
                 + "] K -- the verdict extrapolates the artefact");
 
         sVector r; int nFailed = 0;
-        computeResiduals(thermo, P_data, xExp, tExp, r, &nFailed, i1, i2);
+        computeResiduals(thermo, pExp, xExp, tExp, r, &nFailed, i1, i2);
 
         scalar sse = 0.0, aad = 0.0, maxAbs = 0.0;
         std::size_t maxIdx = 0, nGood = 0;
@@ -595,7 +715,7 @@ int FitParameters::run(const DictPtr& dict,
         {
             std::cout << "\n=====================  FitParameters (EVALUATE)  ====================\n"
                       << "  Pair:        " << thermo.comp(i1).name() << " / "
-                      << thermo.comp(i2).name() << "   at P = " << (P_data/1.0e5) << " bar\n"
+                      << thermo.comp(i2).name() << "   " << pressureSpan() << "\n"
                       << "  Parameters:  " << (params.empty()
                           ? "package AS ASSEMBLED (nothing pinned)"
                           : std::to_string(params.size()) + " pinned (what-if)") << "\n";
@@ -679,10 +799,24 @@ int FitParameters::run(const DictPtr& dict,
     }
 
     // -- LM loop -----------------------------------------------------------
+    //
+    //  THE SEARCH IS FRAMED, because a regression WALKS.  Levenberg-Marquardt
+    //  visits parameter sets it invents and discards almost all of them, and
+    //  each visit prices bubble points whose Newton starts from a
+    //  mole-fraction-weighted normal boiling temperature -- 371.8 K for this
+    //  case's first datum, which is 37 K above the answer and outside
+    //  ethanol's declared Antoine window.  The resulting caveat is TRUE of the
+    //  initial guess and true of nothing the run publishes.  The frame stamps
+    //  those entries `trial`, so the end-of-run block puts them under the
+    //  solver's path instead of beside the fitted parameters; anything that
+    //  really does qualify the answer is raised again by the final residual
+    //  pass and the held-out pass below, with the frame CLOSED, and a matching
+    //  trial entry is promoted rather than duplicated.
+    AdvisoryFrame search("fitParameters: Levenberg-Marquardt parameter search");
     sVector r_curr;
     ThermoPackage thermo = buildThermo(params);
     const auto [iF1, iF2] = pairIdx(thermo);
-    scalar chi2 = computeResiduals(thermo, P_data, xExp, tExp, r_curr,
+    scalar chi2 = computeResiduals(thermo, pExp, xExp, tExp, r_curr,
                                    nullptr, iF1, iF2);
 
     auto logIter = [&](int iter)
@@ -721,7 +855,7 @@ int FitParameters::run(const DictPtr& dict,
             params[j].value = p0 + h;
             ThermoPackage thermoH = buildThermo(params);
             sVector r_h;
-            computeResiduals(thermoH, P_data, xExp, tExp, r_h, nullptr, iF1, iF2);
+            computeResiduals(thermoH, pExp, xExp, tExp, r_h, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < N; ++k)
                 J[k][j] = (r_h[k] - r_curr[k]) / h;
             params[j].value = p0;
@@ -740,7 +874,7 @@ int FitParameters::run(const DictPtr& dict,
         }
         ThermoPackage thermoTrial = buildThermo(trial);
         sVector r_trial;
-        scalar chi2_trial = computeResiduals(thermoTrial, P_data,
+        scalar chi2_trial = computeResiduals(thermoTrial, pExp,
                                               xExp, tExp, r_trial,
                                               nullptr, iF1, iF2);
 
@@ -767,6 +901,13 @@ int FitParameters::run(const DictPtr& dict,
             logIter(iter);
         }
     }
+    //  THE SEARCH ENDS HERE, and everything below is about the ANSWER: the
+    //  parity table, the identifiability Jacobian at the converged
+    //  parameters, and the held-out comparison.  A caveat raised by any of
+    //  those qualifies what this operation publishes, so the frame must be
+    //  closed before them -- and closed EXPLICITLY rather than left to the
+    //  destructor, because the destructor runs after they do.
+    search.close();
 
     // -- Parity CSV --------------------------------------------------------
     //  The NAMED pair's indices (iF1/iF2, resolved for the LM above), never
@@ -775,14 +916,17 @@ int FitParameters::run(const DictPtr& dict,
     if (!parityPath.empty())
     {
         std::ofstream pcsv(parityPath);
-        pcsv << "x_1,T_exp,T_model,residual\n";
+        //  P_Pa is a COLUMN and not a header note: a parity plot of a fit
+        //  spanning three isobars is unreadable without it -- the same x with
+        //  two different T's is not scatter, it is two experiments.
+        pcsv << "x_1,P_Pa,T_exp,T_model,residual\n";
         for (std::size_t k = 0; k < N; ++k)
         {
             sVector x(thermo.n(), 0.0);
             x[iF1] = xExp[k]; x[iF2] = 1.0 - xExp[k];
-            auto br = BubblePoint::compute(thermo, x, P_data);
+            auto br = BubblePoint::compute(thermo, x, pExp[k]);
             const scalar Tm = br.converged ? br.T : std::nan("");
-            pcsv << xExp[k] << "," << tExp[k] << "," << Tm
+            pcsv << xExp[k] << "," << pExp[k] << "," << tExp[k] << "," << Tm
                  << "," << (Tm - tExp[k]) << "\n";
         }
     }
@@ -810,7 +954,7 @@ int FitParameters::run(const DictPtr& dict,
     int nFailed = 0;
     {
         sVector r_final;
-        computeResiduals(thermo, P_data, xExp, tExp, r_final, &nFailed, iF1, iF2);
+        computeResiduals(thermo, pExp, xExp, tExp, r_final, &nFailed, iF1, iF2);
 
         std::vector<sVector> Jf(N, sVector(P, 0.0));
         for (std::size_t j = 0; j < P; ++j)
@@ -820,7 +964,7 @@ int FitParameters::run(const DictPtr& dict,
             params[j].value = p0 + h;
             ThermoPackage thH = buildThermo(params);
             sVector rh;
-            computeResiduals(thH, P_data, xExp, tExp, rh, nullptr, iF1, iF2);
+            computeResiduals(thH, pExp, xExp, tExp, rh, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < N; ++k) Jf[k][j] = (rh[k] - r_final[k]) / h;
             params[j].value = p0;
         }
@@ -1110,18 +1254,46 @@ int FitParameters::run(const DictPtr& dict,
     //  `validated` as "agrees"; the engine keeps one set of words.
     //  ===================================================================
     scalar aadHeldOut = 0.0;
+    scalar aadHeldOutK_ = 0.0;   // the same residual in kelvin
     scalar heldOutXmin = 0.0, heldOutXmax = 0.0;
     std::size_t nHeldOut = 0;
     std::string heldOutSets;
     if (engaged)
     {
         const EvidencePartition& part = *partPtr;
-        sVector xVal, tVal;
+        sVector xVal, tVal, pVal;
+        std::size_t nValWithP = 0;
         for (const auto& pt : EvidencePartition::loadAll(
-                 part.validation(), {"x1", "x", "liquidMoleFraction"},
-                 {"T", "Tbubble", "temperature"},
-                 "fitParameters(" + kind + ")"))
-        { xVal.push_back(pt.x); tVal.push_back(pt.y); }
+                 part.validation(), xNames, yNames,
+                 "fitParameters(" + kind + ")", zNames))
+        {
+            xVal.push_back(pt.x); tVal.push_back(pt.y); pVal.push_back(pt.z);
+            if (pt.hasZ()) ++nValWithP;
+        }
+        //  THE HELD-OUT SET IS PRICED THE SAME WAY THE FIT SET WAS.  If the
+        //  fit's pressure came from the data, the validation's must too --
+        //  otherwise the held-out residual would measure the difference
+        //  between two pressures and report it as a model error, which is the
+        //  most convincing kind of wrong number this operation can produce.
+        if (nValWithP != 0 && nValWithP != xVal.size())
+            throw std::runtime_error("fitParameters(T_bubble): the held-out"
+                " evidence is inconsistent about its pressure -- "
+                + std::to_string(nValWithP) + " of "
+                + std::to_string(xVal.size()) + " points carry a pressure"
+                  " column.  Give every `role validation` dataset one, or"
+                  " none.");
+        if (nValWithP == 0)
+        {
+            if (evidenceCarriesP)
+                throw std::runtime_error("fitParameters(T_bubble): the fit"
+                    " evidence carries its own pressure per point but the"
+                    " held-out evidence does not.  The two subsets must be"
+                    " priced the same way; otherwise the held-out residual"
+                    " measures the difference between two pressures and"
+                    " reports it as a model error.  Give the validation"
+                    " dataset a pressure column.");
+            pVal.assign(xVal.size(), pExp.empty() ? 0.0 : pExp[0]);
+        }
 
         //  R4: the caller is the only one that knows how many survived.
         part.requireNonEmptyValidation(xVal.size(),
@@ -1136,10 +1308,22 @@ int FitParameters::run(const DictPtr& dict,
             //  a difference between the two cannot look like a model error.
             ThermoPackage thV = buildThermo(params);
             sVector rV;
-            computeResiduals(thV, P_data, xVal, tVal, rV, nullptr, iF1, iF2);
+            computeResiduals(thV, pVal, xVal, tVal, rV, nullptr, iF1, iF2);
             for (std::size_t k = 0; k < rV.size(); ++k)
-                aadHeldOut += std::fabs(rV[k]) / tVal[k];
-            aadHeldOut = 100.0 * aadHeldOut / static_cast<scalar>(rV.size());
+            {
+                aadHeldOut   += std::fabs(rV[k]) / tVal[k];
+                aadHeldOutK_ += std::fabs(rV[k]);
+            }
+            aadHeldOut   = 100.0 * aadHeldOut / static_cast<scalar>(rV.size());
+            //  THE SAME QUANTITY IN KELVIN, and it is not decoration.  The
+            //  per-cent form is what the acceptance band is declared in; the
+            //  kelvin form is what a reader can put beside `evaluate` mode's
+            //  `aad`, which has always been in kelvin.  Two operations
+            //  reporting "AAD" in two units invite exactly the comparison the
+            //  units make wrong -- and fitNRTL02 exists to make that
+            //  comparison, between a fitted pair and the catalogue pair on the
+            //  same held-out file.  Both are printed with their unit, always.
+            aadHeldOutK_ /= static_cast<scalar>(rV.size());
             nHeldOut = rV.size();
             heldOutXmin = *std::min_element(xVal.begin(), xVal.end());
             heldOutXmax = *std::max_element(xVal.begin(), xVal.end());
@@ -1172,7 +1356,9 @@ int FitParameters::run(const DictPtr& dict,
                 std::cout << "    dataset(s)  " << heldOutSets << "\n"
                           << "    points      " << nHeldOut << "\n"
                           << "    AAD         " << std::fixed
-                          << std::setprecision(4) << aadHeldOut << " %\n";
+                          << std::setprecision(4) << aadHeldOut << " %"
+                          << "   (" << std::setprecision(4) << aadHeldOutK_
+                          << " K)\n";
 
             std::cout << "\n  ACCEPTANCE CRITERION\n";
             if (part.hasAcceptance())
@@ -1263,6 +1449,7 @@ int FitParameters::run(const DictPtr& dict,
     diag_["chi2_in_sample"] = chi2;   // the same number, named for what it is
     diag_["n_heldout"] = static_cast<scalar>(nHeldOut);
     if (nHeldOut > 0) diag_["aad_heldout_pct"] = aadHeldOut;
+    if (nHeldOut > 0) diag_["aad_heldout_K"]   = aadHeldOutK_;
     diag_["converged"] = converged ? 1.0 : 0.0;
     for (const auto& ps : params)
         diag_[ps.path] = ps.value;

@@ -1,0 +1,78 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  CURATION DOSSIER -- a scientific work record, NOT runtime property data.
+
+  NOTHING IN THIS FILE IS VISIBLE TO THE SOLVER.  Record resolution looks only
+  in <case>/constant/, data/standards/ and data/local/, so a file here is out
+  of its reach BY CONSTRUCTION -- not by convention.
+
+  Nothing here has been promoted.  Curation state belongs to the evidence
+  process; runtime trust belongs to the numerical record actually admitted
+  to data/standards/, and only an explicit human promotion moves one there
+  (bin/curate/promote-from-dossier).
+
+  MATURITY IS PER PROPERTY, not per component: the properties below may hold
+  different verdicts, and any whole-component summary is DERIVED from them
+  rather than stored beside them.
+
+  Regenerated on every run.  Hand edits are lost.
+\*-----------------------------------------------------------------------------*/
+
+component      ethanol;
+reviewStatus   unreviewed;
+
+property binaryVLE.T_bubble
+{
+    operation      fit_NRTL_across_isobars;   // type fitParameters
+    model          "NRTL binary pair, bubble-T residual at fixed P";
+    verdict        heldOutPerformed;
+
+    fittedParameters
+    {
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  1.63848598983;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -539.173511227;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  -0.460896026686;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  681.603178514;
+    }
+
+    evidence
+    {
+        partitionFingerprint  "7179460aebc37a0c";   // frozen before the fit
+
+        datasets
+        (
+        {
+            role      fit;
+            dataset   "constant/experiments/voutsas2011-ethanol-water.dat";
+            doi       "10.1016/j.fluid.2011.06.009";
+            provenance measured;
+            archiveFile "data/local/thermoml/xml/10.1016/j.fluid.2011.06.009.xml";
+            system    "ethanol + water";
+        }
+        {
+            role      validation;
+            dataset   "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+            doi       "10.1021/je2008704";
+            provenance measured;
+            archiveFile "data/local/thermoml/xml/10.1021/je2008704.xml";
+            system    "ethanol + water";
+        }
+        );
+
+        domain
+        {
+            fit         { min 0.063 x1; max 0.971 x1; n 45; }
+            validation  { min 0.018 x1; max 0.972 x1; n 21; }
+        }
+    }
+
+    metrics
+    {
+        //  r2InSample: not computed by this operation (it reports chi-square).
+        //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
+        aadHeldOutPct     0.108817419527;
+        //  No acceptance band was declared, so the residuals above are
+        //  reported and NO verdict is claimed on them.  Whether they are
+        //  small enough is a judgement, and the engine does not make it.
+    }
+}
+

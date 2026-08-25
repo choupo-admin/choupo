@@ -921,6 +921,91 @@ solver stays deferred per the constitution -- the named next step
 Gate: `check_block_tridiagonal` (5 sabotages).  Record:
 [`docs/design/block-tridiagonal-mesh.md`](docs/design/block-tridiagonal-mesh.md).
 
+**A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE — with a
+result the witness was not built expecting (2026-08-25).**
+`fitParameters(kind T_bubble)` read ONE scalar `residual.P` and priced every
+point at it, so a study that measured three isobars could only be fitted by
+discarding two — and an NRTL pair's temperature dependence (`tau = a + b/T`)
+is identifiable only from data that SPAN temperature.  `EvidencePoint` gained
+an optional third coordinate (a quiet NaN when undeclared, **never zero** —
+zero is a pressure, NaN is the absence of one), `loadColumns`/`loadAll` a
+defaulted `zNames`, so the three existing callers are byte-unaffected.  The
+reader takes BOTH forms a faithful transcription uses — a `Pressure` COLUMN
+where the study varied it (ThermoML's Variable), a held-constant SCALAR where
+it fixed it (ThermoML's Constraint) — because the two halves of one partition
+must be priced the same way when one study varied the pressure and another
+did not.  **The dangerous failure is never an error, it is a plausible
+number**, so four refusals, each by name: `residual.P` beside evidence
+carrying its own (two homes for one fact — the scalar is what the header
+prints, the column is what the bubble points are computed at, so a reader
+could be told 101.325 kPa about a fit performed at 13.15); a fit set only
+half-carrying one; a fit set with a pressure and a held-out set without (the
+held-out residual would measure the difference between two pressures and
+publish it as a MODEL error); and a held-constant with **no unit** — the
+sabotage worth keeping, because with that check removed the probe case did
+not crash, it CONVERGED, reading `Pressure 101.3;` as 101.3 Pa and dragging
+ethanol's Antoine far outside its window with no other symptom.  **Witness
+`fitNRTL02_thermoml_isobars`, and its finding contradicts the case's own
+first draft**: 45 points on three vacuum isobars (Voutsas 2011,
+doi:10.1016/j.fluid.2011.06.009) fit to a reduced chi-square of 0.023 and an
+in-sample rms of 0.144 K, then predict 21 held-out points at 101.3 kPa from a
+different laboratory (Kamihama 2012, doi:10.1021/je2008704) at **AAD 0.3857 K
+against the catalogue pair's 0.0821 K on the same points** — the regression
+bought 11 % where it looked and lost a factor of 4.7 where it did not.  Two
+`mode evaluate` control ops score the catalogue pair on BOTH datasets, so all
+four numbers come from one run and each pair is visibly best where its
+evidence was taken.  Second lesson, also measured: three isobars span 28 K
+instead of 12 and `cond(J'J)` falls from 3.6e11 to 5.6e9 — two orders of
+magnitude — while `max|correlation|` stays 1.000 and `identifiable` stays 0.
+**Conditioning is not identifiability**; `b_ij = -539 +/- 456` pins nothing,
+so nothing constrains 101 kPa.  Also: `aad_heldout_K` beside
+`aad_heldout_pct` (two ops reporting "AAD" in two units invite exactly the
+comparison the units make wrong), a `P_Pa` column in the parity CSV, and the
+LEGACY single `dataset "<path>";` form wired into this path so a control op
+can SCORE a pair against a measured file without transcribing it.
+**`reviewStatus` ON A DATASET (same slice):** the archive assessment admits
+point values "cited to the ORIGINAL article, CHECKED against it when the
+paper is in hand", and the second half is UNMET here — so the extractor
+writes `provenance { reviewStatus transcribedNotCheckedAgainstArticle; }`,
+the partition reads it, and the run announces it on the console AND on the
+`AdvisoryLog`.  A transcribed file carries the DOI from birth, which is
+exactly what makes the unchecked state look checked; *a citation says where
+numbers are supposed to come from, not that anybody looked.*  Two smaller
+provenance fixes rode along: the extractor's citation lived only in a banner
+COMMENT the parser discards (the 2026-08-05 shape) and is now a
+machine-readable `provenance {}` + `system ( )` block; and
+`readOwnProvenance` was extracted so BOTH declaration forms use it — it sat
+inside the `evidence ( )` branch, so a legacy single-`dataset` op announced a
+fully cited file as one "with no declared identity", an announcement about
+the READER rather than about the evidence.  **102 IDENTICAL PARAGRAPHS, and
+the guard scoped wrong:** `VaporPressureModel::noteRange` latched its
+announce-once on `announcedOutside_`, a member of the model INSTANCE, and
+Levenberg-Marquardt rebuilds the whole package once per iteration and once
+per FD perturbation — so "announce once" became "announce once per rebuild",
+102 copies of one temperature in one run.  The console echo now asks
+`AdvisoryLog::add`, which outlives every rebuild and is the only thing in the
+process that can answer *has this been said?*; 102 became 2.  **A guard
+scoped to an object the caller recreates in a loop guards nothing** — the
+arity doctrine applied to an announcement rather than a value.  NOT widened,
+said plainly: the instance latch stays as the hot-path early-out, so one
+instance still reports only its FIRST excursion (an extrapolation then a
+supercritical request = two physically different situations, one report) —
+pre-existing, recorded, not closed.  **AND THE GAP THIS SLICE DID NOT
+CLOSE, named:** the two caveats `fitNRTL02` still reports (ethanol's Antoine
+at 371.8 K and 372.8 K) are `BubblePoint::compute`'s INITIAL GUESS — the
+mole-fraction-weighted normal boiling point of each set's first datum, where
+the answer is 335 K — and framing the LM search does not fix it, because the
+parity and held-out passes re-provoke the same guess with the frame closed
+and the promotion rule then correctly marks it `accepted`: the mechanism
+working perfectly on a raise site scoped one level too high.  The fix is a
+frame INSIDE `newton1D`'s T loop plus a re-evaluation at the converged T, and
+it needs the per-instance latch restructured first.  Gate:
+`check_held_out_pressure` (5 sabotages; S1 is the one to know — with
+`pData_Pa[k]` replaced by `[0]` the header went on printing `across 3
+isobars` TRUTHFULLY, because the span is computed from the loaded points
+while the pressure is used in the residual).  Record:
+[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md).
+
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
 (2026-08-25).**  Everything a membrane needs was already here -- the
 solution-diffusion and DSPM-DE transport laws, van't Hoff and Pitzer osmotic,

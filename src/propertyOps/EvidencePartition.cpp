@@ -27,12 +27,14 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EvidencePartition.H"
+#include "core/Advisory.H"
 #include "core/Units.H"
 
 #include <algorithm>
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 
@@ -93,6 +95,76 @@ const char* EvidencePartition::refusalR1()
            "No independent experimental evidence remains after fitting.";
 }
 
+//  The dataset's OWN provenance, read from the dataset file rather than
+//  re-declared in the case: the file is where a curator writes what the
+//  numbers are, and a second declaration beside the role would be a second
+//  home for the same fact.
+//
+//  ONE reader for BOTH forms (2026-08-25).  It used to sit inside the
+//  `evidence ( )` branch only, so a legacy single-`dataset` op announced a
+//  fully cited file as one "with no declared identity" -- the announcement
+//  would have been about the reader rather than about the evidence.
+void EvidencePartition::readOwnProvenance(EvidenceDataset& d,
+                                          const std::string& opLabel)
+{
+    try
+    {
+        auto dsDict = Dictionary::fromFile(d.path);
+        if (dsDict->found("provenance"))
+        {
+            auto pv = dsDict->subDict("provenance");
+            d.provenanceSource = pv->lookupWordOrDefault("source", "");
+            d.archiveFile      = pv->lookupWordOrDefault("archiveFile", "");
+            d.reviewStatus     = pv->lookupWordOrDefault("reviewStatus", "");
+
+            //  The dataset's own DOI / hash FILL IN where the case declared
+            //  none.  If BOTH declare and they DISAGREE, that is an identity
+            //  conflict and is refused rather than resolved by an undeclared
+            //  precedence -- the same posture R3 takes for a cross-role
+            //  collision.  Silently preferring one would make the dossier cite
+            //  a publication the evidence may not be from.
+            const std::string dsDoi = pv->lookupWordOrDefault("doi", "");
+            const std::string dsSha = pv->lookupWordOrDefault("sha256", "");
+            if (!dsDoi.empty() && dsDoi != "none-declared")
+            {
+                if (d.doi.empty()) d.doi = dsDoi;
+                else if (d.doi != dsDoi)
+                    throw std::runtime_error(opLabel + ": evidence dataset '"
+                        + d.path + "' declares doi '" + dsDoi + "' but the"
+                        " case declares '" + d.doi + "'.  Two identities"
+                        " for one dataset -- correct whichever is wrong"
+                        " rather than letting the dossier cite a"
+                        " publication the numbers may not come from.");
+            }
+            if (!dsSha.empty())
+            {
+                if (d.sha256.empty()) d.sha256 = dsSha;
+                else if (d.sha256 != dsSha)
+                    throw std::runtime_error(opLabel + ": evidence dataset '"
+                        + d.path + "' declares a sha256 that differs from"
+                        " the one the case declares.  A checksum conflict"
+                        " is not a preference.");
+            }
+        }
+        if (dsDict->found("system"))
+        {
+            const auto sys = dsDict->lookupWordList("system");
+            for (std::size_t k = 0; k < sys.size(); ++k)
+                d.system += (k ? " + " : "") + sys[k];
+        }
+        if (dsDict->found("pressure"))
+            d.pressure = std::to_string(dsDict->lookupScalar("pressure"))
+                       + " Pa";
+    }
+    catch (const std::exception&)
+    {
+        //  Unreadable here is not fatal HERE: loadColumns opens the same file
+        //  and refuses with the message that names the column problem.
+        //  Failing twice, differently, about one file would tell the author
+        //  less, not more.
+    }
+}
+
 EvidencePartition EvidencePartition::read(const DictPtr& opDict,
                                           const std::string& opLabel)
 {
@@ -124,6 +196,7 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
         EvidenceDataset only;
         only.path   = opDict->lookupWord("dataset");
         only.series = opDict->lookupWordOrDefault("series", "");
+        readOwnProvenance(only, opLabel);
         only.role   = "fit";
         p.fit_.push_back(only);
         p.engaged_ = false;
@@ -203,65 +276,7 @@ EvidencePartition EvidencePartition::read(const DictPtr& opDict,
                   " it).  A defaulted role would make every dataset a fitting"
                   " dataset and re-create an in-sample error reported as"
                   " validation.");
-        //  The dataset's OWN provenance, read from the dataset file rather
-        //  than re-declared in the case: the file is where a curator writes
-        //  what the numbers are, and a second declaration beside the role
-        //  would be a second home for the same fact.
-        try
-        {
-            auto dsDict = Dictionary::fromFile(d.path);
-            if (dsDict->found("provenance"))
-            {
-                auto pv = dsDict->subDict("provenance");
-                d.provenanceSource = pv->lookupWordOrDefault("source", "");
-                d.archiveFile      = pv->lookupWordOrDefault("archiveFile", "");
-
-                //  The dataset's own DOI / hash FILL IN where the case
-                //  declared none.  If BOTH declare and they DISAGREE, that is
-                //  an identity conflict and is refused rather than resolved by
-                //  an undeclared precedence -- the same posture R3 takes for a
-                //  cross-role collision.  Silently preferring one would make
-                //  the dossier cite a publication the evidence may not be from.
-                const std::string dsDoi = pv->lookupWordOrDefault("doi", "");
-                const std::string dsSha = pv->lookupWordOrDefault("sha256", "");
-                if (!dsDoi.empty() && dsDoi != "none-declared")
-                {
-                    if (d.doi.empty()) d.doi = dsDoi;
-                    else if (d.doi != dsDoi)
-                        throw std::runtime_error(opLabel + ": evidence dataset '"
-                            + d.path + "' declares doi '" + dsDoi + "' but the"
-                            " case declares '" + d.doi + "'.  Two identities"
-                            " for one dataset -- correct whichever is wrong"
-                            " rather than letting the dossier cite a"
-                            " publication the numbers may not come from.");
-                }
-                if (!dsSha.empty())
-                {
-                    if (d.sha256.empty()) d.sha256 = dsSha;
-                    else if (d.sha256 != dsSha)
-                        throw std::runtime_error(opLabel + ": evidence dataset '"
-                            + d.path + "' declares a sha256 that differs from"
-                            " the one the case declares.  A checksum conflict"
-                            " is not a preference.");
-                }
-            }
-            if (dsDict->found("system"))
-            {
-                const auto sys = dsDict->lookupWordList("system");
-                for (std::size_t k = 0; k < sys.size(); ++k)
-                    d.system += (k ? " + " : "") + sys[k];
-            }
-            if (dsDict->found("pressure"))
-                d.pressure = std::to_string(dsDict->lookupScalar("pressure"))
-                           + " Pa";
-        }
-        catch (const std::exception&)
-        {
-            //  Unreadable here is not fatal HERE: loadColumns opens the same
-            //  file and refuses with the message that names the column
-            //  problem.  Failing twice, differently, about one file would tell
-            //  the author less, not more.
-        }
+        readOwnProvenance(d, opLabel);
 
         d.role = e->lookupWord("role");
         if (d.role != "fit" && d.role != "validation")
@@ -403,6 +418,30 @@ void EvidencePartition::announce(const std::string& opLabel, int verbosity) cons
                      "  Any verdict below is a statement about the machinery,"
                      " never about physics.\n";
 
+    //  A CITATION SAYS WHERE THE NUMBERS ARE SUPPOSED TO COME FROM, NOT THAT
+    //  ANYBODY LOOKED.  A dataset transcribed out of a compilation carries the
+    //  article's DOI from the moment it is written, which is exactly what
+    //  makes the unchecked state easy to mistake for a checked one: the file
+    //  looks fully sourced.  The distinction is the same one `reviewStatus`
+    //  draws for a component record, and it rides the AdvisoryLog so it also
+    //  reaches the end-of-run caveat block -- a line here, a thousand lines
+    //  above the answer, has been delivered and not received.
+    for (const auto* set : { &fit_, &validation_ })
+        for (const auto& d : *set)
+        {
+            if (d.reviewStatus.empty() || d.reviewStatus == "checked") continue;
+            AdvisoryLog::instance().add(
+                "provenance", "warning", "dataset '" + d.path + "'",
+                "declares `reviewStatus " + d.reviewStatus + "` -- its values"
+                " have not been checked against the publication it cites"
+                + (d.archiveFile.empty() ? std::string()
+                                         : "; transcribed from " + d.archiveFile));
+            std::cout << "      [reviewStatus] " << d.path << ": "
+                      << d.reviewStatus << " -- the citation names the article,"
+                         " but these numbers have not been read back against"
+                         " it.\n";
+        }
+
     //  The identity-level independence facts.  ANNOUNCED, never adjudicated:
     //  whether two studies are scientifically independent is a human
     //  judgement, and the engine states what it can observe and stops there.
@@ -433,7 +472,8 @@ std::vector<EvidencePoint>
 EvidencePartition::loadColumns(const EvidenceDataset& ds,
                                const std::vector<std::string>& xNames,
                                const std::vector<std::string>& yNames,
-                               const std::string& opLabel)
+                               const std::string& opLabel,
+                               const std::vector<std::string>& zNames)
 {
     const std::string where = opLabel + " dataset '" + ds.path + "'";
     auto d    = Dictionary::fromFile(ds.path);
@@ -444,7 +484,7 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
         throw std::runtime_error(where + ": need >= 2 columns and a data grid"
             " whose length is a multiple of the column count.");
 
-    int cx = -1, cy = -1;
+    int cx = -1, cy = -1, cz = -1;
     std::vector<std::string> unit(nc);
     for (std::size_t j = 0; j < nc; ++j)
     {
@@ -454,6 +494,8 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
             cx = static_cast<int>(j);
         if (cy < 0 && std::find(yNames.begin(), yNames.end(), name) != yNames.end())
             cy = static_cast<int>(j);
+        if (cz < 0 && std::find(zNames.begin(), zNames.end(), name) != zNames.end())
+            cz = static_cast<int>(j);
     }
     auto join = [](const std::vector<std::string>& v) {
         std::string s; for (const auto& e : v) s += (s.empty() ? "" : " | ") + e; return s;
@@ -462,12 +504,61 @@ EvidencePartition::loadColumns(const EvidenceDataset& ds,
         throw std::runtime_error(where + ": needs a column named one of ["
             + join(xNames) + "] and one of [" + join(yNames) + "].");
 
+    //  A HELD-CONSTANT IS A CONSTANT PER POINT.  ThermoML draws a first-class
+    //  distinction between a Variable (measured at each point, a column) and a
+    //  Constraint (held fixed for the whole series, a single value), and a
+    //  faithful transcription of an isobaric study keeps the pressure as a
+    //  scalar line rather than repeating it down a column.  Both forms say the
+    //  same thing about any individual measurement, so the reader accepts both
+    //  -- and it must, or the two subsets of one partition could not be priced
+    //  the same way when one study varied the pressure and another fixed it.
+    //
+    //  A file declaring the quantity BOTH ways is refused rather than resolved:
+    //  a column that disagrees with the constraint above it is a transcription
+    //  error, and picking one silently would carry it into the fit.
+    scalar zConst  = std::numeric_limits<scalar>::quiet_NaN();
+    if (!zNames.empty())
+    {
+        for (const auto& zn : zNames)
+        {
+            if (!d->found(zn)) continue;
+            if (cz >= 0)
+                throw std::runtime_error(where + ": '" + zn + "' is declared"
+                    " BOTH as a held-constant scalar and as a per-point column."
+                    "  One series cannot have been measured at a fixed value"
+                    " and at a varying one; correct whichever is wrong rather"
+                    " than leaving the reader to choose.");
+            //  THE UNIT IS MANDATORY on the scalar form, and it is not
+            //  pedantry.  A column carries its unit in the `columns` block, so
+            //  `101.3` there is unambiguous; a bare `Pressure 101.3;` would be
+            //  read as 101.3 Pa and the fit would run, converge and report a
+            //  vacuum -- a wrong answer with no symptom.  The column form
+            //  cannot make that mistake, so the scalar form must not be
+            //  allowed to either.
+            if (!d->hasDimensions(zn))
+                throw std::runtime_error(where + ": the held-constant '" + zn
+                    + "' declares no unit.  Write it with one (`" + zn
+                    + " 101.3 kPa;`): an unqualified number is taken as"
+                      " canonical SI, so a pressure in kPa would be read as"
+                      " pascals and the fit would converge to a vacuum without"
+                      " a symptom.");
+            zConst = d->lookupScalar(zn);
+            break;
+        }
+    }
+
     const std::size_t N = grid.size() / nc;
     std::vector<EvidencePoint> out;
     out.reserve(N);
     for (std::size_t r = 0; r < N; ++r)
-        out.push_back({ convUnit(grid[r * nc + cx], unit[cx], where),
-                        convUnit(grid[r * nc + cy], unit[cy], where) });
+    {
+        EvidencePoint p;
+        p.x = convUnit(grid[r * nc + cx], unit[cx], where);
+        p.y = convUnit(grid[r * nc + cy], unit[cy], where);
+        if (cz >= 0) p.z = convUnit(grid[r * nc + cz], unit[cz], where);
+        else         p.z = zConst;
+        out.push_back(p);
+    }
     return out;
 }
 
@@ -475,12 +566,13 @@ std::vector<EvidencePoint>
 EvidencePartition::loadAll(const std::vector<EvidenceDataset>& sets,
                            const std::vector<std::string>& xNames,
                            const std::vector<std::string>& yNames,
-                           const std::string& opLabel)
+                           const std::string& opLabel,
+                           const std::vector<std::string>& zNames)
 {
     std::vector<EvidencePoint> all;
     for (const auto& s : sets)
     {
-        auto pts = loadColumns(s, xNames, yNames, opLabel);
+        auto pts = loadColumns(s, xNames, yNames, opLabel, zNames);
         all.insert(all.end(), pts.begin(), pts.end());
     }
     return all;

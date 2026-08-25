@@ -119,14 +119,33 @@ void VaporPressureModel::noteRange(scalar T_K) const
     //  case where a fit degrades sharply just past its edge.
     const bool supercritical = (Tc_declared_ > 0.0 && T_K > Tc_declared_);
 
+    //  THE CONSOLE ECHO IS GATED ON THE SINK'S ANSWER, not on this object's
+    //  memory (2026-08-25).  `announcedOutside_` is per model INSTANCE, and an
+    //  instance's lifetime is the caller's business: a Levenberg-Marquardt fit
+    //  rebuilds the whole thermo package once per iteration and once per
+    //  finite-difference perturbation, so "announce once" became "announce
+    //  once per rebuild" -- 102 identical paragraphs in one run of
+    //  fitNRTL02, all of them about the SAME temperature.  `AdvisoryLog::add`
+    //  already returns false when the sentence is a duplicate of one it holds,
+    //  and the log outlives every rebuild, so it is the one thing in the
+    //  process that can answer "has this been said?".  A guard scoped to an
+    //  object the caller recreates in a loop guards nothing.
+    //
+    //  NOT WIDENED, and worth knowing before trusting this: the instance latch
+    //  stays as the cheap hot-path early-out, so one model instance still
+    //  reports only its FIRST excursion.  An instance that extrapolates a few
+    //  kelvin past its window and LATER goes supercritical announces only the
+    //  first -- two physically different situations, one report.  That blind
+    //  spot predates this change and is not closed by it.
     if (supercritical)
     {
-        AdvisoryLog::instance().add(
+        const bool fresh = AdvisoryLog::instance().add(
             "validity", "warning", who,
             "vapour pressure requested at T = " + trimNum(T_K) + " K, ABOVE"
             " its critical temperature Tc = " + trimNum(Tc_declared_)
             + " K -- there is no saturation state there; the value returned"
               " is not a vapour pressure");
+        if (!fresh) return;
         std::cerr << "[psat] " << who << ": vapour pressure requested at T = "
                   << trimNum(T_K) << " K, ABOVE its critical temperature Tc = "
                   << trimNum(Tc_declared_) << " K.\n     Above Tc a substance"
@@ -138,11 +157,12 @@ void VaporPressureModel::noteRange(scalar T_K) const
         return;
     }
 
-    AdvisoryLog::instance().add(
+    const bool fresh = AdvisoryLog::instance().add(
         "validity", "warning", who,
         "vapour pressure evaluated at T = " + trimNum(T_K) + " K, OUTSIDE its"
         " declared Trange (" + trimNum(lo) + " " + trimNum(hi)
         + ") -- extrapolated, still returned");
+    if (!fresh) return;
     std::cerr << "[psat] " << who << ": " << modelName()
               << " evaluated at T = " << trimNum(T_K)
               << " K, OUTSIDE its declared Trange (" << trimNum(lo) << " "

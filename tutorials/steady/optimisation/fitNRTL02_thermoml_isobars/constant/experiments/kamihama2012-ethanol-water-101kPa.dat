@@ -1,0 +1,57 @@
+/*****************************************************************************\
+  Experimental dataset EXTRACTED from the ThermoML Archive mirror
+  (je2008704.xml, block 3).
+
+  THE SOURCE TO CITE IS THE ARTICLE, never the archive or this file:
+      Kamihama, N.; Matsuda, H.; Kurihara, K.; Tochigi, K.; Oba, S. (2012).
+      Isobaric Vapor-Liquid Equilibria for Ethanol + Water + Ethylene  Glycol and Its Constituent Three Binary Systems
+      J. Chem. Eng. Data.  doi:10.1021/je2008704
+
+  Data compiled by NIST/TRC from the article (doi:10.18434/mds2-2422);
+  values verbatim from the ThermoML file, column order var1..varN, property.
+  This file belongs in a CASE's constant/experiments/ (sample-specific,
+  axiom 4) -- it must never enter data/standards/.
+\*****************************************************************************/
+
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    doi          10.1021/je2008704;
+    archiveFile  "data/local/thermoml/xml/10.1021/je2008704.xml";
+}
+
+system  ( ethanol water );
+
+Pressure    101.3 kPa;   // held constant (ThermoML Constraint)
+
+columns
+(
+    { name x_ethanol;  unit -; }
+    { name Boiling_temperature_at_pressure_P;  unit K; }
+);
+
+data
+(
+    0.018  368.18
+    0.079  360.5
+    0.09  359.7
+    0.147  357.27
+    0.244  355.38
+    0.311  354.55
+    0.353  354.11
+    0.425  353.45
+    0.488  352.96
+    0.57  352.39
+    0.616  352.11
+    0.67  351.82
+    0.711  351.64
+    0.802  351.37
+    0.835  351.3
+    0.869  351.27
+    0.901  351.26
+    0.914  351.26
+    0.922  351.27
+    0.94  351.29
+    0.972  351.35
+);

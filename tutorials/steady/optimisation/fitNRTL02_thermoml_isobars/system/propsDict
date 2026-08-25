@@ -1,0 +1,229 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  fitNRTL02 -- A GOOD FIT THAT PREDICTS WORSE.  The ethanol/water NRTL pair
+  regressed across three measured vacuum isobars, then asked about a fourth
+  isobar, at atmospheric pressure, from a different laboratory.
+
+  THE RESULT FIRST, BECAUSE IT IS NOT THE ONE THE CASE WAS BUILT EXPECTING.
+  The regression converges in 19 iterations to a reduced chi-square of 0.023
+  over 45 points -- an in-sample rms of 0.144 K, which is at the scatter of
+  the measurements.  Every number on the fit's own report says it went well.
+  Then the fitted pair meets 21 points it never saw, at 101.3 kPa, and its
+  average absolute deviation is 0.386 K.  The pair the case STARTED from --
+  the catalogue's DECHEMA set, adjusted by nothing -- manages 0.082 K on the
+  same 21 points.  The fit made the model 4.7 times worse where it was not
+  looking.
+
+  The two control operations below make that symmetric rather than a
+  one-sided accusation.  All four numbers, each measured by this run:
+
+                                vacuum data              atmospheric data
+                            (Voutsas, 13-33 kPa)       (Kamihama, 101.3 kPa)
+    catalogue pair            rms 0.1619 K                aad 0.0821 K
+    pair fitted here          rms 0.1438 K  (in-sample)   aad 0.3857 K
+
+  Each pair is at its best where its evidence was taken.  The regression
+  bought an 11 % improvement where it looked, and lost a factor of 4.7 where
+  it did not.  A student who reads only `converged 1`, `chi2_reduced 0.023`
+  and `rms 0.144 K` would ship the new pair; the held-out column is the only
+  thing in the run that says not to.
+
+  WHY IT HAPPENS, AND THE SECOND LESSON.  NRTL's interaction is
+  tau = a + b/T, so identifying `a` and `b` separately needs data that span
+  1/T.  Three isobars from 13 to 33 kPa span about 28 K around 320 K, which
+  moves 1/T by roughly 9 % -- better than the 12 K of a single isobar
+  (fitNRTL01), and it shows: the condition number of J'J falls from 3.6e11
+  to 5.6e9, two orders of magnitude.  But `max|correlation|` is still 1.000
+  and the run still reports `identifiable 0`.  Two orders of magnitude of
+  conditioning did NOT buy identifiability, and the confidence intervals say
+  why: b_ij = -539 +/- 456, b_ji = 682 +/- 768.  The parameters are a
+  correlated pair that happens to describe the vacuum data; nothing pins
+  either one, so nothing constrains what they do at 101 kPa.  The catalogue
+  record's own declared validity window is 298-373 K -- it was fitted where
+  it is being asked, and this fit was not.
+
+  THE EVIDENCE, AND WHERE IT CAME FROM.  Both datasets were read out of the
+  NIST/TRC ThermoML Archive by `bin/curate/thermoml_extract.py` and carry the
+  citation of the article they were measured in, as a field the engine reads
+  rather than a comment it discards:
+
+    FIT         Voutsas, Pamouktsis, Argyris & Pappa, Fluid Phase Equilib.
+                (2011), doi:10.1016/j.fluid.2011.06.009 -- 45 points on
+                three isobars, 13.15 / 19.71 / 32.86 kPa.
+
+    HELD OUT    Kamihama, Matsuda, Kurihara, Tochigi & Oba, J. Chem. Eng.
+                Data (2012), doi:10.1021/je2008704 -- 21 points at
+                101.3 kPa.
+
+  The held-out set is not a slice withheld from the same measurement: it is a
+  DIFFERENT LABORATORY, a different journal, a different year, at a pressure
+  a full decade above anything the fitter was shown.  That is what makes its
+  number mean something the in-sample one cannot.  The identity collision the
+  engine CAN settle (the same DOI in both roles) is settled by construction
+  here, because the DOIs differ; whether two studies are scientifically
+  independent stays a human judgement, and the run announces what it knows
+  rather than adjudicating it.
+
+  ITS NEIGHBOUR, AND WHAT IS DIFFERENT.  `tutorials/props/curation/
+  curate02_vle_heldout_ethanol_water` already holds out three of eleven
+  measured points on this same system, and already reports the same
+  identifiability finding -- it was the first place in the corpus where a
+  fitted binary pair met real evidence it had not been handed, and this case
+  does not claim that.  What is new here is the SHAPE of the test: curate02
+  withholds points from ONE series at ONE pressure, so it asks whether the
+  model interpolates within a study.  This case withholds an ENTIRE
+  INDEPENDENT STUDY at a pressure a decade away, which asks whether the model
+  transfers at all -- and the two questions get different answers.  Read
+  curate02 first; it is the cleaner statement of the contract.
+
+  NO ACCEPTANCE BAND IS DECLARED, deliberately.  This run REPORTS the
+  held-out residual and claims no pass or fail on it, because a limit chosen
+  after seeing the residual is not a limit.  Every number quoted above is
+  pinned in `expected`, so none of them can move unnoticed -- including the
+  ones that make the fit look bad.  Nothing here was tuned to produce this
+  outcome: the fit is the catalogue pair as its starting point, the bounds
+  are fitNRTL01's, and the two datasets were the only ethanol+water
+  bubble-temperature studies in the mirror that suited the roles.
+
+  WHAT THE RUN'S TWO CAVEATS ARE ABOUT, said plainly.  The end-of-run block
+  reports ethanol's Antoine correlation evaluated at 371.8 K and 372.8 K,
+  outside its declared 273-369 K window.  Both are the bubble-point Newton's
+  STARTING temperature -- the mole-fraction-weighted normal boiling point of
+  the first datum in each set -- and neither is a state any published answer
+  contains.  The mechanism that would say so (`AdvisoryFrame`) is opened
+  around this operation's parameter search but NOT yet inside the
+  bubble-point Newton itself, so those two lines are reported as though they
+  qualified the answer.  That gap is named in
+  docs/design/advisory-attribution.md rather than papered over here.
+\*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  NOTE ON WHAT THIS CASE DOES NOT SHOW.  It does not show that regression is
+  a bad idea, and it does not show that the catalogue pair is right.  It
+  shows one pair, one system, one pressure decade.  The transferable part is
+  the METHOD: hold out evidence from an independent study, declare the
+  partition before fitting, and read the held-out column before believing the
+  in-sample one.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_NRTL_across_isobars;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij;  initial -0.8009;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij;  initial  246.18;   min -5000;  max 5000; }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji;  initial  3.4578;   min -15;    max 15;   }
+            { path  equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji;  initial -586.0809; min -5000;  max 5000; }
+        );
+
+        //  No `P` here.  The measurements say where they were made -- the
+        //  Voutsas set in a Pressure COLUMN because that study varied it, the
+        //  Kamihama set as a held-constant because that one fixed it.  A
+        //  scalar declared beside them would be a second home for the same
+        //  fact and the op refuses the pair by name.
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol  water );
+        }
+
+        evidence
+        (
+            {
+                dataset  "constant/experiments/voutsas2011-ethanol-water.dat";
+                role     fit;
+            }
+            {
+                dataset  "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+                role     validation;
+            }
+        );
+
+        options
+        {
+            maxIter      60;
+            tolerance    1.0e-6;
+            fdStep       1.0e-3;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log    fit_history.csv;
+            parity     parity.csv;
+        }
+    }
+
+    //  THE CONTROL.  A held-out AAD on its own is a number with nothing to
+    //  compare it to: the reader cannot tell whether 0.1 % means the vacuum
+    //  fit taught the model something about atmospheric distillation, or
+    //  whether the pair it started from was already that good.  So this
+    //  operation scores the CATALOGUE pair -- the one the case declares in
+    //  constant/thermoPhysPropDict, untouched -- against the very same
+    //  Kamihama file, and the difference between the two AADs is the answer.
+    //
+    //  It adjusts nothing (`mode evaluate;`), and it uses the LEGACY single
+    //  `dataset` form deliberately: that form claims no validation, which is
+    //  the truth here.  This op performs no fit, so it has nothing to withhold
+    //  data FROM -- the held-out claim is unavailable to it rather than merely
+    //  unproven.  It reads the same file the fit held out, so the numbers
+    //  cannot drift apart; transcribing them a second time is what would let
+    //  them.
+    //
+    //  Its parameters come from the case dict, NOT from the operation above:
+    //  the fitter mutates a private deep copy, so the package this operation
+    //  assembles is the one the case declares.
+    {
+        name        score_catalogue_pair_at_101kPa;
+        type        fitParameters;
+        mode        evaluate;
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol  water );
+        }
+
+        dataset  "constant/experiments/kamihama2012-ethanol-water-101kPa.dat";
+
+        output
+        {
+            parity   parity_catalogue_101kPa.csv;
+        }
+    }
+
+    //  THE OTHER HALF OF THE CONTROL: the same catalogue pair, scored on the
+    //  VACUUM data the fit was performed against.  Without it a reader could
+    //  conclude that the catalogue pair is simply better, which is not what
+    //  these four numbers say.  Each pair is at its best where its evidence
+    //  was taken, and this operation is what makes that visible rather than
+    //  asserted.
+    {
+        name        score_catalogue_pair_at_vacuum;
+        type        fitParameters;
+        mode        evaluate;
+
+        residual
+        {
+            kind        T_bubble;
+            components  ( ethanol  water );
+        }
+
+        dataset  "constant/experiments/voutsas2011-ethanol-water.dat";
+
+        output
+        {
+            parity   parity_catalogue_vacuum.csv;
+        }
+    }
+);

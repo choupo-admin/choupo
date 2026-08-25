@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  fitNRTL02_thermoml_isobars -- meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Fit the ethanol/water NRTL pair across three measured isobars, then predict a fourth held out from a different laboratory";
+
+verbosity     2;

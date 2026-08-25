@@ -2230,6 +2230,23 @@ PYEOF
     fi
     rm -f /tmp/blocktri.$$
 
+    # held-out-pressure gate (2026-08-25).  A bubble-point fit prices every
+    # point at the pressure its own measurement declares -- a column where the
+    # study varied it, a held-constant where the study fixed it -- so a pair
+    # can be regressed across isobars and tested against an independent study
+    # at another pressure.  Five sabotages; the instructive one is that a
+    # held-constant without a unit is read as pascals and CONVERGES, so the
+    # gate demands the named refusal rather than any failure.
+    if "$ROOT/bin/curate/check_held_out_pressure.py" > /tmp/heldoutp.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "held-out-pressure-gate" "$(head -1 /tmp/heldoutp.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_held_out_pressure.py)\n" "held-out-pressure-gate"
+        cat /tmp/heldoutp.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/heldoutp.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

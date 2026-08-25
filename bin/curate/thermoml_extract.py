@@ -197,6 +197,8 @@ def main():
         sys.exit(f"thermoml_extract: block {a.block} out of range "
                  f"(0..{len(blocks)-1})")
     cols, rows, why, cons = describe_block(blocks[a.block], compounds)
+    comps = sorted({compounds.get(text_of(k, "nOrgNum"), "")
+                    for k in blocks[a.block] if L(k.tag) == "Component"} - {""})
     if why:
         sys.exit(f"thermoml_extract: block {a.block} is unextractable: {why}."
                  "  This tool embeds no physics and will not guess a "
@@ -221,6 +223,48 @@ def main():
     lines.append("  axiom 4) -- it must never enter data/standards/.")
     lines.append("\\" + "*" * 77 + "/")
     lines.append("")
+    #  THE CITATION MUST BE A FIELD, NOT ONLY A COMMENT.  The banner above is
+    #  for the reader; the parser discards it, and this project has already
+    #  paid once for provenance that lived where the engine could not see it
+    #  (67 records carrying `PROPOSAL TIER -- UNVERIFIED` in a discarded
+    #  banner).  `provenance {}` is what EvidencePartition reads to fill in a
+    #  dataset's identity, and it is what makes the cross-role identity
+    #  collision (R3) a fact the engine can settle instead of a judgement the
+    #  reader has to make.
+    lines.append("provenance")
+    lines.append("{")
+    lines.append("    source       measured;")
+    #  THE CONDITION THE TIER RULING ATTACHES, made machine-readable.
+    #  docs/design/thermoml-archive-assessment.md admits point values "cited to
+    #  the ORIGINAL article, CHECKED AGAINST IT when the paper is in hand".
+    #  This tool transcribes from the archive and has never seen the article,
+    #  so the second half is unmet at the moment of writing, and a file that
+    #  did not say so would let a reader assume it had been done.  A curator
+    #  who reads the paper and confirms the numbers edits this to `checked`;
+    #  nothing automatic may.
+    lines.append("    reviewStatus transcribedNotCheckedAgainstArticle;")
+    if cit and cit.get("doi"):
+        lines.append(f"    doi          {cit['doi']};")
+    else:
+        #  Said aloud rather than omitted: an absent key and a known absence
+        #  are different states, and the announcement counts the second.
+        lines.append("    doi          none-declared;   // the ThermoML Citation block carries none")
+    #  Resolve FIRST: the identity of the archive file is its path inside the
+    #  mirror, and a caller who typed a relative path must not silently get a
+    #  bare basename where the record claims a location.
+    pAbs = p.resolve()
+    rel = pAbs.relative_to(ROOT) if str(pAbs).startswith(str(ROOT)) else Path(p.name)
+    lines.append(f"    archiveFile  \"{rel}\";")
+    lines.append("}")
+    lines.append("")
+    if comps:
+        #  Same sanitisation the mole-fraction columns get: a compound whose
+        #  common name carries spaces ("1-methylethyl ethanoate") would
+        #  otherwise become two words in a word list.
+        lines.append("system  ( "
+                     + " ".join(re.sub(r"[^A-Za-z0-9]+", "_", c).strip("_")
+                                for c in comps) + " );")
+        lines.append("")
     for c, u, v in cons:
         lines.append(f"{c}    {v} {u};   // held constant (ThermoML Constraint)")
     if cons:
