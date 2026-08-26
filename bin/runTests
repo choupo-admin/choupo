@@ -2300,6 +2300,26 @@ PYEOF
     fi
     rm -f /tmp/friction.$$
 
+    # chemsep-transport gate (2026-08-26).  Three model families -- chemsepCp16
+    # on both Cp rungs, chemsepEq101 (liquid viscosity), chemsepEq16 (liquid
+    # thermal conductivity) -- shipped across three days with no gate at all.
+    # They fail QUIETLY: each returns a positive number of about the right size
+    # whatever it gets wrong.  The gate recomputes each in Python from the
+    # component record's own parameters, bands the J/kmol -> J/mol conversion
+    # (present on Cp, absent on conductivity -- the pair a shared helper gets
+    # wrong once), and pins the window announcement and the two refusals.
+    # Seven sabotages; the sixth SURVIVED first contact and exposed a real hole
+    # -- Cp_liquid > Cp_ig waves a thousandfold error through in one direction.
+    if "$ROOT/bin/curate/check_chemsep_transport.py" > /tmp/chemseptr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "chemsep-transport-gate" "$(head -1 /tmp/chemseptr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_chemsep_transport.py)\n" "chemsep-transport-gate"
+        cat /tmp/chemseptr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/chemseptr.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

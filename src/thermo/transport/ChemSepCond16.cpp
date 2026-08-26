@@ -46,9 +46,21 @@ scalar ChemSepCond16::conductivityLiquidPure(const Component& c, scalar T) const
             " Tc) -- select that instead, and know it is a prediction.");
     auto lc = c.liquidConductivityDict();
     if (!lc->found("chemsepEq16"))
+    {
+        //  Same rule as the viscosity twin: enumerate what the record has
+        //  rather than guessing a remedy it may not carry.
+        std::string have;
+        for (const auto& k : lc->keys())
+            have += (have.empty() ? "" : ", ") + k;
         throw std::runtime_error("chemsepEq16 conductivity: component '"
             + c.name() + "' has a liquidThermalConductivity block but no"
-            " `chemsepEq16 { A; B; C; D; E; }` sub-block.");
+            " `chemsepEq16 { A; B; C; D; E; }` sub-block."
+            + (have.empty()
+                 ? std::string("  The block declares nothing at all.")
+                 : "  It declares: " + have + " -- select one of those, or"
+                   " SatoRiedel, which is predictive from MW, Tb and Tc and"
+                   " needs no record at all."));
+    }
     auto p = lc->subDict("chemsepEq16");
 
     if (T <= 0)

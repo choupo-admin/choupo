@@ -41,12 +41,32 @@ scalar ChemSepVisc101::viscosityLiquidPure(const Component& c, scalar T) const
 {
     if (!c.hasLiquidViscosity())
         throw std::runtime_error("chemsepEq101 viscosity: component '"
-            + c.name() + "' has no `liquidViscosity` block in its .dat.");
+            + c.name() + "' has no `liquidViscosity` block in its .dat."
+            "  Andrade needs only a two-parameter fit (A, B in the same"
+            " block) -- select that instead, and know it is a narrower"
+            " fit than the five-parameter form.");
     auto lv = c.liquidViscosityDict();
     if (!lv->found("chemsepEq101"))
+    {
+        //  NAME WHAT THE RECORD ACTUALLY HAS, not a fixed alternative.  This
+        //  branch fires precisely when the component DOES carry a viscosity
+        //  block -- so the useful sentence is not "try Andrade" but "this
+        //  substance declares these, pick one".  A refusal that states a gap
+        //  without saying what would fill it teaches only unease, and a
+        //  refusal that guesses the remedy can name a model the record does
+        //  not carry.
+        std::string have;
+        for (const auto& k : lv->keys())
+            have += (have.empty() ? "" : ", ") + k;
         throw std::runtime_error("chemsepEq101 viscosity: component '"
             + c.name() + "' has a liquidViscosity block but no"
-            " `chemsepEq101 { A; B; C; D; E; }` sub-block.");
+            " `chemsepEq101 { A; B; C; D; E; }` sub-block."
+            + (have.empty()
+                 ? std::string("  The block declares nothing at all.")
+                 : "  It declares: " + have + " -- select one of those"
+                   " instead (Andrade and Vogel are narrower fits than the"
+                   " five-parameter form, which is the trade)."));
+    }
     auto p = lv->subDict("chemsepEq101");
 
     if (T <= 0)
