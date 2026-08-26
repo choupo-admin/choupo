@@ -448,8 +448,33 @@ Component Database::loadComponent(const std::string& name) const
     //  code read it.  A field the engine cannot see is a comment.
     //
     //  Announced beside [local] and [estimate], because a record's
-    //  trustworthiness is voiced in ONE place.  ABSENT is not "reviewed":
-    //  an unmarked record says nothing and this says nothing about it.
+    //  trustworthiness is voiced in ONE place.
+    //
+    //  AND ABSENCE SPEAKS TOO (2026-08-26).  The rule used to be that an
+    //  unmarked record "says nothing, so this says nothing about it".  That
+    //  is right as logic and wrong as an interface, and measuring it settled
+    //  it: 180 of 603 component records carry no `reviewStatus` key at all,
+    //  and they are ALL the hand-curated ones -- water, ethanol, benzene,
+    //  toluene, acetic acid -- while the 611 marked `interim` are bulk
+    //  imports the corpus rarely loads.  So the warning was ANTI-CORRELATED
+    //  WITH USE: flash01_benzene_toluene, the flagship tutorial, touched two
+    //  records and raised nothing, while a xylene nobody runs shouted.  A
+    //  reader draws the only available conclusion -- benzene is fine, the
+    //  xylene is suspect -- and it is backwards: one of those files has been
+    //  read by a human and the other has not.
+    //
+    //  This is the absence-reads-as-affirmation shape the project already
+    //  closed once, on the other side, when `reviewStatus checked` was made
+    //  to announce itself on a dataset: a status a curator had verified was
+    //  indistinguishable in the output from one declaring nothing.
+    //
+    //  A SEPARATE TAG, deliberately.  `[unmarked]` is not `[unreviewed]`:
+    //  the first says nobody has stated anything, the second says somebody
+    //  stated that it is unverified.  Collapsing them would destroy the
+    //  distinction AND break check_review_status's negative, whose whole job
+    //  is that a case with no interim record prints no [unreviewed] line.
+    //  It claims nothing about the values -- only that the file makes no
+    //  claim, which is exactly what is true of it.
     if (dict->lookupWordOrDefault("reviewStatus", "") == "interim")
         if (announceOnce("interim:" + name))
         {
@@ -466,6 +491,34 @@ Component Database::loadComponent(const std::string& name) const
                       << ".  The values are usable but UNVERIFIED; review them"
                          " and mark `reviewStatus reviewed;` before the result"
                          " is cited.\n";
+        }
+
+    //  CONSOLE ONLY, AND THE REASON IS WORTH KEEPING.  The first version put
+    //  this on the AdvisoryLog like its `interim` sibling, and the corpus
+    //  answered immediately: the 180 unmarked records are the ones EVERY case
+    //  loads, so every run in the tree grew a permanent caveat, and the gate
+    //  whose subject was a run with nothing to say lost its subject
+    //  (heatExchanger01_water_water). That is the objection this change was
+    //  warned about -- a warning on every run stops being read -- arriving as
+    //  a measurement rather than as an opinion.
+    //
+    //  So the channel is the difference.  The caveat block replays what
+    //  QUALIFIES THE ANSWER: an extrapolated correlation, an authorised
+    //  approximation, a datum declared unverified.  "Nobody has written down
+    //  whether this file was checked" is a fact about the CATALOGUE, not
+    //  about this run's number.  It belongs where a reader meets the record
+    //  -- at load, once, at the normal verbosity -- and not in the block that
+    //  has to stay short enough to read.
+    if (!dict->found("reviewStatus"))
+        if (announceOnce("unmarked:" + name))
+        {
+            std::cerr << "[unmarked] component '" << name
+                      << "': no `reviewStatus` declared -- this record makes"
+                         " no claim either way about whether its values were"
+                         " checked, which is not the same as claiming they are"
+                         " fine.  Add `reviewStatus interim;`, or `reviewed;`"
+                         " once a human has read them back against the sources"
+                         " its header already names.\n";
         }
 
     Component c;
