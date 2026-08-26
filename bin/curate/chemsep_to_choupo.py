@@ -42,7 +42,12 @@ from pathlib import Path
 
 ROOT      = Path(__file__).resolve().parents[2]
 SRC       = ROOT / 'thirdParty' / 'chemsep'
-PROPOSED  = ROOT / 'data' / 'proposed'
+#  data/local/, NOT data/local/.  The public `proposed` tier was
+#  RETIRED on 2026-07-13 -- it was a versioned PUBLIC lower-trust tier,
+#  which is exactly what created the third-party-redistribution problem
+#  it was meant to solve.  This module's own header already said data/local
+#  while the code kept writing to the dead one.
+PROPOSED  = ROOT / 'data' / 'local'
 COMP_OUT  = PROPOSED / 'components'
 PAIR_OUT  = PROPOSED / 'binaryPairs'
 REVIEW    = PROPOSED / '_chemsep_review'
@@ -253,6 +258,14 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
                 '', f'name        {key};']
         if cas:
             body.append(f'CAS         {cas};')
+        #  reviewStatus IS A PARSED FIELD.  The banner above says "UNVERIFIED"
+        #  and the parser throws banners away -- the 2026-08-05 finding, *a
+        #  field the engine cannot see is a comment*, which is how 67 records
+        #  once carried an unreviewed mark nothing could act on.  `interim` is
+        #  the word the engine already knows and already announces at load:
+        #  "imported, not yet checked against a primary".  It is exactly what
+        #  this is, so no new vocabulary is invented for it.
+        body.append('reviewStatus interim;')
         # ChemSep stores kg/kmol (numerically equal to Choupo kg/kmol), K,
         # Pa, dimensionless omega, K.  Choupo stores Pc in bar.
         if 'MW' in consts:
