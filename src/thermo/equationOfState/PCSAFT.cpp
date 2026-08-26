@@ -16,6 +16,7 @@
 #include "core/Constants.H"
 #include "core/Dictionary.H"
 
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <stdexcept>

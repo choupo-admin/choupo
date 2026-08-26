@@ -31,6 +31,7 @@ License
 #include "LU.H"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cmath>
 #include <cstdio>

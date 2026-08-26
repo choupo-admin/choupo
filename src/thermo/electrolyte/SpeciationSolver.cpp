@@ -31,6 +31,7 @@ License
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/Dictionary.H"
+#include <array>
 #include <set>
 #include "solver/NewtonND.H"
 #include "thermo/RecordResolver.H"

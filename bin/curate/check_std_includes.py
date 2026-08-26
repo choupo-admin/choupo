@@ -14,6 +14,25 @@
 # =============================================================================
 """check_std_includes -- what libstdc++ lends you, libc++ does not.
 
+THE LIST IS AN ENUMERATION, SO IT CATCHES WHAT SOMEBODY LISTED -- and on
+2026-08-26 that stopped being an abstract caveat.  `std::array` was not on it,
+the block-tridiagonal slice put a `std::vector<std::array<...>>` into
+`solver/NewtonND.cpp`, the native build compiled (libstdc++ lends the header
+transitively), this gate said OK, and the WASM build died in Vitor's terminal:
+
+    /usr/share/emscripten/.../c++/v1/__tuple:219:
+    template <class _Tp, size_t _Size> struct _LIBCPP_TEMPLATE_VIS array;
+
+libc++ only FORWARD-DECLARES array there.  So the guard held for every symbol
+it knew and was blind to the one that broke.
+
+The complete check is `make wasm`, which compiles the tree with the libc++ in
+question -- and it is NOT in bin/runTests, because emscripten is a separate
+toolchain and the suite must run without it.  That gap is real and is stated
+here rather than papered over: this gate REDUCES the chance of the failure, it
+does not remove it.  Adding a symbol here after a WASM build catches one is
+the intended workflow, not an admission of a broken gate.
+
 THE BUG THIS GUARDS.  `std::ostringstream` needs <sstream>.  libstdc++ hands
 it over anyway, through <iostream> or <iomanip>; emscripten's libc++ does
 not.  So a file can compile perfectly with g++ and fail under em++ -- and the
@@ -59,6 +78,7 @@ if not os.path.isdir(SRC):
 #  gate turns into noise nobody reads.
 RULES = [
     (r"\bstd::(ostringstream|istringstream|stringstream)\b", "sstream"),
+    (r"\bstd::array\s*<",                                    "array"),
     (r"\bstd::function\s*<",                                 "functional"),
     (r"\bstd::(set|multiset)\s*<",                           "set"),
     (r"\bstd::(map|multimap)\s*<",                           "map"),
