@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/solubilityParameter.schema.json",
+  "title": "solubilityParameter operation",
+  "description": "The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V_m), for every component of the case, plus the pairwise |delta_i - delta_j| table that is what the question usually is: the smaller the gap, the more likely two liquids mix. Delta is DERIVED and never stored -- the latent heat comes from the same Watson correlation the enthalpy legs use, and the molar volume from the record's Vliq -- so a stored value would be a second home for a fact the record already fixes. Where a record declares a published delta as an ANCHOR, the deviation is printed beside the derived number; that column is a check on the derivation and never an input to it, and it exists because all three ways this arithmetic fails are silent (a dropped RT term, a wrong V_m unit, and Pa^0.5 reported where the literature uses MPa^0.5 -- a factor of 31.6 that still reads as a solubility parameter). Refuses by name for a component with no Tc, no HvapTb or no Vliq, and at a temperature at or above Tc, where there is no liquid and delta is not defined. States on every call that Hildebrand carries no hydrogen bonding -- it cannot separate a polar solvent from a hydrogen-bonding one of the same cohesive energy density, so a close pair is a CANDIDATE and never a verdict -- and names Hansen's three-parameter split as what would, not implemented because its parameters are a dataset this project does not hold.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Temperature",
+      "description": "Where to evaluate delta; defaults to 298.15 K, and the default is ANNOUNCED. The temperature is part of the answer rather than a detail: cohesive energy density falls to zero at the critical point, because there is no longer a liquid to pull apart, so a table of deltas with no temperature beside it is a table of numbers from unrelated states. Every published compilation uses 25 C, which is why that is the default.",
+      "unit": "K"
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

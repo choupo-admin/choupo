@@ -1145,6 +1145,9 @@
   "SolidPhase": [
    "src/thermo/phase/SolidPhase.H"
   ],
+  "SolubilityParameter": [
+   "src/propertyOps/SolubilityParameter.H"
+  ],
   "SolutionControl": [
    "src/io/SolutionWriter.H"
   ],
@@ -1684,6 +1687,10 @@
    {
     "key": "frictionBench",
     "type": "FrictionBench"
+   },
+   {
+    "key": "solubilityParameter",
+    "type": "SolubilityParameter"
    },
    {
     "key": "estimateComponent",
@@ -3663,6 +3670,7 @@
    "src/propertyOps/PurePhaseDiagram.H",
    "src/propertyOps/ReactionCurve.H",
    "src/propertyOps/ScalingScan.H",
+   "src/propertyOps/SolubilityParameter.H",
    "src/propertyOps/Speciate.H",
    "src/propertyOps/SteamTables.H",
    "src/propertyOps/ThielePellet.H",
@@ -3823,6 +3831,21 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.H"
+  ],
+  "src/propertyOps/SolubilityParameter.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/SolubilityParameter.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H"
   ],
   "src/propertyOps/Speciate.cpp": [
    "src/core/Advisory.H",
@@ -7036,6 +7059,7 @@
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/ReactionCurve.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -7135,6 +7159,7 @@
    "src/propertyOps/PropertyScan2D.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/thermo/Component.cpp",
@@ -7268,6 +7293,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -7533,6 +7559,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -7853,6 +7880,7 @@
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ScalingScan.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
@@ -8065,6 +8093,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
@@ -8474,6 +8503,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -9035,6 +9065,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ScalingScan.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/SteamTables.cpp",
    "src/propertyOps/ThielePellet.cpp",
@@ -9080,6 +9111,10 @@
   "src/propertyOps/ScalingScan.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/ScalingScan.cpp"
+  ],
+  "src/propertyOps/SolubilityParameter.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/SolubilityParameter.cpp"
   ],
   "src/propertyOps/Speciate.H": [
    "src/propertyOps/Exchange.cpp",
@@ -9424,6 +9459,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",
@@ -9869,6 +9905,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VanKrevelen.cpp",
@@ -10137,6 +10174,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",
@@ -10454,6 +10492,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VleConsistency.cpp",

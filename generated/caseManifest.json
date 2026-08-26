@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 380,
+  "cases": 381,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2073,6 +2073,20 @@
    ],
    "thermo": {
     "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/solubility01_hildebrand_ladder": {
+   "application": "choupoProps",
+   "ops": [
+    "solubilityParameter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
    },
    "roles": [],
    "hasGolden": true
@@ -5701,6 +5715,7 @@
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
+    "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
@@ -6703,6 +6718,7 @@
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
@@ -6992,6 +7008,9 @@
     "tutorials/props/electrolyte/scaling_ro_brackish",
     "tutorials/props/electrolyte/softener_brackish",
     "tutorials/props/thermoTest/model4_speciation_scaling"
+   ],
+   "solubilityParameter": [
+    "tutorials/props/molecular/solubility01_hildebrand_ladder"
    ],
    "speciate": [
     "tutorials/props/electrolyte/edwards01_sour_water_activity",

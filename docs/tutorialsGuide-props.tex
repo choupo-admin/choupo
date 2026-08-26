@@ -2299,6 +2299,33 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \goldmore{12}
 \end{tutgolden}
 
+\clearpage
+\tutentry{solubility01\_hildebrand\_ladder}{tutorials/props/molecular/solubility01\_hildebrand\_ladder}
+\tutwhat{Hildebrand: one number for like-dissolves-like, and where it stops}
+\tutreadme{Seven liquids on a ladder of cohesive energy density, from hexane to water.}
+\tutreadme{$\delta$ is derived, never stored: sqrt(($\Delta$Hvap(T) - RT)/V\_m), with the latent heat from the Watson correlation the enthalpy legs already use. Every input is already in the component record, so a stored $\delta$ would be a second home for a fact the record fixes --- free to drift from it.}
+\tutreadme{The published column is an $\ast$anchor$\ast$, not an input. It is what ChemSep computed independently, and its only job is to give the derivation something to be wrong against. Worst deviation here is 0.85 \%.}
+\tutreadme{That matters because the three ways this arithmetic fails are all silent:}
+\tutreadme{$\ast$ the RT term dropped --- $\delta$ a few per cent high, and a solubility parameter has no intuitive magnitude to make that look wrong; $\ast$ V\_m in the wrong unit; $\ast$ Pa\textasciicircum{}0.5 reported where the literature uses MPa\textasciicircum{}0.5 --- a factor of 31.6, and the number still reads as a solubility parameter.}
+\tutreadme{Same device as the Zc column in a property data bank: a redundant determination turns a plausible wrong number into a visible disagreement.}
+\begin{tutgolden}
+\goldrow{diag}{solubilityParameter\_0}{delta\_acetone}{19673.2}
+\goldrow{diag}{solubilityParameter\_0}{delta\_benzene}{18648.2}
+\goldrow{diag}{solubilityParameter\_0}{delta\_cyclohexane}{16733.6}
+\goldrow{diag}{solubilityParameter\_0}{delta\_ethanol}{26301.9}
+\goldrow{diag}{solubilityParameter\_0}{delta\_nHexane}{14859}
+\goldrow{diag}{solubilityParameter\_0}{delta\_toluene}{18183.8}
+\goldrow{diag}{solubilityParameter\_0}{delta\_water}{48266.4}
+\goldrow{diag}{solubilityParameter\_0}{dev\_acetone}{0.00287938}
+\goldrow{diag}{solubilityParameter\_0}{dev\_benzene}{0.00277184}
+\goldrow{diag}{solubilityParameter\_0}{dev\_cyclohexane}{0.000380181}
+\goldrow{diag}{solubilityParameter\_0}{dev\_ethanol}{0.00619352}
+\goldrow{diag}{solubilityParameter\_0}{dev\_nHexane}{0.000736807}
+\goldrow{diag}{solubilityParameter\_0}{dev\_toluene}{0.003629}
+\goldrow{diag}{solubilityParameter\_0}{dev\_water}{0.00849075}
+\goldmore{5}
+\end{tutgolden}
+
 \subsection{reactor}
 \grouptheory{reactor}
 \clearpage

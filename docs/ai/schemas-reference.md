@@ -17,11 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*83 of 84 registered operations carry a schema and are documented below.*
-
-**Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
-
-> `solubilityParameter`
+*84 of 84 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -886,6 +882,14 @@ Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Ret
 Convective solid dryer taking TWO real input streams — a wet solid and a hot-air stream — and producing a dry solid and a humid exhaust. It has NO operation parameters, and that absence is the design: the air stream BRINGS the heat (as its own sensible cooling) and CARRIES AWAY the moisture, so the energy balance closes on real streams with no phantom duty. The earlier `airTemperature` and `relativeHumidity` parameters were retired with that rewrite — the air temperature is the inlet stream's, and the humidity follows from its composition. The drying kinetics are a named reference at unit level (`dryingCurve <name>;` into `constant/dryingKinetics`), not an operation key.
 
 *(no operation-block fields)*
+
+## `solubilityParameter`  (solubilityParameter operation)
+
+The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V_m), for every component of the case, plus the pairwise |delta_i - delta_j| table that is what the question usually is: the smaller the gap, the more likely two liquids mix. Delta is DERIVED and never stored -- the latent heat comes from the same Watson correlation the enthalpy legs use, and the molar volume from the record's Vliq -- so a stored value would be a second home for a fact the record already fixes. Where a record declares a published delta as an ANCHOR, the deviation is printed beside the derived number; that column is a check on the derivation and never an input to it, and it exists because all three ways this arithmetic fails are silent (a dropped RT term, a wrong V_m unit, and Pa^0.5 reported where the literature uses MPa^0.5 -- a factor of 31.6 that still reads as a solubility parameter). Refuses by name for a component with no Tc, no HvapTb or no Vliq, and at a temperature at or above Tc, where there is no liquid and delta is not defined. States on every call that Hildebrand carries no hydrogen bonding -- it cannot separate a polar solvent from a hydrogen-bonding one of the same cohesive energy density, so a close pair is a CANDIDATE and never a verdict -- and names Hansen's three-parameter split as what would, not implemented because its parameters are a dataset this project does not hold.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `T` |   | number | K | Where to evaluate delta; defaults to 298.15 K, and the default is ANNOUNCED. The temperature is part of the answer rather than a detail: … |
 
 ## `speciate`  (speciate operation)
 
