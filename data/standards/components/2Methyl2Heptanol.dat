@@ -39,6 +39,11 @@ idealGasHeatCapacity
     coefficients  (102.1789  -500  6.321724721  0  0);
     Trange        (255  1500);
 }
+
+groups
+{
+    unifac ( { group CH3; count 3; } { group CH2; count 4; } { group C; count 1; } { group OH; count 1; } );
+}
 solubilityParameter 17397.3;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source

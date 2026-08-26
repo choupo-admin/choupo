@@ -65,6 +65,23 @@ EXCLUDED = ['DIPPR', 'NIST', 'WEBBOOK', 'SRD', 'ASPEN', 'HYSYS', 'PRO-II',
             'PROII', 'UNISIM', 'YAWS', 'CRC', 'PERRY', 'REFPROP', 'DDBST']
 
 
+def _load_unifac_key():
+    """The id -> name key, RECOMPUTED from the curated overlap on every run.
+
+    Never a stored table: a derived fact with a second home is the arity sin,
+    and this one would drift the moment a component's groups were corrected.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "unifac_key", Path(__file__).with_name("unifac_key.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.derive()[0]
+
+
+UNIFAC_KEY = _load_unifac_key()
+
+
 def die_no_files():
     """Spec step 3: the importer REQUIRES the real ChemSep files; if absent it
     explains clearly and refuses -- it must never fabricate a database."""
@@ -590,6 +607,57 @@ def parse_components(xml_path: Path, report: list, write: bool,
             lines += ['    }', '}']
             body += lines
             emitted.add('liquidThermalConductivity')
+
+        #  UNIFAC GROUPS -- and the reason this is not a lookup table.
+        #
+        #  ChemSep states a compound's UNIFAC decomposition as SUBGROUP IDS;
+        #  Choupo states it as subgroup NAMES.  Nothing ChemSep ships carries
+        #  the id -> name key: it is not in chemsep1.xml and not in pcd/.
+        #  Writing the classic Fredenslund numbering from memory would have
+        #  been wrong, and wrong INVISIBLY -- ChemSep numbers water 17 and
+        #  methanol 16, where the classic table has 16 and 15, so the
+        #  remembered key would have mapped ethanol's OH onto a different
+        #  group and produced a plausible activity coefficient nobody could
+        #  question.
+        #
+        #  So the key is DERIVED, from the 40 components the curated
+        #  catalogue and ChemSep both describe: a substance whose ids are all
+        #  explained but one, and whose names are all explained but one, pins
+        #  that pairing -- COUNTS INCLUDED, so `CH3 2` cannot be read onto a
+        #  name appearing once.  Propagated to a fixed point it determines 20
+        #  ids with ZERO contradictions across all 40.  `unifac_key.py` is the
+        #  one home for that derivation; it is recomputed, never transcribed.
+        #
+        #  AN UNKNOWN ID BLOCKS THE WHOLE COMPONENT.  A partial decomposition
+        #  is not partial information -- it is a DIFFERENT MOLECULE, and
+        #  UNIFAC would answer for it without complaint.  A component whose
+        #  decomposition contains one id the key does not determine gets no
+        #  `groups` block at all and keeps its honest absence.
+        uni = comp.find('UnifacVLE')
+        if uni is not None:
+            ids = {}
+            for g in uni.findall('group'):
+                try:
+                    ids[int(g.get('id'))] = int(g.get('value'))
+                except (TypeError, ValueError):
+                    ids = None
+                    break
+            if ids:
+                unknown = sorted(i for i in ids if i not in UNIFAC_KEY)
+                if unknown:
+                    report.append(
+                        f'- {name}: UNIFAC groups NOT imported -- subgroup id(s) '
+                        f'{unknown} are not determined by the curated overlap.  A '
+                        'partial decomposition is a different molecule, so none '
+                        'is written.  Curating any component that uses one of '
+                        'those ids would determine it.')
+                else:
+                    items = ' '.join(
+                        f'{{ group {UNIFAC_KEY[i]}; count {n}; }}'
+                        for i, n in sorted(ids.items()))
+                    body += ['', 'groups', '{',
+                             f'    unifac ( {items} );', '}']
+                    emitted.add('groups')
 
         #  THE HILDEBRAND ANCHOR.  Never an input: the engine derives delta
         #  from HvapTb and Vliq, and this is what ChemSep computed by its own

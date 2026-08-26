@@ -77,6 +77,11 @@ liquidThermalConductivity
         Tmax  429.9;
     }
 }
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2; count 7; } { group CH; count 1; } );
+}
 solubilityParameter 16350;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source

@@ -2320,6 +2320,26 @@ PYEOF
     fi
     rm -f /tmp/chemseptr.$$
 
+    # unifac-key gate (2026-08-26).  ChemSep states UNIFAC decompositions as
+    # subgroup IDS and ships no id -> name key; Choupo names its subgroups.
+    # Writing the classic Fredenslund numbering from memory is wrong and wrong
+    # INVISIBLY (ChemSep numbers water 17 and methanol 16, the classic table
+    # 16 and 15) -- UNIFAC answers for whatever molecule it is handed.  The key
+    # is SOLVED from the 40 components both sources describe, matched by CAS,
+    # and an undetermined id blocks the whole component: a partial
+    # decomposition is a different molecule.  Four sabotages; the third
+    # reproduces a real defect this gate found -- the derivation counting its
+    # own emitted records as evidence.
+    if "$ROOT/bin/curate/check_unifac_key.py" > /tmp/unifackey.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unifac-key-gate" "$(head -1 /tmp/unifackey.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unifac_key.py)\n" "unifac-key-gate"
+        cat /tmp/unifackey.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unifackey.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a
