@@ -135,6 +135,12 @@ const PLOT_TYPES: PlotType[] = [
   // isobar (h,s,v,cp vs T; the engine announces the Tsat crossing).
   { id: "steam", label: "Steam tables (IF97)", min: 1, max: 1, vle: false,
     why: "IF97 is the water formulation — select water alone" },
+  //  Solvent selection by cohesive energy density.  Needs no pair parameters
+  //  and no VLE: delta is derived per component from HvapTb, Tc and Vliq, so
+  //  any two substances that carry those three can be compared -- which is
+  //  what makes this the one study that works across the whole catalogue.
+  { id: "solubility", label: "Solubility parameter (Hildebrand)", min: 2, max: 12, vle: false,
+    why: "pick 2+ liquids that carry HvapTb, Tc and Vliq — delta is derived from those three" },
 ];
 
 // Short lens labels for the toolbar SegmentedControl (the full label rides the
@@ -144,6 +150,7 @@ const LENS_SHORT: Record<PlotKind, string> = {
   scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
   scaling: "scaling", steam: "steam", gibbsmap: "gibbsmap", bjerrum: "Bjerrum",
+  solubility: "delta",
 };
 
 // PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
@@ -706,6 +713,20 @@ export function ExploreWorkspace() {
         steam: steamMode === "saturation"
           ? { mode: "saturation", from: satFrom, to: satTo, n: Math.max(2, Math.round(nPts)) }
           : { mode: "isobar", P: steamP, from: isoFrom, to: isoTo, n: Math.max(2, Math.round(nPts)) },
+        ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
+      };
+    }
+
+    if (plotType === "solubility") {
+      //  No axis and no sweep: one delta per component at one temperature.
+      //  The composition is irrelevant to a pure-component property and is
+      //  sent only because the spec shape requires a state.
+      return {
+        components: selected,
+        properties: [],
+        axis: { variable: "T", from: 0, to: 1, n: 2 },   // unused
+        state: { T: fixedT, P: fixedP, composition },
+        solubility: { T: fixedT },
         ...(hasLocal ? { componentFiles: localComponentFiles } : {}),
       };
     }

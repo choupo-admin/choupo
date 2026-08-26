@@ -23,11 +23,7 @@ standardThermochemistry
 
 vaporPressure
 {
-    model         Antoine;
-    // log10(Psat [bar]) = A - B / (T[K] + C)
-    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
-    coefficients  (4.628742958  1835.675916  -24.15);
-    Trange        (364.25  538.65);
+    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
 }
 
 Vliq        0.000149448;      // m3/mol at 25 C  [ChemSep eqno 105]

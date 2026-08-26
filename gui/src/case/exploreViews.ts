@@ -26,6 +26,7 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 export const PLOT_KINDS = [
   "scan", "txy", "flash", "gamma", "binaryLle", "ternary",
   "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
+  "solubility",
 ] as const;
 export type PlotKind = (typeof PLOT_KINDS)[number];
 
@@ -72,6 +73,10 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   // construction and moved to the Methods workspace.  Its feed — the same
   // binary-VLE engine run — is shared via case/methodFeeds.ts.)
   if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("flash"); out.add("gamma"); }
+  //  Solvent selection: needs no pair parameters and no VLE, only the three
+  //  data delta is derived from -- which is why it reaches parts of the
+  //  catalogue every other multi-component study cannot.
+  if (n >= 2 && metas.every((m) => m?.deltaAble ?? false)) out.add("solubility");
   if (n === 2 && allUnifac) out.add("binaryLle");            // immiscibility instrument
   if (n === 3 && vleMix && allVle) out.add("ternary");
   if (n === 3 && vleMix && allVle && allUnifac) out.add("ternaryLle");

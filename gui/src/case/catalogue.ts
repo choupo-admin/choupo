@@ -54,6 +54,12 @@ export interface ComponentMeta {
    *  — the engine reads it directly, so the component is UNIFAC-able (gates the
    *  γ=UNIFAC views without a hardcoded map). */
   hasUnifac: boolean;
+  /** Carries the three data a Hildebrand solubility parameter is DERIVED from:
+   *  HvapTb, Tc and Vliq.  Not a stored delta -- the tree holds no derivative
+   *  -- but the ability to compute one.  A component without all three is
+   *  offered no solubility study, because the engine would refuse it by name
+   *  and a study that refuses everything it is given is a dead front door. */
+  deltaAble: boolean;
   /** Critical temperature [K], critical pressure [bar], normal boiling point [K]
    *  — harvested for the pure-compound P-T phase diagram (mark Tc/Pc/Tb).
    *  Undefined when the .dat omits them. */
@@ -113,8 +119,15 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const grp = j.groups as Record<string, unknown> | undefined;
   const hasUnifac = !!grp && grp.unifac !== undefined && grp.unifac !== null;
   const num = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
+  //  The SAME three the engine's solubilityParameter op requires, and it
+  //  refuses by name for each one missing.  Read here so a study is offered
+  //  only where it can answer.
+  const deltaAble = hasTc
+    && typeof j.HvapTb === "number" && j.HvapTb > 0
+    && typeof j.Vliq === "number" && j.Vliq > 0
+    && !nonvol;
   return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isSynthetic, hasUnifac,
-    origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
+    deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 
 /** Every standard component, sorted by name. Computed once at module load. */

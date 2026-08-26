@@ -376,7 +376,41 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
         #  corresponding-states estimate wherever the record carries one --
         #  a measured correlation beats a predicted one, and the conversion
         #  is exact (see antoine_choupo).
+        #  AN IMPORTER MUST NOT WRITE A RECORD THAT CONTRADICTS ITSELF.
+        #  The conversion below is exact (verified to 6e-9 over 1065 points),
+        #  but the SOURCE is not internally consistent everywhere: for 28 of
+        #  355 substances ChemSep's own Antoine set does not reproduce
+        #  ChemSep's own normal boiling point, by up to 84 %.  Several are
+        #  substances whose "Tb" is nominal because they decompose or sublime
+        #  before boiling (the nitrotoluenes); others are simply two fits from
+        #  different sources sitting in one record.
+        #
+        #  Writing both would hand the engine a record whose Psat says one
+        #  thing and whose Tb says another, and every consumer would silently
+        #  pick whichever it happened to read.  So the Antoine is DECLINED
+        #  where it disagrees with the record's own Tb by more than 2 % --
+        #  the compound keeps its Ambrose-Walton corresponding-states
+        #  estimate, which is honest about being an estimate -- and the count
+        #  is REPORTED rather than absorbed.  Declining is not judging which
+        #  of the two is right: that needs a primary source, and inventing an
+        #  answer here would convert a visible contradiction into an
+        #  invisible choice.
         ant = antoine_choupo(_corr(comp, 'AntoineVaporPressure'))
+        if ant is not None and Tb:
+            import math as _m
+            A_, B_, C_ = ant[0], ant[1], ant[2]
+            try:
+                pAtTb = 10.0 ** (A_ - B_ / (Tb + C_))          # bar
+                if abs(pAtTb - 1.01325) / 1.01325 > 0.02:
+                    report.append(
+                        f'- {name}: ChemSep\'s own Antoine gives'
+                        f' {pAtTb:.4f} bar at its own Tb = {Tb:.2f} K'
+                        f' ({(pAtTb/1.01325 - 1)*100:+.1f} % off 1 atm) --'
+                        ' the SOURCE contradicts itself, so no Antoine was'
+                        ' written; the corresponding-states estimate stands.')
+                    ant = None
+            except (OverflowError, ValueError, ZeroDivisionError):
+                ant = None
         if ant is not None:
             A, B, C, tmin, tmax = ant
             body += ['', 'vaporPressure', '{',

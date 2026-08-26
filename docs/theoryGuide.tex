@@ -5357,6 +5357,91 @@ reduction pin, the Harned slopes, and the declared Gibbs--Duhem deviation.
 \end{tutoriallink}
 
 % =====================================================================
+% =====================================================================
+\section{Cohesive energy density and the solubility parameter}
+\label{ch:solubility-parameter}
+
+Before activity coefficients could be regressed from data, engineers needed
+some way to guess whether two liquids would mix.  The answer that survived
+is one number per substance, and it survived because it is derived from
+quantities everybody already measures.
+
+\subsection{The definition}
+
+Vaporising a mole of liquid separates its molecules completely.  The energy
+that costs, less the work $RT$ the vapour does pushing the atmosphere aside,
+is the \emph{energy of vaporisation}; divided by the liquid's molar volume it
+is the \emph{cohesive energy density}, and Hildebrand's parameter is its
+square root:
+
+\begin{equation}
+  \delta(T) \;=\; \sqrt{\frac{\Delta H_{\mathrm{vap}}(T) - RT}{V_m}}
+  \label{eq:hildebrand-delta}
+\end{equation}
+
+Its unit, $\mathrm{Pa}^{1/2}$, is not an accident of algebra: energy per
+volume is a pressure, so $\delta$ is the square root of an internal pressure.
+Compilations print $\mathrm{MPa}^{1/2}$, a factor of $10^{3}$ smaller.
+
+The rule of thumb follows from regular-solution theory, in which the excess
+enthalpy of mixing two non-polar liquids is
+
+\begin{equation}
+  \Delta H^{E} \;=\; V_m \,\phi_1 \phi_2 \,(\delta_1 - \delta_2)^2
+  \label{eq:regular-solution}
+\end{equation}
+
+with $\phi_i$ the volume fractions.  The difference enters \emph{squared} and
+is never negative: on this model mixing is always endothermic, and the closer
+the two $\delta$ are, the smaller the penalty.  ``Like dissolves like'' is
+Eq.~\eqref{eq:regular-solution} read backwards.
+
+\subsection{What Eq.~\eqref{eq:hildebrand-delta} cannot do}
+
+The assumption behind Eq.~\eqref{eq:regular-solution} is that the only forces
+are dispersive --- that a molecule's interaction with a neighbour does not
+depend on which neighbour.  Where that fails, the theory fails with it, and
+it fails in a specific direction: $\Delta H^{E} \ge 0$ always, so a
+\emph{negative} enthalpy of mixing cannot be represented at all.  Hydrogen
+bonding between unlike molecules is exactly that case.
+
+The consequence is not subtle.  Water's $\delta$ is about
+$\SI{48}{\mega\pascal\tothe{1/2}}$ and ethanol's about $\SI{26}{}$; the
+difference of $22$ says they should be strongly immiscible, and they are
+miscible in all proportions.  The theory has compressed dispersion, polarity
+and hydrogen bonding into a single scalar, and water is where that
+compression costs everything.
+
+This is why Hansen's later three-parameter split
+($\delta_d$, $\delta_p$, $\delta_h$, with miscibility judged by a distance in
+that space) is what formulation practice uses.  Choupo does not implement it:
+its parameters are a separate curated dataset the project does not hold.
+
+\subsection{How Choupo evaluates it}
+
+\declaredanchor{ch:solubility-parameter}
+
+$\delta$ is \emph{derived}, never stored.  Every input in
+Eq.~\eqref{eq:hildebrand-delta} is already in the component record ---
+$\Delta H_{\mathrm{vap}}$ at the normal boiling point, $T_c$, and $V_m$ ---
+so a stored $\delta$ would be a second home for a fact the record already
+fixes.  The latent heat at $T$ comes from the Watson correlation
+$\Delta H_{\mathrm{vap}}(T) = \Delta H_{\mathrm{vap}}(T_b)
+\left[(T_c-T)/(T_c-T_b)\right]^{0.38}$, the same one the enthalpy legs use.
+
+Where a record carries a published $\delta$, it is stored as an
+\emph{anchor}: never an input, only a check.  The three ways
+Eq.~\eqref{eq:hildebrand-delta} is got wrong --- dropping $RT$, a wrong unit
+on $V_m$, and reporting $\mathrm{Pa}^{1/2}$ where the literature uses
+$\mathrm{MPa}^{1/2}$ --- all produce a number that still reads as a
+solubility parameter, and only an independent determination beside it turns
+any of them into a visible disagreement.
+
+Note finally that $\delta \to 0$ as $T \to T_c$: at the critical point there
+is no longer a liquid to pull apart.  A table of solubility parameters
+without a temperature beside it is a table of numbers from unrelated states,
+which is why the evaluation temperature is announced on every run.
+
 \section{Multi-ion Pitzer: the Harvie--M\o ller--Weare
 model}\label{ch:pitzer-hmw}
 

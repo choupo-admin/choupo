@@ -199,6 +199,12 @@ export interface ExploreSpec {
    *  `isobar` scans h,s,v,cp vs T at fixed P (Pa) — the engine announces the
    *  Tsat crossing.  All values canonical SI, like every synthesized scalar. */
   steam?: { mode: "saturation" | "isobar"; from: number; to: number; n: number; P?: number };
+  /** Hildebrand solubility parameter for every selected component, plus the
+   *  pairwise |delta_i - delta_j| table.  `T` in K; the engine defaults to
+   *  298.15 and ANNOUNCES the default, because delta falls to zero at Tc and
+   *  a table of deltas from unstated temperatures is a table of unrelated
+   *  states.  No axis, no sweep: one evaluation per component. */
+  solubility?: { T: number };
   /** UNIFAC group decompositions per component — used by the LLE ternary path to
    *  synthesize a predictive VLLE package (no fitted pairs).  A component absent
    *  here is omitted from the groups block → UNIFAC treats it as ideal (γ=1). */
@@ -432,9 +438,22 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       }
     : null;
 
+  //  Same dict grammar as
+  //  tutorials/props/molecular/solubility01_hildebrand_ladder: the op takes
+  //  the case's component set as given and needs nothing else but T.  It
+  //  writes NO csv -- its result is the diagnostics map (delta_<name>,
+  //  dev_<name>, gap_min, gap_max), which the panel reads directly.
+  const solubilityOp: JsonDict | null = spec.solubility
+    ? {
+        name: "explore",
+        type: "solubilityParameter",
+        T: spec.solubility.T,
+      }
+    : null;
+
   const propsDict: JsonDict = {
     operations: [
-      phaseOp ?? psychroOp ?? ternaryOp ?? binaryOp ?? scalingOp ?? gibbsMapOp ?? steamOp ?? {
+      phaseOp ?? psychroOp ?? ternaryOp ?? binaryOp ?? scalingOp ?? gibbsMapOp ?? steamOp ?? solubilityOp ?? {
         name: "explore",
         type: "propertyScan1D",
         vary: {

@@ -164,6 +164,10 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   txy: "ch:flash",            // binary boiling envelope — bubble/dew
   flash: "ch:flash",          // tie-line through the feed + the lever rule
   gamma: "ch:activity",       // γ(x) from the activity model
+  //  Cohesive energy density: derived from the latent heat and the molar
+  //  volume, and the section says in the same breath where regular-solution
+  //  theory stops -- a negative enthalpy of mixing it cannot represent at all.
+  solubility: "ch:solubility-parameter",
   // g_mix(x) with the two coexisting liquids joined by their common tangent:
   // liquid-liquid equilibrium by Gibbs minimisation, one dimension below the
   // ternary lens that already points here.

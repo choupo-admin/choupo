@@ -184,6 +184,9 @@
   "CatalystRegistry": [
    "src/unitOperations/reactor/pellet/CatalystRegistry.H"
   ],
+  "ChemSepCp16": [
+   "src/thermo/heatCapacity/ChemSepCp16.H"
+  ],
   "ChemistrySystem": [
    "src/thermo/ChemistrySystem.H"
   ],
@@ -5046,10 +5049,19 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/SRK.H"
   ],
+  "src/thermo/heatCapacity/ChemSepCp16.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/heatCapacity/ChemSepCp16.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H"
+  ],
   "src/thermo/heatCapacity/HeatCapacityModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
+   "src/thermo/heatCapacity/ChemSepCp16.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/NASA7Cp.H",
    "src/thermo/heatCapacity/PolynomialCp.H",
@@ -7096,6 +7108,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/phase/SolidPhase.cpp",
@@ -7354,6 +7367,7 @@
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -7620,6 +7634,7 @@
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -8579,6 +8594,7 @@
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/SRK.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -10958,6 +10974,10 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/SRK.cpp"
   ],
+  "src/thermo/heatCapacity/ChemSepCp16.H": [
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
+   "src/thermo/heatCapacity/HeatCapacityModel.cpp"
+  ],
   "src/thermo/heatCapacity/HeatCapacityModel.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
@@ -10973,6 +10993,7 @@
    "src/thermo/Component.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
+   "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",

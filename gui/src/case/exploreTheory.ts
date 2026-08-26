@@ -57,6 +57,13 @@ export function theoryAnchor(plotType: PlotKind, property: string): string {
     // the gibbsMap props op.
     case "gibbsmap": return "sec:gibbs-maps"; // equilibrium maps (forum 2026-07-02)
     case "steam": return "ch:vap";           // saturation line / vapour pressure
+    //  Cohesive energy density, its own section -- NOT ch:vap.  The latent
+    //  heat is an INPUT to delta, not the subject: a reader sent to vapour
+    //  pressure would find the quantity this lens consumes and nothing about
+    //  what it does with it, nor the one thing the section must say -- that
+    //  regular-solution theory makes the enthalpy of mixing non-negative by
+    //  construction and therefore cannot represent water and ethanol at all.
+    case "solubility": return "ch:solubility-parameter";
     case "scan":                             // the property IS the subject here
     default:
       if (property === "Psat") return "ch:vap";
