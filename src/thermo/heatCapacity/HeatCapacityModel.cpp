@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HeatCapacityModel.H"
+#include "ChemSepCp16.H"
 #include "PolynomialCp.H"
 #include "RowlinsonBondi.H"
 #include "NASA7Cp.H"
@@ -69,6 +70,11 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("RowlinsonBondi",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<RowlinsonBondi>(d); });
+    //  ChemSep's equation form 16, read as published rather than refitted --
+    //  356 imported records state their ideal-gas Cp in it.
+    registerModel("chemsepCp16",
+        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
+        { return std::make_unique<ChemSepCp16>(d); });
     registerModel("NASA7",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<NASA7Cp>(d); });

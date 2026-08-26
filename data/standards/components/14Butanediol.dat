@@ -15,10 +15,33 @@ Pc          48.8;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
 omega       1.17696;      // [-] [origin=ChemSep v8.3]
 Tb          501.15;      // K [origin=ChemSep v8.3]
 
+standardThermochemistry
+{
+    dHf_298   -426700;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     381;        // J/(mol.K)  third-law absolute
+}
+
 vaporPressure
 {
-    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (5.803943826  2511.394701  -67.663);
+    Trange        (408.15  588.27);
 }
+
+Vliq        8.88514e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      62902.8;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (78.857  -613.48  5.885244721  -0.00013274  6.7309e-08);
+    Trange        (273  1500.15);
+}
+solubilityParameter 28850;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source
 {

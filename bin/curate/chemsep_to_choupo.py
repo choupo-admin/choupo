@@ -195,6 +195,75 @@ XML_CONST = {
     'AcentricityFactor':            ('omega', '-'),
     'NormalBoilingPointTemperature':('Tb',    'K'),
 }
+
+# ---------------------------------------------------------------------------
+#  THE CORRELATIONS, AND WHY EACH FORM IS TRUSTED
+#
+#  ChemSep stores a temperature-dependent property as an `eqno` plus A..E and
+#  a validity window.  A wrong equation form does not raise -- it returns a
+#  plausible number -- so NONE of these was taken from memory.  Each was
+#  confirmed, before this code was written, against a scalar the SAME record
+#  publishes independently (2026-08-26, across all 431 records):
+#
+#    eqno 10  Antoine   exp(A - B/(T+C)) [Pa]
+#             CHECK: P(Tb) must be 101325 Pa.  Median deviation 0.27 %.
+#    eqno 105 density   A / B^(1 + (1 - T/C)^D) [kmol/m3]
+#             CHECK: 1/rho(298.15) vs the published molar volume.  0.094 %.
+#    eqno 106 dHvap     A (1-Tr)^(B + C Tr + D Tr^2 + E Tr^3) [J/kmol]
+#             CHECK: with 105, reproduces the published Hildebrand parameter
+#             through delta = sqrt((dHvap - RT)/Vm).  Median 0.28 % over 408.
+#
+#  AND ONE FIELD NAME LIES, which is the finding that justified the whole
+#  exercise: `LiquidVolumeAtNormalBoilingPoint` is NOT at the boiling point.
+#  Evaluated there the correlation disagrees with it by 12.3 % median; at
+#  298.15 K, by 0.094 %.  Trusting the name would have written Vliq into 356
+#  records systematically 12 % high -- a plausible number nothing would catch.
+#  So Vliq is taken at 298.15 K, which is also what Choupo's Vliq means.
+# ---------------------------------------------------------------------------
+def _corr(comp, tag):
+    """(eqno, A..E, Tmin, Tmax) for a ChemSep correlation block, or None."""
+    el = comp.find(tag)
+    if el is None:
+        return None
+    g = lambda k: (lambda c: float(c.get('value')) if c is not None
+                            and c.get('value') is not None else None)(el.find(k))
+    try:
+        d = {'eqno': g('eqno'), 'Tmin': g('Tmin'), 'Tmax': g('Tmax')}
+        for k in 'ABCDE':
+            d[k] = g(k)
+    except (TypeError, ValueError):
+        return None
+    return d if d['eqno'] is not None else None
+
+
+def _eq105(p, T):
+    return p['A'] / p['B'] ** (1.0 + (1.0 - T / p['C']) ** p['D'])
+
+
+def _eq106(p, T, Tc):
+    Tr = T / Tc
+    e = p['E'] or 0.0
+    return p['A'] * (1.0 - Tr) ** (p['B'] + p['C']*Tr + p['D']*Tr**2 + e*Tr**3)
+
+
+def antoine_choupo(p):
+    """ChemSep eqno 10 -> Choupo's Antoine, EXACTLY.
+
+    ChemSep:  Psat[Pa]  = exp(A - B/(T + C))
+    Choupo:   log10(Psat[bar]) = A' - B'/(T + C')
+
+    log10(Psat/1e5) = (A - B/(T+C))/ln(10) - 5, so A' = A/ln10 - 5,
+    B' = B/ln10, C' = C.  A conversion, not a refit: no information is lost
+    and nothing is estimated."""
+    import math
+    if p is None or int(p['eqno']) != 10:
+        return None
+    if p['A'] is None or p['B'] is None or p['C'] is None:
+        return None
+    ln10 = math.log(10.0)
+    return (p['A'] / ln10 - 5.0, p['B'] / ln10, p['C'], p['Tmin'], p['Tmax'])
+
+
 def parse_components(xml_path: Path, report: list, write: bool) -> dict:
     counts = {'source': 0, 'new': 0, 'refreshed': 0, 'existing_cas': 0,
               'name_collision': 0, 'skipped': 0}
@@ -215,6 +284,7 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
         counts['source'] += 1
         cas = val('CAS')
         consts = {}
+        emitted = set()   # which optional blocks this record actually got
         for tag, (key, _note) in XML_CONST.items():
             v = val(tag)
             if v is not None:
@@ -278,11 +348,123 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
             body.append(f'omega       {consts["omega"]:.12g};      // [-] [origin=ChemSep v8.3]')
         if 'Tb' in consts:
             body.append(f'Tb          {consts["Tb"]:.12g};      // K [origin=ChemSep v8.3]')
-        if all(k in consts for k in ('Tc', 'Pc', 'omega')):
+        #  ---- the MEASURED data the first version of this importer left on
+        #  the table.  It took five fields of the ~13 ChemSep publishes at
+        #  full coverage, and the consequence was not cosmetic: with no
+        #  formation enthalpy the energy balance REFUSES on every imported
+        #  compound, and the vapour pressure was an Ambrose-Walton ESTIMATE
+        #  standing in for an Antoine the record carries outright.
+        Tc = consts.get('Tc')
+        Tb = consts.get('Tb')
+
+        #  THE ENERGY DATUM -- this is what closes the first law.  ChemSep
+        #  states J/kmol and J/kmol/K; Choupo works per mole.
+        hf, sAbs = val('HeatOfFormation'), val('AbsEntropy')
+        if hf is not None and sAbs is not None:
+            try:
+                body += ['', 'standardThermochemistry', '{',
+                         f'    dHf_298   {float(hf)/1000.0:.10g};'
+                         '        // J/mol   [ChemSep v8.3, ideal gas]',
+                         f'    s_298     {float(sAbs)/1000.0:.10g};'
+                         '        // J/(mol.K)  third-law absolute',
+                         '}']
+                emitted.add('standardThermochemistry')
+            except (TypeError, ValueError):
+                pass
+
+        #  THE VAPOUR PRESSURE.  A converted Antoine is preferred over the
+        #  corresponding-states estimate wherever the record carries one --
+        #  a measured correlation beats a predicted one, and the conversion
+        #  is exact (see antoine_choupo).
+        ant = antoine_choupo(_corr(comp, 'AntoineVaporPressure'))
+        if ant is not None:
+            A, B, C, tmin, tmax = ant
+            body += ['', 'vaporPressure', '{',
+                     '    model         Antoine;',
+                     '    // log10(Psat [bar]) = A - B / (T[K] + C)',
+                     '    // converted EXACTLY from ChemSep eqno 10,'
+                     ' Psat[Pa] = exp(a - b/(T+c))',
+                     f'    coefficients  ({A:.10g}  {B:.10g}  {C:.10g});']
+            if tmin is not None and tmax is not None and tmax > tmin:
+                body += [f'    Trange        ({tmin:.6g}  {tmax:.6g});']
+            else:
+                #  A DECLARED ABSENCE, not a silent one (AP3): three states,
+                #  and "the source stated no window" is not "0 to infinity".
+                body += ['    Trange        unknown;']
+            body += ['}']
+            emitted.add('vaporPressure')
+        elif all(k in consts for k in ('Tc', 'Pc', 'omega')):
             body += ['', 'vaporPressure', '{',
                      '    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]', '}']
         else:
             body += ['', '// GAP: Tc/Pc/omega incomplete; no vapour-pressure model emitted.']
+
+        #  LIQUID MOLAR VOLUME at 298.15 K -- which is what Choupo's Vliq
+        #  means, and (see the header) what ChemSep's misleadingly named
+        #  LiquidVolumeAtNormalBoilingPoint actually holds.  Taken from the
+        #  correlation rather than that field so the temperature is ours to
+        #  state rather than a name's to imply.
+        dens = _corr(comp, 'LiquidDensity')
+        if dens is not None and int(dens['eqno']) == 105 and dens['C']:
+            try:
+                rho = _eq105(dens, 298.15)          # kmol/m3
+                if rho > 0:
+                    body += ['', f'Vliq        {1.0/(rho*1000.0):.6g};'
+                                 '      // m3/mol at 25 C  [ChemSep eqno 105]']
+                    emitted.add('Vliq')
+            except (TypeError, ValueError, ZeroDivisionError):
+                pass
+
+        #  LATENT HEAT AT Tb -- the input the Hildebrand parameter and every
+        #  Watson-slope enthalpy leg are derived from.
+        hv = _corr(comp, 'HeatOfVaporization')
+        if hv is not None and int(hv['eqno']) == 106 and Tc and Tb and Tb < Tc:
+            try:
+                body += [f'HvapTb      {_eq106(hv, Tb, Tc)/1000.0:.6g};'
+                         '      // J/mol at Tb  [ChemSep eqno 106]']
+                emitted.add('HvapTb')
+            except (TypeError, ValueError, ZeroDivisionError):
+                pass
+
+        #  THE IDEAL-GAS Cp, read as ChemSep publishes it (eqno 16) rather
+        #  than refitted to Choupo's cubic.  A refit would store an
+        #  approximation to somebody else's correlation, carrying its own
+        #  residual, with the original discarded and nothing left to check it
+        #  against.  The form was confirmed two ways before the engine model
+        #  was written -- see src/thermo/heatCapacity/ChemSepCp16.H.
+        cp = _corr(comp, 'IdealGasHeatCapacityCp')
+        if cp is not None and int(cp['eqno']) == 16 \
+                and all(cp[k] is not None for k in 'ABCD'):
+            E = cp['E'] or 0.0
+            body += ['', 'idealGasHeatCapacity', '{',
+                     '    model         chemsepCp16;',
+                     '    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)',
+                     '    // ChemSep states J/(kmol.K); A and the exp are'
+                     ' scaled to per-mole here.',
+                     f'    coefficients  ({cp["A"]/1000.0:.10g}  {cp["B"]:.10g}'
+                     f'  {cp["C"] - 6.907755279:.10g}  {cp["D"]:.10g}'
+                     f'  {E:.10g});']
+            if cp['Tmin'] is not None and cp['Tmax'] is not None \
+                    and cp['Tmax'] > cp['Tmin']:
+                body += [f'    Trange        ({cp["Tmin"]:.6g}'
+                         f'  {cp["Tmax"]:.6g});']
+            else:
+                body += ['    Trange        unknown;']
+            body += ['}']
+            emitted.add('idealGasHeatCapacity')
+
+        #  THE HILDEBRAND ANCHOR.  Never an input: the engine derives delta
+        #  from HvapTb and Vliq, and this is what ChemSep computed by its own
+        #  route, so the derivation has something to be wrong against.
+        sp = val('SolubilityParameter')
+        if sp is not None:
+            try:
+                body += [f'solubilityParameter {float(sp):.6g};'
+                         '   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked'
+                         ' against, never used]']
+                emitted.add('solubilityParameter')
+            except (TypeError, ValueError):
+                pass
         collide_note = ''
         if collide:
             prior = stems[key.lower()][0].relative_to(ROOT)
