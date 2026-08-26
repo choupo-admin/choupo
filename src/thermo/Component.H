@@ -376,6 +376,17 @@ public:
     bool           hasLiquidViscosity()   const { return liquidViscDict_ != nullptr; }
     const DictPtr& liquidViscosityDict()  const { return liquidViscDict_; }
 
+    // ---- Transport: liquid thermal conductivity -------------------
+    //  The SAME shape as the viscosity block above, and added for the same
+    //  reason it was: a correlation whose parameters are FITTED per component
+    //  cannot live in the package-level model, and the package-level model is
+    //  where the CHOICE belongs.  SatoRiedel needs none of this -- it is
+    //  predictive from MW, Tb and Tc -- which is why the block did not exist
+    //  until a measured form (ChemSep's eqno 16, 420 of 431 records) arrived
+    //  to need it.  Exposed raw so the next model needs no change here.
+    bool           hasLiquidConductivity()   const { return liquidCondDict_ != nullptr; }
+    const DictPtr& liquidConductivityDict()  const { return liquidCondDict_; }
+
     // ---- Transport: Wilke-Chang association factor ----------------
     // φ for the liquid-diffusivity Wilke-Chang correlation when this
     // component is the SOLVENT (water 2.6, methanol 1.9, ethanol 1.5,
@@ -654,6 +665,7 @@ private:
     std::string reviewReason_;
     scalar      Vliq_    = 0.0;
     scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]
+    DictPtr     liquidCondDict_;  // liquidThermalConductivity{} block, raw
     scalar      Hf298_   = 0.0;
     scalar      S298_    = 0.0;
     bool        hasGibbsData_ = false;

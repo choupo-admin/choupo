@@ -63,6 +63,20 @@ liquidViscosity
         Tmax  473;
     }
 }
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     0.034432;
+        B     -227.95;
+        C     -0.38117;
+        D     -0.0048371;
+        E     -1.1782e-06;
+        Tmin  250.33;
+        Tmax  428.15;
+    }
+}
 solubilityParameter 17550;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source

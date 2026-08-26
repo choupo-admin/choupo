@@ -264,7 +264,8 @@ def antoine_choupo(p):
     return (p['A'] / ln10 - 5.0, p['B'] / ln10, p['C'], p['Tmin'], p['Tmax'])
 
 
-def parse_components(xml_path: Path, report: list, write: bool) -> dict:
+def parse_components(xml_path: Path, report: list, write: bool,
+                     refresh_standards: bool = False) -> dict:
     counts = {'source': 0, 'new': 0, 'refreshed': 0, 'existing_cas': 0,
               'name_collision': 0, 'skipped': 0}
     try:
@@ -300,9 +301,25 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
         if cas and cas in by_cas:
             represented = by_cas[cas]
             represented_text = represented.read_text(errors='ignore')
-            if (represented.parent == COMP_OUT
-                    and 'importedBy    "chemsep_to_choupo"' in represented_text):
+            #  A RECORD THIS TOOL WROTE MAY BE REWRITTEN BY IT; ANY OTHER MAY
+            #  NOT.  The marker is the whole permission -- a hand-curated
+            #  record is never touched, wherever it sits.  Vitor's ruling put
+            #  the ChemSep wave in `data/standards/`, MARKED, so refreshing
+            #  there needs its own flag: the default cannot reach the
+            #  committee tree at all, and a re-import that adds a field must
+            #  ASK for it.  (`data/local` needs no flag -- it is the working
+            #  tier and this tool owns what it put there.)
+            marked = 'importedBy    "chemsep_to_choupo"' in represented_text
+            in_std = represented.parent == STD_COMP
+            if marked and (represented.parent == COMP_OUT
+                           or (in_std and refresh_standards)):
                 refresh_path = represented
+            elif marked and in_std:
+                report.append(f'- {name} (CAS {cas}): imported record in '
+                              f'`{represented.relative_to(ROOT)}` NOT refreshed'
+                              ' -- pass --refresh-standards to rewrite it.')
+                counts['existing_cas'] += 1
+                continue
             else:
                 report.append(f'- {name} (CAS {cas}): already represented by '
                               f'`{represented.relative_to(ROOT)}` -- skipped.')
@@ -316,8 +333,14 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
         collide = refresh_path is None and key.lower() in stems
         out_dir = REVIEW if collide else COMP_OUT
         out_path = refresh_path or (out_dir / f'{key}.dat')
+        #  MKDIR ONLY WHERE SOMETHING IS ACTUALLY WRITTEN.  Creating the
+        #  destination before knowing there is a record for it made the
+        #  private tier EXIST on a machine that imported nothing new -- and
+        #  the docs say `data/local/` ships empty, so an empty-but-present
+        #  directory has the docs describing the opposite of what is on disk.
+        #  (check_doc_references caught exactly that.)
         if write:
-            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
         body = ['/*--------------------------------*- Choupo -*-----------------------*\\',
                 f'  Component: {key}  (CAS {cas or "not supplied"})',
                 '  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3',
@@ -537,6 +560,37 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
             body += lines
             emitted.add('liquidViscosity')
 
+        #  LIQUID THERMAL CONDUCTIVITY, ChemSep form 16 -- the SAME algebra as
+        #  the liquid Cp above and a different quantity, so a different block
+        #  and a different model.  ChemSep states W/(m.K) in the block's own
+        #  `units` attribute and Choupo's conductivity surface is W/(m.K), so
+        #  NOTHING is converted here; the Cp emitter converts because ChemSep
+        #  states J/kmol/K.  A converted quantity and an unconverted one that
+        #  share an equation are exactly the pair a shared helper would get
+        #  wrong once and silently.
+        #
+        #  eqno 16 is what 420 of the 422 records carrying this property use;
+        #  the other two (forms 3 and 100) are LEFT OUT rather than
+        #  approximated, and fall back to the predictive SatoRiedel as before.
+        cnd = _corr(comp, 'LiquidThermalConductivity')
+        if cnd is not None and int(cnd['eqno']) == 16 \
+                and all(cnd[k] is not None for k in 'ABC'):
+            lines = ['', 'liquidThermalConductivity', '{',
+                     '    chemsepEq16', '    {',
+                     f'        A     {cnd["A"]:.10g};',
+                     f'        B     {cnd["B"]:.10g};',
+                     f'        C     {cnd["C"]:.10g};']
+            for k in 'DE':
+                if cnd[k] is not None:
+                    lines.append(f'        {k}     {cnd[k]:.10g};')
+            if cnd['Tmin'] is not None and cnd['Tmax'] is not None \
+                    and cnd['Tmax'] > cnd['Tmin']:
+                lines += [f'        Tmin  {cnd["Tmin"]:.6g};',
+                          f'        Tmax  {cnd["Tmax"]:.6g};']
+            lines += ['    }', '}']
+            body += lines
+            emitted.add('liquidThermalConductivity')
+
         #  THE HILDEBRAND ANCHOR.  Never an input: the engine derives delta
         #  from HvapTb and Vliq, and this is what ChemSep computed by its own
         #  route, so the derivation has something to be wrong against.
@@ -724,6 +778,12 @@ def main():
         description='Stage ChemSep records without modifying data/standards/.')
     parser.add_argument('--dry-run', action='store_true',
                         help='scan and report planned actions without writing files')
+    parser.add_argument('--refresh-standards', action='store_true',
+                        help='rewrite records THIS TOOL wrote into '
+                             'data/standards/components (they carry its '
+                             'importedBy marker).  Hand-curated records are '
+                             'never touched either way.  Off by default: the '
+                             'committee tree is not a scratch area.')
     parser.add_argument('--components-only', action='store_true',
                         help='skip binary interaction parameter import')
     args = parser.parse_args()
@@ -749,7 +809,8 @@ def main():
         if excluded(x.name):
             report.append(f'- {x.name}: REFUSED (excluded-source token in name).')
             continue
-        result = parse_components(x, report, write=not args.dry_run)
+        result = parse_components(x, report, write=not args.dry_run,
+                                  refresh_standards=args.refresh_standards)
         for key, value in result.items():
             component_counts[key] += value
     report.append('')

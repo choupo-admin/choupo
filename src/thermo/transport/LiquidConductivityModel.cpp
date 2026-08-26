@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "LiquidConductivityModel.H"
+#include "ChemSepCond16.H"
 #include "SatoRiedel.H"
 
 #include <map>
@@ -58,6 +59,8 @@ std::unique_ptr<LiquidConductivityModel> LiquidConductivityModel::New(const Dict
 
 void LiquidConductivityModel::registerBuiltins()
 {
+    //  The measured rung: ChemSep form 16, 420 of 431 records.
+    registerModel("chemsepEq16", [](const DictPtr& d) { return std::make_unique<ChemSepCond16>(d); });
     registerModel("SatoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
     registerModel("satoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
 }

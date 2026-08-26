@@ -239,6 +239,8 @@ void Component::readFromDict(const DictPtr& d)
     associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);
     if (d->found("liquidViscosity"))
         liquidViscDict_ = d->subDict("liquidViscosity");
+    if (d->found("liquidThermalConductivity"))
+        liquidCondDict_ = d->subDict("liquidThermalConductivity");
 
     // Non-volatile / solute extensions.  When `nonvolatile true;`
     // is set, the component is dissolved-only: Antoine and Cp blocks are
