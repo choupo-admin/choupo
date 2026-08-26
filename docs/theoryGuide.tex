@@ -11679,7 +11679,15 @@ extended four-parameter Andrade
    \ln \mu^{\mathrm{liq}}(T) \;=\;
      A \;+\; \frac{B}{T} \;+\; C\,\ln T \;+\; D\,T^E,
 \end{equation}
-but the two-parameter form is what we ship.
+and Choupo ships \emph{both}: \code{Andrade} for a pair fitted to two
+points, and \code{chemsepEq101} for the four-parameter form read
+straight from a published DIPPR-style fit
+($\mu = \exp(A + B/T + C \ln T + D\,T^{E})$), which the great majority
+of the imported components carry.  Note what is \emph{not} done: the
+five published parameters are never refitted down to Andrade's two.
+That would replace a published fit with an approximation to it, and
+the residual would be invisible --- the number would still look like
+a viscosity.
 
 \begin{example}[Acetic acid at 300 K and 380 K]
 Fitting Andrade to two literature data points ($\mu(300) = 1.07$ mPa·s,
@@ -11840,6 +11848,50 @@ $\kappa \approx 0.162$ W/(m·K) against a literature value of
 $\sim$0.158 W/(m·K).
 \end{example}
 
+\subsection{Per-component fits, and how far corresponding states gets you}
+
+Sato--Riedel asks for nothing but $M$, $T_b$ and $T_c$, which is its
+whole appeal: it answers for a substance nobody has measured.  The
+price is that it cannot know anything a published fit knows.  Choupo
+therefore also carries \code{chemsepEq16}, a five-parameter
+per-component form
+\begin{equation}
+   \kappa^{\mathrm{liq}}(T) \;=\; A + \exp\!\left(\frac{B}{T} + C + D\,T
+     + E\,T^{2}\right) \qquad [\text{W/(m$\cdot$K)}],
+   \label{eq:chemsep-cond16}
+\end{equation}
+declared per component rather than per package, so a substance with a
+fit uses it and a substance without one still gets an answer.
+
+\emph{How far apart are they?}  Comparing the two across every
+catalogue substance that has both, at 298.15~K and inside each fit's
+own declared window --- 351 of them --- the median disagreement is
+9.3\%\ and the mean 12.1\%, with 250 inside 15\%.  That is the number
+the $\sim$8--15\%\ claim above deserves to be read as: it holds, and it
+holds across hundreds of substances rather than a handful.
+
+\emph{Where it does not hold is the interesting part.}  The eight
+largest disagreements are, without exception, hydrogen-bonding or
+strongly polar liquids: ammonia (+123\%), water (+106\%), hydrogen
+chloride (+105\%), sulfur trioxide (+89\%), glycerol (+79\%), nitric
+acid (+73\%), sulfur dioxide (+60\%).  Corresponding states works by
+assuming that all substances behave alike once scaled by their
+critical constants, and an associating liquid is precisely the case
+where that assumption fails --- the hydrogen-bond network conducts
+heat by a route the scaling never sees.  Water at 25~\textcelsius\ is
+about 0.61~W/(m$\cdot$K); Eq.~\eqref{eq:sato-riedel} says 0.30.
+
+Two lessons worth carrying past this page.  First, a correlation's
+stated accuracy is an average over the set it was calibrated on, and
+your substance may not be in the middle of that set.  Second --- and
+this is why the comparison is presented as a comparison and not as a
+validation --- \emph{neither of these is a measurement}.  Two
+correlations agreeing tells you the arithmetic and the units are
+right.  It does not tell you either one is true.  To learn that you
+need measured data, and the honest statement is that Choupo's
+catalogue does not currently carry measured liquid conductivities to
+check against.
+
 \subsection{Pure gas: modified Eucken}
 
 Eucken combined heat conduction and viscosity through the kinetic
@@ -11863,13 +11915,15 @@ $\mu$ and $c_p$.
 \subsection{Declaring the models}
 
 Sato-Riedel needs no coefficients; Eucken needs none either
-once $\mu$ and $c_p$ are in place.  The case's \file{thermoPhysPropDict}
+once $\mu$ and $c_p$ are in place.  \code{chemsepEq16} needs five, and
+takes them from the component's own record rather than from the case.  The case's \file{thermoPhysPropDict}
 just declares which model to use, inside the \code{transport} block:
 \begin{lstlisting}
 transport
 {
     thermalConductivity  { model Eucken; }      // gas (needs a viscosity model)
-    liquidConductivity   { model SatoRiedel; }  // liquid
+    liquidConductivity   { model SatoRiedel; }  // liquid, predictive
+ // liquidConductivity   { model chemsepEq16; } // liquid, per-component fit
 }
 \end{lstlisting}
 
