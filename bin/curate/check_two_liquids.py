@@ -46,7 +46,7 @@ bad = []
 
 
 def run(case):
-    p = subprocess.run([str(SOLVE), "-case", str(case)],
+    p = subprocess.run([str(SOLVE), str(case)],
                        capture_output=True, text=True, timeout=600)
     return p.returncode, p.stdout + p.stderr
 

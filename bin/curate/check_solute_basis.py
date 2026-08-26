@@ -52,7 +52,7 @@ bad = []
 
 def run(binary, case):
     #  choupoSolve takes -case; choupoBatch takes the directory positionally.
-    argv = ([str(ROOT / binary), "-case", str(ROOT / case)]
+    argv = ([str(ROOT / binary), str(ROOT / case)]
             if binary == "choupoSolve"
             else [str(ROOT / binary), str(ROOT / case)])
     p = subprocess.run(argv, capture_output=True, text=True, timeout=900)
