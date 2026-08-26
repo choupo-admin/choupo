@@ -487,6 +487,34 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
             body += ['}']
             emitted.add('idealGasHeatCapacity')
 
+        #  THE LIQUID Cp, in the same eqno 16 form and therefore the same
+        #  engine model -- no new machinery, 410 of 431 records carry it.
+        #
+        #  This one is not a nicety.  Without a measured liquid Cp the engine
+        #  falls back to RowlinsonBondi, the predictive rung, whose own
+        #  README row states the cost: about 1 % on non-polar species and
+        #  30-70 % on hydrogen-bonding ones.  Every alcohol, acid and amine
+        #  among the 356 was carrying that error into every enthalpy the
+        #  liquid leg integrates.
+        lcp = _corr(comp, 'LiquidHeatCapacityCp')
+        if lcp is not None and int(lcp['eqno']) == 16 \
+                and all(lcp[k] is not None for k in 'ABCD'):
+            E = lcp['E'] or 0.0
+            body += ['', 'liquidHeatCapacity', '{',
+                     '    model         chemsepCp16;',
+                     '    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)',
+                     f'    coefficients  ({lcp["A"]/1000.0:.10g}  {lcp["B"]:.10g}'
+                     f'  {lcp["C"] - 6.907755279:.10g}  {lcp["D"]:.10g}'
+                     f'  {E:.10g});']
+            if lcp['Tmin'] is not None and lcp['Tmax'] is not None \
+                    and lcp['Tmax'] > lcp['Tmin']:
+                body += [f'    Trange        ({lcp["Tmin"]:.6g}'
+                         f'  {lcp["Tmax"]:.6g});']
+            else:
+                body += ['    Trange        unknown;']
+            body += ['}']
+            emitted.add('liquidHeatCapacity')
+
         #  THE HILDEBRAND ANCHOR.  Never an input: the engine derives delta
         #  from HvapTb and Vliq, and this is what ChemSep computed by its own
         #  route, so the derivation has something to be wrong against.

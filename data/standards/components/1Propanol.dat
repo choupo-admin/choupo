@@ -41,6 +41,14 @@ idealGasHeatCapacity
     coefficients  (56.681  -627.22  5.471244721  0.00012228  -5.0293e-08);
     Trange        (150  1500);
 }
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (100.52  125.3  -2.188355279  0.024513  -1.9669e-05);
+    Trange        (146.95  400);
+}
 solubilityParameter 24450;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source
