@@ -620,6 +620,20 @@ OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV wr
 \file{tutorials/ctrl/ctrl17\_step\_reaction\_curve}
 \end{tutoriallink}
 
+\paragraph{\code{solubilityParameter}}
+The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V\_m), for every component of the case, plus the pairwise |delta\_i - delta\_j| table that is what the question usually is: the smaller the gap, the more likely two liquids mix. Delta is DERIVED and never stored -- the latent heat comes from the same Watson correlation the enthalpy legs use, and the molar volume from the record's Vliq -- so a stored value would be a second home for a fact the record already fixes. Where a record declares a published delta as an ANCHOR, the deviation is printed beside the derived number; that column is a check on the derivation and never an input to it, and it exists because all three ways this arithmetic fails are silent (a dropped RT term, a wrong V\_m unit, and Pa\textasciicircum{}0.5 reported where the literature uses MPa\textasciicircum{}0.5 -- a factor of 31.6 that still reads as a solubility parameter). Refuses by name for a component with no Tc, no HvapTb or no Vliq, and at a temperature at or above Tc, where there is no liquid and delta is not defined. States on every call that Hildebrand carries no hydrogen bonding -- it cannot separate a polar solvent from a hydrogen-bonding one of the same cohesive energy density, so a close pair is a CANDIDATE and never a verdict -- and names Hansen's three-parameter split as what would, not implemented because its parameters are a dataset this project does not hold.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{T} & Temperature [K] \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/solubility01\_hildebrand\_ladder}
+\end{tutoriallink}
+
 \paragraph{\code{thielePellet}}
 The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset record and its effective diffusivity from the ONE home that owns that resolution, solves the isothermal first-order intraparticle boundary-value problem numerically, and VERIFIES that answer against the closed form. It publishes the concentration field c(r)/c\_s, the Thiele modulus phi with the effectiveness factor eta it produces, the Weisz-Prater observable modulus eta*phi\textasciicircum{}2, and — swept — the classical eta(phi) family over the three geometries. The physics is NOT here: it lives in unitOperations/reactor/pellet/PelletDiffusion, which the four reactors that today assume eta = 1 will reach. The op judges nothing: it publishes phi, eta and the field, announces what it assumed (isothermal, first-order, one pellet size, external film neglected), and leaves the reader to decide whether diffusion matters in their case. A run whose numerical answer misses the declared verification tolerances exits 1.
 
@@ -645,28 +659,3 @@ The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset r
 \file{tutorials/props/reactor/thiele01\_sphere\_first\_order}
 \end{tutoriallink}
 
-
-\paragraph{\code{solubilityParameter}}
-The Hildebrand solubility parameter, derived per component and never stored:
-\[
-  \delta = \sqrt{\frac{\Delta H_{\mathrm{vap}}(T) - RT}{V_m}}
-\]
-with $\Delta H_{\mathrm{vap}}(T)$ from \code{Component::Hvap\_latent} (the
-Watson correlation the enthalpy legs already use) and $V_m$ the liquid molar
-volume at \SI{25}{\celsius}.  \code{T} defaults to \SI{298.15}{\kelvin} and
-the default is announced: $\delta$ falls to zero at $T_c$, so a table without
-a temperature beside it is a table of unrelated states.
-
-Three outputs: the per-substance derivation with its inputs visible; the
-deviation from an independently published $\delta$ where the record declares
-one as an \emph{anchor}; and the pairwise $|\delta_i-\delta_j|$ table.  The
-anchor is never an input --- it exists so a dropped $RT$ term, a wrong $V_m$
-unit or $\mathrm{Pa}^{0.5}$ reported as $\mathrm{MPa}^{0.5}$ becomes a visible
-disagreement instead of a plausible number.
-
-Refuses by name on a component with no $T_c$, no \code{HvapTb} or no
-\code{Vliq}, and at a temperature at or above $T_c$.  States on every call
-that Hildebrand carries no hydrogen bonding, and names Hansen as the
-three-parameter split that would --- not implemented, its parameters being a
-dataset this project does not hold.  Witness:
-\code{tutorials/props/molecular/solubility01\_hildebrand\_ladder}.
