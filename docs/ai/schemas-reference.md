@@ -890,6 +890,7 @@ The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V_m), for e
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` |   | number | K | Where to evaluate delta; defaults to 298.15 K, and the default is ANNOUNCED. The temperature is part of the answer rather than a detail: … |
+| `output` |   | object | — | Optional. Writes one row per priced substance: delta (MPa^0.5), the latent heat and molar volume it was derived from, and the published v… |
 
 ## `speciate`  (speciate operation)
 
