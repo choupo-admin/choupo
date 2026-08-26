@@ -1029,6 +1029,110 @@ where two families exist would be committing the error this whole section
 is about: presenting one answer as though it were the only one.
 
 % =====================================================================
+% =====================================================================
+\section{One number for ``like dissolves like''}
+\label{sec:edu-solubility}
+
+A student asked to pick a solvent has a shelf of bottles and no way to
+rank them.  The oldest useful answer is a single number per liquid, and
+it is worth teaching precisely because it is \emph{almost} right --- the
+places where it fails are as instructive as the places where it works.
+
+\subsection{Where the number comes from}
+
+Vaporising a liquid pulls its molecules apart.  The energy that costs,
+per unit volume, is the \emph{cohesive energy density}; its square root
+is Hildebrand's solubility parameter:
+
+\begin{equation}
+  \delta \;=\; \sqrt{\frac{\Delta H_{\mathrm{vap}}(T) - RT}{V_m}}
+  \label{eq:hildebrand}
+\end{equation}
+
+Two things in that expression are worth stopping on.
+
+The $RT$ is the work the vapour does pushing the atmosphere aside.
+Subtracting it turns an \emph{enthalpy} of vaporisation into an
+\emph{energy} of vaporisation, and only the second one measures cohesion.
+Leaving it in gives a $\delta$ a few per cent high --- small enough to
+look right, which is what makes it a favourite error.
+
+And $\delta$ is a function of temperature that nobody writes the
+temperature next to.  As a liquid approaches its critical point the
+cohesive energy goes to zero, and so does $\delta$: there is no longer a
+liquid to pull apart.  Published tables are at \SI{25}{\celsius}; a
+$\delta$ quoted without a temperature is a number from an unstated state.
+
+\subsection{Running it}
+
+\begin{center}
+\code{choupoProps} with a \code{solubilityParameter} operation.
+\end{center}
+
+Choupo \emph{derives} $\delta$ --- it is never stored.  Every input is
+already in the component record (the latent heat at $T_b$, the critical
+temperature, the liquid molar volume), so a stored $\delta$ would be a
+second home for a fact the record already fixes, free to drift from it.
+The latent heat at $T$ comes from the same Watson correlation the
+enthalpy legs use, not a second copy of it.
+
+The output has three parts: what each substance's $\delta$ is and what it
+was computed from; how far that sits from an independently published
+value where the record carries one; and the pairwise table
+$|\delta_i - \delta_j|$, which is what the question actually was.
+
+\subsection{The column that makes it checkable}
+
+\begin{tryit}
+Look at the \emph{published} column before you look at anything else.
+
+Equation~\ref{eq:hildebrand} has three chances to go quietly wrong: a unit
+slip in $V_m$, the missing $RT$, and reporting $\mathrm{Pa}^{0.5}$ where
+the literature uses $\mathrm{MPa}^{0.5}$ --- a factor of $31.6$ that still
+looks like a solubility parameter.  None of the three raises an error.
+
+What catches them is that some records carry a $\delta$ somebody else
+computed, independently, and the run prints the deviation.  Across the
+substances where both exist the derivation reproduces the published value
+to well under a per cent; a deviation of several per cent is therefore a
+\emph{finding} and not noise.
+
+This is the same device as the $Z_c$ column in a property data bank: a
+redundant determination turns a plausible wrong number into a visible
+disagreement.  A tool that computes something you cannot check is a tool
+that is right until the day it is not.
+\end{tryit}
+
+\subsection{Where one number stops}
+
+\textbf{Hildebrand carries no hydrogen bonding.}  Ethanol
+($\delta \approx \SI{26}{\mega\pascal\tothe{0.5}}$) and nitromethane
+($\approx \SI{25.1}{}$) sit almost on top of each other, and a formulator
+knows they behave differently --- one donates hydrogen bonds and the
+other does not.  The theory cannot express the difference, because it
+compressed every kind of intermolecular force into one scalar.
+
+That is why the coatings industry uses Hansen's three-way split:
+dispersion, polar and hydrogen-bonding contributions, with miscibility
+judged by a distance in that space rather than on a line.  Choupo does
+\emph{not} implement it, and the run says so every time: Hansen's
+parameters are a separate dataset this project does not hold.
+
+So the honest reading of a close pair is \emph{candidate}, never
+\emph{verdict} --- and the run prints exactly that sentence, on every
+call, rather than letting a small number imply more than it carries.
+
+\begin{tryit}
+Put water in the list.  Its $\delta$ is enormous
+($\approx \SI{48}{\mega\pascal\tothe{0.5}}$), far from every organic on
+the shelf, and the pairwise table will duly report that water mixes with
+nothing.  Water and ethanol are of course miscible in all proportions.
+
+That single row is the clearest lesson the tool gives: the number is a
+measure of \emph{how much} energy holds a liquid together, and says
+nothing about \emph{what kind}.
+\end{tryit}
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 Six live tools are \emph{not} written up above.  They are listed here with

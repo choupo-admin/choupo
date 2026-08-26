@@ -21,6 +21,11 @@ omega       0.142;              // [-]
 Tb          225.46;             // K
 HvapTb      18420;              // J/mol
 Vliq        6.81e-5;            // m^3/mol
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 11890;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
 
 standardThermochemistry
 {

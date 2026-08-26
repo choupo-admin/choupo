@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    solubilityParameter_0  delta_acetone    19673.2            1e-4
+diag    solubilityParameter_0  delta_benzene    18648.2            1e-4
+diag    solubilityParameter_0  delta_cyclohexane 16733.6            1e-4
+diag    solubilityParameter_0  delta_ethanol    26301.9            1e-4
+diag    solubilityParameter_0  delta_nHexane    14859              1e-4
+diag    solubilityParameter_0  delta_toluene    18183.8            1e-4
+diag    solubilityParameter_0  delta_water      48266.4            1e-4
+diag    solubilityParameter_0  dev_acetone      0.00287938         1e-4
+diag    solubilityParameter_0  dev_benzene      0.00277184         1e-4
+diag    solubilityParameter_0  dev_cyclohexane  0.000380181        1e-4
+diag    solubilityParameter_0  dev_ethanol      0.00619352         1e-4
+diag    solubilityParameter_0  dev_nHexane      0.000736807        1e-4
+diag    solubilityParameter_0  dev_toluene      0.003629           1e-4
+diag    solubilityParameter_0  dev_water        0.00849075         1e-4
+diag    solubilityParameter_0  dev_worst        0.00849075         1e-4
+diag    solubilityParameter_0  gap_max          33.4073            1e-4
+diag    solubilityParameter_0  gap_min          0.464396           1e-4
+diag    solubilityParameter_0  n_checked        7                  1e-4
+diag    solubilityParameter_0  n_derived        7                  1e-4

@@ -96,6 +96,17 @@ public:
     scalar Hvap_Tb() const { return Hvap_Tb_; } // latent heat at Tb [J/mol]
     scalar Vliq()  const { return Vliq_;  }   // liquid molar volume at 25 °C [m³/mol]
 
+    //  The PUBLISHED Hildebrand solubility parameter [Pa^0.5], when the
+    //  record declares one.  It is an ANCHOR, never an input: the engine
+    //  DERIVES delta from the latent heat and the molar volume (the arity
+    //  doctrine -- the tree never stores a derivative), and this value exists
+    //  so the derivation can be checked against a compilation that computed
+    //  it independently.  Absent = no such check is available, which is a
+    //  different statement from agreeing, and `hasSolubilityParameter()` is
+    //  what keeps the two apart.
+    bool   hasSolubilityParameter() const { return solPar_ > 0; }
+    scalar solubilityParameter()    const { return solPar_; }
+
     // ---- Standard-state thermo (Gibbs reactor & related) -------------------
     // Standard enthalpy of formation at 298.15 K, ideal-gas reference [J/mol].
     // Standard absolute (third-law) molar entropy at 298.15 K, ideal-gas
@@ -642,6 +653,7 @@ private:
     std::string reviewStatus_;        // interim | reviewed | (absent = unmarked)
     std::string reviewReason_;
     scalar      Vliq_    = 0.0;
+    scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]
     scalar      Hf298_   = 0.0;
     scalar      S298_    = 0.0;
     bool        hasGibbsData_ = false;

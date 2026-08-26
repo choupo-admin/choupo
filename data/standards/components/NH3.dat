@@ -27,6 +27,11 @@ omega       0.252;              // [-]
 Tb          239.82;             // K
 HvapTb      23330;              // J/mol
 Vliq        2.50e-5;            // m^3/mol
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 24790;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
 role        solute;        // soluble gas: Henry K = H(T)/P (solvent water)
 
 standardThermochemistry

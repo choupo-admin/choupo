@@ -645,3 +645,28 @@ The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset r
 \file{tutorials/props/reactor/thiele01\_sphere\_first\_order}
 \end{tutoriallink}
 
+
+\paragraph{\code{solubilityParameter}}
+The Hildebrand solubility parameter, derived per component and never stored:
+\[
+  \delta = \sqrt{\frac{\Delta H_{\mathrm{vap}}(T) - RT}{V_m}}
+\]
+with $\Delta H_{\mathrm{vap}}(T)$ from \code{Component::Hvap\_latent} (the
+Watson correlation the enthalpy legs already use) and $V_m$ the liquid molar
+volume at \SI{25}{\celsius}.  \code{T} defaults to \SI{298.15}{\kelvin} and
+the default is announced: $\delta$ falls to zero at $T_c$, so a table without
+a temperature beside it is a table of unrelated states.
+
+Three outputs: the per-substance derivation with its inputs visible; the
+deviation from an independently published $\delta$ where the record declares
+one as an \emph{anchor}; and the pairwise $|\delta_i-\delta_j|$ table.  The
+anchor is never an input --- it exists so a dropped $RT$ term, a wrong $V_m$
+unit or $\mathrm{Pa}^{0.5}$ reported as $\mathrm{MPa}^{0.5}$ becomes a visible
+disagreement instead of a plausible number.
+
+Refuses by name on a component with no $T_c$, no \code{HvapTb} or no
+\code{Vliq}, and at a temperature at or above $T_c$.  States on every call
+that Hildebrand carries no hydrogen bonding, and names Hansen as the
+three-parameter split that would --- not implemented, its parameters being a
+dataset this project does not hold.  Witness:
+\code{tutorials/props/molecular/solubility01\_hildebrand\_ladder}.

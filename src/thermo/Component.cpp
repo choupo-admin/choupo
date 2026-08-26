@@ -230,6 +230,7 @@ void Component::readFromDict(const DictPtr& d)
     Tb_      = d->lookupScalarOrDefault("Tb",      0.0);
     Hvap_Tb_ = d->lookupScalarOrDefault("HvapTb",  0.0);
     Vliq_    = d->lookupScalarOrDefault("Vliq",    0.0);
+    solPar_  = d->lookupScalarOrDefault("solubilityParameter", 0.0);
     diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
 
     // Liquid-viscosity parameters: keep the raw `liquidViscosity`

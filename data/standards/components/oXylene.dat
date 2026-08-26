@@ -24,6 +24,11 @@ omega       0.31200;        // [-]      [CoolProp EOS]
 Tb          417.5210;        // K  normal boiling [CoolProp]
 HvapTb      36383.9;        // J/mol  at Tb     [CoolProp]
 Vliq        1.2120e-04;        // m3/mol @298K     [CoolProp]
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 18390;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
 
 vaporPressure
 {

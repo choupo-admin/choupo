@@ -1,0 +1,3 @@
+application     choupoProps;
+description     "Hildebrand: one number for like-dissolves-like, and where it stops";
+verbosity       3;

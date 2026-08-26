@@ -1,0 +1,18 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( nHexane cyclohexane benzene toluene acetone ethanol water );
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

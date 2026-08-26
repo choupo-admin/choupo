@@ -17,7 +17,11 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*83 of 83 registered operations carry a schema and are documented below.*
+*83 of 84 registered operations carry a schema and are documented below.*
+
+**Not documented here** — these operations are registered and runnable but have no `.schema.json` yet, so the GUI has no property editor for them and this reference cannot describe their fields.  Read `unit-ops.md`, the tutorials, or the header comment of the implementing class instead; adding a schema file is what removes a name from this list:
+
+> `solubilityParameter`
 
 ## `FUG`  (FUG operation)
 

@@ -1,0 +1,7 @@
+operations
+(
+    {
+        type    solubilityParameter;
+        T       298.15 K;
+    }
+);
