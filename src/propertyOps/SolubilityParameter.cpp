@@ -35,6 +35,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <vector>
@@ -226,6 +227,34 @@ int SolubilityParameter::run(const DictPtr& dict,
                      " not established for these substances.\n";
     }
     diag_["n_derived"] = static_cast<scalar>(out.size());
+
+    //  OPTIONAL CSV.  The console table is the glass-box surface; this is the
+    //  machine-readable one, and the GUI's Explore panel is its consumer.
+    //  MPa^0.5 in the file as well as on screen, because that is the unit
+    //  every compilation prints and a reader comparing the two must not have
+    //  to convert.  `published` and `dev` are EMPTY where no anchor exists --
+    //  an empty cell says "nothing checks this", which a 0 would not.
+    if (dict->found("output"))
+    {
+        const std::string file = dict->subDict("output")->lookupWord("file");
+        std::ofstream csv(file);
+        if (!csv.is_open())
+            throw std::runtime_error("solubilityParameter: cannot open output"
+                                     " file '" + file + "'");
+        csv << "substance,delta_MPa05,dHvap_J_per_mol,Vm_cm3_per_mol,"
+               "published_MPa05,dev_pct\n";
+        for (const auto& d : out)
+        {
+            csv << d.name << ',' << d.delta / 1.0e3 << ',' << d.dHvap << ','
+                << d.Vm * 1.0e6 << ',';
+            if (d.hasRef)
+                csv << d.ref / 1.0e3 << ','
+                    << std::fabs(d.delta - d.ref) / d.ref * 100.0;
+            else
+                csv << ',';
+            csv << '\n';
+        }
+    }
 
     // ---- the pairwise table, which is what the question actually is -------
     if (out.size() >= 2)

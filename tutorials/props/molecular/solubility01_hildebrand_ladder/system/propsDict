@@ -3,5 +3,6 @@ operations
     {
         type    solubilityParameter;
         T       298.15 K;
+        output  { file "solubility.csv"; }
     }
 );

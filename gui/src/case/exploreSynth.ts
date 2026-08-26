@@ -448,6 +448,7 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
         name: "explore",
         type: "solubilityParameter",
         T: spec.solubility.T,
+        output: { file: EXPLORE_OUTPUT },
       }
     : null;
 

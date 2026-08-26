@@ -11,6 +11,21 @@
       "title": "Temperature",
       "description": "Where to evaluate delta; defaults to 298.15 K, and the default is ANNOUNCED. The temperature is part of the answer rather than a detail: cohesive energy density falls to zero at the critical point, because there is no longer a liquid to pull apart, so a table of deltas with no temperature beside it is a table of numbers from unrelated states. Every published compilation uses 25 C, which is why that is the default.",
       "unit": "K"
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "Optional. Writes one row per priced substance: delta (MPa^0.5), the latent heat and molar volume it was derived from, and the published value with its deviation where the record carries one. Those last two cells are EMPTY where no anchor exists -- an empty cell says 'nothing checks this', which a zero would not. Omitting the block leaves only the console table.",
+      "properties": {
+        "file": {
+          "type": "string",
+          "title": "File name"
+        }
+      },
+      "required": [
+        "file"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [],

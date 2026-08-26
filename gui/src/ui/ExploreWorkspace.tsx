@@ -1168,6 +1168,26 @@ export function ExploreWorkspace() {
           ? ` Equilibrium ON: ${SCALING_EQUIL_MINERALS.join(", ")} driven to SI = 0 — plot SIeq_<m> (clamped) or scale_<m> (the deposit curve${scalingFeedFlow > 0 ? ", kgday_<m> rated by feed flow" : ""}). EQUILIBRIUM CEILING — the thermodynamic maximum, NOT a kinetic deposit prediction.`
           : ""
       }`
+    : plotType === "solubility"
+    //  WHAT THE PICTURE CLAIMS, and the one thing it must say out loud.
+    //  A close pair here is a CANDIDATE, never a verdict: Hildebrand compresses
+    //  dispersion, polarity and hydrogen bonding into one scalar, so it cannot
+    //  separate a polar solvent from a hydrogen-bonding one of the same
+    //  cohesive energy density.  Water is where that compression costs
+    //  everything -- it sits 22 MPa^0.5 from ethanol, and the two are miscible
+    //  in all proportions.  Saying so on the caption rather than only in the
+    //  engine log is the difference between a warning delivered and one
+    //  received.
+    ? `delta = sqrt((dHvap(T) - RT)/V_m) at ${fixedT.toFixed(2)} K, MPa^0.5 -- `
+      + `DERIVED per component from HvapTb, Tc and Vliq, never stored.  `
+      + `\`published\` is an independently computed value carried as an ANCHOR: `
+      + `it checks the derivation and is never an input to it, and an empty cell `
+      + `means nothing checks that row.  The smaller |delta_i - delta_j|, the `
+      + `more likely two liquids mix -- but ONE NUMBER CARRIES NO HYDROGEN `
+      + `BONDING, so a close pair is a candidate and not a verdict (water sits `
+      + `22 MPa^0.5 from ethanol and the two are miscible in all proportions).  `
+      + `Hansen's three-parameter split is what that needs; it is not `
+      + `implemented -- its parameters are a dataset this project does not hold.`
     : plotType === "bjerrum"
     // WHAT THE PICTURE CLAIMS.  The one thing this lens must say is that its
     // x-axis is an INPUT: `pH` carries two meanings and the `speciate` op's own
