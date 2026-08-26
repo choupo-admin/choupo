@@ -41,6 +41,8 @@ Description
 
 #pragma once
 
+#include <string>
+
 namespace Choupo {
 
 // Bumped per commit -- the version string is the commit-message tag.
@@ -54,5 +56,39 @@ inline constexpr const char* CHOUPO_VERSION = "Choupo-dev";
 // version (e.g. "  batch", "  ctrl", "  props"; empty for choupoSolve).  The
 // suffix is padded with spaces to keep the box width consistent.
 void printBanner(const char* suffix = "");
+
+//  THE TWO FLAGS EVERY BINARY OWES ITS CALLER, and the refusal that goes
+//  with them (2026-08-26).
+//
+//  `./choupoSolve --version` used to print the banner -- because the banner
+//  always prints -- and then die with
+//
+//      ERROR: Case directory does not exist: --version
+//
+//  A half-answer followed by a confusing error, on the first thing anybody
+//  types at a binary they have just built.
+//
+//  Underneath it sat the worse defect.  choupoSolve's parser ended in a
+//  catch-all, `else caseDir = arg;`, so ANY unrecognised argument became a
+//  directory name.  A mistyped flag was therefore SILENTLY DROPPED: run
+//  `choupoSolve --lnt myCase` and the lint you asked for does not happen,
+//  the solve runs instead, and the exit code is 0.  That is the no-silent-
+//  crutch rule broken at the front door -- a flag the user asked for that
+//  did not happen, with nothing said.
+//
+//  So: ONE home, and the refusal is part of it.  `handleStandardFlags`
+//  returns true when the caller should exit 0 (it has printed what was
+//  asked for); `refuseUnknownOption` throws, by name, with the usage text.
+//  A positional argument is still a case directory -- only an argument
+//  beginning with `-` is a flag, and an unrecognised flag is an error
+//  rather than a filename.
+//
+//  `usage` is the binary's own one-screen help text, passed in rather than
+//  stored here: this header knows the version, not what each binary does.
+bool handleStandardFlags(int argc, char** argv, const char* usage);
+
+//  Throws a runtime_error naming the offending option and quoting `usage`.
+[[noreturn]] void refuseUnknownOption(const std::string& arg,
+                                      const char* usage);
 
 } // namespace Choupo

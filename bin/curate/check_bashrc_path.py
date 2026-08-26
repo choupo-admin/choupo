@@ -32,7 +32,15 @@ THE ARMS
       no longer type `choupoSolve` has traded one broken workflow for
       another.
 
-  (c) bin/ IS STILL EARLY.  `runCase` and friends must win over anything
+  (c) A POISONED PATH IS REPAIRED, NOT SKIPPED.  Sourcing the file from a
+      shell that ALREADY carries the old broken order must fix it.  The first
+      version of the fix failed this and nobody noticed for an hour: the
+      guard was "if CHOUPO_HOME is already on PATH, do nothing", so the
+      repair declined to act for precisely the people who needed it -- and
+      `exec bash` did not help either, because it inherits the environment.
+      Only a brand-new terminal did, and nothing said so.
+
+  (d) bin/ IS STILL EARLY.  `runCase` and friends must win over anything
       similarly named later in PATH.
 
 WHAT IT DOES NOT COVER, said so the OK line cannot imply it: it tests bash.
@@ -125,7 +133,26 @@ def main():
                      " its three siblings are symlinks in the root and that is"
                      " the only reason the root is there")
 
-    # ---- (c) bin/ still wins ----------------------------------------------
+    # ---- (c) a poisoned PATH is repaired ---------------------------------
+    poisoned = f"{ROOT}:{ROOT}/bin:/usr/bin:/bin"
+    env = dict(os.environ)
+    env["PATH"] = poisoned
+    env["CHOUPO_HOME"] = str(ROOT)
+    r = subprocess.run(
+        ["bash", "-c", f'source "{BASHRC}" >/dev/null 2>&1; printf "%s" "$PATH"'],
+        capture_output=True, text=True, env=env, timeout=60)
+    rep = r.stdout.strip().split(":")
+    if rep and rep[0] == str(ROOT):
+        fails.append("sourcing etc/bashrc from a shell that ALREADY has the"
+                     " broken order leaves it broken -- the repair must"
+                     " NORMALISE the PATH, not skip when it finds itself"
+                     " already on it")
+    elif rep.count(str(ROOT)) > 1 or rep.count(str(ROOT / "bin")) > 1:
+        fails.append("sourcing etc/bashrc twice duplicates its own entries on"
+                     f" PATH ({rep.count(str(ROOT))} x root,"
+                     f" {rep.count(str(ROOT / 'bin'))} x bin)")
+
+    # ---- (d) bin/ still wins ----------------------------------------------
     binp = str(ROOT / "bin")
     if binp not in entries:
         fails.append(f"{binp} is not on PATH -- runCase, listCases and"
@@ -149,7 +176,9 @@ def main():
     print(f"check_bashrc_path: OK -- sourcing etc/bashrc leaves recursive"
           f" `$(MAKE)` working (probed with a throwaway project carrying its"
           f" own `make/` directory, which is the actual failure, not the PATH"
-          f" order that causes it), keeps {home} reachable for the"
+          f" order that causes it), REPAIRS a PATH that already carries the"
+          f" broken order rather than skipping because it finds itself on it,"
+          f" keeps {home} reachable for the"
           f" ./choupoSolve symlinks, and keeps bin/ ahead of the system"
           f" directories.  NOT CHECKED: zsh and the POSIX fallback branch,"
           f" which resolve their own location differently; and whether"

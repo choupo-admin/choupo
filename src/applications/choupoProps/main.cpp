@@ -239,6 +239,31 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
 int main(int argc, char** argv)
 try
 {
+    static const char* USAGE =
+        "Usage: choupoProps [options] [case-directory]\n"
+        "\n"
+        "  Property evaluation and the props BENCH.  With no case directory it\n"
+        "  runs the current directory.\n"
+        "\n"
+        "  --gap-report            assemble the thermo package, emit the\n"
+        "                          pre-solve gap report, and exit without solving\n"
+        "  --canonical-hash FILE   the computational seal's canonical hash\n"
+        "  --canonical-dump FILE   the parsed content the hash is taken over\n"
+        "  --aqueous-graph [OUT]   write the aqueous equilibrium graph as JSON\n"
+        "  --family [NAME]         print the aqueous family index, or one family\n"
+        "  --version, -V           print the banner (version and commit)\n"
+        "  --help, -h              this text\n";
+
+    if (handleStandardFlags(argc, argv, USAGE))
+    {
+        //  The banner has NOT been printed yet in this binary (it is held
+        //  back so --gap-report leaves stdout clean for its JSON consumer),
+        //  so --version has to ask for it here.  The other three print it
+        //  first thing and this branch is silent in them.
+        printBanner("  props");
+        return 0;
+    }
+
     bool gapReport = false;
     for (int gi = 1; gi < argc; ++gi)
         if (std::string(argv[gi]) == "--gap-report") gapReport = true;
@@ -336,7 +361,16 @@ try
     for (int i = 1; i < argc; ++i)
     {
         const std::string a = argv[i];
-        if (a != "--gap-report" && caseArg.empty()) caseArg = a;
+        if (a == "--gap-report") continue;
+        //  A FLAG IS NOT A FILENAME.  This loop used to take the first
+        //  non-`--gap-report` argument as the case directory, whatever it
+        //  looked like, so a mistyped flag became a directory name and the
+        //  run died complaining about a directory nobody asked for -- or,
+        //  worse, silently ran the current one.  The catalogue-wide queries
+        //  (--canonical-hash, --aqueous-graph, --family) all returned long
+        //  before here, so anything still starting with `-` is unknown.
+        if (!a.empty() && a[0] == '-') refuseUnknownOption(a, USAGE);
+        if (caseArg.empty()) caseArg = a;
     }
     const fs::path caseDir = caseArg.empty() ? fs::current_path() : caseArg;
     if (!fs::is_directory(caseDir))

@@ -164,6 +164,21 @@ try
     HeatTransferCorrelation::registerBuiltins();
     BatchUnitOperation::registerBuiltins();
 
+    static const char* USAGE =
+        "Usage: choupoBatch [options] [case-directory]\n"
+        "\n"
+        "  Batch / time-dependent solver, driven by the `recipe` block of the\n"
+        "  case's flowsheetDict.  With no case directory it runs the current\n"
+        "  directory.\n"
+        "\n"
+        "  --version, -V     print the banner (which carries version and commit)\n"
+        "  --help, -h        this text\n";
+
+    if (handleStandardFlags(argc, argv, USAGE))
+        return 0;
+    if (argc > 1 && argv[1][0] == '-')
+        refuseUnknownOption(argv[1], USAGE);
+
     const std::string caseDir = (argc > 1) ? argv[1] : ".";
     if (!fs::exists(caseDir))
         throw std::runtime_error("Case directory does not exist: " + caseDir);

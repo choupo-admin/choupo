@@ -66,10 +66,31 @@ export CHOUPO_WORKSPACE
 #
 # The root is on PATH ONLY for the ./choupoSolve-style symlinks, which
 # shadow nothing, so last is where it belongs.
-case ":$PATH:" in
-    *":$CHOUPO_HOME:"*) ;;
-    *) export PATH="$CHOUPO_HOME/bin:$PATH:$CHOUPO_HOME" ;;
-esac
+# IT NORMALISES, IT DOES NOT SKIP.  The obvious guard -- "if CHOUPO_HOME is
+# already on PATH, do nothing" -- was here first, and it made this whole fix
+# INERT for the only people who needed it.  Anyone carrying the old, broken
+# order already had CHOUPO_HOME on PATH, so re-sourcing this file left it
+# exactly as it was, and even `exec bash` did nothing because it inherits the
+# environment.  Only a brand-new terminal helped, and nothing said so.
+#
+# A guard that declines to act because the thing it fixes is present is not
+# idempotence; it is a repair that refuses to repair.  So: strip EVERY
+# existing entry for the root and for bin/, then put them back in the right
+# order.  Sourcing twice is now the same as sourcing once AND repairs a
+# stale PATH inherited from an older shell.
+_choupo_strip() {
+    local out= entry
+    local IFS=:
+    for entry in $1; do
+        [ -z "$entry" ] && continue
+        [ "$entry" = "$CHOUPO_HOME" ] && continue
+        [ "$entry" = "$CHOUPO_HOME/bin" ] && continue
+        out="${out:+$out:}$entry"
+    done
+    printf '%s' "$out"
+}
+export PATH="$CHOUPO_HOME/bin:$(_choupo_strip "$PATH"):$CHOUPO_HOME"
+unset -f _choupo_strip
 
 # ----- Convenience aliases --------------------------------------------------
 alias Choupo='cd "$CHOUPO_HOME"'

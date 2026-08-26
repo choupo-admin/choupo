@@ -454,6 +454,22 @@ try
     // Flags: `-init0` materialises 0/ instead of solving (arch step 2);
     // `--force` lets it regenerate existing internal/outlet estimates;
     // `--lint` validates the case and stops (read-only, never solves).
+    static const char* USAGE =
+        "Usage: choupoSolve [options] [case-directory]\n"
+        "\n"
+        "  Steady-state solver.  With no case directory it solves the current\n"
+        "  directory.\n"
+        "\n"
+        "  -init0, --init0   materialise 0/ from the authored inlets instead of\n"
+        "                    solving; never overwrites without --force\n"
+        "  --force           let -init0 regenerate existing estimates\n"
+        "  -lint,  --lint    validate the case and stop, without solving\n"
+        "  --version, -V     print the banner (which carries version and commit)\n"
+        "  --help, -h        this text\n";
+
+    if (handleStandardFlags(argc, argv, USAGE))
+        return 0;
+
     bool init0Mode = false, init0Force = false, lintMode = false;
     std::string caseDir = ".";
     for (int a = 1; a < argc; ++a)
@@ -462,6 +478,10 @@ try
         if      (arg == "-init0" || arg == "--init0") init0Mode = true;
         else if (arg == "--force")                    init0Force = true;
         else if (arg == "-lint"  || arg == "--lint")  lintMode = true;
+        //  A FLAG IS NOT A FILENAME.  The catch-all this replaces turned any
+        //  unrecognised argument into a case directory, so `--lnt myCase`
+        //  ran the SOLVE with the lint silently dropped, at exit 0.
+        else if (!arg.empty() && arg[0] == '-') refuseUnknownOption(arg, USAGE);
         else caseDir = arg;
     }
     if (!fs::exists(caseDir))

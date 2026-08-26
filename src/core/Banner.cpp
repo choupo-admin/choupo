@@ -36,6 +36,7 @@ License
 #endif
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 namespace Choupo {
@@ -66,6 +67,42 @@ void printBanner(const char* suffix)
        /|\                      |
 \*---------------------------------------------------------------------------*/
 )CH" << "\n";
+}
+
+//  `--version` and `--help`, and the refusal for anything else that looks
+//  like a flag.  See Banner.H for what this cost before it existed.
+//
+//  THE BANNER HAS ALREADY BEEN PRINTED by the time a main.cpp calls this --
+//  every binary opens with it.  So `--version` prints NOTHING further and
+//  returns true: the banner IS the version, and printing a second copy of
+//  the string beneath it would be a second home for the same fact.
+bool handleStandardFlags(int argc, char** argv, const char* usage)
+{
+    for (int a = 1; a < argc; ++a)
+    {
+        const std::string arg = argv[a];
+        if (arg == "--version" || arg == "-version" || arg == "-V")
+            return true;
+        if (arg == "--help" || arg == "-help" || arg == "-h")
+        {
+            std::cout << usage << "\n";
+            return true;
+        }
+    }
+    return false;
+}
+
+void refuseUnknownOption(const std::string& arg, const char* usage)
+{
+    //  NAMED, and with the usage beside it.  The alternative this replaces
+    //  was to treat it as a case directory, which turns a typo into a
+    //  silently different run.
+    throw std::runtime_error(
+        "unrecognised option '" + arg + "'.\n\n"
+        "  An argument beginning with '-' is a flag, and this binary does not\n"
+        "  know that one.  It is NOT taken as a case directory: a mistyped\n"
+        "  flag that silently does nothing is worse than one that stops.\n\n"
+        + std::string(usage));
 }
 
 } // namespace Choupo
