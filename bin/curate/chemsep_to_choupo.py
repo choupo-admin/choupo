@@ -515,6 +515,28 @@ def parse_components(xml_path: Path, report: list, write: bool) -> dict:
             body += ['}']
             emitted.add('liquidHeatCapacity')
 
+        #  LIQUID VISCOSITY, DIPPR/ChemSep form 101.  Per-component block,
+        #  package-level model -- the shape Andrade and Vogel already use, and
+        #  the reason Component exposes the block raw.  Refitting five
+        #  parameters into Andrade's two would replace a published fit with an
+        #  approximation to it, carrying a residual nobody could see.
+        vis = _corr(comp, 'LiquidViscosity')
+        if vis is not None and int(vis['eqno']) == 101 \
+                and vis['A'] is not None and vis['B'] is not None:
+            lines = ['', 'liquidViscosity', '{', '    chemsepEq101', '    {',
+                     f'        A     {vis["A"]:.10g};',
+                     f'        B     {vis["B"]:.10g};']
+            for k in 'CDE':
+                if vis[k] is not None:
+                    lines.append(f'        {k}     {vis[k]:.10g};')
+            if vis['Tmin'] is not None and vis['Tmax'] is not None \
+                    and vis['Tmax'] > vis['Tmin']:
+                lines += [f'        Tmin  {vis["Tmin"]:.6g};',
+                          f'        Tmax  {vis["Tmax"]:.6g};']
+            lines += ['    }', '}']
+            body += lines
+            emitted.add('liquidViscosity')
+
         #  THE HILDEBRAND ANCHOR.  Never an input: the engine derives delta
         #  from HvapTb and Vliq, and this is what ChemSep computed by its own
         #  route, so the derivation has something to be wrong against.

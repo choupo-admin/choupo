@@ -187,6 +187,9 @@
   "ChemSepCp16": [
    "src/thermo/heatCapacity/ChemSepCp16.H"
   ],
+  "ChemSepVisc101": [
+   "src/thermo/transport/ChemSepVisc101.H"
+  ],
   "ChemistrySystem": [
    "src/thermo/ChemistrySystem.H"
   ],
@@ -5275,6 +5278,17 @@
    "src/thermo/SurfaceTensionModel.H",
    "src/thermo/transport/BrockBird.H"
   ],
+  "src/thermo/transport/ChemSepVisc101.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/transport/ChemSepVisc101.H",
+   "src/thermo/transport/LiquidViscosityModel.H"
+  ],
   "src/thermo/transport/ChungViscosity.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -5347,6 +5361,7 @@
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/thermo/transport/Andrade.H",
+   "src/thermo/transport/ChemSepVisc101.H",
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/Vogel.H"
   ],
@@ -7113,6 +7128,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
@@ -7387,6 +7403,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
@@ -7654,6 +7671,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
@@ -7958,6 +7976,7 @@
    "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
@@ -8172,6 +8191,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
@@ -8615,6 +8635,7 @@
    "src/thermo/solution/SolutionRegistry.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/DiffusivityModel.cpp",
    "src/thermo/transport/Eucken.cpp",
@@ -9983,6 +10004,7 @@
    "src/thermo/reaction/Reaction.cpp",
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/thermo/transport/Fuller.cpp",
@@ -11165,6 +11187,10 @@
    "src/thermo/SurfaceTensionModel.cpp",
    "src/thermo/transport/BrockBird.cpp"
   ],
+  "src/thermo/transport/ChemSepVisc101.H": [
+   "src/thermo/transport/ChemSepVisc101.cpp",
+   "src/thermo/transport/LiquidViscosityModel.cpp"
+  ],
   "src/thermo/transport/ChungViscosity.H": [
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/TransportModel.cpp"
@@ -11211,6 +11237,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/Andrade.cpp",
+   "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/Vogel.cpp"
   ],

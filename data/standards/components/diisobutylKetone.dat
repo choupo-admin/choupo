@@ -49,6 +49,20 @@ liquidHeatCapacity
     coefficients  (85.834  -102.6  4.794244721  0.0033978  -2.1321e-06);
     Trange        (307.5  457.5);
 }
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -74.692;
+        B     4018.6;
+        C     9.6018;
+        D     -6.1216e-06;
+        E     2;
+        Tmin  227.17;
+        Tmax  492;
+    }
+}
 solubilityParameter 16450;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source

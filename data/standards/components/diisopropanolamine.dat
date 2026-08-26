@@ -41,6 +41,20 @@ idealGasHeatCapacity
     coefficients  (104.01  -559.93  6.364244721  -0.00018865  9.0295e-08);
     Trange        (273  1200);
 }
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -158.9768;
+        B     13684.82;
+        C     19.79212;
+        D     1.78855e-05;
+        E     1.442815;
+        Tmin  303.15;
+        Tmax  572;
+    }
+}
 solubilityParameter 26610;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 
 source

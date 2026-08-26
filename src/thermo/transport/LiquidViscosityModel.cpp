@@ -28,6 +28,7 @@ License
 
 #include "LiquidViscosityModel.H"
 #include "Andrade.H"
+#include "ChemSepVisc101.H"
 #include "Vogel.H"
 
 #include <map>
@@ -59,6 +60,9 @@ std::unique_ptr<LiquidViscosityModel> LiquidViscosityModel::New(const DictPtr& d
 
 void LiquidViscosityModel::registerBuiltins()
 {
+    //  The DIPPR/ChemSep form 414 imported records state their
+    //  viscosity in -- five parameters where Andrade has two.
+    registerModel("chemsepEq101", [](const DictPtr& d) { return std::make_unique<ChemSepVisc101>(d); });
     registerModel("Andrade", [](const DictPtr& d) { return std::make_unique<Andrade>(d); });
     registerModel("andrade", [](const DictPtr& d) { return std::make_unique<Andrade>(d); });
     registerModel("Vogel",   [](const DictPtr& d) { return std::make_unique<Vogel>(d); });
