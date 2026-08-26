@@ -90,9 +90,21 @@ export function TopBar({ onMinWidth }: {
   onMinWidth?: (px: number) => void;
 } = {}) {
   // The version badge reads wasm/version.json -- written by the WASM build
-  // BESIDE the binaries this app loads, so the announced version and the
-  // engine that runs can never disagree (a user landing on /app/ must know
+  // BESIDE the binaries this app loads (a user landing on /app/ must know
   // what they are about to run).
+  //
+  // THIS COMMENT USED TO CLAIM the announced version and the running engine
+  // "can never disagree".  They can, and on 2026-08-26 they did: the stamp is
+  // written by a RECURSIVE make step that runs AFTER the binaries, so a build
+  // that dies part-way leaves fresh .wasm files beside the stamp of the last
+  // build that COMPLETED.  A browser announced Choupo-2607 -- months old --
+  // over binaries compiled minutes earlier.
+  //
+  // Nothing here can detect that: this component sees one file and has no way
+  // to date the engine against it.  `bin/runGui` refuses the mismatch instead,
+  // which is where the two are both on disk and comparable.  What this
+  // component owes the reader is the absence of a GUESS -- an unreadable or
+  // missing stamp shows NO badge rather than a plausible default.
   const [engineVersion, setEngineVersion] = useState<EngineVersion | null>(null);
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}wasm/version.json`)

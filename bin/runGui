@@ -82,6 +82,30 @@ if [ ! -f "$wasm" ] || [ -n "$newest_src" ]; then
     exit 1
 fi
 
+#  AND THE STAMP MUST NOT BE OLDER THAN THE ENGINE IT NAMES (2026-08-26).
+#  TopBar.tsx reads gui/public/wasm/version.json for the badge and its
+#  comment claims the announced version and the running engine "can never
+#  disagree".  They can, and Vitor hit it: `wasm-version` is a RECURSIVE
+#  step that runs AFTER the binaries, so a build that dies part-way leaves
+#  fresh .wasm files beside a stamp from the last build that COMPLETED.
+#  His browser announced Choupo-2607 -- the last successful build, months
+#  old -- over binaries compiled minutes earlier.
+#
+#  A version badge that lies is worse than no badge: it is the ONE thing a
+#  reader consults to find out what they are running, and CLAUDE.md points
+#  at it as the staleness check.  So this refuses too, separately, because
+#  the remedy is the same command but the fault is a different one.
+stamp="$root_dir/gui/public/wasm/version.json"
+if [ -f "$wasm" ] && { [ ! -f "$stamp" ] || [ "$wasm" -nt "$stamp" ]; }; then
+    echo "[runGui] REFUSED: gui/public/wasm/version.json is $( [ -f "$stamp" ] \
+         && echo 'OLDER than the .wasm beside it' || echo 'MISSING' ) --"
+    echo "         the version badge would announce the last build that"
+    echo "         COMPLETED while the browser runs binaries from a later"
+    echo "         one that did not (the stamp is written after them)."
+    echo "         Build it:   make wasm-gui      (then re-run bin/runGui)"
+    exit 1
+fi
+
 kill_prior() {
     local prior
     prior=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
