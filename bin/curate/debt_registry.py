@@ -153,6 +153,50 @@ TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
 SELF_CONTRADICTING_RECORDS = {}
 
 
+#  ---------------------------------------------------------------------------
+#  STEADY CASES WHOSE STREAM CARRIES A PHASE LABEL THE ENGINE HAS DISPROVED
+#  ---------------------------------------------------------------------------
+#
+#  The energy report prices each stream in the phase its state file declares
+#  and CHECKS the label: a stream called liquid whose own Rachford-Rice
+#  residual at (T, P, z) puts it above its bubble point cannot hold the name,
+#  and the report says so -- naming the stream, the residual, and that the
+#  enthalpy charged for it is "missing (or inventing) that phase change, which
+#  is a residual of latent-heat size".  The check is not in question.
+#
+#  What is pinned here is that SEVEN shipped tutorials trigger it, five with a
+#  real energy residual beside the label.  The corpus stayed green because the
+#  finding is announced rather than refused, which is the right default for an
+#  extrapolation and is doing more work than it should here: an extrapolated
+#  Antoine is a qualified answer, while a stream priced in a phase it cannot
+#  occupy is a wrong one, out by a latent heat.
+#
+#  WHY IT IS PINNED AND NOT FIXED.  Correcting a case means changing what it
+#  DECLARES about its streams -- the `vaporFraction`/`phase` in 0/ -- which
+#  changes published answers in five tutorials with recorded goldens.  That is
+#  a curation decision about each case's physics and is Vitor's.  Refusing an
+#  impossible label outright is a contract change with the same blast radius.
+#
+#  THE VALUE IS THE WORST ABSOLUTE ENERGY RESIDUAL, in kW, measured by
+#  check_impossible_phase_pins from the run itself and never transcribed --
+#  the first hand-taken version of this table was out by a factor of two on
+#  two of the seven, in opposite directions, and the gate's own reader caught
+#  it.  The gate fails if a case joins the list, leaves it, or gets worse.
+#
+#  REMEDY, per case: decide what the stream really is at its (T, P, z) and
+#  declare it -- `vaporFraction`/`phase` in 0/ -- then re-record the golden.
+#  BLOCKER: each is a thermodynamic judgement about that case, not a sweep.
+IMPOSSIBLE_PHASE_CASES = {
+    "phasechange01_partial_condenser":   898.64,
+    "acetone03_luyben_reaction_section": 390.606,
+    "combined01_brayton_rankine":        132.782,
+    "stripper02_sour_water_h2s":          17.4804,
+    "stripper01_sour_water":              12.7946,
+    "tsa01_co2_twin_bed":                  0.023239,
+    "flash10_ch4propane_pcsaft":           2.4e-05,
+}
+
+
 # ---------------------------------------------------------------------------
 #  A STATED DEBT ABOUT THIS FILE ITSELF
 # ---------------------------------------------------------------------------
