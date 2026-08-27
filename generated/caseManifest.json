@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 381,
+  "cases": 383,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -1997,6 +1997,34 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "cosmoSAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/envelope01_natural_gas": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/envelope02_root_jump": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
     ]
    },
    "roles": [],
@@ -5709,6 +5737,8 @@
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/envelope01_natural_gas",
+    "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
@@ -6718,6 +6748,8 @@
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
+    "tutorials/props/molecular/envelope01_natural_gas",
+    "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
     "tutorials/props/scan/phase01_water_full",
@@ -6952,6 +6984,10 @@
    ],
    "linearTbEstimate": [
     "tutorials/props/estimate/userEstimate01_linear_tb"
+   ],
+   "phaseEnvelope": [
+    "tutorials/props/molecular/envelope01_natural_gas",
+    "tutorials/props/molecular/envelope02_root_jump"
    ],
    "pitzerActivity": [
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",

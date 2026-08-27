@@ -2378,6 +2378,44 @@ PYEOF
     fi
     rm -f /tmp/unifacgaps.$$
 
+    # phase-envelope gate (2026-08-27).  A P-T envelope is drawn to find the
+    # cricondentherm and the retrograde region, and both live at the nose,
+    # which no single-specification march can close.  But the defect this gate
+    # was built around is not the nose: both saturation solvers bracket T in
+    # 200-700 K and are warm-started, so Newton can converge to a DIFFERENT
+    # root and report success -- the first version drew a bubble temperature
+    # FALLING with pressure and published a 371.492 K "cricondentherm" that
+    # was the resulting spike.  A converged point is not necessarily a point
+    # on the curve.  Six sabotages; the fourth proved nothing (it attacked a
+    # redundant line) and is recorded as such.
+    if "$ROOT/bin/curate/check_phase_envelope.py" > /tmp/envelope.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "phase-envelope-gate" "$(head -1 /tmp/envelope.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_phase_envelope.py)\n" "phase-envelope-gate"
+        cat /tmp/envelope.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/envelope.$$
+
+    # component-name-hint gate (2026-08-27).  Found by using Choupo as a
+    # final-year student would: `ethylbenzene` is how the word is spelled and
+    # how ChemSep spells it; the catalogue record is `ethylBenzene.dat`, and
+    # the refusal said the component did not exist and then told the reader to
+    # ESTIMATE it -- sending them to invent a number curated three directories
+    # down.  444 of 603 names carry an internal capital and none collide when
+    # folded, so a case-only miss has exactly one candidate.  It still
+    # REFUSES; it just names the record.
+    if "$ROOT/bin/curate/check_component_name_hint.py" > /tmp/namehint.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "component-name-hint-gate" "$(head -1 /tmp/namehint.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_component_name_hint.py)\n" "component-name-hint-gate"
+        cat /tmp/namehint.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/namehint.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

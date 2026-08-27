@@ -36,6 +36,9 @@ License
 
 #include <cstdlib>
 #include <filesystem>
+#include <cctype>
+#include <algorithm>
+#include <vector>
 #include <fstream>
 #include <stdexcept>
 
@@ -209,6 +212,102 @@ Component Database::loadComponent(const std::string& name) const
             ? "(no case-local constant/components/" + name + ".dat up the tree)"
             : caseLocal.string();
 
+        //  ---- BEFORE ANY REMEDY: IS IT ALREADY HERE UNDER ANOTHER SPELLING?
+        //
+        //  The lookup is exact by filename and stays that way (settled
+        //  2026-06-07: O(1) path concatenation, no startup directory walk).
+        //  What was missing is what happens AFTER it misses.  A student who
+        //  writes `ethylbenzene` -- which is how the word is spelled, and how
+        //  ChemSep itself spells it -- was told the component does not exist
+        //  and, in the next breath, told to ESTIMATE it.  The curated record
+        //  is `ethylBenzene.dat`, one capital letter away.  The message did
+        //  not merely fail to help: it actively sent the reader to invent a
+        //  number that was already curated three directories down.
+        //
+        //  MEASURED: 444 of the 603 catalogue components carry an internal
+        //  capital, so a lower-case spelling misses three quarters of the
+        //  tree; and NOT ONE pair of names collides when case is ignored, so
+        //  a case-only mismatch has exactly ONE candidate, always.  There is
+        //  no ambiguity here to be careful about.
+        //
+        //  IT STILL REFUSES.  Resolving the name silently would be the
+        //  crutch: `CH4` and `ch4` are one substance today and need not be
+        //  tomorrow, and a case that runs under a name the author did not
+        //  write is a case whose components nobody can audit.  So the engine
+        //  NAMES the candidate and stops -- the author makes the edit.
+        //
+        //  This search runs ONLY on the failure path.  The happy path never
+        //  lists a directory.
+        std::string nearby;
+        {
+            auto fold = [](std::string t)
+            {
+                std::string o;
+                for (char c : t)
+                    if (std::isalnum(static_cast<unsigned char>(c)))
+                        o += static_cast<char>(std::tolower(
+                                 static_cast<unsigned char>(c)));
+                return o;
+            };
+            const std::string want = fold(name);
+            std::vector<std::string> exact, partial;
+            for (const auto& dir : { fs::path(root_) / "standards" / "components",
+                                     fs::path(root_) / "local" / "components" })
+            {
+                std::error_code ec;
+                if (!fs::is_directory(dir, ec)) continue;
+                for (const auto& e : fs::directory_iterator(dir, ec))
+                {
+                    if (e.path().extension() != ".dat") continue;
+                    const std::string stem = e.path().stem().string();
+                    const std::string f = fold(stem);
+                    if (f == want) { exact.push_back(stem); continue; }
+                    //  A CONTAINMENT IS ONLY A HINT WHEN THE SHORTER NAME
+                    //  CARRIES MOST OF THE LONGER.  The first version asked
+                    //  only that one contain the other, and 'methylglyoxalate'
+                    //  duly suggested `H, O` -- the catalogue's hydrogen and
+                    //  oxygen, whose folded names are single letters found
+                    //  inside almost anything.  Noise in a refusal is worse
+                    //  than silence: it teaches the reader that the hints are
+                    //  not worth reading.  So both names must be substantial
+                    //  and the overlap must be most of the longer one.
+                    if (f.size() < 4 || want.size() < 4) continue;
+                    const bool contains = f.find(want) != std::string::npos
+                                       || want.find(f) != std::string::npos;
+                    if (!contains) continue;
+                    const std::size_t shorter = std::min(f.size(), want.size());
+                    const std::size_t longer  = std::max(f.size(), want.size());
+                    if (shorter * 10 >= longer * 6) partial.push_back(stem);
+                }
+            }
+            std::sort(partial.begin(), partial.end());
+            if (partial.size() > 6) partial.resize(6);
+            if (!exact.empty())
+            {
+                nearby = "  IT IS HERE, UNDER A DIFFERENT SPELLING: '"
+                       + exact.front() + "'.\n"
+                         "    The two names differ only in punctuation or"
+                         " capitalisation, and the lookup is\n"
+                         "    exact by filename -- deliberately, so that two"
+                         " spellings can never become two\n"
+                         "    records for one substance.  Write '"
+                       + exact.front() + "' in your components list.\n"
+                         "    DO NOT estimate this component: it is curated,"
+                         " and the remedy below does not\n"
+                         "    apply to it.\n";
+            }
+            else if (!partial.empty())
+            {
+                nearby = "  NOT FOUND, but these catalogue names contain or"
+                         " are contained by yours:\n    ";
+                for (std::size_t i = 0; i < partial.size(); ++i)
+                    nearby += (i ? ", " : "") + partial[i];
+                nearby += "\n    If one of them is your substance, write it"
+                          " exactly.  If none is, the remedy\n"
+                          "    below applies.\n";
+            }
+        }
+
         //  THE REMEDY LOOKS FOR THE GROUPS INSTEAD OF ASKING FOR THEM.
         //  `data/groupEstimative/` carries a structural decomposition for
         //  ~28 800 molecules -- identity + UNIFAC + Joback groups, the half of
@@ -238,6 +337,7 @@ Component Database::loadComponent(const std::string& name) const
         }
         throw std::runtime_error(
             "Database: component '" + name + "' not found.\n"
+            + nearby +
             "  looked in: " + caseMsg + "\n"
             "         and: " + standard.string() + "  (verified)\n"
             "         and: " + proposed.string() + "  (proposed/unverified)\n"

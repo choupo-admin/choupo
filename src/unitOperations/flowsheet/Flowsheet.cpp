@@ -991,6 +991,29 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
     }
 
     // 4.  Inject inputs (single `in` or multi `inputs (...)`)
+    //
+    //  THE WRITER NORMALISES AND THE READER DID NOT, and that asymmetry was a
+    //  dead end for anyone authoring a case by hand.  `emitFlowsheet` above
+    //  writes a single input as `in` and several as `inputs`, so the engine
+    //  already treats `inputs ( x )` and `in x;` as one topology fact.  The
+    //  reader treated them as two: `inputs` injected only `inputStreams`,
+    //  while every single-inlet unit reads `feed {}` and `composition {}`.
+    //
+    //  So a case declaring `inputs ( feed )` on a reactor -- which 65 corpus
+    //  cases' spelling makes look right, and which the flowsheet accepts
+    //  without complaint -- died three layers down with "Dictionary
+    //  'reactor': missing sub-dictionary 'feed'": a key the author never
+    //  wrote, that appears in no document for that unit, and that names the
+    //  consequence instead of the cause.  Found by authoring a case as a
+    //  student would.
+    //
+    //  A ONE-ELEMENT `inputs` NOW GETS BOTH INJECTIONS.  Not a silent crutch
+    //  and not an approximation: the two spellings denote the same single
+    //  inlet, the engine's own writer says so, and a unit cannot be harmed by
+    //  a key it does not read.  Multi-inlet `inputs` is unchanged -- there is
+    //  no single feed to name, and a unit that wants one must say which.
+    const bool singleInputs = udict->found("inputs")
+                           && udict->lookupWordList("inputs").size() == 1;
     if (udict->found("inputs"))
     {
         auto names = udict->lookupWordList("inputs");
@@ -1004,9 +1027,11 @@ DictPtr buildAugmentedDict(const DictPtr&                          udict,
         }
         out->insert("inputStreams", dicts);
     }
-    else if (udict->found("in"))
+    if (udict->found("in") || singleInputs)
     {
-        const std::string inName = udict->lookupWord("in");
+        const std::string inName = singleInputs
+                                 ? udict->lookupWordList("inputs").front()
+                                 : udict->lookupWord("in");
         if (streams.find(inName) == streams.end())
             throw std::runtime_error("Flowsheet: input stream '" + inName
                 + "' not in registry");

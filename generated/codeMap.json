@@ -889,6 +889,9 @@
   "PhaseChanger": [
    "src/unitOperations/heatTransfer/PhaseChanger.H"
   ],
+  "PhaseEnvelope": [
+   "src/propertyOps/PhaseEnvelope.H"
+  ],
   "PinchPass": [
    "src/postProcessing/PinchPass.H"
   ],
@@ -1053,7 +1056,8 @@
   "Result": [
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/TrayHydraulics.H",
-   "src/unitOperations/saturation/BubblePoint.H"
+   "src/unitOperations/saturation/BubblePoint.H",
+   "src/unitOperations/saturation/DewPoint.H"
   ],
   "RiaziDaubert": [
    "src/propertyOps/RiaziDaubert.H"
@@ -1604,6 +1608,10 @@
    {
     "key": "purePhaseDiagram",
     "type": "PurePhaseDiagram"
+   },
+   {
+    "key": "phaseEnvelope",
+    "type": "PhaseEnvelope"
    },
    {
     "key": "psychrometricChart",
@@ -3601,6 +3609,26 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/activityCoefficient/ActivityModel.H"
   ],
+  "src/propertyOps/PhaseEnvelope.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/PhaseEnvelope.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/saturation/BubblePoint.H",
+   "src/unitOperations/saturation/DewPoint.H"
+  ],
   "src/propertyOps/PitzerActivity.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -3668,6 +3696,7 @@
    "src/propertyOps/IsothermEval.H",
    "src/propertyOps/Kinetics1D.H",
    "src/propertyOps/MolecularActivity.H",
+   "src/propertyOps/PhaseEnvelope.H",
    "src/propertyOps/PitzerActivity.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropertyPoint.H",
@@ -5470,6 +5499,7 @@
    "src/core/Types.H",
    "src/result/UnitProfile.H",
    "src/solver/Convergence.H",
+   "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/PackageAudit.H",
@@ -7099,6 +7129,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
    "src/propertyOps/ReactionCurve.cpp",
@@ -7328,6 +7359,7 @@
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -7597,6 +7629,7 @@
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -7922,6 +7955,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -8138,6 +8172,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -8548,6 +8583,7 @@
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -9085,6 +9121,10 @@
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/PhaseEnvelope.H": [
+   "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/PitzerActivity.H": [
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -9114,6 +9154,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
@@ -9391,6 +9432,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -9510,6 +9552,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
@@ -9650,8 +9693,10 @@
   ],
   "src/solver/NewtonRaphson.H": [
    "src/postProcessing/EconomicsPass.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/solver/NewtonRaphson.cpp",
    "src/thermo/SaturationCurves.cpp",
+   "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
@@ -9769,6 +9814,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -9955,6 +10001,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -10227,6 +10274,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
@@ -10545,6 +10593,7 @@
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",
@@ -11368,6 +11417,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanBinary.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
@@ -11831,6 +11881,7 @@
   "src/unitOperations/saturation/BubblePoint.H": [
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/unitOperations/UnitOperation.cpp",
@@ -11839,6 +11890,7 @@
    "src/unitOperations/saturation/BubblePoint.cpp"
   ],
   "src/unitOperations/saturation/DewPoint.H": [
+   "src/propertyOps/PhaseEnvelope.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/saturation/DewPoint.cpp"
   ],

@@ -2110,6 +2110,36 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \end{tutgolden}
 
 \clearpage
+\tutentry{envelope01\_natural\_gas}{tutorials/props/molecular/envelope01\_natural\_gas}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that never starts}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_points}{0}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{1}
+\goldrow{diag}{envelope}{dew\_cricondentherm\_K}{274.705}
+\goldrow{diag}{envelope}{dew\_points}{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{envelope02\_root\_jump}{tutorials/props/molecular/envelope02\_root\_jump}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T envelope where the saturation solve jumps root: both branches stop AT the jump and report it as one, and no cricondentherm is claimed}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_points}{17}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{18}
+\goldrow{diag}{envelope}{dew\_points}{25}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{26}
+\end{tutgolden}
+
+\clearpage
 \tutentry{eval\_nrtl\_catalogue}{tutorials/props/molecular/eval\_nrtl\_catalogue}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

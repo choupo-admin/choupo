@@ -1070,8 +1070,50 @@ ProcessStream readStreamState(const fs::path&       file,
     const bool legacyFluidOnly = hasCF;    // legacy componentFlows excluded solids
 
     const auto& mixTokens = thermo.mixtureMembersByToken();
+    //  A FLOW WITH NO UNIT IS LEGAL AND ALMOST NEVER MEANT.  The dict grammar
+    //  accepts three forms -- a named unit (`100 kmol/h`), bracket dimensions,
+    //  or raw canonical SI -- and a bare number takes the third.  For T and P
+    //  a bare number is usually what the author meant (300, 101325).  For a
+    //  FLOW it almost never is: the canonical unit here is kmol/s, and no
+    //  textbook, datasheet or student works in kmol/s.
+    //
+    //  FOUND BY AUTHORING A CASE AS A STUDENT WOULD.  `ethylBenzene 100;`
+    //  meaning kmol/h ran as 100 kmol/s: the reactor reported an extent of
+    //  216 000 kmol/h and a duty of 7.6 GW instead of 60 kmol/h and 2.1 MW --
+    //  a factor of 3600, and NOTHING in the run said a word.  Every balance
+    //  closed, the reaction chemistry was right, the answer was a plant 3600
+    //  times too large.  That is the exact shape this project refuses
+    //  everywhere else: a plausible number, silently.
+    //
+    //  ANNOUNCED, NOT REFUSED.  Raw SI is a declared form of the grammar and
+    //  a legitimate one; refusing it would break every case that uses it on
+    //  purpose.  What must not happen is silence.  Once per stream, naming
+    //  the components and what they were taken as.
+    auto noteBareUnits = [&](const DictPtr& blk, const char* what,
+                             const char* canonical)
+    {
+        std::string bare;
+        for (const auto& comp : blk->keys())
+            if (!blk->hasDimensions(comp) && blk->lookupScalar(comp) != 0.0)
+                bare += (bare.empty() ? "" : ", ") + comp;
+        if (bare.empty()) return;
+        const std::string msg =
+            std::string("stream '") + name + "': " + what + " declared"
+            " WITHOUT a unit for " + bare + " -- taken as the canonical "
+            + canonical + ", which is what the grammar says and almost"
+            " certainly not what was meant: a value intended as kmol/h read"
+            " as kmol/s is a factor of 3600, and every balance still closes."
+            "  Write the unit (`100 kmol/h;`) or, if canonical SI really is"
+            " intended, say so in the file so the next reader knows.";
+        if (AdvisoryLog::instance().add("input", "warning",
+                                        "stream '" + name + "'", msg))
+            std::cerr << "[units] " << msg << "\n";
+    };
+
     auto readMolar = [&](const DictPtr& blk, bool mass)
     {
+        noteBareUnits(blk, mass ? "componentMassFlows" : "componentMolarFlows",
+                      mass ? "kg/s" : "kmol/s");
         for (const auto& comp : blk->keys())
         {
             scalar v = blk->lookupScalar(comp);               // SI: kmol/s or kg/s

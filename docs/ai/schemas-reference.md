@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*84 of 84 registered operations carry a schema and are documented below.*
+*85 of 85 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -689,6 +689,16 @@ Phase changer: condenses or vaporises a stream at a declared pressure. The outle
 | `geometry` |   | object | — | Present = the duty EMERGES from the surface and the film coefficients instead of being declared. Give the wall conductivity either direct… |
 | `condensation` |   | object | — | Which film correlation prices the condensing side, e.g. NusseltFilm (laminar film, Nusselt 1916). |
 | `heatingMedium` |   | object | — | The heating-medium stream's inlet temperature and film coefficient — the other half of the rating. |
+
+## `phaseEnvelope`  (phaseEnvelope operation)
+
+The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P_Pa, T_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `composition` | ✓ | object | — | The feed this envelope belongs to, one entry per component. An envelope is a curve for ONE composition and there is no default to fall ba… |
+| `pressure` | ✓ | object | — | The pressures at which each branch is solved. The march is in PRESSURE, and that choice bounds the answer: T_bubble(P) is single-valued t… |
+| `output` |   | object | — | Optional. One row per traced point: P_Pa, T_K, and `curve` in { bubble, dew }. Only points that survived the continuity test are written … |
 
 ## `pipe`  (pipe operation)
 

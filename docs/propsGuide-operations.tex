@@ -599,6 +599,23 @@ The Darcy friction factor's correlation library, in two parts. VERIFY (always): 
 \file{tutorials/props/hydraulics/moody01\_friction\_correlations}
 \end{tutoriallink}
 
+\paragraph{\code{phaseEnvelope}}
+The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P\_Pa, T\_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{composition}\textbf{*} & Feed composition \\
+\code{output} & CSV output \\
+\code{pressure}\textbf{*} & Pressure march \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/envelope01\_natural\_gas}
+\quad (and 1 more)
+\end{tutoriallink}
+
 \paragraph{\code{reactionCurve}}
 OPEN-LOOP IDENTIFICATION off a trajectory somebody else recorded. Given a CSV written by a choupoCtrl run, one column driven and one column watched, it cuts the record into step SEGMENTS, fits a first-order-plus-dead-time surrogate (K, tau, theta) to each by Nelder-Mead on the sum of squared residuals, and applies the classical tuning rules to the segment the reader nominates. It solves no plant and integrates nothing: the experiment must already exist on disk, and the op reads it. THE SURROGATE IS A SURROGATE — the record is whatever the plant did, an FOPDT is three numbers, and the statement that the second is standing in for the first reaches the reader at the site AND in the end-of-run caveat block. A segment whose response has not SETTLED yields no time constant, because both K and tau are read off the end of the curve; the steady-state test that decides this is declared, not assumed. A dead time smaller than the record's own sampling interval is UNRESOLVED, and every rule that divides by theta (Ziegler-Nichols, Cohen-Coon) is then REFUSED BY NAME for that segment — a controller gain computed from a number the experiment could not measure is a number with nothing behind it. IMC survives there, because its algebra never divides by theta. NOTHING IN CHOUPO EVER CLOSES A LOOP ON THESE SETTINGS: the published gains are what each rule says, not a claim that they work.
 
