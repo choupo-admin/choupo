@@ -55,6 +55,9 @@ struct Derived
     scalar      delta = 0;      // Pa^0.5
     scalar      ref   = 0;      // the record's declared value, 0 if none
     bool        hasRef = false;
+    //  The Hansen triple, when the record declares one.  Pa^0.5.
+    bool        hasHansen = false;
+    scalar      dD = 0, dP = 0, dH = 0;
 };
 
 std::string fmt(scalar v, int prec = 4)
@@ -157,6 +160,11 @@ int SolubilityParameter::run(const DictPtr& dict,
         {
             d.ref    = c.solubilityParameter();
             d.hasRef = true;
+        }
+        if (c.hasHansen())
+        {
+            d.hasHansen = true;
+            d.dD = c.hansenD();  d.dP = c.hansenP();  d.dH = c.hansenH();
         }
         out.push_back(d);
     }
@@ -300,11 +308,110 @@ int SolubilityParameter::run(const DictPtr& dict,
                  " bonding.  It cannot tell a\n"
                  "  polar solvent from a hydrogen-bonding one of the same"
                  " cohesive energy density,\n"
-                 "  so a close pair here is a CANDIDATE and never a verdict."
-                 "  The three-parameter\n"
-                 "  Hansen split is what that needs; it is not implemented"
-                 " -- its parameters are a\n"
-                 "  separate dataset this repository does not hold.\n";
+                 "  so a close pair here is a CANDIDATE and never a verdict.\n";
+
+    // ---- THE HANSEN SPLIT, and the Teas coordinates it is plotted in ------
+    //
+    //  delta^2 = dD^2 + dP^2 + dH^2, and a Teas diagram plots the FRACTIONS
+    //      fd = dD/(dD+dP+dH),  fp = dP/(...),  fh = dH/(...)
+    //  which sum to 1 and are therefore a point in a ternary (Teas, J. Paint
+    //  Technol. 40 (1968) 19).  That is the picture that separates ethanol
+    //  from benzene: they sit far apart on the Hildebrand ladder for the
+    //  RIGHT reason, and water sits far from both for a reason the ladder
+    //  cannot show at all.
+    //
+    //  THE SUM RULE IS A REDUNDANT COLUMN, and it is the point of putting
+    //  this here rather than in a separate op.  This op DERIVES delta from
+    //  the latent heat and the molar volume -- an entirely different route
+    //  from wherever the triple came from -- so |delta| computed from the
+    //  triple can be compared with it.  A triple mistyped, entered in the
+    //  wrong unit, or transcribed off by a row cannot survive that.  It is
+    //  the Zc discipline that caught three false findings in the Poling
+    //  parse, available free on every triple this catalogue will ever hold.
+    std::size_t withHansen = 0;
+    for (const auto& d : out) if (d.hasHansen) ++withHansen;
+
+    if (withHansen == 0)
+    {
+        //  THE HONEST ABSENCE, and it names what is missing rather than
+        //  saying the capability does not exist.  The machinery is here; the
+        //  DATA is not, and those are different sentences.
+        std::cout << "\n  THE THREE-PARAMETER HANSEN SPLIT IS WHAT A CLOSE"
+                     " PAIR NEEDS, and no component\n"
+                     "  in this run declares one.  The engine reads it from a"
+                     " `hansen { dD; dP; dH; }`\n"
+                     "  block on the component record, in Pa^0.5, and plots"
+                     " the Teas fractions from it;\n"
+                     "  what is absent is the DATA, not the capability."
+                     "  Hansen parameters are a\n"
+                     "  separate dataset this repository does not hold, and"
+                     " none is invented here.\n";
+        diag_["n_hansen"] = 0;
+    }
+    else
+    {
+        std::cout << "\n  HANSEN SPLIT and TEAS COORDINATES (fractions, %),"
+                     " with the sum rule audited\n"
+                     "  against the delta DERIVED above -- an independent"
+                     " route, so a mistyped or\n"
+                     "  mis-united triple cannot agree with it:\n\n"
+                  << "      " << std::left << std::setw(14) << "substance"
+                  << std::right << std::setw(9) << "dD" << std::setw(9) << "dP"
+                  << std::setw(9) << "dH" << std::setw(10) << "|d|_trio"
+                  << std::setw(10) << "delta" << std::setw(9) << "dev%"
+                  << std::setw(8) << "fd" << std::setw(8) << "fp"
+                  << std::setw(8) << "fh" << "\n";
+        scalar worst = 0;
+        std::string worstName;
+        for (const auto& d : out)
+        {
+            if (!d.hasHansen) continue;
+            const scalar mag = std::sqrt(d.dD*d.dD + d.dP*d.dP + d.dH*d.dH);
+            const scalar sum = d.dD + d.dP + d.dH;
+            const scalar dev = d.delta > 0
+                             ? std::fabs(mag - d.delta) / d.delta * 100.0 : 0.0;
+            if (dev > worst) { worst = dev; worstName = d.name; }
+            std::cout << "      " << std::left << std::setw(14)
+                      << d.name.substr(0, 13) << std::right
+                      << std::setw(9) << fmt(d.dD / 1.0e3, 2)
+                      << std::setw(9) << fmt(d.dP / 1.0e3, 2)
+                      << std::setw(9) << fmt(d.dH / 1.0e3, 2)
+                      << std::setw(10) << fmt(mag / 1.0e3, 2)
+                      << std::setw(10) << fmt(d.delta / 1.0e3, 2)
+                      << std::setw(9) << fmt(dev, 1)
+                      << std::setw(8) << fmt(100.0 * d.dD / sum, 1)
+                      << std::setw(8) << fmt(100.0 * d.dP / sum, 1)
+                      << std::setw(8) << fmt(100.0 * d.dH / sum, 1) << "\n";
+        }
+        std::cout << "\n      fd/fp/fh are the TEAS coordinates (Teas, J."
+                     " Paint Technol. 40 (1968) 19):\n"
+                     "      they sum to 100 and place each solvent as a point"
+                     " in a ternary whose\n"
+                     "      corners are pure dispersion, pure polar and pure"
+                     " hydrogen bonding.\n"
+                     "      Worst sum-rule deviation: " << fmt(worst, 1)
+                  << " % (" << worstName << ").\n";
+        //  SAID EVERY TIME, not only when it is large.  A Teas diagram
+        //  normalises the triple away, so two solvents of very different
+        //  cohesive strength can land on the SAME point -- the fractions
+        //  carry direction and discard magnitude.  A reader who forgets that
+        //  reads the picture as a miscibility map, which it is not.
+        std::cout << "      THE TEAS FRACTIONS DISCARD MAGNITUDE: two solvents"
+                     " with the same balance\n"
+                     "      of forces and very different total cohesive energy"
+                     " plot at the SAME point.\n"
+                     "      The triangle shows the CHARACTER of the"
+                     " interaction, never its strength;\n"
+                     "      read it beside the |d|_trio column, never instead"
+                     " of it.\n";
+        diag_["n_hansen"] = static_cast<scalar>(withHansen);
+        diag_["hansen_sumrule_worst_pct"] = worst;
+        if (withHansen < out.size())
+            std::cout << "\n      " << (out.size() - withHansen)
+                      << " substance(s) in this run declare NO `hansen {}`"
+                         " block and are absent from\n      the table above --"
+                         " an absence, not a zero.\n";
+    }
 
     if (!refused.empty())
     {

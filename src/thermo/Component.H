@@ -107,6 +107,40 @@ public:
     bool   hasSolubilityParameter() const { return solPar_ > 0; }
     scalar solubilityParameter()    const { return solPar_; }
 
+    //  ---- The HANSEN TRIPLE: dispersion, polar, hydrogen-bonding ----------
+    //
+    //  `hansen { dD; dP; dH; }` in Pa^0.5, the same unit as the Hildebrand
+    //  parameter beside it.  These are the three components the single
+    //  Hildebrand number is the length of, and they are what a Teas diagram
+    //  plots -- the picture that separates the polar solvent from the
+    //  hydrogen-bonding one of the same cohesive energy density, which is
+    //  exactly what one number cannot do (ethanol and water sit 22 MPa^0.5
+    //  apart on the Hildebrand ladder and are miscible in all proportions).
+    //
+    //  AN INPUT, NOT A DERIVATIVE, and that is the difference from
+    //  `solubilityParameter` above.  The Hildebrand delta is DERIVED from the
+    //  latent heat and the molar volume, so a stored one is an anchor.  The
+    //  split into three is NOT derivable from anything this record holds: it
+    //  is measured or estimated by a named method, and there is nowhere else
+    //  in the tree it could come from.
+    //
+    //  BUT IT IS AUDITABLE, and for free.  The three obey
+    //      delta^2 = dD^2 + dP^2 + dH^2
+    //  and the left-hand side is computed here by an INDEPENDENT route.  So a
+    //  triple that arrives mistyped, in the wrong unit, or transcribed off by
+    //  a row cannot agree with a number this repository derives from the
+    //  enthalpy of vaporisation.  That is the redundant-column discipline --
+    //  the thing that caught three false findings in the Poling parse --
+    //  available on every Hansen triple the catalogue will ever carry.
+    //
+    //  ALL THREE OR NONE.  A partial triple refuses at load: dD alone is not
+    //  "some information about the split", it is a number that will be read
+    //  as a coordinate and plotted somewhere wrong.
+    bool   hasHansen()  const { return hansenSet_; }
+    scalar hansenD()    const { return hansenD_; }   // Pa^0.5, dispersion
+    scalar hansenP()    const { return hansenP_; }   // Pa^0.5, polar
+    scalar hansenH()    const { return hansenH_; }   // Pa^0.5, H-bonding
+
     // ---- Standard-state thermo (Gibbs reactor & related) -------------------
     // Standard enthalpy of formation at 298.15 K, ideal-gas reference [J/mol].
     // Standard absolute (third-law) molar entropy at 298.15 K, ideal-gas
@@ -662,6 +696,8 @@ private:
     bool        K_f_derived_ = false;
     bool        K_b_derived_ = false; // true when K_b_ came from R Tb^2 M / dHvap
     std::string reviewStatus_;        // interim | reviewed | (absent = unmarked)
+    bool   hansenSet_ = false;        // the `hansen {}` trio, all or none
+    scalar hansenD_ = 0, hansenP_ = 0, hansenH_ = 0;   // Pa^0.5
     std::string reviewReason_;
     scalar      Vliq_    = 0.0;
     scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]

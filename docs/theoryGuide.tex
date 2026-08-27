@@ -5412,10 +5412,78 @@ miscible in all proportions.  The theory has compressed dispersion, polarity
 and hydrogen bonding into a single scalar, and water is where that
 compression costs everything.
 
-This is why Hansen's later three-parameter split
-($\delta_d$, $\delta_p$, $\delta_h$, with miscibility judged by a distance in
-that space) is what formulation practice uses.  Choupo does not implement it:
-its parameters are a separate curated dataset the project does not hold.
+This is why Hansen's later three-parameter split is what formulation
+practice uses, and it is the subject of the next subsection.
+
+\subsection{The Hansen split, and the Teas triangle}
+\label{sec:teas}
+
+Hansen's move is to stop pretending the cohesive energy is one thing.  It is
+the sum of three contributions --- London dispersion, permanent-dipole
+interaction, and hydrogen bonding --- and because they add as energies, the
+parameters add in quadrature:
+\begin{equation}
+   \boxed{\;\delta^2 \;=\; \delta_d^2 \;+\; \delta_p^2 \;+\; \delta_h^2 \;}
+   \label{eq:hansen-sum}
+\end{equation}
+The single Hildebrand $\delta$ is the \emph{length} of that vector.  Water
+and ethanol are far apart in length; what the length cannot show is that they
+point in nearly the same direction, both dominated by $\delta_h$, which is
+why they mix.
+
+\paragraph{The Teas triangle.}  Three numbers per substance want a
+three-dimensional plot, which is awkward on paper and worse in a lecture.
+Teas's device \cite{Teas1968} is to plot the \emph{fractions}
+\begin{equation}
+   f_d = \frac{\delta_d}{\delta_d + \delta_p + \delta_h}, \qquad
+   f_p = \frac{\delta_p}{\delta_d + \delta_p + \delta_h}, \qquad
+   f_h = \frac{\delta_h}{\delta_d + \delta_p + \delta_h},
+   \label{eq:teas}
+\end{equation}
+which sum to one by construction and therefore place every solvent as a
+single point in a ternary diagram whose corners are pure dispersion, pure
+polar and pure hydrogen bonding.  A polymer's solubility region becomes an
+\emph{area} on that triangle, and choosing a solvent becomes reading whether
+a point falls inside it --- which is what the picture is for.
+
+\begin{tcolorbox}[colback=red!4!white, colframe=red!55!black,
+                  title=What the triangle throws away]
+Equation~\eqref{eq:teas} normalises the magnitude out.  Two solvents with the
+same \emph{balance} of forces and very different total cohesive strength plot
+at the \emph{same point}.  The triangle shows the character of the
+interaction, never its strength, and it is not a miscibility map: reading it
+as one is the second mistake of this chapter, after reading the Hildebrand
+ladder as one.  Choupo prints $|\delta|_{\text{trio}}$ in the column beside
+the fractions for exactly this reason.
+\end{tcolorbox}
+
+\paragraph{Note that the denominators differ.}  Equation~\eqref{eq:hansen-sum}
+adds in quadrature; Eq.~\eqref{eq:teas} divides by the plain sum.  That is not
+an inconsistency --- the Teas fractions are a projection chosen for
+legibility, not a physical decomposition, and Teas said so.  It is worth
+labouring because normalising by $|\delta|$ instead produces three numbers
+that still look like Teas coordinates, still order the solvents plausibly,
+and are wrong; they do not sum to one.
+
+\paragraph{What Choupo does and does not have.}  The engine reads the split
+from a \code{hansen \{ dD; dP; dH; \}} block on the component record, in
+$\mathrm{Pa}^{1/2}$, and prints the Teas fractions from it.  \emph{No
+component in the shipped catalogue carries one.}  Hansen parameters are a
+separate curated dataset this project does not hold, and none is invented ---
+a triple typed from memory would produce a Teas point that looks entirely
+reasonable and is fiction.  A run with no triple says so, naming the block it
+would read, so that the absence is legible as missing \emph{data} and not as
+a missing capability.
+
+What the engine does get for free is an audit.  Because Choupo derives
+$\delta$ independently, from the latent heat and the molar volume, any triple
+that arrives can be tested against Eq.~\eqref{eq:hansen-sum}: a value
+mistyped, entered in $\mathrm{MPa}^{1/2}$ where $\mathrm{Pa}^{1/2}$ is meant,
+or transcribed off by a row cannot reproduce a number computed from an
+enthalpy of vaporisation.  The limit of that audit is worth stating in the
+same breath: it constrains the \emph{length} of the vector and says nothing
+about where it points, so a triple wrong in direction but right in magnitude
+passes it untouched.
 
 \subsection{How Choupo evaluates it}
 
@@ -22297,6 +22365,12 @@ J. M., ``Group-Contribution Estimation of Activity Coefficients in
 Nonideal Liquid Mixtures'', \emph{AIChE J.}, 21, 1086--1099 (1975). The
 original UNIFAC paper.
 
+
+\bibitem{Teas1968} Teas, J. P., ``Graphic Analysis of Resin Solubilities'',
+\emph{J. Paint Technol.}, 40 (516), 19--25 (1968).  The origin of the
+fractional-parameter ternary plot of Eq.~\eqref{eq:teas}.  Cited for the
+CONSTRUCTION only: this project holds no Hansen parameter values, from this
+paper or from anywhere else, and none is reproduced here.
 
 \bibitem{Hansen1991} Hansen, H. K., Rasmussen, P., Fredenslund, A.,
 Schiller, M., \& Gmehling, J., ``Vapor-Liquid Equilibria by UNIFAC Group

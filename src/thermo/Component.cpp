@@ -231,6 +231,32 @@ void Component::readFromDict(const DictPtr& d)
     Hvap_Tb_ = d->lookupScalarOrDefault("HvapTb",  0.0);
     Vliq_    = d->lookupScalarOrDefault("Vliq",    0.0);
     solPar_  = d->lookupScalarOrDefault("solubilityParameter", 0.0);
+
+    //  THE HANSEN TRIPLE, all-or-nothing.  A partial trio is refused rather
+    //  than half-read: a lone dD is not partial information about the split,
+    //  it is a coordinate that will be plotted somewhere wrong.  Same posture
+    //  as the pcsaft association trio one block down.
+    if (d->found("hansen"))
+    {
+        auto h = d->subDict("hansen");
+        const bool hasD = h->found("dD"), hasP = h->found("dP"),
+                   hasH = h->found("dH");
+        if (!(hasD && hasP && hasH))
+            throw std::runtime_error("component '" + name_ + "': the `hansen {}`"
+                " block must declare ALL THREE of dD, dP and dH (Pa^0.5)."
+                "  A partial triple is not partial information about the"
+                " cohesive-energy split -- it is a coordinate that would be"
+                " plotted somewhere wrong.  Declare the three, or remove the"
+                " block and keep the honest absence.");
+        hansenD_ = h->lookupScalar("dD");
+        hansenP_ = h->lookupScalar("dP");
+        hansenH_ = h->lookupScalar("dH");
+        if (hansenD_ < 0 || hansenP_ < 0 || hansenH_ < 0)
+            throw std::runtime_error("component '" + name_ + "': a `hansen {}`"
+                " component is negative.  Each is the square root of a"
+                " non-negative energy density and cannot be.");
+        hansenSet_ = true;
+    }
     diffusionVolume_ = d->lookupScalarOrDefault("diffusionVolume", 0.0);
 
     // Liquid-viscosity parameters: keep the raw `liquidViscosity`
