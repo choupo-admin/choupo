@@ -1,6 +1,6 @@
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
-components       ( H2  neon  N2  Ar  O2  CH4  C2H4  water );
+components       ( H2  neon  N2  Ar  O2  CH4  C2H4  benzene  water  ethyleneGlycol  naphthalene  biphenyl  glycerol );
 equilibrium
 {
     formulation gammaPhi;

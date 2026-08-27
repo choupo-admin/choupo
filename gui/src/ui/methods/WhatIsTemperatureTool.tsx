@@ -51,7 +51,7 @@ License
   order.  Prose does.
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Alert, Badge, Box, Group, Loader, Slider, Stack, Text, Title }
   from "@mantine/core";
 
@@ -114,7 +114,9 @@ export const LADDER_WITNESS = "props/thermo/temperature02_engineers_ladder";
 /** One rung, as the page reads it out of the run's own diagnostics.  The
  *  labels are what the substance IS on a plant, which is the half a reader
  *  needs and a formula cannot supply; the NUMBERS are all the engine's. */
-export const LADDER: readonly { op: string; comp: string; T: number; what: string }[] = [
+export const LADDER: readonly {
+  op: string; comp: string; T: number; what: string; caveat?: string;
+}[] = [
   { op: "rung_H2",    comp: "H2",    T: 20.39,  what: "liquid hydrogen" },
   { op: "rung_neon",  comp: "neon",  T: 27.10,  what: "neon" },
   { op: "rung_N2",    comp: "N2",    T: 77.35,  what: "liquid nitrogen — air separation" },
@@ -122,8 +124,59 @@ export const LADDER: readonly { op: string; comp: string; T: number; what: strin
   { op: "rung_O2",    comp: "O2",    T: 90.17,  what: "liquid oxygen" },
   { op: "rung_CH4",   comp: "CH4",   T: 111.66, what: "LNG" },
   { op: "rung_C2H4",  comp: "C2H4",  T: 169.42, what: "cryogenic ethylene" },
+  { op: "rung_benzene", comp: "benzene", T: 353.24, what: "benzene — the aromatics train" },
   { op: "rung_water", comp: "water", T: 373.15, what: "water at one atmosphere" },
+  { op: "rung_ethyleneGlycol", comp: "ethyleneGlycol", T: 470.45,
+    what: "ethylene glycol — dehydration, glycol regeneration" },
+  { op: "rung_naphthalene", comp: "naphthalene", T: 491.16, what: "naphthalene" },
+  { op: "rung_biphenyl", comp: "biphenyl", T: 528.15,
+    what: "biphenyl — a component of the hot-oil fluids" },
+  { op: "rung_glycerol", comp: "glycerol", T: 563.15,
+    what: "glycerol — and here the ladder breaks, on purpose",
+    caveat: "This record's vapour pressure is `origin predictive` — "
+      + "Ambrose-Walton corresponding states from Tc, Pc and omega, at "
+      + "omega = 1.54, far outside where such a correlation was fitted.  The "
+      + "record itself says \u201cvalidate against saturation data\u201d, and this "
+      + "row IS that validation: it misses by a factor of 19.  Kept, and "
+      + "labelled, because a table that only shows the rungs that land "
+      + "teaches that records can be trusted without being checked." },
 ];
+
+/** ITS-90's own defining fixed points ABOVE the triple point of water --
+ *  DECLARED, not computed here, and marked as such wherever they are shown.
+ *
+ *  They belong on this page because they are what the ladder of boiling
+ *  points TURNS INTO: above roughly 600 K an organic cracks before it boils,
+ *  so there is no one-atmosphere equilibrium left to ask about, and the scale
+ *  changes character -- it is realised on metal FREEZING points instead.
+ *
+ *  Provenance, marked exactly as the epigraphs are: these are the values of
+ *  the International Temperature Scale of 1990 as it is universally quoted
+ *  (Preston-Thomas, Metrologia 27 (1990) 3-10, plus its erratum).  This
+ *  repository has NOT read them back against the BIPM text, and the page says
+ *  so rather than letting a table look measured. */
+export const ITS90_ABOVE_WATER: readonly { what: string; T: number }[] = [
+  { what: "gallium (melting)",   T: 302.9146 },
+  { what: "indium (freezing)",   T: 429.7485 },
+  { what: "tin (freezing)",      T: 505.078 },
+  { what: "zinc (freezing)",     T: 692.677 },
+  { what: "aluminium (freezing)", T: 933.473 },
+  { what: "silver (freezing)",   T: 1234.93 },
+  { what: "gold (freezing)",     T: 1337.33 },
+  { what: "copper (freezing)",   T: 1357.77 },
+];
+
+/** The HIGHEST defining fixed point ITS-90 has.  Everything above it is
+ *  extrapolated Planck radiation -- which is the whole reason section 7
+ *  exists, and the reason a melting point quoted above here cannot carry the
+ *  precision it is usually printed with. */
+export const ITS90_TOP_K = 1357.77;
+
+/** Platinum's melting point, as it is usually quoted -- the number that
+ *  provoked this part of the page.  It is NOT an ITS-90 fixed point: it is a
+ *  measurement made ON the scale, in the extrapolated radiation region. */
+export const T_PT_MELT_C = 1768.3;
+export const T_PT_MELT_K = T_PT_MELT_C + 273.15;
 
 /** How far a rung's computed vapour pressure sits from one atmosphere, in per
  *  cent.  Derived from the engine's own diagnostics; the page computes no
@@ -396,8 +449,8 @@ export function WhatIsTemperatureTool(): JSX.Element {
             they are going to design.
           </Text>
           <Text size="sm" mt={6}>
-            Here is the bottom half of that range, and the engine checks it
-            rather than quoting it.  Each row asks one question: at the
+            Here is that range climbed as far as a boiling point can carry
+            it, and the engine checks every rung rather than quoting it.  Each row asks one question: at the
             temperature this substance’s record calls its normal boiling point,
             what does its vapour-pressure correlation say the pressure is?  It
             should be one atmosphere — that is what a normal boiling point
@@ -429,7 +482,9 @@ export function WhatIsTemperatureTool(): JSX.Element {
                   const d = rungDeparturePct(hit.psat);
                   const bad = Math.abs(d) > 2;
                   return (
-                    <tr key={r.op} style={{ borderBottom: `1px solid ${GRID}` }}>
+                    <Fragment key={r.op}>
+                    <tr style={{ borderBottom: r.caveat ? "none"
+                      : `1px solid ${GRID}` }}>
                       <td style={{ padding: "4px 8px" }}>{r.T.toFixed(2)}</td>
                       <td style={{ padding: "4px 8px", color: INK }}>{r.what}</td>
                       <td style={{ padding: "4px 8px", textAlign: "right" }}>
@@ -440,6 +495,15 @@ export function WhatIsTemperatureTool(): JSX.Element {
                         {d >= 0 ? "+" : ""}{d.toFixed(1)} %
                       </td>
                     </tr>
+                    {r.caveat && (
+                      <tr style={{ borderBottom: `1px solid ${GRID}` }}>
+                        <td colSpan={4} style={{ padding: "0 8px 6px 8px",
+                          color: INK, fontSize: 12, lineHeight: 1.45 }}>
+                          {r.caveat}
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   );
                 })}
               </tbody>
@@ -525,6 +589,100 @@ export function WhatIsTemperatureTool(): JSX.Element {
             of the skill.
           </Text>
         </Box>
+
+        <Box>
+          <Title order={5}>6b · Where the boiling-point ladder ends — and what takes over</Title>
+          <Text size="sm" mt={4}>
+            The table stops at glycerol, and not because the list got boring.
+            Above roughly <strong>600 K an ordinary organic cracks before it
+            boils</strong>: there is no one-atmosphere equilibrium left to ask
+            about, so there is no rung to check.  A normal boiling point simply
+            runs out as a way of marking temperature.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>The official scale does exactly the same thing.</strong>
+            {" "}Above the triple point of water, ITS-90’s defining fixed points
+            are no longer boiling points at all — they are the{" "}
+            <strong>freezing points of metals</strong>:
+          </Text>
+          <Box mt={8} style={{ overflowX: "auto" }}>
+            <table style={{ borderCollapse: "collapse", width: "100%",
+              fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${GRID}` }}>
+                  <th style={{ textAlign: "left", padding: "4px 8px" }}>T [K]</th>
+                  <th style={{ textAlign: "left", padding: "4px 8px" }}>fixed point</th>
+                  <th style={{ textAlign: "right", padding: "4px 8px" }}>T [°C]</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ITS90_ABOVE_WATER.map((f) => (
+                  <tr key={f.what} style={{ borderBottom: `1px solid ${GRID}` }}>
+                    <td style={{ padding: "4px 8px" }}>{f.T.toFixed(4)}</td>
+                    <td style={{ padding: "4px 8px", color: INK }}>{f.what}</td>
+                    <td style={{ padding: "4px 8px", textAlign: "right" }}>
+                      {(f.T - 273.15).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Box>
+          <Text size="xs" c="dimmed" mt={6}>
+            DECLARED, not computed — unlike every other number on this page.
+            These are the values of the International Temperature Scale of 1990
+            as it is universally quoted (Preston-Thomas, <em>Metrologia</em> 27
+            (1990) 3–10, with its erratum).  This repository has not read them
+            back against the BIPM text, and says so rather than letting a table
+            look measured.
+          </Text>
+          <Text size="sm" mt={10}>
+            Now read the bottom of that table again.  <strong>It stops at
+            copper, {ITS90_TOP_K} K.</strong>  ITS-90 defines no fixed point
+            above it.  Everything hotter is <strong>extrapolated</strong> —
+            Planck radiation, referred back to silver, gold or copper.
+          </Text>
+        </Box>
+
+        <Alert variant="light" color="orange"
+          title="So how can anyone say platinum melts at 1768.3 °C?">
+          <Text size="sm">
+            They can say it.  They cannot say it to a tenth of a degree, and
+            the reason is in the table you just read.  <strong>Platinum is not
+            an ITS-90 fixed point.</strong>  At{" "}
+            {T_PT_MELT_K.toFixed(2)} K it sits{" "}
+            {(T_PT_MELT_K - ITS90_TOP_K).toFixed(0)} K above the highest one
+            there is, deep in the extrapolated radiation region.  So its
+            melting point is a <em>measurement made on the scale</em>, not a
+            definition of it — and it inherits every uncertainty the
+            extrapolation carries.
+          </Text>
+          <Text size="sm" mt={8}>
+            How much it inherits is the arithmetic of the next section, applied
+            one step higher.  The emissivity sensitivity λ·T / c₂ at 0.65 µm is{" "}
+            <strong>{emissivitySensitivity(0.65, T_HOT_K).toFixed(3)}</strong>{" "}
+            at {T_HOT_K.toFixed(0)} K and{" "}
+            <strong>{emissivitySensitivity(0.65, T_PT_MELT_K).toFixed(3)}</strong>{" "}
+            at {T_PT_MELT_K.toFixed(0)} K.  A scale that pays{" "}
+            {emissivityBand_K(0.65, T_PT_MELT_K, 0.10).toFixed(0)} K for a 10 %
+            error in an assumed emissivity is not handing anybody tenths of a
+            degree.
+          </Text>
+          <Text size="sm" mt={8}>
+            And there is a second thing the printed number hides: a melting
+            point is <strong>impurity-sensitive</strong>.  “Pure platinum” is
+            itself a claim, and parts per million move it measurably.  The
+            value is a real, careful measurement of a real, careful sample.
+            The <strong>.3</strong> is decoration.
+          </Text>
+          <Text size="xs" c="dimmed" mt={8}>
+            No uncertainty figure is quoted for platinum here, deliberately.
+            This repository has not read one back from a primary source, and an
+            invented ± would be worse than the missing one: it would turn an
+            honest gap into a false claim.  What IS shown is derived from this
+            page’s own arithmetic.
+          </Text>
+        </Alert>
 
         <Box>
           <Title order={5}>7 · And what, exactly, is 1608.1 °C?</Title>

@@ -70,6 +70,24 @@ propertyManifest
             originSha256  "e3d123385657307e1929cf9d9f01e3b96bf2813c5914168c5bfe290d31abf282";
             release       Choupo-2607;
         }
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "3185488215c01db6ccb18e81a131068c585e0049b3396d90b57f2f1ee3d01403";
+            computationalSha256 "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "77d7604645ff3a28b34d91023e497586af35fa74849c914378f858666a2b900e";
+            release       Choupo-2607;
+        }
+        "components/biphenyl.dat"
+        {
+            type          imported;
+            sha256        "a5485b57eb0b66db0a26a9dad9815117a4ae4c004d9294ce3f54a25af25d70dd";
+            computationalSha256 "a57a1372cbc5ab32d7bd05e414743e68db1b1e2cc386f3b0250e5f7ef306b496";
+            origin        "data/standards/components/biphenyl.dat";
+            originSha256  "331328b0b0dec0652d84fe8668ed3175bdac75c3a1be344039ec4953068b2008";
+            release       Choupo-2607;
+        }
         "components/ethylene.dat"
         {
             type          imported;
@@ -77,6 +95,33 @@ propertyManifest
             computationalSha256 "9ecea34b8709922d823b649c1ad223132b172ba849da1fbcf49114bac3cb7e66";
             origin        "data/standards/components/ethylene.dat";
             originSha256  "41f529ebdd93ffb142b20d2b015139e20a73caf2a4dcab1c68a2a4c4426a8aaa";
+            release       Choupo-2607;
+        }
+        "components/ethyleneGlycol.dat"
+        {
+            type          imported;
+            sha256        "90a08772d5d16af262d75d4d94a381badf761f596b0d48e076d49e894e382fac";
+            computationalSha256 "e0a5c54ef867640b2cd14824a4e668b95b96b548186bffed7ef80448fb90ee21";
+            origin        "data/standards/components/ethyleneGlycol.dat";
+            originSha256  "0a244b65a7d282e352b091271f518293e44e59b12fd311ef5f19eede978c06a4";
+            release       Choupo-2607;
+        }
+        "components/glycerol.dat"
+        {
+            type          imported;
+            sha256        "0d5b2e3e4a69658e5d03134c307b560edcb0c3a0fd486548fef51850e16da13b";
+            computationalSha256 "78adc43e8c550330b852aa9122c0ce5019aa6a26a507215505d7945c629aa8da";
+            origin        "data/standards/components/glycerol.dat";
+            originSha256  "79a0ba7a8be7374f1386274022f49b1f9fd55bfc3e9c9b1a29f7252d7e8dc4c6";
+            release       Choupo-2607;
+        }
+        "components/naphthalene.dat"
+        {
+            type          imported;
+            sha256        "b262e67ebdae0bfd37ab211c04a6ef9e5bf3385cb2b79933239636b214613dec";
+            computationalSha256 "d61eb4d7c04772484d7cd76e2c6624f73c3feaf134f0e3bd7b3a564a510c30ec";
+            origin        "data/standards/components/naphthalene.dat";
+            originSha256  "1a6eeb8a50806a93cbf9a69b8e5e3dc52072b13bfd51b7f2b3698fcaec5a42f5";
             release       Choupo-2607;
         }
         "components/neon.dat"

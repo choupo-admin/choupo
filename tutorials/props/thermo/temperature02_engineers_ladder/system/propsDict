@@ -21,14 +21,32 @@
     converge at 20 K, a gap this repository already has on record (see
     docs/design/held-out-pressure.md).  Verifying the pressure at a declared
     temperature asks the same physics of the same correlation and is robust,
-    so that is what runs here -- said plainly rather than papered over.       */
+    so that is what runs here -- said plainly rather than papered over.
+
+    WHY THE LADDER STOPS AT GLYCEROL, and it is not because the list got
+    boring.  Above roughly 600 K an ordinary organic does not have a normal
+    boiling point to check: it CRACKS first, so there is no one-atmosphere
+    equilibrium to ask about.  The scale itself changes character there --
+    ITS-90 stops interpolating on vapour pressure and gas thermometry
+    altogether and realises its upper range on the FREEZING POINTS OF METALS,
+    then on Planck radiation above the silver point.  Those fixed points are
+    declared values of the scale, not something this engine computes, and the
+    page says so where it lists them.
+
+    DOWTHERM A IS ABSENT AND THAT IS A FINDING, not an oversight.  The hot-oil
+    fluid an engineer actually runs a 530 K loop on is curated here with
+    `role nonvolatile` and carries NO vapour-pressure correlation, so this
+    case cannot ask it the question it asks the others.  Named rather than
+    quietly skipped: an omission a reader cannot see is the kind of gap this
+    project refuses to leave.                                                */
+
 operations
 (
     {
         //  liquid hydrogen — colder than anything a plant routinely does
         name        rung_H2;
         type        propertyPoint;
-        state       { T 20.39 K;  P 1 atm;  composition { H2 1.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 20.39 K;  P 1 atm;  composition { H2 1.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_H2 );
     }
 
@@ -36,7 +54,7 @@ operations
         //  neon
         name        rung_neon;
         type        propertyPoint;
-        state       { T 27.1 K;  P 1 atm;  composition { H2 0.0;  neon 1.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 27.1 K;  P 1 atm;  composition { H2 0.0;  neon 1.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_neon );
     }
 
@@ -44,7 +62,7 @@ operations
         //  liquid nitrogen — air separation, the commonest cryogen on a site
         name        rung_N2;
         type        propertyPoint;
-        state       { T 77.35 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 1.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 77.35 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 1.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_N2 );
     }
 
@@ -52,7 +70,7 @@ operations
         //  argon — the air-separation side draw
         name        rung_Ar;
         type        propertyPoint;
-        state       { T 87.3 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 1.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 87.3 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 1.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_Ar );
     }
 
@@ -60,7 +78,7 @@ operations
         //  liquid oxygen — air separation
         name        rung_O2;
         type        propertyPoint;
-        state       { T 90.17 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 1.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 90.17 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 1.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_O2 );
     }
 
@@ -68,7 +86,7 @@ operations
         //  LNG — the temperature a whole industry is built around
         name        rung_CH4;
         type        propertyPoint;
-        state       { T 111.66 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 1.0;  C2H4 0.0;  water 0.0; } }
+        state       { T 111.66 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 1.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_CH4 );
     }
 
@@ -76,15 +94,55 @@ operations
         //  cryogenic ethylene
         name        rung_C2H4;
         type        propertyPoint;
-        state       { T 169.42 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 1.0;  water 0.0; } }
+        state       { T 169.42 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 1.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_C2H4 );
+    }
+
+    {
+        //  benzene — the aromatics train
+        name        rung_benzene;
+        type        propertyPoint;
+        state       { T 353.24 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 1.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
+        properties  ( Psat_benzene );
     }
 
     {
         //  water at one atmosphere — the anchor everybody has a feel for
         name        rung_water;
         type        propertyPoint;
-        state       { T 373.15 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 1.0; } }
+        state       { T 373.15 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 1.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
         properties  ( Psat_water );
+    }
+
+    {
+        //  ethylene glycol — glycol regeneration, dehydration
+        name        rung_ethyleneGlycol;
+        type        propertyPoint;
+        state       { T 470.45 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 1.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 0.0; } }
+        properties  ( Psat_ethyleneGlycol );
+    }
+
+    {
+        //  naphthalene
+        name        rung_naphthalene;
+        type        propertyPoint;
+        state       { T 491.16 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 1.0;  biphenyl 0.0;  glycerol 0.0; } }
+        properties  ( Psat_naphthalene );
+    }
+
+    {
+        //  biphenyl — a component of the hot-oil fluids
+        name        rung_biphenyl;
+        type        propertyPoint;
+        state       { T 528.15 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 1.0;  glycerol 0.0; } }
+        properties  ( Psat_biphenyl );
+    }
+
+    {
+        //  glycerol — and about here the boiling-point ladder ends
+        name        rung_glycerol;
+        type        propertyPoint;
+        state       { T 563.15 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  benzene 0.0;  water 0.0;  ethyleneGlycol 0.0;  naphthalene 0.0;  biphenyl 0.0;  glycerol 1.0; } }
+        properties  ( Psat_glycerol );
     }
 );

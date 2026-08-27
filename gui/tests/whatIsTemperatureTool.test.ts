@@ -29,7 +29,8 @@ import { applyScalarOverride } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import {
-  C2_UM_K, LADDER, LADDER_WITNESS, T_HOT_C, T_HOT_K, T_SUBJECT_K,
+  C2_UM_K, ITS90_ABOVE_WATER, ITS90_TOP_K, LADDER, LADDER_WITNESS,
+  T_HOT_C, T_HOT_K, T_PT_MELT_C, T_PT_MELT_K, T_SUBJECT_K,
   TEMPERATURE_WITNESS, emissivityBand_K, emissivitySensitivity, readLadder,
   readZScan, rungDeparturePct, worstDeparturePct,
 } from "../src/ui/methods/WhatIsTemperatureTool.js";
@@ -207,5 +208,59 @@ describe("the hot end -- where the tenth of a degree dies", () => {
 
   it("has no band at all when the emissivity is known exactly", () => {
     expect(emissivityBand_K(0.65, T_HOT_K, 0)).toBe(0);
+  });
+});
+
+
+describe("where the ladder ends and the metals take over", () => {
+  it("climbs past water, which is the whole complaint that produced it", () => {
+    //  The table used to stop at water while the page then argued about
+    //  1881 K -- a ladder that ends three paragraphs before the question.
+    const top = Math.max(...LADDER.map((r) => r.T));
+    expect(top).toBeGreaterThan(500);
+    expect(LADDER.filter((r) => r.T > 373.15).length).toBeGreaterThanOrEqual(4);
+  });
+
+  it("keeps the rung that FAILS, and labels it", () => {
+    //  Glycerol's vapour pressure is a corresponding-states estimate at
+    //  omega = 1.54 and misses its own record's boiling point by a factor of
+    //  19.  A table that showed only the rungs that land would teach that a
+    //  record can be trusted without being checked, which is the opposite of
+    //  this page's argument.
+    const g = LADDER.find((r) => r.op === "rung_glycerol");
+    expect(g, "the failing rung was quietly dropped").toBeTruthy();
+    expect(g!.caveat, "the failing rung carries no explanation").toBeTruthy();
+    expect(g!.caveat).toContain("predictive");
+  });
+
+  it("the ITS-90 points are sorted and stop at copper", () => {
+    const T = ITS90_ABOVE_WATER.map((f) => f.T);
+    expect([...T].sort((a, b) => a - b)).toEqual(T);
+    expect(Math.max(...T)).toBeCloseTo(ITS90_TOP_K, 6);
+    //  Copper is the highest defining fixed point ITS-90 has; everything
+    //  above it is extrapolated radiation, which is what section 7 is about
+    //  and what makes the platinum answer what it is.
+    expect(ITS90_ABOVE_WATER.at(-1)!.what).toContain("copper");
+  });
+
+  it("every ITS-90 point is above the triple point of water", () => {
+    for (const f of ITS90_ABOVE_WATER) expect(f.T).toBeGreaterThan(273.16);
+  });
+
+  it("puts platinum outside the scale's defining points, by a long way", () => {
+    expect(T_PT_MELT_K).toBeCloseTo(T_PT_MELT_C + 273.15, 9);
+    expect(T_PT_MELT_K).toBeGreaterThan(ITS90_TOP_K);
+    //  The gap is the argument: ~680 K of extrapolation above the last
+    //  fixed point there is.  If platinum ever became a defining point the
+    //  page's answer would change, and this test would say so.
+    expect(T_PT_MELT_K - ITS90_TOP_K).toBeGreaterThan(500);
+  });
+
+  it("the silver point sits between the two temperatures the page argues about", () => {
+    //  Section 7 turns on 1608.1 degC being ABOVE the silver point; this
+    //  pins that the silver point is in the list and where it falls.
+    const ag = ITS90_ABOVE_WATER.find((f) => f.what.startsWith("silver"))!;
+    expect(ag.T).toBeLessThan(T_HOT_K);
+    expect(ag.T).toBeLessThan(T_PT_MELT_K);
   });
 });
