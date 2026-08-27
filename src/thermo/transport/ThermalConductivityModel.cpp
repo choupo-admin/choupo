@@ -53,8 +53,12 @@ ThermalConductivityModel::New(const DictPtr& dict)
     const std::string name = dict->lookupWordOrDefault("model", "Eucken");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("ThermalConductivityModel: unknown model '"
-            + name + "'.  Registered: see availableModels().");
+            + name + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

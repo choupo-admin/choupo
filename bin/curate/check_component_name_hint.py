@@ -67,6 +67,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from runtests_verdict import verdict  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 BUILD = ROOT / "build" / "linux64Gcc"
 COMP = ROOT / "data" / "standards" / "components"
@@ -147,21 +150,23 @@ def main() -> int:
         shutil.rmtree(tmp, ignore_errors=True)
 
     # ---- (d) the happy path is untouched ---------------------------------
-    r = subprocess.run(["bin/runTests",
-                        "tutorials/props/molecular/solubility01_hildebrand_ladder"],
-                       cwd=ROOT, capture_output=True, text=True, timeout=900)
-    if "PASS 1 / FAIL 0" not in r.stdout:
-        if "REFUSES while a destructive" in (r.stdout + r.stderr) \
-                or "journal" in (r.stdout + r.stderr):
-            #  Distinguish "could not run" from "the answer moved" -- the
-            #  friction-correlation gate had to learn the same thing.
-            fails.append("the happy-path check COULD NOT RUN (a destructive"
-                         " journal is open), which is not the same as a moved"
-                         " answer and must not be reported as one")
-        else:
-            fails.append("a case whose component names are all correct no"
-                         " longer reproduces its golden -- the lookup's happy"
-                         " path must never touch the new search")
+    #  THE VERDICT QUESTION HAS ONE HOME (runtests_verdict, 2026-08-27).  The
+    #  local version of this test caught a destructive journal and nothing
+    #  else, so when `bin/runTests` was EDITED WHILE RUNNING -- bash reads a
+    #  script incrementally, so the live run executed torn bytes -- this arm
+    #  reported "the golden moved" and sent the reader to Database.cpp, where
+    #  nothing was wrong.  The claim is positive now: moved is claimed only
+    #  when the harness printed a verdict for the case.
+    state, _out, reason = verdict(
+        "tutorials/props/molecular/solubility01_hildebrand_ladder")
+    if state == "could-not-run":
+        fails.append("the happy-path check COULD NOT RUN, which is not the"
+                     " same as a moved answer and must not be reported as"
+                     " one: " + reason)
+    elif state == "fail":
+        fails.append("a case whose component names are all correct no"
+                     " longer reproduces its golden -- the lookup's happy"
+                     " path must never touch the new search")
     else:
         notes.append("the happy path is unmoved")
 

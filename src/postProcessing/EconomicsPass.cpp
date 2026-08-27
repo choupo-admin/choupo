@@ -340,6 +340,52 @@ int EconomicsPass::run(SimulationResult& result)
                                       econDict_->lookupScalarOrDefault("estimateClass",       4.0));
     const bool   refuseOnMissing   = econDict_->lookupScalarOrDefault("refuseOnMissingPrice", 1.0) != 0.0;
 
+    //  `method` WAS DECORATIVE.  Three tutorial cases declare
+    //  `method discountedCashFlow;` and nothing read it: the pass is
+    //  hardcoded DCF, so the key parsed, sat there, and the author believed
+    //  they had SELECTED something.  Found by the postDict audit on its first
+    //  corpus run, 2026-08-27.  Reading it costs nothing and moves no number
+    //  -- there is one method and every case names it -- but a key that does
+    //  not exist must now say so instead of being quietly ignored.
+    //  `constructionPeriod` WAS READ BY NOTHING IN THE WHOLE TREE, and the
+    //  cash-flow timeline hardcodes ONE year ("Year 0 = construction ... for
+    //  a 1-year construction", below).  So a case declaring 2 was discounted
+    //  over 1 and nothing said so.
+    //
+    //  ONE SHIPPED CASE DOES DECLARE 2 -- ammonia02_full_plant, deliberately,
+    //  beside `projectLife 15`.  Its published NPV therefore does not match
+    //  its own declaration, which is a live finding and a better one than the
+    //  coincidence the first draft of this comment claimed.
+    //
+    //  IT ANNOUNCES; IT DOES NOT REFUSE, and the first version of this code
+    //  got that wrong.  Refusing would break a case whose author declared a
+    //  two-year construction on purpose -- my judgement overriding theirs --
+    //  and implementing a real multi-year draw-down MOVES a published NPV,
+    //  which is a scientific decision and is reserved.  Announcing states the
+    //  gap beside the answer and moves nothing, which is what this project
+    //  does with every other declared-but-unmodelled fact.
+    const scalar constructionPeriod = econDict_->lookupScalarOrDefault("constructionPeriod", 1.0);
+    if (std::fabs(constructionPeriod - 1.0) > 1e-9)
+    {
+        std::ostringstream cp;
+        cp << "the case declares constructionPeriod = " << constructionPeriod
+           << ", and this DCF models a ONE-year construction: the whole FCI"
+              " and working capital are placed at t = 0 and operating cash"
+              " flows begin in year 1.  A multi-year draw-down is NOT"
+              " implemented, so the NPV, IRR and paybacks below are computed"
+              " on a 1-year construction whatever this key says.";
+        std::cout << "  [economics] " << cp.str() << "\n";
+        AdvisoryLog::instance().add("economics", "warning",
+                                    "constructionPeriod", cp.str());
+    }
+
+    const std::string econMethod   = econDict_->lookupWordOrDefault("method", "discountedCashFlow");
+    if (econMethod != "discountedCashFlow")
+        throw std::runtime_error("EconomicsPass: unknown method '" + econMethod
+            + "'.  Implemented: discountedCashFlow (the only one -- straight-"
+              "line or MACRS depreciation inside it is the separate"
+              " `depreciation` key).");
+
     const std::string deprMethod   = econDict_->lookupWordOrDefault("depreciation", "straightLine");
 
     if (deprMethod != "straightLine")

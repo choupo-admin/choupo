@@ -42,6 +42,11 @@ SizingPass::SizingPass(const DictPtr& dict)
 
 int SizingPass::run(SimulationResult& result)
 {
+    //  Recorded BEFORE anything can fail: the fact being carried is "a sizing
+    //  pass ran", not "a sizing pass succeeded".  CostingPass needs the first
+    //  to tell an empty `sizings` that means "no pass" from one that means
+    //  "every unit failed, and the reasons are printed above".
+    result.sizingAttempted = true;
     auto units = sizingDict_->lookupDictList("units");
     if (units.empty())
     {
@@ -92,6 +97,41 @@ int SizingPass::run(SimulationResult& result)
                       << std::setw(10) << std::fixed << std::setprecision(2) << t_mm
                       << std::setw(12) << std::fixed << std::setprecision(1) << w
                       << "\n";
+
+            //  THE RULE THAT PRODUCED THE SIZE.  A volume whose rule is
+            //  invisible can be reported and not defended: `V_R 7.6882` is
+            //  the same table entry whether it came from a residence time, a
+            //  space velocity, or the author typing it in, and those are
+            //  three different design arguments.  `VesselSize` computed this
+            //  string all along and discarded it.
+            if (!dims.basis.empty())
+            {
+                std::cout << "        basis: " << dims.basis;
+                //  AND SAY THAT Q IS IDEAL-GAS.  The volumetric flow driving
+                //  every residence-time and space-velocity size is
+                //  `N R T / P`, computed regardless of the thermo package the
+                //  case declared.  At a knockout drum's 1 bar that is exact
+                //  enough; at 50 bar a real Z of 0.8 undersizes the vessel by
+                //  a fifth, and nothing said so.  Announced, never judged --
+                //  the same posture as the extrapolated Antoine: the engine
+                //  cannot know whether it matters to this reader, and a
+                //  design correlation is entitled to its own approximations
+                //  so long as they are not silent.
+                if (dims.values.count("Q_gas"))
+                    //  SIGNIFICANT digits, not decimals.  Q spans orders of
+                    //  magnitude across the corpus (6e-4 m3/s for a bench
+                    //  flash, tens for a plant), so a FIXED precision that
+                    //  reproduces one is two significant figures on the
+                    //  other -- and a reader multiplying by tau then misses
+                    //  the printed volume.  Caught by the gate doing exactly
+                    //  that: the same defect the B1/B2 columns had, one field
+                    //  over, found because it was printed.
+                    std::cout << "   (Q = N R T / P, IDEAL GAS, "
+                              << std::defaultfloat << std::setprecision(6)
+                              << dims.values.at("Q_gas") << " m3/s -- not the"
+                                 " case's thermo package)";
+                std::cout << "\n";
+            }
 
             // DESIGN INVERSION output (from a `design {}` rule): the geometry the
             // process targets require -- the rating model run BACKWARD.

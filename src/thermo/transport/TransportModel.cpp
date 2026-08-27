@@ -51,8 +51,12 @@ std::unique_ptr<TransportModel> TransportModel::New(const DictPtr& dict)
     const std::string name = dict->lookupWordOrDefault("model", "Chung");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("TransportModel: unknown model '" + name
-            + "'.  Registered: see TransportModel::availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

@@ -15,6 +15,8 @@ License
 
 #include "core/DictAudit.H"
 
+#include <set>
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -73,7 +75,35 @@ std::vector<Finding> audit(const Dictionary& d, const std::string& where)
                 f.suggestion = cand;
             }
         }
+        //  No near miss: the key is not a typo of anything the code wanted,
+        //  so the useful answer is the list of names it DID want.  See the
+        //  header for why this is the case a bare complaint fails.
+        if (f.suggestion.empty()) f.lookedFor = absent;
         out.push_back(f);
+    }
+    return out;
+}
+
+std::vector<Finding> auditTree(const Dictionary& d, const std::string& where)
+{
+    std::vector<Finding> out = audit(d, where);
+
+    //  Which of this level's keys were reported unread?  A block among them
+    //  is not descended into: see the header.
+    std::set<std::string> unreadHere;
+    for (const auto& f : out) unreadHere.insert(f.key);
+
+    for (const auto& child : d.childDictsUnnoted())
+    {
+        //  `child.first` is the dotted path from THIS dict; the leading
+        //  segment (before any `[i]`) is the key at this level.
+        const std::string head = child.first.substr(0, child.first.find('['));
+        if (unreadHere.count(head)) continue;
+
+        const auto sub = auditTree(*child.second,
+                                   where.empty() ? child.first
+                                                 : where + " " + child.first);
+        out.insert(out.end(), sub.begin(), sub.end());
     }
     return out;
 }
@@ -82,6 +112,7 @@ int report(const std::vector<Finding>& findings, int verbosity)
 {
     if (findings.empty() || verbosity < 1) return static_cast<int>(findings.size());
 
+    std::string menuPrinted;
     std::cerr << "[dict] " << findings.size()
               << " key(s) written and never read -- they had NO effect on this"
                  " run:\n";
@@ -92,6 +123,20 @@ int report(const std::vector<Finding>& findings, int verbosity)
             std::cerr << "  -- did you mean `" << f.suggestion << "`?  (the"
                          " model looked for that one and did not find it)";
         std::cerr << "\n";
+
+        //  Once per BLOCK, not once per key: the menu is a property of the
+        //  block's reader, and repeating it per finding would be the same
+        //  fact stored twice on screen.
+        if (f.suggestion.empty() && !f.lookedFor.empty()
+            && f.where != menuPrinted)
+        {
+            menuPrinted = f.where;
+            std::cerr << "[dict]     this block's reader looked for and did"
+                         " not find:";
+            for (const auto& a : f.lookedFor) std::cerr << " " << a;
+            std::cerr << "\n[dict]     -- if one of those is what you meant,"
+                         " it is the name to write.\n";
+        }
     }
     //  Say what it COSTS, not just that it happened.  "Unused key" reads as
     //  tidiness; "the value you declared did nothing" is the actual news.

@@ -103,6 +103,14 @@ struct SimulationResult
     std::map<std::string, std::vector<scalar>>                     convergence;
     std::map<std::string, UnitProfile>                             profiles;
     std::map<std::string, EquipmentSizing>                         sizings;
+
+    //  DID A SIZING PASS RUN AT ALL?  `sizings` being empty means two very
+    //  different things -- no pass ran, or a pass ran and sized nothing
+    //  because every unit failed -- and the costing pass used to conflate
+    //  them, asking "did SizingPass run first?" when the answer was usually
+    //  yes and the reasons were already printed above.  The two have
+    //  different remedies, so the distinction is carried rather than guessed.
+    bool                                                           sizingAttempted = false;
     std::map<std::string, CostBreakdown>                           costs;
     std::vector<std::string>                                       componentNames;
     // Per-component molar mass in kg/kmol; populated by the

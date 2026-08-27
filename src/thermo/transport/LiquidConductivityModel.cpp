@@ -52,8 +52,12 @@ std::unique_ptr<LiquidConductivityModel> LiquidConductivityModel::New(const Dict
     const std::string name = dict->lookupWordOrDefault("model", "SatoRiedel");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("LiquidConductivityModel: unknown model '" + name
-            + "'.  Registered: see LiquidConductivityModel::availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

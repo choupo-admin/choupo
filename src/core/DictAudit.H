@@ -79,6 +79,16 @@ struct Finding
     std::string where;       // "unit 'col' operation{}"
     std::string key;         // the key as the author spelled it
     std::string suggestion;  // the asked-for key it most likely meant ("" = none)
+
+    //  Every key the CODE asked this block for and did not find.  Filled only
+    //  when no close suggestion was reachable -- because that is exactly the
+    //  case the bare complaint fails: `targetYearCEPCI` is not a misspelling
+    //  of `cepci`, it is a different word, and edit distance can say nothing
+    //  useful about it.  What the author needs then is the MENU: the four
+    //  names the model actually looked for.  Same shape as the vessel sizing
+    //  refusal listing the KPIs the unit publishes -- name the choice, not
+    //  only the absence.
+    std::vector<std::string> lookedFor;
 };
 
 //- Levenshtein distance.  Small, published, and testable -- the same bar the
@@ -90,6 +100,13 @@ std::size_t editDistance(const std::string& a, const std::string& b);
 //  is close enough to be a typo rather than a different word: distance <= 2,
 //  and never more than a third of the key's length.
 std::vector<Finding> audit(const Dictionary& d, const std::string& where);
+
+//- Audit a dict AND its sub-dictionary tree, `where` naming the dotted path.
+//
+//  A block that is itself unread is REPORTED and NOT descended into: "the
+//  whole `designRules {}` block did nothing" is one true line, where six
+//  lines about its keys would bury it and imply six separate mistakes.
+std::vector<Finding> auditTree(const Dictionary& d, const std::string& where);
 
 //- Announce findings on stderr, at verbosity >= 1.  Returns the count.
 int report(const std::vector<Finding>& findings, int verbosity);

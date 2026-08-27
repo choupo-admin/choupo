@@ -90,6 +90,14 @@ struct EquipmentSizing
     std::string                                  equipmentType;
     std::string                                  material;
     std::map<std::string, scalar>                values;   // "D", "H", "A", "t_wall", "weight",...
+
+    //  WHICH RULE PRODUCED THE SIZE.  `VesselSize` computed exactly this
+    //  string in three careful branches ("drum V = Q*tau", "catalyst V =
+    //  Q/SV", "volume (author-set)") and then discarded it with `(void)basis`
+    //  to silence an unused-variable warning.  The decision that determines
+    //  the vessel volume was known to the engine and said nowhere -- and a
+    //  volume whose rule is invisible cannot be defended, only reported.
+    std::string                                  basis;
 };
 
 // Energy wire.  A direct scalar coupling from one unit's
@@ -119,6 +127,17 @@ struct CostBreakdown
     scalar                                       totalModuleCost = 0.0;  // C_TM  [€]
     std::map<std::string, scalar>                factors;                 // F_M, F_P,...
     std::string                                  currency = "EUR_2026";
+
+    //  THE PROVENANCE OF THIS NUMBER, so the table can be defended from
+    //  itself.  A costing line printing `F_M 3.05` and `C_TM 166653` gives a
+    //  student two numbers and no way to answer "where did that come from?":
+    //  the correlation, its size driver, the price index, the currency rate
+    //  and the module factors are five decisions hiding behind one total.
+    //  They are all already computed here; these three fields are what was
+    //  missing to SAY them.
+    std::string                                  sizeKey;      // "V_R", "A", ...
+    std::string                                  correlation;  // "log-quadratic" | "power-law"
+    std::string                                  material;     // the record F_M came from
 };
 
 // One row of the utility-allocation summary: a unit's heat duty (or a

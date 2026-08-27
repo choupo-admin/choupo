@@ -51,6 +51,7 @@ Description
 
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/DictAudit.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
 #include "result/ResultEmitter.H"
@@ -1045,6 +1046,27 @@ try
             auto chain = PostProcessor::buildChain(postDict);
             for (auto& pp : chain) pp->run(result);
         }
+
+        //  THE POST-PROCESSING BLOCKS GET THE SAME AUDIT the units get.
+        //  `dictAudit` was wired at exactly one site -- each unit's
+        //  `operation {}` -- and postDict was outside it, which is where the
+        //  defect that prompted this was found: a `costing {}` declaring
+        //  `targetYearCEPCI 800;` priced the plant at the DEFAULT index of
+        //  820 and said nothing.  2.5 % of the capital cost, silent, on a
+        //  number the author believed they had set.  postDict is a pure
+        //  PARAMETER file -- every key in it belongs to the pass named above
+        //  it -- so the scope argument that keeps this pass off the case file
+        //  at large does not apply here.
+        //
+        //  Audited AFTER the chain has run (the passes read at construction
+        //  AND at run) and ONCE for the whole tree: the outer drivers rebuild
+        //  their chain per evaluation from this same DictPtr, so the reads
+        //  accumulate on these objects and one audit at the end sees them all
+        //  -- where auditing inside buildChain would repeat itself per sweep
+        //  point.
+        if (postDict)
+            dictAudit::report(dictAudit::auditTree(*postDict, "postDict"),
+                              verbosity);
 
         // Layer 3b: controlDict `reports {... }` chain.
         runReports(result);

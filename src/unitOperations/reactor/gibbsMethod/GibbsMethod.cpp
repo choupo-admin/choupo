@@ -192,8 +192,12 @@ std::unique_ptr<GibbsMethod> GibbsMethod::New(const std::string& name)
 {
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("GibbsMethod: unknown model '" + name
-            + "'.  Registered: see GibbsMethod::availableTypes().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second();
 }
 

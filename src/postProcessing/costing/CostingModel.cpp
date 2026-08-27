@@ -48,12 +48,29 @@ void CostingModel::registerType(const std::string& name, Factory f)
 
 std::unique_ptr<CostingModel> CostingModel::New(const DictPtr& dict)
 {
+    //  THE HELPFUL MESSAGE USED TO REQUIRE HAVING ALREADY GUESSED THE KEY.
+    //  `lookupWord` throws the DICTIONARY's generic "missing word entry
+    //  'method'" when the key is absent, which fires before this factory is
+    //  reached -- so an author who wrote the wrong VALUE got the full list of
+    //  registered methods, and an author who omitted the key entirely (which
+    //  is what happens the first time) got a bare sentence naming a key and
+    //  nothing else.  The absent case is the commoner one and had the worse
+    //  message.  Both now go through the listing.
+    std::string avail;
+    for (const auto& kv : registry()) avail += " " + kv.first;
+    if (!dict->found("method"))
+        throw std::runtime_error("CostingModel: the `costing {}` block does"
+            " not declare `method`.  Registered:"
+            + (avail.empty() ? std::string(" (none)") : avail)
+            + "\n  Copy one of the names above EXACTLY -- the lookup is"
+              " case-sensitive, and the first\n  draft of this very message"
+              " suggested `guthrie` where the registered name is `Guthrie`."
+              "\n  There is no default: which correlation family prices a"
+              " piece of equipment is an\n  author's choice, not a detail.");
     const std::string method = dict->lookupWord("method");
     auto it = registry().find(method);
     if (it == registry().end())
     {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("CostingModel: unknown method '" + method
             + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
     }

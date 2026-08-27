@@ -52,6 +52,7 @@ Description
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -255,8 +256,31 @@ public:
     //  intentions an unread key may have been aiming at.
     std::vector<std::string> askedButAbsent() const;
 
+    //- Enumerate the sub-dictionary children -- a `{...}` entry, and every
+    //  member of a `( {...} {...} )` list -- WITHOUT consulting anything.
+    //
+    //  Deliberately NOT written in terms of subDict()/lookupDictList(): those
+    //  call note(), so an auditor walking the tree to ask "what did nobody
+    //  read?" would mark every block it visited as read on the way in, and
+    //  then report that nothing was unread.  A check that erases its own
+    //  subject is worse than no check.  The path is dotted, list members
+    //  indexed (`units[0].designRules`), so a finding names the block the
+    //  author can find in their file.
+    std::vector<std::pair<std::string, DictPtr>>
+    childDictsUnnoted(const std::string& prefix = "") const;
+
 private:
     void setVarsDictRecursive_(const DictPtr& v);
+
+    //  A "missing X 'key'" error that does not look at the keys the dict DOES
+    //  declare is a diagnosis with the evidence in hand and unread.  The
+    //  author wrote `designRuls`; the code asked for `designRules`; the dict
+    //  holds both halves of that sentence and used to print only one.
+    //
+    //  Returns a suffix naming what this dict declares and, when one of them
+    //  is within a typo's distance of the key asked for, which one.  Empty
+    //  for an empty dict -- there is nothing to suggest and nothing to list.
+    std::string missingKeyHint_(const std::string& key) const;
 
     //  Record one consultation.  Called by every public lookup; `mutable`
     //  because consulting a dict does not change what it MEANS.

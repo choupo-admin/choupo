@@ -28,6 +28,8 @@ License
 
 #include "Dictionary.H"
 
+#include "core/DictAudit.H"
+
 #include "Units.H"
 
 #include <cctype>
@@ -630,6 +632,34 @@ std::vector<std::string> Dictionary::unreadKeys() const
     return out;
 }
 
+std::vector<std::pair<std::string, DictPtr>>
+Dictionary::childDictsUnnoted(const std::string& prefix) const
+{
+    //  entries_ is read DIRECTLY, and order_ drives the walk: file order, and
+    //  no note() anywhere -- see the header for why an auditor that consults
+    //  what it audits reports the wrong answer.
+    std::vector<std::pair<std::string, DictPtr>> out;
+    for (const auto& key : order_)
+    {
+        auto it = entries_.find(key);
+        if (it == entries_.end()) continue;
+        const std::string path = prefix.empty() ? key : prefix + "." + key;
+
+        if (const auto* sub = std::get_if<DictPtr>(&it->second))
+        {
+            if (*sub) out.emplace_back(path, *sub);
+        }
+        else if (const auto* lst = std::get_if<std::vector<DictPtr>>(&it->second))
+        {
+            for (std::size_t i = 0; i < lst->size(); ++i)
+                if ((*lst)[i])
+                    out.emplace_back(path + "[" + std::to_string(i) + "]",
+                                     (*lst)[i]);
+        }
+    }
+    return out;
+}
+
 std::vector<std::string> Dictionary::askedButAbsent() const
 {
     std::vector<std::string> out;
@@ -644,13 +674,45 @@ bool Dictionary::found(const std::string& key) const
     return entries_.find(key) != entries_.end();
 }
 
+std::string Dictionary::missingKeyHint_(const std::string& key) const
+{
+    if (order_.empty())
+        return "\n  This dict is EMPTY -- nothing was parsed into it, so the"
+               " block may be missing or misplaced entirely.";
+
+    //  The nearest declared key, if it is near enough to be a slip rather
+    //  than a different word.  Same tolerance rule as dictAudit's, and the
+    //  same function, because two edit distances that could disagree is one
+    //  more than this project keeps.
+    std::string best;
+    std::size_t bestD = std::string::npos;
+    const std::size_t tol =
+        std::min<std::size_t>(2, std::max<std::size_t>(1, key.size() / 3));
+    for (const auto& k : order_)
+    {
+        const std::size_t d = dictAudit::editDistance(key, k);
+        if (d <= tol && (bestD == std::string::npos || d < bestD))
+        {
+            bestD = d;
+            best  = k;
+        }
+    }
+
+    std::string out = "\n  This dict declares:";
+    for (const auto& k : order_) out += " " + k;
+    if (!best.empty())
+        out += "\n  Did you mean `" + best + "`?  The code asked for `" + key
+             + "`, and that is the closest name here.";
+    return out;
+}
+
 const EntryValue& Dictionary::entryValue(const std::string& key) const
 {
     note(key);
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
-            "': missing entry '" + key + "'");
+            "': missing entry '" + key + "'" + missingKeyHint_(key));
     return it->second;
 }
 
@@ -660,7 +722,8 @@ scalar Dictionary::lookupScalar(const std::string& key) const
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
-            "' (" + source_ + "): missing scalar entry '" + key + "'");
+            "' (" + source_ + "): missing scalar entry '" + key + "'"
+            + missingKeyHint_(key));
 
     if (std::holds_alternative<scalar>(it->second))
         return std::get<scalar>(it->second);
@@ -694,7 +757,7 @@ std::string Dictionary::lookupWord(const std::string& key) const
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
-            "': missing word entry '" + key + "'");
+            "': missing word entry '" + key + "'" + missingKeyHint_(key));
     if (std::holds_alternative<std::string>(it->second))
         return std::get<std::string>(it->second);
     throw std::runtime_error("Dictionary '" + name_ +
@@ -759,7 +822,8 @@ DictPtr Dictionary::subDict(const std::string& key) const
     auto it = entries_.find(key);
     if (it == entries_.end())
         throw std::runtime_error("Dictionary '" + name_ +
-            "': missing sub-dictionary '" + key + "'");
+            "': missing sub-dictionary '" + key + "'"
+            + missingKeyHint_(key));
     if (std::holds_alternative<DictPtr>(it->second))
         return std::get<DictPtr>(it->second);
     throw std::runtime_error("Dictionary '" + name_ +

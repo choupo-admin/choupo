@@ -32,6 +32,7 @@ License
 #include "materials/MaterialRegistry.H"
 
 #include <iomanip>
+#include <sstream>
 #include <iostream>
 
 namespace Choupo {
@@ -44,7 +45,26 @@ int CostingPass::run(SimulationResult& result)
 {
     if (result.sizings.empty())
     {
-        std::cerr << "CostingPass: result.sizings is empty — did SizingPass run first?\n";
+        //  TWO DIFFERENT SITUATIONS, AND THE OLD MESSAGE ASKED THE WRONG ONE.
+        //  "did SizingPass run first?" is a question whose answer is usually
+        //  YES: the pass ran, reported per unit why each one failed, and
+        //  produced nothing.  Sending the reader to check whether it ran
+        //  points them away from the report that already tells them.  The
+        //  two states have different remedies and are now named apart.
+        if (result.sizingAttempted)
+            std::cerr << "CostingPass: nothing to cost -- SizingPass RAN and"
+                         " sized no equipment.\n"
+                         "  It reported the reason for each unit above (look"
+                         " for `FAILED:` in the sizing table);\n"
+                         "  costing prices sized equipment, so every unit that"
+                         " failed to size is absent here too.\n"
+                         "  Fix the sizing failures and the costs follow --"
+                         " there is nothing to change in this block.\n";
+        else
+            std::cerr << "CostingPass: nothing to cost -- no SizingPass ran."
+                         "  Costing prices SIZED equipment,\n"
+                         "  so a `sizing {}` block must precede `costing {}`"
+                         " in system/postDict.\n";
         return 1;
     }
 
@@ -134,6 +154,95 @@ int CostingPass::run(SimulationResult& result)
                                     "costing total omits " +
                                     std::to_string(notCosted.size()) +
                                     " unit(s) that could not be costed");
+    }
+    //  HOW EACH NUMBER WAS REACHED.  Everything above is a result; this is
+    //  the arithmetic that produced it.  It exists because the table on its
+    //  own is not defensible: `F_M 3.05` and `C_TM 166653` are two numbers,
+    //  and the correlation, its size driver, the price index, the currency
+    //  rate and the two module factors are five more decisions standing
+    //  between them -- all of them already computed, none of them said.  A
+    //  student asked "where does the bare-module factor 7.80 come from?"
+    //  should be able to answer from their own output, not from the source.
+    if (!result.costs.empty())
+    {
+        const auto& any = result.costs.begin()->second;
+        const scalar cepci     = any.factors.count("cepci")
+                               ? any.factors.at("cepci") : 0.0;
+        const scalar cepci2001 = any.factors.count("cepci2001")
+                               ? any.factors.at("cepci2001") : 0.0;
+        const scalar fx        = any.factors.count("usdToEur")
+                               ? any.factors.at("usdToEur") : 0.0;
+
+        std::cout << "\n  ---- how each number above was reached ----\n"
+                     "  C_p(2001 USD) = 10^( K1 + K2 log10 S + K3 (log10 S)^2 )"
+                     "     [log-quadratic]\n"
+                     "                 = Cp_ref (S/S_ref)^n                    "
+                     "     [power-law, where declared]\n"
+                     "  C_p           = C_p(2001) x CEPCI/CEPCI_2001 x EUR/USD\n"
+                     "  C_BM          = C_p x ( B1 + B2 F_M F_P )\n"
+                     "  C_TM          = 1.18 x C_BM      (contingency + fee)\n";
+        std::cout << "  index: CEPCI " << std::fixed << std::setprecision(1)
+                  << cepci << " / " << cepci2001;
+        if (cepci2001 > 0.0)
+            std::cout << " = " << std::setprecision(4) << cepci / cepci2001;
+        std::cout << "     currency: " << std::setprecision(4) << fx
+                  << " EUR/USD     basis: 2001 USD\n\n";
+
+        std::cout << "  " << std::left
+                  << std::setw(14) << "unit"
+                  << std::setw(16) << "correlation"
+                  << std::setw(20) << "size driver S"
+                  << std::setw(26) << "coefficients"
+                  << std::setw(12) << "B1, B2"
+                  << "F_M (material)\n  " << std::string(103, '-') << "\n";
+
+        for (const auto& [uname, cb] : result.costs)
+        {
+            auto f = [&](const char* k) -> scalar {
+                auto it = cb.factors.find(k);
+                return it == cb.factors.end() ? 0.0 : it->second;
+            };
+            //  ENOUGH DIGITS TO REPRODUCE, and `std::fixed` with them.
+            //  The first version of this block used setprecision() on a fresh
+            //  stream, which is SIGNIFICANT digits, and printed `B1, B2 =
+            //  2.2, 1.8` and `F_M = 3`.  A reader doing the arithmetic then
+            //  gets 2.2 + 1.8 x 3 = 7.6 against the 7.801 that produced the
+            //  total, is out by 2.6 %, and concludes THEY made the mistake.
+            //  A provenance line too coarse to reproduce is worse than none:
+            //  it invites a failed reproduction and blames the reader.
+            std::ostringstream sz, co, bb, fm;
+            sz << cb.sizeKey << " = " << std::fixed << std::setprecision(4)
+               << f("S");
+            if (cb.correlation == "power-law")
+                //  Cp_ref runs to 1e5-1e6; four DECIMALS there is noise, so
+                //  the power-law row keeps significant digits by design.
+                co << std::setprecision(6) << f("Cp_ref") << ", "
+                   << f("S_ref") << ", " << f("n_exp");
+            else
+                co << std::fixed << std::setprecision(4) << f("K1") << ", "
+                   << f("K2") << ", " << f("K3");
+            bb << std::fixed << std::setprecision(2) << f("B1") << ", "
+               << f("B2");
+            fm << std::fixed << std::setprecision(2) << f("F_M")
+               << " (" << cb.material << ")";
+
+            std::cout << "  " << std::left
+                      << std::setw(14) << uname
+                      << std::setw(16) << cb.correlation
+                      << std::setw(20) << sz.str()
+                      << std::setw(26) << co.str()
+                      << std::setw(12) << bb.str()
+                      << fm.str() << "\n";
+        }
+        //  WHERE THE COEFFICIENTS COME FROM -- named, because a formula with
+        //  anonymous constants is still not checkable.  F_M is NOT listed
+        //  here: it is a per-material datum and its own record carries its
+        //  citation, which is the one home it should have.
+        std::cout << "\n  K1-K3, B1, B2 and the 1.18: Turton et al., "
+                     "\"Analysis, Synthesis and Design of\n"
+                     "  Chemical Processes\", Appendix A (2001 USD basis).  "
+                     "F_M is cited in its own\n  material record "
+                     "(data/standards/assets/<material>.dat).\n";
     }
     std::cout << "=====================================================================\n\n";
     return failures;

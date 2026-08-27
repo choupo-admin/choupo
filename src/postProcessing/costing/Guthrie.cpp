@@ -296,8 +296,32 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
     out.factors["B2"]       = c.B2;
     out.factors["Cp_2001"]  = Cp_2001_USD;
     out.factors["cepci"]    = cepci_;
+    out.factors["cepci2001"]= cepci2001_;
     out.factors["usdToEur"] = usdToEur_;
     out.factors["year"]     = year_;
+
+    //  The size this cost was computed FROM, and the coefficients that turned
+    //  it into money.  Published because a total nobody can reconstruct is a
+    //  total nobody can defend: with these, `C_p = 10^(K1 + K2 log10 S + K3
+    //  (log10 S)^2) x CEPCI/CEPCI_2001 x EUR/USD` is arithmetic a reader can
+    //  redo, and without them it is an assertion.
+    out.factors["S"]        = S;
+    out.factors["C_TM_over_C_BM"] = 1.18;
+    if (c.powerLaw)
+    {
+        out.factors["Cp_ref"] = c.Cp_ref;
+        out.factors["S_ref"]  = c.S_ref;
+        out.factors["n_exp"]  = c.n_exp;
+    }
+    else
+    {
+        out.factors["K1"] = c.K1;
+        out.factors["K2"] = c.K2;
+        out.factors["K3"] = c.K3;
+    }
+    out.sizeKey     = c.sizeKey;
+    out.correlation = c.powerLaw ? "power-law" : "log-quadratic";
+    out.material    = mat.name;
     out.currency = "EUR";
     return out;
 }

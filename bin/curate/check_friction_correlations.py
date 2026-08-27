@@ -114,6 +114,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from runtests_verdict import verdict  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 CASE = ROOT / "tutorials/props/hydraulics/moody01_friction_correlations"
 PIPE = ROOT / "src/unitOperations/hydraulics/Pipe.cpp"
@@ -234,19 +237,18 @@ def main():
     #  printed a PASS line -- and the arm read that absence as a moved answer.
     #  Diagnosing a cause the evidence does not establish is worse than
     #  reporting nothing: it sends the next reader to the wrong file.
+    #  THE VERDICT QUESTION HAS ONE HOME (runtests_verdict, 2026-08-27).  The
+    #  list of "declined" phrases below used to live here, and it was a list
+    #  of the reasons ALREADY SEEN -- so a NEW way for the harness to produce
+    #  no verdict read as a moved answer again.  It did, on 2026-08-27, when
+    #  bin/runTests was edited while running.  The claim is positive now.
     pipe = ROOT / "tutorials/steady/hydraulics/pipe01_water_line"
-    r = subprocess.run([str(ROOT / "bin/runTests"), str(pipe)],
-                       capture_output=True, text=True, timeout=900)
-    rout = r.stdout + r.stderr
-    could_not_run = ("REFUSING TO RUN" in rout
-                     or "ABORTED before running anything" in rout
-                     or "destructive session is open" in rout)
-    if could_not_run:
-        fails.append("the pipe-golden arm COULD NOT RUN (bin/runTests refused "
-                     "or aborted -- a destructive session is open, or the "
-                     "build is stale).  This is NOT a statement about "
-                     "pipe01's answer, and the arm refuses to make one.")
-    elif "PASS 1 " not in rout:
+    state, _rout, reason = verdict(pipe)
+    if state == "could-not-run":
+        fails.append("the pipe-golden arm COULD NOT RUN.  This is NOT a "
+                     "statement about pipe01's answer, and the arm refuses to "
+                     "make one: " + reason)
+    elif state == "fail":
         fails.append("pipe01_water_line no longer reproduces its golden -- a "
                      "refactor that moves an answer is not a refactor")
 

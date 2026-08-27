@@ -51,8 +51,12 @@ std::unique_ptr<DiffusivityModel> DiffusivityModel::New(const DictPtr& dict)
     const std::string name = dict->lookupWordOrDefault("model", "Fuller");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("DiffusivityModel: unknown model '" + name
-            + "'.  Registered: see availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

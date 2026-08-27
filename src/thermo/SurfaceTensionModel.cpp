@@ -53,8 +53,12 @@ SurfaceTensionModel::New(const DictPtr& dict)
     const std::string name = dict->lookupWordOrDefault("model", "BrockBird");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("SurfaceTensionModel: unknown model '" + name
-            + "'.  Registered: see SurfaceTensionModel::availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

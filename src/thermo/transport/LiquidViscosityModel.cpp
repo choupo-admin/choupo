@@ -53,8 +53,12 @@ std::unique_ptr<LiquidViscosityModel> LiquidViscosityModel::New(const DictPtr& d
     const std::string name = dict->lookupWordOrDefault("model", "Andrade");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("LiquidViscosityModel: unknown model '" + name
-            + "'.  Registered: see LiquidViscosityModel::availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

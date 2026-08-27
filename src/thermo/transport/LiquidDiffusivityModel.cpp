@@ -51,8 +51,12 @@ std::unique_ptr<LiquidDiffusivityModel> LiquidDiffusivityModel::New(const DictPt
     const std::string name = dict->lookupWordOrDefault("model", "WilkeChang");
     auto it = registry().find(name);
     if (it == registry().end())
+    {
+        std::string avail;
+        for (const auto& kv : registry()) avail += " " + kv.first;
         throw std::runtime_error("LiquidDiffusivityModel: unknown model '" + name
-            + "'.  Registered: see LiquidDiffusivityModel::availableModels().");
+            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
+    }
     return it->second(dict);
 }
 

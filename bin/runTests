@@ -3809,6 +3809,35 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/unread.$$
 
+    # postDict audit gate (2026-08-27): the same unread-key diagnosis, one
+    # layer out.  `targetYearCEPCI 800;` in a `costing {}` block priced a
+    # plant at the DEFAULT index of 820 -- 2.5 % of the capital cost, on a
+    # number the author believed they had set, with nothing saying otherwise.
+    if "$ROOT/bin/curate/check_postdict_audit.py" > /tmp/pdaudit.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "postdict-audit-gate" "$(tail -1 /tmp/pdaudit.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_postdict_audit.py)\n" "postdict-audit-gate"
+        cat /tmp/pdaudit.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pdaudit.$$
+
+    # Cost-provenance gate (2026-08-27): the sizing and costing tables must be
+    # defensible from THEMSELVES.  The central arm recomputes C_TM from the
+    # printed coefficients alone -- which is what a student under questioning
+    # would do, and what catches a block that prints too few digits to
+    # reproduce (2.25 -> "2.2" puts the reader 2.6 % out and blames them).
+    if "$ROOT/bin/curate/check_cost_provenance.py" > /tmp/costprov.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cost-provenance-gate" "$(tail -1 /tmp/costprov.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cost_provenance.py)\n" "cost-provenance-gate"
+        cat /tmp/costprov.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/costprov.$$
+
     # Model-boundary ledger gate (2026-08-12): the ledger's three quantities
     # live in a top-level `energyClosures` array; published => pinned AND
     # pinned => published.

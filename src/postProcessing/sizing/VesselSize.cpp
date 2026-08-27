@@ -35,8 +35,30 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
     auto kpi = [&](const std::string& key) -> scalar {
         auto it = k.find(key);
         if (it == k.end())
+        {
+            //  NAME WHAT THE AUTHOR CAN DO, not only what is absent.  The
+            //  flow key is CONFIGURABLE (`designRules { flowKey ...; }`) and
+            //  the message never said so, so an author whose unit publishes a
+            //  differently-named throughput had a dead end: the remedy is one
+            //  word in the dict they are already editing.  Listing the KPIs
+            //  the unit DOES publish turns "not found" into a choice --
+            //  invariant I5, and the same fix the heater's Q refusal took.
+            std::string have;
+            for (const auto& kv : k)
+                have += (have.empty() ? "" : ", ") + kv.first;
             throw std::runtime_error("Vessel: unit '" + unitName
-                + "' has no '" + key + "' KPI needed to size it");
+                + "' has no '" + key + "' KPI needed to size it.\n"
+                "  This unit publishes: "
+                + (have.empty() ? std::string("(no KPIs at all)") : have) + "\n"
+                "  If one of those is the throughput to size on, name it --"
+                " `designRules { flowKey <name>; }`\n"
+                "  (the default is N_out_mol_s).  If none is, this unit does"
+                " not report a flow and cannot\n"
+                "  be sized by residence time or space velocity: give the"
+                " volume directly instead\n"
+                "  (`designRules { volume <m3>; }`), which makes it the"
+                " author's declared design choice.");
+        }
         return it->second;
     };
 
@@ -107,7 +129,7 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
     d.values["weight"]         = weight;
     d.values["pressureDesign"] = pressureDesign;
     d.values["Q_gas"]          = Q_m3s;
-    (void)basis;
+    d.basis                    = basis;
     return d;
 }
 

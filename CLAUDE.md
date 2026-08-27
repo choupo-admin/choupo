@@ -1115,6 +1115,91 @@ something false, with authority.*  The witness's two datasets were re-extracted
 through the consolidated tool and **every number in its golden is unchanged**.
 Record: [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
 
+**A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 of the
+student walkthrough, and it found five things (2026-08-27).**  The test was
+concrete: take €166,653 off the costing table and try to answer *"where did
+that come from?"* as a jury would ask it.
+
+* **THE AUDIT WAS WIRED AT ONE SITE AND `postDict` WAS OUTSIDE IT.**
+  `src/core/DictAudit` has caught unread keys since 2026-08-14 — in each
+  unit's `operation {}` and nowhere else.  A `costing {}` declaring
+  `targetYearCEPCI 800;` priced a plant at the **default** index of 820: 2.5 %
+  of the capital cost, silent, on a number the author believed they had set.
+  `postDict` is a PURE parameter file (every key belongs to the pass named
+  above it), so the scope argument that keeps the audit off the case file at
+  large does not apply.  `Dictionary::childDictsUnnoted()` + `auditTree()`
+  reach the nested blocks; an unread BLOCK is ONE finding and is **not**
+  descended into.  The walker reads `entries_` DIRECTLY — never
+  `subDict()`/`lookupDictList()`, which `note()` — because **an auditor that
+  marks every block it visits as read reports that nothing was unread**.
+  (Measured: that defect is LATENT today, because `auditTree` audits before
+  descending; the source-reading arm is a guard against the ordering
+  changing, and claiming otherwise would credit it with coverage it lacks.)
+* **THE CORPUS RUN FOUND TWO REAL DEFECTS.**  Nine cases carry a `postDict`;
+  six were clean.  `method discountedCashFlow;` in the economics block was
+  **decorative** — the pass is hardcoded DCF and read nothing.  And
+  **`constructionPeriod` was read by nothing in the whole tree** while the
+  cash-flow timeline hardcodes one year — so **`ammonia02_full_plant`, which
+  declares `constructionPeriod 2;` beside `projectLife 15`, has been
+  publishing a €196.5 M NPV discounted over a ONE-year construction**: a
+  shipped case whose answer does not match its own declaration.  `method`
+  refuses an unimplemented value; `constructionPeriod` ANNOUNCES (console +
+  caveat block) and does not refuse — a real multi-year draw-down MOVES a
+  published NPV, which is reserved, and refusing would be my judgement
+  overriding an author who meant 2.  No number moved.
+  **AND THE MISTAKE HERE IS THE SLICE'S OWN SUBJECT, twice:** the first fix
+  REFUSED, on the strength of "all three flagged cases declare 1" — an
+  inference from the three the audit flagged, recorded as a measurement of the
+  nine that exist (six declare the key; one declares 2).  Then I verified it
+  by re-running those cases and reading **zero `[dict]` findings as success**
+  — but a CRASHED run prints zero findings too, so `ammonia02` was failing
+  outright and recorded as clean.  *Absence read as affirmation, inside the
+  machinery built against absence being read as affirmation.*
+* **`(void)basis;`** — `VesselSize` computed the design rule that determines
+  the vessel volume in three careful branches (`drum V = Q*tau`,
+  `catalyst V = Q/SV`, `volume (author-set)`) and cast it away to silence an
+  unused-variable warning.  Published now, beside the fact that the driving
+  `Q = N R T / P` is **IDEAL GAS whatever thermo the case declared** (exact
+  enough at a drum's 1 bar; a fifth undersized at 50 bar with Z = 0.8).
+  Announced, never judged — the Antoine/η=1 posture.
+* **THE COSTING TABLE NOW PRINTS ITS OWN ARITHMETIC** (correlation,
+  coefficients, size driver, CEPCI ratio, EUR/USD, B1/B2, the 1.18, and Turton
+  App. A as the source).  `F_M` is deliberately NOT cited there: its material
+  record is its one home.  **A PROVENANCE LINE TOO COARSE TO REPRODUCE IS
+  WORSE THAN NONE** — the first version used `setprecision` on a fresh stream
+  (SIGNIFICANT digits), printed `B1, B2 = 2.2, 1.8` and `F_M = 3`, and a
+  reader redoing the arithmetic lands 2.6 % out and concludes **they** erred.
+  Caught only because it was printed; the same defect then turned up one field
+  over in `Q`, caught by the gate doing what a student would do.
+* **A REFUSAL MUST READ THE EVIDENCE IN ITS HAND.**  `missing sub-dictionary
+  'designRules'` was true and silent about the `designRuls` three lines above
+  in the same dict.  All four `Dictionary` missing-key failures now list what
+  the dict declares and name the closest match, through
+  `dictAudit::editDistance` (never a second copy).  Mirror of the audit: the
+  audit matches an UNREAD key against what the code asked for; this matches an
+  ASKED-FOR key against what is present.
+
+**AND A PROCESS LESSON, paid for in a killed suite: NEVER EDIT `bin/runTests`
+WHILE IT RUNS** — bash reads a script incrementally from a held offset, so the
+live run executes torn bytes.  `check_component_name_hint` then reported *"a
+case whose component names are all correct no longer reproduces its golden"*
+and sent the reader to `Database.cpp`, where nothing was wrong.  Two gates had
+each grown their own half of this test, each catching the reasons ALREADY
+SEEN, so a NEW way for the harness to produce no verdict read as a moved
+answer again.  `bin/curate/runtests_verdict.py` is the ONE home, and its claim
+is POSITIVE: *moved* is asserted only when the harness printed a verdict for
+that case; anything else is `could-not-run`, with the reason carried back.
+*A check that cannot run must not pass — and must not fail with a FALSE REASON
+either.*  Converted: `check_component_name_hint`, `check_friction_correlations`
+(the other ~17 gates that shell out still carry their own readers).
+Gates: `check_postdict_audit` (5 sabotages) · `check_cost_provenance` (6
+sabotages; S2 reproduces the shipped precision defect and fires at −1.43 %).
+Records: [`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
+and [`docs/design/a-cost-you-can-defend.md`](docs/design/a-cost-you-can-defend.md).
+**RESERVED for Vítor:** the costing model is registered as `Guthrie` and every
+coefficient in the file is **Turton's** — an attribution ruling and a
+corpus-wide rename, and no value moves either way.
+
 **A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR — the
 pattern applied to a SECOND family (2026-08-25).**  `HeatTransferCorrelation`
 has had the right shape since it was written (declared validity window +
