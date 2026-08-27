@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 384,
+  "cases": 385,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2257,6 +2257,21 @@
    "hasGolden": true
   },
   "tutorials/props/steam/steam02_water_transport": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/temperature01_gas_thermometer": {
    "application": "choupoProps",
    "ops": [
     "propertyPoint",
@@ -5771,6 +5786,7 @@
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
@@ -6772,6 +6788,7 @@
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -7020,7 +7037,8 @@
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
-    "tutorials/props/steam/steam02_water_transport"
+    "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/temperature01_gas_thermometer"
    ],
    "propertyScan1D": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
@@ -7032,7 +7050,8 @@
     "tutorials/props/compare/compare_visc_liquid_ammonia",
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
-    "tutorials/props/steam/steam02_water_transport"
+    "tutorials/props/steam/steam02_water_transport",
+    "tutorials/props/thermo/temperature01_gas_thermometer"
    ],
    "propertyScan2D": [
     "tutorials/props/scan/scan2d01_co2_compressibility"

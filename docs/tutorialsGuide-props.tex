@@ -2700,6 +2700,48 @@ The (rho,T) viscosity / conductivity kernels get their density from the IF97 the
 \goldrow{diag}{transport\_scan}{n\_failures}{0}
 \end{tutgolden}
 
+\subsection{thermo}
+\grouptheory{thermo}
+\clearpage
+\tutentry{temperature01\_gas\_thermometer}{tutorials/props/thermo/temperature01\_gas\_thermometer}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{Z\_of\_P}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{nearly\_ideal}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{laboratory\_pressure}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The gas thermometer: why the ideal gas is a limit, not a substance}
+\begin{tutnarrative}
+A constant-volume gas thermometer reads a temperature off PV = nRT. A real gas does not obey that, so the reading depends on the PRESSURE it was taken at -- and only in the limit P $\to$ 0 does it become the thermodynamic temperature. This case measures that departure, at the temperature the accompanying notes are about.
+
+500.012 K is not a special temperature. It is the number the notes use to ask what the last digits of a temperature actually assert, and the scan is run there so the two are talking about the same state.
+
+\end{tutnarrative}
+\tutreadme{> $\ast$"Thermodynamics is a funny subject. The first time you go through it, you > don't understand it at all. The second time you go through it, you think you > understand it, except for one or two small points. The third time you go > through it, you know you don't understand it, but by that time you are so > used to it, it doesn't bother you any more."$\ast$ > > --- attributed to Arnold Sommerfeld. PROVENANCE UNVERIFIED: Sommerfeld > published no such sentence; it reaches us by report, and this repository does > not quote a source it has not read. It is here as an epigraph, marked, and > must be either sourced or dropped before it appears in any published guide.}
+\tutreadme{What does the 012 assert? Not "roughly five hundred kelvin" --- three digits past the decimal point is a specific claim about the world. Whose claim, and resting on what?}
+\tutreadme{The kelvin is no longer defined by a substance. It is defined by fixing the Boltzmann constant:}
+\tutreadme{Not measured. Fixed. So a temperature is a conversion factor between energy and degrees, and nothing else. The triple point of water --- which $\ast$defined$\ast$ the kelvin for sixty-five years --- became, overnight, a quantity that is measured, with an uncertainty.}
+\tutreadme{That is the first dogma, and it is worth sitting with: the definition tells you what a kelvin $\ast$means$\ast$ and gives you no way whatsoever to $\ast$measure$\ast$ one.}
+\tutreadme{Nobody puts the Boltzmann constant inside a thermometer. To read a temperature you need a $\ast$realisation$\ast$: a chain of reproducible fixed points and an instrument that interpolates between them. In practice that is ITS-90, with a platinum resistance thermometer doing the interpolating. At 500 K you are between the triple point of water and the freezing point of zinc.}
+\begin{tutgolden}
+\goldrow{diag}{Z\_of\_P}{n\_emptyCurves}{0.0000}
+\goldrow{diag}{Z\_of\_P}{n\_failures}{0.0000}
+\goldrow{diag}{Z\_of\_P}{n\_points}{21.0000}
+\goldrow{diag}{nearly\_ideal}{Cp\_ig}{29.6051}
+\goldrow{diag}{nearly\_ideal}{H\_R}{-0.0040}
+\goldrow{diag}{nearly\_ideal}{H\_ig}{5915.3500}
+\goldrow{diag}{nearly\_ideal}{H\_real}{5915.3460}
+\goldrow{diag}{nearly\_ideal}{P}{1000.0000}
+\goldrow{diag}{nearly\_ideal}{S\_R}{-0.0000}
+\goldrow{diag}{nearly\_ideal}{S\_ig}{245.0414}
+\goldrow{diag}{nearly\_ideal}{S\_real}{245.0413}
+\goldrow{diag}{nearly\_ideal}{T}{500.0120}
+\goldrow{diag}{nearly\_ideal}{Z}{1.0000}
+\goldrow{diag}{nearly\_ideal}{gamma}{1.3905}
+\goldmore{13}
+\end{tutgolden}
+
 \subsection{thermoTest}
 \grouptheory{thermoTest}
 \clearpage

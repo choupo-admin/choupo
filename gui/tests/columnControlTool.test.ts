@@ -62,7 +62,7 @@ import {
 } from "../src/ui/methods/columnControlRecords.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
-import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
+import { METHOD_TOOLS, METHOD_TOOL_KINDS } from "../src/ui/methods/registry.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const heuristicsDir = resolve(here, "../../data/standards/heuristics");
@@ -94,8 +94,12 @@ describe("column-control — the registry entry", () => {
   });
 
   it("every other tool declares a kind too — the field is not optional", () => {
+    //  READ FROM THE REGISTRY, never re-typed here.  The literal list this
+    //  line used to carry was a second home for a fact registry.ts owns, and
+    //  it failed the day a third kind was added -- which is the whole failure
+    //  mode the arity doctrine names.
     for (const m of METHOD_TOOLS)
-      expect(["construction", "selection"], `${m.id} needs a kind`)
+      expect(METHOD_TOOL_KINDS as readonly string[], `${m.id} needs a kind`)
         .toContain(m.kind);
   });
 

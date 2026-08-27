@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  ONE component and ONE equation of state, because the question is not about
+    a mixture.  Nitrogen is the gas real constant-volume gas thermometers are
+    filled with (helium too, and the two disagree in exactly the way this case
+    is about).  SRK is a cubic: it is not the last word on nitrogen and does
+    not need to be -- what this case shows is that Z DEPARTS FROM 1, and by
+    roughly how much, not the third decimal of that departure.                */
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components       ( nitrogen );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel SRK; }
+}

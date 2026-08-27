@@ -190,6 +190,9 @@ const ThielePelletTool = lazy(() =>
   import("./methods/ThielePelletTool.js").then((m) => ({ default: m.ThielePelletTool })));
 const FugShortcutTool = lazy(() =>
   import("./methods/FugShortcutTool.js").then((m) => ({ default: m.FugShortcutTool })));
+const WhatIsTemperatureTool = lazy(() =>
+  import("./methods/WhatIsTemperatureTool.js")
+    .then((m) => ({ default: m.WhatIsTemperatureTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -352,6 +355,7 @@ export function MethodsWorkspace() {
             : tool === "column-control" ? <ColumnControlTool />
             : tool === "thiele" ? <ThielePelletTool />
             : tool === "fug" ? <FugShortcutTool />
+            : tool === "what-is-temperature" ? <WhatIsTemperatureTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

@@ -58,7 +58,8 @@ import { guideUrl } from "../../help/guideLinks.js";
 export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
-  | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele";
+  | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
+  | "what-is-temperature";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -74,7 +75,14 @@ export type MethodToolId =
  *
  *  It lives inside EduTools and does NOT get a third top-level surface: one
  *  building for one tenant is how a shell acquires rooms nobody visits. */
-export type MethodToolKind = "construction" | "selection";
+//  ONE HOME for the kinds, and the TYPE is derived from it rather than the
+//  other way round.  A test used to carry its own literal list
+//  (`["construction", "selection"]`) and therefore had to be edited every time
+//  a kind was added -- a second home for a fact this file owns, which failed
+//  the day `notes` arrived.  Reading this array cannot drift from it.
+export const METHOD_TOOL_KINDS = ["construction", "selection", "notes"] as const;
+
+export type MethodToolKind = typeof METHOD_TOOL_KINDS[number];
 
 export interface MethodTool {
   id: MethodToolId;
@@ -103,6 +111,28 @@ export interface MethodTool {
 // that never existed in any build of the guide).
 
 export const METHOD_TOOLS: MethodTool[] = [
+  //  THE FIRST TOOL OF THE NOTES KIND (2026-08-27).  It constructs nothing and
+  //  helps choose nothing: it is a chapter you scroll, with the engine running
+  //  inside it.  The owner's ask was for support material across several
+  //  courses, and the first subject is the one he named as still bothering him
+  //  after a career of teaching it -- what a temperature actually is.
+  //
+  //  NOT A NEW WORKSPACE, deliberately.  `kind` is an axis this registry
+  //  already has (`selection` was added the same way on 2026-08-18), the
+  //  landing page already renders the registry, and the deep link already
+  //  works.  A third plane would have been a bigger system before the small
+  //  one had been shown to teach anybody anything -- which is the wrong order,
+  //  and the owner named the rule: Gall's law, simple first.
+  {
+    id: "what-is-temperature", label: "What is a temperature?",
+    kind: "notes", status: "live",
+    teaches: "That 500.012 K is a claim about a platinum resistor and a chain "
+      + "of fixed points, not about nature: the kelvin is DEFINED by fixing "
+      + "the Boltzmann constant, REALISED by an entirely separate practical "
+      + "scale, and the gas thermometer that historically bridged them reads "
+      + "thermodynamic temperature only in a limit no experiment can reach.",
+    theory: "ch:criticals",
+  },
   {
     id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",

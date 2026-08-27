@@ -3,9 +3,15 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 16,
-  "registryTools": 16,
+  "liveTools": 17,
+  "registryTools": 17,
   "tools": [
+    {
+      "id": "what-is-temperature",
+      "label": "What is a temperature?",
+      "teaches": "That 500.012 K is a claim about a platinum resistor and a chain of fixed points, not about nature: the kelvin is DEFINED by fixing the Boltzmann constant, REALISED by an entirely separate practical scale, and the gas thermometer that historically bridged them reads thermodynamic temperature only in a limit no experiment can reach.",
+      "href": "/app/?workspace=methods&tool=what-is-temperature"
+    },
     {
       "id": "mccabe",
       "label": "Distillation (McCabe-Thiele)",

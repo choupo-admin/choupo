@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  A constant-volume gas thermometer reads a temperature off PV = nRT.  A real
+    gas does not obey that, so the reading depends on the PRESSURE it was taken
+    at -- and only in the limit P -> 0 does it become the thermodynamic
+    temperature.  This case measures that departure, at the temperature the
+    accompanying notes are about.
+
+    500.012 K is not a special temperature.  It is the number the notes use to
+    ask what the last digits of a temperature actually assert, and the scan is
+    run there so the two are talking about the same state.                   */
+operations
+(
+    {
+        //  Z FROM 1 kPa TO 5 MPa.  The bottom of the range is where the
+        //  thermometer would be honest and the top is an ordinary laboratory
+        //  pressure; the point is the SPAN between them, not either end.
+        name       Z_of_P;
+        type       propertyScan1D;
+        vary       { variable P;  from 1000 Pa;  to 5000000 Pa;  points 25; }
+        state      { T 500.012 K;  composition { nitrogen 1.0; } }
+        properties ( Z v_molar );
+        output     { file "gasThermometer.csv"; }
+    }
+
+    //  THE TWO ENDS AS SCALARS, so a golden row can read them: a CSV is a
+    //  path, and what is pinned here is the CLAIM -- that Z is 1 to six
+    //  figures at the bottom and visibly not 1 at the top.
+    {
+        name       nearly_ideal;
+        type       propertyPoint;
+        state      { T 500.012 K;  P 1000 Pa;  composition { nitrogen 1.0; } }
+        properties ( Z );
+    }
+    {
+        name       laboratory_pressure;
+        type       propertyPoint;
+        state      { T 500.012 K;  P 5000000 Pa;  composition { nitrogen 1.0; } }
+        properties ( Z );
+    }
+);
