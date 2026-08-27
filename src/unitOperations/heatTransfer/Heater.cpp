@@ -77,9 +77,33 @@ int Heater::solve(const DictPtr& dict,
     }
     if (!operDict->found("Q"))
     {
+        //  THE RULE WAS STATED AND THE REMEDY WAS NOT, which is invariant I5
+        //  applied to a refusal: a message that says what you may not do,
+        //  without saying what you may, teaches only unease.  And it is
+        //  actively harmful to an LLM-assisted author, who reads "T_out is a
+        //  result", invents a `T` key that no unit accepts, and produces a
+        //  case that is wrong in a new way.  Both documented routes are named
+        //  here, because which one is right depends on something the engine
+        //  cannot see: whether the target temperature crosses saturation.
         throw std::runtime_error(
             "Heater: must specify 'Q' [W or kW] -- the absolute thermal "
-            "power delivered to the stream.  T_out is a result.");
+            "power delivered to the stream.  T_out is a result: the heater is "
+            "the unit that TAKES a duty (its hardware knob), while a flash "
+            "GIVES one.\n"
+            "  If you want to SPECIFY the outlet temperature, there are two "
+            "routes and the right one depends on your target:\n"
+            "    * the outlet stays single-phase (a sensible heat change) -- "
+            "wrap this unit in a\n"
+            "      DesignSpec that solves `$Q` for your T_out; see "
+            "docs/ai/patterns.md.\n"
+            "    * the outlet CROSSES the saturation line (a quench that "
+            "condenses, a reboiler) --\n"
+            "      use `phaseChanger` (aliases `boiler` / `condenser`), which "
+            "takes the target state\n"
+            "      and RETURNS the duty.  A heater must not cross the dome, "
+            "so a Q chosen to reach\n"
+            "      such a T would be answering a question this unit cannot "
+            "pose.");
     }
 
     // Q in W (SI).  Positive = heating, negative = cooling.

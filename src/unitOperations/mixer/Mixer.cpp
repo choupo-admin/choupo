@@ -31,6 +31,7 @@ License
 
 #include <cmath>
 #include <iomanip>
+#include <sstream>
 #include <iostream>
 #include <limits>
 #include <stdexcept>
@@ -81,6 +82,10 @@ int Mixer::solve(const DictPtr& dict,
     sVector s_out(n, 0.0);
     scalar  Hin_total = 0.0;            // Σ F_k · h_k   [(kmol/s)(J/mol)]
     scalar  vfw       = 0.0;            // Σ F_k · vf_k  (flow-weighted vf)
+    //  How many inlets arrive on each side -- not for the arithmetic (that is
+    //  vfw's job) but so the unit can say whether the dominant label was a
+    //  choice at all.  See the announcement below the phase decision.
+    std::size_t nVapIn = 0, nLiqIn = 0;
     int     nLiquidInlets = 0;          // vf < 0.5 count (the emulsion line)
     scalar  P_out     = std::numeric_limits<scalar>::infinity();
     scalar  T_first   = 0.0;
@@ -139,6 +144,7 @@ int Mixer::solve(const DictPtr& dict,
         if (P < P_out) P_out = P;
         Hin_total += F * hInlet(T, P, vf, z);
         vfw       += F * vf;
+        (vf >= 0.5 ? nVapIn : nLiqIn)++;
         if (vf < 0.5) ++nLiquidInlets;
         if (!haveFirst) { T_first = T; haveFirst = true; }
     }
@@ -220,10 +226,96 @@ int Mixer::solve(const DictPtr& dict,
         auto r = solver::newton1D(f, df, T_first, nro);
         T_out     = r.x;
         converged = r.converged;
+
+        //  ---- THE DIAGNOSIS EXISTED AND ONLY THE COMMENT HAD IT ----------
+        //
+        //  The paragraph above this block states precisely why an adiabatic
+        //  mix fails and what the author should do about it -- and it said so
+        //  to a reader of the SOURCE.  A student saw `Flowsheet: unit 'mix'
+        //  failed to converge`, with no residual, no bracket, no iterate and
+        //  no remedy, on what is the single commonest failure in a first
+        //  flowsheet: a recycle whose seed is not yet near its answer.  That
+        //  is a field the engine cannot see, one level up -- the engine KNEW
+        //  and told nobody.
+        //
+        //  It throws here rather than returning 1, because the flowsheet
+        //  turns any non-zero return into a generic sentence and the detail
+        //  would be discarded at exactly the moment it is needed.
+        //
+        //  MIXING IS EXACT REGARDLESS, and saying so is not consolation: it
+        //  tells the reader the material balance is not in question and stops
+        //  them looking for an error in their flowsheet's topology.
+        if (!converged)
+        {
+            std::ostringstream m;
+            m << "Mixer: the ADIABATIC energy balance found no outlet"
+                 " temperature.\n"
+                 "  The material mix is EXACT and is not in question -- only"
+                 " the temperature is.\n"
+                 "  Newton on H(T) = H_inlets searched ["
+              << nro.lower << ", " << nro.upper << "] K (the "
+              << (gasDominant ? "vapour" : "liquid")
+              << "-dominant bracket), reached T = " << r.x
+              << " K after " << r.iterations << " iteration(s), and the"
+                 " enthalpy still misses by " << f(r.x) << " J/s.\n"
+                 "  THIS IS USUALLY NOT A TOLERANCE.  Two causes, and both"
+                 " are about the DATUM, not the solver:\n"
+                 "    * the inlets are at very different states and the"
+                 " adiabatic mix is genuinely ill-posed\n"
+                 "      on one phase basis -- a liquid species mixed into a"
+                 " dominant gas carries a large\n"
+                 "      formation+latent gap, and the balance has no root"
+                 " inside any physical bracket;\n"
+                 "    * a RECYCLE seed that is still far from its answer, so"
+                 " the mix is being asked about\n"
+                 "      a state the converged flowsheet never visits.\n"
+                 "  REMEDY: if a downstream unit fixes the temperature anyway"
+                 " (a furnace, a reactor with\n"
+                 "  its own operation.T), declare the mixer ISOTHERMAL --"
+                 " `operation { T <K>; }` -- and the\n"
+                 "  author owns that datum explicitly instead of the solver"
+                 " inventing one.  Otherwise give\n"
+                 "  the tear a better seed in 0/, or tear a different stream.";
+            throw std::runtime_error(m.str());
+        }
     }
 
     const scalar      vf_out = vfFix;
     const std::string regime = gasDominant ? "vapour" : "liquid";
+
+    //  ---- "DOMINANT" IS A LABEL, AND THE READER CANNOT ACT ON THE WORD ----
+    //
+    //  This unit MIXES; it does not FLASH.  The outlet carries the
+    //  flow-weighted dominant phase as a single label, which is exact when
+    //  the inlets agree and is a CHOICE when they do not.  Printing the word
+    //  "dominant" told the reader a decision had been made without telling
+    //  them one had been available.
+    //
+    //  It matters because the consequence surfaces far away and in someone
+    //  else's voice: mixing a vapour reactor feed with a liquid recycle
+    //  labelled the outlet LIQUID at 900 K, and the energy report -- 200
+    //  lines later, per unit, several times over -- proved with a
+    //  Rachford-Rice residual that no fluid can hold that label.  The report
+    //  is right and its detection stays the ONE home for the check; what was
+    //  missing is the unit saying what it DID, where it did it.
+    //
+    //  A statement about the action, never a second detection.
+    if (verbosity >= 2)
+    {
+        if (nVapIn > 0 && nLiqIn > 0)
+            std::cout << "\n  [mixer] the inlets are of UNLIKE phases ("
+                      << nVapIn << " vapour, " << nLiqIn << " liquid) and this"
+                         " unit mixes without flashing, so\n"
+                         "          the outlet carries the flow-weighted"
+                         " dominant label (" << regime << ").  If the mixed"
+                         " state is really\n"
+                         "          two-phase, that label is a CHOICE and not"
+                         " a result: put a `flash` or a\n"
+                         "          `phaseChanger` after this unit and let it"
+                         " resolve the split.  The energy report\n"
+                         "          checks the label against Rachford-Rice and"
+                         " will say so if it is impossible.\n";
+    }
 
     if (verbosity >= 2)
     {

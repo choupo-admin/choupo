@@ -79,6 +79,48 @@ namespace Choupo {
 
 namespace {
 
+//  THE PERMANENT-GAS SCREEN, WITH ONE HOME.
+//
+//  A stream whose spec does not pin a phase and whose T exceeds every present
+//  component's critical temperature cannot form a liquid: it is a permanent
+//  gas / supercritical single phase, so vf = 1.  Cheap and
+//  thermo-context-INDEPENDENT (Tc is a global constant), which is why it
+//  belongs in the resolver and never in the file reader (the reader stays
+//  thermo-free and reads only pins).
+//
+//  IT WAS APPLIED ONCE, TO THE AUTHORED STREAMS, AND THE STREAMS THAT NEED IT
+//  MOST ARE CREATED AFTERWARDS.  `choupo-init0` propagates estimates through
+//  the topology well after the resolver has run, so every internal and outlet
+//  file it writes was left at the default vf = 0 -- liquid.  On a styrene
+//  reactor loop that means 0/reactorIn was written as LIQUID ethylbenzene and
+//  steam at 900 K and 1.2 bar, a state no fluid can occupy, and the run then
+//  proved it impossible fifteen times over (`IMPOSSIBLE INLET PHASE`, with a
+//  Rachford-Rice residual) about a file the tool itself had just produced.
+//  Two tools disagreeing about one file, and the silent one was the writer.
+//
+//  Extracted rather than copied: a second transcription of this screen would
+//  drift, and both copies would keep answering.
+void screenPermanentGas(ProcessStream& s, const ThermoPackage& thermo)
+{
+    if (s.vf > 1.0e-6 || s.T <= 0.0) return;     // pinned/computed vapour, or no T
+    scalar maxTc = 0.0; bool allHaveTc = true, anyPresent = false;
+    for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
+    {
+        if (s.z[i] <= 0.0) continue;
+        anyPresent = true;
+        const scalar tci = thermo.comp(i).Tc();
+        if (tci > 0.0) { if (tci > maxTc) maxTc = tci; }
+        else { allHaveTc = false; break; }        // missing Tc -> do not screen
+    }
+    if (anyPresent && allHaveTc && s.T > maxTc)
+        s.vf = 1.0;                               // above every Tc: no liquid possible
+}
+
+} // namespace
+
+
+namespace {
+
 // (The `state`-based stream spec -- saturatedVapour / vaporFraction -- and
 //  its two solvers, invertPsat() and solveStateForVf(), were readers of the
 //  RETIRED flowsheetDict `streams {}` block.  That block is refused loudly
@@ -2558,22 +2600,7 @@ int Flowsheet::solve(const DictPtr& dict,
     //  stays thermo-free; it reads only pins).  Sub-critical resolution by a
     //  flash, in the consuming unit's effective context, is layer 2 (a later
     //  increment); until then a non-pinned sub-critical stream keeps vf = 0.
-    for (auto& [nm, s] : streams_)
-    {
-        (void) nm;
-        if (s.vf > 1.0e-6 || s.T <= 0.0) continue;   // pinned/computed vapour, or no T
-        scalar maxTc = 0.0; bool allHaveTc = true, anyPresent = false;
-        for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
-        {
-            if (s.z[i] <= 0.0) continue;
-            anyPresent = true;
-            const scalar tci = thermo.comp(i).Tc();
-            if (tci > 0.0) { if (tci > maxTc) maxTc = tci; }
-            else { allHaveTc = false; break; }       // missing Tc -> do not screen
-        }
-        if (anyPresent && allHaveTc && s.T > maxTc)
-            s.vf = 1.0;                               // above every Tc: no liquid possible
-    }
+    for (auto& [nm, s] : streams_) { (void) nm; screenPermanentGas(s, thermo); }
 
     // Snapshot the AUTHORED state names (what 0/ supplied) BEFORE any tear
     // auto-seeding -- choupo-init0 must distinguish what the author wrote
@@ -3761,6 +3788,11 @@ int Flowsheet::runInit0(const std::vector<DictPtr>&     units,
                 ProcessStream est = mix;
                 est.name = so;
                 est.F    = Fout;
+                //  SCREEN THE ESTIMATE THE MOMENT IT EXISTS.  See
+                //  screenPermanentGas: the resolver's pass ran long before
+                //  this propagation, so without this the files init0 writes
+                //  are exactly the ones the screen never reached.
+                screenPermanentGas(est, thermo);
                 streams_[so] = est;
                 known.insert(so);
                 generated.insert(so);
