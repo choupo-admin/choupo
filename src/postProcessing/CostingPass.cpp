@@ -196,8 +196,20 @@ int CostingPass::run(SimulationResult& result)
                   << std::setw(12) << "B1, B2"
                   << "F_M (material)\n  " << std::string(103, '-') << "\n";
 
-        for (const auto& [uname, cb] : result.costs)
+        for (const auto& [uname, entry] : result.costs)
         {
+            //  A STRUCTURED BINDING CANNOT BE CAPTURED BY A LAMBDA IN C++17
+            //  -- it became legal only in C++20.  g++ accepts it as an
+            //  extension and emscripten's clang does not, so writing
+            //  `[&]{ ... cb.factors ... }` over `auto& [uname, cb]` compiles
+            //  natively, passes the whole suite, and kills `make wasm`:
+            //      error: reference to local binding 'cb' declared in
+            //      enclosing function
+            //  which is what took www.choupo.org three commits stale.  The
+            //  ordinary reference below is capturable, and the trap is the
+            //  same one CLAUDE.md §13 names: the WASM build is SEPARATE and
+            //  is not in bin/runTests.
+            const CostBreakdown& cb = entry;
             auto f = [&](const char* k) -> scalar {
                 auto it = cb.factors.find(k);
                 return it == cb.factors.end() ? 0.0 : it->second;
