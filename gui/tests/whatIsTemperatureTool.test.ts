@@ -29,7 +29,8 @@ import { applyScalarOverride } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import {
-  LADDER, LADDER_WITNESS, T_SUBJECT_K, TEMPERATURE_WITNESS, readLadder,
+  C2_UM_K, LADDER, LADDER_WITNESS, T_HOT_C, T_HOT_K, T_SUBJECT_K,
+  TEMPERATURE_WITNESS, emissivityBand_K, emissivitySensitivity, readLadder,
   readZScan, rungDeparturePct, worstDeparturePct,
 } from "../src/ui/methods/WhatIsTemperatureTool.js";
 
@@ -146,5 +147,65 @@ describe("the engineer's ladder", () => {
     expect(rungDeparturePct(101325)).toBeCloseTo(0, 9);
     //  Water, the rung the page singles out.
     expect(rungDeparturePct(103926)).toBeCloseTo(2.567, 2);
+  });
+});
+
+
+describe("the hot end -- where the tenth of a degree dies", () => {
+  it("puts the subject temperature above the silver point", () => {
+    //  The whole section turns on this: 1608.1 degC is past where a platinum
+    //  resistance thermometer can go, which is WHY the answer becomes
+    //  radiation and why the emissivity then decides the number.  If this
+    //  ever stopped holding, the section would be arguing about the wrong
+    //  instrument.
+    const SILVER_POINT_K = 1234.93;   //  ITS-90 defining fixed point
+    expect(T_HOT_K).toBeGreaterThan(SILVER_POINT_K);
+  });
+
+  it("converts to kelvin the one way there is", () => {
+    expect(T_HOT_K).toBeCloseTo(T_HOT_C + 273.15, 9);
+    expect(T_HOT_K).toBeCloseTo(1881.25, 6);
+  });
+
+  it("carries the second radiation constant, not a rounded memory of it", () => {
+    //  c2 = h*c/k = 1.4387769e-2 m.K.  The page prints this constant to the
+    //  reader and invites them to redo the arithmetic; a value wrong in the
+    //  third digit would make every band on the page wrong by the same
+    //  factor, invisibly.
+    expect(C2_UM_K).toBeCloseTo(14387.769, 0);
+  });
+
+  it("computes the emissivity sensitivity from Wien, as a pure ratio", () => {
+    //  dT/T = (lambda*T/c2) * (de/e).  Recomputed here independently of the
+    //  implementation, so a transposed factor fails rather than agreeing
+    //  with itself.
+    expect(emissivitySensitivity(0.65, T_HOT_K))
+      .toBeCloseTo((0.65 * 1881.25) / 14388, 9);
+    expect(emissivitySensitivity(0.65, T_HOT_K)).toBeCloseTo(0.085, 3);
+  });
+
+  it("grows with wavelength and with temperature, which is the lesson", () => {
+    //  A short wavelength is LESS sensitive to the emissivity guess -- that
+    //  is why pyrometers are built narrow-band and blue.  If this ordering
+    //  ever inverted, the page would be teaching the opposite of the truth.
+    const short = emissivitySensitivity(0.65, T_HOT_K);
+    const long = emissivitySensitivity(5.0, T_HOT_K);
+    expect(long).toBeGreaterThan(short);
+    expect(emissivitySensitivity(0.65, 2 * T_HOT_K))
+      .toBeGreaterThan(short);
+  });
+
+  it("turns a 10 % emissivity error into the band the page prints", () => {
+    const band = emissivityBand_K(0.65, T_HOT_K, 0.10);
+    expect(band).toBeCloseTo(16, 0);
+    //  ONE home: the page prints this number twice (as "K on the answer" and
+    //  as the "+/-" beside the reading) and both must come from here.  The
+    //  first draft hand-wrote 15 beside a computed 16.
+    expect(band).toBeCloseTo(
+      emissivitySensitivity(0.65, T_HOT_K) * 0.10 * T_HOT_K, 9);
+  });
+
+  it("has no band at all when the emissivity is known exactly", () => {
+    expect(emissivityBand_K(0.65, T_HOT_K, 0)).toBe(0);
   });
 });

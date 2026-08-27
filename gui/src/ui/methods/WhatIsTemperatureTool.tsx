@@ -75,6 +75,39 @@ const PROPS_DICT = "system/propsDict";
  *  point, which is the question. */
 export const T_SUBJECT_K = 500.012;
 
+/** The hot end, as the owner posed it: "what the hell is a temperature of
+ *  1608.1 degC?"  Above the silver point, so the platinum resistor is gone and
+ *  the answer is radiation -- which is where the tenth of a degree dies. */
+export const T_HOT_C = 1608.1;
+export const T_HOT_K = T_HOT_C + 273.15;
+
+/** Second radiation constant, um.K -- the ONE place this page carries a
+ *  physical constant, and it is here because the engine has no radiation
+ *  thermometry operation to ask.  See the section's own note. */
+export const C2_UM_K = 14388;
+
+/** Sensitivity of a narrow-band radiation thermometer to the emissivity it had
+ *  to ASSUME.  From Wien's approximation to Planck:
+ *
+ *      dT/T  =  (lambda*T / c2) * (de/e)
+ *
+ *  It is arithmetic over a closed form, printed so a reader can redo it -- not
+ *  an engine answer, and the page says so rather than letting it look like
+ *  one. */
+export function emissivitySensitivity(lambda_um: number, T_K: number): number {
+  return (lambda_um * T_K) / C2_UM_K;
+}
+
+/** What a relative emissivity error of `relErr` costs, in kelvin, at `T_K`.
+ *  The band the page prints beside the reading -- ONE home, because the
+ *  sentence "1608 +/- 16" and the sentence "16 K on the answer" are the same
+ *  number and a page that transcribes it twice will drift them. */
+export function emissivityBand_K(
+  lambda_um: number, T_K: number, relErr: number,
+): number {
+  return emissivitySensitivity(lambda_um, T_K) * relErr * T_K;
+}
+
 /** The second witness: the ladder of normal boiling points, verified. */
 export const LADDER_WITNESS = "props/thermo/temperature02_engineers_ladder";
 
@@ -492,6 +525,112 @@ export function WhatIsTemperatureTool(): JSX.Element {
             of the skill.
           </Text>
         </Box>
+
+        <Box>
+          <Title order={5}>7 · And what, exactly, is 1608.1 °C?</Title>
+          <Text size="sm" mt={4}>
+            That is {T_HOT_K.toFixed(2)} K — a cracker firebox, a reformer
+            flame, an incinerator.  A real number off a real plant.  And look
+            where it falls: <strong>above the silver point</strong>.  The
+            platinum resistance thermometer of §5 has ended.  Nothing survives
+            there, and ITS-90 stops using resistance for exactly that reason.
+          </Text>
+          <Text size="sm" mt={6}>
+            What is left is <strong>radiation</strong>: Planck’s law, and a
+            pyrometer looking at the thing.  Which is where the tenth of a
+            degree dies.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>A pyrometer does not measure temperature.  It measures
+            radiance.</strong>  To turn that into a temperature it must ASSUME
+            an emissivity — and nobody knows the emissivity of a furnace
+            refractory, a flame or an oxidised tube to better than about ±0.05.
+          </Text>
+          <Text size="sm" mt={6}>
+            What that costs is computable, from Wien’s approximation to
+            Planck:
+          </Text>
+          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+            <Text size="sm" ff="monospace">
+              ΔT / T ≈ (λ·T / c₂) · (Δε / ε)
+            </Text>
+          </Box>
+          <Text size="sm">
+            At {T_HOT_K.toFixed(0)} K with a narrow band at λ = 0.65 µm and
+            c₂ = {C2_UM_K} µm·K, that factor is{" "}
+            <strong>{emissivitySensitivity(0.65, T_HOT_K).toFixed(3)}</strong>.
+            So a <strong>10 % error in the emissivity you guessed</strong> puts{" "}
+            <strong>{emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} K</strong>{" "}
+            on the answer.
+          </Text>
+          <Text size="sm" mt={6}>
+            So {T_HOT_C} °C is, at best,{" "}
+            <strong>
+              {Math.round(T_HOT_C)} ± {emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} °C
+            </strong>.  The tenth of a degree is noise wearing the clothes of
+            precision.
+          </Text>
+        </Box>
+
+        <Alert variant="light" title="A second epigraph, and the same warning">
+          <Text size="sm" fs="italic">
+            “The physicist can never subject an isolated hypothesis to
+            experimental test, but only a whole group of hypotheses.”
+          </Text>
+          <Text size="xs" mt={6} c="dimmed">
+            Pierre Duhem, <em>La Théorie Physique: Son Objet, Sa Structure</em>
+            {" "}(1906).  Marked exactly as the Sommerfeld one is: the thesis is
+            certainly Duhem’s, the English wording here is one of several
+            translations in circulation and this repository has not checked it
+            against a specific edition.
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>Reading a pyrometer is that thesis, made of metal.</strong>
+            {" "}You never measure the temperature.  You measure a radiance, and
+            to get a number out you carry Planck’s law, an assumed emissivity,
+            the transmission of a dirty window and the geometry of a sight path
+            — all at once.  When the answer comes out wrong,{" "}
+            <strong>nothing tells you which of them failed.</strong>
+          </Text>
+          <Text size="sm" mt={6}>
+            The deeper form of the problem is older than the pyrometer and has
+            a modern book of its own: Hasok Chang, <em>Inventing
+            Temperature</em> (2004), on what he calls the problem of nomic
+            measurement — to check that a thermometer reads truly you need a
+            way of knowing the temperature, which is the thing the thermometer
+            was for.  Named here as the place to go next; this repository has
+            not read it back and quotes nothing from it.
+          </Text>
+        </Alert>
+
+        <Box>
+          <Title order={5}>The symmetry, which is the whole answer</Title>
+          <Text size="sm" mt={4}>
+            At <strong>20 K</strong> and at <strong>{T_HOT_K.toFixed(0)} K</strong>
+            {" "}you are outside the platinum resistor — on both sides.  The vast
+            accurate middle, where ITS-90 is good to millikelvin, is where the
+            engineer’s ordinary life happens; and{" "}
+            <strong>both ends of the engineer’s own range are served by
+            different physics</strong>.
+          </Text>
+          <Text size="sm" mt={6}>
+            That is why “what is a temperature” has no single answer.  It has
+            four, handed over in turn, and the honest thing an engineer can do
+            is know which one is under the number they are holding.
+          </Text>
+        </Box>
+
+        <Alert variant="light" color="gray"
+          title="Why this section has no slider">
+          <Text size="xs">
+            Every other number on this page is an engine run.  This one is not:
+            Choupo has no radiation-thermometry operation, so an interactive
+            here would have to compute physics in the page — which this plane
+            forbids, and for good reason.  The arithmetic is printed instead,
+            with its constants, so a reader can redo it.  A missing interactive
+            that says why is better than one that quietly breaks the rule.
+          </Text>
+        </Alert>
 
         <Alert variant="light" title="The dogma, stated rather than buried">
           <Text size="sm">
