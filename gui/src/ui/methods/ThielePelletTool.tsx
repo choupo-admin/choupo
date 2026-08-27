@@ -76,7 +76,7 @@ License
 import { useMemo, useState } from "react";
 import {
   Alert, Badge, Box, Group, Loader, NumberInput, SegmentedControl, Slider,
-  Text, Tooltip,
+  Stack, Text, Title, Tooltip,
 } from "@mantine/core";
 
 import type { RunResult } from "../../adapters/SolverAdapter.js";
@@ -91,9 +91,90 @@ import {
   type FieldRead, type PelletDiagnostics, type PelletGeometry, type Read,
   type SweepRead, type ThieleKnobValues,
 } from "../../case/thielePellet.js";
-import {
-  KnobField, KnobSlider, MethodSetupRail, PanelNote,
-} from "./knobPanel.js";
+import { KnobField, KnobSlider, PanelNote } from "./knobPanel.js";
+
+/*  THE LESSON, as data rather than as markup.
+ *
+ *  This tool used to be an instrument panel: knobs down one side, a drawing in
+ *  the middle, and a wall of small grey provenance text underneath.  Every
+ *  number on it was right and none of it TAUGHT anything -- a reader who did
+ *  not already know what a Thiele modulus was left knowing exactly that.  The
+ *  temperature tool had already shown the shape that works: a page you scroll,
+ *  where the interactive is EARNED by the paragraphs above it.
+ *
+ *  The steps live here, not inline in the JSX, because a test can then check
+ *  that the argument still runs end to end -- that no step lost its formula,
+ *  and that the two regimes are still stated as consequences a designer acts
+ *  on rather than as algebra.  */
+export const THIELE_STEPS: readonly {
+  n: number; title: string; body: string; formula?: string; note?: string;
+}[] = [
+  {
+    n: 1,
+    title: "The rate you measured is not the rate you get",
+    body: "You measure a rate constant in a flask, with the catalyst ground "
+      + "to powder and everything in contact with everything.  Then you pack "
+      + "a bed with 3 mm pellets and use that same constant to size it.  The "
+      + "bed comes out too small — sometimes by a factor of five — and "
+      + "nothing in the arithmetic looks wrong.  What went wrong is "
+      + "geographical: the reaction happens on pore walls INSIDE the pellet, "
+      + "and the reagent has to get there.",
+  },
+  {
+    n: 2,
+    title: "Two speeds, and only their ratio matters",
+    body: "A pellet is a race between two processes.  Reaction consumes the "
+      + "species at a rate k·c per unit volume.  Diffusion resupplies it "
+      + "through the pore network at a rate set by D_eff and by how far the "
+      + "centre is from the surface.  Neither speed means anything alone: "
+      + "double both and the pellet behaves identically.  The Thiele modulus "
+      + "is that ratio, made dimensionless.",
+    formula: "φ = L · √(k / D_eff)",
+    note: "L is the characteristic length — the sphere's radius, the "
+      + "slab's HALF-thickness.  φ small: diffusion wins, the whole pellet "
+      + "sees surface concentration.  φ large: reaction wins, the reagent is "
+      + "eaten near the surface and the core is dead weight.",
+  },
+  {
+    n: 3,
+    title: "η is the answer to “how much of my pellet is working?”",
+    body: "The effectiveness factor is the honest bookkeeping: the rate the "
+      + "pellet ACTUALLY delivers, divided by the rate it would deliver if "
+      + "every pore saw surface concentration.  It is what your flask "
+      + "constant must be multiplied by before it describes your bed.  "
+      + "η = 1 means the whole pellet works.  η = 0.19 means four fifths "
+      + "of the catalyst you paid for is doing nothing.",
+    formula: "η = (actual rate) / (rate at surface conditions)",
+  },
+  {
+    n: 4,
+    title: "Two regimes, and they demand opposite things of you",
+    body: "At small φ you are KINETICALLY controlled: η ≈ 1, and the way "
+      + "to more conversion is more catalyst activity or more temperature.  "
+      + "At large φ you are DIFFUSION controlled: η → 3/φ for a sphere, "
+      + "so η·k → 3√(k·D_eff)/L — the observed rate now depends on "
+      + "the SQUARE ROOT of k.  Doubling your catalyst's activity buys you "
+      + "41 %, not 100 %.  Halving the pellet size buys you the full factor "
+      + "of two.  Knowing which regime you are in tells you which lever to "
+      + "pull, and pulling the wrong one is expensive.",
+    note: "The apparent activation energy halves too, for the same reason "
+      + "— which is a classic diagnostic: an Arrhenius plot whose slope is "
+      + "about half what the chemistry says is a pellet telling you it is "
+      + "diffusion limited.",
+  },
+  {
+    n: 5,
+    title: "You cannot measure φ. You can measure η·φ².",
+    body: "To compute φ you need k and D_eff — the two things you were "
+      + "trying to establish.  This is circular, and the way out is the "
+      + "WEISZ-PRATER criterion, which is built only from quantities you can "
+      + "actually observe: the rate the pellet is delivering right now, its "
+      + "size, and the surface concentration.  Well below 1 and you are "
+      + "kinetically controlled; well above 1 and you are not.  It answers "
+      + "the design question without ever asking for the intrinsic rate.",
+    formula: "η·φ² = (r_obs · L²) / (D_eff · c_s)",
+  },
+];
 
 // ---- palette ----------------------------------------------------------------
 
@@ -629,9 +710,16 @@ export function ThielePelletTool(): JSX.Element {
       title="The η(φ) family could not be read">
       <Text size="xs">{family.read.why}</Text>
     </Alert>);
-  if (advisories.length > 0) alerts.push(
-    <Alert key="adv" color="yellow" variant="light" m={12}
-      title={`The engine qualifies its own answer: ${advisories.length} advisories`}>
+
+  /*  THE ADVISORIES ARE NOT A FAILURE, so they do not sit with the failures.
+   *  Everything in `alerts` above is a run that did not produce an answer;
+   *  these are the engine qualifying an answer it DID produce, which belongs
+   *  beside the provenance at the foot of the lesson rather than in front of
+   *  the paragraph that introduces the pellet.  */
+  const advisoryAlert = advisories.length === 0 ? null : (
+    <Alert color="yellow" variant="light"
+      title={`The engine qualifies its own answer: ${advisories.length} `
+        + `advisor${advisories.length === 1 ? "y" : "ies"}`}>
       {advisories.map((a) => (
         <Text key={a.message} size="xs" ff="monospace" mt={2}
           style={{ whiteSpace: "pre-wrap" }}>
@@ -640,7 +728,7 @@ export function ThielePelletTool(): JSX.Element {
       ))}
     </Alert>);
 
-  const controls = (
+  const knobRail = (
     <>
       <KnobField label="view">
         <SegmentedControl size="xs" value={view} fullWidth
@@ -664,148 +752,271 @@ export function ThielePelletTool(): JSX.Element {
             ]} />
         </KnobField>
       )}
-      {busy && (
-        <Group gap={6} wrap="nowrap" align="center">
-          <Loader size="xs" />
-          <Text size="xs" c="dimmed">
-            re-solving all three shapes — seconds, not instant
-          </Text>
-        </Group>
-      )}
       <RateConstantKnob value={knobs["rateConstant"] ?? RATE_KNOB.def}
-        onChange={(v) => setKnobs((s) => ({ ...s, rateConstant: v }))} />
+        onChange={(v) => setKnobs((st) => ({ ...st, rateConstant: v }))} />
       {THIELE_KNOBS.filter((k) => k.id !== "rateConstant").map((k) => (
         <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def} showWhy
-          onChange={(v) => setKnobs((s) => ({ ...s, [k.id]: v }))} />
+          onChange={(v) => setKnobs((st) => ({ ...st, [k.id]: v }))} />
       ))}
-      <PanelNote>
-        Runs tutorials/{THIELE_WITNESS} THREE times in your browser — once per
-        shape — with your parameters written into its own dicts. The species is
-        {" "}{WITNESS_SPECIES} counter-diffusing against {WITNESS_CARRIER} in the
-        {" "}{WITNESS_CATALYST} record; the effective diffusivity is derived by
-        the engine as (ε_p/τ)·D_molecular and announced with that rule.
-      </PanelNote>
-      <PanelNote>
-        There is no ORDER knob and no film-coefficient knob: the operation
-        models neither, and a knob that changed nothing would be worse than
-        its absence.
-      </PanelNote>
     </>
   );
 
-  return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
-      {alerts}
-
-      <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
-        style={{ flexShrink: 0 }}>
-        <Tooltip withArrow multiline w={430}
-          label={"D_eff is not stored anywhere: the engine derives it as "
-            + "(epsilon_p / tau) * D_molecular from the catalyst record and "
-            + "Fuller's correlation for the CO/N2 pair, and announces the rule "
-            + "that produced it.  Knudsen diffusion is not modelled and the run "
-            + "says so."}>
-          <Badge variant="light" color="teal" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            D_eff = {sci(dEff)} m²/s
-          </Badge>
-        </Tooltip>
-        <Tooltip withArrow multiline w={430}
-          label={"The largest |numerical - closed form| over every node of the "
-            + "three fields, as each run published it in its own diagnostics.  "
-            + "It is not recomputed here: the engine writes both the numerical "
-            + "and the analytical value in the same CSV row, and the deviation "
-            + "beside them."}>
-          <Badge variant="light" color="cyan" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            worst field deviation = {sci(worstFieldDev)}
-          </Badge>
-        </Tooltip>
-        <Badge variant="light" color="grape" tt="none">
-          grid: {Number.isFinite(runs[0]?.diag?.nodes)
-            ? runs[0]!.diag!.nodes : "—"} points
-        </Badge>
-        <Badge variant="light" color="orange" tt="none">
-          Weisz-Prater η·φ² (sphere) = {fmt(bySphere?.diag?.weiszPrater, 4)}
-        </Badge>
-      </Group>
-
-      <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
-        {busy && (
-          <Box style={{ position: "absolute", inset: 0, display: "flex",
-            alignItems: "center", justifyContent: "center", zIndex: 1,
-            background: "light-dark(rgba(255,255,255,0.5), rgba(0,0,0,0.35))" }}>
-            <Loader size="sm" />
+  const step = (n: number): JSX.Element | null => {
+    const st = THIELE_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+            <Text size="sm" ff="monospace">{st.formula}</Text>
           </Box>
         )}
-        <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
-          preserveAspectRatio="xMidYMid meet" role="img"
-          aria-label={"Intraparticle concentration field in a catalyst pellet: "
-            + "a slab, a cylinder and a sphere painted from the engine's own "
-            + "c/c_s field, each with its Thiele modulus and effectiveness "
-            + "factor, over a chart of the same field against the normalised "
-            + "coordinate with the closed form drawn on top of it"}>
-          {runs.map((r, i) => (
-            <CrossSection key={r.geometry} run={r} x={CELL_X[i]!}
-              paint={paint} tRange={tRange} />
-          ))}
-          <RampLegend y={STRIP_Y + STRIP_H + 6} />
-          <TraceLegend y={STRIP_Y + STRIP_H + 6} />
-          {view === "field"
-            ? <ProfileChart runs={runs} />
-            : family && family.read.ok
-              ? <FamilyChart sweep={family.read.read} runs={runs} />
-              : (
-                <text x={FW / 2} y={(PLOT_T + PLOT_B) / 2} textAnchor="middle"
-                  fontSize={12} fill={INK}>
-                  no η(φ) family published yet
-                </text>
-              )}
-        </svg>
+        {st.note && <Text size="sm" c={INK}>{st.note}</Text>}
       </Box>
+    );
+  };
 
-      {/* WHAT THIS IS, AND WHAT IT IS NOT.  Both halves are required reading and
-          neither is a preference; the limits are the case module's ONE home
-          (THIELE_LIMITS), rendered here. */}
-      <Box px={12} pb={8} style={{ flexShrink: 0 }}>
-        <Text size="xs" c="dimmed">
-          <b>Engine output:</b> every band and every solid curve is the{" "}
-          <code>c_over_cs</code> column of <code>{FIELD_CSV}</code> against its
-          own <code>xi</code>; every dashed curve is{" "}
-          <code>c_over_cs_closedForm</code> from the SAME row. η, φ, φ_char,
-          c(centre) and the deviations are the operation&apos;s own published
-          diagnostics.
-          {view === "family" && family && family.read.ok && (
-            <> The η(φ) family is <code>{SWEEP_CSV}</code> as the{" "}
-            {family.geometry} run wrote it — all three runs publish it
-            identically, because it is parametric in φ and holds no pellet
-            fixed.</>)}
-        </Text>
-        <Text size="xs" c="dimmed" mt={2}>
-          <b>Drawn by this view:</b> the shapes; the stride that reduces the
-          field to about {MAX_BANDS} piecewise-constant bands (published rows
-          are DROPPED, never averaged — each band&apos;s fill is one published
-          value and both its edges are published ξ); the colour ramp; and, on
-          the family chart only, a log10 abscissa. Nothing else. No modulus, no
-          effectiveness factor, no profile and no deviation is computed in the
-          browser, and nothing is interpolated between published rows.
-        </Text>
-        {/* THE LIMITS, all of them, all the time.  They are laid out as a
-            responsive GRID rather than a stack of full-width paragraphs: five
-            claims this long cost the drawing about 260 px of height in one
-            column and about 120 px in two, and the drawing is aspect-fitted, so
-            height it loses it also loses in width.  Nothing is folded, elided
-            or moved behind a hover — the columns collapse to one below ~320 px
-            of content width and every sentence is still on the page. */}
-        <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 3,
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
-          {THIELE_LIMITS.map((l) => (
-            <Text key={l.id} size="xs" c="dimmed">
-              <b>{l.title}</b> {l.body}
-            </Text>
-          ))}
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        <Box>
+          <Title order={3}>What is a catalyst pellet doing inside?</Title>
+          <Text size="sm" c={INK} mt={4}>
+            You are about to size a packed bed.  Everything below decides
+            whether it comes out the right size, and none of it is visible
+            from outside the pellet.
+          </Text>
         </Box>
-      </Box>
-    </MethodSetupRail>
+
+        {alerts}
+
+        {step(1)}
+        {step(2)}
+        {step(3)}
+
+        <Box>
+          <Title order={5}>Now watch it happen</Title>
+          <Text size="sm" mt={4}>
+            Three shapes, the same length, the same chemistry, solved in your
+            browser.  <strong>Drag the rate constant</strong> and watch the
+            field go from nearly flat — the whole pellet working — to a skin
+            hugging the surface over a dead core.  The dashed curve is the
+            closed-form solution drawn on top of the numerical one, so you are
+            watching the method being checked as well as the physics.
+          </Text>
+        </Box>
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(210px, 250px) 1fr" }}>
+          <Stack gap={6}>
+            {knobRail}
+            {busy && (
+              <Group gap={6} wrap="nowrap" align="center">
+                <Loader size="xs" />
+                <Text size="xs" c={INK}>re-solving all three shapes…</Text>
+              </Group>
+            )}
+          </Stack>
+
+          <Box style={{ minWidth: 0, position: "relative" }}>
+            <Group gap="xs" wrap="wrap" align="center" mb={4}>
+              <Tooltip withArrow multiline w={430}
+                label={"D_eff is not stored anywhere: the engine derives it as "
+                  + "(epsilon_p / tau) * D_molecular from the catalyst record "
+                  + "and Fuller's correlation for the CO/N2 pair, and "
+                  + "announces the rule that produced it.  Knudsen diffusion "
+                  + "is not modelled and the run says so."}>
+                <Badge variant="light" color="teal" tt="none"
+                  styles={{ root: { cursor: "help" } }}>
+                  D_eff = {sci(dEff)} m²/s
+                </Badge>
+              </Tooltip>
+              <Tooltip withArrow multiline w={430}
+                label={"The largest |numerical - closed form| over every node "
+                  + "of the three fields, as each run published it in its own "
+                  + "diagnostics.  It is not recomputed here."}>
+                <Badge variant="light" color="cyan" tt="none"
+                  styles={{ root: { cursor: "help" } }}>
+                  worst field deviation = {sci(worstFieldDev)}
+                </Badge>
+              </Tooltip>
+              <Badge variant="light" color="grape" tt="none">
+                grid: {Number.isFinite(runs[0]?.diag?.nodes)
+                  ? runs[0]!.diag!.nodes : "—"} points
+              </Badge>
+              <Badge variant="light" color="orange" tt="none">
+                Weisz-Prater η·φ² (sphere) ={" "}
+                {fmt(bySphere?.diag?.weiszPrater, 4)}
+              </Badge>
+            </Group>
+            {busy && (
+              <Box style={{ position: "absolute", inset: 0, display: "flex",
+                alignItems: "center", justifyContent: "center", zIndex: 1,
+                background: "light-dark(rgba(255,255,255,0.5), "
+                  + "rgba(0,0,0,0.35))" }}>
+                <Loader size="sm" />
+              </Box>
+            )}
+            {/*  The height comes from the aspect ratio, never from an
+                 attribute: `height="auto"` is not a valid SVG length and the
+                 browser rejects the whole attribute with a console error.
+                 A CSS height of auto on an element with a viewBox lets the
+                 intrinsic ratio set it, which is what a scrolling page
+                 wants.  */}
+            <svg viewBox={`0 0 ${FW} ${FH}`}
+              style={{ width: "100%", height: "auto", display: "block" }}
+              preserveAspectRatio="xMidYMid meet" role="img"
+              aria-label={"Intraparticle concentration field in a catalyst "
+                + "pellet: a slab, a cylinder and a sphere painted from the "
+                + "engine's own c/c_s field, each with its Thiele modulus and "
+                + "effectiveness factor, over a chart of the same field "
+                + "against the normalised coordinate with the closed form "
+                + "drawn on top of it"}>
+              {runs.map((r, i) => (
+                <CrossSection key={r.geometry} run={r} x={CELL_X[i]!}
+                  paint={paint} tRange={tRange} />
+              ))}
+              <RampLegend y={STRIP_Y + STRIP_H + 6} />
+              <TraceLegend y={STRIP_Y + STRIP_H + 6} />
+              {view === "field"
+                ? <ProfileChart runs={runs} />
+                : family && family.read.ok
+                  ? <FamilyChart sweep={family.read.read} runs={runs} />
+                  : (
+                    <text x={FW / 2} y={(PLOT_T + PLOT_B) / 2}
+                      textAnchor="middle" fontSize={12} fill={INK}>
+                      no η(φ) family published yet
+                    </text>
+                  )}
+            </svg>
+          </Box>
+        </Box>
+
+        <Alert variant="light"
+          title="Why the three shapes are not three problems">
+          <Text size="sm">
+            A slab, a cylinder and a sphere give three different η at the same
+            φ — you can see the gap on the chart.  But switch to the{" "}
+            <strong>η(φ) family</strong> view and they very nearly collapse
+            onto ONE curve.  The trick is the characteristic length: measure φ
+            on Λ = V/S, the volume the reaction happens in divided by the area
+            the reagent enters through, and the geometry mostly cancels.  That
+            is why a designer can carry one curve instead of a catalogue of
+            shapes — and why comparing shapes at the same RADIUS, as the strip
+            above does, is a deliberate choice and not a law.
+          </Text>
+        </Alert>
+
+        {step(4)}
+        {step(5)}
+
+        <Alert variant="light" color="orange"
+          title="The number this screen exists to make you distrust">
+          <Text size="sm">
+            The badge above reads <strong>η·φ² ={" "}
+            {fmt(bySphere?.diag?.weiszPrater, 4)}</strong> for the sphere, at
+            the knob settings you are holding right now.  Turn the rate
+            constant up and watch it cross 1 while the pellet on screen grows
+            its dead core.  That crossing is the moment your flask constant
+            stopped describing your bed.
+          </Text>
+        </Alert>
+
+        {hasTemperature && (
+          <Box>
+            <Title order={5}>
+              6 · And the pellet is not at one temperature
+            </Title>
+            <Text size="sm" mt={4}>
+              Switch the paint to <strong>temperature</strong>.  An exothermic
+              reaction releases its heat where it happens — near the surface,
+              once φ is large — and the pellet cannot conduct it away for
+              free.  Prater’s relation makes this exact rather than
+              hand-waved: heat and mass obey the same equation inside the
+              pellet, so temperature and concentration are locked together and
+              there is no second differential equation to solve.
+            </Text>
+            <Box my={8} px="sm" py={6}
+              style={{ borderLeft: `3px solid ${GRID}` }}>
+              <Text size="sm" ff="monospace">
+                T − T_s = β · T_s · (1 − c/c_s),{"   "}
+                β = (−ΔH)·D_eff·c_s / (k_eff·T_s)
+              </Text>
+            </Box>
+            <Text size="sm">
+              <strong>And now the honest half.</strong>  What is painted is
+              Prater’s exact consequence of the concentration field that was
+              solved.  It is NOT the coupled non-isothermal pellet: the rate
+              constant on this screen does not rise where the pellet is
+              hotter.  The real coupled problem can have three steady states
+              at one modulus and η above 1, and nothing here solves it.
+            </Text>
+          </Box>
+        )}
+
+        {advisoryAlert}
+
+        <Box>
+          <Title order={5}>
+            What is the engine’s, and what is the drawing’s
+          </Title>
+          <Text size="xs" c={INK} mt={4}>
+            <b>Engine output:</b> every band and every solid curve is the{" "}
+            <code>c_over_cs</code> column of <code>{FIELD_CSV}</code> against
+            its own <code>xi</code>; every dashed curve is{" "}
+            <code>c_over_cs_closedForm</code> from the SAME row. η, φ,
+            φ_char, c(centre) and the deviations are the operation’s own
+            published diagnostics.
+            {view === "family" && family && family.read.ok && (
+              <> The η(φ) family is <code>{SWEEP_CSV}</code> as the{" "}
+              {family.geometry} run wrote it — all three runs publish it
+              identically, because it is parametric in φ and holds no pellet
+              fixed.</>)}
+          </Text>
+          <Text size="xs" c={INK} mt={2}>
+            <b>Drawn by this view:</b> the shapes; the stride that reduces the
+            field to about {MAX_BANDS} piecewise-constant bands (published rows
+            are DROPPED, never averaged); the colour ramp; and, on the family
+            chart only, a log10 abscissa.  Nothing else.  No modulus, no
+            effectiveness factor, no profile and no deviation is computed in
+            the browser.
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>What this does not model</Title>
+          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+            {THIELE_LIMITS.map((l) => (
+              <Text key={l.id} size="xs" c={INK}>
+                <b>{l.title}</b> {l.body}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+
+        <Box>
+          <PanelNote>
+            Runs tutorials/{THIELE_WITNESS} THREE times in your browser — once
+            per shape — with your parameters written into its own dicts.  The
+            species is {WITNESS_SPECIES} counter-diffusing against{" "}
+            {WITNESS_CARRIER} in the {WITNESS_CATALYST} record.
+          </PanelNote>
+          <PanelNote>
+            There is no ORDER knob and no film-coefficient knob: the operation
+            models neither, and a knob that changed nothing would be worse than
+            its absence.
+          </PanelNote>
+        </Box>
+
+        <Text size="xs" c={TEXT}>
+          Nothing on this page is computed in the page: every η, every φ and
+          every profile point is the engine’s.
+        </Text>
+      </Stack>
+    </Box>
   );
 }

@@ -66,6 +66,7 @@ import {
 } from "../src/case/thielePellet.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
+import { THIELE_STEPS } from "../src/ui/methods/ThielePelletTool.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -657,5 +658,102 @@ describe("THIELE_LIMITS — the claim and its limits, on screen", () => {
     const l = THIELE_LIMITS.find((x) => x.id === "same-dimension")!;
     expect(l.title).toMatch(/characteristic dimension/i);
     expect(l.body).toMatch(/half-thickness/i);
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+//  THE PAGE IS A LESSON NOW, NOT A PANEL.
+//
+//  It used to be knobs down one side, a drawing in the middle and a wall of
+//  small grey provenance underneath.  Every number was right and nothing on it
+//  taught: a reader who did not already know what a Thiele modulus was left
+//  knowing exactly that.  These pin the argument, because prose is the one
+//  part of a tool that rots without anything failing.
+// ---------------------------------------------------------------------------
+
+describe("the lesson the page walks through", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/ThielePelletTool.tsx", import.meta.url), "utf-8");
+
+  it("runs five steps, numbered without a gap", () => {
+    expect(THIELE_STEPS).toHaveLength(5);
+    expect(THIELE_STEPS.map((s) => s.n)).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it("renders the definitions before the interactive and the consequences after", () => {
+    //  The drawing is EARNED by the paragraphs above it.  A student who meets
+    //  the pellet field before being told what a modulus is learns to read a
+    //  picture, not a concept -- which is what the panel version did.
+    //
+    //  This reads the RENDER order (where the step calls sit in the JSX), not
+    //  where THIELE_STEPS happens to be declared: the constant lives at the
+    //  top of the file, so a declaration-order test would pass no matter how
+    //  the page were arranged and would prove nothing at all.
+    const svg = SRC.indexOf("<svg viewBox");
+    expect(svg).toBeGreaterThan(0);
+    for (const n of [1, 2, 3]) {
+      const at = SRC.indexOf(`{step(${n})}`);
+      expect(at, `step ${n} is not rendered`).toBeGreaterThan(0);
+      expect(at, `step ${n} renders after the drawing`).toBeLessThan(svg);
+    }
+    for (const n of [4, 5]) {
+      const at = SRC.indexOf(`{step(${n})}`);
+      expect(at, `step ${n} is not rendered`).toBeGreaterThan(0);
+      expect(at, `step ${n} renders before the drawing`).toBeGreaterThan(svg);
+    }
+    //  And the formula really is a formula, in the glyphs a reader sees.
+    expect(SRC).toContain("φ = L");
+  });
+
+  it("carries a formula for the modulus, the effectiveness and Weisz-Prater", () => {
+    const f = THIELE_STEPS.filter((s) => s.formula).map((s) => s.formula!);
+    expect(f).toHaveLength(3);
+    expect(f.join(" ")).toContain("D_eff");
+    //  Weisz-Prater must be built ONLY from observables -- that is the whole
+    //  reason it exists, and a version of it carrying k would be useless.
+    const wp = THIELE_STEPS.find((s) => s.n === 5)!;
+    expect(wp.formula).toContain("r_obs");
+    expect(wp.formula).not.toContain("k /");
+  });
+
+  it("states the two regimes as things a designer DOES, not as algebra", () => {
+    //  "eta -> 3/phi" is algebra.  "doubling the activity buys 41 %, halving
+    //  the pellet buys the full factor of two" is a decision.  The step must
+    //  carry both, or it is a derivation with no consequence.
+    const st = THIELE_STEPS.find((s) => s.n === 4)!;
+    expect(st.body).toContain("3/φ");
+    expect(st.body).toContain("41 %");
+    expect(st.body.toLowerCase()).toContain("square root");
+  });
+
+  it("no longer builds itself as a fixed instrument panel", () => {
+    //  MethodSetupRail pins the drawing into whatever height is left over;
+    //  this page scrolls, so the prose can be as long as the argument needs.
+    expect(SRC).not.toContain("MethodSetupRail");
+    expect(SRC).toContain("overflowY: \"auto\"");
+  });
+
+  it("keeps the limits and the provenance on the page, not behind a hover", () => {
+    expect(SRC).toContain("THIELE_LIMITS.map");
+    expect(SRC).toContain("What this does not model");
+    expect(SRC).toContain("What is the engine");
+  });
+});
+
+describe("the isothermal limit, after a temperature became paintable", () => {
+  it("no longer claims the pellet is held at one temperature", () => {
+    //  The limit predated the `thermal {}` block.  A page that paints a
+    //  temperature field beside a caveat saying "the pellet is held at one
+    //  temperature" reads as a contradiction, and the reader cannot tell
+    //  which half is stale.
+    const iso = THIELE_LIMITS.find((l) => l.id === "isothermal")!;
+    expect(iso.body).not.toContain("held at one temperature");
+    expect(iso.body).toContain("Prater");
+    //  What must SURVIVE is the real limitation: the rate is not coupled to
+    //  the temperature.  Losing that while adding the paint would be far
+    //  worse than the stale sentence.
+    expect(iso.body).toContain("does NOT rise where the pellet is");
+    expect(iso.body).toContain("three steady states");
   });
 });

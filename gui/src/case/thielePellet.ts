@@ -645,15 +645,19 @@ export interface ToolLimit {
 export const THIELE_LIMITS: readonly ToolLimit[] = [
   {
     id: "isothermal",
-    title: "Isothermal, and first order. Nothing else is modelled.",
-    body: "The pellet is held at one temperature and the reaction is first "
-      + "order in the diffusing species. The NON-isothermal pellet is not "
-      + "modelled at all: coupled to an Arrhenius rate it has up to three "
-      + "steady states for one modulus and eta may exceed 1, so its answer is "
-      + "a SET and no single curve on this screen could stand for it. Orders "
-      + "other than first are not modelled either — they have no closed form, "
-      + "so there would be no oracle to check the numerical field against, "
-      + "which is the whole point of drawing both.",
+    title: "The RATE is isothermal and first order, even when a temperature is painted.",
+    body: "The concentration field is solved at ONE temperature, with a rate "
+      + "first order in the diffusing species. When a case declares a "
+      + "`thermal {}` block the pellet also publishes a temperature, but that "
+      + "is Prater's exact consequence of the concentration field just "
+      + "solved — the rate constant does NOT rise where the pellet is "
+      + "hotter. The coupled non-isothermal pellet is not modelled at all: "
+      + "with an Arrhenius rate it has up to three steady states for one "
+      + "modulus and eta may exceed 1, so its answer is a SET and no single "
+      + "curve on this screen could stand for it. Orders other than first are "
+      + "not modelled either — they have no closed form, so there would be "
+      + "no oracle to check the numerical field against, which is the whole "
+      + "point of drawing both.",
   },
   {
     id: "film",
