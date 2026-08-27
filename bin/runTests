@@ -3838,6 +3838,24 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/costprov.$$
 
+    # WASM-dialect gate (2026-08-27): what g++ lends as an extension,
+    # emscripten's clang refuses.  A lambda capturing a structured binding is
+    # illegal in C++17, silent under g++ -Wall -Wextra -Wpedantic, and fatal
+    # to `make wasm` -- it killed publish-site on three consecutive pushes
+    # while the suite stayed green, because the site is a different artefact
+    # from a different toolchain.  Local clang reports the family as a
+    # warning; this promotes it to an error.  NOT a replacement for
+    # `make wasm`.
+    if "$ROOT/bin/curate/check_wasm_dialect.py" > /tmp/wasmdia.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "wasm-dialect-gate" "$(tail -1 /tmp/wasmdia.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_wasm_dialect.py)\n" "wasm-dialect-gate"
+        cat /tmp/wasmdia.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/wasmdia.$$
+
     # Model-boundary ledger gate (2026-08-12): the ledger's three quantities
     # live in a top-level `energyClosures` array; published => pinned AND
     # pinned => published.

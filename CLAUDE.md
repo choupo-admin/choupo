@@ -1115,6 +1115,39 @@ something false, with authority.*  The witness's two datasets were re-extracted
 through the consolidated tool and **every number in its golden is unchanged**.
 Record: [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
 
+**THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE
+(2026-08-27).**  A lambda captured a STRUCTURED BINDING —
+`for (const auto& [uname, cb] : …)` then `[&]{ … cb.factors … }` — which is
+illegal in C++17 and became legal only in C++20.  **g++ accepts it as an
+extension and says nothing, even under `-Wall -Wextra -Wpedantic`**;
+emscripten's clang makes it an error.  So it built natively, passed the whole
+suite and every gate, and killed `make wasm`: `publish-site` failed on THREE
+consecutive pushes while www.choupo.org went on serving a bundle three commits
+old.  **A green suite is not evidence about the site** — the site is a
+different artefact from a different toolchain, and nothing in `bin/runTests`
+compiled it.  §13 says to rebuild WASM and it was not done.
+**What makes a LOCAL gate possible:** the two compilers do not disagree about
+the LANGUAGE, only about severity — ordinary clang reports the same constructs
+as `-Wc++20-extensions` where emscripten's older clang errors.  So
+`check_wasm_dialect` compiles every `src/**/*.cpp` with `clang++ -std=c++17
+-fsyntax-only` and those families promoted to errors, no emscripten needed;
+it carries a PROBE (the construct itself) that must still be rejected, and it
+FAILS rather than skips when clang is absent.  Swept, not assumed: that was
+the only instance in the tree.  **It is NOT `make wasm`** — local libstdc++
+headers, so it cannot see the libc++ differences `check_std_includes` exists
+for; the flag list is an enumeration; and emscripten's clang is OLDER, so a
+construct the local one accepts silently still passes.  4 sabotages, and
+**S2 SURVIVED**: `-Wc++2a-extensions` is an ALIAS of the same group, so
+disarming one flag leaves the other armed and the gate went on printing two
+claims that were false at that moment — any future sabotage must disarm the
+whole list.  **RESERVED for Vítor: the standard itself.**  The C++17 choice is
+registered in two places and ARGUED in neither (`property-architecture.md`
+§106 rejects C++20 because it *"contradicts settled decisions (C++17, …)"*,
+which is circular).  The code that broke the site is valid C++20.  Against
+moving: the WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the
+whole site is built from it — whether it does C++20 well enough is a
+MEASUREMENT nobody has taken, not a guess to make.
+
 **A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 of the
 student walkthrough, and it found five things (2026-08-27).**  The test was
 concrete: take €166,653 off the costing table and try to answer *"where did
@@ -1136,15 +1169,16 @@ that come from?"* as a jury would ask it.
   descending; the source-reading arm is a guard against the ordering
   changing, and claiming otherwise would credit it with coverage it lacks.)
 * **`solverDict` AND `outerDict` FOLLOWED, MEASURED FIRST THIS TIME.**  Same
-  kind of file, same argument.  Wired behind an env var, run over **all 47
-  cases** that carry either, and only then shipped: **10 findings, all one
-  benign class** — five recycle cases declaring `recycleWegsteinQmin/Qmax`
+  kind of file, same argument.  Wired behind an env var, run over **every
+  case** that carries either, and only then shipped: the findings were all
+  **one benign class** — five recycle cases declaring `recycleWegsteinQmin/Qmax`
   beside `recycleSolver Newton;`, so the Wegstein branch is never entered and
   the bounds are never read.  Dead configuration reading as a live setting.
   The five were COMMENTED OUT in the same commit rather than left to
   announce: *a shipped tutorial that warns on every run teaches the reader to
-  skip the warnings*, which is the failure the pass exists to prevent.  Corpus
-  now 47 cases / 0 findings.  (`Dictionary::found()` notes, so a real Wegstein
+  skip the warnings*, which is the failure the pass exists to prevent.  The
+  corpus is silent after it — the dated measurement, with the case list, is in
+  the record, which is where a count belongs.  (`Dictionary::found()` notes, so a real Wegstein
   case marks them read through `recScalar`'s own `found(k)` test — the audit
   tells the two situations apart without being told about either.)
 * **THE CORPUS RUN FOUND TWO REAL DEFECTS.**  Nine cases carry a `postDict`;
