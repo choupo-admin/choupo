@@ -293,7 +293,7 @@ describe("the holistic section, and the claim it had to retire", () => {
     //  here" -- true until 6b listed all eight of them, after which the page
     //  contradicted itself in the one register it cannot afford to.
     expect(SRC).not.toContain("VALUES are not quoted here");
-    expect(SRC).toContain("listed in §6b");
+    expect(SRC).toContain("listed in §8");
   });
 
   it("carries all four of Chang's circles, each with its way out", () => {
@@ -332,8 +332,8 @@ describe("the holistic section, and the claim it had to retire", () => {
     //  Regnault's comparability, the instrument handover is circle 3, and the
     //  solver's own initial guess is circle 4.  If those links are cut the
     //  section becomes a digression.
-    for (const p of ["Circle 1 is §4", "Circle 2 is the glycerol rung",
-      "Circle 3 is §5", "Circle 4 is every solver"]) {
+    for (const p of ["Circle 1 is §5", "Circle 2 is the glycerol rung",
+      "Circle 3 is §6", "Circle 4 is every solver"]) {
       expect(SRC, `the section lost its link: ${p}`).toContain(p);
     }
   });
@@ -343,5 +343,195 @@ describe("the holistic section, and the claim it had to retire", () => {
     //  reading, not a substitute; the page must not let itself be mistaken
     //  for the scholarship it is summarising.
     expect(SRC).toContain("Read the book.");
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+//  THE PHYSICS THE PAGE MUST NOT GET WRONG.
+//
+//  An external review found several claims stronger than the physics allows,
+//  in a page whose whole subject is claims stronger than the evidence allows.
+//  Each of these pins a correction, because prose is the part of a tool that
+//  rots with nothing failing.
+// ---------------------------------------------------------------------------
+
+
+/** The source with every run of whitespace collapsed.  A prose assertion made
+ *  against raw source is really an assertion about where the formatter put the
+ *  line breaks: re-wrap a paragraph and the test fails while the page is
+ *  unchanged, which trains a reader to "fix" the test.  Collapse first. */
+const prose = (src: string): string => src.replace(/\s+/g, " ");
+
+const SPRT_LO_K = 13.8033;   //  ITS-90: triple point of equilibrium hydrogen
+const SPRT_HI_K = 1234.93;   //  ITS-90: freezing point of silver
+
+describe("temperature, the kelvin, and T90 are three different things", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
+    "utf-8");
+
+  it("defines the quantity by the entropy derivative before any unit", () => {
+    //  The page used to open on the 2019 redefinition and conclude that "a
+    //  temperature is a conversion factor between energy and degrees, and
+    //  nothing else".  That is the UNIT's definition mistaken for the
+    //  QUANTITY's, and it left the page with no definition of temperature at
+    //  all -- philosophy standing where the physics should be.
+    const iDef = SRC.indexOf("(∂S / ∂U)");
+    const iK = SRC.indexOf("1.380649");
+    expect(iDef, "the thermodynamic definition is missing").toBeGreaterThan(0);
+    expect(iDef, "the unit is defined before the quantity").toBeLessThan(iK);
+  });
+
+  it("never calls a temperature a conversion factor", () => {
+    //  k_B is the conversion factor; it appears as k_B*T.  Saying the
+    //  temperature is one gets the relation backwards.
+    expect(SRC).not.toContain("conversion factor between energy and degrees");
+    expect(prose(SRC)).toContain("k<sub>B</sub> is the conversion factor");
+  });
+
+  it("keeps the three names apart, by name", () => {
+    expect(prose(SRC)).toContain("the quantity <em>T</em>");
+    expect(SRC).toContain("T₉₀");
+  });
+});
+
+describe("the platinum resistance thermometer's real range", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
+    "utf-8");
+
+  it("does not put the coldest rung outside the instrument that covers it", () => {
+    //  THE WORST ERROR THIS PAGE HAS CARRIED.  A closing section claimed that
+    //  "at 20 K and at 1881 K you are outside the platinum resistor -- on
+    //  both sides".  The SPRT runs from 13.8033 K, so 20 K is INSIDE it, and
+    //  the page's own instrument list said so four sections earlier.  It
+    //  contradicted itself in the register it can least afford.
+    const coldest = Math.min(...LADDER.map((r) => r.T));
+    expect(coldest).toBeGreaterThan(SPRT_LO_K);
+    expect(prose(SRC)).not.toContain("outside the platinum resistor");
+    expect(prose(SRC)).toContain("The cold end does not escape at all");
+  });
+
+  it("states the instrument bounds as numbers, so a claim can be checked", () => {
+    expect(SRC).toContain(String(SPRT_LO_K));
+    expect(SRC).toContain(String(SPRT_HI_K));
+  });
+
+  it("says the instrument ranges overlap rather than abut", () => {
+    //  "Four instruments, each handed over where the previous runs out" is
+    //  tidier than ITS-90 is: the gas thermometer reaches 24.5561 K while the
+    //  SPRT starts at 13.8033 K.  The overlap is the design, not a detail.
+    expect(prose(SRC)).toContain("overlap");
+    expect(SRC).toContain("24.5561");
+  });
+
+  it("puts 500 K where it actually falls among the fixed points", () => {
+    //  It sits just BELOW the tin point, with indium below it -- not
+    //  "between the triple point of water and the freezing point of zinc",
+    //  which skips the two fixed points nearest to it.
+    expect(prose(SRC))
+      .not.toContain("between the triple point of water and the freezing");
+    const sn = ITS90_ABOVE_WATER.find((f) => f.what.startsWith("tin"))!;
+    expect(sn.T).toBeGreaterThan(500);
+    expect(prose(SRC)).toContain("just below the");
+  });
+});
+
+describe("the water rung says what it actually found", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
+    "utf-8");
+
+  //  The record: log10(P/bar) = A - B/(T + C).  Recomputed here rather than
+  //  quoted, so the page's arithmetic is checked and not merely repeated.
+  const A = 5.40221, B = 1838.675, C = -31.737;
+  const P = (T: number): number => 10 ** (A - B / (T + C)) * 1e5;
+
+  it("confirms the record disagrees with ITSELF, not with nature", () => {
+    let lo = 350, hi = 400;
+    for (let i = 0; i < 200; ++i) {
+      const m = (lo + hi) / 2;
+      if (P(m) < 101325) lo = m; else hi = m;
+    }
+    const tbFromAntoine = (lo + hi) / 2;
+    //  The record declares Tb = 373.15 K a few lines above these
+    //  coefficients.  They imply 372.45 K.
+    expect(tbFromAntoine).toBeCloseTo(372.45, 1);
+    expect(373.15 - tbFromAntoine).toBeCloseTo(0.70, 1);
+  });
+
+  it("shows the 0.15 K extrapolation is NOT the cause", () => {
+    //  Inside the declared window, at 373.00 K, the correlation is already
+    //  2.0 % high.  The extrapolation is worth about half a per cent of the
+    //  two and a half -- so blaming it, as the page used to, misattributes a
+    //  data defect to an epistemological one.
+    expect(P(373.0) / 101325 - 1).toBeCloseTo(0.0201, 3);
+    expect((P(373.15) - P(373.0)) / 101325).toBeCloseTo(0.0056, 3);
+  });
+
+  it("no longer claims water disobeys its boiling point", () => {
+    expect(prose(SRC)).not.toContain("Water refuses to boil at the boiling point");
+    expect(prose(SRC)).not.toContain("not as fixed as the schoolroom says");
+    expect(SRC).toContain("its own water record");
+    expect(SRC).toContain("0.70 K");
+  });
+});
+
+describe("claims kept inside what the evidence supports", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
+    "utf-8");
+
+  it("frames the engineer's range as scope, not as physics", () => {
+    expect(prose(SRC)).toContain("engineering scope, not a boundary of");
+    //  There is no temperature at which plasma begins, and the nuclear-physics
+    //  line was a category error beside it.
+    expect(prose(SRC)).not.toContain("above it is plasma");
+    expect(prose(SRC)).not.toContain("not doing nuclear physics");
+  });
+
+  it("does not put a physical wall at 600 K", () => {
+    //  Anthracene boils near 613 K and p-terphenyl above 660 K.  The true
+    //  claim is that a normal boiling point becomes progressively less useful,
+    //  not that organics stop having one.
+    expect(prose(SRC)).not.toContain("an ordinary organic cracks before it");
+    expect(prose(SRC)).toContain("progressively less useful");
+  });
+
+  it("does not call gallium a freezing point while its own table says melting", () => {
+    expect(ITS90_ABOVE_WATER[0]!.what).toContain("melting");
+    expect(prose(SRC)).toContain("melting and freezing points of metals");
+  });
+
+  it("states the pyrometer band as conditional on its own assumptions", () => {
+    //  16 K is what a 10 % emissivity error costs AT 0.65 um under Wien.  It
+    //  is not a floor on pyrometry, and "at best" said it was.
+    expect(SRC).not.toContain("at best,");
+    expect(prose(SRC)).toContain("this geometry alone");
+    //  And the +/-0.05 emissivity figure had no source.
+    expect(prose(SRC)).not.toContain("better than about ±0.05");
+  });
+
+  it("does not declare platinum's last digit decorative", () => {
+    //  The page admits it has read no uncertainty for platinum from a primary
+    //  source.  Concluding from that that the digit is decoration is an
+    //  unsourced claim inside the section that condemns them.
+    expect(prose(SRC)).not.toContain("is decoration");
+    expect(prose(SRC)).toContain("a digit is not an uncertainty");
+  });
+
+  it("makes the closing thesis about the MEASUREMENT, not about temperature", () => {
+    //  One word. "A temperature is a position inside a system" is a
+    //  contestable ontological claim that also contradicts §1; "a reported
+    //  temperature MEASUREMENT is" is a metrological observation that is
+    //  simply true.
+    expect(prose(SRC)).toContain("A reported temperature measurement is not a fact");
+    expect(prose(SRC)).not.toContain("A temperature is not a fact you read off");
+  });
+
+  it("opens by asking for the uncertainty, not for the meaning of a digit", () => {
+    expect(prose(SRC)).toContain("decimal places are not uncertainty");
+    expect(prose(SRC)).toContain("U = 0.015 K (k = 2)");
   });
 });

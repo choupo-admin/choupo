@@ -410,9 +410,14 @@ export function WhatIsTemperatureTool(): JSX.Element {
         <Box>
           <Title order={3}>What is a temperature?</Title>
           <Text size="sm" c="dimmed" mt={4}>
-            Write one down: <strong>500.012 K</strong>.  What does the “012”
-            assert?  Three digits past the point is a specific claim about the
-            world.  Whose claim, and resting on what?
+            Write one down: <strong>500.012 K</strong>.  It <em>looks</em>
+            precise.  But decimal places are not uncertainty, and as written
+            this is not yet a measurement result at all — it carries no
+            uncertainty, names no scale, no method and no traceability.  A
+            serious one reads more like{" "}
+            <strong>T₉₀ = 500.012 K, U = 0.015 K (k = 2)</strong>, plus how it
+            was obtained.  So: what would have to be true for those three
+            digits to mean anything?
           </Text>
         </Box>
 
@@ -434,13 +439,42 @@ export function WhatIsTemperatureTool(): JSX.Element {
         </Alert>
 
         <Box>
-          <Title order={5}>1 · The definition, and it is a decree</Title>
+          <Title order={5}>1 · What temperature IS, before any thermometer</Title>
           <Text size="sm" mt={4}>
-            Since 2019 the kelvin is not defined by any substance.  It is
-            defined by <em>fixing</em> the Boltzmann constant at exactly{" "}
-            <strong>1.380649 × 10⁻²³ J/K</strong>.  Not measured — fixed.  A
-            temperature is therefore a conversion factor between energy and
-            degrees, and nothing else.
+            Thermodynamics defines temperature without measuring anything.  Put
+            two systems in thermal contact and let them exchange energy; the
+            total entropy rises until it stops.  What is equal at that point,
+            for every pair of systems in equilibrium, is one intensive
+            quantity — and that quantity <em>is</em> the temperature:
+          </Text>
+          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
+            <Text size="sm" ff="monospace">
+              1 / T = (∂S / ∂U)<sub>V, N</sub>
+            </Text>
+          </Box>
+          <Text size="sm">
+            Read it as: <strong>temperature says how reluctantly a system
+            accepts energy.</strong>  Add a joule; if the entropy barely
+            rises, T is high.  That is the whole definition, it needs no
+            substance and no instrument, and everything else on this page is
+            about the gap between it and a number on a screen.
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>2 · The kelvin is a different thing from T</Title>
+          <Text size="sm" mt={4}>
+            §1 defined a <em>quantity</em>.  A unit is a separate decision, and
+            since 2019 the kelvin is not defined by any substance either: it is
+            fixed by <em>declaring</em> the Boltzmann constant to be exactly{" "}
+            <strong>1.380649 × 10⁻²³ J/K</strong>.  Not measured — fixed.
+          </Text>
+          <Text size="sm" mt={6}>
+            Note carefully what was defined.  <strong>The unit, not the
+            quantity.</strong>  Temperature is still what §1 says it is;
+            k<sub>B</sub> is the conversion factor, appearing as k<sub>B</sub>T
+            wherever a temperature has to become an energy.  Saying “a
+            temperature is a conversion factor” gets it exactly backwards.
           </Text>
           <Text size="sm" mt={6}>
             The triple point of water, which <em>defined</em> the kelvin for
@@ -449,22 +483,36 @@ export function WhatIsTemperatureTool(): JSX.Element {
             definition tells you what a kelvin means and gives you no way
             whatsoever to measure one.
           </Text>
+          <Text size="sm" mt={6}>
+            <strong>Three things, kept apart from here on:</strong> the
+            quantity <em>T</em>; the unit <em>K</em>; and the practical scale{" "}
+            <em>T₉₀</em> that instruments actually read.  Most confusion about
+            temperature is one of these wearing another’s clothes.
+          </Text>
         </Box>
 
         <Box>
-          <Title order={5}>2 · The realisation, which is a different thing</Title>
+          <Title order={5}>3 · The realisation, which is a different thing again</Title>
           <Text size="sm" mt={4}>
-            Nobody puts the Boltzmann constant inside a thermometer.  Reading a
-            temperature needs a chain of reproducible fixed points and an
-            instrument that interpolates between them — in practice ITS-90,
-            with a platinum resistance thermometer doing the interpolating.  At
-            500 K you sit between the triple point of water and the freezing
-            point of zinc.
+            Nobody puts the Boltzmann constant inside a thermometer.  There ARE
+            primary thermometers that realise thermodynamic temperature
+            directly — acoustic and dielectric-constant gas thermometry,
+            Johnson-noise thermometry, radiometry — and since the redefinition
+            they are expected to take over more of the range, particularly at
+            the two ends.  But they are laboratory instruments.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>Almost all practical thermometry is disseminated instead
+            through ITS-90</strong>: a chain of reproducible fixed points with
+            declared instruments interpolating between them.  At 500 K you sit
+            just below the <strong>freezing point of tin, 505.078 K</strong> —
+            with indium at 429.7485 K below you — and a platinum resistance
+            thermometer is doing the interpolating.
           </Text>
           <Text size="sm" mt={6}>
             The practical scale and the thermodynamic temperature{" "}
-            <strong>are not the same number</strong>.  They differ by a few
-            millikelvin in this region — known, tabulated, revised as
+            <strong>are not the same number</strong>.  Near 500 K they differ
+            by of order ten millikelvin — known, tabulated, revised as
             measurements improve.  So the “012” is a statement about a platinum
             resistor and a chain of fixed points.  It is not a statement about
             nature.
@@ -472,7 +520,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
         </Box>
 
         <Box>
-          <Title order={5}>3 · The bridge, and where it breaks</Title>
+          <Title order={5}>4 · The bridge, and where it breaks</Title>
           <Text size="sm" mt={4}>
             Thermodynamic temperature was historically got at with a
             constant-volume gas thermometer: hold the volume, measure the
@@ -512,20 +560,27 @@ export function WhatIsTemperatureTool(): JSX.Element {
         )}
 
         <Box>
-          <Title order={5}>4 · So what range does this actually matter over?</Title>
+          <Title order={5}>5 · So what range does this actually matter over?</Title>
           <Text size="sm" mt={4}>
-            Not all of them.  A chemical engineer works between roughly{" "}
-            <strong>20 K and 2300 K</strong> — liquid hydrogen at the bottom, a
-            fired heater or a flare at the top.  Two orders of magnitude, and
-            that is the whole of it.
+            Not all of them.  Conventional chemical-process work lives
+            between roughly <strong>20 K and 2300 K</strong> — liquid hydrogen
+            at the bottom, a fired heater or a flare at the top.  Two orders of
+            magnitude, and this tool stays inside them.
           </Text>
           <Text size="sm" mt={6}>
-            Below that is cryogenic physics; above it is plasma.  Both are real
-            and neither is ours, and saying so is worth more than a survey that
-            pretends everything matters equally.  <strong>We are not doing
-            nuclear physics here</strong>, and a page that hedged towards
-            nanokelvin and fusion would teach a reader nothing about the plant
-            they are going to design.
+            <strong>That is an engineering scope, not a boundary of
+            physics.</strong>  Nothing changes character at 2300 K; there is no
+            temperature at which “plasma begins”, because ionisation depends on
+            the species, the pressure and the density.  And chemical
+            engineering does reach outside these numbers — dilution
+            refrigeration below, combustion diagnostics above.  The bracket
+            says where this page has chosen to be useful.
+          </Text>
+          <Text size="sm" mt={6}>
+            Choosing is worth more than a survey that pretends everything
+            matters equally.  A page that hedged towards nanokelvin and fusion
+            would teach a reader nothing about the plant they are going to
+            design.
           </Text>
           <Text size="sm" mt={6}>
             Here is that range climbed as far as a boiling point can carry
@@ -594,43 +649,69 @@ export function WhatIsTemperatureTool(): JSX.Element {
           title="And the worst rung is the one you trust most">
           <Text size="sm">
             Seven cryogens no reader has any intuition for land inside 1.4 %.
-            <strong> Water does not.</strong>  Its Antoine fit declares a
-            validity range ending at 373 K and its normal boiling point is
-            373.15 K — the fit stops <em>0.15 K before the temperature everybody
-            uses it at</em>, and evaluated there it returns 1.026 atm instead of
-            1.000.
+            <strong> Water does not</strong> — it comes out at 1.026 atm.  And
+            it is worth being exact about what that does and does not show,
+            because the obvious reading is wrong.
           </Text>
           <Text size="sm" mt={6}>
-            The run says so without being asked:{" "}
+            The run does raise an extrapolation notice, unasked:{" "}
             <code>[psat] component &apos;water&apos;: Antoine evaluated at
-            T = 373.15 K, OUTSIDE its declared Trange (273 373).</code>
+            T = 373.15 K, OUTSIDE its declared Trange (273 373).</code>{" "}
+            <strong>But 0.15 K of extrapolation is not what went wrong.</strong>
+            {" "}At 373.00 K, safely inside the window, the same correlation
+            already reads 1.020 atm.  The extrapolation is worth about half a
+            per cent of the two and a half.
           </Text>
           <Text size="sm" mt={6}>
-            Familiarity is not accuracy.  A declared validity range is worth
-            more than a feeling.
+            What the rung actually found is this:{" "}
+            <strong>solve the record’s own Antoine coefficients for one
+            atmosphere and they give 372.45 K</strong>, while the same record
+            declares <code>Tb 373.15</code> a few lines above.  The file
+            disagrees with itself by <strong>0.70 K</strong>.
+          </Text>
+          <Text size="sm" mt={6}>
+            So the engine has <em>not</em> discovered that water disobeys its
+            boiling point.  It has discovered that <strong>its own water record
+            does not close</strong> — two homes for one fact, drifted apart,
+            and nothing had ever asked them the same question until this table
+            did.  That is a data defect, and finding it is exactly why
+            declared validity ranges and a correlation you can interrogate are
+            worth having.
+          </Text>
+          <Text size="sm" mt={6}>
+            The lesson survives intact, only aimed correctly:{" "}
+            <strong>familiarity is not accuracy</strong>.  The rung nobody
+            would think to check is the one that failed.
           </Text>
         </Alert>
 
         <Box>
-          <Title order={5}>5 · How T is realised, across that range</Title>
+          <Title order={5}>6 · How T₉₀ is realised, across that range</Title>
           <Text size="sm" mt={4}>
             One scale covers essentially the whole of it — <strong>ITS-90</strong>,
-            from 0.65 K to the copper point and above by radiation — but it is
-            not one instrument.  It is four, each interpolating between fixed
-            points, handed over where the previous one runs out:
+            from 0.65 K upwards — but it is not one instrument.  It is four,
+            each interpolating between fixed points, and they{" "}
+            <strong>overlap</strong> rather than meeting at points:
           </Text>
           <Text size="sm" mt={6} component="div">
             <ul style={{ marginTop: 4, paddingLeft: 20 }}>
-              <li>helium vapour pressure, at the very bottom;</li>
-              <li>an interpolating constant-volume gas thermometer above it —
-                the instrument §3 is about;</li>
+              <li>helium vapour pressure, <strong>0.65 – 5 K</strong>;</li>
+              <li>an interpolating constant-volume gas thermometer,{" "}
+                <strong>3 – 24.5561 K</strong> — the instrument §4 is about;</li>
               <li>the <strong>platinum resistance thermometer</strong> over the
-                great middle, from the hydrogen triple point to the silver
-                point.  <strong>Every temperature in the table above lives
-                here</strong>;</li>
+                great middle, <strong>13.8033 K (the hydrogen triple point) to
+                1234.93 K (the silver point)</strong>.  <strong>Every
+                temperature in the table above lives here</strong>, the
+                20.39 K hydrogen rung included;</li>
               <li>Planck’s radiation law above the silver point, where nothing
                 can be touched.</li>
             </ul>
+          </Text>
+          <Text size="sm" mt={6}>
+            The overlaps are not untidiness, they are the design.  Where two
+            instruments both apply they can be compared, and a scale that
+            handed over at bare points would have no way of checking itself at
+            the joins.
           </Text>
           <Text size="sm" mt={6}>
             <strong>And the fixed points are a different ladder from the one
@@ -642,43 +723,56 @@ export function WhatIsTemperatureTool(): JSX.Element {
             is a mistake worth naming.
           </Text>
           <Text size="xs" c={INK} mt={6}>
-            The fixed points themselves are listed in §6b.
+            The fixed points themselves are listed in §8.
           </Text>
         </Box>
 
         <Box>
-          <Title order={5}>6 · And your plant instrument is none of these</Title>
+          <Title order={5}>7 · And your plant instrument is none of these</Title>
           <Text size="sm" mt={4}>
             Everything above is metrology.  The thing on your P&amp;ID is a
-            thermocouple in a thermowell, and the chain from the definition to
-            the number on the DCS screen loses <strong>orders of
-            magnitude</strong> of precision at every handover: the scale is
-            realised in a laboratory, a reference is calibrated against it, your
-            instrument is calibrated against that, and then it is welded into a
-            pipe and left there for five years.
+            thermocouple in a thermowell, or a Pt100, or something else again —
+            and it is at the far end of a <strong>traceability chain</strong>:
+            the scale is realised in a national laboratory, a reference is
+            calibrated against that, your instrument against the reference, and
+            then it is welded into a pipe and left there for five years.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>Uncertainty grows at every link of that chain.</strong>  By
+            how much is an engineering question with an answer for your
+            installation, not a universal constant: sensor type, calibration,
+            immersion depth, the thermowell, gradients along it, drift, and the
+            transmitter all decide it.  A well-installed loop can be very good;
+            a badly installed one can be tens of kelvin out and look fine.
           </Text>
           <Text size="sm" mt={6}>
             So <strong>500.012 K is a metrology-laboratory statement.</strong>
-            {" "}A plant reading of the same state is 500 K give or take a
-            couple — and knowing which of the two you are holding is the whole
-            of the skill.
+            {" "}What the same state reads on a plant is a different question
+            with a different answer — and knowing which of the two you are
+            holding, and roughly what it cost to get there, is the whole of the
+            skill.
           </Text>
         </Box>
 
         <Box>
-          <Title order={5}>6b · Where the boiling-point ladder ends — and what takes over</Title>
+          <Title order={5}>8 · Where the boiling-point ladder ends — and what takes over</Title>
           <Text size="sm" mt={4}>
             The table stops at glycerol, and not because the list got boring.
-            Above roughly <strong>600 K an ordinary organic cracks before it
-            boils</strong>: there is no one-atmosphere equilibrium left to ask
-            about, so there is no rung to check.  A normal boiling point simply
-            runs out as a way of marking temperature.
+            As molecules get heavier and more fragile, a normal boiling point
+            becomes <strong>progressively less useful</strong>: many decompose
+            at or before it, which is why heavy fractions are distilled under
+            vacuum in the first place.  There is no wall — anthracene boils
+            near 613 K, p-terphenyl above 660 K — but the further you go the
+            fewer substances have a one-atmosphere boiling point worth
+            marking a scale with.
           </Text>
           <Text size="sm" mt={6}>
-            <strong>The official scale does exactly the same thing.</strong>
-            {" "}Above the triple point of water, ITS-90’s defining fixed points
-            are no longer boiling points at all — they are the{" "}
-            <strong>freezing points of metals</strong>:
+            <strong>The official scale reaches the same conclusion by its own
+            route.</strong>  Above the triple point of water, ITS-90’s defining
+            fixed points are not boiling points at all — they are{" "}
+            <strong>melting and freezing points of metals</strong> (gallium
+            melts; the rest are freezing points), chosen because they are
+            reproducible to microkelvin:
           </Text>
           <Box mt={8} style={{ overflowX: "auto" }}>
             <table style={{ borderCollapse: "collapse", width: "100%",
@@ -742,26 +836,38 @@ export function WhatIsTemperatureTool(): JSX.Element {
             degree.
           </Text>
           <Text size="sm" mt={8}>
-            And there is a second thing the printed number hides: a melting
+            And a second thing the printed number does not carry: a melting
             point is <strong>impurity-sensitive</strong>.  “Pure platinum” is
-            itself a claim, and parts per million move it measurably.  The
-            value is a real, careful measurement of a real, careful sample.
-            The <strong>.3</strong> is decoration.
+            itself a claim about a sample, and parts per million move it
+            measurably.
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>So what should you conclude about the .3?</strong>  Not
+            that it is meaningless — this page cannot say that, because it has
+            not read the measurement that produced it.  What it can say is the
+            useful thing: <strong>the value arrives with no uncertainty
+            attached, and a digit is not an uncertainty.</strong>  Ask where it
+            came from and what its budget was.  Careful work at these
+            temperatures has been done; the number in front of you may well
+            deserve its digits, or may not, and the quoted figure alone cannot
+            tell you which.
           </Text>
           <Text size="xs" c="dimmed" mt={8}>
-            No ± is quoted for platinum: none has been read back from a
-            primary source, and an invented one would be worse than none.
-            The figures above are the arithmetic on this page.
+            No ± is quoted for platinum here: none has been read back from a
+            primary source, and an invented one would be worse than none —
+            which is also why this section stops at “ask for the budget”
+            instead of declaring the last digit decorative.  The kelvin figures
+            above are the arithmetic on this page and nothing more.
           </Text>
         </Alert>
 
         <Box>
-          <Title order={5}>7 · And what, exactly, is 1608.1 °C?</Title>
+          <Title order={5}>9 · And what, exactly, is 1608.1 °C?</Title>
           <Text size="sm" mt={4}>
             That is {T_HOT_K.toFixed(2)} K — a cracker firebox, a reformer
             flame, an incinerator.  A real number off a real plant.  And look
             where it falls: <strong>above the silver point</strong>.  The
-            platinum resistance thermometer of §5 has ended.  Nothing survives
+            platinum resistance thermometer of §6 has ended.  Nothing survives
             there, and ITS-90 stops using resistance for exactly that reason.
           </Text>
           <Text size="sm" mt={6}>
@@ -772,8 +878,12 @@ export function WhatIsTemperatureTool(): JSX.Element {
           <Text size="sm" mt={6}>
             <strong>A pyrometer does not measure temperature.  It measures
             radiance.</strong>  To turn that into a temperature it must ASSUME
-            an emissivity — and nobody knows the emissivity of a furnace
-            refractory, a flame or an oxidised tube to better than about ±0.05.
+            an emissivity.  In a metrology laboratory that assumption can be
+            made very good — a blackbody cavity, a characterised surface,
+            ratio pyrometry — and radiometric thermometry is a primary method.
+            Pointed at a furnace refractory, a flame or an oxidised tube it is
+            a different matter, and there the emissivity usually{" "}
+            <strong>dominates the uncertainty</strong>.
           </Text>
           <Text size="sm" mt={6}>
             What that costs is computable, from Wien’s approximation to
@@ -793,11 +903,16 @@ export function WhatIsTemperatureTool(): JSX.Element {
             on the answer.
           </Text>
           <Text size="sm" mt={6}>
-            So {T_HOT_C} °C is, at best,{" "}
-            <strong>
-              {Math.round(T_HOT_C)} ± {emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} °C
-            </strong>.  The tenth of a degree is noise wearing the clothes of
-            precision.
+            So <strong>if</strong> the emissivity of that target is uncertain
+            by 10 % relative, <strong>this geometry alone</strong> puts about{" "}
+            {emissivityBand_K(0.65, T_HOT_K, 0.10).toFixed(0)} K on the answer.
+            That is a worked example, not a verdict on every pyrometer: change
+            the wavelength, the target or the method and the number changes
+            with it.  What does not change is the shape of it — at these
+            temperatures the emissivity you assumed is usually the biggest
+            term in your budget, and a tenth of a degree written after a
+            radiance measurement is asserting something the measurement did not
+            establish.
           </Text>
         </Box>
 
@@ -826,24 +941,31 @@ export function WhatIsTemperatureTool(): JSX.Element {
             Temperature</em> (2004), on what he calls the <strong>problem of
             nomic measurement</strong> — to check that a thermometer reads
             truly you need a way of knowing the temperature, which is the thing
-            the thermometer was for.  <strong>§8 takes it up.</strong>
+            the thermometer was for.  <strong>§10 takes it up.</strong>
           </Text>
         </Alert>
 
         <Box>
-          <Title order={5}>The symmetry, which is the whole answer</Title>
+          <Title order={5}>The asymmetry, which is the surprise</Title>
           <Text size="sm" mt={4}>
-            At <strong>20 K</strong> and at <strong>{T_HOT_K.toFixed(0)} K</strong>
-            {" "}you are outside the platinum resistor — on both sides.  The vast
-            accurate middle, where ITS-90 is good to millikelvin, is where the
-            engineer’s ordinary life happens; and{" "}
-            <strong>both ends of the engineer’s own range are served by
-            different physics</strong>.
+            You might expect the engineer’s range to poke out of the platinum
+            resistor at both ends.  It does not.  <strong>The cold end does
+            not escape at all</strong>: liquid hydrogen at 20.39 K sits above
+            13.8033 K, so the coldest thing in this whole tool is still
+            interpolated by the same instrument as a distillation column.
           </Text>
           <Text size="sm" mt={6}>
-            That is why “what is a temperature” has no single answer.  It has
-            four, handed over in turn, and the honest thing an engineer can do
-            is know which one is under the number they are holding.
+            <strong>Only the hot end leaves.</strong>  Above 1234.93 K there is
+            no resistor and no fixed point, and the physics changes completely
+            — which is why {T_HOT_C} °C got a section of its own and 20 K did
+            not.
+          </Text>
+          <Text size="sm" mt={6}>
+            That is the shape worth carrying: not “thermometry breaks at both
+            extremes”, but <strong>one instrument covers almost everything you
+            will ever do, and the exception is at the top</strong>.  What an
+            engineer owes a number is knowing which side of 1234.93 K it came
+            from.
           </Text>
         </Box>
 
@@ -867,11 +989,12 @@ export function WhatIsTemperatureTool(): JSX.Element {
         </Alert>
 
         <Box>
-          <Title order={5}>8 · So what IS a temperature, taken whole?</Title>
+          <Title order={5}>10 · So what IS a temperature, taken whole?</Title>
           <Text size="sm" mt={4}>
-            Everything above is one instrument at a time.  Put them together
-            and a different kind of answer appears — and it is not the one a
-            textbook gives.  <strong>A temperature is not a fact you read off
+            §1 said what temperature <em>is</em>, and that answer stands: an
+            intensive variable defined by thermal equilibrium, needing no
+            instrument.  This section is about the other thing — the number.
+            <strong> A reported temperature measurement is not a fact read off
             nature.  It is a position inside a system of measurements,
             instruments, fixed points and theories that hold each other
             up.</strong>  Nothing in that system is self-justifying.  It works
@@ -880,7 +1003,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
           <Text size="sm" mt={6}>
             That is the argument of the book this page has been circling since
-            §7: {CHANG_CITATION}.  Its spine is{" "}
+            §9: {CHANG_CITATION}.  Its spine is{" "}
             <strong>four circles</strong> — four moments where the thing you
             would need in order to justify a measurement <em>is</em> the thing
             the measurement was for — and, crucially, the four escapes that
@@ -900,7 +1023,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             <Text size="xs" c="dimmed" mt={6}>
               J. W. Matousek, “Temperature Measurements in Olden Tymes” (1990),
               as quoted by Chang at the head of his chapter 3.  He is
-              describing §7 of this page, and the last clause is the reason
+              describing §9 of this page, and the last clause is the reason
               this section exists.
             </Text>
           </Box>
@@ -946,11 +1069,13 @@ export function WhatIsTemperatureTool(): JSX.Element {
             numbers the engine produced:
           </Text>
           <Text size="sm" mt={8}>
-            <strong>Circle 1 is §4’s water rung.</strong>  Water refuses to
-            boil at the boiling point — Chang’s whole first chapter — and it
-            refused again here, 250 years later, inside an Antoine fit that
-            stops 0.15 K short and answers 1.026 atm.  The fixed point is still
-            not as fixed as the schoolroom says.
+            <strong>Circle 1 is §5’s water rung</strong> — though not in the
+            way it first looks.  Chang’s first chapter is about a fixed point
+            that would not stay fixed; what this page found is a{" "}
+            <em>record</em> that will not agree with itself, its Antoine
+            coefficients putting the boiling point 0.70 K from the value the
+            same file declares.  Different failure, same moral: the datum
+            everybody is surest of is the one nobody had ever asked twice.
           </Text>
           <Text size="sm" mt={8}>
             <strong>Circle 2 is the glycerol rung.</strong>  We cannot check a
@@ -963,10 +1088,10 @@ export function WhatIsTemperatureTool(): JSX.Element {
             criterion.
           </Text>
           <Text size="sm" mt={8}>
-            <strong>Circle 3 is §5 and §6b.</strong>  Four instruments handed
+            <strong>Circle 3 is §6 and §8.</strong>  Four instruments handed
             over in turn, and a scale assembled where each ends — not one
             method validated against a standard, but a standard built out of
-            agreement.  Wedgwood’s kiln is §7’s pyrometer with worse hardware.
+            agreement.  Wedgwood’s kiln is §9’s pyrometer with worse hardware.
           </Text>
           <Text size="sm" mt={8}>
             <strong>Circle 4 is every solver in this simulator.</strong>  A
@@ -979,13 +1104,15 @@ export function WhatIsTemperatureTool(): JSX.Element {
 
         <Alert variant="light" title="And the sentence to take to the exam">
           <Text size="sm">
-            When someone asks what 500.012 K, or 1608.1 °C, or 1768.3 °C
-            <em>is</em>, the honest answer is not a number and not a
-            definition.  It is: <strong>“that is where this state sits in a
-            scale realised by these instruments, between these fixed points,
-            under these assumptions — and here is which of them I would doubt
-            first.”</strong>  An engineer who can say that owns the number.  An
-            engineer who can only repeat it does not.
+            When someone asks what the reported value 500.012 K — or
+            1608.1 °C, or 1768.3 °C — <em>means</em>, the honest answer is not
+            the number and not the definition.  It is:{" "}
+            <strong>“that is where this state sits on a scale realised by
+            these instruments, between these fixed points, under these
+            assumptions; here is its uncertainty and how it was obtained; and
+            here is which of those assumptions I would doubt first.”</strong>
+            {" "}An engineer who can say that owns the number.  An engineer who
+            can only repeat it does not.
           </Text>
           <Text size="xs" c="dimmed" mt={8}>
             Chang calls this way of working <em>complementary science</em>:
@@ -1012,7 +1139,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             citation is worse than admitting a gap.
             <br />• 500.012 K is arbitrary.  What is not arbitrary is that it
             has three digits after the point.
-            <br />• §8 is a compression of Chang’s book — four chapters and a
+            <br />• §10 is a compression of Chang’s book — four chapters and a
             philosophical synthesis in one screen.  The history in it
             (Cavendish on boiling, Regnault on comparability, Wedgwood’s clay,
             Peirce on self-correcting reasoning) is his, quoted short and
