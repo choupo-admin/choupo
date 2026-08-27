@@ -39,11 +39,20 @@ namespace Choupo {
 
 void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
-    // Run the costing pass (reuses the existing CostingPass PostProcessor);
-    // it reads ctx.result.sizings (so `design` must run first) and
-    // populates ctx.result.costs.
-    auto coster = PostProcessor::New("costing", dict);
-    coster->run(ctx.result);
+    //  A REPORT DRAWS; IT DOES NOT RECOMPUTE.  Same defect as the design
+    //  report, same fix: this ran the whole costing pass again out of the
+    //  REPORT's own dict, so `method`, `cepci`, `usdToEur` and the rest had
+    //  to be declared TWICE -- in system/postDict and here -- with nothing
+    //  keeping the two copies equal.  It serialises `result.costs` now.
+    (void)dict;
+    if (ctx.result.costs.empty())
+        throw std::runtime_error(
+            "economics report: there is nothing to write -- `result.costs` is"
+            " empty.\n  This report SERIALISES the costing the pipeline"
+            " produced; it does not cost anything itself.\n  Add"
+            " `sizing { ... }` and `costing { ... }` blocks to"
+            " system/postDict (they run before the reports),\n  and the cost"
+            " basis lives THERE, once.");
 
     const std::filesystem::path dir = ctx.outDir("economics", "economics");
     std::filesystem::create_directories(dir);
@@ -56,15 +65,39 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
     if (!ctx.result.costs.empty())
         currency = ctx.result.costs.begin()->second.currency;
 
+    //  THE CSV IS SELF-DEFENDING, to the same standard the console block is
+    //  held to.  Three costs and nothing else is a number a reader cannot
+    //  reproduce -- and this is the file that goes into the report, so the
+    //  correlation, its size driver, the module factors and the two indices
+    //  ride with it.  Enough digits to redo the arithmetic: a provenance
+    //  column too coarse to reproduce is worse than none.
     f << "unit,purchased_" << currency
       << ",bareModule_" << currency
-      << ",totalModule_" << currency << "\n";
+      << ",totalModule_" << currency
+      << ",correlation,sizeKey,S,K1_or_CpRef,K2_or_SRef,K3_or_n,"
+         "B1,B2,F_M,F_P,material,cepci,cepci2001,usdToEur\n";
     scalar tp = 0.0, tb = 0.0, tt = 0.0;
     for (const auto& [unit, c] : ctx.result.costs)
     {
+        auto fac = [&](const char* k) -> scalar {
+            auto it = c.factors.find(k);
+            return it == c.factors.end() ? 0.0 : it->second;
+        };
+        const bool pw = (c.correlation == "power-law");
         f << unit << "," << std::fixed << std::setprecision(2)
           << c.purchasedCost << "," << c.bareModuleCost
-          << "," << c.totalModuleCost << "\n";
+          << "," << c.totalModuleCost
+          << "," << (c.correlation.empty() ? "(not stated)" : c.correlation)
+          << "," << (c.sizeKey.empty() ? "(not stated)" : c.sizeKey)
+          << "," << std::setprecision(6) << fac("S")
+          << "," << (pw ? fac("Cp_ref") : fac("K1"))
+          << "," << (pw ? fac("S_ref")  : fac("K2"))
+          << "," << (pw ? fac("n_exp")  : fac("K3"))
+          << "," << fac("B1") << "," << fac("B2")
+          << "," << fac("F_M") << "," << fac("F_P")
+          << "," << (c.material.empty() ? "(not stated)" : c.material)
+          << "," << fac("cepci") << "," << fac("cepci2001")
+          << "," << fac("usdToEur") << "\n";
         tp += c.purchasedCost; tb += c.bareModuleCost; tt += c.totalModuleCost;
     }
     f << "TOTAL," << std::fixed << std::setprecision(2)

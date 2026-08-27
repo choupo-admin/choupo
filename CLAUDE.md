@@ -1148,6 +1148,34 @@ moving: the WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the
 whole site is built from it — whether it does C++20 well enough is a
 MEASUREMENT nobody has taken, not a guess to make.
 
+**AND THEN: CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  Sizing and
+costing printed their tables and left **no file at all**: the equipment list
+and the capital cost, which a project report is built around, existed only in
+terminal scrollback.  Measured before touching anything: of twelve registered
+reports, **`design` and `economics` are declared by ZERO corpus cases** (74
+declare `streamTable`) — *the two a final-year project needs most are the two
+nobody had ever run*, which is why what follows had survived.  Three defects:
+(1) **both reports RE-RAN their pipeline pass** out of the REPORT's own dict,
+so the equipment list and the whole cost basis each needed TWO homes and the
+re-run overwrote what costing had consumed — they SERIALISE `result` now and
+refuse naming the remedy when it is empty (*a report draws, it does not
+recompute* — the architecture already said so); (2) **one failing report
+killed every report after it, silently** — the chain loop had no guard, so
+"never reached" read as "produced nothing", which is absence read as a result
+one layer out from where leg 4 found it; each is caught by name now, the chain
+continues, the count is stated and raised on `AdvisoryLog`; (3) the CSVs
+carried bare numbers, so leg 4's traceability stopped at the screen —
+`sizing.csv` carries the design BASIS and `costs.csv` reproduces its own total
+from its own columns.  NOT done, named: the twelve report kinds are still
+UNDISCOVERABLE from a run's output (a student finds the syntax by reading
+another case), making `design`/`economics` default is a corpus-wide change and
+is RESERVED, and `kind;` still refuses saying what is wrong and not what is
+right.  Gate: `check_cost_provenance` arms (f)(g)(h), 9 sabotages total — and
+its own defect recorded: the new arms were first written AFTER the `finally`
+that deletes the probe directory, so they checked an empty directory and
+blamed the engine.  Record:
+[`docs/design/the-deliverable.md`](docs/design/the-deliverable.md).
+
 **A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 of the
 student walkthrough, and it found five things (2026-08-27).**  The test was
 concrete: take €166,653 off the costing table and try to answer *"where did

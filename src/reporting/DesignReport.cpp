@@ -41,10 +41,27 @@ namespace Choupo {
 
 void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
 {
-    // Run the sizing pass (reuses the existing SizingPass PostProcessor),
-    // which populates ctx.result.sizings from the unit KPIs + design rules.
-    auto sizer = PostProcessor::New("sizing", dict);
-    sizer->run(ctx.result);
+    //  A REPORT DRAWS; IT DOES NOT RECOMPUTE.  This used to call
+    //  `PostProcessor::New("sizing", dict)` and run the whole sizing pass
+    //  again out of the REPORT's own dict -- so the equipment list had to be
+    //  declared TWICE, once in `system/postDict` and once here, and the
+    //  re-run overwrote the `sizings` the costing pass had already consumed.
+    //  Two homes for one fact, and a reporting layer reaching down to
+    //  recompute what the pipeline already produced.
+    //
+    //  It writes out `result.sizings` now.  No corpus case declared this
+    //  report (measured 2026-08-27: zero, against 74 for `streamTable`), so
+    //  nothing depended on the old behaviour -- which is also why the defect
+    //  survived: an unexercised path is one nobody could find.
+    (void)dict;
+    if (ctx.result.sizings.empty())
+        throw std::runtime_error(
+            "design report: there is nothing to write -- `result.sizings` is"
+            " empty.\n  This report SERIALISES the sizing the pipeline"
+            " produced; it does not size anything itself.\n  Add a"
+            " `sizing { units ( ... ) }` block to system/postDict (it runs"
+            " before the reports),\n  and the equipment list lives THERE,"
+            " once.");
 
     const std::filesystem::path dir = ctx.outDir("design", "design");
     std::filesystem::create_directories(dir);
@@ -59,12 +76,18 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& [unit, sz] : ctx.result.sizings)
         for (const auto& [k, v] : sz.values) { (void)v; keys.insert(k); }
 
-    f << "unit,equipmentType,material";
+    //  THE BASIS TRAVELS WITH THE FILE, not only with the screen.  A volume
+    //  is the same number whether a residence time, a space velocity or the
+    //  author produced it, and this CSV is what goes into the report -- so
+    //  the design ARGUMENT has to be in it.  Solving that on the console and
+    //  not here would be half the fix.
+    f << "unit,equipmentType,material,basis";
     for (const auto& k : keys) f << "," << k;
     f << "\n";
     for (const auto& [unit, sz] : ctx.result.sizings)
     {
-        f << unit << "," << sz.equipmentType << "," << sz.material;
+        f << unit << "," << sz.equipmentType << "," << sz.material << ","
+          << (sz.basis.empty() ? std::string("(not stated)") : sz.basis);
         for (const auto& k : keys)
         {
             f << ",";

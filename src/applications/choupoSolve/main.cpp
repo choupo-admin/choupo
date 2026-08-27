@@ -874,7 +874,41 @@ try
         if (!declaredKinds.count("elementBalance"))
             chain.emplace_back(Report::New("elementBalance"),
                 Dictionary::fromString("", "<default elementBalance>"));
-        for (auto& [rep, opts] : chain) rep->run(opts, rctx);
+        //  ONE FAILING REPORT MUST NOT SILENCE THE REST.  This loop had no
+        //  guard, so the first report to throw killed every report after it
+        //  AND the rest of the run -- and said nothing about the ones that
+        //  never ran.  Asking for four reports and getting one, with an error
+        //  naming only the second, reads as "the fourth produced nothing"
+        //  rather than "the fourth was never reached".  Absence read as a
+        //  result, one layer out.
+        //
+        //  A report is post-processing over an answer that is already
+        //  computed and already written; its failure cannot invalidate the
+        //  solution.  So each is caught, named, and the chain continues --
+        //  and the count is stated at the end, because a reader who scrolled
+        //  past one red line must still learn that something is missing.
+        std::vector<std::string> reportFailures;
+        for (auto& [rep, opts] : chain)
+        {
+            try { rep->run(opts, rctx); }
+            catch (const std::exception& e)
+            {
+                reportFailures.push_back(rep->type());
+                std::cerr << "  [report] " << rep->type() << " FAILED: "
+                          << e.what() << "\n";
+            }
+        }
+        if (!reportFailures.empty())
+        {
+            std::cerr << "  ^ " << reportFailures.size() << " report(s) failed"
+                         " and produced NO artefact:";
+            for (const auto& r : reportFailures) std::cerr << " " << r;
+            std::cerr << "\n    The others ran; the solution is unaffected"
+                         " (a report draws, it does not solve).\n";
+            AdvisoryLog::instance().add("reporting", "warning", "report chain",
+                std::to_string(reportFailures.size()) +
+                " report(s) failed and produced no artefact");
+        }
     };
 
     // ---- converged/ writer (stream-state architecture, 2026-07-06) ------

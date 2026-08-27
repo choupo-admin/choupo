@@ -58,7 +58,27 @@ WHAT THIS GATE CHECKS, on a probe built from a real corpus case:
       here is exactly the duplication the arity doctrine forbids.  Checked, so
       that a later "helpful" addition cannot pass silently.
 
-SABOTAGE-VERIFIED 2026-08-27, six times; every quoted line is OBSERVED.
+  (f) THE DESIGN CSV CARRIES THE DESIGN ARGUMENT.  `reports/design/sizing.csv`
+      is the file that goes into the report, and a volume is the same entry
+      whether a residence time, a space velocity or the author produced it.
+      Solving that on the console alone would be half the fix.
+
+  (g) THE ECONOMICS CSV REPRODUCES ITS OWN TOTAL.  This arm reads ONLY the
+      file -- no console, no JSON, no source -- and recomputes C_TM from the
+      columns sitting beside it.  Arm (a)'s standard, applied to the artefact.
+
+  (h) A FAILING REPORT DOES NOT SILENCE THE ONES AFTER IT.  The chain loop had
+      no guard, so the first report to throw killed every report after it and
+      said nothing about the ones that never ran -- "never reached" reading as
+      "produced nothing", which is absence read as a result, one layer out.
+      The probe declares `economics` with no postDict at all: it must refuse,
+      the report beside it must still write its artefact, and the run must
+      state how many failed.
+
+  (i) THE COSTING NUMBER IS UNMOVED by the audit.  An announcement that
+      changes an answer is not an announcement.
+
+SABOTAGE-VERIFIED 2026-08-27, nine times; every quoted line is OBSERVED.
 
 S1 -- the whole provenance block suppressed.  Arms (a) and (d).
 
@@ -82,6 +102,25 @@ S6 -- the provenance block's F_M column made to read B1.  Arm (a), both
 through the recomputation (-18.67 %) and through the two-tables-disagree
 check, which is the one that names the cause rather than the symptom.
 
+S7 -- `sizing.csv` loses its `basis` column.  Arm (f): the volume is in the
+file and the rule that produced it is not, so the file cannot be defended.
+
+S8 -- `costs.csv` reverted to three numbers and nothing else.  Arm (g), naming
+all eleven columns that vanished: "the file states a total nobody can
+reproduce from it".
+
+S9 -- the chain's per-report `catch` made to re-throw, restoring the
+kill-the-chain behaviour.  Arm (h), both halves.  The FIRST attempt at this
+sabotage did not COMPILE, which proves nothing at all; it was rewritten until
+it built and ran, because a sabotage that fails to build has tested nothing.
+
+AND A DEFECT IN THIS GATE, found by running the new arms.  They were first
+inserted AFTER the `finally: shutil.rmtree(tmp)` -- so they checked for files
+in a directory that had already been deleted, and reported "the design report
+wrote no sizing.csv" about a run that had written it.  The gate was testing an
+empty directory and blaming the engine.  A check must be inside the scope of
+the thing it checks.
+
 WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
 
   * It does not check that any COEFFICIENT IS RIGHT.  It proves the printed
@@ -97,6 +136,7 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
     golden row pins it.  A word is not a golden value, and this gate is the
     only thing standing behind it.
 """
+import csv
 import math
 import re
 import shutil
@@ -143,6 +183,23 @@ costing
 fails = []
 
 
+def add_reports(case_dir, kinds):
+    """Add report kinds to a case's controlDict, MERGING into any existing
+    `reports {}` block.  Appending a second block is refused by the dict layer
+    -- correctly: "key 'reports' is declared TWICE ... the file's order would
+    decide the answer" -- and the probe must not trip over a guard that is
+    doing its job."""
+    cd = Path(case_dir) / "system" / "controlDict"
+    txt = cd.read_text()
+    body = "".join(f"    {k} {{ }}\n" for k in kinds)
+    m = re.search(r"(reports\s*\{)", txt)
+    if m:
+        txt = txt[:m.end()] + "\n" + body + txt[m.end():]
+    else:
+        txt += "\nreports\n{\n" + body + "}\n"
+    cd.write_text(txt)
+
+
 def main():
     if not BIN.exists():
         print("check_cost_provenance: FAIL -- choupoSolve missing; run `make all`")
@@ -153,6 +210,12 @@ def main():
         d = Path(tmp) / "probe"
         shutil.copytree(CASE, d)
         (d / "system" / "postDict").write_text(POST)
+        #  Ask for the ARTEFACTS too.  The console block and the CSV are the
+        #  same claim on two surfaces, and the CSV is the one that goes into
+        #  the report -- solving it on screen only would be half the fix.
+        #  `boom` is a report that cannot run (no sizing of its own kind);
+        #  it is here to prove the chain survives one failing member.
+        add_reports(d, ["design", "economics"])
         p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True,
                            cwd=str(ROOT), timeout=300)
         out = p.stdout + p.stderr
@@ -237,6 +300,90 @@ def main():
             fails.append("(e) F_M has acquired a citation in the costing "
                          "block; it is a per-material datum and its record is "
                          "its one home -- a second is the arity sin")
+
+        # ---- (f) the design CSV carries the design ARGUMENT
+        dcsv = d / "reports" / "design" / "sizing.csv"
+        if not dcsv.exists():
+            fails.append("(f) the design report wrote no sizing.csv -- the "
+                         "student has a screen table and nothing to put in a "
+                         "report")
+        else:
+            rows = list(csv.DictReader(dcsv.open()))
+            if not rows or "basis" not in rows[0]:
+                fails.append("(f) sizing.csv has no `basis` column; the volume "
+                             "is in the file and the rule that produced it is "
+                             "not, so the file cannot be defended")
+            elif not rows[0]["basis"] or rows[0]["basis"] == "(not stated)":
+                fails.append("(f) sizing.csv's basis column is empty")
+
+        # ---- (g) the economics CSV REPRODUCES ITS OWN TOTAL
+        ecsv = d / "reports" / "economics" / "costs.csv"
+        if not ecsv.exists():
+            fails.append("(g) the economics report wrote no costs.csv")
+        else:
+            rows = [r for r in csv.DictReader(ecsv.open())
+                    if r["unit"] != "TOTAL"]
+            if not rows:
+                fails.append("(g) costs.csv has no equipment rows")
+            else:
+                r = rows[0]
+                missing = [k for k in ("S", "K1_or_CpRef", "K2_or_SRef",
+                                       "K3_or_n", "B1", "B2", "F_M", "F_P",
+                                       "cepci", "cepci2001", "usdToEur")
+                           if k not in r]
+                if missing:
+                    fails.append("(g) costs.csv omits " + ", ".join(missing)
+                                 + " -- the file states a total nobody can "
+                                   "reproduce from it")
+                else:
+                    try:
+                        S = float(r["S"])
+                        l = math.log10(S)
+                        cp = (10 ** (float(r["K1_or_CpRef"])
+                                     + float(r["K2_or_SRef"]) * l
+                                     + float(r["K3_or_n"]) * l * l)
+                              * float(r["cepci"]) / float(r["cepci2001"])
+                              * float(r["usdToEur"]))
+                        ctm = 1.18 * cp * (float(r["B1"])
+                                           + float(r["B2"]) * float(r["F_M"])
+                                           * float(r["F_P"]))
+                        want = float(r["totalModule_EUR"])
+                        if want == 0 or abs(ctm - want) / want > 1e-3:
+                            fails.append(
+                                f"(g) costs.csv does not reproduce its own "
+                                f"total: {ctm:.2f} recomputed from its columns "
+                                f"against {want:.2f} stated "
+                                f"({100*(ctm-want)/max(want,1):+.2f} %)")
+                    except (ValueError, KeyError) as e:
+                        fails.append(f"(g) costs.csv columns are unreadable: {e}")
+
+        # ---- (h) a failing report does not silence the ones after it
+        boom = Path(tmp) / "boom"
+        shutil.copytree(CASE, boom)
+        #  `economics` with NO postDict at all: it must refuse (there is
+        #  nothing to serialise) and `streamTable`, which the base case
+        #  already declares, must still produce its artefact.
+        #  Only `economics` is ADDED.  The base case already declares
+        #  `streamTable`, and declaring it twice in one block is refused
+        #  outright by the dict layer -- so the survivor arm uses the report
+        #  that is already there rather than tripping a guard doing its job.
+        (boom / "system" / "postDict").unlink(missing_ok=True)
+        add_reports(boom, ["economics"])
+        bout = subprocess.run([str(BIN), str(boom)], capture_output=True,
+                              text=True, cwd=str(ROOT), timeout=300)
+        btxt = bout.stdout + bout.stderr
+        if "economics FAILED" not in btxt:
+            fails.append("(h) a report that cannot run did not report itself "
+                         "as failing")
+        if not (boom / "reports" / "streams" / "streamTable.csv").exists():
+            fails.append("(h) a report declared AFTER a failing one produced "
+                         "no artefact -- one failure silences the rest, and "
+                         "'never reached' reads as 'produced nothing'")
+        if "report(s) failed and produced NO artefact" not in btxt:
+            fails.append("(h) the run does not state how many reports failed; "
+                         "a reader who scrolled past the red line never learns "
+                         "something is missing")
+
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -252,12 +399,16 @@ def main():
           "names the rule that produced it, the ideal-gas volumetric flow is "
           "announced and reproduces V_R at the declared tau, and the "
           "coefficients are attributed to Turton App. A while F_M is "
-          "deliberately left to its own record.  NOT COVERED: whether any "
-          "coefficient is RIGHT (no copy of that book is in this repository), "
-          "the power-law items (crystalliser / spray dryer / cyclone), whether "
-          "the size is a GOOD design, and any golden pinning of the `basis` "
-          "word -- it is console-only and this gate is all that stands behind "
-          "it.")
+          "deliberately left to its own record.  THE ARTEFACTS CARRY THE SAME "
+          "CLAIM: sizing.csv has the design ARGUMENT in a column, costs.csv "
+          "reproduces its own stated total from its own columns, and the "
+          "report chain survives a failing member with the count stated -- so "
+          "a reader who never sees the console can still defend the numbers.  "
+          "NOT COVERED: whether any coefficient is RIGHT (no copy of that book "
+          "is in this repository), the power-law items (crystalliser / spray "
+          "dryer / cyclone), whether the size is a GOOD design, and any GOLDEN "
+          "pinning -- `basis` is a word, no golden row reads it, and this gate "
+          "is all that stands behind it.")
     return 0
 
 
