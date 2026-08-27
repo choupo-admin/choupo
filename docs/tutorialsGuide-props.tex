@@ -2398,6 +2398,46 @@ k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 --
 \goldmore{16}
 \end{tutgolden}
 
+\clearpage
+\tutentry{thiele02\_prater\_temperature}{tutorials/props/reactor/thiele02\_prater\_temperature}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{thiele\_CO\_alumina\_prater}\\[-1pt]{\tiny thielePellet}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Single catalyst pellet: intraparticle concentration field, effectiveness factor, and the eta(phi) family, each verified against the first-order isothermal closed form}
+\begin{tutnarrative}
+One thielePellet operation.
+
+THE RATE CONSTANT IS DECLARED HERE, and not on the catalyst record, because kinetics are equipment- and reaction-specific: the asset carries the SOLID, never the chemistry run on it. Two reactors loaded with the same catalyst would otherwise carry two copies of one rate constant and drift apart.
+
+k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 -- the transition region, where the field has a visible gradient and eta is neither \textasciitilde{}1 nor \textasciitilde{}1/phi. It is not measured and is not claimed to be.
+
+\end{tutnarrative}
+\tutreadme{The SAME pellet as thiele01\_sphere\_first\_order, with one block added, so the difference between the two runs is the temperature.}
+\tutreadme{Everything else --- catalyst, species, T, P, rate constant, diffusion, grid, verification tolerances --- is thiele01 unchanged. Run both and diff the output: nothing else moves.}
+\tutreadme{The reaction is exothermic, so the pellet is hottest where the reactant is most depleted, which is the centre:}
+\tutreadme{The field CSV gains two columns, T\_over\_Ts and T\_K, one value per node --- so the temperature is a FIELD, not a headline number, and the EduTool paints the same discs by it.}
+\tutreadme{The species and energy balances inside a pellet carry the same reaction term. Eliminate it between them and, for constant D\_eff and k\_eff and any kinetics at all, what is left is a first integral --- Prater's relation:}
+\tutreadme{So the temperature field costs no second boundary-value problem. It is algebra over the concentration field the operation already solved.}
+\begin{tutgolden}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{D\_eff}{9.68564e-06}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{D\_molecular}{6.45709e-05}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{Lambda}{0.0005}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{P}{101325}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{T}{573.15}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{T\_centre\_K}{736.654}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{c\_centre}{0.289874}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{c\_centre\_closedForm}{0.289873}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{deltaT\_centre\_K}{163.504}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{dimension}{0.0015}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{epsilon\_p}{0.45}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{eta}{0.665742}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{eta\_closedForm}{0.665742}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{eta\_flux}{0.665731}
+\goldmore{23}
+\end{tutgolden}
+
 \subsection{scan}
 \grouptheory{scan}
 \clearpage

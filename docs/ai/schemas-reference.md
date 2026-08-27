@@ -1010,6 +1010,7 @@ The PROPS BENCH for one catalyst pellet: it resolves the pellet from its asset r
 | `refinement` |   | object | — | Optional. Re-solves the case's own pellet on a series of grids and reports the observed ORDER of convergence between the finest pair. A s… |
 | `verification` |   | object | — | Optional. The tolerances the run's PASS/FAIL verdict — and its exit code — are taken on. Omitting the block defaults them to field 1e-4, … |
 | `output` |   | object | — | Where the three data products are written, relative to the case directory. Each key is independent and each is optional — omit one and th… |
+| `thermal` |   | object | — | OPTIONAL, and its absence is not an isothermal claim -- it is the absence of a temperature field.  Declared, the op publishes T_over_Ts a… |
 
 ## `tsaTwinBed`  (tsaTwinBed operation)
 
