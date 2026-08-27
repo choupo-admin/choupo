@@ -642,11 +642,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             is a mistake worth naming.
           </Text>
           <Text size="xs" c={INK} mt={6}>
-            The defining fixed-point VALUES are not quoted here.  They are
-            published by the BIPM and this repository has not read them back
-            against that source, and a citation invented is worse than a gap
-            admitted.  What is stated above is the scale’s structure, not its
-            table.
+            The fixed points themselves are listed in §6b.
           </Text>
         </Box>
 
@@ -708,12 +704,10 @@ export function WhatIsTemperatureTool(): JSX.Element {
             </table>
           </Box>
           <Text size="xs" c="dimmed" mt={6}>
-            DECLARED, not computed — unlike every other number on this page.
-            These are the values of the International Temperature Scale of 1990
-            as it is universally quoted (Preston-Thomas, <em>Metrologia</em> 27
-            (1990) 3–10, with its erratum).  This repository has not read them
-            back against the BIPM text, and says so rather than letting a table
-            look measured.
+            Declared, not computed — unlike every other number on this page.
+            These are the ITS-90 values as universally quoted
+            (Preston-Thomas, <em>Metrologia</em> 27 (1990) 3–10), not read
+            back here against the BIPM text.
           </Text>
           <Text size="sm" mt={10}>
             Now read the bottom of that table again.  <strong>It stops at
@@ -755,11 +749,9 @@ export function WhatIsTemperatureTool(): JSX.Element {
             The <strong>.3</strong> is decoration.
           </Text>
           <Text size="xs" c="dimmed" mt={8}>
-            No uncertainty figure is quoted for platinum here, deliberately.
-            This repository has not read one back from a primary source, and an
-            invented ± would be worse than the missing one: it would turn an
-            honest gap into a false claim.  What IS shown is derived from this
-            page’s own arithmetic.
+            No ± is quoted for platinum: none has been read back from a
+            primary source, and an invented one would be worse than none.
+            The figures above are the arithmetic on this page.
           </Text>
         </Alert>
 
@@ -816,9 +808,8 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
           <Text size="xs" mt={6} c="dimmed">
             Pierre Duhem, <em>La Théorie Physique: Son Objet, Sa Structure</em>
-            {" "}(1906).  Marked exactly as the Sommerfeld one is: the thesis is
-            certainly Duhem’s, the English wording here is one of several
-            translations in circulation and this repository has not checked it
+            {" "}(1906).  The thesis is certainly Duhem’s; this English
+            wording is one of several translations and has not been checked
             against a specific edition.
           </Text>
           <Text size="sm" mt={8}>
@@ -835,12 +826,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
             Temperature</em> (2004), on what he calls the <strong>problem of
             nomic measurement</strong> — to check that a thermometer reads
             truly you need a way of knowing the temperature, which is the thing
-            the thermometer was for.  <strong>That book has now been read, and
-            §8 below is what it says.</strong>  (This paragraph used to end
-            “this repository has not read it back and quotes nothing from it”,
-            which was true when it was written and stopped being true the day
-            the book was opened.  A claim about what has been checked is the
-            worst kind to leave standing after it expires.)
+            the thermometer was for.  <strong>§8 takes it up.</strong>
           </Text>
         </Alert>
 
@@ -861,15 +847,12 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
         </Box>
 
-        <Alert variant="light" color="gray"
-          title="Why this section has no slider">
+        <Alert variant="light" color="gray" title="Nothing to drag here">
           <Text size="xs">
-            Every other number on this page is an engine run.  This one is not:
-            Choupo has no radiation-thermometry operation, so an interactive
-            here would have to compute physics in the page — which this plane
-            forbids, and for good reason.  The arithmetic is printed instead,
-            with its constants, so a reader can redo it.  A missing interactive
-            that says why is better than one that quietly breaks the rule.
+            Every other number on this page is an engine run; this one is
+            arithmetic, printed with its constants so you can redo it yourself
+            on paper.  Do that once — it is three multiplications — and the
+            number stops being something you were told.
           </Text>
         </Alert>
 
@@ -897,7 +880,7 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
           <Text size="sm" mt={6}>
             That is the argument of the book this page has been circling since
-            §7: {CHANG_CITATION}.  It has now been read.  Its spine is{" "}
+            §7: {CHANG_CITATION}.  Its spine is{" "}
             <strong>four circles</strong> — four moments where the thing you
             would need in order to justify a measurement <em>is</em> the thing
             the measurement was for — and, crucially, the four escapes that
@@ -1029,13 +1012,11 @@ export function WhatIsTemperatureTool(): JSX.Element {
             citation is worse than admitting a gap.
             <br />• 500.012 K is arbitrary.  What is not arbitrary is that it
             has three digits after the point.
-            <br />• §8 summarises Chang’s book, read from a copy supplied by
-            this project’s author.  The reading of it is mine and the
-            compression is severe: four chapters and a philosophical synthesis
-            in a screen.  Quotations are short and attributed; the historical
-            claims (Cavendish on boiling, Regnault on comparability, Wedgwood’s
-            clay, Peirce on self-correcting reasoning) are Chang’s reporting,
-            not this repository’s independent scholarship.  Read the book.
+            <br />• §8 is a compression of Chang’s book — four chapters and a
+            philosophical synthesis in one screen.  The history in it
+            (Cavendish on boiling, Regnault on comparability, Wedgwood’s clay,
+            Peirce on self-correcting reasoning) is his, quoted short and
+            attributed.  Read the book.
           </Text>
         </Box>
 

@@ -274,21 +274,26 @@ describe("the holistic section, and the claim it had to retire", () => {
     new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
     "utf-8");
 
-  it("no longer says the book was not read", () => {
-    //  THE POINT OF THIS TEST.  The page carried "this repository has not
-    //  read it back and quotes nothing from it", which was true when written
-    //  and false the day the book was opened.  A claim about what has been
-    //  CHECKED is the worst kind to leave standing after it expires -- it
-    //  reads as diligence while being wrong.  If anyone ever re-adds that
-    //  sentence beside a section that summarises the book, this fails.
-    //  The phrase survives EXACTLY ONCE, inside the retraction that quotes
-    //  it -- counting is the honest test here, because a `not.toContain`
-    //  would be satisfied by punctuation drift and prove nothing.
-    const hits = SRC.match(/quotes nothing from it/g) ?? [];
-    expect(hits, "the retired claim is loose in the page again")
-      .toHaveLength(1);
-    expect(SRC).toContain("used to end");
-    expect(SRC).toContain("That book has now been read");
+  it("carries no bookkeeping about its own editing history", () => {
+    //  THE RULE THIS PINS, and it was learned the hard way: the page is for
+    //  a student, and a paragraph explaining what the page USED to say
+    //  obscures the thing being taught.  Provenance about the KNOWLEDGE
+    //  stays (a value not read back against its source is something a reader
+    //  must be told); an audit trail about this repository's own process
+    //  does not -- it belongs in the commit message.
+    for (const meta of ["used to end", "has now been read",
+      "quotes nothing from it", "this repository has not read it back"]) {
+      expect(SRC, `self-referential bookkeeping is back: "${meta}"`)
+        .not.toContain(meta);
+    }
+  });
+
+  it("does not claim the fixed-point values are unquoted while quoting them", () => {
+    //  Section 5 used to say "the defining fixed-point VALUES are not quoted
+    //  here" -- true until 6b listed all eight of them, after which the page
+    //  contradicted itself in the one register it cannot afford to.
+    expect(SRC).not.toContain("VALUES are not quoted here");
+    expect(SRC).toContain("listed in §6b");
   });
 
   it("carries all four of Chang's circles, each with its way out", () => {
