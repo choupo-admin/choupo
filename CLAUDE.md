@@ -2318,7 +2318,27 @@ split below).
 
 ### Decisions already made — do not relitigate
 
-* **C++17, no external libs.**  No Boost/Eigen/Sundials — hand-rolled Newton,
+* **C++17 — CLOSED 2026-08-27, with the argument that had been missing.**  The
+  choice was registered in two places and argued in neither, and
+  `property-architecture.md` §106 rejected C++20 because it *"contradicts
+  settled decisions (C++17, …)"*, which is circular.  Three facts close it, and
+  they were MEASURED, not remembered:
+  (1) **`OpenFOAM-dev` compiles with `-std=c++14`** — checked at commit
+  `09951d6`, 2026-08-27, on every platform rule in the tree (g++, clang, icx,
+  ARM, PPC), not one `c++17` anywhere.  The project this one takes as its
+  model is a standard BEHIND us, with a far larger codebase and decades of
+  maintenance.
+  (2) The WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the whole
+  site is built from it.  In C++17 the gap between g++ 13 and that clang is
+  narrow; in C++20 it is wide, so **moving would make the site-breaking failure
+  of 2026-08-27 MORE likely, not less** — and it also widens the blind spot
+  `check_wasm_dialect` states about itself.
+  (3) Nothing here needs it.  This is hand-rolled numerics with no template
+  metaprogramming; C++20 would buy convenience, not capability.
+  Do not reopen.  If a concrete feature is ever genuinely blocked by C++17, the
+  prerequisite is upgrading emscripten FIRST and separately — never the two at
+  once.
+* **No external libs.**  No Boost/Eigen/Sundials — hand-rolled Newton,
   Gauss, RK4, Michelsen.
 * **Make + custom rules.**  No CMake (`make/compiler.mk` + `rules.mk`).
 * **GPL-3.0-or-later source-code licence (settled 2026-06-18); documentation manuals under CC BY-SA 4.0.**

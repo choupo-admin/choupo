@@ -103,7 +103,7 @@ and carry it to the result JSON.
 | `PropertyResult<T>` carried through the flash engine | Wrong scope. Provenance belongs to data + validation, never the hot path. |
 | Runtime `PropertyResolver` (resolve at flash-time) | Anti-glass-box. Choupo resolves at curation-time and writes a reviewable `.dat`. |
 | Parallel interface set (`IConstantEstimator`/`ITemperatureModel`/`IFugacityModel`) | The existing factories already are the interfaces; estimators are Layer-3 tools. |
-| C++20 · CMake · Eigen · PC-SAFT · COSMO-SAC · CAPE-OPEN · open-core commercial GUI | Contradict settled decisions (C++17, Make, zero-deps, GPL + cautious-deps, reputational-not-commercial). |
+| C++20 · CMake · Eigen · PC-SAFT · COSMO-SAC · CAPE-OPEN · open-core commercial GUI | Contradict settled decisions (C++17, Make, zero-deps, GPL + cautious-deps, reputational-not-commercial).  **The C++20 row used to be circular** — it rejected C++20 *because* C++17 was settled, without saying why C++17 was.  Closed 2026-08-27 with a measured argument; see `CLAUDE.md` §"Decisions already made". |
 
 What the brief gets RIGHT and we ADOPT: the `Origin` enum + per-value
 provenance; the priority-chain resolver (at curation-time); validation-first /
