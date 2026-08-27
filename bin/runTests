@@ -2359,6 +2359,25 @@ PYEOF
     fi
     rm -f /tmp/hansen.$$
 
+    # unifac-gaps gate (2026-08-27).  UNIFAC reads a_mn from the published
+    # table and falls back to 0.0 when a main-group pair is absent -- a = 0 is
+    # Psi = 1, the ATHERMAL contribution, so part of the mixture was priced as
+    # ideal in silence.  Measured: 30 of 210 directed pairs in play are absent,
+    # touching 671 of 29 890 binary combinations (2.2 %).  ANNOUNCED, never
+    # refused: the gap is in Hansen (1991), not in this catalogue, so no
+    # curation act fills it.  Five sabotages; the fifth survived first contact
+    # and the defect was in the gate -- it searched the whole run for the
+    # component names, which the [unreviewed] advisories also print.
+    if "$ROOT/bin/curate/check_unifac_gaps.py" > /tmp/unifacgaps.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unifac-gaps-gate" "$(head -1 /tmp/unifacgaps.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unifac_gaps.py)\n" "unifac-gaps-gate"
+        cat /tmp/unifacgaps.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unifacgaps.$$
+
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
     # line -- never transcribed from a docstring, because a transcription is a

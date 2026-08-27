@@ -4776,6 +4776,7 @@
    "src/thermo/activityCoefficient/NRTL.H"
   ],
   "src/thermo/activityCoefficient/UNIFAC.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7127,6 +7128,7 @@
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
+   "src/thermo/activityCoefficient/UNIFAC.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",

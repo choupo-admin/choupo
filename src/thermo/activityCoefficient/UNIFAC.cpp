@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "UNIFAC.H"
+#include "core/Advisory.H"
 
 #include "core/Dictionary.H"
 #include "thermo/Component.H"
@@ -154,6 +155,90 @@ UNIFAC::UNIFAC(const DictPtr& dict, const std::vector<std::string>& names)
             if (tot > 0.0) Xpure_[i][k] = nu_[i][k] / tot;
         }
         l_[i] = (Z / 2.0) * (r_[i] - q_[i]) - (r_[i] - 1.0);
+    }
+
+    //  ---- A MISSING a_mn IS AN APPROXIMATION, AND IT WAS SILENT -----------
+    //
+    //  `Psi` reads `a_mn` from the table and falls back to 0.0 when the pair
+    //  is absent, which makes Psi = 1: the ATHERMAL, ideal contribution for
+    //  that group interaction.  So a mixture whose groups the published table
+    //  does not connect was being priced as partly ideal, with no crash, no
+    //  NaN, and a gamma that looks entirely reasonable.  That is precisely
+    //  the shape the ProblemDivergence contract exists to catch, and UNIFAC
+    //  was on its own list of UNCOVERED downgrades.
+    //
+    //  MEASURED ON THIS CATALOGUE before the announcement was written: 245
+    //  components carry groups, giving 29 890 binary combinations, of which
+    //  671 (2.2 %) touch at least one of the 30 main-group pairs missing from
+    //  the 210 in play.  Small, and not nothing -- and invisible either way.
+    //
+    //  ANNOUNCED, NOT REFUSED, and the reason is that the gap is in the
+    //  PUBLISHED TABLE.  Hansen 1991 genuinely does not report every
+    //  main-group pair; a fluorocarbon beside an ester is a hole in the
+    //  literature, not a hole in this catalogue, and no curation act can fill
+    //  it.  Refusing would make 671 usable-with-a-caveat systems unusable.
+    //  Same posture as the extrapolated sub-273 K Antoine and the sub-band
+    //  Davies: the engine states what it did and judges nothing.
+    //
+    //  AT CONSTRUCTION, never in `Psi`.  The absence is a property of the
+    //  SYSTEM -- which components, which groups -- and is known once the
+    //  group set is built.  `Psi` runs inside every iteration of every flash;
+    //  an announcement there would be the 102-identical-paragraphs defect
+    //  this project already paid for.
+    {
+        std::set<std::string> mains(mainOf_.begin(), mainOf_.end());
+        std::vector<std::string> gaps;
+        for (const auto& m : mains)
+            for (const auto& k : mains)
+            {
+                if (m == k) continue;
+                if (a_.find({ m, k }) == a_.end())
+                    gaps.push_back(m + "/" + k);
+            }
+        if (!gaps.empty())
+        {
+            //  Name the COMPONENTS too: a reader who is told "CF2/CCOO is
+            //  missing" still has to work out which of their substances
+            //  carries which group, and a caveat that needs homework is one
+            //  that gets skipped.
+            std::set<std::string> carriers;
+            for (std::size_t i = 0; i < N; ++i)
+                for (std::size_t k = 0; k < G; ++k)
+                    if (nu_[i][k] > 0)
+                        for (const auto& g : gaps)
+                            if (g.substr(0, g.find('/')) == mainOf_[k])
+                            { carriers.insert(names[i]); break; }
+            std::string gapList;
+            for (std::size_t n = 0; n < gaps.size() && n < 6; ++n)
+                gapList += (n ? ", " : "") + gaps[n];
+            if (gaps.size() > 6)
+                gapList += ", ... (" + std::to_string(gaps.size()) + " in all)";
+            std::string who;
+            for (const auto& c : carriers)
+                who += (who.empty() ? "" : ", ") + c;
+
+            const std::string msg =
+                "UNIFAC: the published interaction table has no a_mn for "
+                + gapList + " -- each is taken as 0, which is Psi = 1, the "
+                "ATHERMAL (ideal) contribution for that group interaction. "
+                "The affected component(s): " + who + ".  This is a gap in "
+                "Hansen (1991), not in this catalogue: no curation act fills "
+                "it, and the alternative to announcing it is pricing part of "
+                "this mixture as ideal without saying so.";
+            //  THE ECHO ASKS THE LOG WHETHER THIS HAS BEEN SAID.  The
+            //  package is rebuilt once per outer iteration and once per
+            //  finite-difference perturbation, so "announce once per
+            //  construction" is not once -- the first version of this printed
+            //  the paragraph twice on a two-point scan.  `AdvisoryLog` is the
+            //  only thing in the process that outlives every rebuild and can
+            //  answer the question; its `add` returns false for a repeat.
+            //  Same fix as VaporPressureModel::noteRange, and the same
+            //  lesson: a guard scoped to an object the caller recreates in a
+            //  loop guards nothing.
+            if (AdvisoryLog::instance().add("approximation", "warning",
+                                            "UNIFAC group interactions", msg))
+                std::cerr << "[unifac] " << msg << "\n";
+        }
     }
 }
 
