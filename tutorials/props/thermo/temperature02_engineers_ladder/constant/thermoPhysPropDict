@@ -1,0 +1,9 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components       ( H2  neon  N2  Ar  O2  CH4  C2H4  water );
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}

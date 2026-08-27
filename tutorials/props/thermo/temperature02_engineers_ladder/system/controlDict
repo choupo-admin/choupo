@@ -1,0 +1,3 @@
+application  choupoProps;
+description  "The range a chemical engineer actually works in";
+verbosity    3;

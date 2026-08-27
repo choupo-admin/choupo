@@ -29,7 +29,8 @@ import { applyScalarOverride } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import {
-  T_SUBJECT_K, TEMPERATURE_WITNESS, readZScan, worstDeparturePct,
+  LADDER, LADDER_WITNESS, T_SUBJECT_K, TEMPERATURE_WITNESS, readLadder,
+  readZScan, rungDeparturePct, worstDeparturePct,
 } from "../src/ui/methods/WhatIsTemperatureTool.js";
 
 const PROPS = "system/propsDict";
@@ -102,5 +103,48 @@ describe("the registry entry", () => {
     expect(e, "the tool left the registry").toBeTruthy();
     expect(e!.kind).toBe("notes");
     expect(e!.status).toBe("live");
+  });
+});
+
+
+describe("the engineer's ladder", () => {
+  it("its witness is bundled too", () => {
+    const t = tutorialByName(LADDER_WITNESS);
+    expect(t, `${LADDER_WITNESS} is not bundled — the table would be empty and`
+      + " say nothing").toBeTruthy();
+  });
+
+  it("every rung the page lists is an operation the case declares", () => {
+    //  The page reads each rung out of the run BY OPERATION NAME.  Rename one
+    //  in the case and that row silently vanishes from the table, which is a
+    //  page quietly making a weaker argument than it says it makes.
+    const props = tutorialByName(LADDER_WITNESS)!.files.rawFiles!["system/propsDict"]!;
+    for (const r of LADDER) {
+      expect(props, `rung ${r.op} is not in the case`).toContain(`name        ${r.op};`);
+      expect(props, `rung ${r.op} does not ask for its own Psat`)
+        .toContain(`Psat_${r.comp}`);
+    }
+  });
+
+  it("reads a rung out of the diagnostics", () => {
+    const rows = readLadder([
+      { name: "rung_N2", diagnostics: { Psat_N2: 101302 } },
+      { name: "rung_water", diagnostics: { Psat_water: 103926 } },
+    ]);
+    expect(rows).toHaveLength(2);
+    expect(rows[0]!.psat).toBeCloseTo(101302, 3);
+  });
+
+  it("LEAVES OUT a rung the run did not produce", () => {
+    //  Never defaulted to one atmosphere: that would paint a missing answer
+    //  as a perfect one, which is the worst direction for this table to fail.
+    expect(readLadder([{ name: "rung_N2", diagnostics: {} }])).toHaveLength(0);
+    expect(readLadder(undefined)).toHaveLength(0);
+  });
+
+  it("measures the departure from one atmosphere, signed", () => {
+    expect(rungDeparturePct(101325)).toBeCloseTo(0, 9);
+    //  Water, the rung the page singles out.
+    expect(rungDeparturePct(103926)).toBeCloseTo(2.567, 2);
   });
 });

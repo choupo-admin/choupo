@@ -75,6 +75,45 @@ const PROPS_DICT = "system/propsDict";
  *  point, which is the question. */
 export const T_SUBJECT_K = 500.012;
 
+/** The second witness: the ladder of normal boiling points, verified. */
+export const LADDER_WITNESS = "props/thermo/temperature02_engineers_ladder";
+
+/** One rung, as the page reads it out of the run's own diagnostics.  The
+ *  labels are what the substance IS on a plant, which is the half a reader
+ *  needs and a formula cannot supply; the NUMBERS are all the engine's. */
+export const LADDER: readonly { op: string; comp: string; T: number; what: string }[] = [
+  { op: "rung_H2",    comp: "H2",    T: 20.39,  what: "liquid hydrogen" },
+  { op: "rung_neon",  comp: "neon",  T: 27.10,  what: "neon" },
+  { op: "rung_N2",    comp: "N2",    T: 77.35,  what: "liquid nitrogen — air separation" },
+  { op: "rung_Ar",    comp: "Ar",    T: 87.30,  what: "argon" },
+  { op: "rung_O2",    comp: "O2",    T: 90.17,  what: "liquid oxygen" },
+  { op: "rung_CH4",   comp: "CH4",   T: 111.66, what: "LNG" },
+  { op: "rung_C2H4",  comp: "C2H4",  T: 169.42, what: "cryogenic ethylene" },
+  { op: "rung_water", comp: "water", T: 373.15, what: "water at one atmosphere" },
+];
+
+/** How far a rung's computed vapour pressure sits from one atmosphere, in per
+ *  cent.  Derived from the engine's own diagnostics; the page computes no
+ *  pressure of its own. */
+export function rungDeparturePct(psat: number): number {
+  return (psat / 101325 - 1) * 100;
+}
+
+/** Pull each rung's computed vapour pressure out of the run's own operation
+ *  diagnostics.  A rung the run did not produce is left OUT, never defaulted
+ *  to 101325 -- that would paint a missing answer as a perfect one. */
+export function readLadder(
+  ops: readonly { name?: string; diagnostics?: Record<string, number> }[] | undefined,
+): { op: string; psat: number }[] {
+  const out: { op: string; psat: number }[] = [];
+  for (const r of LADDER) {
+    const o = ops?.find((x) => x.name === r.op);
+    const v = o?.diagnostics?.["Psat_" + r.comp];
+    if (typeof v === "number" && Number.isFinite(v)) out.push({ op: r.op, psat: v });
+  }
+  return out;
+}
+
 /** One row of the scan the engine writes. */
 export interface ZRow { P: number; Z: number }
 
@@ -188,6 +227,12 @@ export function WhatIsTemperatureTool(): JSX.Element {
 
   const run = useMethodRun(TEMPERATURE_WITNESS, overrides,
     String(pMaxMPa), "choupoProps");
+  //  The ladder takes no knob -- it is the same eight questions every time --
+  //  so it runs once with no overrides.
+  const ladderRun = useMethodRun(LADDER_WITNESS, [], "ladder", "choupoProps");
+  const ladder = useMemo(
+    () => readLadder(ladderRun.result?.operationResults),
+    [ladderRun.result]);
   const rows = useMemo(
     () => readZScan(run.result?.csvFiles?.["gasThermometer.csv"] ?? ""),
     [run.result]);
@@ -300,6 +345,153 @@ export function WhatIsTemperatureTool(): JSX.Element {
             </Badge>
           </Group>
         )}
+
+        <Box>
+          <Title order={5}>4 · So what range does this actually matter over?</Title>
+          <Text size="sm" mt={4}>
+            Not all of them.  A chemical engineer works between roughly{" "}
+            <strong>20 K and 2300 K</strong> — liquid hydrogen at the bottom, a
+            fired heater or a flare at the top.  Two orders of magnitude, and
+            that is the whole of it.
+          </Text>
+          <Text size="sm" mt={6}>
+            Below that is cryogenic physics; above it is plasma.  Both are real
+            and neither is ours, and saying so is worth more than a survey that
+            pretends everything matters equally.  <strong>We are not doing
+            nuclear physics here</strong>, and a page that hedged towards
+            nanokelvin and fusion would teach a reader nothing about the plant
+            they are going to design.
+          </Text>
+          <Text size="sm" mt={6}>
+            Here is the bottom half of that range, and the engine checks it
+            rather than quoting it.  Each row asks one question: at the
+            temperature this substance’s record calls its normal boiling point,
+            what does its vapour-pressure correlation say the pressure is?  It
+            should be one atmosphere — that is what a normal boiling point
+            means.
+          </Text>
+        </Box>
+
+        {ladderRun.busy && (
+          <Group gap={8}><Loader size="xs" />
+            <Text size="xs" c="dimmed">solving the ladder…</Text></Group>
+        )}
+
+        {ladder.length > 0 && (
+          <Box style={{ overflowX: "auto" }}>
+            <table style={{ borderCollapse: "collapse", width: "100%",
+              fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${GRID}` }}>
+                  <th style={{ textAlign: "left", padding: "4px 8px" }}>T [K]</th>
+                  <th style={{ textAlign: "left", padding: "4px 8px" }}>what it is</th>
+                  <th style={{ textAlign: "right", padding: "4px 8px" }}>P<sub>sat</sub> / atm</th>
+                  <th style={{ textAlign: "right", padding: "4px 8px" }}>off by</th>
+                </tr>
+              </thead>
+              <tbody>
+                {LADDER.map((r) => {
+                  const hit = ladder.find((x) => x.op === r.op);
+                  if (!hit) return null;
+                  const d = rungDeparturePct(hit.psat);
+                  const bad = Math.abs(d) > 2;
+                  return (
+                    <tr key={r.op} style={{ borderBottom: `1px solid ${GRID}` }}>
+                      <td style={{ padding: "4px 8px" }}>{r.T.toFixed(2)}</td>
+                      <td style={{ padding: "4px 8px", color: INK }}>{r.what}</td>
+                      <td style={{ padding: "4px 8px", textAlign: "right" }}>
+                        {(hit.psat / 101325).toFixed(3)}
+                      </td>
+                      <td style={{ padding: "4px 8px", textAlign: "right",
+                        fontWeight: bad ? 700 : 400 }}>
+                        {d >= 0 ? "+" : ""}{d.toFixed(1)} %
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Box>
+        )}
+
+        <Alert variant="light" color="orange"
+          title="And the worst rung is the one you trust most">
+          <Text size="sm">
+            Seven cryogens no reader has any intuition for land inside 1.4 %.
+            <strong> Water does not.</strong>  Its Antoine fit declares a
+            validity range ending at 373 K and its normal boiling point is
+            373.15 K — the fit stops <em>0.15 K before the temperature everybody
+            uses it at</em>, and evaluated there it returns 1.026 atm instead of
+            1.000.
+          </Text>
+          <Text size="sm" mt={6}>
+            The run says so without being asked:{" "}
+            <code>[psat] component &apos;water&apos;: Antoine evaluated at
+            T = 373.15 K, OUTSIDE its declared Trange (273 373).</code>
+          </Text>
+          <Text size="sm" mt={6}>
+            Familiarity is not accuracy.  A declared validity range is worth
+            more than a feeling.
+          </Text>
+        </Alert>
+
+        <Box>
+          <Title order={5}>5 · How T is realised, across that range</Title>
+          <Text size="sm" mt={4}>
+            One scale covers essentially the whole of it — <strong>ITS-90</strong>,
+            from 0.65 K to the copper point and above by radiation — but it is
+            not one instrument.  It is four, each interpolating between fixed
+            points, handed over where the previous one runs out:
+          </Text>
+          <Text size="sm" mt={6} component="div">
+            <ul style={{ marginTop: 4, paddingLeft: 20 }}>
+              <li>helium vapour pressure, at the very bottom;</li>
+              <li>an interpolating constant-volume gas thermometer above it —
+                the instrument §3 is about;</li>
+              <li>the <strong>platinum resistance thermometer</strong> over the
+                great middle, from the hydrogen triple point to the silver
+                point.  <strong>Every temperature in the table above lives
+                here</strong>;</li>
+              <li>Planck’s radiation law above the silver point, where nothing
+                can be touched.</li>
+            </ul>
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>And the fixed points are a different ladder from the one
+            above.</strong>  ITS-90 is realised on triple points of gases and
+            freezing points of metals, chosen because they are{" "}
+            <em>reproducible</em>.  The table above is boiling points at one
+            atmosphere, chosen because they are what a plant{" "}
+            <em>distils at</em>.  Two ladders, two reasons, and conflating them
+            is a mistake worth naming.
+          </Text>
+          <Text size="xs" c={INK} mt={6}>
+            The defining fixed-point VALUES are not quoted here.  They are
+            published by the BIPM and this repository has not read them back
+            against that source, and a citation invented is worse than a gap
+            admitted.  What is stated above is the scale’s structure, not its
+            table.
+          </Text>
+        </Box>
+
+        <Box>
+          <Title order={5}>6 · And your plant instrument is none of these</Title>
+          <Text size="sm" mt={4}>
+            Everything above is metrology.  The thing on your P&amp;ID is a
+            thermocouple in a thermowell, and the chain from the definition to
+            the number on the DCS screen loses <strong>orders of
+            magnitude</strong> of precision at every handover: the scale is
+            realised in a laboratory, a reference is calibrated against it, your
+            instrument is calibrated against that, and then it is welded into a
+            pipe and left there for five years.
+          </Text>
+          <Text size="sm" mt={6}>
+            So <strong>500.012 K is a metrology-laboratory statement.</strong>
+            {" "}A plant reading of the same state is 500 K give or take a
+            couple — and knowing which of the two you are holding is the whole
+            of the skill.
+          </Text>
+        </Box>
 
         <Alert variant="light" title="The dogma, stated rather than buried">
           <Text size="sm">

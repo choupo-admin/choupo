@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 385,
+  "cases": 386,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2276,6 +2276,20 @@
    "ops": [
     "propertyPoint",
     "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/thermo/temperature02_engineers_ladder": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -5787,6 +5801,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/temperature01_gas_thermometer",
+    "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
@@ -6789,6 +6804,7 @@
     "tutorials/props/steam/steam01_if97_verification",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/temperature01_gas_thermometer",
+    "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -7038,7 +7054,8 @@
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/steam/steam02_water_transport",
-    "tutorials/props/thermo/temperature01_gas_thermometer"
+    "tutorials/props/thermo/temperature01_gas_thermometer",
+    "tutorials/props/thermo/temperature02_engineers_ladder"
    ],
    "propertyScan1D": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",

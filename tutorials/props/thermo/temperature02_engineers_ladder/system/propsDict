@@ -1,0 +1,90 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE LADDER A CHEMICAL ENGINEER ACTUALLY CLIMBS, and the engine CHECKS it
+    rather than quoting it.
+
+    Each rung asks one question: at the temperature this substance's record
+    calls its normal boiling point, what does its VAPOUR-PRESSURE CORRELATION
+    say the pressure is?  The answer should be one atmosphere -- that is what a
+    normal boiling point means -- and how close it lands is a measure of the
+    record, published rather than assumed.
+
+    THE OTHER WAY ROUND WOULD HAVE BEEN NICER AND DOES NOT WORK.  Asking for
+    `T_bubble` at 1 atm solves for the temperature, which is the more direct
+    question; `BubblePoint::compute` carries its own initial guess and does not
+    converge at 20 K, a gap this repository already has on record (see
+    docs/design/held-out-pressure.md).  Verifying the pressure at a declared
+    temperature asks the same physics of the same correlation and is robust,
+    so that is what runs here -- said plainly rather than papered over.       */
+operations
+(
+    {
+        //  liquid hydrogen — colder than anything a plant routinely does
+        name        rung_H2;
+        type        propertyPoint;
+        state       { T 20.39 K;  P 1 atm;  composition { H2 1.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_H2 );
+    }
+
+    {
+        //  neon
+        name        rung_neon;
+        type        propertyPoint;
+        state       { T 27.1 K;  P 1 atm;  composition { H2 0.0;  neon 1.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_neon );
+    }
+
+    {
+        //  liquid nitrogen — air separation, the commonest cryogen on a site
+        name        rung_N2;
+        type        propertyPoint;
+        state       { T 77.35 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 1.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_N2 );
+    }
+
+    {
+        //  argon — the air-separation side draw
+        name        rung_Ar;
+        type        propertyPoint;
+        state       { T 87.3 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 1.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_Ar );
+    }
+
+    {
+        //  liquid oxygen — air separation
+        name        rung_O2;
+        type        propertyPoint;
+        state       { T 90.17 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 1.0;  CH4 0.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_O2 );
+    }
+
+    {
+        //  LNG — the temperature a whole industry is built around
+        name        rung_CH4;
+        type        propertyPoint;
+        state       { T 111.66 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 1.0;  C2H4 0.0;  water 0.0; } }
+        properties  ( Psat_CH4 );
+    }
+
+    {
+        //  cryogenic ethylene
+        name        rung_C2H4;
+        type        propertyPoint;
+        state       { T 169.42 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 1.0;  water 0.0; } }
+        properties  ( Psat_C2H4 );
+    }
+
+    {
+        //  water at one atmosphere — the anchor everybody has a feel for
+        name        rung_water;
+        type        propertyPoint;
+        state       { T 373.15 K;  P 1 atm;  composition { H2 0.0;  neon 0.0;  N2 0.0;  Ar 0.0;  O2 0.0;  CH4 0.0;  C2H4 0.0;  water 1.0; } }
+        properties  ( Psat_water );
+    }
+);

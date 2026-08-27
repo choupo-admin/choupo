@@ -2742,6 +2742,53 @@ A constant-volume gas thermometer reads a temperature off PV = nRT. A real gas d
 \goldmore{13}
 \end{tutgolden}
 
+\clearpage
+\tutentry{temperature02\_engineers\_ladder}{tutorials/props/thermo/temperature02\_engineers\_ladder}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{rung\_H2}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{rung\_neon}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{rung\_N2}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{rung\_Ar}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{rung\_O2}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{rung\_CH4}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{rung\_C2H4}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{rung\_water}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The range a chemical engineer actually works in}
+\begin{tutnarrative}
+THE LADDER A CHEMICAL ENGINEER ACTUALLY CLIMBS, and the engine CHECKS it rather than quoting it.
+
+Each rung asks one question: at the temperature this substance's record calls its normal boiling point, what does its VAPOUR-PRESSURE CORRELATION say the pressure is? The answer should be one atmosphere -- that is what a normal boiling point means -- and how close it lands is a measure of the record, published rather than assumed.
+
+THE OTHER WAY ROUND WOULD HAVE BEEN NICER AND DOES NOT WORK. Asking for `T\_bubble` at 1 atm solves for the temperature, which is the more direct question; `BubblePoint::compute` carries its own initial guess and does not converge at 20 K, a gap this repository already has on record (see docs/design/held-out-pressure.md). Verifying the pressure at a declared temperature asks the same physics of the same correlation and is robust, so that is what runs here -- said plainly rather than papered over.
+
+\end{tutnarrative}
+\tutreadme{Eight rungs, from liquid hydrogen to boiling water, checked by the engine rather than quoted at you.}
+\tutreadme{At the temperature each substance's record calls its normal boiling point, what does its vapour-pressure correlation say the pressure is?}
+\tutreadme{It should be one atmosphere --- that is what a normal boiling point $\ast$means$\ast$. How close it lands measures the record, and the answer is published rather than assumed.}
+\tutreadme{The substance every engineer trusts most is the worst rung on the ladder.}
+\tutreadme{Water's Antoine fit declares Trange (273 373). Its normal boiling point is 373.15 K. The fit stops 0.15 K before the temperature everybody uses it at, and evaluated there it returns 1.026 atm instead of 1.000 --- 2.6 \% out, on the one substance whose boiling point every reader could recite.}
+\tutreadme{Seven cryogens the reader has no intuition for land inside 1.4 \%. The familiar one does not. Familiarity is not accuracy, and a declared validity range is worth more than a feeling.}
+\begin{tutgolden}
+\goldrow{diag}{rung\_H2}{Cp\_ig}{27.3234}
+\goldrow{diag}{rung\_H2}{H\_R}{0.0000}
+\goldrow{diag}{rung\_H2}{H\_ig}{-7841.8140}
+\goldrow{diag}{rung\_H2}{H\_real}{-7841.8140}
+\goldrow{diag}{rung\_H2}{P}{101325.0000}
+\goldrow{diag}{rung\_H2}{Psat\_H2}{101850.7659}
+\goldrow{diag}{rung\_H2}{S\_R}{0.0000}
+\goldrow{diag}{rung\_H2}{S\_ig}{55.7336}
+\goldrow{diag}{rung\_H2}{S\_real}{55.7336}
+\goldrow{diag}{rung\_H2}{T}{20.3900}
+\goldrow{diag}{rung\_H2}{Z}{1.0000}
+\goldrow{diag}{rung\_H2}{gamma}{1.4374}
+\goldrow{diag}{rung\_H2}{v\_molar}{0.0017}
+\goldrow{diag}{rung\_neon}{Cp\_ig}{20.7861}
+\goldmore{90}
+\end{tutgolden}
+
 \subsection{thermoTest}
 \grouptheory{thermoTest}
 \clearpage
