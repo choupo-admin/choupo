@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Catalyst pellet: a 3 mm spherical gamma-alumina support.
+
+  *** THIS IS A TEACHING SURROGATE.  NO NUMBER IN IT IS CITED. ***
+
+  And that sentence is not only in this banner: `provenance.identity.origin` is
+  read by the engine and ANNOUNCED on every run that uses this record, because
+  a field the engine cannot see is a comment.
+
+  It is declared HERE, case-locally, and NOT in data/standards/assets/, and
+  that placement is the honest half of the statement.  data/standards/ is the
+  frozen, committee-managed tree in which every value is expected to carry a
+  PRIMARY citation; the two numbers that matter most to the answer this case
+  computes -- the intraparticle porosity `epsilon_p` and the tortuosity `tau`
+  -- are exactly the two this author could not source from a primary.  Rather
+  than attach a citation that does not support them (which converts *unsourced*
+  into *falsely sourced*, and neither a reader nor a gate can detect that), the
+  values are stated as what they are: round, plausible, uncited, and chosen so
+  the resulting Thiele modulus lands in the transition region where the
+  concentration field is worth looking at.
+
+  WHAT IS VERIFIED IN THIS CASE, and it is not these numbers: that the
+  NUMERICAL solution of the intraparticle boundary-value problem reproduces the
+  first-order isothermal CLOSED FORM.  That claim is independent of every value
+  below -- change the porosity and the modulus moves, and the numerical field
+  still has to match the analytical field at the new modulus.  See the README.
+
+  Promoting a real, cited catalyst into data/standards/assets/ needs no code
+  change: `CatalystRegistry` already scans that home for `kind catalyst;`.
+\*-----------------------------------------------------------------------------*/
+
+kind catalyst;
+
+catalyst
+{
+    name         aluminaSphere3mm;
+    type         "gamma-alumina support, spherical pellet (teaching surrogate)";
+
+    geometry     sphere;
+    radius       1.5 mm;         // 3 mm pellet
+
+    rho_particle 1300;           // kg/m3, apparent (pellet) density
+    rho_bulk      780;           // kg/m3, packed bulk density
+
+    epsilon_p    0.45;           // intraparticle porosity [-]
+    tau          3.0;            // tortuosity [-]
+}
+
+reviewStatus  interim;
+
+provenance
+{
+    identity
+    {
+        origin teachingSurrogate;
+        method "Round values in the range commonly quoted for a porous gamma-alumina support pellet.  NOT taken from, and NOT traceable to, any primary measurement.  epsilon_p and tau together set D_eff = (epsilon_p/tau)*D_molecular, and tau alone is conventionally reported anywhere between 2 and 7 -- so a factor of three in eta sits inside the uncertainty of this record.  Do not quote it.";
+    }
+}

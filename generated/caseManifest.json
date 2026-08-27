@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 383,
+  "cases": 384,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2120,6 +2120,20 @@
    "hasGolden": true
   },
   "tutorials/props/reactor/thiele01_sphere_first_order": {
+   "application": "choupoProps",
+   "ops": [
+    "thielePellet"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/reactor/thiele02_prater_temperature": {
    "application": "choupoProps",
    "ops": [
     "thielePellet"
@@ -5747,6 +5761,7 @@
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
+    "tutorials/props/reactor/thiele02_prater_temperature",
     "tutorials/props/scan/binary01_lle_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
@@ -6752,6 +6767,7 @@
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/reactor/thiele01_sphere_first_order",
+    "tutorials/props/reactor/thiele02_prater_temperature",
     "tutorials/props/scan/phase01_water_full",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
     "tutorials/props/steam/steam01_if97_verification",
@@ -7066,7 +7082,8 @@
     "tutorials/props/steam/steam01_if97_verification"
    ],
    "thielePellet": [
-    "tutorials/props/reactor/thiele01_sphere_first_order"
+    "tutorials/props/reactor/thiele01_sphere_first_order",
+    "tutorials/props/reactor/thiele02_prater_temperature"
    ],
    "vaporPressureFit": [
     "tutorials/props/curation/curate01_water_evidence_partition",

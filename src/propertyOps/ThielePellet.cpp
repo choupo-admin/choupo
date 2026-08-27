@@ -298,6 +298,77 @@ int ThielePellet::run(const DictPtr& dict,
             " so the size of that error is not left to be guessed.");
 
     // ---------------------------------------------------------------------
+    //  THE TEMPERATURE FIELD, WHEN THE CASE DECLARES WHAT IT TAKES.
+    //
+    //  PRATER'S RELATION IS AN EXACT FIRST INTEGRAL of the coupled pellet
+    //  equations.  The species and energy balances carry the SAME reaction
+    //  term, so eliminating it between them gives, for constant D_eff and
+    //  k_eff and any kinetics whatsoever,
+    //
+    //      T(r) - T_s  =  beta * T_s * ( 1 - c(r)/c_s ),
+    //      beta        =  (-dH) * D_eff * c_s / ( k_eff * T_s ).
+    //
+    //  So the temperature field costs no second boundary-value problem: it is
+    //  algebra over the concentration field already solved.
+    //
+    //  AND HERE THE FIELD IS EXACT, not an approximation -- which is worth
+    //  stating precisely, because the obvious thing to say is wrong.
+    //
+    //  What couples the two balances is the RATE's dependence on temperature.
+    //  This op takes `rateConstant` as a NUMBER, not an Arrhenius law, so the
+    //  reaction term does not know the temperature: the species equation is
+    //  independent of the energy equation, its profile c(r) is exact, and
+    //  Prater then hands back the exact temperature field.  Nothing here is
+    //  linearised and nothing is iterated.
+    //
+    //  THE COUPLING RETURNS THE MOMENT k IS ARRHENIUS, and that is where the
+    //  multiplicity this op refuses lives: with k(T) the two equations feed
+    //  each other, the answer can be a SET of up to three steady states, and
+    //  eta may exceed 1.  `beta` is the size of the temperature excursion the
+    //  Arrhenius factor would then be exposed to, so it is also the measure of
+    //  how badly a fixed-k reading would mislead.  Announced; never judged.
+    //
+    //  The block is OPTIONAL and its absence changes nothing -- a case that
+    //  does not declare it runs byte for byte as before.
+    // ---------------------------------------------------------------------
+    bool   hasThermal = false;
+    scalar praterBeta = 0.0, dHrxn = 0.0, kEff = 0.0, cSurf = 0.0;
+    if (dict->found("thermal"))
+    {
+        auto th = dict->subDict("thermal");
+        dHrxn = th->lookupScalar("heatOfReaction",      Dims::molarEnergy);
+        kEff  = th->lookupScalar("thermalConductivity", Dims::thermalCond);
+        cSurf = th->lookupScalar("surfaceConcentration", Dims::concentration);
+        if (kEff <= 0.0)
+            throw std::runtime_error(locus + ": thermal { thermalConductivity }"
+                " must be positive -- it is the pellet's EFFECTIVE conductivity"
+                " and it sits in the denominator of the Prater number.");
+        if (cSurf <= 0.0)
+            throw std::runtime_error(locus + ": thermal { surfaceConcentration }"
+                " must be positive.  It is c_s, the reactant concentration at"
+                " the pellet surface, and this op cannot derive it: the"
+                " dimensionless first-order problem it solves does not contain"
+                " c_s at all, which is why the field is published as c/c_s.");
+        //  THE TREE STORES NO DERIVATIVE: beta is computed from the three
+        //  declared numbers and announced with all three, never declared.
+        praterBeta = (-dHrxn) * de.D_eff * cSurf / (kEff * T);
+        hasThermal = true;
+
+        AdvisoryLog::instance().add("model", "info", locus,
+            "a temperature field is published, from PRATER's relation"
+            " T - T_s = beta*T_s*(1 - c/c_s) over the concentration field,"
+            " with beta = " + fmtG(praterBeta) + " derived from the three"
+            " declared numbers.  IT IS EXACT HERE, not an approximation: this"
+            " op takes `rateConstant` as a number rather than an Arrhenius"
+            " law, so the reaction term does not depend on temperature, the"
+            " species equation is uncoupled from the energy equation, and its"
+            " profile is exact.  THE COUPLING -- and with it the multiplicity"
+            " this op declines to solve, up to three steady states and eta"
+            " above 1 -- appears only once k is made a function of T.  beta is"
+            " then the size of the excursion that Arrhenius factor would see.");
+    }
+
+    // ---------------------------------------------------------------------
     //  Verification tolerances: declared, or DEFAULTED and announced.
     // ---------------------------------------------------------------------
     scalar tolField = 1.0e-4, tolEta = 1.0e-4, tolSweep = 5.0e-3;
@@ -364,16 +435,32 @@ int ThielePellet::run(const DictPtr& dict,
         if (!f)
             throw std::runtime_error(locus + ": cannot write the field CSV '"
                 + fieldCsv + "'.");
+        //  The temperature columns appear ONLY when the case declared the
+        //  thermal block.  A column of zeros would be a temperature field
+        //  claiming the pellet is isothermal, which is a different statement
+        //  from having no temperature field at all.
         f << "geometry,phi,phi_char,xi,c_over_cs,c_over_cs_closedForm,"
-             "absDeviation\n";
+             "absDeviation";
+        if (hasThermal) f << ",T_over_Ts,T_K";
+        f << '\n';
         const std::string gname = pelletGeometryName(cat.geometry());
         for (std::size_t j = 0; j < sol.xi.size(); ++j)
+        {
             f << gname << ',' << fmtG(phi) << ',' << fmtG(phiChar) << ','
               << fmtG(sol.xi[j]) << ',' << fmtG(sol.u[j]) << ','
               << fmtG(sol.uClosedForm[j]) << ','
-              << fmtG(std::abs(sol.u[j] - sol.uClosedForm[j])) << '\n';
+              << fmtG(std::abs(sol.u[j] - sol.uClosedForm[j]));
+            if (hasThermal)
+            {
+                const scalar tOverTs = 1.0 + praterBeta * (1.0 - sol.u[j]);
+                f << ',' << fmtG(tOverTs) << ',' << fmtG(tOverTs * T);
+            }
+            f << '\n';
+        }
         if (verbosity >= 2)
-            std::cout << "    concentration field -> " << fieldCsv << "  ("
+            std::cout << "    " << (hasThermal ? "concentration + temperature"
+                                               : "concentration")
+                      << " field -> " << fieldCsv << "  ("
                       << sol.xi.size() << " nodes)\n";
     }
 
@@ -548,6 +635,22 @@ int ThielePellet::run(const DictPtr& dict,
     diag_["eta_flux"]              = sol.etaFlux;
     diag_["eta_volumeVsFlux"]      = sol.etaVolumeVsFlux;
     diag_["field_maxAbsDeviation"] = sol.maxAbsFieldDeviation;
+    if (hasThermal)
+    {
+        //  Published as INGREDIENTS beside the derived group, so a reader can
+        //  redo the arithmetic rather than take beta on trust -- the same
+        //  standard the costing table is held to.
+        diag_["prater_beta"]           = praterBeta;
+        diag_["prater_heatOfReaction"] = dHrxn;
+        diag_["prater_thermalCond"]    = kEff;
+        diag_["prater_c_surface"]      = cSurf;
+        //  The centre is the hottest point of an exothermic pellet, and it is
+        //  where c/c_s is smallest -- so this is the whole temperature field
+        //  in one number.
+        diag_["deltaT_centre_K"]       = praterBeta * T * (1.0 - sol.u.front());
+        diag_["T_centre_K"]            = T * (1.0 + praterBeta
+                                                    * (1.0 - sol.u.front()));
+    }
     diag_["c_centre"]              = sol.u.front();
     diag_["c_centre_closedForm"]   = sol.uClosedForm.front();
     diag_["D_eff"]                 = de.D_eff;

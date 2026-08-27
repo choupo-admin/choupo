@@ -1,0 +1,100 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  One thielePellet operation.
+
+    THE RATE CONSTANT IS DECLARED HERE, and not on the catalyst record, because
+    kinetics are equipment- and reaction-specific: the asset carries the SOLID,
+    never the chemistry run on it.  Two reactors loaded with the same catalyst
+    would otherwise carry two copies of one rate constant and drift apart.
+
+    k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near
+    1 -- the transition region, where the field has a visible gradient and eta
+    is neither ~1 nor ~1/phi.  It is not measured and is not claimed to be.    */
+
+operations
+(
+    {
+        name       thiele_CO_alumina_prater;
+        type       thielePellet;
+
+        catalyst   aluminaSphere3mm;      // constant/assets/, `kind catalyst;`
+        species    CO;                    // the diffusing reactant
+        T          573.15 K;
+        P          1 atm;
+
+        rateConstant 40.0;                // 1/s, per unit PELLET volume
+
+
+        //  THE ONLY DIFFERENCE FROM thiele01, so the difference IS the
+        //  temperature.  Three declared numbers; beta is DERIVED from them and
+        //  announced with all three.
+        //
+        //  ALL THREE ARE TEACHING VALUES and none is measured.  The catalyst
+        //  record this case carries already says so of itself ("NOT traceable
+        //  to any primary measurement.  Do not quote it."), and these are of
+        //  the same kind: a conductivity in the range usually quoted for a
+        //  porous alumina pellet, and a heat of reaction and a surface
+        //  concentration chosen so that beta lands where the lesson is: the
+        //  centre runs about 163 K hotter than the surface, which is the
+        //  intuition a student does not have and a line plot of c/c_s cannot
+        //  give them.  No number here is a claim about CO oxidation.
+        //
+        //  AND THE FIELD IS EXACT.  `rateConstant` above is a NUMBER, not an
+        //  Arrhenius law, so the reaction does not depend on temperature and
+        //  the two balances do not couple: the concentration profile is exact
+        //  and Prater hands back the exact temperature.  Make k(T) Arrhenius
+        //  and the coupling -- and up to three steady states -- comes with it.
+        //  That case is deliberately NOT this one.
+        thermal
+        {
+            heatOfReaction        -2.83e8;   // J/kmol  (exothermic, negative)
+            thermalConductivity    0.25;     // W/(m.K), effective, pellet
+            surfaceConcentration   0.021;    // kmol/m3
+        }
+        diffusion
+        {
+            medium           gas;
+            counterDiffusing N2;          // the carrier: D_CO,N2 by Fuller
+        }
+
+        //  401 GRID POINTS (odd: Simpson's rule integrates the field over an
+        //  even number of intervals).  At phi_char ~ 3 this puts phi_char*h at
+        //  ~8e-3, so the second-order truncation error is O(1e-6) -- which the
+        //  reported deviation from the closed form then confirms rather than
+        //  assumes.
+        nodes      401;
+
+        //  THE CLASSICAL PLOT.  A PARAMETRIC family over the generalised
+        //  modulus -- it varies phi directly, so it is not a family of real
+        //  pellets and the op says so.  On this abscissa the three geometries
+        //  nearly collapse onto one curve, which is the lesson.
+        sweep
+        {
+            phi        ( 0.1 10.0 );      // log-spaced, endpoints included
+            points     21;
+            geometries ( slab cylinder sphere );
+            nodes      201;
+        }
+
+        //  A single tolerance says the answer is close enough on ONE grid; the
+        //  observed ORDER says the scheme converges the way it claims to.
+        refinement { nodes ( 51 101 201 401 ); }
+
+        //  DECLARED rather than defaulted, so the verdict this run's exit code
+        //  carries is the case's own statement and not the engine's fallback.
+        verification { field 1e-4; eta 1e-4; sweep 5e-3; }
+
+        output
+        {
+            field      pelletConcentrationField.csv;
+            sweep      pelletEtaPhi.csv;
+            refinement pelletGridRefinement.csv;
+        }
+    }
+);

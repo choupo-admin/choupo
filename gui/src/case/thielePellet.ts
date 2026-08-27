@@ -85,7 +85,14 @@ import type { DictOverride } from "./methodRun.js";
 // ---- The witness ------------------------------------------------------------
 
 /** The bundled tutorial the tool runs, three times, in the browser. */
-export const THIELE_WITNESS = "props/reactor/thiele01_sphere_first_order";
+//  THE WITNESS CARRIES THE THERMAL BLOCK (2026-08-27).  thiele01 stays as the
+//  ISOTHERMAL control -- its golden is untouched and it is what the engine's
+//  own verification runs against -- and the tool runs thiele02, which declares
+//  `thermal { heatOfReaction; thermalConductivity; surfaceConcentration; }` and
+//  therefore publishes a temperature field beside the concentration one.  The
+//  extra columns are OPTIONAL everywhere below, so pointing this back at an
+//  isothermal case degrades to exactly the old behaviour.
+export const THIELE_WITNESS = "props/reactor/thiele02_prater_temperature";
 
 /** The two dict files the knobs write into (case-root-relative, exactly the
  *  keys `tutorials.ts` bundles them under). */
@@ -281,6 +288,13 @@ export interface FieldRow {
   uClosed: number;
   /** |u - uClosed|, as published — never recomputed here. */
   absDev: number;
+  /** T/T_s, published ONLY when the case declared a `thermal {}` block.
+   *  `undefined` means the run published no temperature — which is a
+   *  different statement from a pellet that is isothermal, and the two must
+   *  not be allowed to look alike. */
+  tOverTs?: number;
+  /** The same point in kelvin, as published. */
+  tK?: number;
 }
 
 export interface FieldRead {
@@ -304,6 +318,9 @@ export type Read<T> = { ok: true; read: T } | { ok: false; why: string };
 const FIELD_HEADER = "geometry,phi,phi_char,xi,c_over_cs,"
   + "c_over_cs_closedForm,absDeviation";
 
+/** The same field WITH the temperature columns the `thermal {}` block adds. */
+const FIELD_HEADER_T = FIELD_HEADER + ",T_over_Ts,T_K";
+
 const SWEEP_HEADER = "geometry,phi,phi_char,eta,eta_closedForm,"
   + "relDeviation,eta_flux";
 
@@ -324,7 +341,14 @@ export function readPelletField(csv: string): Read<FieldRead> {
   const lines = csv.trim().split(/\r?\n/);
   if (lines.length < 2) return { ok: false, why: "the field CSV is empty" };
   const header = lines[0]!.split(",").map((s) => s.trim());
-  if (header.join(",") !== FIELD_HEADER)
+  //  EXACTLY TWO forms are accepted, and nothing else.  A run that declared
+  //  no `thermal {}` block writes the base header; one that did appends
+  //  `T_over_Ts,T_K`.  Kept as an equality against a closed list rather than
+  //  a prefix test, so a header that has DRIFTED still refuses by name
+  //  instead of being read positionally and silently mis-columned.
+  const joined = header.join(",");
+  const hasT = joined === FIELD_HEADER_T;
+  if (joined !== FIELD_HEADER && !hasT)
     return { ok: false, why: headerRefusal(header, FIELD_HEADER,
       "a thielePellet CONCENTRATION FIELD") };
 
@@ -347,7 +371,19 @@ export function readPelletField(csv: string): Read<FieldRead> {
     phi = p; phiChar = pc;
     const last = rows[rows.length - 1];
     if (last && xi < last.xi) xiMonotonic = false;
-    rows.push({ xi, u, uClosed, absDev });
+    //  OPTIONAL by construction: an isothermal run has no such columns and
+    //  the row carries `undefined` rather than a number that would read as a
+    //  temperature.  A row whose temperature cells are unreadable in a file
+    //  that HAS them is skipped with the rest, not silently de-thermalised.
+    let tOverTs: number | undefined;
+    let tK: number | undefined;
+    if (hasT) {
+      const a = Number(c[7]), b = Number(c[8]);
+      if (!Number.isFinite(a) || !Number.isFinite(b)) { ++skippedRows; continue; }
+      tOverTs = a; tK = b;
+    }
+    rows.push(hasT ? { xi, u, uClosed, absDev, tOverTs: tOverTs!, tK: tK! }
+                   : { xi, u, uClosed, absDev });
   }
   if (rows.length < 2)
     return { ok: false, why: "the field CSV carries fewer than two usable "
@@ -505,6 +541,9 @@ export interface FieldBand {
   from: number;
   to: number;
   u: number;
+  /** Carried from the band's inner row; undefined on an isothermal run. */
+  tOverTs?: number;
+  tK?: number;
 }
 
 /** Reduce a published field to at most `maxBands` piecewise-constant bands.
@@ -523,9 +562,26 @@ export function fieldBands(
   const out: FieldBand[] = [];
   for (let i = 0; i < n - 1; i += stride) {
     const j = Math.min(i + stride, n - 1);
-    out.push({ from: rows[i]!.xi, to: rows[j]!.xi, u: rows[i]!.u });
+    const r = rows[i]!;
+    out.push({ from: r.xi, to: rows[j]!.xi, u: r.u, tOverTs: r.tOverTs,
+               tK: r.tK });
   }
   return out;
+}
+
+/** The temperature range over a field, for the ramp to be normalised against.
+ *  Returns null when the run published no temperature at all — never a
+ *  degenerate [0,0], which would paint a field that does not exist. */
+export function fieldTemperatureRange(
+  rows: readonly FieldRow[],
+): { lo: number; hi: number } | null {
+  let lo = Infinity, hi = -Infinity;
+  for (const r of rows) {
+    if (r.tK === undefined || !Number.isFinite(r.tK)) continue;
+    if (r.tK < lo) lo = r.tK;
+    if (r.tK > hi) hi = r.tK;
+  }
+  return Number.isFinite(lo) && Number.isFinite(hi) ? { lo, hi } : null;
 }
 
 // ---- View geometry: the colour ramp -----------------------------------------
@@ -545,6 +601,26 @@ const mix = (a: number, b: number, t: number): number =>
 /** The fill for a published c/c_s.  Clamped rather than refused: a converged
  *  field can overshoot 1 by round-off at the surface node, and a black hole in
  *  the drawing would be a worse report of that than a clamped pixel. */
+/** The TEMPERATURE ramp, deliberately a different family from the
+ *  concentration one so the two pictures can never be confused at a glance:
+ *  cool surface -> hot core.  `t` is already normalised to [0,1] over the
+ *  field's own range by the caller, because an absolute kelvin ramp would
+ *  paint every pellet the same colour. */
+const T_RAMP: readonly [number, number, number][] = [
+  [ 40,  70, 120],   // coolest point in this field — the surface
+  [214, 118,  56],
+  [255, 234, 168],   // hottest point — the centre, for an exothermic pellet
+];
+
+export function temperatureColor(t: number): string {
+  const x = Number.isFinite(t) ? Math.min(1, Math.max(0, t)) : 0;
+  const lo = x < 0.5 ? T_RAMP[0]! : T_RAMP[1]!;
+  const hi = x < 0.5 ? T_RAMP[1]! : T_RAMP[2]!;
+  const k = x < 0.5 ? x / 0.5 : (x - 0.5) / 0.5;
+  return `rgb(${mix(lo[0], hi[0], k)},${mix(lo[1], hi[1], k)},`
+    + `${mix(lo[2], hi[2], k)})`;
+}
+
 export function fieldColor(u: number): string {
   const x = Number.isFinite(u) ? Math.min(1, Math.max(0, u)) : 0;
   const lo = x < 0.5 ? RAMP[0]! : RAMP[1]!;

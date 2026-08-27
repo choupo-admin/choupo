@@ -85,6 +85,7 @@ import {
   FIELD_CSV, GEOMETRIES, RATE_CONSTANT_LADDER, SWEEP_CSV, THIELE_KNOBS,
   THIELE_LIMITS, THIELE_WITNESS, WITNESS_CARRIER, WITNESS_CATALYST,
   WITNESS_SPECIES, defaultKnobValues, fieldBands, fieldColor,
+  fieldTemperatureRange, temperatureColor,
   nearestLadderIndex, overridesFor, readEtaPhiSweep, readPelletDiagnostics,
   readPelletField,
   type FieldRead, type PelletDiagnostics, type PelletGeometry, type Read,
@@ -149,7 +150,18 @@ interface Run {
  *  over intervals whose two ends are published `xi`, filled with one published
  *  `c_over_cs`; the rings are drawn outside-in so each visible annulus shows
  *  the value published at its inner edge. */
-function CrossSection({ run, x }: { run: Run; x: number }): JSX.Element {
+function CrossSection({ run, x, paint, tRange }: {
+  run: Run; x: number;
+  /** Which published quantity the SAME geometry is coloured by.  One picture,
+   *  two stories: a toggle costs no layout, where a second strip of discs
+   *  would have to come out of the height budget MenuBar.tsx measured. */
+  paint: "concentration" | "temperature";
+  /** Normalisation for the temperature ramp, shared across the three shapes so
+   *  the same colour means the same kelvin in all of them.  An absolute ramp
+   *  would paint every pellet identically; a PER-SHAPE one would make three
+   *  different pellets look alike, which is worse. */
+  tRange: { lo: number; hi: number } | null;
+}): JSX.Element {
   const g = run.geometry;
   const colour = C_GEO[g] ?? TEXT;
   const cx = x + CELL_W / 2;
@@ -157,6 +169,16 @@ function CrossSection({ run, x }: { run: Run; x: number }): JSX.Element {
   const read = run.field && run.field.ok ? run.field.read : null;
   const bands = read ? fieldBands(read.rows, MAX_BANDS) : [];
   const d = run.diag;
+
+  //  A band with no published temperature keeps the CONCENTRATION colour
+  //  rather than falling to the ramp's cold end: painting "no datum" as
+  //  "coldest" is a number where there is none.
+  const bandFill = (b: { u: number; tK?: number }): string => {
+    if (paint === "concentration") return fieldColor(b.u);
+    if (b.tK === undefined || !tRange || tRange.hi <= tRange.lo)
+      return fieldColor(b.u);
+    return temperatureColor((b.tK - tRange.lo) / (tRange.hi - tRange.lo));
+  };
 
   return (
     <g>
@@ -178,10 +200,10 @@ function CrossSection({ run, x }: { run: Run; x: number }): JSX.Element {
             <g key={i}>
               <rect x={cx + b.from * SLAB_HW} y={cy - SLAB_HH}
                 width={Math.max(0.4, (b.to - b.from) * SLAB_HW)}
-                height={2 * SLAB_HH} fill={fieldColor(b.u)} />
+                height={2 * SLAB_HH} fill={bandFill(b)} />
               <rect x={cx - b.to * SLAB_HW} y={cy - SLAB_HH}
                 width={Math.max(0.4, (b.to - b.from) * SLAB_HW)}
-                height={2 * SLAB_HH} fill={fieldColor(b.u)} />
+                height={2 * SLAB_HH} fill={bandFill(b)} />
             </g>
           ))}
           <rect x={cx - SLAB_HW} y={cy - SLAB_HH} width={2 * SLAB_HW}
@@ -195,7 +217,7 @@ function CrossSection({ run, x }: { run: Run; x: number }): JSX.Element {
         <g>
           {[...bands].reverse().map((b, i) => (
             <circle key={i} cx={cx} cy={cy} r={Math.max(0.4, b.to * DISC_R)}
-              fill={fieldColor(b.u)} />
+              fill={bandFill(b)} />
           ))}
           <circle cx={cx} cy={cy} r={DISC_R} fill="none" stroke={colour}
             strokeWidth={1.6} />
@@ -430,6 +452,10 @@ function RateConstantKnob({ value, onChange }: {
 export function ThielePelletTool(): JSX.Element {
   const [knobs, setKnobs] = useState<ThieleKnobValues>(defaultKnobValues);
   const [view, setView] = useState<"field" | "family">("field");
+  //  WHICH published quantity paints the discs.  Defaults to concentration,
+  //  so a witness with no `thermal {}` block behaves exactly as before.
+  const [paint, setPaint] =
+    useState<"concentration" | "temperature">("concentration");
   const knobsKey = JSON.stringify(knobs);
 
   //  THREE RUNS of ONE witness, one per shape.  The hooks are unconditional and
@@ -466,6 +492,24 @@ export function ThielePelletTool(): JSX.Element {
 
   const busy = runs.some((r) => r.busy);
   const bySphere = runs.find((r) => r.geometry === "sphere");
+
+  //  ONE temperature range ACROSS THE THREE SHAPES, so the same colour means
+  //  the same kelvin in all of them.  Normalising each shape against its own
+  //  range would paint three different pellets identically and hide the very
+  //  comparison the strip exists for.  Null when no run published a
+  //  temperature -- the toggle then does not appear at all.
+  const tRange = useMemo(() => {
+    let lo = Infinity, hi = -Infinity;
+    for (const r of runs) {
+      const read = r.field && r.field.ok ? r.field.read : null;
+      const range = read ? fieldTemperatureRange(read.rows) : null;
+      if (!range) continue;
+      if (range.lo < lo) lo = range.lo;
+      if (range.hi > hi) hi = range.hi;
+    }
+    return Number.isFinite(lo) && Number.isFinite(hi) ? { lo, hi } : null;
+  }, [runs]);
+  const hasTemperature = tRange !== null;
 
   //  THE FAMILY IS PUBLISHED IDENTICALLY BY ALL THREE RUNS (it is parametric in
   //  phi and holds no pellet fixed), so it is read from the FIRST run that
@@ -606,6 +650,20 @@ export function ThielePelletTool(): JSX.Element {
             { label: "η(φ) family", value: "family" },
           ]} />
       </KnobField>
+      {/* THE PAINT TOGGLE appears only when the run actually published a
+          temperature.  An always-visible control that yields the same picture
+          would teach the reader that the toggle does nothing. */}
+      {hasTemperature && (
+        <KnobField label="paint the pellet by">
+          <SegmentedControl size="xs" value={paint} fullWidth
+            onChange={(v) => setPaint(v === "temperature"
+              ? "temperature" : "concentration")}
+            data={[
+              { label: "c / c_s", value: "concentration" },
+              { label: "temperature", value: "temperature" },
+            ]} />
+        </KnobField>
+      )}
       {busy && (
         <Group gap={6} wrap="nowrap" align="center">
           <Loader size="xs" />
@@ -688,7 +746,8 @@ export function ThielePelletTool(): JSX.Element {
             + "factor, over a chart of the same field against the normalised "
             + "coordinate with the closed form drawn on top of it"}>
           {runs.map((r, i) => (
-            <CrossSection key={r.geometry} run={r} x={CELL_X[i]!} />
+            <CrossSection key={r.geometry} run={r} x={CELL_X[i]!}
+              paint={paint} tRange={tRange} />
           ))}
           <RampLegend y={STRIP_Y + STRIP_H + 6} />
           <TraceLegend y={STRIP_Y + STRIP_H + 6} />

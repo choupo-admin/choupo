@@ -1,0 +1,40 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    thiele_CO_alumina_prater D_eff            9.68564e-06        1e-4
+diag    thiele_CO_alumina_prater D_molecular      6.45709e-05        1e-4
+diag    thiele_CO_alumina_prater Lambda           0.0005             1e-4
+diag    thiele_CO_alumina_prater P                101325             1e-4
+diag    thiele_CO_alumina_prater T                573.15             1e-4
+diag    thiele_CO_alumina_prater T_centre_K       736.654            1e-4
+diag    thiele_CO_alumina_prater c_centre         0.289874           1e-4
+diag    thiele_CO_alumina_prater c_centre_closedForm 0.289873           1e-4
+diag    thiele_CO_alumina_prater deltaT_centre_K  163.504            1e-4
+diag    thiele_CO_alumina_prater dimension        0.0015             1e-4
+diag    thiele_CO_alumina_prater epsilon_p        0.45               1e-4
+diag    thiele_CO_alumina_prater eta              0.665742           1e-4
+diag    thiele_CO_alumina_prater eta_closedForm   0.665742           1e-4
+diag    thiele_CO_alumina_prater eta_flux         0.665731           1e-4
+diag    thiele_CO_alumina_prater eta_relDeviation 1.34497e-06        1e-4
+diag    thiele_CO_alumina_prater eta_volumeVsFlux 1.78568e-05        1e-4
+diag    thiele_CO_alumina_prater field_maxAbsDeviation 1.44754e-06        1e-4
+diag    thiele_CO_alumina_prater gate_eta         1                  1e-4
+diag    thiele_CO_alumina_prater gate_field       1                  1e-4
+diag    thiele_CO_alumina_prater gates_pass       1                  1e-4
+diag    thiele_CO_alumina_prater newton_iterations 1                  1e-4
+diag    thiele_CO_alumina_prater newton_residual  3.35917e-15        1e-4
+diag    thiele_CO_alumina_prater nodes            401                1e-4
+diag    thiele_CO_alumina_prater phi              1.0161             1e-4
+diag    thiele_CO_alumina_prater phi_char         3.0483             1e-4
+diag    thiele_CO_alumina_prater prater_beta      0.401722           1e-4
+diag    thiele_CO_alumina_prater prater_c_surface 0.021              1e-4
+diag    thiele_CO_alumina_prater prater_heatOfReaction -2.83e+08          1e-4
+diag    thiele_CO_alumina_prater prater_thermalCond 0.25               1e-4
+diag    thiele_CO_alumina_prater rateConstant     40                 1e-4
+diag    thiele_CO_alumina_prater refinement_finestRelDeviation 1.34497e-06        1e-4
+diag    thiele_CO_alumina_prater refinement_order 2.00015            1e-4
+diag    thiele_CO_alumina_prater sweep_maxRelDeviation 0.000906886        1e-4
+diag    thiele_CO_alumina_prater sweep_nodes      201                1e-4
+diag    thiele_CO_alumina_prater sweep_points     63                 1e-4
+diag    thiele_CO_alumina_prater tau              3                  1e-4
+diag    thiele_CO_alumina_prater weiszPrater      0.68735            1e-4

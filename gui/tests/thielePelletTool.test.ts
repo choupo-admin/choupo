@@ -62,7 +62,7 @@ import {
   REFINEMENT_CSV, SWEEP_CSV, THIELE_KNOBS, THIELE_LIMITS, THIELE_WITNESS,
   WITNESS_CATALYST, defaultKnobValues, dimensionKey, fieldBands, fieldColor,
   nearestLadderIndex, overridesFor, readEtaPhiSweep, readPelletDiagnostics,
-  readPelletField,
+  readPelletField, fieldTemperatureRange, temperatureColor,
 } from "../src/case/thielePellet.js";
 import { applyScalarOverride, methodCase } from "../src/case/methodRun.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -117,6 +117,81 @@ describe("the classroom witness — bundled, choupoProps, one thielePellet op", 
 });
 
 // ---- The knob map, against the REAL bundled raw text -------------------------
+
+describe("the temperature field — the optional columns the thermal block adds", () => {
+  //  THE WITNESS DECLARES `thermal {}` (2026-08-27), so its field CSV carries
+  //  two extra columns.  These pin the reader's two forms, because the header
+  //  check is an EQUALITY against a closed list: get it wrong and the tool
+  //  refuses a real file, or worse, reads one positionally and mis-columns it.
+
+  const BASE = "geometry,phi,phi_char,xi,c_over_cs,c_over_cs_closedForm,"
+    + "absDeviation";
+  const withT = BASE + ",T_over_Ts,T_K\n"
+    + "sphere,1,3,0,0.3,0.3,0,1.28,736.65\n"
+    + "sphere,1,3,1,1,1,0,1,573.15\n";
+  const withoutT = BASE + "\n"
+    + "sphere,1,3,0,0.3,0.3,0\n"
+    + "sphere,1,3,1,1,1,0\n";
+
+  it("reads the temperature columns when they are there", () => {
+    const r = readPelletField(withT);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.read.rows[0]!.tK).toBeCloseTo(736.65, 6);
+    expect(r.read.rows[1]!.tK).toBeCloseTo(573.15, 6);
+    //  The surface is the reference: T/T_s is exactly 1 there, by
+    //  construction of Prater's relation at c = c_s.
+    expect(r.read.rows[1]!.tOverTs).toBeCloseTo(1, 12);
+  });
+
+  it("still reads an isothermal field, carrying UNDEFINED and not zero", () => {
+    const r = readPelletField(withoutT);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    //  `undefined` means "this run published no temperature".  A 0 there
+    //  would be a temperature of absolute zero, and a 1 would be a claim that
+    //  the pellet is isothermal -- two different statements, neither true.
+    expect(r.read.rows[0]!.tK).toBeUndefined();
+    expect(r.read.rows[0]!.tOverTs).toBeUndefined();
+  });
+
+  it("refuses a header that is neither form, rather than reading it by index", () => {
+    const drifted = BASE.replace("c_over_cs", "c_over_cS") + "\n"
+      + "sphere,1,3,0,0.3,0.3,0\n";
+    expect(readPelletField(drifted).ok).toBe(false);
+  });
+
+  it("reports no temperature range for an isothermal field", () => {
+    const r = readPelletField(withoutT);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    //  Null, never a degenerate {lo: 0, hi: 0}: the toggle keys on this, and
+    //  a zero-width range would offer the reader a picture that does not
+    //  exist.
+    expect(fieldTemperatureRange(r.read.rows)).toBeNull();
+  });
+
+  it("spans the published temperatures, and the bands carry them", () => {
+    const r = readPelletField(withT);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const range = fieldTemperatureRange(r.read.rows);
+    expect(range).not.toBeNull();
+    expect(range!.lo).toBeCloseTo(573.15, 6);
+    expect(range!.hi).toBeCloseTo(736.65, 6);
+    //  A band inherits its inner row's temperature -- the same rule the
+    //  concentration bands already follow, so the two pictures are painted
+    //  from the same geometry and cannot disagree about where a ring is.
+    const bands = fieldBands(r.read.rows, 8);
+    expect(bands[0]!.tK).toBeCloseTo(736.65, 6);
+  });
+
+  it("gives the hottest colour to the hottest point and they differ", () => {
+    //  Not a claim about the palette: a claim that the ramp is not constant,
+    //  which is what a reader relies on when they read the picture.
+    expect(temperatureColor(1)).not.toEqual(temperatureColor(0));
+  });
+});
 
 describe("the knob map — every target resolves against the real raw text", () => {
   it("every knob's override resolves uniquely, the dict unit surviving", () => {
