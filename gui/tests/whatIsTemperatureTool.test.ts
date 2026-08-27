@@ -28,8 +28,11 @@ import { describe, expect, it } from "vitest";
 import { applyScalarOverride } from "../src/case/methodRun.js";
 import { tutorialByName } from "../src/cases/tutorials.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
+import { readFileSync } from "node:fs";
+
 import {
-  C2_UM_K, ITS90_ABOVE_WATER, ITS90_TOP_K, LADDER, LADDER_WITNESS,
+  C2_UM_K, CHANG_CIRCLES, CHANG_CITATION, ITS90_ABOVE_WATER, ITS90_TOP_K,
+  LADDER, LADDER_WITNESS,
   T_HOT_C, T_HOT_K, T_PT_MELT_C, T_PT_MELT_K, T_SUBJECT_K,
   TEMPERATURE_WITNESS, emissivityBand_K, emissivitySensitivity, readLadder,
   readZScan, rungDeparturePct, worstDeparturePct,
@@ -262,5 +265,78 @@ describe("where the ladder ends and the metals take over", () => {
     const ag = ITS90_ABOVE_WATER.find((f) => f.what.startsWith("silver"))!;
     expect(ag.T).toBeLessThan(T_HOT_K);
     expect(ag.T).toBeLessThan(T_PT_MELT_K);
+  });
+});
+
+
+describe("the holistic section, and the claim it had to retire", () => {
+  const SRC = readFileSync(
+    new URL("../src/ui/methods/WhatIsTemperatureTool.tsx", import.meta.url),
+    "utf-8");
+
+  it("no longer says the book was not read", () => {
+    //  THE POINT OF THIS TEST.  The page carried "this repository has not
+    //  read it back and quotes nothing from it", which was true when written
+    //  and false the day the book was opened.  A claim about what has been
+    //  CHECKED is the worst kind to leave standing after it expires -- it
+    //  reads as diligence while being wrong.  If anyone ever re-adds that
+    //  sentence beside a section that summarises the book, this fails.
+    //  The phrase survives EXACTLY ONCE, inside the retraction that quotes
+    //  it -- counting is the honest test here, because a `not.toContain`
+    //  would be satisfied by punctuation drift and prove nothing.
+    const hits = SRC.match(/quotes nothing from it/g) ?? [];
+    expect(hits, "the retired claim is loose in the page again")
+      .toHaveLength(1);
+    expect(SRC).toContain("used to end");
+    expect(SRC).toContain("That book has now been read");
+  });
+
+  it("carries all four of Chang's circles, each with its way out", () => {
+    expect(CHANG_CIRCLES).toHaveLength(4);
+    expect(CHANG_CIRCLES.map((c) => c.ch)).toEqual([1, 2, 3, 4]);
+    for (const c of CHANG_CIRCLES) {
+      //  A circle without its escape leaves the reader with scepticism
+      //  instead of a practice, which is the opposite of the book's argument
+      //  and of this page's purpose.
+      expect(c.circle.length, `circle ${c.ch} has no circularity`)
+        .toBeGreaterThan(80);
+      expect(c.escape.length, `circle ${c.ch} has no way out`)
+        .toBeGreaterThan(60);
+    }
+  });
+
+  it("names the four escapes the book actually reports", () => {
+    const all = CHANG_CIRCLES.map((c) => c.escape).join(" ").toLowerCase();
+    for (const key of ["spiral", "comparability", "convergence", "iteration"]) {
+      expect(all, `the escape "${key}" went missing`).toContain(key);
+    }
+  });
+
+  it("cites the book once, in one place, with its publisher and year", () => {
+    expect(CHANG_CITATION).toContain("Hasok Chang");
+    expect(CHANG_CITATION).toContain("Inventing Temperature");
+    expect(CHANG_CITATION).toContain("2004");
+    //  One home: the page renders this constant rather than retyping the
+    //  citation, so the title cannot drift between two mentions.
+    expect(SRC.match(/Oxford University Press/g) ?? []).toHaveLength(1);
+  });
+
+  it("ties each circle back to a number this page actually produced", () => {
+    //  Section 8 earns its place by being about THIS tool, not about
+    //  philosophy in general: the water rung is circle 1, glycerol is
+    //  Regnault's comparability, the instrument handover is circle 3, and the
+    //  solver's own initial guess is circle 4.  If those links are cut the
+    //  section becomes a digression.
+    for (const p of ["Circle 1 is §4", "Circle 2 is the glycerol rung",
+      "Circle 3 is §5", "Circle 4 is every solver"]) {
+      expect(SRC, `the section lost its link: ${p}`).toContain(p);
+    }
+  });
+
+  it("says the compression is severe and points at the book", () => {
+    //  Four chapters and a philosophical synthesis in one screen is a
+    //  reading, not a substitute; the page must not let itself be mistaken
+    //  for the scholarship it is summarising.
+    expect(SRC).toContain("Read the book.");
   });
 });

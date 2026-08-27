@@ -200,6 +200,85 @@ export function readLadder(
   return out;
 }
 
+/** The book this page has been circling from its first line, now READ rather
+ *  than named.  Chang's four historical episodes are four CIRCLES: in each,
+ *  the thing you would need in order to justify a measurement is the thing
+ *  the measurement was for.  Each carries the escape that was actually
+ *  found -- which is the point, because a page that only posed the
+ *  circularity would leave a reader with scepticism instead of an
+ *  engineering practice. */
+export const CHANG_CIRCLES: readonly {
+  ch: number; title: string; circle: string; escape: string;
+}[] = [
+  {
+    ch: 1,
+    title: "Keeping the fixed points fixed",
+    circle: "A thermometer is graduated between two phenomena assumed to "
+      + "happen always at the same temperature.  But how was that judged, "
+      + "before any trusted thermometer existed?  And water does NOT "
+      + "cooperate: it superheats, it bumps, it hisses, and its boiling "
+      + "temperature moves with the vessel, the dissolved air and the "
+      + "pressure.  Cavendish, around 1780: \u201cThe excess of the heat of "
+      + "water above the boiling point is influenced by a great variety of "
+      + "circumstances.\u201d",
+    escape: "A self-improving spiral of quantification: bodily sensation "
+      + "first, then an ORDINAL thermoscope that ranks without numbering, "
+      + "then a CARDINAL thermometer.  Each stage is built with the "
+      + "previous one and ends up better than it.",
+  },
+  {
+    ch: 2,
+    title: "Spirit, air and quicksilver",
+    circle: "The two-point method assumes the fluid expands uniformly with "
+      + "temperature.  To test that you must plot volume against "
+      + "temperature \u2014 and you have no temperature until the thermometer "
+      + "you are testing is trusted.  Chang calls this the PROBLEM OF NOMIC "
+      + "MEASUREMENT, and it is general: you want X, you can only observe "
+      + "Y, you need a law X = f(Y), and f cannot be tested without knowing "
+      + "X.  Mercury, alcohol and air thermometers disagreed, and at most "
+      + "one of them could be right.",
+    escape: "Regnault's COMPARABILITY, and it is beautifully minimal: a "
+      + "real physical property has ONE value in a given situation (the "
+      + "principle of single value), so an instrument that disagrees with "
+      + "itself, or with others of its own kind, is wrong \u2014 and you can "
+      + "know that WITHOUT knowing which one is right.  It tests "
+      + "thermometers while assuming nothing about the nature of heat.",
+  },
+  {
+    ch: 3,
+    title: "To go beyond",
+    circle: "Extend the scale past where it was built and the instrument "
+      + "itself fails: mercury freezes, glass softens, the thermometer "
+      + "melts in the kiln.  There is no pre-existing standard in the new "
+      + "domain against which a new method could be checked.  Wedgwood the "
+      + "potter measured his kilns by the shrinkage of clay \u2014 and clay "
+      + "CONTRACTS with heat, so the scale ran backwards.",
+    escape: "CONVERGENCE.  The concept in the new domain is partly BUILT by "
+      + "several independent methods being made to agree there.  Not one "
+      + "method validated against a standard, but a standard assembled out "
+      + "of agreement.",
+  },
+  {
+    ch: 4,
+    title: "Theory, measurement, and absolute temperature",
+    circle: "Thomson (Kelvin) built a temperature that refers to no "
+      + "substance whatsoever.  But connecting that abstraction to any "
+      + "actual apparatus needs a theory, and testing the theory needs "
+      + "temperature measurements \u2014 which need the connection.",
+    escape: "ITERATION on an admitted guess: assume the unjustified "
+      + "hypothesis provisionally, use it, and let the results correct the "
+      + "assumption you started from.  Peirce's observation, which Chang "
+      + "quotes: reasoning \u201cnot only corrects its conclusions, it even "
+      + "corrects its premisses.\u201d",
+  },
+];
+
+/** The book, cited once, in one place. */
+export const CHANG_CITATION =
+  "Hasok Chang, Inventing Temperature: Measurement and Scientific Progress "
+  + "(Oxford University Press, 2004; Oxford Studies in the Philosophy of "
+  + "Science)";
+
 /** One row of the scan the engine writes. */
 export interface ZRow { P: number; Z: number }
 
@@ -753,11 +832,15 @@ export function WhatIsTemperatureTool(): JSX.Element {
           <Text size="sm" mt={6}>
             The deeper form of the problem is older than the pyrometer and has
             a modern book of its own: Hasok Chang, <em>Inventing
-            Temperature</em> (2004), on what he calls the problem of nomic
-            measurement — to check that a thermometer reads truly you need a
-            way of knowing the temperature, which is the thing the thermometer
-            was for.  Named here as the place to go next; this repository has
-            not read it back and quotes nothing from it.
+            Temperature</em> (2004), on what he calls the <strong>problem of
+            nomic measurement</strong> — to check that a thermometer reads
+            truly you need a way of knowing the temperature, which is the thing
+            the thermometer was for.  <strong>That book has now been read, and
+            §8 below is what it says.</strong>  (This paragraph used to end
+            “this repository has not read it back and quotes nothing from it”,
+            which was true when it was written and stopped being true the day
+            the book was opened.  A claim about what has been checked is the
+            worst kind to leave standing after it expires.)
           </Text>
         </Alert>
 
@@ -801,6 +884,137 @@ export function WhatIsTemperatureTool(): JSX.Element {
         </Alert>
 
         <Box>
+          <Title order={5}>8 · So what IS a temperature, taken whole?</Title>
+          <Text size="sm" mt={4}>
+            Everything above is one instrument at a time.  Put them together
+            and a different kind of answer appears — and it is not the one a
+            textbook gives.  <strong>A temperature is not a fact you read off
+            nature.  It is a position inside a system of measurements,
+            instruments, fixed points and theories that hold each other
+            up.</strong>  Nothing in that system is self-justifying.  It works
+            anyway, and understanding <em>how</em> it works anyway is the whole
+            of the skill.
+          </Text>
+          <Text size="sm" mt={6}>
+            That is the argument of the book this page has been circling since
+            §7: {CHANG_CITATION}.  It has now been read.  Its spine is{" "}
+            <strong>four circles</strong> — four moments where the thing you
+            would need in order to justify a measurement <em>is</em> the thing
+            the measurement was for — and, crucially, the four escapes that
+            were actually found.
+          </Text>
+
+          <Box my={10} px="sm" py={8} style={{ borderLeft: `3px solid ${GRID}` }}>
+            <Text size="sm" fs="italic">
+              “Now, when it is desired to determine the magnitude of some high
+              temperature, the target emissivity is established using a
+              reflected laser beam, the temperature is measured by an
+              infrared-sensing, two-colour pyrometer, information is
+              automatically logged into a computer data bank, and the engineer
+              in charge gives no thought to the possibility that it might not
+              always have been done this way.”
+            </Text>
+            <Text size="xs" c="dimmed" mt={6}>
+              J. W. Matousek, “Temperature Measurements in Olden Tymes” (1990),
+              as quoted by Chang at the head of his chapter 3.  He is
+              describing §7 of this page, and the last clause is the reason
+              this section exists.
+            </Text>
+          </Box>
+
+          {CHANG_CIRCLES.map((c) => (
+            <Box key={c.ch} mt={12} px="sm" py={8}
+              style={{ borderLeft: `3px solid ${ACCENT}` }}>
+              <Text size="sm" fw={700}>
+                Circle {c.ch} · {c.title}
+              </Text>
+              <Text size="sm" mt={4}>{c.circle}</Text>
+              <Text size="sm" mt={6}>
+                <strong>The way out — </strong>{c.escape}
+              </Text>
+            </Box>
+          ))}
+
+          <Text size="sm" mt={14}>
+            And the synthesis, which is Chang’s chapter 5.  Measurement is
+            where <strong>foundationalism</strong> — the idea that knowledge
+            rests on self-justifying bedrock — fails most visibly, because
+            empirical science needs observations that depend on theories while
+            empiricism demands that theories be justified by observations.  His
+            answer is not to escape the circle but to accept it:{" "}
+            <strong>justification in empirical science is coherentist</strong>,
+            and progress happens by <strong>epistemic iteration</strong> —
+            adopt the existing system with respect but without assurance, work
+            with it, and let it correct itself.
+          </Text>
+          <Text size="sm" mt={6}>
+            Note what that is <em>not</em>: it is not relativism, and it is not
+            “anything goes”.  The system is savagely constrained — by
+            comparability, by convergence, by every instrument having to agree
+            with every other.  It simply is not constrained <em>from
+            underneath</em>.
+          </Text>
+        </Box>
+
+        <Alert variant="light" color="orange"
+          title="Why this is not a philosophy digression — read this page again">
+          <Text size="sm">
+            Every circle above has already happened to you, in this tool, in
+            numbers the engine produced:
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>Circle 1 is §4’s water rung.</strong>  Water refuses to
+            boil at the boiling point — Chang’s whole first chapter — and it
+            refused again here, 250 years later, inside an Antoine fit that
+            stops 0.15 K short and answers 1.026 atm.  The fixed point is still
+            not as fixed as the schoolroom says.
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>Circle 2 is the glycerol rung.</strong>  We cannot check a
+            vapour-pressure correlation against the truth; we have no truth to
+            check it against.  What we CAN do is exactly Regnault’s move — ask
+            whether the record <em>agrees with itself</em>, by evaluating its
+            own correlation at its own declared boiling point.  It missed by a
+            factor of 19.  <strong>Comparability caught it without anybody
+            knowing the right answer</strong>, which is the entire point of the
+            criterion.
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>Circle 3 is §5 and §6b.</strong>  Four instruments handed
+            over in turn, and a scale assembled where each ends — not one
+            method validated against a standard, but a standard built out of
+            agreement.  Wedgwood’s kiln is §7’s pyrometer with worse hardware.
+          </Text>
+          <Text size="sm" mt={8}>
+            <strong>Circle 4 is every solver in this simulator.</strong>  A
+            Newton iteration starts from a guess nobody justified, and the
+            answer corrects the guess.  Choupo’s refusal to hide that guess —{" "}
+            <em>no silent crutch</em> — is epistemic iteration with the
+            iteration left visible.
+          </Text>
+        </Alert>
+
+        <Alert variant="light" title="And the sentence to take to the exam">
+          <Text size="sm">
+            When someone asks what 500.012 K, or 1608.1 °C, or 1768.3 °C
+            <em>is</em>, the honest answer is not a number and not a
+            definition.  It is: <strong>“that is where this state sits in a
+            scale realised by these instruments, between these fixed points,
+            under these assumptions — and here is which of them I would doubt
+            first.”</strong>  An engineer who can say that owns the number.  An
+            engineer who can only repeat it does not.
+          </Text>
+          <Text size="xs" c="dimmed" mt={8}>
+            Chang calls this way of working <em>complementary science</em>:
+            asking the scientific questions that specialist science has stopped
+            asking, by re-examining what everyone already accepts.  He warns
+            that when belief goes unquestioned it becomes “a substitute for
+            genuine understanding”.  That is what this tool is for, and the
+            debt is his.
+          </Text>
+        </Alert>
+
+        <Box>
           <Title order={5}>What this page is not</Title>
           <Text size="xs" c={INK} mt={4}>
             • SRK is not the truth about nitrogen.  It establishes that Z leaves
@@ -815,6 +1029,13 @@ export function WhatIsTemperatureTool(): JSX.Element {
             citation is worse than admitting a gap.
             <br />• 500.012 K is arbitrary.  What is not arbitrary is that it
             has three digits after the point.
+            <br />• §8 summarises Chang’s book, read from a copy supplied by
+            this project’s author.  The reading of it is mine and the
+            compression is severe: four chapters and a philosophical synthesis
+            in a screen.  Quotations are short and attributed; the historical
+            claims (Cavendish on boiling, Regnault on comparability, Wedgwood’s
+            clay, Peirce on self-correcting reasoning) are Chang’s reporting,
+            not this repository’s independent scholarship.  Read the book.
           </Text>
         </Box>
 
