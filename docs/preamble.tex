@@ -132,6 +132,33 @@
   before upper={\noindent\textit{\sffamily\small What you'll learn.}\quad},
 }
 
+% ---------------------------------------------------------------------------
+%  PART EPIGRAPH
+% ---------------------------------------------------------------------------
+%
+%  A short attributed quotation opening a Part.  Two arguments: the text and
+%  the attribution.  Plain LaTeX -- no epigraph package, because one macro is
+%  cheaper than a dependency and this manual controls its own typography.
+%
+%  THE ATTRIBUTION IS PART OF THE CONTENT, not decoration.  A manual whose
+%  argument is that a citation must be checkable cannot open its Parts with
+%  quotations nobody checked, so each one carries edition and page in the
+%  bibliography and is verified against the source before it ships.  Where a
+%  popular form of a quotation differs from what its author actually wrote,
+%  the AUTHOR'S wording is used and the popular one is not mentioned: this is
+%  an epigraph, not a note on misquotation.
+\newcommand{\partepigraph}[2]{%
+  \begingroup
+  \par\vspace{0.6em}%
+  \hfill\begin{minipage}{0.82\linewidth}%
+    \raggedleft\itshape\small #1\par
+    \vspace{0.35em}%
+    \upshape\footnotesize\textsc{#2}\par
+  \end{minipage}\par
+  \vspace{1.1em}%
+  \endgroup
+}
+
 % Worked example --- the pedagogical workhorse of the theory manual.
 \newcounter{theoryexample}[section]
 \renewcommand{\thetheoryexample}{\thesection.\arabic{theoryexample}}
