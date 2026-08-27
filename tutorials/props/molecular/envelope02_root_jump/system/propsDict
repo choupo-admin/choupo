@@ -1,0 +1,10 @@
+operations
+(
+    {
+        name        envelope;
+        type        phaseEnvelope;
+        composition { propane 0.50;  nButane 0.30;  nPentane 0.20; }
+        pressure    { from 1 bar;  to 40 bar;  n 40; }
+        output      { file envelope.csv; }
+    }
+);

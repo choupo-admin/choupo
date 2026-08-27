@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/phaseEnvelope.schema.json",
+  "title": "phaseEnvelope operation",
+  "description": "The P-T phase envelope of a MIXTURE at fixed feed composition: the bubble curve (V/F -> 0) and the dew curve (V/F -> 1) traced in the (T, P) plane and written as a long-form CSV (P_Pa, T_K, curve). An envelope is drawn to find the CRICONDENTHERM -- the highest temperature at which the feed can hold a liquid, what a pipeline is designed against -- and the retrograde region beside it, and both live at the nose, which no single-specification march can close: this trace does NOT close it, says so on every run, and names Michelsen's arc-length continuation with a switching specification (Fluid Phase Equilib. 4 (1980) 1) as the algorithm that would. The bubble and dew solves are BubblePoint::compute and DewPoint::compute -- the same routines the bubbleT and dewT units call, so neither saturation residual exists twice. Marching in pressure, the temperature maximum is not a turning point for the specification, so an INTERIOR maximum is reported as a BRACKETED cricondentherm naming the two pressures it lies between; an endpoint maximum is not reported, because it says where the range stops and not where the mixture peaks. A point that CONVERGED but is discontinuous with its branch is discarded and the branch ends there: the bubble curve is monotonically increasing in P up to the critical point (physics, not a heuristic) and the dew curve gets a continuity test, because both saturation solvers bracket T in 200-700 K and are warm-started, so Newton can land on a different root and report success -- which it did, drawing a bubble temperature FALLING with pressure and publishing a cricondentherm that was the resulting spike. A branch that produces no point at all is reported as never having started, which is a different finding from a branch that stopped, and has a different remedy.",
+  "type": "object",
+  "properties": {
+    "composition": {
+      "type": "object",
+      "title": "Feed composition",
+      "description": "The feed this envelope belongs to, one entry per component. An envelope is a curve for ONE composition and there is no default to fall back on, so the block is required. A set that does not sum to 1 is normalised and the normalisation is ANNOUNCED -- silently rescaling a feed changes which curve is drawn, and the reader is comparing it against a published envelope for the composition they typed.",
+      "additionalProperties": { "type": "number", "minimum": 0 },
+      "minProperties": 2
+    },
+    "pressure": {
+      "type": "object",
+      "title": "Pressure march",
+      "description": "The pressures at which each branch is solved. The march is in PRESSURE, and that choice bounds the answer: T_bubble(P) is single-valued to the critical point, while the dew branch is not single-valued in P above the cricondenbar, so the dew march is EXPECTED to stop and where it stops is a result rather than a failure to tune away.",
+      "properties": {
+        "from": { "type": "number", "exclusiveMinimum": 0, "title": "Lowest pressure", "unit": "Pa" },
+        "to":   { "type": "number", "exclusiveMinimum": 0, "title": "Highest pressure", "unit": "Pa" },
+        "n":    { "type": "integer", "minimum": 2, "title": "Steps", "description": "Number of pressures, inclusive of both ends. Defaults to 40." }
+      },
+      "required": ["from", "to"],
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "Optional. One row per traced point: P_Pa, T_K, and `curve` in { bubble, dew }. Only points that survived the continuity test are written -- a discarded root jump is absent from the file, not marked in it, because a plot must not be able to draw it. Omitting the block leaves only the console table.",
+      "properties": { "file": { "type": "string", "title": "File name" } },
+      "required": ["file"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["composition", "pressure"],
+  "additionalProperties": false
+}

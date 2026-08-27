@@ -1,0 +1,11 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CH4 ethane propane nButane );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;      standardState pureLiquid; }
+    vapour  { fugacityModel PengRobinson; }
+}

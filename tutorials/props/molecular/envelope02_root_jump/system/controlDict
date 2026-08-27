@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope02_root_jump -- a converged point that is not on the curve.
+
+  THE WHOLE CASE IS THE FAILURE, and it is the one that cost this op its
+  first answer.  Both saturation solvers bracket T in 200-700 K and are
+  warm-started from the previous pressure step; with a wide bracket, Newton
+  can converge to a DIFFERENT root and report success.  On this C3/C4/C5 feed
+  the first version of the envelope traced the bubble branch 243 -> 332 K to
+  16 bar and then reported 268 K at 19 bar -- a bubble temperature FALLING as
+  pressure rises, which is thermodynamically impossible -- and the
+  cricondentherm detector read the resulting spike on the dew branch as a
+  maximum and published 371.492 K.  A plausible number, confidently
+  reported, from a root nobody asked for.
+
+  What this case pins is that BOTH branches now stop AT the jump and say so:
+
+    * the bubble curve is monotonically increasing in P up to the critical
+      point -- physics, not a heuristic -- so a step that lowers T is
+      rejected outright;
+    * the dew curve is NOT monotone (the cricondentherm is an interior
+      maximum), so it gets a continuity test instead: a step many times the
+      branch's own recent steps is a jump, not a curve.
+
+  AND THAT NOTHING IS CLAIMED ABOUT THE NOSE.  With the jump discarded, the
+  dew branch's highest kept point sits at its ENDPOINT, so the interior-
+  maximum test correctly declines to call it a cricondentherm.  Compare
+  envelope01, where the maximum is genuinely interior and IS reported.
+
+  NOT VALIDATED: no number here is checked against a measured envelope.  This
+  is a STRUCTURAL witness for a refusal.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "P-T envelope where the saturation solve jumps root: both branches stop AT the jump and report it as one, and no cricondentherm is claimed";
+verbosity     3;

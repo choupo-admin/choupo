@@ -41,9 +41,11 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "solver/NewtonRaphson.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <functional>
 #include <string>
 
 namespace Choupo {
@@ -58,6 +60,38 @@ public:
     int solve(const DictPtr& dict,
               const ThermoPackage& thermo,
               int verbosity) override;
+
+    //  THE SOLVER, REACHABLE WITHOUT THE UNIT.  Mirrors
+    //  `BubblePoint::compute`, and exists for the same reason: a caller that
+    //  needs a dew temperature -- the phase-envelope op is the first -- must
+    //  not carry a second copy of the residual sum(y_i/K_i) = 1.  Two homes
+    //  for one equation is the arity sin, and this one would drift silently:
+    //  both copies would still converge, to slightly different curves.
+    //
+    //  `T_init = 0` lets the routine pick a mole-fraction-weighted Tb guess,
+    //  exactly as the unit does.
+    struct Result
+    {
+        scalar  T          = 0.0;   // dew-point temperature      [K]
+        sVector x;                  // equilibrium liquid comp.   [-]
+        int     outerIterations = 0;
+        int     newtonIterations = 0;
+        bool    converged  = false;
+        scalar  compDelta  = 0.0;   // |dx|_2 at the last outer sweep
+    };
+
+    //  `onOuter(iteration, T, |dx|_2)` lets the UNIT keep its console trace
+    //  and its residual history without the loop existing twice.  Absent, the
+    //  routine is silent -- which is what the envelope op wants, since it
+    //  calls this once per pressure step.
+    using OuterTrace = std::function<void(int, scalar, scalar)>;
+
+    static Result compute(const ThermoPackage& thermo,
+                          const sVector&       y,
+                          scalar               P,
+                          scalar               T_init = 0.0,
+                          const OuterTrace&    onOuter = nullptr,
+                          const solver::NROptions* nroOverride = nullptr);
 
 private:
     inline static const std::string type_ = "dewT";

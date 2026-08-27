@@ -1,0 +1,11 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( propane nButane nPentane );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;      standardState pureLiquid; }
+    vapour  { fugacityModel PengRobinson; }
+}

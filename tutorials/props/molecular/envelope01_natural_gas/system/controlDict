@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope01_natural_gas -- the P-T phase envelope of a lean natural gas.
+
+  WHAT IT DEMONSTRATES, and the second half is the point:
+
+    * the DEW branch traced in pressure, over the cricondentherm -- marching
+      P, the temperature maximum is not a turning point for the
+      specification, so the trace walks straight over it and the maximum is
+      visible in the data;
+
+    * the BUBBLE branch producing NOTHING, announced as what it is.  This
+      feed is 80 % methane and its bubble line lies below the saturation
+      solver's own 200 K bracket.  A branch that never started is NOT a
+      branch that stopped at a turning point, and the two are reported
+      differently because the remedies differ.
+
+  NOT CLAIMED: the nose.  A pressure-marched trace cannot pass the
+  cricondenbar, nor the critical point where the branches merge.  Closing it
+  needs arc-length continuation with a switching specification (Michelsen,
+  Fluid Phase Equilib. 4 (1980) 1) and that is not implemented.
+
+  NOT VALIDATED: no number here is checked against a measured envelope.  The
+  feed is a plausible lean gas, not a sampled one, and the K-values come from
+  Peng-Robinson over an ideal liquid.  This is a STRUCTURAL witness -- it
+  shows what the op reports and refuses to report, not that the curve is
+  right.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that never starts";
+verbosity     3;
