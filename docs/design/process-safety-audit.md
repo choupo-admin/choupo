@@ -161,6 +161,109 @@ value does not depend on the engine.
 * HAZOP / LOPA as method, not as paperwork.
 * Uncertainty and provenance in safety numbers.
 
+### The chapter's spine is the HIERARCHY, and the relief valve is rung three
+
+Added 2026-08-27 on Vítor's correction, and it is not an addition — it is an
+inversion of everything above it.
+
+The order of protection is **inherent > passive > active > procedural**.  A
+pressure relief valve is the THIRD rung: it requires a device to act.  A
+chapter that opens on relief sizing and appends a note about inherently safer
+design teaches the priority backwards, and the case-study literature is
+unanimous that the backwards order is how plants get built.
+
+Kletz's principles, and what each asks of a design:
+
+* **Intensification / minimisation** — hold less of it.  *What you don't have
+  can't leak.*
+* **Substitution** — use something less hazardous that does the same job.
+* **Attenuation / moderation** — hold it under conditions that make a release
+  less violent: dilute, colder, lower pressure, below its atmospheric boiling
+  point.
+* **Simplification** — fewer things to get wrong, fewer opportunities for the
+  unsafe interaction of components that have not failed.
+
+#### A process simulator is structurally biased toward the LAST rungs
+
+This is the observation that makes the chapter belong in a simulator's manual
+rather than in a safety course, and it is uncomfortable enough to state
+plainly.
+
+A simulator takes a flowsheet as given and computes what it does.  It will
+size a relief valve beautifully.  It has **no representation whatsoever** for
+*this process should not exist in this form*.  Every simulator — this one
+included — invites the student to optimise **within** a design rather than to
+question the design, and the invitation is invisible because nothing in the
+tool marks the boundary of what it is willing to ask.
+
+That bias is the deepest version of the system-boundary lesson.  It is not
+that the student forgets to look outside the flowsheet; it is that the tool
+they are holding is shaped so that looking outside it produces no output.
+
+#### Three of the four are MEASURABLE with what already exists
+
+This is what stops the chapter being a sermon.  Each of these needs no new
+architecture:
+
+* **Inventory** (intensification).  `VesselSize` computes vessel volumes from
+  throughput and a design basis; `StirredTank` too; batch units already expose
+  `materialInventory()`.  *How much hazardous material is in this plant at
+  any moment* is a report, not a research project — and it is the single most
+  important number in the whole subject.
+
+* **Superheat on release** (attenuation).  A stream held as a liquid ABOVE its
+  atmospheric boiling point is Flixborough's exact condition: on release it
+  flashes rather than pooling.  Choupo computes bubble points.  *"This stream
+  is 130 K above its 1 atm bubble point; a release flashes"* is a COMPUTED
+  statement, not a warning — and the same calculation ranks two candidate
+  designs.
+
+* **Complexity** (simplification).  Units, control loops and tear streams are
+  all counted by the engine already (`Flowsheet` knows `tears.size()`).  A
+  design with fewer things to get wrong has a number.
+
+* **Comparing two designs** is what `OuterDriver` already does — same duty,
+  two flowsheets, compare inventory and conditions.  It is a CASE PATTERN,
+  not a feature.
+
+#### And one that is NOT, which must be said as loudly
+
+**Substitution cannot be computed.**  Choosing a less hazardous chemistry is a
+chemist's judgement about a reaction route, its selectivity, its catalyst and
+its by-products.  Choupo can COMPARE two routes an author declares; it can
+never propose one.  A tool that appeared to recommend a chemistry would be
+the most dangerous thing in this document.
+
+#### What this does to the roadmap
+
+S0 (the chapter) grows and moves earlier, because the hierarchy is the
+chapter.  A new **S0b** appears ahead of any relief work:
+
+**S0b — `inventoryReport`**, a PostProcessor that totals the hazardous
+inventory a converged flowsheet holds, per unit and overall, and flags every
+stream held above its atmospheric bubble point with the superheat.  No
+scenario, no device, no standard, no licensing question at all.  It is the
+first rung made visible, it is cheap, and it teaches the thing the relief
+valve exists because we failed to do.
+
+The relief work (S1 onward) then arrives explicitly labelled as rung three,
+which is the honest place for it.
+
+#### The case studies
+
+Flixborough (1974) and Bhopal (1984) are the canonical pair — the first for
+inventory of a hot flammable liquid above its atmospheric boiling point, the
+second for storing tonnes of an intermediate that later designs made and
+consumed in situ.  Kletz's *What Went Wrong?* and the CSB's public
+investigation reports are the teaching material.
+
+**None of these has been read back for this audit**, and the same rule applies
+to them as to the epigraphs: a citation says where an account is supposed to
+come from, never that anybody looked.  Before a single case study enters the
+guide it is read in its primary report.
+
+---
+
 ### The opening example should be Choupo's own, not a valve
 
 This is the strongest thing in the brief and it can be made concrete from
