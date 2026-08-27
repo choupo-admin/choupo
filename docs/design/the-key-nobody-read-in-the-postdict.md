@@ -277,6 +277,5 @@ output carried back so the caller says WHY instead of guessing.
 either.  Diagnosing a cause the evidence does not establish is worse than
 reporting nothing, because it sends the next reader to the wrong file.*
 
-Converted: `check_component_name_hint`, `check_friction_correlations`.  The
-other ~17 gates that shell out to `bin/runTests` still carry their own
-readers; they are not converted here, and this is said rather than implied.
+Converted: `check_component_name_hint`, `check_friction_correlations`.  Every other gate that shells out to `bin/runTests` still carries its own
+reader; they are not converted here, and this is said rather than implied.

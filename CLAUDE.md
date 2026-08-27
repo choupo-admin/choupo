@@ -1191,7 +1191,7 @@ is POSITIVE: *moved* is asserted only when the harness printed a verdict for
 that case; anything else is `could-not-run`, with the reason carried back.
 *A check that cannot run must not pass — and must not fail with a FALSE REASON
 either.*  Converted: `check_component_name_hint`, `check_friction_correlations`
-(the other ~17 gates that shell out still carry their own readers).
+(every other gate that shells out still carries its own reader).
 Gates: `check_postdict_audit` (5 sabotages) · `check_cost_provenance` (6
 sabotages; S2 reproduces the shipped precision defect and fires at −1.43 %).
 Records: [`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
