@@ -77,8 +77,15 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
       << ",correlation,sizeKey,S,K1_or_CpRef,K2_or_SRef,K3_or_n,"
          "B1,B2,F_M,F_P,material,cepci,cepci2001,usdToEur\n";
     scalar tp = 0.0, tb = 0.0, tt = 0.0;
-    for (const auto& [unit, c] : ctx.result.costs)
+    for (const auto& [unit, entry] : ctx.result.costs)
     {
+        //  An ordinary reference, because a STRUCTURED BINDING CANNOT BE
+        //  CAPTURED BY A LAMBDA IN C++17 -- g++ allows it as an extension,
+        //  emscripten's clang errors, and that is what broke the site
+        //  earlier today.  Written the wrong way here a second time, hours
+        //  later, in the same shape; `check_wasm_dialect` caught it before it
+        //  could reach the site, which is the whole reason that gate exists.
+        const CostBreakdown& c = entry;
         auto fac = [&](const char* k) -> scalar {
             auto it = c.factors.find(k);
             return it == c.factors.end() ? 0.0 : it->second;
