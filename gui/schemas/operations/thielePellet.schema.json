@@ -200,6 +200,43 @@
           "description": "Columns: geometry, phi, nodes, h, eta, eta_closedForm, relDeviation."
         }
       }
+    },
+    "thermal": {
+      "type": "object",
+      "title": "Temperature field (Prater)",
+      "description": "OPTIONAL, and its absence is not an isothermal claim -- it is the absence of a temperature field.  Declared, the op publishes T_over_Ts and T_K per node beside c_over_cs, plus the Prater number beta and the centre temperature, from the exact first integral of the coupled pellet equations: T - T_s = beta*T_s*(1 - c/c_s), with beta = (-dH)*D_eff*c_s/(k_eff*T_s).  The two balances carry the SAME reaction term, so eliminating it between them leaves that relation for constant D_eff and k_eff and ANY kinetics -- the temperature field costs no second boundary-value problem.  IT IS EXACT under this op, because `rateConstant` is a NUMBER and not an Arrhenius law: the reaction term does not depend on temperature, so the species equation is uncoupled from the energy equation and its profile is exact.  Write k(T) and the coupling returns, and with it the multiplicity this op declines to solve -- up to three steady states for one phi, and eta above 1.  beta is DERIVED from the three values below and announced with all three; it is never declared.",
+      "properties": {
+        "heatOfReaction": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "title": "Heat of reaction dH [J/kmol]",
+          "description": "NEGATIVE for an exothermic reaction, which is the case that makes a pellet centre hotter than its surface.  Enters beta as (-dH), so a positive value (endothermic) gives a negative beta and a centre COLDER than the surface, which is equally physical."
+        },
+        "thermalConductivity": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "title": "Effective thermal conductivity k_eff [W/(m.K)]",
+          "description": "Of the PELLET, not of the solid skeleton: it is the conduction the porous body actually offers.  Must be positive -- it sits in the denominator of beta, and the op refuses a non-positive value by name."
+        },
+        "surfaceConcentration": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "title": "Reactant concentration at the surface c_s [kmol/m3]",
+          "description": "Cannot be derived and must be declared.  The dimensionless first-order problem this op solves does not contain c_s at all, which is exactly why its concentration field is published as c/c_s -- so there is nothing for the op to read it off.  Must be positive."
+        }
+      },
+      "required": [
+        "heatOfReaction",
+        "thermalConductivity",
+        "surfaceConcentration"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
