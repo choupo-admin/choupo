@@ -23,7 +23,19 @@ operations
         //  pressure; the point is the SPAN between them, not either end.
         name       Z_of_P;
         type       propertyScan1D;
-        vary       { variable P;  from 1000 Pa;  to 5000000 Pa;  points 25; }
+        //  ONE KEY PER LINE, and not for tidiness.  `applyScalarOverride`
+        //  anchors on a key at the START of a line, so a `vary { ... to
+        //  5000000 Pa; ... }` written on ONE line is a key the EduTool's
+        //  pressure knob cannot find -- and its failure is silent: the page
+        //  renders, the slider moves, and the curve never changes.  Shipped
+        //  that way and caught by the tool's own test, 2026-08-27.
+        vary
+        {
+            variable P;
+            from     1000 Pa;
+            to       5000000 Pa;
+            points   25;
+        }
         state      { T 500.012 K;  composition { nitrogen 1.0; } }
         properties ( Z v_molar );
         output     { file "gasThermometer.csv"; }

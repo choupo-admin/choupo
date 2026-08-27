@@ -174,9 +174,16 @@ export function WhatIsTemperatureTool(): JSX.Element {
   //  the case's own scan bound, so the engine re-answers.
   const [pMaxMPa, setPMaxMPa] = useState(5);
 
+  //  `occurrence` IS 1-BASED (methodRun's `locate`: `matches[(occurrence ?? 1)
+  //  - 1]`).  Shipped as 0, which finds nothing and throws -- so the knob did
+  //  not merely fail to move the curve, it failed on every drag.  Caught by
+  //  this tool's own test the same day, together with the case having written
+  //  `vary { ... to 5000000 Pa; ... }` on ONE line, where the override cannot
+  //  anchor on the key at all.  Two independent ways for one control to do
+  //  nothing, and neither shows on screen.
   const overrides = useMemo(() => [{
     file: PROPS_DICT, key: "to", value: pMaxMPa * 1e6,
-    occurrence: 0,
+    occurrence: 1,
   }], [pMaxMPa]);
 
   const run = useMethodRun(TEMPERATURE_WITNESS, overrides,
