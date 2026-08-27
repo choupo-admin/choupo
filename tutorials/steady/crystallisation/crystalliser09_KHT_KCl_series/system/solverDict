@@ -17,5 +17,9 @@ tearStreams      ( recoveredEthanol );          // close the antisolvent loop
 recycleSolver     Newton;                       // Newton on the tear variables
 recycleTol        1e-5;
 recycleMaxIter    150;
-recycleWegsteinQmin  0.0;                        // gentle (phase-changing recycle): no acceleration
-recycleWegsteinQmax  0.0;
+//  Wegstein acceleration bounds -- COMMENTED because this case runs
+//  `recycleSolver Newton;`, so the Wegstein branch is never entered
+//  and these were read by nothing.  Uncomment them together with
+//  `recycleSolver Wegstein;` to use them.
+// recycleWegsteinQmin  0.0;                        // gentle (phase-changing recycle): no acceleration
+// recycleWegsteinQmax  0.0;

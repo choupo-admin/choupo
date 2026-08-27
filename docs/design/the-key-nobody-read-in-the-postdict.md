@@ -118,13 +118,11 @@ The corpus count is reported in §7 below.
 ## 6. What this does NOT cover, said plainly
 
 - **`choupoBatch` / `choupoCtrl` / `choupoProps`** — the wiring is in
-  `choupoSolve` only, because `postDict` is a steady-path file.  A batch
-  campaign's dicts are not audited by this slice.
-- **`controlDict`, `flowsheetDict` above the `operation {}` blocks,
-  `solverDict`, `outerDict`, `postDict`'s siblings in the case** — all still
-  outside.  `solverDict` in particular is a parameter file of the same kind and
-  is the obvious next candidate; it is not done here because it was not
-  measured here.
+  `choupoSolve` only.  A batch campaign's dicts, and a ctrl case's `outerDict`,
+  are not audited.
+- **`controlDict`, and `flowsheetDict` above the `operation {}` blocks** —
+  still outside.  (`solverDict` and `outerDict` were the named next candidates
+  and are now done; see §10.)
 - **A key read by the WRONG reader.** The audit answers "did anybody read
   this?", not "did the intended reader read this?".  A key that two blocks
   could plausibly own, written in the wrong one but read by the other, passes.
@@ -279,3 +277,48 @@ reporting nothing, because it sends the next reader to the wrong file.*
 
 Converted: `check_component_name_hint`, `check_friction_correlations`.  Every other gate that shells out to `bin/runTests` still carries its own
 reader; they are not converted here, and this is said rather than implied.
+
+
+## 10. solverDict and outerDict, measured before wired
+
+`solverDict` and `outerDict` are parameter files of exactly the same kind as
+`postDict`, and §6 named them as the obvious next candidates.  They are done —
+and this time **the measurement came first**, which is the method
+`DictAudit`'s own header prescribes and the discipline §7 records me failing at.
+
+The audit was wired behind an environment variable, run over **all 47 cases
+that carry either file**, and only then shipped.
+
+**Ten findings, and every one is the same benign class.**  Five recycle cases
+declare `recycleWegsteinQmin` / `recycleWegsteinQmax` beside
+`recycleSolver Newton;`:
+
+| case |
+|---|
+| `polycaprolactonePlant` |
+| `crystalliser09_KHT_KCl_series` |
+| `process03_recycle` |
+| `process05_isomerization_recycle` |
+| `recycle_autoinit_tear` |
+
+The Wegstein branch is never entered, so `recScalar("recycleWegsteinQmin", …)`
+is never called and the bounds are never read.  Dead configuration that reads
+as an active setting — precisely what this pass is for, and a benign instance
+of it: nothing computed differently, because nothing was going to.
+
+**The five cases were commented out in the same commit, not left to
+announce.**  A shipped tutorial that prints a `[dict]` warning on every run
+trains the reader to skip `[dict]` warnings, which is the failure this pass
+exists to prevent — the header's own *"a diagnostic that cries about those
+trains the author to ignore it"*.  The keys stay in the file as comments, with
+a line saying to uncomment them together with `recycleSolver Wegstein;`, so
+the pedagogical content survives without the false appearance of a live
+setting.
+
+After that, the corpus stands at **47 cases, 0 findings.**
+
+Worth recording about the mechanism: `Dictionary::found()` calls `note()`, so
+a Wegstein case marks the keys read merely by the `found(k)` test inside
+`recScalar` — which is correct, because that case's reader really did consult
+them.  The audit distinguishes the two situations without being told about
+either.

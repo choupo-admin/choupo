@@ -20,5 +20,9 @@ tearStreams           ( recycle );
 recycleSolver          Newton;        // Newton on the tear variables (default);
 recycleTol             1e-5;
 recycleMaxIter         120;
-recycleWegsteinQmin    0.0;
-recycleWegsteinQmax    0.0;
+//  Wegstein acceleration bounds -- COMMENTED because this case runs
+//  `recycleSolver Newton;`, so the Wegstein branch is never entered
+//  and these were read by nothing.  Uncomment them together with
+//  `recycleSolver Wegstein;` to use them.
+// recycleWegsteinQmin    0.0;
+// recycleWegsteinQmax    0.0;

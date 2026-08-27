@@ -107,6 +107,7 @@ Description
 #include <cctype>
 #include <filesystem>
 #include <fstream>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -1066,6 +1067,25 @@ try
         //  point.
         if (postDict)
             dictAudit::report(dictAudit::auditTree(*postDict, "postDict"),
+                              verbosity);
+
+        //  solverDict AND outerDict GET THE SAME AUDIT, and the corpus was
+        //  MEASURED before the wiring shipped -- the method the DictAudit
+        //  header prescribes for itself.  Across the 47 cases that carry
+        //  either file it found TEN keys, every one of them the same benign
+        //  class: five recycle cases declaring `recycleWegsteinQmin/Qmax`
+        //  beside `recycleSolver Newton;`, so the Wegstein branch is never
+        //  entered and the bounds never read.  Dead configuration that reads
+        //  as an active setting -- exactly what this pass is for.  Those five
+        //  cases were commented out in the same commit, so a shipped tutorial
+        //  does not print a warning on every run: noise teaches the reader to
+        //  skip the warnings, which is the failure this pass exists to
+        //  prevent.
+        if (solverDict)
+            dictAudit::report(dictAudit::auditTree(*solverDict, "solverDict"),
+                              verbosity);
+        if (outerDict)
+            dictAudit::report(dictAudit::auditTree(*outerDict, "outerDict"),
                               verbosity);
 
         // Layer 3b: controlDict `reports {... }` chain.

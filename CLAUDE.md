@@ -1135,6 +1135,18 @@ that come from?"* as a jury would ask it.
   (Measured: that defect is LATENT today, because `auditTree` audits before
   descending; the source-reading arm is a guard against the ordering
   changing, and claiming otherwise would credit it with coverage it lacks.)
+* **`solverDict` AND `outerDict` FOLLOWED, MEASURED FIRST THIS TIME.**  Same
+  kind of file, same argument.  Wired behind an env var, run over **all 47
+  cases** that carry either, and only then shipped: **10 findings, all one
+  benign class** — five recycle cases declaring `recycleWegsteinQmin/Qmax`
+  beside `recycleSolver Newton;`, so the Wegstein branch is never entered and
+  the bounds are never read.  Dead configuration reading as a live setting.
+  The five were COMMENTED OUT in the same commit rather than left to
+  announce: *a shipped tutorial that warns on every run teaches the reader to
+  skip the warnings*, which is the failure the pass exists to prevent.  Corpus
+  now 47 cases / 0 findings.  (`Dictionary::found()` notes, so a real Wegstein
+  case marks them read through `recScalar`'s own `found(k)` test — the audit
+  tells the two situations apart without being told about either.)
 * **THE CORPUS RUN FOUND TWO REAL DEFECTS.**  Nine cases carry a `postDict`;
   six were clean.  `method discountedCashFlow;` in the economics block was
   **decorative** — the pass is hardcoded DCF and read nothing.  And
