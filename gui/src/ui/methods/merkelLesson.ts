@@ -47,6 +47,23 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "minus the enthalpy of the bulk air passing it.  That difference, in "
       + "kJ per kg of dry air, is the entire driving force of the tower.",
     formula: "driving force = h*(T_water) − h_air      [kJ per kg dry air]",
+    where: [
+      { sym: "T_water", means: "The LOCAL bulk temperature of the water at a "
+        + "section of the packing — the abscissa of the whole Merkel diagram, "
+        + "and the temperature at which the saturation enthalpy h* is taken.  "
+        + "Note what that means: h* is air saturated at the WATER's "
+        + "temperature, not at the air's.", unit: "K" },
+      { sym: "h*", means: "The enthalpy of air SATURATED at T_water — the "
+        + "equilibrium curve of the diagram.  It is the state the air at the "
+        + "interface would have, never the state of the bulk air.",
+        unit: "kJ per kg dry air" },
+      { sym: "h_air", means: "The enthalpy of the bulk moist air PER KILOGRAM "
+        + "OF DRY AIR (the carrier alone), not per kg of the moist mixture.  "
+        + "That basis is the whole reason Merkel's method works: the dry air "
+        + "is conserved down the packing while the water it carries is not, "
+        + "so a per-kg-dry-air enthalpy is a well-posed coordinate and a "
+        + "per-kg-of-mixture one is not.", unit: "kJ per kg dry air" },
+    ],
     note: "The diagram below is that sentence drawn: h*(T) is the upper "
       + "curve, the air-side operating line is the lower one, and the shaded "
       + "gap between them IS the driving force at each water temperature.  "
@@ -68,6 +85,20 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "the cold water actually ends up is the APPROACH, and it is the "
       + "number that sizes and prices the tower.",
     formula: "approach = T_water,out − T_wb,in        (the engine publishes both)",
+    where: [
+      { sym: "T_wb", means: "The WET-BULB temperature of the INLET air — what "
+        + "that air reaches by saturating itself adiabatically.  It is the "
+        + "thermodynamic FLOOR for the cold water: a design specification at "
+        + "or below it is refused by name, and in rating mode the solver "
+        + "brackets its search just above it so the answer can never sit "
+        + "under it.  It is a property of the site's climate, not of the "
+        + "tower — buy a bigger tower and this number does not move.",
+        unit: "K" },
+      { sym: "T_water,out", means: "The COLD-WATER outlet temperature — the "
+        + "water stream, not the air (the air has its own outlet, reported "
+        + "separately).  It is the RESULT in rating mode and the SPEC in "
+        + "design mode.", unit: "K" },
+    ],
     note: "The approach cannot be bought down cheaply.  Push T_water,out "
       + "towards T_wb and the gap at the cold end of the diagram closes, the "
       + "integrand 1/(h* − h) grows without bound, and so does the packing "
@@ -92,9 +123,42 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "choose a narrow one and you pump more.  What the tower and the "
       + "ambient wet bulb decide between them is the cold end — the approach. "
       + " The ratio that couples the two sides is L/G, kg of water per kg of "
-      + "dry air, and on the diagram it is the slope of the operating line.",
+      + "dry air.  It SETS the slope of the operating line but is not itself "
+      + "the slope: the diagram's vertical axis is an enthalpy and its "
+      + "horizontal one a temperature, so the slope carries cp_L with it and "
+      + "is (L/G)·cp_L — read the formula below and check the units.",
     formula: "Q = L · cp_L · range            range = T_water,in − T_water,out\n"
       + "operating line:  h(T) = h_air,in + (L·cp_L / G) (T − T_water,out)",
+    where: [
+      { sym: "Q", means: "The tower's heat duty, computed on the WATER side "
+        + "as L·cp_L·range.  Be careful what you conclude from it: because "
+        + "the air outlet enthalpy is DEFINED by this same operating line, "
+        + "the air-side product G(h₂−h₁) is identically equal to it.  The two "
+        + "sides agreeing is arithmetic, not an independent energy check.",
+        unit: "kW as published" },
+      { sym: "L", means: "The water MASS flow — specifically the mass flow of "
+        + "the condensable component in the water inlet, so a dissolved "
+        + "solute in that stream is not counted in L.  Across this corpus L "
+        + "is overloaded: in the distillation pages it is a liquid MOLAR flow "
+        + "inside a column, and in Kremser a solute-free molar solvent flow. "
+        + " Same letter, different quantity, different units.", unit: "kg/s" },
+      { sym: "G", means: "The DRY-air mass flow: the carrier component alone, "
+        + "deliberately excluding the water vapour the air already carries "
+        + "and the water it is about to pick up.  That exclusion is what "
+        + "makes G constant down the packing.", unit: "kg/s dry air" },
+      { sym: "cp_L", means: "The specific heat capacity of LIQUID water — "
+        + "what turns a water temperature drop into heat the air must carry "
+        + "away.  The engine evaluates it ONCE and holds it constant; see "
+        + "step 5 for where that approximation bites.", unit: "J/(kg·K)" },
+      { sym: "T", means: "A water temperature ANYWHERE in the packing — the "
+        + "running coordinate, not a terminal.  The operating line gives the "
+        + "air enthalpy at the section where the water is at T.", unit: "K" },
+      { sym: "range", means: "How far the water is cooled: T_water,in − "
+        + "T_water,out.  Range and approach are the two numbers that describe "
+        + "a tower's job, and they are independent — range is set by the duty "
+        + "and the water flow, approach by the tower and the climate.",
+        unit: "K" },
+    ],
     note: "The engine's two spec modes ARE these two questions, and exactly "
       + "one may be declared (both, or neither, is refused).  Declare the "
       + "packing — merkelNumber, RATING — and the cold-water temperature is "
@@ -118,6 +182,40 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "number reads two ways: as the DEMAND this duty places on a tower, "
       + "and as the SUPPLY an installed packing offers.",
     formula: "Me = KaV/L = ∫[T_out → T_in]  cp_L dT / (h*(T) − h(T))",
+    where: [
+      { sym: "Me", means: "The Merkel number — the dimensionless size of the "
+        + "transfer job, obtained by integrating the reciprocal driving force "
+        + "across the range.  A big Me means a hard job: either a small "
+        + "driving force or a wide range.", unit: "dimensionless" },
+      { sym: "KaV/L", means: "The classical name for the same group: mass "
+        + "transfer coefficient K, interfacial area per unit volume a, "
+        + "packing volume V, water flow L.  READ THIS CAREFULLY — in this "
+        + "engine K, a and V never appear apart.  There is no variable, no "
+        + "dict key and no correlation for any of them anywhere in the unit; "
+        + "the group is declared or computed only as a whole.  So the Merkel "
+        + "number sizes NOTHING by itself: turning it into a fill height or "
+        + "a plan area needs a packing model this engine does not have.",
+        unit: "dimensionless" },
+      { sym: "T_out", means: "The lower limit of the integral: the COLD-water "
+        + "outlet, the same quantity step 2 wrote T_water,out.  The shorter "
+        + "spelling is the one the classical integral is written with.",
+        unit: "K" },
+      { sym: "T_in", means: "The upper limit: the HOT-water inlet (step 3's "
+        + "T_water,in).  Both limits are the WATER's temperatures — the air "
+        + "never appears in the limits, only in the driving force.",
+        unit: "K" },
+      { sym: "T", means: "The integration variable — the water temperature at "
+        + "a point in the packing, marched from the cold end to the hot end.  "
+        + "It is the diagram's x-axis; both the saturation curve and the "
+        + "operating line are read at it, and their gap is the local driving "
+        + "force.", unit: "K" },
+      { sym: "dT", means: "The differential of WATER temperature: the slice "
+        + "of cooling whose released heat cp_L dT the enthalpy gap must "
+        + "carry.  It is emphatically NOT a temperature-difference driving "
+        + "force — that is step 1's whole point.  Numerically the engine "
+        + "discretises it as a composite-Simpson step over a fixed grid.",
+        unit: "K" },
+    ],
     note: "Choupo evaluates that integral by composite Simpson on a fine "
       + "grid and publishes the classical CTI four-point Chebyshev hand "
       + "evaluation beside it, so the shortcut a student would do on paper is "
@@ -140,8 +238,13 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "CONSTANT inside the integral, ignoring the water that evaporates "
       + "away as the stream descends.  It closes the air outlet by assuming "
       + "the EXIT AIR IS SATURATED, because an enthalpy profile alone does "
-      + "not fix a humidity.  And it evaluates the specific heats once, at "
-      + "mean temperatures, rather than along the packing.",
+      + "not fix a humidity.  And it evaluates the SPECIFIC HEATS ONCE and "
+      + "holds them constant down the packing — the gas ones at the mean of "
+      + "the two inlets, and the LIQUID one at a fixed 25 °C surrogate for "
+      + "the water outlet, because in rating mode that outlet is precisely "
+      + "the unknown being solved for.  That last one is a real "
+      + "approximation at the cold end of a tower whose outlet is far from "
+      + "25 °C.",
     note: "The neglected evaporation is not hidden: the engine computes it "
       + "from the air's humidity gain, publishes it, and subtracts it from "
       + "the cold-water outlet, so the boundary mass balance is exact even "

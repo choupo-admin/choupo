@@ -44,6 +44,36 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "picture.",
     formula: "PFR:   V = F_A0 ∫₀^X dX/(−r_A)     — the AREA under the curve\n"
       + "CSTR:  V = F_A0 · X/(−r_A)|exit    — a RECTANGLE of that height",
+    where: [
+      { sym: "V", means: "The reactor VOLUME — the quantity this whole "
+        + "construction exists to produce.  Note the direction of travel: in "
+        + "the engine the volume is an INPUT and the conversion is the "
+        + "result; this diagram reads the same equation backwards, sizing a "
+        + "reactor for a conversion you want.", unit: "m³" },
+      { sym: "F_A0", means: "The molar feed rate of the LIMITING reactant A: "
+        + "its inlet mole fraction times the total inlet molar flow, fixed "
+        + "once and used as the reference for every conversion on the page.  "
+        + "It is what turns an area into a volume.", unit: "mol/s" },
+      { sym: "X", means: "CONVERSION of the limiting reactant — the fraction "
+        + "of A fed that has been consumed.  In this corpus the letter X "
+        + "carries three OTHER meanings you will meet on neighbouring pages: "
+        + "dry-basis moisture content in drying, a solute mole ratio in "
+        + "Kremser, and the Gilliland abscissa in the shortcut-column page.  "
+        + "Here it is conversion and nothing else.", unit: "dimensionless" },
+      { sym: "dX", means: "A differential slice of conversion — the width of "
+        + "one strip under the curve.  The engine does not march in X: it "
+        + "integrates the mole balance in reactor VOLUME and computes X at "
+        + "each stored point.  The two are the same equation with the "
+        + "variable changed, which is why a strip's area is a slice of volume "
+        + "per mole of feed.", unit: "dimensionless" },
+      { sym: "r_A", means: "The rate of reaction OF A per unit volume.  Since "
+        + "A is a reactant its stoichiometric coefficient is negative, so "
+        + "r_A itself is NEGATIVE while the reaction runs forward.  That is "
+        + "why the minus sign in −r_A is written explicitly: it makes the "
+        + "plotted quantity a positive rate of CONSUMPTION.  On a reversible "
+        + "law it goes negative past equilibrium — the sign is information, "
+        + "not an error.", unit: "mol/(m³·s)" },
+    ],
     note: "Read the ordinate as a price: a slow reaction is a small −r_A, "
       + "hence a TALL ordinate, hence an expensive reactor.  Where the curve "
       + "is high, conversion is dear; where it is low, it is cheap.  The "
@@ -65,6 +95,17 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "height the ordinate at that same X_exit.",
     formula: "V_CSTR = F_A0 · X_exit / (−r_A)|exit\n"
       + "rectangle:  width X_exit,  height 1/(−r_A)|exit",
+    where: [
+      { sym: "V_CSTR", means: "The volume of the perfectly mixed tank — the "
+        + "RECTANGLE.  Nothing is approximated to get it: it is the exact "
+        + "mole balance of an ideal CSTR, drawn instead of solved.",
+        unit: "m³" },
+      { sym: "X_exit", means: "The conversion at the tank's outlet — ONE "
+        + "number, not a profile, because a perfectly mixed vessel has no "
+        + "gradient: the whole vessel sits at its exit state.  That is also "
+        + "why the rectangle's height is read at the exit and not anywhere "
+        + "else.", unit: "dimensionless" },
+    ],
     note: "Nothing was approximated to get the rectangle.  It is the exact "
       + "mole balance of an ideal CSTR — F_A0·X = (−r_A)·V — drawn instead of "
       + "solved.  The plot below takes its width and height from the engine's "
@@ -85,6 +126,14 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
     formula: "1/(−r_A) increasing on [0, X]  ⇒  ∫₀^X dX/(−r_A) ≤ X · "
       + "1/(−r_A)|exit\nhence  V_PFR ≤ V_CSTR   for the same feed and the "
       + "same conversion",
+    where: [
+      { sym: "V_PFR", means: "The volume of the tubular reactor — the AREA "
+        + "under the curve.  The inequality on this line is the whole reason "
+        + "a plug-flow reactor is smaller than a tank for the same job "
+        + "whenever the ordinate rises with conversion: the tank pays the "
+        + "EXIT price for every mole, the tube pays each mole its own price.",
+        unit: "m³" },
+    ],
     note: "The same reading explains tanks in SERIES.  Each tank is its own "
       + "rectangle standing on the previous tank's conversion, so N tanks are "
       + "a staircase of rectangles under one curve — always more than the "
@@ -112,6 +161,24 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "stirred tank provides by construction.",
     formula: "autocatalytic:  −r_A = k · C_A · C_P\n"
       + "C_P = 0 at X = 0  ⇒  −r_A = 0  ⇒  1/(−r_A) unbounded there",
+    where: [
+      { sym: "C_A", means: "The molar CONCENTRATION of A that the rate law "
+        + "sees — a molar flow divided by a volumetric flow.  The volumetric "
+        + "flow is evaluated once at the INLET composition and held constant "
+        + "through the reactor, which is the ordinary constant-density "
+        + "reading and what makes a single residence time well defined.",
+        unit: "mol/m³" },
+      { sym: "C_P", means: "The concentration of a PRODUCT, formed the same "
+        + "way — there is no separate product path in the engine.  A product "
+        + "enters the forward rate only if its stoichiometry entry declares "
+        + "its own reaction ORDER; an undeclared product contributes nothing. "
+        + " That is what makes an autocatalytic law expressible here rather "
+        + "than a special case.", unit: "mol/m³" },
+      { sym: "k", means: "The rate constant of the law as written.  Its units "
+        + "are whatever makes the product of concentrations come out as "
+        + "mol/(m³·s) — they depend on the orders, so they are not fixed in "
+        + "advance.", unit: "depends on the reaction orders" },
+    ],
     note: "Read this off the plot rather than memorising which reactor wins: "
       + "whichever way the curve runs, compare the rectangle at the exit "
       + "height against the area, and the smaller one is the smaller reactor.  "
@@ -136,6 +203,22 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
     formula: "V_total/F_A0 = X*·1/(−r_A)|X*  +  ∫_{X*}^{X_f} dX/(−r_A)\n"
       + "d/dX* of that total  =  X* · d[1/(−r_A)]/dX  =  0   ⇒   X* at the "
       + "curve's MINIMUM",
+    where: [
+      { sym: "V_total", means: "The volume of the two reactors in SERIES: a "
+        + "tank carried to the minimum of the ordinate, then a tube taking "
+        + "the rest.  This combination is a lesson construction — no engine "
+        + "site computes it and no tutorial flowsheet puts a tank and a tube "
+        + "in series, so what you see here is the two published volumes "
+        + "added, not a simulated train.", unit: "m³" },
+      { sym: "X*", means: "The conversion at which you switch from the tank "
+        + "to the tube — the abscissa of the curve's MINIMUM.  The derivative "
+        + "in the second line is why: at the minimum the extra volume of "
+        + "widening the rectangle exactly matches the strip the tube would "
+        + "have cost.", unit: "dimensionless" },
+      { sym: "X_f", means: "The FINAL conversion demanded of the train — the "
+        + "specification, the thing you were told to achieve.",
+        unit: "dimensionless" },
+    ],
     note: "The derivative is worth doing once: differentiating the rectangle "
       + "gives 1/(−r_A) + X*·d[1/(−r_A)]/dX, and extending the CSTR by dX "
       + "removes exactly 1/(−r_A) of integral from the PFR, so the two "

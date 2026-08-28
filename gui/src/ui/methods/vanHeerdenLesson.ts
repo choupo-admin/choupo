@@ -52,6 +52,52 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "\n"
       + "G(T) = H_in − H(T_in, x(T))                    heat generated  [W]\n"
       + "R(T) = H(T, x(T)) − H(T_in, x(T)) − Q_ext(T)   heat removed    [W]",
+    where: [
+      { sym: "T", means: "The REACTOR temperature — one temperature for the "
+        + "whole perfectly-mixed vessel, and also the outlet's.  In an "
+        + "adiabatic or jacketed run it is not something you declare: it is "
+        + "the UNKNOWN the energy balance solves for, and the axis every "
+        + "curve on this page is drawn against.", unit: "K" },
+      { sym: "H_out", means: "The enthalpy flow leaving with the product, on "
+        + "the elements/formation datum: the outlet's molar flow priced at "
+        + "the reactor temperature and the outlet composition.  Because the "
+        + "datum is formation-from-elements, the chemical energy released is "
+        + "already inside this one number.", unit: "W" },
+      { sym: "H_in", means: "The enthalpy flow entering with the feed, on the "
+        + "same datum, priced at the FEED temperature and composition.  It is "
+        + "a constant along the whole scan — only H_out moves.", unit: "W" },
+      { sym: "Q_ext", means: "The rate of heat crossing the boundary from "
+        + "OUTSIDE (the jacket's UA·(T_coolant − T)).  Its sign convention is "
+        + "heat INTO the reactor: positive when the jacket is hotter than the "
+        + "contents.  It is identically zero in an adiabatic case, which is "
+        + "why this page's witness has no coolant knob.", unit: "W" },
+      { sym: "phi", means: "The energy-balance RESIDUAL: what the solver "
+        + "drives to zero.  A steady state is a temperature at which it "
+        + "vanishes, so counting the states is counting this function's "
+        + "roots.", unit: "W" },
+      { sym: "G", means: "The heat GENERATION curve: the enthalpy the "
+        + "chemistry releases, evaluated ALL AT THE FEED TEMPERATURE so that "
+        + "it is pure chemistry with the sensible heat held out of it.  Note "
+        + "this is not the G of the cooling-tower page (an air mass flow) — "
+        + "same letter, different quantity.", unit: "W (plotted in kW)" },
+      { sym: "R", means: "The heat REMOVAL curve: sensible heat carried out "
+        + "by the product plus whatever the exchanger takes.  Here R is a "
+        + "curve of watts against temperature — it is NOT the reflux ratio a "
+        + "distillation page calls R, not the gas constant, and not the "
+        + "retardation factor the adsorption page writes R_f.",
+        unit: "W (plotted in kW)" },
+      { sym: "x", means: "The outlet COMPOSITION at temperature T.  It is "
+        + "written as a function of T because it is one: hotter means more "
+        + "converted, which is exactly why G bends.", unit: "mole fractions" },
+      { sym: "W", means: "The watt — the unit every quantity on the vertical "
+        + "axis carries.  Worth pausing on: these are RATES of energy, not "
+        + "amounts of it.  Both curves are power, so their crossing is a "
+        + "steady state and not an energy total.", unit: "W = J/s" },
+      { sym: "T_in", means: "The FEED temperature, declared in the stream and "
+        + "constant across the whole diagram.  It is both what H_in is priced "
+        + "at and the reference the generation curve is evaluated at.",
+        unit: "K" },
+    ],
     note: "On the elements datum this split is an IDENTITY, not a second "
       + "model: R − G reproduces phi exactly, point for point, which is what "
       + "makes the picture a view of the engine's own equation rather than a "
@@ -74,6 +120,41 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "the entire content of the diagram.",
     formula: "G(T) = (−ΔH_rxn(T_in)) · ξ(T)          one reaction; a sum over ξ_j for several\n"
       + "R(T) = F·c_p·(T − T_in) + UA·(T − T_coolant)",
+    where: [
+      { sym: "ΔH_rxn", means: "The heat of reaction per mole of extent, always "
+        + "Σ νᵢ·hᵢ(T) on the elements/formation datum, each species carrying "
+        + "its own heat of formation.  A dH_rxn written in a reactions dict "
+        + "is never a primary input here: where formation data exist it is "
+        + "only cross-checked, and a disagreement is warned aloud.",
+        unit: "J per mole of extent" },
+      { sym: "ξ", means: "The reaction EXTENT — moles of reaction turned over "
+        + "per second, an ABSOLUTE amount, which is why every species' flow "
+        + "follows from it as F_i,out = F_i,in + νᵢ·ξ.  It is NOT conversion: "
+        + "conversion is a dimensionless fraction of ONE nominated reactant, "
+        + "so one extent gives you every species at once while a conversion "
+        + "is always about a single named one.", unit: "mol/s" },
+      { sym: "ξ_j", means: "The extent of reaction j when several run at "
+        + "once — one per reaction, solved together, each species' flow being "
+        + "the sum over all of them.", unit: "mol/s" },
+      { sym: "F", means: "The total molar flow through the reactor.  Careful: "
+        + "in the textbook removal line this is one number, whereas the "
+        + "engine prices H_out on the OUTLET total, which equals the feed's "
+        + "only when the stoichiometry conserves moles.", unit: "mol/s" },
+      { sym: "c_p", means: "Molar heat capacity — the constant that makes the "
+        + "textbook removal line STRAIGHT.  THE ENGINE NEVER USES IT HERE: it "
+        + "computes the exact enthalpy difference instead, which is precisely "
+        + "why the drawn removal curve bends where the textbook line does "
+        + "not.", unit: "J/(mol·K)" },
+      { sym: "UA", means: "The overall heat-transfer coefficient times the "
+        + "exchange area — one lumped number, the jacket's ability to move "
+        + "heat per kelvin of difference.  It TILTS the removal line: more "
+        + "cooling capacity, steeper line, and stability is a statement about "
+        + "slopes.", unit: "W/K" },
+      { sym: "T_coolant", means: "The temperature of the medium in the "
+        + "jacket, read only when a heat-exchange mode is declared.  It "
+        + "enters the INTERCEPT — it slides the line without tilting it.  "
+        + "This page's witness is adiabatic and declares none.", unit: "K" },
+    ],
     note: "The removal line is straight in the textbook idealisation of a "
       + "CONSTANT heat capacity.  What the engine publishes is the exact "
       + "enthalpy difference, so the drawn curve bends a little: the heat "
@@ -96,6 +177,20 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "where they meet.",
     formula: "d(Q_rem)/dT > d(Q_gen)/dT   at the crossing   →   stable\n"
       + "dR/dT > dG/dT",
+    where: [
+      { sym: "Q_rem", means: "The same removal curve step 1 called R, written "
+        + "out for the stability statement.  Two spellings of one quantity — "
+        + "the classical literature uses both.", unit: "W" },
+      { sym: "Q_gen", means: "The same generation curve step 1 called G.",
+        unit: "W" },
+      { sym: "dR/dT", means: "The SLOPE of the removal curve at the crossing — "
+        + "how much extra heat you get rid of for one more kelvin.  Stability "
+        + "is entirely a contest between this and dG/dT: if a small warm "
+        + "excursion removes more than it generates, the reactor comes back.",
+        unit: "W/K" },
+      { sym: "dG/dT", means: "The slope of the generation curve — how much "
+        + "extra heat one more kelvin of chemistry releases.", unit: "W/K" },
+    ],
     note: "Where there are three crossings the MIDDLE one fails this test — "
       + "the generation curve is cutting upward through the line there — which "
       + "is why it can never be observed however carefully the plant is tuned. "

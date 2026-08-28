@@ -55,6 +55,21 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
       + "by the flows, and the arithmetic is exactly the lever rule you read "
       + "off the flash: the mixing point sits closer to the bigger stream.",
     formula: "M = F + S        FM / MS = S / F",
+    where: [
+      { sym: "F", means: "The FEED — the stream carrying the solute in its "
+        + "original carrier, entering the cascade at stage 1 and leaving it, "
+        + "stripped, as the raffinate at stage N.  It is a real inlet: the "
+        + "extractor takes exactly two, feed then solvent, and refuses any "
+        + "other arity by name.", unit: "mol/s" },
+      { sym: "S", means: "The SOLVENT — the second inlet, the phase that "
+        + "will take the solute up.  Which species counts as the solvent is "
+        + "DECLARED by the case, not guessed from the name.", unit: "mol/s" },
+      { sym: "M", means: "The MIXING POINT: the state you would get by "
+        + "dumping F and S into one pot.  It is not a stream in the "
+        + "flowsheet — it is a bookkeeping point on the triangle, and it "
+        + "lies on the straight line FS because mixing is linear in the "
+        + "component flows.", unit: "mol/s as a flow; a composition as plotted" },
+    ],
     note: "That is the whole of the material balance in this diagram: a "
       + "SUM lies between its parts, on the line joining them.",
   },
@@ -85,6 +100,36 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
       + "of lines through Δ plays the part the single operating line played "
       + "in McCabe.",
     formula: "Δ = F − E₁ = R_N − S",
+    where: [
+      { sym: "Δ", means: "The DIFFERENCE POINT — a fictitious stream: the net "
+        + "flow passing every cut of the cascade.  Because F − E₁ = R_j − "
+        + "E_{j+1} = R_N − S is the same net stream wherever you cut, Δ, R_j "
+        + "and E_{j+1} are colinear for every j, which is exactly why every "
+        + "operating line radiates from this one point — it takes the place "
+        + "the single operating line held in McCabe-Thiele.  It is a "
+        + "DIFFERENCE of flows, not a mixture, so it is under no obligation "
+        + "to be a composition: it routinely lies OUTSIDE the triangle, and "
+        + "a negative amount of a component is just what a net flow in the "
+        + "other direction looks like on a diagram.  Nothing in the engine "
+        + "computes Δ — it is a construction device built in the browser "
+        + "from the terminal streams the engine does publish, and it can be "
+        + "absent entirely when the two defining lines are parallel and the "
+        + "net stream is at infinity.", unit: "mol/s as a net flow" },
+      { sym: "E", means: "The EXTRACT (E₁ is the one leaving stage 1) — the solvent-rich "
+        + "phase, flowing countercurrent to the raffinate and carrying out "
+        + "the solute it has taken up.  The engine does not decide which "
+        + "phase is the extract by name: at each stage it flashes the "
+        + "combined inlet into two liquids and labels the one richer in the "
+        + "declared solvent species.", unit: "mol/s" },
+      { sym: "R_N", means: "The RAFFINATE leaving the LAST stage N — the "
+        + "feed-derived phase after it has passed every stage, i.e. the "
+        + "depleted product.  The subscript is doing real work, and so is "
+        + "this warning: R is the most overloaded letter in the corpus.  It "
+        + "is also the reflux ratio L/D in distillation, the universal gas "
+        + "constant in every rate and equilibrium expression, and (as R_f) "
+        + "the retardation factor in adsorption — four quantities, one "
+        + "letter.  Always read the subscript and the page.", unit: "mol/s" },
+    ],
     note: "AND IT IS OFTEN OUTSIDE THE TRIANGLE, which alarms every student "
       + "who meets it and is entirely correct.  Δ is a DIFFERENCE of flows, "
       + "not a mixture, and a difference has no obligation to be a "

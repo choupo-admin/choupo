@@ -61,8 +61,16 @@ Description
         Merkel resolves the air enthalpy profile, not its humidity, so
         the exit state needs one closing assumption and this is the
         classical one -- stated, and good near design loadings.
-      * cp of liquid water, carrier and vapour are evaluated once at the
-        arithmetic mean of the relevant inlet/outlet temperatures.
+      * cp of liquid water, carrier and vapour are evaluated ONCE and
+        held constant down the packing.  The carrier and vapour cp's are
+        taken at the mean of the two INLETS, 0.5*(T_air,in + T_water,in).
+        The liquid cp is taken at 0.5*(T_water,in + 298.15 K) -- a fixed
+        25 C surrogate standing in for the water outlet, and NOT an
+        inlet/outlet mean, because in RATING mode the water outlet is
+        precisely the unknown being solved: forming the constant from it
+        would make the integrand depend on the answer.  Stated rather
+        than smoothed over: this is a real approximation at the cold end
+        of a tower whose outlet is far from 25 C.
 
     The integral is a composite Simpson rule on a fixed fine grid (the
     converged answer); the classical CTI four-point Chebyshev estimate is

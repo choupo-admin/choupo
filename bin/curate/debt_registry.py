@@ -290,23 +290,24 @@ EDUTOOL_PANEL_DEBT = {
 #  `where` field (gui/src/ui/methods/lessonStep.tsx) is the home for the
 #  answer, and it arrived empty everywhere.
 #
-#  These are PINNED rather than rushed because filling them is real writing
+#  These were PINNED rather than rushed because filling them is real writing
 #  and a WRONG definition is worse than a missing one: a gap is visible to a
 #  student and a falsehood is not.  check_lesson_symbols refuses a NEW
 #  unglossed symbol in a pinned lesson and refuses any at all in an unpinned
-#  one, so the debt can be paid down but never grow.
+#  one, so the debt could be paid down but never grow.
+#
+#  DISCHARGED IN FULL 2026-08-28.  All sixteen lesson modules now gloss every
+#  symbol their formulas use.  The dict is kept EMPTY rather than deleted,
+#  because an empty waiver list is a CLAIM -- "nothing is excused here" --
+#  and deleting it would leave that claim unstated (the LAYERING_UPWARD_EDGES
+#  precedent).  The glosses were written against the ENGINE SOURCE, one
+#  agent per lesson, each required to cite `file:line` for every symbol; the
+#  citation requirement is what made them read the code instead of the page,
+#  and it turned up eight defects the pages had been carrying -- among them
+#  the cooling tower's operating-line slope (the prose contradicted its own
+#  formula two lines below) and a claim in the Bjerrum lesson, written by
+#  this project, that the engine has no pH input at all, which is false.
 LESSON_SYMBOLS_UNGLOSSED = {
-    "bjerrumLesson.ts":        "Sigma, z_i, m_i, C_T",
-    "columnControlLesson.ts":  "T_top / T_bot, dT, du",
-    "dryingLesson.ts":         "R_c, X_0, X_c, tau, lambda, the two cp's",
-    "fugLesson.ts":            "the whole FUG symbol set (K_i, alpha, theta, ...)",
-    "hunterNashLesson.ts":     "F, R_N",
-    "levenspielLesson.ts":     "C_A, C_P, V_CSTR / V_PFR, X_f",
-    "merkelLesson.ts":         "T_water, h_air, cp_L, T_in / T_out",
-    "pinchLesson.ts":          "CP_i / CP_total, dH, dT, the T_supply pair",
-    "psychroLesson.ts":        "M_v / M_c, p_v, c_s, T_as, lambda, Y_sat",
-    "pumpSystemLesson.ts":     "the pressure/head pair, NPSH_a / NPSH_r, SigmaK",
-    "vanHeerdenLesson.ts":     "xi, dH_rxn, Q_gen / Q_rem / Q_ext, UA",
 }
 
 LESSON_SYMBOLS_DEBT = {

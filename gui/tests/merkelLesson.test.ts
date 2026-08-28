@@ -188,14 +188,24 @@ describe("what Merkel assumes — the page states all of it, and only it", () =>
     expect(body).toContain("LEWIS FACTOR AS ONE");
     expect(body).toContain("WATER FLOW CONSTANT");
     expect(body).toContain("EXIT AIR IS SATURATED");
-    expect(body).toContain("specific heats once, at mean temperatures");
+    expect(body).toContain("SPECIFIC HEATS ONCE");
+    expect(body).toContain("fixed 25 \u00b0C surrogate");
     //  Each is the engine's own, read back out of the unit that computes the
     //  answer.  A hypothesis the page invents, or one the engine makes and
     //  the page drops, separates these.
     expect(ENGINE_H).toContain("Lewis factor = 1");
     expect(ENGINE_H).toContain("NEGLECTED");
     expect(ENGINE_H).toContain("exit air is assumed SATURATED");
-    expect(ENGINE_H).toContain("evaluated once at the");
+    //  This line used to read `toContain("evaluated once at the")`, and it
+    //  passed over a header sentence that was FALSE: it claimed the cp's were
+    //  taken at "the arithmetic mean of the relevant inlet/outlet
+    //  temperatures", whereas the gas ones are at the mean of the two INLETS
+    //  and the liquid one at a fixed 25 C stand-in for an outlet that, in
+    //  rating mode, is the unknown being solved.  A vague claim is not
+    //  testable, so what is pinned now is the specific one.
+    expect(ENGINE_H).toContain("evaluated ONCE and");
+    expect(ENGINE_H).toContain("mean of the two INLETS");
+    expect(ENGINE_H).toContain("fixed\n        25 C surrogate");
   });
 
   it("keeps the Lewis-factor claim inside the range the engine states", () => {

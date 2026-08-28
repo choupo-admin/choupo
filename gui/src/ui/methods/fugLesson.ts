@@ -52,6 +52,35 @@ export const FUG_STEPS: readonly LessonStep[] = [
     formula: "α_i,HK = K_i / K_HK          keys: LK (light) and HK (heavy)\n"
       + "recoveryLK, recoveryHK — both the fraction of that key's FEED that\n"
       + "leaves in the DISTILLATE (so a sharp split is a high LK and a low HK)",
+    where: [
+      { sym: "α_i,HK", means: "The RELATIVE VOLATILITY of component i referred "
+        + "to the heavy key: K_i/K_HK.  The heavy key's own value is exactly "
+        + "1 by construction, and the light key's is the larger of the two.  "
+        + "It is evaluated ONCE, at the feed bubble point, and held constant "
+        + "for the whole column — see step 2 for why that matters.",
+        unit: "dimensionless" },
+      { sym: "K_i", means: "The equilibrium ratio y_i/x_i of component i from "
+        + "the case's DECLARED thermodynamics — the very same K the flash and "
+        + "the rigorous column use, but asked for at a single state instead "
+        + "of stage by stage.", unit: "dimensionless" },
+      { sym: "K_HK", means: "The heavy key's equilibrium ratio at that same "
+        + "state — the denominator that turns every K into a relative "
+        + "volatility.  A non-volatile heavy key has no volatility to be "
+        + "relative to, and is refused.", unit: "dimensionless" },
+      { sym: "LK", means: "The LIGHT KEY: the more volatile of the two "
+        + "components whose split you are specifying.  Choosing the keys is "
+        + "YOUR design decision, not the method's.", unit: "—" },
+      { sym: "HK", means: "The HEAVY KEY: the less volatile of the pair.  "
+        + "Everything lighter than LK goes essentially overhead and "
+        + "everything heavier than HK essentially down; the method only "
+        + "really decides about the keys.", unit: "—" },
+      { sym: "recoveryLK", means: "The fraction of the light key's FEED that "
+        + "leaves in the DISTILLATE.", unit: "dimensionless" },
+      { sym: "recoveryHK", means: "The fraction of the heavy key's feed that "
+        + "leaves in the distillate — note the same basis, which is why a "
+        + "sharp split is a HIGH light-key recovery and a LOW heavy-key one.",
+        unit: "dimensionless" },
+    ],
     note: "The two ends of the answer are pictures you already know.  Total "
       + "reflux is the staircase stepped off against the 45° line, because "
       + "with no product withdrawn both operating lines collapse onto it; "
@@ -73,6 +102,37 @@ export const FUG_STEPS: readonly LessonStep[] = [
     formula: "N_min = ln[ (x_LK/x_HK)_D · (x_HK/x_LK)_B ] / ln α_LK,HK\n"
       + "        (the same product grouped by component: "
       + "(x_D/x_B)_LK · (x_B/x_D)_HK )",
+    where: [
+      { sym: "N_min", means: "The stage count at TOTAL REFLUX: the fewest "
+        + "equilibrium stages that could ever achieve this separation.  It is "
+        + "a LIMIT, not a design — a column at total reflux makes no product "
+        + "at all.  It is not an integer, and the engine keeps it as a real "
+        + "number.", unit: "equilibrium stages" },
+      { sym: "x_LK", means: "Mole fraction of the LIGHT KEY in a named "
+        + "product stream — per mole of THAT stream, so x_LK,D and x_LK,B are "
+        + "different numbers wearing the same symbol.  The subscript is doing "
+        + "the work; read it every time.", unit: "dimensionless" },
+      { sym: "x_HK", means: "Mole fraction of the HEAVY KEY in a named "
+        + "product stream, on the same per-stream basis.",
+        unit: "dimensionless" },
+      { sym: "α_LK,HK", means: "The light key's relative volatility referred "
+        + "to the heavy key — the single number Fenske divides by.  The "
+        + "engine refuses a value not greater than 1, because that means the "
+        + "keys have been assigned the wrong way round.",
+        unit: "dimensionless" },
+      { sym: "x_D", means: "A composition in the DISTILLATE — per mole of "
+        + "distillate.  In this method it is DERIVED from the Fenske "
+        + "distribution rather than declared.", unit: "dimensionless" },
+      { sym: "x_B", means: "A composition in the BOTTOMS, per mole of "
+        + "bottoms, derived the same way from the same distribution.",
+        unit: "dimensionless" },
+      { sym: "D", means: "The DISTILLATE stream (as a subscript) and its "
+        + "molar flow (in Kirkbride below).  Note the direction of the "
+        + "arithmetic in this method: D and B are OUTPUTS of the key "
+        + "recoveries, not specifications you set.", unit: "kmol/s" },
+      { sym: "B", means: "The BOTTOMS stream and its molar flow — the sum "
+        + "over all components of what Fenske sends down.", unit: "kmol/s" },
+    ],
     note: "α is CONSTANT here — that is an assumption, not a fact.  A real "
       + "column is colder at the top than at the bottom and its α varies over "
       + "that span; the formula needs one number.  Textbooks write α_avg and "
@@ -94,6 +154,37 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "is the vertical asymptote.",
     formula: "Σ_i  α_i z_i / (α_i − θ)  =  1 − q          →  θ\n"
       + "R_min + 1  =  Σ_i  α_i x_D,i / (α_i − θ)",
+    where: [
+      { sym: "Σ_i", means: "The sum runs over EVERY component in the case, all "
+        + "n of them — not just the two keys.  That is precisely why the "
+        + "shortcut survives a multicomponent feed: the keys fix the "
+        + "separation, but every non-key still contributes its own term, and "
+        + "its own pole where α_i equals θ.", unit: "none" },
+      { sym: "z_i", means: "FEED mole fraction of component i, per mole of "
+        + "total feed, normalised to sum to 1 whatever the author typed.",
+        unit: "dimensionless" },
+      { sym: "θ", means: "UNDERWOOD'S ROOT — the one quantity in the whole "
+        + "method that has to be SOLVED for rather than evaluated.  The "
+        + "left-hand sum has a vertical asymptote at every component "
+        + "volatility, so it crosses many times and most crossings are "
+        + "meaningless; the root that fixes the minimum reflux is the one "
+        + "trapped BETWEEN THE TWO KEY VOLATILITIES.",
+        unit: "dimensionless (it is a relative volatility)" },
+      { sym: "q", means: "The FEED QUALITY: how much of the feed arrives as "
+        + "liquid.  q = 1 is a saturated liquid, q = 0 a saturated vapour, "
+        + "and values outside [0,1] are a subcooled liquid or a superheated "
+        + "vapour.  It is the only place the feed's THERMAL state enters "
+        + "this method.", unit: "dimensionless" },
+      { sym: "R_min", means: "The MINIMUM REFLUX RATIO — the reflux below "
+        + "which the separation is unreachable at ANY column height, because "
+        + "a pinch has appeared.  The sum gives R_min + 1, and the −1 is what "
+        + "makes it a ratio of reflux to distillate.", unit: "dimensionless" },
+      { sym: "x_D", means: "The DISTILLATE composition.  Note it is DERIVED "
+        + "from the Fenske distribution rather than declared — so it is the "
+        + "composition the column would have at TOTAL reflux, being used here "
+        + "at minimum reflux.  That is one of the method's approximations.",
+        unit: "dimensionless" },
+    ],
     note: "PICKING THE RIGHT ROOT is the fiddly part, and it is the step that "
       + "quietly goes wrong.  The left-hand sum has a vertical asymptote at "
       + "EVERY component volatility α_i, so it crosses 1 − q many times and "
@@ -123,6 +214,30 @@ export const FUG_STEPS: readonly LessonStep[] = [
     formula: "X = (R − R_min) / (R + 1)        Y = (N − N_min) / (N + 1)\n"
       + "Y = 1 − exp[ ((1 + 54.4 X) / (11 + 117.2 X)) · (X − 1) / √X ]\n"
       + "                                       (the usual closed form)",
+    where: [
+      { sym: "R", means: "The OPERATING reflux ratio, L/D — liquid returned "
+        + "to the top per mole of distillate drawn.  It is an INPUT here, "
+        + "read from the case; this method never forms the internal liquid "
+        + "and vapour flows that would make it physical.  R is the corpus's "
+        + "most overloaded letter: it is also the gas constant, the heat "
+        + "removal curve in the reactor-stability page, and (as R_f) a "
+        + "retardation factor in adsorption.", unit: "dimensionless" },
+      { sym: "X", means: "GILLILAND'S ABSCISSA — a reduced coordinate built "
+        + "only so that minimum reflux lands at 0 and total reflux at 1.  It "
+        + "is a position along a fitted curve, NOT a composition, and it has "
+        + "nothing to do with the X of the absorption or drying pages.",
+        unit: "dimensionless" },
+      { sym: "Y", means: "GILLILAND'S ORDINATE — the second reduced "
+        + "coordinate, read off the fitted curve at the current X and then "
+        + "inverted for N.  It is a fraction of the way from the total-reflux "
+        + "limit toward an infinitely tall column; it is not the humidity "
+        + "ratio or the mole ratio that share the letter elsewhere.",
+        unit: "dimensionless" },
+      { sym: "N", means: "The theoretical STAGE COUNT at the operating "
+        + "reflux — the answer this page exists to produce.  EQUILIBRIUM "
+        + "stages, not trays, and not an integer.  Its accuracy is the "
+        + "correlation's, not the thermodynamics'.", unit: "stages" },
+    ],
     note: "This is the single most important thing on the page.  The two ENDS "
       + "of the N(R) curve are as good as their assumptions — they are what "
       + "constant α and constant molar overflow IMPLY.  Everything between "
@@ -151,6 +266,19 @@ export const FUG_STEPS: readonly LessonStep[] = [
       + "and that count will be an answer to a system that does not exist.",
     formula: "Kirkbride (feed stage, empirical):\n"
       + "N_rect / N_strip = [ (z_HK/z_LK) · (x_LK,B / x_HK,D)² · (B/D) ]^0.206",
+    where: [
+      { sym: "N_rect", means: "The number of stages ABOVE the feed — the "
+        + "rectifying section.", unit: "stages" },
+      { sym: "N_strip", means: "The number of stages BELOW the feed — the "
+        + "stripping section.  Kirkbride gives only their RATIO, so the total "
+        + "N from Gilliland has to be split by it; the feed stage is the one "
+        + "number on this page with no theoretical derivation behind it at "
+        + "all.", unit: "stages" },
+      { sym: "z_HK", means: "Heavy-key mole fraction in the FEED.",
+        unit: "dimensionless" },
+      { sym: "z_LK", means: "Light-key mole fraction in the feed.",
+        unit: "dimensionless" },
+    ],
     note: "So use it the way it was meant: the shortcut designs, the rigorous "
       + "column verifies.  The comparison drawn above is that sentence with "
       + "numbers attached — the same feed, the same declared thermodynamics, "

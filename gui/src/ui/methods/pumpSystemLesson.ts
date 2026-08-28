@@ -60,6 +60,27 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "exactly one place, and that crossing is the operating point: the "
       + "only flow the installation can actually run at.",
     formula: "Δp_pump(Q*) = Δp_system(Q*)      →      Q* , the operating point",
+    where: [
+      { sym: "Δp_pump", means: "The pressure RISE the pump delivers at a given "
+        + "flow.  In this model it is a closed form, not a machine "
+        + "characteristic: a fixed shaft power times a fixed efficiency, "
+        + "divided by the volume passing through.  The curve falls simply "
+        + "because the same power is spread over more volume — there is no "
+        + "speed, no impeller diameter and no measured curve behind it.",
+        unit: "Pa" },
+      { sym: "Δp_system", means: "The pressure the PIPEWORK demands at that "
+        + "flow — exactly three terms: distributed friction, minor losses, "
+        + "and static elevation.  There is no fourth: no terminal-vessel "
+        + "pressure difference is modelled anywhere in the sum.",
+        unit: "Pa" },
+      { sym: "Q", means: "Volumetric flow through the system.  It is never "
+        + "CHOSEN by the pump: the feed's molar flow sets it, and the sweep "
+        + "imposes that point by point.", unit: "m³/s" },
+      { sym: "Q*", means: "The OPERATING POINT — the one flow at which the "
+        + "two curves agree.  It is not a setting: it is where the "
+        + "installation ends up, which is the whole lesson of the page.",
+        unit: "m³/s" },
+    ],
     note: "Read the plot below as two answers to the same question.  The "
       + "sweep behind it IMPOSES a flow at each of its points and asks each "
       + "side what pressure it would want there; at every flow but one the "
@@ -83,6 +104,40 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     formula: "Δp_system = ρ g Δz              (static — flat in Q)\n"
       + "          + ( f·L/D + ΣK ) · ρ v² / 2   (friction — grows ≈ Q²)\n"
       + "with   v = Q / A",
+    where: [
+      { sym: "ρ", means: "Liquid density — AND A WARNING YOU SHOULD BE ABLE "
+        + "TO GIVE AT A VIVA.  The two curves on this diagram do not use the "
+        + "same one.  The pump builds ρ from the component record's constant "
+        + "liquid volume; the pipe asks the thermo package, which uses the "
+        + "saturated-liquid Rackett correlation and announces about itself "
+        + "that it runs about 12 % low for water at 25 °C.  For the classroom "
+        + "case that is ≈997 against ≈877 kg/m³.  PRESSURES may be compared "
+        + "across the crossing — both curves are in Pa and the intersection "
+        + "is meaningful.  HEADS from the two sides may NOT, because each was "
+        + "divided by a different ρ.", unit: "kg/m³" },
+      { sym: "g", means: "Standard gravitational acceleration.",
+        unit: "m/s²" },
+      { sym: "Δz", means: "Elevation change from pipe inlet to outlet — and "
+        + "the WHOLE of the static term, the only flow-independent "
+        + "contribution.  Elevation only: an installation discharging into a "
+        + "pressurised header has static head this curve does not contain.",
+        unit: "m" },
+      { sym: "f", means: "The Darcy friction factor — the one term here that "
+        + "is not constant: it falls slowly as the Reynolds number rises, "
+        + "which is why the friction curve is only ROUGHLY quadratic.",
+        unit: "dimensionless" },
+      { sym: "L", means: "Straight pipe LENGTH, entering only through the "
+        + "ratio L/D.  Fittings are counted separately and carry no length.",
+        unit: "m" },
+      { sym: "D", means: "Internal pipe diameter.", unit: "m" },
+      { sym: "ΣK", means: "The sum of minor-loss coefficients over the "
+        + "declared fittings.  It multiplies the velocity head directly, so "
+        + "this term is EXACTLY quadratic in Q — unlike the distributed "
+        + "friction, whose f drifts.", unit: "dimensionless" },
+      { sym: "v", means: "Mean velocity in the pipe.", unit: "m/s" },
+      { sym: "A", means: "The pipe's internal cross-sectional area.",
+        unit: "m²" },
+    ],
     note: "Roughly the square, not exactly: the minor-loss term is truly "
       + "quadratic, because ΣK is a constant, but the distributed friction "
       + "carries the friction factor f, and f falls slowly as the Reynolds "
@@ -103,6 +158,18 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "pressure rise is whatever that power buys when it is spread over "
       + "the volume passing through.  Twice the flow, half the rise.",
     formula: "Δp_pump = η · W_shaft / Q        (Q = volumetric flow)",
+    where: [
+      { sym: "η", means: "Pump EFFICIENCY — a declared constant, read once "
+        + "and applied at every flow.  It is not a curve and not a function "
+        + "of Q, so this model has no best-efficiency point and no "
+        + "efficiency-versus-flow reading exists.  It splits the shaft work: "
+        + "the η fraction becomes pressure, the rest heats the liquid.",
+        unit: "dimensionless" },
+      { sym: "W_shaft", means: "Shaft POWER supplied to the pump — one of "
+        + "three mutually exclusive specifications.  Note it is power, not "
+        + "rotational speed: nothing in this model converts between the two.",
+        unit: "W" },
+    ],
     note: "So the falling line below is a constant-shaft-power hyperbola of "
       + "the MODEL, never a manufacturer's tested H(Q) curve, and the plot "
       + "says so beside itself.  Because η is a declared constant here and "
@@ -129,6 +196,24 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "first place.",
     formula: "throttle:  ΣK ↑   →  system curve steepens  →  Q* falls\n"
       + "affinity:  Q ∝ N        H ∝ N²        P ∝ N³",
+    where: [
+      { sym: "N", means: "Rotational SPEED, in the affinity laws.  NOT "
+        + "COMPUTED BY THIS ENGINE — the pump model has no speed and no "
+        + "impeller diameter, only a shaft power and an efficiency.  Turning "
+        + "the shaft power down is a DIFFERENT experiment from slowing the "
+        + "pump, and no affinity relation is evaluated anywhere on this "
+        + "page.", unit: "rev/s (nominal)" },
+      { sym: "H", means: "Pump HEAD — the pressure rise expressed as a height "
+        + "of the liquid.  See the ρ warning in step 2 before converting "
+        + "either curve to head.", unit: "m" },
+      { sym: "P", means: "Pump POWER in the affinity law.  The engine has the "
+        + "quantity (it is the shaft power) but never scales it with a speed, "
+        + "because there is no speed to scale by.  The cube relation also "
+        + "holds only between homologous points, and carries over to an "
+        + "installation's operating point only when the system curve passes "
+        + "through the origin — which one with a static lift does not.",
+        unit: "W" },
+    ],
     note: "NEITHER move is computed on this page, and the difference is "
       + "worth being precise about.  There is no valve knob: a throttle "
       + "raises ΣK, and although the classroom case declares a globe valve, "
@@ -163,6 +248,28 @@ export const PUMP_STEPS: readonly LessonStep[] = [
     formula: "NPSH_a = (P_suction − P_vap)/(ρ g) + z_suction − h_f,suction   (falls with Q)\n"
       + "NPSH_r = the pump's own, measured                                (rises with Q)\n"
       + "cavitation when   NPSH_a ≤ NPSH_r",
+    where: [
+      { sym: "NPSH_a", means: "Net positive suction head AVAILABLE — how much "
+        + "head the liquid arrives with above its own vapour pressure, "
+        + "falling as flow rises.  NOT COMPUTED BY THIS ENGINE: no unit "
+        + "publishes an NPSH of either kind and the pump carries no suction "
+        + "geometry.", unit: "m" },
+      { sym: "NPSH_r", means: "Net positive suction head REQUIRED — the "
+        + "pump's own property, measured by its maker, rising with flow.  NOT "
+        + "COMPUTED, and could not be: it is measured machine data, and this "
+        + "model carries no measured data of any kind.", unit: "m" },
+      { sym: "P_suction", means: "Absolute pressure at the pump suction.",
+        unit: "Pa" },
+      { sym: "P_vap", means: "The liquid's vapour pressure at the suction "
+        + "temperature — the floor the suction pressure must stay above.",
+        unit: "Pa" },
+      { sym: "z_suction", means: "Static head of liquid above (or below) the "
+        + "pump centreline on the suction side.", unit: "m" },
+      { sym: "h_f,suction", means: "Friction head lost in the SUCTION line "
+        + "alone — which is why a long or throttled suction is the classic "
+        + "way to cavitate a pump that is otherwise sized correctly.",
+        unit: "m" },
+    ],
     note: "Choupo computes NONE of this, and the page will not pretend "
       + "otherwise: no unit in the engine publishes an NPSH of either kind, "
       + "the pump model carries no suction geometry, and it never checks its "

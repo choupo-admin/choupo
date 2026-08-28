@@ -59,6 +59,28 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "curves are computed for the pair you name, so the carrier's molar "
       + "mass is part of the answer and not a decoration.",
     formula: "Y = (M_v / M_c) · p_v / (P − p_v)      [kg vapour / kg dry gas]",
+    where: [
+      { sym: "Y", means: "The HUMIDITY RATIO: kg of condensable vapour carried "
+        + "by one kg of DRY carrier gas.  The dry-carrier denominator is not "
+        + "a convention, it is the reason the chart works — a heater, a dryer "
+        + "or a cooling coil leaves the dry carrier untouched, so per kg of "
+        + "it every balance on this page is a subtraction between two points. "
+        + " (Kremser's Y is a solute MOLE ratio and the shortcut column's is "
+        + "a reduced stage coordinate: three quantities, one letter, all "
+        + "reachable from the same menu.)", unit: "kg vapour / kg dry gas" },
+      { sym: "M_v", means: "The molar mass of the CONDENSABLE, from its own "
+        + "component record.", unit: "g/mol" },
+      { sym: "M_c", means: "The molar mass of the CARRIER.  This ratio is why "
+        + "the chart is COMPUTED rather than copied out of a book: swap "
+        + "nitrogen for air and every humidity ratio on the page moves.",
+        unit: "g/mol" },
+      { sym: "p_v", means: "The PARTIAL PRESSURE of the vapour in the moist "
+        + "gas — what fixes Y at a given total pressure.", unit: "Pa" },
+      { sym: "P", means: "The TOTAL pressure the whole chart is drawn at.  It "
+        + "appears in the definition of Y and on NEITHER axis, which is "
+        + "exactly why a psychrometric chart is not portable between "
+        + "pressures — step 5 is about that.", unit: "Pa" },
+    ],
     note: "The DRY basis is the whole trick.  The dry carrier is the one "
       + "thing that passes through a heater, a dryer or a cooling coil "
       + "UNCHANGED — nothing condenses it and nothing evaporates it — so per "
@@ -83,6 +105,21 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
     formula: "φ = p_v / P_sat(T)\n"
       + "Y(φ, T) = (M_v/M_c) · φ P_sat(T) / (P − φ P_sat(T))\n"
       + "saturation:  φ = 1",
+    where: [
+      { sym: "φ", means: "The RELATIVE HUMIDITY: the vapour's actual partial "
+        + "pressure over the saturation pressure at the SAME temperature.  A "
+        + "ratio of PRESSURES, not of humidity ratios — the two are close but "
+        + "not equal, and saturation is φ = 1.  Charts and dialogs usually "
+        + "enter it as a percentage.", unit: "dimensionless" },
+      { sym: "P_sat", means: "The SATURATION vapour pressure of the pure "
+        + "condensable at T, from that component's own vapour-pressure model. "
+        + " It is the ceiling the whole chart hangs from, a property of the "
+        + "condensable ALONE, and it does not move when the total pressure "
+        + "does.", unit: "Pa" },
+      { sym: "T", means: "The DRY-BULB temperature — what an ordinary "
+        + "thermometer in the stream reads, and the chart's abscissa.",
+        unit: "°C on the axis (K internally)" },
+    ],
     note: "Because P_sat(T) sits in the denominator, relative humidity moves "
       + "when NOTHING is added or removed: heat the gas at constant Y and φ "
       + "falls, purely because the ceiling rose.  That is why Y is the "
@@ -117,6 +154,55 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "humid heat:            c_s = c_p,carrier + Y · c_p,vapour\n"
       + "moist-gas enthalpy:    h = c_s · (T − T₀) + Y · λ(T₀)   [per kg dry gas]\n"
       + "true wet bulb:         same anchor, slope × Le^(2/3),  Le = α / D_AB",
+    where: [
+      { sym: "T_as", means: "The ADIABATIC-SATURATION temperature: what the "
+        + "gas would reach if it saturated itself by evaporating the "
+        + "condensable into it with no heat crossing the boundary.  It comes "
+        + "from an ENERGY BALANCE on the gas, and it labels a whole FAMILY — "
+        + "every state on that line has this adiabatic-saturation "
+        + "temperature.", unit: "°C" },
+      { sym: "T_wb", means: "The TRUE WET-BULB temperature: what a wet wick "
+        + "in the stream settles at, where latent heat leaving the surface "
+        + "and sensible heat arriving from the gas cancel.  It comes from the "
+        + "RATIO of heat transfer to mass transfer, so it carries the Lewis "
+        + "number.  IT IS A DIFFERENT QUANTITY FROM T_as and equals it only "
+        + "when Le = 1 — a near-coincidence that air-water happens to "
+        + "satisfy, which is why most textbooks conflate them.", unit: "°C" },
+      { sym: "Y_sat", means: "The humidity ratio ON the saturation curve: the "
+        + "most vapour the gas can carry at that temperature and pressure.  "
+        + "It is the top edge of the habitable chart and the anchor point of "
+        + "every adiabatic and wet-bulb line.",
+        unit: "kg vapour / kg dry gas" },
+      { sym: "c_s", means: "The HUMID HEAT: the heat needed to raise one kg "
+        + "of DRY carrier gas AND the vapour riding with it by one kelvin.  "
+        + "It is named on the same dry basis as Y, which is what makes it the "
+        + "slope-setter of the adiabatic line.",
+        unit: "J/(kg dry gas·K)" },
+      { sym: "c_p,carrier", means: "The specific heat of the dry carrier gas, "
+        + "per kg of it.", unit: "J/(kg·K)" },
+      { sym: "c_p,vapour", means: "The specific heat of the vapour, per kg of "
+        + "vapour — which is why it is multiplied by Y in the humid heat.",
+        unit: "J/(kg·K)" },
+      { sym: "λ", means: "The LATENT HEAT of vaporisation per kg, at the "
+        + "anchor temperature.  It is the price of evaporation, and being in "
+        + "the denominator it is what makes the adiabatic line SHALLOW.",
+        unit: "J/kg" },
+      { sym: "h", means: "The moist-gas ENTHALPY, per kg of dry gas — the "
+        + "same basis again.  Its two terms are the sensible heat of the "
+        + "mixture and the latent heat the vapour brought with it.",
+        unit: "J/kg dry gas" },
+      { sym: "T₀", means: "The enthalpy DATUM temperature.  Its value is a "
+        + "convention: only enthalpy DIFFERENCES between two states on the "
+        + "chart mean anything.", unit: "°C" },
+      { sym: "Le", means: "The LEWIS number: thermal diffusivity over mass "
+        + "diffusivity — how fast heat spreads compared with how fast the "
+        + "vapour does.  It is the single number that separates the two "
+        + "temperatures above, and Le ≈ 1 for air-water is why they are so "
+        + "often treated as one.", unit: "dimensionless" },
+      { sym: "α", means: "Thermal diffusivity of the gas.", unit: "m²/s" },
+      { sym: "D_AB", means: "Diffusivity of the vapour in the carrier gas.",
+        unit: "m²/s" },
+    ],
     note: "THE TWO TEMPERATURES ARE NOT THE SAME QUANTITY.  The "
       + "adiabatic-saturation temperature comes from an energy balance on gas "
       + "saturated to the end; the wet-bulb temperature comes from the RATIO "
@@ -151,6 +237,21 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "dehumidification:         condensate = Y_in − Y_sat(T_surface)\n"
       + "adiabatic humidification: up a wet-bulb line, bounded below by T_wb\n"
       + "mixing:  Y_m = (G₁·Y₁ + G₂·Y₂) / (G₁ + G₂),   G = dry-gas mass flow",
+    where: [
+      { sym: "Y_in", means: "The humidity ratio of the gas ENTERING the "
+        + "operation.", unit: "kg vapour / kg dry gas" },
+      { sym: "T_surface", means: "The temperature of the COIL surface the gas "
+        + "touches — not the gas temperature.  Condensation is set by how "
+        + "cold the metal is, which is why a coil can dehumidify air that is "
+        + "nowhere near saturated in the bulk.", unit: "°C" },
+      { sym: "Y_m", means: "The humidity ratio of the MIXED stream: the "
+        + "dry-gas-weighted average of the two feeds, which is why the mixed "
+        + "state lands ON the straight segment joining them.  It is exact "
+        + "precisely because the weighting basis — dry gas — is conserved "
+        + "through the mixing.", unit: "kg vapour / kg dry gas" },
+      { sym: "G", means: "The DRY-GAS mass flow of a stream: the weight each "
+        + "feed carries in the lever rule.", unit: "kg dry gas/s" },
+    ],
     note: "The mixing rule is the LEVER RULE again — the same geometry as the "
       + "flash's tie line and the extraction triangle, and for the same "
       + "reason: Y and h are both averages weighted by the dry-gas flow.  It "
