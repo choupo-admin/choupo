@@ -227,3 +227,57 @@ GATE_DECLARATIONS_DEBT = (
     "declaration should be DERIVED from each gate's own OK line, never "
     "transcribed from its docstring."
 )
+
+# ---------------------------------------------------------------------------
+#  EDUTOOLS THAT ARE STILL INSTRUMENT PANELS
+# ---------------------------------------------------------------------------
+
+#  THE RULE (Vitor, 2026-08-28): an EduTool is a page you SCROLL, carrying the
+#  explanation and the equations, with the interactive earned by the
+#  paragraphs above it.  The Explorer is the other surface, and it is for
+#  studies that only make sense once you have CHOSEN compounds and
+#  compositions -- which is why the pellet has no business there.
+#
+#  A tool may legitimately live in BOTH: the flash is a study of a chosen pair
+#  in the Explorer and a lesson about the operating line in EduTools.  What it
+#  may not be is an instrument panel in EduTools, because a panel shows a
+#  reader who already knows the method what it does, and teaches a reader who
+#  does not exactly nothing.
+#
+#  These are the tools still built as MethodSetupRail panels: knobs down one
+#  side, a drawing pinned into what height is left, and the provenance in
+#  small grey type underneath.  Every number on them is correct.  None of them
+#  teaches.
+#
+#  The list is expected to SHRINK to nothing.  check_edutool_form fails if a
+#  name here has already been converted (a pin outliving its violation is a
+#  licence) and if a tool NOT here is a panel (which is how a new one would
+#  arrive built the old way).
+EDUTOOL_STILL_A_PANEL = {
+    "BreakthroughTool.tsx":     "adsorption breakthrough",
+    "ColumnControlTool.tsx":    "column control structure",
+    "DryingCurveTool.tsx":      "batch tray drying",
+    "EpsilonNtuTool.tsx":       "heat exchanger effectiveness-NTU",
+    "FugShortcutTool.tsx":      "Fenske-Underwood-Gilliland",
+    "KremserTool.tsx":          "absorption",
+    "LevenspielTool.tsx":       "reactor sizing",
+    "MerkelTool.tsx":           "cooling tower",
+    "PinchCompositeTool.tsx":   "pinch composite curves",
+    "PumpSystemTool.tsx":       "pump vs system curve",
+    "RayleighTool.tsx":         "batch still",
+    "TieTriangleTool.tsx":      "Hunter-Nash extraction",
+    "VanHeerdenTool.tsx":       "ignition / extinction",
+}
+
+EDUTOOL_PANEL_DEBT = {
+    "why": "These EduTools are built as MethodSetupRail instrument panels "
+           "rather than as scrolling lessons: the knobs and the drawing are "
+           "there, the explanation and the equations are not. A reader who "
+           "does not already know the method leaves knowing that.",
+    "remedy": "Convert each to the scrolling form the temperature, flash and "
+              "Thiele tools now use: numbered steps carrying the equations, "
+              "the interactive placed where the paragraphs have earned it, "
+              "the limits block kept, and the step content held as DATA so a "
+              "test can assert the argument still runs end to end.",
+    "blocked": None,   # not blocked on anything -- it is work
+}

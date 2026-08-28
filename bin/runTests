@@ -1018,6 +1018,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/mtools.$$
 
+    #  EduTool FORM gate: a tool in EduTools is a page you SCROLL, carrying
+    #  the explanation and the equations; the Explorer is the surface for
+    #  studies that need compounds and compositions CHOSEN first.  Pure file
+    #  reading -- no node_modules, so it cannot SKIP.
+    "$ROOT/bin/curate/check_edutool_form.py" > /tmp/eform.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "edutool-form-gate" "$(head -1 /tmp/eform.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_edutool_form.py)\n" "edutool-form-gate"
+        cat /tmp/eform.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/eform.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then
