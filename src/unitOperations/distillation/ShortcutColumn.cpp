@@ -139,18 +139,65 @@ int ShortcutColumn::solve(const DictPtr& dict,
         return s - (1.0 - q);
     };
     // Bisection between the HK (α=1) and LK volatilities, off the poles.
+    //  NO SIGN CHANGE IS NOT A ROOT, AND THE MIDPOINT IS NOT AN ANSWER.
+    //
+    //  This bracket used to fall back to `theta = (lo + hi)/2` when the
+    //  Underwood function did not change sign across it -- a number with no
+    //  claim behind it, fed straight into R_min, which then came out
+    //  PLAUSIBLE (theta sits between the two volatilities, so the sum stays
+    //  finite and positive) and the run exited 0.  Every downstream number --
+    //  R, the Gilliland stage count, the feed stage, the reflux duty a
+    //  condenser is sized on -- descends from it.
+    //
+    //  A sign change genuinely can be absent: a distributed non-key whose
+    //  alpha lies between the two keys puts a POLE inside this interval, so
+    //  the root Underwood wants is in a different sub-interval, and the
+    //  correct method is to bracket between each adjacent pair of alphas and
+    //  take one root per pair.  That is a real extension and it is not built
+    //  here, so the refusal says which case it is and what to do instead
+    //  rather than inventing a theta.
     scalar lo = 1.0 + 1.0e-6, hi = aLK - 1.0e-6, theta = 0.5 * (lo + hi);
     {
-        scalar glo = gU(lo), ghi = gU(hi);
-        if (glo * ghi > 0.0) theta = 0.5 * (lo + hi);   // fallback (no sign change)
-        else
-            for (int it = 0; it < 200; ++it)
-            {
-                theta = 0.5 * (lo + hi);
-                const scalar g = gU(theta);
-                if (std::abs(g) < 1.0e-10) break;
-                if (glo * g < 0.0) { hi = theta; } else { lo = theta; glo = g; }
-            }
+        scalar glo = gU(lo);
+        const scalar ghi = gU(hi);
+        if (!(glo * ghi < 0.0))
+        {
+            //  Name the alphas that sit inside the bracket: with a
+            //  distributed non-key they ARE the diagnosis.
+            std::string inside;
+            for (std::size_t i = 0; i < n; ++i)
+                if (z[i] > 0.0 && alpha[i] > lo && alpha[i] < hi)
+                {
+                    if (!inside.empty()) inside += ", ";
+                    inside += thermo.comp(i).name() + " (alpha = "
+                            + std::to_string(alpha[i]) + ")";
+                }
+            throw std::runtime_error("ShortcutColumn: Underwood's equation"
+                " does not change sign across the bracket (1, alpha_LK = "
+                + std::to_string(aLK) + "), so no root can be isolated there."
+                + (inside.empty()
+                     ? std::string("  No component's relative volatility lies"
+                         " strictly between the keys, so this is not the"
+                         " distributed-non-key case: check q (the feed's"
+                         " vapour fraction vf = " + std::to_string(vf)
+                         + " gives q = " + std::to_string(q) + ") and the key"
+                           " assignment.")
+                     : std::string("  These component(s) lie BETWEEN the keys"
+                         " and put a pole inside the bracket: ") + inside
+                       + ".  Underwood then needs one root per adjacent alpha"
+                         " pair, which this shortcut does not implement --"
+                         " use `model simultaneous;` on a rigorous"
+                         " distillationColumn for a distributed non-key.")
+                + "  It will NOT fall back to the bracket midpoint: that"
+                  " yields a plausible R_min with nothing behind it.");
+        }
+        for (int it = 0; it < 200; ++it)
+        {
+            theta = 0.5 * (lo + hi);
+            const scalar g = gU(theta);
+            if (std::abs(g) < 1.0e-10) break;
+            if (glo * g < 0.0) { hi = theta; } else { lo = theta; glo = g; }
+        }
     }
     scalar Rmin = 0.0;
     for (std::size_t i = 0; i < n; ++i) Rmin += alpha[i] * xD[i] / (alpha[i] - theta);

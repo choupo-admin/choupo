@@ -31,6 +31,7 @@ License
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/ThermoPackage.H"
+#include "core/Advisory.H"
 
 #include <cmath>
 #include <iomanip>
@@ -53,10 +54,12 @@ int HeatExchanger::solve(const DictPtr& dict,
             + ".  Declare in flowsheetDict as  inputs (hotName coldName );");
     const std::size_t n = thermo.n();
 
-    struct Stream { sVector z; scalar F = 0, T = 0, P = 0, vf = 0; };
+    struct Stream
+    { std::string name; sVector z; scalar F = 0, T = 0, P = 0, vf = 0; };
     auto readStream = [&](const DictPtr& sd) -> Stream
     {
         Stream s;
+        s.name = sd->name();
         s.F  = sd->lookupScalar("F", Dims::molarFlow);
         s.T  = sd->lookupScalar("T", Dims::temperature);
         s.P  = sd->lookupScalar("P", Dims::pressure);
@@ -74,25 +77,80 @@ int HeatExchanger::solve(const DictPtr& dict,
 
     // ---- Operation: HARDWARE = area + U (+ optional flow arrangement) ---
     auto oper = dict->subDict("operation");
+    //  THE ARRANGEMENT IS A CLOSED SET, AND AN UNRECOGNISED WORD REFUSES.
+    //
+    //  This used to read `flow != "co" && != "cocurrent" && != "parallel"`,
+    //  which makes the DEFAULT the destination of every word the engine does
+    //  not know.  `flow crossflow;` -- a real arrangement, not implemented
+    //  here -- ran counter-current and said nothing; so did `flow Co;`, and so
+    //  did a typo.  Counter-current is the OPTIMISTIC arrangement (the largest
+    //  possible LMTD for the same terminal temperatures), so the silent
+    //  fallback always errs towards a smaller exchanger than the declaration
+    //  asked for.  A wrong answer at exit 0 is the failure this project
+    //  refuses; the accepted words are listed so the remedy is in the message.
     const std::string flow = oper->lookupWordOrDefault("flow", "counter");
-    const bool counter = (flow != "co" && flow != "cocurrent" && flow != "parallel");
+    const bool counter =
+        (flow == "counter" || flow == "countercurrent");
+    const bool cocurrent =
+        (flow == "co" || flow == "cocurrent" || flow == "parallel");
+    if (!counter && !cocurrent)
+        throw std::runtime_error("HeatExchanger: operation { flow " + flow
+            + "; } is not an arrangement this unit implements.  Accepted:"
+              " `counter` (= `countercurrent`, the default) or `co`"
+              " (= `cocurrent` = `parallel`).  Crossflow and multi-pass"
+              " shell-side arrangements are NOT implemented -- for 1 shell"
+              " pass and 2 tube passes declare `passes 2;` instead (in"
+              " `operation`, or in `operation.geometry` under"
+              " `model geometry;`), which selects the corresponding"
+              " eps-NTU relation.");
 
     // ---- Per-stream Cp (sensible; liquid or gas by vapour fraction) -----
+    //  A COMPONENT WITH NO Cp ON THIS RUNG CONTRIBUTES ZERO, WHICH IS A
+    //  NUMBER.  The loop below used to skip such a component silently and the
+    //  only guard downstream was `Cp <= 0`, which fires solely when EVERY
+    //  component is missing.  A binary stream half of whose moles carry no
+    //  liquid Cp therefore reported an mCp roughly half the truth: the duty
+    //  came out low, eps-NTU converged, exit 0, and nothing anywhere said that
+    //  half the stream had been priced at zero heat capacity.  That is the
+    //  shape this project refuses -- a plausible number, not an error.
+    //
+    //  The refusal is on the moles actually PRESENT (z > 0): a component the
+    //  case declares but this stream does not carry cannot make the mixture's
+    //  Cp wrong, and refusing on it would make the global component list, not
+    //  the stream, decide whether an exchanger runs.
     auto streamCp = [&](const Stream& s, scalar Teval) -> scalar
     {
-        scalar cp = 0.0;
-        if (s.vf < 0.5)                        // liquid
+        const bool liquid = (s.vf < 0.5);
+        scalar cp = 0.0, missing = 0.0;
+        std::string names;
+        for (std::size_t i = 0; i < n; ++i)
         {
-            for (std::size_t i = 0; i < n; ++i)
-                if (thermo.comp(i).hasCpLiquid())
-                    cp += s.z[i] * thermo.comp(i).cpLiquid().Cp(Teval);
+            const bool has = liquid ? thermo.comp(i).hasCpLiquid()
+                                    : thermo.comp(i).hasCpIdealGas();
+            if (has)
+                cp += s.z[i] * (liquid ? thermo.comp(i).cpLiquid().Cp(Teval)
+                                       : thermo.comp(i).cpIdealGas().Cp(Teval));
+            else if (s.z[i] > 0.0)
+            {
+                missing += s.z[i];
+                if (!names.empty()) names += ", ";
+                names += thermo.comp(i).name();
+            }
         }
-        else                                   // gas
-        {
-            for (std::size_t i = 0; i < n; ++i)
-                if (thermo.comp(i).hasCpIdealGas())
-                    cp += s.z[i] * thermo.comp(i).cpIdealGas().Cp(Teval);
-        }
+        if (missing > 0.0)
+            throw std::runtime_error("HeatExchanger: stream '" + s.name
+                + "' carries " + std::to_string(100.0 * missing) + " % of its"
+                  " moles in component(s) with no "
+                + std::string(liquid ? "liquid" : "ideal-gas")
+                + " heat capacity: " + names + ".  Those moles would be priced"
+                  " at Cp = 0 and the duty reported LOW without any other"
+                  " symptom, so the exchanger refuses instead.  Remedy: give"
+                  " each named component a "
+                + std::string(liquid ? "`liquidHeatCapacity`"
+                                     : "`idealGasHeatCapacity`")
+                + " block, or declare the stream on the other rung if its"
+                  " vapour fraction (vf = " + std::to_string(s.vf)
+                + ") is wrong.");
         return cp;
     };
 
@@ -440,6 +498,38 @@ int HeatExchanger::solve(const DictPtr& dict,
             ? std::exp(0.576 - 0.19 * std::log(rs.Re)) : 0.0;
         const scalar dP_shell = f_shell * G_s * G_s * shellID
                               * (nBaffles + 1) / (2.0 * rho_s * D_e);   // Pa
+
+        //  THE PRESSURE DROP IS COMPUTED, PUBLISHED -- AND NOT APPLIED.
+        //
+        //  Both outlet streams leave at their inlet pressure (see the stream
+        //  block at the end of solve()).  So a reader sees `dP_shell_kPa` on
+        //  the KPI table and the SAME pressure at both ends of the stream in
+        //  the stream table, and the two surfaces disagree with no word
+        //  between them.  Downstream units then size a pump or a compressor
+        //  against a pressure this exchanger has already said it destroys.
+        //
+        //  This ANNOUNCES rather than applying: carrying dP into the outlets
+        //  moves the answer of every geometry-mode case in the corpus, and
+        //  whether a shell-side Kern correlation is trustworthy enough to
+        //  drive a flowsheet's pressure profile is a modelling decision, not
+        //  a defect to fix in passing.  The posture is the pellet's -- state
+        //  the gap where the reader is, judge nothing.
+        {
+            const std::string locus = "unit "
+                + (dict->name().empty() ? std::string("heatExchanger")
+                                        : dict->name());
+            const std::string message =
+                "the geometry model computes a tube-side and a shell-side"
+                " pressure drop and publishes both as KPIs, but NEITHER is"
+                " applied to the outlet streams: both leave at their inlet"
+                " pressure.  A downstream unit therefore sees a pressure this"
+                " exchanger has already reported as lost.  Read dP_tube_kPa"
+                " and dP_shell_kPa as a rating of the bundle, never as the"
+                " flowsheet's pressure profile.";
+            if (AdvisoryLog::instance().add("model", "info", locus, message)
+                && verbosity >= 2)
+                std::cout << "  [dP] " << locus << ": " << message << "\n";
+        }
 
         // --- KPIs (geometry-mode) -----------------------------------------
         geomKpis["dP_tube_kPa"]  = dP_tube  / 1000.0;

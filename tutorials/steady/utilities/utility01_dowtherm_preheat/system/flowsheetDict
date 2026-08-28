@@ -2,8 +2,32 @@
   utility01_dowtherm_preheat
   ==========================
 
-  A hydrocarbon feed (50/50 n-hexane / n-octane) needs to be heated to
-  ~530 K before downstream conversion.  HP steam can deliver at most
+  A hydrocarbon feed (n-hexane) needs to be heated to
+  ~530 K before downstream conversion.
+
+  THE FEED USED TO SAY 50/50 n-hexane / n-octane, AND THE OCTANE HALF WAS
+  NEVER PRICED.  Neither data/standards/components/nOctane.dat nor this
+  case's own sealed C8H18.dat carries a `liquidHeatCapacity` block, and the
+  exchanger's mixture Cp used to skip a component that has none -- so twenty
+  of the forty kmol/h contributed EXACTLY ZERO heat capacity, in a stream
+  declared vf 0.  Nothing said so: the eps-NTU loop converged, the run exited
+  0, and the duty, the Dowtherm flow and the EUR/h -- this case's own
+  inspection question -- all descended from an mCp roughly half the truth.
+  The exchanger refuses that now (2026-08-28) and this case is what the
+  refusal caught.
+
+  The octane is declared at ZERO flow rather than deleted, for two reasons.
+  It is the honest record of a gap: the catalogue cannot price liquid
+  n-octane, and a curated, cited liquid Cp is the one thing needed to put
+  `C8H18 20 kmol/h;` back and have the two-component feed mean something.
+  And it moves no ENERGY number.  Exactly two rows of the golden change --
+  the total molar flow of the two process streams, halved, because twenty
+  kmol/h of matter that was declared present has stopped being declared.
+  Q_kW, both outlet temperatures, the Dowtherm mass flow and the EUR/h are
+  unchanged to every recorded digit, and that is the evidence for the
+  paragraph above: the exchanger was already computing 20 kmol/h of hexane
+  and calling it forty of a mixture.  What changed is that the declaration
+  now says what the arithmetic was doing.  HP steam can deliver at most
   ~525 K (T_sat at 40 barg) -- not enough; the next escalation up the
   temperature ladder is a hot-oil loop, the textbook choice in the
   250-400 C range being Dowtherm A (delivered here at 623 K).
@@ -17,7 +41,7 @@
   outlet temperatures, and the Dowtherm flowrate fall out of the
   effectiveness-NTU solution.
 
-  Process : 40 kmol/h at 320 K, 5 bar (mixed C6 + C8 hydrocarbon)
+  Process : 20 kmol/h at 320 K, 5 bar (n-hexane; see the note above)
   Utility : Dowtherm A loop, delivery 623 K (350 C), `utility dowthermA;`
             pulls the rest of the conditions from the catalogue
   Hardware: A = 25 m^2, U = 600 W/(m^2.K), counter-current

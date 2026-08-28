@@ -44,11 +44,24 @@ Description
          F_i,out  =  F_i,in  +  ν_i · ξ
 
     with the molar extent  ξ [mol/s] = r · V_R.  We close this system
-    by computing  C_j = F_j,out / Q  where Q is the outlet volumetric
-    flow.  Assuming additive liquid volumes,
+    by computing  C_j = F_j,out / Q  where Q is the volumetric flow
+    evaluated at the INLET composition and held constant through the
+    reactor.  Assuming additive liquid volumes,
 
-         V_mol(x_out) = Σ x_j,out · Vliq_j         [m³/mol]
-         Q            = F_total,out · V_mol(x_out)  [m³/s]
+         V_mol(z_in) = Σ z_j,in · Vliq_j          [m³/mol]
+         Q           = F_total,in · V_mol(z_in)    [m³/s]
+
+    This paragraph used to say Q was the OUTLET volumetric flow, from
+    x_out -- which is not what CSTR.cpp computes, and the difference is
+    not cosmetic: a Q that moves with the extent puts ξ on both sides of
+    the rate law and makes the residual implicit in a second way.  The
+    CODE is the correct one of the two.  The constant-Q reading is the
+    ordinary constant-density assumption, it is what makes τ = V_R/Q a
+    single well-defined residence time, and it is exact whenever the
+    reaction is volume-neutral in the liquid.  Where it is not (a
+    strongly volume-changing liquid reaction, or a gas-phase one with a
+    change in mole number), the concentrations here are wrong by the
+    volume ratio and this unit does not correct for it.
 
     The single nonlinear equation in ξ is solved by 1-D Newton-Raphson
     with bracket bisection fall-back on  ξ ∈ [0, F_A,in / |ν_A|].

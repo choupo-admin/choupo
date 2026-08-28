@@ -188,8 +188,17 @@ export interface ClippedCurve {
   pts: AreaPoint[];
   /** How many published points were excluded (−r ≤ MIN_RATE or non-finite). */
   excludedCount: number;
-  /** X of the FIRST excluded sample — the equilibrium asymptote the chart
-   *  clips at and annotates.  Null when nothing was excluded. */
+  /** X of the FIRST excluded sample — where 1/(−r) stops being finite, the
+   *  point the chart clips at and annotates.  Null when nothing was excluded.
+   *
+   *  This used to be called "the equilibrium asymptote", which names ONE
+   *  reason the rate can vanish as though it were the only one.  The test
+   *  applied is `−r ≤ MIN_RATE or non-finite`, and that fires equally for a
+   *  reversible reaction approaching equilibrium, an irreversible one that
+   *  has consumed its limiting reactant, a rate law evaluated outside the
+   *  window where it means anything, and a NaN.  Only the first of those is
+   *  an equilibrium, and a student reading the wrong label learns a physical
+   *  story the chart never checked. */
   xClip: number | null;
 }
 
@@ -562,8 +571,9 @@ function LevenspielSvg({ pfr, cstr, limiting, busyOverlay }: {
           </>
         )}
 
-        {/* the equilibrium asymptote — excluded points REPORTED, never
-            silently dropped */}
+        {/* where 1/(−r) stops being finite — excluded points REPORTED, never
+            silently dropped, and NOT diagnosed: the chart measures that the
+            rate vanished, not why */}
         {pfr && pfr.curve.xClip !== null && (
           <g>
             <line x1={toX(pfr.curve.xClip)} y1={FY0}
@@ -571,7 +581,7 @@ function LevenspielSvg({ pfr, cstr, limiting, busyOverlay }: {
               stroke={CLIP_COLOR} strokeWidth={1.4} strokeDasharray="3 3" />
             <text x={toX(pfr.curve.xClip) - 4} y={FY1 - 8} fontSize={10}
               textAnchor="end" fill={CLIP_COLOR}>
-              equilibrium asymptote — {pfr.curve.excludedCount} published
+              rate vanishes here — {pfr.curve.excludedCount} published
               point{pfr.curve.excludedCount === 1 ? "" : "s"} with −r ≤ 0
               excluded (reported, not hidden)
             </text>
@@ -967,9 +977,12 @@ export function LevenspielTool(): JSX.Element {
         {pfrView && pfrView.curve.excludedCount > 0 && (
           <Text size="xs" c="dimmed">
             {pfrView.curve.excludedCount} published point
-            {pfrView.curve.excludedCount === 1 ? "" : "s"} past the
-            equilibrium asymptote (−r ≤ 0) excluded from the 1/(−r) view —
-            reported here and annotated on the chart, never silently dropped.
+            {pfrView.curve.excludedCount === 1 ? "" : "s"} where the rate
+            vanishes (−r ≤ 0) excluded from the 1/(−r) view — reported here
+            and annotated on the chart, never silently dropped.  WHY it
+            vanishes is not decided here: equilibrium is one reason, a
+            consumed limiting reactant and a rate law asked a question
+            outside its window are others.
           </Text>
         )}
       </Box>
