@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 387,
+  "cases": 388,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -1476,6 +1476,11 @@
    "roles": [
     "validationOp"
    ],
+   "hasGolden": true
+  },
+  "tutorials/props/electrolyte/bjerrum01_carbonate_pH": {
+   "application": "choupoProps",
+   "roles": [],
    "hasGolden": true
   },
   "tutorials/props/electrolyte/composition01_nacl": {
@@ -5751,6 +5756,7 @@
     "tutorials/props/curation/curate02_vle_heldout_ethanol_water",
     "tutorials/props/curation/curate03_thermoml_fixture_bubble",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
+    "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
     "tutorials/props/electrolyte/composition01_nacl",
     "tutorials/props/electrolyte/davies01_band_edge",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
