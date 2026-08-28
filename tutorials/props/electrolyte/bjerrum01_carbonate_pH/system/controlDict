@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoProps;
+description  "Carbonate speciation across the pH range -- the Bjerrum plot, titrated";
+//  VERBOSITY 2, not the pedagogical 3.  At 3 every one of the 44 points
+//  prints its gamma passes and Newton steps -- the right default for ONE
+//  speciation, and forty-four of them bury the diagram.  Raise it to 3 to
+//  watch any single point converge; the trace is the same one every other
+//  electrolyte case shows.
+verbosity    2;
