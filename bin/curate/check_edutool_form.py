@@ -131,7 +131,12 @@ def main():
                  f"that opens nothing.")
         label, src = source_of(comp)
         seen[tid] = label
-        (panels if PANEL_MARKER in src else lessons).append((tid, label, src))
+        #  COMMENTS ARE NOT CODE -- the same rule the Explorer arm already
+        #  follows, and this arm did not.  TieTriangleTool's header describes
+        #  the chrome it USED to use, so a raw search called a converted
+        #  lesson a panel on the strength of a sentence about its own past.
+        (panels if PANEL_MARKER in strip_comments(src) else lessons).append(
+            (tid, label, src))
 
     declared = set(EDUTOOL_STILL_A_PANEL)
     panel_labels = {label for _, label, _ in panels}

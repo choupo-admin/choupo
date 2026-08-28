@@ -270,7 +270,6 @@ EDUTOOL_STILL_A_PANEL = {
     "MerkelTool.tsx":           "cooling tower",
     "PinchCompositeTool.tsx":   "pinch composite curves",
     "PumpSystemTool.tsx":       "pump vs system curve",
-    "TieTriangleTool.tsx":      "Hunter-Nash extraction",
     "VanHeerdenTool.tsx":       "ignition / extinction",
 }
 

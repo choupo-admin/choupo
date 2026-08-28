@@ -74,7 +74,7 @@ License
   load outside a browser, and keeping the reading + geometry in a plain module
   lets the node test runner pin them with no mock at all.
 
-  Chrome: the shared `MethodSetupRail` / `KnobSlider` from knobPanel.tsx — the
+  Chrome: a scrolling lesson page with the shared `KnobSlider` — the
   knobs are the panel's, the construction gets the rest of the width.  The
   knob descriptors carry the structural `PanelKnob` fields, so they are handed
   to the slider whole rather than re-shaped for it.
@@ -82,7 +82,8 @@ License
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text,
+  Title, Tooltip,
 } from "@mantine/core";
 
 import {
@@ -95,8 +96,10 @@ import {
   type TieTriangleKnobValues,
 } from "../../case/hunterNash.js";
 import { useMethodRun } from "../../case/methodRun.js";
+import { HUNTER_NASH_LIMITS, HUNTER_NASH_STEPS }
+  from "./hunterNashLesson.js";
 import {
-  KnobField, KnobSlider, MethodSetupRail, PanelNote,
+  KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
 
 /** The engine's own stability advisory, raised by the LL flash on its OWN
@@ -465,11 +468,65 @@ export function TieTriangleTool(): JSX.Element {
     </>
   );
 
-  if (!cons) {
+  /*  ONE renderer for the lesson, above BOTH returns: the empty state and
+   *  the full page show the same steps.  The Rayleigh tool shipped with the
+   *  explanation only in the branch that HAD a diagram, so it vanished
+   *  exactly when there was nothing to explain -- that is the defect this
+   *  shape avoids. */
+  const lessonStep = (n: number) => {
+    const st = HUNTER_NASH_STEPS.find((x) => x.n === n);
+    if (!st) return null;
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>Extraction, where the operating line becomes a point</Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        The fifth time you meet this construction — and the first time it
+        leaves the x–y plane.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {HUNTER_NASH_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  if (!cons) {
+
+    return (
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+        {lessonHead}
         {alerts}
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+        {[1, 2, 3, 4, 5].map(lessonStep)}
+        <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+        <Box style={{ display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
           {busy || (colRun.result === null && colRun.err === null) ? (
             <Group gap="sm" wrap="nowrap" align="center">
@@ -488,7 +545,9 @@ export function TieTriangleTool(): JSX.Element {
             </Text>
           )}
         </Box>
-      </MethodSetupRail>
+        {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
@@ -496,8 +555,29 @@ export function TieTriangleTool(): JSX.Element {
   const recovery = feed?.kpis[`recovery_${WITNESS_SOLUTE}`];
 
   return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+      {lessonHead}
       {alerts}
+      {lessonStep(1)}
+      {lessonStep(2)}
+      {lessonStep(3)}
+      {lessonStep(4)}
+
+      <Box>
+        <Title order={5}>Now read the cascade the engine solved</Title>
+        <Text size="sm" mt={4}>
+          The triangle below carries the engine’s own tie-lines, its cascade
+          stage by stage, and the difference point located by two independent
+          balances.  Turn the knobs and watch Δ move — and notice where it
+          goes.
+        </Text>
+      </Box>
+
+      <Box style={{ display: "grid", gap: 14,
+        gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+        <Stack gap={8}>{controls}</Stack>
+        <Box style={{ minWidth: 0 }}>
 
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6} style={{ flexShrink: 0 }}>
         <Tooltip withArrow multiline w={460}
@@ -599,6 +679,12 @@ export function TieTriangleTool(): JSX.Element {
           anything.
         </Text>
       </Box>
-    </MethodSetupRail>
+        </Box>
+      </Box>
+
+      {lessonStep(5)}
+      {lessonLimits}
+      </Stack>
+    </Box>
   );
 }
