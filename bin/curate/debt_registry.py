@@ -260,7 +260,6 @@ GATE_DECLARATIONS_DEBT = (
 #  registry-driven gate resolves them to, so a tool cannot hide by being
 #  named differently or by having no file of its own.
 EDUTOOL_STILL_A_PANEL = {
-    "MethodsWorkspace.tsx::McCabeTool":  "distillation, McCabe-Thiele",
     "MethodsWorkspace.tsx::PsychroTool": "psychrometric chart",
     "BreakthroughTool.tsx":     "adsorption breakthrough",
     "ColumnControlTool.tsx":    "column control structure",

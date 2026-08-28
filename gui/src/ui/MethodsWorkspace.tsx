@@ -122,7 +122,7 @@ License
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionIcon, Alert, Box, Button, Code, Collapse, CopyButton,
-  Group, Loader, NumberInput, Select, Stack, Text, Tooltip,
+  Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
 } from "@mantine/core";
 import { IconBook, IconExternalLink } from "@tabler/icons-react";
 
@@ -144,6 +144,7 @@ import { McCabePlot } from "./plotting/McCabePlot.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
+import { MCCABE_LIMITS, MCCABE_STEPS } from "./methods/mccabeLesson.js";
 import {
   KnobField, KnobNumber, MethodSetupRail,
 } from "./methods/knobPanel.js";
@@ -648,7 +649,7 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
   // ONE plot pane, whichever way the setup bar is folded — the fold moves
   // chrome around the diagram, never a second copy of it.
   const plotPane = (
-    <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
+    <Box style={{ minWidth: 0, height: 520, position: "relative" }}>
       {mccabeCsv ? (
         <McCabePlot csv={mccabeCsv} compA={vA} compB={vB} P={P} allowWide />
       ) : (
@@ -664,8 +665,7 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
     </Box>
   );
 
-  return (
-    <MethodSetupRail title="setup" scent="SETUP" setup={
+  const setupRail = (
       <>
         <KnobField label="light">
           <Select size="xs" searchable data={vleNames} value={compA} w="100%"
@@ -703,10 +703,82 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
           </Button>
         )}
       </>
-    }>
-      {plotPane}
-      <HandOffFooter spec={spec} alerts={alerts} />
-    </MethodSetupRail>
+  );
+
+  const step = (n: number) => {
+    const st = MCCABE_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        <Box>
+          <Title order={3}>Distillation, one step at a time</Title>
+          <Text size="sm" c="dimmed" mt={4}>
+            The flash gave you one equilibrium stage.  A column is a stack of
+            them, and the staircase below is exactly that step, walked.
+          </Text>
+        </Box>
+
+        {alerts}
+
+        {step(1)}
+        {step(2)}
+        {step(3)}
+
+        <Box>
+          <Title order={5}>Now walk it</Title>
+          <Text size="sm" mt={4}>
+            Pick a pair and the engine computes the real equilibrium curve
+            y*(x) at your pressure; the staircase then re-walks in pure
+            geometry as you turn the reflux ratio and the feed condition on
+            the diagram itself.  Choosing the components is part of the lesson
+            here — the same construction on ethanol/water and on
+            benzene/toluene teaches two different things.
+          </Text>
+        </Box>
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(210px, 250px) 1fr" }}>
+          <Stack gap={8}>{setupRail}</Stack>
+          <Box style={{ minWidth: 0 }}>{plotPane}</Box>
+        </Box>
+
+        {step(4)}
+        {step(5)}
+
+        <Box>
+          <Title order={5}>What this does not model</Title>
+          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+            {MCCABE_LIMITS.map((l) => (
+              <Text key={l.id} size="xs" c="dimmed">
+                <b>{l.title}</b> {l.body}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+
+        <HandOffFooter spec={spec} alerts={[]} />
+      </Stack>
+    </Box>
   );
 }
 
