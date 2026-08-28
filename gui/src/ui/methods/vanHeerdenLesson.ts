@@ -31,13 +31,8 @@
   exactly a line -- the step says so rather than repeating the idealisation.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
   {

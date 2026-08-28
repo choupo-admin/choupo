@@ -32,6 +32,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import { Alert, Badge, Box, Group, Loader, Slider, Stack, Text, Title }
   from "@mantine/core";
 
@@ -279,22 +280,7 @@ export function FlashOperatingLineTool(): JSX.Element {
     () => (curve ? flashAtVF(curve, z, vf) : null), [curve, z, vf]);
   const arms = sol ? leverSegments(sol) : null;
 
-  const step = (n: number): JSX.Element | null => {
-    const st = FLASH_STEPS.find((s) => s.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace">{st.formula}</Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c={INK}>{st.note}</Text>}
-      </Box>
-    );
-  };
+  const step = lessonStepper(FLASH_STEPS);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">

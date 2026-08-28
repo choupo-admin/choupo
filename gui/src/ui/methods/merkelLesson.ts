@@ -30,13 +30,8 @@
   settings (tutorials/steady/heat/coolingTower01_merkel, `expected`).
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const MERKEL_STEPS: readonly LessonStep[] = [
   {

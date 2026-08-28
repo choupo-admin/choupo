@@ -120,6 +120,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
+import { lessonStepper } from "./methods/lessonStep.js";
 import {
   ActionIcon, Alert, Box, Button, Code, Collapse, CopyButton,
   Group, Loader, NumberInput, Select, Stack, Text, Title, Tooltip,
@@ -707,25 +708,7 @@ function McCabeTool({ catalogue, localUnifac, componentFiles }: {
       </>
   );
 
-  const step = (n: number) => {
-    const st = MCCABE_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const step = lessonStepper(MCCABE_STEPS);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
@@ -903,25 +886,7 @@ function PsychroTool({ catalogue, componentFiles }: {
       </>
   );
 
-  const step = (n: number) => {
-    const st = PSYCHRO_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const step = lessonStepper(PSYCHRO_STEPS);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">

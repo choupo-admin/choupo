@@ -31,13 +31,8 @@
   home for a derived fact, and it drifts.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const FUG_STEPS: readonly LessonStep[] = [
   {

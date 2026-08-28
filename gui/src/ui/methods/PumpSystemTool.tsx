@@ -93,6 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Table, Text,
   Title, Tooltip,
@@ -605,25 +606,7 @@ export function PumpSystemTool(): JSX.Element {
    *  solve is still running, or the chosen source carries none at all.  An
    *  explanation that disappears exactly when there is nothing to explain is
    *  the defect this shape avoids (the Rayleigh precedent). */
-  const lessonStep = (n: number) => {
-    const st = PUMP_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(PUMP_STEPS);
 
   const lessonHead = (
     <Box>

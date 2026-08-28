@@ -274,7 +274,14 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC.match(/const lessonStep = /g) ?? []).toHaveLength(1);
     expect(SRC.match(/const lessonLimits = /g) ?? []).toHaveLength(1);
     //  ...and the renderer reads the DATA, never an inlined string.
-    expect(SRC).toContain("FUG_STEPS.find");
+    //  The bordered formula box and the step walk now live in ONE
+    //  place (methods/lessonStep.tsx), so pinning them in THIS
+    //  tool's source pinned a copy that no longer exists.  The
+    //  stronger claim, and the one that survives the next change to
+    //  how a step is drawn, is that the tool uses the shared
+    //  renderer rather than a seventeenth private one.
+    expect(SRC).toContain("lessonStepper(FUG_STEPS)");
+    expect(SRC).not.toContain("FUG_STEPS.find");
     expect(SRC).toContain("FUG_LIMITS.map");
   });
 

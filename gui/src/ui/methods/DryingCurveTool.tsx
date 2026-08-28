@@ -93,6 +93,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
   Tooltip,
@@ -962,25 +963,7 @@ export function DryingCurveTool(): JSX.Element {
   /*  ONE renderer for the lesson, hoisted above BOTH returns: a page whose
    *  explanation lives only in the branch that HAS a diagram loses the
    *  explanation exactly when there is nothing to explain. */
-  const lessonStep = (n: number) => {
-    const st = DRYING_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(DRYING_STEPS);
 
   const lessonHead = (
     <Box>

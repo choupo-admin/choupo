@@ -78,6 +78,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Slider, Stack,
   Text, Title, Tooltip,
@@ -835,25 +836,7 @@ export function RayleighTool(): JSX.Element {
   /*  ONE renderer for the lesson, above BOTH returns.  The empty state and
    *  the full page must show the same steps, and a second copy of this
    *  function would be two homes for one page. */
-  const lessonStep = (n: number) => {
-    const st = RAYLEIGH_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(RAYLEIGH_STEPS);
 
   // ---- No drawable pot yet: per-source honest states ------------------------
   if (pot === null || trajView === null) {

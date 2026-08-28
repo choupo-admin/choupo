@@ -77,6 +77,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Box, Group, Loader, SegmentedControl, Stack, Switch, Table, Text,
   Title,
@@ -506,25 +507,7 @@ export function BreakthroughTool(): JSX.Element {
    *  the full page show the same steps.  An explanation that lives only in
    *  the branch that HAS a plot disappears exactly when there is nothing to
    *  explain -- which is when a reader most needs it. */
-  const lessonStep = (n: number) => {
-    const st = BREAKTHROUGH_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(BREAKTHROUGH_STEPS);
 
   const lessonHead = (
     <Box>

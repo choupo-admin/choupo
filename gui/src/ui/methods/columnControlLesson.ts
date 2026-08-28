@@ -35,13 +35,8 @@
   it does not cover.  A preference typed here would be a claim with no author.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
   {

@@ -322,6 +322,13 @@ describe("the tool renders it as a scrolling lesson", () => {
 
   it("renders every step's formula in a bordered monospace box", () => {
     expect(SRC).toContain('ff="monospace"');
-    expect(SRC).toContain("borderLeft: \"3px solid var(--mantine-color-default-border)\"");
+    //  The bordered formula box and the step walk now live in ONE
+    //  place (methods/lessonStep.tsx), so pinning them in THIS
+    //  tool's source pinned a copy that no longer exists.  The
+    //  stronger claim, and the one that survives the next change to
+    //  how a step is drawn, is that the tool uses the shared
+    //  renderer rather than a seventeenth private one.
+    expect(SRC).toContain("lessonStepper(BREAKTHROUGH_STEPS)");
+    expect(SRC).not.toContain("BREAKTHROUGH_STEPS.find");
   });
 });

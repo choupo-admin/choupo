@@ -74,6 +74,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, NumberInput, SegmentedControl, Slider,
   Stack, Text, Title, Tooltip,
@@ -803,22 +804,7 @@ export function ThielePelletTool(): JSX.Element {
     </>
   );
 
-  const step = (n: number): JSX.Element | null => {
-    const st = THIELE_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace">{st.formula}</Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c={INK}>{st.note}</Text>}
-      </Box>
-    );
-  };
+  const step = lessonStepper(THIELE_STEPS);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">

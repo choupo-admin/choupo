@@ -31,6 +31,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import { Alert, Box, Group, Slider, Stack, Text, Title } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
@@ -247,24 +248,7 @@ export function BjerrumTool(): JSX.Element {
   const worstClosure = pts.length
     ? pts.reduce((m, q) => Math.min(m, q.closure), 1) : NaN;
 
-  const step = (n: number): JSX.Element | null => {
-    const st = BJERRUM_STEPS.find((s) => s.n === n);
-    if (!st) return null;
-    return (
-      <Box>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c={INK}>{st.note}</Text>}
-      </Box>
-    );
-  };
+  const step = lessonStepper(BJERRUM_STEPS);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">

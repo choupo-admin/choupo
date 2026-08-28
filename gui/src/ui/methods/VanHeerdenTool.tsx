@@ -98,6 +98,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Switch, Text,
   Title, Tooltip,
@@ -800,26 +801,7 @@ export function VanHeerdenTool(): JSX.Element {
    *  explanation only in the branch that HAD a diagram would lose it exactly
    *  when there was nothing to explain, and this construction's argument is
    *  worth reading whether or not a curve arrived. */
-  const lessonStep = (n: number) => {
-    const st = VAN_HEERDEN_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ border: "1px solid var(--mantine-color-default-border)",
-              borderRadius: 4 }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(VAN_HEERDEN_STEPS);
 
   const lessonHead = (
     <Box>

@@ -33,13 +33,8 @@
   indices.  Nothing here is computed in TypeScript.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const BJERRUM_STEPS: readonly LessonStep[] = [
   {
@@ -151,7 +146,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   },
 ];
 
-export interface LessonLimit { id: string; title: string; body: string; }
+import type { LessonLimit } from "./lessonStep.js";
+export type { LessonLimit };
 
 export const BJERRUM_LIMITS: readonly LessonLimit[] = [
   {

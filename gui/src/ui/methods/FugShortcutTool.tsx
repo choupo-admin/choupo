@@ -84,6 +84,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
   Switch, Text, Title, Tooltip,
@@ -514,25 +515,7 @@ export function FugShortcutTool(): JSX.Element {
    *  explanation exactly when there is nothing to explain is backwards, and
    *  a second copy of the prose in the empty branch would be a second home
    *  for it. */
-  const lessonStep = (n: number) => {
-    const st = FUG_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(FUG_STEPS);
 
   const lessonHead = (
     <Box>

@@ -44,13 +44,8 @@
   would be the exact failure this project's honesty rules exist to prevent.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const PUMP_STEPS: readonly LessonStep[] = [
   {

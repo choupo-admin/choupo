@@ -40,13 +40,8 @@
       spreading                   tutorials/batch/adsorber/batch15_mesh_study
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
   {

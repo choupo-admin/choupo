@@ -34,6 +34,7 @@
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -308,9 +309,16 @@ describe("the tool renders it as a scrolling lesson", () => {
   });
 
   it("renders a formula as a bordered monospace block", () => {
-    const at = SRC.indexOf("const lessonStep = ");
-    const body = SRC.slice(at, at + 1200);
-    expect(body).toContain("st.formula");
+    //  This used to slice 1200 characters after `const lessonStep = ` in THIS
+    //  tool and read the drawing out of them.  The drawing now lives in ONE
+    //  place -- methods/lessonStep.tsx, which replaced seventeen private
+    //  copies that had already drifted into seven variants -- so the claim
+    //  splits in two: the tool must USE the shared renderer, and the shared
+    //  renderer must still draw a bordered monospace block.
+    expect(SRC).toContain("lessonStepper(COLUMN_CONTROL_STEPS)");
+    const body = readFileSync(
+      resolve(__dirname, "../src/ui/methods/lessonStep.tsx"), "utf8");
+    expect(body).toContain("step.formula");
     expect(body).toContain('ff="monospace"');
     expect(body).toContain("borderLeft");
     //  Both monospace surfaces survive: the lesson's block and the engine's

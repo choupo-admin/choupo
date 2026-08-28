@@ -25,13 +25,8 @@
   absorber design is usually done with a formula and distillation is not.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const KREMSER_STEPS: readonly LessonStep[] = [
   {

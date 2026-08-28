@@ -73,6 +73,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
+import { lessonStepper } from "./lessonStep.js";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
   Title, Tooltip,
@@ -364,26 +365,7 @@ export function EpsilonNtuTool(): JSX.Element {
   /*  ONE renderer for the lesson, defined above the single page that holds
    *  both the solved chart and the empty state: the explanation is the point
    *  of the page and must not depend on the run having produced a point. */
-  const lessonStep = (n: number) => {
-    const st = ENTU_STEPS.find((x) => x.n === n);
-    if (!st) return null;
-    return (
-      <Box key={n}>
-        <Title order={5}>{st.n} · {st.title}</Title>
-        <Text size="sm" mt={4}>{st.body}</Text>
-        {st.formula && (
-          <Box my={8} px="sm" py={6}
-            style={{ border: "1px solid var(--mantine-color-default-border)",
-              borderRadius: 4 }}>
-            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {st.formula}
-            </Text>
-          </Box>
-        )}
-        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
-      </Box>
-    );
-  };
+  const lessonStep = lessonStepper(ENTU_STEPS);
 
   const lessonHead = (
     <Box>

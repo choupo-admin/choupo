@@ -41,13 +41,8 @@
   would be describing a model this engine does not run.
 \*---------------------------------------------------------------------------*/
 
-export interface LessonStep {
-  n: number;
-  title: string;
-  body: string;
-  formula?: string;
-  note?: string;
-}
+import type { LessonStep, SymbolGloss } from "./lessonStep.js";
+export type { LessonStep, SymbolGloss };
 
 export const DRYING_STEPS: readonly LessonStep[] = [
   {
