@@ -280,3 +280,50 @@ EDUTOOL_PANEL_DEBT = {
               "test can assert the argument still runs end to end.",
     "blocked": None,   # not blocked on anything -- it is work
 }
+
+
+#  THE EDUTOOL LESSONS THAT DO NOT YET DEFINE THEIR SYMBOLS.
+#
+#  Found by the owner reading the tools and asking whether a student would
+#  know what the letters mean; measured at 133 symbol uses across sixteen
+#  lesson modules where the LETTER never appears outside a formula.  The
+#  `where` field (gui/src/ui/methods/lessonStep.tsx) is the home for the
+#  answer, and it arrived empty everywhere.
+#
+#  These are PINNED rather than rushed because filling them is real writing
+#  and a WRONG definition is worse than a missing one: a gap is visible to a
+#  student and a falsehood is not.  check_lesson_symbols refuses a NEW
+#  unglossed symbol in a pinned lesson and refuses any at all in an unpinned
+#  one, so the debt can be paid down but never grow.
+LESSON_SYMBOLS_UNGLOSSED = {
+    "bjerrumLesson.ts":        "Sigma, z_i, m_i, C_T",
+    "breakthroughLesson.ts":   "eps, rho_b, D_ax, and the Langmuir pair set",
+    "columnControlLesson.ts":  "T_top / T_bot, dT, du",
+    "dryingLesson.ts":         "R_c, X_0, X_c, tau, lambda, the two cp's",
+    "epsilonNtuLesson.ts":     "C_min / C_max / C_hot / C_cold, T_h, T_c",
+    "fugLesson.ts":            "the whole FUG symbol set (K_i, alpha, theta, ...)",
+    "hunterNashLesson.ts":     "F, R_N",
+    "levenspielLesson.ts":     "C_A, C_P, V_CSTR / V_PFR, X_f",
+    "mccabeLesson.ts":         "x_D, x_B, z_F, N_min",
+    "merkelLesson.ts":         "T_water, h_air, cp_L, T_in / T_out",
+    "pinchLesson.ts":          "CP_i / CP_total, dH, dT, the T_supply pair",
+    "psychroLesson.ts":        "M_v / M_c, p_v, c_s, T_as, lambda, Y_sat",
+    "pumpSystemLesson.ts":     "the pressure/head pair, NPSH_a / NPSH_r, SigmaK",
+    "rayleighLesson.ts":       "x_W, x_D",
+    "vanHeerdenLesson.ts":     "xi, dH_rxn, Q_gen / Q_rem / Q_ext, UA",
+}
+
+LESSON_SYMBOLS_DEBT = {
+    "why": "An EduTool formula can use a symbol the page never defines, so a "
+           "student meets a Greek letter with nothing to attach it to.  The "
+           "worst case measured is the breakthrough lesson, whose FIRST "
+           "formula uses eps and rho_b while the words 'porosity' and 'bulk "
+           "density' appear nowhere in the file.",
+    "remedy": "Add a `where: [{ sym, means, unit }]` list to the step whose "
+              "formula uses them; it renders under the equation the way a "
+              "textbook does.  Where the quantity is a per-unit amount, the "
+              "gloss should say WHICH BASIS -- that is the fact that really "
+              "varies between unit operations, and the letter is downstream "
+              "of it.",
+    "blocked": None,   # not blocked on anything -- it is writing
+}

@@ -1033,6 +1033,22 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/eform.$$
 
+    #  EduTool SYMBOL gate: every symbol an EduTool formula uses must be
+    #  DEFINED in that step's `where` list or an earlier one.  The owner asked
+    #  whether a student would know what the letters mean; measured, 210
+    #  symbol uses had no definition anywhere on the page.  Pure file reading,
+    #  so it cannot SKIP.
+    "$ROOT/bin/curate/check_lesson_symbols.py" > /tmp/lsym.$$ 2>&1
+    if [ $? = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "lesson-symbols-gate" "$(head -1 /tmp/lsym.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lesson_symbols.py)\n" "lesson-symbols-gate"
+        cat /tmp/lsym.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lsym.$$
+
     # Tree gate (Migration 6): retired data/standards homes must never come
     # back -- neither as src path-builders nor as resurrected directories.
     if "$ROOT/bin/curate/check_tree_gate.py" > /tmp/treegate.$$ 2>&1; then

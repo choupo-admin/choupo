@@ -41,6 +41,19 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "carrier gas and the solvent pass through almost unchanged while the "
       + "total flows do not.",
     formula: "Y = y/(1−y)      X = x/(1−x)",
+    where: [
+      { sym: "y", means: "solute MOLE FRACTION in the gas — per mole of gas, "
+        + "total" },
+      { sym: "Y", means: "solute MOLE RATIO in the gas — per mole of "
+        + "solute-free carrier gas, which is the quantity that does not "
+        + "change as the solute leaves",
+        unit: "mol solute / mol carrier" },
+      { sym: "x", means: "solute mole fraction in the liquid — per mole of "
+        + "liquid, total" },
+      { sym: "X", means: "solute mole ratio in the liquid — per mole of "
+        + "solute-free solvent",
+        unit: "mol solute / mol solvent" },
+    ],
     note: "In ratios the operating line is straight even when the total flows "
       + "are not constant, which is exactly the assumption distillation has "
       + "to make and absorption gets for free.",
@@ -54,6 +67,17 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "can work at all: it compares the solvent's capacity to carry the "
       + "solute away against the solute's tendency to stay in the gas.",
     formula: "A = L / (K · V)",
+    where: [
+      { sym: "A", means: "the absorption factor — how hard the solvent pulls "
+        + "relative to how hard the equilibrium pushes back.  A > 1 and the "
+        + "solvent wins" },
+      { sym: "L", means: "molar flow of solvent, on the SOLUTE-FREE basis",
+        unit: "mol/s" },
+      { sym: "V", means: "molar flow of carrier gas, on the SOLUTE-FREE basis",
+        unit: "mol/s" },
+      { sym: "K", means: "the equilibrium ratio y/x at the stage conditions — "
+        + "the slope of the equilibrium line" },
+    ],
     note: "A > 1: the operating line is steeper than the equilibrium line, "
       + "the two diverge going up the column, and more stages keep buying "
       + "recovery.  A < 1: they converge, the staircase pinches, and no "
@@ -72,6 +96,13 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       + "distillation columns are drawn or solved stage by stage.",
     formula: "recovery = (A^(N+1) − A) / (A^(N+1) − 1)        A ≠ 1\n"
       + "recovery = N / (N + 1)                              A = 1",
+    where: [
+      { sym: "recovery", means: "the fraction of the entering solute the "
+        + "solvent captures" },
+      { sym: "A", means: "the absorption factor, as above" },
+      { sym: "N", means: "the number of EQUILIBRIUM stages — ideal ones, not "
+        + "trays: a real column needs more" },
+    ],
     note: "The A = 1 case is a removable singularity, not a special physics: "
       + "both branches meet there, and the limit is the textbook N/(N+1).  "
       + "The engine's stagewise answer is plotted against this formula on the "
