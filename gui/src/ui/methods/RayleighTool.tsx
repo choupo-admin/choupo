@@ -79,7 +79,8 @@ License
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Slider, Stack,
+  Text, Title, Tooltip,
 } from "@mantine/core";
 
 import { resolveAdapter } from "../../adapters/index.js";
@@ -92,7 +93,10 @@ import { eqCurveFromTxyCsv, type EqCurve } from "../../case/mccabeThiele.js";
 import { binaryVleSpec } from "../../case/methodFeeds.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { BatchStaircasePlot, type StaircaseInstant }
+  from "./BatchStaircasePlot.js";
+import { RAYLEIGH_LIMITS, RAYLEIGH_STEPS } from "./rayleighLesson.js";
+import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { TrajectoryPlot } from "../plotting/TrajectoryPlot.js";
 
 // ---- Activation -------------------------------------------------------------
@@ -340,6 +344,41 @@ export function buildConstruction(
 
 /** Bundled identifier of the witness case ("<category>/<subclass>/<case>" —
  *  batch is a sub-classed category, so the `still` segment is part of it). */
+/** The SECOND witness: the same still with a rectifying column on top, so
+ *  there are stages to draw.  still01 has none, and a construction with no
+ *  stages cannot show the thing this section exists for. */
+export const RECTIFIER_WITNESS = "batch/still/still04_rectifier_benzene_toluene";
+
+/** Ideal stages ABOVE the pot, as still04 declares them.  Read here rather
+ *  than assumed: the staircase walks this many plus one, and the extra step
+ *  is the pot itself. */
+export const RECTIFIER_TRAYS = 3;
+
+/** Lift (t, x_pot, x_D, R) out of the rectifier run's trajectory.  Every
+ *  value is the engine's; the only arithmetic is the pot mole fraction from
+ *  its own mole columns, which is a ratio and not a model. */
+export function rectifierInstants(
+  traj: { t?: number[]; vars?: Record<string, number[]> } | undefined,
+): StaircaseInstant[] {
+  const v = traj?.vars;
+  const t = traj?.t;
+  if (!v || !t) return [];
+  const nb = v["still.n_" + WITNESS_LIGHT];
+  const nt = v["still.n_" + WITNESS_HEAVY];
+  const xD = v["still.xD_" + WITNESS_LIGHT];
+  const R = v["still.R"];
+  if (!nb || !nt || !xD || !R) return [];
+  const out: StaircaseInstant[] = [];
+  for (let i = 0; i < t.length; ++i) {
+    const tot = (nb[i] ?? 0) + (nt[i] ?? 0);
+    if (!(tot > 0)) continue;
+    const d = xD[i], r = R[i];
+    if (!Number.isFinite(d) || !Number.isFinite(r)) continue;
+    out.push({ t: t[i]!, xPot: nb[i]! / tot, xD: d!, R: r! });
+  }
+  return out;
+}
+
 export const RAYLEIGH_WITNESS = "batch/still/still01_benzene_toluene";
 
 /** The witness pair, light first (benzene boils at ~353 K, toluene ~384 K —
@@ -691,6 +730,22 @@ export function RayleighTool(): JSX.Element {
     () => (curveCsv ? eqCurveFromTxyCsv(curveCsv, WITNESS_LIGHT) : null),
     [curveCsv]);
 
+  /*  THE STAGES, ASKED FOR BY NAME.  A batch still with trays is a McCabe
+   *  construction that MOVES: the pot depletes, the distillate gets leaner,
+   *  and the whole staircase slides down the curve.  That is what a column
+   *  diagram cannot show, and it is why this runs a SECOND witness --
+   *  still04, which declares a rectifier with trays -- rather than trying to
+   *  draw stages on a still that has none.  */
+  const rect = useMethodRun(
+    src === "classroom" ? RECTIFIER_WITNESS : null, [], "rect", "choupoBatch");
+  const instants = useMemo(
+    () => rectifierInstants(rect.result?.trajectory), [rect.result]);
+  const [tIdx, setTIdx] = useState(0);
+  const at: StaircaseInstant | null =
+    instants.length > 0
+      ? instants[Math.min(tIdx, instants.length - 1)]!
+      : null;
+
   const con = useMemo(
     () => (curve && pot && src === "classroom"
       ? buildConstruction(curve, pot) : null),
@@ -777,12 +832,56 @@ export function RayleighTool(): JSX.Element {
     </>
   );
 
+  /*  ONE renderer for the lesson, above BOTH returns.  The empty state and
+   *  the full page must show the same steps, and a second copy of this
+   *  function would be two homes for one page. */
+  const lessonStep = (n: number) => {
+    const st = RAYLEIGH_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
   // ---- No drawable pot yet: per-source honest states ------------------------
   if (pot === null || trajView === null) {
+    /*  THE LESSON SURVIVES A RUN THAT PRODUCED NOTHING.
+     *
+     *  This branch used to return the knobs and an apology and nothing else,
+     *  so the explanation vanished exactly when there was no diagram to
+     *  explain -- which is the opposite of what an EduTool is for.  A reader
+     *  whose browser cannot run the engine should still be able to learn the
+     *  method; only the interactive is missing, and the page says which.  */
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+        <Box>
+          <Title order={3}>Batch distillation, and a staircase that moves</Title>
+          <Text size="sm" c="dimmed" mt={4}>
+            The fourth time you meet this construction — and the first time it
+            will not hold still, because what you are separating is being
+            consumed while you separate it.
+          </Text>
+        </Box>
         {alerts}
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
+        <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+        <Box style={{ display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
           {src === "classroom" && err === null && (busy || classroom === null) ? (
             <Group gap="sm" wrap="nowrap" align="center">
@@ -804,13 +903,54 @@ export function RayleighTool(): JSX.Element {
             </Text>
           )}
         </Box>
-      </MethodSetupRail>
+        <Box>
+          <Title order={5}>What this does not model</Title>
+          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+            {RAYLEIGH_LIMITS.map((l) => (
+              <Text key={l.id} size="xs" c="dimmed">
+                <b>{l.title}</b> {l.body}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+        </Stack>
+      </Box>
     );
   }
 
+
   return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+      <Box>
+        <Title order={3}>Batch distillation, and a staircase that moves</Title>
+        <Text size="sm" c="dimmed" mt={4}>
+          The fourth time you meet this construction — and the first time it
+          will not hold still, because what you are separating is being
+          consumed while you separate it.
+        </Text>
+      </Box>
+
       {alerts}
+
+      {lessonStep(1)}
+      {lessonStep(2)}
+
+      <Box>
+        <Title order={5}>The Rayleigh integral, on the engine’s own curve</Title>
+        <Text size="sm" mt={4}>
+          The shaded area and the engine’s own holdups are two routes to one
+          number.  Turn the knobs and watch them stay together — or come
+          apart, which is the more instructive outcome.
+        </Text>
+      </Box>
+
+      <Box style={{ display: "grid", gap: 14,
+        gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+        <Stack gap={8}>{controls}</Stack>
+        <Box style={{ minWidth: 0 }}>
 
       {/* Chips: the two sides of the identity + the window's far end. */}
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
@@ -916,6 +1056,67 @@ export function RayleighTool(): JSX.Element {
         points).  W and x are display arithmetic on the trajectory&apos;s own
         mole columns; every y* and every holdup is the engine&apos;s.
       </Text>
-    </MethodSetupRail>
+        </Box>
+      </Box>
+
+      {lessonStep(3)}
+
+      {/*  THE STAGES, MOVING.  A second witness (still04) with a real
+          rectifier, scrubbed in time -- what a column diagram cannot show. */}
+      {src === "classroom" && curve && (
+        <Box>
+          <Title order={5}>Drag the clock and watch the stages slide</Title>
+          {rect.busy && (
+            <Group gap={6} wrap="nowrap" mt={6}>
+              <Loader size="xs" />
+              <Text size="xs" c="dimmed">solving the rectifier campaign…</Text>
+            </Group>
+          )}
+          {rect.err && (
+            <Alert color="red" variant="light" mt={6}
+              title="choupoBatch (WASM)">
+              <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+                {rect.err}
+              </Text>
+            </Alert>
+          )}
+          {at && (
+            <>
+              <Text size="sm" mt={4}>
+                The same still with a {RECTIFIER_TRAYS}-tray column above the
+                pot, run at constant reflux.  Every value on the diagram —
+                x_D, R and the pot — is this instant of the engine’s own
+                campaign; the staircase is geometry on them.
+              </Text>
+              <Box mt={8}>
+                <Text size="xs" c="dimmed" mb={2}>time through the batch</Text>
+                <Slider min={0} max={instants.length - 1} step={1}
+                  value={Math.min(tIdx, instants.length - 1)}
+                  onChange={setTIdx} label={null} />
+              </Box>
+              <Box mt={10} style={{ maxWidth: 640 }}>
+                <BatchStaircasePlot curve={curve} at={at}
+                  trays={RECTIFIER_TRAYS} light={WITNESS_LIGHT} />
+              </Box>
+            </>
+          )}
+        </Box>
+      )}
+
+      {lessonStep(4)}
+
+      <Box>
+        <Title order={5}>What this does not model</Title>
+        <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+          {RAYLEIGH_LIMITS.map((l) => (
+            <Text key={l.id} size="xs" c="dimmed">
+              <b>{l.title}</b> {l.body}
+            </Text>
+          ))}
+        </Box>
+      </Box>
+      </Stack>
+    </Box>
   );
 }

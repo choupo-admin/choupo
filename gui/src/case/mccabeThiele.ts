@@ -452,6 +452,103 @@ function findAzeotrope(curve: EqCurve, lo: number, hi: number): Pt | null {
   Sensitivity sweep: N(R).  Re-walk the BROWSER staircase across a range of R
   (no WASM).  The R_min asymptote and the N_min floor are the anchors.
 \*---------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE BATCH RECTIFIER'S STAIRCASE -- the stages, drawn, at one instant.
+
+  A batch still with trays is a McCabe construction that MOVES.  At any moment
+  the pot holds x_W, the condenser delivers x_D, and between them sit nStages
+  ideal stages on ONE operating line -- the rectifying line, because a batch
+  still has no stripping section: the pot IS the reboiler and there is nothing
+  below it.
+
+  Step from the distillate DOWN.  Start on the diagonal at (x_D, x_D), which
+  is the total condenser: what leaves as vapour from the top stage is what
+  comes back as liquid.  Then alternate, exactly as in a column:
+
+      horizontal to the equilibrium curve  ->  the liquid on that stage
+      vertical to the operating line       ->  the vapour rising to it
+
+  HOW MANY STEPS, and it was settled by MEASUREMENT rather than assumed.  The
+  operation's `nStages` counts ideal stages ABOVE the pot -- but the pot is
+  itself an equilibrium stage, the reboiler of this column, so the walk from
+  x_D down to x_W takes nStages + 1 steps.  Checked against the engine's own
+  trajectory for still04 (3 trays, R = 3, benzene/toluene): stepping nStages
+  lands 0.13 mole fraction ABOVE the pot and nStages + 2 lands 0.10 below,
+  while nStages + 1 lands within 0.0003 at every instant of the run.
+
+  That is the check worth showing a student.  The engine computed x_D FROM
+  x_W through the stages; this walks back down and lands where it started.
+  What remains is the interpolation of a curve sampled at finite points, and
+  the tool prints it rather than hiding it.
+
+  ZERO PHYSICS: yStar and xForY read the curve the engine computed, and the
+  line is the material balance.  Nothing here knows any thermodynamics.
+\*---------------------------------------------------------------------------*/
+
+export interface StaircaseStep {
+  /** the liquid composition on this stage (foot of the horizontal) */
+  x: number;
+  /** the vapour rising from it (top of the vertical) */
+  y: number;
+}
+
+export interface BatchStaircase {
+  /** the corner points, in draw order, starting on the diagonal at x_D */
+  corners: Pt[];
+  /** one entry per ideal stage, top-down; the LAST is the pot */
+  steps: StaircaseStep[];
+  /** the liquid the last step sits on -- this IS the pot composition, and
+   *  comparing it with the engine's is what makes the drawing falsifiable */
+  xBottom: number;
+  /** true when a step ran off the bottom of the curve before nStages were
+   *  taken: the construction cannot reach that many stages here. */
+  ranOut: boolean;
+}
+
+/** Walk down from the distillate on the rectifying line for (R, xD), taking
+ *  `nStages` TRAY steps plus one for the POT -- see the note above for why,
+ *  and for the measurement that settled it.
+ *
+ *  `nStages` of 0 is a still with no trays: the walk is then the single pot
+ *  step, which is exactly a simple Rayleigh still, and the construction
+ *  correctly reduces to it rather than drawing nothing. */
+export function batchRectifierStaircase(
+  curve: EqCurve, xD: number, R: number, nStages: number,
+): BatchStaircase {
+  const line = rectifyingLine(R, xD);
+  const corners: Pt[] = [{ x: xD, y: xD }];
+  const steps: StaircaseStep[] = [];
+  let y = xD;
+  let ranOut = false;
+  const walk = Math.max(0, Math.floor(nStages)) + 1;   // + the pot
+  let xPrev = Number.POSITIVE_INFINITY;
+  for (let i = 0; i < walk; ++i) {
+    const x = xForY(curve, y);
+    if (!Number.isFinite(x) || x <= 1e-9) { ranOut = true; break; }
+    corners.push({ x, y });                       // horizontal to the curve
+    steps.push({ x, y });
+
+    /*  A PINCH IS A LOSS OF PROGRESS, not a line crossing the diagonal.
+     *
+     *  The first version of this guard asked whether the operating line had
+     *  fallen below y = x, which is a different situation entirely and never
+     *  fires here.  What actually happens at low reflux is that the line
+     *  approaches the equilibrium curve and the steps get shorter and
+     *  shorter without ever ending: at xD = 0.95, R = 0.05 on an alpha = 2.5
+     *  curve, fifty steps move the liquid by less than a hundredth.  So the
+     *  test is whether THIS step bought anything.  */
+    if (x >= xPrev - 1e-9) { ranOut = true; break; }
+    xPrev = x;
+
+    const yNext = line.m * x + line.b;            // vertical to the line
+    if (!Number.isFinite(yNext)) { ranOut = true; break; }
+    if (i < walk - 1) corners.push({ x, y: yNext });
+    y = yNext;
+  }
+  const xBottom = steps.length > 0 ? steps[steps.length - 1]!.x : xD;
+  return { corners, steps, xBottom, ranOut };
+}
+
 export interface SweepPoint { R: number; ratio: number; N: number; }
 
 export function sweepReflux(curve: EqCurve, spec: MccabeSpec, n = 60, maxFactor = 5): { rMin: number; nMin: number; points: SweepPoint[] } {
