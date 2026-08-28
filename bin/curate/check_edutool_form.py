@@ -60,6 +60,9 @@ EXPLORE_VIEWS = ROOT / "gui/src/case/exploreViews.ts"
 PANEL_MARKER = "MethodSetupRail"
 SCROLL_MARKER = 'overflowY: "auto"'
 EQUATION_MARKERS = ('ff="monospace"', "ff='monospace'")
+#  The shared step renderer draws the formula AND its `where`
+#  gloss; a tool that calls it carries equations by delegation.
+STEPPER_MARKER = "lessonStepper("
 
 
 def fail(msg):
@@ -166,9 +169,20 @@ def main():
         if SCROLL_MARKER not in src:
             fail(f"{label} ({tid}) is not a panel and does not scroll either "
                  f"({SCROLL_MARKER!r} absent) -- it is neither form.")
-        if not any(m in src for m in EQUATION_MARKERS):
-            fail(f"{label} ({tid}) scrolls but carries no equation block "
-                 "(no monospace Text).  The form exists to hold the "
+        #  TWO WAYS TO CARRY EQUATIONS, and the second is the stronger one.
+        #  A tool may draw its own monospace block, or it may hand its steps
+        #  to the SHARED renderer (methods/lessonStep.tsx), which draws the
+        #  formula and, since 2026-08-28, the `where` gloss under it.  This
+        #  arm used to accept only the first, so the day seventeen private
+        #  copies of that renderer were replaced by one shared home, a tool
+        #  that had gained a BETTER guarantee was reported as having lost the
+        #  point.  A check that reads presentation out of a caller's own file
+        #  measures where the code lives, not what the page shows.
+        if not any(m in src for m in EQUATION_MARKERS) \
+           and STEPPER_MARKER not in src:
+            fail(f"{label} ({tid}) scrolls but carries no equation block: it "
+                 f"has no monospace Text of its own and does not call "
+                 f"{STEPPER_MARKER!r}.  The form exists to hold the "
                  "equations, so a lesson without one kept the layout and "
                  "dropped the point.")
 
