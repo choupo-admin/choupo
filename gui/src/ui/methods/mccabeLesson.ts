@@ -56,6 +56,26 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "of the upper one — which is why turning R moves the staircase.",
     formula: "rectifying:  y = R/(R+1) · x + x_D/(R+1)\n"
       + "stripping:   y = (L̄/V̄) · x − (B/V̄) · x_B",
+    where: [
+      { sym: "x", means: "mole fraction of the MORE VOLATILE component in the "
+        + "liquid on a tray" },
+      { sym: "y", means: "mole fraction of the same component in the vapour "
+        + "leaving that tray" },
+      { sym: "R", means: "the REFLUX RATIO L/D — liquid returned to the "
+        + "column per mole of distillate taken off" },
+      { sym: "x_D", means: "composition of the distillate, the product leaving "
+        + "the top" },
+      { sym: "x_B", means: "composition of the bottoms, the product leaving "
+        + "the reboiler" },
+      { sym: "B", means: "molar flow of bottoms", unit: "mol/s" },
+      { sym: "L", means: "liquid molar flow in the RECTIFYING section, above "
+        + "the feed", unit: "mol/s" },
+      { sym: "V", means: "vapour molar flow in the rectifying section",
+        unit: "mol/s" },
+      { sym: "L̄, V̄", means: "the same two flows BELOW the feed.  The bar "
+        + "marks a SECTION, not an average — the feed changes both, which is "
+        + "why the column needs two operating lines and not one" },
+    ],
     note: "Both lines are STRAIGHT, and that is an assumption, not a fact — "
       + "see the limits at the foot of this page.",
   },
@@ -69,6 +89,14 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "is q/(q−1), which is why a saturated-liquid feed gives a VERTICAL "
       + "q-line and a saturated vapour a horizontal one.",
     formula: "q-line:  y = q/(q−1) · x − z_F/(q−1)",
+    where: [
+      { sym: "q", means: "the FEED THERMAL CONDITION — moles of liquid added "
+        + "to the stripping section per mole of feed.  1 for a saturated "
+        + "liquid, 0 for a saturated vapour, above 1 for a sub-cooled "
+        + "liquid.  NOT the adsorbed loading that adsorption calls q: same "
+        + "letter, no relation" },
+      { sym: "z_F", means: "composition of the feed" },
+    ],
     note: "q > 1 subcooled liquid, q = 1 saturated liquid, 0 < q < 1 partly "
       + "vaporised, q = 0 saturated vapour, q < 0 superheated vapour.  Feed "
       + "condition is a design variable, not a given: it moves the "
@@ -85,6 +113,14 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "become infinitely small, so you need infinitely many.  Minimum "
       + "energy, infinite column.",
     formula: "N_min at R → ∞      ·      N → ∞ at R → R_min",
+    where: [
+      { sym: "N", means: "number of EQUILIBRIUM stages — ideal ones; a real "
+        + "column needs more" },
+      { sym: "N_min", means: "the fewest stages that can make the separation, "
+        + "reached at total reflux (Fenske)" },
+      { sym: "R_min", means: "the smallest reflux ratio that can make it, "
+        + "needing infinitely many stages" },
+    ],
     note: "Neither is buildable, and that is what makes them useful: every "
       + "real design sits between them, and the usual working range is "
       + "R ≈ 1.1 to 1.5 × R_min, where the capital cost of trays and the "

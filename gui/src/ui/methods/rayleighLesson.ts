@@ -49,6 +49,17 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "the equilibrium curve without ever solving a differential equation "
       + "in time.",
     formula: "ln(W₀/W) = ∫ dx / (y*(x) − x)     from x_W to x₀",
+    where: [
+      { sym: "W", means: "moles of liquid left in the pot", unit: "mol" },
+      { sym: "W₀", means: "moles charged to the pot at the start", unit: "mol" },
+      { sym: "x", means: "mole fraction of the more volatile component in the "
+        + "pot, which FALLS as the still runs" },
+      { sym: "x₀", means: "that composition at the start of the batch" },
+      { sym: "x_W", means: "that composition at the end — the integration runs "
+        + "from where you stopped back to where you started" },
+      { sym: "y*(x)", means: "the vapour composition in EQUILIBRIUM with a "
+        + "pot at x — the star marks equilibrium, not an operating value" },
+    ],
     note: "The area under 1/(y* − x) between the two pot compositions IS the "
       + "logarithm of how much you boiled away.  The tool shades that area "
       + "over the engine's own equilibrium points and compares it with the "
@@ -66,6 +77,11 @@ export const RAYLEIGH_STEPS: readonly LessonStep[] = [
       + "distillate the same column can deliver gets leaner every minute, and "
       + "the staircase slides down the curve as you watch.",
     formula: "y = R/(R+1) · x + x_D/(R+1)      anchored at (x_D, x_D)",
+    where: [
+      { sym: "R", means: "the reflux ratio, as in a continuous column" },
+      { sym: "x_D", means: "the INSTANTANEOUS distillate composition, which in "
+        + "a batch still moves as the pot depletes" },
+    ],
     note: "There is no stripping section: the pot IS the reboiler and there "
       + "is nothing below it. So one operating line, anchored at the "
       + "distillate — and the walk down takes the trays plus ONE more step, "

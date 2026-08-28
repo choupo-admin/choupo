@@ -45,6 +45,25 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "the duty falls out of what you already know.",
     formula: "LMTD route   Q = U·A·ΔT_lm       needs T_h,in T_h,out T_c,in T_c,out\n"
       + "ε-NTU route  Q = ε·C_min·(T_h,in − T_c,in)   needs the two INLETS",
+    where: [
+      { sym: "Q", means: "the DUTY — heat actually crossing from the hot "
+        + "stream to the cold one", unit: "W" },
+      { sym: "U", means: "the overall heat-transfer coefficient, hot side to "
+        + "cold side through the wall", unit: "W/(m²·K)" },
+      { sym: "A", means: "the heat-transfer AREA of the exchanger", unit: "m²" },
+      { sym: "ΔT_lm", means: "the log-mean temperature difference — the "
+        + "average driving force along the exchanger, which needs all FOUR "
+        + "terminal temperatures and therefore needs the answer before it "
+        + "can be computed", unit: "K" },
+      { sym: "ε", means: "the EFFECTIVENESS — the duty as a fraction of the "
+        + "most this pair of streams could possibly exchange" },
+      { sym: "C_min", means: "the smaller of the two capacity rates ṁ·c_p, "
+        + "defined in the next step", unit: "W/K" },
+      { sym: "T_h,in / T_c,in", means: "the hot and cold INLET temperatures",
+        unit: "K" },
+      { sym: "T_h,out / T_c,out", means: "the two outlet temperatures — what "
+        + "the LMTD route needs and the ε-NTU route does not", unit: "K" },
+    ],
     note: "Choupo's exchanger takes the second route: it solves the duty and "
       + "both outlets from ε-NTU, and only then computes the LMTD, printing "
       + "U·A·LMTD beside the duty as a cross-check.  Two routes to one number "
@@ -66,6 +85,22 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "would force the smaller-C one straight past its partner's inlet.",
     formula: "C = ṁ·c_p          C_min = min(C_hot, C_cold)\n"
       + "Q_max = C_min · (T_h,in − T_c,in)",
+    where: [
+      { sym: "C", means: "the CAPACITY RATE of a stream — how much heat it "
+        + "carries away per degree", unit: "W/K" },
+      { sym: "ṁ", means: "mass flow rate", unit: "kg/s" },
+      { sym: "c_p", means: "specific heat capacity", unit: "J/(kg·K)" },
+      { sym: "C_min", means: "the smaller of the two capacity rates — the "
+        + "stream that changes temperature FASTEST, and therefore the one "
+        + "that limits the exchange" },
+      { sym: "C_hot / C_cold", means: "the capacity rates of the hot and the "
+        + "cold stream", unit: "W/K" },
+      { sym: "C_max", means: "the larger of the two" },
+      { sym: "Q_max", means: "the largest duty this pair of streams could "
+        + "exchange, at infinite area", unit: "W" },
+      { sym: "T_h,in / T_c,in", means: "the two INLET temperatures — the only "
+        + "temperatures the eps-NTU route needs", unit: "K" },
+    ],
     note: "Q_max is what a COUNTERFLOW exchanger of infinite area would "
       + "deliver.  That is not a rhetorical infinity: it is the ceiling the "
       + "counter-current curves on the plot climb towards, and the one the "
@@ -99,6 +134,16 @@ export const ENTU_STEPS: readonly LessonStep[] = [
     formula: "C_r = C_min / C_max                    0 ≤ C_r ≤ 1\n"
       + "C_r = 0    ε = 1 − exp(−NTU)           every arrangement\n"
       + "C_r = 1    ε = NTU / (1 + NTU)         counter-current",
+    where: [
+      { sym: "NTU", means: "the NUMBER OF TRANSFER UNITS, U·A/C_min — the "
+        + "exchanger's SIZE measured against the stream that limits it, and "
+        + "dimensionless because it is a ratio of two conductances" },
+      { sym: "C_r", means: "the capacity-rate RATIO C_min/C_max — how evenly "
+        + "matched the two streams are.  0 when one side changes phase and "
+        + "holds its temperature; 1 when both swing equally" },
+      { sym: "T_h / T_c", means: "hot-side and cold-side temperature, at "
+        + "whichever end the subscript names", unit: "K" },
+    ],
     note: "C_r = 0 is a stream whose temperature does not move — condensing "
       + "steam, a boiling liquid, or simply a service stream so large that "
       + "its outlet is its inlet.  With one side isothermal there is no "

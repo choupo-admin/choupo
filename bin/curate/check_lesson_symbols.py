@@ -89,7 +89,24 @@ def glossed(block: str) -> set:
                   block, re.S)
     if not m:
         return set()
-    return set(re.findall(r'sym:\s*"((?:[^"\\]|\\.)*)"', m.group(1)))
+    #  A `sym` may legitimately cover a PAIR -- "C_hot / C_cold",
+    #  "T_h,in / T_c,in" -- because the two are one idea and splitting them
+    #  into two entries makes the reader read the same sentence twice.  The
+    #  entry defines both, so both count as glossed.  Split on / and on a
+    #  comma that separates two symbol-shaped tokens, never inside one
+    #  (T_h,in is ONE symbol).
+    out = set()
+    for raw in re.findall(r'sym:\s*"((?:[^"\\]|\\.)*)"', m.group(1)):
+        out.add(raw)
+        for part in re.split(r'\s*/\s*', raw):
+            part = part.strip()
+            if part:
+                out.add(part)
+                #  "T_h,in" also glosses "T_h": the qualifier after the comma
+                #  names WHICH end, and a formula that writes the bare symbol
+                #  is asking about the same quantity.
+                out.add(part.split(",")[0].strip())
+    return out
 
 
 def is_symbol(tok: str) -> bool:

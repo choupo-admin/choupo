@@ -300,16 +300,13 @@ LESSON_SYMBOLS_UNGLOSSED = {
     "breakthroughLesson.ts":   "eps, rho_b, D_ax, and the Langmuir pair set",
     "columnControlLesson.ts":  "T_top / T_bot, dT, du",
     "dryingLesson.ts":         "R_c, X_0, X_c, tau, lambda, the two cp's",
-    "epsilonNtuLesson.ts":     "C_min / C_max / C_hot / C_cold, T_h, T_c",
     "fugLesson.ts":            "the whole FUG symbol set (K_i, alpha, theta, ...)",
     "hunterNashLesson.ts":     "F, R_N",
     "levenspielLesson.ts":     "C_A, C_P, V_CSTR / V_PFR, X_f",
-    "mccabeLesson.ts":         "x_D, x_B, z_F, N_min",
     "merkelLesson.ts":         "T_water, h_air, cp_L, T_in / T_out",
     "pinchLesson.ts":          "CP_i / CP_total, dH, dT, the T_supply pair",
     "psychroLesson.ts":        "M_v / M_c, p_v, c_s, T_as, lambda, Y_sat",
     "pumpSystemLesson.ts":     "the pressure/head pair, NPSH_a / NPSH_r, SigmaK",
-    "rayleighLesson.ts":       "x_W, x_D",
     "vanHeerdenLesson.ts":     "xi, dH_rxn, Q_gen / Q_rem / Q_ext, UA",
 }
 
