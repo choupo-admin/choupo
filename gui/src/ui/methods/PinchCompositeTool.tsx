@@ -76,19 +76,31 @@ License
   Charts are inline SVG (the EpsilonNtuTool precedent) — the plotly bundle
   cannot load outside a browser, and the pure helpers here must stay
   importable by the node test runner (tests/pinchCompositeTool.test.ts).
+
+  CHROME: a scrolling teaching page, not an instrument panel.  The lesson is
+  DATA (ui/methods/pinchLesson.ts) and is rendered by ONE hoisted renderer, so
+  it cannot exist in one branch and vanish in another; the definitions come
+  BEFORE the curves and the consequences — the ΔT_min trade and the three
+  rules — come after them, because a reader who has not yet seen what the
+  overlap means has nothing to read the plot with.  The knobs sit in a
+  two-column grid beside the picture.  Every honesty surface the panel
+  carried is kept: the engine's targets chip, the derived-in-view cross-check,
+  the verbatim engine refusal, the candidate table's own wording and the
+  limits list.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
 import {
   Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
-  Text, Tooltip,
+  Text, Title, Tooltip,
 } from "@mantine/core";
 
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import {
-  KnobField, KnobNumber, MethodSetupRail, PanelNote,
+  KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
+import { PINCH_LIMITS, PINCH_STEPS } from "./pinchLesson.js";
 
 // ---- Where the engine's pinch artefacts live in the run result --------------
 // csvFiles keys are case-root-relative (solverWorker.js walks /case and strips
@@ -547,13 +559,11 @@ export function pinchOverrides(
   }));
 }
 
-/* THE PER-TOOL FOLD KEY IS GONE (2026-08-18).  This tool's knobs are now in the
- * shared EduTools setup panel (ui/methods/knobPanel.tsx), whose fold and width
- * live under ONE registry entry — `PANELS.methodKnobsRail` — for all twelve
- * tools.  The name that used to be exported here (PINCH_CONTROLS_COLLAPSED_KEY)
- * answered "is THIS tool's knob strip folded?", and there is no longer a
- * per-tool answer to give: a lecturer who folds the chrome away wants it folded
- * on the next tool too. */
+/* THE PER-TOOL FOLD KEY IS GONE (2026-08-18).  The name that used to be
+ * exported here (PINCH_CONTROLS_COLLAPSED_KEY) answered "is THIS tool's knob
+ * strip folded?", and there is no longer a per-tool answer to give.  There is
+ * no fold at all now: the knobs sit in the page beside the curves, and a page
+ * that scrolls has no chrome to put away. */
 
 // ---- The workspace tool -----------------------------------------------------
 
@@ -618,10 +628,12 @@ export function PinchCompositeTool(): JSX.Element {
     `${c.key}: engine ${c.engine} · derived ${c.derived.toPrecision(10)}`
     + `  (Δ = ${c.deviation.toExponential(2)})`);
 
-  /* The setup panel's content: the source, the pane, the knobs and their reset,
-     the classroom provenance.  The engine's targets and the cross-check chip
-     stay beside the curves — they report, they do not set. */
-  const setup = (
+  /* THE KNOBS AND THE VIEW SWITCH — the only surfaces here that SET anything.
+     They sit in the page beside the curves, in a two-column grid; the engine's
+     targets and the cross-check chip stay above the picture, because they
+     report and do not set.  ΔTmin spans both columns: it is the knob the
+     lesson is about. */
+  const controls = (
     <>
       {showSourceToggle && (
         <SegmentedControl size="xs" value={source} fullWidth
@@ -632,21 +644,27 @@ export function PinchCompositeTool(): JSX.Element {
           ]} />
       )}
       <KnobField label="view">
-        <SegmentedControl size="xs" value={pane} fullWidth orientation="vertical"
+        <SegmentedControl size="xs" value={pane} fullWidth
           onChange={(v) => setPane(v as Pane)}
           data={[
-            { label: "Composite curves", value: "composite" },
+            { label: "Composites", value: "composite" },
             { label: "Grand composite", value: "gcc" },
-            { label: `Candidate matches (${matches.length})`, value: "matches" },
+            { label: `Candidates (${matches.length})`, value: "matches" },
           ]} />
       </KnobField>
       {source === "classroom" && (
         <>
-          {PINCH_KNOBS.map((k) => (
-            <KnobNumber key={k.id} label={`${k.label} (${k.unit})`}
-              value={knobValues[k.id] ?? k.value} min={k.min} step={k.step}
-              onChange={(v) => setKnobValues((st) => ({ ...st, [k.id]: v }))} />
-          ))}
+          <Box style={{ display: "grid", gap: 8,
+            gridTemplateColumns: "repeat(2, minmax(0, 1fr))" }}>
+            {PINCH_KNOBS.map((k) => (
+              <Box key={k.id} style={{ minWidth: 0,
+                ...(k.id === "dTmin" ? { gridColumn: "1 / -1" } : {}) }}>
+                <KnobNumber label={`${k.label} (${k.unit})`}
+                  value={knobValues[k.id] ?? k.value} min={k.min} step={k.step}
+                  onChange={(v) => setKnobValues((st) => ({ ...st, [k.id]: v }))} />
+              </Box>
+            ))}
+          </Box>
           <Button size="compact-xs" variant="subtle" color="gray"
             onClick={() => setKnobValues(Object.fromEntries(
               PINCH_KNOBS.map((k) => [k.id, k.value])))}>
@@ -663,158 +681,245 @@ export function PinchCompositeTool(): JSX.Element {
     </>
   );
 
-  return (
-    <MethodSetupRail title="pinch knobs" setup={setup}>
-      <Group gap={8} align="center" wrap="wrap" p="sm" pb={0}
-        style={{ flexShrink: 0 }}>
-          {/* The engine's targets — the numbers of record, from the KPI row. */}
-          {active && !emptyCurrentRun && (
-          <Badge variant="light" color="gray" size="lg"
-            styles={{ root: { textTransform: "none" } }}>
-            {kpis
-              ? `engine targets · Q_H,min ${fmt(kpis["Q_H_min_kW"])} kW · `
-                + `Q_C,min ${fmt(kpis["Q_C_min_kW"])} kW · `
-                + `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · `
-                + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
-              : "no pinch KPI row in this run — curves shown, targets unverified"}
-          </Badge>
-          )}
-          {/* The cross-check chip — derived in view, the engine is the judge. */}
-          {derived && checks.length > 0 && (
-            <Tooltip withArrow multiline w={380}
-              label={"Derived in view: the Linnhoff-Flower cascade re-run over"
-                + " the engine's published hotShifted/coldShifted curves.\n"
-                + checkLines.join("\n")}
-              styles={{ tooltip: { whiteSpace: "pre-line" } }}>
-              <Badge variant="light" size="lg"
-                color={allAgree ? "teal" : "orange"}
-                styles={{ root: { textTransform: "none", cursor: "help" } }}>
-                {allAgree
-                  ? "cross-check (derived in view): cascade reproduces the engine's targets"
-                  : "cross-check (derived in view): DISAGREES — a finding about this"
-                    + " tool's reading, the engine's targets stand"}
-              </Badge>
-            </Tooltip>
-          )}
-          {derived && checks.length === 0 && (
-            <Badge variant="light" color="gray" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              cross-check unavailable — no engine KPI row to compare against
-            </Badge>
-          )}
-      </Group>
-
-      {source === "classroom" && method.err && (
-        <Alert color="red" variant="light" p="xs" m="sm" mb={0}
-          title="engine error (verbatim)">
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>
-            {method.err}
-          </Text>
-        </Alert>
+  /* The reported numbers: the engine's targets, and the derived-in-view
+     cross-check that says whether this tool read them correctly. */
+  const chips = (
+    <Group gap={8} align="center" wrap="wrap">
+      {active && !emptyCurrentRun && (
+        <Badge variant="light" color="gray" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          {kpis
+            ? `engine targets · Q_H,min ${fmt(kpis["Q_H_min_kW"])} kW · `
+              + `Q_C,min ${fmt(kpis["Q_C_min_kW"])} kW · `
+              + `pinch T* ${fmt(kpis["T_pinch_K"], 2)} K · `
+              + `ΔTmin ${fmt(kpis["dTmin_K"], 0)} K`
+            : "no pinch KPI row in this run — curves shown, targets unverified"}
+        </Badge>
       )}
+      {derived && checks.length > 0 && (
+        <Tooltip withArrow multiline w={380}
+          label={"Derived in view: the Linnhoff-Flower cascade re-run over"
+            + " the engine's published hotShifted/coldShifted curves.\n"
+            + checkLines.join("\n")}
+          styles={{ tooltip: { whiteSpace: "pre-line" } }}>
+          <Badge variant="light" size="lg"
+            color={allAgree ? "teal" : "orange"}
+            styles={{ root: { textTransform: "none", cursor: "help" } }}>
+            {allAgree
+              ? "cross-check (derived in view): cascade reproduces the engine's targets"
+              : "cross-check (derived in view): DISAGREES — a finding about this"
+                + " tool's reading, the engine's targets stand"}
+          </Badge>
+        </Tooltip>
+      )}
+      {derived && checks.length === 0 && (
+        <Badge variant="light" color="gray" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          cross-check unavailable — no engine KPI row to compare against
+        </Badge>
+      )}
+    </Group>
+  );
 
-      <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
-        {/* Honest empty state — ONLY for the "Current run" source; the
-            classroom source feeds itself. */}
-        {emptyCurrentRun && (
-          <Box style={{ height: "100%", display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 24 }}>
-            <Text size="sm" c="dimmed" ta="center" maw={520}>
-              No pinch targets in this run.  This tool reads the engine&apos;s
-              own pinch pass: declare <code>pinchPass</code> in the case&apos;s{" "}
-              <code>system/postDict</code> chain and run a converged steady
-              case — the engine then writes{" "}
-              <code>reports/pinch/compositeCurves.csv</code> +{" "}
-              <code>candidateMatches.csv</code> and publishes the{" "}
-              <code>pinch</code> KPI row.  Witness case:{" "}
-              <code>tutorials/{PINCH_WITNESS}</code>.
+  /* ONE renderer for the lesson, hoisted above everything that branches: the
+     steps must not be able to exist on one path and vanish on another (the
+     empty states below are branches inside the SAME page, so the reader who
+     has no curves still gets the whole argument). */
+  const lessonStep = (n: number) => {
+    const st = PINCH_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
             </Text>
           </Box>
         )}
-        {/* Classroom source before its first result: the run is in flight
-            (Loader) or it refused (the Alert above carries the words). */}
-        {source === "classroom" && !active && (
-          <Box style={{ height: "100%", display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 24 }}>
-            {method.busy
-              ? <Loader size="lg" />
-              : (
-                <Text size="sm" c="dimmed" ta="center" maw={520}>
-                  {method.err
-                    ? "The classroom run did not produce a result — the engine's own words are in the alert above."
-                    : "Waiting for the classroom engine run."}
-                </Text>
-              )}
-          </Box>
-        )}
-        {!emptyCurrentRun && active && (<>
-        {pane === "composite" && (hot && cold ? (
-          <CompositeSvg hot={hot} cold={cold}
-            pinchHot={kpis?.["T_pinch_hot_K"]} pinchCold={kpis?.["T_pinch_cold_K"]} />
-        ) : (
-          <Box p="xl">
-            <Text size="sm" c="dimmed">
-              This run carries no <code>{COMPOSITE_CURVES_CSV_PATH}</code> with
-              hot + cold curves — the pinch pass writes both on every run that
-              finds duty-carrying units; re-run the case.
-            </Text>
-          </Box>
-        ))}
-        {pane === "gcc" && (derived ? (
-          <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
-            <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-              Derived in view from the engine&apos;s shifted composite curves
-              (<code>hotShifted</code>/<code>coldShifted</code> in{" "}
-              <code>{COMPOSITE_CURVES_CSV_PATH}</code>) — the engine publishes
-              no grand-composite curve of its own.  The temperature shift
-              (±ΔTmin/2) is already inside those curves; nothing here re-applies
-              it.
-            </Text>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <GccSvg gcc={derived.gcc} Tpinch={derived.T_pinch_K} />
-            </Box>
-          </Stack>
-        ) : (
-          <Box p="xl">
-            <Text size="sm" c="dimmed">
-              The grand composite is derived from the engine&apos;s{" "}
-              <code>hotShifted</code>/<code>coldShifted</code> curves and this
-              run carries none — the pinch pass writes them beside the actual
-              curves; re-run the case.
-            </Text>
-          </Box>
-        ))}
-        {pane === "matches" && (matches.length > 0 ? (
-          <MatchesTable matches={matches} />
-        ) : (
-          <Box p="xl">
-            <Text size="sm" c="dimmed">
-              No <code>{CANDIDATE_MATCHES_CSV_PATH}</code> in this run — the
-              pinch pass writes the exhaustive hot×cold analysis table on every
-              run that finds duty-carrying units; re-run the case.
-            </Text>
-          </Box>
-        ))}
-        </>)}
-        {/* A knob changed while a previous result is on screen: the stale
-            curves stay visible under the loader until the engine answers. */}
-        {source === "classroom" && method.busy && active && (
-          <Box style={{ position: "absolute", inset: 0, display: "flex",
-            alignItems: "center", justifyContent: "center",
-            pointerEvents: "none" }}>
-            <Loader size="lg" />
-          </Box>
-        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
       </Box>
+    );
+  };
 
-      <Text size="xs" c="dimmed" p="sm" pt={0} style={{ flexShrink: 0 }}>
-        The composite overlap is the heat that process-to-process recovery can
-        serve; the tails are the minimum utilities, fixed before any exchanger
-        is drawn.  Pockets in the grand composite are internal recovery across
-        the cascade.  All targets are the engine&apos;s (PinchPass, problem
-        table printed in the run log); this view only re-reads its published
-        curves.
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        Pinch analysis, or how much energy the plant needs before you design it
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        Two curves, one temperature difference you choose, and three rules that
+        turn out to be the same rule.
       </Text>
-    </MethodSetupRail>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {PINCH_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {lessonHead}
+
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+
+        <Box>
+          <Title order={5}>Now read the curves the engine published</Title>
+          <Text size="sm" mt={4}>
+            The two composites below are the engine&apos;s own, straight off{" "}
+            <code>{COMPOSITE_CURVES_CSV_PATH}</code>: the horizontal gap
+            between their ends is what the process can recover from itself, and
+            the two overhangs are the targets in the chip above.  The grand
+            composite is the same cascade plotted against the shifted
+            temperature — it touches zero AT the pinch, and any bulge away from
+            the axis is heat the process passes down through itself rather than
+            to a utility.  The candidate table is the engine&apos;s exhaustive
+            hot × cold analysis, in its own words.
+          </Text>
+        </Box>
+
+        {chips}
+
+        {source === "classroom" && method.err && (
+          /* The engine's refusal, VERBATIM — a refusal is a teaching surface
+             and is never paraphrased away by a layout change. */
+          <Alert color="red" variant="light" title="choupoSolve (WASM)">
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {method.err}
+            </Text>
+          </Alert>
+        )}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(220px, 300px) 1fr" }}>
+          <Stack gap={8} style={{ minWidth: 0 }}>{controls}</Stack>
+          <Box pos="relative" style={{ minWidth: 0, height: 460 }}>
+            {/* Honest empty state — ONLY for the "Current run" source; the
+                classroom source feeds itself. */}
+            {emptyCurrentRun && (
+              <Box style={{ height: "100%", display: "flex", alignItems: "center",
+                justifyContent: "center", padding: 24 }}>
+                <Text size="sm" c="dimmed" ta="center" maw={520}>
+                  No pinch targets in this run.  This tool reads the
+                  engine&apos;s own pinch pass: declare <code>pinchPass</code>{" "}
+                  in the case&apos;s <code>system/postDict</code> chain and run
+                  a converged steady case — the engine then writes{" "}
+                  <code>reports/pinch/compositeCurves.csv</code> +{" "}
+                  <code>candidateMatches.csv</code> and publishes the{" "}
+                  <code>pinch</code> KPI row.  Witness case:{" "}
+                  <code>tutorials/{PINCH_WITNESS}</code>.
+                </Text>
+              </Box>
+            )}
+            {/* Classroom source before its first result: the run is in flight
+                (Loader) or it refused (the Alert above carries the words). */}
+            {source === "classroom" && !active && (
+              <Box style={{ height: "100%", display: "flex", alignItems: "center",
+                justifyContent: "center", padding: 24 }}>
+                {method.busy
+                  ? <Loader size="lg" />
+                  : (
+                    <Text size="sm" c="dimmed" ta="center" maw={520}>
+                      {method.err
+                        ? "The classroom run did not produce a result — the engine's own words are in the alert above."
+                        : "Waiting for the classroom engine run."}
+                    </Text>
+                  )}
+              </Box>
+            )}
+            {!emptyCurrentRun && active && (<>
+            {pane === "composite" && (hot && cold ? (
+              <CompositeSvg hot={hot} cold={cold}
+                pinchHot={kpis?.["T_pinch_hot_K"]} pinchCold={kpis?.["T_pinch_cold_K"]} />
+            ) : (
+              <Box p="xl">
+                <Text size="sm" c="dimmed">
+                  This run carries no <code>{COMPOSITE_CURVES_CSV_PATH}</code> with
+                  hot + cold curves — the pinch pass writes both on every run that
+                  finds duty-carrying units; re-run the case.
+                </Text>
+              </Box>
+            ))}
+            {pane === "gcc" && (derived ? (
+              <Stack gap={4} h="100%" style={{ minHeight: 0 }}>
+                <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
+                  Derived in view from the engine&apos;s shifted composite curves
+                  (<code>hotShifted</code>/<code>coldShifted</code> in{" "}
+                  <code>{COMPOSITE_CURVES_CSV_PATH}</code>) — the engine publishes
+                  no grand-composite curve of its own.  The temperature shift
+                  (±ΔTmin/2) is already inside those curves; nothing here re-applies
+                  it.
+                </Text>
+                <Box style={{ flex: 1, minHeight: 0 }}>
+                  <GccSvg gcc={derived.gcc} Tpinch={derived.T_pinch_K} />
+                </Box>
+              </Stack>
+            ) : (
+              <Box p="xl">
+                <Text size="sm" c="dimmed">
+                  The grand composite is derived from the engine&apos;s{" "}
+                  <code>hotShifted</code>/<code>coldShifted</code> curves and this
+                  run carries none — the pinch pass writes them beside the actual
+                  curves; re-run the case.
+                </Text>
+              </Box>
+            ))}
+            {pane === "matches" && (matches.length > 0 ? (
+              <MatchesTable matches={matches} />
+            ) : (
+              <Box p="xl">
+                <Text size="sm" c="dimmed">
+                  No <code>{CANDIDATE_MATCHES_CSV_PATH}</code> in this run — the
+                  pinch pass writes the exhaustive hot×cold analysis table on every
+                  run that finds duty-carrying units; re-run the case.
+                </Text>
+              </Box>
+            ))}
+            </>)}
+            {/* A knob changed while a previous result is on screen: the stale
+                curves stay visible under the loader until the engine answers. */}
+            {source === "classroom" && method.busy && active && (
+              <Box style={{ position: "absolute", inset: 0, display: "flex",
+                alignItems: "center", justifyContent: "center",
+                pointerEvents: "none" }}>
+                <Loader size="lg" />
+              </Box>
+            )}
+          </Box>
+        </Box>
+
+        <Text size="xs" c="dimmed">
+          Every target here is the engine&apos;s (PinchPass, whose problem table
+          is printed cascade row by cascade row in the run log); this view
+          re-reads its published curves and derives nothing but the grand
+          composite and the cross-check above, both labelled where they appear.
+          The pass analyses the network the case declares — it designs nothing
+          and rewrites nothing.
+        </Text>
+
+        {lessonStep(4)}
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

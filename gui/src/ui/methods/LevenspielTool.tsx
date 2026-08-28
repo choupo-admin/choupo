@@ -71,17 +71,26 @@ License
   bundle cannot load outside a browser, and the pure helpers (detectors,
   clipping, rectangle, knob map) must stay importable by the node test
   runner (tests/levenspielTool.test.ts).
+
+  THE PAGE IS A SCROLLING LESSON, not an instrument panel: the argument lives
+  as DATA in levenspielLesson.ts (steps + limits) so a test can assert it
+  still runs end to end, the definitions sit ABOVE the chart and the
+  consequences BELOW it, and ONE hoisted renderer serves both this file's
+  returns — a tool that hid its explanation on the branch where the engine
+  produced nothing would be hiding it exactly when it is most needed.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
+  Tooltip,
 } from "@mantine/core";
 
 import type { StreamResult, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { KnobNumber, PanelNote } from "./knobPanel.js";
+import { LEVENSPIEL_LIMITS, LEVENSPIEL_STEPS } from "./levenspielLesson.js";
 // The ONE existing trapezoid-integrator home in the Methods workspace (the
 // Rayleigh construction owns the same piecewise-linear area-in-view with the
 // same coverage refusal).  Reused rather than duplicated — the arity doctrine;
@@ -728,12 +737,64 @@ export function LevenspielTool(): JSX.Element {
     </>
   );
 
+  /*  ONE renderer for the lesson, above BOTH returns: the empty state and the
+   *  full page show the same steps.  A tool that hides its explanation when
+   *  the engine produced nothing is exactly backwards — the reader with no
+   *  chart is the reader who most needs the argument. */
+  const lessonStep = (n: number) => {
+    const st = LEVENSPIEL_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>Sizing a reactor, where the area IS the volume</Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        One curve, two shapes under it — and the shape of the curve decides
+        which reactor you should build.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {LEVENSPIEL_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
   // ---- Nothing drawable yet: per-source honest states -----------------------
   if (pfrView === null && cstrView === null) {
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+        {lessonHead}
         {alerts}
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
+        {[1, 2, 3, 4, 5].map(lessonStep)}
+        <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+        <Box style={{ display: "flex", alignItems: "center",
           justifyContent: "center", padding: 12 }}>
           {src === "classroom"
             && pfrRun.err === null && cstrRun.err === null
@@ -757,15 +818,39 @@ export function LevenspielTool(): JSX.Element {
             </Text>
           )}
         </Box>
-      </MethodSetupRail>
+        {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
   const limiting = pfrView?.limiting ?? cstrView?.limiting ?? "A";
 
   return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+      {lessonHead}
       {alerts}
+      {lessonStep(1)}
+      {lessonStep(2)}
+      {lessonStep(3)}
+
+      <Box>
+        <Title order={5}>Now read the two reactors the engine solved</Title>
+        <Text size="sm" mt={4}>
+          Below, the same duty done twice.  The shaded area is the PFR&apos;s
+          volume and the outlined rectangle is the CSTR&apos;s, both drawn from
+          the engines&apos; own published points — the twins share a feed, a
+          reaction file and a thermophysical system, so the only difference on
+          the chart is the reactor.  Turn a knob and watch the two shapes move
+          against each other.
+        </Text>
+      </Box>
+
+      <Box style={{ display: "grid", gap: 14,
+        gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+        <Stack gap={8}>{controls}</Stack>
+        <Box style={{ minWidth: 0 }}>
 
       {/* Chips: what each construction honestly claims. */}
       <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
@@ -888,6 +973,13 @@ export function LevenspielTool(): JSX.Element {
           </Text>
         )}
       </Box>
-    </MethodSetupRail>
+        </Box>
+      </Box>
+
+      {lessonStep(4)}
+      {lessonStep(5)}
+      {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

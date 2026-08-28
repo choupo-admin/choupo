@@ -84,17 +84,30 @@ License
   the plotting bundle cannot load outside a browser, and the pure helpers
   (detector, marker classifier, axis helpers, knob map) must stay importable
   by the node test runner (tests/vanHeerdenTool.test.ts).
+
+  THE PAGE IS A SCROLLING LESSON, not an instrument panel: the definitions
+  (steps 1-3 of `vanHeerdenLesson.ts`) sit ABOVE the diagram, the consequences
+  the diagram exists for — ignition/extinction hysteresis, and which handles
+  actually move the removal line — sit BELOW it, and the knobs live in a
+  two-column grid beside the plot rather than in a docked rail.  The prose is
+  DATA (`VAN_HEERDEN_STEPS` / `VAN_HEERDEN_LIMITS`) so the node test runner can
+  assert it still says what it is supposed to say.  There is ONE lesson
+  renderer, hoisted above BOTH returns: the no-surface branch shows the same
+  steps and the same limits as the branch that has a diagram, because the
+  argument is worth reading whether or not a curve arrived.
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Switch, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Switch, Text,
+  Title, Tooltip,
 } from "@mantine/core";
 
 import type { ProfileMarker, UnitProfile } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { KnobSlider, PanelNote } from "./knobPanel.js";
+import { VAN_HEERDEN_LIMITS, VAN_HEERDEN_STEPS } from "./vanHeerdenLesson.js";
 
 // ---- Detection: which engine surface feeds the tool -------------------------
 // The COLUMN PAIR is the contract, never a unit or a case name (the Merkel
@@ -551,8 +564,11 @@ function VanHeerdenSvg(
 
   const zeroInView = yDom.lo <= 0 && 0 <= yDom.hi;
 
+  /* A fixed height, because the page SCROLLS: inside a scrolling column there
+   * is no flex parent to stretch against, and an `svg` at height 100 % of an
+   * auto-height box collapses to nothing. */
   return (
-    <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+    <Box style={{ position: "relative", width: "100%", height: 460 }}>
       {busyOverlay && (
         <Box style={{ position: "absolute", inset: 0, display: "flex",
           alignItems: "center", justifyContent: "center", zIndex: 1,
@@ -742,9 +758,9 @@ export function VanHeerdenTool(): JSX.Element {
       ]} />
   ) : null;
 
-  /* The setup panel's content: the source, the option, the knobs, the
-     provenance.  It is a LIST of controls and nothing about the panel — the
-     panel is `MethodSetupRail` and it is the same one every tool docks. */
+  /* The controls: the source, the option, the knobs, the provenance.  A LIST
+     and nothing about where it sits — the page puts it in the column beside
+     the diagram. */
   const controls = (
     <>
       {sourceToggle}
@@ -780,37 +796,99 @@ export function VanHeerdenTool(): JSX.Element {
     </Alert>
   ) : null;
 
+  /*  ONE renderer for the lesson, above BOTH returns.  A tool that carried its
+   *  explanation only in the branch that HAD a diagram would lose it exactly
+   *  when there was nothing to explain, and this construction's argument is
+   *  worth reading whether or not a curve arrived. */
+  const lessonStep = (n: number) => {
+    const st = VAN_HEERDEN_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ border: "1px solid var(--mantine-color-default-border)",
+              borderRadius: 4 }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        Ignition and extinction: the answers a reactor can actually hold
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        The same equipment and the same feed can have three steady states — one
+        of which no start-up procedure can hold, and two which stop existing
+        altogether if you push a parameter far enough.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {VAN_HEERDEN_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
   if (view === null) {
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
-        {alerts}
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
-          justifyContent: "center", padding: 12 }}>
-          {src === "classroom" && run.err === null
-            && (busy || run.result === null) ? (
-              <Group gap="sm" wrap="nowrap" align="center">
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  the engine is scanning the energy balance — seconds, not
-                  instant
-                </Text>
-              </Group>
-            ) : (
-              <Text size="sm" c="dimmed" ta="center" maw={520}>
-                {src === "classroom"
-                  ? "The classroom run finished but published no Van Heerden "
-                    + "surface"
-                  : "This run publishes no Van Heerden surface"}
-                {" "}— the diagram activates when a solved unit publishes a
-                profile carrying both <b>{G_COLUMN}</b> and <b>{R_COLUMN}</b>
-                {" "}columns, which is what a NON-ISOTHERMAL{" "}
-                <code>cstr</code> emits over its steady-state scan.  An
-                isothermal CSTR has no such scan and no such profile — run{" "}
-                <code>tutorials/{VAN_HEERDEN_WITNESS}</code> and return here.
-              </Text>
-            )}
-        </Box>
-      </MethodSetupRail>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {lessonHead}
+          {alerts}
+          {[1, 2, 3, 4, 5].map(lessonStep)}
+          <Box style={{ display: "grid", gap: 14,
+            gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+            <Stack gap={8}>{controls}</Stack>
+            <Box style={{ minWidth: 0, display: "flex", alignItems: "center",
+              justifyContent: "center", padding: 12 }}>
+              {src === "classroom" && run.err === null
+                && (busy || run.result === null) ? (
+                  <Group gap="sm" wrap="nowrap" align="center">
+                    <Loader size="sm" />
+                    <Text size="sm" c="dimmed">
+                      the engine is scanning the energy balance — seconds, not
+                      instant
+                    </Text>
+                  </Group>
+                ) : (
+                  <Text size="sm" c="dimmed" ta="center" maw={520}>
+                    {src === "classroom"
+                      ? "The classroom run finished but published no Van "
+                        + "Heerden surface"
+                      : "This run publishes no Van Heerden surface"}
+                    {" "}— the diagram activates when a solved unit publishes a
+                    profile carrying both <b>{G_COLUMN}</b> and <b>{R_COLUMN}</b>
+                    {" "}columns, which is what a NON-ISOTHERMAL{" "}
+                    <code>cstr</code> emits over its steady-state scan.  An
+                    isothermal CSTR has no such scan and no such profile — run{" "}
+                    <code>tutorials/{VAN_HEERDEN_WITNESS}</code> and return
+                    here.
+                  </Text>
+                )}
+            </Box>
+          </Box>
+          {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
@@ -818,12 +896,9 @@ export function VanHeerdenTool(): JSX.Element {
   const dT_rise = view.kpis?.["dT_rise"];
   const T_guess = view.kpis?.["T_guess"];
 
-  return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
-      {alerts}
-
-      {/* Chips: what each one claims, and on whose number. */}
-      <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
+  const chips = (
+      /* Chips: what each one claims, and on whose number. */
+      <Group gap="sm" wrap="wrap" align="center"
         style={{ flexShrink: 0 }}>
         <Tooltip withArrow multiline w={430}
           label={"The engine's own KPI `steadyStates` — how many roots its "
@@ -884,16 +959,11 @@ export function VanHeerdenTool(): JSX.Element {
           </Text>
         )}
       </Group>
+  );
 
-      <VanHeerdenSvg
-        T={view.T} G={view.G} R={view.R} phi={view.phi}
-        states={view.states} showPhi={showPhi}
-        T_guess={typeof T_guess === "number" && Number.isFinite(T_guess)
-          ? T_guess : null}
-        busyOverlay={src === "classroom" && busy} />
-
-      {/* What this file computes, it declares (the standing Methods rule). */}
-      <Box px={12} pb={8} style={{ flexShrink: 0 }}>
+  const provenance = (
+      /* What this file computes, it declares (the standing Methods rule). */
+      <Box style={{ flexShrink: 0 }}>
         <Text size="xs" c="dimmed">
           G(T), R(T) and phi(T) are the reactor&apos;s published profile
           columns {G_COLUMN} / {R_COLUMN} / {PHI_COLUMN} on the engine&apos;s
@@ -915,6 +985,53 @@ export function VanHeerdenTool(): JSX.Element {
           </Text>
         )}
       </Box>
-    </MethodSetupRail>
+  );
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+        {lessonHead}
+        {alerts}
+
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+
+        <Box>
+          <Title order={5}>Now read the diagram the engine scanned</Title>
+          <Text size="sm" mt={4}>
+            Below are the two curves, drawn from the reactor&apos;s own
+            published columns, with a vertical line at every root the engine
+            bisected.  Read the slopes where they cross: at the outer
+            crossings the removal line is the steeper of the two, and at the
+            middle one it is not.  Then move <code>T_guess</code> and watch
+            which crossing the run REPORTS change without the diagram moving
+            at all — same equipment, same feed, a different answer, decided by
+            where you started.
+          </Text>
+        </Box>
+
+        {chips}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{controls}</Stack>
+          <Stack gap={8} style={{ minWidth: 0 }}>
+            <VanHeerdenSvg
+              T={view.T} G={view.G} R={view.R} phi={view.phi}
+              states={view.states} showPhi={showPhi}
+              T_guess={typeof T_guess === "number" && Number.isFinite(T_guess)
+                ? T_guess : null}
+              busyOverlay={src === "classroom" && busy} />
+            {provenance}
+          </Stack>
+        </Box>
+
+        {lessonStep(4)}
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

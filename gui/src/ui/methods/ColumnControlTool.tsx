@@ -39,6 +39,15 @@ License
   none of that needs a transient.  It needs a cross-section with the instruments
   on it, which is exactly what a P&ID is, drawn over a steady column.
 
+  THE PAGE IS A LESSON, and it scrolls.  The degrees-of-freedom count, the
+  naming convention it produces and the reason the pairing is the whole
+  question come BEFORE the interactive; what the tray criteria found and what
+  the choice actually depends on come AFTER it.  That prose lives in
+  columnControlLesson.ts as DATA, so a test can assert the argument still runs
+  end to end — prose is the part of a tool that rots with nothing failing.  It
+  states a count and a convention and no rule of thumb; every rule of thumb on
+  this screen is a cited record (below).
+
   THREE SURFACES, ONE SELECTION.
 
     * THE CROSS-SECTION.  The column drawn in section with its condenser,
@@ -84,13 +93,17 @@ License
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, ScrollArea, SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, ScrollArea, SegmentedControl, Stack, Text,
+  Title, Tooltip,
 } from "@mantine/core";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { KnobSlider, PanelNote } from "./knobPanel.js";
+import {
+  COLUMN_CONTROL_LIMITS, COLUMN_CONTROL_STEPS,
+} from "./columnControlLesson.js";
 import {
   conflictPairs, heuristicsForStructure, heuristicsForTopic,
   readHeuristicsCatalogue, stanceOn,
@@ -1051,18 +1064,81 @@ export function ColumnControlTool(): JSX.Element {
     </>
   );
 
+
+  /*  ONE renderer for the lesson, above BOTH returns: the page that has a
+   *  structure catalogue and the page that could not read one show the same
+   *  steps.  A sibling tool once shipped the explanation only in the branch
+   *  that HAD a drawing, so it vanished exactly when there was nothing to
+   *  explain -- that is the shape this avoids. */
+  const lessonStep = (n: number) => {
+    const st = COLUMN_CONTROL_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        Controlling a column: five valves, and why the choice is yours
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        The first of these pages that does not build you an answer.  Every
+        structure below is defensible; what is worth learning is how to choose
+        between them, and what the choice depends on.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {COLUMN_CONTROL_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
   if (!structure) {
     return (
-      <MethodSetupRail title="setup" setup={controls}>
-        {alerts}
-        <Box p={12}>
-          <Text size="sm" c="dimmed">
-            No control structure could be read from
-            data/standards/heuristics/ — the drawing is declared there, and
-            this tool draws nothing it cannot read.
-          </Text>
-        </Box>
-      </MethodSetupRail>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {lessonHead}
+          {alerts}
+          {[1, 2, 3].map(lessonStep)}
+          <Box>
+            <Text size="sm" c="dimmed">
+              No control structure could be read from
+              data/standards/heuristics/ — the drawing is declared there, and
+              this tool draws nothing it cannot read.  The refusals above name
+              every record that could not be used; the lesson below is
+              unaffected, because the count and the convention are not
+              heuristics.
+            </Text>
+          </Box>
+          <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+          {[4, 5].map(lessonStep)}
+          {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
@@ -1070,178 +1146,222 @@ export function ColumnControlTool(): JSX.Element {
   const trayRules = heuristicsForTopic(catalogue, "traySelection");
   const conflicts = conflictPairs(catalogue, structure.name);
 
-  return (
-    <MethodSetupRail title="setup" setup={controls}>
-      {alerts}
-
-      <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
-        style={{ flexShrink: 0 }}>
-        <Tooltip withArrow multiline w={430} label={structure.summary}>
-          <Badge variant="light" color="grape" tt="none"
+  const chips = (
+    <Group gap="sm" wrap="wrap" align="center">
+      <Tooltip withArrow multiline w={430} label={structure.summary}>
+        <Badge variant="light" color="grape" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          {structure.label}
+        </Badge>
+      </Tooltip>
+      <Tooltip withArrow multiline w={440}
+        label={"The largest |T(n+1) − T(n)| over the stages that are trays "
+          + "(stage 1 is the condenser and the last stage the reboiler, so "
+          + "neither can carry a tray thermocouple).  Read off ONE solved "
+          + "profile — the criterion a student can apply with a ruler."}>
+        <Badge variant="light" color="cyan" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          slope picks {view0?.slopePick
+            ? `stage ${view0.slopePick.stage} (${fmt(view0.slopePick.value, 4)} K`
+              + ` between it and stage ${view0.slopePick.stage + 1})`
+            : "—"}
+        </Badge>
+      </Tooltip>
+      <Tooltip withArrow multiline w={440}
+        label={"The largest |ΔT| per 1 % move of the manipulated variable, "
+          + "from a SECOND solve of the same column.  This is the number a "
+          + "published table cannot give you: it belongs to this column at "
+          + "these settings with this handle."}>
+        <Badge variant="light" color="violet" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          sensitivity picks {view0?.sensPick
+            ? `stage ${view0.sensPick.stage} `
+              + `(${view0.sensPick.value >= 0 ? "+" : ""}`
+              + `${fmt(view0.sensPick.value, 3)} K per 1 % of `
+              + `${HANDLE_TEXT[handle].label})`
+            : src === "current" ? "— (needs a second solve)" : "—"}
+        </Badge>
+      </Tooltip>
+      {view0?.drum && (
+        <Tooltip withArrow multiline w={450}
+          label={"Choupo's Design Guide says to hold a level with the LARGER "
+            + "stream leaving that drum, and both streams are on this run's "
+            + "KPI row (L_rect and D), so the rule has a number here: "
+            + `L/D = ${fmt(view0.drum.ratio, 4)}.  What the rule does NOT `
+            + "ship is a THRESHOLD — the published forms disagree about "
+            + "where 'larger' starts to matter, none could be pinned to a "
+            + "checked page, and so this chip says which is larger and stops "
+            + "there."}>
+          <Badge variant="light" color="orange" tt="none"
             styles={{ root: { cursor: "help" } }}>
-            {structure.label}
+            leaving the drum: L/D = {fmt(view0.drum.ratio, 4)} — the{" "}
+            {view0.drum.larger === "reflux" ? "reflux" : "distillate"} is the
+            {" "}larger stream
           </Badge>
         </Tooltip>
-        <Tooltip withArrow multiline w={440}
-          label={"The largest |T(n+1) − T(n)| over the stages that are trays "
-            + "(stage 1 is the condenser and the last stage the reboiler, so "
-            + "neither can carry a tray thermocouple).  Read off ONE solved "
-            + "profile — the criterion a student can apply with a ruler."}>
-          <Badge variant="light" color="cyan" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            slope picks {view0?.slopePick
-              ? `stage ${view0.slopePick.stage} (${fmt(view0.slopePick.value, 4)} K`
-                + ` between it and stage ${view0.slopePick.stage + 1})`
-              : "—"}
-          </Badge>
-        </Tooltip>
-        <Tooltip withArrow multiline w={440}
-          label={"The largest |ΔT| per 1 % move of the manipulated variable, "
-            + "from a SECOND solve of the same column.  This is the number a "
-            + "published table cannot give you: it belongs to this column at "
-            + "these settings with this handle."}>
-          <Badge variant="light" color="violet" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            sensitivity picks {view0?.sensPick
-              ? `stage ${view0.sensPick.stage} `
-                + `(${view0.sensPick.value >= 0 ? "+" : ""}`
-                + `${fmt(view0.sensPick.value, 3)} K per 1 % of `
-                + `${HANDLE_TEXT[handle].label})`
-              : src === "current" ? "— (needs a second solve)" : "—"}
-          </Badge>
-        </Tooltip>
-        {view0?.drum && (
-          <Tooltip withArrow multiline w={450}
-            label={"Choupo's Design Guide says to hold a level with the LARGER "
-              + "stream leaving that drum, and both streams are on this run's "
-              + "KPI row (L_rect and D), so the rule has a number here: "
-              + `L/D = ${fmt(view0.drum.ratio, 4)}.  What the rule does NOT `
-              + "ship is a THRESHOLD — the published forms disagree about "
-              + "where 'larger' starts to matter, none could be pinned to a "
-              + "checked page, and so this chip says which is larger and stops "
-              + "there."}>
-            <Badge variant="light" color="orange" tt="none"
-              styles={{ root: { cursor: "help" } }}>
-              leaving the drum: L/D = {fmt(view0.drum.ratio, 4)} — the{" "}
-              {view0.drum.larger === "reflux" ? "reflux" : "distillate"} is the
-              {" "}larger stream
-            </Badge>
-          </Tooltip>
-        )}
-        {view0?.slopePick && view0.sensPick && (
-          <Badge variant="light" tt="none"
-            color={view0.slopePick.stage === view0.sensPick.stage
-              ? "green" : "orange"}>
-            {view0.slopePick.stage === view0.sensPick.stage
-              ? "the two criteria agree"
-              : `the two criteria DISAGREE — ${view0.slopePick.stage} against `
-                + `${view0.sensPick.stage}`}
-          </Badge>
-        )}
-      </Group>
-
-      {view === "section" ? (
-        <ColumnSection structure={structure}
-          nStages={view0?.nStages ?? 15} feedStage={feedStage}
-          sensorStage={sensorStage} sensorCriterion={sensorCriterion}
-          sensorLoop={sensorLoop}
-          busyOverlay={src === "classroom" && busy} />
-      ) : view === "tray" ? (
-        view0 ? (
-          <TrayChart T={view0.T} slope={view0.slope} sens={view0.sens}
-            slopePick={view0.slopePick} sensPick={view0.sensPick}
-            handle={handle} busyOverlay={src === "classroom" && busy} />
-        ) : (
-          <Box style={{ flex: 1, display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 12 }}>
-            {busy ? <Loader size="sm" /> : (
-              <Text size="sm" c="dimmed" ta="center" maw={520}>
-                No column profile yet — the diagnostic activates when a solved
-                unit publishes a per-stage profile whose axis is{" "}
-                <b>{STAGE_COLUMN}</b> and which carries a <b>{T_COLUMN}</b>{" "}
-                column, which is what a <code>distillationColumn</code> emits.
-              </Text>
-            )}
-          </Box>
-        )
-      ) : (
-        <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto">
-          <Box p={12}>
-            <Text size="xs" c="dimmed" mb={8}>
-              What the authorities say about <b>{structure.label}</b>. Where two
-              disagree, both are shown with the conditions each assumed; nothing
-              here is scored, weighted or reconciled.
-            </Text>
-            {rules.length === 0 && (
-              <Text size="sm" c="dimmed" mb={12}>
-                No record in the catalogue takes a stance on this structure.
-                That is an absence of evidence, not a verdict — silence is not a
-                neutral opinion, and this tool does not manufacture one.
-              </Text>
-            )}
-            {rules.map((h) => (
-              <HeuristicCard key={h.file} h={h} structure={structure.name} />
-            ))}
-            {conflicts.map(([a, b]) => (
-              <Alert key={`${a.name}|${b.name}`} color="orange" variant="light"
-                mb={12}
-                title="Two authorities disagree here — deliberately not resolved">
-                <Text size="xs">
-                  <b>{a.source.author} ({a.source.year})</b> {a.claim}
-                </Text>
-                <Text size="xs" mt={4}>
-                  <b>{b.source.author} ({b.source.year})</b> {b.claim}
-                </Text>
-                <Text size="xs" mt={6} c="dimmed">
-                  Read the two <i>Asserted for</i> lines above: the conditions
-                  are not the same, and which of them is yours is the judgement
-                  this tool exists to hand back to you rather than make.
-                </Text>
-              </Alert>
-            ))}
-            <Text size="xs" c="dimmed" mt={16} mb={6}
-              style={{ fontWeight: 600 }}>
-              On choosing the tray
-            </Text>
-            {trayRules.map((h) => (
-              <HeuristicCard key={`t${h.file}`} h={h}
-                structure={structure.name} />
-            ))}
-          </Box>
-        </ScrollArea>
       )}
+      {view0?.slopePick && view0.sensPick && (
+        <Badge variant="light" tt="none"
+          color={view0.slopePick.stage === view0.sensPick.stage
+            ? "green" : "orange"}>
+          {view0.slopePick.stage === view0.sensPick.stage
+            ? "the two criteria agree"
+            : `the two criteria DISAGREE — ${view0.slopePick.stage} against `
+              + `${view0.sensPick.stage}`}
+        </Badge>
+      )}
+    </Group>
+  );
 
-      {/* What this file computes, it declares (the standing EduTools rule). */}
-      <Box px={12} pb={8} style={{ flexShrink: 0 }}>
-        {sensorLoop === null && (
-          <Text size="xs" c="red">
-            In {structure.name}, {HANDLE_TEXT[handle].label} is not free for
-            composition — it is spent on{" "}
-            {structure.loops.find((l) => l.manipulates === handle)?.controlled
-              ?? "an inventory"}. The sensitivity below is a valid perturbation
-            of this column, but no loop in this structure would use it; the
-            structure that frees this handle is the one to switch to.
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {lessonHead}
+        {alerts}
+
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+
+        <Box>
+          <Title order={5}>Now wire one of them onto a solved column</Title>
+          <Text size="sm" mt={4}>
+            <b>Cross-section</b> draws the structure you select as a P&amp;ID
+            over a steady column: every valve, every instrument bubble, and a
+            dashed signal line from each measurement to the valve it drives.
+            Change the structure and watch the lines move — that is the whole
+            selection, made visible.  <b>Tray selection</b> puts the engine&apos;s
+            own stage-temperature profile beside the two criteria of step 4 and
+            marks the tray each one picks.  <b>Cited heuristics</b> shows what
+            published authorities said about the structure on screen, including
+            where two of them disagree.  Nothing on any of the three is scored
+            or ranked.
           </Text>
-        )}
-        {view0 && view0.crossings.length > 0 && (
+        </Box>
+
+        {chips}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{controls}</Stack>
+          <Box style={{ minWidth: 0, height: 500, display: "flex",
+            flexDirection: "column" }}>
+            {view === "section" ? (
+              <ColumnSection structure={structure}
+                nStages={view0?.nStages ?? 15} feedStage={feedStage}
+                sensorStage={sensorStage} sensorCriterion={sensorCriterion}
+                sensorLoop={sensorLoop}
+                busyOverlay={src === "classroom" && busy} />
+            ) : view === "tray" ? (
+              view0 ? (
+                <TrayChart T={view0.T} slope={view0.slope} sens={view0.sens}
+                  slopePick={view0.slopePick} sensPick={view0.sensPick}
+                  handle={handle} busyOverlay={src === "classroom" && busy} />
+              ) : (
+                <Box style={{ flex: 1, display: "flex", alignItems: "center",
+                  justifyContent: "center", padding: 12 }}>
+                  {busy ? <Loader size="sm" /> : (
+                    <Text size="sm" c="dimmed" ta="center" maw={520}>
+                      No column profile yet — the diagnostic activates when a
+                      solved unit publishes a per-stage profile whose axis is{" "}
+                      <b>{STAGE_COLUMN}</b> and which carries a{" "}
+                      <b>{T_COLUMN}</b> column, which is what a{" "}
+                      <code>distillationColumn</code> emits.
+                    </Text>
+                  )}
+                </Box>
+              )
+            ) : (
+              <ScrollArea style={{ flex: 1, minHeight: 0 }} type="auto">
+                <Box p={12}>
+                  <Text size="xs" c="dimmed" mb={8}>
+                    What the authorities say about <b>{structure.label}</b>.
+                    Where two disagree, both are shown with the conditions each
+                    assumed; nothing here is scored, weighted or reconciled.
+                  </Text>
+                  {rules.length === 0 && (
+                    <Text size="sm" c="dimmed" mb={12}>
+                      No record in the catalogue takes a stance on this
+                      structure. That is an absence of evidence, not a verdict —
+                      silence is not a neutral opinion, and this tool does not
+                      manufacture one.
+                    </Text>
+                  )}
+                  {rules.map((h) => (
+                    <HeuristicCard key={h.file} h={h}
+                      structure={structure.name} />
+                  ))}
+                  {conflicts.map(([a, b]) => (
+                    <Alert key={`${a.name}|${b.name}`} color="orange"
+                      variant="light" mb={12}
+                      title="Two authorities disagree here — deliberately not resolved">
+                      <Text size="xs">
+                        <b>{a.source.author} ({a.source.year})</b> {a.claim}
+                      </Text>
+                      <Text size="xs" mt={4}>
+                        <b>{b.source.author} ({b.source.year})</b> {b.claim}
+                      </Text>
+                      <Text size="xs" mt={6} c="dimmed">
+                        Read the two <i>Asserted for</i> lines above: the
+                        conditions are not the same, and which of them is yours
+                        is the judgement this tool exists to hand back to you
+                        rather than make.
+                      </Text>
+                    </Alert>
+                  ))}
+                  <Text size="xs" c="dimmed" mt={16} mb={6}
+                    style={{ fontWeight: 600 }}>
+                    On choosing the tray
+                  </Text>
+                  {trayRules.map((h) => (
+                    <HeuristicCard key={`t${h.file}`} h={h}
+                      structure={structure.name} />
+                  ))}
+                </Box>
+              </ScrollArea>
+            )}
+          </Box>
+        </Box>
+
+        {/* What this file computes, it declares (the standing EduTools rule). */}
+        <Box>
+          {sensorLoop === null && (
+            <Text size="xs" c="red">
+              In {structure.name}, {HANDLE_TEXT[handle].label} is not free for
+              composition — it is spent on{" "}
+              {structure.loops.find((l) => l.manipulates === handle)?.controlled
+                ?? "an inventory"}. The sensitivity above is a valid
+              perturbation of this column, but no loop in this structure would
+              use it; the structure that frees this handle is the one to switch
+              to.
+            </Text>
+          )}
+          {view0 && view0.crossings.length > 0 && (
+            <Text size="xs" c="dimmed">
+              The response to {HANDLE_TEXT[handle].label} changes SIGN between
+              stage {view0.crossings[0]!.below} and{" "}
+              {view0.crossings[0]!.above}: a sensor there has almost no gain,
+              whatever the profile looks like. The slope criterion cannot see
+              this, because it never asks the handle a question.
+            </Text>
+          )}
           <Text size="xs" c="dimmed">
-            The response to {HANDLE_TEXT[handle].label} changes SIGN between
-            stage {view0.crossings[0]!.below} and{" "}
-            {view0.crossings[0]!.above}: a sensor there has almost no gain,
-            whatever the profile looks like. The slope criterion cannot see
-            this, because it never asks the handle a question.
+            Every temperature above is the column&apos;s own published stage
+            profile; this file takes a difference between adjacent stages, and a
+            difference between two engine runs, and draws them. It computes no
+            relative gain — the engine publishes no gain matrix — and it shows
+            no transient: a level that moves is an accumulation term, the engine
+            has no dynamic column, and a fabricated response would teach a
+            specific wrong thing with confidence.
           </Text>
-        )}
-        <Text size="xs" c="dimmed">
-          Every temperature above is the column&apos;s own published stage
-          profile; this file takes a difference between adjacent stages, and a
-          difference between two engine runs, and draws them. It computes no
-          relative gain — the engine publishes no gain matrix — and it shows no
-          transient: a level that moves is an accumulation term, the engine has
-          no dynamic column, and a fabricated response would teach a specific
-          wrong thing with confidence.
-        </Text>
-      </Box>
-    </MethodSetupRail>
+        </Box>
+
+        {lessonStep(4)}
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

@@ -1,0 +1,238 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  The batch-drying lesson, as DATA -- the kremserLesson / hunterNashLesson
+  shape, for the same reason: prose is the part of a tool that rots with
+  nothing failing, and an argument held as data can be asserted to still say
+  what it claims.
+
+  THE LESSON: drying is not one operation, it is TWO, and they are controlled
+  by different things.  While the surface stays wet the solid is barely in the
+  problem at all -- the rate is set by the air film and the surface sits at the
+  air's WET BULB.  Below the critical moisture the solid takes over, the rate
+  falls, and the surface warms.  Students size the first period and pay for the
+  second.
+
+  EVERY CLAIM HERE WAS CHECKED AGAINST src/unitOperations/batch/BatchDryer.{H,cpp}
+  AND AGAINST THE WITNESS tutorials/batch/drying/dryer01_sucrose_tray BEFORE IT
+  WAS WRITTEN, and the ones the model does NOT support are labelled instead of
+  dropped.  The two that matter most:
+
+    * X_c is a DECLARED INPUT (`operation.criticalMoisture`), echoed back as a
+      KPI.  Nothing here predicts it.
+    * the solid's own temperature is NOT integrated.  The warm-up toward the
+      dry bulb is real physics and is a named gap in this model, so the page
+      says both halves rather than the flattering one.
+
+  There is also no transfer CORRELATION anywhere in this unit: k_Y is declared
+  sample/equipment data.  A step that spoke of Nusselt or Sherwood numbers
+  would be describing a model this engine does not run.
+\*---------------------------------------------------------------------------*/
+
+export interface LessonStep {
+  n: number;
+  title: string;
+  body: string;
+  formula?: string;
+  note?: string;
+}
+
+export const DRYING_STEPS: readonly LessonStep[] = [
+  {
+    n: 1,
+    title: "One curve, two completely different operations",
+    body: "Plot the moisture of a wet solid against time and you get a "
+      + "straight stretch that bends into a long tail.  That bend is not a "
+      + "numerical artefact and it is not a smooth transition of one "
+      + "mechanism: it is the point where the operation changes hands.  "
+      + "Before it, the rate is set by the AIR.  After it, the rate is set by "
+      + "the SOLID.  Everything else on this page follows from that, "
+      + "including the two ways a dryer gets sized wrong.  Moisture is "
+      + "counted on the DRY basis — kg of water per kg of bone-dry solid — "
+      + "because the dry solid is the one quantity in the tray that does not "
+      + "change while it dries.",
+    formula: "X = m_moisture / m_drySolid        [kg/kg dry solid]",
+    note: "The dry basis is why X can exceed 1 and why the axis has no "
+      + "ceiling: a solid holding twice its own dry weight in water sits at "
+      + "X = 2.  A wet-basis fraction would compress the whole interesting "
+      + "part of the curve against its own upper bound.",
+  },
+  {
+    n: 2,
+    title: "Constant rate: the surface is free liquid, and it stays COOL",
+    body: "While the surface is kept wet, the solid is barely in the problem. "
+      + " The water evaporating there behaves like a free liquid pool: the "
+      + "rate is set by transfer through the air film, and the solid supplies "
+      + "moisture as fast as the air can take it away.  The consequence "
+      + "students under-use is thermal.  Evaporation cools the surface until "
+      + "the heat arriving from the air exactly matches the latent heat "
+      + "leaving with the vapour, and that balance point is the air's WET-BULB "
+      + "temperature — well below its dry bulb.  So the material sits cool "
+      + "while it dries, which is why the constant-rate period is the safe one "
+      + "for a heat-sensitive product, and why hot air is not automatically a "
+      + "danger to it.",
+    formula: "Y_sat(T_wb) − Y = (cp_c + Y·cp_v)(T_air − T_wb) / λ(T_wb)\n"
+      + "R_c = k_Y · ( Y_sat(T_wb) − Y )                 [kg/(m² s)]",
+    note: "The engine solves the first line for T_wb by bisection at Lewis = 1 "
+      + "and publishes it as the T_wb KPI; the flux is then formed on the "
+      + "mass-transfer side alone.  Those are the same statement only BECAUSE "
+      + "Lewis = 1 is assumed — that is the hypothesis doing the work here.  "
+      + "And k_Y is DECLARED sample and equipment data (air velocity, tray "
+      + "geometry), not a correlation: this model does not predict a transfer "
+      + "coefficient from the air's condition, so changing the air temperature "
+      + "moves T_wb and the driving force, and leaves k_Y exactly where you "
+      + "put it.",
+  },
+  {
+    n: 3,
+    title: "The critical moisture — and in this model you DECLARE it",
+    body: "Eventually the solid can no longer deliver moisture to the surface "
+      + "fast enough to keep it wet.  The moisture content at which that "
+      + "happens is the CRITICAL MOISTURE X_c, and it is the corner in the "
+      + "rate curve.  Be clear about what it is not: it is not a pure "
+      + "material property.  The same powder dried harder — faster air, hotter "
+      + "air — reaches the limit at a HIGHER moisture, because the surface is "
+      + "being stripped faster than the interior can resupply.  X_c belongs to "
+      + "the material AND the conditions together, which is why it is "
+      + "measured.",
+    formula: "t_c = m_s · (X_0 − X_c) / (R_c · A)      [the constant-rate leg]",
+    note: "IN THIS ENGINE X_c IS AN INPUT, not a result: the case declares "
+      + "operation.criticalMoisture and the KPI X_critical echoes it back.  So "
+      + "reading X_c off the corner of the R(X) plot recovers what was "
+      + "declared — the corner sits there by construction of the two-period "
+      + "law.  What the RUN decides is WHEN the curve arrives there, and that "
+      + "is the t_critical KPI, which the engine publishes only when it "
+      + "actually observed the crossing.",
+  },
+  {
+    n: 4,
+    title: "Falling rate: now the solid controls, and the surface warms",
+    body: "Below X_c the wet surface is gone.  Moisture now has to travel from "
+      + "inside the solid to a receding or partly dry surface, and that "
+      + "journey — not the air film — sets the pace.  The rate falls, and "
+      + "keeps falling, all the way to the equilibrium moisture X_eq where it "
+      + "reaches zero.  The thermal picture inverts with it: with less "
+      + "evaporation to cool it, the surface leaves the wet bulb and climbs "
+      + "toward the air's DRY-BULB temperature.  That is where a "
+      + "heat-sensitive product is actually at risk, and it is the opposite "
+      + "end of the curve from where the hot air first worried you.",
+    formula: "R = R_c · (X − X_eq) / (X_c − X_eq)\n"
+      + "X(t) − X_eq = (X_c − X_eq)·exp(−(t − t_c)/τ),   "
+      + "τ = m_s (X_c − X_eq)/(R_c A)",
+    note: "TWO HONESTY MARKS ON THIS STEP.  The linear falling-rate law above "
+      + "is a MODELLING CHOICE the engine announces on every run in those "
+      + "words — the simplest defensible law, not a mechanism: no internal "
+      + "diffusion coefficient, no receding front, and only ONE falling-rate "
+      + "period where many real materials show two.  And the warm-up toward "
+      + "the dry bulb is described here but NOT computed: the solid's own "
+      + "temperature is not integrated at all, which the engine also announces "
+      + "as a named gap.  So this tool can tell you the product stays at T_wb "
+      + "during the constant-rate period; it cannot tell you how hot it gets "
+      + "afterwards.",
+  },
+  {
+    n: 5,
+    title: "Two consequences you have to size for",
+    body: "FIRST: most of the WATER usually leaves in the constant-rate "
+      + "period, and most of the TIME is usually spent in the falling-rate "
+      + "one.  Those two sentences are not in conflict — they are what an "
+      + "exponential tail does.  Size a dryer by taking the water to be "
+      + "removed and dividing by the constant rate and you will underestimate "
+      + "the drying time badly, because you priced the whole job at the "
+      + "fastest rate it ever achieves.  Read the break time against the run's "
+      + "horizon on the plot below and you can see the split for yourself.  "
+      + "SECOND: X_eq is a FLOOR.  The rate vanishes there by construction, so "
+      + "no amount of extra time gets you below it; drier product needs drier "
+      + "or hotter air, not a longer run.  A dryer specified to a moisture "
+      + "below the equilibrium value of the air it is fed cannot meet its "
+      + "specification at any residence time.",
+    formula: "t(X) = t_c + τ · ln( (X_c − X_eq) / (X − X_eq) )   →  ∞  as X → X_eq",
+    note: "Both consequences are visible in the two diagrams: on X(t) the tail "
+      + "flattens onto X_eq and never touches it; on R(X) the sloping segment "
+      + "aims at R = 0 exactly at X_eq.  X_eq here is a RESULT, not a "
+      + "declaration — the GAB isotherm of the solid evaluated at the water "
+      + "activity of the declared air — so it moves when you move the air's "
+      + "humidity, and that is the knob that raises or lowers the floor.",
+  },
+];
+
+export const DRYING_LIMITS: readonly { id: string; title: string; body: string }[] = [
+  {
+    id: "declared-critical-moisture",
+    title: "X_c is DECLARED, so the corner is not a prediction.",
+    body: "operation.criticalMoisture is an input echoed back as the "
+      + "X_critical KPI. Nothing in this engine predicts where the "
+      + "constant-rate period ends, and nothing here makes X_c move when you "
+      + "change the air — which real materials do, since drying harder pushes "
+      + "the critical moisture up. Reading X_c off the plot recovers what was "
+      + "typed into the case.",
+  },
+  {
+    id: "falling-rate-law",
+    title: "ONE falling-rate period, by a law that is a CHOICE.",
+    body: "R = R_c (X − X_eq)/(X_c − X_eq) is announced by the engine as a "
+      + "modelling choice, not physics. There is no internal diffusion "
+      + "coefficient, no moisture profile inside the solid, no receding "
+      + "evaporation front, no case hardening, and no second falling-rate "
+      + "period. A material whose tail is governed by liquid capillary flow "
+      + "and one governed by vapour diffusion are drawn identically here.",
+  },
+  {
+    id: "solid-temperature",
+    title: "The solid's temperature is NOT integrated.",
+    body: "The surface is held at the wet bulb by hypothesis while X > X_c, "
+      + "and the falling-rate warm-up toward the air's dry bulb is a gap the "
+      + "engine names on every run. So this tool cannot tell you the product "
+      + "temperature after the break, and no thermal-degradation or "
+      + "product-quality claim can be read off it.",
+  },
+  {
+    id: "constant-air",
+    title: "The air is a DECLARED, CONSTANT environment.",
+    body: "T, Y and the carrier are fixed for the whole run: the air does not "
+      + "humidify as it picks up moisture, there is no air flow rate, no "
+      + "outlet-air state and no recycle. A real tray dryer's air is drier at "
+      + "the inlet end than at the outlet end, which is one reason a real "
+      + "batch does not dry uniformly. None of that is here.",
+  },
+  {
+    id: "no-spatial-resolution",
+    title: "ONE moisture for the whole charge.",
+    body: "The tray is a single well-mixed inventory: no bed depth, no "
+      + "position along the tray, no non-uniform loading, and no distinction "
+      + "between the top and the bottom of the layer. The exposed area is a "
+      + "declared constant, so shrinkage of the drying surface as the solid "
+      + "contracts is not modelled either.",
+  },
+  {
+    id: "declared-transfer-coefficient",
+    title: "k_Y is declared data, not a correlation.",
+    body: "The gas-film coefficient is sample and equipment data — air "
+      + "velocity, tray geometry — and the engine refuses to default it. "
+      + "Nothing here computes it from a Reynolds or Sherwood number, so the "
+      + "air-temperature knob changes the wet bulb and the driving force but "
+      + "never k_Y itself. The wet-bulb equation also assumes Lewis = 1.",
+  },
+  {
+    id: "energy-from-outside",
+    title: "The latent load is published, and deliberately NOT ledgered.",
+    body: "The drying heat comes from the declared air environment, which "
+      + "lies outside the campaign boundary, so the engine publishes "
+      + "latentDuty_kW and latentEnergy_kJ as KPIs and reports the campaign "
+      + "energy balance as UNAVAILABLE rather than closing it with a term it "
+      + "cannot price. The evaporated water is reported the same way — as "
+      + "matter the declared closure destroys, never as a silent leak.",
+  },
+];

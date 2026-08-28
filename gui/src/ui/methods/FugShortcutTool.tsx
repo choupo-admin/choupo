@@ -54,8 +54,8 @@ License
   `src/unitOperations/distillation/ShortcutColumn.cpp` and nowhere else; this
   file draws numbers and never makes one.  The comparability protocol -- what
   had to be tied together so the two columns answer ONE question -- is written
-  out in `case/fugShortcut.ts`, and its short form is on screen in the setup
-  panel and the footer.
+  out in `case/fugShortcut.ts`, and its short form is on screen beside the
+  plot.
 
   THE ENGINE ALREADY CALLS THIS AN APPROXIMATION, and the tool says so in the
   engine's own words rather than its own: every shortcut run emits a
@@ -66,25 +66,34 @@ License
   cannot show that the column was a shortcut, so the record travels with the
   answer.  Here, so does the drawing.
 
+  THE PAGE IS THE LESSON, not a panel of knobs with a caption.  The argument
+  lives as DATA in `fugLesson.ts` (FUG_STEPS, FUG_LIMITS) so a test can assert
+  it still runs end to end -- prose is the part of a tool that rots with
+  nothing failing.  Steps 1-4 build the construction BEFORE the plot; step 5
+  and the limits state the consequences AFTER it; and the lesson is rendered
+  from ONE hoisted renderer, so it is on screen whether or not the engine has
+  answered.
+
   THE LIMITS ARE ON SCREEN, not omitted for clarity: constant relative
   volatility (frozen at the feed bubble point, so no azeotrope is
   representable), constant molar overflow, a STAGE COUNT rather than a design,
-  and a Gilliland correlation that is a FIT to plant and simulation data rather
-  than a derivation.  They are in the footer of both panes and in the panel.
+  an empirical Kirkbride feed split, and a Gilliland correlation that is a FIT
+  to plant and simulation data rather than a derivation.
 
   Theory: \label{ch:fug} in docs/theoryGuide.tex.
 \*---------------------------------------------------------------------------*/
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Switch,
-  Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
+  Switch, Text, Title, Tooltip,
 } from "@mantine/core";
 
 import {
-  KnobField, KnobNumber, KnobSlider, MethodSetupRail, PanelNote,
+  KnobField, KnobNumber, KnobSlider, PanelNote,
   type PanelKnob,
 } from "./knobPanel.js";
+import { FUG_LIMITS, FUG_STEPS } from "./fugLesson.js";
 import { useEngineSeries } from "../../case/engineSeries.js";
 import {
   FUG_KNOB_DEFAULTS, FUG_RIGOROUS_WITNESS, FUG_SHORTCUT_WITNESS,
@@ -437,7 +446,7 @@ export function FugShortcutTool(): JSX.Element {
     </Group>
   );
 
-  // ---- The setup panel ------------------------------------------------------
+  // ---- The knobs ------------------------------------------------------------
   const setup = (
     <>
       <KnobField label="pane">
@@ -468,6 +477,12 @@ export function FugShortcutTool(): JSX.Element {
             onChange={(v) => setKnobs({ ...knobs, ladderAbove: v })} />
         </>
       )}
+    </>
+  );
+
+  // ---- Where every number on this page came from ----------------------------
+  const provenance = (
+    <>
       <PanelNote>
         Both curves are engine runs, in this browser. The shortcut points are{" "}
         <code>choupoSolve</code> on{" "}
@@ -493,63 +508,119 @@ export function FugShortcutTool(): JSX.Element {
     </>
   );
 
-  return (
-    <MethodSetupRail title="shortcut knobs" setup={setup}>
-      <Group gap={8} align="center" wrap="wrap" p="sm" pb={0}
-        style={{ flexShrink: 0 }}>
-        {/* THE TWO LIMITS: reflux-independent, so they are shown from the
-            first answered point of the series. */}
-        {basis && (
-          <>
-            <Badge variant="light" color="orange" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              Fenske · N_min = {basis.Nmin.toFixed(2)} at total reflux
-            </Badge>
-            <Badge variant="light" color="orange" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              Underwood · R_min = {basis.Rmin.toFixed(3)} (θ = {basis.theta.toFixed(4)})
-            </Badge>
-            <Badge variant="light" color="gray" size="lg"
-              styles={{ root: { textTransform: "none" } }}>
-              α_LK,HK = {basis.alpha.toFixed(3)} · frozen at the feed bubble point
-            </Badge>
-          </>
+  /*  ONE renderer for the lesson, hoisted above everything that can be empty:
+   *  the steps, the heading and the limits are rendered from the SAME place
+   *  whether the engine has answered or not.  A page that hides its
+   *  explanation exactly when there is nothing to explain is backwards, and
+   *  a second copy of the prose in the empty branch would be a second home
+   *  for it. */
+  const lessonStep = (n: number) => {
+    const st = FUG_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
         )}
-        {/* THE INTERPOLATION AT THIS REFLUX: only once its own run has landed. */}
-        {operating && (
-          <Badge variant="light" color="cyan" size="lg"
-            styles={{ root: { textTransform: "none" } }}>
-            Gilliland · N = {operating.N.toFixed(2)} at R = {operating.R.toFixed(3)}
-          </Badge>
-        )}
-        {/* THE JUXTAPOSITION.  This is the chip the tool exists for. */}
-        {operating && compare && crossing.nStages != null ? (
-          <Tooltip withArrow multiline w={340}
-            label="Both columns: same feed, same thermo, same reflux, same distillate rate, same product specification. The shortcut answers with a stage count in closed form; the rigorous MESH column is solved once per stage count until it reaches the same products.">
-            <Badge variant="filled" color="teal" size="lg"
-              styles={{ root: { textTransform: "none", cursor: "help" } }}>
-              shortcut prediction: {operating.N.toFixed(1)} stages
-              {" → "}{shortcutStages} trays
-              {"  ·  "}rigorous MESH: {crossing.nStages} stages
-            </Badge>
-          </Tooltip>
-        ) : compare && ladder.busy ? (
-          <Badge variant="light" color="gray" size="lg"
-            styles={{ root: { textTransform: "none" } }}>
-            rigorous ladder · solving {ladder.done}/{ladderPoints.length}
-          </Badge>
-        ) : null}
-        {shortcut.busy && (
-          <Badge variant="light" color="gray" size="lg"
-            styles={{ root: { textTransform: "none" } }}>
-            shortcut curve · solving {shortcut.done}/{shortcutPoints.length}
-          </Badge>
-        )}
-      </Group>
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
 
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        The shortcut: two limits with derivations, and a fit between them
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        Where the first number you type into a rigorous column comes from — and
+        which parts of it are consequences of an assumption, and which part is
+        a curve somebody drew through data.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {FUG_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  // ---- The live numbers, as chips ------------------------------------------
+  const chips = (
+    <Group gap={8} align="center" wrap="wrap">
+      {/* THE TWO LIMITS: reflux-independent, so they are shown from the
+          first answered point of the series. */}
+      {basis && (
+        <>
+          <Badge variant="light" color="orange" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            Fenske · N_min = {basis.Nmin.toFixed(2)} at total reflux
+          </Badge>
+          <Badge variant="light" color="orange" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            Underwood · R_min = {basis.Rmin.toFixed(3)} (θ = {basis.theta.toFixed(4)})
+          </Badge>
+          <Badge variant="light" color="gray" size="lg"
+            styles={{ root: { textTransform: "none" } }}>
+            α_LK,HK = {basis.alpha.toFixed(3)} · frozen at the feed bubble point
+          </Badge>
+        </>
+      )}
+      {/* THE INTERPOLATION AT THIS REFLUX: only once its own run has landed. */}
+      {operating && (
+        <Badge variant="light" color="cyan" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          Gilliland · N = {operating.N.toFixed(2)} at R = {operating.R.toFixed(3)}
+        </Badge>
+      )}
+      {/* THE JUXTAPOSITION.  This is the chip the tool exists for. */}
+      {operating && compare && crossing.nStages != null ? (
+        <Tooltip withArrow multiline w={340}
+          label="Both columns: same feed, same thermo, same reflux, same distillate rate, same product specification. The shortcut answers with a stage count in closed form; the rigorous MESH column is solved once per stage count until it reaches the same products.">
+          <Badge variant="filled" color="teal" size="lg"
+            styles={{ root: { textTransform: "none", cursor: "help" } }}>
+            shortcut prediction: {operating.N.toFixed(1)} stages
+            {" → "}{shortcutStages} trays
+            {"  ·  "}rigorous MESH: {crossing.nStages} stages
+          </Badge>
+        </Tooltip>
+      ) : compare && ladder.busy ? (
+        <Badge variant="light" color="gray" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          rigorous ladder · solving {ladder.done}/{ladderPoints.length}
+        </Badge>
+      ) : null}
+      {shortcut.busy && (
+        <Badge variant="light" color="gray" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          shortcut curve · solving {shortcut.done}/{shortcutPoints.length}
+        </Badge>
+      )}
+    </Group>
+  );
+
+  // ---- What the engine itself says about these runs ------------------------
+  const alerts = (
+    <>
       {/* THE ENGINE'S OWN VERDICT, verbatim.  Not a caption this file wrote. */}
       {divergences.map((d, i) => (
-        <Alert key={i} color="yellow" variant="light" m="sm" mb={0}
+        <Alert key={i} color="yellow" variant="light"
           title="The engine records this run as a declared approximation">
           <Text size="xs">
             <strong>{d.locus}</strong> — requested: {d.requested}; solved:{" "}
@@ -565,7 +636,7 @@ export function FugShortcutTool(): JSX.Element {
       ))}
 
       {shortcut.failures.length > 0 && (
-        <Alert color="red" variant="light" m="sm" mb={0}
+        <Alert color="red" variant="light"
           title="choupoSolve (WASM) — shortcut points that refused">
           {shortcut.failures.map((f) => (
             <Text key={f.label} size="xs" ff="monospace"
@@ -576,7 +647,7 @@ export function FugShortcutTool(): JSX.Element {
         </Alert>
       )}
       {ladder.failures.length > 0 && (
-        <Alert color="red" variant="light" m="sm" mb={0}
+        <Alert color="red" variant="light"
           title="choupoSolve (WASM) — rigorous ladder rungs that refused">
           {ladder.failures.map((f) => (
             <Text key={f.label} size="xs" ff="monospace"
@@ -587,7 +658,7 @@ export function FugShortcutTool(): JSX.Element {
         </Alert>
       )}
       {compare && !ladder.busy && crossing.aboveWindow && rungs.length > 0 && (
-        <Alert color="orange" variant="light" m="sm" mb={0}
+        <Alert color="orange" variant="light"
           title="The ladder did not reach the separation">
           <Text size="xs">
             No stage count between {rungs[0]!.nStages} and{" "}
@@ -599,7 +670,7 @@ export function FugShortcutTool(): JSX.Element {
         </Alert>
       )}
       {compare && !ladder.busy && crossing.belowWindow && (
-        <Alert color="orange" variant="light" m="sm" mb={0}
+        <Alert color="orange" variant="light"
           title="The ladder's lowest rung already met the separation">
           <Text size="xs">
             {crossing.nStages} stages is the SMALLEST count that was tried, so
@@ -608,59 +679,96 @@ export function FugShortcutTool(): JSX.Element {
           </Text>
         </Alert>
       )}
+    </>
+  );
 
-      <Box pos="relative" style={{ flex: 1, minHeight: 0 }}>
-        <LoadingOverlay visible={busy && !basis} zIndex={5}
-          overlayProps={{ blur: 1 }}
-          loaderProps={{ children: fallback }} />
-        {basis && pane === "curve" ? (
-          <Suspense fallback={fallback}>
-            <StagesVsRefluxPlot curve={curve} basis={basis} operating={operating}
-              rigorousN={compare ? crossing.nStages : null} />
-          </Suspense>
-        ) : basis && rungs.length > 0 ? (
-          <Suspense fallback={fallback}>
-            <RigorousLadderPlot rungs={rungs} target={target}
-              shortcutStages={shortcutStages} crossing={crossing} />
-          </Suspense>
-        ) : basis && !compare ? (
-          <Box p="xl">
-            <Text c="dimmed" size="sm" maw={560}>
-              The rigorous comparison is switched off, so there is no ladder to
-              draw. Turn it back on in the panel and the MESH column is solved
-              once per stage count around the shortcut&apos;s answer.
-            </Text>
-          </Box>
-        ) : basis ? (
-          <Box p="xl">
-            <Text c="dimmed" size="sm" maw={560}>
-              The rigorous ladder has no rungs yet
-              {ladderPoints.length > 0
-                ? ` (${ladder.done} of ${ladderPoints.length} stage counts solved)`
-                : ""}. Each rung is a full MESH solve of{" "}
-              <code>tutorials/{FUG_RIGOROUS_WITNESS}</code> in this browser, and
-              they run one after another so the reflux they all share is the one
-              the shortcut returned.
-            </Text>
-          </Box>
-        ) : !busy && shortcut.failures.length === 0 ? (
-          <Box p="xl">
-            <Text c="dimmed" size="sm" maw={560}>
-              No shortcut answer yet. The construction reads a{" "}
-              <code>shortcutColumn</code> run — its KPIs publish{" "}
-              <code>N_min</code>, <code>R_min</code>, <code>theta</code> and{" "}
-              <code>N_theoretical</code>.
-            </Text>
-          </Box>
-        ) : null}
-      </Box>
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
 
-      {/* THE LIMITS, on screen and not in a footnote nobody opens. */}
-      <Box p="sm" pt={6} style={{ flexShrink: 0 }}>
+        {lessonHead}
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
+
+        <Box>
+          <Title order={5}>Now read the two limits off a solved column</Title>
+          <Text size="sm" mt={4}>
+            Everything below is an engine answer, not an illustration. The
+            first pane draws N against R: the horizontal dashed line is
+            Fenske&apos;s N_min, the vertical dashed line is Underwood&apos;s
+            R_min, and the curve between them is Gilliland — one solve of the
+            shortcut column per point. The second pane runs the RIGOROUS MESH
+            column on the same separation, one solve per stage count, and asks
+            the only question that settles the comparison: how many stages does
+            it actually take to reach the products the shortcut designed for?
+          </Text>
+        </Box>
+
+        {chips}
+        {alerts}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{setup}</Stack>
+          <Box pos="relative" style={{ minWidth: 0, height: 460 }}>
+            <LoadingOverlay visible={busy && !basis} zIndex={5}
+              overlayProps={{ blur: 1 }}
+              loaderProps={{ children: fallback }} />
+            {basis && pane === "curve" ? (
+              <Suspense fallback={fallback}>
+                <StagesVsRefluxPlot curve={curve} basis={basis} operating={operating}
+                  rigorousN={compare ? crossing.nStages : null} />
+              </Suspense>
+            ) : basis && rungs.length > 0 ? (
+              <Suspense fallback={fallback}>
+                <RigorousLadderPlot rungs={rungs} target={target}
+                  shortcutStages={shortcutStages} crossing={crossing} />
+              </Suspense>
+            ) : basis && !compare ? (
+              <Box p="xl">
+                <Text c="dimmed" size="sm" maw={560}>
+                  The rigorous comparison is switched off, so there is no ladder
+                  to draw. Turn it back on in the knobs and the MESH column is
+                  solved once per stage count around the shortcut&apos;s answer.
+                </Text>
+              </Box>
+            ) : basis ? (
+              <Box p="xl">
+                <Text c="dimmed" size="sm" maw={560}>
+                  The rigorous ladder has no rungs yet
+                  {ladderPoints.length > 0
+                    ? ` (${ladder.done} of ${ladderPoints.length} stage counts solved)`
+                    : ""}. Each rung is a full MESH solve of{" "}
+                  <code>tutorials/{FUG_RIGOROUS_WITNESS}</code> in this browser,
+                  and they run one after another so the reflux they all share is
+                  the one the shortcut returned.
+                </Text>
+              </Box>
+            ) : !busy && shortcut.failures.length === 0 ? (
+              <Box p="xl">
+                <Text c="dimmed" size="sm" maw={560}>
+                  No shortcut answer yet. The construction reads a{" "}
+                  <code>shortcutColumn</code> run — its KPIs publish{" "}
+                  <code>N_min</code>, <code>R_min</code>, <code>theta</code> and{" "}
+                  <code>N_theoretical</code>.
+                </Text>
+              </Box>
+            ) : null}
+          </Box>
+        </Box>
+
+        {provenance}
+
+        {lessonStep(5)}
+
+        {/* THE LIMITS AGAINST THIS RUN'S OWN NUMBERS, not a footnote nobody
+            opens: the same four assumptions, priced where they can be. */}
         <Text size="xs" c="dimmed">
-          <strong>What FUG assumes, and what it returns.</strong> The relative
-          volatility is <strong>constant</strong> — one value, frozen at the
-          feed bubble point{basis
+          <strong>What FUG assumed to get the numbers above.</strong> The
+          relative volatility is <strong>constant</strong> — one value, frozen
+          at the feed bubble point{basis
             ? ` (α = ${basis.alpha.toFixed(3)} here)`
             : ""} — so no azeotrope is representable at all, and the α that
           actually varies down a real column is not in any of these numbers.
@@ -682,7 +790,9 @@ export function FugShortcutTool(): JSX.Element {
               + ` involved, and the two counts meet.`
             : ""}
         </Text>
-      </Box>
-    </MethodSetupRail>
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

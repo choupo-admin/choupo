@@ -1,0 +1,244 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  The column-control lesson, as DATA, for the same reason the McCabe, Kremser
+  and Hunter-Nash ones are: prose is the part of a tool that rots with nothing
+  failing, and an argument held as data can be asserted to still run end to
+  end.
+
+  THE ONE THING THAT MAKES THIS LESSON DIFFERENT FROM ITS SIBLINGS.  The other
+  EduTools CONSTRUCT an answer — a staircase, a triangle, a recovery.  This one
+  is of the SELECTION kind: the reader leaves with a defensible way of choosing
+  between structures that are all defensible, not with the structure.  So every
+  sentence here is written to hand the judgement back rather than to make it,
+  and the page states plainly what it cannot settle.
+
+  WHAT THIS FILE MAY AND MAY NOT SAY.  It may state the DEGREES-OF-FREEDOM
+  arithmetic and the NAMING CONVENTION that follows from it, because those are
+  a count and a definition — the same count the Theory Guide's
+  `sec:column-control` derives.  It may NOT state a rule of thumb, a
+  threshold, a ranking or a preference: those live as cited records under
+  data/standards/heuristics/ and reach the screen through
+  columnControlRecords.ts, each with its author, its validity domain and what
+  it does not cover.  A preference typed here would be a claim with no author.
+\*---------------------------------------------------------------------------*/
+
+export interface LessonStep {
+  n: number;
+  title: string;
+  body: string;
+  formula?: string;
+  note?: string;
+}
+
+export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
+  {
+    n: 1,
+    title: "Count the valves before you draw a single loop",
+    body: "Control structure looks like an open-ended design problem until "
+      + "you count.  Around a two-product column with a total condenser there "
+      + "are five manipulable flows, and no more: the condenser duty (the "
+      + "coolant valve), the distillate D, the reflux L, the boilup V (the "
+      + "reboiler heat valve) and the bottoms B.  Against them stand things "
+      + "that MUST be held whether you are interested in them or not.  "
+      + "Pressure has to be controlled, or every temperature on the column "
+      + "means something different from one minute to the next.  The "
+      + "reflux-drum level and the sump level have to be controlled, or the "
+      + "column empties or floods — an inventory with no loop on it is not a "
+      + "variable you postponed, it is a shutdown you scheduled.  Three "
+      + "valves are spent before composition is mentioned, and two are left.",
+    formula: "valves around the column     5    condenser duty · D · L · V · B\n"
+      + "inventories, not optional   −3    pressure · drum level · sump level\n"
+      + "                            ———\n"
+      + "left for composition         2    →  a 2×2 problem, and only 2×2",
+    note: "Each level is held by a stream LEAVING its vessel, which is why "
+      + "the two level loops eat product or internal-flow valves rather than "
+      + "something cheaper.  That is also the whole reason this subject is "
+      + "finite: two handles and two compositions is a small enough problem "
+      + "to enumerate completely, and the enumeration is the next step.",
+  },
+  {
+    n: 2,
+    title: "The two valves left over give the structure its name",
+    body: "Choose which valve holds the drum level and which holds the sump "
+      + "level, and the remaining pair is what composition control can use.  "
+      + "The convention is to name the structure after that pair.  LV — "
+      + "levels on the two products, so reflux and boilup remain — is the "
+      + "conventional arrangement and the one most columns are built with.  "
+      + "DV puts the drum level on the reflux instead, which frees D for the "
+      + "top composition.  LB does the mirror image at the bottom: the sump "
+      + "level rides on the boilup, which frees B.  DB frees both PRODUCTS "
+      + "and holds both levels with the internal flows.  (L/D)(V/B) keeps "
+      + "LV's levels but drives each composition loop through a ratio "
+      + "station, so a change in throughput moves both members of a pair "
+      + "together instead of leaving one behind.",
+    formula: "name          free for composition   drum level on   sump level on\n"
+      + "LV            L , V                  D               B\n"
+      + "LB            L , B                  D               V\n"
+      + "DV            D , V                  L               B\n"
+      + "DB            D , B                  L               V\n"
+      + "(L/D)(V/B)    L , V as ratios        D               B",
+    note: "These are the same five arrangements the cross-section below "
+      + "draws, and switching the selector moves the signal lines rather than "
+      + "changing any equation — which is why a still drawing is the right "
+      + "surface for this question.  Beside them the tool also offers "
+      + "Single-ended LV, where only one composition loop is closed; step 5 "
+      + "is about why that option is on the list at all.",
+  },
+  {
+    n: 3,
+    title: "The loops interact, and that is the whole difficulty",
+    body: "Two handles, two compositions — but the two handles are not two "
+      + "independent knobs on two independent halves of the equipment.  Raise "
+      + "the reflux and the top gets purer AND the bottom changes; raise the "
+      + "boilup and the same thing happens from the other end.  Each loop "
+      + "therefore acts as a disturbance on the other, and a pairing that "
+      + "looks perfectly sensible on a steady-state balance can be hard or "
+      + "impossible to tune once both loops are actually closed.  What "
+      + "changing the structure buys you is a change in WHAT KIND of handle "
+      + "each loop sits on: in LV both composition loops drive internal "
+      + "flows, while in DV the top loop drives a material-balance stream "
+      + "directly.  Whether that helps on YOUR column is a quantitative "
+      + "question, and it is the one this page hands back to you.",
+    formula: "LV    T_top ← L        T_bot ← V     both handles are internal flows\n"
+      + "DV    T_top ← D        T_bot ← V     the top loop is on a product\n"
+      + "LB    T_top ← L        T_bot ← B     the bottom loop is on a product\n"
+      + "DB    T_top ← D        T_bot ← B     both loops are on products",
+    note: "Interaction is normally judged with a relative-gain analysis, and "
+      + "Choupo computes no gain matrix, at any frequency.  So this tool does "
+      + "not score the structures and does not recommend one.  What it shows "
+      + "instead, on the Cited heuristics view, is what published authorities "
+      + "said — including where two of them disagree — with the conditions "
+      + "each was asserted under printed beside the claim.  Read the "
+      + "conditions: the disagreements in this subject are almost always "
+      + "about which question was being answered.",
+  },
+  {
+    n: 4,
+    title: "Whichever pairing you pick, the loop measures a tray — which one?",
+    body: "A composition analyser is slow and expensive, so a column's "
+      + "\"composition\" loop almost always measures a sensitive TRAY "
+      + "TEMPERATURE instead.  That substitution creates a second choice "
+      + "inside the first, and the tool computes it on your own column by two "
+      + "classical criteria.  The SLOPE criterion takes the tray where the "
+      + "converged profile is steepest — one solve, and a student can apply "
+      + "it with a ruler.  The SENSITIVITY criterion perturbs the manipulated "
+      + "variable, solves again, and takes the tray that responded most — two "
+      + "solves, and the number belongs to this column at these settings with "
+      + "this handle.  On the classroom witness they select DIFFERENT trays, "
+      + "and the disagreement is the lesson rather than a defect.",
+    formula: "slope         n* = argmax_n | T(n+1) − T(n) |        one solve\n"
+      + "sensitivity   n* = argmax_n | ΔT(n) / Δu |            two solves\n"
+      + "\n"
+      + "u must be NAMED: change the handle and the answer moves.",
+    note: "The sign is where the trap lives.  The temperature response "
+      + "changes sign somewhere between the two ends of the column, and a "
+      + "sensor sitting at that crossing is nearly deaf to the handle however "
+      + "steep the profile looks there — which the slope criterion cannot "
+      + "warn you about, because it never asks the handle a question.  Note "
+      + "also what the substitution assumes: temperature stands for "
+      + "composition exactly only for a binary at a fixed pressure.",
+  },
+  {
+    n: 5,
+    title: "What the choice actually depends on — and the option students are rarely offered",
+    body: "There is no correct structure to arrive at, and a page that "
+      + "produced one would be teaching you to misapply it the first time the "
+      + "conditions differed.  What there is, is a short list of things the "
+      + "choice depends on: which end carries the tight specification, "
+      + "whether BOTH ends really need one, how large the reflux is compared "
+      + "with the distillate leaving the same drum, whether a fast inner "
+      + "temperature loop will be closed underneath the composition layer, "
+      + "and whether throughput is going to move.  And one option belongs on "
+      + "that list far more often than a course usually admits: Single-ended "
+      + "LV — hold ONE composition and let the other float on a fixed flow.  "
+      + "It removes the interaction of step 3 completely, because there is "
+      + "only one quality loop left to interact.  It costs energy, since the "
+      + "floating end is over-purified most of the time, and it is very "
+      + "commonly the right engineering answer.",
+    note: "Dual-composition control is what the textbooks analyse and it is "
+      + "what makes this a 2×2 problem in the first place, so it is easy to "
+      + "leave a course believing it is the norm.  It is not, and knowing "
+      + "that a defensible structure can simply decline half the problem is "
+      + "worth as much as knowing the names of the other five.  What the "
+      + "single-ended option does NOT tell you is which end to hold, or what "
+      + "the floating end costs — the record that carries this claim says so "
+      + "itself, in its own \"does not cover\" line.",
+  },
+];
+
+export const COLUMN_CONTROL_LIMITS: readonly {
+  id: string; title: string; body: string;
+}[] = [
+  {
+    id: "no-dynamics",
+    title: "Nothing here is a transient.",
+    body: "A level that moves is an accumulation term and needs a dynamic "
+      + "column; Choupo has none — its dynamic tier is a stirred tank and one "
+      + "reference plant, and no column anywhere in the corpus is under "
+      + "control. So this page shows no response curve, no settling time and "
+      + "no tuning. A fabricated animation would be worse than the still "
+      + "drawing, because a moving picture is more persuasive and would teach "
+      + "a specific wrong thing with confidence.",
+  },
+  {
+    id: "no-relative-gain",
+    title: "No relative gain is computed, at any frequency.",
+    body: "The published arguments about these structures are largely "
+      + "arguments about relative gains, and the engine publishes no gain "
+      + "matrix. The heuristic cards quote those numbers as their authors' "
+      + "numbers; none of them is something this simulator checked. Reading a "
+      + "gain on this page as a Choupo result would be reading a citation as "
+      + "a computation.",
+  },
+  {
+    id: "no-recommendation",
+    title: "The tool ranks nothing and recommends nothing.",
+    body: "There is no score, no weighting and no verdict — deliberately. A "
+      + "ranking would need a weighting nobody published, and presented to a "
+      + "reader who cannot yet judge it, that is the worst artefact this tool "
+      + "could produce. What it does instead is show what each authority "
+      + "said, under which conditions, and where two of them disagree.",
+  },
+  {
+    id: "temperature-for-composition",
+    title: "Temperature stands for composition only under conditions.",
+    body: "For a binary at fixed pressure, bubble-point temperature and "
+      + "liquid composition are in one-to-one correspondence and the "
+      + "substitution is exact. With more than two components many "
+      + "compositions share a bubble point; and if the column pressure moves, "
+      + "the temperature moves with no composition change at all. Both are "
+      + "limits of the substitution, not of the thermocouple.",
+  },
+  {
+    id: "two-product-column",
+    title: "The count is for a two-product column with a total condenser.",
+    body: "Five valves and three unavoidable inventories is the arithmetic of "
+      + "THAT column. A partial condenser with a vapour product, a side "
+      + "draw, a decanter on the overhead, a thermally coupled or divided-wall "
+      + "arrangement — each changes the count, and therefore changes the list "
+      + "of structures. Nothing here generalises to them by analogy.",
+  },
+  {
+    id: "structures-from-the-catalogue",
+    title: "The candidates are the ones the catalogue declares.",
+    body: "Every structure the selector offers, and every claim on the Cited "
+      + "heuristics view, is read from a record under "
+      + "data/standards/heuristics/ — this page states the degrees-of-freedom "
+      + "count and the naming convention, and no rule of thumb of its own. A "
+      + "record the reader refuses is named on screen rather than dropped, so "
+      + "an absent structure is visibly absent.",
+  },
+];

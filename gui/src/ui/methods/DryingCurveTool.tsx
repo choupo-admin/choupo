@@ -82,19 +82,29 @@ License
   precedent): the plotting bundle cannot load outside a browser, and the pure
   helpers (detector, column resolver, period classifier, knob map) must stay
   importable by the node test runner (tests/dryingCurveTool.test.ts).
+
+  THE PAGE IS A SCROLLING LESSON, not an instrument panel: the two regimes are
+  DEFINED before the diagrams and their design consequences stated after, with
+  the knobs beside the plot rather than in a rail.  The prose is DATA
+  (./dryingLesson.ts, DRYING_STEPS + DRYING_LIMITS) so the test runner can
+  reach it, and it is rendered from ONE hoisted renderer used by BOTH returns
+  -- a page whose explanation lives only in the branch that HAS a diagram
+  loses the explanation exactly when there is nothing to explain.
 \*---------------------------------------------------------------------------*/
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Stack, Text, Title,
+  Tooltip,
 } from "@mantine/core";
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
 import {
-  KnobField, KnobSlider, MethodSetupRail, PanelNote,
+  KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
+import { DRYING_LIMITS, DRYING_STEPS } from "./dryingLesson.js";
 // The padded display domain is a pure view helper with ONE home already (the
 // Levenspiel-imports-Rayleigh precedent for sharing a helper between two
 // method tools) -- re-declaring it here would be a second copy of the same
@@ -681,7 +691,7 @@ function periodPolylines(
 function BusyVeil({ on }: { on: boolean }): JSX.Element | null {
   if (!on) return null;
   return (
-    <Box style={{ width: "100%", height: "100%", display: "flex",
+    <Box style={{ position: "absolute", inset: 0, display: "flex",
       alignItems: "center", justifyContent: "center", zIndex: 1,
       background: "light-dark(rgba(255,255,255,0.5), rgba(0,0,0,0.35))" }}>
       <Loader size="sm" />
@@ -900,7 +910,7 @@ export function DryingCurveTool(): JSX.Element {
     };
   }, [trajectory, kpis, detection, result]);
 
-  // ---- The setup panel's content: source, view, knobs, provenance ----------
+  // ---- The controls: source, view, knobs, provenance -----------------------
   const controls = (
     <>
       {hasAppTrajectory && (
@@ -941,7 +951,7 @@ export function DryingCurveTool(): JSX.Element {
 
   // The engine's message, verbatim — never rephrased, never swallowed.
   const alerts = src === "classroom" && err !== null ? (
-    <Alert color="red" variant="light" m={12}
+    <Alert color="red" variant="light"
       title="The run refused or failed — the engine's message, verbatim">
       <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
         {err}
@@ -949,180 +959,266 @@ export function DryingCurveTool(): JSX.Element {
     </Alert>
   ) : null;
 
-  // ---- No drawable view yet: per-source honest states -----------------------
+  /*  ONE renderer for the lesson, hoisted above BOTH returns: a page whose
+   *  explanation lives only in the branch that HAS a diagram loses the
+   *  explanation exactly when there is nothing to explain. */
+  const lessonStep = (n: number) => {
+    const st = DRYING_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>Drying, and the two operations hiding in one curve</Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        The air controls the first half and the solid controls the second —
+        and a dryer sized on the first half is a dryer that is too small.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {DRYING_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  // ---- No drawable view yet: the lesson still stands, with an honest state --
   if (view === null) {
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
-        {alerts}
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
-          justifyContent: "center", padding: 12 }}>
-          {src === "classroom" && err === null
-            && (busy || classroom === null) ? (
-              <Group gap="sm" wrap="nowrap" align="center">
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  the engine is integrating the tray — seconds, not instant
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {lessonHead}
+          {alerts}
+          {[1, 2, 3, 4, 5].map(lessonStep)}
+          <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+          <Box style={{ display: "flex", alignItems: "center",
+            justifyContent: "center", padding: 12 }}>
+            {src === "classroom" && err === null
+              && (busy || classroom === null) ? (
+                <Group gap="sm" wrap="nowrap" align="center">
+                  <Loader size="sm" />
+                  <Text size="sm" c="dimmed">
+                    the engine is integrating the tray — seconds, not instant
+                  </Text>
+                </Group>
+              ) : (
+                <Text size="sm" c="dimmed" ta="center" maw={500}>
+                  {src === "classroom"
+                    ? "The classroom run finished but published no drying "
+                      + "surface"
+                    : "This run publishes no drying surface"}
+                  {" "}— the two diagrams activate when a choupoBatch unit
+                  emits the trajectory columns <b>{X_COLUMN_SUFFIX}</b> and{" "}
+                  <b>{R_COLUMN_SUFFIX}</b> AND the matching KPIs (
+                  {REQUIRED_DRYING_KPIS.join(", ")}), which is what a{" "}
+                  <code>batchDryer</code> publishes.  A batch run of any other
+                  kind has no drying curve to draw — run{" "}
+                  <code>tutorials/{DRYING_WITNESS}</code> and return here.
                 </Text>
-              </Group>
-            ) : (
-              <Text size="sm" c="dimmed" ta="center" maw={500}>
-                {src === "classroom"
-                  ? "The classroom run finished but published no drying "
-                    + "surface"
-                  : "This run publishes no drying surface"}
-                {" "}— the two diagrams activate when a choupoBatch unit emits
-                the trajectory columns <b>{X_COLUMN_SUFFIX}</b> and{" "}
-                <b>{R_COLUMN_SUFFIX}</b> AND the matching KPIs (
-                {REQUIRED_DRYING_KPIS.join(", ")}), which is what a{" "}
-                <code>batchDryer</code> publishes.  A batch run of any other
-                kind has no drying curve to draw — run{" "}
-                <code>tutorials/{DRYING_WITNESS}</code> and return here.
-              </Text>
-            )}
-        </Box>
-      </MethodSetupRail>
+              )}
+          </Box>
+          {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
   const k = view.k;
 
+  /* Chips: each states WHAT it claims and on whose number. */
+  const chips = (
+    <Group gap="sm" wrap="wrap" align="center">
+      <Tooltip withArrow multiline w={430}
+        label={"The engine's KPI `T_wb`: the wet-bulb temperature of the "
+          + "DECLARED air, found by bisecting the adiabatic-saturation "
+          + "equation at Lewis = 1.  While X > X_c the model HOLDS the "
+          + "surface there — which is why the flux is flat.  The solid's "
+          + "own temperature is a named gap: this model does not "
+          + "integrate it."}>
+        <Badge variant="light" color="teal" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          T_wb = {fmt(k.T_wb)} K
+        </Badge>
+      </Tooltip>
+
+      <Tooltip withArrow multiline w={430}
+        label={"The engine's KPI `R_constant`: the constant-rate flux it "
+          + "formed as k_Y (Y_sat(T_wb) − Y), the flat level in R(X).  A "
+          + "flux, not a rate — multiply by the exposed area to get kg/s."}>
+        <Badge variant="light" color="cyan" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          R_c = {k.R_constant !== null
+            ? `${k.R_constant.toExponential(4)} kg/(m² s)` : "—"}
+        </Badge>
+      </Tooltip>
+
+      <Tooltip withArrow multiline w={450}
+        label={"The engine's KPI `X_critical` — and it is a DECLARED INPUT "
+          + "echoed back, not a result: the case measures it "
+          + "(operation.criticalMoisture).  So the corner in R(X) sits at "
+          + "X_c BY CONSTRUCTION of the declared two-period law; reading "
+          + "X_c off the plot recovers what was put in.  What the run "
+          + "decides is WHEN the curve reaches it — that is t_critical."}>
+        <Badge variant="light" color="red" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          X_c = {fmt(k.X_critical)} kg/kg (declared input)
+        </Badge>
+      </Tooltip>
+
+      <Tooltip withArrow multiline w={450}
+        label={"The engine's KPI `X_equilibrium` — and this one IS a "
+          + "result: the GAB isotherm of the solid evaluated at the "
+          + "declared air's own water activity.  The engine says so in the "
+          + "log ('NOT a declared number').  It is where the falling-rate "
+          + "law sends the flux to zero, so the tail aims at it and never "
+          + "crosses it."}>
+        <Badge variant="light" color="green" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          X_eq = {fmt(k.X_equilibrium)} kg/kg (GAB result)
+        </Badge>
+      </Tooltip>
+
+      <Tooltip withArrow multiline w={450}
+        label={"The engine's KPIs `latentDuty_kW` (the load at the "
+          + "constant rate, R_c A λ(T_wb)) and `latentEnergy_kJ` (what the "
+          + "whole evaporation took).  Both are the AIR's: the drying heat "
+          + "comes from a declared environment OUTSIDE the campaign "
+          + "boundary, so the engine publishes them as KPIs and refuses to "
+          + "ledger them as a duty.  That is also why this case's campaign "
+          + "energy balance reports UNAVAILABLE rather than a number."}>
+        <Badge variant="light" color="orange" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          latent duty = {fmt(k.latentDuty_kW)} kW
+          {k.latentEnergy_kJ !== null
+            ? ` (${fmt(k.latentEnergy_kJ)} kJ total)` : ""}
+        </Badge>
+      </Tooltip>
+
+      {/* The honesty chip: the falling-rate law is a CHOICE, and the
+          engine's own sentence is quoted rather than paraphrased. */}
+      <Tooltip withArrow multiline w={470}
+        label={view.notice !== null
+          ? `The engine announces this every run, verbatim: "${view.notice}"`
+          : "This run's log did not carry the engine's own sentence, so "
+            + "there is nothing to quote here.  The falling-rate law is "
+            + "still a declared modelling choice — read it in the run log "
+            + "rather than from a paraphrase written here."}>
+        <Badge variant="light" color="grape" tt="none"
+          styles={{ root: { cursor: "help" } }}>
+          falling-rate law: a MODELLING CHOICE
+          {view.notice === null ? " (engine wording unavailable)" : ""}
+        </Badge>
+      </Tooltip>
+    </Group>
+  );
+
   return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
-      {alerts}
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+        {lessonHead}
+        {alerts}
 
-      {/* Chips: each states WHAT it claims and on whose number. */}
-      <Group gap="sm" wrap="wrap" align="center" px={12} py={6}
-        style={{ flexShrink: 0 }}>
-        <Tooltip withArrow multiline w={430}
-          label={"The engine's KPI `T_wb`: the wet-bulb temperature of the "
-            + "DECLARED air, found by bisecting the adiabatic-saturation "
-            + "equation at Lewis = 1.  While X > X_c the model HOLDS the "
-            + "surface there — which is why the flux is flat.  The solid's "
-            + "own temperature is a named gap: this model does not "
-            + "integrate it."}>
-          <Badge variant="light" color="teal" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            T_wb = {fmt(k.T_wb)} K
-          </Badge>
-        </Tooltip>
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
 
-        <Tooltip withArrow multiline w={430}
-          label={"The engine's KPI `R_constant`: the constant-rate flux it "
-            + "formed as k_Y (Y_sat(T_wb) − Y), the flat level in R(X).  A "
-            + "flux, not a rate — multiply by the exposed area to get kg/s."}>
-          <Badge variant="light" color="cyan" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            R_c = {k.R_constant !== null
-              ? `${k.R_constant.toExponential(4)} kg/(m² s)` : "—"}
-          </Badge>
-        </Tooltip>
-
-        <Tooltip withArrow multiline w={450}
-          label={"The engine's KPI `X_critical` — and it is a DECLARED INPUT "
-            + "echoed back, not a result: the case measures it "
-            + "(operation.criticalMoisture).  So the corner in R(X) sits at "
-            + "X_c BY CONSTRUCTION of the declared two-period law; reading "
-            + "X_c off the plot recovers what was put in.  What the run "
-            + "decides is WHEN the curve reaches it — that is t_critical."}>
-          <Badge variant="light" color="red" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            X_c = {fmt(k.X_critical)} kg/kg (declared input)
-          </Badge>
-        </Tooltip>
-
-        <Tooltip withArrow multiline w={450}
-          label={"The engine's KPI `X_equilibrium` — and this one IS a "
-            + "result: the GAB isotherm of the solid evaluated at the "
-            + "declared air's own water activity.  The engine says so in the "
-            + "log ('NOT a declared number').  It is where the falling-rate "
-            + "law sends the flux to zero, so the tail aims at it and never "
-            + "crosses it."}>
-          <Badge variant="light" color="green" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            X_eq = {fmt(k.X_equilibrium)} kg/kg (GAB result)
-          </Badge>
-        </Tooltip>
-
-        <Tooltip withArrow multiline w={450}
-          label={"The engine's KPIs `latentDuty_kW` (the load at the "
-            + "constant rate, R_c A λ(T_wb)) and `latentEnergy_kJ` (what the "
-            + "whole evaporation took).  Both are the AIR's: the drying heat "
-            + "comes from a declared environment OUTSIDE the campaign "
-            + "boundary, so the engine publishes them as KPIs and refuses to "
-            + "ledger them as a duty.  That is also why this case's campaign "
-            + "energy balance reports UNAVAILABLE rather than a number."}>
-          <Badge variant="light" color="orange" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            latent duty = {fmt(k.latentDuty_kW)} kW
-            {k.latentEnergy_kJ !== null
-              ? ` (${fmt(k.latentEnergy_kJ)} kJ total)` : ""}
-          </Badge>
-        </Tooltip>
-
-        {/* The honesty chip: the falling-rate law is a CHOICE, and the
-            engine's own sentence is quoted rather than paraphrased. */}
-        <Tooltip withArrow multiline w={470}
-          label={view.notice !== null
-            ? `The engine announces this every run, verbatim: "${view.notice}"`
-            : "This run's log did not carry the engine's own sentence, so "
-              + "there is nothing to quote here.  The falling-rate law is "
-              + "still a declared modelling choice — read it in the run log "
-              + "rather than from a paraphrase written here."}>
-          <Badge variant="light" color="grape" tt="none"
-            styles={{ root: { cursor: "help" } }}>
-            falling-rate law: a MODELLING CHOICE
-            {view.notice === null ? " (engine wording unavailable)" : ""}
-          </Badge>
-        </Tooltip>
-      </Group>
-
-      {pane === "Xt" ? (
-        <XversusTSvg t={view.t} X={view.X} segments={view.segments} k={k}
-          tCrit={view.tCrit} busyOverlay={src === "classroom" && busy} />
-      ) : (
-        <RversusXSvg X={view.X} R={view.R} segments={view.segments} k={k}
-          busyOverlay={src === "classroom" && busy} />
-      )}
-
-      {/* What this file computes, it declares (the standing Methods rule). */}
-      <Box px={12} pb={8} style={{ flexShrink: 0 }}>
-        {pane === "Xt" ? (
-          <Text size="xs" c="dimmed">
-            X(t) is the dryer&apos;s published column{" "}
-            <b>{view.unit}.{X_COLUMN_SUFFIX}</b> against the driver&apos;s own
-            {" "}t.  The colour split is the ONE thing computed here: each
-            emitted sample is compared with the engine&apos;s X_c using the
-            engine&apos;s own strict inequality (X &gt; X_c is constant rate),
-            so a sample sitting exactly on X_c is falling-rate here for the
-            same reason it is in the solver.
+        <Box>
+          <Title order={5}>Now read the curve the engine integrated</Title>
+          <Text size="sm" mt={4}>
+            X(t) carries the two periods in two colours; R(X) is the diagram
+            the corner is read off.  Every number below is an engine KPI and
+            both curves are engine columns — the one thing computed here is
+            which side of X_c each emitted sample falls on, using the
+            engine&apos;s own comparison.  Move a knob and the tray is
+            re-integrated.
           </Text>
-        ) : (
-          <Text size="xs" c="dimmed">
-            R(X) is the published column <b>{view.unit}.{R_COLUMN_SUFFIX}</b>
-            {" "}plotted against <b>{view.unit}.{X_COLUMN_SUFFIX}</b> — the
-            same two engine series, one against the other.  Time runs RIGHT
-            to LEFT (the tray dries).  The flat stretch sits at R_c; the
-            corner is at X_c; the sloping segment heads for R = 0 at X_eq,
-            which is where the declared law puts it.
+        </Box>
+
+        {chips}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{controls}</Stack>
+          <Box style={{ minWidth: 0, height: 460, display: "flex" }}>
+            {pane === "Xt" ? (
+              <XversusTSvg t={view.t} X={view.X} segments={view.segments} k={k}
+                tCrit={view.tCrit} busyOverlay={src === "classroom" && busy} />
+            ) : (
+              <RversusXSvg X={view.X} R={view.R} segments={view.segments} k={k}
+                busyOverlay={src === "classroom" && busy} />
+            )}
+          </Box>
+        </Box>
+
+        {/* What this file computes, it declares (the standing Methods rule). */}
+        <Box>
+          {pane === "Xt" ? (
+            <Text size="xs" c="dimmed">
+              X(t) is the dryer&apos;s published column{" "}
+              <b>{view.unit}.{X_COLUMN_SUFFIX}</b> against the driver&apos;s
+              own t.  The colour split is the ONE thing computed here: each
+              emitted sample is compared with the engine&apos;s X_c using the
+              engine&apos;s own strict inequality (X &gt; X_c is constant
+              rate), so a sample sitting exactly on X_c is falling-rate here
+              for the same reason it is in the solver.
+            </Text>
+          ) : (
+            <Text size="xs" c="dimmed">
+              R(X) is the published column <b>{view.unit}.{R_COLUMN_SUFFIX}</b>
+              {" "}plotted against <b>{view.unit}.{X_COLUMN_SUFFIX}</b> — the
+              same two engine series, one against the other.  Time runs RIGHT
+              to LEFT (the tray dries).  The flat stretch sits at R_c; the
+              corner is at X_c; the sloping segment heads for R = 0 at X_eq,
+              which is where the declared law puts it.
+            </Text>
+          )}
+
+          {/* The break time — present or absent, always a sentence. */}
+          <Text size="xs" c={view.tCrit.present ? "dimmed" : "orange"} mt={2}>
+            {view.tCrit.present
+              ? `t_critical = ${fmt(view.tCrit.t)} s — ${view.tCrit.note}`
+              : `t_critical NOT PUBLISHED — ${view.tCrit.note}`}
           </Text>
-        )}
 
-        {/* The break time — present or absent, always a sentence. */}
-        <Text size="xs" c={view.tCrit.present ? "dimmed" : "orange"} mt={2}>
-          {view.tCrit.present
-            ? `t_critical = ${fmt(view.tCrit.t)} s — ${view.tCrit.note}`
-            : `t_critical NOT PUBLISHED — ${view.tCrit.note}`}
-        </Text>
+          {/* The engine's own words about the law that draws the tail. */}
+          <Text size="xs" c="dimmed" mt={2}>
+            {view.notice !== null
+              ? `Engine, verbatim: ${view.notice}`
+              : "The engine's falling-rate sentence could not be read from "
+                + "this run's log — it is quoted here when present, and never "
+                + "paraphrased when absent."}
+          </Text>
+        </Box>
 
-        {/* The engine's own words about the law that draws the tail. */}
-        <Text size="xs" c="dimmed" mt={2}>
-          {view.notice !== null
-            ? `Engine, verbatim: ${view.notice}`
-            : "The engine's falling-rate sentence could not be read from this "
-              + "run's log — it is quoted here when present, and never "
-              + "paraphrased when absent."}
-        </Text>
-      </Box>
-    </MethodSetupRail>
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }

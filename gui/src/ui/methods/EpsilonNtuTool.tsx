@@ -61,16 +61,26 @@ License
   Charts are parametric inline SVG (the HeatExchangerDatasheet precedent),
   NOT the plotly kit — plotly cannot load in the node test environment, and
   the closed forms + matcher here must stay importable by the tests.
+
+  THE PAGE is a scrolling lesson, not an instrument panel: the definitions
+  (Q_max, ε, NTU, C_r) come BEFORE the chart, the knobs sit in the left
+  column of a two-column grid beside it, and the design consequence and the
+  limits come after.  The prose is DATA (epsilonNtuLesson.ts) so the
+  arithmetic it claims can be recomputed against `epsilonNtu` in the tests —
+  a page must not teach against its own code.  The lesson renderer is
+  hoisted above the branch that draws the chart, so the empty state and the
+  solved state carry the same explanation.
 \*---------------------------------------------------------------------------*/
 
 import { useMemo, useState } from "react";
 import {
   Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
-  Tooltip,
+  Title, Tooltip,
 } from "@mantine/core";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
-import { KnobSlider, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { ENTU_LIMITS, ENTU_STEPS } from "./epsilonNtuLesson.js";
+import { KnobSlider, PanelNote } from "./knobPanel.js";
 import type { ScalarOverride } from "../../case/methodRun.js";
 import { useMethodRun } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
@@ -323,10 +333,10 @@ export function EpsilonNtuTool(): JSX.Element {
   const profile = useMemo(
     () => findAreaProfile(result?.profiles, unit), [result, unit]);
 
-  /* The setup panel's content: the source, the exchanger knobs, the
-     provenance.  The unit picker and the cross-check chip stay in the content
-     column, where SolvedView renders them beside the chart. */
-  const setup = (
+  /* The controls: the source, the exchanger knobs, the provenance.  They sit
+     in the left column of the grid beside the chart, so the reader can turn a
+     knob without leaving the paragraph that explains what it moves. */
+  const controls = (
     <>
       {(appServable || source === "run") && (
         <SegmentedControl size="xs" value={source} fullWidth
@@ -351,51 +361,134 @@ export function EpsilonNtuTool(): JSX.Element {
     </>
   );
 
-  return (
-    <MethodSetupRail title="exchanger knobs" setup={setup}>
-      {/* The engine's error, VERBATIM — never paraphrased. */}
-      {source === "classroom" && err && (
-        <Alert color="red" variant="light" mx={12} my={6} py={6}
-          title="The engine refused this run" style={{ flexShrink: 0 }}>
-          <Text size="xs" style={{ whiteSpace: "pre-wrap",
-            fontFamily: "var(--mantine-font-family-monospace)" }}>
-            {err}
-          </Text>
-        </Alert>
-      )}
+  /*  ONE renderer for the lesson, defined above the single page that holds
+   *  both the solved chart and the empty state: the explanation is the point
+   *  of the page and must not depend on the run having produced a point. */
+  const lessonStep = (n: number) => {
+    const st = ENTU_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ border: "1px solid var(--mantine-color-default-border)",
+              borderRadius: 4 }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
 
-      {(!unit || !kpis || !match) ? (
-        // ---- No servable point in the active source. -----------------------
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
-          justifyContent: "center", padding: 24 }}>
-          {source === "run" ? (
-            <Text size="sm" c="dimmed" ta="center" maw={460}>
-              No exchanger point in this run.  The ε-NTU chart activates when a
-              solved unit's KPI row carries all of <b>NTU</b>, <b>effectiveness</b>
-              {" "}and <b>C_r</b> — run a case with a heat-exchanger unit first.
-              The families alone would be a textbook page, not your case.
-            </Text>
-          ) : busy ? (
-            <Group gap="xs" wrap="nowrap">
-              <Loader size="sm" />
-              <Text size="sm" c="dimmed">
-                Solving the classroom exchanger in your browser…
-              </Text>
-            </Group>
-          ) : (
-            <Text size="sm" c="dimmed" ta="center" maw={460}>
-              {err
-                ? "The classroom run did not produce an exchanger point — the engine's message above says why."
-                : "Waiting for the classroom run…"}
-            </Text>
-          )}
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        Effectiveness-NTU, and the question LMTD cannot answer
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        You know the two inlets and the hardware.  The outlets are what you
+        are trying to find — which is exactly what the log-mean route needs
+        before it will start.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {ENTU_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {lessonHead}
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
+
+        <Box>
+          <Title order={5}>Now read the exchanger the engine solved</Title>
+          <Text size="sm" mt={4}>
+            The curves below are the textbook closed forms — three flow
+            arrangements, each drawn for C_r = 0, 0.25, 0.5, 0.75 and 1.  The
+            dot is the engine&apos;s own (NTU, ε) for a solved unit, and the
+            chip beside it says which of the three forms reproduces it.  Turn
+            a knob: area and U move the point along the NTU axis, the two
+            flows move it between the C_r curves.
+          </Text>
         </Box>
-      ) : (
-        <SolvedView units={units} unit={unit} onPick={setPicked}
-          kpis={kpis} match={match} profile={profile}
-          busy={source === "classroom" && busy} />
-      )}
-    </MethodSetupRail>
+
+        {/* The engine's error, VERBATIM — never paraphrased. */}
+        {source === "classroom" && err && (
+          <Alert color="red" variant="light" py={6}
+            title="The engine refused this run">
+            <Text size="xs" style={{ whiteSpace: "pre-wrap",
+              fontFamily: "var(--mantine-font-family-monospace)" }}>
+              {err}
+            </Text>
+          </Alert>
+        )}
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{controls}</Stack>
+          <Box style={{ minWidth: 0 }}>
+            {(!unit || !kpis || !match) ? (
+              // ---- No servable point in the active source. -----------------
+              <Box style={{ display: "flex", alignItems: "center",
+                justifyContent: "center", padding: 24, minHeight: 200 }}>
+                {source === "run" ? (
+                  <Text size="sm" c="dimmed" ta="center" maw={460}>
+                    No exchanger point in this run.  The ε-NTU chart activates
+                    when a solved unit&apos;s KPI row carries all of{" "}
+                    <b>NTU</b>, <b>effectiveness</b> and <b>C_r</b> — run a
+                    case with a heat-exchanger unit first.  The families alone
+                    would be a textbook page, not your case.
+                  </Text>
+                ) : busy ? (
+                  <Group gap="xs" wrap="nowrap">
+                    <Loader size="sm" />
+                    <Text size="sm" c="dimmed">
+                      Solving the classroom exchanger in your browser…
+                    </Text>
+                  </Group>
+                ) : (
+                  <Text size="sm" c="dimmed" ta="center" maw={460}>
+                    {err
+                      ? "The classroom run did not produce an exchanger point — the engine's message above says why."
+                      : "Waiting for the classroom run…"}
+                  </Text>
+                )}
+              </Box>
+            ) : (
+              <SolvedView units={units} unit={unit} onPick={setPicked}
+                kpis={kpis} match={match} profile={profile}
+                busy={source === "classroom" && busy} />
+            )}
+          </Box>
+        </Box>
+
+        {lessonStep(5)}
+        {lessonLimits}
+
+      </Stack>
+    </Box>
   );
 }
 
@@ -423,51 +516,37 @@ function SolvedView({ units, unit, onPick, kpis, match, profile, busy }: {
     `${c.label}: ε = ${fmt(c.eps, 6)}  (Δε = ${c.dEps.toExponential(2)})`);
 
   return (
-    <>
-      {/* Toolbar: the unit picker + the cross-check chip. */}
-      <Box style={{
-        flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
-        borderBottom: HAIRLINE,
-      }}>
-        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
-          <Group gap={4} wrap="nowrap" align="center">
-            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>exchanger</Text>
-            <Select size="xs" data={units} value={unit} w={180}
-              onChange={(v) => onPick(v)} allowDeselect={false}
-              disabled={units.length < 2} />
-          </Group>
-          <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
-            NTU {fmt(NTU)} · ε {fmt(eps)} · C_r {fmt(Cr)}
-          </Text>
-          <Tooltip withArrow multiline w={340}
-            label={deviationLines.join("\n")}
-            styles={{ tooltip: { whiteSpace: "pre-line" } }}>
-            {confirmedLabels.length > 0 ? (
-              <Badge color="teal" variant="light" tt="none" style={{ flexShrink: 0 }}>
-                configuration confirmed: {confirmedLabels.join(" = ")}
-              </Badge>
-            ) : (
-              <Badge color="orange" variant="light" tt="none" style={{ flexShrink: 0 }}>
-                no configuration matches — a finding
-              </Badge>
-            )}
-          </Tooltip>
+    <Stack gap="sm">
+      {/* The unit picker, the case's own three numbers, the cross-check chip. */}
+      <Group gap="sm" wrap="wrap" align="center">
+        <Group gap={4} wrap="nowrap" align="center">
+          <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>exchanger</Text>
+          <Select size="xs" data={units} value={unit} w={180}
+            onChange={(v) => onPick(v)} allowDeselect={false}
+            disabled={units.length < 2} />
         </Group>
-      </Box>
-
-      {/* The pedagogy line, stated before the plot. */}
-      <Text size="xs" c="dimmed" px={12} py={4} style={{ flexShrink: 0 }}>
-        Families are the textbook closed forms; the engine's answer is the
-        point.  C_r = 0 is the phase-change limit (a condensing or boiling
-        stream at constant T) where all three configurations collapse to
-        ε = 1 − e<sup>−NTU</sup>.
-      </Text>
+        <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+          NTU {fmt(NTU)} · ε {fmt(eps)} · C_r {fmt(Cr)}
+        </Text>
+        <Tooltip withArrow multiline w={340}
+          label={deviationLines.join("\n")}
+          styles={{ tooltip: { whiteSpace: "pre-line" } }}>
+          {confirmedLabels.length > 0 ? (
+            <Badge color="teal" variant="light" tt="none" style={{ flexShrink: 0 }}>
+              configuration confirmed: {confirmedLabels.join(" = ")}
+            </Badge>
+          ) : (
+            <Badge color="orange" variant="light" tt="none" style={{ flexShrink: 0 }}>
+              no configuration matches — a finding
+            </Badge>
+          )}
+        </Tooltip>
+      </Group>
 
       {/* No-match FINDING: all three deviations shown; the point never moves. */}
       {confirmedLabels.length === 0 && (
-        <Alert color="orange" variant="light" mx={12} mb={4} py={6}
-          title="Finding: the tool's geometry disagrees with the engine"
-          style={{ flexShrink: 0 }}>
+        <Alert color="orange" variant="light" py={6}
+          title="Finding: the tool's geometry disagrees with the engine">
           <Stack gap={2}>
             {match.checks.map((c) => (
               <Text key={c.id} size="xs">
@@ -475,128 +554,128 @@ function SolvedView({ units, unit, onPick, kpis, match, profile, busy }: {
               </Text>
             ))}
             <Text size="xs" c="dimmed">
-              The engine's point never moves — a disagreement means this tool
-              picked the wrong configuration for the unit, not that the
-              engine's ε is in doubt.
+              The engine&apos;s point never moves — a disagreement means this
+              tool picked the wrong configuration for the unit, not that the
+              engine&apos;s ε is in doubt.
             </Text>
           </Stack>
         </Alert>
       )}
 
-      {/* Main row: the family chart + the area-profile side pane. */}
-      <Box style={{ flex: 1, minHeight: 0, display: "flex", gap: 12,
-        padding: "0 12px 8px", overflow: "hidden" }}>
-        {/* ---- ε vs NTU families ---- */}
-        <Box style={{ flex: 2, minWidth: 0, display: "flex",
-          flexDirection: "column", position: "relative" }}>
-          <Group gap="md" wrap="wrap" py={2} style={{ flexShrink: 0 }}>
-            {EXCHANGER_CONFIGS.map((c) => (
-              <Group key={c.id} gap={4} wrap="nowrap" align="center">
-                <svg width={26} height={8} aria-hidden>
-                  <line x1={1} y1={4} x2={25} y2={4} stroke={c.color}
-                    strokeWidth={2} strokeDasharray={c.dash || undefined} />
-                </svg>
-                <Text size="xs" c="dimmed">{c.label}</Text>
-              </Group>
-            ))}
-            <Group gap={4} wrap="nowrap" align="center">
-              <svg width={12} height={12} aria-hidden>
-                <circle cx={6} cy={6} r={4} fill={POINT} />
-              </svg>
-              <Text size="xs" c="dimmed">the engine's answer ({unit})</Text>
-            </Group>
-          </Group>
-          <Box style={{ flex: 1, minHeight: 0 }}>
-            <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
-              preserveAspectRatio="xMidYMid meet"
-              role="img" aria-label="effectiveness versus NTU families">
-              {/* grid + axes */}
-              {[0, 1, 2, 3, 4, 5, 6].map((n) => (
-                <g key={`gx${n}`}>
-                  <line x1={ntuToX(n)} y1={FY0} x2={ntuToX(n)} y2={FY1}
-                    stroke={GRID} strokeWidth={n === 0 ? 1.4 : 0.6} />
-                  <text x={ntuToX(n)} y={FY1 + 16} textAnchor="middle"
-                    fontSize={11} fill={INK}>{n}</text>
-                </g>
-              ))}
-              {[0, 0.2, 0.4, 0.6, 0.8, 1].map((e) => (
-                <g key={`gy${e}`}>
-                  <line x1={FX0} y1={epsToY(e)} x2={FX1} y2={epsToY(e)}
-                    stroke={GRID} strokeWidth={e === 0 ? 1.4 : 0.6} />
-                  <text x={FX0 - 6} y={epsToY(e) + 4} textAnchor="end"
-                    fontSize={11} fill={INK}>{e.toFixed(1)}</text>
-                </g>
-              ))}
-              <text x={(FX0 + FX1) / 2} y={FH - 6} textAnchor="middle"
-                fontSize={12} fill={INK}>NTU = UA / C_min</text>
-              <text x={14} y={(FY0 + FY1) / 2} textAnchor="middle" fontSize={12}
-                fill={INK} transform={`rotate(-90 14 ${(FY0 + FY1) / 2})`}>
-                ε (effectiveness)
-              </text>
-              {/* the families: 3 configurations × C_r = 0, 0.25, 0.5, 0.75, 1 */}
-              {FAMILIES.map(({ config, lines }) =>
-                lines.map(({ Cr: cr, path }) => (
-                  <polyline key={`${config.id}-${cr}`} points={path} fill="none"
-                    stroke={config.color} strokeWidth={cr === 0 ? 1.8 : 1.1}
-                    strokeDasharray={config.dash || undefined}
-                    opacity={cr === 0 ? 0.95 : 0.75} />
-                )))}
-              {/* C_r labels ride the counter-current family's right edge (the
-                  co-current / shell curves order the same way — see legend) */}
-              {CR_FAMILY.map((cr) => (
-                <text key={`crlab${cr}`} x={FX1 + 3}
-                  y={epsToY(epsilonNtu("counter", NTU_MAX, cr)) + 4}
-                  fontSize={10} fill={INK}>{cr}</text>
-              ))}
-              <text x={FX1 + 3} y={FY0 + 2} fontSize={10} fill={INK}>C_r</text>
-              {/* the case's point, with guides to both axes */}
-              <line x1={px} y1={py} x2={px} y2={FY1} stroke={POINT}
-                strokeWidth={0.8} strokeDasharray="3 3" />
-              <line x1={FX0} y1={py} x2={px} y2={py} stroke={POINT}
-                strokeWidth={0.8} strokeDasharray="3 3" />
-              <circle cx={px} cy={py} r={5} fill={POINT}
-                stroke="var(--mantine-color-body)" strokeWidth={1.5} />
-              <text x={px + 8} y={py - 8} fontSize={11} fill={POINT}>
-                {offChart ? `NTU ${fmt(NTU, 3)} (beyond axis) · ` : ""}ε = {fmt(eps)}
-              </text>
+      {/* ---- ε vs NTU families ---- */}
+      <Group gap="md" wrap="wrap">
+        {EXCHANGER_CONFIGS.map((c) => (
+          <Group key={c.id} gap={4} wrap="nowrap" align="center">
+            <svg width={26} height={8} aria-hidden>
+              <line x1={1} y1={4} x2={25} y2={4} stroke={c.color}
+                strokeWidth={2} strokeDasharray={c.dash || undefined} />
             </svg>
-          </Box>
-          {/* Classroom re-run in flight: Loader OVER the chart, previous
-              point visible underneath. */}
-          {busy && (
-            <Box style={{ position: "absolute", inset: 0, display: "flex",
-              alignItems: "center", justifyContent: "center",
-              pointerEvents: "none" }}>
-              <Loader size="sm" />
-            </Box>
-          )}
-        </Box>
+            <Text size="xs" c="dimmed">{c.label}</Text>
+          </Group>
+        ))}
+        <Group gap={4} wrap="nowrap" align="center">
+          <svg width={12} height={12} aria-hidden>
+            <circle cx={6} cy={6} r={4} fill={POINT} />
+          </svg>
+          <Text size="xs" c="dimmed">the engine&apos;s answer ({unit})</Text>
+        </Group>
+      </Group>
 
-        {/* ---- Side pane: the area profile the ε summarises ---- */}
-        <Box style={{ flex: 1, minWidth: 220, maxWidth: 340, display: "flex",
-          flexDirection: "column",
-          borderLeft: HAIRLINE,
-          paddingLeft: 12 }}>
-          <Text size="xs" fw={600} c="dimmed" py={2} style={{ flexShrink: 0 }}>
-            T along the area — the approach the ε summarises
-          </Text>
-          <Text size="xs" c="dimmed" style={{ flexShrink: 0 }}>
-            LMTD {fmt(kpis["LMTD"])} K · Q {fmt(kpis["Q_kW"])} kW
-          </Text>
-          {profile ? (
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <ProfileSvg profile={profile} />
-            </Box>
-          ) : (
-            <Text size="xs" c="dimmed" mt={8}>
-              This run carries no area profile for {unit} — the engine writes
-              a 21-point T_hot/T_cold sweep on every solved exchanger; re-run
-              the case to see the two curves approach.
-            </Text>
-          )}
-        </Box>
+      <Box style={{ position: "relative", height: 400 }}>
+        <svg viewBox={`0 0 ${FW} ${FH}`} width="100%" height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          role="img" aria-label="effectiveness versus NTU families">
+          {/* grid + axes */}
+          {[0, 1, 2, 3, 4, 5, 6].map((n) => (
+            <g key={`gx${n}`}>
+              <line x1={ntuToX(n)} y1={FY0} x2={ntuToX(n)} y2={FY1}
+                stroke={GRID} strokeWidth={n === 0 ? 1.4 : 0.6} />
+              <text x={ntuToX(n)} y={FY1 + 16} textAnchor="middle"
+                fontSize={11} fill={INK}>{n}</text>
+            </g>
+          ))}
+          {[0, 0.2, 0.4, 0.6, 0.8, 1].map((e) => (
+            <g key={`gy${e}`}>
+              <line x1={FX0} y1={epsToY(e)} x2={FX1} y2={epsToY(e)}
+                stroke={GRID} strokeWidth={e === 0 ? 1.4 : 0.6} />
+              <text x={FX0 - 6} y={epsToY(e) + 4} textAnchor="end"
+                fontSize={11} fill={INK}>{e.toFixed(1)}</text>
+            </g>
+          ))}
+          <text x={(FX0 + FX1) / 2} y={FH - 6} textAnchor="middle"
+            fontSize={12} fill={INK}>NTU = UA / C_min</text>
+          <text x={14} y={(FY0 + FY1) / 2} textAnchor="middle" fontSize={12}
+            fill={INK} transform={`rotate(-90 14 ${(FY0 + FY1) / 2})`}>
+            ε (effectiveness)
+          </text>
+          {/* the families: 3 configurations × C_r = 0, 0.25, 0.5, 0.75, 1 */}
+          {FAMILIES.map(({ config, lines }) =>
+            lines.map(({ Cr: cr, path }) => (
+              <polyline key={`${config.id}-${cr}`} points={path} fill="none"
+                stroke={config.color} strokeWidth={cr === 0 ? 1.8 : 1.1}
+                strokeDasharray={config.dash || undefined}
+                opacity={cr === 0 ? 0.95 : 0.75} />
+            )))}
+          {/* C_r labels ride the counter-current family's right edge (the
+              co-current / shell curves order the same way — see legend) */}
+          {CR_FAMILY.map((cr) => (
+            <text key={`crlab${cr}`} x={FX1 + 3}
+              y={epsToY(epsilonNtu("counter", NTU_MAX, cr)) + 4}
+              fontSize={10} fill={INK}>{cr}</text>
+          ))}
+          <text x={FX1 + 3} y={FY0 + 2} fontSize={10} fill={INK}>C_r</text>
+          {/* the case's point, with guides to both axes */}
+          <line x1={px} y1={py} x2={px} y2={FY1} stroke={POINT}
+            strokeWidth={0.8} strokeDasharray="3 3" />
+          <line x1={FX0} y1={py} x2={px} y2={py} stroke={POINT}
+            strokeWidth={0.8} strokeDasharray="3 3" />
+          <circle cx={px} cy={py} r={5} fill={POINT}
+            stroke="var(--mantine-color-body)" strokeWidth={1.5} />
+          <text x={px + 8} y={py - 8} fontSize={11} fill={POINT}>
+            {offChart ? `NTU ${fmt(NTU, 3)} (beyond axis) · ` : ""}ε = {fmt(eps)}
+          </text>
+        </svg>
+        {/* Classroom re-run in flight: Loader OVER the chart, previous
+            point visible underneath. */}
+        {busy && (
+          <Box style={{ position: "absolute", inset: 0, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            pointerEvents: "none" }}>
+            <Loader size="sm" />
+          </Box>
+        )}
       </Box>
-    </>
+
+      <Text size="xs" c="dimmed">
+        Families are the textbook closed forms; the engine&apos;s answer is the
+        point.  The C_r = 0 line is the phase-change limit — a condensing or
+        boiling stream at constant T — where all three configurations collapse
+        to ε = 1 − e<sup>−NTU</sup>.  This unit itself models sensible heat
+        only, so that line is where the chart goes and not where the engine
+        can follow it.
+      </Text>
+
+      {/* ---- The area profile the ε summarises ---- */}
+      <Box style={{ borderTop: HAIRLINE, paddingTop: 8 }}>
+        <Text size="xs" fw={600} c="dimmed">
+          T along the area — the approach the ε summarises
+        </Text>
+        <Text size="xs" c="dimmed">
+          LMTD {fmt(kpis["LMTD"])} K · Q {fmt(kpis["Q_kW"])} kW
+        </Text>
+        {profile ? (
+          <Box style={{ height: 240, maxWidth: 420 }}>
+            <ProfileSvg profile={profile} />
+          </Box>
+        ) : (
+          <Text size="xs" c="dimmed" mt={8}>
+            This run carries no area profile for {unit} — the engine writes
+            a 21-point T_hot/T_cold sweep on every solved exchanger; re-run
+            the case to see the two curves approach.
+          </Text>
+        )}
+      </Box>
+    </Stack>
   );
 }
 

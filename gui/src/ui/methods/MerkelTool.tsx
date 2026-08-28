@@ -27,17 +27,21 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  MerkelTool — the Merkel cooling-tower diagram: the air-saturation enthalpy
-  curve h*(T) above, the operating line below, and the area between them
-  shaded — that area IS the enthalpy driving force the Merkel number
-  integrates, which is the whole pedagogy of the plot.
+  MerkelTool — the cooling tower, read as a scrolling lesson: the argument
+  first (why the driving force is an ENTHALPY difference, why the floor is
+  the wet bulb, what the approach costs, what the Merkel integral counts),
+  then the engine's own diagram — the air-saturation enthalpy curve h*(T)
+  above, the operating line below, the area between them shaded, that area
+  BEING the driving force the Merkel number integrates — then the method's
+  assumptions and what it does not model.  The prose lives in
+  merkelLesson.ts as DATA so the tests can reach it.
 
   SELF-FEEDING (the Methods-workspace contract): the DEFAULT mode is
   STANDALONE — the tool runs the ENGINE itself, in the browser, on its own
   witness case (tutorials/steady/heat/coolingTower01_merkel, bundled
-  identifier "steady/heat/coolingTower01_merkel"), with a compact knob
-  panel writing declared dict scalars (hot-water T and flow, ambient-air T,
-  moisture and dry-air flow, the packing's Merkel number) through
+  identifier "steady/heat/coolingTower01_merkel"), with knobs beside the
+  diagram writing declared dict scalars (hot-water T and flow, ambient-air
+  T, moisture and dry-air flow, the packing's Merkel number) through
   methodRun's textual ScalarOverride.  The knobs write NUMBERS into the
   witness dicts; the WASM engine computes everything — an infeasible
   construction (a pinched L/G, a below-wet-bulb target) REFUSES with the
@@ -73,16 +77,18 @@ License
 
 import { useCallback, useMemo, useState } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Text, Tooltip,
+  Alert, Badge, Box, Group, Loader, SegmentedControl, Select, Stack, Text,
+  Title, Tooltip,
 } from "@mantine/core";
 import { IconAlertTriangle } from "@tabler/icons-react";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
 import {
-  KnobField, KnobSlider, MethodSetupRail, PanelNote,
+  KnobField, KnobSlider, PanelNote,
 } from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
+import { MERKEL_LIMITS, MERKEL_STEPS } from "./merkelLesson.js";
 
 // ---- Detection: which units feed the tool -----------------------------------
 
@@ -191,21 +197,38 @@ export interface MerkelKnob {
    *  unit word in the dict survives the override untouched.  "" for the
    *  dimensionless Merkel number. */
   unit: string;
+  /** One line of what this knob moves in the construction — the hint the
+   *  panel shows beside the control. */
+  why?: string;
 }
 
 export const MERKEL_KNOBS: readonly MerkelKnob[] = [
   { id: "hotWaterT", label: "hot water in T", file: "0/hotWater", key: "T",
-    def: 318.15, min: 303.15, max: 343.15, step: 0.5, unit: "K" },
+    def: 318.15, min: 303.15, max: 343.15, step: 0.5, unit: "K",
+    why: "The hot end of the diagram — where the process hands the water "
+      + "over.  It moves the range, not the wet-bulb floor." },
   { id: "waterFlow", label: "water flow L", file: "0/hotWater", key: "water",
-    def: 100, min: 10, max: 300, step: 5, unit: "kmol/h" },
+    def: 100, min: 10, max: 300, step: 5, unit: "kmol/h",
+    why: "L in L/G: more water at the same air tilts the operating line up "
+      + "towards the saturation curve, and eventually pinches the tower." },
   { id: "airT", label: "air in T", file: "0/air", key: "T",
-    def: 298.15, min: 273.15, max: 313.15, step: 0.5, unit: "K" },
+    def: 298.15, min: 273.15, max: 313.15, step: 0.5, unit: "K",
+    why: "The air's DRY bulb.  It is not the floor: watch how much less the "
+      + "engine's T_wb moves than this knob does." },
   { id: "airMoisture", label: "air moisture (humidity)", file: "0/air", key: "water",
-    def: 1.3, min: 0, max: 5, step: 0.1, unit: "kmol/h" },
+    def: 1.3, min: 0, max: 5, step: 0.1, unit: "kmol/h",
+    why: "The other half of the wet bulb.  Wetter air at the same "
+      + "temperature raises T_wb, and the cold water follows it up." },
   { id: "dryAirFlow", label: "dry air flow G", file: "0/air", key: "N2",
-    def: 65, min: 20, max: 200, step: 5, unit: "kmol/h" },
+    def: 65, min: 20, max: 200, step: 5, unit: "kmol/h",
+    why: "G in L/G.  More air flattens the operating line and opens the "
+      + "driving force — the fan work that buys it is not modelled here.  "
+      + "The witness declares its dry gas as pure N2, so the carrier's "
+      + "properties are nitrogen's, not those of a full air mixture." },
   { id: "merkelNumber", label: "Merkel number KaV/L", file: "system/flowsheetDict",
-    key: "merkelNumber", def: 1.5, min: 0.2, max: 5, step: 0.05, unit: "" },
+    key: "merkelNumber", def: 1.5, min: 0.2, max: 5, step: 0.05, unit: "",
+    why: "The packing you declare you have (RATING mode): the cold-water "
+      + "temperature is then the engine's result, not yours." },
 ];
 
 export type MerkelKnobValues = { [id: string]: number };
@@ -273,17 +296,13 @@ export function MerkelTool(): JSX.Element {
   const mode = source;
   const showToggle = currentUnits.length > 0 || source === "current";
 
-  // The classroom knobs (defaults = the witness's authored values) and the
-  // collapsible panel state, persisted per browser.
+  // The classroom knobs (defaults = the witness's authored values).
   const [knobs, setKnobs] = useState<MerkelKnobValues>(defaultKnobValues);
   const overridesKey = useMemo(() => JSON.stringify(knobs), [knobs]);
   const overrides = useMemo(() => knobOverrides(knobs), [knobs]);
   const setKnob = useCallback((id: string, v: number) => {
     setKnobs((s) => ({ ...s, [id]: v }));
   }, []);
-  /* The fold and the width are the panel's (ui/methods/knobPanel.tsx).  This
-   * tool used to carry its own try/catch pair around localStorage — the fourth
-   * hand-rolled copy of a posture the state layer already owned. */
 
   // The self-run: debounced in-browser choupoSolve on the parameterized
   // witness.  Witness null in "Current run" mode — no engine run there.
@@ -310,11 +329,11 @@ export function MerkelTool(): JSX.Element {
       ]} />
   ) : null;
 
-  /* The setup panel's content: the source, the tower picker, the knobs and the
-     provenance.  The chips stay in the content column beside the diagram —
-     inputs left, published numbers right. */
-  const setup = (
-    <>
+  /* The controls: the source, the tower picker, the knobs and the
+     provenance.  They sit in the left column of the grid beside the diagram —
+     inputs left, the engine's picture right. */
+  const controls = (
+    <Stack gap={8}>
       {sourceToggle}
       {active && units.length > 1 && (
         <KnobField label="tower">
@@ -331,44 +350,132 @@ export function MerkelTool(): JSX.Element {
             </Group>
           )}
           {MERKEL_KNOBS.map((k) => (
-            <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def}
+            <KnobSlider key={k.id} knob={k} value={knobs[k.id] ?? k.def} showWhy
               onChange={(v) => setKnob(k.id, v)} />
           ))}
           <PanelNote>{PROVENANCE}</PanelNote>
         </>
       )}
-    </>
+    </Stack>
   );
+
+  /*  ONE renderer for the lesson, above BOTH returns: the empty state and the
+   *  full page show the same steps.  A page whose explanation lives only in
+   *  the branch that HAS a diagram loses it exactly when there is nothing to
+   *  explain. */
+  const lessonStep = (n: number) => {
+    const st = MERKEL_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>
+        Cooling by evaporation, where the driving force stops being a ΔT
+      </Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        Every exchanger so far was priced on a temperature difference.  This
+        one is priced on an enthalpy difference, and the coldest water it can
+        make is set by the weather.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {MERKEL_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  /* The engine's refusal, verbatim — a pinched L/G or a below-wet-bulb
+     construction refuses with a named message, and that refusal IS the
+     pedagogy.  Nothing is rephrased. */
+  const refusal = mode === "classroom" && err ? (
+    <Alert color="orange" variant="light" py={8}
+      icon={<IconAlertTriangle size={16} />}
+      title="The engine did not solve this construction">
+      <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>{err}</Text>
+    </Alert>
+  ) : null;
 
   // ---- Honest empty state — only inside "Current run" mode: no tower
   // profile in the app's run, no diagram (the classroom source never needs
-  // one, it feeds itself). ----------------------------------------------------
+  // one, it feeds itself).  The lesson still renders. --------------------------
   if (mode === "current" && !active) {
     return (
-      <MethodSetupRail title="classroom parameters" setup={setup}>
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
-          justifyContent: "center", padding: 24 }}>
-          <Text size="sm" c="dimmed" ta="center" maw={520}>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {lessonHead}
+          {[1, 2, 3, 4, 5].map(lessonStep)}
+          <Box style={{ maxWidth: 280 }}>{controls}</Box>
+          <Text size="sm" c="dimmed" maw={620}>
             No cooling-tower profile in this run.  The Merkel diagram activates
             when a solved unit publishes a profile carrying both{" "}
             <b>{OPERATING_COLUMN}</b> and <b>{SATURATION_COLUMN}</b> columns —
             run a case with a <b>coolingTower</b> unit first, e.g.{" "}
             <code>tutorials/steady/heat/coolingTower01_merkel</code>, then
-            return here.
+            return here.  Or switch back to <b>Classroom</b>: the tool runs
+            that very case itself, in the browser.
           </Text>
-        </Box>
-      </MethodSetupRail>
+          {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
+  const nPoints = active
+    ? (active.profile.columns[active.profile.xAxis]?.length ?? 0) : 0;
+
   return (
-    <MethodSetupRail title="classroom parameters" setup={setup}>
-      {/* The published numbers: the KPI line and the hand-method cross-check.
-          They report, so they stay beside the diagram, never in the panel. */}
-      <Box style={{
-        flexShrink: 0, padding: "6px 12px",
-        borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
-      }}>
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {lessonHead}
+
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+        {lessonStep(4)}
+
+        <Box>
+          <Title order={5}>Now read the tower the engine solved</Title>
+          <Text size="sm" mt={4}>
+            Both curves below are the engine&apos;s published profile
+            {nPoints > 0 ? ` (${nPoints} points)` : ""}: the saturation curve
+            h*(T), the operating line
+            from the air-side balance, and the shaded band between them — the
+            driving force the Merkel number integrates.  The dashed tick is
+            the inlet wet bulb, the floor the water cannot cross; the gap
+            between it and the water-out marker is the approach.  Turn the
+            knobs and watch which of the two ends moves.
+          </Text>
+        </Box>
+
+        {/* The published numbers: the KPI line and the hand-method
+            cross-check.  They report on the run, so they sit with it. */}
         <Group gap="sm" wrap="wrap" align="center">
           {active && (
             <Text size="xs" c="dimmed">
@@ -377,7 +484,7 @@ export function MerkelTool(): JSX.Element {
               {" "}· approach {fmt(active.kpis?.["approach_K"])} K (over T_wb)
               {" "}· Me {fmt(active.kpis?.["merkelNumber"])}
               {" "}· L/G {fmt(active.kpis?.["L_over_G"])}
-              {" "}· evaporation {fmt(active.kpis?.["evaporation_pct_of_L"], 3)} % of L (= make-up)
+              {" "}· evaporation {fmt(active.kpis?.["evaporation_pct_of_L"], 3)} % of L
               {" "}· Q {fmt(active.kpis?.["Q_kW"])} kW
             </Text>
           )}
@@ -396,34 +503,48 @@ export function MerkelTool(): JSX.Element {
               </Badge>
             </Tooltip>
           )}
+          {active?.kpis?.["T_air_out"] !== undefined && (
+            <Badge variant="light" color="gray" tt="none">
+              air out {fmt(active.kpis["T_air_out"])} K, assumed SATURATED
+              {" "}· Y {fmt(active.kpis["Y_in"], 3)} → {fmt(active.kpis["Y_out"], 3)} kg/kg dry
+            </Badge>
+          )}
         </Group>
-      </Box>
 
-      {/* The engine's refusal, verbatim — a pinched L/G or a below-wet-bulb
-          construction refuses with a named message, and that refusal IS the
-          pedagogy.  Nothing is rephrased. */}
-      {mode === "classroom" && err && (
-        <Alert color="orange" variant="light" m={12} py={8}
-          icon={<IconAlertTriangle size={16} />}
-          title="The engine did not solve this construction"
-          style={{ flexShrink: 0 }}>
-          <Text size="xs" style={{ whiteSpace: "pre-wrap" }}>{err}</Text>
-        </Alert>
-      )}
+        {refusal}
 
-      {active ? (
-        <MerkelDiagram active={active}
-          busyOverlay={mode === "classroom" && busy} />
-      ) : mode === "classroom" && !err ? (
-        <Box style={{ flex: 1, display: "flex", alignItems: "center",
-          justifyContent: "center", gap: 8 }}>
-          <Loader size="sm" />
-          <Text size="sm" c="dimmed">
-            running coolingTower01_merkel in your browser…
-          </Text>
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          {controls}
+          <Box style={{ minWidth: 0 }}>
+            {active ? (
+              <MerkelDiagram active={active}
+                busyOverlay={mode === "classroom" && busy} />
+            ) : mode === "classroom" && !err ? (
+              <Group gap={8} p="xl" wrap="nowrap">
+                <Loader size="sm" />
+                <Text size="sm" c="dimmed">
+                  running coolingTower01_merkel in your browser…
+                </Text>
+              </Group>
+            ) : null}
+          </Box>
         </Box>
-      ) : null}
-    </MethodSetupRail>
+
+        {/* The engine's method hypotheses, quoted — never asserted here. */}
+        <Text size="xs" c="dimmed">
+          {METHOD_HYPOTHESES}{" "}
+          The °C axis is unit scaling of the engine&apos;s Kelvin, nothing
+          more.  The evaporation above is what the tower COSTS in water, and
+          the engine reports it as the make-up: drift and blowdown are not
+          modelled, so a real circuit consumes more.
+        </Text>
+
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }
 
@@ -473,19 +594,9 @@ function MerkelDiagram({ active, busyOverlay }: {
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => yLo + f * (yHi - yLo));
 
   return (
-    <>
-      {/* The pedagogy line, stated before the plot. */}
-      <Text size="xs" c="dimmed" px={12} py={4} style={{ flexShrink: 0 }}>
-        Both curves are the engine&apos;s published profile ({n} points).  The
-        shaded band between h*(T) and the operating line IS the enthalpy
-        driving force the Merkel number integrates; the water can at best
-        reach T_wb — the thermodynamic floor the approach is measured over.
-        The °C axis is unit scaling of the engine&apos;s Kelvin, nothing more.
-      </Text>
-
+    <Box style={{ minWidth: 0 }}>
       {/* ---- The Merkel diagram ---- */}
-      <Box style={{ flex: 1, minHeight: 0, display: "flex",
-        flexDirection: "column", padding: "0 12px 4px", overflow: "hidden" }}>
+      <Box style={{ display: "flex", flexDirection: "column" }}>
         <Group gap="md" wrap="wrap" py={2} style={{ flexShrink: 0 }}>
           <Group gap={4} wrap="nowrap" align="center">
             <svg width={26} height={8} aria-hidden>
@@ -515,7 +626,7 @@ function MerkelDiagram({ active, busyOverlay }: {
             </Group>
           )}
         </Group>
-        <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
+        <Box style={{ height: 420, position: "relative" }}>
           {busyOverlay && (
             <Box style={{ position: "absolute", inset: 0, display: "flex",
               alignItems: "center", justifyContent: "center", zIndex: 1,
@@ -592,11 +703,6 @@ function MerkelDiagram({ active, busyOverlay }: {
           </svg>
         </Box>
       </Box>
-
-      {/* The engine's method hypotheses, quoted — never asserted here. */}
-      <Text size="xs" c="dimmed" px={12} pb={6} style={{ flexShrink: 0 }}>
-        {METHOD_HYPOTHESES}
-      </Text>
-    </>
+    </Box>
   );
 }

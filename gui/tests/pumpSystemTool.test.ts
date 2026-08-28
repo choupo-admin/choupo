@@ -330,6 +330,6 @@ describe("the module source carries the honesty annotations", () => {
       expect(name).not.toMatch(/COLLAPSED_KEY$/);
     }
     expect(src).not.toContain("methodsToolCollapsedKey");
-    expect(src).toContain("MethodSetupRail");
+    expect(src).not.toContain("MethodSetupRail");
   });
 });

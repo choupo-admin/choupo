@@ -259,18 +259,13 @@ GATE_DECLARATIONS_DEBT = (
 #  tools while the registry declared 18.  They are keyed by the label the
 #  registry-driven gate resolves them to, so a tool cannot hide by being
 #  named differently or by having no file of its own.
+#  DISCHARGED 2026-08-28: the table is EMPTY because every one of the 18
+#  live EduTools is now a scrolling lesson.  It stays as a table rather
+#  than being deleted because it is the gate's exemption list, and an
+#  exemption list that exists and is empty says something a deleted one
+#  cannot: that nothing is exempt.  The fields below describe what a pin
+#  would mean if a new tool were ever added in the panel form.
 EDUTOOL_STILL_A_PANEL = {
-    "MethodsWorkspace.tsx::PsychroTool": "psychrometric chart",
-    "BreakthroughTool.tsx":     "adsorption breakthrough",
-    "ColumnControlTool.tsx":    "column control structure",
-    "DryingCurveTool.tsx":      "batch tray drying",
-    "EpsilonNtuTool.tsx":       "heat exchanger effectiveness-NTU",
-    "FugShortcutTool.tsx":      "Fenske-Underwood-Gilliland",
-    "LevenspielTool.tsx":       "reactor sizing",
-    "MerkelTool.tsx":           "cooling tower",
-    "PinchCompositeTool.tsx":   "pinch composite curves",
-    "PumpSystemTool.tsx":       "pump vs system curve",
-    "VanHeerdenTool.tsx":       "ignition / extinction",
 }
 
 EDUTOOL_PANEL_DEBT = {

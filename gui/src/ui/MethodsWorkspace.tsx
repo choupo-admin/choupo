@@ -145,9 +145,8 @@ import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { useCoarsePointer, useNarrowViewport } from "./methods/methodsChrome.js";
 import { MCCABE_LIMITS, MCCABE_STEPS } from "./methods/mccabeLesson.js";
-import {
-  KnobField, KnobNumber, MethodSetupRail,
-} from "./methods/knobPanel.js";
+import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
+import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
   METHOD_TOOLS, setActiveMethodTool, theoryUrl, useActiveMethodTool,
   type MethodTool, type MethodToolId,
@@ -842,10 +841,10 @@ function PsychroTool({ catalogue, componentFiles }: {
     return Number.isFinite(n) ? n : fallback;
   };
 
-  // ONE plot pane, whichever way the setup bar is folded (same rule as the
-  // McCabe tool: the fold moves chrome, never duplicates the diagram).
+  // ONE plot pane, wherever the page puts it — the layout moves chrome around
+  // the chart, never a second copy of it.
   const plotPane = (
-    <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 12, position: "relative" }}>
+    <Box style={{ minWidth: 0, height: 520, position: "relative" }}>
       {csv ? (
         <PsychroPlot csv={csv} yMax={yMax} />
       ) : (
@@ -861,8 +860,7 @@ function PsychroTool({ catalogue, componentFiles }: {
     </Box>
   );
 
-  return (
-    <MethodSetupRail title="setup" scent="SETUP" setup={
+  const setupRail = (
       <>
         <KnobField label="carrier gas">
           <Select size="xs" searchable data={carrierNames} value={carrier} w="100%"
@@ -900,9 +898,83 @@ function PsychroTool({ catalogue, componentFiles }: {
           </Group>
         )}
       </>
-    }>
-      {plotPane}
-      <HandOffFooter spec={spec} alerts={alerts} />
-    </MethodSetupRail>
+  );
+
+  const step = (n: number) => {
+    const st = PSYCHRO_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        <Box>
+          <Title order={3}>Moist gas, read as a map</Title>
+          <Text size="sm" c="dimmed" mt={4}>
+            The densest diagram you will use, and it rewards being read the
+            way a map is: every point is a state, and every process is a line
+            on it with a direction that means something.
+          </Text>
+        </Box>
+
+        {alerts}
+
+        {step(1)}
+        {step(2)}
+        {step(3)}
+
+        <Box>
+          <Title order={5}>Now read one</Title>
+          <Text size="sm" mt={4}>
+            The engine computes the whole chart at your pressure — the
+            saturation ceiling, the relative-humidity family, the
+            adiabatic-saturation lines and, where the transport data allow it,
+            the true wet-bulb lines beside them.  Changing the pair is part of
+            the lesson: nitrogen with water gives you the chart you have seen
+            printed, and a pair whose Lewis number is far from one pulls the
+            two dashed-and-solid families visibly apart.
+          </Text>
+        </Box>
+
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(220px, 260px) 1fr" }}>
+          <Stack gap={8}>{setupRail}</Stack>
+          <Box style={{ minWidth: 0 }}>{plotPane}</Box>
+        </Box>
+
+        {step(4)}
+        {step(5)}
+
+        <Box>
+          <Title order={5}>What this does not model</Title>
+          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+            {PSYCHRO_LIMITS.map((l) => (
+              <Text key={l.id} size="xs" c="dimmed">
+                <b>{l.title}</b> {l.body}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+
+        <HandOffFooter spec={spec} alerts={[]} />
+      </Stack>
+    </Box>
   );
 }

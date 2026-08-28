@@ -59,6 +59,15 @@ License
   so: c_in is never invented.  The knobs turn declared dict scalars only; the
   engine recomputes q*, R_f, t_st and the whole front itself on every run.
 
+  THE PAGE is a scrolling lesson, not an instrument panel: the definitions
+  (what a mass-transfer zone is, how fast it travels, what the S-curve is a
+  picture of) come BEFORE the plot, the knobs sit beside it, and the design
+  consequences (the length of unused bed, what sharpens or broadens the zone,
+  why beds run in pairs) come AFTER.  The prose is DATA -- breakthroughLesson.ts
+  -- so a test can reach it; ONE renderer serves both this page and the
+  no-curve state, so the explanation never disappears exactly when there is
+  nothing to explain.
+
   Activation is a predicate over the run (either source): the trajectory must
   carry outlet columns (c_out_/y_out_) AND some unit's KPIs must carry a
   t_stoichiometric_* key.  A holdup-only adsorber run (batch09: n_/q_/p_
@@ -70,16 +79,20 @@ License
 import { useMemo, useState } from "react";
 import {
   Alert, Box, Group, Loader, SegmentedControl, Stack, Switch, Table, Text,
+  Title,
 } from "@mantine/core";
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
-import { KnobNumber, MethodSetupRail, PanelNote } from "./knobPanel.js";
+import { KnobNumber, PanelNote } from "./knobPanel.js";
 import {
   TrajectoryPlot, type EventMarker, type GhostTrace,
 } from "../plotting/TrajectoryPlot.js";
 import { PLOT_COLORS } from "../plotting/plotly.js";
+import {
+  BREAKTHROUGH_LIMITS, BREAKTHROUGH_STEPS,
+} from "./breakthroughLesson.js";
 
 /** Per-unit KPI block as the adapter delivers it (RunResult.kpis[unit]). */
 export type UnitKpis = { [key: string]: number };
@@ -489,49 +502,108 @@ export function BreakthroughTool(): JSX.Element {
     </>
   );
 
-  // ---- No drawable view yet: per-source honest states -----------------------
+  /*  ONE renderer for the lesson, above BOTH returns: the no-curve state and
+   *  the full page show the same steps.  An explanation that lives only in
+   *  the branch that HAS a plot disappears exactly when there is nothing to
+   *  explain -- which is when a reader most needs it. */
+  const lessonStep = (n: number) => {
+    const st = BREAKTHROUGH_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box key={n}>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const lessonHead = (
+    <Box>
+      <Title order={3}>Adsorption, and the separation that has no steady state</Title>
+      <Text size="sm" c="dimmed" mt={4}>
+        The first construction here whose answer is a time rather than an
+        operating point — a bed does not settle, it fills up.
+      </Text>
+    </Box>
+  );
+
+  const lessonLimits = (
+    <Box>
+      <Title order={5}>What this does not model</Title>
+      <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+        {BREAKTHROUGH_LIMITS.map((l) => (
+          <Text key={l.id} size="xs" c="dimmed">
+            <b>{l.title}</b> {l.body}
+          </Text>
+        ))}
+      </Box>
+    </Box>
+  );
+
+  /*  The engine's refusal or failure, VERBATIM.  A refusal is a teaching
+   *  surface: it is never paraphrased, and it rides ABOVE whatever curve is
+   *  still on screen from the previous knob setting. */
+  const refusal = src === "classroom" && err !== null ? (
+    <Alert color="red" variant="light"
+      title="The engine refused or failed — its message, verbatim">
+      <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+        {err}
+      </Text>
+    </Alert>
+  ) : null;
+
+  // ---- No drawable view yet: the lesson still runs, then the honest state --
   if (view === null) {
     return (
-      <MethodSetupRail title="classroom knobs" setup={controls}>
-        {src === "classroom" && err !== null && (
-          <Alert color="red" variant="light" m={12}
-            title="The engine refused or failed — its message, verbatim">
-            <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-              {err}
-            </Text>
-          </Alert>
-        )}
-        {src === "classroom" && err === null && (
-          <Box style={{ flex: 1, display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 12 }}>
-            {busy || classroom === null ? (
-              <Group gap="sm" wrap="nowrap" align="center">
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  the engine is integrating the bed — seconds, not instant
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+          {lessonHead}
+          {refusal}
+          {[1, 2, 3, 4, 5].map(lessonStep)}
+          <Stack gap={8} style={{ maxWidth: 280 }}>{controls}</Stack>
+          {src === "classroom" && err === null && (
+            <Box style={{ display: "flex", alignItems: "center",
+              justifyContent: "center", padding: 12 }}>
+              {busy || classroom === null ? (
+                <Group gap="sm" wrap="nowrap" align="center">
+                  <Loader size="sm" />
+                  <Text size="sm" c="dimmed">
+                    the engine is integrating the bed — seconds, not instant
+                  </Text>
+                </Group>
+              ) : (
+                <Text size="sm" c="dimmed" ta="center" maw={460}>
+                  The classroom run finished but did not publish the
+                  breakthrough surfaces (c_out_/y_out_ columns +
+                  t_stoichiometric_* KPIs) — nothing honest to draw.
                 </Text>
-              </Group>
-            ) : (
+              )}
+            </Box>
+          )}
+          {src === "current" && (
+            <Box style={{ display: "flex", alignItems: "center",
+              justifyContent: "center", padding: 12 }}>
               <Text size="sm" c="dimmed" ta="center" maw={460}>
-                The classroom run finished but did not publish the
-                breakthrough surfaces (c_out_/y_out_ columns +
-                t_stoichiometric_* KPIs) — nothing honest to draw.
+                Adsorption breakthrough needs a fixed-bed choupoBatch run with
+                OUTLET tracking: a trajectory carrying c_out_/y_out_ columns and
+                the engine&apos;s front KPIs (t_stoichiometric_*). A holdup-only
+                adsorber run has no breakthrough curve to draw.
               </Text>
-            )}
-          </Box>
-        )}
-        {src === "current" && (
-          <Box style={{ flex: 1, display: "flex", alignItems: "center",
-            justifyContent: "center", padding: 12 }}>
-            <Text size="sm" c="dimmed" ta="center" maw={460}>
-              Adsorption breakthrough needs a fixed-bed choupoBatch run with
-              OUTLET tracking: a trajectory carrying c_out_/y_out_ columns and
-              the engine's front KPIs (t_stoichiometric_*). A holdup-only
-              adsorber run has no breakthrough curve to draw.
-            </Text>
-          </Box>
-        )}
-      </MethodSetupRail>
+            </Box>
+          )}
+          {lessonLimits}
+        </Stack>
+      </Box>
     );
   }
 
@@ -542,77 +614,104 @@ export function BreakthroughTool(): JSX.Element {
   ];
 
   return (
-    <MethodSetupRail title="classroom knobs" setup={controls}>
-      {/* A knob run that failed keeps the previous curve on screen — the
-          engine's message rides above it, verbatim, never swallowed. */}
-      {src === "classroom" && err !== null && (
-        <Alert color="red" variant="light" m={12}
-          title="The engine refused or failed — its message, verbatim">
-          <Text size="xs" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
-            {err}
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        {lessonHead}
+        {lessonStep(1)}
+        {lessonStep(2)}
+        {lessonStep(3)}
+
+        <Box>
+          <Title order={5}>Now read the bed the engine integrated</Title>
+          <Text size="sm" mt={4}>
+            The curve below is the outlet history the engine produced; the
+            three vertical markers are its own 5 %, 50 % and 95 % crossings,
+            and the step is the ideal front at the stoichiometric time it
+            announced BEFORE integrating.  Lengthen the bed and the front
+            arrives later while the zone stays about as wide, so the wasted
+            fraction falls.  Raise the temperature and the front arrives
+            sooner — b falls, the solid holds less.  Raise the pressure and
+            watch the retention factor in the table go DOWN rather than up:
+            the feed concentration rises in proportion to P, but a saturating
+            isotherm cannot, so each mole of gas is carrying less capacity
+            with it.
           </Text>
-        </Alert>
-      )}
+        </Box>
 
-      {/* The engine's curve + the KPI front construction. */}
-      <Box style={{ flex: 1, minWidth: 0, minHeight: 0, overflow: "hidden" }}>
-        <TrajectoryPlot
-          data={view.data}
-          filterVars={filterVars}
-          mvVars={detection.thermalColumns}
-          eventMarkers={view.markers}
-          ghost={view.ghost}
-          leftTitle={view.leftTitle}
-          rightTitle="T [K]"
-          title={`Breakthrough — ${view.unit}`}
-        />
-      </Box>
+        {refusal}
 
-      {/* Caption: the pedagogy of the construction + the normalisation
-          provenance, both stated rather than implied. */}
-      <Stack gap={2} px={12} py={4} style={{ flexShrink: 0 }}>
-        <Text size="xs" c="dimmed">
-          The area between the real curve and the ideal square wave at t_st is
-          the front spreading that the Peclet number
-          ({view.pe !== null ? `Pe = ${fmt(view.pe)}` : "Pe not emitted"}) and
-          heat effects buy.
-        </Text>
-        <Text size="xs" c="dimmed">{view.norm.caption}</Text>
-      </Stack>
+        {/* Knobs beside the engine's curve + the KPI front construction. */}
+        <Box style={{ display: "grid", gap: 14,
+          gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+          <Stack gap={8}>{controls}</Stack>
+          <Box style={{ minWidth: 0, height: 420 }}>
+            <TrajectoryPlot
+              data={view.data}
+              filterVars={filterVars}
+              mvVars={detection.thermalColumns}
+              eventMarkers={view.markers}
+              ghost={view.ghost}
+              leftTitle={view.leftTitle}
+              rightTitle="T [K]"
+              title={`Breakthrough — ${view.unit}`}
+            />
+          </Box>
+        </Box>
 
-      {/* The KPI table: one row per front component, each number verbatim
-          from the engine with its one-line meaning. */}
-      <Box px={12} pb={8} style={{ flexShrink: 0, overflowX: "auto" }}>
-        <Table withTableBorder withColumnBorders
-          style={{ fontSize: 12 }} verticalSpacing={2}>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>component</Table.Th>
-              <Table.Th>retention_factor</Table.Th>
-              <Table.Th>qbar_final</Table.Th>
-              <Table.Th>c_out/c_in final</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {detection.components.map((comp) => (
-              <Table.Tr key={comp}>
-                <Table.Td>{comp}</Table.Td>
-                <Table.Td>{fmt(view.unitKpis?.[`retention_factor_${comp}`])}</Table.Td>
-                <Table.Td>{fmt(view.unitKpis?.[`qbar_${comp}_final`])}</Table.Td>
-                <Table.Td>{fmt(view.unitKpis?.[`c_out_over_cin_final_${comp}`])}</Table.Td>
+        {/* Caption: the pedagogy of the construction + the normalisation
+            provenance, both stated rather than implied. */}
+        <Stack gap={2}>
+          <Text size="xs" c="dimmed">
+            The area between the real curve and the ideal square wave at t_st is
+            the front spreading that axial dispersion
+            ({view.pe !== null ? `Pe = ${fmt(view.pe)}` : "Pe not emitted"}),
+            the finite LDF uptake rate and — on a run that computes one — heat
+            effects buy.  On this witness the mesh contributes too; see the
+            limits below.
+          </Text>
+          <Text size="xs" c="dimmed">{view.norm.caption}</Text>
+        </Stack>
+
+        {/* The KPI table: one row per front component, each number verbatim
+            from the engine with its one-line meaning. */}
+        <Box style={{ overflowX: "auto" }}>
+          <Table withTableBorder withColumnBorders
+            style={{ fontSize: 12 }} verticalSpacing={2}>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>component</Table.Th>
+                <Table.Th>retention_factor</Table.Th>
+                <Table.Th>qbar_final</Table.Th>
+                <Table.Th>c_out/c_in final</Table.Th>
               </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-        <Text size="xs" c="dimmed" mt={4}>
-          retention_factor: how many hold-up times the front lags the carrier —
-          the bed's dynamic capacity for the component.{" "}
-          qbar_final: bed-average adsorbed loading at t_end — the capacity the
-          run actually used.{" "}
-          c_out/c_in final: the late plateau — 1 means the bed is fully broken
-          through.
-        </Text>
-      </Box>
-    </MethodSetupRail>
+            </Table.Thead>
+            <Table.Tbody>
+              {detection.components.map((comp) => (
+                <Table.Tr key={comp}>
+                  <Table.Td>{comp}</Table.Td>
+                  <Table.Td>{fmt(view.unitKpis?.[`retention_factor_${comp}`])}</Table.Td>
+                  <Table.Td>{fmt(view.unitKpis?.[`qbar_${comp}_final`])}</Table.Td>
+                  <Table.Td>{fmt(view.unitKpis?.[`c_out_over_cin_final_${comp}`])}</Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+          <Text size="xs" c="dimmed" mt={4}>
+            retention_factor: how many hold-up times the front lags the carrier —
+            the bed&apos;s dynamic capacity for the component.{" "}
+            qbar_final: bed-average adsorbed loading at t_end — the capacity the
+            run actually used.{" "}
+            c_out/c_in final: the late plateau — 1 means the bed is fully broken
+            through.
+          </Text>
+        </Box>
+
+        {lessonStep(4)}
+        {lessonStep(5)}
+
+        {lessonLimits}
+      </Stack>
+    </Box>
   );
 }
