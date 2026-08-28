@@ -98,7 +98,12 @@ def glossed(block: str) -> set:
     out = set()
     for raw in re.findall(r'sym:\s*"((?:[^"\\]|\\.)*)"', m.group(1)):
         out.add(raw)
-        for part in re.split(r'\s*/\s*', raw):
+        #  Split on `/` and on a COMMA FOLLOWED BY A SPACE.  The space is
+        #  what tells the two apart: "T_h,in" is ONE symbol with a qualifier
+        #  inside it, while "b_j, p_j" is two symbols listed together.  A
+        #  bare comma must not split, or every subscripted end-point symbol
+        #  would be cut in half.
+        for part in re.split(r'\s*/\s*|,\s+', raw):
             part = part.strip()
             if part:
                 out.add(part)

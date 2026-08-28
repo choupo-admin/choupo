@@ -297,7 +297,6 @@ EDUTOOL_PANEL_DEBT = {
 #  one, so the debt can be paid down but never grow.
 LESSON_SYMBOLS_UNGLOSSED = {
     "bjerrumLesson.ts":        "Sigma, z_i, m_i, C_T",
-    "breakthroughLesson.ts":   "eps, rho_b, D_ax, and the Langmuir pair set",
     "columnControlLesson.ts":  "T_top / T_bot, dT, du",
     "dryingLesson.ts":         "R_c, X_0, X_c, tau, lambda, the two cp's",
     "fugLesson.ts":            "the whole FUG symbol set (K_i, alpha, theta, ...)",

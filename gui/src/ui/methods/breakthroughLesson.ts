@@ -56,6 +56,33 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "field moving down a bed while the solid underneath it loads.",
     formula: "ε ∂c_i/∂t + ρ_b ∂q_i/∂t = −∂(u c_i)/∂z + D_ax ∂²c_i/∂z²\n"
       + "∂q_i/∂t = k_i · (q*_i − q_i)",
+    where: [
+      { sym: "c_i", means: "concentration of species i in the GAS moving "
+        + "through the bed", unit: "mol/m³" },
+      { sym: "q_i", means: "the LOADING — moles of i held on the solid per "
+        + "kilogram of adsorbent.  Per kilogram of the thing that stays "
+        + "behind, which is why the bed's inventory is a simple sum",
+        unit: "mol/kg" },
+      { sym: "q*_i", means: "the loading the solid WOULD hold if it were at "
+        + "equilibrium with the gas beside it — the star is equilibrium, not "
+        + "an operating value", unit: "mol/kg" },
+      { sym: "ε", means: "the VOID FRACTION of the bed — the share of its "
+        + "volume that is gas, between the particles.  The engine's own line "
+        + "prints ρ_p = ρ_b/(1−ε), which is what fixes both meanings" },
+      { sym: "ρ_b", means: "the BULK density of the packing — kilograms of "
+        + "adsorbent per cubic metre of BED, voids included (not per cubic "
+        + "metre of solid, which is ρ_p)", unit: "kg/m³" },
+      { sym: "u", means: "the SUPERFICIAL velocity — volumetric flow divided "
+        + "by the empty tube's cross-section, as if the packing were not "
+        + "there.  The gas between the particles actually moves faster, at "
+        + "u/ε", unit: "m/s" },
+      { sym: "z", means: "distance along the bed from the inlet", unit: "m" },
+      { sym: "D_ax", means: "the AXIAL DISPERSION coefficient — how much the "
+        + "front smears by mixing along the flow", unit: "m²/s" },
+      { sym: "k_i", means: "the LINEAR DRIVING FORCE coefficient — one "
+        + "declared rate constant standing for the pore, film and crystal "
+        + "resistances together", unit: "1/s" },
+    ],
     note: "Those two lines are what this unit actually solves — no more.  One "
       + "dimension (axial), a declared mesh of finite volumes, first-order "
       + "upwind advection, and a LINEAR DRIVING FORCE for the uptake: the "
@@ -77,6 +104,18 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
     formula: "R_f  = ε + ρ_b · q*(c_in) / c_in\n"
       + "u_zone = u / R_f\n"
       + "t_st = (L / u) · R_f",
+    where: [
+      { sym: "R_f", means: "the RETARDATION FACTOR — how many times slower the "
+        + "concentration front travels than the gas does, because most of "
+        + "each molecule's time is spent on the solid" },
+      { sym: "c_in", means: "the feed concentration entering the bed",
+        unit: "mol/m³" },
+      { sym: "u_zone", means: "the speed of the mass-transfer zone through "
+        + "the bed — the front, not the gas", unit: "m/s" },
+      { sym: "t_st", means: "the STOICHIOMETRIC time — when the front would "
+        + "reach the exit if it were infinitely sharp", unit: "s" },
+      { sym: "L", means: "the length of the bed", unit: "m" },
+    ],
     note: "The engine prints all three BEFORE it integrates and publishes R_f "
       + "and t_st as KPIs — so the arrival time is a prediction you can check "
       + "against the curve, not a number read off it afterwards.  On the "
@@ -96,6 +135,10 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "zone of zero width would give the square wave the plot draws at t_st "
       + "instead.",
     formula: "∫₀^∞ (1 − c_out/c_in) dt = t_st",
+    where: [
+      { sym: "c_out", means: "concentration leaving the bed — the curve this "
+        + "whole page is about", unit: "mol/m³" },
+    ],
     note: "That identity is exact for the conservative scheme, and the engine "
       + "publishes both sides — integral_anchor beside t_stoichiometric — "
       + "which is why they agree here to about ten digits.  It also says what "
@@ -116,6 +159,14 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "how WIDE the zone is.  The usual bookkeeping turns that width into a "
       + "length of bed thrown away at every switch.",
     formula: "LUB = L · (1 − t_b / t_st)        (length of unused bed)",
+    where: [
+      { sym: "LUB", means: "LENGTH OF UNUSED BED — the part still clean when "
+        + "you switched, which is the price of a front with width",
+        unit: "m" },
+      { sym: "t_b", means: "the BREAKTHROUGH time — when the outlet first "
+        + "reaches the concentration you declared unacceptable.  It is a "
+        + "CHOICE, not a property of the bed", unit: "s" },
+    ],
     note: "On the witness's own numbers t_b(5 %) = 2891 s against t_st = "
       + "3041 s, so about 5 % of the 0.5 m bed — some 2.5 cm — is unused when "
       + "it is switched.  A sharp zone means a bed you can use almost fully; a "
@@ -142,6 +193,29 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "the wasted length of step 4 grows with it.",
     formula: "q*_i = q_sat,i · b_i(T) · p_i / (1 + Σ_j b_j(T) · p_j)\n"
       + "b(T) = b(T_ref) · exp[ −(ΔH_ads/R)(1/T − 1/T_ref) ]",
+    where: [
+      { sym: "q_sat,i", means: "the saturation loading of i — the monolayer "
+        + "the Langmuir picture allows", unit: "mol/kg" },
+      { sym: "b_i", means: "the AFFINITY of i for the surface, which falls as "
+        + "the bed warms", unit: "1/Pa" },
+      { sym: "p_i", means: "partial pressure of i in the gas", unit: "Pa" },
+      { sym: "b_j, p_j", means: "the same two quantities for EVERY OTHER "
+        + "adsorbing species — the subscript changes, the meaning does not" },
+      { sym: "T", means: "the temperature of the bed at that point",
+        unit: "K" },
+      { sym: "Σ_j", means: "a sum over EVERY adsorbing species, including "
+        + "i itself.  The shared denominator is the competition: what one "
+        + "species takes, another cannot have" },
+      { sym: "ΔH_ads", means: "the heat of adsorption, NEGATIVE because "
+        + "adsorption releases heat — which is why a warm bed holds less and "
+        + "why a hot purge regenerates one", unit: "J/mol" },
+      { sym: "T_ref", means: "the temperature at which the affinity was "
+        + "measured, the anchor the van't Hoff term moves away from",
+        unit: "K" },
+      { sym: "R", means: "the gas constant — NOT the reflux ratio a "
+        + "distillation page calls R, and not the retardation factor R_f "
+        + "above", unit: "J/(mol·K)" },
+    ],
     note: "ΔH_ads is negative — adsorption is exothermic — so b falls as T "
       + "rises and a warm bed holds less: raise the temperature knob and the "
       + "front arrives sooner.  That is the lever temperature-swing "
