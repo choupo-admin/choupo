@@ -594,26 +594,54 @@ void Dictionary::setDimensions(const std::string& key, const Dimensions& dims)
     entryDims_[key] = dims;
 }
 
+//  ONE place decides whether an entry is a `$reference` and, if so, which
+//  variable it names.  Three dimension accessors and the checked
+//  lookupScalar all ask THIS -- four transcriptions of one test is how the
+//  contract came to be honoured on one path and not the others.
+const Dictionary* Dictionary::dimsHome_(const std::string& key,
+                                        std::string& outKey) const
+{
+    outKey = key;
+    auto eit = entries_.find(key);
+    if (eit != entries_.end()
+        && std::holds_alternative<Reference>(eit->second)
+        && varsDict_)
+    {
+        outKey = std::get<Reference>(eit->second).name;
+        return varsDict_.get();
+    }
+    return this;
+}
+
 bool Dictionary::hasDimensions(const std::string& key) const
 {
-    return entryDims_.find(key) != entryDims_.end();
+    std::string k;
+    const Dictionary* home = dimsHome_(key, k);
+    return home->entryDims_.find(k) != home->entryDims_.end();
 }
 
 Dimensions Dictionary::dimensionsOf(const std::string& key) const
 {
-    auto it = entryDims_.find(key);
-    if (it == entryDims_.end())
+    std::string k;
+    const Dictionary* home = dimsHome_(key, k);
+    auto it = home->entryDims_.find(k);
+    if (it == home->entryDims_.end())
         throw std::runtime_error("Dictionary '" + name_ +
-            "': no dimensions declared for entry '" + key +
-            "' (caller required them but the dict did not tag the value)");
+            "': no dimensions declared for entry '" + key + "'"
+            + (home != this ? " (which references $" + k + "; declare the"
+                              " unit on the variable, not at the reference)"
+                            : "")
+            + " (caller required them but the dict did not tag the value)");
     return it->second;
 }
 
 Dimensions Dictionary::dimensionsOrDefault(const std::string& key,
                                            const Dimensions& def) const
 {
-    auto it = entryDims_.find(key);
-    return (it == entryDims_.end()) ? def : it->second;
+    std::string k;
+    const Dictionary* home = dimsHome_(key, k);
+    auto it = home->entryDims_.find(k);
+    return (it == home->entryDims_.end()) ? def : it->second;
 }
 
 void Dictionary::note(const std::string& key) const

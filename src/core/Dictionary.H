@@ -154,6 +154,16 @@ public:
     //  These accessors just RECORD/return the declared dimensions; the
     //  cross-check against caller expectations is the checked
     //  `lookupScalar(key, expectedDims)` overload.
+    //  ALL THREE FOLLOW A `$reference`.  The declared dimensions of an
+    //  entry written `HCO3 $C_T;` live on the VARIABLE, which is what
+    //  docs/ai/dict-syntax.md promises ("References inherit the variable's
+    //  declared dimensions").  They used to read entryDims_ alone, so an
+    //  entry that is a reference reported NO dimensions while the CHECKED
+    //  lookupScalar(key, expectedDims) followed the same reference and
+    //  validated against exactly those dimensions -- two accessors for one
+    //  entry's dimensions, one honouring the contract and one not.  A caller
+    //  that asks "did this entry declare a unit?" then refuses a case that
+    //  declared one perfectly well, one indirection away.
     bool       hasDimensions(const std::string& key) const;
     Dimensions dimensionsOf(const std::string& key) const;
     Dimensions dimensionsOrDefault(const std::string& key,
@@ -270,6 +280,12 @@ public:
     childDictsUnnoted(const std::string& prefix = "") const;
 
 private:
+    //  Where an entry's declared dimensions LIVE: this dict, or the
+    //  variables block when the entry is a `$reference`.  Writes the
+    //  key to look up there into `outKey`.
+    const Dictionary* dimsHome_(const std::string& key,
+                                std::string& outKey) const;
+
     void setVarsDictRecursive_(const DictPtr& v);
 
     //  A "missing X 'key'" error that does not look at the keys the dict DOES

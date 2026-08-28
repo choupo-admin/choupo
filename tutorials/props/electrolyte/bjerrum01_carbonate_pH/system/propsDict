@@ -91,54 +91,100 @@
   with an experiment.
 \*---------------------------------------------------------------------------*/
 
+//  THREE NUMBERS, ONE HOME EACH.  `$variables` are resolved at LOOKUP time,
+//  so every one of the 44 operations below reads the SAME temperature and the
+//  SAME total carbonate -- and a knob that turns one of them turns it once.
+//  Written out 44 times over, this file would carry 44 homes for one fact,
+//  which is the arity sin in a case file rather than in a data record.
+variables
+{
+    //  Total carbonate, held across the whole titration.
+    C_T   0.001 mol/kg;
+
+    //  Temperature.  Every constant in this diagram carries a van't Hoff dH
+    //  and a full analytic log K(T), so BOTH pK's move when this moves --
+    //  turn it and watch which one moves further.
+    T     298.15 K;
+
+    //  A BACKGROUND-ELECTROLYTE KNOB BELONGS HERE AND IS NOT HERE YET.
+    //  Raising the ionic strength at a fixed pK is the OTHER way this diagram
+    //  moves, and separating it from temperature is the point of having two
+    //  knobs.  Measured, so the next attempt starts from facts rather than
+    //  from scratch: 0.5 mol/kg of KNO3 shifts the first crossover from
+    //  pH 6.341 to 6.177 and drops gamma_CO3 from 0.903 to 0.289 -- the
+    //  effect is large and worth teaching.  Potassium is the wrong carrier
+    //  (the curated chemistry has KHCO3aq, which at 0.5 mol/kg holds 5.4 % of
+    //  ALL the carbon, so the three fractions would sum to 0.946 and the
+    //  diagram would quietly be about something else); LITHIUM has no such
+    //  record, which is a statement about this reaction list and NOT about
+    //  nature -- LiHCO3(aq) exists and is weak, and a diagram is complete
+    //  only up to the reactions somebody wrote down.
+    //
+    //  TWO THINGS BLOCK IT, both found on 2026-08-28 and both real:
+    //  (1) bin/choupo-import's dependency closure does not resolve
+    //      `$variable` references, so `Li $bg;` is INVISIBLE to it -- the
+    //      seal ships without species/Li.dat and the run then refuses on a
+    //      record the closure never staged.  With the literal `Li 0.1
+    //      mol/kg;` the same closure finds it.
+    //  (2) There is no re-seal path when a sealed case's reach GROWS.  The
+    //      engine's refusal says "re-run bin/choupo-import", which cannot
+    //      work: the importer stages the case with its existing manifest, so
+    //      the staged run refuses for the same reason.  Removing the manifest
+    //      by hand then orphans every record it owned, and the importer
+    //      refuses those as authored files.  The sequence that does work --
+    //      delete the manifest AND every record it owned, then import -- is
+    //      written down nowhere, and both refusals name a remedy that is
+    //      wrong for this situation.
+}
+
 operations
 (
     //  ACID SIDE -- HCl added to dissolved CO2 (Na absent).
-    { name acid_5p0; type speciate; analyticalTotals { Cl 0.005000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_5p0.csv; } }
-    { name acid_3p0; type speciate; analyticalTotals { Cl 0.003000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_3p0.csv; } }
-    { name acid_2p0; type speciate; analyticalTotals { Cl 0.002000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_2p0.csv; } }
-    { name acid_1p5; type speciate; analyticalTotals { Cl 0.001500 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_1p5.csv; } }
-    { name acid_1p0; type speciate; analyticalTotals { Cl 0.001000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_1p0.csv; } }
-    { name acid_0p6; type speciate; analyticalTotals { Cl 0.000600 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p6.csv; } }
-    { name acid_0p35; type speciate; analyticalTotals { Cl 0.000350 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p35.csv; } }
-    { name acid_0p2; type speciate; analyticalTotals { Cl 0.000200 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p2.csv; } }
-    { name acid_0p1; type speciate; analyticalTotals { Cl 0.000100 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p1.csv; } }
-    { name acid_0p05; type speciate; analyticalTotals { Cl 0.000050 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p05.csv; } }
+    { name acid_5p0; type speciate; analyticalTotals { Cl 0.005000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_5p0.csv; } }
+    { name acid_3p0; type speciate; analyticalTotals { Cl 0.003000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_3p0.csv; } }
+    { name acid_2p0; type speciate; analyticalTotals { Cl 0.002000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_2p0.csv; } }
+    { name acid_1p5; type speciate; analyticalTotals { Cl 0.001500 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_1p5.csv; } }
+    { name acid_1p0; type speciate; analyticalTotals { Cl 0.001000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_1p0.csv; } }
+    { name acid_0p6; type speciate; analyticalTotals { Cl 0.000600 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p6.csv; } }
+    { name acid_0p35; type speciate; analyticalTotals { Cl 0.000350 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p35.csv; } }
+    { name acid_0p2; type speciate; analyticalTotals { Cl 0.000200 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p2.csv; } }
+    { name acid_0p1; type speciate; analyticalTotals { Cl 0.000100 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p1.csv; } }
+    { name acid_0p05; type speciate; analyticalTotals { Cl 0.000050 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file acid_0p05.csv; } }
 
     //  BASE SIDE -- Na/C_T = 0 is CO2(aq); 1 is NaHCO3; 2 is Na2CO3;
     //  beyond 2 the excess is caustic soda.
-    { name base_0p0; type speciate; analyticalTotals { Na 0.000000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 ); output { file base_0p0.csv; } }
-    { name base_0p1; type speciate; analyticalTotals { Na 0.000100 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p1.csv; } }
-    { name base_0p2; type speciate; analyticalTotals { Na 0.000200 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p2.csv; } }
-    { name base_0p3; type speciate; analyticalTotals { Na 0.000300 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p3.csv; } }
-    { name base_0p4; type speciate; analyticalTotals { Na 0.000400 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p4.csv; } }
-    { name base_0p5; type speciate; analyticalTotals { Na 0.000500 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p5.csv; } }
-    { name base_0p6; type speciate; analyticalTotals { Na 0.000600 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p6.csv; } }
-    { name base_0p7; type speciate; analyticalTotals { Na 0.000700 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p7.csv; } }
-    { name base_0p8; type speciate; analyticalTotals { Na 0.000800 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p8.csv; } }
-    { name base_0p9; type speciate; analyticalTotals { Na 0.000900 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p9.csv; } }
-    { name base_0p95; type speciate; analyticalTotals { Na 0.000950 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p95.csv; } }
-    { name base_0p98; type speciate; analyticalTotals { Na 0.000980 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p98.csv; } }
-    { name base_1p0; type speciate; analyticalTotals { Na 0.001000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p0.csv; } }
-    { name base_1p02; type speciate; analyticalTotals { Na 0.001020 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p02.csv; } }
-    { name base_1p05; type speciate; analyticalTotals { Na 0.001050 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p05.csv; } }
-    { name base_1p1; type speciate; analyticalTotals { Na 0.001100 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p1.csv; } }
-    { name base_1p2; type speciate; analyticalTotals { Na 0.001200 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p2.csv; } }
-    { name base_1p3; type speciate; analyticalTotals { Na 0.001300 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p3.csv; } }
-    { name base_1p4; type speciate; analyticalTotals { Na 0.001400 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p4.csv; } }
-    { name base_1p5; type speciate; analyticalTotals { Na 0.001500 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p5.csv; } }
-    { name base_1p6; type speciate; analyticalTotals { Na 0.001600 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p6.csv; } }
-    { name base_1p7; type speciate; analyticalTotals { Na 0.001700 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p7.csv; } }
-    { name base_1p8; type speciate; analyticalTotals { Na 0.001800 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p8.csv; } }
-    { name base_1p9; type speciate; analyticalTotals { Na 0.001900 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p9.csv; } }
-    { name base_1p95; type speciate; analyticalTotals { Na 0.001950 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p95.csv; } }
-    { name base_2p0; type speciate; analyticalTotals { Na 0.002000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p0.csv; } }
-    { name base_2p05; type speciate; analyticalTotals { Na 0.002050 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p05.csv; } }
-    { name base_2p1; type speciate; analyticalTotals { Na 0.002100 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p1.csv; } }
-    { name base_2p2; type speciate; analyticalTotals { Na 0.002200 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p2.csv; } }
-    { name base_2p4; type speciate; analyticalTotals { Na 0.002400 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p4.csv; } }
-    { name base_2p8; type speciate; analyticalTotals { Na 0.002800 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p8.csv; } }
-    { name base_3p5; type speciate; analyticalTotals { Na 0.003500 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_3p5.csv; } }
-    { name base_5p0; type speciate; analyticalTotals { Na 0.005000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_5p0.csv; } }
-    { name base_8p0; type speciate; analyticalTotals { Na 0.008000 mol/kg; HCO3 0.001 mol/kg; } totalsBasis stoichiometric; pH solve; temperature 298.15; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_8p0.csv; } }
+    { name base_0p0; type speciate; analyticalTotals { Na 0.000000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 ); output { file base_0p0.csv; } }
+    { name base_0p1; type speciate; analyticalTotals { Na 0.000100 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p1.csv; } }
+    { name base_0p2; type speciate; analyticalTotals { Na 0.000200 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p2.csv; } }
+    { name base_0p3; type speciate; analyticalTotals { Na 0.000300 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p3.csv; } }
+    { name base_0p4; type speciate; analyticalTotals { Na 0.000400 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p4.csv; } }
+    { name base_0p5; type speciate; analyticalTotals { Na 0.000500 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p5.csv; } }
+    { name base_0p6; type speciate; analyticalTotals { Na 0.000600 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p6.csv; } }
+    { name base_0p7; type speciate; analyticalTotals { Na 0.000700 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p7.csv; } }
+    { name base_0p8; type speciate; analyticalTotals { Na 0.000800 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p8.csv; } }
+    { name base_0p9; type speciate; analyticalTotals { Na 0.000900 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p9.csv; } }
+    { name base_0p95; type speciate; analyticalTotals { Na 0.000950 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p95.csv; } }
+    { name base_0p98; type speciate; analyticalTotals { Na 0.000980 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_0p98.csv; } }
+    { name base_1p0; type speciate; analyticalTotals { Na 0.001000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p0.csv; } }
+    { name base_1p02; type speciate; analyticalTotals { Na 0.001020 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p02.csv; } }
+    { name base_1p05; type speciate; analyticalTotals { Na 0.001050 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p05.csv; } }
+    { name base_1p1; type speciate; analyticalTotals { Na 0.001100 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p1.csv; } }
+    { name base_1p2; type speciate; analyticalTotals { Na 0.001200 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p2.csv; } }
+    { name base_1p3; type speciate; analyticalTotals { Na 0.001300 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p3.csv; } }
+    { name base_1p4; type speciate; analyticalTotals { Na 0.001400 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p4.csv; } }
+    { name base_1p5; type speciate; analyticalTotals { Na 0.001500 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p5.csv; } }
+    { name base_1p6; type speciate; analyticalTotals { Na 0.001600 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p6.csv; } }
+    { name base_1p7; type speciate; analyticalTotals { Na 0.001700 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p7.csv; } }
+    { name base_1p8; type speciate; analyticalTotals { Na 0.001800 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p8.csv; } }
+    { name base_1p9; type speciate; analyticalTotals { Na 0.001900 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p9.csv; } }
+    { name base_1p95; type speciate; analyticalTotals { Na 0.001950 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_1p95.csv; } }
+    { name base_2p0; type speciate; analyticalTotals { Na 0.002000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p0.csv; } }
+    { name base_2p05; type speciate; analyticalTotals { Na 0.002050 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p05.csv; } }
+    { name base_2p1; type speciate; analyticalTotals { Na 0.002100 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p1.csv; } }
+    { name base_2p2; type speciate; analyticalTotals { Na 0.002200 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p2.csv; } }
+    { name base_2p4; type speciate; analyticalTotals { Na 0.002400 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p4.csv; } }
+    { name base_2p8; type speciate; analyticalTotals { Na 0.002800 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_2p8.csv; } }
+    { name base_3p5; type speciate; analyticalTotals { Na 0.003500 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_3p5.csv; } }
+    { name base_5p0; type speciate; analyticalTotals { Na 0.005000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_5p0.csv; } }
+    { name base_8p0; type speciate; analyticalTotals { Na 0.008000 mol/kg; HCO3 $C_T; } totalsBasis stoichiometric; pH solve; temperature $T; diagSpecies ( CO2aq HCO3 CO3 NaHCO3aq ); output { file base_8p0.csv; } }
 );
