@@ -253,7 +253,15 @@ GATE_DECLARATIONS_DEBT = (
 #  name here has already been converted (a pin outliving its violation is a
 #  licence) and if a tool NOT here is a panel (which is how a new one would
 #  arrive built the old way).
+#  TWO OF THESE ARE NOT FILES.  McCabeTool and PsychroTool are defined INLINE
+#  in MethodsWorkspace.tsx, which is how they escaped the first version of
+#  check_edutool_form entirely -- it globbed methods/*Tool.tsx and reported 16
+#  tools while the registry declared 18.  They are keyed by the label the
+#  registry-driven gate resolves them to, so a tool cannot hide by being
+#  named differently or by having no file of its own.
 EDUTOOL_STILL_A_PANEL = {
+    "MethodsWorkspace.tsx::McCabeTool":  "distillation, McCabe-Thiele",
+    "MethodsWorkspace.tsx::PsychroTool": "psychrometric chart",
     "BreakthroughTool.tsx":     "adsorption breakthrough",
     "ColumnControlTool.tsx":    "column control structure",
     "DryingCurveTool.tsx":      "batch tray drying",
