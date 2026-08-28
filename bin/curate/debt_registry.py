@@ -266,7 +266,6 @@ EDUTOOL_STILL_A_PANEL = {
     "DryingCurveTool.tsx":      "batch tray drying",
     "EpsilonNtuTool.tsx":       "heat exchanger effectiveness-NTU",
     "FugShortcutTool.tsx":      "Fenske-Underwood-Gilliland",
-    "KremserTool.tsx":          "absorption",
     "LevenspielTool.tsx":       "reactor sizing",
     "MerkelTool.tsx":           "cooling tower",
     "PinchCompositeTool.tsx":   "pinch composite curves",

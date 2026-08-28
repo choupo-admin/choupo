@@ -75,16 +75,17 @@ License
 
 import { Suspense, lazy, useMemo, useState, type ComponentProps } from "react";
 import {
-  Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Text,
-  Tooltip,
+  Alert, Badge, Box, Group, Loader, LoadingOverlay, SegmentedControl, Stack,
+  Text, Title, Tooltip,
 } from "@mantine/core";
 
 import type { RunResult, UnitProfile } from "../../adapters/SolverAdapter.js";
 import {
-  KnobField, KnobNumber, MethodSetupRail, PanelNote,
+  KnobField, KnobNumber, PanelNote,
 } from "./knobPanel.js";
 import { useMethodRun, type ScalarOverride } from "../../case/methodRun.js";
 import { useStore } from "../../state/store.js";
+import { KREMSER_LIMITS, KREMSER_STEPS } from "./kremserLesson.js";
 
 // ---- The Kremser closed form (the authorized method geometry) --------------
 
@@ -449,7 +450,7 @@ export function KremserTool(): JSX.Element {
   // "Current run": the classroom never waits for a flowsheet.
   if (source === "current" && !active) {
     return (
-      <MethodSetupRail title="column knobs" setup={setup}>
+      <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
         <Box p="xl">
           <Text c="dimmed" size="sm" maw={560}>
             No absorber run to analyse. The Kremser construction reads a converged
@@ -463,14 +464,32 @@ export function KremserTool(): JSX.Element {
             case itself, in the browser.
           </Text>
         </Box>
-      </MethodSetupRail>
+      </Box>
     );
   }
 
-  return (
-    <MethodSetupRail title="column knobs" setup={setup}>
-      <Group gap={8} align="center" wrap="wrap" p="sm" pb={0}
-        style={{ flexShrink: 0 }}>
+  const step = (n: number) => {
+    const st = KREMSER_STEPS.find((x) => x.n === n);
+    if (!st) return null;
+    return (
+      <Box>
+        <Title order={5}>{st.n} · {st.title}</Title>
+        <Text size="sm" mt={4}>{st.body}</Text>
+        {st.formula && (
+          <Box my={8} px="sm" py={6}
+            style={{ borderLeft: "3px solid var(--mantine-color-default-border)" }}>
+            <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
+              {st.formula}
+            </Text>
+          </Box>
+        )}
+        {st.note && <Text size="sm" c="dimmed">{st.note}</Text>}
+      </Box>
+    );
+  };
+
+  const chips = (
+      <Group gap={8} align="center" wrap="wrap">
         {active && (
           <Badge variant="light" color="gray" size="lg"
             styles={{ root: { textTransform: "none" } }}>
@@ -499,18 +518,50 @@ export function KremserTool(): JSX.Element {
           </Badge>
         )}
       </Group>
+  );
+
+  return (
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+      <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
+
+        <Box>
+          <Title order={3}>Absorption, and the staircase that became a formula</Title>
+          <Text size="sm" c="dimmed" mt={4}>
+            The third time you meet the same construction — and the first time
+            it collapses into something you can write on one line.
+          </Text>
+        </Box>
+
+        {step(1)}
+        {step(2)}
+        {step(3)}
+
+        <Box>
+          <Title order={5}>Now compare the formula with a solved column</Title>
+          <Text size="sm" mt={4}>
+            The engine solves the absorber stage by stage, re-evaluating K on
+            every one; the closed form assumes a single A.  The plot draws
+            both, and the chip beside each solute measures the gap.  Turn the
+            knobs and watch where the formula stops being a good answer.
+          </Text>
+        </Box>
+
+        {chips}
 
       {source === "classroom" && classroom.err && (
         /* The engine's refusal/error, VERBATIM -- a refusal is a teaching
            surface, never to be paraphrased away. */
-        <Alert color="red" variant="light" m="sm" mb={0} title="choupoSolve (WASM)">
+        <Alert color="red" variant="light" title="choupoSolve (WASM)">
           <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>
             {classroom.err}
           </Text>
         </Alert>
       )}
 
-      <Box pos="relative" style={{ flex: 1, minHeight: 0 }}>
+      <Box style={{ display: "grid", gap: 14,
+        gridTemplateColumns: "minmax(200px, 240px) 1fr" }}>
+        <Stack gap={8}>{setup}</Stack>
+        <Box pos="relative" style={{ minWidth: 0, height: 460 }}>
         <LoadingOverlay visible={busy} zIndex={5}
           overlayProps={{ blur: 1 }}
           loaderProps={{ children: fallback }} />
@@ -539,10 +590,13 @@ export function KremserTool(): JSX.Element {
             </Text>
           </Box>
         ) : null}
+        </Box>
       </Box>
 
+      {step(4)}
+
       {active && (
-        <Text size="xs" c="dimmed" p="sm" pt={0} style={{ flexShrink: 0 }}>
+        <Text size="xs" c="dimmed">
           Kremser assumes ONE constant absorption factor A = L/(K·V) — straight
           operating and equilibrium lines. The engine re-computes K stage by
           stage, so the run&apos;s recovery leaves the closed-form curve; each chip
@@ -552,6 +606,19 @@ export function KremserTool(): JSX.Element {
             " This run is non-isothermal: the solvent heats as it absorbs (dT_rise), and that temperature rise drives the K variation."}
         </Text>
       )}
-    </MethodSetupRail>
+
+        <Box>
+          <Title order={5}>What this does not model</Title>
+          <Box mt={4} style={{ display: "grid", columnGap: 16, rowGap: 6,
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))" }}>
+            {KREMSER_LIMITS.map((l) => (
+              <Text key={l.id} size="xs" c="dimmed">
+                <b>{l.title}</b> {l.body}
+              </Text>
+            ))}
+          </Box>
+        </Box>
+      </Stack>
+    </Box>
   );
 }
