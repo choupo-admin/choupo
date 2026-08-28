@@ -703,7 +703,7 @@ describe("the lesson the page walks through", () => {
       expect(at, `step ${n} renders before the drawing`).toBeGreaterThan(svg);
     }
     //  And the formula really is a formula, in the glyphs a reader sees.
-    expect(SRC).toContain("φ = L");
+    expect(SRC).toContain("φ_R = R");
   });
 
   it("carries a formula for the modulus, the effectiveness and Weisz-Prater", () => {
@@ -722,7 +722,7 @@ describe("the lesson the page walks through", () => {
     //  the pellet buys the full factor of two" is a decision.  The step must
     //  carry both, or it is a derivation with no consequence.
     const st = THIELE_STEPS.find((s) => s.n === 4)!;
-    expect(st.body).toContain("3/φ");
+    expect(st.body).toContain("3/φ_R");
     expect(st.body).toContain("41 %");
     expect(st.body.toLowerCase()).toContain("square root");
   });
@@ -755,5 +755,154 @@ describe("the isothermal limit, after a temperature became paintable", () => {
     //  worse than the stale sentence.
     expect(iso.body).toContain("does NOT rise where the pellet is");
     expect(iso.body).toContain("three steady states");
+  });
+});
+
+
+// ---------------------------------------------------------------------------
+//  CLAIMS BROUGHT BACK INSIDE THE PHYSICS.
+//
+//  An external review found several memorable sentences that were not true --
+//  and memorable is exactly what makes them dangerous.  Each is pinned, and
+//  the two that are arithmetic are RECOMPUTED here rather than quoted.
+// ---------------------------------------------------------------------------
+
+const prose = (src: string): string => src.replace(/\s+/g, " ");
+const TOOL_SRC = prose(readFileSync(
+  new URL("../src/ui/methods/ThielePelletTool.tsx", import.meta.url), "utf-8"));
+const CASE_SRC = prose(readFileSync(
+  new URL("../src/case/thielePellet.ts", import.meta.url), "utf-8"));
+
+describe("first order has no dead core", () => {
+  it("never calls the starved interior dead", () => {
+    //  For a first-order rate with c_s > 0 the solutions are cosh, I0 and
+    //  sinh -- strictly positive everywhere.  The centre can be a thousandth
+    //  of the surface value and is still reacting.  A true dead core (c = 0
+    //  over a finite region) needs an order below one, which this op does not
+    //  model, so the phrase names a thing that cannot happen here.
+    //  The phrase may appear ONCE, in the sentence that defines what a dead
+    //  core is and says this model cannot produce one.  What must be gone is
+    //  every use of it as a DESCRIPTION of this pellet.
+    for (const use of ["over a dead core", "its dead core", "dead weight",
+      "a dead core.  The dashed"]) {
+      expect(TOOL_SRC, `still describes the pellet as: ${use}`)
+        .not.toContain(use);
+    }
+    expect((TOOL_SRC.match(/dead core/g) ?? []).length).toBe(1);
+    expect(TOOL_SRC).toContain("A true dead core, c = 0 over a finite region");
+    expect(TOOL_SRC).toContain("STARVED, never dead");
+  });
+
+  it("shows the closed form really is positive at the centre", () => {
+    //  sphere: u(0) = phi/sinh(phi).  Tiny, never zero.
+    for (const phi of [1, 5, 20, 60])
+      expect(phi / Math.sinh(phi)).toBeGreaterThan(0);
+    expect(60 / Math.sinh(60)).toBeLessThan(1e-23);
+    expect(60 / Math.sinh(60)).toBeGreaterThan(0);
+  });
+
+  it("the knob text no longer promises a threefold tau sensitivity", () => {
+    //  D_eff goes as 1/tau so phi goes as sqrt(tau); the FULL 2-to-7 spread
+    //  can move eta by at most sqrt(7/2) = 1.87x even as phi grows without
+    //  bound, and by far less near the default.  "Threefold" is unreachable.
+    expect(CASE_SRC).not.toContain("threefold");
+    expect(CASE_SRC).toContain("sqrt(7/2) = 1.87x");
+
+    const etaSphere = (phi: number): number =>
+      phi > 1e-8 ? (3 / phi) * (1 / Math.tanh(phi) - 1 / phi) : 1;
+    let worst = 0;
+    for (let p3 = 0.1; p3 < 200; p3 *= 1.15) {
+      const r = etaSphere(p3 * Math.sqrt(2 / 3)) / etaSphere(p3 * Math.sqrt(7 / 3));
+      if (r > worst) worst = r;
+    }
+    expect(worst).toBeLessThan(Math.sqrt(7 / 2) + 1e-3);
+    expect(worst).toBeLessThan(2);
+  });
+});
+
+describe("the two moduli are never silently swapped", () => {
+  it("subscripts every modulus the page shows", () => {
+    //  The page taught phi = L*sqrt(k/D_eff) with L the radius, then showed a
+    //  badge computed on Lambda = V/S.  For a sphere that is a factor of NINE
+    //  between the formula a reader was given and the number they were shown.
+    expect(TOOL_SRC).toContain("φ_R = R");
+    expect(TOOL_SRC).toContain("φ_Λ");
+    expect(TOOL_SRC).toContain("M_W");
+    expect(TOOL_SRC).toContain("NINE TIMES SMALLER");
+  });
+
+  it("has the factor of nine right, for a sphere", () => {
+    const R = 1.5e-3;
+    const Lambda = (4 / 3) * Math.PI * R ** 3 / (4 * Math.PI * R ** 2);
+    expect(Lambda).toBeCloseTo(R / 3, 12);
+    expect((R / Lambda) ** 2).toBeCloseTo(9, 10);
+  });
+
+  it("does not present the screening value as a phase boundary", () => {
+    expect(TOOL_SRC).toContain("SCREENING value, not a");
+    expect(TOOL_SRC).not.toContain("That crossing is the moment your flask");
+  });
+});
+
+describe("eta is a ratio of rates, not a fraction of catalyst", () => {
+  it("says so, and drops the mass metaphor", () => {
+    expect(TOOL_SRC).not.toContain("four fifths");
+    expect(TOOL_SRC).toContain("a ratio of rates, not a fraction of mass");
+  });
+});
+
+describe("what the model does not contain is stated", () => {
+  it("names the external HEAT film, not only the mass film", () => {
+    //  T_s is prescribed: there is no h, no Nusselt and no pellet-to-gas
+    //  energy balance, so the external temperature drop -- often larger than
+    //  the internal one -- is in no number on the screen.
+    const film = THIELE_LIMITS.find((l) => l.id === "film")!;
+    expect(film.title).toContain("BOTH external films");
+    expect(prose(film.body)).toContain("T_s is PRESCRIBED");
+    expect(TOOL_SRC).toContain("prescribed, not");
+  });
+
+  it("does not claim other orders lack a closed form", () => {
+    expect(CASE_SRC).not.toContain("they have no closed form");
+    expect(CASE_SRC).toContain("zero order has a well-known one");
+  });
+
+  it("qualifies Prater as exact WITHIN the constant-property model", () => {
+    expect(TOOL_SRC).toContain("<em>within this model</em>");
+    expect(TOOL_SRC).toContain("constant D<sub>eff</sub>");
+  });
+
+  it("calls the temperature knob what it is", () => {
+    const k = THIELE_KNOBS.find((x) => x.id === "T")!;
+    expect(k.label).toContain("SURFACE");
+    expect(prose(k.why)).toContain("It is T_s");
+  });
+
+  it("does not hard-code a grid threshold in k", () => {
+    expect(CASE_SRC).not.toContain("Above ~400 1/s");
+    expect(CASE_SRC).toContain("phi_char*h");
+  });
+
+  it("qualifies the halved activation energy", () => {
+    const st = THIELE_STEPS.find((s) => s.n === 4)!;
+    expect(st.note).toContain("falls towards HALF");
+    expect(st.note).toContain("negligible");
+  });
+});
+
+describe("a surface concentration a gas cannot hold", () => {
+  it("is impossible above 580 K at one atmosphere, as the witness had it", () => {
+    //  THE DEFECT: the case declared c_s = 0.021 kmol/m3 independently of T,
+    //  while the tool's knob sweeps T to 873 K at 1 atm.  Choupo's canonical
+    //  mole is the KILOmole, so the ideal-gas total density is P/(1000*R*T)
+    //  in kmol/m3.  At 573.15 K that is 0.02126 -- the declared value was
+    //  98.8 % of ALL the gas -- and above 580.3 K it exceeds it outright.
+    const R = 8.314462618, P = 101325;
+    const cTot = (T: number): number => P / (1e3 * R * T);
+    expect(0.021 / cTot(573.15)).toBeCloseTo(0.988, 2);
+    expect(0.021 / cTot(873.15)).toBeGreaterThan(1.5);
+    //  The corrected value stays physical across the whole knob range.
+    expect(0.002 / cTot(873.15)).toBeLessThan(0.2);
+    expect(0.002 / cTot(373.15)).toBeLessThan(0.1);
   });
 });

@@ -30,6 +30,7 @@ License
 #include "ThielePellet.H"
 
 #include "core/Advisory.H"
+#include "core/Constants.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/reactor/pellet/Catalyst.H"
@@ -246,14 +247,18 @@ int ThielePellet::run(const DictPtr& dict,
 
     //  The scope of the model, stated on every run rather than in a comment.
     AdvisoryLog::instance().add("model", "info", locus,
-        "ISOTHERMAL pellet, FIRST-ORDER reaction, ONE pellet size, and the"
-        " external film neglected (c_s is taken as the bulk concentration)."
-        "  The NON-ISOTHERMAL pellet is not modelled: coupled to Arrhenius it"
-        " has up to three steady states for one phi and eta may exceed 1, so"
-        " its answer is a SET and a Newton would return whichever root the"
-        " guess was nearest.  Orders other than first are not modelled either"
-        " -- they have no closed form, hence no oracle to check the numerical"
-        " answer against.");
+        "FIRST-ORDER reaction at ONE temperature, ONE pellet size, and BOTH"
+        " external films neglected: c_s is taken as the bulk concentration,"
+        " and where a thermal block is declared T_s is PRESCRIBED rather than"
+        " obtained from a bulk temperature -- there is no heat-transfer"
+        " coefficient here.  The rate is not coupled to temperature: with an"
+        " Arrhenius k the pellet has up to three steady states for one phi and"
+        " eta may exceed 1, so its answer is a SET and a Newton would return"
+        " whichever root the guess was nearest.  Orders other than first are"
+        " not modelled either -- not for want of a closed form (zero order has"
+        " one) but because first order supplies a clean oracle in ALL THREE"
+        " geometries at once, which is what makes drawing the numerical answer"
+        " over the analytical one worth doing.");
 
     if (verbosity >= 2)
     {
@@ -349,6 +354,53 @@ int ThielePellet::run(const DictPtr& dict,
                 " the pellet surface, and this op cannot derive it: the"
                 " dimensionless first-order problem it solves does not contain"
                 " c_s at all, which is why the field is published as c/c_s.");
+
+        /*  A SURFACE CONCENTRATION IS NOT A FREE NUMBER when the medium is a
+         *  gas: it cannot exceed the total molar density the declared (T, P)
+         *  allows, because the reactant would then be more than all of the
+         *  gas.  Nothing checked it, and c_s was declared INDEPENDENTLY of T
+         *  -- so a case sweeping temperature at fixed c_s walks straight out
+         *  of the physical region and the run says nothing.  Measured on the
+         *  shipped witness: c_s = 0.021 kmol/m3 is 98.8 % of the total
+         *  density at its own 573.15 K and EXCEEDS it above 580.3 K, where
+         *  the tool's temperature knob spends most of its range.
+         *
+         *  The refusal names the mole fraction it computed, because that is
+         *  the number the author actually has in mind and the one that makes
+         *  the mistake obvious.  Ideal gas is stated: this is a bound, not a
+         *  property claim, and a real gas at 1 atm does not move it enough to
+         *  matter.  */
+        if (req.medium == "gas")
+        {
+            //  CHOUPO'S CANONICAL MOLE IS THE KILOMOLE (Dims::concentration
+            //  is kmol/m3, Dims::molarEnergy is J/kmol), while constant::R is
+            //  in J/(mol.K).  The factor of 1000 between them is exactly the
+            //  slip that made the first version of this guard silent: it
+            //  compared a kmol/m3 against a mol/m3 and found every case a
+            //  thousand times safe than it is.
+            const scalar cTotal =
+                P / (1.0e3 * constant::R * T);            // kmol/m3, ideal gas
+            const scalar y      = cSurf / cTotal;
+            if (y > 1.0)
+                throw std::runtime_error(locus + ": thermal {"
+                    " surfaceConcentration } = " + sci(cSurf) + " kmol/m3 is"
+                    " IMPOSSIBLE at the declared T = " + fmtG(T) + " K and"
+                    " P = " + fmtG(P) + " Pa: the total ideal-gas molar"
+                    " density there is " + sci(cTotal) + " kmol/m3, so this"
+                    " asks for a mole fraction of " + fmtG(y) + ".  c_s is"
+                    " declared independently of T here, so raising T lowers"
+                    " the density under a fixed c_s -- declare a c_s that is"
+                    " physical over the whole range you intend to sweep.");
+            if (y > 0.95)
+                AdvisoryLog::instance().add("model", "warning", locus,
+                    "thermal { surfaceConcentration } is " + fmtG(y * 100.0)
+                    + " % of the total ideal-gas molar density at the"
+                    " declared (T, P) -- an essentially pure reactant at the"
+                    " pellet surface.  Legal, and rarely what an author"
+                    " means; and since c_s is declared independently of T,"
+                    " a small increase in T makes it impossible.");
+        }
+
         //  THE TREE STORES NO DERIVATIVE: beta is computed from the three
         //  declared numbers and announced with all three, never declared.
         praterBeta = (-dHrxn) * de.D_eff * cSurf / (kEff * T);
@@ -358,7 +410,7 @@ int ThielePellet::run(const DictPtr& dict,
             "a temperature field is published, from PRATER's relation"
             " T - T_s = beta*T_s*(1 - c/c_s) over the concentration field,"
             " with beta = " + fmtG(praterBeta) + " derived from the three"
-            " declared numbers.  IT IS EXACT HERE, not an approximation: this"
+            " declared numbers.  IT IS EXACT WITHIN THIS MODEL -- constant D_eff, constant k_eff and a temperature-independent rate constant -- not an approximation of them: this"
             " op takes `rateConstant` as a number rather than an Arrhenius"
             " law, so the reaction term does not depend on temperature, the"
             " species equation is uncoupled from the energy equation, and its"

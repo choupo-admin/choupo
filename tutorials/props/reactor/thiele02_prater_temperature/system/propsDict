@@ -55,7 +55,19 @@ operations
         {
             heatOfReaction        -2.83e8;   // J/kmol  (exothermic, negative)
             thermalConductivity    0.25;     // W/(m.K), effective, pellet
-            surfaceConcentration   0.021;    // kmol/m3
+            //  c_s IS NOT A FREE NUMBER.  A surface concentration cannot
+            //  exceed the total molar density the declared (T, P) allows --
+            //  the reactant would be more than all of the gas.  This case
+            //  shipped with 0.021 kmol/m3, which is 98.8 % of the ideal-gas
+            //  density at its own 573.15 K and IMPOSSIBLE above 580.3 K,
+            //  where the EduTool's temperature knob spends most of its
+            //  range.  Nothing checked it; the op refuses it now.
+            //
+            //  0.002 kmol/m3 is about 9.4 mol % CO here and stays physical
+            //  across the whole 373-873 K sweep -- a realistic partial-
+            //  oxidation feed rather than essentially pure CO.  It is a
+            //  TEACHING value like the rest of this case, not a measurement.
+            surfaceConcentration   0.002;    // kmol/m3  (~9.4 mol% CO at 573 K)
         }
         diffusion
         {

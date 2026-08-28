@@ -129,11 +129,21 @@ export const THIELE_STEPS: readonly {
       + "centre is from the surface.  Neither speed means anything alone: "
       + "double both and the pellet behaves identically.  The Thiele modulus "
       + "is that ratio, made dimensionless.",
-    formula: "φ = L · √(k / D_eff)",
-    note: "L is the characteristic length — the sphere's radius, the "
+    formula: "φ_R = R · √(k / D_eff)      φ_Λ = (V/S) · √(k / D_eff)",
+    note: "TWO LENGTHS, and the difference costs a factor of nine.  φ_R uses "
+      + "the sphere's radius (the slab's HALF-thickness) and is what the "
+      + "radial solution is written in; φ_Λ uses Λ = V/S, which for a sphere "
+      + "is R/3, and is what makes different shapes comparable.  This page "
+      + "shows both, always subscripted, because a threshold quoted for one "
+      + "and applied to the other is wrong by an order of magnitude.  "
       + "slab's HALF-thickness.  φ small: diffusion wins, the whole pellet "
       + "sees surface concentration.  φ large: reaction wins, the reagent is "
-      + "eaten near the surface and the core is dead weight.",
+      + "eaten near the surface and the interior is starved.  Note that it "
+      + "is STARVED, never dead: for a first-order rate with c_s > 0 the "
+      + "solution is cosh, I₀ or sinh — strictly positive everywhere, so "
+      + "the centre can be a thousandth of the surface value and is still "
+      + "reacting.  A true dead core, c = 0 over a finite region, needs an "
+      + "order below one, and this operation does not model that.",
   },
   {
     n: 3,
@@ -142,8 +152,11 @@ export const THIELE_STEPS: readonly {
       + "pellet ACTUALLY delivers, divided by the rate it would deliver if "
       + "every pore saw surface concentration.  It is what your flask "
       + "constant must be multiplied by before it describes your bed.  "
-      + "η = 1 means the whole pellet works.  η = 0.19 means four fifths "
-      + "of the catalyst you paid for is doing nothing.",
+      + "η = 1 means no internal gradient at all.  η = 0.19 means the "
+      + "pellet delivers 19 % of the rate it would deliver without one — "
+      + "which is NOT the same as 81 % of the catalyst sitting idle.  η is "
+      + "a ratio of rates, not a fraction of mass: at first order every "
+      + "gram is reacting, most of it just at a much lower concentration.",
     formula: "η = (actual rate) / (rate at surface conditions)",
   },
   {
@@ -151,16 +164,19 @@ export const THIELE_STEPS: readonly {
     title: "Two regimes, and they demand opposite things of you",
     body: "At small φ you are KINETICALLY controlled: η ≈ 1, and the way "
       + "to more conversion is more catalyst activity or more temperature.  "
-      + "At large φ you are DIFFUSION controlled: η → 3/φ for a sphere, "
-      + "so η·k → 3√(k·D_eff)/L — the observed rate now depends on "
+      + "At large φ you are DIFFUSION controlled: η → 3/φ_R for a sphere — "
+      + "and, note, η → 1/φ_Λ for EVERY shape, which is exactly why Λ makes "
+      + "them collapse.  So η·k → √(k·D_eff)/Λ: the observed rate depends on "
       + "the SQUARE ROOT of k.  Doubling your catalyst's activity buys you "
       + "41 %, not 100 %.  Halving the pellet size buys you the full factor "
       + "of two.  Knowing which regime you are in tells you which lever to "
       + "pull, and pulling the wrong one is expensive.",
-    note: "The apparent activation energy halves too, for the same reason "
-      + "— which is a classic diagnostic: an Arrhenius plot whose slope is "
-      + "about half what the chemistry says is a pellet telling you it is "
-      + "diffusion limited.",
+    note: "The apparent activation energy falls towards HALF the intrinsic "
+      + "one for the same reason — exactly half only if the diffusivity's own "
+      + "temperature dependence is negligible, which here it is not (D_eff "
+      + "comes from Fuller and rises with T).  Still the classic diagnostic: "
+      + "an Arrhenius plot whose slope is far below what the chemistry says "
+      + "is a pellet telling you it is diffusion limited.",
   },
   {
     n: 5,
@@ -172,7 +188,15 @@ export const THIELE_STEPS: readonly {
       + "size, and the surface concentration.  Well below 1 and you are "
       + "kinetically controlled; well above 1 and you are not.  It answers "
       + "the design question without ever asking for the intrinsic rate.",
-    formula: "η·φ² = (r_obs · L²) / (D_eff · c_s)",
+    formula: "M_W = η·φ_Λ²  =  (r_obs · Λ²) / (D_eff · c_s),   Λ = V/S",
+    note: "READ THE SUBSCRIPT.  This is the GENERALISED Weisz modulus, built "
+      + "on Λ = V/S — for a sphere Λ = R/3, so it is NINE TIMES SMALLER than "
+      + "the conventional Weisz-Prater number C_WP = r_obs·R²/(D_eff·c_s) "
+      + "built on the radius.  Both conventions are in the literature and "
+      + "neither is wrong; quoting a threshold from one while computing the "
+      + "other is.  The badge on this page is M_W, on Λ, because that is "
+      + "what the engine publishes and what makes the three shapes "
+      + "comparable.",
   },
 ];
 
@@ -325,19 +349,37 @@ function CrossSection({ run, x, paint, tRange }: {
 
 // ---- the colour legend -------------------------------------------------------
 
-function RampLegend({ y }: { y: number }): JSX.Element {
+/*  THE LEGEND MUST DESCRIBE THE RAMP THAT IS ACTUALLY PAINTED.
+ *
+ *  It took no `paint` prop at all: switching the discs to temperature
+ *  repainted them with `temperatureColor` while this went on drawing the
+ *  concentration ramp and writing "fill = c/c_s".  A key that names the wrong
+ *  quantity is worse than no key -- the reader has no way to see it is wrong,
+ *  and every colour they read is mis-attributed.  */
+function RampLegend({ y, paint, tRange }: {
+  y: number;
+  paint: "concentration" | "temperature";
+  tRange: { lo: number; hi: number } | null;
+}): JSX.Element {
   const x0 = PLOT_L, w = 190, steps = 40;
+  const hot = paint === "temperature" && tRange !== null;
+  const ramp = (t: number): string =>
+    hot ? temperatureColor(t) : fieldColor(t);
   return (
     <g>
       {Array.from({ length: steps }, (_, i) => (
         <rect key={i} x={x0 + (i * w) / steps} y={y} width={w / steps + 0.6}
-          height={9} fill={fieldColor(i / (steps - 1))} />
+          height={9} fill={ramp(i / (steps - 1))} />
       ))}
       <rect x={x0} y={y} width={w} height={9} fill="none" stroke={GRID} />
-      <text x={x0 - 6} y={y + 8} textAnchor="end" fontSize={9} fill={INK}>0</text>
-      <text x={x0 + w + 6} y={y + 8} fontSize={9} fill={INK}>1</text>
-      <text x={x0 + w + 22} y={y + 8} fontSize={9.5} fill={INK}>
-        fill = c/c_s, as published
+      <text x={x0 - 6} y={y + 8} textAnchor="end" fontSize={9} fill={INK}>
+        {hot ? tRange!.lo.toFixed(1) : "0"}
+      </text>
+      <text x={x0 + w + 6} y={y + 8} fontSize={9} fill={INK}>
+        {hot ? tRange!.hi.toFixed(1) : "1"}
+      </text>
+      <text x={x0 + w + (hot ? 46 : 22)} y={y + 8} fontSize={9.5} fill={INK}>
+        {hot ? "fill = T [K], as published" : "fill = c/c_s, as published"}
       </text>
     </g>
   );
@@ -803,7 +845,7 @@ export function ThielePelletTool(): JSX.Element {
             Three shapes, the same length, the same chemistry, solved in your
             browser.  <strong>Drag the rate constant</strong> and watch the
             field go from nearly flat — the whole pellet working — to a skin
-            hugging the surface over a dead core.  The dashed curve is the
+            hugging the surface over a starved interior.  The dashed curve is the
             closed-form solution drawn on top of the numerical one, so you are
             watching the method being checked as well as the physics.
           </Text>
@@ -847,10 +889,18 @@ export function ThielePelletTool(): JSX.Element {
                 grid: {Number.isFinite(runs[0]?.diag?.nodes)
                   ? runs[0]!.diag!.nodes : "—"} points
               </Badge>
-              <Badge variant="light" color="orange" tt="none">
-                Weisz-Prater η·φ² (sphere) ={" "}
-                {fmt(bySphere?.diag?.weiszPrater, 4)}
-              </Badge>
+              <Tooltip withArrow multiline w={430}
+                label={"The GENERALISED Weisz modulus M_W = eta*phi^2 with phi "
+                  + "built on Lambda = V/S, exactly as the engine publishes "
+                  + "it.  For a sphere Lambda = R/3, so the conventional "
+                  + "Weisz-Prater number on the radius is NINE TIMES this "
+                  + "value.  Quote the convention with the number."}>
+                <Badge variant="light" color="orange" tt="none"
+                  styles={{ root: { cursor: "help" } }}>
+                  M_W = η·φ_Λ² (sphere) ={" "}
+                  {fmt(bySphere?.diag?.weiszPrater, 4)}
+                </Badge>
+              </Tooltip>
             </Group>
             {busy && (
               <Box style={{ position: "absolute", inset: 0, display: "flex",
@@ -869,17 +919,21 @@ export function ThielePelletTool(): JSX.Element {
             <svg viewBox={`0 0 ${FW} ${FH}`}
               style={{ width: "100%", height: "auto", display: "block" }}
               preserveAspectRatio="xMidYMid meet" role="img"
-              aria-label={"Intraparticle concentration field in a catalyst "
-                + "pellet: a slab, a cylinder and a sphere painted from the "
-                + "engine's own c/c_s field, each with its Thiele modulus and "
-                + "effectiveness factor, over a chart of the same field "
-                + "against the normalised coordinate with the closed form "
-                + "drawn on top of it"}>
+              aria-label={"Intraparticle field in a catalyst pellet: a slab, "
+                + "a cylinder and a sphere painted from the engine's own "
+                + (paint === "temperature"
+                  ? "temperature field in kelvin, "
+                  : "c/c_s concentration field, ")
+                + "each with its Thiele modulus and effectiveness factor, "
+                + "over a chart of the concentration field against the "
+                + "normalised coordinate with the closed form drawn on top "
+                + "of it"}>
               {runs.map((r, i) => (
                 <CrossSection key={r.geometry} run={r} x={CELL_X[i]!}
                   paint={paint} tRange={tRange} />
               ))}
-              <RampLegend y={STRIP_Y + STRIP_H + 6} />
+              <RampLegend y={STRIP_Y + STRIP_H + 6} paint={paint}
+                tRange={tRange} />
               <TraceLegend y={STRIP_Y + STRIP_H + 6} />
               {view === "field"
                 ? <ProfileChart runs={runs} />
@@ -916,12 +970,23 @@ export function ThielePelletTool(): JSX.Element {
         <Alert variant="light" color="orange"
           title="The number this screen exists to make you distrust">
           <Text size="sm">
-            The badge above reads <strong>η·φ² ={" "}
-            {fmt(bySphere?.diag?.weiszPrater, 4)}</strong> for the sphere, at
-            the knob settings you are holding right now.  Turn the rate
+            The badge above reads <strong>M_W ={" "}
+            {fmt(bySphere?.diag?.weiszPrater, 4)}</strong> for the sphere — the
+            generalised modulus, on Λ = V/S — at the knob settings you are
+            holding right now.  On the radius instead, the conventional
+            Weisz-Prater number is nine times that:{" "}
+            <strong>
+              {fmt((bySphere?.diag?.weiszPrater ?? NaN) * 9, 4)}
+            </strong>.  Same pellet, same physics, two conventions, and a
+            threshold borrowed across them is off by an order of magnitude.  Turn the rate
             constant up and watch it cross 1 while the pellet on screen grows
-            its dead core.  That crossing is the moment your flask constant
-            stopped describing your bed.
+            its starved interior.  Treat 1 as a SCREENING value, not a
+            phase boundary: nothing happens abruptly there, the diffusion
+            limitation grows smoothly, and conventional practice often uses a
+            tighter figure (of order 0.3) before calling internal diffusion
+            negligible.  What the crossing marks is that your flask constant
+            has stopped describing your bed by a margin you can no longer
+            ignore.
           </Text>
         </Alert>
 
@@ -947,12 +1012,28 @@ export function ThielePelletTool(): JSX.Element {
               </Text>
             </Box>
             <Text size="sm">
-              <strong>And now the honest half.</strong>  What is painted is
-              Prater’s exact consequence of the concentration field that was
-              solved.  It is NOT the coupled non-isothermal pellet: the rate
+              <strong>And now the honest half.</strong>  “Exact” means exact{" "}
+              <em>within this model</em>: constant D<sub>eff</sub>, constant
+              k<sub>eff</sub>, and a rate constant that does not depend on
+              temperature.  Those are real assumptions — the diffusivity here
+              is evaluated at T<sub>s</sub> by Fuller and then held fixed
+              across a pellet whose centre is tens of kelvin hotter.
+            </Text>
+            <Text size="sm" mt={6}>
+              And it is NOT the coupled non-isothermal pellet: the rate
               constant on this screen does not rise where the pellet is
               hotter.  The real coupled problem can have three steady states
-              at one modulus and η above 1, and nothing here solves it.
+              at one modulus and η above 1, and nothing here solves it — β is
+              the size of the excursion an Arrhenius factor <em>would</em>{" "}
+              see.
+            </Text>
+            <Text size="sm" mt={6}>
+              One more absence, easy to miss because the picture looks
+              complete: <strong>T<sub>s</sub> is prescribed, not
+              computed.</strong>  There is no heat-transfer coefficient
+              between pellet and gas here, so the EXTERNAL temperature drop —
+              often larger than the internal one for a strongly exothermic
+              reaction — is in no number on this screen.
             </Text>
           </Box>
         )}

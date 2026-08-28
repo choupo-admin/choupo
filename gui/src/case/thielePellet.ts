@@ -180,8 +180,12 @@ export const THIELE_KNOBS: readonly ThieleKnob[] = [
     //  hint now carries the one thing a reader must know AT THE KNOB; the rest
     //  is in the limits block under the drawing, which is on screen anyway.
     why: "The knob that walks the field from nearly flat to a boundary layer "
-      + "on the surface. Above ~400 1/s the default grid misses the case's own "
-      + "1e-4 tolerance and the run exits 1 — raise the grid points below.",
+      + "on the surface. Push it far enough and the boundary layer gets thin "
+      + "relative to the grid and the run fails its own verification gate; "
+      + "the criterion is phi_char*h, which the engine computes and "
+      + "announces, so read the refusal rather than a remembered threshold in "
+      + "k — where it bites depends on the dimension, the tortuosity and the "
+      + "temperature too. Raise the grid points below when it does.",
   },
   {
     id: "dimension", label: "characteristic dimension (radius, or the slab's half-thickness)",
@@ -195,13 +199,17 @@ export const THIELE_KNOBS: readonly ThieleKnob[] = [
     file: CATALYST_DAT, key: "tau",
     def: 3, min: 1, max: 7, step: 0.25, unit: "",
     why: "The record's own most doubtful number, and it says so: reported "
-      + "anywhere between 2 and 7, which alone moves eta about threefold.",
+      + "anywhere between 2 and 7.  Since D_eff goes as 1/tau, phi goes as "
+      + "sqrt(tau), so that whole spread can move eta by at most "
+      + "sqrt(7/2) = 1.87x even as phi grows without bound, and by much "
+      + "less near the default. Turn it and read the actual sensitivity "
+      + "off the screen rather than trusting a remembered factor.",
   },
   {
-    id: "T", label: "pellet temperature T",
+    id: "T", label: "pellet SURFACE temperature T_s",
     file: PROPS_DICT, key: "T",
     def: 573.15, min: 373.15, max: 873.15, step: 25, unit: "K",
-    why: "Moves D_eff (Fuller), hence the modulus. It does NOT move k — this "
+    why: "It is T_s, the surface value: where a thermal block is declared the pellet has a whole temperature FIELD and this is its boundary condition, prescribed here rather than obtained from a bulk temperature (no heat-transfer coefficient is modelled). It moves D_eff (Fuller), hence the modulus. It does NOT move k — this "
       + "operation has no Arrhenius term, so heating here only helps "
       + "diffusion, which a real catalyst would not do.",
   },
@@ -655,17 +663,25 @@ export const THIELE_LIMITS: readonly ToolLimit[] = [
       + "with an Arrhenius rate it has up to three steady states for one "
       + "modulus and eta may exceed 1, so its answer is a SET and no single "
       + "curve on this screen could stand for it. Orders other than first are "
-      + "not modelled either — they have no closed form, so there would be "
-      + "no oracle to check the numerical field against, which is the whole "
-      + "point of drawing both.",
+      + "not modelled either. That is not because closed forms do not exist "
+      + "— zero order has a well-known one — but because first order supplies "
+      + "a particularly clean oracle in ALL THREE geometries at once (cosh, "
+      + "I0, sinh), which is what makes drawing the numerical answer over the "
+      + "analytical one worth doing.",
   },
   {
     id: "film",
-    title: "The external film is neglected: c_s is taken as the bulk concentration.",
+    title: "BOTH external films are neglected — mass and heat.",
     body: "Every profile here starts at c/c_s = 1 at the surface by "
       + "construction. If the film outside the pellet offers real resistance, "
       + "a second resistance sits in series with everything drawn and the "
-      + "surface value is not the bulk one.",
+      + "surface value is not the bulk one. The same holds on the thermal "
+      + "side and is easier to miss: where a temperature field is published, "
+      + "T_s is PRESCRIBED, not computed from a bulk gas temperature. There "
+      + "is no heat-transfer coefficient, no Nusselt correlation and no "
+      + "pellet-to-gas energy balance here, so the external temperature drop "
+      + "— which for a strongly exothermic reaction is often LARGER than the "
+      + "internal one — is not in any number on this screen.",
   },
   {
     id: "surrogate",
