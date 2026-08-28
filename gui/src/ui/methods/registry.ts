@@ -59,7 +59,7 @@ export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
-  | "what-is-temperature";
+  | "what-is-temperature" | "flash-operating-line";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -132,6 +132,21 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "scale, and the gas thermometer that historically bridged them reads "
       + "thermodynamic temperature only in a limit no experiment can reach.",
     theory: "ch:criticals",
+  },
+  {
+    //  FIRST among the constructions, deliberately.  Until this existed the
+    //  list went from "what is a temperature" straight to McCabe-Thiele, so a
+    //  student met the STAIRCASE before ever meeting one STEP -- which is how
+    //  people end up able to draw the construction without being able to say
+    //  what either line means.
+    id: "flash-operating-line", label: "Flash (operating line)",
+    kind: "construction", status: "live",
+    teaches: "The single equilibrium stage, and the two curves that decide "
+      + "it: the material balance is a straight line that PIVOTS about the "
+      + "feed on the diagonal with slope -L/V, and where it cuts the "
+      + "equilibrium curve is the flash. Every other construction in this "
+      + "list is this step repeated, moved to other axes, or integrated.",
+    theory: "ch:flash",
   },
   {
     id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",

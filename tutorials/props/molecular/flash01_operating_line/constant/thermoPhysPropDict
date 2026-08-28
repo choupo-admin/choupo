@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  BENZENE + TOLUENE, IDEAL, ON PURPOSE.
+
+    This is the FIRST graphical construction a student meets, so the curve must
+    not fight the lesson.  Benzene/toluene is monotone, has no azeotrope, and
+    its ideal-solution treatment is the one every textbook draws -- so the only
+    thing moving on the diagram is the operating line, which is the subject.
+
+    An azeotropic pair would be a better SECOND case and a worse first one: the
+    operating line still works there, but the curve crosses the diagonal and
+    the reader cannot tell which surprise belongs to which idea.  The corpus
+    carries those (props/compare/acetone04_acetone_water_vle), and the tool
+    points at them rather than pretending the world is ideal.                */
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( benzene  toluene );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}

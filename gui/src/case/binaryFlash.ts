@@ -132,6 +132,47 @@ export function eqCurveFromTxyCsv(csv: string): EqCurve | null
 }
 
 /*---------------------------------------------------------------------------*\
+  THE OPERATING LINE -- the material balance, drawn.
+
+  F*z = L*x + V*y with L = F - V.  Divide by F and let psi = V/F:
+
+      z = (1 - psi)*x + psi*y      =>      y = -((1-psi)/psi)*x + z/psi
+
+  Two facts do all the teaching, and both are visible on the diagram:
+
+    * it passes through (z, z), ON THE DIAGONAL, whatever psi is -- so the
+      line PIVOTS about the feed as the vapour fraction changes;
+    * its slope is -(1-psi)/psi = -L/V, the phase ratio itself.  Vertical at
+      psi -> 0 (bubble point), horizontal at psi -> 1 (dew point).
+
+  Where it cuts the equilibrium curve IS the answer, and that intersection is
+  Rachford-Rice solved graphically.  This is the single stage McCabe-Thiele
+  repeats, which is why it belongs before it.
+
+  ZERO PHYSICS, as everywhere in this module: a straight line through a point
+  the caller supplies, on a curve the engine computed.
+\*---------------------------------------------------------------------------*/
+
+/** The operating line for feed `z` at vapour fraction `VF`, as slope and
+ *  intercept in y = m*x + b.  At VF = 0 the line is VERTICAL (x = z) and no
+ *  finite slope exists: `vertical` says so rather than returning an infinity
+ *  a plotter would silently drop. */
+export function operatingLine(z: number, VF: number):
+  { vertical: true; x: number } | { vertical: false; m: number; b: number }
+{
+  if (!(VF > 0)) return { vertical: true, x: z };
+  return { vertical: false, m: -(1 - VF) / VF, b: z / VF };
+}
+
+/** The operating line evaluated at x — NaN on the vertical (VF = 0) branch,
+ *  where y is not a function of x at all. */
+export function operatingLineAt(z: number, VF: number, x: number): number
+{
+  const L = operatingLine(z, VF);
+  return L.vertical ? NaN : L.m * x + L.b;
+}
+
+/*---------------------------------------------------------------------------*\
   Monotone 1-D interpolation + inversion on the tabulated curve.
 \*---------------------------------------------------------------------------*/
 

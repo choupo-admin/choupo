@@ -193,6 +193,9 @@ const FugShortcutTool = lazy(() =>
 const WhatIsTemperatureTool = lazy(() =>
   import("./methods/WhatIsTemperatureTool.js")
     .then((m) => ({ default: m.WhatIsTemperatureTool })));
+const FlashOperatingLineTool = lazy(() =>
+  import("./methods/FlashOperatingLineTool.js")
+    .then((m) => ({ default: m.FlashOperatingLineTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -356,6 +359,7 @@ export function MethodsWorkspace() {
             : tool === "thiele" ? <ThielePelletTool />
             : tool === "fug" ? <FugShortcutTool />
             : tool === "what-is-temperature" ? <WhatIsTemperatureTool />
+            : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>

@@ -71,6 +71,17 @@ export interface ScalarOverride {
   key: string;
   value: number;
   occurrence?: number;
+  /** The unit `value` is expressed in, as the dict spells it ("Pa", "K",
+   *  "bar"), or "" for a bare SI number.  OPTIONAL, and when given it is
+   *  CHECKED against the unit already in the slot.
+   *
+   *  It exists because the substitution keeps the declared unit and replaces
+   *  only the number: writing an SI value into a slot that says `1 atm`
+   *  produces `200000 atm`, which is 2e10 Pa, runs happily and is wrong by
+   *  five orders of magnitude with no symptom on screen.  That is the same
+   *  shape as the ThermoML `Pressure 101.3` read as pascals -- a plausible
+   *  number, never an error.  Declaring the unit turns it into a refusal. */
+  unit?: string;
 }
 
 /** One knob: replace the WORD of `key <word>;` in `file`.  Used where the
@@ -129,10 +140,20 @@ const escapeKey = (k: string): string => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"
 export function applyScalarOverride(text: string, o: ScalarOverride): string {
   const re = new RegExp(
     "(^[ \\t]*" + escapeKey(o.key)
-    + "[ \\t]+)([-+0-9.eE]+)([ \\t]*[A-Za-z/%0-9.^-]*[ \\t]*;)", "gm");
+    + "[ \\t]+)([-+0-9.eE]+)([ \\t]*)([A-Za-z/%0-9.^-]*)([ \\t]*;)", "gm");
   const m = locate(text, re, `key '${o.key}'`, o.file, o.occurrence);
-  return text.slice(0, m.index) + m[1] + String(o.value) + m[3]
-       + text.slice(m.index! + m[0].length);
+  const declared = m[4] ?? "";
+  if (o.unit !== undefined && o.unit !== declared) {
+    throw new Error(
+      `override of '${o.key}' in ${o.file} writes a value in `
+      + `'${o.unit || "(bare SI)"}' but the dict declares `
+      + `'${declared || "(bare SI)"}'.  The substitution replaces the NUMBER `
+      + `and keeps the unit, so this would write the value under the wrong `
+      + `one -- a plausible number, never an error.  Declare the knob in the `
+      + `dict's own unit, or change the dict.`);
+  }
+  return text.slice(0, m.index) + m[1] + String(o.value) + m[3] + declared
+       + m[5] + text.slice(m.index! + m[0].length);
 }
 
 /** Replace the WORD of `key <word>;`, keeping the indentation and the comment

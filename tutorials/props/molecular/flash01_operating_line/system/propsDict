@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE CURVE, AND ONLY THE CURVE.
+
+    A binary flash is fixed by two of {T, P, V/F} -- Duhem -- so at a frozen
+    pressure the equilibrium curve y*(x) is frozen too.  Everything the flash
+    tool draws on top of it (the operating line, its intersection, the lever
+    rule) is GRAPHICAL construction on this one table, which is why turning a
+    knob there redraws at once instead of re-solving.
+
+    So this case publishes exactly one thing: the curve.  It does NOT flash
+    anything.  The flash the student watches is the intersection, performed on
+    these rows -- and the corpus already carries the ENGINE's own answer for
+    the same pair (tutorials/steady/flash/flash01_benzene_toluene, V/F =
+    0.30398 at 370 K), which is the number to check the construction against.
+
+    51 points is not a rounding of taste: the construction interpolates
+    linearly between rows (no spline -- an overshoot near an azeotrope would
+    invent equilibrium the engine never computed), so the sampling IS the
+    resolution of every answer read off it.                                  */
+operations
+(
+    {
+        //  The equilibrium curve at one atmosphere: for each liquid
+        //  composition, the temperature it boils at and the vapour it makes.
+        name        txy;
+        type        propertyScan1D;
+        vary        { variable x[benzene];  from 0.0;  to 1.0;  n 51; }
+        //  P ON ITS OWN LINE, and it is load-bearing.  The GUI rewrites this
+        //  key to move the curve, and a scalar override anchors on the key at
+        //  the START of a line -- a state block written on one line cannot be
+        //  reached at all, and the knob then fails silently on every drag.
+        //  That exact defect shipped once already, on the temperature tool.
+        state
+        {
+            T            370 K;
+            P            1.01325 bar;
+            composition  { benzene 0.5;  toluene 0.5; }
+        }
+        properties  ( T_bubble  y_eq_benzene );
+        output      { file txy.csv; }
+    }
+);
