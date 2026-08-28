@@ -166,6 +166,7 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     if (!wbList.empty() && !canWB && verbosity >= 1)
         std::cerr << "[psychro] wet-bulb lines skipped: need carrier+condensable "
                      "ideal-gas Cp and the condensable's Hvap/Tc.\n";
+    std::size_t nAdiabaticDrawn = 0;
     if (canWB)
         for (double TasC : wbList)
         {
@@ -187,20 +188,44 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 Y  = Yas - cs * (Tc_ - TasC) / lam;
                 if (Y < 0.0) break;
                 csv << Tc_ << "," << Y << ",adiabatic:" << static_cast<int>(TasC) << "\n";
+                if (k == 0) ++nAdiabaticDrawn;
                 //  The adiabatic line's END is where the latent-heat term has
                 //  done its work; it moves with Hvap and with the moist-gas
                 //  heat capacity, neither of which the saturation anchors see.
                 diag_["Y_adiabatic_last"] = Y;
-                diag_["nWetBulbCurves"]   = static_cast<double>(wbList.size());
             }
         }
+
+    //  COUNT WHAT WAS DRAWN, UNDER THE NAME OF THE FAMILY THAT WAS DRAWN.
+    //
+    //  This used to be `diag_["nWetBulbCurves"]`, assigned INSIDE the
+    //  adiabatic loop from the REQUESTED list length.  Three things were
+    //  wrong at once: it named the family it was not counting, it reported a
+    //  request rather than a result, and it was the only number any golden
+    //  could reach -- so psychro01, the corpus's only psychrometric witness,
+    //  has been pinning `nWetBulbCurves 3` while emitting ZERO `wetbulb:`
+    //  rows.  A golden pinning that key could not have seen the Lewis family
+    //  appear or disappear, which is exactly what it looked like it was for.
+    diag_["nAdiabaticCurves"] = static_cast<double>(nAdiabaticDrawn);
 
     // -- TRUE wet-bulb lines via the Lewis number (Chilton-Colburn) ----------
     // T_wb equals the adiabatic-saturation T ONLY when Le = alpha/D_AB ~ 1
     // (air-water, a near-coincidence).  For other pairs Le != 1 and the wet-bulb
     // line's slope is scaled by Le^(2/3) -- the two visibly diverge.  Needs gas
     // diffusivity (Fuller) + thermal conductivity (Eucken) in the package.
-    if (canWB && thermo.hasDiffusivity() && thermo.hasThermalConductivity())
+    //  A FAMILY THAT DRAWS NOTHING MUST SAY SO.  Every exit below was a bare
+    //  `continue`: the block could be entered, iterate over all its requested
+    //  temperatures, emit not one row, and leave no trace anywhere -- no
+    //  diagnostic, no console line, nothing in the CSV.  Silence then meant
+    //  three different things at once (the transport models were absent; they
+    //  were present and one of them refused; the family was drawn) and a
+    //  reader could not tell which.  So: count what is drawn, count each
+    //  reason a curve was skipped, and publish both.
+    std::size_t nTrueWetBulbDrawn = 0;
+    std::size_t skipYas = 0, skipLatent = 0, skipTransport = 0, skipThrew = 0;
+    const bool transportAvailable =
+        thermo.hasDiffusivity() && thermo.hasThermalConductivity();
+    if (canWB && transportAvailable)
     {
         std::size_t iC = 0, iV = 0;
         for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -214,9 +239,9 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
         {
             const double Tas_K = TasC + 273.15;
             const double Yas = Ysat(Tas_K);
-            if (Yas < 0.0) continue;
+            if (Yas < 0.0) { ++skipYas; continue; }
             const double lam = cond->Hvap_latent(Tas_K) / Mv * 1000.0;   // J/kg
-            if (lam <= 0.0) continue;
+            if (lam <= 0.0) { ++skipLatent; continue; }
             const double cpc = cpMass(*carrier, Tas_K);
             const double cpv = cpMass(*cond, Tas_K);
             double Le;
@@ -226,10 +251,10 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 const double kg  = thermo.thermalConductivityGas(Tas_K, yC);  // W/(m K)
                 const double rho = P * (Mc / 1000.0) / (R * Tas_K);           // kg/m^3
                 const double alpha = kg / (rho * cpc);                        // m^2/s
-                if (Dab <= 0.0 || alpha <= 0.0) continue;
+                if (Dab <= 0.0 || alpha <= 0.0) { ++skipTransport; continue; }
                 Le = alpha / Dab;
             }
-            catch (const std::exception&) { continue; }
+            catch (const std::exception&) { ++skipThrew; continue; }
             const double cs = cpc + Yas * cpv;
             const double slope = cs * std::pow(Le, 2.0 / 3.0) / lam;   // Le^(2/3) factor
             for (std::size_t k = 0; k < n; ++k)
@@ -238,8 +263,42 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 const double Y = Yas - slope * (Tc_ - TasC);
                 if (Y < 0.0) break;
                 csv << Tc_ << "," << Y << ",wetbulb:" << static_cast<int>(TasC) << "\n";
+                if (k == 0)
+                {
+                    ++nTrueWetBulbDrawn;
+                    //  Le is the WHOLE point of this family: at Le = 1 it lies
+                    //  exactly on the adiabatic line and the two are one
+                    //  quantity; away from 1 they diverge, and a reader with
+                    //  only the curves cannot tell which situation is on the
+                    //  chart.  Published so a golden reads the separation and
+                    //  not merely that something was drawn.
+                    diag_["Lewis_last"] = Le;
+                }
             }
         }
+    }
+
+    diag_["nTrueWetBulbCurves"] = static_cast<double>(nTrueWetBulbDrawn);
+    if (!wbList.empty() && nTrueWetBulbDrawn == 0 && verbosity >= 1)
+    {
+        std::cout << "psychrometricChart: the TRUE wet-bulb family (the"
+                     " Le^(2/3) one) drew NOTHING for the "
+                  << wbList.size() << " requested temperature(s).  The chart"
+                     " therefore shows only adiabatic-saturation lines, and"
+                     " reading them as wet-bulb lines assumes Le = 1.  Reason: ";
+        if (!canWB)
+            std::cout << "the carrier or the condensable lacks an ideal-gas Cp,"
+                         " or the condensable lacks Hvap/Tc.\n";
+        else if (!transportAvailable)
+            std::cout << "the package declares no `transport { diffusivity;"
+                         " thermalConductivity; }` models, so no Lewis number"
+                         " can be formed.\n";
+        else
+            std::cout << skipYas << " past boiling, " << skipLatent
+                      << " with no latent heat, " << skipTransport
+                      << " with a non-positive diffusivity or diffusivity of"
+                         " heat, " << skipThrew
+                      << " where a transport model refused.\n";
     }
 
     if (verbosity >= 2)

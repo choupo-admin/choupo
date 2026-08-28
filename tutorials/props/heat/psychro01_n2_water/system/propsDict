@@ -25,6 +25,27 @@ operations
         grid             { n 61; }      // 1 C steps -- readable, not smooth-washed
 
         relativeHumidity ( 20  40  60  80 );   // PERCENT (the op's unit)
+
+        //  Each of these draws TWO families, and telling them apart is the
+        //  point of the case.  The ADIABATIC-SATURATION line is a pure energy
+        //  balance.  The TRUE WET-BULB line is that same line with its slope
+        //  scaled by Le^(2/3), Le = alpha/D_AB, which needs the transport
+        //  models declared in constant/thermoPhysPropDict.
+        //
+        //  Until 2026-08-28 the transport block was written in a dialect the
+        //  builder drops, so this chart emitted NO wetbulb: rows at all, and
+        //  nothing said so: the diagnostic that looked like it counted them
+        //  (`nWetBulbCurves`) was the length of the list BELOW, set inside the
+        //  adiabatic loop.  It counted the request, and it was the only number
+        //  a golden could reach.  Now `nAdiabaticCurves` and
+        //  `nTrueWetBulbCurves` each count what was drawn, and `Lewis_last`
+        //  is pinned -- because the two families coincide exactly at Le = 1,
+        //  so a chart with the count right and the Lewis number drifted is
+        //  still the wrong chart.
+        //
+        //  For this pair Le = 0.82, NOT 1: the near-coincidence that lets
+        //  handbooks treat the two as one quantity is a property of air/water,
+        //  and even here it is an approximation rather than an identity.
         wetBulb          ( 10  20  30 );   // C
 
         output { file psychroChart.csv; }

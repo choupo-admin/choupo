@@ -231,7 +231,11 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
       + "(Eucken) to form the Lewis number; a component whose record carries "
       + "no diffusion volume simply yields no wet-bulb lines. Their ABSENCE "
       + "means the data was missing, never that Le = 1 and the two families "
-      + "coincide. Le is also evaluated once per line, at its saturation "
+      + "coincide — and since 2026-08-28 the run SAYS which of those it is, "
+      + "naming the reason no line was drawn, because for most of this "
+      + "chart's life the transport block was written in a dialect the "
+      + "builder dropped and the family was silently missing from every "
+      + "chart. Le is also evaluated once per line, at its saturation "
       + "anchor and in a carrier-dominated gas, rather than along it.",
   },
   {

@@ -25,9 +25,19 @@ equilibrium
 //  saturation line and the wet-bulb line coincide only when the Lewis number
 //  is 1; for air/water it is close but not equal, and the op computes it from
 //  these models rather than assuming the coincidence.
+//  The block below was written in the FLAT dialect until 2026-08-28 --
+//  `thermalConductivity Eucken;` directly under transport -- and the builder,
+//  which walks a fixed (phase, property) table, matched none of it and
+//  dropped every key.  So the package carried no diffusivity and no thermal
+//  conductivity, the Lewis number could not be formed, and this chart emitted
+//  ZERO `wetbulb:` rows for the whole of its life while the paragraph above
+//  said it computed them.  The builder refuses that now.
 transport
 {
-    model               Chung;
-    thermalConductivity Eucken;
-    diffusivity         Fuller;
+    vapour
+    {
+        viscosity           { model Chung;  }
+        thermalConductivity { model Eucken; }
+        diffusivity         { model Fuller; }
+    }
 }

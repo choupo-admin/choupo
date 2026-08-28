@@ -2176,6 +2176,42 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                 mb->insert("model", pb->entryValue("model"));
                 transportDict->insert(mrow.v1key, EntryValue(mb));
             }
+
+            //  A DECLARED TRANSPORT BLOCK THAT MAPS TO NOTHING IS REFUSED.
+            //
+            //  This loop walks a fixed table of (phase, property) pairs and
+            //  skips anything it does not recognise.  A block written in the
+            //  FLAT legacy dialect -- `transport { thermalConductivity Eucken;
+            //  diffusivity Fuller; }` -- matches no row, so every key in it
+            //  was dropped and `transportDict` came out EMPTY BUT NON-NULL:
+            //  readTransportBlock then ran over nothing, the package reported
+            //  no diffusivity and no thermal conductivity, and the run said
+            //  nothing at all.  psychro01_n2_water declared exactly that, with
+            //  a comment above it saying the op "computes it from these models
+            //  rather than assuming the coincidence" -- and the op had never
+            //  once seen them.  A declaration nobody reads is a comment.
+            if (transportDict->keys().empty())
+            {
+                std::string declared;
+                for (const auto& k : tr->keys())
+                {
+                    if (!declared.empty()) declared += ", ";
+                    declared += k;
+                }
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " the `transport {}` block declares " + declared
+                    + " and NOT ONE of those reaches a model.  This grammar is"
+                      " PHASE-STRUCTURED: write `transport { vapour {"
+                      " thermalConductivity { model Eucken; } diffusivity {"
+                      " model Fuller; } } }`, with `liquid {}` for"
+                      " liquidViscosity / liquidConductivity /"
+                      " liquidDiffusivity and `interface {}` for"
+                      " surfaceTension.  The flat form"
+                      " (`thermalConductivity Eucken;` directly under"
+                      " transport) is silently DROPPED, which is why this"
+                      " refuses rather than running without the models you"
+                      " asked for.");
+            }
         }
         // G4: pureFluids{} rides verbatim -- a per-component multi-property
         // surface override, announced.

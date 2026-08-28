@@ -45,9 +45,24 @@ License
                    T axis itself goes far higher, into the unsaturated drying
                    region the RH curves do not reach).
     * rh:<phi>   : p_v = phi * P_sat(T), one curve per requested relative humidity.
-    * wetbulb:<Tas> : adiabatic-saturation lines (the drying tool) -- the locus
+    * adiabatic:<Tas> : ADIABATIC-SATURATION lines (the drying tool) -- the locus
                    c_s*(T - T_as) = (Y_sat(T_as) - Y) * lambda(T_as), spanning the
                    full T range; c_s = humid heat, lambda = latent heat at T_as.
+                   A pure energy balance: no transport property enters.
+    * wetbulb:<Tas> : the TRUE wet-bulb lines -- the same anchor with the slope
+                   scaled by Le^(2/3), Le = alpha/D_AB (Chilton-Colburn).  Drawn
+                   ONLY when the package can give a gas diffusivity (Fuller) and
+                   a thermal conductivity (Eucken); when it cannot, the op says
+                   so and names the reason, because the absence of these lines
+                   means the data was missing and NEVER that Le = 1.
+
+  This list said THREE families and named `wetbulb:` for the adiabatic one
+  until 2026-08-28.  The .cpp had emitted four since the Lewis family was
+  written, so the header described a chart the op does not draw -- and the only
+  diagnostic a golden could read, `nWetBulbCurves`, was assigned inside the
+  adiabatic loop from the REQUESTED list length, so it could not see the fourth
+  family appear or disappear either.  It is now `nAdiabaticCurves` and
+  `nTrueWetBulbCurves`, each counting what was DRAWN, plus `Lewis_last`.
 
   Dictionary form:
 
