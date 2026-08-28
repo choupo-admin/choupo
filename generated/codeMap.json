@@ -3935,6 +3935,7 @@
   ],
   "src/propertyOps/ThielePellet.cpp": [
    "src/core/Advisory.H",
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7241,6 +7242,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
    "src/propertyOps/VaporPressureFit.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/PackageAudit.cpp",

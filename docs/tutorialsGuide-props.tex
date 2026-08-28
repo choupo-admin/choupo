@@ -2210,6 +2210,30 @@ Three evaluations of the same dataset: 1. scaffold\_as\_is -- the inline pair, u
 \end{tutgolden}
 
 \clearpage
+\tutentry{flash01\_operating\_line}{tutorials/props/molecular/flash01\_operating\_line}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{txy}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The equilibrium curve a flash operating line is drawn on}
+\begin{tutnarrative}
+THE CURVE, AND ONLY THE CURVE.
+
+A binary flash is fixed by two of \{T, P, V/F\} -- Duhem -- so at a frozen pressure the equilibrium curve y$\ast$(x) is frozen too. Everything the flash tool draws on top of it (the operating line, its intersection, the lever rule) is GRAPHICAL construction on this one table, which is why turning a knob there redraws at once instead of re-solving.
+
+So this case publishes exactly one thing: the curve. It does NOT flash anything. The flash the student watches is the intersection, performed on these rows -- and the corpus already carries the ENGINE's own answer for the same pair (tutorials/steady/flash/flash01\_benzene\_toluene, V/F = 0.30398 at 370 K), which is the number to check the construction against.
+
+51 points is not a rounding of taste: the construction interpolates linearly between rows (no spline -- an overshoot near an azeotrope would invent equilibrium the engine never computed), so the sampling IS the resolution of every answer read off it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{txy}{n\_emptyCurves}{0}
+\goldrow{diag}{txy}{n\_failures}{0}
+\goldrow{diag}{txy}{n\_points}{51}
+\end{tutgolden}
+
+\clearpage
 \tutentry{nrtl01\_ethanol\_water\_package}{tutorials/props/molecular/nrtl01\_ethanol\_water\_package}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -2426,10 +2450,10 @@ k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 --
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{Lambda}{0.0005}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{P}{101325}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{T}{573.15}
-\goldrow{diag}{thiele\_CO\_alumina\_prater}{T\_centre\_K}{736.654}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{T\_centre\_K}{588.722}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{c\_centre}{0.289874}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{c\_centre\_closedForm}{0.289873}
-\goldrow{diag}{thiele\_CO\_alumina\_prater}{deltaT\_centre\_K}{163.504}
+\goldrow{diag}{thiele\_CO\_alumina\_prater}{deltaT\_centre\_K}{15.5718}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{dimension}{0.0015}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{epsilon\_p}{0.45}
 \goldrow{diag}{thiele\_CO\_alumina\_prater}{eta}{0.665742}
@@ -2753,7 +2777,11 @@ A constant-volume gas thermometer reads a temperature off PV = nRT. A real gas d
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{rung\_O2}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{rung\_CH4}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{rung\_C2H4}\\[-1pt]{\tiny propertyPoint}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{rung\_water}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{rung\_benzene}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{rung\_water}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{rung\_ethyleneGlycol}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{rung\_naphthalene}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{rung\_biphenyl}\\[-1pt]{\tiny propertyPoint}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The range a chemical engineer actually works in}
@@ -2763,6 +2791,10 @@ THE LADDER A CHEMICAL ENGINEER ACTUALLY CLIMBS, and the engine CHECKS it rather 
 Each rung asks one question: at the temperature this substance's record calls its normal boiling point, what does its VAPOUR-PRESSURE CORRELATION say the pressure is? The answer should be one atmosphere -- that is what a normal boiling point means -- and how close it lands is a measure of the record, published rather than assumed.
 
 THE OTHER WAY ROUND WOULD HAVE BEEN NICER AND DOES NOT WORK. Asking for `T\_bubble` at 1 atm solves for the temperature, which is the more direct question; `BubblePoint::compute` carries its own initial guess and does not converge at 20 K, a gap this repository already has on record (see docs/design/held-out-pressure.md). Verifying the pressure at a declared temperature asks the same physics of the same correlation and is robust, so that is what runs here -- said plainly rather than papered over.
+
+WHY THE LADDER STOPS AT GLYCEROL, and it is not because the list got boring. Above roughly 600 K an ordinary organic does not have a normal boiling point to check: it CRACKS first, so there is no one-atmosphere equilibrium to ask about. The scale itself changes character there -- ITS-90 stops interpolating on vapour pressure and gas thermometry altogether and realises its upper range on the FREEZING POINTS OF METALS, then on Planck radiation above the silver point. Those fixed points are declared values of the scale, not something this engine computes, and the page says so where it lists them.
+
+DOWTHERM A IS ABSENT AND THAT IS A FINDING, not an oversight. The hot-oil fluid an engineer actually runs a 530 K loop on is curated here with `role nonvolatile` and carries NO vapour-pressure correlation, so this case cannot ask it the question it asks the others. Named rather than quietly skipped: an omission a reader cannot see is the kind of gap this project refuses to leave.
 
 \end{tutnarrative}
 \tutreadme{Eight rungs, from liquid hydrogen to boiling water, checked by the engine rather than quoted at you.}
@@ -2786,7 +2818,7 @@ THE OTHER WAY ROUND WOULD HAVE BEEN NICER AND DOES NOT WORK. Asking for `T\_bubb
 \goldrow{diag}{rung\_H2}{gamma}{1.4374}
 \goldrow{diag}{rung\_H2}{v\_molar}{0.0017}
 \goldrow{diag}{rung\_neon}{Cp\_ig}{20.7861}
-\goldmore{90}
+\goldmore{155}
 \end{tutgolden}
 
 \subsection{thermoTest}
