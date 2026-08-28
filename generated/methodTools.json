@@ -3,8 +3,8 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 18,
-  "registryTools": 18,
+  "liveTools": 19,
+  "registryTools": 19,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -17,6 +17,12 @@
       "label": "Flash (operating line)",
       "teaches": "The single equilibrium stage, and the two curves that decide it: the material balance is a straight line that PIVOTS about the feed on the diagonal with slope -L/V, and where it cuts the equilibrium curve is the flash. Every other construction in this list is this step repeated, moved to other axes, or integrated.",
       "href": "/app/?workspace=methods&tool=flash-operating-line"
+    },
+    {
+      "id": "bjerrum",
+      "label": "Speciation vs pH (Bjerrum)",
+      "teaches": "That the pH axis of a speciation diagram is a RESULT, not a knob: 44 separate equilibrium calculations, each a real neutral mixture, each landing wherever its own charge balance puts it -- and the two crossovers arriving on the two pK's without either having been an input. Also the two things the hand-drawn version cannot show: the three fractions do not sum to one, because the titrant is not a spectator, and the crossovers sit below the thermodynamic pK because the engine works in activities.",
+      "href": "/app/?workspace=methods&tool=bjerrum"
     },
     {
       "id": "mccabe",
