@@ -36,10 +36,20 @@ describe("the steps", () => {
     expect(f).toContain("K2");
   });
 
-  it("says the pH is not an input, and says why", () => {
+  //  THIS TEST USED TO PIN A FALSEHOOD.  It asserted the page said "no pH
+  //  input", and the page said it, and it was WRONG: `Speciate.cpp` accepts
+  //  BOTH `pH <number>;` and `pH solve;`.  A green test over a false claim is
+  //  worse than no test, so what is pinned now is the true and sharper
+  //  statement -- the given-pH mode EXISTS, and what it costs is the charge
+  //  row.  The negative keeps the old overstatement from coming back.
+  it("says the pH is a choice here, names the cost, and does not overstate", () => {
     const s = BJERRUM_STEPS[1];
-    expect(prose(s?.title ?? "")).toMatch(/NOT a knob/i);
-    expect(prose(s?.body ?? "")).toMatch(/no pH input/i);
+    const body = prose(s?.body ?? "");
+    expect(prose(s?.title ?? "")).toMatch(/NOT a knob here/i);
+    expect(body).toMatch(/pH 7\.8;|legal declaration/i);   // the mode exists
+    expect(body).toMatch(/electroneutrality/i);            // and what it costs
+    expect(body).toMatch(/pH solve;/);                     // what this case picked
+    expect(body).not.toMatch(/no pH input|has no pH knob/i);
     expect(s?.formula ?? "").toContain("Σ z_i m_i = 0");
   });
 

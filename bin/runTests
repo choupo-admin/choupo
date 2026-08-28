@@ -2228,6 +2228,23 @@ PYEOF
     fi
     rm -f /tmp/advattr.$$
 
+    # Bjerrum prose gate (2026-08-28).  The carbonate witness teaches through
+    # PROSE that quotes numbers -- two crossover pH's, the carbonate activity
+    # coefficient at each, the sum-to-one dip -- and those live in two homes
+    # that cannot share a variable (a case header, a TypeScript lesson) while
+    # being DERIVED from a third (the golden).  Three had already drifted,
+    # silently, because nothing looked.  This recomputes them from the golden
+    # and requires both homes to quote them.  4 sabotages.
+    if "$ROOT/bin/curate/check_bjerrum_prose.py" > /tmp/bjerprose.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "bjerrum-prose-gate" "$(head -1 /tmp/bjerprose.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_bjerrum_prose.py)\n" "bjerrum-prose-gate"
+        cat /tmp/bjerprose.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/bjerprose.$$
+
     # diafiltration gate (2026-08-25).  The tree's first BATCH membrane is
     # open in both directions at once -- permeate out, make-up solvent in --
     # so its ledger has to agree with the accepted state on two boundary

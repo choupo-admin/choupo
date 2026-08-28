@@ -19,12 +19,17 @@
   end to end.
 
   THE REASON THIS TOOL EXISTS IS NOT THE DIAGRAM.  Every textbook draws it.
-  What no textbook can show is that the horizontal axis is a RESULT: a book
+  What no textbook can show is that the horizontal axis is a RESULT -- and
+  that this is a CHOICE, visible in one word of the case file.  A book
   substitutes pH into the mass-action expressions, which is arithmetic and
-  always works, while this engine has no pH input at all -- so every point on
-  the curve had to be a beaker somebody could weigh out, and the pH came back
-  from electroneutrality.  A student who has understood that will never again
-  think the pH of a bicarbonate solution is something you choose.
+  always works; Choupo will do that too (`pH 7.8;` fixes [H+] and DROPS the
+  electroneutrality row, reporting the net charge the composition carries
+  instead of forcing it to zero -- the mode a measured laboratory pH needs).
+  This witness declines it: every op says `pH solve;`, so each point had to
+  be a beaker somebody could weigh out and the pH came back from charge.
+  A student who has understood that will never again think the pH of a
+  bicarbonate solution is something you choose -- nor that an engine which
+  lets you type one has therefore computed it.
 
   WHAT THE ENGINE ACTUALLY EMITS, checked against the witness before this
   prose was written: 44 `speciate` operations, each publishing pH, the
@@ -56,15 +61,44 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   },
   {
     n: 2,
-    title: "The pH is NOT a knob — and that is the whole lesson",
+    title: "The pH is NOT a knob here — and that is the whole lesson",
     body: "A textbook plots the three fractions against pH by putting pH into "
       + "the two mass-action expressions and solving for the ratios.  That is "
-      + "arithmetic, and it always works.  This engine cannot do it: there is "
-      + "no pH input anywhere in Choupo, by a settled decision, because a pH "
-      + "you declare is a number with no model behind it.  What decides the "
-      + "proton concentration is CHARGE: the solution must be electrically "
-      + "neutral, and given everything else in the beaker that fixes [H+].",
+      + "arithmetic, and it always works.  Choupo will do it too: `pH 7.8;` is "
+      + "a legal declaration.  Look at what it costs.  Fixing [H+] REMOVES the "
+      + "electroneutrality equation, so the run reports the net charge the "
+      + "composition carries instead of forcing it to zero — the curve you "
+      + "drew is a set of compositions no beaker can hold.  That mode is for "
+      + "a MEASURED pH off a laboratory sheet, which is a datum somebody read "
+      + "off an instrument.  This case declares `pH solve;` instead, so [H+] "
+      + "joins the unknowns and CHARGE is what decides it: the solution must "
+      + "be electrically neutral, and given everything else in the beaker "
+      + "that fixes [H+].",
     formula: "Σ z_i m_i = 0     →     [H+] , and therefore pH",
+    where: [
+      { sym: "Σ", means: "The sum runs over EVERY aqueous species in the "
+        + "converged table — the masters, H+, OH- and every complex.  It is "
+        + "not decoration: this is a row the solver assembles and imposes, "
+        + "and it is the row that closes the system when the pH is unknown.  "
+        + "A precipitated solid is not in it (a crystal is neutral)." },
+      { sym: "z_i", means: "The charge NUMBER of species i, signed: +1 for "
+        + "Na+, −2 for CO3--, 0 for a neutral such as CO2(aq).  It is not "
+        + "fitted — it is read off the species' own curated identity record, "
+        + "and every formation reaction is checked to conserve it before the "
+        + "solve begins.", unit: "dimensionless (elementary charges, signed)" },
+      { sym: "m_i", means: "The molality of species i: moles of i per "
+        + "KILOGRAM OF SOLVENT, not per litre of solution.  A concentration "
+        + "declared per litre has to pass through a density before it can "
+        + "enter here, and the engine announces that conversion.",
+        unit: "mol/kg water" },
+      { sym: "pH", means: "A RESULT on this page.  With `pH solve;` the free "
+        + "H+ molality joins the Newton unknowns and the row above is what "
+        + "closes for it.  It is reported WITH its scale: −log10(γ_H · m_H) "
+        + "on the Davies charge-symmetric convention, so this is a FREE H+ "
+        + "activity — not the total proton concentration, and not the "
+        + "operational scale a laboratory meter reads against buffers.",
+        unit: "dimensionless (a decimal logarithm)" },
+    ],
     note: "So the horizontal axis of the diagram below is not an axis anybody "
       + "set.  It is 44 separate equilibrium calculations, each landing "
       + "wherever its own charge balance puts it — which is exactly what "
@@ -90,6 +124,19 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "solved pH absorbs the error.  That warning is right for a lab sheet "
       + "and wrong here: this imbalance IS the titrant.  Declaring the basis "
       + "changes no number — it changes what the engine says about them.",
+    where: [
+      { sym: "C_T", means: "The TOTAL carbonate, held fixed at the same value "
+        + "in all 44 beakers — the one quantity that does not vary from point "
+        + "to point.  That is what makes the diagram a statement about WHICH "
+        + "form the carbon is in rather than how much of it there is.  It is "
+        + "declared once as a case variable and read by every operation.",
+        unit: "mol/kg water (the witness declares 0.001)" },
+      { sym: "Na", means: "The total sodium in the beaker, added as strong "
+        + "base (NaOH).  Na/C_T is therefore the titration coordinate: how "
+        + "many equivalents of base per carbonate.  It is an INPUT — the "
+        + "thing you weigh out — while the pH it produces is the output.",
+        unit: "mol/kg water" },
+    ],
   },
   {
     n: 4,
@@ -102,12 +149,15 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "pK was an input to any of the 44 calculations.  They are constants "
       + "inside the reaction network, and the titration simply ARRIVES there.",
     formula: "CO2(aq) = HCO3-   at pH 6.341     (log K1 = 6.352)\n"
-      + "HCO3-   = CO3--   at pH 10.269    (log K2 = 10.329)",
+      + "HCO3-   = CO3--   at pH 10.262    (log K2 = 10.329)",
     note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
       + "gap is the activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
       + " The divalent carbonate ion is the one that feels it — its gamma is "
-      + "0.90 at the first crossover and 0.81 at the second.",
+      + "0.90 at the first crossover and 0.81 at the second.  Both crossover "
+      + "pH's are INTERPOLATED between the two beakers that bracket them: the "
+      + "axis is 44 sampled points, not a continuum, and no beaker lands "
+      + "exactly on a crossing.",
   },
   {
     n: 5,

@@ -14,13 +14,20 @@
   diagram every textbook draws, built the way Choupo has to build it.
 
   THE ONE THING THAT MAKES THIS DIFFERENT FROM THE TEXTBOOK VERSION: here
-  the pH is NOT an axis you set.  A textbook draws the fractions against pH
-  by substituting pH into the mass-action expressions, which is arithmetic
-  and always works.  This engine has no pH knob -- there is no such input,
-  by a settled decision -- so pH comes out of ELECTRONEUTRALITY, and the
-  only way to move it is to change what is in the beaker.  Every point
-  below is therefore a TITRATION point, and the x-axis of the plot is a
-  RESULT, exactly as it is in a laboratory.
+  the pH is NOT an axis you set -- and that is a CHOICE this case makes, in
+  one word, which you can read three screens down.  A textbook draws the
+  fractions against pH by substituting pH into the mass-action expressions,
+  which is arithmetic and always works.  Choupo can do that too: `pH 7.8;`
+  is a legal declaration, it fixes [H+], and it DROPS the electroneutrality
+  row -- the run then reports the net charge the composition carries
+  (`pH GIVEN -- this is the net charge the analysis carries`) instead of
+  forcing it to zero.  That mode exists because a laboratory sheet reports
+  a MEASURED pH, which is a datum.  It is not what this case wants.
+  Every op below declares `pH solve;` instead, so [H+] joins the unknowns
+  and the charge balance is the equation that closes the system.  The price
+  of that choice is the whole lesson: each point had to be a beaker
+  somebody could weigh out, the 44 of them differ only in what is IN the
+  beaker, and the x-axis is a RESULT, exactly as it is in a laboratory.
 
   WHAT IS ACTUALLY IN EACH BEAKER.  Total carbonate is held at 1 mmol/kg
   throughout.  The 44 points differ only in how much strong acid or strong
@@ -44,12 +51,15 @@
 
   1.  THE TWO CROSSOVERS LAND ON THE TWO pK's, AND NOBODY PUT THEM THERE.
       CO2(aq) and HCO3- are equal at pH 6.341; the record's log K1 is
-      6.352.  HCO3- and CO3-- are equal at pH 10.269; log K2 is 10.329.
+      6.352.  HCO3- and CO3-- are equal at pH 10.262; log K2 is 10.329.
+      Both crossover pH's are INTERPOLATED between the two beakers that
+      bracket them -- the axis is 44 sampled points, not a continuum, and
+      no beaker lands exactly on a crossing.
       Neither pK was used as an input to any point -- they are the mass-
       action constants inside the network, and the crossover is where the
       titration happens to arrive.  The small shift DOWN in both is the
       activity coefficients: gamma_CO3 is 0.90 at the first crossover and
-      0.82 further up, while a textbook plot takes every gamma as 1.
+      0.81 at the second, while a textbook plot takes every gamma as 1.
 
   2.  THE THREE FRACTIONS DO NOT SUM TO ONE.  They dip to 0.99966 through
       the middle of the range, and the missing carbon is NOT round-off: it

@@ -152,11 +152,13 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  THE OWNER ASKED FOR THIS ONE BY NAME, and for a reason that is the
     //  tool's whole subject: speciation against pH in a single-family
     //  electrolyte is the diagram he has always found magical.  What makes it
-    //  worth a page rather than a picture is that Choupo CANNOT draw it the
-    //  way a book does.  A book puts pH on the axis and substitutes it into
-    //  the mass-action expressions; this engine has no pH input at all, so
-    //  every point had to be a beaker and the abscissa came back out of
-    //  electroneutrality.  The diagram is the same; the lesson is not.
+    //  worth a page rather than a picture is that Choupo DECLINES to draw it
+    //  the way a book does.  A book puts pH on the axis and substitutes it
+    //  into the mass-action expressions; the engine will accept a given pH
+    //  too, but doing so DROPS the electroneutrality row and the points stop
+    //  being solutions anybody could make.  The witness declares `pH solve;`,
+    //  so every point had to be a beaker and the abscissa came back out of
+    //  charge.  The diagram is the same; the lesson is not.
     id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
     kind: "construction", status: "live",
     teaches: "That the pH axis of a speciation diagram is a RESULT, not a "
