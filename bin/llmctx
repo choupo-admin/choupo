@@ -27,15 +27,32 @@
 #     Required legal notices:  see NOTICE
 # =============================================================================
 
+# --- usage ---
 # bin/llmctx --- print all docs/ai/*.md concatenated to stdout, in the
 # order an LLM should read them.  Lets a user paste-the-whole-thing into
 # a fresh chat with Claude / ChatGPT / etc., then ask their question:
 #
-#   bin/llmctx                # print to stdout (browse / pipe / copy)
+#   bin/llmctx                # the WHOLE kit -> stdout (browse / pipe / copy)
+#   bin/llmctx --core         # the case-AUTHORING subset, about half the size
 #   bin/llmctx > ctx.md       # save -> paste into a fresh chat
-#   bin/llmctx | wc -l        # check how many lines you're about to paste
 #   bin/llmctx | xclip         # copy to clipboard (Linux)
-#   bin/llmctx | pbcopy        # copy to clipboard (macOS)
+#   bin/llmctx | pbcopy       # copy to clipboard (macOS)
+#
+#  WHY --core EXISTS.  The whole kit has grown past what a 128k-token context
+#  window holds, and it fills much of a 200k one -- leaving the rest of the
+#  window to carry the conversation, the case being written and every
+#  iteration of it.  --core drops the two REFERENCE documents an assistant
+#  looks things up in rather than reads end to end (schemas-reference and
+#  components) plus the curation, doctrine and extension docs, and keeps
+#  everything needed to write a flowsheetDict.
+#
+#  NO SIZE IS WRITTEN DOWN HERE.  Both sizes are measured and printed every
+#  run -- on stderr and in the kit's own banner -- because the last two size
+#  claims in this file were a hard-coded line count that drifted from 1500 to
+#  5600 and a banner sentence promising the kit was "well under any modern
+#  context window", which was true when it was written and false by the time
+#  anyone pasted it.  Run the script to learn its size.
+# --- end usage ---
 #
 # The kit is designed to teach an LLM everything it needs to author a
 # Choupo case.  Its SIZE is reported on stderr when the script runs -- a
@@ -46,6 +63,25 @@
 set -euo pipefail
 
 # Repo root from this script's location: bin/llmctx -> repo root is one up.
+CORE_ONLY=0
+for arg in "$@"; do
+    case "$arg" in
+        --core) CORE_ONLY=1 ;;
+        -h|--help)
+            #  Print the usage block by its MARKERS, never by line number: a
+            #  `sed -n '30,60p'` is a second home for where the text lives,
+            #  and it silently prints the wrong thing the first time anyone
+            #  adds a paragraph above it.
+            sed -n '/^# --- usage ---$/,/^# --- end usage ---$/p' "$0" \
+                | grep -v -e '^# --- usage ---$' -e '^# --- end usage ---$' \
+                | sed 's/^# \{0,1\}//'
+            exit 0 ;;
+        *)
+            echo "llmctx: unknown option '$arg' (accepted: --core, --help)" >&2
+            exit 2 ;;
+    esac
+done
+
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
 AI_DIR="$HERE/docs/ai"
 
@@ -90,6 +126,24 @@ EXCLUDE=(
                          # GUI, not for someone authoring a case
 )
 
+#  The --core subset: what somebody AUTHORING A CASE needs, and nothing else.
+#  Membership is by what a reader DOES with the file, not by size: the two
+#  biggest omissions (schemas-reference, components) are reference tables an
+#  assistant consults by name, and pasting a table nobody reads costs the same
+#  window as pasting one that is read.  A file not listed here is still in the
+#  full kit -- --core NARROWS, it never decides what exists.
+CORE=(
+    start-here
+    overview
+    dict-syntax
+    stream-state
+    case-layout
+    thermo
+    unit-ops
+    patterns
+    pitfalls
+)
+
 in_list() {
     local needle="$1"; shift
     local x
@@ -101,6 +155,7 @@ in_list() {
 # default; the alternative failure (a doc nobody reads) is the one that
 # already happened.
 EXTRA=()
+skipped=()
 for f in "$AI_DIR"/*.md; do
     name="$(basename "$f" .md)"
     in_list "$name" "${ORDER[@]}"   && continue
@@ -109,45 +164,98 @@ for f in "$AI_DIR"/*.md; do
 done
 ORDER+=("${EXTRA[@]+"${EXTRA[@]}"}")
 
-cat <<'EOF'
-<!--
-================================================================================
-Choupo case-authoring context for AI assistants (LLM-facing kit, v0.78).
-Produced by `bin/llmctx`; reading order is fixed by the script.
-
-If you're an LLM reading this:  you have everything needed to help a user
-write a `flowsheetDict` / `propsDict` for Choupo.  Start at the overview,
-write the case, and when in doubt cite which file you pulled the fact from.
-
-If you're a HUMAN: paste this whole file into a fresh chat with Claude /
-ChatGPT and then ask your question.  It is well under any modern context
-window; the exact size is printed on stderr when you generate it.
-================================================================================
--->
-
-EOF
+#  THE BANNER REPORTS A MEASUREMENT, SO THE BODY IS BUILT FIRST.
+#
+#  This banner used to say the kit "is well under any modern context window".
+#  That was a SIZE CLAIM FROZEN IN PROSE -- true when the kit was ~1500 lines,
+#  false at 8800, and the reader it misleads is a student pasting into a 128k
+#  window where 495 kB does not fit at all.  It is the exact defect the
+#  comment at the top of this script records having fixed one sentence higher
+#  up, where a hard-coded line count had drifted from 1500 to 5600.  A number
+#  about the kit belongs where it can be measured; a CLAIM about the number
+#  belongs nowhere.
+#
+#  So the body goes to a temporary file, is measured, and the banner carries
+#  the real bytes -- to the LLM as well as to the human, because the assistant
+#  is the one that has to decide what it can still fit alongside.
+BODY="$(mktemp)"
+trap 'rm -f "$BODY"' EXIT
 
 lines=0
 emitted=()
 for name in "${ORDER[@]}"; do
+    if [ "$CORE_ONLY" -eq 1 ] && ! in_list "$name" "${CORE[@]}"; then
+        skipped+=("$name")
+        continue
+    fi
     f="$AI_DIR/${name}.md"
     if [ ! -f "$f" ]; then
         echo "llmctx: missing $f -- skipping" >&2
         continue
     fi
-    printf '\n\n<!-- ============================================================ -->\n'
-    printf '<!-- docs/ai/%s.md -->\n' "$name"
-    printf '<!-- ============================================================ -->\n\n'
-    cat "$f"
+    {
+        printf '\n\n<!-- ============================================================ -->\n'
+        printf '<!-- docs/ai/%s.md -->\n' "$name"
+        printf '<!-- ============================================================ -->\n\n'
+        cat "$f"
+    } >> "$BODY"
     lines=$(( lines + $(wc -l < "$f") ))
     emitted+=("$name")
 done
 
+bytes=$(wc -c < "$BODY")
+#  A ROUGH token estimate, and labelled as one everywhere it is printed.  No
+#  tokenizer is available here and none is going to be added for this; ~3.7
+#  characters per token is a rule of thumb for English technical markdown, and
+#  a rule of thumb reported AS a rule of thumb is honest where a bare number
+#  dressed as a measurement is not.
+tokens_approx=$(( bytes / 37 * 10 ))
+
+{
+    printf '<!--\n'
+    printf '================================================================================\n'
+    printf 'Choupo case-authoring context for AI assistants (LLM-facing kit, v0.79).\n'
+    printf 'Produced by `bin/llmctx`'
+    #  printf reads a leading `--` as its own option terminator, so the flag
+    #  name must travel as an ARGUMENT.  Under `set -e` the failure killed the
+    #  script between the banner and the body: it emitted a header claiming
+    #  244935 bytes and then nothing at all, exit 0.
+    [ "$CORE_ONLY" -eq 1 ] && printf '%s' ' --core'
+    printf '; reading order is fixed by the script.\n'
+    printf '\n'
+    printf 'SIZE OF THIS FILE: %s bytes across %d document(s), very roughly %s\n' \
+           "$bytes" "${#emitted[@]}" "$tokens_approx"
+    printf 'tokens (a rule of thumb at ~3.7 characters per token, not a count).\n'
+    if [ "$CORE_ONLY" -eq 1 ]; then
+        printf 'This is the --core subset: the case-AUTHORING documents only.  Left out,\n'
+        printf 'and available by running bin/llmctx with no argument: %s.\n' "${skipped[*]}"
+    else
+        printf 'This is the WHOLE kit.  It does NOT fit a 128k-token context window and\n'
+        printf 'fills much of a 200k one, leaving the rest to hold the conversation, the\n'
+        printf 'case being written and every iteration of it.  `bin/llmctx --core` emits\n'
+        printf 'the case-authoring subset instead, at about half the size.\n'
+    fi
+    printf '\n'
+    printf "If you're an LLM reading this: you have what you need to help a user write a\n"
+    printf '`flowsheetDict` / `propsDict`.  Start at the overview, write the case, and\n'
+    printf 'when in doubt cite which file you pulled the fact from.  If a document you\n'
+    printf 'want is listed above as left out, ASK for it rather than guessing its\n'
+    printf 'content -- every one of them is a file in docs/ai/ the user can paste.\n'
+    printf '================================================================================\n'
+    printf '%s\n\n' '-->'      # a format string starting with `-` is an OPTION
+    cat "$BODY"
+}
+
 # Report the kit's real shape on stderr -- stdout is the kit itself, and the
 # size is a number nobody should have to keep in sync by hand.
 {
-    printf 'llmctx: %d file(s), %d lines of docs/ai content\n' \
-           "${#emitted[@]}" "$lines"
+    printf 'llmctx: %d file(s), %d lines, %s bytes (~%s tokens, rough) of docs/ai content\n' \
+           "${#emitted[@]}" "$lines" "$bytes" "$tokens_approx"
+    if [ "$CORE_ONLY" -eq 1 ]; then
+        printf 'llmctx: --core, so left out: %s\n' "${skipped[*]}"
+    else
+        printf 'llmctx: this OVERFLOWS a 128k-token window -- `bin/llmctx --core` is about half\n'
+    fi
     if [ "${#EXCLUDE[@]}" -gt 0 ]; then
         printf 'llmctx: omitted on purpose: %s\n' "${EXCLUDE[*]}"
     fi

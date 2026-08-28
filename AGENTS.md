@@ -31,9 +31,19 @@ For one-shot bundling use `bin/llmctx`, but prefer selecting only the files
 needed for the task:
 
 ```sh
-bin/llmctx                # print all docs/ai/*.md to stdout in reading order
+bin/llmctx --core         # the case-AUTHORING subset, ~245 kB -- start here
+bin/llmctx                # ALL docs/ai/*.md in reading order, ~495 kB
 bin/llmctx > ctx.md       # save -> paste -> ask your question
 ```
+
+**The whole kit does not fit a 128k-token context window** and fills much of
+a 200k one, leaving the rest to hold the conversation, the case being written
+and every iteration of it.  `--core` drops the two reference documents an
+assistant looks things up in rather than reads (`schemas-reference`,
+`components` -- 37 % of the kit between them) plus the curation, doctrine and
+extension docs, and names in its own banner what it left out so the assistant
+can ASK for a document instead of guessing its content.  Both sizes above are
+printed, measured, whenever the script runs; neither is asserted anywhere.
 
 ## Are you editing the project's source code?
 
