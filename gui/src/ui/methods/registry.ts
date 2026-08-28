@@ -59,7 +59,7 @@ export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
-  | "what-is-temperature" | "flash-operating-line";
+  | "what-is-temperature" | "flash-operating-line" | "bjerrum";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -147,6 +147,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "equilibrium curve is the flash. Every other construction in this "
       + "list is this step repeated, moved to other axes, or integrated.",
     theory: "ch:flash",
+  },
+  {
+    //  THE OWNER ASKED FOR THIS ONE BY NAME, and for a reason that is the
+    //  tool's whole subject: speciation against pH in a single-family
+    //  electrolyte is the diagram he has always found magical.  What makes it
+    //  worth a page rather than a picture is that Choupo CANNOT draw it the
+    //  way a book does.  A book puts pH on the axis and substitutes it into
+    //  the mass-action expressions; this engine has no pH input at all, so
+    //  every point had to be a beaker and the abscissa came back out of
+    //  electroneutrality.  The diagram is the same; the lesson is not.
+    id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
+    kind: "construction", status: "live",
+    teaches: "That the pH axis of a speciation diagram is a RESULT, not a "
+      + "knob: 44 separate equilibrium calculations, each a real neutral "
+      + "mixture, each landing wherever its own charge balance puts it -- and "
+      + "the two crossovers arriving on the two pK's without either having "
+      + "been an input. Also the two things the hand-drawn version cannot "
+      + "show: the three fractions do not sum to one, because the titrant is "
+      + "not a spectator, and the crossovers sit below the thermodynamic pK "
+      + "because the engine works in activities.",
+    theory: "ch:electrolytes",
   },
   {
     id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",

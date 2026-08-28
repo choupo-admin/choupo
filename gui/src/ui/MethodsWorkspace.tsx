@@ -196,6 +196,8 @@ const WhatIsTemperatureTool = lazy(() =>
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
+const BjerrumTool = lazy(() =>
+  import("./methods/BjerrumTool.js").then((m) => ({ default: m.BjerrumTool })));
 
 // ---- The engine runner ------------------------------------------------------
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
@@ -360,6 +362,7 @@ export function MethodsWorkspace() {
             : tool === "fug" ? <FugShortcutTool />
             : tool === "what-is-temperature" ? <WhatIsTemperatureTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
+            : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}
         </Suspense>
       </Box>
