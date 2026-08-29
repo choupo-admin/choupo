@@ -40,6 +40,12 @@ import type { DynamicInstants } from "../case/dynamicInstants.js";
 export interface StreamResult {
   name: string;
   role: "feed" | "intermediate" | "product";
+  /** True for a feed consumed ONLY by observer units (a saturation calc
+   *  declaring `outputs ( )`): a state under observation, not matter
+   *  crossing the boundary.  The balance surfaces skip it -- counting it
+   *  showed bubbleT01 as a 100 % mass-balance violation.  Mirrors the
+   *  engine's one-home rule in src/reporting/Topology.H. */
+  observed?: boolean;
   /** OVERALL molar flow in canonical SI: kmol/s -- the stream's whole
    *  material inventory, solids included, exactly what converged/<stream>
    *  stores as componentMolarFlows.  ONE STREAM, ONE SEMANTICS (ruled

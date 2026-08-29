@@ -54,3 +54,47 @@ describe("shapeStreams role classification", () => {
     expect(role("OffGas")).toBe("product");
   });
 });
+
+// Observer classification (mirrors src/reporting/Topology.H, 2026-08-29):
+// bubbleT/dewT declare `outputs ( )` -- they interrogate a state and
+// transform no matter.  Counting their feed as boundary intake drew
+// bubbleT01 as a 100 % mass-balance violation in the GUI's own plot.
+const observerFlowsheet = {
+  streams: { feed: {} },
+  units: [
+    { name: "bubble01", in: "feed", outputs: [] },
+  ],
+} as never;
+const observerPayload = { version: 1, converged: true, components: ["x"],
+  kpis: {}, streams: { feed: S(1) } } as never;
+
+describe("observer units and the feeds they alone consume", () => {
+  const streams = () =>
+    shapeStreams(observerPayload, { flowsheet: observerFlowsheet } as never);
+
+  it("the observed feed keeps its feed role but is marked observed", () => {
+    const f = streams().find((s) => s.name === "feed")!;
+    expect(f.role).toBe("feed");
+    expect(f.observed).toBe(true);
+  });
+
+  it("a feed a transformer also consumes is NEVER marked observed", () => {
+    const shared = {
+      streams: { feed: {} },
+      units: [
+        { name: "bubble01", in: "feed", outputs: [] },
+        { name: "heater", in: "feed", outputs: ["hot"] },
+      ],
+    } as never;
+    const p = { version: 1, converged: true, components: ["x"], kpis: {},
+      streams: { feed: S(1), hot: S(1) } } as never;
+    const f = shapeStreams(p, { flowsheet: shared } as never)
+      .find((s) => s.name === "feed")!;
+    expect(f.observed).toBeUndefined();
+  });
+
+  it("ordinary feeds stay unmarked (negative)", () => {
+    const out = shapeStreams(payload, { flowsheet } as never);
+    for (const s of out) expect(s.observed).toBeUndefined();
+  });
+});

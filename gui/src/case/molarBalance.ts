@@ -70,7 +70,7 @@ export function molarBalanceView(
   };
   let any = false;
   for (const s of streams) {
-    if (s.role === "feed") { view.inKmolS += totalOf(s); any = true; }
+    if (s.role === "feed" && !s.observed) { view.inKmolS += totalOf(s); any = true; }
     else if (s.role === "product") { view.outKmolS += totalOf(s); any = true; }
   }
   view.netKmolS = view.outKmolS - view.inKmolS;

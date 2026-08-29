@@ -56,8 +56,13 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
     // ONE shared routine (BalanceMath::elementBoundaryBalance): union of
     // in/out elements, refusals as states, missing streams withheld.
     (void) comps; (void) n;
+    // `balanceFeeds`, not `feeds`: a feed consumed only by observer units
+    // (bubbleT's `outputs ( )`) is a state under interrogation, not matter
+    // crossing a transforming boundary -- counting it raised the ELEMENT
+    // BALANCE FAILED banner on a correct saturation case.  The
+    // classification has ONE home, reporting::Topology.
     const auto eb = reporting::elementBoundaryBalance(
-        topo.feeds, topo.products, ctx.result, ctx.thermo);
+        topo.balanceFeeds, topo.products, ctx.result, ctx.thermo);
 
     // Data/metadata separation: the CSV stays a REGULAR table (one header,
     // homogeneous rows); status + reasons live in the narrow .meta sidecar
@@ -80,6 +85,10 @@ void ElementBalanceReport::run(const DictPtr& /*dict*/,
              << "status,"
              << (!eb.available ? "UNAVAILABLE"
                  : eb.partial ? "PARTIAL" : "FULL") << "\n";
+        for (const auto& s : topo.observedFeeds)
+            meta << "observedFeed." << s << "," << esc("consumed only by"
+                    " observer units (no material outputs declared) --"
+                    " excluded from the material boundary") << "\n";
         for (const auto& [nm, why] : eb.refusedSpecies)
             meta << "refusedSpecies." << nm << "," << esc(why) << "\n";
         for (const auto& nm : eb.missingStreams)

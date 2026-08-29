@@ -146,6 +146,81 @@ def main() -> int:
                     "per-unit surface is back on FLUID mass and a crystal "
                     "has stopped being matter")
 
+    #  (d) OBSERVER witness (reported by Vitor 2026-08-29, the OTHER way for
+    #      this surface to lie): bubbleT01's only unit declares `outputs ( )`
+    #      -- a saturation calculation that transforms no matter -- and the
+    #      boundary balances used to publish closure 0 %, the ELEMENT BALANCE
+    #      FAILED banner and a false "defect in the unit" warning about it.
+    #      The truthful record: closure n/a, the reason in massBalance.meta,
+    #      and NO warning, because nothing is wrong.
+    obs = ROOT / "tutorials/steady/flash/bubbleT01_ethanol_water"
+    r = subprocess.run([str(ROOT / "bin" / "runCase"), "-f", str(obs)],
+                       capture_output=True, text=True, timeout=900,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+    blob = r.stdout + r.stderr
+    gcsv = (obs / "reports/balances/massBalance.csv").read_text()
+    meta = (obs / "reports/balances/massBalance.meta").read_text()
+    if r.returncode != 0:
+        fail.append("bubbleT01: run failed -- the observer arm cannot judge")
+    if "closure_pct,,,n/a" not in gcsv:
+        fail.append("bubbleT01: global closure is not n/a -- an observed "
+                    "feed is being counted as boundary intake again")
+    if "does not close on MASS" in blob:
+        fail.append("bubbleT01: the false 'does not close' warning is back "
+                    "on a unit that transforms no matter")
+    if "ELEMENT BALANCE FAILED" in blob:
+        fail.append("bubbleT01: the ELEMENT BALANCE FAILED banner fires on "
+                    "a saturation observer")
+    for needle, what in (("observerUnit.bubble01", "the observer unit"),
+                         ("observedFeed.feed", "the observed feed"),
+                         ("status,NOT_APPLICABLE", "the n/a status")):
+        if needle not in meta:
+            fail.append(f"bubbleT01: massBalance.meta lost {what} -- the "
+                        "n/a would stand with no stated reason")
+
+    #  (e) CLOSED CYCLE: rankine02 has no boundary material streams at all.
+    #      0/0 used to print closure 0.0000; now n/a with the closedCycle
+    #      reason, and the per-unit rows CARRY the verification -- so this
+    #      arm also requires all four to close.
+    cyc = ROOT / "tutorials/steady/power/rankine02_water"
+    r = subprocess.run([str(ROOT / "bin" / "runCase"), "-f", str(cyc)],
+                       capture_output=True, text=True, timeout=900,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+    if r.returncode != 0:
+        fail.append("rankine02: run failed -- the closed-cycle arm cannot judge")
+    gcsv = (cyc / "reports/balances/massBalance.csv").read_text()
+    meta = (cyc / "reports/balances/massBalance.meta").read_text()
+    if "closure_pct,,,n/a" not in gcsv:
+        fail.append("rankine02: closed-cycle closure is not n/a -- 0/0 is "
+                    "being printed as a verdict again")
+    if "closedCycle" not in meta:
+        fail.append("rankine02: massBalance.meta lost the closedCycle reason")
+    rows = closures(cyc) or []
+    if len(rows) < 4:
+        fail.append("rankine02: fewer than 4 per-unit rows -- the surface "
+                    "that carries the closed-cycle verification shrank")
+    for unit, pct in rows:
+        if abs(pct - 100.0) > BAND_PCT:
+            fail.append(f"rankine02: unit '{unit}' at {pct:.4f} % -- the "
+                        "cycle's own verification does not close")
+
+    #  (f) NEGATIVE: an ordinary open case is untouched by the observer
+    #      machinery -- numeric closure, status FULL, no observer rows.
+    neg = ROOT / "tutorials/steady/flash/flash01_benzene_toluene"
+    r = subprocess.run([str(ROOT / "bin" / "runCase"), "-f", str(neg)],
+                       capture_output=True, text=True, timeout=900,
+                       env={"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin"})
+    if r.returncode != 0:
+        fail.append("flash01: run failed -- the negative arm cannot judge")
+    g = global_closure(neg)
+    meta = (neg / "reports/balances/massBalance.meta").read_text()
+    if g is None or abs(g - 100.0) > BAND_PCT:
+        fail.append(f"flash01: global closure {g} -- the observer machinery "
+                    "touched an ordinary open case")
+    if "status,FULL" not in meta or "observer" in meta:
+        fail.append("flash01: meta is not a clean FULL -- observer rows on "
+                    "a case with none")
+
     if fail:
         print("check_mass_closure: FAILED")
         for f in fail:
@@ -155,11 +230,16 @@ def main() -> int:
           f"{len(CASES)} solid-bearing case(s) close on MASS within "
           f"{BAND_PCT} %, the per-unit and global surfaces agree (both count "
           "the crystal), and the non-closure warning is wired to stderr AND "
-          "the durable advisory surface.  NOT CHECKED: that the warning "
-          "FIRES (not provokable from a case file; verified by hand once by "
-          "reverting F_massTotal -> F_mass, which reproduced flash21 at "
-          "58.8 % WITH the warning), and whether a closing balance is right "
-          "-- closure is conservation, never correctness.")
+          "the durable advisory surface.  Observer arm: bubbleT01 reports "
+          "n/a with its reason in massBalance.meta and raises NO warning and "
+          "no element banner; closed-cycle arm: rankine02 reports n/a with "
+          "the closedCycle reason while its four per-unit rows carry the "
+          "verification; negative: flash01 stays numeric FULL.  NOT CHECKED: "
+          "that the non-closure warning FIRES (not provokable from a case "
+          "file; verified by hand once by reverting F_massTotal -> F_mass, "
+          "which reproduced flash21 at 58.8 % WITH the warning), and whether "
+          "a closing balance is right -- closure is conservation, never "
+          "correctness.")
     return 0
 
 

@@ -69,6 +69,18 @@ struct Topology
     std::set<std::string>  produced;   // any stream that is some unit's output
     std::set<std::string>  feeds;      // consumed AND not produced (or boundary-declared)
     std::set<std::string>  products;   // produced AND not consumed
+
+    // OBSERVER units and the feeds they alone consume (2026-08-29).  A unit
+    // with inputs and NO material outputs -- a saturation calculation whose
+    // case declares `outputs ( )` -- interrogates a state; it transforms no
+    // matter.  Counting its feed as boundary intake with nothing coming back
+    // made every bubbleT/dewT tutorial publish the gravest verdict the
+    // balance surfaces own (closure 0 %, ELEMENT BALANCE FAILED, "defect in
+    // the unit") about a correct case.  The classification lives HERE, once,
+    // so the mass, element and energy boundaries cannot disagree about it.
+    std::set<std::string>  observerUnits;   // >=1 input, zero material outputs
+    std::set<std::string>  observedFeeds;   // feeds consumed ONLY by observers
+    std::set<std::string>  balanceFeeds;    // feeds - observedFeeds
 };
 
 // Derive the topology for the reports.  The flattened solver topology
@@ -159,6 +171,25 @@ inline Topology readTopology(const DictPtr& flowsheetDict,
         if (b->found("outlets"))
             for (const auto& s : b->lookupWordList("outlets"))
                 topo.products.insert(s);
+    }
+
+    // Observer classification (see the struct comment).  A feed goes to
+    // `observedFeeds` only when a consumer exists and EVERY consumer is an
+    // observer; a boundary-declared feed no unit consumes stays in
+    // `balanceFeeds` (the declaration is authoritative about the boundary).
+    for (const auto& u : topo.units)
+        if (!u.ins.empty() && u.outs.empty())
+            topo.observerUnits.insert(u.name);
+    for (const auto& s : topo.feeds)
+    {
+        bool byObserver = false, byTransformer = false;
+        for (const auto& u : topo.units)
+            for (const auto& in : u.ins)
+                if (in == s)
+                    (topo.observerUnits.count(u.name) ? byObserver
+                                                      : byTransformer) = true;
+        if (byObserver && !byTransformer) topo.observedFeeds.insert(s);
+        else                              topo.balanceFeeds.insert(s);
     }
 
     return topo;

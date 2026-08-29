@@ -675,6 +675,8 @@ export function shapeStreams(payload: ResultPayload,
   }>;
   const consumed = new Set<string>();
   const produced = new Set<string>();
+  const consumedByObserver = new Set<string>();
+  const consumedByTransformer = new Set<string>();
   for (const u of units) {
     // A unit's inlets come as `in` (single-input ops) OR `inputs` (multi-input
     // ops: mixer, multi-feed evaporator, ...).  Reading only `in` MISSED the
@@ -686,6 +688,13 @@ export function shapeStreams(payload: ResultPayload,
     for (const n of ins) consumed.add(n);
     for (const n of u.inputs ?? []) consumed.add(n);
     for (const n of u.outputs ?? []) produced.add(n);
+    // Observer classification (mirrors src/reporting/Topology.H): a unit
+    // with inputs and NO material outputs -- `outputs ( )`, a saturation
+    // calculation -- interrogates a state and transforms no matter.
+    const allIns = [...ins, ...(u.inputs ?? [])];
+    const isObserver = allIns.length > 0 && (u.outputs ?? []).length === 0;
+    for (const n of allIns)
+      (isObserver ? consumedByObserver : consumedByTransformer).add(n);
   }
   // Composite-case boundary names (legacy boundary{} block, still honoured).
   const boundary = (fs["boundary"] ?? {}) as {
@@ -731,9 +740,15 @@ export function shapeStreams(payload: ResultPayload,
     : isProduct
         ? "product"
       : "intermediate";
+    // A feed every consumer of which is an observer is a state under
+    // observation: it keeps its feed role (it IS the domain inlet) but the
+    // balance surfaces must not count it as boundary intake.
+    const observed = isFeed
+      && consumedByObserver.has(name) && !consumedByTransformer.has(name);
     out.push({
       name,
       role,
+      ...(observed ? { observed: true } : {}),
       F: s.F,
       T: s.T,
       P: s.P,

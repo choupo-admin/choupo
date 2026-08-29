@@ -53,8 +53,12 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     std::filesystem::create_directories(dir);
 
     // ---- Global per-component balance (feeds in, products out) ----------
+    // The boundary counts matter entering TRANSFORMING paths: a feed consumed
+    // only by observer units (topo.observedFeeds) is a state being examined,
+    // not matter being processed, and counting it made bubbleT01 publish
+    // closure 0 % about a correct saturation case.
     std::vector<scalar> in(n, 0.0), out(n, 0.0);
-    for (const auto& name : topo.feeds)
+    for (const auto& name : topo.balanceFeeds)
     {
         auto it = ctx.result.streams.find(name);
         if (it == ctx.result.streams.end()) continue;
@@ -84,14 +88,57 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         }
         f << "TOTAL," << std::fixed << std::setprecision(4)
           << totIn << "," << totOut << "," << (totOut - totIn) << "\n";
-        f << "closure_pct,,," << std::setprecision(4)
-          << closurePct(totIn, totOut) << "\n";
+        // With NOTHING crossing the boundary (a closed cycle, or every feed
+        // observed) there is no closure to state: a 0/0 printed as 0.0000
+        // reads as the worst violation possible, about nothing.  `n/a` -- the
+        // reason is in massBalance.meta and on the console.
+        const bool noBoundary = (totIn == 0.0 && totOut == 0.0);
+        if (noBoundary)
+            f << "closure_pct,,,n/a\n";
+        else
+            f << "closure_pct,,," << std::setprecision(4)
+              << closurePct(totIn, totOut) << "\n";
         f.close();
+
+        // Data/metadata separation (the elementBalance.meta contract): the
+        // CSV stays a regular table; WHY a closure is n/a, which units are
+        // observers and which feeds they hold live in the narrow sidecar,
+        // written on EVERY run so a stale copy cannot contradict the table.
+        {
+            std::ofstream meta(dir / "massBalance.meta");
+            meta << "key,value\n"
+                 << "status," << (noBoundary ? "NOT_APPLICABLE" : "FULL")
+                 << "\n";
+            for (const auto& u : topo.observerUnits)
+                meta << "observerUnit." << u
+                     << ",\"declares no material outputs (a saturation"
+                        " observer): it interrogates a state and transforms"
+                        " no matter\"\n";
+            for (const auto& s : topo.observedFeeds)
+                meta << "observedFeed." << s
+                     << ",\"consumed only by observer units -- excluded from"
+                        " the material boundary\"\n";
+            if (noBoundary && topo.observedFeeds.empty())
+                meta << "closedCycle,\"no boundary material streams; the"
+                        " per-unit balances carry the verification\"\n";
+        }
+
         if (ctx.verbosity >= 2)
-            std::cout << "  [report] massBalance -> " << path.string()
-                      << "   (global closure "
-                      << std::fixed << std::setprecision(3)
-                      << closurePct(totIn, totOut) << " %)\n";
+        {
+            std::cout << "  [report] massBalance -> " << path.string();
+            if (noBoundary)
+                std::cout << "   (no material boundary -- "
+                          << (topo.observedFeeds.empty()
+                              ? "closed cycle; the per-unit balances carry"
+                                " the verification"
+                              : "every feed is a state under observation,"
+                                " not matter being processed")
+                          << ")\n";
+            else
+                std::cout << "   (global closure "
+                          << std::fixed << std::setprecision(3)
+                          << closurePct(totIn, totOut) << " %)\n";
+        }
     }
 
     // ---- Per-unit total mass balance ------------------------------------
@@ -104,6 +151,19 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         const auto units = reporting::resolveUnits(topo, ctx.result);
         for (const auto& u : units)
         {
+            // An observer has no mass balance to state: it consumes matter
+            // in no physical sense (bubbleT's feed is the SUBJECT of a
+            // question, not a plant intake), so a row "in 2643, out 0,
+            // closure 0 %" plus the defect warning below would be two false
+            // claims about a correct unit.  Announced, never silent.
+            if (topo.observerUnits.count(u.name))
+            {
+                if (ctx.verbosity >= 2)
+                    std::cout << "  [report]   unit '" << u.name
+                              << "': no material outputs declared (observer)"
+                                 " -- no mass balance to state\n";
+                continue;
+            }
             scalar uin = 0.0, uout = 0.0;
             for (const auto& s : u.ins)
             {
@@ -146,8 +206,13 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         }
         f.close();
         if (ctx.verbosity >= 2)
+        {
+            const std::size_t nObs = topo.observerUnits.size();
             std::cout << "  [report] massBalance_byUnit -> " << path.string()
-                      << "  (" << units.size() << " units)\n";
+                      << "  (" << (units.size() - nObs) << " units";
+            if (nObs > 0) std::cout << ", " << nObs << " observer";
+            std::cout << ")\n";
+        }
     }
 }
 

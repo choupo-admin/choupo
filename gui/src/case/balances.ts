@@ -96,7 +96,10 @@ export function massBalance(
   }
   const components = [...set];
 
-  const feeds = streams.filter((s) => s.role === "feed");
+  //  An observed feed (consumed only by observer units -- see StreamResult)
+  //  is a state under interrogation, not boundary intake; counting it drew
+  //  bubbleT01 as a 100 % violation.
+  const feeds = streams.filter((s) => s.role === "feed" && !s.observed);
   const products = streams.filter((s) => s.role === "product");
 
   const totals = (group: StreamResult[]): Record<string, number> => {
@@ -166,7 +169,7 @@ export function energyBalance(
   streams: StreamResult[],
   added?: { heatKw?: number; workKw?: number },
 ): EnergyBalance {
-  const feeds = streams.filter((s) => s.role === "feed");
+  const feeds = streams.filter((s) => s.role === "feed" && !s.observed);
   const products = streams.filter((s) => s.role === "product");
   let inKw = 0, outKw = 0, skipped = 0;
   // A boundary stream with mass but no enthalpy is missing-DATA, not

@@ -95,3 +95,30 @@ describe("the Mass Balance chart does not own the arithmetic", () => {
     expect(addsSolid).toBe(false);
   });
 });
+
+describe("an observed feed stays out of the boundary balance", () => {
+  //  bubbleT01: the only unit declares `outputs ( )` (a saturation
+  //  observer), so its feed carries `observed: true` from the adapter.
+  //  Counting it drew a correct case as a 100 % violation in the plot.
+  it("skips observed feeds and reports nothing to close", () => {
+    const feed = {
+      ...base, role: "feed", observed: true,
+      F: 1.0,
+      composition: { water: 0.5, NaCl: 0.5 },
+    } as StreamResult;
+    const b = massBalance([feed], MW);
+    expect(b.inSum).toBe(0);
+    expect(b.outSum).toBe(0);
+    expect(b.closureErr).toBe(0);
+  });
+
+  it("an unmarked feed is still counted (negative)", () => {
+    const feed = {
+      ...base, role: "feed",
+      F: 1.0,
+      composition: { water: 1.0 },
+    } as StreamResult;
+    const b = massBalance([feed], MW);
+    expect(b.inSum).toBeGreaterThan(0);
+  });
+});

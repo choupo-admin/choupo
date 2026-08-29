@@ -603,8 +603,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 ++nGap;
             }
         };
-        for (const auto& s : topo.feeds)    sumStream(s, Hfeeds, nFeed);
-        for (const auto& s : topo.products) sumStream(s, Hprods, nProd);
+        // `balanceFeeds`: an observed feed (bubbleT's, consumed only by a
+        // unit with no material outputs) carries no enthalpy ACROSS the
+        // boundary -- counting it read as a 100 % energy hole on a correct
+        // saturation case.  Same one-home classification as mass/elements.
+        for (const auto& s : topo.balanceFeeds) sumStream(s, Hfeeds, nFeed);
+        for (const auto& s : topo.products)     sumStream(s, Hprods, nProd);
 
         // ---- REFUSAL --------------------------------------------------------
         // One or more boundary streams could not be placed on the elements
