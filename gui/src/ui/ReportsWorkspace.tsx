@@ -169,7 +169,7 @@ export function ReportsWorkspace() {
             </Table.Tbody>
           </Table>
           <Text size="xs" c="dimmed" mt={4}>
-            Closure |in−out|/in = {(mb.closureErr * 100).toFixed(3)}% — a converged steady state closes to ≪0.1%.
+            Imbalance |in−out|/in = {(mb.closureErr * 100).toFixed(3)}% — a converged steady state stays ≪0.1%.
           </Text>
         </Section>
 
@@ -201,7 +201,7 @@ export function ReportsWorkspace() {
                 </Table.Tbody>
               </Table>
               <Text size="xs" c={eb.closureErr <= 1e-3 ? "teal.4" : "yellow.5"} mt={4}>
-                Closure |H in + Q + W − H out| / |H in + Q + W| = {(eb.closureErr * 100).toFixed(4)}%.
+                Imbalance |H in + Q + W − H out| / |H in + Q + W| = {(eb.closureErr * 100).toFixed(4)}%.
               </Text>
             </>
           )}

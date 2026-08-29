@@ -264,7 +264,7 @@ export function StreamsSummary({
             in {formatFlow(mb.inSum, u)} · out {formatFlow(mb.outSum, u)} {u}
           </Text>
           <Text size="xs" c={massOk ? "teal.4" : "yellow.5"} ff="monospace">
-            closure {closurePct} %
+            imbalance {closurePct} %
           </Text>
         </Stack>
 
@@ -308,7 +308,7 @@ export function StreamsSummary({
             </Text>
           ) : (
             <Text size="xs" c={energyOk ? "teal.4" : "yellow.5"} ff="monospace">
-              closure {energyPct} %
+              imbalance {energyPct} %
             </Text>
           )}
         </Stack>
