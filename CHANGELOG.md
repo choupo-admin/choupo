@@ -8,6 +8,114 @@ tag `v2607` = version `2607`).  Development happens on `main`, the default
 branch, which carries `Choupo-dev`; a release is an immutable tag.
 **Choupo-2607** is the first version.
 
+## Choupo-dev (2026-08-29) — the August line, written for the Choupo-2608 cut
+
+A month of work in one section, by theme; the full dated records live in
+`docs/architecture/decision-records.md` (95 design records, indexed and
+gate-counted).  What follows is what a user of Choupo-2608 gets that
+Choupo-2607 did not have.
+
+### Verification became the product's spine
+
+- **The golden corpus now pins what it publishes.**  555 tutorial cases run
+  under golden-master comparison, and an August sweep added 2 922 rows the
+  corpus published but never checked — among them **865 stream temperatures
+  (there was exactly one before)**, 38 stream flows, and ~2 000 KPIs and
+  diagnostics (mass closures, duties, campaign inventories).  Append-only by
+  construction: not one existing value, hand-tuned tolerance or published
+  anchor moved.
+- **167 curation gates, each recorded with the OK line it actually printed**
+  (`generated/gateManifest.json`), sabotage-verified as a protocol; several
+  gates found defects in themselves before finding any in the engine, and
+  say so in their own blind-spot lists.
+- **A destructive gate can no longer poison the evidence**: a disk journal
+  survives SIGKILL, and every harness refuses to run or record while one
+  stands open.
+
+### The physics that moved (answers changed, each with its record)
+
+- **The distillate leaves at its own bubble point.**  Both column solvers
+  published the condensate at the top tray's temperature — its own DEW point
+  — beside `vf 0`.  Measured at 0.58 K warm on the benzene/toluene witness,
+  and compounding through recycles (a reactor ran 2.4 K hot in
+  `process05`).  Where the package resolves reactive chemistry the correction
+  does not apply and the column SAYS so instead of pretending.
+- **One liquid density, not two.**  The pipe asked Rackett (12 % low for
+  water, self-announced) while the pump read the record's `Vliq`.  Now the
+  measured `Vliq` sets the level and Rackett supplies only the temperature
+  dependence: 0.13 % error where there was 12, and heads on one ruler.
+- **FUG refuses what it used to substitute**: a failed feed bubble point no
+  longer falls back on the declared temperature (the method's only
+  thermodynamic evaluation), and the operating reflux must be declared —
+  `1.3*R_min` was a "sensible default" nobody could defend at a viva.
+- **n-Octane gained a cited liquid Cp** (Choupo's own fit to Coulier 2015 via
+  the NIST ThermoML archive, corroborated by three independent laboratories
+  to 0.075 % at 298 K), and **air is declared `noncondensable`**, so the
+  psychrometric carrier menu can finally offer air.
+
+### New capability, August
+
+- **Batch membranes**: `batchDiafilter` (concentration and constant-volume
+  diafiltration) with Hermia fouling laws — the washout law failing where a
+  student can watch, `R_obs` published per instant against the constant-R
+  idealisation computed from the run's own start.
+- **Structured MESH Newton**: declared block-tridiagonal structure buys
+  CPR-coloured Jacobians and a block-Thomas solve (48-stage reactive
+  stripper: 62.7 s → 28.9 s, same convergence), with the declaration
+  AUDITED live and refused when false.
+- **Ice as a phase, K_f derived**; **Edwards-Pitzer** as a third aqueous
+  activity engine with its Table-7/Table-8 VLE anchors; **the two-basis
+  contract** (apparent + speciation on every stream the package can
+  resolve); **`aqueousAnalysis` inlets** with weighted-least-squares
+  reconciliation under a KKT-verified attribution.
+- **Fitting with a third coordinate**: bubble-point evidence carries (x, P,
+  T), ThermoML transcription reads both Variable and Constraint forms, and
+  the witness regresses three vacuum isobars then loses to the catalogue
+  pair on held-out atmospheric data — a finding, published as such.
+- **Correlations as objects**: the friction-factor family (Blasius,
+  Colebrook, Haaland, Churchill) with citations, windows and anchors, and a
+  bench that publishes two spreads (all four: 25.7 %; the three inside
+  their windows: 1.7 %) rather than one lie.
+- **The deliverable legs**: costing tables that print their own arithmetic
+  (CEPCI, B1/B2, Turton App. A), sizing/costing CSVs that reproduce their
+  own totals, `postDict`/`solverDict`/`outerDict` under the unread-key
+  audit, and refusals that read the evidence in their hand (closest-match
+  suggestions on missing keys).
+
+### Teaching surfaces
+
+- **21 EduTools** (was 16), all in the scrolling-lesson form, and **every
+  formula symbol on every lesson is now glossed** — the definitions were
+  written against the ENGINE with `file:line` citations, a requirement that
+  changed what the writers read and surfaced eight defects the pages had
+  been carrying (among them a claim, pinned by a green test, that the engine
+  has no pH input; it has two closures, and the page now teaches the choice).
+- **The temperature page was rearchitected to one mental model** — a
+  temperature reading is the end of a measurement chain — with the
+  epistemology (Chang, Regnault, the gas thermometer, ITS-90's fixed points)
+  in its own deep dive and the boiling-point ladder on its own page, "When a
+  property database lies to you", teaching internal consistency and declared
+  validity.
+- **The first hour was walked as a student**: the scaffold's offline guide
+  taught five keys the engine never read (fixed at source, swept against the
+  corpus-verified schemas), the entry tools now answer a bare call with
+  their syntax, and hand-typed counts left the prose for the generated
+  inventory.
+- **Advisories carry their state** (`accepted`/`trial`): `column13`'s 103
+  advisories became the 12 that describe its answer; problem divergences
+  (an approximation the case authorised vs a substitution nobody did)
+  travel with the result on four surfaces.
+
+### Honesty debts paid and left, said plainly
+
+Paid: the five-reader forward-order default, the checks that could not run
+but passed, the parsed-and-discarded validity windows, the golden row kinds
+for every published result block.  Left, each pinned with its reason: the
+NF270 40x contradiction, eighteen missing species citations, the
+water-record 0.70 K self-inconsistency (now a teaching example), and the
+reserved rulings (Guthrie→Turton attribution, the pump/pipe density
+unification beyond water, the v2608 cut itself).
+
 ## Choupo-dev (2026-07-28)
 
 * **The development line moved to the DEFAULT branch — `main` is now
