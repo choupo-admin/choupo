@@ -828,27 +828,49 @@ try
                       "sample dt = "
                     : "Time integration  (RK4 inside units, dt = ")
               << deltaT << " s):\n";
+    // ONE width per column, shared by the header and every data row.  A
+    // fixed setw(14) let a longer label ("reactor.n_compA", 15 chars)
+    // overflow and shift every header to its right: on ctrl01 the drift
+    // reached a full column, so the last data column (MV) sat under the
+    // TC1.PV label -- a student reads the controller OUTPUT as the
+    // MEASUREMENT.  Width = max(14, label + 1); data rows use the same
+    // vector, so header and numbers cannot shear again.
+    std::vector<std::string> columnLabels;
+    for (const auto& u : units)
+        for (const auto& lbl : u->stateLabels())
+            columnLabels.push_back(u->name() + "." + lbl);
+    for (const auto& c : controllers)
+    {
+        columnLabels.push_back(c->name() + ".PV");
+        columnLabels.push_back(c->name() + ".MV");
+    }
+    std::vector<int> columnWidths;
+    for (const auto& lbl : columnLabels)
+        columnWidths.push_back(std::max<int>(14, int(lbl.size()) + 1));
+
     if (verbosity >= 3)
     {
         std::cout << "      t [s]    ";
-        for (const auto& u : units)
-            for (const auto& lbl : u->stateLabels())
-                std::cout << std::setw(14) << (u->name() + "." + lbl);
-        for (const auto& c : controllers)
-            std::cout << std::setw(14) << (c->name() + ".PV")
-                      << std::setw(14) << (c->name() + ".MV");
+        for (std::size_t i = 0; i < columnLabels.size(); ++i)
+            std::cout << std::setw(columnWidths[i]) << columnLabels[i];
         std::cout << "\n";
     }
 
     auto echoLine = [&](scalar t)
     {
         std::cout << "  " << std::setw(9) << std::fixed << std::setprecision(2) << t << "  ";
+        std::size_t col = 0;
         for (const auto& u : units)
             for (auto v : u->stateVector())
-                std::cout << std::setw(14) << std::scientific << std::setprecision(5) << v;
+                std::cout << std::setw(columnWidths[col++])
+                          << std::scientific << std::setprecision(5) << v;
         for (const auto& c : controllers)
-            std::cout << std::setw(14) << std::scientific << std::setprecision(5) << c->lastCV()
-                      << std::setw(14) << std::scientific << std::setprecision(5) << c->lastMV();
+        {
+            std::cout << std::setw(columnWidths[col++])
+                      << std::scientific << std::setprecision(5) << c->lastCV();
+            std::cout << std::setw(columnWidths[col++])
+                      << std::scientific << std::setprecision(5) << c->lastMV();
+        }
         std::cout << "\n";
     };
 
