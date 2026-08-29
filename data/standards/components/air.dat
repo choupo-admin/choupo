@@ -7,6 +7,13 @@
 \*---------------------------------------------------------------------------*/
 
 name        air;
+//  A permanent carrier gas: Tc = 132.45 K, so at every temperature a drying
+//  or psychrometric case runs at it is FAR supercritical and cannot condense.
+//  The KEY, not the fact, was missing (2026-08-29): without it the GUI's
+//  psychrometric carrier menu -- which offers only components declaring
+//  `noncondensable true;` -- could not offer air, and the default fell to
+//  nitrogen, ~3.4 % off in every humidity ratio (MW 28.014 vs 28.96).
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
 CAS         132259-10-0;
 reviewStatus interim;
 MW          28.96;      // kg/kmol [origin=ChemSep v8.3]
