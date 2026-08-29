@@ -214,8 +214,8 @@ function ThreeThings(): JSX.Element {
         "The unit T is expressed in — fixed since 2019 by declaring the "
         + "Boltzmann constant exact.  A convention, not a property.")}
       {cell("practical scale", "T₉₀",
-        "The metrological recipe (ITS-90) by which practical temperatures "
-        + "are realised and disseminated.  What instruments actually read.")}
+        "The practical scale (ITS-90) through which precision temperature "
+        + "measurements are realised and disseminated.")}
     </Group>
   );
 }
@@ -243,9 +243,10 @@ export function WhatIsTemperatureTool(): JSX.Element {
         <Box>
           <Title order={5}>1 · Two systems touch</Title>
           <Text size="sm" mt={4}>
-            Put two systems in thermal contact.  If there is a net flow of
-            energy between them, they were <strong>not at the same
-            temperature</strong> — that is what the words mean.  When the flow
+            Put two systems in thermal contact.  If thermal contact alone
+            produces a net flow of heat between them, they were{" "}
+            <strong>not at the same temperature</strong> — that is what the
+            words mean.  When the flow
             stops, the two are in <strong>thermal equilibrium</strong>, and
             there is one intensive property that is now equal in both.  We
             call that property <strong>temperature</strong>.
@@ -274,9 +275,10 @@ export function WhatIsTemperatureTool(): JSX.Element {
             </Text>
           </Box>
           <Text size="sm">
-            Read it as: <strong>temperature says how reluctantly a system
-            accepts energy.</strong>  Add a joule; if the entropy barely
-            rises, T is high.  It needs no substance and no instrument — and
+            Read it as: <strong>at fixed V and N, 1/T says how much the
+            entropy changes when a little energy is added.</strong>  At high
+            temperature, the same added joule produces a smaller entropy
+            increase.  It needs no substance and no instrument — and
             that is precisely why everything that follows on this page is
             about the gap between this definition and a number on a screen.
           </Text>
@@ -299,16 +301,18 @@ export function WhatIsTemperatureTool(): JSX.Element {
             through the practical scale instead: ITS-90, a chain of
             reproducible fixed points with declared instruments interpolating
             between them.  At {T_SUBJECT_K} K you sit just below the freezing
-            point of tin (505.078 K), and a platinum resistance thermometer is
-            doing the interpolating.  T₉₀ and thermodynamic T{" "}
+            point of tin (505.078 K), and a standard platinum resistance
+            thermometer (SPRT) is the defining interpolating instrument —
+            not the industrial Pt100 of the table below.  T₉₀ and
+            thermodynamic T{" "}
             <strong>are not the same number</strong> — near 500 K they differ
             by of order ten millikelvin, known and tabulated.
           </Text>
           <Text size="xs" c={INK} mt={6}>
             How the kelvin actually reaches a thermometer — the fixed points,
-            the four interpolating instruments, and what happens above the
-            silver point — is the deep dive: <em>How do we know a thermometer
-            is right?</em>
+            the different ITS-90 realisation regimes, and what happens above
+            the silver point — is the deep dive: <em>How do we know a
+            thermometer is right?</em>
           </Text>
         </Box>
 
@@ -426,7 +430,10 @@ export function WhatIsTemperatureTool(): JSX.Element {
             <strong>T₉₀ = 500.012 K, U = 0.015 K (k = 2)</strong>, plus how it
             was obtained.  The digits tell you how finely the number was{" "}
             <em>written</em>; only the uncertainty tells you how well it is{" "}
-            <em>known</em> — and nothing obliges the two to agree.
+            <em>known</em>.  Display resolution and measurement uncertainty
+            are different things and need not be comparable — though when a
+            final result is reported, the value and its uncertainty should be
+            rounded consistently.
           </Text>
         </Box>
 
