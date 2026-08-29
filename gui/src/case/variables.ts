@@ -81,7 +81,7 @@ export interface VarRow {
   expr?: string;
   unit?: string;
   /** For manipulated entries: the driver-owned search seed + bounds. */
-  bounds?: { initial?: number; min?: number; max?: number };
+  bounds?: { initial?: number | string; min?: number | string; max?: number | string };
   /** Which driver owns a manipulated variable (e.g. "designSpec"). */
   owner?: string;
   /** Where $name is referenced across the flowsheet. */
@@ -108,9 +108,16 @@ function flowsheetRaw(files: CaseFiles): string | undefined {
  *  `variables {... }` block of the raw flowsheetDict text, so we can show the
  *  authored unit that toJson dropped.  Comments + compute sub-dicts are
  *  skipped; failure just means we fall back to the SI number. */
-function authoredScalars(raw: string | undefined): { [name: string]: string } {
+function authoredScalars(rawIn: string | undefined): { [name: string]: string } {
   const out: { [name: string]: string } = {};
-  if (!raw) return out;
+  if (!rawIn) return out;
+  //  Comments FIRST, then find the block: designSpec01's header comment says
+  //  "`variables { ... }`" sixty lines above the real block, and matching
+  //  before stripping walked the COMMENT's braces and extracted nothing --
+  //  every declared value rendered as an em-dash (found 2026-08-29).
+  const raw = rawIn
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/[^\n]*/g, "");
   const m = raw.match(/\bvariables\b\s*\{/);
   if (!m || m.index === undefined) return out;
   // Walk braces from the opening { to its match.
@@ -199,7 +206,7 @@ export function buildVariableRows(files: CaseFiles, run: RunResult | null): VarR
   const vars = fs.variables as JsonDict;
 
   // Manipulated set + bounds from outerDict.
-  const manip: { [name: string]: { initial?: number; min?: number; max?: number } } = {};
+  const manip: { [name: string]: { initial?: number | string; min?: number | string; max?: number | string } } = {};
   let owner: string | undefined;
   const od = files.outerDict;
   if (od) {
@@ -211,11 +218,9 @@ export function buildVariableRows(files: CaseFiles, run: RunResult | null): VarR
           const ed = e as JsonDict;
           const vn = typeof ed.variable === "string" ? ed.variable : undefined;
           if (vn) {
-            manip[vn] = {
-              initial: typeof ed.initial === "number" ? ed.initial : undefined,
-              min: typeof ed.min === "number" ? ed.min : undefined,
-              max: typeof ed.max === "number" ? ed.max : undefined,
-            };
+            const nb = (x: unknown): number | string | undefined =>
+              typeof x === "number" || typeof x === "string" ? x : undefined;
+            manip[vn] = { initial: nb(ed.initial), min: nb(ed.min), max: nb(ed.max) };
           }
         }
       }
@@ -274,7 +279,12 @@ export function buildVariableRows(files: CaseFiles, run: RunResult | null): VarR
     rows.push({
       name,
       role: isManip ? "manipulated" : "constant",
-      declared: authored[name] ?? (typeof v === "number" ? String(v) : undefined),
+      //  The dict parser hands a unit-bearing scalar over as the STRING
+      //  "100 m2", not a number -- accept it, or the declared column shows
+      //  an em-dash about a value three lines away in the Case tab.
+      declared: authored[name]
+        ?? (typeof v === "number" ? String(v)
+          : typeof v === "string" ? v : undefined),
       bounds: isManip ? manip[name] : undefined,
       owner: isManip ? owner : undefined,
       usedIn,

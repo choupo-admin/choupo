@@ -86,10 +86,15 @@ function declaredCell(r: VarRow): string {
   if (r.role === "computed") return r.expr ? `= ${r.expr}` : "—";
   if (r.role === "manipulated") {
     const b = r.bounds;
-    const seed = r.declared ?? (b?.initial !== undefined ? formatSig(b.initial) : "—");
-    const lo = b?.min !== undefined ? formatSig(b.min) : "?";
-    const hi = b?.max !== undefined ? formatSig(b.max) : "?";
-    return `${seed}  (guess; in [${lo}, ${hi}] SI)`;
+    //  A bound may arrive as the AUTHORED unit-bearing string ("20 m2") --
+    //  show it verbatim; only a bare number is an SI value needing the label.
+    const fmt = (x: number | string): string =>
+      typeof x === "number" ? formatSig(x) : x;
+    const seed = r.declared ?? (b?.initial !== undefined ? fmt(b.initial) : "—");
+    const lo = b?.min !== undefined ? fmt(b.min) : "?";
+    const hi = b?.max !== undefined ? fmt(b.max) : "?";
+    const si = [b?.min, b?.max].some((x) => typeof x === "number") ? " SI" : "";
+    return `${seed}  (guess; in [${lo}, ${hi}]${si})`;
   }
   return r.declared ?? "—";
 }

@@ -4,6 +4,8 @@
 
 import { describe, expect, it } from "vitest";
 
+import { tutorialByName } from "../src/cases/tutorials.js";
+
 import { buildVariableRows } from "../src/case/variables.js";
 import type { CaseFiles } from "../src/case/types.js";
 import type { RunResult } from "../src/adapters/SolverAdapter.js";
@@ -82,5 +84,23 @@ describe("buildVariableRows", () => {
 
   it("returns [] for a case with no variables block", () => {
     expect(buildVariableRows({ thermoPackage: {}, controlDict: {} }, null)).toEqual([]);
+  });
+});
+
+describe("the REAL bundled case whose header comment defeated the parser", () => {
+  //  designSpec01's header says "`variables { ... }`" sixty lines above the
+  //  real block; matching before comment-stripping walked the COMMENT's
+  //  braces and every declared value rendered as an em-dash in the panel
+  //  (found walking the workspace in a browser, 2026-08-29).  The synthetic
+  //  fixture above cannot catch this -- its raw text has no such comment --
+  //  so these pins hold the real case.
+  it("recovers designSpec01's declared values and authored bounds", () => {
+    const t = tutorialByName("steady/optimisation/designSpec01_triple_equal_areas")!;
+    const rows = buildVariableRows(t.files, null);
+    const a = rows.find((r) => r.name === "A")!;
+    expect(a.declared).toBe("100 m2");
+    expect(a.bounds?.min).toBe("20 m2");
+    expect(a.bounds?.max).toBe("500 m2");
+    expect(rows.find((r) => r.name === "F_steam")!.declared).toBe("400.0 kmol/h");
   });
 });
