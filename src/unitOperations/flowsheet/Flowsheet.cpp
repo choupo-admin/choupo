@@ -2809,7 +2809,12 @@ int Flowsheet::solve(const DictPtr& dict,
     }
 
     std::cout << "\n================  Flowsheet topology  ================\n";
-    std::cout << "Source streams (case inlets, from 0/):\n";
+    // Every graph stream prints here, OUTLETS included -- 0/ carries the
+    // complete initial state, so a flash's product streams appear with their
+    // SEEDED values (a "vapor" stream at vf = 0 before the solve is the
+    // seed, not the answer).  The old header said "case inlets" over that
+    // list, which mislabelled two thirds of it on the very first tutorial.
+    std::cout << "Initial stream state (all graph streams, seeded from 0/):\n";
     for (const auto& [name, s] : streams_) printStream(s, thermo);
     if (!tears.empty())
     {
