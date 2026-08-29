@@ -1854,28 +1854,96 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
         return Mbar / vm;                                     // kg/m³
     }
 
-    // (3) Liquid -> saturated-liquid Rackett, mole-weighted molar volume.
-    static bool announcedRackett = false;
-    if (!announcedRackett)
-    {
-        std::cout << "liquid density: Rackett (saturated correlation --"
-                     " an ESTIMATE; known weak for water, ~12% low at 25 C:"
-                     " check against a measured density where it matters)\n";
-        announcedRackett = true;
-    }
+    // (3) Liquid -> mole-weighted molar volume, per component by the best
+    //     route that component's own record supports.
+    //
+    //  THIS USED TO BE RACKETT FOR EVERYTHING, and Rackett is a GENERIC
+    //  saturated-liquid correlation that fails on exactly the substance this
+    //  engine uses most: it returns 877 kg/m3 for water at 25 C against a
+    //  measured 997, ~12 % low, and the branch announced that about itself
+    //  while doing it anyway.  Meanwhile `Pump` read the component record's
+    //  own `Vliq` and got 997 -- so a pump and a pipe carrying the SAME water
+    //  sat on two densities 12 % apart, and the heads either published could
+    //  not be compared with the other's.
+    //
+    //  THE FIX IS NOT TO PICK ONE.  A measured `Vliq` is the better LEVEL
+    //  (it is a datum, at 25 C) and Rackett is the better SHAPE (it is a
+    //  function of T, which a stored constant is not).  So where the record
+    //  declares `Vliq`, the correlation is ANCHORED on it:
+    //
+    //      V(T) = Vliq_declared * Rackett(T) / Rackett(298.15 K)
+    //
+    //  which is exactly the declared value at 25 C and carries Rackett's
+    //  thermal expansion away from it.  A component with no `Vliq` keeps
+    //  bare Rackett; one with `Vliq` but no critical constants keeps the
+    //  declared constant and is told it has no temperature dependence.
+    //  Each route ANNOUNCES itself, because three routes reported as one
+    //  number is the thing this engine exists not to do.
+    constexpr scalar Tref_Vliq = 298.15;                        // `Vliq` datum
+    static bool announcedAnchored = false, announcedBare = false,
+                announcedFlat     = false;
     scalar Vmix = 0.0;                                          // m³/mol
     for (std::size_t i = 0; i < N; ++i)
     {
         if (z[i] <= 0.0) continue;
         const Component& c = components_[i];
         const scalar Tc = c.Tc(), Pc_Pa = c.Pc() * 1.0e5, omega = c.omega();
-        if (Tc <= 0.0 || Pc_Pa <= 0.0)
-            throw std::runtime_error("ThermoPackage::density: liquid (Rackett)"
-                " needs Tc and Pc for component '" + c.name() + "'.");
-        Vmix += (z[i] / zsum) * closures::rackettVliq(T, Tc, Pc_Pa, omega);
+        const scalar Vdecl = c.Vliq();
+        const bool   hasCrit = (Tc > 0.0 && Pc_Pa > 0.0);
+
+        scalar Vi = 0.0;
+        if (Vdecl > 0.0 && hasCrit)
+        {
+            const scalar Vr  = closures::rackettVliq(T, Tc, Pc_Pa, omega);
+            const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
+            if (Vr0 <= 0.0)
+                throw std::runtime_error("ThermoPackage::density: Rackett"
+                    " reference volume <= 0 for component '" + c.name() + "'.");
+            Vi = Vdecl * (Vr / Vr0);
+            if (!announcedAnchored)
+            {
+                std::cout << "liquid density: the record's own Vliq at 25 C,"
+                             " with Rackett supplying only the temperature"
+                             " dependence (V = Vliq * Rackett(T)/Rackett(298.15))"
+                             " -- the measured value sets the level, the"
+                             " correlation sets the shape\n";
+                announcedAnchored = true;
+            }
+        }
+        else if (Vdecl > 0.0)
+        {
+            Vi = Vdecl;
+            if (!announcedFlat)
+            {
+                std::cout << "liquid density: component '" << c.name()
+                          << "' declares Vliq but no critical constants, so its"
+                             " molar volume is held CONSTANT at the 25 C datum"
+                             " -- no thermal expansion is modelled for it\n";
+                announcedFlat = true;
+            }
+        }
+        else if (hasCrit)
+        {
+            Vi = closures::rackettVliq(T, Tc, Pc_Pa, omega);
+            if (!announcedBare)
+            {
+                std::cout << "liquid density: component '" << c.name()
+                          << "' declares no Vliq, so its molar volume is bare"
+                             " Rackett -- a generic saturated-liquid ESTIMATE,"
+                             " unanchored to any measurement of this substance\n";
+                announcedBare = true;
+            }
+        }
+        else
+            throw std::runtime_error("ThermoPackage::density: liquid density"
+                " for component '" + c.name() + "' needs either a `Vliq` in its"
+                " record or the critical constants Tc and Pc for Rackett;"
+                " it declares neither.");
+
+        Vmix += (z[i] / zsum) * Vi;
     }
     if (Vmix <= 0.0)
-        throw std::runtime_error("ThermoPackage::density: Rackett molar volume"
+        throw std::runtime_error("ThermoPackage::density: liquid molar volume"
             " <= 0");
     return Mbar / Vmix;                                         // kg/m³
 }

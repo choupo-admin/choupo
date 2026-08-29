@@ -1,18 +1,20 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  downstream             F                0.555555555556     1e-4
-stream  feed                   F                0.555555555556     1e-4
-kpi     P1                     F                0.555555555556     1e-4
-kpi     P1                     P_in             500000             1e-4
-kpi     P1                     P_out            462942.299189      1e-4
-kpi     P1                     dP_elevation     17171.7847864      1e-4
-kpi     P1                     dP_fittings      10942.8641074      1e-4
-kpi     P1                     dP_friction      8943.05191699      1e-4
-kpi     P1                     deltaP           37057.7008108      1e-4
-kpi     P1                     density          875.517367621      1e-4
-kpi     P1                     frictionFactor   0.0192870918591    1e-4
-kpi     P1                     head_loss_m      2.31611521712      1e-4
-kpi     P1                     regime           2                  1e-4
-kpi     P1                     reynolds         149291.31749       1e-4
-kpi     P1                     velocity         1.45548292337      1e-4
-kpi     P1                     viscosity        0.000853566435819  1e-4
+stream  downstream             F                0.555555555556   1e-4
+stream  feed                   F                0.555555555556   1e-4
+kpi     P1                     F                0.555555555556   1e-4
+kpi     P1                     P_in             500000           1e-4
+kpi     P1                     P_out            462986.302076    1e-4
+kpi     P1                     dP_elevation     19520.1545706    1e-4
+kpi     P1                     dP_fittings      9626.38419279    1e-4
+kpi     P1                     dP_friction      7867.15916089    1e-4
+kpi     P1                     deltaP           37013.6979243    1e-4
+kpi     P1                     density          995.250904772    1e-4
+kpi     P1                     frictionFactor   0.0192870918591  1e-4
+kpi     P1                     head_loss_m      1.79235705234    1e-4
+kpi     P1                     regime           2                1e-4
+kpi     P1                     reynolds         149291.31749     1e-4
+kpi     P1                     velocity         1.28038123008    1e-4
+kpi     P1                     viscosity        0.000853566435819 1e-4
+stream  downstream             T                300              1e-4
+stream  feed                   T                300              1e-4

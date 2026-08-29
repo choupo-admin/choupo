@@ -1,23 +1,25 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  downstream             F                0.0563888888889    1e-4
-stream  feed                   F                0.0563888888889    1e-4
-kpi     P1                     F                0.0563888888889    1e-4
-kpi     P1                     P_in             200000             1e-4
-kpi     P1                     P_out            193549.865507      1e-4
-kpi     P1                     Re_Gs            26035.4493901      1e-4
-kpi     P1                     Re_Ls            28789.8441141      1e-4
-kpi     P1                     X_martinelli     2.80978475563      1e-4
-kpi     P1                     dP_elevation     0                  1e-4
-kpi     P1                     dP_friction      6450.13449347      1e-4
-kpi     P1                     deltaP           6450.13449347      1e-4
-kpi     P1                     holdup_liquid    0.36831342294      1e-4
-kpi     P1                     jG               4.07152675186      1e-4
-kpi     P1                     jL               0.584320357502     1e-4
-kpi     P1                     phi_L2           8.24464715919      1e-4
-kpi     P1                     quality_mass     0.017542041521     1e-4
-kpi     P1                     rho_G            2.2473368993       1e-4
-kpi     P1                     rho_L            877.017578886      1e-4
-kpi     P1                     vaporFraction    0.0114381198303    1e-4
-kpi     P1                     voidFraction     0.63168657706      1e-4
+stream  downstream             F                0.0563888888889  1e-4
+stream  feed                   F                0.0563888888889  1e-4
+kpi     P1                     F                0.0563888888889  1e-4
+kpi     P1                     P_in             200000           1e-4
+kpi     P1                     P_out            193989.686272    1e-4
+kpi     P1                     Re_Gs            26035.4493901    1e-4
+kpi     P1                     Re_Ls            28789.8441141    1e-4
+kpi     P1                     X_martinelli     2.63535511116    1e-4
+kpi     P1                     dP_elevation     0                1e-4
+kpi     P1                     dP_friction      6010.31372773    1e-4
+kpi     P1                     deltaP           6010.31372773    1e-4
+kpi     P1                     holdup_liquid    0.357791422881   1e-4
+kpi     P1                     jG               4.07152675186    1e-4
+kpi     P1                     jL               0.514023769077   1e-4
+kpi     P1                     phi_L2           8.73309654435    1e-4
+kpi     P1                     quality_mass     0.017542041521   1e-4
+kpi     P1                     rho_G            2.2473368993     1e-4
+kpi     P1                     rho_L            996.956281129    1e-4
+kpi     P1                     vaporFraction    0.0114381198303  1e-4
+kpi     P1                     voidFraction     0.642208577119   1e-4
+stream  downstream             T                298.15           1e-4
+stream  feed                   T                298.15           1e-4
