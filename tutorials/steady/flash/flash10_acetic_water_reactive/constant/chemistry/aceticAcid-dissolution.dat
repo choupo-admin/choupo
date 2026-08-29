@@ -25,7 +25,7 @@ reaction "CH3COOH(g) = CH3COOH";
 
 // VAPOUR dimerisation of acetic acid (the carboxylic-acid signature):
 //   2 CH3COOH(g) = (CH3COOH)2(g),  K_dim = p_D/p_M^2 [atm^-1]
-// K25 ~ 1.4e3 atm^-1 (logK25 3.146), dH ~ -58.5 kJ/mol.
+// K25 ~ 3.6e2 atm^-1 (logK25 2.555), dH ~ -63.2 kJ/mol.
 vapourDimerisation
 {
     logK25  2.555;

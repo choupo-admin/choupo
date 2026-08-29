@@ -13,7 +13,9 @@
   constant/experiments/phiL_25C_parker1965.dat carries the MEASURED Phi_L
   (Parker NSRDS-NBS 2, 1965) used by the curation refit
   (bin/curate/fit_lphi_pitzer.py) that fitted the Na-OH dbeta/dT T-slots in
-  the standard catalogue (rel-AAD 4.97%, gate <5%).  The op below sweeps the
+  the standard catalogue (the FIT's own rel-AAD 4.97%, gate <5%; the
+  in-engine L_phi scan pinned by this case lands at rel-AAD 4.77% -- two
+  measurements, not one).  The op below sweeps the
   ACTIVITY surface whose T-derivative is L_phi; the in-engine L_phi scan +
   AAD overlay land with slices 4-5 (the 3-curve chart).
 \*---------------------------------------------------------------------------*/

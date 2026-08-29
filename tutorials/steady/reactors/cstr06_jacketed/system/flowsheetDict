@@ -16,7 +16,7 @@
 
   There is still NO dH_rxn source: on the elements datum the heat of reaction is
   already inside H.  What the jacket does is remove some of it, so the outlet
-  settles BELOW the adiabatic 431.96 K of cstr04.
+  settles BELOW the adiabatic 454.2 K of cstr04.
 
   Check it by hand from the printed KPIs:  Q_kW should equal UA (T_c - T_out),
   and it is NEGATIVE -- heat leaves the reactor.  Cool harder (raise UA, lower

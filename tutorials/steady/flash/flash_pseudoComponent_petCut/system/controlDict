@@ -12,8 +12,8 @@
 
   WORKED EXAMPLE for the PSEUDO-COMPONENT data model: flash a binary of a
   petroleum pseudo-component (petCut_C7plus, lumped from an assay by
-  Riazi-Daubert) with a real species (toluene), then a heater raises the
-  liquid and the energy balance CLOSES on the implied duty.
+  Riazi-Daubert) with a real species (toluene), then a heater with negative
+  duty cools the liquid and the energy balance CLOSES on the implied duty.
 
   The pseudo-component .dat lives in constant/components/petCut_C7plus.dat
   (CASE-LOCAL -- the case carries its own lump).  It omits formula/CAS

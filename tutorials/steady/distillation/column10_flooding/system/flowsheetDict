@@ -8,14 +8,14 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   column10_flooding  --  the SAME column as column09, built 1.10 m wide instead
-  of the 1.322 m that column09 designed for it.
+  of the 1.316 m that column09 designed for it.
 
   Nothing about the separation changes.  The distillate is still 98.12 % benzene,
   the bottoms still 98.12 % toluene, the MESH equations converge exactly as
   before, and every number in the stream table is identical.  The column is a
   perfectly good column -- on paper.
 
-  It floods.  The worst tray runs at 115.6 % of its entrainment-flooding
+  It floods.  The worst tray runs at 114.5 % of its entrainment-flooding
   velocity: the vapour is fast enough to carry the liquid up to the tray above
   instead of letting it fall.  In a real column the trays would fill, the
   pressure drop would run away, and the separation printed above would not
@@ -27,7 +27,7 @@
   or cut the reflux -- but do not believe the stream table until a tray can pass
   the traffic it carries.
 
-  Note the downcomer, too: the backup reaches 271 mm against a 275 mm limit.
+  Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit.
   Narrow the column a little further and it would flood from below as well,
   for an entirely different reason.
 \*---------------------------------------------------------------------------*/

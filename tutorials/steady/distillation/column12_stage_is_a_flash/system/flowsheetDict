@@ -55,8 +55,8 @@
   the vapour/liquid split ("mixers mix, flashes separate").  Handed a
   liquid and a vapour it conserves total enthalpy exactly and reports the
   result as a single dominant phase at whatever temperature carries that
-  enthalpy.  That temperature is FICTITIOUS -- a sub-cooled liquid held
-  well above its bubble point -- and the case does not use it for
+  enthalpy.  That temperature is FICTITIOUS -- a nominal vapour read out
+  at 182.9 K, far below its saturation -- and the case does not use it for
   anything.  What the mixer is doing here is carrying an ENTHALPY across
   one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is
   precisely the quantity it reads back, and the fictitious temperature

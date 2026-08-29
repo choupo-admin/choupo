@@ -11,7 +11,8 @@
 
   The flash splits the feed into vapour + liquid (the pseudo-component
   participates in VLE through its critical{} + Ambrose-Walton Psat).  The
-  heater then adds sensible heat to the liquid; energyBalance reports the
+  heater unit then REMOVES sensible heat from the liquid (Q -30 kW -- a
+  heater with negative duty is a cooler); energyBalance reports the
   implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure
   Cp.  No reaction -> no formation datum needed (matching the lump's omitted
   standardThermochemistry).

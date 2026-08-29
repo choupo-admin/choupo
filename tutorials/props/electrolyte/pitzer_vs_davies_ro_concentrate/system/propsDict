@@ -64,9 +64,9 @@
   E_theta(I) BEFORE -> AFTER (the scan_pitzer fork only; scan_davies is BYTE-
     IDENTICAL -- E_theta is Pitzer-only).  At r_max (I ~ 3.3 mol/kg, deep brine
     where higher-order mixing bites hardest):
-      SI_gypsum_rmax   -0.144 -> -0.305   SI_calcite_rmax  2.026 -> 1.945
-      SI_gypsum_r0     -0.877 -> -0.966   SI_calcite_r0    1.240 -> 1.185
-      I_rmax            3.271 ->  3.323    gypsum stays undersaturated end-to-end
+      SI_gypsum_rmax   -0.144 -> -0.317   SI_calcite_rmax  2.026 -> 1.938
+      SI_gypsum_r0     -0.877 -> -0.967   SI_calcite_r0    1.240 -> 1.183
+      I_rmax            3.271 ->  3.322    gypsum stays undersaturated end-to-end
     The engineering verdict (gypsum the limiting scale) is UNCHANGED in direction;
     E_theta refines the SI magnitude in the high-I tail.
 

@@ -32,27 +32,27 @@
       aragonite solubility); Millero, F.J., Chem. Rev. 107 (2007) 308 (the
       seawater carbonate system); a well-documented oceanographic number (the
       ocean-acidification baseline).  Choupo (Pitzer-HMW) computes SI_calcite
-      = +0.667 -- INSIDE the published band.
+      = +0.655 -- INSIDE the published band.
     SI_gypsum (seawater) ~ -0.9 to -0.6 (strongly UNDERsaturated -- seawater is
       nowhere near gypsum saturation); Choupo computes -0.964 -- a touch below
       the -0.9 floor (this carbonate-bearing brine sits at slightly higher I than
-      the carbonate-free seawater_verify case, which gives -0.689 in-band).  Still
+      the carbonate-free seawater_verify case, which gives -0.687 in-band).  Still
       firmly undersaturated, the physically-correct verdict.
 
     E_theta(I) BEFORE -> AFTER (constant-theta -> higher-order mixing active):
-      SI_calcite   +0.724 -> +0.667   (IN band +0.6..+0.8) -- E_theta lowers the
+      SI_calcite   +0.724 -> +0.655   (IN band +0.6..+0.8) -- E_theta lowers the
                                        2+/2- ion gammas, nudging the carbonate IAP
       SI_gypsum    -0.875 -> -0.964   gamma_CO2aq 1.105 -> 1.106 (salting-out kept)
                                        gamma_Ca 0.227 -> 0.194 (E_theta on Ca pairs)
-      Davies (untouched -- E_theta is Pitzer-only): SI_calcite +0.882, byte-ident.
+      Davies (untouched -- E_theta is Pitzer-only): SI_calcite +0.868, byte-ident.
 
   The golden master locks Choupo's exact output; the band above validates it is
   PHYSICALLY right (a wrong pin is worse than no pin -- the band is cited).
 
   DAVIES vs PITZER (the differentiator, also pinned): the SAME composition under
-  Davies gives SI_calcite +0.882 and gamma_CO2aq = 1.000 (no neutral salting-
+  Davies gives SI_calcite +0.868 and gamma_CO2aq = 1.000 (no neutral salting-
   out) -- Davies is out of its trustworthy band (~0.5) at this I, overshoots the
-  calcite SI by ~0.22 vs Pitzer-HMW-with-E_theta and misses the CO2 salting-out
+  calcite SI by ~0.21 vs Pitzer-HMW-with-E_theta and misses the CO2 salting-out
   entirely.  Pitzer is the rigorous tool for brine.  Both entries run here so the
   divergence is VISIBLE.
 

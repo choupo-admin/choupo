@@ -42,14 +42,14 @@
     scan       CLOSED system -- every total (DIC included) concentrates as
                feed/(1-r); the charge-balance ratio is scale-invariant, so
                the pH only drifts gently (7.72 -> 7.58, the Davies gammas at
-               work) while calcite SI climbs 0.24 -> 1.43.
+               work) while calcite SI climbs 0.23 -> 1.38.
     scan_open  OPEN to the atmosphere (`atmosphere { pCO2 4.2e-4 atm; }`) --
                a(CO2aq) is PINNED by Henry, the HCO3 mole balance is
                REPLACED by the pin, and DIC becomes a solved OUTCOME.  This
                groundwater is ~8x CO2-supersaturated vs the atmosphere, so
                opening it DEGASES CO2: the pH jumps to 8.54 and climbs to
-               9.09, and calcite SI lands ABOVE the closed curve (2.61 vs
-               1.43 at r = 0.85) -- why concentrate pH control (acid dosing)
+               9.08, and calcite SI lands ABOVE the closed curve (2.59 vs
+               1.38 at r = 0.85) -- why concentrate pH control (acid dosing)
                matters.  Compare the two CSVs (both carry a pH column right
                after I); the contrast IS the lesson.
 

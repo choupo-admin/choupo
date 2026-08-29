@@ -22,7 +22,7 @@
     salt fraction: Harned's rule, EMERGING from the model rather than being
     assumed (R^2 > 0.99 with zero electrolyte-electrolyte parameters).
   * The PURE endpoints reproduce the validated single-salt eNRTL kernel
-    exactly (the reduction pin ~1e-16): the multicomponent formulation
+    exactly (the reduction pin ~1e-15): the multicomponent formulation
     collapses correctly.
   * The pair parameters are the EXACT Chen & Evans 1986 Table 1 values the
     paper uses (case-local constant/electrolyte/enrtl.dat, cited).  The
@@ -42,8 +42,8 @@
     composition-dependent mixing rules (the Bollas, Chen & Barton 2008 idea
     on the symmetric form).  Its oracle closes (~1e-9) at every composition;
     both reduce EXACTLY to the same single-salt kernel at the endpoints.
-    Mid-sweep they differ by |dln gamma_pm| ~ 0.037 (~4 % in gamma), and the
-    trace limits differ visibly (NaCl trace 0.608 published vs 0.667
+    Mid-sweep they differ by |dln gamma_pm| ~ 0.041 (~4 % in gamma), and the
+    trace limits differ visibly (NaCl trace 0.617 published vs 0.678
     consistent).  WHICH is closer to nature is a question for MIXTURE data
     (Covington 1968 / Robinson 1961) -- this case states the facts and locks
     both; it does not pick a winner without measurements.
@@ -56,8 +56,8 @@
   10.1021/j100822a016 -- isopiestic NaCl-KCl mixtures, Harned coefficients
   at M ~ 4.4 mol/kg: alpha_NaCl = +0.0243, alpha_KCl = -0.0091; the op now
   emits harned_alpha_1/2 on the same convention, golden-locked):
-      alpha_NaCl:  published +0.0276 (+14 %)   consistent +0.0173 (-29 %)
-      alpha_KCl:   published -0.0242 (2.7x)    consistent -0.0193 (2.1x)
+      alpha_NaCl:  published +0.0285 (+17 %)   consistent +0.0180 (-26 %)
+      alpha_KCl:   published -0.0256 (2.8x)    consistent -0.0187 (2.1x)
   With tauEE = 0, PUBLISHED wins on the dominant NaCl coefficient; BOTH
   formulations overstate the (small) effect on KCl.
 

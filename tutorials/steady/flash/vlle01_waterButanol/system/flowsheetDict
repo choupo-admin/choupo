@@ -11,7 +11,7 @@
   cited Winkelman et al. (2009) UNIQUAC LLE parameters.
 
   Water + 1-butanol is THE textbook partially-miscible binary.  At 320 K and
-  1.013 bar an equimolar mixture is well below the bubble point (water boils at
+  1.013 bar an 80/20 water/butanol mixture is well below the bubble point (water boils at
   373 K, 1-butanol near 390 K), so the equilibrium is GENUINELY two LIQUIDS --
   no vapour.  A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct
   Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.

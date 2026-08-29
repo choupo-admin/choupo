@@ -18,11 +18,11 @@
   At T = 600 K:
       dG_rxn  =  g_CO2 + g_H2 - g_CO - g_H2O   ≈  -16.3 kJ/mol
       K_eq    =  exp(16300 / (R · 600))        ≈  26.5
-      For equimolar CO + H2O, K_eq = X^2 / (1-X)^2 -->  X_eq = 0.838
+      For equimolar CO + H2O, K_eq = X^2 / (1-X)^2 -->  X_eq ≈ 0.84
 
   V_R is picked large enough (1e-3 m^3 for a 1 kmol/h feed) that the
   kinetics are fast relative to residence; we see the conversion
-  approach (but not exceed) X_eq = 0.838 --- exactly the
+  approach (but not exceed) X_eq ≈ 0.84 --- the
   thermodynamic ceiling.
 \*---------------------------------------------------------------------------*/
 

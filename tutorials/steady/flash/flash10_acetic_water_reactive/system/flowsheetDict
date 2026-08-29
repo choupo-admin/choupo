@@ -20,11 +20,11 @@
   exist in the internal state and the report.
 
   THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K,
-  1 atm; sum p_eq = 0.836 atm < P): the honest regime for a dilute,
+  1 atm; sum p_eq = 0.818 atm < P): the honest regime for a dilute,
   barely-volatile acid on the Davies rung.  The unit is an ISOTHERMAL
   (T,P) flash -- T is the specification, not a result.  Temperature still
   ACTS, through BOTH van't Hoff legs (dissolution dH = -51.5 kJ/mol,
-  dimerisation dH = -58.5 kJ/mol), and the flash publishes what it moves
+  dimerisation dH = -63.2 kJ/mol), and the flash publishes what it moves
   as KPIs: pH, p_eq_sum_atm, p_mono_atm, p_dimer_atm, dimer_share.
   flash11_acetic_T_sweep sweeps T across the subsaturated window so the
   student SEES the total volatility climb while the dimer share falls;

@@ -11,7 +11,7 @@
 
       feed (2 HAc + 1 NH3 + 12 EtOH + 85 H2O, kmol/h)
         -> [flash01, 358.15 K / 0.65 atm]
-        -> liquid (42.0 kmol/h, pH 5.03) + vapor (58.0 kmol/h)
+        -> liquid (42.3 kmol/h, pH 4.98) + vapor (57.7 kmol/h)
 
   On the NRTL backbone the feed's bubble pressure is ~1.1 atm (gamma_EtOH
   = 2.97 triples the ideal ethanol volatility): 0.65 atm strips well over

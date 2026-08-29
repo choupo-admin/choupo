@@ -31,7 +31,9 @@
                  what pure-component association physics alone can and
                  cannot predict for a strongly hydrogen-bonded pair.
 
-  What the student compares (both goldened), measured at this state:
+  What the student compares, measured at the feed composition z
+  (illustrative -- what is goldened are the CONVERGED K's: PC-SAFT
+  11.47 / 0.581 vs NRTL 3.896 / 0.602 for ethanol / water):
 
                        predictive PC-SAFT     fitted NRTL (gamma-phi)
     K_ethanol (at z)        2.185                  2.238

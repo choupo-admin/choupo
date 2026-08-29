@@ -73,8 +73,9 @@
 
       IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this
       paragraph exists rather than a preference.  With H2 in the feed the MESH
-      converged (16 Newton iterations, ||F|| 2.4e-11) to the SAME distillate
-      -- x_acetone 0.9722 -- and then the energy report REFUSED: hydrogen has
+      converged (16 Newton iterations, ||F|| 2.4e-11) to essentially the same
+      distillate -- x_acetone 0.9722 vs the shipped run's goldened 0.9731 --
+      and then the energy report REFUSED: hydrogen has
       no liquid heat capacity, because at 330 K it has no liquid.  The refusal
       is right, and it is the honest form of the modelling error: a total
       condenser was silently asking a permanent gas to leave as a liquid.
