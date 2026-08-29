@@ -58,3 +58,32 @@ diag    reduction_nacl         gamma_pm_Na_Cl   0.657            2e-2     anchor
 # inferred from an absence.  The finding is in the case header; resolving it
 # needs the primary tables (HMW 1984; Millero & Pierrot), which the project
 # does not hold.
+diag    reduction_nacl         chargeImposed    0                1e-4
+diag    reduction_nacl         chargeResidual   -2.35207e-08     1e-4
+diag    reduction_nacl         networkRestricted 1                1e-4
+diag    seawater               SI_arcanite      -5.15133         1e-4
+diag    seawater               SI_bischofite    -7.2702          1e-4
+diag    seawater               SI_bloedite      -5.685           1e-4
+diag    seawater               SI_brucite       -2.88693         1e-4
+diag    seawater               SI_carnallite    -9.77833         1e-4
+diag    seawater               SI_epsomite      -2.78444         1e-4
+diag    seawater               SI_glaserite     -8.35405         1e-4
+diag    seawater               SI_glauberite    -3.44279         1e-4
+diag    seawater               SI_goergeyite    -3.53892         1e-4
+diag    seawater               SI_hexahydrite   -2.94626         1e-4
+diag    seawater               SI_kainite       -6.91185         1e-4
+diag    seawater               SI_kieserite     -3.31535         1e-4
+diag    seawater               SI_labile_S      -6.62926         1e-4
+diag    seawater               SI_leonhardite   -3.6129          1e-4
+diag    seawater               SI_leonite       -7.44823         1e-4
+diag    seawater               SI_mirabilite    -2.90793         1e-4
+diag    seawater               SI_misenite      -73.0531         1e-4
+diag    seawater               SI_pentahydrite  -3.22308         1e-4
+diag    seawater               SI_polyhalite    -8.10823         1e-4
+diag    seawater               SI_portlandite   -9.33044         1e-4
+diag    seawater               SI_schoenite     -7.11559         1e-4
+diag    seawater               SI_syngenite     -5.7262          1e-4
+diag    seawater               SI_thenardite    -4.18211         1e-4
+diag    seawater               chargeImposed    0                1e-4
+diag    seawater               chargeResidual   0.00244297       1e-4
+diag    seawater               networkRestricted 1                1e-4

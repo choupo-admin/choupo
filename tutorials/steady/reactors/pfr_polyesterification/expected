@@ -14,3 +14,7 @@ kpi     reactor                Xn               53.8322388335      1e-4
 kpi     reactor                Xw               106.664477667      1e-4
 kpi     reactor                p_conversion     0.981423770929     1e-4
 kpi     reactor                tau_s            5829.95951417      1e-4
+stream  feed                   T                450              1e-4
+stream  polymerMelt            T                450              1e-4
+kpi     reactor                Q_kW             -50.8699400972   1e-4
+kpi     reactor                dHrxn_kJ_per_mol -186.598072896   1e-4

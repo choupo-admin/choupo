@@ -43,3 +43,9 @@ utility transporter            heating.steamLP.eur_h 1.728            1e-4
 closure divider                raw_kW           0                1e-4
 closure divider                step_kW          -9.09494701773e-13 1e0
 closure divider                remaining_kW     9.09494701773e-13 1e0
+stream  branchA                T                330.806557015    1e-4
+stream  branchB                T                330.806557015    1e-4
+stream  brine                  T                313.15           1e-4
+stream  feed                   T                313.15           1e-4
+stream  offgas                 T                313.15           1e-4
+stream  warmBrine              T                330.806557015    1e-4

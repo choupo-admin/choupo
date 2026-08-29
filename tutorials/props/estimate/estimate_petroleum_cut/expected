@@ -10,3 +10,4 @@ diag    estimate_petroleum_cut Tc_K             617.80             1e-4
 diag    estimate_petroleum_cut Vc_cm3mol        627.46             1e-4
 diag    estimate_petroleum_cut Vliq298_cm3mol   203.43             1e-4
 diag    estimate_petroleum_cut omega            0.48               1e-4
+diag    estimate_petroleum_cut Psat_298_bar     0.00             1e-4

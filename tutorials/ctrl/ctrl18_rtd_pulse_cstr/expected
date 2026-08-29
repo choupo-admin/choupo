@@ -33,3 +33,4 @@ kpi     rtd                    truncation_final_over_peak 3.39145420463e-05  1e-
 kpi     rtd                    area_kmol        3.0e-4           1e-3  anchor
 kpi     rtd                    tbar_s           355.0            1e-3  anchor
 kpi     rtd                    sigma2_s2        57675.0          5e-3  anchor
+kpi     rtd                    variance_ratio   0.456286487972   1e-4

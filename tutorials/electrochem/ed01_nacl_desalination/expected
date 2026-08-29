@@ -27,3 +27,7 @@ utility rectifier              power.electricity_(generated).duty_kW 0.108062102
 utility rectifier              power.electricity_(generated).T -1                 1e-4
 utility rectifier              power.electricity_(generated).kg_s 0                  1e-4
 utility rectifier              power.electricity_(generated).eur_h -0.0108148552469   1e-4
+stream  concentrate            T                298.15           1e-4
+stream  concentrateFeed        T                298.15           1e-4
+stream  diluate                T                298.15           1e-4
+stream  diluateFeed            T                298.15           1e-4

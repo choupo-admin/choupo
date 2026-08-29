@@ -47,3 +47,7 @@ kpi     dryer                  water_activity   0.0626058190889    1e-4
 kpi     dryer                  water_evaporated 0.0165190239937    1e-4
 kpi     dryer                  water_residual   0.0001475189277    1e-4
 kpi     dryer                  wheelSpeed       20000              1e-4
+stream  dryingAir              T                473.15           1e-4
+stream  exhaustAir             T                372.025243986    1e-4
+stream  feed                   T                298.15           1e-4
+stream  powder                 T                372.025243986    1e-4

@@ -14,3 +14,6 @@ utility airHeater              heating.steamHP.duty_kW 5                  1e-4
 utility airHeater              heating.steamHP.T 468.478847995      1e-4
 utility airHeater              heating.steamHP.kg_s 0.00291715285881   1e-4
 utility airHeater              heating.steamHP.eur_h 0.324              1e-4
+stream  feed                   T                298.15           1e-4
+stream  hot                    T                468.478847995    1e-4
+kpi     airHeater              vf_out           1                1e-4

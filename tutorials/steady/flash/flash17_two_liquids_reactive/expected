@@ -28,3 +28,6 @@ kpi     flash01                K_aceticAcid     0.115197484879   1e-4
 kpi     flash01                K_benzene        37.4471809517    1e-4
 kpi     flash01                K_ethanol        2.08935291258    1e-4
 kpi     flash01                K_water          0.214225184675   1e-4
+stream  feed                   T                313.15           1e-4
+stream  liquid                 T                313.15           1e-4
+stream  vapor                  T                313.15           1e-4

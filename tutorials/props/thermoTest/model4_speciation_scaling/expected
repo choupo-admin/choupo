@@ -27,3 +27,16 @@ diag    concentrate            pH_rmax          7                1e-4
 diag    concentrate            recovery_at_anhydrite_onset 0.240444         1e-4
 diag    concentrate            recovery_at_gypsum_onset 0.0347075        1e-4
 diag    concentrate            recovery_at_halite_onset 0.501988         1e-4
+diag    brine                  SI_glauberite    -1.50119         1e-4
+diag    brine                  SI_labile_S      -3.57986         1e-4
+diag    brine                  SI_portlandite   -10.421          1e-4
+diag    brine                  chargeImposed    0                1e-4
+diag    brine                  chargeResidual   -2.36786e-08     1e-4
+diag    concentrate            SI_glauberite_r0 -1.50119         1e-4
+diag    concentrate            SI_glauberite_rmax 2.1858           1e-4
+diag    concentrate            SI_labile_S_r0   -3.57986         1e-4
+diag    concentrate            SI_labile_S_rmax 1.22793          1e-4
+diag    concentrate            SI_portlandite_r0 -10.421          1e-4
+diag    concentrate            SI_portlandite_rmax -8.84023         1e-4
+diag    concentrate            recovery_at_glauberite_onset 0.529681         1e-4
+diag    concentrate            recovery_at_labile_S_onset 0.699932         1e-4

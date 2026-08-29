@@ -35,3 +35,8 @@ kpi     reactor                n_ethylAcetate_final 0.00816712028058 1e-4
 kpi     reactor                n_water_final    0.00816712028058 1e-4
 kpi     reactor                t_end            600              1e-4
 kpi     reactor                totalMoles_final 0.0185           1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.0185           1e-4
+kpi     campaign               moles_kmol_initial 0.0185           1e-4
+kpi     campaign               utility_coolingWater_peak_kW 0.849382680299   1e-4
+kpi     campaign               utility_coolingWater_t_peak_s 0                1e-4

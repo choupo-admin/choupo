@@ -67,3 +67,11 @@ diag    isobar_1MPa            n_points         47                 1e-9
 diag    isobar_1MPa            Tsat_K           0.453035632e3      1e-5
 diag    isobar_10MPa           n_points         67                 1e-9
 diag    isobar_10MPa           Tsat_K           0.584149488e3      1e-5
+diag    r1_T300_p3MPa          cv               4.1212           1e-4
+diag    r1_T300_p80MPa         cv               3.91737          1e-4
+diag    r1_T300_p80MPa         psat_MPa         0.00353659       1e-4
+diag    r1_T500_p3MPa          cv               3.22139          1e-4
+diag    r2_T300_p3p5kPa        cv               1.44133          1e-4
+diag    r2_T300_p3p5kPa        psat_MPa         0.00353659       1e-4
+diag    r2_T700_p3p5kPa        cv               1.61978          1e-4
+diag    r2_T700_p30MPa         cv               2.97554          1e-4

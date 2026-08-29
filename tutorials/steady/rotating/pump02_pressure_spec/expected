@@ -19,3 +19,5 @@ utility pump02                 power.electricity.duty_kW 0.848631578947     1e-4
 utility pump02                 power.electricity.T -1                 1e-4
 utility pump02                 power.electricity.kg_s 0                  1e-4
 utility pump02                 power.electricity.eur_h 0.0849310484211    1e-4
+stream  feed                   T                298.15           1e-4
+stream  out                    T                298.523735099    1e-4

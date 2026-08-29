@@ -21,3 +21,6 @@ kpi     boilerHX               UA               680                1e-4
 kpi     boilerHX               area             0.85               1e-4
 kpi     boilerHX               effectiveness    0.326976122099     1e-4
 utility boilerHX               heating.-.unserved 1                  1e-4
+stream  boilerFeed             T                393.15           1e-4
+stream  saltReturn             T                756.857883776    1e-4
+stream  saltSupply             T                773.15           1e-4

@@ -31,3 +31,7 @@ utility separator              cooling.coolingWater.kg_s 23.148635186     1e-4
 utility separator              cooling.coolingWater.eur_h 1.39336264912    1e-4
 kpi     reactor                Q_reaction_kW    470.487527672    1e-4
 kpi     reactor                Q_sensible_kW    369.77570698     1e-4
+stream  Rin                    T                389              1e-4
+stream  Rout                   T                623              1e-4
+stream  flashGas               T                318              1e-4
+stream  flashLiquid            T                318              1e-4

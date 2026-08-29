@@ -50,3 +50,13 @@ diag    farelo_NH4Cl_pure      gamma_NH4        0.564773         1e-4
 diag    farelo_NH4Cl_pure      m_Cl             7.34995          1e-4
 diag    farelo_NH4Cl_pure      m_NH4            7.34994          1e-4
 diag    farelo_NH4Cl_pure      pH               4.42514          1e-4
+diag    farelo_NaCl_pure       chargeImposed    1                1e-4
+diag    farelo_NaCl_pure       chargeResidual   -6.04402e-15     1e-4
+diag    farelo_NaCl_nh4_093    chargeImposed    1                1e-4
+diag    farelo_NaCl_nh4_093    chargeResidual   6.7314e-18       1e-4
+diag    farelo_NaCl_nh4_187    chargeImposed    1                1e-4
+diag    farelo_NaCl_nh4_187    chargeResidual   -4.07524e-17     1e-4
+diag    farelo_NaCl_nh4_280    chargeImposed    1                1e-4
+diag    farelo_NaCl_nh4_280    chargeResidual   -8.0998e-17      1e-4
+diag    farelo_NH4Cl_pure      chargeImposed    1                1e-4
+diag    farelo_NH4Cl_pure      chargeResidual   1.52252e-16      1e-4

@@ -30,7 +30,7 @@ One isothermEval operation: the curated CO2/zeolite13X langmuir record on a 3-T 
 \goldrow{diag}{eval\_13x\_co2}{gate\_henry}{1.000e+00}
 \goldrow{diag}{eval\_13x\_co2}{gate\_henry\_maxdev}{1.227e-07}
 \goldrow{diag}{eval\_13x\_co2}{gate\_saturation}{1.000e+00}
-\goldmore{7}
+\goldmore{9}
 \end{tutgolden}
 
 \clearpage
@@ -63,7 +63,7 @@ Four fitParameters(kind isotherm) operations: the REAL Jaschik fit plus the thre
 \goldrow{diag}{fit\_jaschik}{fit.b\_ref.stderr}{2.90989e-05}
 \goldrow{diag}{fit\_jaschik}{fit.dH\_ads.value}{-3.73835e+04}
 \goldrow{diag}{fit\_jaschik}{fit.dH\_ads.stderr}{1.90453e+03}
-\goldmore{32}
+\goldmore{69}
 \end{tutgolden}
 
 \clearpage
@@ -325,6 +325,10 @@ The GUI renders the CSVs via the existing compare machinery (overlay of the $\as
 \goldrow{diag}{k\_iapws}{n\_points}{46}
 \goldrow{diag}{k\_generic}{n\_failures}{0}
 \goldrow{diag}{k\_generic}{n\_points}{46}
+\goldrow{diag}{mu\_iapws}{n\_emptyCurves}{0}
+\goldrow{diag}{mu\_generic}{n\_emptyCurves}{0}
+\goldrow{diag}{k\_iapws}{n\_emptyCurves}{0}
+\goldrow{diag}{k\_generic}{n\_emptyCurves}{0}
 \end{tutgolden}
 
 \clearpage
@@ -503,7 +507,7 @@ The run also announces an extrapolation: ethanol's vapour pressure is evaluated 
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_corr}{0.9999}
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{max\_abs\_resid}{0.5825}
 \goldrow{diag}{nrtl\_etoh\_water\_heldout}{n\_data}{8.0000}
-\goldmore{7}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -541,7 +545,7 @@ WHAT IT DOES NOT PROVE: anything about ethanol, water, or NRTL. The acceptance b
 \goldrow{diag}{thermoml\_fixture\_bubble}{max\_abs\_corr}{1.0000}
 \goldrow{diag}{thermoml\_fixture\_bubble}{max\_abs\_resid}{0.6562}
 \goldrow{diag}{thermoml\_fixture\_bubble}{n\_data}{7.0000}
-\goldmore{7}
+\goldmore{8}
 \end{tutgolden}
 
 \subsection{electrolyte}
@@ -667,6 +671,8 @@ NOT VALIDATED AGAINST MEASUREMENT. This case is a STRUCTURAL witness: it shows t
 \goldrow{diag}{naclWater}{m\_Cl}{2}
 \goldrow{diag}{naclWater}{m\_Na}{2}
 \goldrow{diag}{naclWater}{pH}{7.13303}
+\goldrow{diag}{naclWater}{chargeImposed}{1}
+\goldrow{diag}{naclWater}{chargeResidual}{-6.39009e-17}
 \end{tutgolden}
 
 \clearpage
@@ -713,7 +719,7 @@ WHY IT EXISTS: every electrolyte run above I \textasciitilde{} 0.5 mol/kg carrie
 \goldrow{diag}{hmw\_m0p05}{gamma\_Cl}{0.820867}
 \goldrow{diag}{hmw\_m0p05}{gamma\_Na}{0.820867}
 \goldrow{diag}{hmw\_m0p05}{m\_Cl}{0.05}
-\goldmore{114}
+\goldmore{146}
 \end{tutgolden}
 
 \clearpage
@@ -770,7 +776,7 @@ Sealing this case is where the importer's dependency closure was found not to kn
 \goldrow{diag}{sourWater\_edwards}{m\_NH4}{2.48981}
 \goldrow{diag}{sourWater\_edwards}{pH}{9}
 \goldrow{diag}{sourWater\_davies}{I}{1.77822}
-\goldmore{12}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -1028,7 +1034,7 @@ constant/experiments/phiL\_25C\_parker1965.dat carries the MEASURED Phi\_L (Park
 \goldrow{diag}{farelo\_NaCl\_nh4\_093}{aw}{0.746427}
 \goldrow{diag}{farelo\_NaCl\_nh4\_093}{gamma\_NH4}{0.591469}
 \goldrow{diag}{farelo\_NaCl\_nh4\_093}{gamma\_Na}{1.04074}
-\goldmore{29}
+\goldmore{39}
 \end{tutgolden}
 
 \clearpage
@@ -1103,7 +1109,7 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \goldrow{diag}{T25}{pH}{7.6}
 \goldrow{diag}{T40}{I}{0.074682}
 \goldrow{diag}{T40}{SI\_calcite}{0.981885}
-\goldmore{16}
+\goldmore{91}
 \end{tutgolden}
 
 \clearpage
@@ -1126,6 +1132,8 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \goldrow{diag}{naclWater}{m\_Cl}{2}
 \goldrow{diag}{naclWater}{m\_Na}{2}
 \goldrow{diag}{naclWater}{pH}{7.13303}
+\goldrow{diag}{naclWater}{chargeImposed}{1}
+\goldrow{diag}{naclWater}{chargeResidual}{-6.39009e-17}
 \end{tutgolden}
 
 \clearpage
@@ -1159,6 +1167,8 @@ APPROACH FROM ABOVE: the engine's equilibrate is a precipitation CEILING (SI $\t
 \goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00543277}
 \goldrow{diag}{calciteEq\_25C}{pH}{6.02946}
 \goldrow{diag}{calciteEq\_25C}{pH}{6.004}
+\goldrow{diag}{calciteEq\_25C}{chargeImposed}{1}
+\goldrow{diag}{calciteEq\_25C}{chargeResidual}{2.22179e-18}
 \end{tutgolden}
 
 \clearpage
@@ -1182,6 +1192,9 @@ NOTE on the two L\_phi columns: pitzer\_nacl.csv reports L\_phi\_fit and L\_phi\
 \goldrow{diag}{gamma\_nacl}{gamma\_pm\_1m}{0.6572}
 \goldrow{diag}{gamma\_nacl}{gamma\_pm\_3m}{0.7140}
 \goldrow{diag}{gamma\_nacl}{phi\_1m}{0.9363}
+\goldrow{diag}{gamma\_nacl}{Lphi\_AAD\_abs\_Jmol}{97.6414}
+\goldrow{diag}{gamma\_nacl}{Lphi\_AAD\_rel\_pct}{10.2355}
+\goldrow{diag}{gamma\_nacl}{Lphi\_nMeas}{29.0000}
 \end{tutgolden}
 
 \clearpage
@@ -1266,7 +1279,7 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing WITH carb
 \goldrow{diag}{seawater\_pitzer}{gamma\_HCO3}{0.659478}
 \goldrow{diag}{seawater\_pitzer}{m\_CO2aq}{1.4318e-05}
 \goldrow{diag}{seawater\_pitzer}{m\_CO3}{7.71637e-05}
-\goldmore{20}
+\goldmore{94}
 \end{tutgolden}
 
 \clearpage
@@ -1342,6 +1355,8 @@ to numerical noise. BEFORE the fix the HMW held its virials at 25 C and this cas
 \goldrow{diag}{kernel\_nacl\_100C}{gamma\_pm\_1m}{0.6221}
 \goldrow{diag}{kernel\_nacl\_100C}{gamma\_pm\_3m}{0.6760}
 \goldrow{diag}{kernel\_nacl\_100C}{phi\_1m}{0.9327}
+\goldrow{diag}{hmw\_nacl\_100C}{chargeImposed}{0.0000}
+\goldrow{diag}{hmw\_nacl\_100C}{chargeResidual}{-0.0000}
 \end{tutgolden}
 
 \clearpage
@@ -1438,7 +1453,7 @@ DATA SCOPE: the SPECIATION network is a complete case-local replace-mode snapsho
 \goldrow{diag}{seawater}{SI\_gypsum}{-0.687047}
 \goldrow{diag}{seawater}{SI\_halite}{-2.48552}
 \goldrow{diag}{seawater}{SI\_sylvite}{-3.51313}
-\goldmore{21}
+\goldmore{50}
 \end{tutgolden}
 
 \clearpage
@@ -1485,7 +1500,7 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing with the 
 \goldrow{diag}{scan\_davies}{SI\_halite\_rmax}{-0.45497}
 \goldrow{diag}{scan\_davies}{SI\_sylvite\_r0}{-3.3946}
 \goldrow{diag}{scan\_davies}{SI\_sylvite\_rmax}{-1.44942}
-\goldmore{33}
+\goldmore{192}
 \end{tutgolden}
 
 \clearpage
@@ -1528,7 +1543,7 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \goldrow{diag}{feed}{SI\_halite}{-5.35323}
 \goldrow{diag}{feed}{SI\_sylvite}{-6.39779}
 \goldrow{diag}{feed}{aw}{0.999302}
-\goldmore{36}
+\goldmore{193}
 \end{tutgolden}
 
 \clearpage
@@ -1575,6 +1590,7 @@ Diagnostics locked by the golden master: pH, I, m\_CO2aq, and the dissolved O2 /
 \goldrow{diag}{air10}{m\_CO2aq}{2.2591e-05}
 \goldrow{diag}{air10}{m\_OH}{1.04436e-09}
 \goldrow{diag}{air10}{pH}{5.55469}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -1625,7 +1641,7 @@ Speciation/mineral/gas data: case-local constant/electrolyte/ (self- contained S
 \goldrow{diag}{pin\_neutral}{aw}{1}
 \goldrow{diag}{pin\_neutral}{pH}{7}
 \goldrow{diag}{feed}{I}{0.0266002}
-\goldmore{40}
+\goldmore{244}
 \end{tutgolden}
 
 \clearpage
@@ -1671,7 +1687,7 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \goldrow{diag}{raw}{SI\_halite\_rmax}{-3.82475}
 \goldrow{diag}{raw}{SI\_sylvite\_r0}{-6.39779}
 \goldrow{diag}{raw}{SI\_sylvite\_rmax}{-4.87569}
-\goldmore{35}
+\goldmore{193}
 \end{tutgolden}
 
 \clearpage
@@ -1701,7 +1717,7 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \goldrow{diag}{acidulation\_pitzer}{m\_Ca}{0.397714}
 \goldrow{diag}{acidulation\_pitzer}{m\_H2Tart}{0.0656066}
 \goldrow{diag}{acidulation\_pitzer}{m\_HTart}{0.0314016}
-\goldmore{52}
+\goldmore{74}
 \end{tutgolden}
 
 \subsection{estimate}
@@ -1802,6 +1818,7 @@ Promote with the printed `mv`, then it FLASHES (see the sibling tutorial steady/
 \goldrow{diag}{estimate\_petroleum\_cut}{Vc\_cm3mol}{627.46}
 \goldrow{diag}{estimate\_petroleum\_cut}{Vliq298\_cm3mol}{203.43}
 \goldrow{diag}{estimate\_petroleum\_cut}{omega}{0.48}
+\goldrow{diag}{estimate\_petroleum\_cut}{Psat\_298\_bar}{0.00}
 \end{tutgolden}
 
 \clearpage
@@ -1878,6 +1895,8 @@ SOURCE + LICENCE: Yang, Zou, Ye, Zhu, Dong, Bi, ACS Omega 5 (2020) 19655, doi:10
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{yang2020\_Tg\_polystyrene}{M0\_g\_per\_mol}{104}
+\goldrow{diag}{yang2020\_Tg\_polystyrene}{Tg\_K}{444}
+\goldrow{diag}{yang2020\_Tg\_polystyrene}{YgSum\_1e3gKmol}{46.18}
 \end{tutgolden}
 
 \clearpage
@@ -2035,6 +2054,11 @@ The per-correlation deviation diags are the golden KPIs.
 \goldrow{diag}{bench}{dev\_DittusBoelter}{0.0220718}
 \goldrow{diag}{bench}{dev\_Gnielinski}{0.00118956}
 \goldrow{diag}{bench}{dev\_Kern}{0}
+\goldrow{diag}{bench}{dev\_NusseltFilm}{0.0245797}
+\goldrow{diag}{bench}{dev\_Rohsenow}{0.000270621}
+\goldrow{diag}{bench}{dev\_ZuberCHF}{0.000684704}
+\goldrow{diag}{bench}{h\_choupo\_NusseltFilm}{6680.26}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -2172,6 +2196,10 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \goldrow{diag}{ternary}{n\_points}{2}
 \goldrow{diag}{water\_hexane}{n\_failures}{0}
 \goldrow{diag}{water\_hexane}{n\_points}{2}
+\goldrow{diag}{pure\_water}{n\_emptyCurves}{0}
+\goldrow{diag}{bin\_wet}{n\_emptyCurves}{0}
+\goldrow{diag}{ternary}{n\_emptyCurves}{0}
+\goldrow{diag}{water\_hexane}{n\_emptyCurves}{0}
 \end{tutgolden}
 
 \clearpage
@@ -2271,7 +2299,7 @@ Three evaluations of the same dataset: 1. scaffold\_as\_is -- the inline pair, u
 \goldrow{diag}{rough\_paper\_values}{aad}{1.5942}
 \goldrow{diag}{rough\_paper\_values}{chi2}{61.7621}
 \goldrow{diag}{rough\_paper\_values}{max\_abs\_resid}{5.5866}
-\goldmore{19}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -2338,6 +2366,7 @@ the NON-ASSOCIATING PC-SAFT core, validated on a pure n-alkane. n-hexane's segme
 \goldrow{diag}{liquid\_298K\_1bar}{gamma}{1.06168e+00}
 \goldrow{diag}{liquid\_298K\_1bar}{v\_molar}{2.33649e-02}
 \goldrow{diag}{liquid\_298K\_1bar}{v\_molar\_liq}{1.32651e-04}
+\goldmore{1}
 \end{tutgolden}
 
 \clearpage
@@ -2372,7 +2401,7 @@ Three probes, all goldened: (1) CH4 vapour Z at 300 K / 50 bar -- PC-SAFT vs SRK
 \goldrow{diag}{CH4\_vapour\_pcsaft}{v\_molar}{4.55038e-04}
 \goldrow{diag}{CH4\_vapour\_srk}{Cp\_ig}{3.56607e+01}
 \goldrow{diag}{CH4\_vapour\_srk}{H\_R}{-8.31158e+02}
-\goldmore{38}
+\goldmore{42}
 \end{tutgolden}
 
 \clearpage
@@ -2415,7 +2444,7 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \goldrow{diag}{water\_liquid\_298K}{v\_molar}{2.23340e-02}
 \goldrow{diag}{ethanol\_liquid\_298K}{Cp\_ig}{6.54261e+01}
 \goldrow{diag}{ethanol\_liquid\_298K}{H\_R}{-4.01997e+03}
-\goldmore{12}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -2442,7 +2471,7 @@ The two ops publish the standard vapour-root family (Z, v\_molar) plus the label
 \goldrow{diag}{solubilityParameter\_0}{dev\_nHexane}{0.000736807}
 \goldrow{diag}{solubilityParameter\_0}{dev\_toluene}{0.003629}
 \goldrow{diag}{solubilityParameter\_0}{dev\_water}{0.00849075}
-\goldmore{5}
+\goldmore{6}
 \end{tutgolden}
 
 \subsection{reactor}
@@ -2484,7 +2513,7 @@ k = 40 1/s is a TEACHING VALUE chosen so the generalised modulus lands near 1 --
 \goldrow{diag}{thiele\_CO\_alumina}{eta}{6.65742e-01}
 \goldrow{diag}{thiele\_CO\_alumina}{eta\_closedForm}{6.65742e-01}
 \goldrow{diag}{thiele\_CO\_alumina}{eta\_flux}{6.65731e-01}
-\goldmore{16}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -2748,7 +2777,7 @@ Plus the working artefacts: the saturated-steam table 0.01-350 degC (saturation.
 \goldrow{diag}{r1\_T300\_p80MPa}{u}{0.106448356e3}
 \goldrow{diag}{r1\_T300\_p80MPa}{s}{0.368563852}
 \goldrow{diag}{r1\_T300\_p80MPa}{cp}{0.401008987e1}
-\goldmore{39}
+\goldmore{47}
 \end{tutgolden}
 
 \clearpage
@@ -2787,6 +2816,10 @@ The (rho,T) viscosity / conductivity kernels get their density from the IF97 the
 \goldrow{diag}{pin\_100C}{thermal\_conductivity}{0.6772}
 \goldrow{diag}{transport\_scan}{n\_points}{46}
 \goldrow{diag}{transport\_scan}{n\_failures}{0}
+\goldrow{diag}{pin\_25C}{Cp\_ig}{33.6596}
+\goldrow{diag}{pin\_25C}{H\_R}{0.0000}
+\goldrow{diag}{pin\_25C}{H\_ig}{-241826.0000}
+\goldmore{49}
 \end{tutgolden}
 
 \subsection{thermo}
@@ -2995,6 +3028,6 @@ The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg) r
 \goldrow{diag}{concentrate}{I\_rmax}{15.6285}
 \goldrow{diag}{concentrate}{SI\_anhydrite\_r0}{-0.22134}
 \goldrow{diag}{concentrate}{SI\_anhydrite\_rmax}{1.39807}
-\goldmore{13}
+\goldmore{26}
 \end{tutgolden}
 

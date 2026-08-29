@@ -15,3 +15,6 @@ kpi     flash01                p_eq_sum_atm     0.0415604200493    1e-4
 kpi     flash01                p_ethanol_atm    0.0111811211227    1e-4
 kpi     flash01                p_nButanol_atm   0.00389708966162   1e-4
 kpi     flash01                phaseSet         0                  1e-4
+stream  feed                   T                298.15           1e-4
+stream  liquid                 T                298.15           1e-4
+stream  vapor                  T                298.15           1e-4

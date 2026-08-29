@@ -16,3 +16,6 @@ kpi     turbine01              dT               -317.064793523     1e-4
 kpi     turbine01              dT_isen          -375.536146266     1e-4
 kpi     turbine01              eta_isen         0.85               1e-4
 kpi     turbine01              ratio            7.59133551538      1e-4
+stream  exhaust                T                582.935206477    1e-4
+stream  hotAir                 T                900              1e-4
+kpi     turbine01              W_shaft_kW       -10              1e-4

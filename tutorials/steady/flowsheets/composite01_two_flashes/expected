@@ -26,3 +26,17 @@ utility flash2                 heating.steamLP.duty_kW 97.3567463602      1e-4
 utility flash2                 heating.steamLP.T 373                1e-4
 utility flash2                 heating.steamLP.kg_s 0.0445364804941    1e-4
 utility flash2                 heating.steamLP.eur_h 4.20581144276      1e-4
+stream  bottoms                T                373              1e-4
+stream  feed                   T                365              1e-4
+stream  liquid1                F                0.0065614714677  1e-4
+stream  liquid1                T                370              1e-4
+stream  vapor1                 T                370              1e-4
+stream  vapor2                 T                373              1e-4
+kpi     flash1                 K_benzene        1.65136809583    1e-4
+kpi     flash1                 K_toluene        0.673501829388   1e-4
+kpi     flash1                 Q                686964.038241    1e-4
+kpi     flash1                 Q_kW             686.964038241    1e-4
+kpi     flash2                 K_benzene        1.79265553248    1e-4
+kpi     flash2                 K_toluene        0.73837734639    1e-4
+kpi     flash2                 Q                97356.7463602    1e-4
+kpi     flash2                 Q_kW             97.3567463602    1e-4

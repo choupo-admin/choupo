@@ -20,3 +20,10 @@ kpi     reactor                n_compA_final    2.47875217792e-06  1e-4
 kpi     reactor                n_compB_final    0.000997521247822  1e-4
 kpi     reactor                t_end            600                1e-4
 kpi     reactor                totalMoles_final 0.001              1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.001            1e-4
+kpi     campaign               moles_kmol_initial 0.001            1e-4
+kpi     campaign               utility_coolingWater_eur 1.99504249564e-05 1e-4
+kpi     campaign               utility_coolingWater_kJ 49.8760623911    1e-4
+kpi     campaign               utility_coolingWater_kg 1.19320723424    1e-4
+kpi     campaign               utility_cost_eur_total 1.99504249564e-05 1e-4

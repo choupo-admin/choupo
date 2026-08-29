@@ -20,3 +20,4 @@ diag    solubilityParameter_0  gap_max          33.4073            1e-4
 diag    solubilityParameter_0  gap_min          0.464396           1e-4
 diag    solubilityParameter_0  n_checked        7                  1e-4
 diag    solubilityParameter_0  n_derived        7                  1e-4
+diag    solubilityParameter_0  n_hansen         0                1e-4

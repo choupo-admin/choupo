@@ -17,3 +17,12 @@ utility decanter01             heating.steamLP.duty_kW 4.38784508636      1e-4
 utility decanter01             heating.steamLP.T 350                1e-4
 utility decanter01             heating.steamLP.kg_s 0.00200724843841   1e-4
 utility decanter01             heating.steamLP.eur_h 0.189554907731     1e-4
+stream  feed                   T                350              1e-4
+stream  liquidA                T                350              1e-4
+stream  liquidB                T                350              1e-4
+stream  vapor                  T                350              1e-4
+kpi     decanter01             K_compA          0.0139269291174  1e-4
+kpi     decanter01             K_compB          71.5379391853    1e-4
+kpi     decanter01             K_compC          0.999801630869   1e-4
+kpi     decanter01             Q                4387.84508636    1e-4
+kpi     decanter01             Q_kW             4.38784508636    1e-4

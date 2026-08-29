@@ -10,3 +10,6 @@ kpi     decanter01             P                101300             1e-4
 kpi     decanter01             T                320                1e-4
 kpi     decanter01             betaFraction         0.411953082867     1e-4
 kpi     decanter01             phaseSet         1                  1e-4
+stream  butanolRich            T                320              1e-4
+stream  feed                   T                320              1e-4
+stream  waterRich              T                320              1e-4

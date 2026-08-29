@@ -12,3 +12,13 @@ utility condenser              cooling.coolingWater.duty_kW -630.508868406     1
 utility condenser              cooling.coolingWater.T 367.494289759      1e-4
 utility condenser              cooling.coolingWater.kg_s 15.0839442202      1e-4
 utility condenser              cooling.coolingWater.eur_h 0.907932770504     1e-4
+stream  feedVapour             F                0.0277777777778  1e-4
+stream  feedVapour             T                390              1e-4
+stream  wetOut                 T                367.494289759    1e-4
+kpi     condenser              F                0.0277777777778  1e-4
+kpi     condenser              P                100000           1e-4
+kpi     condenser              Q                -630508.868406   1e-4
+kpi     condenser              Q_latent_kW      370.981855874    1e-4
+kpi     condenser              Q_sensible_kW    -1001.49072428   1e-4
+kpi     condenser              T_in             390              1e-4
+kpi     condenser              vf_in            0                1e-4

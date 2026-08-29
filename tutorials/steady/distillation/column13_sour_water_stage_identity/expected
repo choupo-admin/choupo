@@ -44,3 +44,11 @@ kpi     restage                H_residual       0.000529574463144 1e-4
 kpi     restage                T_drop           115.985556191    1e-4
 kpi     restage                T_feed           483.325341357    1e-4
 kpi     restage                T_out            367.339785165    1e-4
+stream  bottoms                T                371.482225858    1e-4
+stream  checkLiquid            T                367.339785165    1e-4
+stream  checkVapour            T                367.339785165    1e-4
+stream  distillate             T                354.631541425    1e-4
+stream  feed                   T                350              1e-4
+stream  stageLiquid            T                367.339784921    1e-4
+stream  stageMix               T                483.325341357    1e-4
+stream  stageVapour            T                367.339784921    1e-4

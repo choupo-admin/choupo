@@ -105,3 +105,11 @@ utility steamGenerator         power.electricity_(generated).duty_kW 48.5       
 utility steamGenerator         power.electricity_(generated).T -1                 1e-4
 utility steamGenerator         power.electricity_(generated).kg_s 0                  1e-4
 utility steamGenerator         power.electricity_(generated).eur_h -4.85388           1e-4
+stream  combustorFeed          T                600              1e-4
+stream  flueGasHot             T                1300             1e-4
+stream  gasFlueWarm            T                973.553626591    1e-4
+stream  gasTurbExhaust         T                1130.56081571    1e-4
+stream  heatedSteam            T                1129.43851689    1e-4
+stream  steamCondensate        T                899.419453058    1e-4
+stream  steamExhaust           T                1010.3292627     1e-4
+stream  steamFeed              T                400              1e-4

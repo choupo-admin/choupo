@@ -33,3 +33,6 @@ kpi     hot                    n_ethanol_final  0                1e-4
 kpi     hot                    n_water_final    0                1e-4
 kpi     hot                    t_end            200              1e-4
 kpi     hot                    totalMoles_final 0                1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.0015           1e-4
+kpi     campaign               moles_kmol_initial 0.0015           1e-4

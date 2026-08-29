@@ -13,3 +13,8 @@ kpi     node                   Q_kW             0                1e-4
 kpi     node                   T                273.15           1e-4
 kpi     node                   V_over_F         0.640778122112   1e-4
 kpi     node                   phaseSet         0                1e-4
+stream  feed                   T                273.15           1e-4
+stream  liq                    T                273.15           1e-4
+stream  vap                    T                273.15           1e-4
+kpi     node                   K_CH4            6.35200186422    1e-4
+kpi     node                   K_propane        0.31898768248    1e-4

@@ -25,3 +25,6 @@ kpi     cryst                  solute_in        1.4262375        1e-4
 kpi     cryst                  supersaturation  1.19063534005    1e-4
 kpi     cryst                  throughput       0.00130790277778 1e-4
 kpi     cryst                  yield            0.280589039381   1e-4
+stream  feed                   T                353.15           1e-4
+stream  magma                  T                293.15           1e-4
+kpi     cryst                  Q_kW             -269.5761605     1e-4

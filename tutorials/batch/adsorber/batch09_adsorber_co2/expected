@@ -26,3 +26,6 @@ kpi     campaign               mass_residual_kg 0                  1e-3
 kpi     campaign               transfers_H_invalid 0                  1e-4
 kpi     campaign               transfers_H_valid 0                  1e-4
 kpi     campaign               transfers_logged 0                  1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.002            1e-4
+kpi     campaign               moles_kmol_initial 0.002            1e-4

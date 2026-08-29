@@ -10,3 +10,10 @@ kpi     flash                  P                100000             1e-4
 kpi     flash                  T                370                1e-4
 kpi     flash                  V_over_F         0.30398357314      1e-4
 kpi     flash                  phaseSet         0                  1e-4
+stream  feed                   T                370              1e-4
+stream  liquid                 T                370              1e-4
+stream  vapor                  T                370              1e-4
+kpi     flash                  K_benzene        1.65136809583    1e-4
+kpi     flash                  K_toluene        0.673501829388   1e-4
+kpi     flash                  Q                0                1e-4
+kpi     flash                  Q_kW             0                1e-4

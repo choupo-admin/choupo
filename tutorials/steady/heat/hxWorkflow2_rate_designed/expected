@@ -38,3 +38,7 @@ kpi     hx                     h_inner          15868.6105569      1e-4
 kpi     hx                     h_outer          7434.15240391      1e-4
 kpi     hx                     nBaffles         15                 1e-4
 utility hx                     heating.-.unserved 1                  1e-4
+stream  coldOut                T                311.265188363    1e-4
+stream  coldTube               T                300              1e-4
+stream  hotOut                 T                314.980375215    1e-4
+stream  hotShell               T                330              1e-4

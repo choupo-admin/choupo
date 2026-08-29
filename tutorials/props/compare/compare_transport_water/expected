@@ -8,3 +8,7 @@ diag    k_iapws                n_failures       0                  1e-4
 diag    k_iapws                n_points         46                 1e-4
 diag    k_generic              n_failures       0                  1e-4
 diag    k_generic              n_points         46                 1e-4
+diag    mu_iapws               n_emptyCurves    0                1e-4
+diag    mu_generic             n_emptyCurves    0                1e-4
+diag    k_iapws                n_emptyCurves    0                1e-4
+diag    k_generic              n_emptyCurves    0                1e-4

@@ -19,3 +19,6 @@ utility flash01                heating.steamLP.duty_kW 284.075447071      1e-4
 utility flash01                heating.steamLP.T 372                1e-4
 utility flash01                heating.steamLP.kg_s 0.129952171579     1e-4
 utility flash01                heating.steamLP.eur_h 12.2720593135      1e-4
+stream  feed                   T                370              1e-4
+stream  liquid                 T                372              1e-4
+stream  vapor                  T                372              1e-4

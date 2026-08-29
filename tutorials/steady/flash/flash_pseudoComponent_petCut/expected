@@ -27,3 +27,7 @@ utility cooler01               cooling.coolingWater.duty_kW -30                1
 utility cooler01               cooling.coolingWater.T 405.894884539      1e-4
 utility cooler01               cooling.coolingWater.kg_s 0.717703349282     1e-4
 utility cooler01               cooling.coolingWater.eur_h 0.0432             1e-4
+stream  coldLiquid             T                405.894884539    1e-4
+stream  feed                   T                420              1e-4
+stream  liquid                 T                420              1e-4
+stream  vapor                  T                420              1e-4

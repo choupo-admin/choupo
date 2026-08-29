@@ -17,3 +17,5 @@ kpi     reactor                newtonResidual   8.32667268469e-16 1e-4
 kpi     reactor                steadyStates     3                1e-4
 kpi     reactor                tau_s            310.291329081    1e-4
 kpi     reactor                xi_esterification_etac_mol_per_s 0.13779537841    1e-4
+stream  feed                   T                300              1e-4
+stream  reactorOut             T                405.903598573    1e-4

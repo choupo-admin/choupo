@@ -37,3 +37,15 @@ utility Devolatiliser          heating.steamHP.duty_kW 2.19502758655      1e-4
 utility Devolatiliser          heating.steamHP.T 470                1e-4
 utility Devolatiliser          heating.steamHP.kg_s 0.00128064619985   1e-4
 utility Devolatiliser          heating.steamHP.eur_h 0.142237787608     1e-4
+stream  condensate             T                470              1e-4
+stream  condensateRecycle      T                470              1e-4
+stream  freshMonomer           T                450              1e-4
+stream  overhead               T                470              1e-4
+stream  polymerMelt            T                470              1e-4
+stream  reactorFeed            T                450              1e-4
+stream  reactorOut             T                450              1e-4
+kpi     Devolatiliser          K_hydroxyhexanoicAcid 0.907935678111   1e-4
+kpi     Devolatiliser          K_pclRepeat      0.0420638229653  1e-4
+kpi     Devolatiliser          K_water          107.337073481    1e-4
+kpi     Reactor                Q_kW             -50.8247774967   1e-4
+kpi     Reactor                dHrxn_kJ_per_mol -186.598072896   1e-4

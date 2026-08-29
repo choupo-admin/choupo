@@ -18,3 +18,9 @@ kpi     mhx                    imbalance        0                1e-4
 kpi     mhx                    imbalance_kW     0                1e-4
 kpi     mhx                    nStreams         3                1e-4
 kpi     mhx                    relImbalance     0                1e-4
+stream  cold                   T                300              1e-4
+stream  coldOut                T                320              1e-4
+stream  hot1                   T                380              1e-4
+stream  hot1Out                T                330              1e-4
+stream  hot2                   T                360              1e-4
+stream  hot2Out                T                330              1e-4

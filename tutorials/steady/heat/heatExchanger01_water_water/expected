@@ -20,3 +20,7 @@ kpi     hx                     UA               5000               1e-4
 kpi     hx                     area             10                 1e-4
 kpi     hx                     effectiveness    0.745370092566     1e-4
 utility hx                     heating.-.unserved 1                  1e-4
+stream  cold                   T                300              1e-4
+stream  coldOut                T                337.268504628    1e-4
+stream  hot                    T                360              1e-4
+stream  hotOut                 T                315.277794446    1e-4

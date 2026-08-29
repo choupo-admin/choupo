@@ -19,3 +19,6 @@ kpi     reactor                n_compB_final    0.00062233453082   1e-4
 kpi     reactor                n_compC_final    0.00937766241016   1e-4
 kpi     reactor                t_end            1500               1e-4
 kpi     reactor                totalMoles_final 0.01               1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.01             1e-4
+kpi     campaign               moles_kmol_initial 0.01             1e-4

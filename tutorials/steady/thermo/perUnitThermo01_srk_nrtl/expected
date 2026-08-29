@@ -41,3 +41,7 @@ utility flash                  cooling.coolingWater.duty_kW -413.177313739     1
 utility flash                  cooling.coolingWater.T 353                1e-4
 utility flash                  cooling.coolingWater.kg_s 9.88462473059      1e-4
 utility flash                  cooling.coolingWater.eur_h 0.594975331784     1e-4
+stream  expanded               T                425.796533401    1e-4
+stream  feed                   T                430              1e-4
+stream  liquid                 T                353              1e-4
+stream  vapor                  T                353              1e-4

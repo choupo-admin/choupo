@@ -23,3 +23,7 @@ kpi     cryst                  soluteInCake_mass 0.000378188685576 1e-4
 kpi     cryst                  solute_dissolved 0.0382128216988  1e-4
 kpi     cryst                  solute_in        0.163598027778   1e-4
 kpi     cryst                  yield            0.766422479428   1e-4
+stream  brine                  T                298.15           1e-4
+stream  crystals               T                298.15           1e-4
+stream  ethanol                T                298.15           1e-4
+stream  motherLiquor           T                298.15           1e-4

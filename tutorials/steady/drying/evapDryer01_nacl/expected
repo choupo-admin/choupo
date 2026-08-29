@@ -13,3 +13,7 @@ kpi     dryer                  drySolid_flow    0.324666666667   1e-4
 kpi     dryer                  exhaust_humidity 0.0392946211155  1e-4
 kpi     dryer                  moisture_pct_wb  0                1e-4
 kpi     dryer                  water_removed    0.0750625        1e-4
+stream  drySolid               T                360.675490975    1e-4
+stream  hotGas                 T                400              1e-4
+stream  humidExhaust           T                360.675490975    1e-4
+stream  wetSolid               T                298.15           1e-4

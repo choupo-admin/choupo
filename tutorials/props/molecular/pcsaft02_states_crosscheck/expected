@@ -53,3 +53,7 @@ diag    nButane_liquid         Z_liquid         2.05151e-02        1e-4
 diag    nButane_liquid         gamma            1.09236e+00        1e-4
 diag    nButane_liquid         v_molar          4.24792e-03        1e-4
 diag    nButane_liquid         v_molar_liq      1.01712e-04        1e-4
+diag    CH4_vapour_pcsaft      molarVolume      4.55038e-04      1e-4
+diag    CH4_vapour_srk         molarVolume      4.61102e-04      1e-4
+diag    propane_liquid         molarVolume      1.16642e-03      1e-4
+diag    nButane_liquid         molarVolume      4.24792e-03      1e-4

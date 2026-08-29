@@ -52,3 +52,13 @@ kpi     HPFlash                K_benzene        0.00915181037615 1e-4
 kpi     HPFlash                K_toluene        0.00306261662294 1e-4
 kpi     Reactor                Q_reaction_kW    -1338.38165111   1e-4
 kpi     Reactor                Q_sensible_kW    20061.8572552    1e-4
+stream  Benzene                T                320              1e-4
+stream  Effluent               T                900              1e-4
+stream  H2Makeup               T                300              1e-4
+stream  H2Recycle              T                320              1e-4
+stream  Purge                  T                320              1e-4
+stream  TolueneFeed            T                300              1e-4
+stream  TolueneRecycle         T                320              1e-4
+stream  hpLiquid               T                320              1e-4
+stream  hpVapor                T                320              1e-4
+stream  mixed                  T                330              1e-4

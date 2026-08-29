@@ -18,3 +18,7 @@ kpi     cyclone                rho_particle     2650             1e-4
 kpi     cyclone                solidsCaptured_mass 0.546629155467   1e-4
 kpi     cyclone                solidsEscaped_mass 0.00892640010141 1e-4
 kpi     cyclone                solidsIn_mass    0.555555555568   1e-4
+stream  capturedSolids         T                300              1e-4
+stream  cleanGas               T                300              1e-4
+stream  feed                   T                300              1e-4
+kpi     cyclone                Q_gas            1.02571699975    1e-4

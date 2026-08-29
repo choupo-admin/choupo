@@ -41,3 +41,10 @@ kpi     separator              K_aceticAcid     0.413220690893   1e-4
 kpi     separator              K_ethanol        1.6355567812     1e-4
 kpi     separator              K_ethylAcetate   1.56116136618    1e-4
 kpi     separator              K_water          0.73861136812    1e-4
+stream  freshFeed              T                350              1e-4
+stream  liqOut                 T                364              1e-4
+stream  liqProd                T                364              1e-4
+stream  mixed                  T                354.512898558    1e-4
+stream  reactorOut             T                354.512898558    1e-4
+stream  recycle                T                364              1e-4
+stream  vapProd                T                364              1e-4

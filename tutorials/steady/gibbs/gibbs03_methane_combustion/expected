@@ -20,3 +20,6 @@ kpi     burner                 y_H2             0.000448418778019 1e-4
 kpi     burner                 y_N2             0.714354890974   1e-4
 kpi     burner                 y_O2             0.000522766522573 1e-4
 kpi     burner                 y_water          0.18963314288    1e-4
+stream  feed                   T                1800             1e-4
+stream  flueGas                T                1800             1e-4
+kpi     burner                 Q_kW             -220.358726449   1e-4

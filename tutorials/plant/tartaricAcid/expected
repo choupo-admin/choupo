@@ -28,3 +28,10 @@ kpi     R2                     F_out_kmol_h     3395.76          1e-4
 kpi     R2                     T                329.254033574    1e-4
 kpi     R2                     conversion       0.97             1e-4
 kpi     R2                     extent_kmol_h    92.8872          1e-4
+stream  acidFeed               T                329.254033574    1e-4
+stream  bitartrate             T                333              1e-4
+stream  lime                   T                333              1e-4
+stream  precipOut              T                333              1e-4
+stream  product                T                329.254033574    1e-4
+stream  slurry                 T                333              1e-4
+stream  sulfuric               T                313              1e-4

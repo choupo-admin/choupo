@@ -23,3 +23,5 @@ diag    eval_13x_co2           gate_twin        1.000e+00          1e-6
 diag    eval_13x_co2           gates_pass       1.000e+00          1e-6
 diag    eval_13x_co2           n_T              3.000e+00          1e-6
 diag    eval_13x_co2           n_p              4.000e+00          1e-6
+diag    eval_13x_co2           gate_pin_dev     0.000e+00        1e-4
+diag    eval_13x_co2           gate_twin_maxdev 2.217e-16        1e-4

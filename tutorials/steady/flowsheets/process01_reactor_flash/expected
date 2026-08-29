@@ -33,3 +33,7 @@ utility separator              heating.steamLP.duty_kW 4.98208847309      1e-4
 utility separator              heating.steamLP.T 365                1e-4
 utility separator              heating.steamLP.kg_s 0.00227908896299   1e-4
 utility separator              heating.steamLP.eur_h 0.215226222038     1e-4
+stream  feed                   T                350              1e-4
+stream  liqProd                T                365              1e-4
+stream  reactorOut             T                350              1e-4
+stream  vapProd                T                365              1e-4

@@ -28,3 +28,11 @@ kpi     cryst                  n_sucrose_final  2.97886150239    1e-4
 kpi     cryst                  n_water_final    27.75132         1e-4
 kpi     cryst                  t_end            10800            1e-4
 kpi     cryst                  totalMoles_final 30.7301815024    1e-4
+kpi     campaign               energy_H_external_kJ 0                1e-4
+kpi     campaign               energy_Q_ledger_kJ -2932.13047331   1e-4
+kpi     campaign               energy_closure_rel 1.82948567578e-11 1e-4
+kpi     campaign               energy_dH_vessels_kJ -2932.13047336   1e-4
+kpi     campaign               energy_residual_kJ 5.36429070053e-08 1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 31.4             1e-4
+kpi     campaign               moles_kmol_initial 31.4             1e-4

@@ -14,3 +14,6 @@ kpi     flash01                pH               7.35672525831      1e-4
 kpi     flash01                p_eq_sum_atm     0.032687682758     1e-4
 kpi     flash01                p_nButanol_atm   0.00579877206855   1e-4
 kpi     flash01                phaseSet         0                  1e-4
+stream  feed                   T                298.15           1e-4
+stream  liquid                 T                298.15           1e-4
+stream  vapor                  T                298.15           1e-4

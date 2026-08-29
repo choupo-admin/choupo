@@ -26,3 +26,6 @@ kpi     cryst                  solute_in        0.161846333333   1e-4
 kpi     cryst                  supersaturation  1.09633214957    1e-4
 kpi     cryst                  throughput       0.00142690058333 1e-4
 kpi     cryst                  yield            0.572956175887   1e-4
+stream  brine                  T                298.15           1e-4
+stream  ethanol                T                298.15           1e-4
+stream  magma                  T                298.15           1e-4

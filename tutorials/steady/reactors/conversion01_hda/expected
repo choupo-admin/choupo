@@ -11,3 +11,5 @@ kpi     reactor                dHrxn_kJ_per_mol -48.3683482303   1e-4
 kpi     reactor                extent_kmol_h    75               1e-4
 kpi     reactor                Q_reaction_kW    -1007.67392146   1e-4
 kpi     reactor                Q_sensible_kW    0                1e-4
+stream  feed                   T                900              1e-4
+stream  product                T                900              1e-4

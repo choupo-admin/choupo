@@ -32,3 +32,12 @@ kpi     vessel                 recovery_elem4   0.394243113802   1e-4
 kpi     vessel                 recovery_elem5   0.476339610256   1e-4
 kpi     vessel                 recovery_elem6   0.550981974774   1e-4
 kpi     vessel                 water_recovery   0.550981974774   1e-4
+stream  feed                   T                298.15           1e-4
+stream  permeate               T                298.15           1e-4
+stream  retentate              T                298.15           1e-4
+kpi     vessel                 LSI_calcite_bulk_end 0.610182366759   1e-4
+kpi     vessel                 LSI_calcite_wall_end 0.900649457654   1e-4
+kpi     vessel                 RSI_calcite_wall_end 5.19870108469    1e-4
+kpi     vessel                 StiffDavis_calcite_wall_end 0.660373275997   1e-4
+kpi     vessel                 mass_closure_rel 5.06742735917e-16 1e-4
+kpi     vessel                 maxLSI_calcite_wall 0.900649457654   1e-4

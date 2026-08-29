@@ -25,3 +25,6 @@ utility tower                  cooling.coolingWater.duty_kW -51.4325432244     1
 utility tower                  cooling.coolingWater.T 355.393273713      1e-4
 utility tower                  cooling.coolingWater.kg_s 1.23044361781      1e-4
 utility tower                  cooling.coolingWater.eur_h 0.0740628622432    1e-4
+stream  bottoms                T                370.531146763    1e-4
+stream  distillate             T                355.393273713    1e-4
+stream  feed                   T                360              1e-4

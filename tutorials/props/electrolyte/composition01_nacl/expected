@@ -9,3 +9,5 @@ diag    naclWater              gamma_Na         1.01683            1e-4
 diag    naclWater              m_Cl             2                  1e-4
 diag    naclWater              m_Na             2                  1e-4
 diag    naclWater              pH               7.13303            1e-4
+diag    naclWater              chargeImposed    1                1e-4
+diag    naclWater              chargeResidual   -6.39009e-17     1e-4

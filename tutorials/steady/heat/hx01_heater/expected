@@ -14,3 +14,6 @@ utility heater01               heating.steamLP.duty_kW 100                1e-4
 utility heater01               heating.steamLP.T 338.338658146      1e-4
 utility heater01               heating.steamLP.kg_s 0.0457456541629    1e-4
 utility heater01               heating.steamLP.eur_h 4.32               1e-4
+stream  feed                   T                300              1e-4
+stream  hotStream              T                338.338658146    1e-4
+kpi     heater01               vf_out           0                1e-4

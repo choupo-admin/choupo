@@ -40,3 +40,6 @@ stream  ipaRecycle             isopropanol      0.579745774059     1e-4
 stream  ipaRecycle             water            0.419568067302     1e-4
 stream  waterProduct           isopropanol      0.0129281878815    1e-4
 stream  waterProduct           water            0.987071195419     1e-4
+stream  B1                     T                370              1e-4
+stream  ipaRecycle             T                355.832266988    1e-4
+stream  waterProduct           T                366.174785539    1e-4

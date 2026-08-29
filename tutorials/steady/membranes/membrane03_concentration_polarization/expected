@@ -9,3 +9,6 @@ kpi     ROunit                 R_obs_NaCl       0.998356903981     1e-4
 kpi     ROunit                 dP_feed          200000             1e-4
 kpi     ROunit                 mass_closure_rel 3.01635071855e-16  1e-4
 kpi     ROunit                 water_recovery   0.191065881266     1e-4
+stream  feed                   T                298.15           1e-4
+stream  permeate               T                298.15           1e-4
+stream  retentate              T                298.15           1e-4

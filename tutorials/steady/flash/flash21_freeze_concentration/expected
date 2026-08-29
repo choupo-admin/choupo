@@ -17,3 +17,6 @@ kpi     freezer01              a_water          0.857434120931     1e-4
 kpi     freezer01              phaseSet         0                  1e-4
 kpi     freezer01              solidFraction    0.475994623251     1e-4
 utility freezer01              cooling.-.unserved 1                  1e-4
+stream  feed                   T                298.15           1e-4
+stream  liquor                 T                258.15           1e-4
+stream  vent                   T                258.15           1e-4

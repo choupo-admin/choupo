@@ -19,3 +19,8 @@ utility column07               heating.steamLP.T 296.58946842       1e-4
 utility column07               heating.steamLP.kg_s 4.28836884527      1e-4
 utility column07               heating.steamLP.eur_h 404.972969577      1e-4
 utility column07               cooling.condenser.unserved 1                  1e-4
+stream  bottoms                F                0.333333333333   1e-4
+stream  bottoms                T                296.58946842     1e-4
+stream  distillate             F                0.0833333333333  1e-4
+stream  distillate             T                272.658743462    1e-4
+stream  feed                   T                272.04           1e-4

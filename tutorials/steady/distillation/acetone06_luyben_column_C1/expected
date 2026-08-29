@@ -42,3 +42,6 @@ stream  acetoneProduct         acetone          0.973123011145     1e-4
 stream  acetoneProduct         water            0.0268769883467    1e-4
 stream  B1                     acetone          0.0213780788578    1e-4
 stream  B1                     isopropanol      0.0949714312657    1e-4
+stream  B1                     T                353.606283382    1e-4
+stream  F1                     T                325              1e-4
+stream  acetoneProduct         T                329.375048712    1e-4

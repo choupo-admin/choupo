@@ -15,3 +15,4 @@ diag    liquid_298K_1bar       Z_liquid         5.35107e-03        1e-4
 diag    liquid_298K_1bar       gamma            1.06168e+00        1e-4
 diag    liquid_298K_1bar       v_molar          2.33649e-02        1e-4
 diag    liquid_298K_1bar       v_molar_liq      1.32651e-04        1e-4
+diag    liquid_298K_1bar       molarVolume      2.33649e-02      1e-4

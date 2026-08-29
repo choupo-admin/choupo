@@ -34,3 +34,5 @@ diag    scaffold_again         partial          0.0000             1e-4
 diag    scaffold_again         penalised_points 0.0000             1e-4
 diag    scaffold_again         rms              2.3393             1e-4
 diag    scaffold_again         sse              60.1945            1e-4
+diag    scaffold_as_is         validity_declared 0.0000           1e-4
+diag    scaffold_again         validity_declared 0.0000           1e-4

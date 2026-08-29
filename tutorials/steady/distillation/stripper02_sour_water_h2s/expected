@@ -43,3 +43,6 @@ csv     reports/unitOperations/tower/profile.csv  7:pH        7.6090598    1e-4
 csv     reports/unitOperations/tower/profile.csv  7:m_HS      0.28854884   1e-4
 csv     reports/unitOperations/tower/profile.csv  7:m_HCO3    5.6325275e-06 1e-4
 csv     reports/unitOperations/tower/profile.csv  7:m_H2Saq   0.008247863  1e-4
+stream  bottoms                T                372.031545213    1e-4
+stream  distillate             T                356.430868413    1e-4
+stream  feed                   T                360              1e-4

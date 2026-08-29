@@ -18,3 +18,14 @@ kpi     reactor                n_compA_final    0.0117959393424    1e-4
 kpi     reactor                n_compB_final    0.000204060657576  1e-4
 kpi     reactor                F_in_final       5e-05              1e-4
 kpi     reactor                t_end            15000              1e-4
+kpi     JacketStep             PV_final         0                1e-4
+kpi     balance                energy_balance_available 0                1e-4
+kpi     balance                mass_closure_rel 9.91527847481e-14 1e-4
+kpi     balance                mass_kg_final    0.36             1e-4
+kpi     balance                mass_kg_in_cum   22.5             1e-4
+kpi     balance                mass_kg_initial  0.36             1e-4
+kpi     balance                mass_kg_out_cum  22.5             1e-4
+kpi     balance                mass_residual_kg 2.23093765683e-12 1e-4
+kpi     balance                material_available 1                1e-4
+kpi     reactor                z_in_compA_final 1                1e-4
+kpi     reactor                z_in_compB_final 0                1e-4

@@ -10,3 +10,6 @@ kpi     separator              solidsCaptured_mass 0.0124999999995  1e-4
 kpi     separator              solidsEscaped_mass 0.00138888888884 1e-4
 kpi     separator              solidsIn_mass    0.0138888888884  1e-4
 kpi     separator              solidsRecovery   0.9              1e-4
+stream  capturedSolids         T                300              1e-4
+stream  cleanGas               T                300              1e-4
+stream  feed                   T                300              1e-4

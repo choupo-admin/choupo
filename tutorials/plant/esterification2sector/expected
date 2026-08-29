@@ -9,3 +9,7 @@ utility SEPARATION.flash       cooling.coolingWater.duty_kW -229.173881338   1e-
 utility SEPARATION.flash       cooling.coolingWater.T 355              1e-4
 utility SEPARATION.flash       cooling.coolingWater.kg_s 5.48262874014    1e-4
 utility SEPARATION.flash       cooling.coolingWater.eur_h 0.330010389127   1e-4
+stream  Feed                   T                360              1e-4
+stream  liquid                 T                355              1e-4
+stream  reactorOut             T                360              1e-4
+stream  vapor                  T                355              1e-4

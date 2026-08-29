@@ -49,3 +49,4 @@ diag    thiele_CO_alumina      refinement_finestRelDeviation 1.34497e-06 1e-3
 diag    thiele_CO_alumina      gate_field             1.000e+00          1e-6
 diag    thiele_CO_alumina      gate_eta               1.000e+00          1e-6
 diag    thiele_CO_alumina      gates_pass             1.000e+00          1e-6
+diag    thiele_CO_alumina      newton_residual  3.35917e-15      1e-4

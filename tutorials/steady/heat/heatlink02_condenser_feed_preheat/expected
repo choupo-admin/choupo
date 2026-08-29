@@ -33,3 +33,8 @@ utility column01               heating.steamLP.kg_s 0.844659788448     1e-4
 utility column01               heating.steamLP.eur_h 79.765616054       1e-4
 utility column01               cooling.condenser.unserved 1                  1e-4
 utility preheater              heating.-.unserved 1                  1e-4
+stream  bottoms                T                365.99791143     1e-4
+stream  coldFeed               T                320              1e-4
+stream  distillate             T                353.771511565    1e-4
+stream  warmFeed               T                346.29535675     1e-4
+kpi     preheater              vf_out           0                1e-4

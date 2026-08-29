@@ -61,3 +61,13 @@ utility recovery               cooling.coolingWater.duty_kW -2776.01469262     1
 utility recovery               cooling.coolingWater.T 351.369759441      1e-4
 utility recovery               cooling.coolingWater.kg_s 66.4118347516      1e-4
 utility recovery               cooling.coolingWater.eur_h 3.99746115737      1e-4
+stream  KCl_cake               T                278.15           1e-4
+stream  KHT_cake               T                278.15           1e-4
+stream  feed                   T                323.15           1e-4
+stream  finalLiquor            T                278.15           1e-4
+stream  freshEthanol           T                298.15           1e-4
+stream  liquor1                T                278.15           1e-4
+stream  recoveredEthanol       T                351.329374323    1e-4
+stream  stillage               T                358.019009224    1e-4
+kpi     recovery               nFeeds           1                1e-4
+kpi     recovery               nSideDraws       0                1e-4

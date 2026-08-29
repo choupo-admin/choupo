@@ -39,3 +39,8 @@ utility generator              power.electricity_(generated).duty_kW 9.7        
 utility generator              power.electricity_(generated).T -1                 1e-4
 utility generator              power.electricity_(generated).kg_s 0                  1e-4
 utility generator              power.electricity_(generated).eur_h -0.970776          1e-4
+stream  cooled                 T                388.087132342    1e-4
+stream  exhaust                T                530.878445241    1e-4
+stream  feedSteam              T                800              1e-4
+kpi     cooler                 vf_out           1                1e-4
+kpi     steamTurbine           W_shaft_kW       -10              1e-4

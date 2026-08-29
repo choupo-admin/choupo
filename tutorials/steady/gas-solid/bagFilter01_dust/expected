@@ -15,3 +15,6 @@ kpi     baghouse               rho_gas          1.13794383208    1e-4
 kpi     baghouse               solidsCaptured_mass 0.0138796420244  1e-4
 kpi     baghouse               solidsEscaped_mass 9.24686396528e-06 1e-4
 kpi     baghouse               solidsIn_mass    0.0138888888884  1e-4
+stream  capturedSolids         T                300              1e-4
+stream  cleanGas               T                300              1e-4
+stream  feed                   T                300              1e-4

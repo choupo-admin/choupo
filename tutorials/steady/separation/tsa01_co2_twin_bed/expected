@@ -12,3 +12,14 @@ kpi     co2tsa                 Q_sensible_per_cycle_kJ 276.0             1e-8
 kpi     co2tsa                 Q_desorption_per_cycle_kJ 37.5            1e-8
 kpi     co2tsa                 Q_regeneration_kW 1.045              1e-8
 kpi     co2tsa                 Q_adsorption_cooling_kW -1.045       1e-8
+stream  cleanHe                T                298              1e-4
+stream  feed                   T                298              1e-4
+stream  regenerationGas        T                298              1e-4
+kpi     co2tsa                 Dq_He            0                1e-4
+kpi     co2tsa                 mAdsPerColumn_kg 3                1e-4
+kpi     co2tsa                 purgeRatio       0.1              1e-4
+kpi     co2tsa                 q_ads_CO2        0.412844036697   1e-4
+kpi     co2tsa                 q_ads_He         0                1e-4
+kpi     co2tsa                 q_regen_CO2      0.00468801775073 1e-4
+kpi     co2tsa                 q_regen_He       0                1e-4
+kpi     co2tsa                 tCycle_s         300              1e-4

@@ -27,3 +27,15 @@ kpi     NF_NaCl                R_obs_MgSO4      1                1e-4
 kpi     NF_NaCl                R_obs_NaCl       0.54956131713    1e-4
 kpi     NF_NaCl                dP_feed          100000           1e-4
 kpi     NF_NaCl                water_recovery   0.37489362907    1e-4
+stream  feed_CaCl2             T                298.15           1e-4
+stream  feed_MgSO4             T                298.15           1e-4
+stream  feed_NaCl              T                298.15           1e-4
+stream  perm_CaCl2             T                298.15           1e-4
+stream  perm_MgSO4             T                298.15           1e-4
+stream  perm_NaCl              T                298.15           1e-4
+stream  ret_CaCl2              T                298.15           1e-4
+stream  ret_MgSO4              T                298.15           1e-4
+stream  ret_NaCl               T                298.15           1e-4
+kpi     NF_CaCl2               mass_closure_rel 0                1e-4
+kpi     NF_MgSO4               mass_closure_rel 2.21746332086e-16 1e-4
+kpi     NF_NaCl                mass_closure_rel 6.65444774438e-16 1e-4

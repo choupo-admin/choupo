@@ -95,3 +95,14 @@ kpi     effect3                duty             728407.456304      1e-4
 kpi     effect3                duty_kW          728.407456304      1e-4
 kpi     effect3                economy          1.06175111967      1e-4
 kpi     effect3                molality         3.70378874921      1e-4
+stream  L1to2                  T                366.865476239    1e-4
+stream  L2to3                  T                350.807421767    1e-4
+stream  V1                     T                366.865476239    1e-4
+stream  V2                     T                350.807421767    1e-4
+stream  V3                     T                324.899418002    1e-4
+stream  cond1                  T                387.2590305      1e-4
+stream  cond2                  T                366.865476239    1e-4
+stream  cond3                  T                350.807421767    1e-4
+stream  feed                   T                294              1e-4
+stream  liveSteam              T                387.2590305      1e-4
+stream  productConc            T                324.899418002    1e-4

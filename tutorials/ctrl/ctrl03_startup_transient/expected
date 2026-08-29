@@ -5,3 +5,14 @@ kpi     reactor                T_final          320.759374011      1e-4
 kpi     reactor                n_compA_final    0.0117988900072    1e-4
 kpi     reactor                n_compB_final    0.000201109992805  1e-4
 kpi     reactor                t_end            1000               1e-4
+kpi     balance                energy_balance_available 0                1e-4
+kpi     balance                mass_closure_rel 1.77265609598e-14 1e-4
+kpi     balance                mass_kg_final    0.36             1e-4
+kpi     balance                mass_kg_in_cum   1.5              1e-4
+kpi     balance                mass_kg_initial  0.36             1e-4
+kpi     balance                mass_kg_out_cum  1.5              1e-4
+kpi     balance                mass_residual_kg -2.65898414398e-14 1e-4
+kpi     balance                material_available 1                1e-4
+kpi     reactor                F_in_final       5e-05            1e-4
+kpi     reactor                z_in_compA_final 1                1e-4
+kpi     reactor                z_in_compB_final 0                1e-4

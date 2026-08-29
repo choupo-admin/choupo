@@ -19,3 +19,6 @@ kpi     h2psa                  selectivity_CO2_H2 93.5739694799      1e-4
 kpi     h2psa                  selectivity_CO_H2 1.97470547364      1e-4
 kpi     h2psa                  selectivity_N2_H2 0.530379067687     1e-4
 kpi     h2psa                  tailgas_purity_CO2 0.377353611112     1e-4
+stream  feed                   T                313              1e-4
+stream  hydrogen               T                313              1e-4
+stream  tailgas                T                313              1e-4

@@ -4,3 +4,5 @@
 # teaching point of this case (cf. yang2020_Tg_pvc, where Tg IS validated).
 # kind   name      key         expected        reltol
 diag    yang2020_Tg_polystyrene M0_g_per_mol     104                1e-4
+diag    yang2020_Tg_polystyrene Tg_K             444              1e-4
+diag    yang2020_Tg_polystyrene YgSum_1e3gKmol   46.18            1e-4

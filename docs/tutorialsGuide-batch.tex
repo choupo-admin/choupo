@@ -42,7 +42,7 @@ The run must reproduce these to the golden tolerances -- an independent analytic
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
-\goldmore{9}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -80,7 +80,7 @@ The golden pins the COMPETITIVE path: get the shared denominator wrong and every
 \goldrow{kpi}{adsorber}{uptake\_N2\_mol}{0.7728183086}
 \goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{element\_N\_closure\_rel}{0}
-\goldmore{13}
+\goldmore{16}
 \end{tutgolden}
 
 \clearpage
@@ -118,7 +118,7 @@ The pedagogical point the closed vessel adds over the fixed-q$\ast$ packet formu
 \goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
-\goldmore{9}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -288,6 +288,14 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{0}
 \goldrow{kpi}{bed}{physical\_mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
+\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{0}
+\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{0}
+\goldrow{kpi}{bed}{P\_final}{99946.6820773}
+\goldrow{kpi}{bed}{T\_final}{298.15}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{106.12034902}
+\goldrow{kpi}{bed}{gasInventory\_mol}{0.0806360746763}
+\goldrow{kpi}{bed}{n\_He\_final}{8.06360746763e-05}
+\goldmore{22}
 \end{tutgolden}
 
 \clearpage
@@ -314,7 +322,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.162173202362}
 \goldrow{kpi}{campaign}{mass\_residual\_kg}{2.24687671715e-05}
 \goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403339312462}
-\goldmore{52}
+\goldmore{53}
 \end{tutgolden}
 
 \clearpage
@@ -340,7 +348,7 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{92.4181379529}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{3028.46636949}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{1.84877618489e-14}
-\goldmore{38}
+\goldmore{39}
 \end{tutgolden}
 
 \clearpage
@@ -428,7 +436,7 @@ Adiabatic means NO energy record: nothing is exchanged with the environment; the
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{140.405462904}
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{96.8395014859}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{2850.55000879}
-\goldmore{35}
+\goldmore{37}
 \end{tutgolden}
 
 \clearpage
@@ -468,7 +476,7 @@ Breakthrough crossings/integral freeze at the switch (they describe the load ste
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.521236595}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{1312.9982971}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{3.75114008529e-15}
-\goldmore{37}
+\goldmore{39}
 \end{tutgolden}
 
 \clearpage
@@ -510,7 +518,7 @@ The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md section 6): 
 \goldrow{kpi}{bed}{T\_out\_final\_K}{312.299755078}
 \goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.890450653484}
 \goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.41868747253e-11}
-\goldmore{42}
+\goldmore{44}
 \end{tutgolden}
 
 \clearpage
@@ -548,7 +556,7 @@ The A6 QUESTION this case makes visible (and does not yet verdict): does the bed
 \goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.3911997653}
 \goldrow{kpi}{bed}{integral\_anchor\_CO2}{1312.99822496}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{6.54546762708e-14}
-\goldmore{37}
+\goldmore{43}
 \end{tutgolden}
 
 \clearpage
@@ -707,6 +715,8 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \goldrow{kpi}{bomb}{n\_water\_final}{1.05706749995e-05}
 \goldrow{kpi}{bomb}{t\_end}{0.0002}
 \goldrow{kpi}{bomb}{totalMoles\_final}{4.57220738612e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{6.76051276934e-15}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -783,6 +793,8 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \goldrow{kpi}{bomb}{n\_water\_final}{6.00759209227e-06}
 \goldrow{kpi}{bomb}{t\_end}{0.0003}
 \goldrow{kpi}{bomb}{totalMoles\_final}{2.22501764671e-05}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{3.43861059252e-15}
+\goldmore{17}
 \end{tutgolden}
 
 \clearpage
@@ -815,7 +827,7 @@ solver \{ integrator Rosenbrock23; \} -- the L-stable stiff method. Swap to RK4 
 \goldrow{kpi}{postflame}{n\_N\_final}{2.26160617192e-14}
 \goldrow{kpi}{postflame}{n\_O2\_final}{3.06851934926e-07}
 \goldrow{kpi}{postflame}{n\_OH\_final}{2.0389175016e-08}
-\goldmore{4}
+\goldmore{24}
 \end{tutgolden}
 
 \subsection{crystallisation}
@@ -1059,7 +1071,7 @@ The simulator integrates dn\_A/dt = -k $\cdot$ (n\_A / V) $\cdot$ V = -k n\_A wi
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{0}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{4.5240474843e-16}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
-\goldmore{20}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -1125,6 +1137,13 @@ Constant-Cp here (polynomial degree 0 for both ethanol and water in the database
 \goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -1170,7 +1189,7 @@ No species supplies activation energy: both A\_pre are quoted with Ea = 0 so tha
 \goldrow{kpi}{reactor}{P\_final}{101300}
 \goldrow{kpi}{reactor}{T\_final}{350}
 \goldrow{kpi}{reactor}{n\_compA\_final}{3.05902320887e-09}
-\goldmore{4}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -1198,6 +1217,13 @@ The forward A is the illustrative value tuned for stable RK4 (see constant/react
 \goldrow{kpi}{reactor}{n\_water\_final}{7.92842378768e-05}
 \goldrow{kpi}{reactor}{t\_end}{1200}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.001}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.95156391047e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.95156391047e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{1.95156391047e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.95156391047e-15}
+\goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-0.299204643882}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -1235,6 +1261,13 @@ Constant-Cp here (polynomial degree 0 for both ethanol and water in the database
 \goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{0}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -1264,7 +1297,7 @@ Single closed vessel. Charge: \textasciitilde{}500 kg water + \textasciitilde{}1
 \goldrow{kpi}{campaign}{mass\_residual\_kg}{8.86757334229e-12}
 \goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
 \goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
-\goldmore{13}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage
@@ -1302,6 +1335,13 @@ Constant-Cp here (polynomial degree 0 for both ethanol and water in the database
 \goldrow{kpi}{reactor}{n\_water\_final}{0.00925}
 \goldrow{kpi}{reactor}{t\_end}{600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.87537673079e-16}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.50030138463e-16}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.50050230771e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.50050230771e-16}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
+\goldmore{12}
 \end{tutgolden}
 
 \clearpage
@@ -1343,6 +1383,13 @@ The vessel runs isothermal at 333.15 K, the top of the authors' data range. Do n
 \goldrow{kpi}{reactor}{n\_water\_final}{0.00708545291502}
 \goldrow{kpi}{reactor}{t\_end}{3600}
 \goldrow{kpi}{reactor}{totalMoles\_final}{0.0185}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{2.00040184617e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{1.87537673079e-15}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{2.12542696156e-15}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{2.12542696156e-15}
+\goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{0}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{-218.009898425}
+\goldmore{25}
 \end{tutgolden}
 
 \clearpage
@@ -1372,7 +1419,7 @@ one isothermal batch reactor, one declared dH\_rxn, one hand-checkable jacket du
 \goldrow{kpi}{reactor}{E\_reaction\_seg0\_kJ}{-49.8760623911}
 \goldrow{kpi}{reactor}{E\_reaction\_total\_kJ}{-49.8760623911}
 \goldrow{kpi}{reactor}{P\_final}{101300}
-\goldmore{5}
+\goldmore{12}
 \end{tutgolden}
 
 \subsection{recipes}
@@ -1456,7 +1503,7 @@ Demonstrates the recipe layer's `setParameter` action without inter-unit transfe
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{0}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{4.5240474843e-16}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
-\goldmore{21}
+\goldmore{33}
 \end{tutgolden}
 
 \clearpage
@@ -1495,7 +1542,7 @@ Here the reactor runs the esterification (ethanol + acetic acid $\to$ ethyl acet
 \goldrow{kpi}{still}{n\_ethanol\_final}{0}
 \goldrow{kpi}{still}{n\_ethylAcetate\_final}{0}
 \goldrow{kpi}{still}{n\_water\_final}{0}
-\goldmore{2}
+\goldmore{43}
 \end{tutgolden}
 
 \clearpage
@@ -1534,7 +1581,7 @@ Because both species price on the elements datum, no jacket acts, and nothing le
 \goldrow{kpi}{campaign}{energy\_residual\_kJ}{5.81991344006e-10}
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
-\goldmore{18}
+\goldmore{21}
 \end{tutgolden}
 
 \subsection{still}
@@ -1576,7 +1623,7 @@ where x = x\_benzene in the still pot. Plotting (L/L\_0) vs x\_pot from trajecto
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.0760287317788}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.00909876822121}
-\goldmore{15}
+\goldmore{29}
 \end{tutgolden}
 
 \clearpage
@@ -1610,6 +1657,15 @@ Crucially, this case demonstrates that a single Rayleigh still cannot cross the 
 \goldrow{kpi}{still}{n\_water\_final}{9.99999650927e-05}
 \goldrow{kpi}{still}{t\_end}{600}
 \goldrow{kpi}{still}{totalMoles\_final}{9.99999989764e-05}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{1.35525271561e-15}
+\goldrow{kpi}{campaign}{element\_H\_closure\_rel}{9.63735264432e-16}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{6.50521303491e-16}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{1.35525271561e-15}
+\goldrow{kpi}{campaign}{energy\_H\_external\_kJ}{-249.391762836}
+\goldrow{kpi}{campaign}{energy\_Q\_ledger\_kJ}{0.490652916203}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{1}
+\goldrow{kpi}{campaign}{energy\_closure\_rel}{1.13740334008e-16}
+\goldmore{30}
 \end{tutgolden}
 
 \clearpage
@@ -1642,7 +1698,7 @@ Same pot as still01 (1 mol equimolar benzene/toluene, F\_vap = 1.5e-6 kmol/s, id
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.0851275}
-\goldmore{28}
+\goldmore{35}
 \end{tutgolden}
 
 \clearpage
@@ -1679,7 +1735,7 @@ Physics anchors (verified at authoring): x\_D(0) grows with nStages and R (N=1,R
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.0851275}
-\goldmore{26}
+\goldmore{40}
 \end{tutgolden}
 
 \clearpage
@@ -1716,7 +1772,7 @@ Declared refusals (each with its own diagnostic, try them): x\_D\_target 0.5 $\t
 \goldrow{kpi}{campaign}{mass\_closure\_rel}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
 \goldrow{kpi}{campaign}{mass\_kg\_final}{0.0851275}
-\goldmore{28}
+\goldmore{42}
 \end{tutgolden}
 
 \clearpage
@@ -1764,6 +1820,6 @@ Five ledger records result: potA$\to$recA (continuous, poisoned early), potB$\to
 \goldrow{kpi}{dump}{n\_compA\_final}{9.64864338217e-05}
 \goldrow{kpi}{dump}{n\_toluene\_final}{0.000353786421588}
 \goldrow{kpi}{dump}{t\_end}{600}
-\goldmore{43}
+\goldmore{68}
 \end{tutgolden}
 

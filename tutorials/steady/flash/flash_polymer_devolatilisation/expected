@@ -15,3 +15,6 @@ kpi     devol01                Q_kW             0                  1e-4
 kpi     devol01                T                450                1e-4
 kpi     devol01                V_over_F         0.113500262347     1e-4
 kpi     devol01                phaseSet         0                  1e-4
+stream  liquid                 T                450              1e-4
+stream  meltFeed               T                450              1e-4
+stream  vapor                  T                450              1e-4

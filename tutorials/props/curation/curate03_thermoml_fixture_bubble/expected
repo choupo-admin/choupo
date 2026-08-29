@@ -22,3 +22,4 @@ diag    thermoml_fixture_bubble penalised_points 0.0000             1e-4
 diag    thermoml_fixture_bubble rms              0.3092             1e-4
 diag    thermoml_fixture_bubble t_crit95         3.1820             1e-4
 diag    thermoml_fixture_bubble well_conditioned 0.0000             1e-4
+diag    thermoml_fixture_bubble aad_heldout_K    0.1879           1e-4

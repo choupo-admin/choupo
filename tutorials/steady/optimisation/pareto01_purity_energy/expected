@@ -30,3 +30,6 @@ utility column01               cooling.coolingWater.duty_kW -2035.41756863     1
 utility column01               cooling.coolingWater.T 353.562992445      1e-4
 utility column01               cooling.coolingWater.kg_s 48.6942002063      1e-4
 utility column01               cooling.coolingWater.eur_h 2.93100129882      1e-4
+stream  bottoms                T                383.489767144    1e-4
+stream  distillate             T                353.373063724    1e-4
+stream  feed                   T                370              1e-4

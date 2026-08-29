@@ -13,3 +13,7 @@ kpi     wgs                    X_limiting       0.841431955275     1e-4
 kpi     wgs                    k                1.08521882096      1e-4
 kpi     wgs                    tau_s            134.403584096      1e-4
 kpi     wgs                    xi_mol_per_s     0.116865549344     1e-4
+stream  feed                   T                600              1e-4
+stream  products               T                600              1e-4
+kpi     wgs                    Q_kW             -4.55086962331   1e-4
+kpi     wgs                    minus_r_CO       116.865549344    1e-4

@@ -27,3 +27,7 @@ diag    ethanol_liquid_298K    Z_liquid         2.38322e-03      1e-4
 diag    ethanol_liquid_298K    gamma            1.14558e+00      1e-4
 diag    ethanol_liquid_298K    v_molar          2.04279e-02      1e-4
 diag    ethanol_liquid_298K    v_molar_liq      5.90791e-05      1e-4
+diag    water_liquid_298K      Z_liquid         7.88204e-04      1e-4
+diag    water_liquid_298K      molarVolume      2.23340e-02      1e-4
+diag    water_liquid_298K      v_molar_liq      1.95393e-05      1e-4
+diag    ethanol_liquid_298K    molarVolume      2.04279e-02      1e-4

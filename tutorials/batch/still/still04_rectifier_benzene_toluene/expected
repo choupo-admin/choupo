@@ -41,3 +41,17 @@ kpi     still                  t_end            600              1e-4
 kpi     still                  totalMoles_final 0.000775         1e-4
 kpi     still                  xD_benzene_final 0.905666087463   1e-4
 kpi     still                  xD_toluene_final 0.0943339125367  1e-4
+kpi     campaign               moles_kmol_external_out 0                1e-4
+kpi     campaign               moles_kmol_final 0.001            1e-4
+kpi     campaign               moles_kmol_initial 0.001            1e-4
+kpi     campaign               utility_coolingWater_eur 1.13128412764e-05 1e-4
+kpi     campaign               utility_coolingWater_kJ 28.282103191     1e-4
+kpi     campaign               utility_coolingWater_kg 0.676605339497   1e-4
+kpi     campaign               utility_coolingWater_peak_kW 0.0472424254436  1e-4
+kpi     campaign               utility_coolingWater_t_peak_s 599              1e-4
+kpi     campaign               utility_cost_eur_total 0.000357109719633 1e-4
+kpi     campaign               utility_steamLP_eur 0.000345796878357 1e-4
+kpi     campaign               utility_steamLP_kJ 28.8164065297    1e-4
+kpi     campaign               utility_steamLP_kg 0.0131822536733  1e-4
+kpi     campaign               utility_steamLP_peak_kW 0.0854472179719  1e-4
+kpi     campaign               utility_steamLP_t_peak_s 0                1e-4

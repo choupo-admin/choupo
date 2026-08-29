@@ -15,3 +15,15 @@ diag    air10                  gamma_OH         0.998089         1e-4
 diag    air10                  m_CO2aq          2.2591e-05       1e-4
 diag    air10                  m_OH             1.04436e-09      1e-4
 diag    air10                  pH               5.55469          1e-4
+diag    air25                  chargeImposed    1                1e-4
+diag    air25                  chargeResidual   -7.84311e-16     1e-4
+diag    air25                  gamma_N2         1                1e-4
+diag    air25                  gamma_O2         1                1e-4
+diag    air25                  m_N2             0.000508323      1e-4
+diag    air25                  m_O2             0.000264779      1e-4
+diag    air10                  chargeImposed    1                1e-4
+diag    air10                  chargeResidual   7.15152e-16      1e-4
+diag    air10                  gamma_N2         1                1e-4
+diag    air10                  gamma_O2         1                1e-4
+diag    air10                  m_N2             0.000648911      1e-4
+diag    air10                  m_O2             0.000354352      1e-4

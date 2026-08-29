@@ -26,3 +26,8 @@ utility rdColumn               cooling.coolingWater.duty_kW -0.790521316742    1
 utility rdColumn               cooling.coolingWater.T 330.062558898      1e-4
 utility rdColumn               cooling.coolingWater.kg_s 0.0189119932235    1e-4
 utility rdColumn               cooling.coolingWater.eur_h 0.00113835069611   1e-4
+stream  acidFeed               F                8.55555555556e-06 1e-4
+stream  acidFeed               T                293              1e-4
+stream  bottoms                T                363.229492539    1e-4
+stream  distillate             T                329.991387092    1e-4
+stream  feed                   T                293              1e-4

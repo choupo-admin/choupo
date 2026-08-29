@@ -15,3 +15,13 @@ kpi     flash01                p_benzene_atm    0.238716176589   1e-4
 kpi     flash01                p_eq_sum_atm     1                1e-4
 kpi     flash01                p_ethanol_atm    0.011504063078   1e-4
 kpi     flash01                phaseSet         0                1e-4
+stream  feed                   T                313.15           1e-4
+stream  liquid                 T                313.15           1e-4
+stream  vapor                  T                313.15           1e-4
+kpi     flash01                K_CO2            1726.75504396    1e-4
+kpi     flash01                K_CaCO3          0                1e-4
+kpi     flash01                K_benzene        18.0678927558    1e-4
+kpi     flash01                K_ethanol        1.1797375844     1e-4
+kpi     flash01                K_water          0.0732111598691  1e-4
+kpi     flash01                Q                0                1e-4
+kpi     flash01                Q_kW             0                1e-4

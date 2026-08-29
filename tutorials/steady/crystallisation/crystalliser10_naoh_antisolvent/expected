@@ -23,3 +23,7 @@ kpi     cryst                  soluteInCake_mass 0.00100254507561 1e-4
 kpi     cryst                  solute_dissolved 0.101300628728   1e-4
 kpi     cryst                  solute_in        0.166654166667   1e-4
 kpi     cryst                  yield            0.392150638929   1e-4
+stream  NaOH_cake              T                298.15           1e-4
+stream  antisolvent            T                298.15           1e-4
+stream  liquor                 T                298.15           1e-4
+stream  motherLiquor           T                298.15           1e-4

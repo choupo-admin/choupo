@@ -14,3 +14,29 @@ csv     sweep_results.csv      0:frequencyResponse.out_phase_rad -0.463648 5e-3 
 csv     sweep_results.csv      1:frequencyResponse.out_phase_rad -1.107149 6e-3  anchor
 csv     sweep_results.csv      2:frequencyResponse.out_phase_rad -1.292497 8e-3  anchor
 csv     sweep_results.csv      3:frequencyResponse.out_phase_rad -1.373401 1.2e-2 anchor
+kpi     CarrierMirror          MV_final         4.79049069948e-05 1e-4
+kpi     CarrierMirror          PV_final         0                1e-4
+kpi     CarrierMirror          SP_final         4.79049069948e-05 1e-4
+kpi     TracerSine             MV_final         2.09509300524e-06 1e-4
+kpi     TracerSine             PV_final         0                1e-4
+kpi     TracerSine             SP_final         2.09509300524e-06 1e-4
+kpi     balance                energy_balance_available 0                1e-4
+kpi     balance                mass_closure_rel 5.85780988233e-15 1e-4
+kpi     balance                mass_kg_final    0.36             1e-4
+kpi     balance                mass_kg_in_cum   41.6205          1e-4
+kpi     balance                mass_kg_initial  0.36             1e-4
+kpi     balance                mass_kg_out_cum  41.6205          1e-4
+kpi     balance                mass_residual_kg 2.43804976208e-13 1e-4
+kpi     balance                material_available 1                1e-4
+kpi     frequencyResponse      fit_residual_rel 3.36479137915e-08 1e-4
+kpi     frequencyResponse      frequency_Hz     0.00132629119244 1e-4
+kpi     frequencyResponse      out_amplitude_kmol_s 8.94429778974e-07 1e-4
+kpi     frequencyResponse      out_mean_kmol_s  4.00000000963e-06 1e-4
+kpi     frequencyResponse      out_phase_rad    -1.11131826836   1e-4
+kpi     reactor                F_in_final       5e-05            1e-4
+kpi     reactor                T_final          330              1e-4
+kpi     reactor                n_compA_final    0.0111905736411  1e-4
+kpi     reactor                n_compB_final    0.000809426358856 1e-4
+kpi     reactor                t_end            27747            1e-4
+kpi     reactor                z_in_compA_final 0.958098139895   1e-4
+kpi     reactor                z_in_compB_final 0.0419018601048  1e-4

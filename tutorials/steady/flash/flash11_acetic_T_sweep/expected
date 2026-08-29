@@ -22,3 +22,6 @@ utility flash01                cooling.coolingWater.duty_kW -43.2666666667   1e-
 utility flash01                cooling.coolingWater.T 348.15           1e-4
 utility flash01                cooling.coolingWater.kg_s 1.0350877193     1e-4
 utility flash01                cooling.coolingWater.eur_h 0.062304         1e-4
+stream  feed                   T                368.15           1e-4
+stream  liquid                 T                348.15           1e-4
+stream  vapor                  T                348.15           1e-4

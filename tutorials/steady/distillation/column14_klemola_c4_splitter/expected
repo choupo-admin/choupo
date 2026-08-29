@@ -28,3 +28,6 @@ utility splitter               cooling.coolingWater.duty_kW -8654.33073632     1
 utility splitter               cooling.coolingWater.T 314.249966433      1e-4
 utility splitter               cooling.coolingWater.kg_s 207.041405175      1e-4
 utility splitter               cooling.coolingWater.eur_h 12.4622362603      1e-4
+stream  bottoms                T                329.436820919    1e-4
+stream  distillate             T                312.209486706    1e-4
+stream  feed                   T                323.5875148      1e-4

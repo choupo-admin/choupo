@@ -12,3 +12,8 @@ kpi     flash                  Q_kW             0                  1e-4
 kpi     flash                  T                353                1e-4
 kpi     flash                  V_over_F         0.384521828832     1e-4
 kpi     flash                  phaseSet         0                  1e-4
+stream  feed                   T                353              1e-4
+stream  liquid                 T                353              1e-4
+stream  vapor                  T                353              1e-4
+kpi     flash                  K_ethanol        1.4838682811     1e-4
+kpi     flash                  K_water          0.647356121192   1e-4

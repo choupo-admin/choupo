@@ -18,3 +18,5 @@ kpi     wgs                    y_CO             0.199139146827     1e-4
 kpi     wgs                    y_CO2            0.300860853173     1e-4
 kpi     wgs                    y_H2             0.300860853173     1e-4
 kpi     wgs                    y_water          0.199139146827     1e-4
+stream  feed                   T                800              1e-4
+stream  products               T                900              1e-4

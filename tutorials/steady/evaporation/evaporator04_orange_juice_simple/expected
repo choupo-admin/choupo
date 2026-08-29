@@ -33,3 +33,8 @@ kpi     evap                   duty             14269810.0877      1e-4
 kpi     evap                   duty_kW          14269.8100877      1e-4
 kpi     evap                   economy          0.854995993874     1e-4
 kpi     evap                   molality         5.55558224746      1e-4
+stream  condensate             T                392.1781136      1e-4
+stream  feed                   T                293.15           1e-4
+stream  liveSteam_200kPa       T                392.1781136      1e-4
+stream  productConc            T                325.639122163    1e-4
+stream  vapour                 T                325.639122163    1e-4

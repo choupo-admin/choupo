@@ -4,3 +4,13 @@ stream  feed                   F                0.000277777777778  1e-4
 stream  feed                   vf               1                  1e-4
 stream  products               F                0.000277777777778  1e-4
 stream  products               vf               1                  1e-4
+stream  feed                   T                600              1e-4
+stream  products               T                600              1e-4
+kpi     wgs                    Da_kTau          0.00175028758879 1e-4
+kpi     wgs                    F_out_kmol_h     1                1e-4
+kpi     wgs                    Q_kW             -4.55086758232   1e-4
+kpi     wgs                    T                600              1e-4
+kpi     wgs                    V_R              0.002            1e-4
+kpi     wgs                    X_limiting       0.841431577908   1e-4
+kpi     wgs                    dHrxn_kJ_per_mol -38.9410707335   1e-4
+kpi     wgs                    tau_s            268.807168191    1e-4

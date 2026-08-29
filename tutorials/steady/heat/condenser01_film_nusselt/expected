@@ -27,3 +27,5 @@ utility condenser              cooling.coolingWater.duty_kW -506.70051677      1
 utility condenser              cooling.coolingWater.T 372.755918611      1e-4
 utility condenser              cooling.coolingWater.kg_s 12.1220219323      1e-4
 utility condenser              cooling.coolingWater.eur_h 0.729648744149     1e-4
+stream  condensate             T                372.755918611    1e-4
+stream  steam                  T                372.76           1e-4

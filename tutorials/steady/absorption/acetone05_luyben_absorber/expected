@@ -27,3 +27,7 @@ kpi     absorber               recovery_acetone 0.0726811337763    1e-4
 kpi     absorber               recovery_isopropanol 0                  1e-4
 kpi     absorber               recovery_water   1                  1e-4
 kpi     absorber               stages           9                  1e-4
+stream  bottoms                T                321.205142041    1e-4
+stream  gasIn                  T                318              1e-4
+stream  offgas                 T                326.737585634    1e-4
+stream  washWater              T                320              1e-4

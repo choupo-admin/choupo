@@ -12,3 +12,7 @@ utility secB.fb                heating.steamLP.duty_kW 226.733908578      1e-4
 utility secB.fb                heating.steamLP.T 378                1e-4
 utility secB.fb                heating.steamLP.kg_s 0.103720909688     1e-4
 utility secB.fb                heating.steamLP.eur_h 9.79490485056      1e-4
+stream  bottoms                T                378              1e-4
+stream  feed                   T                365              1e-4
+stream  vaporA                 T                370              1e-4
+stream  vaporB                 T                378              1e-4

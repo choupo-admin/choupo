@@ -15,3 +15,5 @@ kpi     ammonia                lambda_N         -59416.3950887     1e-4
 kpi     ammonia                y_H2             0.507099864715     1e-4
 kpi     ammonia                y_N2             0.169033288238     1e-4
 kpi     ammonia                y_NH3            0.323866847046     1e-4
+stream  feed                   T                700              1e-4
+stream  products               T                700              1e-4

@@ -7,3 +7,5 @@ kpi     reactor                F_out_kmol_h     1                  1e-4
 kpi     reactor                T                320                1e-4
 kpi     reactor                X                0.8                1e-4
 kpi     reactor                converted_kmol_h 0.8                1e-4
+stream  feed                   T                320              1e-4
+stream  out                    T                320              1e-4

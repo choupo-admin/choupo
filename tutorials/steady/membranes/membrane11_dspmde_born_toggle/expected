@@ -14,3 +14,11 @@ kpi     NF_noBorn              J_w_avg          4.0473218085e-05 1e-4
 kpi     NF_noBorn              R_obs_NaCl       0.65954044001    1e-4
 kpi     NF_noBorn              dP_feed          100000           1e-4
 kpi     NF_noBorn              water_recovery   0.201790063872   1e-4
+stream  feed_born              T                298.15           1e-4
+stream  feed_noBorn            T                298.15           1e-4
+stream  perm_born              T                298.15           1e-4
+stream  perm_noBorn            T                298.15           1e-4
+stream  ret_born               T                298.15           1e-4
+stream  ret_noBorn             T                298.15           1e-4
+kpi     NF_born                mass_closure_rel 4.42825128618e-16 1e-4
+kpi     NF_noBorn              mass_closure_rel 2.21412564309e-16 1e-4

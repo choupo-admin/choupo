@@ -15,3 +15,7 @@ diag    ternary                n_failures       0                1e-4
 diag    ternary                n_points         2                1e-4
 diag    water_hexane           n_failures       0                1e-4
 diag    water_hexane           n_points         2                1e-4
+diag    pure_water             n_emptyCurves    0                1e-4
+diag    bin_wet                n_emptyCurves    0                1e-4
+diag    ternary                n_emptyCurves    0                1e-4
+diag    water_hexane           n_emptyCurves    0                1e-4

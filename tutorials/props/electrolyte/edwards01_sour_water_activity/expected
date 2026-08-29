@@ -27,3 +27,7 @@ diag    sourWater_davies       m_HCO3           1.37321            1e-4
 diag    sourWater_davies       m_NH3aq          1.01116            1e-4
 diag    sourWater_davies       m_NH4            1.88884            1e-4
 diag    sourWater_davies       pH               9                  1e-4
+diag    sourWater_edwards      chargeImposed    0                1e-4
+diag    sourWater_edwards      chargeResidual   0.112207         1e-4
+diag    sourWater_davies       chargeImposed    0                1e-4
+diag    sourWater_davies       chargeResidual   0.108067         1e-4

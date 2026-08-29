@@ -10,3 +10,11 @@ kpi     flash05                P                100000             1e-4
 kpi     flash05                T                365                1e-4
 kpi     flash05                V_over_F         0.493658478851     1e-4
 kpi     flash05                phaseSet         0                  1e-4
+stream  feed                   T                365              1e-4
+stream  liquid                 T                365              1e-4
+stream  vapor                  T                365              1e-4
+kpi     flash05                K_benzene        1.43515088002    1e-4
+kpi     flash05                K_nHexane        1.98526737348    1e-4
+kpi     flash05                K_toluene        0.575521757802   1e-4
+kpi     flash05                Q                0                1e-4
+kpi     flash05                Q_kW             0                1e-4

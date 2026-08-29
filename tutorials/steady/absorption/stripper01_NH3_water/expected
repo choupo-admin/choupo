@@ -20,3 +20,7 @@ kpi     stripper               nonIsothermal    1                  1e-4
 kpi     stripper               recovery_NH3     0.981057352452     1e-4
 kpi     stripper               recovery_water   0                  1e-4
 kpi     stripper               stages           6                  1e-4
+stream  liquidFeed             T                330              1e-4
+stream  richGas                T                315.973930965    1e-4
+stream  strippedLiquid         T                313.524974667    1e-4
+stream  strippingGas           T                330              1e-4

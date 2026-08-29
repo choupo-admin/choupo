@@ -13,3 +13,5 @@ diag    kernel_nacl_100C       aw_1m            0.9670             1e-4
 diag    kernel_nacl_100C       gamma_pm_1m      0.6221             1e-4
 diag    kernel_nacl_100C       gamma_pm_3m      0.6760             1e-4
 diag    kernel_nacl_100C       phi_1m           0.9327             1e-4
+diag    hmw_nacl_100C          chargeImposed    0.0000           1e-4
+diag    hmw_nacl_100C          chargeResidual   -0.0000          1e-4

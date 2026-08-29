@@ -19,3 +19,7 @@ kpi     tower01                makeup_kg_s      0.0120283876424    1e-4
 kpi     tower01                merkelNumber     1.5                1e-4
 kpi     tower01                merkelNumber_chebyshev4 1.50006493043      1e-4
 kpi     tower01                range_K          17.3713508623      1e-4
+stream  air                    T                298.15           1e-4
+stream  coolWater              T                300.778649138    1e-4
+stream  hotWater               T                318.15           1e-4
+stream  humidAir               T                307.613817692    1e-4

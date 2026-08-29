@@ -27,3 +27,9 @@ utility radfrac                cooling.coolingWater.duty_kW -804.58622364      1
 utility radfrac                cooling.coolingWater.T 321.647346922      1e-4
 utility radfrac                cooling.coolingWater.kg_s 19.2484742498      1e-4
 utility radfrac                cooling.coolingWater.eur_h 1.15860416204      1e-4
+stream  bottoms                T                454.498489397    1e-4
+stream  distillate             T                319.948597052    1e-4
+stream  drawC4                 T                378.81701421     1e-4
+stream  drawC5                 T                422.542495804    1e-4
+stream  feed1                  T                290              1e-4
+stream  feed2                  T                320              1e-4

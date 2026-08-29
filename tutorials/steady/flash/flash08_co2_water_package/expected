@@ -12,3 +12,8 @@ kpi     node                   Q_kW             0                  1e-4
 kpi     node                   T                298.15             1e-4
 kpi     node                   V_over_F         0.000414662557767  1e-4
 kpi     node                   phaseSet         0                  1e-4
+stream  flatWater              T                298.15           1e-4
+stream  gasOff                 T                298.15           1e-4
+stream  sodaWater              T                298.15           1e-4
+kpi     node                   K_CO2            1618.55415741    1e-4
+kpi     node                   K_water          0.0312533801141  1e-4

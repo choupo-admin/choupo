@@ -10,3 +10,6 @@ kpi     decanter01             P                101325             1e-4
 kpi     decanter01             T                298.15             1e-4
 kpi     decanter01             betaFraction         0.493604933098     1e-4
 kpi     decanter01             phaseSet         1                  1e-4
+stream  aqueous                T                298.15           1e-4
+stream  feed                   T                298.15           1e-4
+stream  organic                T                298.15           1e-4

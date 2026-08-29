@@ -34,3 +34,5 @@ diag    calciteEq_25C          pH               6.02946          1e-4
 #  pass -- the remedy is the physics, or the record of why it moved.
 #
 diag    calciteEq_25C          pH               6.004            5e-3     anchor
+diag    calciteEq_25C          chargeImposed    1                1e-4
+diag    calciteEq_25C          chargeResidual   2.22179e-18      1e-4

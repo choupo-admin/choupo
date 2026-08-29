@@ -16,3 +16,5 @@ kpi     cryst                  m_sat            6.144            1e-4
 kpi     cryst                  solute_dissolved 0.158116012032   1e-4
 kpi     cryst                  solute_in        0.1948           1e-4
 kpi     cryst                  yield            0.18831616       1e-4
+stream  feed                   T                298.15           1e-4
+stream  magma                  T                298.15           1e-4

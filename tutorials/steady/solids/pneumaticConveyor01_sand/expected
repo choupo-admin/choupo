@@ -24,3 +24,5 @@ kpi     node                   u_gas            14.6051756475    1e-4
 kpi     node                   u_particle       13.9742640913    1e-4
 kpi     node                   u_saltation      8.47583059607    1e-4
 kpi     node                   u_terminal       0.917882330342   1e-4
+stream  Feed                   T                298              1e-4
+stream  conveyed               T                298              1e-4

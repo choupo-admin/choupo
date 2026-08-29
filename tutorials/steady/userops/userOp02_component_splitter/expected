@@ -6,3 +6,6 @@ stream  overhead               F                0.0143055555556    1e-4
 kpi     splitter               F_bottoms_kmol_h 48.5               1e-4
 kpi     splitter               F_overhead_kmol_h 51.5               1e-4
 kpi     splitter               overhead_fraction 0.515              1e-4
+stream  bottoms                T                360              1e-4
+stream  feed                   T                360              1e-4
+stream  overhead               T                360              1e-4

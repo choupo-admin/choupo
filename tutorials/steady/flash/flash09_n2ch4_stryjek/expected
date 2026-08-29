@@ -24,3 +24,6 @@ kpi     node                   phaseSet         0                1e-4
 # never to widen the band.
 kpi     node                   K_N2             3.047            3e-2     anchor
 kpi     node                   K_CH4            0.638            3e-2     anchor
+stream  feed                   T                149.82           1e-4
+stream  liq                    T                149.82           1e-4
+stream  vap                    T                149.82           1e-4

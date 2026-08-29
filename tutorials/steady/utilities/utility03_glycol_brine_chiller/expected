@@ -21,3 +21,7 @@ kpi     condChiller            UA               2800               1e-4
 kpi     condChiller            area             8                  1e-4
 kpi     condChiller            effectiveness    0.988322950547     1e-4
 utility condChiller            heating.-.unserved 1                  1e-4
+stream  brineReturn            T                273.758578301    1e-4
+stream  brineSupply            T                273.15           1e-4
+stream  ethanolOut             T                273.813840261    1e-4
+stream  ethanolVapour          T                330              1e-4

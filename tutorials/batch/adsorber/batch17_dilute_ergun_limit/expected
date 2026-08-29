@@ -67,3 +67,4 @@ kpi     legacy                 t_breakthrough_5pct_CO2 373.706923746    1e-4
 kpi     legacy                 t_end            1000             1e-4
 kpi     legacy                 t_stoichiometric_CO2 711.778661332    1e-4
 kpi     legacy                 totalMoles_final 8.06790910917e-06 1e-4
+kpi     ergun                  gasInventory_mol 0.00806825955289 1e-4

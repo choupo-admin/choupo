@@ -23,3 +23,6 @@ kpi     wgs                    y_CO2            0.289219653948   1e-4
 kpi     wgs                    y_H2             0.289235931536   1e-4
 kpi     wgs                    y_water          0.421529693979   1e-4
 kpi     wgs                    Q_kW             -4.44252474317   1e-4
+stream  condensate             T                350              1e-4
+stream  feed                   T                350              1e-4
+stream  gas                    T                350              1e-4

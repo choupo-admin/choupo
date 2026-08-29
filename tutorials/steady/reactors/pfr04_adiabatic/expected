@@ -17,3 +17,5 @@ kpi     reactor                k_esterification_etac 0.00357499942014 1e-4
 kpi     reactor                nReactions       1                1e-4
 kpi     reactor                nSteps           100              1e-4
 kpi     reactor                tau_s            310.291329081    1e-4
+stream  feed                   T                350              1e-4
+stream  reactorOut             T                454.513818186    1e-4

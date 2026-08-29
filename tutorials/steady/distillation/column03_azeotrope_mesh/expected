@@ -20,3 +20,10 @@ utility column                 cooling.coolingWater.duty_kW -952.974894127     1
 utility column                 cooling.coolingWater.T 351.388958309      1e-4
 utility column                 cooling.coolingWater.kg_s 22.7984424432      1e-4
 utility column                 cooling.coolingWater.eur_h 1.37228384754      1e-4
+stream  bottoms                T                357.713408957    1e-4
+stream  distillate             T                351.340302024    1e-4
+stream  feed                   T                363              1e-4
+kpi     column                 Q_condenser_kW   -952.974894127   1e-4
+kpi     column                 Q_reboiler_kW    935.650111764    1e-4
+kpi     column                 nFeeds           1                1e-4
+kpi     column                 nSideDraws       0                1e-4

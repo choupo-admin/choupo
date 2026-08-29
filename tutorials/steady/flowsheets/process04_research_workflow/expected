@@ -10,3 +10,10 @@ kpi     flash01                P                101325             1e-4
 kpi     flash01                T                355                1e-4
 kpi     flash01                V_over_F         0.797563408329     1e-4
 kpi     flash01                phaseSet         0                  1e-4
+stream  feed                   T                355              1e-4
+stream  liquid                 T                355              1e-4
+stream  vapor                  T                355              1e-4
+kpi     flash01                K_ethanol        2.22741301451    1e-4
+kpi     flash01                K_water          0.585036155702   1e-4
+kpi     flash01                Q                0                1e-4
+kpi     flash01                Q_kW             0                1e-4

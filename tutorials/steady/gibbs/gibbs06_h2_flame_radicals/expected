@@ -23,3 +23,5 @@ kpi     flame                  y_O              0.000561708028523  1e-4
 kpi     flame                  y_O2             0.00501826082784   1e-4
 kpi     flame                  y_OH             0.00546270287719   1e-4
 kpi     flame                  y_water          0.324746588078     1e-4
+stream  burnt                  T                2385.83679448    1e-4
+stream  feed                   T                298.15           1e-4

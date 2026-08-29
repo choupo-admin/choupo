@@ -13,3 +13,11 @@ kpi     flash01                V_over_F         0.0212148279253  1e-4
 kpi     flash01                pH               6.02023176857    1e-4
 kpi     flash01                p_eq_sum_atm     1                1e-4
 kpi     flash01                phaseSet         0                1e-4
+stream  feed                   T                313.15           1e-4
+stream  liquid                 T                313.15           1e-4
+stream  vapor                  T                313.15           1e-4
+kpi     flash01                K_CO2            1772.76543056    1e-4
+kpi     flash01                K_CaCO3          0                1e-4
+kpi     flash01                K_water          0.0722361438845  1e-4
+kpi     flash01                Q                0                1e-4
+kpi     flash01                Q_kW             0                1e-4

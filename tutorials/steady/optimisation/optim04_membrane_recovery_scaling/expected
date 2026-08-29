@@ -39,3 +39,7 @@ kpi     vessel                 recovery_elem5   0.340193937928   1e-4
 kpi     vessel                 recovery_elem6   0.392282926669   1e-4
 kpi     vessel                 recovery_elem7   0.43278018116    1e-4
 kpi     vessel                 water_recovery   0.43278018116    1e-4
+stream  feed                   T                298.15           1e-4
+stream  permeate               T                298.15           1e-4
+stream  retentate              T                298.15           1e-4
+kpi     vessel                 mass_closure_rel 1.26685683979e-16 1e-4

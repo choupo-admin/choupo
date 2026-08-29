@@ -22,3 +22,4 @@ diag    nrtl_etoh_water_heldout penalised_points 0.0000             1e-4
 diag    nrtl_etoh_water_heldout rms              0.3181             1e-4
 diag    nrtl_etoh_water_heldout t_crit95         2.7760             1e-4
 diag    nrtl_etoh_water_heldout well_conditioned 0.0000             1e-4
+diag    nrtl_etoh_water_heldout aad_heldout_K    0.2630           1e-4

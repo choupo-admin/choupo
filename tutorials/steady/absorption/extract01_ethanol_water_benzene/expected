@@ -23,3 +23,7 @@ kpi     extractor01            soluteRecovery   0.441759080105   1e-4
 kpi     extractor01            solventToFeed    1.2              1e-4
 kpi     extractor01            splitStages      5                1e-4
 kpi     extractor01            stages           5                1e-4
+stream  extract                T                298.15           1e-4
+stream  feed                   T                298.15           1e-4
+stream  raffinate              T                298.15           1e-4
+stream  solvent                T                298.15           1e-4

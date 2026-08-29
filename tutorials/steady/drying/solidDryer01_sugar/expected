@@ -13,3 +13,7 @@ kpi     solidDryer             drySolid_flow    0.951878730237   1e-4
 kpi     solidDryer             moisture_pct_wb  0.109824620851   1e-4
 kpi     solidDryer             water_activity   0.00431158404412 1e-4
 kpi     solidDryer             water_removed    0.189112936127   1e-4
+stream  drySolid               T                347.5126791      1e-4
+stream  hotAir                 T                420              1e-4
+stream  humidExhaust           T                347.5126791      1e-4
+stream  wetSolid               T                330              1e-4

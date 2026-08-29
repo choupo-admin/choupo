@@ -14,3 +14,6 @@ kpi     column                 feed_stage       10.7940365659      1e-4
 kpi     column                 theta            1.42716041594      1e-4
 kpi     column                 x_B_HK           0.99               1e-4
 kpi     column                 x_D_LK           0.99               1e-4
+stream  bottoms                T                365.266024892    1e-4
+stream  distillate             T                365.266024892    1e-4
+stream  feed                   T                365              1e-4
