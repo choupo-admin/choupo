@@ -13,6 +13,12 @@ to say where its errors come from.
 Every case here is verified on every run of the test suite, so none of them is
 going to fail on you for a reason that is not yours.
 
+**No terminal?  The browser runs the same engine.**  Every case below is in
+the app at [choupo.org/app](https://www.choupo.org/app) — *Browse tutorials*,
+then navigate to the case by the path in its name (flash01 is under
+*steady / Phase equilibrium & flash*).  Press *Run*; the full solver log —
+the same one this guide keeps telling you to read — is the *Log* tab.
+
 ```bash
 source etc/bashrc          # gives you runCase, listCases
 runCase tutorials/steady/flash/flash01_benzene_toluene
