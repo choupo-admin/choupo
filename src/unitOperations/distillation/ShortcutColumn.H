@@ -52,10 +52,32 @@ Description
         recoveryHK   0.01;        // fraction of feed HK to the distillate
         refluxRatio  1.5;         //  OR  refluxFactor 1.3 (= R / R_min)
 
+    EXACTLY ONE of the two reflux keys is MANDATORY, and there is no
+    default.  There used to be (`R = 1.3 * Rmin`, commented "sensible
+    default"), and 1.3 is indeed the usual rule of thumb --- which is what
+    made the silence expensive rather than harmless: the stage count is
+    what a student reads off this unit, R is what decides it, and a number
+    the engine chose is one nobody can defend when asked why the column has
+    that many stages.  Declaring it costs one line, both cases in the
+    corpus already did, and the refusal quotes the computed R_min so a
+    factor can be picked from it.
+
     ASSUMPTIONS (glass-box): constant relative volatility (evaluated at
     the feed bubble point), sharp key split, ideal stages.  Like every
     FUG, it does NOT handle azeotropes (α crossing 1) --- use the
     rigorous column for those.
+
+    THE FEED BUBBLE POINT IS THE METHOD'S ONLY THERMODYNAMIC EVALUATION.
+    Every α, and hence N_min, θ, R_min, N and the feed stage, comes from
+    it.  One that does not converge REFUSES; it used to fall back on the
+    feed's declared temperature and answer anyway, which is a column
+    designed for a different mixture state, reported as this one.
+
+    BOTH PRODUCTS ARE REPORTED AT THAT SAME FEED BUBBLE TEMPERATURE, and
+    that is a KNOWN GAP rather than a claim: a total condenser's distillate
+    leaves at its OWN bubble point and the bottoms at the reboiler's, and
+    this method computes neither.  Anything downstream that prices those
+    streams inherits the placeholder.
 
     Inputs (feed );   outputs (distillate  bottoms );
 \*---------------------------------------------------------------------------*/

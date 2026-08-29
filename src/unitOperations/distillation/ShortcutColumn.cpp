@@ -95,8 +95,32 @@ int ShortcutColumn::solve(const DictPtr& dict,
         throw std::runtime_error("ShortcutColumn: recoveryLK / recoveryHK must be in (0,1)");
 
     // ---- Relative volatilities at the feed bubble point -----------------
+    //  THE WHOLE METHOD RESTS ON ONE THERMODYNAMIC EVALUATION.  Every alpha,
+    //  and therefore N_min, theta, R_min, N and the feed stage, is computed at
+    //  the FEED BUBBLE POINT and nowhere else.  This line used to read
+    //
+    //      const scalar Tref = bub.converged ? bub.T : Tf;
+    //
+    //  -- so a bubble point that failed to converge fell back on the feed's
+    //  DECLARED temperature, silently, at exit 0, and the column answered a
+    //  different question with a plausible number.  Nobody authorised that
+    //  substitution, and the contract for an unauthorised one is refusal with
+    //  the remedies named (docs/design/problem-divergence-contract.md).
     auto bub = BubblePoint::compute(thermo, z, P, Tf);
-    const scalar Tref = bub.converged ? bub.T : Tf;
+    if (!bub.converged)
+        throw std::runtime_error("ShortcutColumn: the FEED BUBBLE POINT did not"
+            " converge at P = " + std::to_string(P) + " Pa from the initial"
+            " guess T = " + std::to_string(Tf) + " K.  This method has no other"
+            " thermodynamic input: every relative volatility, and hence N_min,"
+            " R_min, N and the feed stage, is evaluated there.  It used to fall"
+            " back on the feed's declared temperature and answer anyway, which"
+            " is a different question reported as this one.  Remedies: (a) check"
+            " that the feed is actually a liquid at this pressure -- a feed"
+            " above its bubble point has none; (b) give the feed stream a"
+            " temperature nearer the expected bubble point, since that value is"
+            " the solver's initial guess; (c) check that every component"
+            " carries a vapour-pressure model valid near this temperature.");
+    const scalar Tref = bub.T;
     const sVector K = thermo.Kvec(Tref, P, z, bub.y);
     const scalar Khk = K[iHK];
     if (!(Khk > 0.0))
@@ -205,10 +229,30 @@ int ShortcutColumn::solve(const DictPtr& dict,
     if (Rmin < 0.0) Rmin = 0.0;
 
     // ---- Operating reflux: refluxRatio OR refluxFactor (= R/R_min) -----
+    //  THE OPERATING REFLUX IS THE DESIGN DECISION, and it is not derivable.
+    //  This used to default to `1.3 * Rmin` with the comment "sensible
+    //  default" -- and it IS the usual heuristic, which is exactly what makes
+    //  the silence expensive: a student reads N off the output, is asked at a
+    //  viva why the column has that many stages, and cannot answer, because
+    //  the number that decided it was never theirs.  Declaring it is one line
+    //  and BOTH cases in the corpus already do (`refluxFactor 1.3`), so the
+    //  default was reached by nothing.  Refused, with the heuristic named so
+    //  it can be adopted deliberately.
     scalar R;
-    if (oper->found("refluxRatio"))      R = oper->lookupScalar("refluxRatio");
+    if (oper->found("refluxRatio"))       R = oper->lookupScalar("refluxRatio");
     else if (oper->found("refluxFactor")) R = oper->lookupScalar("refluxFactor") * Rmin;
-    else                                  R = 1.3 * Rmin;          // sensible default
+    else
+        throw std::runtime_error("ShortcutColumn: no operating reflux declared."
+            "  Give the unit's `operation {}` block ONE of:\n"
+            "      refluxFactor 1.3;    // R = 1.3 * R_min, the usual rule of"
+            " thumb -- economic optimum is commonly cited at 1.1-1.5\n"
+            "      refluxRatio  2.5;    // R = L/D directly, if you have a"
+            " number to defend\n"
+            "  This is not a value the engine can derive: R_min is"
+            " thermodynamics, R is your decision about how much you are willing"
+            " to boil to save stages, and the stage count you get is only as"
+            " defensible as that choice.  R_min for this feed and these"
+            " recoveries is " + std::to_string(Rmin) + ".");
     if (R <= Rmin)
         throw std::runtime_error("ShortcutColumn: operating reflux R = "
             + std::to_string(R) + " <= R_min = " + std::to_string(Rmin)
@@ -222,9 +266,17 @@ int ShortcutColumn::solve(const DictPtr& dict,
 
     // ---- Kirkbride: feed-stage location -------------------------------
     //  N_R/N_S = [ (z_HK/z_LK)·(x_LK,B/x_HK,D)^2·(B/D) ]^0.206
+    //  Kirkbride needs a heavy key present in the distillate and a light key
+    //  present in the feed.  When it cannot be formed, the feed stage is
+    //  UNAVAILABLE -- it used to be published as 0.0, and stage 0 is not a
+    //  stage: a reader takes it for the top of the column.  Absent and zero
+    //  are different claims (the batch dryer's t_critical precedent), so the
+    //  KPI is simply not emitted and the reason is said aloud.
     scalar feedStage = 0.0;
+    bool   feedStageAvailable = false;
     if (xD[iHK] > 0.0 && z[iLK] > 0.0)
     {
+        feedStageAvailable = true;
         const scalar inside = (z[iHK] / z[iLK])
                             * std::pow(xB[iLK] / xD[iHK], 2.0)
                             * (B / D);
@@ -248,7 +300,7 @@ int ShortcutColumn::solve(const DictPtr& dict,
     kpis_["R_min"]        = Rmin;
     kpis_["N_theoretical"]= N;
     kpis_["R"]            = R;
-    kpis_["feed_stage"]   = feedStage;
+    if (feedStageAvailable) kpis_["feed_stage"] = feedStage;
     kpis_["alpha_LK_HK"]  = aLK;
     kpis_["theta"]        = theta;
     kpis_["D"]            = D;
@@ -272,8 +324,15 @@ int ShortcutColumn::solve(const DictPtr& dict,
                   << "  Operating R     = " << std::setprecision(2) << R
                   << "  (R/R_min = " << std::setprecision(2) << (R / std::max(Rmin,1e-9)) << ")\n"
                   << "  Gilliland N     = " << std::setprecision(1) << N
-                  << " theoretical stages,  feed at stage " << std::setprecision(1)
-                  << feedStage << " (from top)\n"
+                  << " theoretical stages,  ";
+        if (feedStageAvailable)
+            std::cout << "feed at stage " << std::setprecision(1)
+                      << feedStage << " (from top)\n";
+        else
+            std::cout << "feed stage UNAVAILABLE (Kirkbride needs the heavy key"
+                         " present in the distillate and the light key in the"
+                         " feed; no value is published)\n";
+        std::cout 
                   << "  D = " << std::scientific << std::setprecision(4) << D
                   << " kmol/s,  B = " << B << " kmol/s\n"
                   << "  Assumptions: constant alpha (feed bubble pt), sharp split,\n"

@@ -876,7 +876,7 @@ Concentration scan of a water analysis, the RO/evaporator scaling audit: the dec
 
 ## `shortcutColumn`  (shortcutColumn operation)
 
-Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Returns N_min (Fenske), R_min (Underwood), the stage count N (Gilliland) and the feed stage (Kirkbride). Assumes constant relative volatility; not valid for azeotropes.
+Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Returns N_min (Fenske), R_min (Underwood), the stage count N (Gilliland) and the feed stage (Kirkbride). EXACTLY ONE operating reflux must be declared, `refluxFactor` (R/R_min, commonly 1.3) or `refluxRatio` (R = L/D directly); there is no default, because the reflux is the design decision the stage count descends from and an engine-chosen one is not defensible. Every relative volatility is evaluated at the FEED BUBBLE POINT, and a bubble point that will not converge refuses rather than falling back on the feed's declared temperature. Assumes constant relative volatility; not valid for azeotropes.
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
@@ -884,8 +884,8 @@ Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Ret
 | `heavyKey` | ✓ | string | — | The less-volatile key component. |
 | `recoveryLK` | ✓ | number | - | Fraction of the feed light key leaving in the distillate. |
 | `recoveryHK` | ✓ | number | - | Fraction of the feed heavy key leaving in the distillate. |
-| `refluxRatio` |   | number | - | Operating reflux ratio R; must exceed R_min. Use this or refluxFactor. |
-| `refluxFactor` |   | number | - | Operating reflux as a multiple of the minimum, R/R_min. Use this or refluxRatio. |
+| `refluxRatio` |   | number | - | Operating reflux ratio R = L/D; must exceed R_min. Declare this OR refluxFactor -- one of the two is mandatory, there is no default. |
+| `refluxFactor` |   | number | - | Operating reflux as a multiple of the minimum, R/R_min (1.1-1.5 is the usual band, 1.3 the common rule of thumb). Declare this OR refluxR… |
 
 ## `solidDryer`  (solidDryer operation)
 

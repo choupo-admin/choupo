@@ -644,7 +644,8 @@ operation
     HK_component   toluene;
     recovery_LK    0.99;
     recovery_HK    0.01;
-    refluxFactor   1.3;            // = R / R_min
+    refluxFactor   1.3;            // = R / R_min -- MANDATORY (this or
+                                   //   refluxRatio); there is no default
     P              1.01325 bar;
 }
 ```
