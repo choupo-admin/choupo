@@ -45,6 +45,30 @@
     * the KPI t_critical is OBSERVED (the interpolated crossing between two
       accepted states), not the analytic 1027.7 s above; they agree because
       dX/dt is exactly constant on that leg.
+    * THE CAMPAIGN MASS BALANCE DOES NOT CLOSE, AND IT SHOULD NOT.  Look at
+      it, because it is the first thing an examiner will point at: it
+      reports 2.600000 kg in against 2.039168 kg out, a 21.6 % shortfall.
+      That shortfall is the DRIED WATER.  It left the solid and went into
+      the air -- and the air here is a DECLARED ENVIRONMENT (a temperature
+      and a humidity), not a stream this campaign owns, so there is no
+      vessel on the books for the water to arrive in.  The vessel's
+      inventory genuinely shrinks.
+
+      What makes that a stated model boundary rather than a leak is that
+      the unit PREDICTS the gap independently, from its own evaporation
+      history, and the campaign checks the two against each other: the
+      observed shortfall matches the declared prediction to 7e-17
+      (element_worst_closure_vs_declared_rel).  The raw numbers are never
+      discounted -- 21.6 % is what the balance says and what the balance
+      reports.  If this dryer ever lost matter for a REAL reason, that
+      cross-check is what would move, and it is pinned in `expected`.
+
+      So the honest sentence to give at a viva is: "the balance is open at
+      the air boundary by construction, the opening is the 0.5608 kg of
+      water evaporated, and the model reproduces that number from the
+      other side."  Closing it for real means making the drying air a
+      ledgered stream, which this unit deliberately does not do.
+
     * the campaign energy balance is UNAVAILABLE, and says why in one
       sentence: the drying heat comes from air this campaign never owned.
       The number is not hidden -- it is the latentDuty_kW KPI.

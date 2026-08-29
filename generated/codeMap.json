@@ -5875,7 +5875,8 @@
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/DistillationColumn.H",
-   "src/unitOperations/distillation/TrayHydraulics.H"
+   "src/unitOperations/distillation/TrayHydraulics.H",
+   "src/unitOperations/saturation/BubblePoint.H"
   ],
   "src/unitOperations/distillation/ShortcutColumn.cpp": [
    "src/core/Dictionary.H",
@@ -11894,6 +11895,7 @@
    "src/propertyOps/PropertyScanTernary.cpp",
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp"
   ],
