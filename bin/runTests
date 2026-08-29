@@ -617,14 +617,33 @@ auto_generate() {
         echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
         echo "# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h."
         echo "# kind   name      key         expected        reltol"
-        # streams: F of each
+        # streams: F and T of each.
+        #
+        #  T WAS NOT EMITTED HERE UNTIL 2026-08-29, and the consequence was
+        #  measured before it was fixed: of 794 stream rows in the corpus's
+        #  goldens, exactly ONE pinned a temperature, and that one was added by
+        #  hand.  So the temperature of every product stream in this project --
+        #  the number a student reads off a stream table and is asked to defend
+        #  -- was checked by nothing.  That is how a distillation column came to
+        #  publish its distillate 0.58 K warm, at its DEW point instead of its
+        #  bubble point, without a single golden noticing.  The `stream ... T`
+        #  row kind already worked; the generator just never wrote one.
+        #
+        #  DELIBERATELY NOT DONE HERE: a corpus-wide re-record to give every
+        #  existing case its T rows.  That would freeze ~550 temperatures no
+        #  one has looked at, and this project has already recorded what that
+        #  costs -- a golden recorded before anybody read it makes a wrong
+        #  answer the reference.  Cases gain the rows as they are re-recorded
+        #  for reasons of their own; the sweep is Vitor's call.
         printf '%s\n' "$streams_sec" | grep -P '"\w+": \{.*"F":' | while read -r line; do
-            local s f
+            local s f t
             # head -1: a stream line has TWO ": {" (the name and the
             # "composition" sub-object) --- take the stream name only.
             s=$(printf '%s' "$line" | grep -oP '"\K\w+(?=": \{)' | head -1)
             f=$(printf '%s' "$line" | grep -oP '"F":\s*\K-?[0-9][0-9.eE+-]*' | head -1)
+            t=$(printf '%s' "$line" | grep -oP '"T":\s*\K-?[0-9][0-9.eE+-]*' | head -1)
             [ -n "$s" ] && [ -n "$f" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "F" "$f" "$reltol"
+            [ -n "$s" ] && [ -n "$t" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "T" "$t" "$reltol"
         done
         # kpis: every numeric key per unit (skip iterations)
         printf '%s\n' "$kpis_sec" | grep -P '"\w+": \{' | while read -r line; do

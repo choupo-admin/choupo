@@ -28,6 +28,7 @@ License
 
 #include "core/InfeasibleTrial.H"
 #include "core/Advisory.H"
+#include "unitOperations/saturation/BubblePoint.H"
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
 #include "solver/NewtonRaphson.H"
@@ -47,6 +48,110 @@ License
 #include "thermo/activityCoefficient/ActivityModel.H"
 
 namespace Choupo {
+
+namespace {
+
+//  THE DISTILLATE LEAVES AT ITS OWN BUBBLE POINT, not at the top tray's
+//  temperature -- and this lives in ONE function because the column has TWO
+//  solver paths (Wang-Henke and the simultaneous MESH) that each used to build
+//  this stream for themselves.  One decision, two transcriptions: a fix
+//  applied to either alone would have been right on half the corpus.
+//
+//  WHAT WAS WRONG.  Both paths wrote `T = T[0]` beside `vf = 0`, and those two
+//  statements cannot both be true.  Stage 1's equilibrium makes T[0]
+//  simultaneously the bubble point of the liquid x_1 and the DEW point of the
+//  vapour y_1; with a total condenser x_D = y_1, so publishing the condensate
+//  at T[0] reports a saturated LIQUID at the temperature where that
+//  composition is a saturated VAPOUR.  A total condenser without subcooling
+//  delivers it at the bubble point of x_D, which is lower -- measured at
+//  0.58 K on column01 (354.2109 published against 353.6301 computed), always
+//  in the same direction, widening with the boiling range and closing as the
+//  product approaches purity.  Every downstream unit that priced this stream
+//  inherited that bias.
+ProcessStream makeDistillate(const ThermoPackage& thermo,
+                             const sVector&       xD,
+                             scalar               D,
+                             scalar               P,
+                             scalar               T_topTray)
+{
+    ProcessStream d;
+    d.name = "distillate";
+    d.F    = D;
+    d.P    = P;
+    d.z    = xD;
+    d.vf   = 0.0;                       // a total condenser: already condensed
+
+    //  WHERE THE PACKAGE RESOLVES CHEMISTRY, THIS CORRECTION DOES NOT APPLY,
+    //  and pretending otherwise is worse than the defect it fixes.
+    //  `BubblePoint::compute` asks `Kvec` on the APPARENT composition, and in
+    //  a reactive electrolyte system that is not the equilibrium the stage
+    //  actually solved -- the reactive path owns that question through
+    //  `stageK`/`ReactiveVLE`, which resolve the speciation at each trial
+    //  state.  Applied blindly it made two sour-water columns WORSE, not
+    //  better: `column13` began publishing a distillate its own energy report
+    //  could prove impossible as a liquid, and `stripper01`'s energy residual
+    //  grew from 12.79 to 15.47 kW.  So the reactive columns keep the top
+    //  tray's temperature and are TOLD that they do -- a named gap, not a
+    //  silent one, and the next slice's work.
+    if (thermo.hasReactiveEquilibrium())
+    {
+        d.T = T_topTray;
+        static bool announcedReactive = false;
+        if (!announcedReactive)
+        {
+            std::cout << "  [distillate] this package resolves reactive"
+                         " equilibrium, so the distillate's own bubble point is"
+                         " NOT computed here: the apparent-basis K-values a"
+                         " bubble point would use are not the equilibrium this"
+                         " column solved.  Its temperature is the TOP TRAY's,"
+                         " which with a total condenser is the composition's"
+                         " DEW point -- so this stream is published warm, by"
+                         " an amount nobody has measured for a reactive"
+                         " system.\n";
+            announcedReactive = true;
+        }
+        AdvisoryLog::instance().add("model", "warning",
+            "distillationColumn distillate",
+            "the distillate temperature is the top tray's, not this"
+            " composition's bubble point, because the package resolves"
+            " reactive equilibrium and a bubble point on the apparent basis"
+            " would not be the equilibrium the column solved.  With a total"
+            " condenser the top tray's temperature is the DEW point, so the"
+            " stream is published warm; anything downstream that prices it"
+            " inherits that.");
+        return d;
+    }
+
+    //  T_topTray is the initial guess, and a good one: it is the DEW point of
+    //  this same composition, so the bubble point sits just below it.
+    const auto bub = BubblePoint::compute(thermo, xD, P, T_topTray);
+    if (bub.converged)
+    {
+        d.T = bub.T;
+        return d;
+    }
+
+    //  NEVER silently fall back on the temperature we have just called wrong.
+    //  Report the old value so the run completes, and say which number this is.
+    d.T = T_topTray;
+    std::cout << "  [distillate] WARNING: the bubble point of the distillate"
+                 " did not converge (residual " << bub.residual << " after "
+              << bub.iterations << " iterations), so its temperature is"
+                 " reported as the TOP TRAY's " << T_topTray << " K.  With a"
+                 " total condenser that is this composition's DEW point, so"
+                 " the stream is published WARM.\n";
+    AdvisoryLog::instance().add("numerics", "warning",
+        "distillationColumn distillate",
+        "the distillate's bubble point did not converge, so the top tray's"
+        " temperature is reported instead.  With a total condenser that is"
+        " this composition's DEW point, so the stream is published warmer"
+        " than it leaves, and anything downstream that prices it inherits"
+        " that.");
+    return d;
+}
+
+} // anonymous namespace
+
 
 namespace {
 
@@ -450,13 +555,7 @@ int DistillationColumn::solve(const DictPtr& dict,
 
     // ---- Produced streams (order: distillate, bottoms) ----------------
     produced_.clear();
-    ProcessStream dStream;
-    dStream.name = "distillate";
-    dStream.F    = D;
-    dStream.T    = T[0];
-    dStream.P    = P;
-    dStream.z    = xD;
-    dStream.vf   = 0.0;            // already condensed
+    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0]);
     produced_.push_back(dStream);
 
     ProcessStream bStream;
@@ -1399,9 +1498,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
 
     produced_.clear();
-    ProcessStream dStream;
-    dStream.name = "distillate"; dStream.F = D; dStream.T = T[0]; dStream.P = P;
-    dStream.z = xD; dStream.vf = 0.0;
+    ProcessStream dStream = makeDistillate(thermo, xD, D, P, T[0]);
     produced_.push_back(dStream);
     ProcessStream bStream;
     bStream.name = "bottoms"; bStream.F = Bf; bStream.T = T[N-1]; bStream.P = P;
