@@ -3,14 +3,26 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 19,
-  "registryTools": 19,
+  "liveTools": 21,
+  "registryTools": 21,
   "tools": [
     {
       "id": "what-is-temperature",
       "label": "What is a temperature?",
-      "teaches": "That 500.012 K is a claim about a platinum resistor and a chain of fixed points, not about nature: the kelvin is DEFINED by fixing the Boltzmann constant, REALISED by an entirely separate practical scale, and the gas thermometer that historically bridged them reads thermodynamic temperature only in a limit no experiment can reach.",
+      "teaches": "That a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: STATE, T, scale, sensor, signal, model and calibration, then a reported value with an uncertainty.  The quantity T, the unit K and the practical scale T90 are three different things; no instrument observes temperature itself; and decimal places are not uncertainty.",
       "href": "/app/?workspace=methods&tool=what-is-temperature"
+    },
+    {
+      "id": "thermometer-trust",
+      "label": "How do we know a thermometer is right?",
+      "teaches": "That a thermometer is never right by itself -- it is right the way a witness is credible: agreeing with itself (Regnault's comparability), agreeing with others (convergence), and being cross-examined.  ITS-90's own fixed points, the gas thermometer solved live by the engine, why platinum's melting point cannot carry a tenth of a degree, and Hasok Chang's four circles.",
+      "href": "/app/?workspace=methods&tool=thermometer-trust"
+    },
+    {
+      "id": "property-trust",
+      "label": "When a property database lies to you",
+      "teaches": "Never trust a thermophysical record merely because it exists: test its internal consistency and read its declared validity.  Thirteen records cross-examined against themselves, live -- water's own file disagrees with itself by 0.70 K, and a predictive glycerol correlation that asked to be validated misses by a factor of 19.",
+      "href": "/app/?workspace=methods&tool=property-trust"
     },
     {
       "id": "flash-operating-line",

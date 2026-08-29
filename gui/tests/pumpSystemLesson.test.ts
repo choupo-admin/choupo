@@ -189,7 +189,14 @@ describe("the claims are true of the run the page draws", () => {
     //  grows six-fold is that claim measured.
     expect(spread).toBeLessThan(1e-4);
     const demand = sweep.systemDP;
-    expect(demand[demand.length - 1]! / demand[0]!).toBeGreaterThan(6);
+    //  The BAND, not the claim, moved on 2026-08-29: the liquid-density fix
+    //  (the record's own Vliq anchoring Rackett) raised rho from 877 to
+    //  ~997 kg/m3, which grows the static term and shrinks the velocity at
+    //  the same mass flow -- so the demand ratio fell from ~6.4 to ~5.5.
+    //  The claim under test (static flat, demand grows severalfold) is
+    //  untouched; a band hand-picked around the WRONG density was the only
+    //  casualty.
+    expect(demand[demand.length - 1]! / demand[0]!).toBeGreaterThan(4);
   });
 
   it("friction grows ROUGHLY as the square — and the 'roughly' is real", () => {

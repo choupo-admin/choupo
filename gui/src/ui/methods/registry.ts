@@ -59,7 +59,8 @@ export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
-  | "what-is-temperature" | "flash-operating-line" | "bjerrum";
+  | "what-is-temperature" | "flash-operating-line" | "bjerrum"
+  | "thermometer-trust" | "property-trust";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -124,13 +125,48 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  one had been shown to teach anybody anything -- which is the wrong order,
   //  and the owner named the rule: Gall's law, simple first.
   {
+    //  REARCHITECTED 2026-08-29 on the owner's pedagogical ruling: one page,
+    //  one durable mental model, 10-15 minutes.  The boiling-point ladder
+    //  moved to `property-trust`; the gas thermometer, ITS-90's own fixed
+    //  points and the Chang/epistemology material moved to the deep dive
+    //  `thermometer-trust`; the Newton-iteration analogy was deleted.
     id: "what-is-temperature", label: "What is a temperature?",
     kind: "notes", status: "live",
-    teaches: "That 500.012 K is a claim about a platinum resistor and a chain "
-      + "of fixed points, not about nature: the kelvin is DEFINED by fixing "
-      + "the Boltzmann constant, REALISED by an entirely separate practical "
-      + "scale, and the gas thermometer that historically bridged them reads "
-      + "thermodynamic temperature only in a limit no experiment can reach.",
+    teaches: "That a temperature reading is the END OF A MEASUREMENT CHAIN, "
+      + "not a number nature printed on the system: STATE, T, scale, sensor, "
+      + "signal, model and calibration, then a reported value with an "
+      + "uncertainty.  The quantity T, the unit K and the practical scale "
+      + "T90 are three different things; no instrument observes temperature "
+      + "itself; and decimal places are not uncertainty.",
+    theory: "ch:criticals",
+  },
+  {
+    //  THE DEEP DIVE behind the page above, for the reader who wants the
+    //  metrology and the epistemology after the engineering -- split out so
+    //  nobody has to cross the philosophy of science to learn to interrogate
+    //  a Pt100.
+    id: "thermometer-trust", label: "How do we know a thermometer is right?",
+    kind: "notes", status: "live",
+    teaches: "That a thermometer is never right by itself -- it is right the "
+      + "way a witness is credible: agreeing with itself (Regnault's "
+      + "comparability), agreeing with others (convergence), and being "
+      + "cross-examined.  ITS-90's own fixed points, the gas thermometer "
+      + "solved live by the engine, why platinum's melting point cannot "
+      + "carry a tenth of a degree, and Hasok Chang's four circles.",
+    theory: "ch:criticals",
+  },
+  {
+    //  THE PROPERTY-DATA LESSON that used to sit inside the temperature
+    //  page, teaching the right words in the wrong place: the ladder's
+    //  subject is not what a temperature is, it is when a database can be
+    //  believed.
+    id: "property-trust", label: "When a property database lies to you",
+    kind: "notes", status: "live",
+    teaches: "Never trust a thermophysical record merely because it exists: "
+      + "test its internal consistency and read its declared validity.  "
+      + "Thirteen records cross-examined against themselves, live -- water's "
+      + "own file disagrees with itself by 0.70 K, and a predictive glycerol "
+      + "correlation that asked to be validated misses by a factor of 19.",
     theory: "ch:criticals",
   },
   {

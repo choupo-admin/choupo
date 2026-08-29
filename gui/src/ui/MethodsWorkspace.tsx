@@ -194,6 +194,12 @@ const FugShortcutTool = lazy(() =>
 const WhatIsTemperatureTool = lazy(() =>
   import("./methods/WhatIsTemperatureTool.js")
     .then((m) => ({ default: m.WhatIsTemperatureTool })));
+const ThermometerTrustTool = lazy(() =>
+  import("./methods/ThermometerTrustTool.js")
+    .then((m) => ({ default: m.ThermometerTrustTool })));
+const PropertyTrustTool = lazy(() =>
+  import("./methods/PropertyTrustTool.js")
+    .then((m) => ({ default: m.PropertyTrustTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -362,6 +368,8 @@ export function MethodsWorkspace() {
             : tool === "thiele" ? <ThielePelletTool />
             : tool === "fug" ? <FugShortcutTool />
             : tool === "what-is-temperature" ? <WhatIsTemperatureTool />
+            : tool === "thermometer-trust" ? <ThermometerTrustTool />
+            : tool === "property-trust" ? <PropertyTrustTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}
