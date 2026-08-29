@@ -171,9 +171,10 @@ export function ThermoView() {
           {ppName && (
             <Text size="sm" mb={4}>
               property package: <Text span ff="monospace" c="accent">{ppName}</Text>
-              <Text span c="dimmed"> — selected in constant/propertyDict; the
-              engine assembles it (components, ions, pairs, methods) from
-              data/standards/propertyPackages/.</Text>
+              <Text span c="dimmed"> — a LEGACY constant/propertyDict with the
+              retired <Text span ff="monospace">package</Text> selector.  The
+              engine refuses this grammar since 2026-07: re-import the case
+              (its thermo now lives inline in constant/thermoPhysPropDict).</Text>
             </Text>
           )}
           {activity ? <ModelBlock dict={activity} /> : !ppName &&

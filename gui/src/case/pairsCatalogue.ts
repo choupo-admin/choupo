@@ -5,7 +5,7 @@
   (→ the engine defaults that pair to ideal).
 
   Mirrors catalogue.ts: Vite's import.meta.glob inlines each
-  data/standards/binaryPairs/{NRTL,Wilson}/*.dat as raw text, parsed only to
+  data/standards/parameters/{NRTL,Wilson,UNIQUAC}/*.dat as raw text, parsed only to
   HARVEST the two component names + the model — NO physics, no parameters.  The
   engine still reads the real .dat; this is for the UI note only.
 \*---------------------------------------------------------------------------*/
@@ -14,10 +14,19 @@ import { parse, toJson } from "../dict/index.js";
 
 export interface PairEntry { model: string; a: string; b: string; }
 
-const NRTL_RAW = import.meta.glob("../../../data/standards/binaryPairs/NRTL/*.dat", {
+//  parameters/<model>/ is the pairs' home since Migration 2 (2026-07-16).
+//  This file globbed the RETIRED data/standards/binaryPairs/ for six weeks
+//  after that: hasPair() was permanently false, so the Explorer and the
+//  McCabe tool told the student "no curated NRTL pair covers ethanol-water"
+//  (the pair exists) and silently switched their model pick to UNIFAC.
+//  An empty glob raises no error -- which is exactly how it stayed unseen.
+const NRTL_RAW = import.meta.glob("../../../data/standards/parameters/NRTL/*.dat", {
   query: "?raw", import: "default", eager: true,
 }) as Record<string, string>;
-const WILSON_RAW = import.meta.glob("../../../data/standards/binaryPairs/Wilson/*.dat", {
+const WILSON_RAW = import.meta.glob("../../../data/standards/parameters/Wilson/*.dat", {
+  query: "?raw", import: "default", eager: true,
+}) as Record<string, string>;
+const UNIQUAC_RAW = import.meta.glob("../../../data/standards/parameters/UNIQUAC/*.dat", {
   query: "?raw", import: "default", eager: true,
 }) as Record<string, string>;
 
@@ -37,6 +46,7 @@ function harvest(raw: Record<string, string>, model: string): PairEntry[] {
 export const PAIRS: PairEntry[] = [
   ...harvest(NRTL_RAW, "NRTL"),
   ...harvest(WILSON_RAW, "Wilson"),
+  ...harvest(UNIQUAC_RAW, "UNIQUAC"),
 ];
 
 /** Is there a curated pair for {a,b} under this activity model? (order-free) */

@@ -1409,7 +1409,13 @@ function listFilesUnder(cf: import("../case/types.js").CaseFiles,
     if (cf.outerDict) builtin.push("system/outerDict");
     if (cf.postDict) builtin.push("system/postDict");
   } else if (prefix === "constant") {
-    builtin.push("constant/propertyDict");
+    //  Unconditional until 2026-08-29: every case's file tree showed a
+    //  phantom "constant/propertyDict" -- the RETIRED v1 name the engine
+    //  refuses -- even when the real file is constant/thermoPhysPropDict
+    //  (which arrives via extraFiles below).  List it only when the case
+    //  actually carries one (a legacy case being inspected).
+    if (cf.rawFiles?.["constant/propertyDict"] !== undefined)
+      builtin.push("constant/propertyDict");
     if (cf.reactions) builtin.push("constant/reactions");
   }
   out.push(...builtin);
