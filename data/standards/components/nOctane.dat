@@ -48,6 +48,44 @@ idealGasHeatCapacity
     Trange        (250  1500);
 }
 
+//  LIQUID Cp (added 2026-08-29, ruled by Vitor: the ThermoML-archive route,
+//  already used for the fitNRTL02 VLE datasets, extends to a heat capacity).
+//
+//  THE COEFFICIENTS ARE CHOUPO'S OWN FIT, not the authors': a quadratic
+//  regressed on the ELEVEN measured points of
+//      Coulier, Ballerat-Busserolles, Mesones, Lowe & Coxam,
+//      J. Chem. Eng. Data 60 (2015) 1563-1571, doi 10.1021/je5008444
+//      (pure n-octane, flow calorimetry, 283.15-333.15 K, 0.1 MPa),
+//  as transcribed in the NIST ThermoML archive (thirdParty/thermoml/xml/
+//  10.1021/je5008444.xml, re-read from the XML on the day of this fit, not
+//  from any report about it).  Fit rms 0.18 J/(mol K), max residual 0.35,
+//  both inside the per-point expanded uncertainties (0.42-0.51, TRC's
+//  evaluation, NOT the authors' own statement).  The declared Trange is the
+//  data's actual span and nothing wider.
+//
+//  INDEPENDENTLY CORROBORATED at 298.15 K by three other laboratories in the
+//  same archive, each measuring octane incidentally to a different study:
+//      253.94  Pardo et al. 2005, doi 10.1016/j.tca.2004.11.022  (DSC)
+//      254.08  Lei et al. 2010,   doi 10.1021/je100145f          (DSC)
+//      253.89  Navarro et al. 2016, doi 10.1016/j.fluid.2016.08.035 (DSC)
+//  against Coulier's 253.98 and this fit's 254.20 -- a 0.075 % spread across
+//  four apparatus that nobody arranged.  Also on record: Regueira et al.
+//  2017 (doi 10.1016/j.jct.2017.03.034, 323-383 K) sits a consistent
+//  ~0.5 % BELOW Coulier in their three-point overlap -- a finding between
+//  two laboratories, deliberately NOT spliced into one fit, and the reason
+//  this window stops at 333.15 K instead of borrowing their range.
+//
+//  provenance: transcribedNotCheckedAgainstArticle -- the archive was read,
+//  the paper was not; the citation says where these numbers are supposed to
+//  come from, not that anybody here has read them back off the page.
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = 181.6086 + 7.339146e-2 T + 5.7048860e-4 T^2
+    coefficients  (181.6086   7.339146e-2   5.7048860e-4);
+    Trange        (283.15  333.15);
+}
+
 groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 6; } );

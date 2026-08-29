@@ -13,7 +13,7 @@
 componentMolarFlows
 {
     nHexane    20 kmol/h;
-    C8H18     0 kmol/h;
+    C8H18     20 kmol/h;
 }
 
 T               623.1493054 K;

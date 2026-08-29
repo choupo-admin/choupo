@@ -5,43 +5,51 @@
   A hydrocarbon feed (n-hexane) needs to be heated to
   ~530 K before downstream conversion.
 
-  THE FEED USED TO SAY 50/50 n-hexane / n-octane, AND THE OCTANE HALF WAS
-  NEVER PRICED.  Neither data/standards/components/nOctane.dat nor this
-  case's own sealed C8H18.dat carries a `liquidHeatCapacity` block, and the
-  exchanger's mixture Cp used to skip a component that has none -- so twenty
-  of the forty kmol/h contributed EXACTLY ZERO heat capacity, in a stream
-  declared vf 0.  Nothing said so: the eps-NTU loop converged, the run exited
-  0, and the duty, the Dowtherm flow and the EUR/h -- this case's own
-  inspection question -- all descended from an mCp roughly half the truth.
-  The exchanger refuses that now (2026-08-28) and this case is what the
-  refusal caught.
+  THE FEED SAYS 50/50 n-hexane / n-octane, AND FOR THREE DAYS THE OCTANE
+  HALF COULD NOT BE PRICED.  The history is the lesson, so it stays here.
+  Originally neither the catalogue's nOctane.dat nor this case's own
+  C8H18.dat carried a `liquidHeatCapacity` block, and the exchanger's
+  mixture Cp silently skipped a component that has none -- twenty of the
+  forty kmol/h contributed EXACTLY ZERO heat capacity, in a stream declared
+  vf 0, and the duty descended from an mCp roughly half the truth at exit 0.
+  The exchanger learned to refuse that (2026-08-28; this case is what the
+  refusal caught), the octane was parked at zero flow with the gap named,
+  and on 2026-08-29 the gap CLOSED: a cited liquid Cp landed in
+  nOctane.dat -- Choupo's own quadratic on the eleven flow-calorimetry
+  points of Coulier et al., J. Chem. Eng. Data 60 (2015) 1563 (doi
+  10.1021/je5008444), corroborated at 298 K by three independent
+  laboratories to 0.075 % -- and `C8H18 20 kmol/h;` came back.
 
-  The octane is declared at ZERO flow rather than deleted, for two reasons.
-  It is the honest record of a gap: the catalogue cannot price liquid
-  n-octane, and a curated, cited liquid Cp is the one thing needed to put
-  `C8H18 20 kmol/h;` back and have the two-component feed mean something.
-  And it moves no ENERGY number.  Exactly two rows of the golden change --
-  the total molar flow of the two process streams, halved, because twenty
-  kmol/h of matter that was declared present has stopped being declared.
-  Q_kW, both outlet temperatures, the Dowtherm mass flow and the EUR/h are
-  unchanged to every recorded digit, and that is the evidence for the
-  paragraph above: the exchanger was already computing 20 kmol/h of hexane
-  and calling it forty of a mixture.  What changed is that the declaration
-  now says what the arithmetic was doing.  HP steam can deliver at most
-  ~525 K (T_sat at 40 barg) -- not enough; the next escalation up the
-  temperature ladder is a hot-oil loop, the textbook choice in the
-  250-400 C range being Dowtherm A (delivered here at 623 K).
+  THE DUTY MOVED FROM 330.1 TO 895.1 kW, AND THE JUMP IS THE MEASURE OF
+  WHAT THE SILENT Cp = 0 HAD BEEN HIDING.  Note it is 2.7x, not 2x:
+  in geometry mode nothing hands you the duty -- doubling mCp halves NTU
+  (13.8 -> 5.0), effectiveness falls off its ~1.00 pin, both outlet
+  temperatures move, and the new duty falls out of the eps-NTU solution.
+  A student who expected "twice the moles, twice the heat" has just met
+  the difference between a rating and a spec.
 
-  NOTE: the 25 m2 / U=600 exchanger is deliberately generous -- NTU=13.8,
-  C_r=0.06 give effectiveness ~= 1.00, so the cold outlet is PINNED to the
-  623 K oil inlet, OVERSHOOTING the 530 K target by ~93 K.  The case shows
-  a pinned-effectiveness exchanger; shrink the area to land near 530 K.
+  SAID PLAINLY, because the run says it too: the fit's window is
+  283.15-333.15 K (the data's actual span) and this exchanger integrates
+  Cp from 298 to ~619 K, so ~286 of the 321 K of that path are an
+  ANNOUNCED extrapolation ([cp] lines in the log) -- announced, priced,
+  and far better than the zero it replaces, but not a measured claim
+  above 333 K.  HP steam can deliver at most ~525 K (T_sat at 40 barg)
+  -- not enough; the next escalation up the temperature ladder is a
+  hot-oil loop, the textbook choice in the 250-400 C range being
+  Dowtherm A (delivered here at 623 K).
+
+  NOTE: the 25 m2 / U=600 exchanger is deliberately generous -- with the
+  full 40 kmol/h feed, NTU = 5.0 and effectiveness 0.987, so the cold
+  outlet lands at ~619 K, OVERSHOOTING the 530 K target by ~89 K.  (With
+  the octane half unpriced it was NTU = 13.8 and an outlet pinned to the
+  oil inlet -- the same generosity, hidden by half the mCp.)  The case
+  shows a near-pinned exchanger; shrink the area to land near 530 K.
 
   Hardware (the credo): area + U + flow direction.  The duty Q, the
   outlet temperatures, and the Dowtherm flowrate fall out of the
   effectiveness-NTU solution.
 
-  Process : 20 kmol/h at 320 K, 5 bar (n-hexane; see the note above)
+  Process : 40 kmol/h at 320 K, 5 bar (50/50 n-hexane / n-octane)
   Utility : Dowtherm A loop, delivery 623 K (350 C), `utility dowthermA;`
             pulls the rest of the conditions from the catalogue
   Hardware: A = 25 m^2, U = 600 W/(m^2.K), counter-current
