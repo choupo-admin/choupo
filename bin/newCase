@@ -36,12 +36,14 @@
 #  The STRUCTURE is created here (load-bearing, never guessed); the PHYSICS
 #  is yours to fill.
 #
-#  The skeleton (all five files):
+#  The skeleton (all seven files):
 #      <name>.cho                 empty marker -- the GUI's "openable" entity
 #      system/controlDict         application + description + verbosity
 #      system/flowsheetDict       units() + connections() -- EMPTY topology
 #      constant/thermoPhysPropDict components() -- EMPTY -- + ideal gammaPhi (v2)
 #      CLAUDE.md                  per-case brief (seeded with your statement)
+#      ai/choupo-authoring.md     the authoring rules, LOCAL + offline (llmctx)
+#      AGENTS.md                  vendor-neutral agent entry; points at ai/
 #
 #  Cases live in $CHOUPO_WORKSPACE (default $CHOUPO_HOME/cases, gitignored).
 #  Set CHOUPO_WORKSPACE before sourcing etc/bashrc to own them elsewhere.

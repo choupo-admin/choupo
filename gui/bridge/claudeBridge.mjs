@@ -43,6 +43,7 @@
 
 import { WebSocketServer } from "ws";
 import { spawn } from "node-pty";
+import { execFileSync } from "node:child_process";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve, join, sep, relative, basename } from "node:path";
@@ -319,7 +320,7 @@ PHASES (in order; NEVER jump ahead -- re-running an earlier one means telling th
 2 THERMO + DATA  -- *** GATE: establish WITH THE USER and get sign-off before moving on. ***
               (a) DERIVE the thermo model from the chemistry (ions-in-water->pitzer/eNRTL +
               electrolyte config; polar/LLE->NRTL; mild->Wilson; no pair data->UNIFAC; ideal
-              only if truly ideal), write it EXPLICITLY in constant/propertyDict, and present a
+              only if truly ideal), write it EXPLICITLY in constant/thermoPhysPropDict, and present a
               Modelling-Fork Ledger (each choice + the rejected alternative + one line of
               physics).  (b) Run \`choupoProps <case> --gap-report\` (the ONLY gap authority)
               and lay out WHICH DATA ARE MISSING.  NEVER type a property number from your
@@ -400,67 +401,20 @@ function safeJoin(dir, rel) {
   return abs;
 }
 
-// The deterministic 5-file skeleton, as a {relPath: content} map.  This MIRRORS
-// bin/newCase -- keep the two in sync (structure is load-bearing, never guessed;
-// the physics is the user's to fill via a text editor or the console).
-function scaffoldSkeleton(name, statement) {
-  const desc = (statement && statement.trim()) || name;
-  const files = {};
-  files[`${name}.cho`] = "";
-  files["system/controlDict"] =
-`/*---------------------------------------------------------------------------*\\
-  controlDict  --  meta-control for this case.
-\\*---------------------------------------------------------------------------*/
-
-application   choupoSolve;        // choupoSolve | choupoBatch | choupoCtrl
-description   "${desc.replace(/"/g, "'")}";
-verbosity     3;                  // 0 silent .. 3 info (Newton iters) .. 4 debug
-`;
-  files["system/flowsheetDict"] =
-`/*---------------------------------------------------------------------------*\\
-  flowsheetDict  --  topology (units + connections).  Stream state lives in 0/.
-
-  CURATION phase: this case is EMPTY.  Add units below; their \`in\` and
-  \`outputs\` names define graph streams.  Author one complete 0/<stream> file
-  for each graph stream before running.
-  UNITS ARE MANDATORY on every dimensional value.
-\\*---------------------------------------------------------------------------*/
-
-units
-(
-);
-`;
-  files["constant/propertyDict"] =
-`/*---------------------------------------------------------------------------*\\
-  propertyDict  --  the components + thermodynamic models for this case.
-
-  EMPTY skeleton.  Add your components (from data/standards/components/) and
-  choose ONE global model set -- the default.  "All models are wrong, some are
-  useful": start ideal, SEE the result, then refine by evidence.
-  UNITS ARE MANDATORY on every dimensional value.   e.g. components ( ethanol water );
-\\*---------------------------------------------------------------------------*/
-
-components ( );
-
-activityModel
-{
-    model        ideal;            // ideal | NRTL | Wilson   (+ pairs ( ... ))
-}
-
-equationOfState
-{
-    model        idealGas;         // idealGas | PengRobinson | SRK
-}
-`;
-  files["CLAUDE.md"] = claudeMdTemplate(name).replace(
-    "## Intent (this case)",
-    `## Problem statement\n${desc}\n\n## Intent (this case)`);
-  // Born-taught for ANY local agent, vendor-neutral + offline: the rules in ai/,
-  // and the two entry files (CLAUDE.md above + AGENTS.md) point at them.  Mirrors
-  // what "Download case (.zip)" writes (gui/src/case/caseTeaching.ts).
-  files["AGENTS.md"] = agentsBrief(name, desc);
-  files["ai/choupo-authoring.md"] = buildAuthoringGuide();
-  return files;
+// The case skeleton has ONE writer: bin/newCase.  This bridge used to carry
+// its own copy of the file map ("keep the two in sync") and the copy drifted
+// in the worst field possible -- it wrote the RETIRED v1 constant/propertyDict,
+// which every binary refuses by name, so a GUI-created case was born broken
+// (found 2026-08-29).  A mirror that must be kept in sync is a second home for
+// a load-bearing structure; the bridge now shells out to the one writer.
+function scaffoldWithNewCase(parentDir, name, statement) {
+  const args = ["-d", parentDir, name];
+  const stmt = String(statement || "").trim();
+  if (stmt) args.push(stmt);
+  execFileSync(join(PROJECT_ROOT, "bin", "newCase"), args, {
+    env: { ...process.env, CHOUPO_HOME: PROJECT_ROOT },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
 }
 
 // Files we expose when reading a case from disk: the dicts + marker + brief.
@@ -726,12 +680,8 @@ function handleRest(req, res) {
       const caseDir = join(parent, name);
       if (existsSync(caseDir)) { sendJson(res, 409, { error: `'${name}' already exists in ${parent}` }); return; }
       try {
-        const files = scaffoldSkeleton(name, String(body.statement || ""));
-        for (const [rel, content] of Object.entries(files)) {
-          const abs = join(caseDir, rel);
-          mkdirSync(dirname(abs), { recursive: true });
-          writeFileSync(abs, content, "utf8");
-        }
+        scaffoldWithNewCase(parent, name, body.statement);
+        const files = readCaseFiles(caseDir);
         const cleared = clearPriorSession(caseDir);  // a NEW case starts blank, never resumes a deleted namesake's session
         console.log(`[claudeBridge] scaffolded new case ${caseDir}${cleared ? " (cleared an orphan Claude session)" : ""}`);
         sendJson(res, 201, { name, dir: caseDir, files });

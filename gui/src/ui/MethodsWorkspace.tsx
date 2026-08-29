@@ -553,7 +553,7 @@ function HandOffFooter({ spec, alerts }: { spec: ExploreSpec | null; alerts: Rea
         <Stack gap={4} mt={6}>
           <Text size="xs" c="dimmed">
             Create or open a case, then put this block in <code>system/propsDict</code> under
-            <code> operations ( … )</code>; keep <code>constant/propertyDict</code> in sync with
+            <code> operations ( … )</code>; keep <code>constant/thermoPhysPropDict</code> in sync with
             the components/models above, and <code>runCase</code>.
           </Text>
           <Group gap="xs">

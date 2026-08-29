@@ -242,7 +242,7 @@ export function CaseIntro() {
     ? guide.model
     : (activity || eos
         ? `activity: ${activity ?? "—"},  EoS: ${eos ?? "—"}`
-        : "the thermodynamic models declared in constant/propertyDict");
+        : "the thermodynamic models declared in constant/thermoPhysPropDict");
   const trace = guide
     ? guide.trace
     : isProps

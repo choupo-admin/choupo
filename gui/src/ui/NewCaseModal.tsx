@@ -33,8 +33,10 @@ License
   Creating a case INITIALISES a folder (it is not just written at the end), so
   the target folder is picked up front: the navigator opens at the workspace but
   you can browse anywhere in your tree (the bridge fences writes to $HOME /
-  project / workspace).  The deterministic 5-file skeleton is written by the
-  bridge -- this React app only issues the create-intent (runner, not editor).
+  project / workspace).  The deterministic skeleton is written by bin/newCase,
+  which the bridge shells out to (ONE writer -- the bridge used to carry its
+  own drifted copy) -- this React app only issues the create-intent (runner,
+  not editor).
   It authors NO physics (empty components/units); you fill the dicts in an editor
   or via the Assistant console.  The problem statement seeds the case CLAUDE.md.
 \*---------------------------------------------------------------------------*/

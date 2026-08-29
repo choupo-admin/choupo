@@ -294,6 +294,18 @@ ThermoPackage::loadComponentSet(std::vector<std::string> names,
     return names;
 }
 
+namespace
+{
+    // ONE home for the empty-components refusal (two assembly paths raise it).
+    // A freshly scaffolded case (bin/newCase) ships with this list DELIBERATELY
+    // empty, so this is the first refusal a new author meets -- it must name
+    // the file and the form of the remedy, not just the fact.
+    const char* emptyComponentsMsg =
+        "thermophysicalPropertySystem: 'components' list is empty -- declare"
+        " the case's components in constant/thermoPhysPropDict, e.g."
+        " components ( water ethanol ); (valid names: data/standards/components/)";
+}
+
 void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
                                      const DictPtr& activityDict,
                                      const DictPtr& eosDict,
@@ -305,8 +317,7 @@ void ThermoPackage::assembleTwoPhase(const std::vector<std::string>& namesIn,
     // v2-NATIVE two-phase assembly: the (liquid, vapour) world invariants,
     // built straight from the model-config dicts the builder prepared.
     if (namesIn.empty())
-        throw std::runtime_error("thermophysicalPropertySystem: 'components'"
-            " list is empty");
+        throw std::runtime_error(emptyComponentsMsg);
     const auto names = loadComponentSet(namesIn, db);
 
     solventName_.clear();
@@ -358,8 +369,7 @@ void ThermoPackage::assembleNamedPhases(const std::vector<std::string>& namesIn,
     // v2-NATIVE named-phase assembly (gammaGamma LLE/VLLE): the invariants of
     // the flat `phases (...)` reader path, built from config dicts directly.
     if (namesIn.empty())
-        throw std::runtime_error("thermophysicalPropertySystem: 'components'"
-            " list is empty");
+        throw std::runtime_error(emptyComponentsMsg);
     if (phaseConfigs.empty())
         throw std::runtime_error("thermophysicalPropertySystem: gammaGamma"
             " declares no phases");
