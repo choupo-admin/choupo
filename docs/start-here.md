@@ -44,11 +44,15 @@ enough to check with a pen.  Open the log and find the **Rachford-Rice Newton
 iterations** — printed at the default verbosity, not in a debug mode, and the
 habit the rest of the corpus depends on.
 
-Your terminal will also carry two extrapolation warnings: at 370 K both
-components are being evaluated outside their fitted vapour-pressure range, and
-the run says so and returns the answer anyway.  That is the project's posture
-in the first case you run — announce, never silently refuse and never silently
-pretend.
+Your terminal will also carry three validity notices, and they are worth a
+minute each.  Benzene's vapour pressure is evaluated at 370 K, past the top of
+its fitted range — so is the enthalpy path the energy report integrates.  The
+third is the interesting one: toluene is flagged at **380.25 K, a temperature
+you never declared** — the solver visited it while probing the phase boundary,
+and the announcement is about that trial state, not about your flash.  All
+three return their answer anyway.  That is the project's posture in the first
+case you run — announce, never silently refuse and never silently pretend —
+and it starts with the solver's own footsteps.
 
 *New idea: a case is a directory of text files, and the answer is computed in
 front of you.*
