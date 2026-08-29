@@ -238,7 +238,7 @@ units
 
     { name still;  type batchStill;
       initial { T 350 K; P 1 bar; V 0.001; totalMoles 0; }
-      operation { mode constantRate;  F_vap 2.0e-5 kmol/s;  P 1 bar; } }
+      operation { F_vap 2.0e-5 kmol/s;  P 1 bar; } }
 );
 
 recipe
@@ -283,7 +283,7 @@ variables { A 17; F_steam 1500 kg/h; }
 
 tearStreams    (V_1  V_2 );
 recycleSolver  Wegstein;
-recycleQmin    -0.7;            // extra damping for counter-current
+recycleWegsteinQmin  -0.7;      // extra damping for counter-current
 
 units
 (

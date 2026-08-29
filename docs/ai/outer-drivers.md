@@ -9,8 +9,10 @@ One driver per case; `type` selects it.  Registered types
 | `type` | what it does |
 |---|---|
 | `sweep` | vary ONE dict scalar over a range, record responses → CSV |
+| `gridSweep` | 2-D grid over two parameter{} blocks, long-form CSV |
+| `paretoSweep` | Pareto front by epsilon-constraint over the SQP, one constrained optimisation per point |
 | `designSpec` | Newton-ND on case `$variables` until named targets are met |
-| `optimization` | Nelder-Mead min/max of a KPI / stream field / cost |
+| `optimization` | Nelder-Mead or SQP min/max of a KPI / stream field / cost |
 | `fitBinaryPair` | **RETIRED** — the factory throws with a pointer to `fitParameters` (choupoProps), the canonical fit engine |
 
 ## Which driver for which question
@@ -155,7 +157,7 @@ Canonical cases: `tutorials/steady/optimisation/optim01_column_reflux`
 
 ```
 type    optimization;
-method  nelderMead;                        // the only method (SQP is roadmap)
+method  nelderMead;                        // or `sqp` (the constrained method)
 
 variables                                  // 1..n knobs, RAW dict paths
 (
@@ -190,8 +192,9 @@ report  { file optimization_history.csv; }
   an infinite penalty (the simplex contracts away from it) — announced, not
   hidden.  Inner-pass chatter is silenced; the optimum is replayed once at
   full verbosity at the end.
-* No constraints beyond the box — a purity floor etc. needs a penalty term
-  in the objective (exercise) or the roadmap SQP.
+* Beyond the box, a `constraints ( { kpi <path>; atMost|atLeast|equals <rhs>;
+  tol <x>; } ... );` block is SHIPPED — `method sqp;` only (Nelder-Mead stays
+  unconstrained: give it a penalty term in the objective, or switch to sqp).
 
 ## 4. Parameter estimation
 
@@ -205,11 +208,6 @@ promote-proposal writer.  Full recipe + the identifiability lesson:
 (choupoProps) as the replacement; `fitNRTL01_ethanol_water` was migrated to
 fitParameters keeping its golden.  There is no runnable grammar to document
 (historical note only).
-
-Known limitation (CLAUDE.md §14): it requires the `pairs` INLINE in
-`constant/thermoPhysPropDict` (it mutates them in-memory) — a case using
-external pair files (`constant/parameters/...`) will not fit.  It is
-slated for retirement; prefer `fitParameters` for anything new.
 
 ## The sweep CSV becomes a one-click plot in the GUI
 

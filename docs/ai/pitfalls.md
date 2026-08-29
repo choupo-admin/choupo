@@ -27,14 +27,12 @@ showing the wrong number?") accept only multiplicative units (`bar`,
 `m2`.  (Both `m3`/`m^3` are in the registry; the tokenizer just
 doesn't reach the `^` form.)
 
-### UNIFAC: no `=` in a group name (alkenes/alkynes absent)
-Same tokenizer limitation: `=` is not a word character, so UNIFAC subgroup
-names that contain it — the alkene/alkyne groups `CH2=CH`, `CH=CH`, `C=C` — are
-NOT in `data/standards/parameters/UNIFAC/groups.dat` and cannot be declared.  UNIFAC works
-for saturated families (alkanes, aromatics, alcohols, ketones, esters, ethers,
-acids, amines, chloro, water); a system needing an alkene group must use a
-fitted activity model (NRTL/UNIQUAC) instead.  (Fixable by extending the
-tokenizer, but deliberately deferred — not a launch blocker.)
+### UNIFAC: `=` in a group name parses (alkene/alkyne groups available)
+Unlike `^`, `=` IS a word character in the tokenizer (added exactly for UNIFAC
+subgroup names), so the alkene/alkyne groups `CH2=CH`, `CH=CH`, `CH2=C`,
+`CH=C`, `C=C` ship in `data/standards/parameters/UNIFAC/groups.dat` and can be
+declared directly, alongside the saturated families (alkanes, aromatics,
+alcohols, ketones, esters, ethers, acids, amines, chloro, water).
 
 ### `kmol/s` is the canonical molar flow unit
 `F 100;` is `100 kmol/s` (huge!).  Always `F 100 kmol/h;` or `F 0.0278
@@ -84,9 +82,14 @@ shipped components lives in `data/standards/components/` (see
   operation { bodyDiameter 0.5 m; numberOfTurns 5;... } }
 ```
 
-If you put `model Muschelknautz;` inside `operation {... }`, the
-unit silently falls back to the default model (`Lapple` for cyclone,
-`WangHenke` for distillation, `equilibrium` for crystalliser).
+The unit-level slot is the convention (type = which unit, model = which
+variant).  The cyclone happens to ALSO read an operation-level `model`
+key as an explicit legacy fallback (`Cyclone.cpp`), so
+`model Muschelknautz;` inside `operation {... }` still works there — but
+do not rely on that elsewhere: the distillation column's in-operation
+legacy key is `method`, not `model`, so an operation-level `model` there
+is unread (and flagged by the dict audit) while the column runs
+`WangHenke`.
 
 ### `reaction` / `crystallisation` / `dryingCurve` are STRING refs
 They point to a NAMED block in the corresponding `constant/<library>`

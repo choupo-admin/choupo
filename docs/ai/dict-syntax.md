@@ -68,7 +68,7 @@ operation
 {
     refluxRatio    2.5;
     feedStage      6;
-    stages         12;
+    nStages        12;
 }
 ```
 
@@ -180,15 +180,16 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
   -- note: degC/degF are affine, so a difference and an absolute differ;
   use `K` when in doubt.
 - **Length:** `m`, `mm`, `cm`, `km`, `in` (`inch`), `ft`.  (No `um`/`nm`.)
-- **Area:** `m2` (`m^2`), `cm2`, `mm2`.
-- **Volume:** `m3` (`m^3`), `L` (`l`), `mL` (`ml`).
+- **Area:** `m2`, `cm2`, `mm2`.
+- **Volume:** `m3`, `L` (`l`), `mL` (`ml`).
 - **Volumetric flow:** `m3/s`, `m3/h`, `L/s`, `L/h`, `L/min`.
 - **Time:** `s` (`sec`), `min`, `h` (`hr`), `day`.
 - **Mass:** `kg`, `g`, `t` (`ton`/`tonne`).
 - **Energy / power:** `J`, `kJ`, `MJ`, `W`, `kW`, `MW_power` (`MW_power`,
   not `MW` -- a bare `MW` would collide with `MPa`'s milli-prefix logic).
-- **Heat-transfer coefficient:** `W/(m2.K)`, `W/m2/K`, `W/(m^2.K)`,
-  `W/m^2/K`, `kW/(m2.K)`, `kW/(m^2.K)`.  (No bare `kW/m2/K`.)
+- **Heat-transfer coefficient:** `W/m2/K` (the one parseable spelling --
+  `^`, `(`, `)` are not word characters, so forms like `W/(m2.K)` never
+  survive the tokenizer).  (No `kW/m2/K`.)
 - **Mass-transfer coefficient / velocity:** `m/s`, `cm/s`, `mm/s`.
   (No `um/s` -- use `mm/s`, or `m/s` with the numeric value, e.g.
   `5.0e-5 m/s`.)
@@ -201,7 +202,8 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
   `ppm` (= mg/L, the w/v water-analysis convention -- NOT a fraction).
 - **Molar mass:** `kg/kmol`, `g/mol`.
 - **Molar energy:** `J/mol`, `kJ/mol`, `J/kmol`, `kJ/kmol`.
-- **Molar heat capacity:** `J/(mol.K)`, `J/(kmol.K)`, `kJ/(kmol.K)`.
+- **Molar heat capacity:** no parseable named unit (`^`, `(`, `)` are not
+  word characters) -- use the bracket form or raw SI (J/mol/K).
 - **Dimensionless:** `-`, `%`.
 
 ### Bracket form (when no named unit fits)
@@ -279,7 +281,7 @@ expression evaluated against the simulation result:
 ```
 variables
 {
-    Q_total       { compute "effect1.Q + effect2.Q + effect3.Q"; unit kW; }
+    Q_total       { compute "effect1.duty + effect2.duty + effect3.duty"; unit kW; }
     water_evap    { compute "effect1.F_vap_mass + effect2.F_vap_mass + effect3.F_vap_mass"; unit kg/h; }
     economy       { compute "water_evap / effect1.F_steam"; }
 }

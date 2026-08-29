@@ -68,7 +68,8 @@ case/
 │   ├── thermoPhysPropDict REQUIRED -- the thermophysical system (v2 grammar,
 │   │                      `recordType thermophysicalPropertySystem;`):
 │   │                      components + the equilibrium formulation
-│   │                      (gammaPhi / phiPhi / henryDilute / electrolyte)
+│   │                      (gammaPhi / gammaGamma / phiPhi / diluteSolution
+│   │                      / electrolyteGammaPhi)
 │   │                      + correlation and parameter declarations
 │   ├── propertyManifest   record-ownership registry written by
 │   │                      bin/choupo-import; `sealed true;` forbids any
@@ -112,7 +113,7 @@ them in answers to users.
    `../engine-capabilities.md` §1):
 
    1. **Intrinsic, universal** pure-compound props live in
-      `data/standards/components/<name>.dat`.  Frozen, partilhado
+      `data/standards/components/<name>.dat`.  Frozen, shared
       between cases.
    2. **Pair-dependent** props live in `data/standards/<feature>/<pair>.dat`
       (parameters/NRTL, parameters/Wilson, parameters/Henry,...).  Frozen.
@@ -199,9 +200,9 @@ Big changes, recent first:
 
 - The v2 case grammar (2026-07-17): `constant/thermoPhysPropDict`
   (`recordType thermophysicalPropertySystem; schemaVersion 2;`) declares
-  the whole system inline — the four VLE worlds selected by
-  `equilibrium.formulation` (`gammaPhi` / `diluteSolution` / `phiPhi` /
-  `electrolyteGammaPhi`), per-group standard states, caloric routes, and
+  the whole system inline — the five VLE worlds selected by
+  `equilibrium.formulation` (`gammaPhi` / `gammaGamma` / `diluteSolution` /
+  `phiPhi` / `electrolyteGammaPhi`), per-group standard states, caloric routes, and
   declared→verified→refused parameter files.  Cases are sealed
   self-contained by `constant/propertyManifest` (bin/choupo-import).
   See `thermo.md`.

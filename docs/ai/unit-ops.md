@@ -142,7 +142,8 @@ activity-based equilibrium the same rate law converges to as `V_R` grows.
 (`batchReactor`/`dynamicCSTR` remain power-law only.)
 
 **Non-isothermal** (multi-reaction path).  `thermalMode isothermal` (default) ·
-`adiabatic` · `heatExchange { UA; T_coolant; }`, plus `T_guess` (K).
+`adiabatic` · `heatExchange` (with flat `UA;` and `T_coolant;` keys beside it in
+`operation`), plus `T_guess` (K).
 ```
 operation { V_R <m^3>;  thermalMode adiabatic;  T_guess 350; }
 ```
@@ -154,9 +155,10 @@ lands on the one root — leaving a single function of temperature,
 removed* balance, and it can have **three** roots.  Choupo does not hide that: it
 **scans** the bracket, prints every steady state it finds, and reports the one nearest
 `T_guess`.  Requires `standardThermochemistry` on every reacting species.  Example:
-`cstr04_adiabatic` (esterification, +82 K; the PFR on the same reaction reaches +83 K,
+`cstr04_adiabatic` (esterification, +104 K; the PFR on the same reaction reaches +105 K,
 the difference being the back-mixing the CSTR pays for) · `cstr05_multiplicity` (three
-steady states: 300.4 / 348.4 / 391.3 K — `T_guess` picks the branch; KPI `steadyStates`
+steady states — `T_guess` picks the branch, and the shipped case converges the ignited
+one at 405.9 K; KPI `steadyStates`
 counts them) · `cstr06_jacketed` (`Q_kW` equals `UA (T_coolant − T_out)` to the digit).
 
 ### `pfr`
@@ -172,7 +174,8 @@ For a SERIES network the PFR beats the CSTR (no back-mixing keeps the intermedia
 `pfr03_series_selectivity` gives 79 % of B where `cstr03` gives 53 %, same τ.
 
 **Non-isothermal** (multi-reaction path).  `thermalMode isothermal` (default — T imposed,
-duty a result) · `adiabatic` · `heatExchange { U; areaPerVolume; T_coolant; }`.
+duty a result) · `adiabatic` · `heatExchange` (with flat `U;`, `areaPerVolume;` and
+`T_coolant;` keys beside it in `operation`).
 ```
 operation { V_R <m^3>; nSteps 100;  thermalMode adiabatic; }
 ```
@@ -181,7 +184,7 @@ The reactor marches the **total enthalpy** `H` (elements datum) beside the speci
 datum the heat of reaction is already inside `H`, and an adiabatic reactor conserves it
 (`Q_kW = 0` exactly).  `T(V)` lands in the axial profile — a hot spot is something you
 *see*.  Requires `standardThermochemistry` on every reacting species (a fictitious toy has no
-elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +83 K).
+elements datum → refused, loudly).  Example: `pfr04_adiabatic` (esterification, +105 K).
 NOTE: `cstr`/`pfr` compute concentration on the **liquid** molar volume
 (Vliq) — a liquid-basis model.  For a GAS-phase reactor prefer
 `conversionReactor` (below).
@@ -570,8 +573,8 @@ source.  **σ is required**: add `transport { surfaceTension { model BrockBird; 
 thermoPhysPropDict or declare `sigma`.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
 `dP_column_kPa`, `downcomerBackup_max_mm`, `downcomerFloodStages`, `weepingStages`;
 profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
-Examples: `column09_tray_hydraulics` (design → D = 1.322 m) · `column10_flooding`
-(same column at 1.10 m: identical stream table, stage 14 at 115.6 % of flood).
+Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`
+(same column at 1.10 m: identical stream table, stage 14 at 114.5 % of flood).
 
 **Reactive distillation (`simultaneous` only).**  An equilibrium reaction on
 named catalytic stages.  Restricted to **mole-conserving (Σν = 0)** reactions
@@ -682,19 +685,21 @@ operation
     length           1 m;
     elements         1;              // for a train
     interElementDP   0.5 bar;        // gap loss between elements
-    P_perm           1.01325 bar;
-    dP_feed_total    2 bar;          // constant model (default); see below
+    P_permeate       1.01325 bar;
+    dP_feed_total    2 bar;          // constant drop (used when no pressureDrop block)
 
     // Selectable sub-models (factory pattern):
     massTransfer
     {
-        model         SchockMiquel;  // or `constant`; default constant
+        model         SchockMiquel;  // the only registered model; for a constant
+                                     // coefficient OMIT this block and give `k_film`
         channelHeight 0.7 mm;
         spacerPorosity 0.9;
-        diffusivity   1.6e-9 m2/s;   // solute D
+        diffusivity   1.6e-9;        // solute D, m²/s (SI; no named m2/s unit)
         viscosity     1.0e-3 Pa.s;
     }
-    pressureDrop  { model SchockMiquel; }   // or `constant`; default constant
+    pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
+                                            // block for the constant dP_feed_total
     osmotic       { model Pitzer; }         // or `vanHoff` (default)
 }
 ```
@@ -726,7 +731,7 @@ operation
     filterArea   30 m2;
     arealDustLoad 0.5;  // kg/m^2
     K1  1e9;  K2 1e10;  // Darcy resistances
-    penetration0 0.02;  dCharacteristic 1 um;
+    penetration0 0.02;  dCharacteristic 1e-6;  // m (no `um` unit; bare SI)
 }
 ```
 
@@ -774,7 +779,7 @@ outputs (powder  exhaustAir );
 operation
 {
     wheelDiameter   0.1 m;
-    wheelSpeed     20000 1/min;
+    wheelSpeed     20000;           // rpm (no frequency unit; bare number)
     chamberDiameter  1 m;
     chamberHeight    5 m;
     flow  co;                       // or counter
@@ -883,8 +888,9 @@ mix uses the formation enthalpy, a liquid mix the sensible datum); solids
 summed.  A mixer MIXES — it never runs an internal flash (separators
 separate).  Newton-1D in T_out.
 
-**Declare each inlet's phase** with `state` (`superheatedVapour` → vf 1,
-`subcooledLiquid` → vf 0; both need T and P).  The mixer picks its
+**Declare each inlet's phase** in its `0/` file with `phase gas;` /
+`phase liquid;` (or a `vaporFraction` pin; there is no `state` key; both
+forms need T and P).  The mixer picks its
 energy-balance basis from the flow-weighted inlet vf — leave the phase out
 and every inlet defaults to liquid, so a gas-dominant merge tries a liquid
 balance and the T-solve can fail.
@@ -1129,8 +1135,9 @@ setpoint against a shrinking disturbance.
 { name reactor;  type dynamicCSTR;
   initial { T 320 K; P 1.013 bar; V 0.001; totalMoles 0.0185;
             molarComposition { compA 1.0; } }
-  feed { F 5e-5 kmol/s; T 320 K; composition { compA 1.0; } }
-  operation { reactions (a_to_b );  jacketUA 30 W/K; }
+  inlet { F 5e-5 kmol/s; T 320 K; composition { compA 1.0; } }
+  operation { UA 30;  T_jacket 320 K; }   // flat jacket keys, UA in W/K
+  reactions ( a_to_b );
 }
 ```
 
@@ -1142,17 +1149,18 @@ controllers
     {
         name  TC1;
         type  PID;
-        measurement { unit reactor;  cv T_reactor; }
+        measurement { unit reactor;  cv T; }
         actuator    { unit reactor;  mv T_jacket; }
         setpoint    350 K;
-        Kp  4.0;  Ki  0.04;  Kd  0.0;
-        bias  320;  uLow  280;  uHigh  420;
+        gains  { Kp 4.0;  Ki 0.04;  Kd 0.0; }
+        output { min 280;  max 420;  bias 320; }
     }
     {
         name  noise;
-        type  schedule;
+        type  Schedule;
         actuator { unit reactor;  mv T_in; }
-        schedule ( { t 0 K 320; }  { t 700 K 305; }  { t 1300 K 335; } );
+        schedule ( { time 0; value 320; }  { time 700; value 305; }
+                   { time 1300; value 335; } );
     }
 );
 ```
@@ -1282,10 +1290,7 @@ per compound — fails loudly if a compound has no `liquidHeatCapacity`),
 `y_eq_<comp>`, `Cp_liquid_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 
-# Outer drivers (in `outerDict`)
-
-When you want to do a SWEEP / OPTIMISATION / DESIGN SPEC / FIT around a
-steady simulation, add a `system/outerDict`.  Selected by `type`:
+# More steady units (choupoSolve)
 
 ### `multiStreamHX`  (alias: `MHeatX`)
 Multi-stream heat exchanger (the LNG / cold-box pattern): several hot and
@@ -1359,6 +1364,11 @@ operation { N_cellpairs 100;  current 8.0;  xi 0.9;
 ```
 Examples: `ed01_nacl_desalination`, `ed02_over_limiting_current`.
 
+# Outer drivers (in `outerDict`)
+
+When you want to do a SWEEP / OPTIMISATION / DESIGN SPEC / FIT around a
+steady simulation, add a `system/outerDict`.  Selected by `type`:
+
 ### `sweep`  (1-D parameter scan)
 ```
 type       sweep;
@@ -1385,7 +1395,7 @@ variables
     { path units[0].operation.feedStage;    initial 6;    min 3;    max 10; }
 );
 objective  { kind kpi; path units[0].V_strip;  sense minimize; }
-report     opt_history.csv;
+report     { file opt_history.csv; }
 ```
 `objective.kind` can be `kpi`, `stream`, `cost`, `costTotal` (the last
 two run the postDict chain on each evaluation).

@@ -80,7 +80,7 @@ reports
     massBalance {}
     energyBalance {}
     spreadsheet {}                   // writes a coloured.ods
-    #... see CLAUDE.md for the rest (utilities/profiles/design/economics/computed)
+    //... see CLAUDE.md for the rest (utilities/profiles/design/economics/computed)
 }
 ```
 
@@ -142,9 +142,11 @@ units
 {
     pressure   bar;       // default Pa
     flow       kmol/h;    // default kmol/s
-    temperature degC;     // default K
 }
 ```
+
+Affine units (`degC`, `degF`) are REJECTED as display units — no single
+multiplicative factor fits the formatter; temperatures print in `K`.
 
 These do NOT change what the solver computes; they change what the
 text output reads.
@@ -203,6 +205,7 @@ tutorials/
 ├── batch/        runs with choupoBatch
 ├── ctrl/         runs with choupoCtrl
 ├── props/        runs with choupoProps
+├── electrochem/  electrochemical cases (ED stacks, ion-exchange membranes)
 └── plant/        nested-folder plant tutorials (composite + leaf nodes)
 ```
 
@@ -225,7 +228,7 @@ starters to compare against when answering "write me a case for X":
 | Dissolved gas / Henry world (inline property manifest) | `flash08_co2_water_package` |
 | φ-φ world (`eos.SRK` both phases + kijPairs) | `flash09_n2ch4_stryjek` |
 | Bubble-T point | `bubbleT01_ethanol_water` |
-| Adiabatic CSTR | `cstr01_first_order` |
+| Adiabatic CSTR | `cstr04_adiabatic` |
 | PFR | `pfr01_first_order` |
 | Reactor + flash chain | `process01_reactor_flash` |
 | Recycle (with tear) | `process03_recycle` |
@@ -298,7 +301,7 @@ convergence and augment the result (they never change the solution):
 
 ```
 sizing    { ... }                 // equipment sizes from the converged duties
-costing   { method guthrie; ... } // cost from the sizes
+costing   { method Guthrie; ... } // cost from the sizes (case-sensitive)
 economics { ... }                 // cash-flow aggregation over the costed plant
 pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
                                   // problem table printed cascade by cascade,

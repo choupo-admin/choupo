@@ -519,7 +519,7 @@ vocabulary (standard states + conventions) onto the engine's declarations.
 | **Raoult / Lewis–Randall convention** (pure-liquid reference, γ→1 as x→1) | `gammaPhi` liquids (NRTL/Wilson/UNIQUAC/COSMO-SAC); the co-volatile leg of the reactive flash (`p = γ·x·psat`) |
 | **Henry convention** (infinite-dilution reference, γ*→1 as x→0) | `diluteSolution`; `parameters/Henry/` pairs; the network's gas-liquid records (molal basis) |
 | **unsymmetric convention** (solvent on Raoult + solutes on Henry, one liquid) | the reactive `electrolyteGammaPhi` shape — water on a_w, NH3/HAc on molal K's tied to the speciation network |
-| **standard states** (per-species reference choice) | the `ReferenceRung`s: solid · pure-liquid Raoult · aqueous-infinite-dilution · fused-salt |
+| **standard states** (per-species reference choice) | a consequence of the declared formulation (the one-knob rule): solid · pure-liquid Raoult · aqueous-infinite-dilution · fused-salt |
 | **law of mass action on activities** | the SpeciationSolver (mass action + electroneutrality, pH solved) |
 | **mean-ionic activity, γ±** | Davies / Pitzer / eNRTL on molality |
 | **fugacity coefficient φ̂ from an EoS** | `phiPhi` (SRK, PC-SAFT) |

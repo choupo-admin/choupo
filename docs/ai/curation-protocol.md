@@ -58,9 +58,13 @@ doesn't reproduce — so a hand-typed number cannot even wear a trustworthy badg
    A run may still fail on a datum this report never examined.
 
 2. **For each gap, ADVISE in plain language** — name the consequence, and
-   note that the consequence DIFFERS by kind.  An UNDECLARED activity pair
-   ideal-defaults loudly, never silently — e.g. *"`aniline` has no NRTL
-   pair: a VLE run will use ideal γ for that binary (announced), and an
+   note that the consequence DIFFERS by kind.  An UNCOVERED activity pair is
+   **REFUSED** (2026-08-11 problem-divergence contract) unless the case
+   authorises the approximation at the top level of its `thermoPhysPropDict`
+   (`approximations { idealBinaryPair { pairs (...); reason "…"; } }`); an
+   authorised pair runs ideal, announced and recorded as a
+   `problemDivergence` — e.g. *"`aniline` has no NRTL pair: a VLE run
+   REFUSES that binary unless the case authorises `idealBinaryPair`, and an
    energy/Gibbs run will FAIL as-is on the missing formation data."*  A pair
    the dict DECLARES by `source` in a `binaryParameters` /
    `binaryInteractions` block is VERIFIED at assembly: a declared file that
@@ -153,7 +157,9 @@ CAS Common Chemistry (CC-BY-NC). See `CLAUDE.md` §10 (CODE-vs-DATA policy).
 > **Student:** simulate ethyl acetate + aniline VLE, then the heat duty.
 >
 > **You:** I read the gap report. `ethylAcetate`+`aniline` have **no NRTL pair**,
-> so VLE would fall back to ideal γ (it misses the real deviation); and `aniline`
+> so a VLE run REFUSES that binary unless you authorise the `idealBinaryPair`
+> approximation (which runs ideal γ, announced and recorded as a divergence —
+> it misses the real deviation); and `aniline`
 > is a **data/local** entry (unverified) with **no formation data**, so the
 > heat-of-reaction part will fail. Options:
 > (1) cite/enter a measured NRTL pair; (2) fit one if you have Txy data

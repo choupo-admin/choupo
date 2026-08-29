@@ -85,7 +85,10 @@ The rules, all enforced by `bin/curate/check_registry_scan.py`:
   never sees it at all: it reads its own closure alone.
 * **The symmetric-pair models spell the file ONE way** — `NRTL`, `UNIQUAC` and
   `Wilson` build the name sorted (`min-max.dat`), so `water-ethanol.dat` is a
-  file the engine never opens and a pair that silently falls back to ideal.
+  file the engine never opens — the pair is then UNCOVERED and **REFUSED**
+  (2026-08-11 problem-divergence contract) unless the case authorises
+  `idealBinaryPair`, in which case it runs ideal, announced and recorded as
+  a `problemDivergence`.
   (`Henry` and `Pitzer` are directional by nature: `solute-solvent`,
   `cation-anion`.)
 
@@ -336,7 +339,7 @@ At thermo-build the run prints, per consumed value,
   benzene.eosParam.PCSAFT.epsilon_k | level: case     | model: PCSAFT                | origin: regressed  [Gross&Sadowski 2001]
   sucrose.dHsoln      = 5.40 kJ/mol  | level: standard | pair: sucrose-WATER (DEFAULT)| origin: literature [Putnam&Kilday 1986]
   ethanol-water NRTL                 | level: standard | model: NRTL                  | origin: regressed  [Carey&Lewis 1932]
-  hexane-heptane NRTL                | level: (none)   | model: NRTL                  | DEFAULTED TO IDEAL  <- fit or add
+  hexane-heptane NRTL                | level: (none)   | model: NRTL                  | REFUSED: uncovered pair  <- add, fit, or authorise idealBinaryPair (runs as a recorded divergence)
 ```
 This is the screen a commercial simulator's property-method dropdown is built to
 suppress.
