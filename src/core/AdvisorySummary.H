@@ -124,12 +124,21 @@ inline void printAdvisorySummary(const std::vector<Advisory>& advs,
 
     if (advs.empty())
     {
+        //  Claim only what an empty log supports.  This block used to add
+        //  "every property was evaluated inside its declared validity range,
+        //  from curated records" -- a positive claim the run may contradict
+        //  in its own output (ctrl01 prints it directly under a dict-OVERRIDE
+        //  reaction heat and two [unmarked] records; those announcements do
+        //  not ride the AdvisoryLog, so the log being empty says nothing
+        //  about them).
         os << "\n" << rule << "\n"
            << "ASSUMPTIONS AND CAVEATS: none raised.\n"
-           << "  Every property was evaluated inside its declared validity "
-              "range, from curated\n  records.  This line is printed even when "
-              "empty so its absence cannot be read\n  as \"nothing to report\" "
-              "when the truth is \"nothing looked\".\n";
+           << "  Nothing was raised on the advisory log -- no extrapolation, "
+              "estimate or model\n  announcement asked to be repeated here.  "
+              "Announcements that do not ride the\n  log ([unmarked] records, "
+              "[override] precedence) stay at their site above.\n  This line "
+              "is printed even when empty so its absence cannot be read as\n"
+              "  \"nothing to report\" when the truth is \"nothing looked\".\n";
         return;
     }
 

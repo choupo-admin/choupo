@@ -1370,7 +1370,12 @@ try
     std::cout << "\nTrajectory written: trajectory.csv\n";
 
     // ---- Final summary ----------------------------------------------
-    std::cout << "\n=========================  Final state at t = " << t << " s  ===\n";
+    // 150 s used to print as "1.50000e+02 s" -- scientific-notation state
+    // bled from an earlier print (the same format-bleed class as the batch
+    // TRANSFER amount).  A clock reads in fixed notation.
+    std::cout << "\n=========================  Final state at t = "
+              << std::fixed << std::setprecision(2) << t << " s  ===\n"
+              << std::defaultfloat << std::setprecision(6);
     for (const auto& u : units)
     {
         const auto labels = u->stateLabels();
@@ -1560,11 +1565,16 @@ try
                 bk["mass_kg_out_cum"]   = mOut;
                 bk["mass_residual_kg"]  = residual;
                 bk["mass_closure_rel"]  = std::abs(residual) / scale;
+                // The verdict word rides the number (choupoBatch prints
+                // "(closed)"): a bare 1.8e-15 leaves the student to decide
+                // whether that is a pass.  Same band the ledger uses.
                 std::cout << "\n[balance] material: M(t)-M(0) = "
                           << std::scientific << std::setprecision(4)
                           << (mF - m0) << " kg vs integral(in-out) = "
                           << (mIn - mOut) << " kg, closure "
-                          << bk["mass_closure_rel"] << "\n";
+                          << bk["mass_closure_rel"]
+                          << (bk["mass_closure_rel"] <= 1.0e-6
+                              ? "  (closed)" : "  (NOT closed)") << "\n";
                 //  WHAT THIS CLOSURE CANNOT SEE, said where it is printed
                 //  (2026-08-24, an independent glass-box reading of the
                 //  tanks-in-series case).  This is a TOTAL-MASS ledger over

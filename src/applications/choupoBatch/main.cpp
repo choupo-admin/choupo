@@ -920,10 +920,22 @@ if (flowsheetDict->found("cycle"))
             BatchState pkg = src->discharge(frac);
             dst->chargeFrom(pkg);
             if (verbosity >= 2)
+            {
+                // The fixed/precision(2) set for the TIMESTAMP was bleeding
+                // into the amount: 0.0185 kmol printed as "0.02 kmol" while
+                // the result JSON recorded 0.0185 -- one event, two numbers,
+                // and a student balancing by hand from the console starts
+                // 8 % off.  Format the amount on its own terms.
                 std::cout << "  * t=" << std::fixed << std::setprecision(2)
-                          << tNow << "s   recipe: TRANSFER " << pkg.totalMoles()
-                          << " kmol (" << (frac * 100.0) << "%) from '" << fromN
-                          << "' to '" << toN << "'  (T_src=" << pkg.T << " K)\n";
+                          << tNow << "s   recipe: TRANSFER "
+                          << std::defaultfloat << std::setprecision(6)
+                          << pkg.totalMoles() << " kmol ("
+                          << std::fixed << std::setprecision(2)
+                          << (frac * 100.0) << "%) from '" << fromN
+                          << "' to '" << toN << "'  (T_src="
+                          << pkg.T << " K)\n";
+                std::cout << std::defaultfloat << std::setprecision(6);
+            }
             std::ostringstream d;
             d << "TRANSFER " << pkg.totalMoles() << " kmol ("
               << (frac * 100.0) << "%) " << fromN << " -> " << toN;

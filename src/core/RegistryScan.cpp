@@ -15,6 +15,7 @@ License
 
 #include "core/RegistryScan.H"
 
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <set>
@@ -72,8 +73,34 @@ void ScanGuard::claim(const std::string& key, const std::string& file)
     {
         if (announceOnce(tag))
         {
-            std::cerr << "[override] " << noun_ << " '" << key << "' read from "
-                      << file << " -- replaces " << prev->second << "\n";
+            // A SEALED case-local mirror is not an override: the case runs
+            // the catalogue record, sha256-verified by its own
+            // constant/propertyManifest -- the words "override ... replaces"
+            // told a student recipe01 deliberately runs DIFFERENT steam
+            // properties than the catalogue, which is the opposite of the
+            // truth.  Detect the seal by walking up from the winning file to
+            // a constant/ directory carrying a propertyManifest.
+            bool sealedMirror = false;
+            {
+                namespace fs = std::filesystem;
+                fs::path p = fs::path(file).parent_path();
+                for (int up = 0; up < 4 && !p.empty(); ++up)
+                {
+                    if (p.filename() == "constant"
+                        && fs::exists(p / "propertyManifest"))
+                    { sealedMirror = true; break; }
+                    p = p.parent_path();
+                }
+            }
+            if (sealedMirror)
+                std::cerr << "[sealed] " << noun_ << " '" << key
+                          << "' read from the case's own mirror " << file
+                          << " (manifest-verified copy of " << prev->second
+                          << ")\n";
+            else
+                std::cerr << "[override] " << noun_ << " '" << key
+                          << "' read from " << file << " -- replaces "
+                          << prev->second << "\n";
         }
     }
     claimed()[tag] = file;
