@@ -41,6 +41,21 @@ Description
     With total condenser, x_D,i = y_1,i = K_{1,i}·x_{1,i}, and Σ x_D = 1
     is automatically enforced by the bubble-point at stage 1.
 
+    THE DISTILLATE'S REPORTED TEMPERATURE IS T[0], AND THAT IS THE WRONG
+    END OF ITS OWN TWO-PHASE BAND --- stated here rather than fixed, because
+    correcting it moves every column golden in the corpus and is the owner's
+    call.  Stage 1 equilibrium makes T[0] simultaneously the bubble point of
+    x_1 and the DEW point of y_1; since x_D = y_1, the stream is published at
+    its own dew point while `vf = 0` declares it a saturated LIQUID.  A total
+    condenser with no subcooling delivers it at its own BUBBLE point, which is
+    lower.  MEASURED on column01 (benzene/toluene, 1 atm, 98.1 mol% benzene
+    distillate): reported 354.2109 K against a bubble point of 353.6301 K, so
+    0.58 K too hot.  The gap closes as the split sharpens (a pure product has
+    one temperature) and widens with the boiling range, and anything
+    downstream that prices this stream inherits it.  The engine already has
+    everything needed to correct it --- the `bubbleT` unit is one call --- so
+    this is a decision, not a limitation.
+
     Inputs (per stage are NOT user-specified; the user gives the column
     skeleton):
         nStages, feedStage,  R = L/D,  D (distillate flow [kmol/h]),
