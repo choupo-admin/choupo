@@ -310,9 +310,9 @@ export function WhatIsTemperatureTool(): JSX.Element {
           </Text>
           <Text size="xs" c={INK} mt={6}>
             How the kelvin actually reaches a thermometer — the fixed points,
-            the different ITS-90 realisation regimes, and what happens above
-            the silver point — is the deep dive: <em>How do we know a
-            thermometer is right?</em>
+            the four interpolating instruments, and what happens above the
+            silver point — is the deep dive: <em>How do we know a thermometer
+            is right?</em>
           </Text>
         </Box>
 
