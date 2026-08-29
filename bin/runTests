@@ -488,7 +488,18 @@ within_tol() {
 }
 
 RECORD=
+RECORD_APPEND=
 if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
+#  --record-append: the APPEND-ONLY half of --record, built for the 2026-08-29
+#  stream-temperature sweep.  It refreshes NOTHING: every existing row keeps
+#  the value, tolerance and claim it has (anchors included, trivially -- the
+#  whole refresh loop is skipped), and only the (kind, name, key) triples the
+#  golden does not carry are appended from a fresh run.  The point is the
+#  DIFF: a sweep that only appends produces a change a reader (and a gate,
+#  and git) can verify line by line -- every changed golden is additions
+#  only, every added line is a row the file lacked.  A case with no golden
+#  is SKIPPED: creating one is a recording decision, not a sweep side-effect.
+if [ "${1:-}" = "--record-append" ]; then RECORD=1; RECORD_APPEND=1; shift; fi
 
 #  --witnesses: the ARCHITECTURAL WITNESS TIER (tutorials/WITNESSES) -- one
 #  representative case per execution class, run through the SAME per-case
@@ -808,7 +819,16 @@ if [ -n "$RECORD" ]; then
         fi
         exp="$case_dir/expected"
         app=$(binary_for "$case_dir"); out=$(run_case_raw "$case_dir" "$app")
+        if [ -n "$RECORD_APPEND" ] && [ ! -f "$exp" ]; then
+            echo "  (no golden; --record-append creates none)"
+            continue
+        fi
         if [ -f "$exp" ]; then
+            if [ -n "$RECORD_APPEND" ]; then
+                #  Append-only: leave every existing row byte-identical and
+                #  fall through to the append stanza below.
+                :
+            else
             tmp=$(mktemp)
             while read -r line; do
                 case "$line" in ''|\#*) echo "$line" >> "$tmp"; continue;; esac
@@ -826,6 +846,7 @@ if [ -n "$RECORD" ]; then
                 printf '%-7s %-22s %-16s %-16s %s\n' "$kind" "$name" "$key" "${act:-$exp_v}" "$tol" >> "$tmp"
             done < "$exp"
             mv "$tmp" "$exp"
+            fi
 
             #  A REFRESH THAT CANNOT ADD A ROW LEAVES A NEW KPI UNPINNED.
             #  The loop above only rewrites the VALUE of rows that already
