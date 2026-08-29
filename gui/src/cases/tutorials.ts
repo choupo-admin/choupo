@@ -205,6 +205,26 @@ const SUBCLASS_LABEL: { [slug: string]: string } = {
   recipes: "Recipes",
   compare: "Compare & overlay",
   estimate: "Estimate a component",
+  //  Unlabelled folders rendered as raw slugs in the Open Case browser --
+  //  "economics" and "thermoTest" sat beside "Phase equilibrium & flash"
+  //  (found walking the modal, 2026-08-29).  A key may serve two categories
+  //  (steady/hydraulics + props/hydraulics), so those names stay neutral.
+  economics: "Process economics",
+  hydraulics: "Hydraulics & piping",
+  separation: "Adsorption (PSA / TSA)",
+  solids: "Pneumatic conveying",
+  thermoTest: "Thermo model verification",
+  adsorption: "Adsorption isotherms",
+  curation: "Curation & evidence",
+  electrolyte: "Electrolytes & speciation",
+  fit: "Parameter fitting",
+  kinetics: "Kinetics",
+  molecular: "Molecular models (γ / EoS)",
+  scan: "Property scans & diagrams",
+  steam: "Steam & water",
+  adsorber: "Fixed-bed adsorption",
+  combustion: "Combustion",
+  membrane: "Diafiltration & batch membranes",
 };
 
 export interface SubclassGroup {
