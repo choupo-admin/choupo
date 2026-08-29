@@ -1148,6 +1148,68 @@ moving: the WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the
 whole site is built from it — whether it does C++20 well enough is a
 MEASUREMENT nobody has taken, not a guess to make.
 
+**A CITATION REQUIREMENT CHANGED WHAT THE READERS READ — and found eight
+defects nobody was looking for (2026-08-28/29).**  Measured first: **133 symbol
+uses across sixteen EduTool lessons where the LETTER never appeared outside a
+formula** — a student meeting `Me = KaV/L` or `c_s` or `θ` had nothing to read.
+The obvious response, writing 133 definitions, is the wrong one: *a missing
+definition is visible and a WRONG one is not*, and at that volume a meaningful
+fraction written from memory would have been wrong.  So the constraint came
+first — **every symbol needs a `file:line` citation into the ENGINE, verified
+mechanically**, eleven agents, each forbidden to write a file.  The requirement
+was introduced to make the glosses checkable; what it actually did was change
+what the agents READ.  A definition written against a page paraphrases the
+page; one that must carry a line number forces somebody to open the unit that
+computes the answer — and then they notice the page above it is wrong.  **Two
+of the eight defects are in files this session had already read that day
+without seeing them.**  The sharpest: `merkelLesson` said "L/G … on the diagram
+it is the slope of the operating line" while the engine's line is `h1 +
+LG*cpL*(T−T_out)` — and **the step's OWN formula two lines below was already
+correct**, so the page contradicted itself and the equation was the honest half
+(a reader who checks the units concludes THEY misunderstood, which is the
+characteristic cost of a wrong definition).  `CoolingTower.H` declared a
+hypothesis the code does not implement ("the arithmetic mean of the relevant
+inlet/outlet temperatures"; in fact the gas cp's are at the mean of the two
+INLETS and the liquid cp at a fixed 25 °C surrogate — **and the reason is
+good**, since in rating mode the outlet is the unknown being solved, so the
+vagueness was hiding a defensible decision AND an honest limitation, both).
+**AND ONE THIS PROJECT WROTE ABOUT ITSELF:** the Bjerrum page claimed "there is
+no pH input anywhere in Choupo, by a settled decision" — false, `Speciate.cpp`
+takes both `pH <number>;` and `pH solve;` — in SIX places, one of them **a
+green test asserting the page says it**.  *A test over a false claim is worse
+than no test: it converts an error into a maintained invariant.*  The true
+version is stronger, which is the usual outcome and worth expecting rather than
+noting as luck: the given-pH mode exists for a MEASURED laboratory pH, and what
+it costs is the electroneutrality row (the run then reports the net charge the
+composition carries — a textbook diagram drawn that way is a sequence of
+compositions no beaker can hold), so the witness declaring `pH solve;` is a
+CHOICE visible in one word of the case file, not an absence in the engine.
+Three numeric drifts rode along, in prose quoting a golden from two homes that
+cannot share a variable — γ_CO3 0.81 vs 0.82 against the golden's 0.8130, and a
+crossover pH quoted from the nearest computed BEAKER (10.269, where the ratio
+is 0.982) instead of the interpolation (10.262) **while the FIRST crossover had
+been interpolated correctly**, so the two were not even done the same way.  A
+fourth reported drift was NOT one (0.9997 and 0.99966 are both correct
+roundings of 0.999657) and is recorded as such — *a report that checks and
+finds nothing is worth as much as one that finds something.*  Where two prose
+homes cannot share a variable, **a gate that recomputes is the only available
+single source**.  FUG got the same treatment (three absences returning as
+numbers: the feed bubble point falling back on the declared T — the method's
+ONLY thermodynamic evaluation; `R = 1.3*Rmin` as a silent "sensible default",
+refused because *the stage count is what a student reads off this unit and a
+reflux the engine chose is one nobody can defend at a viva*, and BOTH corpus
+cases already declare it so the branch was reached by nothing; and `feed_stage
+0.0`, whose branch is **LATENT not live** — both routes to it are refused
+earlier by Underwood, so the gate pins the UNREACHABILITY rather than claiming
+coverage).  NOT fixed, named: the pump and the pipe compute liquid density by
+two routes 12 % apart on ONE diagram (constant `Vliq` vs Rackett, which
+announces itself ~12 % low), so pressures may be compared across the operating
+point and HEADS may not — said on the page; unifying it would make water WORSE
+and is the owner's call.  Gates: `check_lesson_symbols` (16/16, waiver dict
+kept EMPTY because an empty waiver list is the claim "nothing is excused") ·
+`check_bjerrum_prose` · `check_shortcut_column_refusals`.  Record:
+[`docs/design/what-a-citation-requirement-found.md`](docs/design/what-a-citation-requirement-found.md).
+
 **AND THEN: CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  Sizing and
 costing printed their tables and left **no file at all**: the equipment list
 and the capital cost, which a project report is built around, existed only in
@@ -2560,7 +2622,13 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-08-07 — the ice slice landed (§6): the crystal is a
+*Last reviewed: 2026-08-29 — the glossing slice landed (§6): every EduTool
+lesson defines its symbols, and requiring a `file:line` citation for each one
+turned eleven writing tasks into eleven READING tasks, which is where the eight
+defects came from.  One of them was a claim this project had written about
+itself and pinned with a passing test.  Nothing in §5's settled contracts
+moved.
+Earlier (2026-08-07) — the ice slice landed (§6): the crystal is a
 Phase, `K_f` became a derived anchor, and a status guard that watched one of
 two routes was found to have been silently green through its own subject's
 promotion.  Nothing in §5's settled contracts moved.
