@@ -162,9 +162,21 @@ Three shapes of question dominate.  Use this rough decision tree:
    settings; props needs a propsDict.
 2. **Declare the thermophysical system** (`constant/thermoPhysPropDict`)
    explicitly.  Don't assume defaults — declare the formulation and its
-   slots (`equilibrium { formulation gammaPhi; liquid { activityModel
-   ideal; standardState pureLiquid; } vapour { fugacityModel idealGas; } }`)
-   even when they are the obvious choice.
+   slots even when they are the obvious choice.  The MINIMAL complete
+   `constant/thermoPhysPropDict` (the first two lines are mandatory and the
+   engine refuses without them, naming each):
+
+   ```
+   recordType     thermophysicalPropertySystem;
+   schemaVersion  2;
+   components     ( benzene toluene );
+   equilibrium
+   {
+       formulation gammaPhi;
+       liquid { activityModel ideal; standardState pureLiquid; }
+       vapour { fugacityModel idealGas; }
+   }
+   ```
 3. **Use named units** in every scalar (`P 1 bar;`, `F 100 kmol/h;`,
    `T 350 K;`).  Choupo's parser tracks dimensions and will catch
    mismatches if you slip.  Bare numbers are interpreted as raw SI.
@@ -176,9 +188,13 @@ Three shapes of question dominate.  Use this rough decision tree:
 
 ## Versioning, currency
 
-This document tracks the line current as of 2026-07-13.  The repository carries
-more than 300 openable `.cho` markers (including nested plant sectors and
-validation cases), 255 golden-master cases, and 194 standard component files.
+COUNTS ARE DELIBERATELY NOT STATED HERE.  This paragraph used to carry a date
+and three hand-typed tallies, and by the time anyone looked the component
+count was stale by a factor of three (194 written, 603 on disk) -- a
+hand-maintained count is a derived fact with a second home, and it drifts
+with nothing failing.  The live inventory is `generated/releaseInventory.json`
+(rebuilt by `bin/curate/release_inventory.py`, freshness-gated by the suite);
+`bin/listCases` enumerates the runnable corpus.
 Big changes, recent first:
 
 - The v2 case grammar (2026-07-17): `constant/thermoPhysPropDict`

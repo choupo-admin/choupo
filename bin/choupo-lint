@@ -15,5 +15,12 @@
 # just the first).  Exit 2: a load-phase refusal (its own message names the
 # rule and the fix).
 set -euo pipefail
+#  Bare invocation: show the syntax, never the engine's complaint about a
+#  missing dict in whatever directory the student happens to be standing in.
+if [ "$#" -eq 0 ] || [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    awk 'NR>=2 && (/^#/ || /^[[:space:]]*$/) { sub(/^# ?/,""); print; next } NR>=2 { exit }' "$0"
+    exit "$([ "$#" -eq 0 ] && echo 1 || echo 0)"
+fi
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 exec "$ROOT/choupoSolve" --lint "$@"

@@ -640,14 +640,17 @@ Chem.* 32 (1940) 1220.
 ```
 operation
 {
-    LK_component   benzene;
-    HK_component   toluene;
-    recovery_LK    0.99;
-    recovery_HK    0.01;
+    lightKey       benzene;
+    heavyKey       toluene;
+    recoveryLK     0.99;           // fraction of feed LK to the distillate
+    recoveryHK     0.01;           // fraction of feed HK to the distillate
     refluxFactor   1.3;            // = R / R_min -- MANDATORY (this or
                                    //   refluxRatio); there is no default
-    P              1.01325 bar;
 }
+// P is NOT an operation key: the column runs at the FEED stream's declared
+// pressure.  (This example once said `LK_component / recovery_LK / P ...` --
+// keys the engine never read.  Nothing checked a doc example against the
+// engine, and an LLM following this file authored a case that refused.)
 ```
 N_min, R_min, N, feed_stage are RESULTS.
 
