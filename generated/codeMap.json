@@ -505,6 +505,9 @@
   "ExchangeSpec": [
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
+  "ExplainProperty": [
+   "src/propertyOps/ExplainProperty.H"
+  ],
   "Extractor": [
    "src/unitOperations/separation/Extractor.H"
   ],
@@ -1584,6 +1587,10 @@
    {
     "key": "propertyPoint",
     "type": "PropertyPoint"
+   },
+   {
+    "key": "explainProperty",
+    "type": "ExplainProperty"
    },
    {
     "key": "propertyScan1D",
@@ -3447,6 +3454,21 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
+  "src/propertyOps/ExplainProperty.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/ExplainProperty.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H"
+  ],
   "src/propertyOps/FitParameters.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -3688,6 +3710,7 @@
    "src/propertyOps/EnthalpyConcentration.H",
    "src/propertyOps/EstimateComponent.H",
    "src/propertyOps/Exchange.H",
+   "src/propertyOps/ExplainProperty.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FreezingPoint.H",
    "src/propertyOps/FrictionBench.H",
@@ -7233,6 +7256,7 @@
    "src/control/signal/Signals.cpp",
    "src/postProcessing/sizing/StirredTank.cpp",
    "src/postProcessing/sizing/VesselSize.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/Kinetics1D.cpp",
@@ -7357,6 +7381,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -7627,6 +7652,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -7956,6 +7982,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -8173,6 +8200,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -8581,6 +8609,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -9086,6 +9115,10 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/ExplainProperty.H": [
+   "src/propertyOps/ExplainProperty.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/FitParameters.H": [
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -9153,6 +9186,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/FrictionBench.cpp",
@@ -9556,6 +9590,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -10002,6 +10037,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -10278,6 +10314,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -10597,6 +10634,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
@@ -11044,6 +11082,7 @@
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",

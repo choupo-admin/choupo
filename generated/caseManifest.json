@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 388,
+  "cases": 389,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2003,6 +2003,19 @@
     "activityModels": [
      "cosmoSAC"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/entropy01_air_ledger": {
+   "application": "choupoProps",
+   "ops": [
+    "explainProperty",
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -5800,6 +5813,7 @@
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
+    "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/eval_nrtl_catalogue",
@@ -7019,6 +7033,9 @@
    "exchange": [
     "tutorials/props/electrolyte/softener_brackish"
    ],
+   "explainProperty": [
+    "tutorials/props/molecular/entropy01_air_ledger"
+   ],
    "fitParameters": [
     "tutorials/props/adsorption/isotherm02_fit_jaschik",
     "tutorials/props/adsorption/isotherm03_fit_refusals",
@@ -7072,6 +7089,7 @@
    "propertyPoint": [
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
+    "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
@@ -7089,6 +7107,7 @@
     "tutorials/props/compare/compare_visc_liquid_ammonia",
     "tutorials/props/compare/compare_visc_liquid_water",
     "tutorials/props/compare/compare_vle_etoh_water",
+    "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/temperature01_gas_thermometer"
