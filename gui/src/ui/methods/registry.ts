@@ -61,7 +61,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
-  | "what-is-exergy";
+  | "what-is-exergy" | "property-origins";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -213,6 +213,25 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "cross-examined.  ITS-90's own fixed points, the gas thermometer "
       + "solved live by the engine, why platinum's melting point cannot "
       + "carry a tenth of a degree, and Hasok Chang's four circles.",
+    theory: "ch:criticals",
+  },
+  {
+    //  THE STEP BEFORE the trust page: before a reader can judge whether a
+    //  record lies, they must know which KIND of number they are holding.
+    //  Requested by the owner (2026-08-31): the estimation methods and the
+    //  data each component carries, presented to students.  The live centre
+    //  runs the Joback estimation of acetone beside the case's own cited
+    //  reference values, so the method's error is on screen, computed on
+    //  the page from the engine's published numbers.
+    id: "property-origins", label: "Where do properties come from?",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That every number in a component's data file has a PROVENANCE "
+      + "-- measured, fitted, or estimated -- and the reflex question to ask "
+      + "of each: measured by whom, fitted over what window, estimated from "
+      + "which groups at what typical error.  The anatomy of a .dat file by "
+      + "what CONSUMES each field, and the standing rule that estimation is "
+      + "a curation-time act, never a runtime one.",
     theory: "ch:criticals",
   },
   {

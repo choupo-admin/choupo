@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 23,
-  "registryTools": 23,
+  "liveTools": 24,
+  "registryTools": 24,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -40,6 +40,13 @@
       "discipline": "Thermodynamics",
       "teaches": "That a thermometer is never right by itself -- it is right the way a witness is credible: agreeing with itself (Regnault's comparability), agreeing with others (convergence), and being cross-examined.  ITS-90's own fixed points, the gas thermometer solved live by the engine, why platinum's melting point cannot carry a tenth of a degree, and Hasok Chang's four circles.",
       "href": "/app/?workspace=methods&tool=thermometer-trust"
+    },
+    {
+      "id": "property-origins",
+      "label": "Where do properties come from?",
+      "discipline": "Thermodynamics",
+      "teaches": "That every number in a component's data file has a PROVENANCE -- measured, fitted, or estimated -- and the reflex question to ask of each: measured by whom, fitted over what window, estimated from which groups at what typical error.  The anatomy of a .dat file by what CONSUMES each field, and the standing rule that estimation is a curation-time act, never a runtime one.",
+      "href": "/app/?workspace=methods&tool=property-origins"
     },
     {
       "id": "property-trust",

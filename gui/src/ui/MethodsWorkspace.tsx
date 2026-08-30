@@ -207,6 +207,9 @@ const ThermometerTrustTool = lazy(() =>
 const PropertyTrustTool = lazy(() =>
   import("./methods/PropertyTrustTool.js")
     .then((m) => ({ default: m.PropertyTrustTool })));
+const PropertyOriginsTool = lazy(() =>
+  import("./methods/PropertyOriginsTool.js")
+    .then((m) => ({ default: m.PropertyOriginsTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -379,6 +382,7 @@ export function MethodsWorkspace() {
             : tool === "what-is-exergy" ? <WhatIsExergyTool />
             : tool === "thermometer-trust" ? <ThermometerTrustTool />
             : tool === "property-trust" ? <PropertyTrustTool />
+            : tool === "property-origins" ? <PropertyOriginsTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}
