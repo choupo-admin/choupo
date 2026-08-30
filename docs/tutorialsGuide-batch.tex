@@ -1313,17 +1313,17 @@ the batch02\_adiabatic runaway integrated with ADAPTIVE Rosenbrock23 time-steppi
 
 The physics below is inherited from batch02\_adiabatic, unchanged: exothermic pseudo-first-order esterification (AcOH + EtOH $\to$ EtOAc + H2O) in an adiabatic batch reactor. Designed to show thermal runaway:
 
-T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}100 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
+T\_0 = 320 K (kinetics very slow: k\_0 \textasciitilde{} 3.7e-4 s\textasciicircum{}-1, tau\_0 \textasciitilde{} 2700 s). dH\_rxn = -26.06 kJ/mol of ethanol, computed from the species' standardThermochemistry (elements datum); lifts T \textasciitilde{}108 K at full conversion, enough to show the runaway. Equimolar ethanol + acetic acid charge; ethyl acetate + water are the products. Mass-conserving, so the energy balance is clean.
 
 Expected qualitative trajectory:
 
-T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}450 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
+T | \_\_\_\_\_\_\_ plateau (\textasciitilde{}428 K) | \_/ | \_/ | \_/ | \_/ | / T\_0 |\_\_/ +------------------$\to$ t induction runaway
 
 The energy balance is just:
 
 dT/dt = - r $\ast$ V $\ast$ dH\_rxn / (n\_A $\ast$ Cp\_A + n\_B $\ast$ Cp\_B)
 
-Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at 450 K.
+Constant-Cp here (polynomial degree 0 for both ethanol and water in the database), so the result extrapolates linearly above the nominal liquidHeatCapacity Trange (280-373 K) without numerical pathology --- consistent with a pedagogical demonstration, not a quantitative prediction at \textasciitilde{}428 K.
 
 \end{tutnarrative}
 \begin{tutgolden}

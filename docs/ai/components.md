@@ -977,7 +977,8 @@ Each carries ρ, F_M (Guthrie), σ_y, max T, max P.
 - `MW`, `Tc`, `Pc`, `omega`, `Tb`, `Hvap_Tb` — universal pure-compound (axiom 1).
 - `Vliq` — liquid molar volume (apparent for solutes).
 - `Antoine { ... }` — `log10(Psat [bar]) = A − B/(T + C)` for VLE (a
-  coefficient set fitted on ln is off by a factor ln 10).
+  coefficient checked or fitted on ln is off by ln 10; the engine is
+  log10, src/thermo/vaporPressure/Antoine.cpp).
 - `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
 - `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.

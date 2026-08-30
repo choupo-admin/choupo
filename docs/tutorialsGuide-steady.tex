@@ -777,7 +777,7 @@ THIS COLUMN IS MODELLED DOWNSTREAM OF LUYBEN'S VENT, so it carries no hydrogen. 
 
 - what that costs is quantified rather than hidden: the same vent carries 0.0335 kmol/h of ACETONE (his own figure), 0.10 \% of the product. Not modelling the vent therefore FLATTERS this column's acetone recovery by that much, and the comparison below must be read knowing it.
 
-IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this paragraph exists rather than a preference. With H2 in the feed the MESH converged (16 Newton iterations, ||F|| 2.4e-11) to the SAME distillate -- x\_acetone 0.9722 -- and then the energy report REFUSED: hydrogen has no liquid heat capacity, because at 330 K it has no liquid. The refusal is right, and it is the honest form of the modelling error: a total condenser was silently asking a permanent gas to leave as a liquid. See this case's CLAUDE.md.
+IT WAS RUN THE OTHER WAY FIRST, and the run is the reason this paragraph exists rather than a preference. With H2 in the feed the MESH converged (16 Newton iterations, ||F|| 2.4e-11) to essentially the same distillate -- x\_acetone 0.9722 vs the shipped run's goldened 0.9731 -- and then the energy report REFUSED: hydrogen has no liquid heat capacity, because at 330 K it has no liquid. The refusal is right, and it is the honest form of the modelling error: a total condenser was silently asking a permanent gas to leave as a liquid. See this case's CLAUDE.md.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1213,15 +1213,15 @@ Read the printed table. The flow parameter F\_LV climbs below the feed (more liq
 \end{tutscheme}
 \tutwhat{The same column, built too narrow: every tray floods -- and it still converges}
 \begin{tutnarrative}
-the SAME column as column09, built 1.10 m wide instead of the 1.322 m that column09 designed for it.
+the SAME column as column09, built 1.10 m wide instead of the 1.316 m that column09 designed for it.
 
 Nothing about the separation changes. The distillate is still 98.12 \% benzene, the bottoms still 98.12 \% toluene, the MESH equations converge exactly as before, and every number in the stream table is identical. The column is a perfectly good column -- on paper.
 
-It floods. The worst tray runs at 115.6 \% of its entrainment-flooding velocity: the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
+It floods. The worst tray runs at 114.5 \% of its entrainment-flooding velocity: the vapour is fast enough to carry the liquid up to the tray above instead of letting it fall. In a real column the trays would fill, the pressure drop would run away, and the separation printed above would not happen at all.
 
 This is the whole reason hydraulics exists as a separate pass. A converged solution is not a feasible column, and the stage equations have no way of knowing the difference. Widen it (column09), space the trays further apart, or cut the reflux -- but do not believe the stream table until a tray can pass the traffic it carries.
 
-Note the downcomer, too: the backup reaches 271 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
+Note the downcomer, too: the backup reaches 268.5 mm against a 275 mm limit. Narrow the column a little further and it would flood from below as well, for an entirely different reason.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -1253,7 +1253,7 @@ Note the downcomer, too: the backup reaches 271 mm against a 275 mm limit. Narro
   \draw[->] ($(column11.east)+(0,0.34)$) -- ($(column11.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {)};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Murphree tray efficiency: 15 REAL trays, not 15 ideal stages -- and the purity you actually get}
+\tutwhat{Murphree tray efficiency: 14 REAL trays plus the reboiler (nStages 15, reboiler counted), not ideal stages -- and the purity you actually get}
 \begin{tutnarrative}
 the same 15-stage benzene/toluene column as column09, with ONE line added: murphreeEfficiency 0.70.
 
@@ -1331,7 +1331,7 @@ Nothing above is a number anyone typed. Every one of them is produced by the run
 
 WHY IT IS WORTH A CASE. The column asks the thermodynamic package for K-values per stage; the flash asks it for an equilibrium split. Those are different entry points and, for a package that resolves CHEMISTRY, they are different code. The effective K-value a reacting stage uses (`ThermoPackage::stageK`, added 2026-08-04 for the sour-water column) is exactly the sort of definition that can be subtly wrong -- wrong normalisation, wrong basis, the reaction counted twice -- and still produce a column that converges to a plausible-looking profile. This identity is what catches it. The molecular case here is the CONTROL: it must hold on a system where nobody doubts the answer, before the same construction is trusted on one where they should.
 
-HOW THE RECOMBINATION WORKS, and the one thing to understand about it. `recombine` is a plain mixer, and a Choupo mixer MIXES -- it does not do the vapour/liquid split ("mixers mix, flashes separate"). Handed a liquid and a vapour it conserves total enthalpy exactly and reports the result as a single dominant phase at whatever temperature carries that enthalpy. That temperature is FICTITIOUS -- a sub-cooled liquid held well above its bubble point -- and the case does not use it for anything. What the mixer is doing here is carrying an ENTHALPY across one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is precisely the quantity it reads back, and the fictitious temperature cancels out of the answer. The identity is therefore an ENERGY statement as well as an equilibrium one: it would fail if the column and the flash disagreed about the enthalpy of either phase.
+HOW THE RECOMBINATION WORKS, and the one thing to understand about it. `recombine` is a plain mixer, and a Choupo mixer MIXES -- it does not do the vapour/liquid split ("mixers mix, flashes separate"). Handed a liquid and a vapour it conserves total enthalpy exactly and reports the result as a single dominant phase at whatever temperature carries that enthalpy. That temperature is FICTITIOUS -- a nominal vapour read out at 182.9 K, far below its saturation -- and the case does not use it for anything. What the mixer is doing here is carrying an ENTHALPY across one arrow, faithfully; `restage` is an ADIABATIC flash, so enthalpy is precisely the quantity it reads back, and the fictitious temperature cancels out of the answer. The identity is therefore an ENERGY statement as well as an equilibrium one: it would fail if the column and the flash disagreed about the enthalpy of either phase.
 
 WHY THE DRAWS ARE ON ONE STAGE AND NOT TWO. Both draws come off stage 5. A liquid draw from stage 5 and a vapour draw from stage 6 would also recombine into something -- and it would not be an equilibrium mixture, so the flash would move it. The point of the case is that when the two phases genuinely leave the SAME stage, the flash cannot move them at all.
 
@@ -1715,9 +1715,9 @@ ONE MORE OBSERVATION, and it is about the ENGINE rather than the column. These t
 \begin{tutnarrative}
 Preliminary column design by the Fenske-Underwood-Gilliland (FUG) shortcut method (the built-in `shortcutColumn`). The same benzene/ toluene separation as the rigorous `column01`, but designed in closed form: you specify the key recoveries and the reflux, and FUG returns the minimum stages, the minimum reflux, the actual stage count and the feed location.
 
-Feed: 100 kmol/h, 50/50 benzene/toluene, saturated liquid, 1 atm. Keys: LK = benzene, HK = toluene ($\alpha$ $\approx$ 2.4). Spec: 99 \% of the benzene to the distillate, 1 \% of the toluene. Reflux: R = 1.3 $\cdot$ R\_min.
+Feed: 100 kmol/h, 50/50 benzene/toluene, saturated liquid, 1 atm. Keys: LK = benzene, HK = toluene ($\alpha$ $\approx$ 2.5). Spec: 99 \% of the benzene to the distillate, 1 \% of the toluene. Reflux: R = 1.3 $\cdot$ R\_min.
 
-Expected ($\alpha$ $\approx$ 2.4): N\_min $\approx$ 10.5 (Fenske, total reflux) R\_min $\approx$ 1.2 (Underwood) N $\approx$ 22 (Gilliland, at R = 1.3 R\_min) distillate \textasciitilde{}99 \% benzene, bottoms \textasciitilde{}99 \% toluene; mass closes 100 \%.
+Expected ($\alpha$ $\approx$ 2.5): N\_min $\approx$ 10.1 (Fenske, total reflux) R\_min $\approx$ 1.3 (Underwood) N $\approx$ 22 (Gilliland, at R = 1.3 R\_min) distillate \textasciitilde{}99 \% benzene, bottoms \textasciitilde{}99 \% toluene; mass closes 100 \%.
 
 Compare with the rigorous column01 (Wang-Henke): FUG is a fast design estimate; the rigorous column is the verification. FUG does NOT handle azeotropes --- it assumes constant relative volatility.
 
@@ -2951,7 +2951,7 @@ Bubble-T of a 30/70 ethanol/water liquid at 1 atm (NRTL gamma, non-ideal). A sat
 \begin{tutnarrative}
 Bubble-T of a 30/70 ethanol/water liquid at 1 atm (UNIQUAC).
 
-Same conditions as bubbleT01 (NRTL): a strongly non-ideal binary whose bubble temperature and vapour composition are set by the activity coefficients. The UNIQUAC result should land close to the NRTL/Wilson twins (T\_bubble \textasciitilde{} 354 K, the vapour enriched in ethanol towards the azeotrope, y\_ethanol \textasciitilde{} 0.58).
+Same conditions as bubbleT01 (NRTL): a strongly non-ideal binary whose bubble temperature and vapour composition are set by the activity coefficients. The UNIQUAC result should land close to the NRTL/Wilson twins (T\_bubble \textasciitilde{} 353.5 K, the vapour enriched in ethanol towards the azeotrope, y\_ethanol \textasciitilde{} 0.58).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -3347,7 +3347,7 @@ the volatile weak ACID, done honestly.
 
 Acetic acid in water IONISES (CH3COOH <$\to$ CH3COO- + H+, pKa 4.756) and VOLATILISES at the same time -- and its VAPOUR DIMERISES (2 HAc = (HAc)2, carboxylic hydrogen bonding), so even the saturation check must price the dimer's own partial pressure. Speciation and phase behaviour are solved TOGETHER: the flash unit implements no chemistry, it delegates to the package's reactive equilibrium (unit-local speciation, section 6b). Streams -- 0/ and converged/ included -- carry ONLY the apparent components aceticAcid and water; the aqueous species (CH3COO-, H+, OH-) exist in the internal state and the report.
 
-THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K, 1 atm; sum p\_eq = 0.836 atm < P): the honest regime for a dilute, barely-volatile acid on the Davies rung. The unit is an ISOTHERMAL (T,P) flash -- T is the specification, not a result. Temperature still ACTS, through BOTH van't Hoff legs (dissolution dH = -51.5 kJ/mol, dimerisation dH = -58.5 kJ/mol), and the flash publishes what it moves as KPIs: pH, p\_eq\_sum\_atm, p\_mono\_atm, p\_dimer\_atm, dimer\_share. flash11\_acetic\_T\_sweep sweeps T across the subsaturated window so the student SEES the total volatility climb while the dimer share falls; flash13\_acetic\_ethanol\_vacuum\_flash crosses into the TWO-PHASE regime, where the vapour mole balance is re-weighted by the dimer explicitly (apparent moles = n\_mono + 2 n\_dim) and its association heat is priced into the duty -- never a silent approximation.
+THE OPERATING POINT IS DELIBERATELY SUBSATURATED (T fixed at 368.15 K, 1 atm; sum p\_eq = 0.818 atm < P): the honest regime for a dilute, barely-volatile acid on the Davies rung. The unit is an ISOTHERMAL (T,P) flash -- T is the specification, not a result. Temperature still ACTS, through BOTH van't Hoff legs (dissolution dH = -51.5 kJ/mol, dimerisation dH = -63.2 kJ/mol), and the flash publishes what it moves as KPIs: pH, p\_eq\_sum\_atm, p\_mono\_atm, p\_dimer\_atm, dimer\_share. flash11\_acetic\_T\_sweep sweeps T across the subsaturated window so the student SEES the total volatility climb while the dimer share falls; flash13\_acetic\_ethanol\_vacuum\_flash crosses into the TWO-PHASE regime, where the vapour mole balance is re-weighted by the dimer explicitly (apparent moles = n\_mono + 2 n\_dim) and its association heat is priced into the duty -- never a silent approximation.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -3479,7 +3479,7 @@ The chemistry does the interesting work in the LIQUID: NH3 + HAc $\to$ NH4+ + Ac
 \begin{tutnarrative}
 One isothermal VACUUM flash, four components, REAL vapour flow:
 
-feed (2 HAc + 1 NH3 + 12 EtOH + 85 H2O, kmol/h) $\to$ [flash01, 358.15 K / 0.65 atm] $\to$ liquid (42.0 kmol/h, pH 5.03) + vapor (58.0 kmol/h)
+feed (2 HAc + 1 NH3 + 12 EtOH + 85 H2O, kmol/h) $\to$ [flash01, 358.15 K / 0.65 atm] $\to$ liquid (42.3 kmol/h, pH 4.98) + vapor (57.7 kmol/h)
 
 On the NRTL backbone the feed's bubble pressure is \textasciitilde{}1.1 atm (gamma\_EtOH = 2.97 triples the ideal ethanol volatility): 0.65 atm strips well over half the feed without wringing the liquid dry. The vapour balance carries the acetic dimer explicitly (v\_HAc = t\_mono + 2 t\_dim, K\_dim(T) van't Hoff) and the buffer chemistry keeps the ammonia liquid-bound. KPIs: pH, p\_mono\_atm, p\_dimer\_atm, dimer\_share, p\_ethanol\_atm, p\_eq\_sum\_atm (= P, two-phase).
 
@@ -3717,7 +3717,7 @@ flashPCSAFT the GLOBAL world: phi-phi PC-SAFT with the ASSOCIATION term active o
 
 flashNRTL a per-unit thermo \{\} override: the classic gamma-phi route on the curated NRTL pair (fitted TO ethanol/water VLE data) + Antoine. This is the case's experimental anchor: the fitted route reproduces the measured azeotropic system, so the DIFFERENCE between the two units' K-values and splits is an honest measurement of what pure-component association physics alone can and cannot predict for a strongly hydrogen-bonded pair.
 
-What the student compares (both goldened), measured at this state:
+What the student compares, measured at the feed composition z (illustrative -- what is goldened are the CONVERGED K's: PC-SAFT 11.47 / 0.581 vs NRTL 3.896 / 0.602 for ethanol / water):
 
 predictive PC-SAFT fitted NRTL (gamma-phi) K\_ethanol (at z) 2.185 2.238 K\_water (at z) 0.769 0.695 V/F 0.649 0.512 x\_ethanol / y\_ethanol 0.038 / 0.441 0.121 / 0.471
 
@@ -3869,7 +3869,7 @@ The flash boils off the residual toluene (vapour) and leaves the polymer in the 
 \begin{tutnarrative}
 feed $\to$ isothermal flash $\to$ heater on the liquid.
 
-The flash splits the feed into vapour + liquid (the pseudo-component participates in VLE through its critical\{\} + Ambrose-Walton Psat). The heater then adds sensible heat to the liquid; energyBalance reports the implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure Cp. No reaction $\to$ no formation datum needed (matching the lump's omitted standardThermochemistry).
+The flash splits the feed into vapour + liquid (the pseudo-component participates in VLE through its critical\{\} + Ambrose-Walton Psat). The heater unit then REMOVES sensible heat from the liquid (Q -30 kW -- a heater with negative duty is a cooler); energyBalance reports the implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure Cp. No reaction $\to$ no formation datum needed (matching the lump's omitted standardThermochemistry).
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -4019,7 +4019,7 @@ This is the state marcilla01 could not reach: there the UNIFAC (VLE) backbone ke
 \begin{tutnarrative}
 liquid-liquid flash of water + 1-butanol with the cited Winkelman et al. (2009) UNIQUAC LLE parameters.
 
-Water + 1-butanol is THE textbook partially-miscible binary. At 320 K and 1.013 bar an equimolar mixture is well below the bubble point (water boils at 373 K, 1-butanol near 390 K), so the equilibrium is GENUINELY two LIQUIDS -- no vapour. A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
+Water + 1-butanol is THE textbook partially-miscible binary. At 320 K and 1.013 bar an 80/20 water/butanol mixture is well below the bubble point (water boils at 373 K, 1-butanol near 390 K), so the equilibrium is GENUINELY two LIQUIDS -- no vapour. A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
 
 THE PARAMETERS (cited, NOT fabricated -- see constant/thermoPhysPropDict and README.md): the UNIQUAC interaction parameters are the LLE-specific fit of
 
@@ -7691,9 +7691,9 @@ water-gas-shift reaction in a CSTR with reverse rate from thermodynamic K\_eq.
 
 Feed: equimolar CO + H2O at 600 K, 10 bar. The forward Arrhenius kinetics drives a high conversion in the early residence times; the reverse term (auto-derived from g\_pure\_ig of the four species at T = 600 K) caps the conversion at the Le Chatelier equilibrium.
 
-At T = 600 K: dG\_rxn = g\_CO2 + g\_H2 - g\_CO - g\_H2O $\approx$ -16.3 kJ/mol K\_eq = exp(16300 / (R $\cdot$ 600)) $\approx$ 26.5 For equimolar CO + H2O, K\_eq = X\textasciicircum{}2 / (1-X)\textasciicircum{}2 -$\to$ X\_eq = 0.838
+At T = 600 K: dG\_rxn = g\_CO2 + g\_H2 - g\_CO - g\_H2O $\approx$ -16.3 kJ/mol K\_eq = exp(16300 / (R $\cdot$ 600)) $\approx$ 26.5 For equimolar CO + H2O, K\_eq = X\textasciicircum{}2 / (1-X)\textasciicircum{}2 -$\to$ X\_eq $\approx$ 0.84
 
-V\_R is picked large enough (1e-3 m\textasciicircum{}3 for a 1 kmol/h feed) that the kinetics are fast relative to residence; we see the conversion approach (but not exceed) X\_eq = 0.838 --- exactly the thermodynamic ceiling.
+V\_R is picked large enough (1e-3 m\textasciicircum{}3 for a 1 kmol/h feed) that the kinetics are fast relative to residence; we see the conversion approach (but not exceed) X\_eq $\approx$ 0.84 --- the thermodynamic ceiling.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -7849,7 +7849,7 @@ The energy balance gains one term, and only one:
 
 H\_out(T) = H\_in + UA (T\_coolant - T\_out)
 
-There is still NO dH\_rxn source: on the elements datum the heat of reaction is already inside H. What the jacket does is remove some of it, so the outlet settles BELOW the adiabatic 431.96 K of cstr04.
+There is still NO dH\_rxn source: on the elements datum the heat of reaction is already inside H. What the jacket does is remove some of it, so the outlet settles BELOW the adiabatic 454.2 K of cstr04.
 
 Check it by hand from the printed KPIs: Q\_kW should equal UA (T\_c - T\_out), and it is NEGATIVE -- heat leaves the reactor. Cool harder (raise UA, lower T\_coolant) and the outlet slides down the generation curve; cool too hard and the reactor extinguishes. Nothing here is switched on by a flag; it is the same one equation in T, with one more term.
 
