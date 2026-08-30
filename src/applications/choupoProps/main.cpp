@@ -846,6 +846,17 @@ try
     // D-c (forum #67/#73): announced BEFORE the JSON stream opens -- an
     // announcement inside the result block corrupts the machine channel.
     announceProvenanceConsumption(ThermoResolutionLog::instance().entries());
+
+    //  THE VERDICT BEFORE THE MACHINE CHANNEL -- the same order the other
+    //  three binaries use, and for the same reason choupoSolve records at
+    //  its own call site: a reader who stops at the human-readable output
+    //  must still meet the divergence banner and the caveat block, and
+    //  until 2026-08-30 this binary buried both BELOW a wall of JSON.  The
+    //  JSON between the markers is unchanged; every consumer extracts it by
+    //  the markers, not by position.
+    printProblemDivergence(ProblemDivergence::instance().entries());
+    printAdvisorySummary(AdvisoryLog::instance().entries());
+
     std::cout << "\n<<<Choupo:result-begin>>>\n{\n";
     std::cout << "  \"binary\": \"choupoProps\",\n";
     std::cout << "  \"caseDir\": \"" << caseDir.string() << "\",\n";
@@ -1058,16 +1069,6 @@ try
 
     std::cout << "\n}\n<<<Choupo:result-end>>>\n";
 
-    //  THE END-OF-RUN CAVEAT BLOCK (core/AdvisorySummary.H).
-    //
-    //  This binary was MISSED when the block was wired, and the commit that
-    //  wired the other three said "ALL FOUR BINARIES print it".  That was
-    //  false when written and it had already been published.  The claim is
-    //  made true here rather than quietly softened -- and the gate that
-    //  follows checks all four, so it cannot become false again unnoticed.
-    //
-    //  Printed AFTER the result markers so the JSON block between them stays
-    //  exactly what every downstream consumer already parses.
     //  THE CURATION DOSSIER -- written last, so it records the run that
     //  actually happened.  It is a work record with evidence semantics and is
     //  structurally out of the resolver's reach; nothing in it is promoted.
@@ -1080,9 +1081,6 @@ try
                          "           bin/curate/promote-from-dossier to admit a"
                          " property to data/standards/)\n";
     }
-
-    printProblemDivergence(ProblemDivergence::instance().entries());
-    printAdvisorySummary(AdvisoryLog::instance().entries());
 
     return overallRc;
 }

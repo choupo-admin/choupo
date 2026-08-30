@@ -2272,6 +2272,32 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                                    " residual of the row)\n"
                                  : "  (pH GIVEN -- this is the net charge the"
                                    " analysis carries)\n");
+        //  A GIVEN pH costs the electroneutrality row (the Bjerrum page's
+        //  point: the composition then carries a net charge no beaker can
+        //  hold), and until 2026-08-30 that fact lived only in the console
+        //  line above -- a warning a thousand lines above the answer has
+        //  been delivered and not received.  Material net charge on a
+        //  given-pH answer now rides the AdvisoryLog into the end-of-run
+        //  caveat block.  The threshold mirrors the feed-imbalance one
+        //  (~5%); a small residual is the analysis' ordinary rounding and
+        //  stays console-only.
+        if (!solveH && qScale > 0.0 && std::fabs(out.chargeResidual) > 0.05)
+        {
+            std::ostringstream msg;
+            msg << "pH was GIVEN, so electroneutrality was not imposed -- "
+                   "the answer carries a net charge of "
+                << std::fixed << std::setprecision(1)
+                << (100.0 * std::fabs(out.chargeResidual))
+                << "% of its total ionic content.  A measured laboratory pH "
+                   "makes this legitimate (the unmeasured counter-ions "
+                   "carry the difference), but no physical beaker holds "
+                   "this composition as written; `pH solve;` closes the "
+                   "balance instead.";
+            if (AdvisoryLog::instance().add("model", "warning", "speciation",
+                                            msg.str())
+                && verbosity >= 1)
+                std::cout << "  [advisory] " << msg.str() << "\n";
+        }
     }
 
     // -- cation-exchange result: loadings + the eq-for-eq salt penalty ----------
