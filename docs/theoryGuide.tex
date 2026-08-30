@@ -3074,34 +3074,96 @@ Acetic acid is harder to evaporate at 350~K than at its boiling point
 \end{example}
 
 \subsection{Pure-component entropy and Gibbs energy}
+\label{sec:integral-entropy}
 
-Entropy is the analogous integral against $c_p / T$,
+Entropy is the analogous integral against $c_p / T$ --- but with one
+structural difference from everything enthalpy did in this chapter.
+Enthalpy ran on a \emph{chosen} reference (the liquid-referenced
+convention above, or the elements datum of
+\S\ref{sec:gibbs-formation-entropy}); entropy has no second
+convention anywhere in the engine.  There is \emph{one} chain, and it
+is absolute: the measured third-law anchor $s^{\circ}_{298}$ from the
+data file, plus $\int c_p/T$,
 \begin{equation}
-   s^{\mathrm{liq}}_i(T) - s^{\mathrm{liq}}_i(T_{\mathrm{ref}})
-   \;=\; \int_{T_{\mathrm{ref}}}^{T} \frac{c_{p,i}^{\mathrm{liq}}(T')}{T'}\,\mathrm{d}T',
+   s^{\circ}_i(T) \;=\; s^{\circ}_{i,298}
+   \;+\; \int_{298.15}^{T} \frac{c_{p,i}(T')}{T'}\,\mathrm{d}T'.
+   \label{eq:integral-sT}
 \end{equation}
-and the vapour entropy is a latent step above:
-\begin{equation}
-   s^{\mathrm{vap}}_i(T) \;=\; s^{\mathrm{liq}}_i(T) \;+\;
-   \frac{\Delta h^{\mathrm{vap}}_i(T)}{T}.
-\end{equation}
-With $h$ and $s$ in hand, the pure-component Gibbs energy follows by
-the Legendre transform that defines it,
-\begin{equation}
-   g_i(T) \;=\; h_i(T) - T\,s_i(T),
-\end{equation}
-and the same reference convention ($g^{\mathrm{liq}}_i(T_{\mathrm{ref}})
-= -T_{\mathrm{ref}}\,s_i(T_{\mathrm{ref}})$) is carried through.
+Each $c_p$ correlation supplies this integral in closed form (for the
+polynomial, $a_0\ln(T/298.15)+\sum_{k\ge1} a_k(T^k-298.15^k)/k$), so
+no quadrature is ever run.
 
-\begin{intuition}
-None of the unit ops  actually call $s$ or $g$ directly ---
-the energy balances are all in $h$ alone, because the systems
-considered are non-reactive plus elementary kinetics where $\Delta G$
-of reaction is not yet needed.  When chemical-equilibrium reactors
-land (post-v1), the same Cp / Watson chain feeds $\Delta G_r =
-\Delta h_r - T\,\Delta s_r$ for the equilibrium constant
-$K_{\mathrm{eq}}(T) = \exp(-\Delta G_r / RT)$.  Wiring is one
-afternoon's work; the data are already in place.
+\paragraph{Crossing a phase is an explicit leg --- and the obvious
+latent step is wrong at the datum.}
+\emph{Along the saturation curve} the two phases are in equilibrium,
+$\Delta g = 0$, so the latent entropy step is exactly the familiar
+\begin{equation}
+   \Delta s^{\mathrm{vap}}_i\!\bigl(T^{\mathrm{sat}}\bigr) \;=\;
+   \frac{\Delta h^{\mathrm{vap}}_i\!\bigl(T^{\mathrm{sat}}\bigr)}
+        {T^{\mathrm{sat}}}.
+\end{equation}
+But the data file's anchors live at the \emph{standard states} ---
+liquid at $298.15$~K and $1$~bar, ideal gas at $298.15$~K and $1$~bar
+--- and those two states are \emph{not} in equilibrium with each
+other: water's $P^{\mathrm{sat}}$ at $298$~K is about $3.17$~kPa, not
+$1$~bar.  The transfer between them carries a non-zero Gibbs change,
+and dividing $\Delta h^{\mathrm{vap}}$ by $T$ alone would silently
+drop it.  What the engine implements is the general identity
+$\Delta s = (\Delta h - \Delta g)/T$:
+\begin{equation}
+   \Delta s^{\mathrm{vap}}_i(298.15)
+   \;=\; \frac{\Delta h^{\mathrm{vap}}_i(298.15) - \Delta g}{298.15},
+   \qquad
+   \Delta g \;=\; -RT
+   \ln\!\frac{P^{\mathrm{sat}}_i(298.15)}{P^{\circ}}
+   \label{eq:integral-svap298}
+\end{equation}
+(\code{Component::s\_formation} in \file{src/thermo/Component.cpp},
+with this reason stated in its comment).  The correction is not small:
+for water, $R\ln(P^{\mathrm{sat}}/P^{\circ}) \approx -28.7$~J/(mol·K)
+--- about a fifth of the whole step.  The published tables confirm the
+identity among themselves: the third-law difference
+$s^{\circ}_{298}(\mathrm{H_2O,g}) - s^{\circ}_{298}(\mathrm{H_2O,l})
+= 188.8 - 70.0 = 118.9$~J/(mol·K), while the calorimetric
+$\Delta h^{\mathrm{vap}}(298)/298.15 \approx 44.0\times10^{3}/298.15
+\approx 147.5$~J/(mol·K) --- and the gap between those two published
+numbers \emph{is} the Gibbs term, not an error in either.  The same construction handles a solid
+datum's melting leg (opt-in: it needs a solid $c_p$ \emph{and}
+$\Delta h^{\mathrm{fus}}$); a crossing the data cannot price refuses
+by name rather than guessing.
+
+With $h$ and $s$ in hand, the pure-component Gibbs energy is the
+Legendre transform that defines it,
+\begin{equation}
+   g^{\circ}_i(T) \;=\; h^{\circ}_i(T) - T\,s^{\circ}_i(T)
+   \label{eq:integral-gT}
+\end{equation}
+(\code{Component::g\_pure\_ig}) --- the enthalpy on the elements
+datum, the entropy absolute, and the pairing correct \emph{only}
+across a balanced stoichiometry, as
+\S\ref{sec:gibbs-formation-entropy} explains.
+
+\begin{intuition}[Where an entropy value actually decides something]
+Two places, and they use it very differently.  The \textbf{Gibbs
+machinery} consumes $g^{\circ}_i(T)$: the equilibrium reactors
+evaluate $K_p=\exp(-\sum_i\nu_i\,g^{\circ}_i/RT)$, and the Gibbs
+reactor minimises total $G$ directly --- there the entropy of mixing
+never appears by name, because it is implicit in every $\ln y_i$ term
+of the chemical potentials.  The \textbf{isentropic machines}
+(compressor, turbine) hold $s$ itself constant: an inner Newton finds
+the temperature at which $s(T,P_{\mathrm{out}},y)=s_{\mathrm{in}}$,
+and each machine publishes the entropy \emph{generated} by its
+declared irreversibility, $\Delta S_{\mathrm{gen}} = s_{\mathrm{out}}
+- s_{\mathrm{in}} \ge 0$, as a KPI.  Note what cancels: with the
+composition held fixed across the machine, the $s^{\circ}_{298}$
+anchors, the mixing term and the reference pressure all drop out of
+the \emph{difference} --- the isentropic answer hangs only on
+$\int c_p/T$, $-R\ln(P_2/P_1)$ and the model's departure.  That
+cancellation is why the ledger can be audited one line at a time: the
+``What is entropy?''\ EduTool page re-adds the lines from a live run
+of \code{tutorials/props/molecular/entropy01\_air\_ledger}, and
+\file{docs/design/entropy-glass-box-trace.md} carries the
+file-by-file trace of the whole chain.
 \end{intuition}
 
 \subsection{Mixing: ideal versus real}

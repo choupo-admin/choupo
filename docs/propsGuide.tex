@@ -413,6 +413,38 @@ compressor and the very same numbers come alive. The \code{.dat} is the
 laboratory record; the model is the question you ask of it.
 \end{intuition}
 
+\subsubsection*{The entropy ledger, completed and verified}
+
+The real-fluid entropy the isentropic machines consume is the
+ideal-gas assembly above plus the model's departure,
+\[
+S(T,P,y) \;=\; S^{\mathrm{ig}}(T,P,y) \;+\; S^{\mathrm{R}}(T,P,y),
+\]
+with $S^{\mathrm{R}}$ supplied by whichever equation of state the case
+declares: SRK carries the closed form
+$S^{\mathrm{R}} = R\ln(Z-B) + (\mathrm{d}a/\mathrm{d}T / b)\,
+\ln\!\bigl((Z+B)/Z\bigr)$ (Sandler's eq.~6.4-31, cited in
+\file{SRK.cpp}), Peng--Robinson its generalised-cubic analogue, and
+IF97 water evaluates its own fundamental-equation entropy directly.
+One convention divergence is on record rather than hidden: PC-SAFT's
+\code{S\_residual} returns the constant-density $(T,\rho)$ residual
+\emph{without} the $+R\ln Z$ conversion to the $(T,P)$ departure the
+cubics use --- stated in its own source comment, flagged in
+\file{docs/design/entropy-glass-box-trace.md}, and open until a
+witnessed fix; no shipped tutorial prices an isentropic machine on
+PC-SAFT today.  The phase-crossing legs of the pure-component chain
+--- and why the vaporisation step at the $298$~K datum is \emph{not}
+$\Delta H_{\mathrm{vap}}/T$ --- are derived in the Theory Guide's
+chapter on integral properties.
+
+The whole chain is pinned by a witness the reader can run:
+\code{tutorials/props/molecular/entropy01\_air\_ledger} publishes
+every line for air at $400$~K and $2$~bar --- $s^{\circ}_i(T)$ per
+component, $S^{\mathrm{ig}}$, $S^{\mathrm{R}}$, $S$ --- and its golden
+holds the re-addition pure~$+$~mixing~$+$~pressure to the engine's own
+total.  The ``What is entropy?''\ EduTool page performs that
+re-addition on screen from a live run of the same case.
+
 \subsection{From \texorpdfstring{$G$}{G} to equilibrium: what \texorpdfstring{$\Delta G^\circ$}{dG0} is (and is not)}
 
 The single most common confusion in this whole subject is $\Delta G^\circ$
