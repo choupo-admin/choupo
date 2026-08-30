@@ -841,6 +841,20 @@ if (flowsheetDict->found("cycle"))
             tr.from = unitNames[i];
             tr.to   = unitNames[static_cast<std::size_t>(dischargeToIdx[i])];
             tr.kind = "continuous";
+            // FIRST activation of this declared edge: say so on the console.
+            // The receiver used to start filling with no line explaining why
+            // -- the recipe header lists its events, the discrete transfer
+            // gets a starred line, and then matter appears in the receiver
+            // "from nowhere" (a first-week student's words, near enough).
+            // One line per edge, at its first hand-off, naming the
+            // DECLARATION that drives it.
+            if (verbosity >= 2)
+                std::cout << "  * t=" << std::fixed << std::setprecision(2)
+                          << tNow << "s   continuous discharge begins: '"
+                          << tr.from << "' -> '" << tr.to
+                          << "'  (the unit's declared `dischargeTo "
+                          << tr.to << ";` -- accumulates every step)\n"
+                          << std::defaultfloat << std::setprecision(6);
             contSlot[i] = transfers.size();
             transfers.push_back(std::move(tr));
             it = contSlot.find(i);
@@ -1406,10 +1420,19 @@ if (flowsheetDict->found("cycle"))
                                                   : "CONTINUOUS ")
                         << nTot << " kmol " << tr.from << " -> " << tr.to
                         << " over [" << tr.tStart << ", " << tr.tEnd << "] s";
+                    // The trigger names WHY this edge exists.  It used to be
+                    // the empty string, so the JSON said one recipe action
+                    // happened while the timeline carried two -- and the
+                    // second gave no mechanism.  A continuous edge is driven
+                    // by the unit's own declaration, not by a recipe event.
                     timeline.push_back({ tr.tStart, "recipe",
                         tr.kind == "external" ? "externalOutlet"
                                               : "dischargeTo",
-                        det.str(), "", tr.from, tr.to, tr.tEnd });
+                        det.str(),
+                        tr.kind == "external"
+                            ? "unrouted product (no dischargeTo declared)"
+                            : "unit declaration: dischargeTo " + tr.to,
+                        tr.from, tr.to, tr.tEnd });
                 }
             }
         }
