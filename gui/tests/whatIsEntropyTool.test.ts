@@ -124,10 +124,41 @@ describe("the spine's order and claims", () => {
     expect(iMix).toBeLessThan(iDef);
   });
 
-  it("the datum contrast: s_298 measured, the enthalpy datum a convention", () => {
+  it("the datum contrast: the ZEROS differ, the experiment is shared", () => {
+    //  Tightened after the 2026-08-30 external review: dHf_298 VALUES are
+    //  measured too (combustion calorimetry) -- what differs is the zero:
+    //  the third law's absolute anchor vs the agreed elements convention.
+    //  The old sharp line ("one column is convention; this one is
+    //  experiment") taught something false about the enthalpy column.
     expect(prose(SRC)).toContain("third law");
-    expect(prose(SRC)).toContain("a calorimeter can MEASURE");
-    expect(prose(SRC)).toContain("an agreement, not a measurement");
+    expect(prose(SRC)).toContain("DETERMINED calorimetrically");
+    expect(prose(SRC)).toContain("both columns rest on experiment");
+    expect(prose(SRC)).toContain("an agreed convention");
+    expect(prose(SRC)).not.toContain("an agreement, not a measurement");
+  });
+
+  it("the second law is stated for an ISOLATED system, not any system", () => {
+    //  A system's entropy can fall spontaneously by exporting entropy;
+    //  what cannot happen is total decrease.  Same review round.
+    expect(prose(SRC)).toContain("in an isolated system it cannot decrease");
+    expect(prose(SRC)).not.toContain(
+      "increases in every process that happens by itself");
+  });
+
+  it("the vaporisation leg names the standard states AND the coexistence limit", () => {
+    //  The blocking item of the review: (ΔHvap − ΔG)/T without saying the
+    //  298 K standard states are off-coexistence reads as a denial of
+    //  ΔS = ΔHvap/T where that IS exact (Δg = 0 on the saturation curve).
+    //  Pinned on the EVALUATED meta (the note is a concatenated literal in
+    //  the source, so a source-text pin would miss it).
+    const temp = LEDGER_META.find((m) => m.line.includes("Cp/T"))!;
+    expect(temp.note).toContain("not in equilibrium with each other");
+    expect(temp.note).toContain("collapses to the familiar ΔHvap/T");
+  });
+
+  it("the machines are declared adiabatic and the un-mixing floor ideal-gas", () => {
+    expect(prose(SRC)).toContain("adiabatic");
+    expect(prose(SRC)).toContain("products delivered at the same T and P");
   });
 
   it("every ledger line carries a citation into the engine", () => {
@@ -138,9 +169,10 @@ describe("the spine's order and claims", () => {
     }
   });
 
-  it("the seven-names line explains why grepping 'entropy' fails", () => {
+  it("the seven-names line lists SEVEN names (the review counted six)", () => {
     expect(prose(SRC)).toContain(
-      "s_298 → s_formation → s_pure_ig → S_ig → S_residual → S_real");
+      "s_298 → s_formation → s_pure_ig → S_ig → S_residual → S_real"
+      + " → dS_gen");
   });
 
   it("the machine witness names dS_gen and the cancellation", () => {

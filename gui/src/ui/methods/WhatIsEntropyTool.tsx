@@ -82,8 +82,9 @@ export function pressureLine(P_Pa: number): number {
   return -R_GAS * Math.log(P_Pa / 1.0e5);
 }
 
-/** Minimum work to UN-mix one mole of ideal mixture at T: w = T·Δs_mix.
- *  [J/mol].  The reversible floor -- a real column pays several times it. */
+/** Minimum work to UN-mix one mole of an IDEAL-GAS mixture, products at
+ *  the same T and P: w = T·Δs_mix  [J/mol] (ΔH_mix = 0, so the reversible
+ *  work is |ΔG_mix|).  A real column pays several times this floor. */
 export function minSeparationWork(T_K: number, y: readonly number[]): number {
   return T_K * mixingLine(y);
 }
@@ -126,16 +127,19 @@ export const LEDGER_META = [
     line: "s_298 (the datum)",
     question: "Where does the count start?",
     cite: "data/standards/components/<name>.dat · standardThermochemistry",
-    note: "Absolute third-law entropy at 298.15 K, 1 bar (JANAF). MEASURED "
-      + "— unlike the enthalpy datum, which is a convention.",
+    note: "Absolute third-law entropy at 298.15 K, 1 bar (JANAF) — anchored "
+      + "at the third law's own zero, where the enthalpy datum's zero is "
+      + "the elements convention.",
   },
   {
     line: "∫Cp/T dT (temperature)",
     question: "How much did heating add?",
     cite: "src/thermo/Component.cpp · Component::s_formation",
-    note: "Closed form per Cp model; phase crossings are explicit legs — "
-      + "the vaporisation entropy is (ΔHvap − ΔG)/T, deliberately not "
-      + "ΔHvap/T.",
+    note: "Closed form per Cp model; phase crossings are explicit legs "
+      + "between the 298 K STANDARD STATES, which are not in equilibrium "
+      + "with each other — so the vaporisation leg keeps its Gibbs term, "
+      + "ΔS = (ΔHvap − ΔG)/298.15.  On the saturation curve, where Δg = 0, "
+      + "this collapses to the familiar ΔHvap/T.",
   },
   {
     line: "−R·Σy·ln y (mixing)",
@@ -275,9 +279,11 @@ export function WhatIsEntropyTool(): JSX.Element {
             themselves, every time.  They never unmix by themselves — not
             once, ever.  No energy was lost either way; the first law is
             silent about it.  <strong>Entropy is the bookkeeping of that
-            one-way street</strong>: the property that increases in every
-            process that happens by itself, and that you must PAY to push
-            back.  (There is a molecular story — more arrangements count as
+            one-way street</strong>: in an isolated system it cannot
+            decrease, and every real process <em>generates</em> some — so a
+            local decrease (this gas un-mixed, that stream cooled) must be
+            paid for by generating more elsewhere, usually with work.
+            (There is a molecular story — more arrangements count as
             “mixed” than “sorted” — worth one sentence here and a statistical
             mechanics course later.)
           </Text>
@@ -301,13 +307,15 @@ export function WhatIsEntropyTool(): JSX.Element {
             That defines only <em>differences</em>.  What makes an absolute
             value possible is the <strong>third law</strong>: a perfect
             crystal at 0 K has S = 0, so the entropy of a substance at
-            298.15 K is something a calorimeter can MEASURE, walking up from
-            near absolute zero.  That measured number is the
+            298.15 K can be DETERMINED calorimetrically — integrating Cp/T
+            up from near absolute zero and adding each phase transition
+            crossed on the way (the very ∫Cp/T structure the ledger below
+            reuses).  That number is the
             {" "}<Text span ff="monospace">s_298</Text> in every component’s
-            data file — and note the contrast with enthalpy, whose datum
-            (the formation convention) is an agreement, not a measurement.
-            One column of your data files is convention; this one is
-            experiment.
+            data file.  The contrast with enthalpy is subtle and worth
+            owning: both columns rest on experiment, but entropy’s
+            <em> zero</em> is the third law’s own — absolute — while
+            enthalpy’s zero (elements at 25 °C) is an agreed convention.
           </Text>
         </Box>
 
@@ -353,6 +361,7 @@ export function WhatIsEntropyTool(): JSX.Element {
             the ledger’s names —{" "}
             <Text span ff="monospace">
               s_298 → s_formation → s_pure_ig → S_ig → S_residual → S_real
+              → dS_gen
             </Text>
             {" "}— seven names, one ledger, and the word itself appears only
             in prose.
@@ -363,16 +372,20 @@ export function WhatIsEntropyTool(): JSX.Element {
           <Title order={5}>4 · What an engineer does with it</Title>
           <Text size="sm" mt={4}>
             <strong>Separation has a price floor.</strong>  The mixing line
-            is the one you pay to reverse.  Un-mixing one mole of an ideal
-            mixture at temperature T costs AT LEAST T·Δs_mix of work — the
-            reversible floor; a real distillation column, with its reboiler
-            and its finite trays, pays several times that.  Move the slider
-            and watch the floor move:
+            is the one you pay to reverse.  Un-mixing one mole of an
+            ideal-gas mixture, products delivered at the same T and P,
+            costs AT LEAST T·Δs_mix of work — the reversible floor; a real
+            distillation column, with its reboiler and its finite trays,
+            pays several times that.  Move the slider and watch the floor
+            move:
           </Text>
           <MixingKnob />
           <Text size="sm" mt={6}>
             <strong>Machines spend it.</strong>  A compressor or turbine in
-            this simulator is solved by matching entropy: the ideal outlet
+            this simulator is adiabatic — its energy balance carries shaft
+            work and nothing else, which is what lets s_out − s_in read
+            directly as the entropy generated — and it is solved by
+            matching entropy: the ideal outlet
             satisfies s(T_out, P_out, y) = s(T_in, P_in, y) — a Newton
             iteration on the real entropy surface
             (src/unitOperations/rotating/IsentropicCore.cpp) — and the
