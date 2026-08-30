@@ -841,7 +841,7 @@ try
             columnLabels.push_back(u->name() + "." + lbl);
     for (const auto& c : controllers)
     {
-        columnLabels.push_back(c->name() + ".PV");
+        if (c->hasPV()) columnLabels.push_back(c->name() + ".PV");
         columnLabels.push_back(c->name() + ".MV");
     }
     std::vector<int> columnWidths;
@@ -866,8 +866,10 @@ try
                           << std::scientific << std::setprecision(5) << v;
         for (const auto& c : controllers)
         {
-            std::cout << std::setw(columnWidths[col++])
-                      << std::scientific << std::setprecision(5) << c->lastCV();
+            if (c->hasPV())
+                std::cout << std::setw(columnWidths[col++])
+                          << std::scientific << std::setprecision(5)
+                          << c->lastCV();
             std::cout << std::setw(columnWidths[col++])
                       << std::scientific << std::setprecision(5) << c->lastMV();
         }
@@ -1411,9 +1413,13 @@ try
     for (const auto& c : controllers)
     {
         std::cout << "  Controller: " << c->name() << "  (" << c->type() << ")\n"
-                  << "    SP = " << std::fixed << std::setprecision(4) << c->setpoint()
-                  << "    PV = " << c->lastCV()
-                  << "    MV = " << c->lastMV() << "\n";
+                  << "    SP = " << std::fixed << std::setprecision(4)
+                  << c->setpoint();
+        if (c->hasPV())
+            std::cout << "    PV = " << c->lastCV();
+        else
+            std::cout << "    PV = (open-loop -- no measurement)";
+        std::cout << "    MV = " << c->lastMV() << "\n";
     }
     std::cout << "==================================================\n";
 

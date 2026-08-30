@@ -76,7 +76,8 @@ public:
 
     void update(scalar t, scalar dt) override;
 
-    scalar lastCV()   const override { return 0.0; }  // unused
+    scalar lastCV()   const override { return 0.0; }  // no measurement exists
+    bool   hasPV()    const override { return false; }
     scalar lastMV()   const override { return lastMV_; }
     scalar setpoint() const override { return lastMV_; }
 

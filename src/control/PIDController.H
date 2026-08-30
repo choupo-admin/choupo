@@ -79,7 +79,19 @@ public:
 
     void update(scalar t, scalar dt) override;
 
-    scalar lastCV()    const override { return lastCV_; }
+    //  Before the first update() there IS no "last" measurement -- lastCV_
+    //  is a zero-initialised member, and the t = 0 trajectory row printed
+    //  "TC1.PV 0.00000e+00" while the reactor sat at 320 K: a student reads
+    //  "the sensor measured 0 K at start-up".  lastMV_ got the bias half of
+    //  this fix at configure time; the CV half cannot (the plant is not
+    //  bound yet), so the accessor reads the LIVE measurement until the
+    //  first update has stored a real one.  Readout only -- no control
+    //  dynamics change.
+    scalar lastCV()    const override
+    {
+        if (!primed_ && measUnit_) return measUnit_->getCV(cvKey_);
+        return lastCV_;
+    }
     scalar lastMV()    const override { return lastMV_; }
     scalar setpoint()  const override { return SP_; }
 

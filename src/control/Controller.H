@@ -88,6 +88,12 @@ public:
     virtual scalar lastCV() const = 0;
     virtual scalar lastMV() const = 0;
     virtual scalar setpoint() const = 0;
+    //  Whether this controller MEASURES anything.  An open-loop Schedule has
+    //  no PV by design, and printing its lastCV() (a hardcoded 0.0 marked
+    //  "unused") as a ".PV" trajectory column reads as "the sensor measured
+    //  zero" -- the same lie the PID's t = 0 row told.  The trajectory only
+    //  prints a PV column for controllers that have one.
+    virtual bool   hasPV() const { return true; }
 
     // ---- Factory (explicit registry) ----
     using Factory = std::function<std::unique_ptr<Controller>()>;
