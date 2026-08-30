@@ -64,6 +64,25 @@ GROUPS = [
 ]
 
 
+#  The schema descriptions use Unicode math freely (a minus is U+2212 there,
+#  not a hyphen), and pdflatex's utf8 inputenc has no text-mode glyph for
+#  most of it.  On 2026-08-30 the U+2212 in enthalpyConcentration's
+#  description made propsGuide.tex uncompilable -- and buildSite's
+#  warn-and-continue then served the last committed PDF, stale behind its
+#  own source, for three days with the suite green.  So the renderer owns
+#  the mapping: every math character a schema is known to carry becomes its
+#  LaTeX form here, applied AFTER the ASCII escaping (the replacements
+#  introduce `$` and `\`, which must not be re-escaped).  A character not
+#  in this table still breaks the PDF build loudly -- which is the correct
+#  failure, now that buildSite refuses instead of warning.
+MATH_CHARS = {
+    "−": "$-$",       "±": "$\\pm$",    "×": "$\\times$",
+    "·": "$\\cdot$",  "Δ": "$\\Delta$", "α": "$\\alpha$",
+    "β": "$\\beta$",  "γ": "$\\gamma$", "η": "$\\eta$",
+    "θ": "$\\theta$", "μ": "$\\mu$",    "φ": "$\\varphi$",
+}
+
+
 def tex_escape(s: str) -> str:
     """LaTeX-escape prose.  Backticked spans become \\code{...} first, since
     the schema descriptions use markdown backticks throughout."""
@@ -76,6 +95,8 @@ def tex_escape(s: str) -> str:
                  .replace("_", "\\_").replace("{", "\\{")
                  .replace("}", "\\}").replace("~", "\\textasciitilde{}")
                  .replace("^", "\\textasciicircum{}"))
+        for ch, tex in MATH_CHARS.items():
+            e = e.replace(ch, tex)
         out.append("\\code{" + e + "}" if i % 2 else e)
     return "".join(out)
 

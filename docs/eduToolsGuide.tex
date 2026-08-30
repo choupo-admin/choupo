@@ -16,13 +16,12 @@
 % destination (hyperref destlabel=true makes every \label in the Theory
 % Guide one), so the string printed here is the same string the tool's
 % registry entry carries and the same string the book icon opens.
-\newcommand{\theorydest}[1]{\code{#1}}
+% \theorydest and \declaredanchor moved to preamble.tex (2026-08-30): the
+% Theory Guide's ch:solubility-parameter now uses \declaredanchor too, and a
+% per-guide copy of a shared macro is the arity sin -- the guide that lacked
+% it simply failed to compile, silently served stale.
 \newcommand{\derivation}[1]{%
   \smallskip\noindent\textbf{\sffamily\small Derivation.}\quad #1\par\smallskip}
-
-% The tool's declared anchor, as the registry writes it.
-\newcommand{\declaredanchor}[1]{%
-  \noindent\textit{\small Declared anchor:} \theorydest{#1}.\par}
 
 \begin{document}
 
@@ -1060,7 +1059,7 @@ look right, which is what makes it a favourite error.
 And $\delta$ is a function of temperature that nobody writes the
 temperature next to.  As a liquid approaches its critical point the
 cohesive energy goes to zero, and so does $\delta$: there is no longer a
-liquid to pull apart.  Published tables are at \SI{25}{\celsius}; a
+liquid to pull apart.  Published tables are at $25\,^\circ$C; a
 $\delta$ quoted without a temperature is a number from an unstated state.
 
 \subsection{Running it}
@@ -1106,8 +1105,8 @@ that is right until the day it is not.
 \subsection{Where one number stops}
 
 \textbf{Hildebrand carries no hydrogen bonding.}  Ethanol
-($\delta \approx \SI{26}{\mega\pascal\tothe{0.5}}$) and nitromethane
-($\approx \SI{25.1}{}$) sit almost on top of each other, and a formulator
+($\delta \approx 26~\mathrm{MPa}^{1/2}$) and nitromethane
+($\approx 25.1$) sit almost on top of each other, and a formulator
 knows they behave differently --- one donates hydrogen bonds and the
 other does not.  The theory cannot express the difference, because it
 compressed every kind of intermolecular force into one scalar.
@@ -1124,7 +1123,7 @@ call, rather than letting a small number imply more than it carries.
 
 \begin{tryit}
 Put water in the list.  Its $\delta$ is enormous
-($\approx \SI{48}{\mega\pascal\tothe{0.5}}$), far from every organic on
+($\approx 48~\mathrm{MPa}^{1/2}$), far from every organic on
 the shelf, and the pairwise table will duly report that water mixes with
 nothing.  Water and ethanol are of course miscible in all proportions.
 

@@ -32,7 +32,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 
 \begin{tutoriallink}
 \file{tutorials/props/compare/acetone01\_ipa\_water\_azeotrope}
-\quad (and 7 more)
+\quad (and 8 more)
 \end{tutoriallink}
 
 \paragraph{\code{propertyScan1D}}
@@ -50,7 +50,7 @@ One-dimensional property sweep: varies one state variable (T, P or a mole fracti
 
 \begin{tutoriallink}
 \file{tutorials/props/compare/acetone01\_ipa\_water\_azeotrope}
-\quad (and 11 more)
+\quad (and 12 more)
 \end{tutoriallink}
 
 \paragraph{\code{propertyScan2D}}
@@ -454,7 +454,7 @@ Least-squares polynomial fit of measured heat-capacity data, producing the \code
 \end{tutoriallink}
 
 \paragraph{\code{estimateComponent}}
-Group-contribution estimation of a component's constants — curation made visible, like the fit ops: the estimate is computed, compared against a reference where one is given, and written as a promotable draft, never silently into the catalogue.  THREE routes by \code{model}: a group method (Joback for small molecules, vanKrevelen for a polymer repeat unit) decomposes the molecule into \code{groups}; a scalar-anchored method (RiaziDaubert) builds a petroleum PSEUDO-component from \code{anchors \{ Tb; SG; \}} and needs no groups — the record it writes says loudly that a cut is a LUMP of hundreds of species, not a molecule; and the polymer route adds a \code{polymer \{\}} block whose packing factor k is visible, never hidden, because rho = M0/(k·Vw) and k IS the assumption.
+Group-contribution estimation of a component's constants — curation made visible, like the fit ops: the estimate is computed, compared against a reference where one is given, and written as a promotable draft, never silently into the catalogue.  THREE routes by \code{model}: a group method (Joback for small molecules, vanKrevelen for a polymer repeat unit) decomposes the molecule into \code{groups}; a scalar-anchored method (RiaziDaubert) builds a petroleum PSEUDO-component from \code{anchors \{ Tb; SG; \}} and needs no groups — the record it writes says loudly that a cut is a LUMP of hundreds of species, not a molecule; and the polymer route adds a \code{polymer \{\}} block whose packing factor k is visible, never hidden, because rho = M0/(k$\cdot$Vw) and k IS the assumption.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline
@@ -550,7 +550,7 @@ Glass-box surface of the ONE shared formula parser (src/thermo/ElementCompositio
 \subsection{Other}
 
 \paragraph{\code{enthalpyConcentration}}
-The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour − h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
+The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour $-$ h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
 
 \begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
 \hline

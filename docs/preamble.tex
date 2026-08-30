@@ -238,6 +238,15 @@
 % ---- Shortcuts ------------------------------------------------------
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\file}[1]{\texttt{#1}}
+
+% A cross-guide PDF named destination (hyperref destlabel=true makes every
+% \label one) and the "Declared anchor" line the EduTools registry writes.
+% ONE home here: first used only by the EduTools Guide, now also by the
+% Theory Guide's ch:solubility-parameter -- a per-guide copy would be the
+% arity sin in a macro.
+\newcommand{\theorydest}[1]{\code{#1}}
+\newcommand{\declaredanchor}[1]{%
+  \noindent\textit{\small Declared anchor:} \theorydest{#1}.\par}
 \newcommand{\dict}[1]{\texttt{#1}}
 \newcommand{\cpp}{C\texttt{++}}
 

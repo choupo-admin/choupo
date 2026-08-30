@@ -73,8 +73,21 @@ if [ "${1:-}" != "--no-build" ]; then
     #  The guide PDFs FIRST (incremental), so the served Help links never 404.
     if command -v pdflatex >/dev/null 2>&1; then
         echo "[buildSite] compiling guide PDFs (make -C docs) ..."
-        ( cd "$root/docs" && make all >/dev/null 2>&1 ) \
-            || echo "[buildSite] WARN: docs build had errors; using existing PDFs"
+        #  A failed compile means the PDFs about to be published are stale
+        #  behind their own sources.  This branch used to WARN and continue,
+        #  and from 2026-08-27 to 2026-08-30 that is exactly what happened:
+        #  theoryGuide.tex had become uncompilable (an \SI with no siunitx
+        #  anywhere in the tree) and every publish served the 08-19 PDF --
+        #  missing the Hansen chapter -- with the suite green.  The
+        #  title-page version gate below cannot catch it: same version,
+        #  stale content.  Refuse, naming the log.
+        ( cd "$root/docs" && make all >/dev/null 2>&1 ) || {
+            echo "[buildSite] ERROR: docs build FAILED -- the committed PDFs are stale" >&2
+            echo "[buildSite]        behind their own .tex sources.  Publishing them would" >&2
+            echo "[buildSite]        serve a guide missing what the source already says." >&2
+            echo "[buildSite]        See docs/*.build.log; fix the .tex, then re-run." >&2
+            exit 1
+        }
     else
         echo "[buildSite] WARN: no pdflatex -- using existing docs/*.pdf"
     fi

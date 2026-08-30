@@ -94,12 +94,21 @@ jobs:
       - name: pdftotext (buildSite verifies the published guide versions)
         run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
 
+      #  `lmodern` is load-bearing and NOT pulled by --no-install-recommends:
+      #  docs/preamble.tex line 8 loads it, so without the deb every guide
+      #  compile dies on its first package and buildSite's docs step never
+      #  built anything here -- it fell to the warn branch and published the
+      #  committed PDFs on every run.  Found 2026-08-30 when theoryGuide.tex
+      #  had been uncompilable for three days (a \SI with no siunitx in the
+      #  tree) and the served guide was stale behind its own source with the
+      #  suite green.  buildSite now REFUSES on a failed docs build, so this
+      #  list must actually compile the guides.
       - name: LaTeX (the guides the app's Help links serve)
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             texlive-latex-recommended texlive-latex-extra texlive-pictures \
-            texlive-fonts-recommended
+            texlive-fonts-recommended lmodern
 
       #  ---- the SAME chain proven locally, in the same order ---------------
       - name: Build the WASM the app runs
