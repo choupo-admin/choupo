@@ -153,6 +153,17 @@ int CSTR::solve(const DictPtr& dict,
         k_rev = k / K_eq;
     }
 
+    // CATALYST LOADING -- the SAME conversion the multi-reaction path applies:
+    // r[mol/(m3.s)] = 1000 * rho_cat[kg/m3] * r[mol/(g.s)].  Until 2026-08-30
+    // only `reactions ( ... )` read this key: the single-reaction grammar left
+    // a declared loading UNREAD, so per-gram rate constants ran as if already
+    // volumetric -- wrong by 1000*rho_cat, at exit 0.  Two grammars, one
+    // physics.  Absent (the homogeneous case) the factor is 1 and nothing
+    // changes.
+    const scalar catLoad   = operDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
+    const scalar catFactor = (catLoad > 0.0) ? 1000.0 * catLoad : 1.0;
+    announceUnresolvedPellet("cstr", catLoad, verbosity);
+
     // ---- Convert to mol/s for the inner arithmetic ------------------
     // Stream F is kmol/s SI; we use mol/s inside this routine
     // because the thermo's Cp / ΔH are reported per mole.
@@ -221,7 +232,7 @@ int CSTR::solve(const DictPtr& dict,
             scalar Cj = Fj / Q;
             r_fwd *= std::pow(Cj, order[j]);
         }
-        if (!reversible) return r_fwd;
+        if (!reversible) return catFactor * r_fwd;
         // Reverse term: products are species with nu > 0; their kinetic
         // order on the reverse leg defaults to nu (mass-action) when not
         // overridden.  Reactants don't appear in the reverse rate.
@@ -234,8 +245,35 @@ int CSTR::solve(const DictPtr& dict,
             scalar Cj = Fj / Q;
             r_rev *= std::pow(Cj, nu[j]);   // mass-action on products
         }
-        return r_fwd - r_rev;
+        return catFactor * (r_fwd - r_rev);
     };
+
+    //  THE MONOTONE-BRACKET AID BELOW IS A CLAIM, and the declared law
+    //  decides whether it is true.  g(xi) = xi - rate(xi)*V_R is monotone
+    //  increasing when the forward rate cannot RISE with conversion: every
+    //  declared nonzero order sits on a REACTANT (nu < 0; nu = 0 is a
+    //  spectator whose concentration never moves) and is positive.  (The
+    //  reverse leg is mass-action on products, which only helps.)  An
+    //  AUTOCATALYTIC order (on a product) or a NEGATIVE order breaks that:
+    //  g can then hold several roots, and the bracket tightening in
+    //  newton1D -- which has only monotone modes -- can expel the true one
+    //  and report a wrong conversion at exit 0.  REFUSE, naming the solver
+    //  that makes no such claim: the multi-reaction grammar's NewtonND
+    //  handles the same law with a full Jacobian and no monotone aid.
+    for (std::size_t j = 0; j < n; ++j)
+        if (order[j] != 0.0 && (nu[j] > 0.0 || order[j] < 0.0))
+            throw std::runtime_error("CSTR: the declared rate law puts a "
+                + std::string(order[j] < 0.0 ? "NEGATIVE order"
+                                             : "forward order on a PRODUCT")
+                + " ('" + thermo.comp(j).name() + "', nu "
+                + std::to_string(nu[j]) + ", order "
+                + std::to_string(order[j]) + ") -- the single-reaction "
+                  "extent Newton relies on g(xi) being monotone, which this "
+                  "law does not guarantee, so it could report a wrong root "
+                  "silently.  Declare the reaction under `reactions ( ... )` "
+                  "instead: the multi-reaction solver makes no monotonicity "
+                  "claim and handles this law.");
+
     auto g  = [&](scalar xi) { return xi - rate(xi) * V_R; };
     auto dg = [&](scalar xi)
     {
@@ -249,7 +287,7 @@ int CSTR::solve(const DictPtr& dict,
     nro.lower              = 0.0;
     nro.upper              = 0.9999 * xi_max;
     nro.bracket            = true;
-    nro.monotoneIncreasing = true;          // g(0) ≤ 0, g(ξ_max) > 0
+    nro.monotoneIncreasing = true;          // PROVEN above: no product/negative order
     nro.maxStep            = 0.25 * xi_max;
 
     if (verbosity >= 3)

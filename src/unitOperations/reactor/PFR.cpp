@@ -149,6 +149,16 @@ int PFR::solve(const DictPtr& dict,
     //    ordinate 1/(-r_lim) is the CLASSROOM construction over this column,
     //    and the engine publishes the rate it already evaluates inside every
     //    RK4 stage rather than letting a view re-derive kinetics.
+    // CATALYST LOADING -- the SAME conversion the multi-reaction path applies:
+    // r[mol/(m3.s)] = 1000 * rho_cat[kg/m3] * r[mol/(g.s)].  Until 2026-08-30
+    // only `reactions ( ... )` read this key on the PFR too; a per-gram rate
+    // constant on the single-reaction grammar ran as if already volumetric.
+    // (No monotone guard is needed here: the PFR integrates, it does not
+    // root-find, so an autocatalytic law is simply integrated.)
+    const scalar catLoad   = operDict->lookupScalarOrDefault("catalystLoading", 0.0);  // kg/m^3
+    const scalar catFactor = (catLoad > 0.0) ? 1000.0 * catLoad : 1.0;
+    announceUnresolvedPellet("pfr", catLoad, verbosity);
+
     auto rate = [&](const sVector& Fi)
     {
         scalar r = k;
@@ -159,7 +169,7 @@ int PFR::solve(const DictPtr& dict,
             if (Cj < 0.0) Cj = 0.0;
             r *= std::pow(Cj, order[j]);
         }
-        if (!reversible) return r;
+        if (!reversible) return catFactor * r;
         // Reverse leg: mass-action on the products (ν > 0).
         scalar r_rev = k_rev;
         for (std::size_t j = 0; j < n; ++j)
@@ -169,7 +179,7 @@ int PFR::solve(const DictPtr& dict,
             if (Cj < 0.0) Cj = 0.0;
             r_rev *= std::pow(Cj, nu[j]);
         }
-        return r - r_rev;
+        return catFactor * (r - r_rev);
     };
 
     // -- Profile sink: store V, F_i, X and -r_lim at every step so the GUI
@@ -261,8 +271,26 @@ int PFR::solve(const DictPtr& dict,
         auto k2 = dFdV(axpy(F_i, 0.5 * dV, k1));
         auto k3 = dFdV(axpy(F_i, 0.5 * dV, k2));
         auto k4 = dFdV(axpy(F_i,       dV, k3));
+        // FRACTION-TO-BOUNDARY commit -- the multi-reaction path's own
+        // mechanism (#106), adopted here 2026-08-30 when a stiff loading
+        // probe drove the limiting reactant to -10x its feed in one coarse
+        // step and X came out ABOVE 1 at exit 0.  When the increment would
+        // cross zero, the WHOLE step is scaled so the limiting species
+        // lands exactly at 0: stoichiometry preserved, mass conserved, an
+        // O(dV) local error at the exhaustion point.  frac = 1 whenever no
+        // crossing happens, so every resolved case is byte-identical.
+        sVector dF(n);
         for (std::size_t i = 0; i < n; ++i)
-            F_i[i] += dV / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+            dF[i] = dV / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+        scalar frac = 1.0;
+        for (std::size_t i = 0; i < n; ++i)
+            if (dF[i] < 0.0 && F_i[i] + dF[i] < 0.0)
+                frac = std::min(frac, F_i[i] / (-dF[i]));
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            F_i[i] += frac * dF[i];
+            if (F_i[i] < 0.0) F_i[i] = 0.0;          // round-off dust only
+        }
 
         const scalar V_here = dV * (m + 1);
         pushProfile(V_here, F_i);
@@ -276,6 +304,26 @@ int PFR::solve(const DictPtr& dict,
             std::cout << "\n";
         }
     }
+
+    // -- THE INTEGRATION MUST HAVE RESOLVED THE KINETICS ------------------
+    //  An explicit RK4 asked to cross a rate transient in one coarse step
+    //  overshoots: the limiting reactant lands materially NEGATIVE, the
+    //  clamped rate then freezes it there, and X = (F_in - F)/F_in comes
+    //  out ABOVE 1 -- found 2026-08-30 by a catalyst-loading probe that
+    //  published X = 11.09 at exit 0 (the same case at nSteps 100000 gives
+    //  X = 1 exactly).  A conversion no reactor can have must refuse, not
+    //  be published.  The threshold is material, not round-off: a stable
+    //  integration undershoots by O(machine), not by fractions of the feed.
+    for (std::size_t i = 0; i < n; ++i)
+        if (F_i[i] < -1.0e-6 * F_in_mol_s)
+            throw std::runtime_error("PFR: the RK4 integration left '"
+                + thermo.comp(i).name() + "' at a materially NEGATIVE flow ("
+                + std::to_string(F_i[i]) + " mol/s against a feed of "
+                + std::to_string(F_in_mol_s) + ") -- the axial steps are too coarse"
+                  " for this rate (a stiff transient crossed in one step"
+                  " overshoots and would publish a conversion above 1)."
+                  "  Raise `nSteps` in the operation block until the profile"
+                  " is resolved.");
 
     // -- Outlet -----------------------------------------------------------
     scalar F_out = 0.0;
