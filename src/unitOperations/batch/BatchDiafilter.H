@@ -189,7 +189,7 @@ public:
     //  same way.  BOTH are declared -- a vessel that drank without
     //  saying so reads to the campaign balance as one fabricating mass.
     BatchState takeContinuousDischarge(scalar tNow) override;
-    BatchState takeContinuousIntake(scalar tNow) override;
+    std::vector<DatumAmendment> takeDatumAmendments() override;
 
     //  vesselEnthalpy is NOT overridden.  A retentate is a plain liquid
     //  inventory and the base already prices exactly that through

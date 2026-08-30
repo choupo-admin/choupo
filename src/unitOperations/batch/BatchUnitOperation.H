@@ -327,38 +327,38 @@ public:
     //  the campaign mass/element/energy balances read a record where they
     //  would otherwise see a leak.  Drained by choupoBatch right after the
     //  setOperationParameter that caused it.  Default: none.
+    //  ONE HOOK for matter crossing the campaign boundary outside the
+    //  transfer machinery (unified 2026-08-30; debt #15).  Two hooks used
+    //  to answer this one question -- takeDatumAmendments (recipe-drained,
+    //  a CHANGED DECLARATION such as the fixed bed's feed switch) and
+    //  takeContinuousIntake (per-step, a FLOW such as the diafilter's
+    //  make-up solvent).  The distinction that mattered was never the hook:
+    //  it was the KIND WORD on the ledger record (a wash-water make-up is
+    //  not a re-declared feed) and the RECORD SHAPE (one record per
+    //  declaration event vs one accumulating record per vessel).  Both now
+    //  live ON the amendment itself, producer-declared; the driver drains
+    //  this queue on every accepted step AND right after a recipe
+    //  setParameter (a swap-queue drains safely twice -- the second call
+    //  finds it empty).
     struct DatumAmendment
     {
         bool        into = false;  // true: matter ENTERS the datum from the
                                    //   boundary; false: returned to it
         BatchState  pkg;           // the amended matter (n >= 0, own T/P/vf)
         std::string why;           // human-readable cause, for the timeline
+        //  The ledger kind word.  "feedAmendment" is the historical meaning
+        //  of this struct (a re-declared commitment) and stays the default
+        //  so the fixed bed's producers are byte-unaffected; a continuous
+        //  flow declares its own (the diafilter: "externalIntake").
+        std::string kind = "feedAmendment";
+        //  false: one ledger record PER AMENDMENT (a discrete declaration
+        //  event, with its own timeline entry).  true: ONE accumulating
+        //  record per (unit, kind, direction), extended in place -- the
+        //  shape a continuous flow needs, one record per vessel and not one
+        //  per step.
+        bool        accumulate = false;
     };
     virtual std::vector<DatumAmendment> takeDatumAmendments() { return {}; }
-
-    //  CONTINUOUS INTAKE -- the mirror of takeContinuousDischarge.
-    //
-    //  Matter this vessel has drawn IN across the campaign boundary since
-    //  the last call, as ONE package.  A diafilter's make-up solvent is the
-    //  first user: it enters at the permeate rate, continuously, and a
-    //  vessel that consumed it without declaring it would read to the
-    //  campaign balance as a vessel fabricating mass -- which is exactly
-    //  what the first run of `diafilter01` reported (closure 0.998, 4996 kg
-    //  unaccounted).  The balance was right and the unit was wrong.
-    //
-    //  WHY NOT `takeDatumAmendments`, whose struct says the same words.
-    //  That hook is drained ONLY inside the recipe's `setParameter`
-    //  handler, because its subject is a CHANGED DECLARATION (the fixed
-    //  bed's feed commitment jumping at a switch).  This one is drained on
-    //  every accepted step, beside the discharge, because its subject is a
-    //  FLOW.  They accumulate into the same `amendIn` bucket -- drawn-in
-    //  matter is drawn-in matter -- but they are recorded under different
-    //  kind words so the timeline can tell a wash-water make-up from a
-    //  re-declared feed.
-    //
-    //  Default: nothing.  A closed vessel draws nothing in, and its
-    //  behaviour is unchanged by this hook existing.
-    virtual BatchState takeContinuousIntake(scalar /*tNow*/) { return {}; }
 
     // ---- Thermo attachment (phase (b), forum #98.3-1) --------------------
     //  The driver attaches the case's thermo package right after

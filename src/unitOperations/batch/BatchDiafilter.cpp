@@ -490,28 +490,38 @@ BatchState BatchDiafilter::takeContinuousDischarge(scalar tNow)
 // ---------------------------------------------------------------------------
 //  the make-up solvent crosses the boundary INTO the vessel
 // ---------------------------------------------------------------------------
-BatchState BatchDiafilter::takeContinuousIntake(scalar tNow)
+std::vector<BatchUnitOperation::DatumAmendment>
+BatchDiafilter::takeDatumAmendments()
 {
-    BatchState in;
-    in.n.assign(state_.n.size(), 0.0);
-    in.T  = state_.T;
-    in.P  = state_.P;
-    in.vf = 0.0;
-
-    (void) tNow;
+    //  Through the ONE boundary hook since 2026-08-30 (debt #15): the
+    //  amendment declares its own kind word (`externalIntake` -- a flow,
+    //  not a re-declared feed) and asks for the ACCUMULATING record shape
+    //  (one ledger record per vessel, extended in place, not one per
+    //  step).  The physics is unchanged from the retired
+    //  takeContinuousIntake: pure solvent at the diafiltrate's own
+    //  density, at the rate the permeate leaves -- which is what
+    //  `constantVolume` MEANS and is the same Q_d the derivative
+    //  integrates.  Declaring it is not bookkeeping: without it the
+    //  campaign balance sees the vessel hold its inventory while
+    //  thousands of kilograms leave, and reports a leak it is right to
+    //  report (diafilter01's first run: closure 0.998, 4996 kg
+    //  unaccounted -- the balance was right and the unit was wrong).
     const scalar dV = Vperm_ - VpermLastIn_;
     VpermLastIn_ = Vperm_;
-    if (dV <= 0.0 || !constantVolume_) return in;
+    if (dV <= 0.0 || !constantVolume_) return {};
 
-    //  Pure solvent at the diafiltrate's own density, at the rate the
-    //  permeate leaves -- which is what `constantVolume` MEANS and is the
-    //  same Q_d the derivative integrates.  Declaring it here is not
-    //  bookkeeping: without it the campaign balance sees the vessel hold
-    //  its inventory while thousands of kilograms leave, and reports a leak
-    //  it is right to report.
-    in.n[iWater_] = dV * rhoDia_ / MW_[iWater_];
-    in.V = volumeOf(in.n);
-    return in;
+    DatumAmendment am;
+    am.into       = true;
+    am.kind       = "externalIntake";
+    am.accumulate = true;
+    am.why        = "constant-volume make-up solvent (diafiltrate)";
+    am.pkg.n.assign(state_.n.size(), 0.0);
+    am.pkg.T  = state_.T;
+    am.pkg.P  = state_.P;
+    am.pkg.vf = 0.0;
+    am.pkg.n[iWater_] = dV * rhoDia_ / MW_[iWater_];
+    am.pkg.V = volumeOf(am.pkg.n);
+    return { am };
 }
 
 // ---------------------------------------------------------------------------

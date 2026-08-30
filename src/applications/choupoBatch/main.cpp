@@ -438,6 +438,13 @@ try
         throw std::runtime_error("Recipe: unit '" + nm + "' not found"
             " in units list");
     };
+    auto findUnitIdx = [&](const std::string& nm) -> std::size_t
+    {
+        for (std::size_t i = 0; i < units.size(); ++i)
+            if (unitNames[i] == nm) return i;
+        throw std::runtime_error("Recipe: unit '" + nm + "' not found"
+            " in units list");
+    };
 
     // Validate an event's action + params (shared by time- and condition-
     // triggered events).
@@ -889,34 +896,67 @@ if (flowsheetDict->found("cycle"))
         }
         addPackage(transfers[it->second], tNow, pkg);
     };
-    //  The mirror of recordVented: matter a vessel DRAWS IN across the
-    //  campaign boundary, continuously.  It lands in the same `amendIn`
-    //  bucket a recipe's feed amendment does -- drawn-in matter is drawn-in
-    //  matter, and the closures already read that bucket on the initial
-    //  side -- but under its own kind word, because a diafilter's wash
-    //  water and a re-declared feed are different events and the timeline
-    //  must not call them the same thing.  One accumulating record per
-    //  vessel, not one per step.
-    std::map<std::size_t, std::size_t> intakeSlot;
-    auto recordIntake = [&](std::size_t i, scalar tNow, const BatchState& pkg)
+    //  THE ONE BOUNDARY DRAIN (unified 2026-08-30; debt #15).  Every
+    //  DatumAmendment a unit queues -- a re-declared feed commitment, a
+    //  diafilter's make-up solvent -- crosses the campaign boundary
+    //  through this lambda, called on every accepted step AND right after
+    //  a recipe setParameter (the queue is a swap, so the second drain of
+    //  a window finds it empty).  The amendment carries its own KIND WORD
+    //  (a wash-water make-up and a re-declared feed are different events,
+    //  and the timeline must not call them the same thing) and its own
+    //  RECORD SHAPE: `accumulate` extends one ledger record per
+    //  (unit, kind, direction) in place -- one record per vessel, not one
+    //  per step -- while a discrete declaration gets its own record and
+    //  its own timeline entry, exactly as before the unification.
+    std::map<std::string, std::size_t> amendSlot;
+    auto drainAmendments = [&](std::size_t i, scalar tNow,
+                               const std::string& trigger)
     {
-        if (pkg.totalMoles() <= 0.0) return;
-        if (amendIn.size() != thermo.n()) amendIn.assign(thermo.n(), 0.0);
-        for (std::size_t c = 0; c < thermo.n() && c < pkg.n.size(); ++c)
-            amendIn[c] += pkg.n[c];
-        auto it = intakeSlot.find(i);
-        if (it == intakeSlot.end())
+        for (auto& am : units[i]->takeDatumAmendments())
         {
-            SimulationResult::TransferRecord tr;
-            tr.tStart = tNow; tr.tEnd = tNow;
-            tr.from = "(external boundary)";
-            tr.to   = unitNames[i];
-            tr.kind = "externalIntake";
-            intakeSlot[i] = transfers.size();
-            transfers.push_back(std::move(tr));
-            it = intakeSlot.find(i);
+            if (am.pkg.totalMoles() <= 0.0) continue;
+            sVector& tgt = am.into ? amendIn : amendOut;
+            if (tgt.size() != thermo.n()) tgt.assign(thermo.n(), 0.0);
+            for (std::size_t c = 0;
+                 c < thermo.n() && c < am.pkg.n.size(); ++c)
+                tgt[c] += am.pkg.n[c];
+
+            const std::string from = am.into ? "(external boundary)"
+                                             : unitNames[i];
+            const std::string to   = am.into ? unitNames[i]
+                                             : "(external boundary)";
+            if (am.accumulate)
+            {
+                const std::string key = unitNames[i] + "\x1f" + am.kind
+                                      + (am.into ? "\x1fI" : "\x1fO");
+                auto it = amendSlot.find(key);
+                if (it == amendSlot.end())
+                {
+                    SimulationResult::TransferRecord tr;
+                    tr.tStart = tNow; tr.tEnd = tNow;
+                    tr.from = from; tr.to = to;
+                    tr.kind = am.kind;
+                    amendSlot[key] = transfers.size();
+                    transfers.push_back(std::move(tr));
+                    it = amendSlot.find(key);
+                }
+                addPackage(transfers[it->second], tNow, am.pkg);
+            }
+            else
+            {
+                SimulationResult::TransferRecord tr;
+                tr.tStart = tNow; tr.tEnd = tNow;
+                tr.from = from; tr.to = to;
+                tr.kind = am.kind;
+                addPackage(tr, tNow, am.pkg);
+                std::ostringstream ad;
+                ad << "FEED AMENDMENT " << am.pkg.totalMoles() << " kmol "
+                   << tr.from << " -> " << tr.to << " (" << am.why << ")";
+                timeline.push_back({ tNow, "recipe", am.kind,
+                                     ad.str(), trigger, tr.from, tr.to });
+                transfers.push_back(std::move(tr));
+            }
         }
-        addPackage(transfers[it->second], tNow, pkg);
     };
     auto fireEvent = [&](const DictPtr& ed, scalar tNow,
                          const std::string& trigger)
@@ -982,26 +1022,7 @@ if (flowsheetDict->found("cycle"))
             //  prices each amendment as a package and the ledger records
             //  it against the external boundary -- the balance reads a
             //  record where it would otherwise see a jump.
-            for (auto& am : findUnit(uN)->takeDatumAmendments())
-            {
-                SimulationResult::TransferRecord tr;
-                tr.tStart = tNow; tr.tEnd = tNow;
-                tr.from = am.into ? "(external boundary)" : uN;
-                tr.to   = am.into ? uN : "(external boundary)";
-                tr.kind = "feedAmendment";
-                addPackage(tr, tNow, am.pkg);
-                sVector& tgt = am.into ? amendIn : amendOut;
-                if (tgt.size() != thermo.n()) tgt.assign(thermo.n(), 0.0);
-                for (std::size_t c = 0;
-                     c < thermo.n() && c < am.pkg.n.size(); ++c)
-                    tgt[c] += am.pkg.n[c];
-                std::ostringstream ad;
-                ad << "FEED AMENDMENT " << am.pkg.totalMoles() << " kmol "
-                   << tr.from << " -> " << tr.to << " (" << am.why << ")";
-                timeline.push_back({ tNow, "recipe", "feedAmendment",
-                                     ad.str(), trigger, tr.from, tr.to });
-                transfers.push_back(std::move(tr));
-            }
+            drainAmendments(findUnitIdx(uN), tNow, trigger);
         }
     };
     // A time trigger's description carries the SCHEDULED time; the entry's
@@ -1190,11 +1211,11 @@ if (flowsheetDict->found("cycle"))
             else
                 recordVented(i, tNow, units[i]->takeContinuousDischarge(tNow));
 
-        //  ... and what they drew IN over the same window.  AFTER the
-        //  discharge, so a vessel that sizes its make-up on what it just
-        //  lost has already lost it.
+        //  ... and what they drew IN (or re-declared) over the same window.
+        //  AFTER the discharge, so a vessel that sizes its make-up on what
+        //  it just lost has already lost it.
         for (std::size_t i = 0; i < units.size(); ++i)
-            recordIntake(i, tNow, units[i]->takeContinuousIntake(tNow));
+            drainAmendments(i, tNow, "");
     };
 
     // Recipe events whose trigger has elapsed.  Runs AFTER noteTimeAdvanced:
