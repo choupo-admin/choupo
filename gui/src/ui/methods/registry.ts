@@ -60,7 +60,8 @@ export type MethodToolId =
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
-  | "thermometer-trust" | "property-trust" | "what-is-entropy";
+  | "thermometer-trust" | "property-trust" | "what-is-entropy"
+  | "what-is-exergy";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -156,6 +157,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "separation has a price floor (T times the mixing line), how an "
       + "isentropic machine spends entropy (dS_gen), and which lines cancel "
       + "when two states are compared.",
+    theory: "ch:criticals",
+  },
+  {
+    //  THE SEQUEL the entropy ledger buys: exergy is the PRICE TAG -- what
+    //  a state is worth in work, against a DECLARED environment.  The live
+    //  centre runs exergy01_air_dead_state and re-adds the engine's two
+    //  published legs (dh and T0*ds); the structural zero at the dead state
+    //  is on screen.  Built the day the `exergy` bench op landed, so every
+    //  claim has an engine surface to cite (the citation-first rule).
+    id: "what-is-exergy", label: "What is exergy?",
+    kind: "notes", status: "live",
+    teaches: "That energy is conserved but USEFULNESS is not: exergy prices "
+      + "a state in work, b = (h - h0) - T0*(s - s0), against a dead state "
+      + "the case DECLARES (the engine refuses to choose your environment). "
+      + "Why the two LEGS re-add on screen, why the dead state's own exergy "
+      + "is zero identically, why b is datum-independent (differences at "
+      + "fixed composition), and Gouy-Stodola: every dS_gen a machine "
+      + "publishes costs T0 times itself in lost work.",
     theory: "ch:criticals",
   },
   {

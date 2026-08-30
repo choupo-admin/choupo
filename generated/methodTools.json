@@ -3,8 +3,8 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 22,
-  "registryTools": 22,
+  "liveTools": 23,
+  "registryTools": 23,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -17,6 +17,12 @@
       "label": "What is entropy?",
       "teaches": "That an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral Cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (S_residual) -- each computed in one named place.  Why separation has a price floor (T times the mixing line), how an isentropic machine spends entropy (dS_gen), and which lines cancel when two states are compared.",
       "href": "/app/?workspace=methods&tool=what-is-entropy"
+    },
+    {
+      "id": "what-is-exergy",
+      "label": "What is exergy?",
+      "teaches": "That energy is conserved but USEFULNESS is not: exergy prices a state in work, b = (h - h0) - T0*(s - s0), against a dead state the case DECLARES (the engine refuses to choose your environment). Why the two LEGS re-add on screen, why the dead state's own exergy is zero identically, why b is datum-independent (differences at fixed composition), and Gouy-Stodola: every dS_gen a machine publishes costs T0 times itself in lost work.",
+      "href": "/app/?workspace=methods&tool=what-is-exergy"
     },
     {
       "id": "thermometer-trust",
