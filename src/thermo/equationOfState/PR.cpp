@@ -35,8 +35,10 @@ License
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <sstream>
+#include <utility>
 
 namespace Choupo {
 
@@ -158,6 +160,17 @@ void PR::buildMix(scalar T, const sVector& y,
         }
     }
     if (aij_out) *aij_out = std::move(aij);
+}
+
+bool PR::mixingLedger(scalar T, const sVector& y, MixingLedger& out) const
+{
+    std::vector<scalar> dadT;
+    buildAi(T, out.a, dadT);
+    out.b.resize(n_);
+    for (std::size_t i = 0; i < n_; ++i) out.b[i] = pure_[i].b;
+    out.kij = kij_;
+    buildMix(T, y, out.a_mix, out.dadT_mix, out.b_mix);
+    return true;
 }
 
 scalar PR::cardano_root(scalar A, scalar B, bool liquid) const
@@ -353,6 +366,7 @@ PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 
     if (eosDict->found("binaryInteractions"))
     {
+        std::set<std::pair<std::size_t, std::size_t>> declared;
         for (const auto& entry : eosDict->lookupDictList("binaryInteractions"))
         {
             const std::string i_name = entry->lookupWord("i");
@@ -370,6 +384,8 @@ PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
                     + (idx_i == n ? i_name : j_name) + "'");
             kij[idx_i][idx_j] = k;
             kij[idx_j][idx_i] = k;
+            declared.insert({ std::min(idx_i, idx_j),
+                              std::max(idx_i, idx_j) });
             // Announce the fitted constant WHERE IT IS CONSUMED, so BOTH entry
             // paths -- a propertyPackage's parameters.kijPairs record (inlined
             // by the builder) AND a legacy inline binaryInteractions list --
@@ -383,6 +399,24 @@ PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
                        + std::to_string(k)))
                 std::cout << "[eos] kij(" << i_name << "," << j_name
                           << ") = " << k << "\n";
+        }
+
+        //  A PARTIALLY declared block: the absent-block line above cannot
+        //  fire, yet the pairs the block does not name run kij = 0 exactly
+        //  as silently as the all-absent case did before 2026-08-23.  Same
+        //  aggregate posture -- one line for the mixture, never one per pair.
+        const std::size_t all = n * (n - 1) / 2;
+        if (declared.size() < all)
+        {
+            std::ostringstream msg;
+            msg << "PR: " << (all - declared.size()) << " of " << all
+                << " binary pair(s) undeclared -- those pairs run kij = 0"
+                   " (predictive-degraded; curated pairs, where they exist,"
+                   " live in parameters/PR/)";
+            if (thermoAnnounce()
+                && AdvisoryLog::instance().add("thermo", "info",
+                       "PR kij coverage", msg.str()))
+                std::cout << "[eos] " << msg.str() << "\n";
         }
     }
 

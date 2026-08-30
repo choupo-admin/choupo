@@ -65,6 +65,20 @@ PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED d
 \file{tutorials/props/molecular/exergy01\_air\_dead\_state}
 \end{tutoriallink}
 
+\paragraph{\code{mixingRules}}
+The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at one state: every pure a\_i(T) and b\_i, every binary k\_ij as constructed, and every pair's additive term in a\_mix = Sum\_i Sum\_j y\_i y\_j (1 - k\_ij) sqrt(a\_i a\_j), b\_mix = Sum\_i y\_i b\_i — plus the identity that re-adds the terms to the a\_mix the engine runs (a gap REFUSES). The numbers come from the SAME buildMix the hot path executes; a ternary needs three binary decisions and the table shows which were declared and which run the announced k\_ij = 0 default. A model with no one-fluid rule (idealGas, PC-SAFT) refuses by name.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{state}\textbf{*} & Thermodynamic state \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/mixrules01\_natural\_gas}
+\end{tutoriallink}
+
 \paragraph{\code{propertyScan1D}}
 One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
 
@@ -174,6 +188,7 @@ Psychrometric chart for ANY carrier + condensable pair, generated from the packa
 
 \begin{tutoriallink}
 \file{tutorials/props/heat/psychro01\_n2\_water}
+\quad (and 1 more)
 \end{tutoriallink}
 
 \paragraph{\code{steamTables}}

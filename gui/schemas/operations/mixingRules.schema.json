@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/mixingRules.schema.json",
+  "title": "mixingRules operation",
+  "description": "The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at one state: every pure a_i(T) and b_i, every binary k_ij as constructed, and every pair's additive term in a_mix = Sum_i Sum_j y_i y_j (1 - k_ij) sqrt(a_i a_j), b_mix = Sum_i y_i b_i — plus the identity that re-adds the terms to the a_mix the engine runs (a gap REFUSES). The numbers come from the SAME buildMix the hot path executes; a ternary needs three binary decisions and the table shows which were declared and which run the announced k_ij = 0 default. A model with no one-fluid rule (idealGas, PC-SAFT) refuses by name.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "Thermodynamic state",
+      "description": "The (T, P, composition) whose mixture parameters are decomposed. a_mix and b_mix depend only on T and the composition; P enters the dimensionless A, B and the root Z.",
+      "properties": {
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Temperature",
+          "unit": "K"
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Pressure",
+          "unit": "Pa"
+        },
+        "composition": {
+          "type": "object",
+          "title": "Mole composition (Sum yi = 1)"
+        }
+      },
+      "required": [
+        "T",
+        "P",
+        "composition"
+      ]
+    }
+  },
+  "required": [
+    "state"
+  ]
+}

@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*87 of 87 registered operations carry a schema and are documented below.*
+*88 of 88 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -664,6 +664,14 @@ Adiabatic stream mixer. Sums the inlet component flows and closes the energy bal
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `T` |   | number | K | Present = the mixer is ISOTHERMAL at this temperature and the duty is the result. Absent = adiabatic mixing, and the outlet temperature f… |
+
+## `mixingRules`  (mixingRules operation)
+
+The van der Waals ONE-FLUID DECOMPOSITION of a cubic EoS's mixture parameters at one state: every pure a_i(T) and b_i, every binary k_ij as constructed, and every pair's additive term in a_mix = Sum_i Sum_j y_i y_j (1 - k_ij) sqrt(a_i a_j), b_mix = Sum_i y_i b_i — plus the identity that re-adds the terms to the a_mix the engine runs (a gap REFUSES). The numbers come from the SAME buildMix the hot path executes; a ternary needs three binary decisions and the table shows which were declared and which run the announced k_ij = 0 default. A model with no one-fluid rule (idealGas, PC-SAFT) refuses by name.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — | The (T, P, composition) whose mixture parameters are decomposed. a_mix and b_mix depend only on T and the composition; P enters the dimen… |
 
 ## `multiStreamHX`  (multiStreamHX operation)
 

@@ -1,0 +1,21 @@
+// [imported] origin "data/standards/chemistry/CH4-dissolution.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  CH4 gas-liquid transfer, PHREEQC molal convention (anchored analytic):
+  a(CH4,aq) = K(T) * p[atm].
+\*---------------------------------------------------------------------------*/
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+// Equilibrium-parameterisation identity (ADR 2026-07-26): typed physical
+// family + versioned convention profile.  The Sander H_xp pair
+// parameters/Henry/CH4-water.dat is an INDEPENDENT PRIMARY of the same
+// family (this analytic carries the wider T domain, lit. 25 - 100 C) --
+// the cross-convention gate compares them as a curation DIAGNOSTIC,
+// never as an automatic error.
+gasSpecies       CH4;
+dissolvedSpecies CH4;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "CH4(g) = CH4";
+      logK25 -2.8; analytic ( 10.44 -0.00765 -6669 0 1014000 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: CH4 solubilities 25 - 100 C";

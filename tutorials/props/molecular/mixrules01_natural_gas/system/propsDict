@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  THE MIXING RULE, DECOMPOSED -- the multicomponent lesson.  A cubic
+    prices a MIXTURE through two numbers, and the one-fluid rule says how
+    n pure components and n(n-1)/2 binary corrections build them:
+
+        a_mix(T) = sum_i sum_j y_i y_j (1 - kij) sqrt(a_i a_j)
+        b_mix    = sum_i y_i b_i
+
+    Every term is on the table: the six pair terms of this ternary re-add
+    to the a_mix the flash would run (the op REFUSES if they do not), the
+    curated N2-CH4 kij sits beside the two CO2 pairs running the announced
+    kij = 0 default, and the pair table is where a student sees that a
+    ternary needs THREE binary decisions -- there is no ternary parameter.
+
+    Two states on purpose, same composition and temperature: a_mix and
+    b_mix are IDENTICAL at 30 bar and 1 bar (the rule sees only T and y),
+    while A, B and Z carry the pressure -- at 1 bar the same gas is nearly
+    ideal (Z ~ 0.997) and at 30 bar it is not (Z ~ 0.93), priced by the
+    SAME two numbers through the cubic.
+
+    Nothing here is validated against measurement: every number is the
+    engine's own arithmetic, decomposed.  The one cited constant is the
+    N2-CH4 kij record (Knapp et al., DECHEMA VI, 1982).
+*/
+
+operations
+(
+    {
+        name        mix_30bar;
+        type        mixingRules;
+        state
+        {
+            T            250 K;
+            P            30 bar;
+            composition  { CH4 0.90;  N2 0.05;  CO2 0.05; }
+        }
+    }
+
+    {
+        name        mix_1bar;
+        type        mixingRules;
+        state
+        {
+            T            250 K;
+            P            1 bar;
+            composition  { CH4 0.90;  N2 0.05;  CO2 0.05; }
+        }
+    }
+);

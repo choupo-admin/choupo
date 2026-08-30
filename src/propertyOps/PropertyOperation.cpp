@@ -39,6 +39,7 @@ License
 #include "Kinetics1D.H"
 #include "Exergy.H"
 #include "ExplainProperty.H"
+#include "MixingRules.H"
 #include "PropertyPoint.H"
 #include "PropertyScan1D.H"
 #include "PropertyScan2D.H"
@@ -144,6 +145,7 @@ void PropertyOperation::registerBuiltins()
 
     reg("propertyPoint",  []{ return std::make_unique<PropertyPoint>();  });
     reg("explainProperty", []{ return std::make_unique<ExplainProperty>(); });
+    reg("mixingRules",     []{ return std::make_unique<MixingRules>();     });
     reg("exergy",          []{ return std::make_unique<Exergy>();          });
     reg("propertyScan1D", []{ return std::make_unique<PropertyScan1D>(); });
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });

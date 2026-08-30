@@ -100,6 +100,34 @@ public:
         return 0.0;
     }
 
+    // ---- the mixing-rule ledger (glass-box surface, not the hot path) ----
+    //
+    // The van der Waals one-fluid decomposition at (T, y), for models that
+    // HAVE one:
+    //
+    //     a_mix(T) = ΣΣ y_i y_j (1 − k_ij) √(a_i a_j),   b_mix = Σ y_i b_i
+    //
+    // Filled by the SAME private code the hot path runs (SRK/PR buildMix),
+    // never a second transcription of the rule -- the ledger is a WINDOW on
+    // the arithmetic, and a window that recomputed would be a second home.
+    // Default: the model prices mixtures another way (ideal gas has no a at
+    // all; PC-SAFT mixes inside its segment dispersion sum) -- returns
+    // false, and the CALLER owns the honest refusal that names the reason.
+    struct MixingLedger
+    {
+        std::vector<scalar>              a;        // a_i(T)  [Pa·m^6/mol²]
+        std::vector<scalar>              b;        // b_i     [m³/mol]
+        std::vector<std::vector<scalar>> kij;      // n×n, symmetric, 0 default
+        scalar a_mix    = 0.0;                     // [Pa·m^6/mol²]
+        scalar b_mix    = 0.0;                     // [m³/mol]
+        scalar dadT_mix = 0.0;                     // [Pa·m^6/(mol²·K)]
+    };
+    virtual bool mixingLedger(scalar /*T_K*/, const sVector& /*y*/,
+                              MixingLedger& /*out*/) const
+    {
+        return false;
+    }
+
     // Compressibility Z = P·v / (R·T) at the vapour root.  Default ~ 1
     // for ideal gas; cubic EoS override.  Useful as a diagnostic and
     // as a single number callers can read instead of v.

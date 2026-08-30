@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "The van der Waals one-fluid mixing rule, decomposed: SRK a_mix/b_mix of a 90/5/5 CH4/N2/CO2 gas at 250 K, pair by pair -- the one curated kij (N2-CH4, DECHEMA) beside the pairs that run the kij = 0 default, and the same decomposition at 1 bar showing a_mix is a (T, y) fact while only A, B, Z carry the pressure";
+verbosity     3;

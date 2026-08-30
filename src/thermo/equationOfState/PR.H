@@ -108,6 +108,11 @@ public:
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
+    // The one-fluid decomposition, filled by the same buildAi/buildMix the
+    // hot path runs (see EquationOfState::MixingLedger).
+    bool mixingLedger(scalar T_K, const sVector& y,
+                      MixingLedger& out) const override;
+
     const std::string& modelName() const override { return name_; }
 
     // Cubic EoS: needs the critical constants + acentric factor per component.
