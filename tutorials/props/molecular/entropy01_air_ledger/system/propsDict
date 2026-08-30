@@ -41,6 +41,37 @@ operations
         properties  ( s_ig_N2  s_ig_O2  S_ig  S_R  S_real  Cp_ig  Z );
     }
 
+    //  The same state, EXPLAINED: every term with the record field it came
+    //  from (s_298 datum, the Cp/T integral by difference of two engine
+    //  calls, mixing, pressure, the SRK residual), re-added and checked
+    //  against the engine's own assembled S_ig and S_real at round-off --
+    //  the op REFUSES if its explanation and the engine disagree.  The H
+    //  twin shows the asymmetry: ideal-gas enthalpy has no mixing and no
+    //  pressure line.
+    {
+        name        explainS;
+        type        explainProperty;
+        property    S_real;
+        state
+        {
+            T            400 K;
+            P            2 bar;
+            composition  { N2 0.79;  O2 0.21; }
+        }
+    }
+
+    {
+        name        explainH;
+        type        explainProperty;
+        property    H_real;
+        state
+        {
+            T            400 K;
+            P            2 bar;
+            composition  { N2 0.79;  O2 0.21; }
+        }
+    }
+
     {
         name        temperatureLine;
         type        propertyScan1D;

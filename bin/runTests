@@ -2598,6 +2598,21 @@ PYEOF
         cat /tmp/refrung.$$
         fail=$((fail+1))
     fi
+
+    # explainProperty: an explanation the engine does not agree with must not
+    # be published.  The op's ledger is re-added INDEPENDENTLY here (never
+    # trusting its own gap rows), the s_298 rows are read back against the
+    # records they quote, the H asymmetry is structural, and both refusals
+    # (unknown property; the pureFluids fundamental-equation route) fire by
+    # name.  Witness: entropy01_air_ledger, the case the EduTool page runs.
+    if "$ROOT/bin/curate/check_explain_property.py" > /tmp/explainprop.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "explain-property-gate" "$(head -1 /tmp/explainprop.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_explain_property.py)\n" "explain-property-gate"
+        cat /tmp/explainprop.$$
+        fail=$((fail+1))
+    fi
     rm -f /tmp/refrung.$$
 
     # ice-freezing gate (2026-08-07).  Vitor's instruction was that classical

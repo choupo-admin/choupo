@@ -26,39 +26,48 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Class
-    Choupo::PropertyPoint
+    Choupo::ExplainProperty
 
 Description
-    Evaluate the thermoPackage at a single (T, P, x) and report the
-    available properties.  Replaces the `ThermoProbe` unit op
-    (which abused the UnitOperation formalism to do property audits).
+    Publish the DERIVATION LEDGER of one mixture property at one state:
+    every term, the record field or model it came from, and the identity
+    that re-adds the terms to the number the engine reports.
+
+    The op computes NO thermodynamics of its own.  Every number is an
+    engine call (`Component::s_pure_ig`, `ThermoPackage::S_ig`,
+    `EquationOfState::S_residual`, ...) or a DIFFERENCE of two engine
+    calls (the ∫cp/T term is s_pure_ig(T) − s_298 — the record's own
+    datum subtracted from the engine's own integral, never a private
+    quadrature).  The two closed-form lines the assembly adds (mixing
+    −RΣy·ln y, pressure −R·ln(P/P°)) are re-stated here ONLY so the
+    identity can be checked: the re-added total must equal the engine's
+    assembled value to round-off, and a gap beyond round-off REFUSES —
+    it would mean this explanation and the engine disagree, and a wrong
+    explanation delivered confidently is worse than none.
 
     Dictionary form:
 
-        operations
-        (
+        {
+            name        explain_s;
+            type        explainProperty;
+            property    S_real;         // S_real | S_ig | H_real | H_ig
+            state
             {
-                name        psat_check;
-                type        propertyPoint;
-                state
-                {
-                    T            298.15 K;
-                    P            1.01325 bar;
-                    composition  { ethanol 0.5;  water 0.5; }
-                }
-                properties  (all );    // or pick a subset
+                T            400 K;
+                P            2 bar;
+                composition  { N2 0.79;  O2 0.21; }
             }
-        );
+        }
 
-    Supported property keywords (case sensitive):
+    Refusals, each by name: an unknown `property`; a component whose
+    datum sits off the ideal-gas rung (raised by `s_pure_ig` itself and
+    passed through); and a state the package routes through a
+    `pureFluids {}` fundamental-equation override, whose entropy is the
+    release's own Gibbs-equation surface — a datum-plus-integral ledger
+    would mislabel it.
 
-      * Mixture (always available):  H_ig  S_ig  Cp_ig  gamma
-      * EoS-dependent:                Z  v_molar  H_R  S_R  H_real  S_real
-      * Per-component (sweep-friendly when type == propertyScan*):
-                                       Psat_<comp>  h_ig_<comp>  s_ig_<comp>
-
-    Use the special keyword `all` to dump every property the package
-    can compute at the given state.
+SourceFiles
+    ExplainProperty.cpp
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -67,14 +76,13 @@ Description
 
 #include <map>
 #include <string>
-#include <vector>
 
 namespace Choupo {
 
-class PropertyPoint : public PropertyOperation
+class ExplainProperty : public PropertyOperation
 {
 public:
-    PropertyPoint() = default;
+    ExplainProperty() = default;
 
     const std::string& type() const override { return type_; }
 
@@ -88,7 +96,7 @@ public:
     }
 
 private:
-    inline static const std::string type_ = "propertyPoint";
+    inline static const std::string type_ = "explainProperty";
     std::map<std::string, scalar>   diag_;
 };
 

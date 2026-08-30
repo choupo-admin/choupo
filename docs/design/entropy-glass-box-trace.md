@@ -1,10 +1,11 @@
 # Entropy, traced end to end — the record before the page
 
-**Date:** 2026-08-30.  **Status:** Phase 1 of the entropy glass-box slice
-(trace, read-only) — COMPLETE.  Phases: (2) the entropy EduTool page (spine
-to be ratified by the owner before writing), (3) the `explainProperty`
-bench op (post-freeze), (4) the guides addendum on how derived properties
-are computed from compound data (owner's explicit deliverable).
+**Date:** 2026-08-30.  **Status:** ALL FOUR PHASES COMPLETE (same day —
+the owner lifted the pre-presentation freeze mid-arc).  (1) this trace;
+(2) the "What is entropy?" EduTool page (spine ratified, external review
+favourable); (3) the `explainProperty` bench op — §8; (4) the guides
+addendum (theory guide ch:integrals entropy subsection rewritten, props
+guide ledger completion).
 
 **Why this record exists.** The owner asked "how exactly is an entropy
 value calculated here?" and a repository search for the word *entropy*
@@ -166,3 +167,29 @@ once in the whole tree, implicit as `ln y` throughout the equilibrium
 machinery), the model line (S_residual per EoS), and the machine that
 spends it (`dS_gen`).  The page's citations write themselves — which is
 the point of doing the trace first.
+
+## 8. Phase 3: the `explainProperty` bench op (2026-08-30)
+
+The ledger this record traces is now an ENGINE surface, not only a page:
+`explainProperty` (src/propertyOps/ExplainProperty.{H,cpp}) publishes the
+derivation of S_real / S_ig / H_real / H_ig at one state — the datum row
+straight off the record (`Component::S298()` / `Hf298()`), the ∫cp/T term
+as a DIFFERENCE of two engine calls (`s_pure_ig(T) − s_298`, never a
+private quadrature), the mixing and pressure lines, the EoS residual —
+re-added and checked against the engine's assembled value, REFUSING on a
+gap beyond round-off, on an unknown property, and on a `pureFluids {}`
+fundamental-equation route (whose ledger is the release's own equation).
+Witness: `entropy01_air_ledger` gained `explainS`/`explainH` ops (30
+golden rows; H's ledger publishes NO mixing/pressure line — the asymmetry
+is structural).  Gate: `check_explain_property` — the re-add is performed
+INDEPENDENTLY in Python and the s_298 rows are read back against the
+records; 4 sabotages, of which S2 (the op's self-check neutered AND its
+gap row zeroed beside a corrupted line) is the one that proves the gate
+does not lean on the auditee.  **Paid for on the way:** the op's first
+`--record` came back at ONE decimal, because choupoProps' result-JSON
+emitter writes values under the AMBIENT stream precision — whatever the
+last op's console table left behind (de facto `fixed(4)` today).  The op
+now saves/restores the stream state; the emitter defect itself is
+RECORDED, not fixed — giving the emitter its own precision changes the
+JSON representation corpus-wide and moves goldens recorded from truncated
+values, a deliberate migration for its own slice.

@@ -35,6 +35,21 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 \quad (and 8 more)
 \end{tutoriallink}
 
+\paragraph{\code{explainProperty}}
+The derivation LEDGER of one mixture property at one state: every term with the record field or model it came from (the \code{s\_298}/\code{dHf\_298} datum, the Cp integral as a difference of two engine calls, the mixing and pressure lines, the EoS residual), re-added and checked against the engine's own assembled value at round-off. The op computes no thermodynamics of its own and REFUSES if its explanation and the engine disagree, if the property is not one it can explain, or if a \code{pureFluids \{\}} fundamental-equation override answers the state (that route's ledger is the release's own equation, not datum-plus-integral).
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{property}\textbf{*} & Property to explain \\
+\code{state}\textbf{*} & Thermodynamic state \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/entropy01\_air\_ledger}
+\end{tutoriallink}
+
 \paragraph{\code{propertyScan1D}}
 One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
 

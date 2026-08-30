@@ -37,6 +37,7 @@ License
 #include "SolubilityParameter.H"
 #include "HeatTransferBench.H"
 #include "Kinetics1D.H"
+#include "ExplainProperty.H"
 #include "PropertyPoint.H"
 #include "PropertyScan1D.H"
 #include "PropertyScan2D.H"
@@ -141,6 +142,7 @@ void PropertyOperation::registerBuiltins()
     };
 
     reg("propertyPoint",  []{ return std::make_unique<PropertyPoint>();  });
+    reg("explainProperty", []{ return std::make_unique<ExplainProperty>(); });
     reg("propertyScan1D", []{ return std::make_unique<PropertyScan1D>(); });
     reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
     reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
