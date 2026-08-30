@@ -130,21 +130,22 @@ variables
     //  nature -- LiHCO3(aq) exists and is weak, and a diagram is complete
     //  only up to the reactions somebody wrote down.
     //
-    //  TWO THINGS BLOCK IT, both found on 2026-08-28 and both real:
-    //  (1) bin/choupo-import's dependency closure does not resolve
-    //      `$variable` references, so `Li $bg;` is INVISIBLE to it -- the
-    //      seal ships without species/Li.dat and the run then refuses on a
-    //      record the closure never staged.  With the literal `Li 0.1
-    //      mol/kg;` the same closure finds it.
-    //  (2) There is no re-seal path when a sealed case's reach GROWS.  The
-    //      engine's refusal says "re-run bin/choupo-import", which cannot
-    //      work: the importer stages the case with its existing manifest, so
-    //      the staged run refuses for the same reason.  Removing the manifest
-    //      by hand then orphans every record it owned, and the importer
-    //      refuses those as authored files.  The sequence that does work --
-    //      delete the manifest AND every record it owned, then import -- is
-    //      written down nowhere, and both refusals name a remedy that is
-    //      wrong for this situation.
+    //  THE TWO TOOL DEFECTS THAT BLOCKED IT (found 2026-08-28) WERE FIXED
+    //  ON 2026-08-30, both proved on a scratch copy of THIS case:
+    //  (1) bin/choupo-import now resolves `$variable` references before its
+    //      regex harvest (`Li $bg;` seeds species/Li.dat exactly as the
+    //      literal does), and
+    //  (2) a sealed case whose reach GROWS re-seals by re-running
+    //      bin/choupo-import: a REFUSED staged run now reads the consumption
+    //      ledger first, learns the catalogue records the run asked for,
+    //      and re-stages -- so the engine's "re-run bin/choupo-import"
+    //      advice is finally true, and no manual manifest surgery exists to
+    //      document.
+    //  What remains is the CURATION half, which is the honest blocker: the
+    //  chemistry list has no LiHCO3aq record, so a lithium background would
+    //  hold its carbon fractions clean only up to the reactions somebody
+    //  wrote down -- adding the knob is now a curation decision, not a tool
+    //  fight.
 }
 
 operations

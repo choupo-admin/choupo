@@ -2620,6 +2620,20 @@ PYEOF
     # is zero on both legs, and both refusals (missing deadState -- the
     # engine never chooses the plant's environment; chemical exergy -- no
     # standard-environment model is curated) fire by name.
+    # seal growth: the closure resolves $variables (a `Li $bg;` seeds its
+    # species record exactly as the literal), a sealed case whose reach grew
+    # re-seals by re-running the importer, and the component ask reaches the
+    # consumption ledger before the sealed refusal -- the seam the
+    # learn-on-refusal path stands on.
+    if "$ROOT/bin/curate/check_seal_growth.py" > /tmp/sealgrowth.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "seal-growth-gate" "$(head -1 /tmp/sealgrowth.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_seal_growth.py)\n" "seal-growth-gate"
+        cat /tmp/sealgrowth.$$
+        fail=$((fail+1))
+    fi
+
     if "$ROOT/bin/curate/check_exergy.py" > /tmp/exergy.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "exergy-gate" "$(head -1 /tmp/exergy.$$)"
         pass=$((pass+1))

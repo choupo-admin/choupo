@@ -172,10 +172,25 @@ Component Database::loadComponent(const std::string& name) const
     }
     // SEALED: the property manifest FORBIDS the catalogue.
     const bool sealed = records::sealed();
-    if (sealed && caseLocal.empty())
-        throw std::runtime_error("SEALED case: component '" + name
-            + "' is NOT in the case's constant/components/ --"
-              " re-run `bin/choupo-import` (the installation catalogue is forbidden).");
+    if (sealed)
+    {
+        //  The consumption ledger must see COMPONENT asks too: this refusal
+        //  is how a sealed case whose reach GREW announces the missing
+        //  record, and until 2026-08-30 the ask died here unrecorded -- so
+        //  bin/choupo-import's learn-from-observation loop could never see
+        //  it, and the "re-run bin/choupo-import" advice below was advice
+        //  that could not work.  Noted at the same seam-format the resolver
+        //  uses ("components/<name>.dat"), miss and hit alike.
+        records::ledger::note("components/" + name + ".dat",
+                              !caseLocal.empty());
+        if (caseLocal.empty())
+            throw std::runtime_error("SEALED case: component '" + name
+                + "' is NOT in the case's constant/components/ --"
+                  " re-run `bin/choupo-import` (the importer re-stages the"
+                  " case, observes the missing record at the resolver seam,"
+                  " and grows the seal; the installation catalogue stays"
+                  " forbidden at run time).");
+    }
     fs::path standard  = fs::path(root_) / "standards" / "components" / (name + ".dat");
     // ONE home (sealing redesign, 2026-07-17): in a STRICTLY sealed case the
     // mirrored constant/components/<name>.dat IS the record -- the imported

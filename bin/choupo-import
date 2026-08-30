@@ -343,6 +343,29 @@ def merge_overlay_text(base_text, overlay_text, rel, release):
 # SpeciationSolver scans).  Returns ({rel: standardsPath}, ionNames:set,
 # wantAllSpecies:bool).
 # ---------------------------------------------------------------------------
+def resolve_dict_variables(text):
+    """Substitute `$name` references from the dict's own `variables {}`
+    block(s) BEFORE any regex harvest runs over the text.
+
+    The engine resolves `$name` at lookup time; this importer harvests by
+    regex, and its value patterns expect a leading digit -- so `Li $bg;`
+    matched nothing, the ion never seeded the closure, and the seal shipped
+    without species/Li.dat while the SAME line with a literal sealed fine
+    (found 2026-08-28, recorded in bjerrum01's variables block).  A
+    harvester must read the dict the way the engine will.
+
+    Longest-name-first is not needed: `$T` does not match inside `$T_ref`
+    because `_` is a word character and the pattern requires a boundary."""
+    out = text
+    for m in re.finditer(r'\bvariables\s*\{', out):
+        body = block(out[m.start():], "variables") or ""
+        body = re.sub(r'//.*', '', body)
+        for vm in re.finditer(r'^\s*([A-Za-z_]\w*)\s+([^;{}]+);', body, re.M):
+            out = re.sub(r'\$' + re.escape(vm.group(1)) + r'\b',
+                         vm.group(2).strip(), out)
+    return out
+
+
 def closure_of(pp_path, caseDir, std, AQ):
     recs = {}
     ions = set()
@@ -504,7 +527,7 @@ def closure_of(pp_path, caseDir, std, AQ):
         return re.findall(r'\bcomponent\s+([A-Za-z0-9_+\-]+)\s*;',
                           block(mtxt, "members") or "")
 
-    t = read(pp_path) or ""
+    t = resolve_dict_variables(read(pp_path) or "")
     comp_blk = block(t, "components")
     comps = words(comp_blk) if comp_blk else []
     for c in comps:
@@ -747,6 +770,7 @@ def closure_of(pp_path, caseDir, std, AQ):
     props = read(Path(caseDir) / "system" / "propsDict") or ""
     props = re.sub(r'/\*.*?\*/', '', props, flags=re.S)
     props = re.sub(r'(^|\s)//.*$', '', props, flags=re.M)
+    props = resolve_dict_variables(props)
     props_ops = block(props, "operations") or props
     for m in re.finditer(r'\b(?:cation|anion)\s+([A-Za-z0-9_+\-]+)\s*;', props_ops):
         ions.add(m.group(1))
@@ -1236,9 +1260,30 @@ def validate_staged(root, staged):
               " (.expect-nonconvergence) with the catalogue hidden")
         return
     if r.returncode != 0:
+        #  A REFUSED staged run can still be the closure ANNOUNCING itself:
+        #  when a sealed case's reach GREW (a new op, a new ion, a model
+        #  that started opening a record), the run dies on the first
+        #  missing record -- and until 2026-08-30 this branch died with it,
+        #  BEFORE reading the consumption ledger.  So the engine's own
+        #  advice ("re-run bin/choupo-import") could not work: the importer
+        #  re-staged, the staged run refused for the same reason, nothing
+        #  learned.  The ledger is written even on a refusal (the resolver
+        #  notes the miss before the consumer throws; static destruction
+        #  flushes it), so read it FIRST: catalogue-resolvable misses are
+        #  learned exactly as on a green run, and only a refusal that
+        #  names NO learnable record is a real failure.
+        if ledger.exists():
+            learnable = validate_closure_complete(root, staged, ledger)
+            if learnable:
+                print("  validation: staged run refused (exit %d), and the"
+                      " ledger names the record(s) it wanted -- the reach"
+                      " grew; learning instead of failing" % r.returncode)
+                return learnable
         tail = "\n".join((r.stdout + "\n" + r.stderr).splitlines()[-25:])
         die("validation FAILED: the staged sealed case does not run with the"
-            " catalogue hidden (exit %d) -- nothing was installed.\n"
+            " catalogue hidden (exit %d), and its consumption ledger names"
+            " no catalogue record the seal omitted -- this is a real"
+            " failure, not a grown reach.  Nothing was installed.\n"
             "--- last lines ---\n%s" % (r.returncode, tail))
     missing = validate_closure_complete(root, staged, ledger)
     if missing:
