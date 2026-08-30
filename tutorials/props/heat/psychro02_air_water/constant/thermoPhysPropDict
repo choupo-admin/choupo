@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+//  Air as the CARRIER and water as the CONDENSABLE.  Only the condensable
+//  needs a vapour-pressure model here -- the carrier contributes its heat
+//  capacity to the wet-bulb lines and nothing else.
+components    ( air  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel { model ideal; } }
+    vapour  { fugacityModel idealGas; }
+}
+
+//  TRANSPORT is what makes the wet-bulb line the TRUE one.  The adiabatic-
+//  saturation line and the wet-bulb line coincide only when the Lewis number
+//  is 1; for air/water it is close but not equal, and the op computes it from
+//  these models rather than assuming the coincidence.
+//  The block below was written in the FLAT dialect until 2026-08-28 --
+//  `thermalConductivity Eucken;` directly under transport -- and the builder,
+//  which walks a fixed (phase, property) table, matched none of it and
+//  dropped every key.  So the package carried no diffusivity and no thermal
+//  conductivity, the Lewis number could not be formed, and this chart emitted
+//  ZERO `wetbulb:` rows for the whole of its life while the paragraph above
+//  said it computed them.  The builder refuses that now.
+transport
+{
+    vapour
+    {
+        viscosity           { model Chung;  }
+        thermalConductivity { model Eucken; }
+        diffusivity         { model Fuller; }
+    }
+}

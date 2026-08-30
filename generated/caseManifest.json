@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 390,
+  "cases": 392,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -1968,6 +1968,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/heat/psychro02_air_water": {
+   "application": "choupoProps",
+   "ops": [
+    "psychrometricChart"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/hydraulics/moody01_friction_correlations": {
    "application": "choupoProps",
    "ops": [
@@ -2097,6 +2111,17 @@
     "activityModels": [
      "ideal"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/mixrules01_natural_gas": {
+   "application": "choupoProps",
+   "ops": [
+    "mixingRules"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -5821,6 +5846,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/molecular/cosmoSAC01_water_ethanol",
@@ -5831,6 +5857,7 @@
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
     "tutorials/props/molecular/flash01_operating_line",
+    "tutorials/props/molecular/mixrules01_natural_gas",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
@@ -6839,6 +6866,7 @@
     "tutorials/props/gibbs/nh3_equilibrium_map",
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/heat/psychro02_air_water",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/kinetics/rate01_arrhenius_recovery",
     "tutorials/props/molecular/envelope01_natural_gas",
@@ -7088,6 +7116,9 @@
    "linearTbEstimate": [
     "tutorials/props/estimate/userEstimate01_linear_tb"
    ],
+   "mixingRules": [
+    "tutorials/props/molecular/mixrules01_natural_gas"
+   ],
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_root_jump"
@@ -7139,7 +7170,8 @@
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene"
    ],
    "psychrometricChart": [
-    "tutorials/props/heat/psychro01_n2_water"
+    "tutorials/props/heat/psychro01_n2_water",
+    "tutorials/props/heat/psychro02_air_water"
    ],
    "purePhaseDiagram": [
     "tutorials/props/scan/phase01_water_full"

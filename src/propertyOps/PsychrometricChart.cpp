@@ -28,6 +28,7 @@ License
 
 #include "PsychrometricChart.H"
 
+#include "core/Advisory.H"
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
 
@@ -163,9 +164,24 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     // -- adiabatic-saturation (wet-bulb) lines -- the drying tool -------------
     const bool canWB = carrier->hasCpIdealGas() && cond->hasCpIdealGas()
                     && cond->Hvap_Tb() > 0.0 && cond->Tc() > 0.0;
-    if (!wbList.empty() && !canWB && verbosity >= 1)
-        std::cerr << "[psychro] wet-bulb lines skipped: need carrier+condensable "
-                     "ideal-gas Cp and the condensable's Hvap/Tc.\n";
+    if (!wbList.empty() && !canWB)
+    {
+        //  RIDE THE ADVISORY LOG, not only the console: the GUI's caveat
+        //  band reads AdvisoryLog, so a console-only explanation left the
+        //  chart visibly thinner with no visible reason (found 2026-08-31
+        //  when the `air` carrier -- imported without an ideal-gas Cp --
+        //  drew only saturation and RH and the reader had to guess why).
+        const std::string why =
+            "psychrometric chart: adiabatic-saturation and wet-bulb"
+            " families SKIPPED -- carrier '" + carrierN + "' or condensable"
+            " '" + condensableN + "' lacks an ideal-gas Cp, or the"
+            " condensable lacks Hvap/Tc.  The chart shows only saturation"
+            " and relative-humidity curves.";
+        AdvisoryLog::instance().add("props", "warning",
+                                    "psychro families", why);
+        if (verbosity >= 1)
+            std::cerr << "[psychro] " << why << "\n";
+    }
     std::size_t nAdiabaticDrawn = 0;
     if (canWB)
         for (double TasC : wbList)
@@ -279,26 +295,33 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     }
 
     diag_["nTrueWetBulbCurves"] = static_cast<double>(nTrueWetBulbDrawn);
-    if (!wbList.empty() && nTrueWetBulbDrawn == 0 && verbosity >= 1)
+    if (!wbList.empty() && nTrueWetBulbDrawn == 0)
     {
-        std::cout << "psychrometricChart: the TRUE wet-bulb family (the"
-                     " Le^(2/3) one) drew NOTHING for the "
-                  << wbList.size() << " requested temperature(s).  The chart"
-                     " therefore shows only adiabatic-saturation lines, and"
-                     " reading them as wet-bulb lines assumes Le = 1.  Reason: ";
+        std::ostringstream why;
+        why << "psychrometric chart: the TRUE wet-bulb family (the"
+               " Le^(2/3) one) drew NOTHING for the "
+            << wbList.size() << " requested temperature(s).  The chart"
+               " therefore shows only adiabatic-saturation lines, and"
+               " reading them as wet-bulb lines assumes Le = 1.  Reason: ";
         if (!canWB)
-            std::cout << "the carrier or the condensable lacks an ideal-gas Cp,"
-                         " or the condensable lacks Hvap/Tc.\n";
+            why << "the carrier or the condensable lacks an ideal-gas Cp,"
+                   " or the condensable lacks Hvap/Tc.";
         else if (!transportAvailable)
-            std::cout << "the package declares no `transport { diffusivity;"
-                         " thermalConductivity; }` models, so no Lewis number"
-                         " can be formed.\n";
+            why << "the package declares no `transport { diffusivity;"
+                   " thermalConductivity; }` models, so no Lewis number"
+                   " can be formed.";
         else
-            std::cout << skipYas << " past boiling, " << skipLatent
-                      << " with no latent heat, " << skipTransport
-                      << " with a non-positive diffusivity or diffusivity of"
-                         " heat, " << skipThrew
-                      << " where a transport model refused.\n";
+            why << skipYas << " past boiling, " << skipLatent
+                << " with no latent heat, " << skipTransport
+                << " with a non-positive diffusivity or diffusivity of"
+                   " heat, " << skipThrew
+                << " where a transport model refused.";
+        //  Same rule as the canWB skip above: the reason must reach the
+        //  GUI's caveat band, not only the console.
+        AdvisoryLog::instance().add("props", "warning",
+                                    "psychro wet-bulb", why.str());
+        if (verbosity >= 1)
+            std::cout << why.str() << "\n";
     }
 
     if (verbosity >= 2)

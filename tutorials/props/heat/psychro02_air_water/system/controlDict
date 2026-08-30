@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE PSYCHROMETRIC CHART, computed rather than looked up.
+
+    Nitrogen + water at 1 atm, 0 -> 60 C: the saturation curve, four
+    relative-humidity lines and three adiabatic-saturation (wet-bulb) lines,
+    all from the SAME vapour-pressure model a flash would use.  Nothing here
+    is a chart digitised from a handbook -- the curve is Y_sat(T) evaluated
+    point by point, so the student can change the model and watch the chart
+    move.
+
+    Why this case exists at all: `psychrometricChart` is reachable from the
+    GUI's Property Explorer, and until now NOTHING exercised it.  It could
+    break and the whole suite would stay green; the first to find out would
+    be a student opening the Explorer.  An op a user can reach and a test
+    cannot is a promise with no guard behind it.
+
+    What to read in the output (long-format CSV: T_C, Y, curve):
+      * `saturation`  -- Y_sat = 0.622 * Psat/(P - Psat), the chart's ceiling;
+      * `RH=...`      -- the same expression at a fraction of Psat, so the
+                         lines fan out and steepen with T exactly as the
+                         printed chart does;
+      * `wetBulb=...` -- the adiabatic-saturation lines, which are NOT
+                         parallel to the RH lines: they carry the latent heat
+                         of the water evaporated, so their slope is set by
+                         Hvap/cp of the moist air, not by geometry.
+*/
+application   choupoProps;
+description   "Psychrometric chart with dry AIR as the carrier (the textbook object): saturation, RH, adiabatic-saturation and true wet-bulb families at 101.325 kPa, Lewis ~ 0.851 -- the case-local air component deliberately shadows the catalogue mixture alias";
+verbosity     3;

@@ -1,0 +1,70 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  THE TEXTBOOK CHART: dry AIR as the carrier, not a stand-in.  Twin of
+    psychro01_n2_water with the REAL carrier -- the lumped pseudo-component
+    air (MW 28.96, ChemSep v8.3), which this case declares CASE-LOCALLY in
+    constant/components/air.dat.  That declaration is load-bearing, not a
+    convenience: the catalogue also holds mixtures/air.dat (an expansion
+    table, air -> N2 + O2 + Ar), and the settled precedence -- the case
+    always overrides -- is what makes the token load as the COMPONENT here;
+    the run announces the shadowed expansion.  Until 2026-08-31 that tie
+    went to the mixture unconditionally and this exact case refused with
+    "carrier 'air' is not a component".
+
+    What the twin buys over psychro01: Y_sat(60 C) = 0.1534 against the
+    ~0.152 a printed air chart reads (N2 gives 0.1586 -- the 3.4 % MW
+    error the registry note predicted), and Lewis = 0.851, the handbook
+    air/water value the Le^(2/3) wet-bulb family exists to teach.
+*/
+
+operations
+(
+    {
+        name             airWater;
+        type             psychrometricChart;
+
+        //  The CARRIER is the dry gas, the CONDENSABLE the one that can
+        //  saturate.  They are not interchangeable: only the condensable
+        //  needs a vapour-pressure model, and the op refuses by name when it
+        //  has none.
+        carrier          air;
+        condensable      water;
+
+        P                101325;        // Pa
+        TminC            0;
+        TmaxC            60;
+        grid             { n 61; }      // 1 C steps -- readable, not smooth-washed
+
+        relativeHumidity ( 20  40  60  80 );   // PERCENT (the op's unit)
+
+        //  Each of these draws TWO families, and telling them apart is the
+        //  point of the case.  The ADIABATIC-SATURATION line is a pure energy
+        //  balance.  The TRUE WET-BULB line is that same line with its slope
+        //  scaled by Le^(2/3), Le = alpha/D_AB, which needs the transport
+        //  models declared in constant/thermoPhysPropDict.
+        //
+        //  Until 2026-08-28 the transport block was written in a dialect the
+        //  builder drops, so this chart emitted NO wetbulb: rows at all, and
+        //  nothing said so: the diagnostic that looked like it counted them
+        //  (`nWetBulbCurves`) was the length of the list BELOW, set inside the
+        //  adiabatic loop.  It counted the request, and it was the only number
+        //  a golden could reach.  Now `nAdiabaticCurves` and
+        //  `nTrueWetBulbCurves` each count what was drawn, and `Lewis_last`
+        //  is pinned -- because the two families coincide exactly at Le = 1,
+        //  so a chart with the count right and the Lewis number drifted is
+        //  still the wrong chart.
+        //
+        //  For this pair Le = 0.82, NOT 1: the near-coincidence that lets
+        //  handbooks treat the two as one quantity is a property of air/water,
+        //  and even here it is an approximation rather than an identity.
+        wetBulb          ( 10  20  30 );   // C
+
+        output { file psychroChart.csv; }
+    }
+);

@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    airWater               Lewis_last       0.850543           1e-4
+diag    airWater               Y_adiabatic_last 0.0146521          1e-4
+diag    airWater               Y_sat_first      0.00377268         1e-4
+diag    airWater               Y_sat_last       0.15342            1e-4
+diag    airWater               nAdiabaticCurves 3                  1e-4
+diag    airWater               nRhCurves        4                  1e-4
+diag    airWater               nSaturationPoints 61                 1e-4
+diag    airWater               nTrueWetBulbCurves 3                  1e-4

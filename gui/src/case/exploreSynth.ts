@@ -20,6 +20,7 @@
 import type { CaseFiles } from "./types.js";
 import type { JsonDict } from "../dict/index.js";
 import { bjerrumOutput, bjerrumPhGrid } from "./bjerrumSweep.js";
+import { mixtureShadowedBodies } from "./catalogue.js";
 
 /** The swept axis: a single engine state variable over a range.
  *  `variable` is an engine keyword: "T", "P", or "x[<componentName>]". */
@@ -311,8 +312,14 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
       verbosity: 2,
     };
     const files: CaseFiles = { propsDict, thermoPackage, controlDict };
-    if (spec.componentFiles && Object.keys(spec.componentFiles).length > 0)
-      files.extraFiles = { ...spec.componentFiles };
+    //  Mixture-shadowed selections (air) ship their component body so the
+    //  engine loads the COMPONENT, not the expansion; explicit case files
+    //  still win the spread.
+    const extraBj = {
+      ...mixtureShadowedBodies(spec.components),
+      ...(spec.componentFiles ?? {}),
+    };
+    if (Object.keys(extraBj).length > 0) files.extraFiles = extraBj;
     return files;
   }
 
@@ -556,7 +563,13 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
   };
 
   const files: CaseFiles = { propsDict, thermoPackage, controlDict };
-  if (spec.componentFiles && Object.keys(spec.componentFiles).length > 0)
-    files.extraFiles = { ...spec.componentFiles };
+  //  Mixture-shadowed selections (air) ship their component body so the
+  //  engine loads the COMPONENT, not the expansion; explicit case files
+  //  still win the spread.
+  const extra = {
+    ...mixtureShadowedBodies(spec.components),
+    ...(spec.componentFiles ?? {}),
+  };
+  if (Object.keys(extra).length > 0) files.extraFiles = extra;
   return files;
 }

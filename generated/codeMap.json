@@ -760,6 +760,12 @@
   "Mixer": [
    "src/unitOperations/mixer/Mixer.H"
   ],
+  "MixingLedger": [
+   "src/thermo/equationOfState/EquationOfState.H"
+  ],
+  "MixingRules": [
+   "src/propertyOps/MixingRules.H"
+  ],
   "ModelBoundaryFinding": [
    "src/core/ResultRecords.H"
   ],
@@ -1594,6 +1600,10 @@
    {
     "key": "explainProperty",
     "type": "ExplainProperty"
+   },
+   {
+    "key": "mixingRules",
+    "type": "MixingRules"
    },
    {
     "key": "exergy",
@@ -3639,6 +3649,21 @@
    "src/propertyOps/Kinetics1D.H",
    "src/propertyOps/PropertyOperation.H"
   ],
+  "src/propertyOps/MixingRules.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/MixingRules.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/equationOfState/EquationOfState.H"
+  ],
   "src/propertyOps/MolecularActivity.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -3741,6 +3766,7 @@
    "src/propertyOps/HeatTransferBench.H",
    "src/propertyOps/IsothermEval.H",
    "src/propertyOps/Kinetics1D.H",
+   "src/propertyOps/MixingRules.H",
    "src/propertyOps/MolecularActivity.H",
    "src/propertyOps/PhaseEnvelope.H",
    "src/propertyOps/PitzerActivity.H",
@@ -3860,6 +3886,7 @@
    "src/unitOperations/saturation/BubblePoint.H"
   ],
   "src/propertyOps/PsychrometricChart.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7181,6 +7208,7 @@
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
+   "src/propertyOps/PsychrometricChart.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -7281,6 +7309,7 @@
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
@@ -7414,6 +7443,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -7686,6 +7716,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -8014,6 +8045,7 @@
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -8233,6 +8265,7 @@
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -8646,6 +8679,7 @@
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -9189,6 +9223,10 @@
    "src/propertyOps/Kinetics1D.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/MixingRules.H": [
+   "src/propertyOps/MixingRules.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/MolecularActivity.H": [
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -9227,6 +9265,7 @@
    "src/propertyOps/HeatTransferBench.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Kinetics1D.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -9627,6 +9666,7 @@
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -10078,6 +10118,7 @@
    "src/propertyOps/HeatCapacityFit.cpp",
    "src/propertyOps/IsothermEval.cpp",
    "src/propertyOps/Joback.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -10353,6 +10394,7 @@
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -10674,6 +10716,7 @@
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HConsistency.cpp",
    "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
@@ -11118,6 +11161,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/propertyOps/ExplainProperty.cpp",
+   "src/propertyOps/MixingRules.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/PropertyPoint.cpp",

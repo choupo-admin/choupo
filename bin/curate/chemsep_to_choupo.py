@@ -527,6 +527,37 @@ def parse_components(xml_path: Path, report: list, write: bool,
             body += ['}']
             emitted.add('idealGasHeatCapacity')
 
+        #  eqno 100 is the OTHER form ChemSep uses for the ideal-gas Cp --
+        #  a plain quartic, Cp[J/(kmol.K)] = A + B*T + C*T^2 + D*T^3 + E*T^4.
+        #  Choupo's `polynomial` model IS that form per mole, so the
+        #  conversion is a division by 1000 and nothing else.  Found missing
+        #  2026-08-31: air's Cp is eqno 100, so the psychrometric carrier
+        #  the GUI menu had been taught to offer could not price its own
+        #  humid heat -- the chart lost its adiabatic-saturation and
+        #  wet-bulb families, with the reason only on the console.
+        elif cp is not None and int(cp['eqno']) == 100 \
+                and cp['A'] is not None and cp['B'] is not None:
+            coeffs = [cp['A'], cp['B'], cp['C'], cp['D'], cp['E']]
+            while coeffs and not coeffs[-1]:
+                coeffs.pop()
+            coeffs = [(c or 0.0) / 1000.0 for c in coeffs]
+            body += ['', 'idealGasHeatCapacity', '{',
+                     '    model         polynomial;',
+                     '    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + ...;'
+                     ' converted EXACTLY from',
+                     '    // ChemSep eqno 100 (J/kmol -> J/mol: each'
+                     ' coefficient / 1000).',
+                     '    coefficients  ('
+                     + '  '.join(f'{c:.10g}' for c in coeffs) + ');']
+            if cp['Tmin'] is not None and cp['Tmax'] is not None \
+                    and cp['Tmax'] > cp['Tmin']:
+                body += [f'    Trange        ({cp["Tmin"]:.6g}'
+                         f'  {cp["Tmax"]:.6g});']
+            else:
+                body += ['    Trange        unknown;']
+            body += ['}']
+            emitted.add('idealGasHeatCapacity')
+
         #  THE LIQUID Cp, in the same eqno 16 form and therefore the same
         #  engine model -- no new machinery, 410 of 431 records carry it.
         #
@@ -669,6 +700,20 @@ def parse_components(xml_path: Path, report: list, write: bool,
                          '   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked'
                          ' against, never used]']
                 emitted.add('solubilityParameter')
+            except (TypeError, ValueError):
+                pass
+
+        #  THE FULLER DIFFUSION VOLUME, as ChemSep tabulates it -- the one
+        #  per-component datum Fuller's D_AB needs.  Without it the
+        #  transport surface refuses by name and (among its consumers) the
+        #  psychrometric chart cannot draw its true wet-bulb family.
+        fv = val('FullerVolume')
+        if fv is not None:
+            try:
+                body += [f'diffusionVolume  {float(fv):.6g};'
+                         '          // Fuller Sigma-v [-]'
+                         ' [origin=ChemSep v8.3]']
+                emitted.add('diffusionVolume')
             except (TypeError, ValueError):
                 pass
         collide_note = ''

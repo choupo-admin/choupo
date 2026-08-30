@@ -2090,6 +2090,31 @@ What to read in the output (long-format CSV: T\_C, Y, curve): `saturation` -- Y\
 \goldrow{diag}{airWater}{nTrueWetBulbCurves}{3}
 \end{tutgolden}
 
+\clearpage
+\tutentry{psychro02\_air\_water}{tutorials/props/heat/psychro02\_air\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{airWater}\\[-1pt]{\tiny psychrometricChart}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Psychrometric chart with dry AIR as the carrier (the textbook object): saturation, RH, adiabatic-saturation and true wet-bulb families at 101.325 kPa, Lewis \textasciitilde{} 0.851 -- the case-local air component deliberately shadows the catalogue mixture alias}
+\begin{tutnarrative}
+THE TEXTBOOK CHART: dry AIR as the carrier, not a stand-in. Twin of psychro01\_n2\_water with the REAL carrier -- the lumped pseudo-component air (MW 28.96, ChemSep v8.3), which this case declares CASE-LOCALLY in constant/components/air.dat. That declaration is load-bearing, not a convenience: the catalogue also holds mixtures/air.dat (an expansion table, air $\to$ N2 + O2 + Ar), and the settled precedence -- the case always overrides -- is what makes the token load as the COMPONENT here; the run announces the shadowed expansion. Until 2026-08-31 that tie went to the mixture unconditionally and this exact case refused with "carrier 'air' is not a component".
+
+What the twin buys over psychro01: Y\_sat(60 C) = 0.1534 against the \textasciitilde{}0.152 a printed air chart reads (N2 gives 0.1586 -- the 3.4 \% MW error the registry note predicted), and Lewis = 0.851, the handbook air/water value the Le\textasciicircum{}(2/3) wet-bulb family exists to teach.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{airWater}{Lewis\_last}{0.850543}
+\goldrow{diag}{airWater}{Y\_adiabatic\_last}{0.0146521}
+\goldrow{diag}{airWater}{Y\_sat\_first}{0.00377268}
+\goldrow{diag}{airWater}{Y\_sat\_last}{0.15342}
+\goldrow{diag}{airWater}{nAdiabaticCurves}{3}
+\goldrow{diag}{airWater}{nRhCurves}{4}
+\goldrow{diag}{airWater}{nSaturationPoints}{61}
+\goldrow{diag}{airWater}{nTrueWetBulbCurves}{3}
+\end{tutgolden}
+
 \subsection{hydraulics}
 \grouptheory{hydraulics}
 \clearpage
@@ -2403,6 +2428,45 @@ So this case publishes exactly one thing: the curve. It does NOT flash anything.
 \goldrow{diag}{txy}{n\_emptyCurves}{0}
 \goldrow{diag}{txy}{n\_failures}{0}
 \goldrow{diag}{txy}{n\_points}{51}
+\end{tutgolden}
+
+\clearpage
+\tutentry{mixrules01\_natural\_gas}{tutorials/props/molecular/mixrules01\_natural\_gas}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{mix\_30bar}\\[-1pt]{\tiny mixingRules}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{mix\_1bar}\\[-1pt]{\tiny mixingRules}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The van der Waals one-fluid mixing rule, decomposed: SRK a\_mix/b\_mix of a 90/5/5 CH4/N2/CO2 gas at 250 K, pair by pair -- the one curated kij (N2-CH4, DECHEMA) beside the pairs that run the kij = 0 default, and the same decomposition at 1 bar showing a\_mix is a (T, y) fact while only A, B, Z carry the pressure}
+\begin{tutnarrative}
+THE MIXING RULE, DECOMPOSED -- the multicomponent lesson. A cubic prices a MIXTURE through two numbers, and the one-fluid rule says how n pure components and n(n-1)/2 binary corrections build them:
+
+a\_mix(T) = sum\_i sum\_j y\_i y\_j (1 - kij) sqrt(a\_i a\_j) b\_mix = sum\_i y\_i b\_i
+
+Every term is on the table: the six pair terms of this ternary re-add to the a\_mix the flash would run (the op REFUSES if they do not), the curated N2-CH4 kij sits beside the two CO2 pairs running the announced kij = 0 default, and the pair table is where a student sees that a ternary needs THREE binary decisions -- there is no ternary parameter.
+
+Two states on purpose, same composition and temperature: a\_mix and b\_mix are IDENTICAL at 30 bar and 1 bar (the rule sees only T and y), while A, B and Z carry the pressure -- at 1 bar the same gas is nearly ideal (Z \textasciitilde{} 0.997) and at 30 bar it is not (Z \textasciitilde{} 0.93), priced by the SAME two numbers through the cubic.
+
+Nothing here is validated against measurement: every number is the engine's own arithmetic, decomposed. The one cited constant is the N2-CH4 kij record (Knapp et al., DECHEMA VI, 1982).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{mix\_30bar}{A}{0.140523}
+\goldrow{diag}{mix\_30bar}{B}{0.0428434}
+\goldrow{diag}{mix\_30bar}{P\_Pa}{3e+06}
+\goldrow{diag}{mix\_30bar}{T\_K}{250}
+\goldrow{diag}{mix\_30bar}{Z\_vapour}{0.901046}
+\goldrow{diag}{mix\_30bar}{a\_CH4}{0.200506}
+\goldrow{diag}{mix\_30bar}{a\_CO2}{0.429536}
+\goldrow{diag}{mix\_30bar}{a\_N2}{0.0837883}
+\goldrow{diag}{mix\_30bar}{a\_mix}{0.202383}
+\goldrow{diag}{mix\_30bar}{b\_CH4}{2.98484e-05}
+\goldrow{diag}{mix\_30bar}{b\_CO2}{2.96742e-05}
+\goldrow{diag}{mix\_30bar}{b\_N2}{2.6754e-05}
+\goldrow{diag}{mix\_30bar}{b\_mix}{2.9685e-05}
+\goldrow{diag}{mix\_30bar}{dadT\_mix}{-0.000515994}
+\goldmore{46}
 \end{tutgolden}
 
 \clearpage

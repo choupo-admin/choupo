@@ -89,6 +89,33 @@ function rememberRaw(body: string): void {
   if (m && !RAW_BY_NAME.has(m[1]!)) RAW_BY_NAME.set(m[1]!, body);
 }
 
+//  Catalogue mixture STEMS (mixtures/<stem>.dat are EXPANSION TABLES, not
+//  components).  A name that is BOTH a mixture stem and a standard component
+//  ("air": the N2+O2+Ar table AND the lumped MW-28.96 carrier) is resolved by
+//  the engine in the mixture's favour UNLESS the case declares the component
+//  case-locally — the settled precedence, the case always overrides.  So a
+//  synthesized explore case that means the COMPONENT must ship its body.
+const MIXTURE_STEMS = new Set(
+  Object.keys(import.meta.glob("../../../data/standards/mixtures/*.dat"))
+    .map((p) => p.split("/").pop()!.replace(/\.dat$/, "")));
+
+/** Case-local bodies for selected names shadowed by a catalogue mixture stem
+ *  — `{ "constant/components/air.dat": <body> }` for each such name.  Without
+ *  this the engine expands the mixture and an op asking for the component by
+ *  name refuses ("carrier 'air' is not a component"), which is how the
+ *  psychrometric chart broke the day the menu learned to offer air
+ *  (2026-08-31).  Names not in the catalogue, or not mixture-shadowed,
+ *  contribute nothing. */
+export function mixtureShadowedBodies(names: string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const n of names) {
+    if (!MIXTURE_STEMS.has(n)) continue;
+    const body = RAW_BY_NAME.get(n);
+    if (body) out[`constant/components/${n}.dat`] = body;
+  }
+  return out;
+}
+
 /** The verbatim `.dat` behind a catalogue name, or null when the name is not in
  *  the shared catalogue (a case-local component is resolved by its caller). */
 export function rawRecordFor(name: string): string | null {

@@ -593,6 +593,33 @@ ThermoPackage::expandMixtures(const std::vector<std::string>& names,
 
     for (const auto& token : names)
     {
+        //  A NAME WITH TWO OWNERS.  Since the ChemSep import the catalogue
+        //  holds BOTH a mixture expansion table (mixtures/air.dat -> N2 +
+        //  O2 + Ar) and a pseudo-COMPONENT (components/air.dat, the lumped
+        //  MW-28.96 carrier the psychrometric menu offers) under the same
+        //  token -- and this loop expanded the mixture unconditionally, so
+        //  a case that DECLARED the component (constant/components/air.dat)
+        //  still got the expansion and the psychrometric op then refused
+        //  "carrier 'air' is not a component" (found 2026-08-31, in the
+        //  GUI's own chart).  The settled precedence rules the tie: the
+        //  case always overrides.  A case-local component file is the case
+        //  declaring the token to BE a component; the catalogue's expansion
+        //  sugar must not fire over it.  Announced, both ways visible.
+        const fs::path caseComp =
+            records::localRecord("components/" + token + ".dat");
+        if (!caseComp.empty())
+        {
+            const fs::path mixAlso =
+                records::resolveRecord("mixtures/" + token + ".dat");
+            if (!mixAlso.empty() && fs::exists(mixAlso) && thermoAnnounce())
+                std::cerr << "[mixture] token '" << token << "' is BOTH a"
+                             " catalogue mixture and a case-local component"
+                             " -- the case wins: loaded as the component ("
+                          << caseComp.string() << "), no expansion.\n";
+            if (!already(token)) out.push_back(token);
+            continue;
+        }
+
         // Sealing redesign: a predefined mixture is a property record like any
         // other -- resolve it through RecordResolver so a SEALED case reads its
         // own MIRRORED constant/mixtures/<token>.dat and NEVER the installation
