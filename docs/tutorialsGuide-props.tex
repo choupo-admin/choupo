@@ -2345,6 +2345,43 @@ Three evaluations of the same dataset: 1. scaffold\_as\_is -- the inline pair, u
 \end{tutgolden}
 
 \clearpage
+\tutentry{exergy01\_air\_dead\_state}{tutorials/props/molecular/exergy01\_air\_dead\_state}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{b\_state}\\[-1pt]{\tiny exergy}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{b\_dead}\\[-1pt]{\tiny exergy}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Physical exergy of 79/21 N2/O2 at 400 K, 2 bar against a DECLARED 298.15 K / 1 bar dead state -- b = (h-h0) - T0(s-s0) from the engine's own H\_real/S\_real, with the structural zero at the dead state itself as the second row}
+\begin{tutnarrative}
+PHYSICAL EXERGY, the number the entropy ledger buys -- the witness behind the exergy work that follows the "What is entropy?" page.
+
+b = (h - h0) - T0$\ast$(s - s0), every term the engine's own H\_real/S\_real at the SAME composition, so the enthalpy datum, the s\_298 anchors, the mixing term and the reference pressure ALL cancel: the exergy is datum-independent. The dead state is DECLARED (an exergy is a statement about a state AND an environment; the engine refuses to assume one).
+
+Two rows on purpose: the same state the entropy01 ledger decomposes, and the dead state itself -- whose exergy is 0 identically, by construction, which the golden pins as the structural zero.
+
+Nothing here is validated against measurement: every number is the engine's own answer, decomposed. The published dh and T0ds legs re-add to b on the reader's desk.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{b\_state}{P}{200000}
+\goldrow{diag}{b\_state}{P0}{100000}
+\goldrow{diag}{b\_state}{T}{400}
+\goldrow{diag}{b\_state}{T0}{298.15}
+\goldrow{diag}{b\_state}{T0ds}{850.601}
+\goldrow{diag}{b\_state}{b\_physical}{2136.71}
+\goldrow{diag}{b\_state}{dh}{2987.32}
+\goldrow{diag}{b\_state}{h}{2980.68}
+\goldrow{diag}{b\_state}{h0}{-6.63211}
+\goldrow{diag}{b\_state}{s}{201.559}
+\goldrow{diag}{b\_state}{s0}{198.706}
+\goldrow{diag}{b\_dead}{P}{100000}
+\goldrow{diag}{b\_dead}{P0}{100000}
+\goldrow{diag}{b\_dead}{T}{298.15}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
 \tutentry{flash01\_operating\_line}{tutorials/props/molecular/flash01\_operating\_line}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

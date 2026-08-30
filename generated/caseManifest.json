@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 389,
+  "cases": 390,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -2072,6 +2072,17 @@
     "activityModels": [
      "NRTL"
     ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/exergy01_air_dead_state": {
+   "application": "choupoProps",
+   "ops": [
+    "exergy"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
    },
    "roles": [],
    "hasGolden": true
@@ -5818,6 +5829,7 @@
     "tutorials/props/molecular/envelope02_root_jump",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
+    "tutorials/props/molecular/exergy01_air_dead_state",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
@@ -7032,6 +7044,9 @@
    ],
    "exchange": [
     "tutorials/props/electrolyte/softener_brackish"
+   ],
+   "exergy": [
+    "tutorials/props/molecular/exergy01_air_dead_state"
    ],
    "explainProperty": [
     "tutorials/props/molecular/entropy01_air_ledger"

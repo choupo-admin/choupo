@@ -505,6 +505,9 @@
   "ExchangeSpec": [
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
+  "Exergy": [
+   "src/propertyOps/Exergy.H"
+  ],
   "ExplainProperty": [
    "src/propertyOps/ExplainProperty.H"
   ],
@@ -1591,6 +1594,10 @@
    {
     "key": "explainProperty",
     "type": "ExplainProperty"
+   },
+   {
+    "key": "exergy",
+    "type": "Exergy"
    },
    {
     "key": "propertyScan1D",
@@ -3454,6 +3461,19 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H"
   ],
+  "src/propertyOps/Exergy.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/propertyOps/Exergy.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/ThermoPackage.H"
+  ],
   "src/propertyOps/ExplainProperty.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -3710,6 +3730,7 @@
    "src/propertyOps/EnthalpyConcentration.H",
    "src/propertyOps/EstimateComponent.H",
    "src/propertyOps/Exchange.H",
+   "src/propertyOps/Exergy.H",
    "src/propertyOps/ExplainProperty.H",
    "src/propertyOps/FitParameters.H",
    "src/propertyOps/FreezingPoint.H",
@@ -7381,6 +7402,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -7652,6 +7674,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -7982,6 +8005,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -8200,6 +8224,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -8609,6 +8634,7 @@
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -9115,6 +9141,10 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/Exergy.H": [
+   "src/propertyOps/Exergy.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/ExplainProperty.H": [
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -9186,6 +9216,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -9590,6 +9621,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -10037,6 +10069,7 @@
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
@@ -10314,6 +10347,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",
@@ -10634,6 +10668,7 @@
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/Exergy.cpp",
    "src/propertyOps/ExplainProperty.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/GibbsMapOp.cpp",

@@ -50,6 +50,21 @@ The derivation LEDGER of one mixture property at one state: every term with the 
 \file{tutorials/props/molecular/entropy01\_air\_ledger}
 \end{tutoriallink}
 
+\paragraph{\code{exergy}}
+PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED dead state: b = (h $-$ h0) $-$ T0$\cdot$(s $-$ s0), every term the engine's own H\_real/S\_real at the same composition, both legs published so the total re-adds. The dead state is the problem's declaration — a missing \code{deadState \{\}} REFUSES (an exergy is a statement about a state AND an environment, and the engine does not choose the plant's environment). CHEMICAL exergy refuses by name: it needs a standard-environment model (Szargut) nobody has curated.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{deadState}\textbf{*} & Dead state (the environment) \\
+\code{state}\textbf{*} & Thermodynamic state \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/exergy01\_air\_dead\_state}
+\end{tutoriallink}
+
 \paragraph{\code{propertyScan1D}}
 One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.
 

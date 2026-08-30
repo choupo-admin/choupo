@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  PHYSICAL EXERGY, the number the entropy ledger buys -- the witness behind
+    the exergy work that follows the "What is entropy?" page.
+
+    b = (h - h0) - T0*(s - s0), every term the engine's own H_real/S_real at
+    the SAME composition, so the enthalpy datum, the s_298 anchors, the
+    mixing term and the reference pressure ALL cancel: the exergy is
+    datum-independent.  The dead state is DECLARED (an exergy is a statement
+    about a state AND an environment; the engine refuses to assume one).
+
+    Two rows on purpose: the same state the entropy01 ledger decomposes, and
+    the dead state itself -- whose exergy is 0 identically, by construction,
+    which the golden pins as the structural zero.
+
+    Nothing here is validated against measurement: every number is the
+    engine's own answer, decomposed.  The published dh and T0ds legs re-add
+    to b on the reader's desk.
+*/
+
+operations
+(
+    {
+        name        b_state;
+        type        exergy;
+        state
+        {
+            T            400 K;
+            P            2 bar;
+            composition  { N2 0.79;  O2 0.21; }
+        }
+        deadState   { T0 298.15 K;  P0 1 bar; }
+    }
+
+    {
+        name        b_dead;
+        type        exergy;
+        state
+        {
+            T            298.15 K;
+            P            1 bar;
+            composition  { N2 0.79;  O2 0.21; }
+        }
+        deadState   { T0 298.15 K;  P0 1 bar; }
+    }
+);

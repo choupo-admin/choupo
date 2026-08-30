@@ -2613,6 +2613,21 @@ PYEOF
         cat /tmp/explainprop.$$
         fail=$((fail+1))
     fi
+
+    # exergy: two engine differences against a DECLARED environment.  b is
+    # reproduced independently through propertyPoint's own H_real/S_real at
+    # both states (a sign slip cannot survive), the dead state's own exergy
+    # is zero on both legs, and both refusals (missing deadState -- the
+    # engine never chooses the plant's environment; chemical exergy -- no
+    # standard-environment model is curated) fire by name.
+    if "$ROOT/bin/curate/check_exergy.py" > /tmp/exergy.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "exergy-gate" "$(head -1 /tmp/exergy.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_exergy.py)\n" "exergy-gate"
+        cat /tmp/exergy.$$
+        fail=$((fail+1))
+    fi
     rm -f /tmp/refrung.$$
 
     # ice-freezing gate (2026-08-07).  Vitor's instruction was that classical

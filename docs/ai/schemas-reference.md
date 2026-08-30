@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*86 of 86 registered operations carry a schema and are documented below.*
+*87 of 87 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -398,6 +398,15 @@ Ion-exchange equilibrium on the props bench: the declared water contacts a resin
 | `equilibrate` |   | object | — | As in `speciate`: let the NAMED minerals precipitate to SI = 0. |
 | `diagSpecies` |   | array[string] | — |  |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `exergy`  (exergy operation)
+
+PHYSICAL (thermo-mechanical) flow exergy of a mixture state against a DECLARED dead state: b = (h − h0) − T0·(s − s0), every term the engine's own H_real/S_real at the same composition, both legs published so the total re-adds. The dead state is the problem's declaration — a missing `deadState {}` REFUSES (an exergy is a statement about a state AND an environment, and the engine does not choose the plant's environment). CHEMICAL exergy refuses by name: it needs a standard-environment model (Szargut) nobody has curated.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `state` | ✓ | object | — | The (T, P, composition) whose physical exergy is evaluated. |
+| `deadState` | ✓ | object | — | REQUIRED. The environment the exergy is measured against — declared by the case, never defaulted by the engine. |
 
 ## `explainProperty`  (explainProperty operation)
 

@@ -46,7 +46,7 @@ REGISTRIES = (
 #  appears in the guide the day its schema does.
 GROUPS = [
     ("Evaluating a state", (
-        "propertyPoint", "explainProperty", "propertyScan1D", "propertyScan2D",
+        "propertyPoint", "explainProperty", "exergy", "propertyScan1D", "propertyScan2D",
         "propertyScanBinary", "propertyScanTernary", "purePhaseDiagram",
         "psychrometricChart", "steamTables")),
     ("Mixtures and activity", (

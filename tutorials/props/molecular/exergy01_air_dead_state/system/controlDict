@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Physical exergy of 79/21 N2/O2 at 400 K, 2 bar against a DECLARED 298.15 K / 1 bar dead state -- b = (h-h0) - T0(s-s0) from the engine's own H_real/S_real, with the structural zero at the dead state itself as the second row";
+verbosity     3;
