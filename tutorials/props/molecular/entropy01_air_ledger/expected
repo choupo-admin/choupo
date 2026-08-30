@@ -1,0 +1,23 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    ledger                 Cp_ig            29.4637            1e-4
+diag    ledger                 H_R              -5.4858            1e-4
+diag    ledger                 H_ig             2986.1689          1e-4
+diag    ledger                 H_real           2980.6831          1e-4
+diag    ledger                 P                200000.0000        1e-4
+diag    ledger                 S_R              -0.0192            1e-4
+diag    ledger                 S_ig             201.5778           1e-4
+diag    ledger                 S_real           201.5586           1e-4
+diag    ledger                 T                400.0000           1e-4
+diag    ledger                 Z                1.0007             1e-4
+diag    ledger                 gamma            1.3931             1e-4
+diag    ledger                 s_ig_N2          200.1887           1e-4
+diag    ledger                 s_ig_O2          213.8979           1e-4
+diag    ledger                 v_molar          0.0166             1e-4
+diag    temperatureLine        n_emptyCurves    0.0000             1e-4
+diag    temperatureLine        n_failures       0.0000             1e-4
+diag    temperatureLine        n_points         31.0000            1e-4
+diag    pressureLine           n_emptyCurves    0.0000             1e-4
+diag    pressureLine           n_failures       0.0000             1e-4
+diag    pressureLine           n_points         25.0000            1e-4

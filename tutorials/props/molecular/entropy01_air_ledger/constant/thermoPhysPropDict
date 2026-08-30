@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  SRK, deliberately: the ledger's model line (S_residual) must be REAL and
+    small at 2 bar, so the reader sees where the ideal-gas ledger ends and
+    the model begins -- and can watch the residual grow on the pressure scan.
+*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( N2 O2 );
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model SRK; }
+}

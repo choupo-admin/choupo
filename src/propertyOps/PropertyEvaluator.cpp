@@ -170,6 +170,17 @@ scalar evaluateProperty(const std::string& propKey,
     if (matchPerComp("gamma", i))
         return thermo.activity().gamma(T, xLiquid)[i];
 
+    // s_ig_<comp> / h_ig_<comp>: the PURE-component ideal-gas entropy /
+    // enthalpy at the scan T -- the per-component lines of the mixture
+    // ledger (S_ig = sum y*s_ig - R sum y ln y - R ln(P/P0)).  PropertyPoint.H
+    // documented both keys from the day it was written; the catalogue never
+    // implemented them, so the entropy01 ledger witness was refused a key
+    // the header promised (found 2026-08-30 building that witness).
+    if (matchPerComp("s_ig", i))
+        return thermo.comp(i).s_pure_ig(T);
+    if (matchPerComp("h_ig", i))
+        return thermo.comp(i).h_pure_ig(T);
+
     // y_eq_<comp>: mole fraction of <comp> in the VAPOUR in equilibrium
     // with the supplied liquid composition `xLiquid` at the given P.
     // Solves the bubble-point internally and returns yᵢ.  Together with

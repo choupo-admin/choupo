@@ -1,0 +1,65 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|        |     O ptimization  |  Licence:  GPL-3.0-or-later                   |
+\*-----------------------------------------------------------------------------*/
+/*  THE ENTROPY LEDGER, published line by line -- the witness behind the
+    "What is entropy?" EduTool page.
+
+    The engine's mixture entropy is assembled in ThermoPackage::S_ig
+    (src/thermo/ThermoPackage.cpp) as
+
+        S_ig(T,P,y) = sum_i y_i * s_ig_i(T)        (pure-state line)
+                    - R * sum_i y_i * ln y_i       (mixing line)
+                    - R * ln(P / 1 bar)            (pressure line)
+
+    with each s_ig_i(T) = s_298_i + integral Cp_i/T dT off the component's
+    own .dat (Component::s_formation), and S_real = S_ig + S_residual(SRK)
+    (the model line, Sandler eq. 6.4-31).  The `ledger` op below publishes
+    the per-component s_ig_i AND the assembled S_ig / S_R / S_real at one
+    state, so a reader -- or the EduTool page in the browser -- can rebuild
+    the total from the lines and check it against the engine's own number.
+    The two scans draw the temperature line (integral Cp/T at fixed P) and
+    the pressure line (-R ln P at fixed T, with the residual gap growing).
+
+    Nothing here is a validation against measurement: every number is the
+    engine's own answer, decomposed.  The value of the case is that the
+    decomposition CANNOT drift from the simulator, because it is published
+    by the same call that computes it.
+*/
+
+operations
+(
+    {
+        name        ledger;
+        type        propertyPoint;
+        state
+        {
+            T            400 K;
+            P            2 bar;
+            composition  { N2 0.79;  O2 0.21; }
+        }
+        properties  ( s_ig_N2  s_ig_O2  S_ig  S_R  S_real  Cp_ig  Z );
+    }
+
+    {
+        name        temperatureLine;
+        type        propertyScan1D;
+
+        vary        { variable T;  from 300 K;  to 600 K;  n 31; }
+        state       { P 2 bar;  composition { N2 0.79;  O2 0.21; } }
+
+        properties  ( S_ig  S_real );
+        output      { file entropy_vs_T.csv; }
+    }
+
+    {
+        name        pressureLine;
+        type        propertyScan1D;
+
+        vary        { variable P;  from 1 bar;  to 50 bar;  n 25; }
+        state       { T 400 K;  composition { N2 0.79;  O2 0.21; } }
+
+        properties  ( S_ig  S_real );
+        output      { file entropy_vs_P.csv; }
+    }
+);

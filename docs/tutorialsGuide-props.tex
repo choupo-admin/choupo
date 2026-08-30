@@ -2203,6 +2203,46 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \end{tutgolden}
 
 \clearpage
+\tutentry{entropy01\_air\_ledger}{tutorials/props/molecular/entropy01\_air\_ledger}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{ledger}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{temperatureLine}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pressureLine}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The entropy ledger of 79/21 N2/O2 at 400 K, 2 bar on SRK: every line of s(T,P,y) published separately, so a reader can rebuild the total by hand}
+\begin{tutnarrative}
+THE ENTROPY LEDGER, published line by line -- the witness behind the "What is entropy?" EduTool page.
+
+The engine's mixture entropy is assembled in ThermoPackage::S\_ig (src/thermo/ThermoPackage.cpp) as
+
+S\_ig(T,P,y) = sum\_i y\_i $\ast$ s\_ig\_i(T) (pure-state line) - R $\ast$ sum\_i y\_i $\ast$ ln y\_i (mixing line) - R $\ast$ ln(P / 1 bar) (pressure line)
+
+with each s\_ig\_i(T) = s\_298\_i + integral Cp\_i/T dT off the component's own .dat (Component::s\_formation), and S\_real = S\_ig + S\_residual(SRK) (the model line, Sandler eq. 6.4-31). The `ledger` op below publishes the per-component s\_ig\_i AND the assembled S\_ig / S\_R / S\_real at one state, so a reader -- or the EduTool page in the browser -- can rebuild the total from the lines and check it against the engine's own number. The two scans draw the temperature line (integral Cp/T at fixed P) and the pressure line (-R ln P at fixed T, with the residual gap growing).
+
+Nothing here is a validation against measurement: every number is the engine's own answer, decomposed. The value of the case is that the decomposition CANNOT drift from the simulator, because it is published by the same call that computes it.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{ledger}{Cp\_ig}{29.4637}
+\goldrow{diag}{ledger}{H\_R}{-5.4858}
+\goldrow{diag}{ledger}{H\_ig}{2986.1689}
+\goldrow{diag}{ledger}{H\_real}{2980.6831}
+\goldrow{diag}{ledger}{P}{200000.0000}
+\goldrow{diag}{ledger}{S\_R}{-0.0192}
+\goldrow{diag}{ledger}{S\_ig}{201.5778}
+\goldrow{diag}{ledger}{S\_real}{201.5586}
+\goldrow{diag}{ledger}{T}{400.0000}
+\goldrow{diag}{ledger}{Z}{1.0007}
+\goldrow{diag}{ledger}{gamma}{1.3931}
+\goldrow{diag}{ledger}{s\_ig\_N2}{200.1887}
+\goldrow{diag}{ledger}{s\_ig\_O2}{213.8979}
+\goldrow{diag}{ledger}{v\_molar}{0.0166}
+\goldmore{6}
+\end{tutgolden}
+
+\clearpage
 \tutentry{envelope01\_natural\_gas}{tutorials/props/molecular/envelope01\_natural\_gas}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
