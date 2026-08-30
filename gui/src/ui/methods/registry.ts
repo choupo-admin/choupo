@@ -86,10 +86,29 @@ export const METHOD_TOOL_KINDS = ["construction", "selection", "notes"] as const
 
 export type MethodToolKind = typeof METHOD_TOOL_KINDS[number];
 
+//  ONE HOME for the disciplines, in DISPLAY ORDER -- the curriculum shelf a
+//  student scans, not a fact about the code (the props-ops-reference rule:
+//  grouping is editorial and lives once).  23 tools had outgrown a flat
+//  list (owner, 2026-08-30).  The type is derived from the array, so a new
+//  tool MUST declare its discipline or it does not compile -- no "Other"
+//  bucket, because an unshelved tool here is a decision dodged, not a
+//  discovery surfaced.
+export const METHOD_DISCIPLINES = [
+  "Thermodynamics",
+  "Separations & phase equilibria",
+  "Heat transfer & energy",
+  "Reaction engineering",
+  "Hydraulics & control",
+] as const;
+
+export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
+
 export interface MethodTool {
   id: MethodToolId;
   label: string;
   kind: MethodToolKind;
+  /** The curriculum shelf this tool sits on (grouped pickers, landing). */
+  discipline: MethodDiscipline;
   status: "live" | "planned";
   /** One line: what this construction teaches. */
   teaches: string;
@@ -132,6 +151,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  points and the Chang/epistemology material moved to the deep dive
     //  `thermometer-trust`; the Newton-iteration analogy was deleted.
     id: "what-is-temperature", label: "What is a temperature?",
+    discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That a temperature reading is the END OF A MEASUREMENT CHAIN, "
       + "not a number nature printed on the system: STATE, T, scale, sensor, "
@@ -149,6 +169,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  entropy01_air_ledger witness and RE-ADDS the engine's own published
     //  lines in front of the reader.
     id: "what-is-entropy", label: "What is entropy?",
+    discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That an entropy value in a simulator is a LEDGER: a measured "
       + "third-law datum (s_298), a temperature line (integral Cp/T), a "
@@ -167,6 +188,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  is on screen.  Built the day the `exergy` bench op landed, so every
     //  claim has an engine surface to cite (the citation-first rule).
     id: "what-is-exergy", label: "What is exergy?",
+    discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That energy is conserved but USEFULNESS is not: exergy prices "
       + "a state in work, b = (h - h0) - T0*(s - s0), against a dead state "
@@ -183,6 +205,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  nobody has to cross the philosophy of science to learn to interrogate
     //  a Pt100.
     id: "thermometer-trust", label: "How do we know a thermometer is right?",
+    discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That a thermometer is never right by itself -- it is right the "
       + "way a witness is credible: agreeing with itself (Regnault's "
@@ -198,6 +221,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  subject is not what a temperature is, it is when a database can be
     //  believed.
     id: "property-trust", label: "When a property database lies to you",
+    discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "Never trust a thermophysical record merely because it exists: "
       + "test its internal consistency and read its declared validity.  "
@@ -213,6 +237,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  people end up able to draw the construction without being able to say
     //  what either line means.
     id: "flash-operating-line", label: "Flash (operating line)",
+    discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
     teaches: "The single equilibrium stage, and the two curves that decide "
       + "it: the material balance is a straight line that PIVOTS about the "
@@ -233,6 +258,7 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  so every point had to be a beaker and the abscissa came back out of
     //  charge.  The diagram is the same; the lesson is not.
     id: "bjerrum", label: "Speciation vs pH (Bjerrum)",
+    discipline: "Thermodynamics",
     kind: "construction", status: "live",
     teaches: "That the pH axis of a speciation diagram is a RESULT, not a "
       + "knob: 44 separate equilibrium calculations, each a real neutral "
@@ -245,7 +271,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:electrolytes",
   },
   {
-    id: "mccabe", label: "Distillation (McCabe-Thiele)", kind: "construction", status: "live",
+    id: "mccabe", label: "Distillation (McCabe-Thiele)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
     theory: "ch:distillation",
   },
@@ -273,6 +300,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  them.  Do not lengthen it back without re-running bin/checkGui.
   {
     id: "fug", label: "Distillation shortcut (FUG)",
+    discipline: "Separations & phase equilibria",
     kind: "construction", status: "live",
     teaches: "Where the first number you type into a rigorous column comes "
       + "from: total reflux fixes N_min, minimum reflux fixes R_min, and "
@@ -282,57 +310,68 @@ export const METHOD_TOOLS: MethodTool[] = [
     theory: "ch:fug",
   },
   {
-    id: "psychro", label: "Psychrometric chart", kind: "construction", status: "live",
+    id: "psychro", label: "Psychrometric chart",
+    discipline: "Heat transfer & energy", kind: "construction", status: "live",
     teaches: "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
     theory: "ch:drying",
   },
   {
-    id: "kremser", label: "Absorption (Kremser)", kind: "construction", status: "live",
+    id: "kremser", label: "Absorption (Kremser)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
     theory: "ch:absorber",
   },
   {
-    id: "pinch-composite", label: "Pinch composite curves", kind: "construction", status: "live",
+    id: "pinch-composite", label: "Pinch composite curves",
+    discipline: "Heat transfer & energy", kind: "construction", status: "live",
     teaches: "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
     theory: "ch:pinch",
   },
   {
-    id: "entu", label: "Heat exchanger (ε-NTU)", kind: "construction", status: "live",
+    id: "entu", label: "Heat exchanger (ε-NTU)",
+    discipline: "Heat transfer & energy", kind: "construction", status: "live",
     teaches: "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
     theory: "ch:hx-entu",
   },
   {
-    id: "pump-system", label: "Pump vs system curve", kind: "construction", status: "live",
+    id: "pump-system", label: "Pump vs system curve",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
     teaches: "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
     theory: "ch:rotating",
   },
   {
-    id: "merkel", label: "Cooling tower (Merkel)", kind: "construction", status: "live",
+    id: "merkel", label: "Cooling tower (Merkel)",
+    discipline: "Heat transfer & energy", kind: "construction", status: "live",
     teaches: "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
     theory: "ch:coolingTower",
   },
   {
-    id: "rayleigh", label: "Batch still (Rayleigh)", kind: "construction", status: "live",
+    id: "rayleigh", label: "Batch still (Rayleigh)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
     theory: "ch:rayleigh",
   },
   {
-    id: "levenspiel", label: "Reactor sizing (Levenspiel)", kind: "construction", status: "live",
+    id: "levenspiel", label: "Reactor sizing (Levenspiel)",
+    discipline: "Reaction engineering", kind: "construction", status: "live",
     teaches: "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
     theory: "ch:pfr",
   },
   {
-    id: "vanheerden", label: "Ignition / extinction (Van Heerden)", kind: "construction", status: "live",
+    id: "vanheerden", label: "Ignition / extinction (Van Heerden)",
+    discipline: "Reaction engineering", kind: "construction", status: "live",
     teaches: "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
     theory: "ch:cstr",
   },
   {
-    id: "drying", label: "Drying curve (batch tray)", kind: "construction", status: "live",
+    id: "drying", label: "Drying curve (batch tray)",
+    discipline: "Heat transfer & energy", kind: "construction", status: "live",
     teaches: "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
   },
   {
-    id: "breakthrough", label: "Adsorption breakthrough", kind: "construction", status: "live",
+    id: "breakthrough", label: "Adsorption breakthrough",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
     theory: "ch:adsorption",
   },
@@ -345,7 +384,8 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  the id — and the fallback itself REFUSES BY NAME, so the trap that made
   //  the caution necessary is closed for every tool after this one.
   {
-    id: "hunter-nash", label: "Extraction (Hunter-Nash)", kind: "construction", status: "live",
+    id: "hunter-nash", label: "Extraction (Hunter-Nash)",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
     teaches: "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
     theory: "sec:hunter-nash",
     fedBy: "ui/methods/TieTriangleTool.tsx over "
@@ -365,7 +405,8 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  MethodsWorkspace refuses an unmounted id by name now, so a `planned`
   //  placeholder here would have helped nobody.
   {
-    id: "thiele", label: "Catalyst pellet (Thiele modulus)", kind: "construction",
+    id: "thiele", label: "Catalyst pellet (Thiele modulus)",
+    discipline: "Reaction engineering", kind: "construction",
     status: "live",
     teaches: "The concentration field INSIDE one pellet: turn the rate "
       + "constant and watch it go from nearly flat — the whole pellet working "
@@ -384,6 +425,7 @@ export const METHOD_TOOLS: MethodTool[] = [
   //  to guidance.
   {
     id: "column-control", label: "Column control (structure & instruments)",
+    discipline: "Hydraulics & control",
     kind: "selection", status: "live",
     teaches: "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
     theory: "sec:column-control",

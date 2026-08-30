@@ -228,6 +228,9 @@
      /methodTools.json (generated from the app's own registry). */
   .edutool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
     background: var(--line); border: 1px solid var(--line); }
+  .edutool-shelf { grid-column: 1 / -1; margin: 0; padding: 12px 20px 10px;
+    background: var(--white); font-size: 13px; font-weight: 800;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--teal); }
   .edutool { display: block; padding: 22px 20px; background: var(--white); text-decoration: none; }
   .edutool:hover, .edutool:focus-visible { background: #eef8f5; }
   .edutool h3 { margin: 0 0 8px; font-size: 17px; }
@@ -705,7 +708,7 @@ https://www.choupo.org/app/
       .then(function (doc) {
         var tools = (doc && doc.tools) || [];
         if (!tools.length) throw 0;
-        host.innerHTML = tools.map(function (t) {
+        var card = function (t) {
           //  A NEW TAB, not the shared `choupo-app` one every other link on
           //  this page reuses.  A tool is not a place you navigate the app TO:
           //  ten of the twelve read the loaded case's run (their
@@ -718,7 +721,28 @@ https://www.choupo.org/app/
             + '<h3>' + esc(t.label) + '</h3>'
             + '<p>' + esc(t.teaches) + '</p>'
             + '<span class="edutool-go">Open in Choupo &rarr;</span></a>';
-        }).join("");
+        };
+        //  GROUPED BY DISCIPLINE (owner, 2026-08-30).  The shelf labels and
+        //  their order come from the artifact (doc.disciplines), which the
+        //  generator carries verbatim from the registry -- the landing never
+        //  invents its own.  Older artifacts without the field, or a tool
+        //  without one, fall back to the flat grid: a missing shelf must not
+        //  hide a tool.
+        var discs = (doc && doc.disciplines) || [];
+        var shelved = discs.map(function (d) {
+          return { d: d, items: tools.filter(function (t) {
+            return t.discipline === d; }) };
+        }).filter(function (g) { return g.items.length > 0; });
+        var offShelf = tools.filter(function (t) {
+          return discs.indexOf(t.discipline) < 0; });
+        if (shelved.length && !offShelf.length) {
+          host.innerHTML = shelved.map(function (g) {
+            return '<h3 class="edutool-shelf">' + esc(g.d) + '</h3>'
+              + g.items.map(card).join("");
+          }).join("");
+        } else {
+          host.innerHTML = tools.map(card).join("");
+        }
         var count = document.getElementById("edutoolsCount");
         if (count) count.textContent = tools.length;
         var blurb = document.getElementById("edutoolsBlurb");

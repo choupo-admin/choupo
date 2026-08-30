@@ -3,144 +3,174 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
+  "disciplines": [
+    "Thermodynamics",
+    "Separations & phase equilibria",
+    "Heat transfer & energy",
+    "Reaction engineering",
+    "Hydraulics & control"
+  ],
   "liveTools": 23,
   "registryTools": 23,
   "tools": [
     {
       "id": "what-is-temperature",
       "label": "What is a temperature?",
+      "discipline": "Thermodynamics",
       "teaches": "That a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: STATE, T, scale, sensor, signal, model and calibration, then a reported value with an uncertainty.  The quantity T, the unit K and the practical scale T90 are three different things; no instrument observes temperature itself; and decimal places are not uncertainty.",
       "href": "/app/?workspace=methods&tool=what-is-temperature"
     },
     {
       "id": "what-is-entropy",
       "label": "What is entropy?",
+      "discipline": "Thermodynamics",
       "teaches": "That an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral Cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (S_residual) -- each computed in one named place.  Why separation has a price floor (T times the mixing line), how an isentropic machine spends entropy (dS_gen), and which lines cancel when two states are compared.",
       "href": "/app/?workspace=methods&tool=what-is-entropy"
     },
     {
       "id": "what-is-exergy",
       "label": "What is exergy?",
+      "discipline": "Thermodynamics",
       "teaches": "That energy is conserved but USEFULNESS is not: exergy prices a state in work, b = (h - h0) - T0*(s - s0), against a dead state the case DECLARES (the engine refuses to choose your environment). Why the two LEGS re-add on screen, why the dead state's own exergy is zero identically, why b is datum-independent (differences at fixed composition), and Gouy-Stodola: every dS_gen a machine publishes costs T0 times itself in lost work.",
       "href": "/app/?workspace=methods&tool=what-is-exergy"
     },
     {
       "id": "thermometer-trust",
       "label": "How do we know a thermometer is right?",
+      "discipline": "Thermodynamics",
       "teaches": "That a thermometer is never right by itself -- it is right the way a witness is credible: agreeing with itself (Regnault's comparability), agreeing with others (convergence), and being cross-examined.  ITS-90's own fixed points, the gas thermometer solved live by the engine, why platinum's melting point cannot carry a tenth of a degree, and Hasok Chang's four circles.",
       "href": "/app/?workspace=methods&tool=thermometer-trust"
     },
     {
       "id": "property-trust",
       "label": "When a property database lies to you",
+      "discipline": "Thermodynamics",
       "teaches": "Never trust a thermophysical record merely because it exists: test its internal consistency and read its declared validity.  Thirteen records cross-examined against themselves, live -- water's own file disagrees with itself by 0.70 K, and a predictive glycerol correlation that asked to be validated misses by a factor of 19.",
       "href": "/app/?workspace=methods&tool=property-trust"
     },
     {
       "id": "flash-operating-line",
       "label": "Flash (operating line)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "The single equilibrium stage, and the two curves that decide it: the material balance is a straight line that PIVOTS about the feed on the diagonal with slope -L/V, and where it cuts the equilibrium curve is the flash. Every other construction in this list is this step repeated, moved to other axes, or integrated.",
       "href": "/app/?workspace=methods&tool=flash-operating-line"
     },
     {
       "id": "bjerrum",
       "label": "Speciation vs pH (Bjerrum)",
+      "discipline": "Thermodynamics",
       "teaches": "That the pH axis of a speciation diagram is a RESULT, not a knob: 44 separate equilibrium calculations, each a real neutral mixture, each landing wherever its own charge balance puts it -- and the two crossovers arriving on the two pK's without either having been an input. Also the two things the hand-drawn version cannot show: the three fractions do not sum to one, because the titrant is not a spectator, and the crossovers sit below the thermodynamic pK because the engine works in activities.",
       "href": "/app/?workspace=methods&tool=bjerrum"
     },
     {
       "id": "mccabe",
       "label": "Distillation (McCabe-Thiele)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "Operating lines, the q-line and the staircase: how reflux R and feed quality q set the number of ideal stages.",
       "href": "/app/?workspace=methods&tool=mccabe"
     },
     {
       "id": "fug",
       "label": "Distillation shortcut (FUG)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "Where the first number you type into a rigorous column comes from: total reflux fixes N_min, minimum reflux fixes R_min, and Gilliland — a fit, not a derivation — interpolates N(R) between those two asymptotes, with the rigorous MESH column's own stage count for the same separation drawn beside it.",
       "href": "/app/?workspace=methods&tool=fug"
     },
     {
       "id": "psychro",
       "label": "Psychrometric chart",
+      "discipline": "Heat transfer & energy",
       "teaches": "The humid-gas state map: saturation, relative-humidity and adiabatic-saturation / wet-bulb lines locate every drying and conditioning path.",
       "href": "/app/?workspace=methods&tool=psychro"
     },
     {
       "id": "kremser",
       "label": "Absorption (Kremser)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight — judged against the engine's stagewise recovery.",
       "href": "/app/?workspace=methods&tool=kremser"
     },
     {
       "id": "pinch-composite",
       "label": "Pinch composite curves",
+      "discipline": "Heat transfer & energy",
       "teaches": "Hot and cold composite curves: the pinch splits the problem and fixes Q_H,min / Q_C,min before any exchanger is drawn — the in-view cascade cross-checked against the engine's targets.",
       "href": "/app/?workspace=methods&tool=pinch-composite"
     },
     {
       "id": "entu",
       "label": "Heat exchanger (ε-NTU)",
+      "discipline": "Heat transfer & energy",
       "teaches": "Effectiveness vs NTU at a capacity ratio: why counter-current wins and when extra area stops paying — the run's exchanger placed on its own curve.",
       "href": "/app/?workspace=methods&tool=entu"
     },
     {
       "id": "pump-system",
       "label": "Pump vs system curve",
+      "discipline": "Hydraulics & control",
       "teaches": "The operating point is an intersection: the pump model's rise falling with flow against the pipe system's demand rising with it — crossed where the engine's own columns cross.",
       "href": "/app/?workspace=methods&tool=pump-system"
     },
     {
       "id": "merkel",
       "label": "Cooling tower (Merkel)",
+      "discipline": "Heat transfer & energy",
       "teaches": "Merkel's one diagram: saturated-air enthalpy above, the operating line below, and the shaded gap between them is the driving force the packing must buy.",
       "href": "/app/?workspace=methods&tool=merkel"
     },
     {
       "id": "rayleigh",
       "label": "Batch still (Rayleigh)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "The graphical Rayleigh integration: the area under 1/(y*−x) between the charge and the pot IS ln(W0/W) — drawn from the engine's own equilibrium curve, judged against the engine's rigorous still.",
       "href": "/app/?workspace=methods&tool=rayleigh"
     },
     {
       "id": "levenspiel",
       "label": "Reactor sizing (Levenspiel)",
+      "discipline": "Reaction engineering",
       "teaches": "One chart, two areas: the PFR's integral under 1/(−r) against the CSTR's rectangle at the outlet rate — why a CSTR needs more volume for the same conversion under positive-order kinetics.",
       "href": "/app/?workspace=methods&tool=levenspiel"
     },
     {
       "id": "vanheerden",
       "label": "Ignition / extinction (Van Heerden)",
+      "discipline": "Reaction engineering",
       "teaches": "Heat generated against heat removed: a straight line can cut a sigmoid three times, so the same reactor with the same feed has three steady states — and the middle one is the state no start-up procedure can hold.",
       "href": "/app/?workspace=methods&tool=vanheerden"
     },
     {
       "id": "drying",
       "label": "Drying curve (batch tray)",
+      "discipline": "Heat transfer & energy",
       "teaches": "The two classical drying plots: X against time, and the rate against moisture — where the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
       "href": "/app/?workspace=methods&tool=drying"
     },
     {
       "id": "breakthrough",
       "label": "Adsorption breakthrough",
+      "discipline": "Separations & phase equilibria",
       "teaches": "The S-shaped breakthrough curve: the mass-transfer zone consumes bed capacity long before the bed saturates — the ideal square wave drawn at the engine's stoichiometric time.",
       "href": "/app/?workspace=methods&tool=breakthrough"
     },
     {
       "id": "hunter-nash",
       "label": "Extraction (Hunter-Nash)",
+      "discipline": "Separations & phase equilibria",
       "teaches": "One point rules the whole column: the difference point Δ = F − E₁ = R_j − E_{j+1} lies on every operating line, so the triangle alternates tie-lines with lines through Δ — and the rigorous cascade's own stages are laid on it as the test.",
       "href": "/app/?workspace=methods&tool=hunter-nash"
     },
     {
       "id": "thiele",
       "label": "Catalyst pellet (Thiele modulus)",
+      "discipline": "Reaction engineering",
       "teaches": "The concentration field INSIDE one pellet: turn the rate constant and watch it go from nearly flat — the whole pellet working — to a boundary layer hugging the surface over a dead core, with the effectiveness factor beside it as the consequence, and the closed form drawn over the numerical answer so the method is watched being checked.",
       "href": "/app/?workspace=methods&tool=thiele"
     },
     {
       "id": "column-control",
       "label": "Column control (structure & instruments)",
+      "discipline": "Hydraulics & control",
       "teaches": "Five valves, five inventories, two left for composition: the cross-section shows which measurement drives which valve, the cited authorities disagree in the open, and the sensor tray is computed from the column's own profile — the slope criterion and the sensitivity criterion, which pick different trays.",
       "href": "/app/?workspace=methods&tool=column-control"
     }

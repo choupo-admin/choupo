@@ -112,7 +112,8 @@ import {
   selectedUnitTypeIn, TAB_CHROME, tabHelp, tabKindFor,
 } from "./tabChrome.js";
 import {
-  METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool, type MethodToolId,
+  METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, useActiveMethodTool,
+  type MethodToolId,
 } from "./methods/registry.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
@@ -996,23 +997,35 @@ function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
       px={px}
       rightSection={<IconChevronDown size={12} stroke={2} />}
     >
-      <Menu.Label>Classical method constructions</Menu.Label>
-      {METHOD_TOOLS.map((m) => {
-        const active = m.id === tool;
-        const planned = m.status !== "live";
+      {/* GROUPED BY DISCIPLINE (owner, 2026-08-30: 23 tools had outgrown a
+          flat list).  The shelf labels and their order have ONE home,
+          METHOD_DISCIPLINES in the registry; an empty shelf does not
+          render. */}
+      {METHOD_DISCIPLINES.map((d) => {
+        const shelf = METHOD_TOOLS.filter((m) => m.discipline === d);
+        if (shelf.length === 0) return null;
         return (
-          <Menu.Item
-            key={m.id}
-            disabled={planned}
-            title={planned ? `Planned — fed by ${m.fedBy ?? "an engine output not shipped yet"}` : undefined}
-            leftSection={active
-              ? <IconCheck size={14} />
-              : <span style={{ display: "inline-block", width: 14 }} />}
-            onClick={() => { if (!planned) setActiveMethodTool(m.id); }}
-            styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
-          >
-            {planned ? `${m.label} (planned)` : m.label}
-          </Menu.Item>
+          <Box key={d}>
+            <Menu.Label>{d}</Menu.Label>
+            {shelf.map((m) => {
+              const active = m.id === tool;
+              const planned = m.status !== "live";
+              return (
+                <Menu.Item
+                  key={m.id}
+                  disabled={planned}
+                  title={planned ? `Planned — fed by ${m.fedBy ?? "an engine output not shipped yet"}` : undefined}
+                  leftSection={active
+                    ? <IconCheck size={14} />
+                    : <span style={{ display: "inline-block", width: 14 }} />}
+                  onClick={() => { if (!planned) setActiveMethodTool(m.id); }}
+                  styles={{ itemLabel: { fontWeight: active ? 600 : 400 } }}
+                >
+                  {planned ? `${m.label} (planned)` : m.label}
+                </Menu.Item>
+              );
+            })}
+          </Box>
         );
       })}
     </TopMenu>

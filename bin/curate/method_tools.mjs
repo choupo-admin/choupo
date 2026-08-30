@@ -172,6 +172,7 @@ async function main()
         .map((t) => ({
             id: t.id,
             label: t.label,
+            discipline: t.discipline,
             teaches: t.teaches,
             href: hrefFor(t.id),
         }));
@@ -193,6 +194,9 @@ async function main()
         generatedFrom: "gui/src/ui/methods/registry.ts",
         label: mod.EDUTOOLS_LABEL,
         blurb: mod.EDUTOOLS_BLURB,
+        //  Shelf order is the registry's, carried verbatim -- the landing
+        //  groups by it and must not invent its own (owner, 2026-08-30).
+        disciplines: mod.METHOD_DISCIPLINES,
         liveTools: tools.length,
         registryTools: all.length,
         tools,

@@ -149,7 +149,8 @@ import { MCCABE_LIMITS, MCCABE_STEPS } from "./methods/mccabeLesson.js";
 import { PSYCHRO_LIMITS, PSYCHRO_STEPS } from "./methods/psychroLesson.js";
 import { KnobField, KnobNumber } from "./methods/knobPanel.js";
 import {
-  METHOD_TOOLS, setActiveMethodTool, theoryUrl, useActiveMethodTool,
+  METHOD_DISCIPLINES, METHOD_TOOLS, setActiveMethodTool, theoryUrl,
+  useActiveMethodTool,
   type MethodTool, type MethodToolId,
 } from "./methods/registry.js";
 import { hasCaseOpen, useStore } from "../state/store.js";
@@ -438,12 +439,19 @@ function ToolChooser({ tool }: { tool: MethodToolId }) {
   // fit question and the pointer question are separate).  One Mantine size
   // step up under a finger; the lineup is identical either way.
   const coarse = useCoarsePointer();
+  //  GROUPED BY DISCIPLINE (owner, 2026-08-30: 23 tools had outgrown a flat
+  //  list).  The shelf labels and their order have ONE home,
+  //  METHOD_DISCIPLINES in the registry; this map cannot drift from it, and
+  //  a discipline with no tools simply does not render.
   const data = useMemo(
-    () => METHOD_TOOLS.map((m) => ({
-      value: m.id,
-      label: m.status === "live" ? m.label : `${m.label} (planned)`,
-      disabled: m.status !== "live",
-    })),
+    () => METHOD_DISCIPLINES.map((d) => ({
+      group: d,
+      items: METHOD_TOOLS.filter((m) => m.discipline === d).map((m) => ({
+        value: m.id,
+        label: m.status === "live" ? m.label : `${m.label} (planned)`,
+        disabled: m.status !== "live",
+      })),
+    })).filter((g) => g.items.length > 0),
     []);
   return (
     <Box style={{
