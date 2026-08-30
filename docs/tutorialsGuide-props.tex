@@ -2207,8 +2207,10 @@ Why the case exists: `kinetics1D` had NO case and no gate. Its sibling vaporPres
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{ledger}\\[-1pt]{\tiny propertyPoint}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{temperatureLine}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pressureLine}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{explainS}\\[-1pt]{\tiny explainProperty}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{explainH}\\[-1pt]{\tiny explainProperty}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{temperatureLine}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{pressureLine}\\[-1pt]{\tiny propertyScan1D}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{The entropy ledger of 79/21 N2/O2 at 400 K, 2 bar on SRK: every line of s(T,P,y) published separately, so a reader can rebuild the total by hand}
@@ -2239,7 +2241,7 @@ Nothing here is a validation against measurement: every number is the engine's o
 \goldrow{diag}{ledger}{s\_ig\_N2}{200.1887}
 \goldrow{diag}{ledger}{s\_ig\_O2}{213.8979}
 \goldrow{diag}{ledger}{v\_molar}{0.0166}
-\goldmore{6}
+\goldmore{36}
 \end{tutgolden}
 
 \clearpage

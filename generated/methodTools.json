@@ -3,14 +3,20 @@
   "generatedFrom": "gui/src/ui/methods/registry.ts",
   "label": "EduTools",
   "blurb": "Classical graphical methods, constructed over curves the engine computes — the method's answer beside the engine's.  Property surfaces (T-x-y, γ, Psat) live in Explore; the split criterion: method-construction → EduTools, property-surface → Explore.",
-  "liveTools": 21,
-  "registryTools": 21,
+  "liveTools": 22,
+  "registryTools": 22,
   "tools": [
     {
       "id": "what-is-temperature",
       "label": "What is a temperature?",
       "teaches": "That a temperature reading is the END OF A MEASUREMENT CHAIN, not a number nature printed on the system: STATE, T, scale, sensor, signal, model and calibration, then a reported value with an uncertainty.  The quantity T, the unit K and the practical scale T90 are three different things; no instrument observes temperature itself; and decimal places are not uncertainty.",
       "href": "/app/?workspace=methods&tool=what-is-temperature"
+    },
+    {
+      "id": "what-is-entropy",
+      "label": "What is entropy?",
+      "teaches": "That an entropy value in a simulator is a LEDGER: a measured third-law datum (s_298), a temperature line (integral Cp/T), a pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a model line (S_residual) -- each computed in one named place.  Why separation has a price floor (T times the mixing line), how an isentropic machine spends entropy (dS_gen), and which lines cancel when two states are compared.",
+      "href": "/app/?workspace=methods&tool=what-is-entropy"
     },
     {
       "id": "thermometer-trust",

@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*85 of 85 registered operations carry a schema and are documented below.*
+*86 of 86 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -398,6 +398,15 @@ Ion-exchange equilibrium on the props bench: the declared water contacts a resin
 | `equilibrate` |   | object | — | As in `speciate`: let the NAMED minerals precipitate to SI = 0. |
 | `diagSpecies` |   | array[string] | — |  |
 | `output` |   | object | — | `{ file <name>.csv; }` — where the per-row results are written, relative to the case directory. |
+
+## `explainProperty`  (explainProperty operation)
+
+The derivation LEDGER of one mixture property at one state: every term with the record field or model it came from (the `s_298`/`dHf_298` datum, the Cp integral as a difference of two engine calls, the mixing and pressure lines, the EoS residual), re-added and checked against the engine's own assembled value at round-off. The op computes no thermodynamics of its own and REFUSES if its explanation and the engine disagree, if the property is not one it can explain, or if a `pureFluids {}` fundamental-equation override answers the state (that route's ledger is the release's own equation, not datum-plus-integral).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `property` | ✓ | string | — | One of S_real, S_ig, H_real, H_ig. An unknown name is refused, never dropped. |
+| `state` | ✓ | object | — | The (T, P, composition) whose ledger is published. |
 
 ## `extract`  (extract operation)
 
