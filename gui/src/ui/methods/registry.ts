@@ -60,7 +60,7 @@ export type MethodToolId =
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
-  | "thermometer-trust" | "property-trust";
+  | "thermometer-trust" | "property-trust" | "what-is-entropy";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -138,6 +138,24 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "uncertainty.  The quantity T, the unit K and the practical scale "
       + "T90 are three different things; no instrument observes temperature "
       + "itself; and decimal places are not uncertainty.",
+    theory: "ch:criticals",
+  },
+  {
+    //  ONE page, ONE mental model (the temperature page's ruling, applied to
+    //  the next hard concept): an entropy value is a LEDGER.  Built AFTER
+    //  the engine trace (docs/design/entropy-glass-box-trace.md) so every
+    //  ledger line cites the code computing it; the live centre runs the
+    //  entropy01_air_ledger witness and RE-ADDS the engine's own published
+    //  lines in front of the reader.
+    id: "what-is-entropy", label: "What is entropy?",
+    kind: "notes", status: "live",
+    teaches: "That an entropy value in a simulator is a LEDGER: a measured "
+      + "third-law datum (s_298), a temperature line (integral Cp/T), a "
+      + "pressure line (-R ln P/P0), a mixing line (-R sum y ln y) and a "
+      + "model line (S_residual) -- each computed in one named place.  Why "
+      + "separation has a price floor (T times the mixing line), how an "
+      + "isentropic machine spends entropy (dS_gen), and which lines cancel "
+      + "when two states are compared.",
     theory: "ch:criticals",
   },
   {
