@@ -445,6 +445,20 @@ holds the re-addition pure~$+$~mixing~$+$~pressure to the engine's own
 total.  The ``What is entropy?''\ EduTool page performs that
 re-addition on screen from a live run of the same case.
 
+And the ledger buys a price tag: the \code{exergy} bench operation
+evaluates the physical exergy $b = (h - h_0) - T_0\,(s - s_0)$ from the
+same $H$ and $S$ surfaces at a \emph{declared} dead state
+(\code{deadState \{ T0; P0; \}} --- the environment is the case
+author's fact, and a missing block refuses rather than assuming one).
+Because only differences at fixed composition enter, the enthalpy
+datum, the $s^{\circ}_{298}$ anchors, the mixing term and the reference
+pressure all cancel: $b$ is datum-independent.  Witness
+\code{exergy01\_air\_dead\_state} prices the same air state at
+$2136.7$~J/mol and pins the structural zero ($b = 0$ at the dead state
+itself, on both legs).  Chemical exergy is deliberately refused by
+name: it needs a standard-environment model (Szargut) that is a curated
+data decision, not a formula.
+
 \subsection{From \texorpdfstring{$G$}{G} to equilibrium: what \texorpdfstring{$\Delta G^\circ$}{dG0} is (and is not)}
 
 The single most common confusion in this whole subject is $\Delta G^\circ$
