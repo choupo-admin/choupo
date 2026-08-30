@@ -108,6 +108,28 @@ describe("the spine's order and claims", () => {
     expect(prose(SRC)).toContain("refuses to run");
   });
 
+  it("the zero is the RESTRICTED dead state's, and says so everywhere", () => {
+    //  2026-08-31 review: (T0, P0, x) at the stream's own composition is
+    //  the restricted (thermo-mechanical) dead state, not the complete
+    //  environmental one -- claiming "indistinguishable from the
+    //  environment" would silently zero a chemical exergy the op refuses.
+    expect(prose(SRC)).toContain("restricted dead state");
+    expect(prose(SRC)).toContain("composition held fixed");
+    expect(SRC).not.toContain("indistinguishable from the environment");
+    expect(prose(SRC)).toContain("maximum useful work");
+    //  the exclusions are stated, not implied
+    expect(prose(SRC)).toContain("kinetic");
+    expect(prose(SRC)).toContain("potential");
+  });
+
+  it("the entropy leg is displayed at the engine's own sign", () => {
+    //  The engine publishes T0*(s-s0) = +850.60 for the witness; showing
+    //  -850.60 under that label mislabeled the quantity (the SIGNED
+    //  contribution is negative, the quantity is not).
+    expect(SRC).not.toContain("-lg.T0ds");
+    expect(prose(SRC)).toContain("sign the engine publishes");
+  });
+
   it("every claim carries a citation into the engine or the witness", () => {
     expect(EXERGY_META).toHaveLength(5);
     for (const m of EXERGY_META) {
@@ -123,10 +145,26 @@ describe("the spine's order and claims", () => {
     expect(prose(SRC)).toContain("all drop out");
   });
 
-  it("Gouy-Stodola names the machines' own KPI", () => {
+  it("datum-independent is NOT model-independent, and the page says so", () => {
+    expect(prose(SRC)).toContain("not model-independent");
+    //  the overclaim the 2026-08-31 review caught, gone for good
+    expect(prose(SRC)).not.toContain("compared across thermodynamic models");
+    //  the mixing-line cancellation stays, said precisely: it is the
+    //  IDEAL line, composition-only -- exact at fixed composition
+    expect(prose(SRC)).toContain("ideal-mixing line");
+  });
+
+  it("Gouy-Stodola names the machines' own KPI, on the adiabatic basis", () => {
     expect(SRC).toContain("dS_gen");
     expect(SRC).toContain("IsentropicCore.cpp");
     expect(prose(SRC)).toContain("T0 times the entropy generated");
+    //  the equivalence stream-Δs = generation holds for the ADIABATIC
+    //  contract and must not be generalised to units with heat transfer
+    expect(prose(SRC).toLowerCase()).toContain("adiabatic");
+    //  energy units, not pseudo-monetary ones
+    expect(SRC).not.toContain("money-units");
+    //  the slider's claim holds s_gen fixed, explicitly
+    expect(prose(SRC)).toContain("FIXED entropy generation");
   });
 
   it("ends on the interrogation, five questions", () => {
@@ -148,9 +186,12 @@ describe("the honest absences", () => {
     expect(SRC).not.toContain("b_ch");
   });
 
-  it("no flowsheet exergy balance is claimed, and the reason is named", () => {
-    expect(prose(SRC)).toContain("no exergy balance");
-    expect(prose(SRC)).toContain("streams carry no entropy");
+  it("no flowsheet exergy balance is claimed, as a STATUS, not a law", () => {
+    //  2026-08-31 review: "streams carry no entropy column" is an
+    //  implementation trace, not the thermodynamic reason -- the honest
+    //  statement is what is not implemented and what a real ledger needs.
+    expect(prose(SRC)).toContain("no audited flowsheet-wide exergy balance");
+    expect(prose(SRC)).toContain("entropy-generation terms");
     expect(SRC).toContain("docs/design/entropy-glass-box-trace.md");
   });
 

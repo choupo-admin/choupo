@@ -37,9 +37,21 @@ License
   The live centre runs tutorials/props/molecular/exergy01_air_dead_state
   in the reader's browser: the engine publishes the two legs (dh and
   T0*ds) beside its own b_physical, and THIS PAGE re-adds them in front of
-  the reader -- plus the structural zero at the dead state itself.  The
-  only arithmetic performed here is that re-addition and one exact product
+  the reader -- plus the structural zero at the RESTRICTED dead state
+  (thermo-mechanical: composition held fixed, so the zero is the physical
+  exergy's, never a claim of chemical indistinguishability).  The only
+  arithmetic performed here is that re-addition and one exact product
   (T0 times a published s_gen, for the Gouy-Stodola slider).
+
+  Tightened 2026-08-31 after an external review the owner forwarded:
+  restricted vs complete dead state named on every surface, the entropy
+  leg's sign displayed as the engine publishes it (+T0(s-s0), subtracted
+  visibly), datum-independence stated as NOT model-independence, and the
+  flowsheet-balance absence stated as an implementation status rather than
+  a storage-layout law.  One reviewer caution deliberately NOT taken: the
+  ideal-mixing line IS composition-only, so at fixed composition it
+  cancels exactly -- the page says so precisely instead of dropping the
+  claim.
 
   Deliberately ABSENT, per the same one-page ruling as the temperature and
   entropy pages: heat-engine cycles, availability accounting frameworks,
@@ -110,38 +122,47 @@ export const EXERGY_META = [
     note: "An exergy is a statement about a state AND an environment. The "
       + "engine REFUSES to assume one — a silently defaulted 25 °C would "
       + "hand a plant in another climate the wrong number with nothing to "
-      + "see.",
+      + "see.  The block declares the reference temperature and pressure "
+      + "the physical-exergy op needs — two numbers do not define a "
+      + "complete environment, and the page does not pretend they do.",
   },
   {
-    line: "b(dead state) = 0, identically",
+    line: "b_ph(restricted dead state) = 0, identically",
     question: "Where does the price hit zero?",
     cite: "tutorials/props/molecular/exergy01_air_dead_state · b_dead",
-    note: "The witness's second row evaluates the dead state itself: both "
-      + "legs are exactly zero, by construction — the structural zero the "
-      + "golden pins.",
+    note: "The witness's second row evaluates (T0, P0) at the SAME "
+      + "composition: both legs are exactly zero, by construction — the "
+      + "structural zero the golden pins.  Thermo-mechanical distance is "
+      + "exhausted there; the stream may still differ CHEMICALLY from the "
+      + "environment, and that part is refused, never silently zeroed.",
   },
   {
     line: "datum-independence",
-    question: "Why can models be compared on b?",
+    question: "Why doesn't the reference zero matter?",
     cite: "src/propertyOps/Exergy.cpp · the differencing comment",
-    note: "Only DIFFERENCES at fixed composition enter, so the enthalpy "
-      + "datum, the s_298 anchors, the mixing term and the reference "
-      + "pressure all cancel — the same cancellation that makes the "
-      + "isentropic machines legitimate.",
+    note: "Only DIFFERENCES at fixed composition enter, so additive "
+      + "reference offsets common to both states — the enthalpy datum, the "
+      + "s_298 anchors, the ideal-mixing line (composition-only, identical "
+      + "in both states), the 1 bar reference-pressure convention — all "
+      + "drop out.  Datum-independent is NOT model-independent: different "
+      + "models predict different Δh and Δs, and that difference is "
+      + "physics, not bookkeeping.",
   },
   {
-    line: "W_lost = T0·dS_gen (Gouy–Stodola)",
+    line: "E_D = T0·dS_gen (Gouy–Stodola)",
     question: "What does an irreversibility cost?",
     cite: "src/unitOperations/rotating/IsentropicCore.cpp · dS_gen KPI",
-    note: "Every compressor and turbine already publishes dS_gen. Multiply "
-      + "by the environment temperature and the entropy the machine "
-      + "generated becomes the work it destroyed.",
+    note: "Every compressor and turbine already publishes dS_gen — and for "
+      + "these ADIABATIC machines the stream's entropy rise IS the "
+      + "generation (a unit with heat transfer would need the boundary "
+      + "term too).  Multiply by T0 and the entropy the machine generated "
+      + "becomes the exergy it destroyed.",
   },
 ] as const;
 
 /** The questions this page installs. */
 export const EXERGY_INTERROGATION = [
-  "Against which dead state is this exergy quoted — and who declared it?",
+  "Against which restricted dead state (T0, P0) is this exergy quoted — and who declared it?",
   "Is this the physical exergy alone, or does someone claim a chemical part — and from which standard environment?",
   "How much of the inlet exergy leaves in the product, and how much was destroyed (T0·s_gen)?",
   "Would this number change if the enthalpy datum changed? (It must not — and why not?)",
@@ -170,14 +191,17 @@ function ExergyTable({ lg }: { lg: ExergyLedger }) {
         </Text>
       </Group>
       {row("enthalpy leg  h − h0", lg.dh)}
-      {row("entropy leg  T0·(s − s0)", -lg.T0ds)}
-      {row("re-added by this page", lg.rebuilt, true)}
+      {row("entropy leg  T0·(s − s0)", lg.T0ds)}
+      {row("b = (h − h0) − T0·(s − s0), rebuilt here", lg.rebuilt, true)}
       {row("the engine’s own b_physical", lg.b, true)}
       <Text size="xs" c={INK} px="sm" py={6}>
-        The re-added legs and the engine’s b agree to
-        {" "}{lg.gap.toExponential(1)} J/mol — the engine subtracted, the
-        page subtracted again; if they ever disagreed, this row is where
-        you would see it.
+        Both legs are shown with the sign the engine publishes them at;
+        the subtraction is visible in the rebuilt row.  The engine
+        publishes the two property differences; this page independently
+        reconstructs b from them and compares with the engine’s own value
+        — they agree to {lg.gap.toExponential(1)} J/mol, computed from the
+        published values at their published precision.  If the two ever
+        disagreed, this row is where you would see it.
       </Text>
     </Box>
   );
@@ -205,10 +229,11 @@ function GouyStodolaKnob() {
         {"  "}(per 1 J/(mol·K) generated)
       </Text>
       <Text size="xs" c={INK} mt={4}>
-        The same irreversibility destroys more work in a hotter
-        environment — the entropy a machine generates is priced at T0.
-        Take any dS_gen from a compressor or turbine run and multiply;
-        this slider is that one exact product, nothing more.
+        For a FIXED entropy generation, a higher declared T0 assigns a
+        larger exergy destruction to the same irreversibility — the
+        entropy a machine generates is priced at T0.  Take any dS_gen
+        from a compressor or turbine run and multiply; this slider is
+        that one exact product, nothing more.
       </Text>
     </Box>
   );
@@ -246,13 +271,14 @@ export function WhatIsExergyTool(): JSX.Element {
         <Box>
           <Title order={5}>1 · Same energy, different worth</Title>
           <Text size="sm" mt={4}>
-            A kilogram of air at 400 K and a kilogram at room temperature
-            hold nearly the same energy once you count the room they will
-            cool into — yet one of them can spin a turbine on its way down
-            and the other can do nothing at all.  What the hot kilogram has
-            and the cold one lacks is not energy; it is <em>distance from
-            the environment</em>.  Exergy measures that distance in the only
-            currency an engineer can bank: work.
+            A mole of air at 400 K and 2 bar can, in principle, deliver
+            work as it is brought reversibly down to 298.15 K and 1 bar.
+            The same mole already sitting at 298.15 K and 1 bar has no
+            physical work potential left against those surroundings.
+            Energy conservation holds in both cases — the first law is
+            never in question; what differs is <em>distance from the
+            declared environment</em>.  Exergy measures that distance in
+            the only currency an engineer can bank: work.
           </Text>
         </Box>
 
@@ -260,22 +286,37 @@ export function WhatIsExergyTool(): JSX.Element {
           <Title order={5}>2 · The formula, and the declaration inside it</Title>
           <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${GRID}` }}>
             <Text size="xs" c={INK} fw={700} tt="uppercase">
-              physical (thermo-mechanical) exergy
+              physical (thermo-mechanical) flow exergy
             </Text>
             <Text size="sm" ff="monospace" mt={4}>
-              b = (h − h0) − T0·(s − s0)
+              b_ph = (h − h0) − T0·(s − s0)
+            </Text>
+            <Text size="xs" c={INK} mt={4}>
+              both reference properties at (T0, P0) with the stream’s OWN
+              composition — the restricted dead state
             </Text>
           </Box>
           <Text size="sm">
-            Two engine differences and one product: the enthalpy you give up
-            reaching the environment, minus the part the second law taxes
-            away (heat that must be dumped at T0 carries T0·ds of it).  The
-            subscript 0 is not a constant of nature — it is
-            a <strong>declaration</strong>.  This simulator refuses to run
-            the op without a <Text span ff="monospace">deadState {"{"} T0;
+            <strong>Physical flow exergy is the maximum useful work
+            obtainable as a flowing stream is brought reversibly to
+            (T0, P0), with its composition held fixed.</strong>  Two engine
+            differences and one product: the enthalpy you give up reaching
+            the environment, minus the part the second law taxes away (heat
+            that must be dumped at T0 carries T0·ds of it).  What this
+            expression deliberately excludes: <em>chemical</em> exergy (the
+            op refuses it by name — see the end of this page),
+            and <em>kinetic</em> and <em>potential</em> exergy (streams
+            here carry no velocity or elevation).  The subscript 0 is not a
+            constant of nature — it is a <strong>declaration</strong>.
+            This simulator refuses to run the op without
+            a <Text span ff="monospace">deadState {"{"} T0;
             P0; {"}"}</Text> block, because an exergy is a statement about a
             state AND an environment, and your environment is your fact,
-            not the engine’s.
+            not the engine’s.  The block declares the reference temperature
+            and pressure this operation needs, and only those — two numbers
+            do not define a complete environmental dead state, which would
+            also need chemical equilibrium with a declared environmental
+            composition.
           </Text>
         </Box>
 
@@ -303,9 +344,11 @@ export function WhatIsExergyTool(): JSX.Element {
           {lg && <ExergyTable lg={lg} />}
           {zero && (
             <Text size="sm" ff="monospace" c={INK}>
-              b(dead state) = {zero.b.toFixed(2)} J/mol — both legs exactly
-              zero, by construction.  The price of being indistinguishable
-              from the environment is nothing.
+              b_ph(restricted dead state) = {zero.b.toFixed(2)} J/mol —
+              both legs exactly zero, by construction.  At (T0, P0), with
+              the composition held fixed, no thermo-mechanical distance
+              remains; any CHEMICAL distance from the environment is
+              neither computed nor hidden — the op refuses it.
             </Text>
           )}
           <Box my={8}>
@@ -328,19 +371,29 @@ export function WhatIsExergyTool(): JSX.Element {
           <Text size="sm" mt={4}>
             <strong>Irreversibility has a bill, and dS_gen is the
             meter.</strong>  Every compressor and turbine in this simulator
-            publishes the entropy its declared inefficiency generated.
-            Gouy–Stodola turns that into money-units of work: the work
-            destroyed is T0 times the entropy generated.  Move the
-            environment and watch the bill move:
+            publishes the entropy its declared inefficiency generated — and
+            for these adiabatic machines the stream’s entropy rise IS the
+            generation.  Gouy–Stodola prices that generation as exergy
+            destroyed, in energy units, relative to the declared
+            environment: E_D = T0 times the entropy generated.  (Economics
+            may later put money on that lost work potential; the number
+            itself is joules.)  Move the environment and watch the bill
+            move:
           </Text>
           <GouyStodolaKnob />
           <Text size="sm" mt={6}>
             This is why the entropy page’s cancellation matters here too:
-            b is built from <em>differences</em> at fixed composition, so
-            the enthalpy datum, the s_298 anchors, the mixing term and the
-            reference pressure all drop out — an exergy can be compared
-            across thermodynamic models, and the dead-state row proves the
-            zero instead of asking you to trust it.
+            b_ph is built from <em>differences</em> at fixed composition,
+            so additive reference offsets common to both states — the
+            enthalpy datum, the s_298 anchors, the ideal-mixing line
+            (composition-only, identical in both states), the 1 bar
+            reference-pressure convention — all drop out.  Physical exergy
+            is therefore <strong>datum-independent, not
+            model-independent</strong>: different thermodynamic models
+            predict different Δh and Δs and hence different exergies, and
+            those are physical model differences, never reference-zero
+            arbitrariness.  The dead-state row proves the zero instead of
+            asking you to trust it.
           </Text>
         </Box>
 
@@ -361,9 +414,14 @@ export function WhatIsExergyTool(): JSX.Element {
             because it needs a standard-environment model (Szargut’s
             reference substances, or another) that is a curated,
             primary-cited data decision, not a formula to transcribe.  And
-            no exergy balance runs over a flowsheet: streams carry no
-            entropy column — a recorded absence
-            (docs/design/entropy-glass-box-trace.md).
+            no audited flowsheet-wide exergy balance is implemented or
+            claimed: this operation prices the physical exergy of one
+            state.  A complete flowsheet ledger would additionally need
+            explicit, traceable stream, work, heat-boundary and
+            entropy-generation terms — and chemical exergy wherever
+            composition changes relative to the environment.  The recorded
+            status of the missing entropy provenance lives in the design
+            trace (docs/design/entropy-glass-box-trace.md).
           </Text>
         </Box>
 

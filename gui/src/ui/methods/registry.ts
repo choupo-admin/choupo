@@ -190,13 +190,15 @@ export const METHOD_TOOLS: MethodTool[] = [
     id: "what-is-exergy", label: "What is exergy?",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
-    teaches: "That energy is conserved but USEFULNESS is not: exergy prices "
-      + "a state in work, b = (h - h0) - T0*(s - s0), against a dead state "
-      + "the case DECLARES (the engine refuses to choose your environment). "
-      + "Why the two LEGS re-add on screen, why the dead state's own exergy "
-      + "is zero identically, why b is datum-independent (differences at "
-      + "fixed composition), and Gouy-Stodola: every dS_gen a machine "
-      + "publishes costs T0 times itself in lost work.",
+    teaches: "That energy is conserved but USEFULNESS is not: PHYSICAL flow "
+      + "exergy prices a state in work, b_ph = (h - h0) - T0*(s - s0), "
+      + "against a restricted dead state the case DECLARES (the engine "
+      + "refuses to choose your environment; chemical exergy is refused, "
+      + "never silently zeroed).  Why the two LEGS re-add on screen, why "
+      + "b_ph at the restricted dead state is zero identically, why b is "
+      + "datum-independent but NOT model-independent, and Gouy-Stodola: "
+      + "every dS_gen an adiabatic machine publishes costs T0 times itself "
+      + "in exergy destroyed.",
     theory: "ch:criticals",
   },
   {
