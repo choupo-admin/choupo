@@ -126,9 +126,14 @@ same vapour root).  Implemented by:
   it; the only touch is a verbatim copy in `SaltFromCatalogue.H:168`.
   Every aqueous energy quantity runs on hfAq/cpAq.  Dormant data,
   honestly recorded here.
-* **No stream, report or ledger carries entropy**; no exergy, no
-  second-law balance, no entropy of mixing for LIQUIDS (activity models
-  supply γ = Gibbs-excess; ∂γ/∂T is never taken, so no excess entropy).
+* **No stream, report or ledger carries entropy**; no second-law
+  balance, no entropy of mixing for LIQUIDS (activity models supply
+  γ = Gibbs-excess; ∂γ/∂T is never taken, so no excess entropy).
+  This line read "no exergy" until 2026-08-31, and the `exergy` op had
+  landed on 2026-08-30 — the ledger's own trace outlived the gap it
+  named by one day.  PHYSICAL exergy is carried
+  (`src/propertyOps/Exergy.{H,cpp}`); CHEMICAL exergy is refused by
+  name, and no exergy balance runs over a flowsheet.
   `SolidPhase::fEffective`'s ΔG_fus = ΔH_fus(1 − T/T_fus) is the one
   phase-level construct with an implicit entropy (ΔS_fus = ΔH_fus/T_fus).
 * **`dGf_298`** is an optional validation datum only the Joback

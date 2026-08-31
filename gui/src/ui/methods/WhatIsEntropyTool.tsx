@@ -145,8 +145,11 @@ export const LEDGER_META = [
     line: "−R·Σy·ln y (mixing)",
     question: "How much did mixing add?",
     cite: "src/thermo/ThermoPackage.cpp · ThermoPackage::S_ig",
-    note: "Written explicitly exactly ONCE in the whole engine; everywhere "
-      + "else it appears disguised as the ln y of a chemical potential.",
+    note: "Written explicitly in exactly TWO places — the assembly "
+      + "(ThermoPackage.cpp) and the audit that re-adds it "
+      + "(ExplainProperty.cpp, which is the op this page's own witness "
+      + "runs); everywhere else it appears disguised as the ln y of a "
+      + "chemical potential.",
   },
   {
     line: "−R·ln(P/P°) (pressure)",
@@ -239,7 +242,7 @@ function MixingKnob() {
       <Text size="xs" c={INK} mt={4}>
         Maximal at 50/50, zero at either pure end — mixing what is already
         mixed adds nothing.  This is the exact formula the engine writes at
-        its one mixing-line site; the slider only moves y.
+        both of its mixing-line sites; the slider only moves y.
       </Text>
     </Box>
   );
@@ -420,8 +423,11 @@ export function WhatIsEntropyTool(): JSX.Element {
           <Text size="xs" c={INK} mt={6}>
             The full engine trace behind this page, with every claim at its
             file and line: docs/design/entropy-glass-box-trace.md.  What the
-            engine does NOT carry — wet-steam entropy, exergy, liquid excess
+            engine does NOT carry — wet-steam entropy, liquid excess
             entropy, an entropy column on streams — is recorded there too.
+            Physical exergy IS carried now (the `exergy` op, and the page
+            beside this one); what stays absent there is CHEMICAL exergy and
+            any exergy balance over a flowsheet.
           </Text>
         </Box>
 

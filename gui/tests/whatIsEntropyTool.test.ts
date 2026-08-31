@@ -194,13 +194,24 @@ describe("the spine's order and claims", () => {
 describe("the honest absences and the marked divergence", () => {
   it("no Carnot, no exergy teaching, no Boltzmann formula", () => {
     //  Ruled out at the spine review: the page keeps ONE mental model.
-    //  The molecular story gets one sentence, no equations.  "exergy" may
-    //  appear EXACTLY once, inside the honest what-the-engine-does-NOT-
-    //  carry sentence -- an absence stated is not material taught.
+    //  The molecular story gets one sentence, no equations.
+    //
+    //  THIS PIN USED TO COUNT THE WORD -- "exergy" exactly once, inside the
+    //  what-the-engine-does-NOT-carry sentence -- and the count was a proxy
+    //  for the real rule, which is that the page must not TEACH exergy.
+    //  The proxy broke on 2026-08-31 for the right reason: the `exergy` op
+    //  had shipped the day before, so the absence sentence became FALSE and
+    //  the honest replacement (what is carried, what is still refused)
+    //  needs the word four times.  Re-pinned on the rule itself.
     expect(SRC).not.toContain("Carnot");
-    const ex = SRC.match(/exergy/gi) ?? [];
-    expect(ex).toHaveLength(1);
-    expect(prose(SRC)).toMatch(/does NOT carry[^.]*exergy/);
+    expect(SRC.match(/exergy/gi) ?? []).not.toHaveLength(0);
+    //  no exergy FORMULA and no dead-state material: that is the sibling
+    //  page's whole subject, and one page keeps one mental model
+    expect(SRC).not.toMatch(/b\s*=\s*\(h/);
+    expect(SRC).not.toContain("dead state");
+    expect(SRC).not.toContain("Gouy");
+    //  and the mention must stay a STATUS sentence, not a lesson
+    expect(prose(SRC)).toMatch(/CHEMICAL exergy/);
     expect(SRC).not.toContain("k_B");
     expect(SRC).not.toContain("ln W");
     expect(SRC).not.toContain("ln Ω");

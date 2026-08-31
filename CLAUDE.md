@@ -1201,11 +1201,19 @@ reflux the engine chose is one nobody can defend at a viva*, and BOTH corpus
 cases already declare it so the branch was reached by nothing; and `feed_stage
 0.0`, whose branch is **LATENT not live** — both routes to it are refused
 earlier by Underwood, so the gate pins the UNREACHABILITY rather than claiming
-coverage).  NOT fixed, named: the pump and the pipe compute liquid density by
-two routes 12 % apart on ONE diagram (constant `Vliq` vs Rackett, which
-announces itself ~12 % low), so pressures may be compared across the operating
-point and HEADS may not — said on the page; unifying it would make water WORSE
-and is the owner's call.  Gates: `check_lesson_symbols` (16/16, waiver dict
+coverage).  Named as NOT fixed at the time: the pump and the pipe computed
+liquid density by two routes 12 % apart on ONE diagram (constant `Vliq` vs
+Rackett, which announces itself ~12 % low), so heads could not be compared
+across the operating point.  **CLOSED 2026-08-29** — the package now ANCHORS
+Rackett on the record's own declared `Vliq`,
+`V(T) = Vliq·Rackett(T)/Rackett(298.15 K)`, and both sides of the witness read
+996.95 kg/m³ (agreeing to 2e-5), so pressures AND heads may be compared; what
+still differs is the temperature dependence, the pump's molar volume being
+constant in T.  **This paragraph, the decision record and the EduTool page all
+went on saying it was unfixed until 2026-08-31**, when an auditor sent to
+verify the page's warning read the engine instead and found the warning
+obsolete — a stale ABSENCE outliving the gap it named, in three homes at once,
+which is exactly the class that audit was hunting.  Gates: `check_lesson_symbols` (16/16, waiver dict
 kept EMPTY because an empty waiver list is the claim "nothing is excused") ·
 `check_bjerrum_prose` · `check_shortcut_column_refusals`.  Record:
 [`docs/design/what-a-citation-requirement-found.md`](docs/design/what-a-citation-requirement-found.md).

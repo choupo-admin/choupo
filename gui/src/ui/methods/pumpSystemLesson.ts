@@ -105,16 +105,21 @@ export const PUMP_STEPS: readonly LessonStep[] = [
       + "          + ( f·L/D + ΣK ) · ρ v² / 2   (friction — grows ≈ Q²)\n"
       + "with   v = Q / A",
     where: [
-      { sym: "ρ", means: "Liquid density — AND A WARNING YOU SHOULD BE ABLE "
-        + "TO GIVE AT A VIVA.  The two curves on this diagram do not use the "
-        + "same one.  The pump builds ρ from the component record's constant "
-        + "liquid volume; the pipe asks the thermo package, which uses the "
-        + "saturated-liquid Rackett correlation and announces about itself "
-        + "that it runs about 12 % low for water at 25 °C.  For the classroom "
-        + "case that is ≈997 against ≈877 kg/m³.  PRESSURES may be compared "
-        + "across the crossing — both curves are in Pa and the intersection "
-        + "is meaningful.  HEADS from the two sides may NOT, because each was "
-        + "divided by a different ρ.", unit: "kg/m³" },
+      { sym: "ρ", means: "Liquid density — and both curves on this diagram "
+        + "now use the same one.  The pump builds ρ from the component "
+        + "record's constant liquid volume; the pipe asks the thermo "
+        + "package, which since 2026-08-29 ANCHORS the Rackett correlation "
+        + "on that same declared value, V(T) = Vliq·Rackett(T)/Rackett(298 "
+        + "K).  On this case they agree to 2e-5 (996.95 kg/m³ on both "
+        + "sides), so pressures AND heads may be compared across the "
+        + "crossing.  Until then the pipe ran bare Rackett, about 12 % low "
+        + "for water, and the two sides read 997 against 877 — worth "
+        + "knowing, because that is the shape of the mistake: a head is a "
+        + "pressure divided by a density, so two densities silently make "
+        + "two different metres.  What still differs is the TEMPERATURE "
+        + "dependence — the pump's molar volume is constant in T and the "
+        + "pipe's is not, so they drift apart away from 25 °C.",
+        unit: "kg/m³" },
       { sym: "g", means: "Standard gravitational acceleration.",
         unit: "m/s²" },
       { sym: "Δz", means: "Elevation change from pipe inlet to outlet — and "

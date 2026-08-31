@@ -259,7 +259,10 @@ export function BjerrumTool(): JSX.Element {
           <Text size="sm" c={INK} mt={4}>
             The diagram every textbook draws — and the one thing about it no
             textbook can show, because a book puts pH on the axis and this
-            engine has no pH to put there.
+            case declines to.  The engine WILL take a given pH
+            (<Text span ff="monospace">pH 7.8;</Text>); what that costs is
+            the electroneutrality row, so each point stops being a beaker
+            anyone could pour.  Here every pH is solved, not set.
           </Text>
         </Box>
 

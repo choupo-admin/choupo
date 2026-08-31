@@ -226,9 +226,12 @@ export const ENTU_LIMITS: readonly { id: string; title: string; body: string }[]
     body: "Counter-current, co-current, and 1 shell pass / 2N tube passes "
       + "(reached by declaring passes ≥ 2). Crossflow — either fluid mixed or "
       + "unmixed — is not implemented, and neither is any multi-shell "
-      + "arrangement. The unit reads `flow` as a single word and treats co, "
-      + "cocurrent and parallel as co-current and EVERYTHING ELSE as "
-      + "counter-current, so a name it does not know is silently "
-      + "counter-current rather than refused.",
+      + "arrangement. The unit reads `flow` as a single word: co, cocurrent "
+      + "and parallel are co-current, counter and countercurrent are "
+      + "counter-current, and ANY OTHER WORD -- crossflow, a capital Co, a "
+      + "typo -- is REFUSED by name, with the accepted set in the message. "
+      + "It used to fall back to counter-current instead, which is the "
+      + "optimistic arrangement, so a typo quietly undersized the exchanger "
+      + "at exit 0.",
   },
 ];

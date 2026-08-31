@@ -184,10 +184,16 @@ describe("the design consequence, and the honest half", () => {
     //  not the same as charged, and the difference is the honest part.
     expect(prose(byId["no-pressure-drop"]!.body))
       .toContain("reported and not applied");
-    //  The unit reads `flow` as a word and defaults everything it does not
-    //  recognise to counter-current, silently.
+    //  The unit reads `flow` as a word from a CLOSED set and REFUSES
+    //  anything else by name (HeatExchanger.cpp:91-105).  The page claimed
+    //  the opposite -- that an unknown word falls back to counter-current
+    //  silently -- describing behaviour deliberately removed from the
+    //  engine, and this test pinned the stale wording verbatim, which is
+    //  how a false claim becomes a maintained invariant.  Corrected
+    //  2026-08-31; the old sentence is asserted ABSENT so it cannot return.
+    expect(prose(byId["arrangements"]!.body)).toContain("REFUSED by name");
     expect(prose(byId["arrangements"]!.body))
-      .toContain("silently counter-current rather than refused");
+      .not.toContain("silently counter-current rather than refused");
     expect(prose(byId["arrangements"]!.body)).toContain("Crossflow");
     //  One U for the whole area, while each c_p IS taken at a mean T -- the
     //  asymmetry is real and is stated rather than smoothed over.

@@ -357,9 +357,12 @@ export const PSYCHRO_LIMITS: readonly { id: string; title: string; body: string 
     title: "The default carrier is NITROGEN, not air.",
     body: "Y is proportional to M_v/M_c, so the carrier's molar mass scales "
       + "the whole chart: nitrogen at 28.013 against air at 28.96 puts every "
-      + "humidity ratio about 3 % above a printed air chart. The carrier list "
-      + "offers only components whose record declares them noncondensable, "
-      + "and the catalogue's air record does not — so air cannot be selected "
-      + "here today. That is a gap in the data, not in the physics.",
+      + "humidity ratio about 3 % above a printed air chart.  Nitrogen is "
+      + "only the DEFAULT: the carrier list offers every component whose "
+      + "record declares `noncondensable true;`, and the catalogue's air "
+      + "record has declared it since 2026-08-29 (with the ideal-gas Cp the "
+      + "adiabatic and wet-bulb families need grafted on 2026-08-31).  Pick "
+      + "air and the chart moves onto the printed one — Y_sat at 60 °C goes "
+      + "from 0.1586 to 0.1534, against the ~0.152 a handbook reads.",
   },
 ];
