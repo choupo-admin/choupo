@@ -150,6 +150,21 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "inside the reaction network, and the titration simply ARRIVES there.",
     formula: "CO2(aq) = HCO3-   at pH 6.341     (pK1 = 6.352)\n"
       + "HCO3-   = CO3--   at pH 10.262    (pK2 = 10.329)",
+    where: [
+      { sym: "pK1", means: "−log10 of the equilibrium constant for the FIRST "
+        + "dissociation, CO2(aq) + H2O = HCO3- + H+.  Choupo's chemistry "
+        + "record writes the reaction the other way round, as a FORMATION, "
+        + "so the file carries logK25 = +6.352 for CO2aq-formation and the "
+        + "number you read here is its negative-log twin — the same "
+        + "constant, one convention apart, which is exactly the kind of sign "
+        + "that gets copied wrong between a book and a data file",
+        unit: "dimensionless" },
+      { sym: "pK2", means: "the same for the SECOND dissociation, "
+        + "HCO3- = CO3-- + H+ (the record is CO3-formation, logK25 = "
+        + "−10.329).  It is nearly four pH units above pK1, which is why the "
+        + "three curves separate rather than overlapping",
+        unit: "dimensionless" },
+    ],
     note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
       + "gap is the activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
