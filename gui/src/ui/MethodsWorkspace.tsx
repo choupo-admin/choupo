@@ -228,6 +228,9 @@ const PcSaftTheoryTool = lazy(() =>
 const PonchonSavaritTool = lazy(() =>
   import("./methods/PonchonSavaritTool.js")
     .then((m) => ({ default: m.PonchonSavaritTool })));
+const NumberNobodyCheckedTool = lazy(() =>
+  import("./methods/NumberNobodyCheckedTool.js")
+    .then((m) => ({ default: m.NumberNobodyCheckedTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -417,6 +420,7 @@ export function MethodsWorkspace() {
             : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "pcsaft-theory" ? <PcSaftTheoryTool />
             : tool === "ponchon-savarit" ? <PonchonSavaritTool />
+            : tool === "number-nobody-checked" ? <NumberNobodyCheckedTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}

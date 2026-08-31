@@ -22171,6 +22171,54 @@ from the streams (planned for). The pressure-design wall
 thickness uses Eq.~\eqref{eq:asme-thickness} on the shell diameter.
 
 % ---------------------------------------------------------------------
+\section{Discounted cash flow: from a cost to a decision}\label{ch:economics}
+
+Costing (\S\ref{ch:cost-guthrie}) ends with a capital figure.  A capital
+figure is not a decision: money now and money later are different
+quantities, and the appraisal that compares them is the discounted cash
+flow Choupo implements in \code{EconomicsPass}.
+
+\paragraph{The ledger, year by year.}  Each operating year carries a
+revenue $R$, a cash operating cost $C$, a depreciation charge $D_k$ that is
+not a cash flow but reduces the taxable income, a tax at rate $t$, and the
+resulting after-tax cash flow
+\begin{equation}
+\mathrm{CF}_k = (R - C - D_k)(1-t) + D_k .
+\label{eq:dcf-cf}
+\end{equation}
+Depreciation is added back because it left the ledger only to compute the
+tax.  Discounting at rate $i$ and summing over the project life $N$, against
+the capital placed at the start,
+\begin{equation}
+\mathrm{NPV} = \sum_{k=1}^{N}\frac{\mathrm{CF}_k}{(1+i)^k}
+             - (\mathrm{FCI} + \mathrm{WC}),
+\label{eq:npv}
+\end{equation}
+and the internal rate of return is the $i$ that makes it vanish.
+
+\paragraph{Three cautions the engine states aloud.}  First, the IRR need not
+be unique: when the cumulative cash flow changes sign more than once the
+equation has more than one root, and the run says so and tells the reader to
+use the NPV.  Second, the discount rate is a \emph{declaration about risk
+and the cost of capital}, not a property of the plant --- two firms
+appraising the same flowsheet correctly disagree.  Third, and most
+important pedagogically: \textbf{a discounted cash flow inherits every
+uncertainty upstream of it}.  The correlations behind the FCI are
+study-grade, so the NPV is a study-grade number wearing however many digits
+the arithmetic produced.
+
+\paragraph{What is NOT modelled, named rather than implied.}  The timeline
+places the whole fixed capital investment and working capital at $t=0$ and
+starts operating cash flows in year~1 --- a \textbf{one-year construction}.
+A case may declare \code{constructionPeriod} otherwise, and the run then
+ANNOUNCES that the key is declared and not modelled rather than refusing or
+silently obeying: implementing a multi-year draw-down moves a published NPV,
+which is a decision for whoever answers for the case.  One shipped tutorial
+(\code{ammonia02\_full\_plant}) declares two years and is discounted over
+one; the EduTools page \emph{The number nobody checked} works through
+exactly that discrepancy.
+
+% ---------------------------------------------------------------------
 \section{Guthrie / Turton bare-module costing}\label{ch:cost-guthrie}
 
 \begin{whatyoulllearn}
