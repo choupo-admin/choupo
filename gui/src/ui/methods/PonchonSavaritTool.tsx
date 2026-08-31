@@ -50,12 +50,22 @@ License
   ZERO PHYSICS IN TYPESCRIPT: nothing is computed here.
 \*---------------------------------------------------------------------------*/
 
-import { Alert, Box, Code, Stack, Text, Title } from "@mantine/core";
+import { useMemo, useState } from "react";
+import { Alert, Box, Code, Group, Loader, Slider, Stack, Switch, Text, Title }
+  from "@mantine/core";
 
+import { useMethodRun } from "../../case/methodRun.js";
+import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAtLiquid }
+  from "../../case/ponchonSavarit.js";
+import { PonchonPlot } from "../plotting/PonchonPlot.js";
 import { LessonStepView } from "./lessonStep.js";
 import type { LessonStep } from "./lessonStep.js";
 
+/** The op's output file, case-root-relative as csvFiles keys are. */
+export const PONCHON_CSV = "enthalpyConcentration.csv";
+
 const INK = "var(--mantine-color-dimmed)";
+const GRID = "var(--mantine-color-default-border)";
 
 export const PONCHON_WITNESS = "props/scan/hxy01_ethanol_water_1atm";
 
@@ -205,6 +215,116 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
   },
 ] as const;
 
+/** THE LIVE CONSTRUCTION.  Runs the witness in this browser, reads the
+ *  engine's own two curves and ties, and lets the reader move the two things
+ *  the construction depends on.
+ *
+ *  THE LEVER-RULE READBACK IS THE POINT OF THE PANEL, not decoration: the
+ *  page claims that L/V can be read off the diagram with a ruler, and the
+ *  panel prints that ruler measurement beside the R the reader dialled.  A
+ *  construction that cannot be checked against the number it came from is a
+ *  picture, not a method. */
+function ConstructionPane(): JSX.Element {
+  const run = useMethodRun(PONCHON_WITNESS, [], "ponchon-savarit",
+    "choupoProps");
+  const [xD, setXD] = useState(0.80);
+  const [R, setR] = useState(2.0);
+  const [ties, setTies] = useState(true);
+
+  const rows = useMemo(
+    () => readHxy(run.result?.csvFiles?.[PONCHON_CSV] ?? ""),
+    [run.result]);
+
+  const readback = useMemo(() => {
+    if (rows.length < 2) return null;
+    const d = deltaD(rows, xD, R);
+    const h = hAt(rows, xD);
+    const H = vapourEnthalpyAtLiquid(rows, xD);
+    if (!d || h === null || H === null) return null;
+    return { delta: d.y, lv: leverLV(d, H, h) };
+  }, [rows, xD, R]);
+
+  if (run.busy) {
+    return (
+      <Group gap={8} p="md"><Loader size="sm" />
+        <Text size="sm" c="dimmed">running the witness in this browser…</Text>
+      </Group>
+    );
+  }
+  if (run.err) {
+    return (
+      <Alert color="red" variant="light" title="the engine refused">
+        <Text size="xs">{run.err}</Text>
+      </Alert>
+    );
+  }
+  if (rows.length < 2) {
+    return (
+      <Alert color="yellow" variant="light" title="no usable rows">
+        <Text size="sm">
+          The run produced no equilibria this construction can be drawn on.
+          A refused node keeps its grid coordinate and leaves the solved
+          fields empty, and those rows are DROPPED here rather than
+          interpolated across — a curve bridged over a state the engine
+          declined to compute would be a drawing, not a result.
+        </Text>
+      </Alert>
+    );
+  }
+
+  return (
+    <Box>
+      <Title order={5}>The construction, on the engine's own curves</Title>
+      <Group gap={20} mt={8} align="flex-end" wrap="wrap">
+        <Box style={{ minWidth: 210 }}>
+          <Text size="xs" c={INK}>distillate composition x_D = {xD.toFixed(2)}</Text>
+          <Slider min={0.5} max={0.95} step={0.01} value={xD} onChange={setXD}
+            label={null} />
+        </Box>
+        <Box style={{ minWidth: 210 }}>
+          <Text size="xs" c={INK}>reflux ratio R = {R.toFixed(2)}</Text>
+          <Slider min={0.3} max={6} step={0.1} value={R} onChange={setR}
+            label={null} />
+        </Box>
+        <Switch size="xs" checked={ties} label="equilibrium ties"
+          onChange={(e) => setTies(e.currentTarget.checked)} />
+      </Group>
+
+      <Box mt={10} style={{ height: 420 }}>
+        <PonchonPlot rows={rows} xD={xD} R={R} showTies={ties} />
+      </Box>
+
+      {readback && (
+        <Box mt={8} px="sm" py={8}
+          style={{ border: `1px solid ${GRID}`, borderRadius: 4 }}>
+          <Text size="sm">
+            Δ_D sits at{" "}
+            <Text span ff="monospace">{(readback.delta / 1000).toFixed(1)} kJ/mol</Text>
+            {" "}— off the top of the curves, as it should be: it is a net
+            flow over a flow, not a state.  Read the lever rule back:{" "}
+            <Text span ff="monospace">
+              L/V = {readback.lv === null ? "—" : readback.lv.toFixed(4)}
+            </Text>
+            , against{" "}
+            <Text span ff="monospace">R/(R+1) = {(R / (R + 1)).toFixed(4)}</Text>
+            {" "}from the reflux you dialled.  They agree because they are the
+            same statement — which is the check to demand of any construction
+            before trusting a stage count read off it.
+          </Text>
+        </Box>
+      )}
+
+      <Text size="xs" c={INK} mt={6}>
+        Curves and ties are the engine's, from{" "}
+        <Code style={{ fontSize: 11 }}>tutorials/{PONCHON_WITNESS}</Code>; the
+        difference point and its ray are geometry on those points
+        (<Code style={{ fontSize: 11 }}>case/ponchonSavarit.ts</Code>).
+        Nothing here evaluates a thermophysical property.
+      </Text>
+    </Box>
+  );
+}
+
 export function PonchonSavaritTool(): JSX.Element {
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
@@ -222,8 +342,10 @@ export function PonchonSavaritTool(): JSX.Element {
 
         {PONCHON_STEPS.map((s) => <LessonStepView key={s.n} step={s} />)}
 
+        <ConstructionPane />
+
         <Alert variant="light" color="orange"
-          title="What is built, and what is not">
+          title="What this construction does not do">
           <Text size="sm">
             The <strong>engine half exists</strong>.  The{" "}
             <Code>enthalpyConcentration</Code> op publishes both saturation
@@ -234,12 +356,12 @@ export function PonchonSavaritTool(): JSX.Element {
             <Code>runCase tutorials/{PONCHON_WITNESS}</Code>.
           </Text>
           <Text size="sm" mt={6}>
-            The <strong>interactive construction is not built</strong>: no
-            difference point you can drag, no lever arms, no staircase on
-            screen.  This page derives the method and points at the data it
-            is drawn on.  A static picture of a construction the reader
-            cannot drive would teach less than saying plainly that it is not
-            here yet.
+            The diagram above draws the curves, the ties, the difference
+            point and ONE ray — the top tray's.  It does not step a full
+            staircase down the column, and there is no second difference
+            point for the stripping section yet.  Stated rather than left
+            for you to discover: what is here is enough to see where Δ_D
+            goes as the reflux moves, and not yet enough to count stages.
           </Text>
         </Alert>
 
