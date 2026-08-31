@@ -95,9 +95,20 @@ function rememberRaw(body: string): void {
 //  the engine in the mixture's favour UNLESS the case declares the component
 //  case-locally — the settled precedence, the case always overrides.  So a
 //  synthesized explore case that means the COMPONENT must ship its body.
+//
+//  `?raw` + eager is LOAD-BEARING even though only the KEYS are read: a
+//  bare import.meta.glob over .dat files makes Vite emit a dynamic import()
+//  per match, and the production rollup then PARSES each .dat as
+//  JavaScript ("Expected ';' ... mixture air;").  Dev and vitest read the
+//  keys without ever materialising the modules, so both stay green -- the
+//  failure appears only in `vite build`, which is the site.  It cost three
+//  blocked publishes on 2026-08-31; same shape as the WASM-dialect
+//  incident (CLAUDE.md §6): a green suite is not evidence about the site.
+//  Gate: check_glob_raw.
 const MIXTURE_STEMS = new Set(
-  Object.keys(import.meta.glob("../../../data/standards/mixtures/*.dat"))
-    .map((p) => p.split("/").pop()!.replace(/\.dat$/, "")));
+  Object.keys(import.meta.glob("../../../data/standards/mixtures/*.dat", {
+    query: "?raw", import: "default", eager: true,
+  })).map((p) => p.split("/").pop()!.replace(/\.dat$/, "")));
 
 /** Case-local bodies for selected names shadowed by a catalogue mixture stem
  *  — `{ "constant/components/air.dat": <body> }` for each such name.  Without

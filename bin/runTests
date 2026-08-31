@@ -2643,6 +2643,21 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # glob-raw gate (2026-08-31).  A bare import.meta.glob over .dat files
+    # makes rollup parse a record as JavaScript, so `vite build` -- the
+    # SITE -- fails while dev and vitest stay green.  It blocked three
+    # consecutive publishes; this is the cheap local check for the
+    # construct, on the check_wasm_dialect pattern.
+    if "$ROOT/bin/curate/check_glob_raw.py" > /tmp/globraw.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "glob-raw-gate" "$(head -1 /tmp/globraw.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_glob_raw.py)\n" "glob-raw-gate"
+        cat /tmp/globraw.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/globraw.$$
+
     # mixing-ledger gate (2026-08-31).  The mixingRules op publishes the
     # one-fluid decomposition through EquationOfState::mixingLedger -- a
     # window on the SAME buildMix the hot path runs, which is the right
