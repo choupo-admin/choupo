@@ -225,7 +225,8 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  runs the Joback estimation of acetone beside the case's own cited
     //  reference values, so the method's error is on screen, computed on
     //  the page from the engine's published numbers.
-    id: "property-origins", label: "Where do properties come from?",
+    id: "property-origins",
+    label: "Where do properties come from? (estimation, Joback)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That every number in a component's data file has a PROVENANCE "
@@ -259,7 +260,13 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  own validation block; PC-SAFT and COSMO-SAC carry their honest
     //  cards (the twin-flash cost; the synthetic-surrogate licence
     //  posture) instead of rows an AAD table could not defend.
-    id: "four-ways-mixture", label: "Four ways to price a mixture",
+    id: "four-ways-mixture",
+    //  THE MODELS ARE IN THE LABEL, not only in `teaches`.  "Four ways to
+    //  price a mixture" is a good title and a bad index entry: a reader
+    //  looking for PC-SAFT scanned the Thermodynamics shelf, saw no model
+    //  named anywhere in it, and concluded the models were not taught.
+    //  They were, on this page and the next one up.
+    label: "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
     discipline: "Thermodynamics",
     kind: "notes", status: "live",
     teaches: "That every mixture model answers one question -- what did it "

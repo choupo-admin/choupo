@@ -1014,7 +1014,16 @@ function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
                 <Menu.Item
                   key={m.id}
                   disabled={planned}
-                  title={planned ? `Planned — fed by ${m.fedBy ?? "an engine output not shipped yet"}` : undefined}
+                  //  A LIVE ITEM CARRIES WHAT IT TEACHES, because the menu
+                  //  showed the label and NOTHING else: `teaches` names the
+                  //  models (PC-SAFT, COSMO-SAC, UNIFAC, Joback) and never
+                  //  reached the screen, so a reader scanning the shelf for a
+                  //  model concluded it was not taught -- reported by the
+                  //  owner, 2026-08-31, about PC-SAFT, which two pages cover.
+                  //  A page nobody can find is a page that does not exist.
+                  title={planned
+                    ? `Planned — fed by ${m.fedBy ?? "an engine output not shipped yet"}`
+                    : m.teaches}
                   leftSection={active
                     ? <IconCheck size={14} />
                     : <span style={{ display: "inline-block", width: 14 }} />}

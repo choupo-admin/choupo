@@ -56,6 +56,13 @@
         fire while arm 1 PASSES.  S2 tripped both sides, so it never tested
         arm 2 alone; this one attacks the orphan mechanism by itself.
 
+  S4  revert the label to "Four ways to price a mixture" -> SURVIVED, and
+        that is recorded above rather than patched away: the arm is real but
+        aimed elsewhere.
+  S5  MenuBar stops passing `m.teaches` -> the second arm fails, naming the
+        consequence (everything a tool declares about itself stays off the
+        screen).  This is the arm that pins the reported defect.
+
   NOT CHECKED, deliberately: that the mounted component renders anything
   useful, or that its witness case runs.  This reads source text for a
   branch's existence; a tool wired to the wrong component passes here and is
@@ -75,6 +82,57 @@ const mountedIds = (): string[] => {
   const hits = WORKSPACE.match(/tool === "([a-z0-9-]+)"/g) ?? [];
   return [...new Set(hits.map((h) => h.replace(/^tool === "|"$/g, "")))];
 };
+
+//  THE MODELS A PAGE TEACHES MUST BE FINDABLE BY NAME.  Reported by the
+//  owner on 2026-08-31: "os modelos de previsao de propriedades com o pc saft
+//  etc nao estao no EduTools".  They were -- two pages cover PC-SAFT,
+//  COSMO-SAC, UNIFAC and Joback -- but the menu rendered `label` and nothing
+//  else, and no label named a model, so scanning the Thermodynamics shelf
+//  returned nothing and the reasonable conclusion was that they were absent.
+//
+//  Pinned as CONTENT, not as a rendering detail: each model name must reach
+//  the reader through the label or through `teaches` (which the menu now
+//  shows as the item's tooltip).  Either surface satisfies it -- what must
+//  not happen is the name living only inside the page's own body, reachable
+//  only by opening the page you cannot find.
+//
+//  WHICH ARM ACTUALLY CATCHES THE REPORTED DEFECT, said plainly because the
+//  sabotage showed it is not the obvious one.  S4 reverted the label to its
+//  pre-fix wording and the first arm PASSED: `teaches` already named all four
+//  models before any of this, so that arm would have been green on the day
+//  the defect was reported.  It pins a DIFFERENT and still-real failure -- a
+//  future page teaching a model its registry entry names nowhere -- and it
+//  must not be read as covering this one.  The arm that covers this one is
+//  the second: the names were present and the menu did not show them, so
+//  what was broken was the RENDERING, and only `m.teaches` reaching MenuBar
+//  fixes it (S5 fails when it stops).
+const MODELS_TAUGHT: Record<string, string[]> = {
+  "four-ways-mixture": ["NRTL", "UNIFAC", "COSMO-SAC", "PC-SAFT"],
+  "property-origins": ["Joback"],
+};
+
+describe("a taught model is findable by its name", () => {
+  it("names each model in the label or in what the tool teaches", () => {
+    for (const [id, models] of Object.entries(MODELS_TAUGHT)) {
+      const t = METHOD_TOOLS.find((m) => m.id === id);
+      expect(t, `no registry entry "${id}"`).toBeTruthy();
+      const shelf = `${t!.label} ${t!.teaches}`;
+      for (const model of models)
+        expect(shelf, `"${id}" teaches ${model}, but neither its label nor `
+          + "its `teaches` names it — so a reader scanning the menu for "
+          + `${model} finds nothing and concludes it is not taught`)
+          .toContain(model);
+    }
+  });
+
+  it("the menu actually shows `teaches`, not the label alone", () => {
+    const menu = readFileSync(
+      new URL("../src/ui/MenuBar.tsx", import.meta.url), "utf-8");
+    expect(menu, "MenuBar renders only `label`, so everything a tool declares "
+      + "about itself stays off the screen")
+      .toMatch(/m\.teaches/);
+  });
+});
 
 describe("every EduTool is mounted", () => {
   it("registered => rendered (no menu entry opens blank)", () => {
