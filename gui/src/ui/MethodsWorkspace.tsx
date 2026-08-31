@@ -225,6 +225,9 @@ const UnifacTheoryTool = lazy(() =>
 const PcSaftTheoryTool = lazy(() =>
   import("./methods/PcSaftTheoryTool.js")
     .then((m) => ({ default: m.PcSaftTheoryTool })));
+const PonchonSavaritTool = lazy(() =>
+  import("./methods/PonchonSavaritTool.js")
+    .then((m) => ({ default: m.PonchonSavaritTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -413,6 +416,7 @@ export function MethodsWorkspace() {
             : tool === "local-composition" ? <LocalCompositionTool />
             : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "pcsaft-theory" ? <PcSaftTheoryTool />
+            : tool === "ponchon-savarit" ? <PonchonSavaritTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}

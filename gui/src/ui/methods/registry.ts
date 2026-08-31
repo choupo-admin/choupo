@@ -63,7 +63,7 @@ export type MethodToolId =
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
-  | "pcsaft-theory";
+  | "pcsaft-theory" | "ponchon-savarit";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -377,6 +377,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "curated as 4C instead of the paper's 2B passed a pure-density "
       + "anchor by coincidence while the mixture flash collapsed.",
     theory: "ch:pcsaft",
+  },
+  {
+    //  BESIDE McCABE, NOT INSTEAD OF IT.  McCabe-Thiele spends constant
+    //  molar overflow to get straight operating lines, and until this page
+    //  that assumption could only be BELIEVED -- nothing let a reader see
+    //  what it costs.  Ordered by the owner, 2026-08-31.
+    id: "ponchon-savarit",
+    label: "Ponchon-Savarit, derived (the enthalpy diagram)",
+    discipline: "Separations & phase equilibria",
+    kind: "notes", status: "live",
+    teaches: "That putting ENTHALPY on the vertical axis turns the energy "
+      + "balance into a point on the diagram: the difference point, whose "
+      + "enthalpy is a net flow over a flow and belongs to no stream, and "
+      + "from which every operating line is a ray.  The lever rule then "
+      + "reads the internal reflux off the page with a ruler, total reflux "
+      + "is the difference point at infinity, and minimum reflux is a ray "
+      + "coinciding with a tie line.  Above all: constant molar overflow is "
+      + "exactly the claim that the two enthalpy curves are parallel "
+      + "straight lines, so how far they are from that IS how wrong "
+      + "McCabe-Thiele is for your system.",
+    theory: "ch:ponchon",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the

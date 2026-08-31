@@ -171,7 +171,17 @@ def audit(path: Path):
 
 
 def main() -> int:
+    #  COVERAGE FOLLOWS THE ABSTRACTION, NOT THE FILENAME.  This globbed
+    #  `*Lesson.ts` only, so a page carrying LessonStep steps inside a
+    #  `*Tool.tsx` -- with formulas and glosses, rendered by the same
+    #  LessonStepView -- was invisible, and the OK line's "N of N lesson
+    #  modules" read as full coverage while being narrower than any reader
+    #  would assume.  Found the day PonchonSavaritTool.tsx became the first
+    #  such page; measured before wiring, and it was the only one, so this
+    #  widening moved nothing else.
     lessons = sorted(LESSONS.glob("*Lesson.ts"))
+    lessons += sorted(f for f in LESSONS.glob("*Tool.tsx")
+                      if "LessonStep" in f.read_text(encoding="utf-8"))
     if not lessons:
         print("check_lesson_symbols: FAILED\n  no lesson module found at "
               f"{LESSONS} -- this gate cannot run, and a check that cannot "
