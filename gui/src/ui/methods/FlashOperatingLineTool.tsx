@@ -136,7 +136,11 @@ export const FLASH_LIMITS: readonly { id: string; title: string; body: string }[
       + "the whole way, so the only thing moving is the operating line. A "
       + "real non-ideal pair can cross the diagonal, and there the "
       + "construction still works but the reading changes completely — the "
-      + "corpus carries those (props/compare/acetone04_acetone_water_vle). "
+      + "corpus carries one at props/compare/acetone01_ipa_water_azeotrope, "
+      + "whose azeotrope is a published anchor.  (Its sibling "
+      + "acetone04_acetone_water_vle is the OPPOSITE lesson: acetone/water "
+      + "has no azeotrope, and the case exists so a model that invents one "
+      + "is caught.)  "
       + "An azeotropic curve is a better SECOND case and a worse first one.",
   },
   {
@@ -326,8 +330,12 @@ export function FlashOperatingLineTool(): JSX.Element {
               <Slider min={0.02} max={0.98} step={0.01} value={z}
                 onChange={setZ} label={null} />
             </KnobField>
-            <KnobField label={`vapour fraction V/F = ${vf.toFixed(2)}`}>
-              <Slider min={0} max={1} step={0.01} value={vf} onChange={setVf}
+            <KnobField label={`vapour fraction V/F = ${vf.toFixed(3)}`}>
+              {/*  step 0.001, not 0.01: step 4 tells the reader to dial the
+                   witness's own V/F = 0.30398, and at 0.01 the nearest
+                   reachable values are 0.30 and 0.31.  An instruction the
+                   control cannot obey is a defect in the control.  */}
+              <Slider min={0} max={1} step={0.001} value={vf} onChange={setVf}
                 label={null} />
             </KnobField>
             <KnobField label={`pressure = ${pBar.toFixed(2)} bar`}>

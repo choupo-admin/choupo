@@ -172,9 +172,13 @@ export const FUG_STEPS: readonly LessonStep[] = [
         unit: "dimensionless (it is a relative volatility)" },
       { sym: "q", means: "The FEED QUALITY: how much of the feed arrives as "
         + "liquid.  q = 1 is a saturated liquid, q = 0 a saturated vapour, "
-        + "and values outside [0,1] are a subcooled liquid or a superheated "
-        + "vapour.  It is the only place the feed's THERMAL state enters "
-        + "this method.", unit: "dimensionless" },
+        + "and in the textbook q outside [0,1] is a subcooled liquid or a "
+        + "superheated vapour.  CHOUPO TAKES q = 1 − vf FROM THE FEED "
+        + "STREAM's vapour fraction, so those outside values are not "
+        + "expressible here: a feed declared with no `vf` is q = 1, and the "
+        + "feed's declared TEMPERATURE enters only as the bubble-point "
+        + "solver's initial guess, nowhere else in the method.",
+        unit: "dimensionless" },
       { sym: "R_min", means: "The MINIMUM REFLUX RATIO — the reflux below "
         + "which the separation is unreachable at ANY column height, because "
         + "a pinch has appeared.  The sum gives R_min + 1, and the −1 is what "

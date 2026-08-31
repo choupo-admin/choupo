@@ -148,8 +148,8 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "at the pH equal to the pK of the step that separates them.  Neither "
       + "pK was an input to any of the 44 calculations.  They are constants "
       + "inside the reaction network, and the titration simply ARRIVES there.",
-    formula: "CO2(aq) = HCO3-   at pH 6.341     (log K1 = 6.352)\n"
-      + "HCO3-   = CO3--   at pH 10.262    (log K2 = 10.329)",
+    formula: "CO2(aq) = HCO3-   at pH 6.341     (pK1 = 6.352)\n"
+      + "HCO3-   = CO3--   at pH 10.262    (pK2 = 10.329)",
     note: "Both crossovers sit slightly BELOW the thermodynamic pK, and the "
       + "gap is the activity coefficients: the engine works in activities, a "
       + "textbook diagram works in concentrations and takes every gamma as 1. "
@@ -162,8 +162,12 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
   {
     n: 5,
     title: "The three fractions do not sum to one",
-    body: "Add up the three curves at any point in the middle of the range "
-      + "and you get 0.9997, not 1.  That missing 0.03 % is not round-off and "
+    body: "Add up the three species' MOLALITIES at any point in the middle "
+      + "of the range, divide by all the carbon in the beaker, and you get "
+      + "0.9997, not 1.  (The curves plotted below will not show you that: "
+      + "they are renormalised onto the three, so they sum to exactly 1 by "
+      + "construction, and the shortfall is printed separately beneath "
+      + "them.)  That missing 0.03 % is not round-off and "
       + "it is not an error: it is a FOURTH species, the ion pair NaHCO3(aq), "
       + "which the curated chemistry carries and a three-curve drawing has no "
       + "room for.  The sodium you added as titrant is not a spectator — it "

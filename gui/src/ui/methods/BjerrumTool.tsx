@@ -195,7 +195,7 @@ export function BjerrumPlot({ pts }: { pts: readonly BjerrumPoint[] }): JSX.Elem
       <text x={14} y={(MT + H - MB) / 2} fontSize={11} textAnchor="middle"
         fill="currentColor" opacity={0.75}
         transform={`rotate(-90 14 ${(MT + H - MB) / 2})`}>
-        fraction of total carbon
+        fraction of the three drawn forms
       </text>
 
       {BJERRUM_SPECIES.map((s, k) => (

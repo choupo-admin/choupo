@@ -733,9 +733,14 @@ export function FugShortcutTool(): JSX.Element {
               <Box p="xl">
                 <Text c="dimmed" size="sm" maw={560}>
                   No shortcut answer yet. The construction reads a{" "}
-                  <code>shortcutColumn</code> run — its KPIs publish{" "}
-                  <code>N_min</code>, <code>R_min</code>, <code>theta</code> and{" "}
-                  <code>N_theoretical</code>.
+                  <code>shortcutColumn</code> run, and needs all of{" "}
+                  <code>N_min</code>, <code>R_min</code>, <code>theta</code>,{" "}
+                  <code>N_theoretical</code>, <code>R</code>,{" "}
+                  <code>alpha_LK_HK</code>, <code>x_D_LK</code> and{" "}
+                  <code>D</code> in one unit's KPIs.  (<code>feed_stage</code>{" "}
+                  is NOT required: the engine withholds it when Kirkbride
+                  cannot be formed, and the construction falls back to a
+                  mid-column feed rather than disappearing.)
                 </Text>
               </Box>
             ) : null}
@@ -768,9 +773,13 @@ export function FugShortcutTool(): JSX.Element {
             ? ` Here the shortcut says ${operating.N.toFixed(2)} stages and the`
               + ` rigorous MESH column reaches the same products at`
               + ` ${crossing.nStages}; the gap is what the assumptions above`
-              + ` cost on this separation, and it is not a constant — take the`
-              + ` reflux towards total reflux, where Gilliland stops being`
-              + ` involved, and the two counts meet.`
+              + ` cost on this separation, and it is not a constant — take`
+              + ` the reflux up and Gilliland's contribution shrinks towards`
+              + ` Fenske's N_min.  Whether the two counts then MEET is not`
+              + ` shown here: this ladder stops at 8x R_min, the frozen`
+              + ` alpha's error has not been separated from Gilliland's`
+              + ` scatter on this separation, and the ladder reports an`
+              + ` integer where the shortcut's own N tends to 10.07.`
             : ""}
         </Text>
 

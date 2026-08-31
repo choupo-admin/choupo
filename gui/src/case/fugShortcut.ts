@@ -240,8 +240,10 @@ export interface ShortcutAnswer {
   N: number;
   /** The operating reflux ratio the engine used. */
   R: number;
-  /** Kirkbride: the feed stage, counted from the top. */
-  feedStage: number;
+  /** Kirkbride: the feed stage, counted from the top.  NULL when the engine
+   *  withheld the KPI (Kirkbride not formable) -- consumers take the 0.5
+   *  fallback in kirkbrideFraction. */
+  feedStage: number | null;
   /** The relative volatility the shortcut froze, at the feed bubble point. */
   alpha: number;
   /** Distillate light-key mole fraction (= the declared recovery, under the
@@ -255,13 +257,22 @@ export interface ShortcutAnswer {
 export function readShortcutAnswer(r: RunResult | null): ShortcutAnswer | null {
   if (!r?.kpis) return null;
   for (const [unit, bag] of Object.entries(r.kpis)) {
+    //  `feed_stage` is NOT in this list, deliberately (2026-08-31): the
+    //  engine emits it only when Kirkbride can be formed (xD[HK] > 0 and
+    //  z[LK] > 0) and says so aloud otherwise, so requiring it here made
+    //  the whole construction vanish on a run the engine deliberately
+    //  supports -- and the empty state then named four KPIs that WERE all
+    //  published.  Absent feed stage => the 0.5 fallback in
+    //  kirkbrideFraction, which this file already carried for exactly this.
     const need = ["N_min", "R_min", "N_theoretical", "R", "theta",
-      "feed_stage", "alpha_LK_HK", "x_D_LK", "D"];
+      "alpha_LK_HK", "x_D_LK", "D"];
     if (!need.every((key) => typeof bag[key] === "number")) continue;
     return {
       unit,
       Nmin: bag["N_min"]!, Rmin: bag["R_min"]!, theta: bag["theta"]!,
-      N: bag["N_theoretical"]!, R: bag["R"]!, feedStage: bag["feed_stage"]!,
+      N: bag["N_theoretical"]!, R: bag["R"]!,
+      feedStage: typeof bag["feed_stage"] === "number"
+        ? bag["feed_stage"]! : null,
       alpha: bag["alpha_LK_HK"]!, xD_LK: bag["x_D_LK"]!, D: bag["D"]!,
     };
   }
@@ -351,7 +362,8 @@ export function feedStageFor(nStages: number, fraction: number): number {
  *  column: `feed_stage / N_theoretical`.  Both are KPIs; this is a ratio of two
  *  engine answers, never a correlation re-evaluated. */
 export function kirkbrideFraction(a: ShortcutAnswer): number {
-  return a.N > 0 ? a.feedStage / a.N : 0.5;
+  if (a.feedStage === null || a.N <= 0) return 0.5;
+  return a.feedStage / a.N;
 }
 
 /** The rigorous series: one MESH solve per stage count in the window. */
