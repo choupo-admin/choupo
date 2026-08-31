@@ -62,7 +62,8 @@ export type MethodToolId =
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
-  | "cosmo-sac-theory" | "local-composition" | "unifac-theory";
+  | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
+  | "pcsaft-theory";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -355,6 +356,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "NRTL's gap is nobody fitted your pair and closes with data, "
       + "UNIFAC's is a hole in the published table and does not.",
     theory: "sec:unifac",
+  },
+  {
+    //  THE FIRST EQUATION OF STATE on this shelf, and the page opens on
+    //  that difference rather than on a formula: the other four build an
+    //  excess Gibbs energy and cannot say what a density is.
+    id: "pcsaft-theory",
+    label: "PC-SAFT, derived (chains, dispersion, association)",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That PC-SAFT builds a residual HELMHOLTZ energy from named "
+      + "contributions -- hard chain, dispersion, association -- so one "
+      + "surface yields both phases and their densities, which no activity "
+      + "model on this shelf can express.  The temperature-dependent "
+      + "segment diameter, the four zeta moments, the perturbation series "
+      + "in packing fraction, van der Waals one-fluid mixing with k_ij as "
+      + "a CORRECTION rather than the whole interaction, and Wertheim "
+      + "TPT1's site-fraction fixed point.  And the lesson this repository "
+      + "paid for: the association SCHEME is part of the fit -- water "
+      + "curated as 4C instead of the paper's 2B passed a pure-density "
+      + "anchor by coincidence while the mixture flash collapsed.",
+    theory: "ch:pcsaft",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
