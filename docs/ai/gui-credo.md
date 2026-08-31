@@ -517,6 +517,63 @@ thing — informed by ParaView, but with deliberate adaptations driven
 by chemical-process specifics and the dict-on-disk + LLM-author
 workflow.
 
+## 10. EduTools REPLACE THE TEXTBOOK — Vítor's ruling, 2026-08-31
+
+Reviewing the pages, the owner ruled on their AMBITION, and it is a change
+of mission rather than a refinement:
+
+> *"Os alunos têm de chegar e ver lá a teoria toda deduzida, com equações,
+> exemplos e a papinha toda feita!  Para o resto dos modelos de propriedades
+> deve ser a mesma coisa!  O EduTools serve para substituir os livros de
+> texto!  No McCabe e Thiele deve ter a dedução das equações!  E o Savarit
+> também tem de ficar!"*
+
+The occasion was the COSMO-SAC entry in `four-ways-mixture`: five fields and
+one paragraph, telling a reader what the model KNOWS and never showing a
+sigma-profile, never writing the segment-activity equation, never deriving
+anything.  The verdict on it was "uma porcaria", and it is the right verdict
+against this bar even though the card is correct against the OLD one.
+
+What changes:
+
+* A page is no longer a set of notes BESIDE the construction.  It carries
+  the **derivation** — the equations, in order, with the assumptions named
+  as they are made — then the worked example, then the live engine run.
+* This binds **every property model**, not only COSMO-SAC: ideal, NRTL,
+  UNIQUAC, UNIFAC, COSMO-SAC, PC-SAFT.
+* It binds the classical constructions: McCabe-Thiele must derive its
+  operating lines and its q-line, not merely draw them.
+* **Ponchon-Savarit is IN SCOPE and must exist.**  The engine already
+  publishes what it is drawn on (`enthalpyConcentration`, witness
+  `tutorials/props/scan/hxy01_ethanol_water_1atm`, theory `ch:ponchon`);
+  what is missing is the page.
+
+WHAT THIS DOES NOT LICENCE, because the ruling raises the ambition and
+repeals none of the invariants below it:
+
+* **Zero physics in TypeScript still holds.**  A derivation is prose and
+  equations; the NUMBERS in a worked example come from the engine run, or
+  are closed-form arithmetic printed with their constants so a reader can
+  redo them on paper.  A page that starts computing thermodynamics in the
+  browser to look like a textbook has become a second engine.
+* **Nothing invented.**  A derivation that needs a datum the tree does not
+  carry states the gap; it does not supply a plausible number.
+* Every equation shown must be the one the engine RUNS, cited to
+  `file:line`.  This is not bureaucracy: requiring the citation is what
+  turns writing a page into READING the implementation, and that is where
+  the 2026-08-28/29 glossing slice found eight defects nobody was hunting.
+
+THE ARITY QUESTION THIS OPENS, recorded because it is unresolved and the
+next session must not assume it away: derivations already have a home, the
+Theory Guide (`docs/theoryGuide.tex`), and every registry entry carries a
+`theory:` field pointing into it (`ch:pcsaft`, `ch:ponchon`, ...).  Putting
+the derivation on the page too creates a SECOND home for one derivation,
+which is the sin this project spends most of its gates on.  The working
+default, until the owner rules otherwise: the PAGE is written first and is
+the home a student reads; the guide chapter keeps the formal treatment and
+the two must be checked against each other rather than diverging quietly.
+A mechanism that makes them one source has not been designed.
+
 Update this file when:
 - A new founding principle is established (rare).
 - An adaptation vs ParaView is debated and decided.
