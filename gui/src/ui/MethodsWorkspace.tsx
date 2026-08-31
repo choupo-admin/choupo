@@ -210,6 +210,9 @@ const PropertyTrustTool = lazy(() =>
 const PropertyOriginsTool = lazy(() =>
   import("./methods/PropertyOriginsTool.js")
     .then((m) => ({ default: m.PropertyOriginsTool })));
+const FourWaysMixtureTool = lazy(() =>
+  import("./methods/FourWaysMixtureTool.js")
+    .then((m) => ({ default: m.FourWaysMixtureTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -383,6 +386,7 @@ export function MethodsWorkspace() {
             : tool === "thermometer-trust" ? <ThermometerTrustTool />
             : tool === "property-trust" ? <PropertyTrustTool />
             : tool === "property-origins" ? <PropertyOriginsTool />
+            : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}

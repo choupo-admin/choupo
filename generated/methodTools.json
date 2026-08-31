@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 24,
-  "registryTools": 24,
+  "liveTools": 25,
+  "registryTools": 25,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -54,6 +54,13 @@
       "discipline": "Thermodynamics",
       "teaches": "Never trust a thermophysical record merely because it exists: test its internal consistency and read its declared validity.  Thirteen records cross-examined against themselves, live -- water's own file disagrees with itself by 0.70 K, and a predictive glycerol correlation that asked to be validated misses by a factor of 19.",
       "href": "/app/?workspace=methods&tool=property-trust"
+    },
+    {
+      "id": "four-ways-mixture",
+      "label": "Four ways to price a mixture",
+      "discipline": "Thermodynamics",
+      "teaches": "That every mixture model answers one question -- what did it KNOW about this pair before it priced it: nothing (ideal), the pair's own measured data (Wilson/NRTL), the groups (UNIFAC), the quantum charge surface (COSMO-SAC), or molecular theory with association (PC-SAFT).  The engine grades four of them against 12 measured ethanol/water points live; a fit wins where its evidence was taken and loses where it was not, and the predictive rungs buy reach at a price the page shows in kelvin.",
+      "href": "/app/?workspace=methods&tool=four-ways-mixture"
     },
     {
       "id": "flash-operating-line",

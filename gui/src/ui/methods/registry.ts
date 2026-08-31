@@ -61,7 +61,7 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
-  | "what-is-exergy" | "property-origins";
+  | "what-is-exergy" | "property-origins" | "four-ways-mixture";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -250,6 +250,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "own file disagrees with itself by 0.70 K, and a predictive glycerol "
       + "correlation that asked to be validated misses by a factor of 19.",
     theory: "ch:criticals",
+  },
+  {
+    //  THE MODELS LESSON the owner asked for by name (2026-08-31: "o COSMO,
+    //  PC-SAFT etc tem de ser bem apresentados aos alunos").  One ladder --
+    //  what did each model KNOW about the pair -- over one binary
+    //  (ethanol/water), graded live against measured data by the engine's
+    //  own validation block; PC-SAFT and COSMO-SAC carry their honest
+    //  cards (the twin-flash cost; the synthetic-surrogate licence
+    //  posture) instead of rows an AAD table could not defend.
+    id: "four-ways-mixture", label: "Four ways to price a mixture",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That every mixture model answers one question -- what did it "
+      + "KNOW about this pair before it priced it: nothing (ideal), the "
+      + "pair's own measured data (Wilson/NRTL), the groups (UNIFAC), the "
+      + "quantum charge surface (COSMO-SAC), or molecular theory with "
+      + "association (PC-SAFT).  The engine grades four of them against "
+      + "12 measured ethanol/water points live; a fit wins where its "
+      + "evidence was taken and loses where it was not, and the "
+      + "predictive rungs buy reach at a price the page shows in kelvin.",
+    theory: "ch:pcsaft",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
