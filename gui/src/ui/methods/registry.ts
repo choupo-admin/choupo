@@ -61,7 +61,8 @@ export type MethodToolId =
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
-  | "what-is-exergy" | "property-origins" | "four-ways-mixture";
+  | "what-is-exergy" | "property-origins" | "four-ways-mixture"
+  | "cosmo-sac-theory";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -278,6 +279,39 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "evidence was taken and loses where it was not, and the "
       + "predictive rungs buy reach at a price the page shows in kelvin.",
     theory: "ch:pcsaft",
+  },
+  {
+    //  THE FIRST PAGE UNDER THE TEXTBOOK RULING (credo §10, 2026-08-31).
+    //  It sits beside the comparison rather than inside it: `four-ways`
+    //  answers "which rung, and what did it know", this answers "where does
+    //  the number come from".  Growing the derivation inside a card would
+    //  have made one page answer two questions badly.
+    id: "cosmo-sac-theory",
+    label: "COSMO-SAC, derived (σ-profiles → activity coefficient)",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "The full derivation of COSMO-SAC 2002 as the engine runs it: "
+      + "the quantum charge surface, the σ-profile, the misfit and "
+      + "hydrogen-bond exchange energy, the IMPLICIT segment activity "
+      + "coefficient solved as a damped fixed point, the residual as a "
+      + "move between environments, and Staverman-Guggenheim for size.  "
+      + "Every equation cited to the line of CosmoSac.cpp that runs it, "
+      + "every constant quoted with its units, every assumption named "
+      + "where it is made — and the licence honesty that the shipped "
+      + "σ-profiles are synthetic teaching surrogates.",
+    //  THE GUIDE SECTION WAS WRITTEN FOR THIS PAGE, not pointed at.
+    //  COSMO-SAC had NO theory anchor at all -- every other model on the
+    //  comparison page has one (ch:pcsaft and the rest) and this one did
+    //  not, which is why the first draft here invented `ch:cosmosac` and
+    //  methodTheoryAnchors refused it: the viewer would have opened the PDF
+    //  at page 1 and said nothing.  Two tests then made the contract
+    //  explicit -- a live tool MUST name a section -- so the credo §10
+    //  worry about two homes is settled by the project's own rule rather
+    //  than by preference: both exist, and they are checked against each
+    //  other.  The guide carries the formal statement, this page carries
+    //  the taught one; equations \eqref{eq:cosmo-dw} and
+    //  \eqref{eq:cosmo-gamma} are the same two the steps below derive.
+    theory: "ch:cosmosac",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the

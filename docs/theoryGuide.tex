@@ -7903,6 +7903,95 @@ their \file{.dat} files (the loader rejects the EoS otherwise --- see
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{COSMO-SAC: an activity coefficient from a charge surface}\label{ch:cosmosac}
+
+Every activity model in the preceding sections describes a molecule by
+numbers fitted to how it \emph{behaves}: an interaction energy, a group
+count, a pair parameter.  COSMO-SAC (Lin \& Sandler, \emph{Ind.\ Eng.\
+Chem.\ Res.}~41 (2002) 899) starts one level down.  A quantum-chemistry
+calculation places the molecule in a \textbf{perfect conductor}, which
+screens its charge exactly, and the screening charge density $\sigma$ is
+read off the cavity surface.  Choupo does \emph{not} perform that
+calculation: it consumes the result.
+
+\paragraph{The $\sigma$-profile.}  The geometry is discarded and only the
+statistics kept.  $p_i(\sigma)$ is the fraction of molecule~$i$'s cavity
+area carrying screening charge density~$\sigma$, on a fixed grid of 51
+points from $-0.025$ to $0.025$\,e/\AA$^2$.  With the cavity area $A_i$
+and volume $V_i$ that profile is the \emph{entire} input: no binary data,
+no group table.  The price of discarding the geometry is that two
+molecules whose profiles coincide cannot be told apart.
+
+\paragraph{Restoring reality.}  In the conductor every segment was
+screened perfectly; in a liquid a segment of density $\sigma_m$ must sit
+against one of density $\sigma_n$, and unless they cancel that costs
+energy,
+\begin{equation}
+\Delta W(\sigma_m,\sigma_n)
+  = \tfrac{1}{2}\alpha'(\sigma_m+\sigma_n)^2
+  + c_{\mathrm{HB}}\max(0,\sigma_{\mathrm{acc}}-\sigma_{\mathrm{HB}})
+                   \min(0,\sigma_{\mathrm{don}}+\sigma_{\mathrm{HB}}),
+\label{eq:cosmo-dw}
+\end{equation}
+with $\sigma_{\mathrm{acc}}=\max(\sigma_m,\sigma_n)$ and
+$\sigma_{\mathrm{don}}=\min(\sigma_m,\sigma_n)$.  The first term is the
+\textbf{misfit} and is symmetric in sign.  The second is the
+\textbf{hydrogen bond}: non-zero only when one segment lies above
+$+\sigma_{\mathrm{HB}}$ and the other below $-\sigma_{\mathrm{HB}}$, and
+then negative.  Nobody declares that a hydrogen bond exists; a cutoff of
+$0.0084$\,e/\AA$^2$ decides it.
+
+\paragraph{The segment activity coefficient is implicit.}  How
+disfavoured a segment of density $\sigma_m$ is depends on what it meets,
+which depends on how disfavoured \emph{those} are:
+\begin{equation}
+\Gamma(\sigma_m) = \Big[\textstyle\sum_n p(\sigma_n)\,\Gamma(\sigma_n)\,
+  \exp\!\big(-\Delta W(\sigma_m,\sigma_n)/RT\big)\Big]^{-1}.
+\label{eq:cosmo-gamma}
+\end{equation}
+This is a fixed point, solved from $\Gamma\equiv1$ with one-half damping
+to $10^{-8}$.  Note that the \emph{only} place temperature enters the
+model is the $RT$ in that exponential: neither the profiles nor
+$\Delta W$ depend on~$T$.
+
+\paragraph{Residual and combinatorial.}  Solving
+\eqref{eq:cosmo-gamma} for the mixture's area-weighted profile
+$p_S$ and for each pure $p_i$ gives the cost of moving molecule~$i$'s
+segments from its own environment into the mixture,
+\begin{equation}
+\ln\gamma_i^{\mathrm{res}}
+  = \frac{A_i}{a_{\mathrm{eff}}}\sum_k p_i(\sigma_k)
+    \big[\ln\Gamma_S(\sigma_k)-\ln\Gamma_i(\sigma_k)\big],
+\label{eq:cosmo-res}
+\end{equation}
+where $A_i/a_{\mathrm{eff}}$ is the segment count.  For a pure component
+every bracket vanishes identically, so $\gamma=1$ exactly rather than
+approximately.  Size and shape are carried by the
+Staverman--Guggenheim combinatorial term of the UNIQUAC family, with
+$r_i=V_i/r_0$ and $q_i=A_i/q_0$ taken from the same cavity, and
+$\ln\gamma_i=\ln\gamma_i^{\mathrm{comb}}+\ln\gamma_i^{\mathrm{res}}$.
+That the two parts simply \emph{add} is itself an assumption, made by the
+plus sign rather than by any term in it.
+
+\paragraph{Constants, and a unit trap.}  Choupo compiles in the 2002
+set: $a_{\mathrm{eff}}=7.5$\,\AA$^2$, $\alpha'=16466.72$ and
+$c_{\mathrm{HB}}=85580$\,kcal\,\AA$^4$/(mol\,e$^2$),
+$\sigma_{\mathrm{HB}}=0.0084$\,e/\AA$^2$, $z=10$, $r_0=66.69$\,\AA$^3$,
+$q_0=79.53$\,\AA$^2$, and $R=0.001987$\,kcal/(mol\,K).  The gas constant
+is in kcal because the interaction constants were fitted there; mixing
+unit systems inside \eqref{eq:cosmo-gamma} is the commonest way to obtain
+a plausible wrong answer from this model.
+
+\paragraph{What ships, and what does not.}  Only the 2002 variant is
+implemented, and a profile declaring another variant is refused rather
+than run against these constants --- a profile and its constants are one
+fitted object.  \textbf{The public tree ships synthetic teaching
+surrogates for the profiles}: the VT-2005 set cannot be redistributed
+here, so the shipped witness demonstrates the mechanism and its numbers
+are not validated against measurement.  A curator's own copy installs via
+\code{bin/choupo-import-cosmo}; without it the model refuses by name.
+
+% ---------------------------------------------------------------------
 \section{PC-SAFT: a molecular equation of state}\label{ch:pcsaft}
 
 The cubic chapter closed on its own limit: hydrogen-bonded fluids,

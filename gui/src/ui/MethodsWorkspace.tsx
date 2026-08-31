@@ -213,6 +213,9 @@ const PropertyOriginsTool = lazy(() =>
 const FourWaysMixtureTool = lazy(() =>
   import("./methods/FourWaysMixtureTool.js")
     .then((m) => ({ default: m.FourWaysMixtureTool })));
+const CosmoSacTheoryTool = lazy(() =>
+  import("./methods/CosmoSacTheoryTool.js")
+    .then((m) => ({ default: m.CosmoSacTheoryTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -397,6 +400,7 @@ export function MethodsWorkspace() {
             : tool === "property-trust" ? <PropertyTrustTool />
             : tool === "property-origins" ? <PropertyOriginsTool />
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
+            : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}
