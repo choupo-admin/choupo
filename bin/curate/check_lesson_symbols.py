@@ -140,11 +140,29 @@ def audit(path: Path):
     seen_gloss, missing = set(), []
     for block in steps(src):
         seen_gloss |= glossed(block)
+        #  THE DERIVATION'S EQUATIONS COUNT TOO.  The `derivation` field
+        #  arrived on 2026-08-31 under the textbook ruling, and it carries
+        #  `eq:` lines that are formulas in every sense a student cares
+        #  about -- the McCabe derivation introduces F and z_F, which its
+        #  step's `where` list did not have.  Reading only `formula` would
+        #  have let a whole new surface of equations past this gate while
+        #  the suite stayed green, which is the shape this gate exists to
+        #  catch one level down.
         formula = field(block, "formula")
-        if not formula:
+        for eq in re.findall(r'eq:\s*((?:"(?:[^"\\]|\\.)*"\s*\+?\s*)+)',
+                             block):
+            formula += "\n" + js_strings(eq)
+        if not formula.strip():
             continue
+        #  A BRACED SUBSCRIPT IS PART OF THE SYMBOL.  `y_{n+1}` used to
+        #  tokenise as `y_`, and the only ways to satisfy the gate were to
+        #  gloss a token that is not a symbol or to stop writing the
+        #  subscript -- gaming the check, or damaging the notation to please
+        #  it.  Both are worse than the gap.  A trailing `_{...}` is now
+        #  taken with the letter it belongs to.
         for tok in re.findall(
-                r'[A-Za-z' + GREEK + r'][A-Za-z0-9_' + GREEK + r']*', formula):
+                r'[A-Za-z' + GREEK + r'][A-Za-z0-9_' + GREEK
+                + r']*(?:\{[^}]*\})?', formula):
             if not is_symbol(tok) or CHEM.match(tok):
                 continue
             if tok not in seen_gloss and tok not in missing:

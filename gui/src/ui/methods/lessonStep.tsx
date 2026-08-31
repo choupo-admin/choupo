@@ -66,6 +66,23 @@ export interface LessonStep {
    *  where the step has no formula; a formula with unglossed symbols is a
    *  gate failure, waived by name in the debt registry while the debt lasts. */
   where?: readonly SymbolGloss[];
+  /** HOW THE FORMULA WAS ARRIVED AT, one move per entry.
+   *
+   *  Added 2026-08-31 under the owner's ruling that EduTools replace the
+   *  textbook (credo §10): a lesson that STATES `y = R/(R+1) x + x_D/(R+1)`
+   *  has told a student what to plot and nothing about where it came from,
+   *  and the first thing that equation stops being is memorable.
+   *
+   *  It lives on the SHARED step rather than on one page, because the
+   *  ruling binds every construction and a field added to McCabe alone
+   *  would be copied outward -- which is the drift this file was created to
+   *  end (seventeen copies, seven variants, measured).
+   *
+   *  Each entry is a STATEMENT and the equation it produces.  Prose that
+   *  merely restates the equation in words is not a derivation and should
+   *  go in `body`; what belongs here is the balance being written, the
+   *  substitution being made, or the assumption being spent. */
+  derivation?: readonly { readonly step: string; readonly eq?: string }[];
   note?: string;
 }
 
@@ -80,6 +97,26 @@ export function LessonStepView({ step }: { step: LessonStep }): JSX.Element {
     <Box>
       <Title order={5}>{step.n} · {step.title}</Title>
       <Text size="sm" mt={4}>{step.body}</Text>
+      {step.derivation && step.derivation.length > 0 && (
+        <Box my={8} px="sm" py={8}
+          style={{ border: `1px solid ${BORDER}`, borderRadius: 4 }}>
+          <Text size="xs" c="dimmed" fw={700} tt="uppercase" mb={6}>
+            where it comes from
+          </Text>
+          {step.derivation.map((d, i) => (
+            <Box key={i} mb={6}>
+              <Text size="sm">
+                <Text span c="dimmed" ff="monospace" size="xs">{i + 1}.</Text>
+                {"  "}{d.step}
+              </Text>
+              {d.eq && (
+                <Text size="sm" ff="monospace" mt={2} ml={16}
+                  style={{ whiteSpace: "pre-wrap" }}>{d.eq}</Text>
+              )}
+            </Box>
+          ))}
+        </Box>
+      )}
       {step.formula && (
         <Box my={8} px="sm" py={6} style={{ borderLeft: `3px solid ${BORDER}` }}>
           <Text size="sm" ff="monospace" style={{ whiteSpace: "pre-wrap" }}>

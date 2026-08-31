@@ -54,6 +54,41 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "The two halves therefore obey DIFFERENT material balances, and each "
       + "gets its own line.  The reflux ratio R = L/D is what sets the slope "
       + "of the upper one — which is why turning R moves the staircase.",
+    derivation: [
+      { step: "Cut the column anywhere ABOVE the feed and write a balance on "
+          + "the more volatile component over the envelope containing the "
+          + "cut, the condenser and the top product.  Vapour V rises past "
+          + "the cut carrying y; liquid L falls past it carrying x; D leaves "
+          + "at x_D.",
+        eq: "V · y_{n+1} = L · x_n + D · x_D" },
+      { step: "Divide by V to get y on its own.  Nothing has been assumed "
+          + "yet — this is exact for any column.",
+        eq: "y_{n+1} = (L/V) · x_n + (D/V) · x_D" },
+      { step: "SPEND THE ASSUMPTION.  Constant molar overflow says L and V "
+          + "do not change from tray to tray within a section, so L/V is one "
+          + "number and the relation is a STRAIGHT LINE.  This is the whole "
+          + "reason the method can be drawn rather than solved.", eq: "" },
+      { step: "Now write both in terms of R = L/D, which is the knob an "
+          + "operator actually turns.  A total balance on the same envelope "
+          + "gives V = L + D, so",
+        eq: "L/V = L/(L+D) = R/(R+1)     and     D/V = 1/(R+1)" },
+      { step: "Substitute.  The rectifying operating line falls out, and "
+          + "notice it passes through (x_D, x_D) for every R — which is why "
+          + "turning the reflux PIVOTS it about that point on the diagonal.",
+        eq: "y = R/(R+1) · x + x_D/(R+1)" },
+      { step: "Below the feed the same cut is made downward, over the "
+          + "envelope containing the reboiler and the bottoms.  The bar "
+          + "marks the section, not an average: the feed has changed both "
+          + "flows.",
+        eq: "V̄ · y_{m+1} = L̄ · x_m − B · x_B\n"
+          + "y = (L̄/V̄) · x − (B/V̄) · x_B" },
+      { step: "In the engine the stripping line is not asked for as an "
+          + "input at all.  It is DETERMINED: the line through (x_B, x_B) "
+          + "and the point where the rectifying line meets the q-line, so it "
+          + "pivots about the bottoms as R and q move.  Two lines, one "
+          + "degree of freedom.  (strippingLine in "
+          + "gui/src/case/mccabeThiele.ts is the six lines that do it.)" },
+    ],
     formula: "rectifying:  y = R/(R+1) · x + x_D/(R+1)\n"
       + "stripping:   y = (L̄/V̄) · x − (B/V̄) · x_B",
     where: [
@@ -72,6 +107,20 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
         + "the feed", unit: "mol/s" },
       { sym: "V", means: "vapour molar flow in the rectifying section",
         unit: "mol/s" },
+      { sym: "F", means: "molar flow of FEED entering the column",
+        unit: "mol/s" },
+      { sym: "D", means: "molar flow of distillate leaving the top",
+        unit: "mol/s" },
+      { sym: "x_n", means: "liquid leaving tray n in the RECTIFYING section, "
+        + "trays counted down from the top" },
+      { sym: "y_{n+1}", means: "vapour rising to tray n from the tray below "
+        + "it.  The offset is the whole point of the balance: the vapour "
+        + "arriving at a tray came from the one beneath, and it is that pair "
+        + "-- not two streams on one tray -- that the operating line relates" },
+      { sym: "x_m", means: "the same as x_n, in the STRIPPING section below "
+        + "the feed" },
+      { sym: "y_{m+1}", means: "the stripping section's counterpart to "
+        + "y_{n+1}" },
       { sym: "L̄, V̄", means: "the same two flows BELOW the feed.  The bar "
         + "marks a SECTION, not an average — the feed changes both, which is "
         + "why the column needs two operating lines and not one" },
@@ -88,6 +137,32 @@ export const MCCABE_STEPS: readonly LessonStep[] = [
       + "q = 1 is a saturated liquid and q = 0 a saturated vapour.  Its slope "
       + "is q/(q−1), which is why a saturated-liquid feed gives a VERTICAL "
       + "q-line and a saturated vapour a horizontal one.",
+    derivation: [
+      { step: "q is DEFINED as the heat needed to bring one mole of feed to "
+          + "saturated vapour, divided by the molar latent heat.  Read off "
+          + "the consequences: a saturated liquid feed needs a full latent "
+          + "heat, so q = 1; a saturated vapour needs none, so q = 0; a "
+          + "sub-cooled liquid needs more than one, so q > 1.", eq: "" },
+      { step: "What the feed does to the internal flows follows directly "
+          + "from that definition — the liquid gains the liquid FRACTION of "
+          + "the feed, and the vapour loses the rest.",
+        eq: "L̄ = L + q · F        V = V̄ + (1 − q) · F" },
+      { step: "Subtract the two operating-line balances, one from the "
+          + "other, and use the overall balance F·z_F = D·x_D + B·x_B.  "
+          + "Every term in x_D and x_B cancels.",
+        eq: "(V − V̄) · y = (L − L̄) · x + F · z_F" },
+      { step: "Substitute the two flow relations above.  This is the q-line: "
+          + "the locus of every point where the two operating lines can "
+          + "meet, fixed by the feed alone and by neither product.",
+        eq: "y = q/(q−1) · x − z_F/(q−1)" },
+      { step: "Two readings worth having.  It passes through (z_F, z_F) for "
+          + "every q, so changing the feed's thermal state ROTATES it about "
+          + "that point on the diagonal; and at q = 1 the slope is "
+          + "infinite, which is why a saturated-liquid feed gives a VERTICAL "
+          + "q-line — the engine tests for it and handles it apart rather "
+          + "than dividing by zero.  (qLine in "
+          + "gui/src/case/mccabeThiele.ts carries that test.)" },
+    ],
     formula: "q-line:  y = q/(q−1) · x − z_F/(q−1)",
     where: [
       { sym: "q", means: "the FEED THERMAL CONDITION — moles of liquid added "
