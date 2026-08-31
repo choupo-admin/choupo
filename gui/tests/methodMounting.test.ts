@@ -151,6 +151,50 @@ describe("a taught model is findable by its name", () => {
 //  is the load-bearing half: a flex child will not shrink below its content
 //  without it and the inner scroll never engages, which is a page that has
 //  the property and is still frozen.
+//  NO TEST FILE IMPORTS THE SAME MODULE TWICE.  Twice in one day I built a
+//  new test by copying an existing file's licence header with a line range
+//  that reached line 26 -- where the vitest import lives -- and then wrote
+//  my own import below it.  VITEST RUNS SUCH A FILE HAPPILY; `tsc` calls it
+//  TS2300 and refuses.  The second time I ran the targeted vitest, the full
+//  vitest, and two sabotages, all green, without running typecheck after
+//  creating the file -- and the publish workflow (which runs `tsc --noEmit
+//  && vite build`) FAILED, leaving an error-boundary fix committed, pushed
+//  and not on the site.
+//
+//  A green test run is not evidence that the file compiles, and the habit
+//  that produced it is mine, so the check has to live outside my head.
+//  THE DEFECT IS A REPEATED BINDING, NOT A REPEATED MODULE, and this arm's
+//  first run proved it: it fired on drillLeaf.test.ts, which imports
+//  `{ parse, toJson }` and then `type { JsonDict }` from the same module --
+//  entirely legal, and `tsc` accepts it.  A guard aimed one concept wide
+//  would have made the suite red over correct code, which is how a check
+//  gets disabled.  What TS2300 refuses is the same NAME declared twice.
+describe("no test file declares one import binding twice", () => {
+  it("has one declaration per imported name per file", () => {
+    const dir = new URL("./", import.meta.url);
+    const files = readdirSync(dir).filter((f) => f.endsWith(".test.ts")
+      || f.endsWith(".test.tsx"));
+    expect(files.length, "no test files found — the glob moved")
+      .toBeGreaterThan(20);
+    for (const f of files) {
+      const src = readFileSync(new URL(f, dir), "utf-8");
+      const seen = new Map<string, number>();
+      for (const m of src.matchAll(
+             /^import\s+(?:type\s+)?\{([^}]*)\}\s*from\s+"[^"]+";/gm))
+        for (const raw of m[1]!.split(",")) {
+          //  `a as b` declares b; a bare name declares itself.
+          const name = (raw.includes(" as ")
+            ? raw.split(" as ")[1] : raw)!.trim();
+          if (name) seen.set(name, (seen.get(name) ?? 0) + 1);
+        }
+      for (const [name, n] of seen)
+        expect(n, `${f} declares the import binding "${name}" ${n} times — `
+          + "tsc refuses that as TS2300 and the publish workflow fails on "
+          + "it, while vitest runs the file without complaint").toBe(1);
+    }
+  });
+});
+
 describe("every EduTool can be scrolled", () => {
   const toolFiles = readdirSync(new URL("../src/ui/methods/", import.meta.url))
     .filter((f) => f.endsWith("Tool.tsx"));

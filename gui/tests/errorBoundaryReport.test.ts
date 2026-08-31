@@ -23,8 +23,6 @@
   to be edited every time the judgement is exercised.
 \*---------------------------------------------------------------------------*/
 
-import { describe, expect, it } from "vitest";
-
 
 /*---------------------------------------------------------------------------*\
   A CRASH REPORT MUST SAY SOMETHING.  On 2026-08-31 the owner sent a render
