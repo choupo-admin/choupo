@@ -92,9 +92,10 @@ export const T_HOT_K = T_HOT_C + 273.15;
  *  number here; the full fixed-point table lives on the deep-dive page. */
 export const T_SILVER_K = 1234.93;
 
-/** Second radiation constant, um.K -- the ONE physical constant this page
- *  carries, because the engine has no radiation-thermometry operation to
- *  ask.  See the pyrometer step's own note. */
+/** Second radiation constant, um.K -- the one physical constant this page
+ *  COMPUTES WITH -- Boltzmann and 273.15 appear in its prose, this is the
+ *  only one that enters an arithmetic here -- and it is carried at all
+ *  because the engine has no radiation-thermometry operation to ask.  See the pyrometer step's own note. */
 export const C2_UM_K = 14388;
 
 /** Sensitivity of a narrow-band radiation thermometer to the emissivity it

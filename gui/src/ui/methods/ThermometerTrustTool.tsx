@@ -391,7 +391,10 @@ export function ThermometerTrustTool(): JSX.Element {
             <ul style={{ marginTop: 4, paddingLeft: 20 }}>
               <li>helium vapour pressure, <strong>0.65 – 5 K</strong>;</li>
               <li>an interpolating constant-volume gas thermometer,{" "}
-                <strong>3 – 24.5561 K</strong> — the instrument of §1;</li>
+                <strong>3 – 24.5561 K</strong> — the same PHYSICS as §1's gas
+                thermometer, but pressed into service as a defining
+                interpolating instrument over a narrow cryogenic band,
+                not the primary thermometer §1 runs at 500 K;</li>
               <li>the <strong>platinum resistance thermometer</strong> over the
                 great middle, <strong>13.8033 K (the hydrogen triple point) to
                 1234.93 K (the silver point)</strong> — where essentially all
@@ -408,8 +411,13 @@ export function ThermometerTrustTool(): JSX.Element {
           </Text>
           <Text size="sm" mt={6}>
             Above the triple point of water, the defining fixed points are
-            melting and freezing points of metals, chosen because they are
-            reproducible to microkelvin:
+            melting and freezing points of metals — phase transitions of
+            pure substances, chosen because a laboratory in another country
+            can realise the same one and get the same temperature.  (How
+            closely is a number this repository has not read back from a
+            primary source, so it is not quoted here; the realisation
+            uncertainty is worst at the top of the table, which is half the
+            argument of the section below.):
           </Text>
           <Box mt={8} style={{ overflowX: "auto" }}>
             <table style={{ borderCollapse: "collapse", width: "100%",
@@ -482,10 +490,13 @@ export function ThermometerTrustTool(): JSX.Element {
           <Title order={5}>3 · The asymmetry, which is the surprise</Title>
           <Text size="sm" mt={4}>
             You might expect process temperatures to poke out of the platinum
-            resistor at both ends.  They do not.  <strong>The cold end does
-            not escape at all</strong>: liquid hydrogen at 20.39 K sits above
-            13.8033 K, so a hydrogen liquefier is still interpolated by the
-            same instrument as a distillation column.{"  "}
+            resistor at both ends.  Almost nothing does.  <strong>The cold
+            end essentially does not escape</strong>: liquid hydrogen at
+            20.39 K sits above 13.8033 K, so a hydrogen liquefier is still
+            interpolated by the same instrument as a distillation column.
+            Below hydrogen you are into helium refrigeration, which does
+            leave the resistor — and almost nothing else in chemical
+            processing goes there.{"  "}
             <strong>Only the hot end leaves.</strong>  Above 1234.93 K there
             is no RESISTOR — the platinum thermometer stops at silver and
             the scale becomes Planck radiation, referred back to the silver,

@@ -156,9 +156,17 @@ describe("ITS-90's own ladder, and where it ends", () => {
 describe("the platinum resistance thermometer's real range", () => {
   it("keeps the cold end inside the instrument that covers it", () => {
     //  The worst error the old page carried: claiming 20 K escapes the SPRT
-    //  when the SPRT runs from 13.8033 K.
+    //  when the SPRT runs from 13.8033 K.  The pin holds the SUBSTANTIVE
+    //  claim, not the absolute: on 2026-08-31 an audit noted that "does not
+    //  escape AT ALL" is false of helium refrigeration, which is real
+    //  process engineering below 13.8 K, so the page was softened to
+    //  "essentially" and told the reader what lies below.  Pinning the
+    //  absolute would have re-installed the overclaim.
     expect(prose(SRC)).not.toContain("outside the platinum resistor");
-    expect(prose(SRC)).toContain("The cold end does not escape at all");
+    expect(prose(SRC)).toContain("The cold end essentially does not escape");
+    expect(prose(SRC)).toContain("liquid hydrogen at 20.39 K sits above");
+    //  and the exception is named rather than swallowed
+    expect(prose(SRC)).toContain("helium refrigeration");
   });
 
   it("states the instrument bounds as numbers, so a claim can be checked", () => {
