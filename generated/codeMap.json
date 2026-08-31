@@ -2418,6 +2418,7 @@
    "src/core/AdvisorySummary.H",
    "src/core/Banner.H",
    "src/core/Constants.H",
+   "src/core/DictAudit.H",
    "src/core/DictCanonical.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -7367,6 +7368,7 @@
    "src/unitOperations/separation/PSA.cpp"
   ],
   "src/core/DictAudit.H": [
+   "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/DictAudit.cpp",
    "src/core/Dictionary.cpp",
