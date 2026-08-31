@@ -212,6 +212,32 @@ export function worstDeparturePct(rows: readonly ZRow[]): number | null {
   return seen ? worst : null;
 }
 
+/** THE SAME DEPARTURE, IN KELVIN -- what the gas thermometer would actually
+ *  misread by.  The page printed the departure only as a percentage on Z, so
+ *  a reader met a percentage on a compressibility and never an error on a
+ *  temperature: the section's whole claim is "the reading with it", and the
+ *  reading is in kelvin.
+ *
+ *  No new physics and no new column.  The page already prints T = P.v/R, and
+ *  Z = P.v/(R.T) is that same product over the true T -- so the instrument
+ *  reads Z.T and errs by (Z - 1).T.  One multiplication on a number the
+ *  engine already published; nothing here is computed from a correlation.
+ *
+ *  Signed, deliberately: above the Boyle temperature Z > 1 and the
+ *  thermometer reads HIGH, below it Z < 1 and it reads low, and a magnitude
+ *  would throw away the half of the lesson that says which way. */
+export function worstReadingErrorK(
+  rows: readonly ZRow[], T_true: number,
+): number | null {
+  let worst = 0, seen = false;
+  for (const r of rows) {
+    const e = (r.Z - 1) * T_true;
+    if (Math.abs(e) > Math.abs(worst)) worst = e;
+    seen = true;
+  }
+  return seen ? worst : null;
+}
+
 // ---- the plot ---------------------------------------------------------------
 
 const PW = 640, PH = 300, ML = 62, MR = 18, MT = 16, MB = 44;
@@ -286,6 +312,7 @@ export function ThermometerTrustTool(): JSX.Element {
     () => readZScan(run.result?.csvFiles?.["gasThermometer.csv"] ?? ""),
     [run.result]);
   const worst = worstDeparturePct(rows);
+  const errK = worstReadingErrorK(rows, T_SUBJECT_K);
 
   return (
     <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
@@ -363,6 +390,13 @@ export function ThermometerTrustTool(): JSX.Element {
             <Badge variant="light">
               worst departure from ideal: {worst.toFixed(3)} %
             </Badge>
+            {errK !== null && (
+              <Badge variant="light" color="orange">
+                which is {errK > 0 ? "+" : ""}{errK.toFixed(1)} K on the
+                reading: the thermometer says{" "}
+                {(T_SUBJECT_K + errK).toFixed(1)} K
+              </Badge>
+            )}
             <Badge variant="light" color="gray">
               {rows.length} points, engine-solved
             </Badge>

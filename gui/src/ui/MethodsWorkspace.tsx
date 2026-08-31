@@ -223,19 +223,28 @@ const BjerrumTool = lazy(() =>
 // The SAME feeding machinery the Explorer uses (resolveAdapter("wasm") over a
 // synthesized transient choupoProps case), reduced to the single-run shape the
 // method tools need.  Debounced; a newer spec aborts the in-flight run.
+//  THE RUN'S DIAGNOSTICS TRAVEL TOO, and until now they did not.  This hook
+//  had the whole RunResult in hand and returned the CSV and the advisories,
+//  so every number an op PUBLISHES about the chart it drew was discarded at
+//  this line.  The psychrometric op publishes `Lewis_last` and says in its
+//  own source why ("a reader with only the curves cannot tell which
+//  situation is on the chart"), and no surface in the GUI could reach it.
 function useEngineCsv(spec: ExploreSpec | null): {
   csv: string | null; err: string | null; busy: boolean; advisories: string[];
+  diags: Record<string, number> | null;
 } {
   const [csv, setCsv] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [advisories, setAdvisories] = useState<string[]>([]);
+  const [diags, setDiags] = useState<Record<string, number> | null>(null);
   const runSeq = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => {
     if (!spec) {
       abortRef.current?.abort();
-      setCsv(null); setErr(null); setAdvisories([]); setBusy(false);
+      setCsv(null); setErr(null); setAdvisories([]); setDiags(null);
+      setBusy(false);
       return;
     }
     const t = setTimeout(() => {
@@ -262,6 +271,7 @@ function useEngineCsv(spec: ExploreSpec | null): {
           // lines off the run log so they are SEEN, never swallowed.
           setAdvisories(
             (result.log.match(/^\s*\[advisory\].*$/gm) ?? []).map((s) => s.trim()));
+          setDiags(result.operationResults?.[0]?.diagnostics ?? null);
           if (out) { setCsv(out); setErr(null); }
           else {
             const detail = result.log.split("\n").map((l) => l.trim()).reverse()
@@ -280,7 +290,7 @@ function useEngineCsv(spec: ExploreSpec | null): {
     }, 300);
     return () => clearTimeout(t);
   }, [spec]);
-  return { csv, err, busy, advisories };
+  return { csv, err, busy, advisories, diags };
 }
 
 // ---- Workspace shell --------------------------------------------------------
@@ -841,7 +851,7 @@ function PsychroTool({ catalogue, componentFiles }: {
     : null,
   [pairOk, carrier, condensable, catalogue, P, tFrom, tTo, rhFrom, rhTo, rhStep, wbStep, componentFiles]);
 
-  const { csv, err, busy, advisories } = useEngineCsv(spec);
+  const { csv, err, busy, advisories, diags } = useEngineCsv(spec);
 
   const alerts: React.ReactNode[] = [];
   if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
@@ -950,6 +960,25 @@ function PsychroTool({ catalogue, componentFiles }: {
             printed, and a pair whose Lewis number is far from one pulls the
             two families — dashed and dotted — visibly apart.
           </Text>
+          {/*  THE NUMBER THAT SEPARATES THE TWO FAMILIES, on screen.  The
+               lesson's step 3 turns entirely on Le, says "Le ~ 1 for
+               air-water is why they are so often treated as one", and never
+               printed a value for any pair -- so a reader saw a gap between
+               the dashed and dotted lines and could not tell what produced
+               it.  The engine has always published it.  */}
+          {diags && Number.isFinite(diags["Lewis_last"]) && (
+            <Text size="sm" mt={6}>
+              For the pair on the chart right now, the engine reports{" "}
+              <Text span ff="monospace">Le = {diags["Lewis_last"]!.toFixed(4)}
+              </Text>.  Read it against the “Le ≈ 1” of the textbooks: at{" "}
+              {diags["Lewis_last"]!.toFixed(2)} the approximation is worth
+              about {Math.abs(1 - diags["Lewis_last"]!) * 100 < 1
+                ? "less than a per cent"
+                : `${(Math.abs(1 - diags["Lewis_last"]!) * 100).toFixed(0)} %`}
+              {" "}— which is the whole distance between the adiabatic-saturation
+              family and the true wet-bulb family you are looking at.
+            </Text>
+          )}
         </Box>
 
         <Box style={{ display: "grid", gap: 14,
