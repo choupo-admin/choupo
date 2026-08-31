@@ -2555,6 +2555,39 @@ domains like membranes).
   costing).
 * **Update this CLAUDE.md** when adding a major capability (and the relevant
   doc under `docs/`).
+* **BURY THE ABSENCE YOU JUST FILLED — in the same commit (ruled
+  2026-08-31).**  A capability arriving silently falsifies every sentence,
+  test, ADR, comment and example whose truth depended on its NOT existing,
+  and nobody re-reads the "we do not have this" lists on the day the thing
+  ships.  Measured, not supposed: of the 43 defects a seven-way EduTools
+  audit found that night, four were exactly this, and all four were caused
+  by work from the preceding 72 hours — the `exergy` op falsified the
+  entropy page's own list of absences *and* its design trace;
+  `explainProperty` falsified "written explicitly exactly ONCE in the whole
+  engine" (and the second site is the op that page's witness runs); the
+  CSTR's new monotone-extent refusal falsified "Choupo can express an
+  autocatalytic law"; and giving `air.dat` its carrier key falsified "air
+  cannot be selected here today", twice over.  So when you ship a
+  capability, grep the tree for the phrases that name its absence — *does
+  not support*, *cannot*, *there is no*, *unavailable*, *not implemented*,
+  *no ... anywhere in Choupo* — and settle each against the code.  Delegate
+  it if you like: an agent whose ONLY mission is "this now exists; find
+  everything whose truth depended on it not existing" does the sweep
+  cheaply and has no blast radius.
+* **THIS FILE IS THE NEXT SESSION'S MEMORY, so a stale fact in it is not
+  untidiness — it is CORRUPTED MEMORY** (same ruling).  There is no
+  cross-session store: a session begins from this file and the tree, which
+  makes every sentence here something a successor will load as true without
+  any way to suspect it.  Keep to invariants, contracts, conventions and
+  the reasons behind them; a claim a single commit can falsify does not
+  belong here, and belongs even less in the form of a NUMBER.  The
+  paragraph that taught this said the pump and the pipe used liquid
+  densities 12 % apart — closed on 2026-08-29, still written here on
+  2026-08-31, in three homes at once, and read back off this file by a
+  session that then briefed an auditor with it.  The auditor read the
+  engine instead and returned the correction.  Prefer the durable form: not
+  *"X and Y differ by 12 %"* but *"when a document claims a current
+  limitation, verify it against the engine before repeating it."*
 
 ---
 
@@ -2630,7 +2663,21 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-08-29 — the glossing slice landed (§6): every EduTool
+*Last reviewed: 2026-08-31 — a SEVEN-WAY EduTools audit read every lesson
+page against the engine it cites (§10's citation-requirement method, run
+again at scale): 43 confirmed defects, of which 33 are fixed in five
+commits ordered by damage to a student — wrong symbol DEFINITIONS first
+(Kremser's L and V were defined solute-free while the engine reads total
+stream flows, so a student recomputing A by hand got 1.706 against the
+1.535 on screen), then false claims about the engine, then pages
+contradicting themselves, then the tests that pinned falsehoods, then
+counts and precisions.  Two rules came out of it and are now in §10: BURY
+THE ABSENCE YOU JUST FILLED, and THIS FILE IS THE NEXT SESSION'S MEMORY.
+The second was paid for by this file itself: the 12 % pump/pipe density
+split it recorded as an open limitation had been closed on 2026-08-29, and
+an auditor briefed with that sentence went to the engine and returned the
+correction.  A general may contradict the emperor, and did.
+Earlier (2026-08-29) — the glossing slice landed (§6): every EduTool
 lesson defines its symbols, and requiring a `file:line` citation for each one
 turned eleven writing tasks into eleven READING tasks, which is where the eight
 defects came from.  One of them was a claim this project had written about
