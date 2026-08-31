@@ -219,6 +219,9 @@ const CosmoSacTheoryTool = lazy(() =>
 const LocalCompositionTool = lazy(() =>
   import("./methods/LocalCompositionTool.js")
     .then((m) => ({ default: m.LocalCompositionTool })));
+const UnifacTheoryTool = lazy(() =>
+  import("./methods/UnifacTheoryTool.js")
+    .then((m) => ({ default: m.UnifacTheoryTool })));
 const FlashOperatingLineTool = lazy(() =>
   import("./methods/FlashOperatingLineTool.js")
     .then((m) => ({ default: m.FlashOperatingLineTool })));
@@ -405,6 +408,7 @@ export function MethodsWorkspace() {
             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
             : tool === "local-composition" ? <LocalCompositionTool />
+            : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />
             : <UnmountedTool tool={active} />}

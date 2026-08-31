@@ -62,7 +62,7 @@ export type MethodToolId =
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
-  | "cosmo-sac-theory" | "local-composition";
+  | "cosmo-sac-theory" | "local-composition" | "unifac-theory";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -334,6 +334,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "fail but runs at tau = 0, exactly ideal, announced and refused "
       + "unless the case authorised it.",
     theory: "ch:activity",
+  },
+  {
+    //  READ AFTER `local-composition`, and the page says so in its first
+    //  sentence: UNIFAC is UNIQUAC's residual evaluated on groups, so
+    //  re-deriving the lattice a third time would teach that they are
+    //  unrelated.  Points at sec:unifac, which already exists -- checked
+    //  before writing the field, after the COSMO-SAC draft invented one.
+    id: "unifac-theory",
+    label: "UNIFAC, derived (a pair nobody has measured)",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That UNIFAC is not a new theory but UNIQUAC's residual term "
+      + "moved one level down, from molecules to their groups: r and q "
+      + "assembled from group counts, a liquid treated as a solution OF "
+      + "GROUPS, one interaction number per ordered main-group pair, and "
+      + "the pure-minus-mixture subtraction that makes a group activity "
+      + "into an activity coefficient.  And that its ideal fallback is a "
+      + "DIFFERENT failure from NRTL's despite identical arithmetic -- "
+      + "NRTL's gap is nobody fitted your pair and closes with data, "
+      + "UNIFAC's is a hole in the published table and does not.",
+    theory: "sec:unifac",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
