@@ -52,6 +52,7 @@ Description
 #include "propertyOps/CurationDossier.H"
 #include "core/distribution/SizeDistribution.H"
 #include "core/Banner.H"
+#include "core/DictAudit.H"
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "result/ResultEmitter.H"
@@ -630,7 +631,26 @@ try
                       " of the diagnostics ARE the answer -- derive it from"
                       " what this run actually produced (see Kinetics1D.H),"
                       " never a fixed list covering every path.");
-        opResults.push_back({ opName, opType, diags, opProvenance(opDict),
+        const auto opProv = opProvenance(opDict);
+
+        //  THE OP'S OWN DICT IS A PURE PARAMETER FILE, so an unread key in it
+        //  is a silent instruction (the postDict argument of 2026-08-27,
+        //  applied one binary over).  `temperature01` declared `points 25;`
+        //  inside `vary {}` -- PropertyScan1D reads `n`, else `step`, else
+        //  defaults 21 -- so the case ran 21 points and said nothing.
+        //
+        //  MEASURED BEFORE SHIPPING, over every props case in the corpus
+        //  (97 cases, 11 with findings, four classes), and each class was
+        //  understood and closed before this went in -- so a shipped tutorial
+        //  never warns on every run, which is what teaches a reader to skip
+        //  the warnings.  The corpus is silent behind it.
+        dictAudit::report(
+            dictAudit::auditTree(*opDict,
+                "propsDict operations[" + std::to_string(k) + "] '"
+                + opName + "'"),
+            verbosity);
+
+        opResults.push_back({ opName, opType, diags, opProv,
                               op->headline() });
     }
 

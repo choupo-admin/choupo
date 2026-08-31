@@ -81,7 +81,17 @@ int PropertyScan1D::run(const DictPtr& dict,
         nPoints = static_cast<std::size_t>(std::abs((to_val - from_val) / step)) + 1;
     }
     else
-        nPoints = 21;        // sensible default
+    {
+        //  A DEFAULT THAT DECIDES THE RESOLUTION OF A PUBLISHED CURVE MUST SAY
+        //  SO.  21 is a reasonable number and a silent one is still a choice
+        //  the author did not make; `temperature01` reached it by writing
+        //  `points 25;`, which nothing reads, and no line of output
+        //  distinguished that from a case that meant 21.
+        nPoints = 21;
+        if (verbosity >= 1)
+            std::cout << "  [scan] neither `n` nor `step` declared -- using the"
+                         " default of " << nPoints << " points.\n";
+    }
 
     if (nPoints < 2)
         throw std::runtime_error("PropertyScan1D: need n >= 2 points");

@@ -279,6 +279,27 @@ public:
     std::vector<std::pair<std::string, DictPtr>>
     childDictsUnnoted(const std::string& prefix = "") const;
 
+    //- DECLARE A BLOCK AS ANOTHER READER'S.  The unread-key audit exists
+    //  because a key nothing reads is a silent instruction -- but a case dict
+    //  legitimately carries blocks for readers other than the engine (the
+    //  GUI's plot annotations, an outer driver's own settings), and a
+    //  diagnostic that cries about those trains the author to ignore it.
+    //
+    //  This is deliberately NOT a general `noteAll()`: the name has to say
+    //  WHY, because a verb that merely silences a diagnostic is the crutch
+    //  the audit was built to prevent.  The caller is asserting that a
+    //  DIFFERENT, NAMED reader owns this block -- and the callers announce
+    //  which one, so the deferral is visible rather than merely quiet.
+    //
+    //  Notes the key and, recursively, every key beneath it: `found(key)`
+    //  alone marks only the block, and `auditTree` then DESCENDS into a block
+    //  it now considers read and reports each of its contents instead -- two
+    //  findings became ten the first time this was tried that way.
+    //
+    //  A key that is absent is not an error: a case need not declare the
+    //  other reader's block at all.
+    void noteForeignBlock(const std::string& key) const;
+
 private:
     //  Where an entry's declared dimensions LIVE: this dict, or the
     //  variables block when the entry is a `$reference`.  Writes the

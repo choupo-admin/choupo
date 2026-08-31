@@ -11,7 +11,13 @@ operations
         dataset    "constant/experiments/rate-secondorder-synthetic.dat";
         fit        ( k0  Ea );
         time       { from 0;  to 1200;  n 61; }
-        rate       { order 2;  c0 1.0;  k 1.0e-3; }
+        //  NO `k` HERE, and its absence is the case.  A declared k is the
+        //  single-isotherm FORWARD model; this case fits k0 and Ea across
+        //  three isotherms, so the op never reaches that branch and the k
+        //  that used to sit here was read by nothing -- while reading, to a
+        //  student, like the answer being handed over.  (Found by the
+        //  propsDict unread-key audit, 2026-08-31.)
+        rate       { order 2;  c0 1.0; }
         output     { file rate_arrhenius.csv; }
     }
 );

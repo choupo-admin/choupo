@@ -56,6 +56,46 @@ namespace {
 // ConstantEstimator sub-model (Joback.{H,cpp}) — selected via the op's `model`
 // slot.  Only the downstream property fills (Psat, Vliq) + IO remain here.
 
+//  THE VALIDATION BLOCK, RESOLVED AND CITED IN ONE PLACE.
+//
+//  Three call sites carried the same two-way alias decision verbatim
+//  (`validation` proper, `reference` the legacy alias), which is one decision
+//  with three transcriptions.  Worse, none of them read the block's own
+//  `source` -- so seven corpus cases declared where their anchor numbers came
+//  from and the engine could not see it.  A field the engine cannot see is a
+//  comment (2026-08-05); the remedy there was to PARSE AND ANNOUNCE, not to
+//  delete, and the same applies to a citation sitting beside the numbers it
+//  vouches for.  The propsDict audit is what surfaced it.
+//
+//  The citation is documentation, so its ABSENCE is not an error: a case may
+//  validate against numbers it does not cite, and it then simply says so.
+struct ValidationBlock
+{
+    DictPtr     dict;      // nullptr when the case declares no block
+    std::string source;    // "" when the block declares no citation
+
+    //- One line naming where the reference column came from, for the table
+    //  header.  Empty when there is no block at all -- there is no column to
+    //  attribute.
+    std::string attribution() const
+    {
+        if (!dict)          return "";
+        if (source.empty()) return "  reference column: declared by the case,"
+                                   " with no source cited\n";
+        return "  reference column: " + source + "\n";
+    }
+};
+
+ValidationBlock validationBlock(const DictPtr& dict)
+{
+    ValidationBlock v;
+    v.dict = dict->found("validation") ? dict->subDict("validation")
+           : dict->found("reference")  ? dict->subDict("reference") : nullptr;
+    if (v.dict && v.dict->found("source"))
+        v.source = v.dict->lookupWordOrDefault("source", "");
+    return v;
+}
+
 std::string isoDateUtc()
 {
     using namespace std::chrono;
@@ -492,8 +532,8 @@ int EstimateComponent::run(const DictPtr& dict,
     // Optional reference values to validate the estimate against (compare-only,
     // NEVER fed back into the estimate).  `validation` is the proper name;
     // `reference` stays accepted forever as the legacy alias.
-    DictPtr ref = dict->found("validation") ? dict->subDict("validation")
-                : dict->found("reference")  ? dict->subDict("reference") : nullptr;
+    const ValidationBlock refBlock = validationBlock(dict);
+    const DictPtr& ref = refBlock.dict;
     //   `valForRef` and the reference are compared in SI (canonical); the
     //   displayed reference is divided by `refScale` so it reads in the same
     //   unit as the estimate (e.g. Pa->bar with refScale=1e5).
@@ -513,7 +553,8 @@ int EstimateComponent::run(const DictPtr& dict,
         std::cout << std::setprecision(2) << "\n";
     };
     std::cout << "  ---------------------------------------------------------------\n"
-              << "  Estimated property            value     unit      [reference, dev]\n";
+              << "  Estimated property            value     unit      [reference, dev]\n"
+              << refBlock.attribution();
     line("MW",                        MW,     "g/mol", nullptr, MW);
     line("Tb (normal boiling)",       Tb,     "K",     "Tb",    Tb);
     line("Tc (critical)",             Tc,     "K",     "Tc",    Tc);
@@ -713,8 +754,8 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
     if (verbosity < 1) return 0;
 
     // ---- console: the screaming-ESTIMATE build-up -------------------------
-    DictPtr ref = dict->found("validation") ? dict->subDict("validation")
-                : dict->found("reference")  ? dict->subDict("reference") : nullptr;
+    const ValidationBlock refBlock = validationBlock(dict);
+    const DictPtr& ref = refBlock.dict;
     auto line = [&](const char* label, double val, const char* unit,
                     const char* refKey, double valForRef, double refScale = 1.0)
     {
@@ -739,7 +780,8 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
               << "  closures:  (Tb,SG) -> (MW,Tc,Pc,Vc) [Riazi-Daubert];  omega <- LeeKesler;\n"
               << "             Psat <- AmbroseWalton(Tc,Pc,omega);  Vliq <- Rackett;  Cp_ig <- KeslerLee\n"
               << "  ---------------------------------------------------------------\n"
-              << "  Estimated property            value     unit      [reference, dev]\n";
+              << "  Estimated property            value     unit      [reference, dev]\n"
+              << refBlock.attribution();
     line("MW",                  MW,     "g/mol", "MW",    MW);
     line("Tb (anchor)",         Tb,     "K",     "Tb",    Tb);
     line("Tc (critical)",       Tc,     "K",     "Tc",    Tc);
@@ -874,13 +916,14 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
     if (verbosity < 1) return 0;
 
     // ---- console: the glass-box additive build-up -------------------------
-    DictPtr ref = dict->found("validation") ? dict->subDict("validation")
-                : dict->found("reference")  ? dict->subDict("reference") : nullptr;
+    const ValidationBlock refBlock = validationBlock(dict);
+    const DictPtr& ref = refBlock.dict;
 
     std::cout << "\n=========  polymer estimate: " << comp << "  =========\n"
               << "  method: " << estimator.method() << "\n"
               << "  Repeat unit decomposed into groups; each adds its contribution.\n"
-              << "  You can redo every line by hand.\n";
+              << "  You can redo every line by hand.\n"
+              << refBlock.attribution();
 
     if (est.hasTg)
     {

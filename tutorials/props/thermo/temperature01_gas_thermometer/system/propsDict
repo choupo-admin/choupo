@@ -34,7 +34,11 @@ operations
             variable P;
             from     1000 Pa;
             to       5000000 Pa;
-            points   25;
+            //  `n`, not `points`: PropertyScan1D reads n, else step, else
+            //  defaults 21 -- so `points 25;` ran 25-point-shaped intent at
+            //  21 points and said nothing.  The audit that now reports an
+            //  unread key in a propsDict found it (2026-08-31).
+            n        25;
         }
         state      { T 500.012 K;  composition { nitrogen 1.0; } }
         properties ( Z v_molar );

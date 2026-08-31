@@ -688,6 +688,34 @@ Dictionary::childDictsUnnoted(const std::string& prefix) const
     return out;
 }
 
+void Dictionary::noteForeignBlock(const std::string& key) const
+{
+    auto it = entries_.find(key);
+    if (it == entries_.end()) return;   // not declared -- nothing to defer
+    note(key);
+
+    //  Recurse through whatever shape the block has: a sub-dict, or a list of
+    //  them.  A scalar entry is fully accounted for by the note() above.
+    std::function<void(const DictPtr&)> descend = [&](const DictPtr& d)
+    {
+        if (!d) return;
+        for (const auto& kv : d->entries_)
+        {
+            d->note(kv.first);
+            if (const auto* sub = std::get_if<DictPtr>(&kv.second))
+                descend(*sub);
+            else if (const auto* lst =
+                         std::get_if<std::vector<DictPtr>>(&kv.second))
+                for (const auto& m : *lst) descend(m);
+        }
+    };
+
+    if (const auto* sub = std::get_if<DictPtr>(&it->second))
+        descend(*sub);
+    else if (const auto* lst = std::get_if<std::vector<DictPtr>>(&it->second))
+        for (const auto& m : *lst) descend(m);
+}
+
 std::vector<std::string> Dictionary::askedButAbsent() const
 {
     std::vector<std::string> out;

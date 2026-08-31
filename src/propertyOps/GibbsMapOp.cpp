@@ -179,6 +179,32 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
     }
     csv.close();
 
+    //  PLOT ANNOTATIONS BELONG TO THE GUI, AND ARE NAMED RATHER THAN IGNORED.
+    //
+    //  `industrialWindow` and `kineticBand` are drawn over this map by
+    //  GibbsMapPlot.tsx.  They carry no physics and move no number computed
+    //  here, so this op does not read their contents -- but the propsDict
+    //  audit reports a key nothing read, and a key another DECLARED reader
+    //  owns is not a mistake (DictAudit.H carves this out for exactly the
+    //  GUI's layout keys).  A bare `found()` to silence the diagnostic would
+    //  be the crutch the audit exists to prevent, so the op ANNOUNCES what it
+    //  is deferring: the reader is told the case carries annotations this
+    //  calculation ignores, and where they are drawn instead.
+    {
+        std::vector<std::string> guiOwned;
+        for (const char* k : { "industrialWindow", "kineticBand" })
+            if (dict->found(k)) { guiOwned.push_back(k);
+                                  dict->noteForeignBlock(k); }
+        if (!guiOwned.empty() && verbosity >= 2)
+        {
+            std::cout << "  [gui] " << guiOwned.size() << " plot annotation"
+                      << (guiOwned.size() == 1 ? "" : "s") << " declared here"
+                         " and drawn by the GUI, not used in this calculation:";
+            for (const auto& k : guiOwned) std::cout << " " << k;
+            std::cout << "\n";
+        }
+    }
+
     // ---- anchor KPIs (deltaT embedded in the NAME -- the goldens break loudly
     //      if someone edits the approach) ---------------------------------------
     if (dict->found("anchors"))
