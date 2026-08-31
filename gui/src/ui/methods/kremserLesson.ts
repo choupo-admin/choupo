@@ -56,7 +56,12 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
     ],
     note: "In ratios the operating line is straight even when the total flows "
       + "are not constant, which is exactly the assumption distillation has "
-      + "to make and absorption gets for free.",
+      + "to make and absorption gets for free — ON PAPER.  Choupo's absorber "
+      + "does NOT take that road: it solves a stage tridiagonal in mole "
+      + "FRACTIONS at constant total L and V, so it makes the same "
+      + "constant-flow assumption after all, and the A it publishes is a "
+      + "total-flow ratio.  The ratio bookkeeping is here because it is how "
+      + "the method is taught and derived, not because it is what runs.",
   },
   {
     n: 2,
@@ -71,12 +76,20 @@ export const KREMSER_STEPS: readonly LessonStep[] = [
       { sym: "A", means: "the absorption factor — how hard the solvent pulls "
         + "relative to how hard the equilibrium pushes back.  A > 1 and the "
         + "solvent wins" },
-      { sym: "L", means: "molar flow of solvent, on the SOLUTE-FREE basis",
+      { sym: "L", means: "molar flow of the LEAN SOLVENT STREAM — the whole "
+        + "stream, not a solute-free basis.  Textbooks usually write Kremser "
+        + "solute-free; Choupo's absorber reads the declared stream F and "
+        + "publishes it as the L_in KPI, so recompute A with the total or "
+        + "your arithmetic will not match the screen",
         unit: "mol/s" },
-      { sym: "V", means: "molar flow of carrier gas, on the SOLUTE-FREE basis",
+      { sym: "V", means: "molar flow of the GAS FEED STREAM — again the whole "
+        + "stream (L_over_V is 1.5 on the witness: 150/100, not 150/90)",
         unit: "mol/s" },
-      { sym: "K", means: "the equilibrium ratio y/x at the stage conditions — "
-        + "the slope of the equilibrium line" },
+      { sym: "K", means: "the equilibrium ratio y/x — the slope of the "
+        + "equilibrium line.  The published K_i, and the A built from it, are "
+        + "the engine's single REFERENCE value at the gas feed temperature; "
+        + "the stages are solved on their own K(T_j), which on the witness "
+        + "run 309-315 K against a feed at 298 K" },
     ],
     note: "A > 1: the operating line is steeper than the equilibrium line, "
       + "the two diverge going up the column, and more stages keep buying "
@@ -132,9 +145,12 @@ export const KREMSER_LIMITS: readonly { id: string; title: string; body: string 
     body: "Kremser sums a geometric series, and that series exists only "
       + "because each step scales by the same factor A. A curved equilibrium "
       + "line — a concentrated solute, a solute that reacts in the liquid — "
-      + "breaks the series and the formula stops being exact. Choupo's "
-      + "absorber solves the stages regardless; the formula is what is being "
-      + "checked here, not the column.",
+      + "breaks the series and the formula stops being exact.  Choupo's "
+      + "absorber does not rescue you there either: it reads HENRY'S LAW and "
+      + "REFUSES an activity-model package by name, and it re-evaluates K at "
+      + "the fixed INLET compositions, so its K bends with stage temperature "
+      + "and never with composition.  What the column buys over the formula "
+      + "is the temperature profile, not a curved equilibrium.",
   },
   {
     id: "isothermal",

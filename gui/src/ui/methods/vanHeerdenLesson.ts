@@ -84,7 +84,7 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
         + "by the product plus whatever the exchanger takes.  Here R is a "
         + "curve of watts against temperature — it is NOT the reflux ratio a "
         + "distillation page calls R, not the gas constant, and not the "
-        + "retardation factor the adsorption page writes R_f.",
+        + "retention factor the adsorption page writes R_f.",
         unit: "W (plotted in kW)" },
       { sym: "x", means: "The outlet COMPOSITION at temperature T.  It is "
         + "written as a function of T because it is one: hotter means more "

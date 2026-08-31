@@ -105,8 +105,9 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       + "u_zone = u / R_f\n"
       + "t_st = (L / u) · R_f",
     where: [
-      { sym: "R_f", means: "the RETARDATION FACTOR — how many times slower the "
-        + "concentration front travels than the gas does, because most of "
+      { sym: "R_f", means: "the RETENTION FACTOR — the engine's own word, "
+        + "and its KPI key (`retention_factor_<i>`) — how many times slower "
+        + "the concentration front travels than the gas does, because most of "
         + "each molecule's time is spent on the solid" },
       { sym: "c_in", means: "the feed concentration entering the bed",
         unit: "mol/m³" },
@@ -119,8 +120,12 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
     note: "The engine prints all three BEFORE it integrates and publishes R_f "
       + "and t_st as KPIs — so the arrival time is a prediction you can check "
       + "against the curve, not a number read off it afterwards.  On the "
-      + "classroom witness R_f ≈ 304: the gas crosses the bed in L/u = 10 s "
-      + "and the front needs about 3040 s to follow it.",
+      + "classroom witness R_f ≈ 304, and it is measured against the "
+      + "SUPERFICIAL velocity: L/u = 10 s of empty-tube transit against a "
+      + "front that needs about 3040 s.  The gas actually moving between the "
+      + "particles is faster — u/ε = 0.125 m/s, 4 s across the bed — so "
+      + "against the real gas the lag is R_f/ε.  That is exactly why R_f "
+      + "carries the + ε term.",
   },
   {
     n: 3,
@@ -197,8 +202,13 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
       { sym: "q_sat,i", means: "the saturation loading of i — the monolayer "
         + "the Langmuir picture allows", unit: "mol/kg" },
       { sym: "b_i", means: "the AFFINITY of i for the surface, which falls as "
-        + "the bed warms", unit: "1/Pa" },
-      { sym: "p_i", means: "partial pressure of i in the gas", unit: "Pa" },
+        + "the bed warms.  Its pressure basis is DECLARED per record "
+        + "(`pressureBasis`), not fixed by the engine: CO2 on 13X here is "
+        + "per BAR (b_298 = 9.0)", unit: "1/bar (declared)" },
+      { sym: "p_i", means: "partial pressure of i in the gas, in whatever "
+        + "unit that record's `pressureBasis` declares — bar for this one, "
+        + "so the witness's own check reads 9 × 0.15",
+        unit: "bar (declared)" },
       { sym: "b_j, p_j", means: "the same two quantities for EVERY OTHER "
         + "adsorbing species — the subscript changes, the meaning does not" },
       { sym: "T", means: "the temperature of the bed at that point",
@@ -213,7 +223,7 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
         + "measured, the anchor the van't Hoff term moves away from",
         unit: "K" },
       { sym: "R", means: "the gas constant — NOT the reflux ratio a "
-        + "distillation page calls R, and not the retardation factor R_f "
+        + "distillation page calls R, and not the retention factor R_f "
         + "above", unit: "J/(mol·K)" },
     ],
     note: "ΔH_ads is negative — adsorption is exothermic — so b falls as T "

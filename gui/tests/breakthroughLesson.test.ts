@@ -19,7 +19,7 @@
   explains would fail rather than mislead.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
 
@@ -330,5 +330,50 @@ describe("the tool renders it as a scrolling lesson", () => {
     //  renderer rather than a seventeenth private one.
     expect(SRC).toContain("lessonStepper(BREAKTHROUGH_STEPS)");
     expect(SRC).not.toContain("BREAKTHROUGH_STEPS.find");
+  });
+});
+
+describe("R_f is the RETENTION factor, everywhere (audited 2026-08-31)", () => {
+  //  The engine, the KPI key (`retention_factor_<i>`), the table header and
+  //  this page's own body all say RETENTION; the symbol gloss said
+  //  RETARDATION -- and so did three OTHER lesson modules that only
+  //  reference the quantity.  No single page audit could see that, which is
+  //  why this pin reaches across files: R_f is this page's quantity, and
+  //  the others borrow the name.
+  it("the gloss uses the engine's own word and its KPI key", () => {
+    const s = BREAKTHROUGH_STEPS.find((x) => x.n === 2)!;
+    const g = prose(s.where!.find((w) => w.sym === "R_f")!.means);
+    expect(g).toContain("RETENTION FACTOR");
+    expect(g).toContain("retention_factor_");
+    expect(g).not.toMatch(/RETARDATION/i);
+  });
+
+  it("no lesson module anywhere calls it a retardation factor", () => {
+    const dir = new URL("../src/ui/methods/", import.meta.url);
+    const files = readdirSync(dir).filter((f) => f.endsWith(".ts"));
+    const offenders = files.filter((f) =>
+      /retardation/i.test(readFileSync(new URL(f, dir), "utf-8")));
+    expect(offenders, "the vocabulary drifted again").toEqual([]);
+  });
+
+  it("the transit time names the SUPERFICIAL velocity it is measured on", () => {
+    const s = BREAKTHROUGH_STEPS.find((x) => x.n === 2)!;
+    const note = prose(s.note ?? "");
+    expect(note).toContain("SUPERFICIAL");
+    //  the interstitial number the page previously omitted
+    expect(note).toContain("u/ε");
+    expect(note).toContain("4 s");
+  });
+
+  it("the isotherm's pressure basis is declared, not assumed to be Pa", () => {
+    //  Found by the pin's own first run: b_i lives in step 5, not 4.  The
+    //  gloss is located by SEARCHING the steps rather than by a step number
+    //  written from memory -- the same mistake this audit exists to catch.
+    const b = BREAKTHROUGH_STEPS
+      .flatMap((x) => x.where ?? [])
+      .find((w) => w.sym === "b_i")!;
+    expect(b, "the b_i gloss left the lesson").toBeTruthy();
+    expect(prose(b.means)).toContain("pressureBasis");
+    expect(b.unit).not.toBe("1/Pa");
   });
 });

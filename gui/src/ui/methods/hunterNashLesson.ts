@@ -127,7 +127,7 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "this warning: R is the most overloaded letter in the corpus.  It "
         + "is also the reflux ratio L/D in distillation, the universal gas "
         + "constant in every rate and equilibrium expression, and (as R_f) "
-        + "the retardation factor in adsorption — four quantities, one "
+        + "the retention factor in adsorption — four quantities, one "
         + "letter.  Always read the subscript and the page.", unit: "mol/s" },
     ],
     note: "AND IT IS OFTEN OUTSIDE THE TRIANGLE, which alarms every student "

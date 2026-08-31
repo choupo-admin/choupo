@@ -150,3 +150,50 @@ describe("the tool renders it as a scrolling lesson", () => {
     expect(SRC).toContain('title="choupoSolve (WASM)"');
   });
 });
+
+describe("the symbols name what the ENGINE computes (audited 2026-08-31)", () => {
+  //  Four claims on this page were checked against src/unitOperations/
+  //  separation/Absorber.cpp and the witness golden, and all four were
+  //  wrong.  The sharpest was quantified: the page defined L and V on the
+  //  SOLUTE-FREE basis while the engine reads the declared stream F, so a
+  //  student recomputing A by hand got 1.706 against the 1.535 on screen --
+  //  11 % apart, and the wrong number is the one the page told them to
+  //  compute.  These pins hold the corrected statements.
+  const gloss = (n: number, sym: string): string => {
+    const s = KREMSER_STEPS.find((x) => x.n === n)!;
+    return prose(s.where!.find((w) => w.sym === sym)!.means);
+  };
+
+  it("L and V are the TOTAL stream flows, not a solute-free basis", () => {
+    for (const sym of ["L", "V"]) {
+      const g = gloss(2, sym);
+      expect(g, `${sym} still claims a solute-free basis`)
+        .not.toMatch(/SOLUTE-FREE basis/);
+      expect(g).toMatch(/whole stream|STREAM/);
+    }
+    //  the witness's own number, which is what makes the basis checkable
+    expect(gloss(2, "V")).toContain("150/100");
+  });
+
+  it("K is the reference value at the GAS FEED temperature", () => {
+    const g = gloss(2, "K");
+    expect(g).toContain("feed temperature");
+    //  and the page says the stages do NOT use it
+    expect(g).toMatch(/K\(T_j\)|own K/);
+    expect(g, "the old 'at the stage conditions' gloss is back")
+      .not.toMatch(/at the stage conditions/);
+  });
+
+  it("the ratio framing does not claim the engine escapes constant flows", () => {
+    const s1 = prose(KREMSER_STEPS[0]!.note ?? "");
+    expect(s1).toContain("mole FRACTIONS");
+    expect(s1).toContain("constant total L and V");
+  });
+
+  it("a curved equilibrium is refused, not silently solved", () => {
+    const lim = KREMSER_LIMITS.find((l) => l.id === "straight-equilibrium")!;
+    expect(prose(lim.body)).toMatch(/REFUSES/);
+    expect(prose(lim.body), "the old 'solves the stages regardless' is back")
+      .not.toMatch(/solves the stages regardless/);
+  });
+});

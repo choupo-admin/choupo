@@ -220,8 +220,8 @@ export const FUG_STEPS: readonly LessonStep[] = [
         + "read from the case; this method never forms the internal liquid "
         + "and vapour flows that would make it physical.  R is the corpus's "
         + "most overloaded letter: it is also the gas constant, the heat "
-        + "removal curve in the reactor-stability page, and (as R_f) a "
-        + "retardation factor in adsorption.", unit: "dimensionless" },
+        + "removal curve in the reactor-stability page, and (as R_f) the "
+        + "retention factor in adsorption.", unit: "dimensionless" },
       { sym: "X", means: "GILLILAND'S ABSCISSA — a reduced coordinate built "
         + "only so that minimum reflux lands at 0 and total reflux at 1.  It "
         + "is a position along a fitted curve, NOT a composition, and it has "
