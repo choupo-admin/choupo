@@ -697,6 +697,25 @@ export function PinchCompositeTool(): JSX.Element {
             : "no pinch KPI row in this run — curves shown, targets unverified"}
         </Badge>
       )}
+      {/*  THE EXCESS, DECOMPOSED -- the one identity on this page a reader can
+           redo on paper, and the page stated it in symbols only.  The lesson
+           says "excess over target = cross-pinch transfer + heating below +
+           cooling above" and that "the gap between them is the whole point of
+           the exercise", then showed no gap.  All four numbers are already
+           published by PinchPass; three of them reached no surface.  */}
+      {active && !emptyCurrentRun && kpis
+        && kpis["Q_heat_current_kW"] != null
+        && kpis["violation_heat_below_pinch_kW"] != null
+        && kpis["violation_cool_above_pinch_kW"] != null && (
+        <Badge variant="light" color="orange" size="lg"
+          styles={{ root: { textTransform: "none" } }}>
+          {`excess over target · ${fmt(kpis["Q_heat_current_kW"])}`
+            + ` − ${fmt(kpis["Q_H_min_kW"])}`
+            + ` = ${fmt(kpis["Q_heat_current_kW"]! - kpis["Q_H_min_kW"]!)} kW`
+            + `  =  ${fmt(kpis["violation_heat_below_pinch_kW"])} heating below`
+            + ` + ${fmt(kpis["violation_cool_above_pinch_kW"])} cooling above`}
+        </Badge>
+      )}
       {derived && checks.length > 0 && (
         <Tooltip withArrow multiline w={380}
           label={"Derived in view: the Linnhoff-Flower cascade re-run over"

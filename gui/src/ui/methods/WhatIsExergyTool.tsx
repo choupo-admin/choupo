@@ -207,10 +207,26 @@ function ExergyTable({ lg }: { lg: ExergyLedger }) {
   );
 }
 
+//  A REAL MACHINE'S IRREVERSIBILITY, quoted from a golden and therefore
+//  re-verified by every runTests -- the same provenance class as
+//  FourWaysMixtureTool's flash20 and fitNRTL02 numbers.
+//
+//  This block used to price S_GEN = 1.0 J/(mol·K) and call it, in a comment,
+//  "a representative machine irreversibility".  The ARITHMETIC was honest --
+//  the label said "per 1 J/(mol·K) generated", so it was a unit rate, not a
+//  fabricated measurement -- but the comment described it as a machine's, and
+//  the page asserts two screens earlier that "every compressor and turbine in
+//  this simulator publishes dS_gen" while the reader never met one.  A claim
+//  about what the engine publishes is worth more when the number on the
+//  slider IS one of them.
+const MACHINE = {
+  case_: "compressor01_air",
+  dS_gen: 4.22615345389,          // J/(mol·K) -- expected:15
+  what: "an air compressor",
+} as const;
+
 function GouyStodolaKnob() {
-  //  A representative machine irreversibility; the reader substitutes any
-  //  dS_gen a compressor or turbine run publishes as a KPI.
-  const S_GEN = 1.0;   // J/(mol·K)
+  const S_GEN = MACHINE.dS_gen;
   const [T0, setT0] = useState<number>(DEAD_T0_K);
   const w = lostWork(T0, S_GEN);
   return (
@@ -225,15 +241,20 @@ function GouyStodolaKnob() {
       <Slider min={250} max={330} step={1} value={T0}
         onChange={setT0} label={null} my={6} />
       <Text size="sm" ff="monospace">
-        W_lost = T0 · dS_gen = {w.toFixed(0)} J/mol
-        {"  "}(per 1 J/(mol·K) generated)
+        W_lost = T0 · dS_gen = {T0.toFixed(0)} × {S_GEN.toFixed(4)}
+        {" "}= {w.toFixed(0)} J/mol
       </Text>
       <Text size="xs" c={INK} mt={4}>
-        For a FIXED entropy generation, a higher declared T0 assigns a
-        larger exergy destruction to the same irreversibility — the
-        entropy a machine generates is priced at T0.  Take any dS_gen
-        from a compressor or turbine run and multiply; this slider is
-        that one exact product, nothing more.
+        That dS_gen is not a round number chosen to look like one: it is{" "}
+        {MACHINE.what} in this corpus — <Text span ff="monospace">
+        {MACHINE.case_}</Text> — whose golden pins{" "}
+        <Text span ff="monospace">dS_gen = {MACHINE.dS_gen}</Text> J/(mol·K),
+        re-verified by every regression run.  For a FIXED entropy
+        generation, a higher declared T0 assigns a larger exergy destruction
+        to the same irreversibility — the entropy a machine generates is
+        priced at T0.  The slider is that one exact product, nothing more:
+        divide by {S_GEN.toFixed(4)} to read it per unit of dS_gen, or
+        substitute any other machine's.
       </Text>
     </Box>
   );
