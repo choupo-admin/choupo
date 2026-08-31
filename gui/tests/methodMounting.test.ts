@@ -69,7 +69,7 @@
   caught by that tool's own test.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
@@ -131,6 +131,51 @@ describe("a taught model is findable by its name", () => {
     expect(menu, "MenuBar renders only `label`, so everything a tool declares "
       + "about itself stays off the screen")
       .toMatch(/m\.teaches/);
+  });
+});
+
+//  MOUNTED IS NOT USABLE.  Three pages shipped registered, dispatched, and
+//  with everything below the fold UNREACHABLE: a tool renders into a flex
+//  parent, so a bare <Stack> overflows instead of scrolling.  Nothing caught
+//  it -- the mounting arms above pass on a page nobody can read past the
+//  first screen, the typechecker is indifferent, and the page LOOKS finished
+//  in a screenshot.  The owner found it by scrolling, 2026-08-31.
+//
+//  Pinned as SOURCE TEXT, and the limits of that are worth stating: this
+//  cannot prove a page scrolls, only that it declares the container the 23
+//  working pages all declare.  A page could satisfy it and still be broken
+//  by a nested overflow.  What it does buy is the failure that actually
+//  happened -- a new page written without the wrapper at all.
+//
+//  `minHeight: 0` is required explicitly, not merely `overflowY`, because it
+//  is the load-bearing half: a flex child will not shrink below its content
+//  without it and the inner scroll never engages, which is a page that has
+//  the property and is still frozen.
+describe("every EduTool can be scrolled", () => {
+  const toolFiles = readdirSync(new URL("../src/ui/methods/", import.meta.url))
+    .filter((f) => f.endsWith("Tool.tsx"));
+
+  it("declares the scroll container the working pages declare", () => {
+    expect(toolFiles.length, "no tool files found — the glob moved")
+      .toBeGreaterThan(20);
+    for (const f of toolFiles) {
+      const src = readFileSync(
+        new URL(`../src/ui/methods/${f}`, import.meta.url), "utf-8");
+      expect(src, `${f} never declares overflowY:"auto" — it renders into a `
+        + "flex parent, so its content overflows instead of scrolling and "
+        + "everything below the fold is unreachable")
+        .toMatch(/overflowY:\s*"auto"/);
+      //  BOTH PROPERTIES, ON ONE STYLE OBJECT.  Searching the file for
+      //  `minHeight: 0` anywhere was satisfied by the COMMENT above the
+      //  container explaining why it is needed -- sabotage S7 deleted the
+      //  real property and the arm stayed green, matching prose about the
+      //  thing instead of the thing.  Anchoring both on the same line is
+      //  what makes the sabotage bite.
+      expect(src, `${f} declares overflowY but not minHeight: 0 beside it — `
+        + "a flex child will not shrink below its content, so the inner "
+        + "scroll never engages and the page is frozen anyway")
+        .toMatch(/minHeight:\s*0[^\n]*overflowY:\s*"auto"|overflowY:\s*"auto"[^\n]*minHeight:\s*0/);
+    }
   });
 });
 

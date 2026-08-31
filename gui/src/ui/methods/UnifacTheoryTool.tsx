@@ -143,7 +143,15 @@ export const UNIFAC_STEPS = [
 
 export function UnifacTheoryTool(): JSX.Element {
   return (
-    <Stack gap={14} p="md">
+    //  THE SCROLL CONTAINER, and it is not decoration.  A tool renders
+    //  into a FLEX parent, so without `flex: 1` + `minHeight: 0` +
+    //  `overflowY: auto` the content overflows and everything below the
+    //  fold is unreachable -- the page looks finished and is unusable.
+    //  `minHeight: 0` is the load-bearing half: a flex child refuses to
+    //  shrink below its content without it, so the inner scroll never
+    //  engages.  Reported by the owner on the COSMO-SAC page, 2026-08-31.
+    <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
+    <Stack gap={14}>
       <Box>
         <Title order={3}>UNIFAC, derived</Title>
         <Text size="sm" mt={4}>
@@ -225,5 +233,6 @@ export function UnifacTheoryTool(): JSX.Element {
         </Text>
       </Box>
     </Stack>
+    </Box>
   );
 }
