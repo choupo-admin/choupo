@@ -162,8 +162,11 @@ export const LEDGER_META = [
     line: "S_residual (the model)",
     question: "What does the real gas change?",
     cite: "src/thermo/equationOfState/SRK.cpp · SRK::S_residual",
-    note: "The departure from ideal — SRK (Sandler eq. 6.4-31), PR, "
-      + "PC-SAFT, or the IF97 steam surface. Small at 2 bar, growing with "
+    note: "The departure from ideal — SRK (Sandler eq. 6.4-31), PR or "
+      + "PC-SAFT.  A pureFluids{} IF97 route has NO residual line at all: "
+      + "the fundamental equation replaces this whole ledger, and "
+      + "explainProperty refuses such a state by name rather than "
+      + "mislabelling the derivation. Small at 2 bar, growing with "
       + "pressure. PC-SAFT's is stated in the (T,ρ) convention — an open, "
       + "recorded divergence (docs/design/entropy-glass-box-trace.md §6).",
   },
@@ -314,8 +317,13 @@ export function WhatIsEntropyTool(): JSX.Element {
             up from near absolute zero and adding each phase transition
             crossed on the way (the very ∫Cp/T structure the ledger below
             reuses).  That number is the
-            {" "}<Text span ff="monospace">s_298</Text> in every component’s
-            data file.  The contrast with enthalpy is subtle and worth
+            {" "}<Text span ff="monospace">s_298</Text> in a component’s
+            data file — in 516 of the catalogue’s 603 records, not all of
+            them.  The salts, minerals and polymers priced on a different
+            route carry no thermochemistry block at all, and a further
+            twelve carry the block without this particular datum; asking
+            any of them for an entropy of formation refuses by name rather
+            than inventing one.  The contrast with enthalpy is subtle and worth
             owning: both columns rest on experiment, but entropy’s
             <em> zero</em> is the third law’s own — absolute — while
             enthalpy’s zero (elements at 25 °C) is an agreed convention.
@@ -366,8 +374,10 @@ export function WhatIsEntropyTool(): JSX.Element {
               s_298 → s_formation → s_pure_ig → S_ig → S_residual → S_real
               → dS_gen
             </Text>
-            {" "}— seven names, one ledger, and the word itself appears only
-            in prose.
+            {" "}— seven names, one ledger, and the word itself survives as
+            a code identifier in exactly one place
+            ({" "}<Text span ff="monospace">NASA7Cp::entropySeg_</Text>,
+            which computes part of the ∫Cp/T line above).
           </Text>
         </Box>
 
