@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Is www.choupo.org serving what `main` has?
+
+WHY THIS EXISTS.  On 2026-08-31 the owner reported a page that would not
+scroll.  It had been fixed, committed and pushed hours earlier -- and its
+publish run had been CANCELLED, so the fix reached the site only by
+accident, carried by a later commit.  The gap between "it is on main" and
+"a student sees it" had no instrument at all, and the answer to "did you
+publish?" came from memory.  A week earlier the same gap left the site
+three commits stale for three consecutive pushes.
+
+WHY IT IS A TOOL AND NOT A GATE, said plainly because the project's rule is
+that a check which cannot run must not pass.  Publishing happens
+ASYNCHRONOUSLY, minutes after the push, so at `bin/runTests` time the site
+is LEGITIMATELY behind.  A gate would be red after every push -- and a
+check that cries on every run teaches the reader to skip it, which is the
+failure the postDict slice named.  Same reasoning as
+bin/curate/verify_against_poling.py: it structurally cannot be a gate, so
+it is not pretended into one.
+
+WHAT IT CANNOT TELL YOU, and this is a real limit rather than a caveat.
+The stamp names the last build that CHANGED the site.  A commit touching
+only, say, a C++ comment produces a byte-identical site, the publish
+workflow correctly declines to commit, and the stamp stays behind while the
+site is perfectly current.  So a stamp older than HEAD is reported as
+UNCONFIRMED, never as stale: this tool can prove currency and cannot prove
+staleness.
+"""
+import json
+import subprocess
+import sys
+import urllib.request
+
+SITE = "https://www.choupo.org"
+TIMEOUT = 20
+
+
+def sh(*args: str) -> str:
+    return subprocess.run(args, capture_output=True, text=True,
+                          check=False).stdout.strip()
+
+
+def fetch(path: str) -> tuple[int, str]:
+    try:
+        with urllib.request.urlopen(SITE + path, timeout=TIMEOUT) as r:
+            return r.status, r.read().decode("utf-8", "replace")
+    except Exception as exc:                       # noqa: BLE001
+        return 0, str(exc)
+
+
+def main() -> int:
+    head = sh("git", "rev-parse", "HEAD")
+    origin = sh("git", "rev-parse", "origin/main")
+    dirty = bool(sh("git", "status", "--porcelain"))
+
+    if not head:
+        print("checkSitePublished: not in a git repository.")
+        return 2
+
+    print(f"local HEAD    {head[:9]}")
+    print(f"origin/main   {origin[:9] or '(unknown -- fetch first)'}")
+    if dirty:
+        print("  NOTE: the working tree is dirty, so HEAD is not what you "
+              "have built locally.")
+    if origin and head != origin:
+        print("  NOTE: HEAD is not origin/main -- nothing unpushed can be "
+              "on the site by definition.")
+
+    status, body = fetch("/buildinfo.json")
+    if status != 200:
+        print(f"\nserved stamp  ABSENT (/buildinfo.json -> {status or body})")
+        print("  The site carries no build stamp.  Either it has not been "
+              "republished since the stamp was added to publish-site.yml, "
+              "or the deploy step did not run.  Nothing can be concluded "
+              "about which commit is being served -- which is exactly the "
+              "state this tool exists to end.")
+        return 1
+
+    try:
+        info = json.loads(body)
+    except json.JSONDecodeError as exc:
+        print(f"\nserved stamp  UNREADABLE: {exc}")
+        return 2
+
+    served = info.get("commit", "")
+    print(f"\nserved commit {served[:9] or '(missing key)'}"
+          f"   built {info.get('builtAt', '?')}")
+
+    if served == origin and origin:
+        print("\nCURRENT -- the site is serving origin/main.")
+        return 0
+
+    if not served or not origin:
+        print("\nUNCONFIRMED -- one of the two commits is unknown.")
+        return 1
+
+    ahead = sh("git", "rev-list", "--count", f"{served}..{origin}")
+    print(f"\nUNCONFIRMED -- origin/main is {ahead or '?'} commit(s) after "
+          "the served stamp.")
+    print("  This is NOT proof the site is stale.  A commit that changes no "
+          "built file leaves the site byte-identical, the publish step "
+          "correctly declines to commit, and the stamp stays behind while "
+          "the site is current.")
+    print("  To settle it: check the publish run for those commits.  A "
+          "CANCELLED or FAILED run is the real failure -- that is what "
+          "happened on 2026-08-31.")
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

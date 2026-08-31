@@ -222,11 +222,35 @@ jobs:
           cd /tmp/site
           git config user.name  "Vítor Geraldes"
           git config user.email "talentgroundlda@gmail.com"
+
+          #  WHICH COMMIT IS THE VISITOR LOOKING AT?  Until this existed the
+          #  answer lived only in the SITE REPO's commit message, which is
+          #  invisible to anyone fetching www.choupo.org -- so "is the site
+          #  current?" could be answered from memory or by hunting for
+          #  content strings in a minified bundle, and both were used.
+          #
+          #  ORDER MATTERS.  The stamp is written AFTER the change test, not
+          #  before: a stamp carrying a fresh timestamp differs on every run,
+          #  so writing it first would make `git diff --cached --quiet` never
+          #  fire and publish a commit on every push even when the built site
+          #  is byte-identical.  The short-circuit below is load-bearing and
+          #  is preserved exactly.
+          #
+          #  The consequence is stated rather than hidden: the stamp names
+          #  the last build that CHANGED the site.  A later commit that
+          #  produces an identical site leaves the stamp behind, and the
+          #  site is nonetheless current -- bin/checkSitePublished says so
+          #  instead of reporting staleness it cannot distinguish.
           git add -A .
           if git diff --cached --quiet; then
             echo "::notice::site already matches this build -- nothing to publish."
             exit 0
           fi
+
+          printf '{\n  "commit": "%s",\n  "builtAt": "%s",\n  "ref": "%s"\n}\n' \
+            "${GITHUB_SHA}" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "${GITHUB_REF_NAME}" \
+            > /tmp/site/buildinfo.json
+          git add buildinfo.json
           git commit -q -m "site: dev refresh — ${GITHUB_SHA:0:8}" \
                         -m "Built from choupo-admin/choupo@${GITHUB_SHA}."
           git push origin HEAD:main
