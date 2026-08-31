@@ -349,6 +349,35 @@ export function WhatIsTemperatureTool(): JSX.Element {
               </tbody>
             </table>
           </Box>
+          {/*  ONE BRIDGE, WALKED WITH REAL NUMBERS.  The table names three
+               observables and the row above calls the conversion a bridge,
+               and until this block the page never crossed one: a reader met
+               "a resistance" and never a resistance.  Owner's review,
+               2026-08-31.  Closed-form and printed with its constants, per
+               this file's zero-physics-in-TypeScript rule -- the reader
+               redoes it on paper, and nothing here is an engine answer.  */}
+          <Text size="sm" mt={8}>
+            Walk one bridge with real numbers.  A Pt100 in a thermowell reads{" "}
+            <strong>119.4 Ω</strong>.  That is the whole of the measurement —
+            a resistance, nothing more.  The bridge is the Callendar–Van Dusen
+            relation of IEC 60751, <em>R</em>(<em>t</em>) ={" "}
+            <em>R</em><sub>0</sub>(1 + <em>At</em> + <em>Bt</em>²) with{" "}
+            <em>R</em><sub>0</sub> = 100 Ω, <em>A</em> = 3.9083 × 10⁻³ °C⁻¹
+            and <em>B</em> = −5.775 × 10⁻⁷ °C⁻², solved for <em>t</em>:
+          </Text>
+          <Box mt={6} p={8} style={{ border: `1px solid ${GRID}`,
+            borderRadius: 4, fontSize: 13 }}>
+            119.4 Ω → <em>t</em> = 50.01 °C → <strong>323.16 K</strong>
+          </Box>
+          <Text size="sm" mt={6}>
+            Notice what that arithmetic did <em>not</em> give you.  It did not
+            say the fluid is at 323.16 K — it said the <em>sensing element</em>
+            is, if this particular Pt100 obeys the standard curve, if it has
+            not drifted, if it is immersed deeply enough, and if the thermowell
+            is not conducting heat along its stem.  Every one of those is an
+            assumption inside the bridge, and none of them is visible in
+            “119.4 Ω”.
+          </Text>
           <Text size="sm" mt={8}>
             The whole page in one figure — read it top to bottom and notice
             how far the reported number sits from the state it is about:
