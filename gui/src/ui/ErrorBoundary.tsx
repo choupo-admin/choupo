@@ -76,8 +76,45 @@ export class ErrorBoundary extends Component<Props, State> {
 
   override render(): ReactNode {
     if (!this.state.error) return this.props.children;
-    const stack = this.state.error.stack ?? this.state.error.message;
-    const componentStack = this.state.info?.componentStack ?? "(no component stack)";
+    //  AN EMPTY REPORT IS WORSE THAN NO REPORT, because it looks like one.
+    //  This read `error.stack ?? error.message`, and `??` falls back only on
+    //  null/undefined -- an EMPTY-STRING stack is not nullish, so it passed
+    //  through and the block rendered blank.  The owner sent exactly that on
+    //  2026-08-31: a crash report whose trace was empty, which cost an hour
+    //  of blind probing against a page that could not be reproduced.
+    //  Fall back on EMPTINESS, and keep going until something says
+    //  something -- a thrown non-Error has neither field and must still
+    //  produce a sentence rather than a void.
+    const err = this.state.error as unknown;
+    const firstNonEmpty = (...xs: (string | undefined)[]): string => {
+      for (const x of xs) if (x && x.trim()) return x;
+      return "(the thrown value carried neither a stack nor a message — "
+        + "probably a non-Error was thrown)";
+    };
+    const stack = firstNonEmpty(
+      this.state.error.stack,
+      this.state.error.message,
+      (() => { try { return String(err); } catch { return undefined; } })(),
+    );
+    const componentStack = firstNonEmpty(
+      this.state.info?.componentStack ?? undefined,
+      "(no component stack)");
+
+    //  WHERE THE READER WAS, which no previous report carried.  A Suspense
+    //  boundary hides the lazy component's name from the stack, so "which
+    //  EduTool were you on?" had to be asked by hand -- and the answer is
+    //  sitting in the address bar the whole time, because the workspace and
+    //  tool are a deep-link contract.  Wrapped: a boundary that throws while
+    //  reporting a throw is the worst possible failure here.
+    let where = "";
+    try {
+      const u = new URL(window.location.href);
+      const bits = ["workspace", "tool", "explore", "case", "tutorial"]
+        .map((k) => { const v = u.searchParams.get(k);
+                      return v ? `${k}=${v}` : null; })
+        .filter(Boolean);
+      where = bits.length ? bits.join("  ·  ") : "(no workspace/tool in the URL)";
+    } catch { where = "(could not read the address bar)"; }
     return (
       <Stack p="md" gap="sm" style={{ height: "100%", overflow: "auto" }}>
         <Alert color="red" icon={<IconAlertTriangle size={16} />}
@@ -92,6 +129,8 @@ export class ErrorBoundary extends Component<Props, State> {
         <Code block style={{ fontSize: 11, maxHeight: 240, overflow: "auto" }}>
           {stack}
         </Code>
+        <Text size="xs" c="dimmed">Where:</Text>
+        <Code block style={{ fontSize: 11 }}>{where}</Code>
         <Text size="xs" c="dimmed">Component stack:</Text>
         <Code block style={{ fontSize: 11, maxHeight: 160, overflow: "auto" }}>
           {componentStack}
