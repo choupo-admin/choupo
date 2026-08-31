@@ -62,7 +62,7 @@ export type MethodToolId =
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
-  | "cosmo-sac-theory";
+  | "cosmo-sac-theory" | "local-composition";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -312,6 +312,28 @@ export const METHOD_TOOLS: MethodTool[] = [
     //  the taught one; equations \eqref{eq:cosmo-dw} and
     //  \eqref{eq:cosmo-gamma} are the same two the steps below derive.
     theory: "ch:cosmosac",
+  },
+  {
+    //  ONE PAGE, THREE MODELS -- and that is the pedagogy, not a shortcut.
+    //  Wilson, NRTL and UNIQUAC share a trunk (local composition, Boltzmann
+    //  weighting); three pages would repeat it three times and bury what
+    //  actually separates them, which is what each is willing to pay for.
+    id: "local-composition",
+    label: "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That Wilson, NRTL and UNIQUAC are one idea carried three "
+      + "distances -- a molecule's neighbourhood is not the bulk "
+      + "composition -- and that each exists because of something the "
+      + "previous one could not do: Wilson STRUCTURALLY cannot produce a "
+      + "liquid-liquid split, NRTL buys that with a third parameter, "
+      + "UNIQUAC separates size from energy and opens the door UNIFAC "
+      + "walks through.  Every equation cited to the engine line that runs "
+      + "it, every assumption named where it is made -- including the one "
+      + "no textbook can teach, that a pair with no parameters does not "
+      + "fail but runs at tau = 0, exactly ideal, announced and refused "
+      + "unless the case authorised it.",
+    theory: "ch:activity",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
