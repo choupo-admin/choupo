@@ -62,8 +62,11 @@ export const HUNTER_NASH_STEPS: readonly LessonStep[] = [
         + "extractor takes exactly two, feed then solvent, and refuses any "
         + "other arity by name.", unit: "mol/s" },
       { sym: "S", means: "The SOLVENT — the second inlet, the phase that "
-        + "will take the solute up.  Which species counts as the solvent is "
-        + "DECLARED by the case, not guessed from the name.", unit: "mol/s" },
+        + "will take the solute up.  Which SPECIES defines the extract phase "
+        + "may be declared (`operation.solvent`), and this witness declares "
+        + "benzene; absent that, the engine takes the solvent stream's "
+        + "dominant component.  Either way it is never guessed from the "
+        + "name.", unit: "mol/s" },
       { sym: "M", means: "The MIXING POINT: the state you would get by "
         + "dumping F and S into one pot.  It is not a stream in the "
         + "flowsheet — it is a bookkeeping point on the triangle, and it "

@@ -948,7 +948,7 @@ function PsychroTool({ catalogue, componentFiles }: {
             the true wet-bulb lines beside them.  Changing the pair is part of
             the lesson: nitrogen with water gives you the chart you have seen
             printed, and a pair whose Lewis number is far from one pulls the
-            two dashed-and-solid families visibly apart.
+            two families — dashed and dotted — visibly apart.
           </Text>
         </Box>
 

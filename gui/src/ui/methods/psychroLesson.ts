@@ -211,7 +211,7 @@ export const PSYCHRO_STEPS: readonly LessonStep[] = [
       + "which air-water happens to satisfy — a near-coincidence of two "
       + "transport properties, not a law, and the reason a printed air-water "
       + "chart can label one set of lines with both names.  This chart draws "
-      + "them as SEPARATE families, dashed for adiabatic saturation and solid "
+      + "them as SEPARATE families, dashed for adiabatic saturation and dotted "
       + "for the true wet bulb, so a pair with Le ≠ 1 shows the gap instead "
       + "of hiding it.  There is no enthalpy scale drawn: the expression "
       + "above is the reason the lines are straight, not a set of lines to "

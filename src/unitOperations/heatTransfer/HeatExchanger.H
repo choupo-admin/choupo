@@ -55,9 +55,19 @@ Description
         T_h,out = T_h,in - Q/C_h,   T_c,out = T_c,in + Q/C_c
 
     ASSUMPTIONS (glass-box --- stated, not hidden):
-      1. sensible heat only, no phase change (constant Cp per stream,
-         evaluated at the inlet);
-      2. counter-current by default (`flow co;` for co-current);
+      1. sensible heat only, no phase change.  Each stream's Cp is held
+         constant across the exchanger but is evaluated at that stream's
+         own MEAN temperature, in two passes: an inlet-temperature seed,
+         then a re-evaluation at 0.5*(T_in + T_out).  (This line said
+         "evaluated at the inlet" until 2026-08-31, when an audit read the
+         code against it; the eps-NTU lesson had the two-pass mean right
+         and this header did not.);
+      2. `flow` is a CLOSED set --- `counter`/`countercurrent` (the
+         default) or `co`/`cocurrent`/`parallel`; any other word is
+         refused by name, with the accepted set in the message.  A silent
+         fallback to counter-current, the optimistic arrangement, would
+         undersize the exchanger at exit 0.  `passes >= 2` selects the
+         1-shell/2N-tube-pass relation;
       3. no heat loss to surroundings (Q_hot = Q_cold).
 
     Inputs (hot  cold );   outputs (hotOut  coldOut );

@@ -43,9 +43,14 @@ License
   diagram writing declared dict scalars (hot-water T and flow, ambient-air
   T, moisture and dry-air flow, the packing's Merkel number) through
   methodRun's textual ScalarOverride.  The knobs write NUMBERS into the
-  witness dicts; the WASM engine computes everything — an infeasible
-  construction (a pinched L/G, a below-wet-bulb target) REFUSES with the
-  engine's own named message, shown verbatim: that refusal is the pedagogy.
+  witness dicts; the WASM engine computes everything, and where it refuses
+  the refusal is shown verbatim, because that refusal is the pedagogy.
+  BUT NOTE THE MODE (corrected 2026-08-31): the two named refusals -- a
+  pinched L/G, a below-wet-bulb target -- both live inside CoolingTower's
+  DESIGN branch, and this witness declares `merkelNumber` (rating), with no
+  T_water_out knob offered.  A reader pushing the water-flow knob to its
+  pinch will therefore NOT see them; the integral diverges and the
+  bisection stops instead.
   When the app's CURRENT run also carries a cooling tower, a source toggle
   offers "Current run" beside the classroom witness.
 

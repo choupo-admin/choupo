@@ -169,8 +169,9 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
       + "room for.  The sodium you added as titrant is not a spectator — it "
       + "associates weakly with bicarbonate and takes a little of the carbon "
       + "out of the diagram you are reading.",
-    note: "Look also at where that species is ABSENT.  In the two beakers "
-      + "with no sodium in them at all the pair does not EXIST, and the "
+    note: "Look also at where that species is ABSENT.  In the ELEVEN beakers "
+      + "with no sodium in them at all — the whole acid side, and Na/C_T = 0 "
+      + "— the pair does not EXIST, and the "
       + "engine refuses to report a species that is not in its table rather "
       + "than printing a zero — absent and zero are different claims.  This "
       + "matters more than it looks: a real 'inert' background electrolyte "
@@ -190,9 +191,12 @@ export const BJERRUM_STEPS: readonly LessonStep[] = [
     note: "Only the temperature knob is here.  The background-electrolyte "
       + "knob is measured and NOT built: 0.5 mol/kg of KNO3 shifts the first "
       + "crossover from pH 6.341 to 6.177 and drops the carbonate gamma from "
-      + "0.903 to 0.289.  Two defects in the sealing machinery block it, both "
-      + "named in the case's own variables block, and saying so is better "
-      + "than a knob that half works.",
+      + "0.903 to 0.289.  Two defects in the sealing machinery blocked it "
+      + "and were fixed on 2026-08-30; what remains is the CURATION half, "
+      + "which is the honest blocker — the chemistry list carries no "
+      + "LiHCO3aq record, and potassium is the wrong carrier precisely "
+      + "because KHCO3(aq) would take 5.4 % of the carbon out of the "
+      + "diagram.  Saying so is better than a knob that half works.",
   },
 ];
 
@@ -240,8 +244,10 @@ export const BJERRUM_LIMITS: readonly LessonLimit[] = [
   {
     id: "no-precipitation",
     title: "Nothing precipitates here, and the engine says how close it came.",
-    body: "Every point reports saturation indices for nahcolite, natron and "
-      + "trona.  At 1 mmol/kg they stay far below zero, which is why this "
+    body: "Every SODIUM-BEARING point reports saturation indices for "
+      + "nahcolite, natron and trona — 33 of the 44, the acid side having no "
+      + "sodium and therefore no such mineral to be saturated in.  At "
+      + "1 mmol/kg they stay far below zero, which is why this "
       + "stays a clean acid-base diagram.  Make the total carbonate a hundred "
       + "times larger and the diagram acquires a ceiling the drawing has no "
       + "way to show.",

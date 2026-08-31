@@ -25,7 +25,7 @@
   follows from that one substitution.
 
   Every hypothesis stated here was read off the engine that computes the
-  answer (src/unitOperations/heatTransfer/CoolingTower.{H,cpp}); the two
+  answer (src/unitOperations/heatTransfer/CoolingTower.{H,cpp}); the
   concrete numbers quoted are this tool's own witness at its authored
   settings (tutorials/steady/heat/coolingTower01_merkel, `expected`).
 \*---------------------------------------------------------------------------*/
@@ -165,8 +165,11 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "the result; declare T_water_out — DESIGN — and the Merkel number the "
       + "duty requires is the result.  Raising L/G tilts the operating line "
       + "up towards the saturation curve; when it touches, the tower is "
-      + "PINCHED, and the engine says so and names the remedy: more air, or "
-      + "less water.",
+      + "PINCHED.  In DESIGN mode the engine refuses by name and gives the "
+      + "remedy — more air, or less water.  In RATING mode, which is what "
+      + "this page's classroom run is, there is no such message: the Merkel "
+      + "integral simply diverges at the pinch and the bisection cannot cool "
+      + "the water past it.",
   },
   {
     n: 4,
@@ -240,14 +243,16 @@ export const MERKEL_STEPS: readonly LessonStep[] = [
       + "the EXIT AIR IS SATURATED, because an enthalpy profile alone does "
       + "not fix a humidity.  And it evaluates the SPECIFIC HEATS ONCE and "
       + "holds them constant down the packing — the gas ones at the mean of "
-      + "the two inlets, and the LIQUID one at a fixed 25 °C surrogate for "
-      + "the water outlet, because in rating mode that outlet is precisely "
-      + "the unknown being solved for.  That last one is a real "
+      + "the two inlets, and the LIQUID one at the MEAN of the water INLET "
+      + "and a fixed 25 °C surrogate standing in for the water outlet, "
+      + "because in rating mode that outlet is precisely the unknown being "
+      + "solved for (on the witness that mean is 35 °C, not 25).  That last one is a real "
       + "approximation at the cold end of a tower whose outlet is far from "
       + "25 °C.",
     note: "The neglected evaporation is not hidden: the engine computes it "
       + "from the air's humidity gain, publishes it, and subtracts it from "
-      + "the cold-water outlet, so the boundary mass balance is exact even "
+      + "the cold-water outlet FLOW (the outlet temperature is untouched), "
+      + "so the boundary mass balance is exact even "
       + "though the integrand's L is not.  On the witness at its authored "
       + "settings that loss is about 2.4 % of the water fed — the water flow "
       + "at the bottom of the packing is that much lower than at the top, "
