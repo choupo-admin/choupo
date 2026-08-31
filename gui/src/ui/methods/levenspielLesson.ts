@@ -184,9 +184,15 @@ export const LEVENSPIEL_STEPS: readonly LessonStep[] = [
       + "height against the area, and the smaller one is the smaller reactor.  "
       + "NEITHER witness below is autocatalytic — both are pseudo-first-order "
       + "in ethanol, so both curves rise — so the falling branch is described "
-      + "here, not demonstrated.  Choupo can express one: a PRODUCT that "
-      + "declares its own `order` in the reaction's stoichiometry list enters "
-      + "the forward rate like any other species.",
+      + "here, not demonstrated.  Choupo can express one — but note WHERE: a "
+      + "PRODUCT that declares its own `order` in the stoichiometry list "
+      + "enters the forward rate like any other species, and the PFR simply "
+      + "integrates it.  The SINGLE-reaction CSTR grammar refuses it by "
+      + "name: its extent Newton claims the residual is monotone in the "
+      + "extent, which a forward order on a product breaks, so it points you "
+      + "at the multi-reaction `reactions ( ... )` grammar instead.  The "
+      + "asymmetry is load-bearing on this very step, where the CSTR is the "
+      + "unit that wins.",
   },
   {
     n: 5,

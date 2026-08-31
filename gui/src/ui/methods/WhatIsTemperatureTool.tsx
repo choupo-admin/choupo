@@ -427,7 +427,9 @@ export function WhatIsTemperatureTool(): JSX.Element {
             measurement result at all: it carries no uncertainty, names no
             scale, no instrument, no traceability.  A serious statement reads
             more like{" "}
-            <strong>T₉₀ = 500.012 K, U = 0.015 K (k = 2)</strong>, plus how it
+            <strong>T₉₀ = 500.012 K, U = 0.015 K (k = 2)</strong> — where
+            that ± is INVENTED here, for its shape alone, because no budget
+            for this number has been read back from anywhere — plus how it
             was obtained.  The digits tell you how finely the number was{" "}
             <em>written</em>; only the uncertainty tells you how well it is{" "}
             <em>known</em>.  Display resolution and measurement uncertainty
@@ -483,9 +485,11 @@ export function WhatIsTemperatureTool(): JSX.Element {
             <br />• The ITS-90 vs T difference near 500 K is given as an order
             of magnitude, never a value — the tabulated figure is a published
             number this repository has not read back against its source.
-            <br />• No uncertainty is invented anywhere here: where none has
-            been read back from a primary source, the page says “ask for the
-            budget” instead of quoting one.
+            <br />• No uncertainty is quoted here as if it had been
+            measured.  The one ± on the page is the illustrative 0.015 K
+            above, marked as invented where it appears; everywhere else, none
+            having been read back from a primary source, the page tells you
+            to ask for the budget rather than supplying a number to trust.
           </Text>
         </Box>
 

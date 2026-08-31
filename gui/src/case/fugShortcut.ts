@@ -317,9 +317,11 @@ export function shortcutDivergences(r: RunResult | null) {
 /** The integer stage counts to try, bracketing the shortcut's answer.
  *
  *  `Math.ceil` on the shortcut's N is the only rounding in this file that
- *  touches a stage count, and it is not an approximation of anything: a column
- *  has a whole number of trays, and 21.59 theoretical stages means you build
- *  22.  Counts below 2 are dropped -- the MESH solver needs a feed stage
+ *  touches a stage count, and it is not an approximation of anything: the
+ *  MESH solver takes an INTEGER number of equilibrium stages, so 21.59
+ *  theoretical stages is tried as 22.  It is NOT a tray count -- converting
+ *  stages into trays needs a Murphree efficiency, which nothing on this path
+ *  supplies, and the lesson says so twice.  Counts below 2 are dropped -- the MESH solver needs a feed stage
  *  strictly between the condenser and the bottom. */
 export function stageWindow(
   Nshortcut: number, below: number, above: number,

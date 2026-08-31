@@ -227,9 +227,23 @@ describe("claims kept inside what the evidence supports", () => {
     expect(prose(SRC)).toContain("three digits after the point");
   });
 
-  it("invents no uncertainty and says so", () => {
-    expect(prose(SRC)).toContain("No uncertainty is invented");
-    expect(prose(SRC)).toContain("ask for the");
+  it("marks its one illustrative uncertainty AS invented", () => {
+    //  This test used to assert the page contains the sentence "No
+    //  uncertainty is invented anywhere here" and the phrase "ask for the
+    //  budget" -- and BOTH were satisfied by that one disclaimer quoting
+    //  itself: "ask for the budget" appeared nowhere else in the file, and
+    //  the page printed U = 0.015 K (k = 2) in bold four paragraphs above.
+    //  A claim a page makes about itself is exactly what a test must not
+    //  take the page's word for.  Corrected 2026-08-31: the figure is
+    //  marked invented AT THE POINT OF USE, and the bullet claims only what
+    //  is true.
+    expect(prose(SRC)).toContain("that ± is INVENTED here");
+    expect(prose(SRC)).toContain("No uncertainty is quoted here as if it had"
+      + " been measured");
+    expect(prose(SRC), "the self-satisfying absolute is back")
+      .not.toContain("No uncertainty is invented anywhere here");
+    //  and the illustrative value is still SHOWN -- a student needs the form
+    expect(SRC).toContain("U = 0.015 K (k = 2)");
   });
 
   it("gives the T90 - T difference as an order of magnitude, never a value", () => {

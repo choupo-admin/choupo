@@ -141,16 +141,18 @@ export const COLUMN_CONTROL_STEPS: readonly LessonStep[] = [
         + "and a pressure move shifts the temperature with no composition "
         + "change at all.  AND READ THE SUBSCRIPT AGAINST THE OUTPUT: the "
         + "engine publishes a KPI also called `T_top`, and it is specifically "
-        + "STAGE 1 — the top tray.  The temperature on this page is whichever "
+        + "STAGE 1 — which in Choupo's numbering is the CONDENSER, not a "
+        + "tray at all.  The temperature on this page is whichever "
         + "rectifying tray carries the sensor, and step 4 exists precisely "
         + "because that is usually NOT the top one: the top tray is where the "
         + "profile is flattest and a sensor there is nearly deaf.",
         unit: "K" },
       { sym: "T_bot", means: "The controlled temperature standing in for the "
         + "BOTTOM composition — a tray temperature in the stripping section, "
-        + "under exactly the same proxy caveat as T_top, and with the same "
-        + "warning about the engine's KPI of that name (which is stage N, the "
-        + "reboiler itself).", unit: "K" },
+        + "under exactly the same proxy caveat as T_top.  The engine's "
+        + "matching KPI is spelt `T_bottom` (there is no `T_bot` key), and "
+        + "it carries the same warning: it is stage N, the reboiler itself.",
+        unit: "K" },
       { sym: "←", means: "Reads 'is controlled by': the quantity on the left "
         + "is measured, and the flow on the right is the valve the controller "
         + "moves to hold it.", unit: "none" },

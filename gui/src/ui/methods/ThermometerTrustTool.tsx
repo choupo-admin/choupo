@@ -487,8 +487,10 @@ export function ThermometerTrustTool(): JSX.Element {
             13.8033 K, so a hydrogen liquefier is still interpolated by the
             same instrument as a distillation column.{"  "}
             <strong>Only the hot end leaves.</strong>  Above 1234.93 K there
-            is no resistor and no fixed point, and the physics changes
-            completely.  What an engineer owes a number is knowing which side
+            is no RESISTOR — the platinum thermometer stops at silver and
+            the scale becomes Planck radiation, referred back to the silver,
+            gold or copper point.  Above copper ({ITS90_TOP_K} K) there is no
+            defining fixed point at all, and the physics changes completely.  What an engineer owes a number is knowing which side
             of the silver point it came from.
           </Text>
         </Box>

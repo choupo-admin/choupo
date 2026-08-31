@@ -579,7 +579,7 @@ export function FugShortcutTool(): JSX.Element {
           <Badge variant="filled" color="teal" size="lg"
             styles={{ root: { textTransform: "none", cursor: "help" } }}>
             shortcut prediction: {operating.N.toFixed(1)} stages
-            {" → "}{shortcutStages} trays
+            {" → "}{shortcutStages} whole stages
             {"  ·  "}rigorous MESH: {crossing.nStages} stages
           </Badge>
         </Tooltip>
