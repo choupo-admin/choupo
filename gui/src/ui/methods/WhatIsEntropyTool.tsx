@@ -90,12 +90,12 @@ export function minSeparationWork(T_K: number, y: readonly number[]): number {
 }
 
 /** Rebuild the ledger from the engine's published diagnostics and compare
- *  the re-added total against the engine's own S_ig.  Every input here is
- *  an ENGINE number except the two exact formulas above. */
+ *  the re-added total against the engine's own S_ig.  EVERY input here is
+ *  an engine number; the page only adds them up. */
 export interface Ledger {
-  pure: number;        // Σ y·s_ig_i  (engine per-component lines)
-  mixing: number;      // −RΣ y ln y  (exact)
-  pressure: number;    // −R ln(P/P°) (exact)
+  pure: number;        // the engine's own pure_line
+  mixing: number;      // the engine's own mixing_line
+  pressure: number;    // the engine's own pressure_line
   rebuilt: number;     // the three re-added
   S_ig: number;        // the engine's own assembled number
   S_R: number;         // the engine's residual (model line)
@@ -106,11 +106,22 @@ export function rebuildLedger(
   d: { [k: string]: number } | undefined,
 ): Ledger | null {
   if (!d) return null;
-  const need = ["s_ig_N2", "s_ig_O2", "S_ig", "S_R", "S_real"];
+  //  READ the three lines, do not recompute them (corrected 2026-08-31).
+  //  The explainProperty op publishes `pure_line`, `mixing_line` and
+  //  `pressure_line` as diagnostics -- the same op this witness runs -- so
+  //  the table's caption ("from the engine's own run") is now literally
+  //  true of every row.  It used to be true of the pure line only, while
+  //  the mixing and pressure rows were the TypeScript formulas below: a
+  //  small violation of this project's own zero-physics-in-TS rule, on the
+  //  page whose whole subject is where each number comes from.  The exact
+  //  formulas stay exported for the interactive knob, which asks a
+  //  what-if the engine was never run for.
+  const need = ["s_ig_N2", "s_ig_O2", "S_ig", "S_R", "S_real",
+    "pure_line", "mixing_line", "pressure_line"];
   for (const k of need) if (!(k in d)) return null;
-  const pure = WITNESS_Y.N2 * d["s_ig_N2"]! + WITNESS_Y.O2 * d["s_ig_O2"]!;
-  const mixing = mixingLine([WITNESS_Y.N2, WITNESS_Y.O2]);
-  const pressure = pressureLine(WITNESS_P_PA);
+  const pure = d["pure_line"]!;
+  const mixing = d["mixing_line"]!;
+  const pressure = d["pressure_line"]!;
   const rebuilt = pure + mixing + pressure;
   return {
     pure, mixing, pressure, rebuilt,

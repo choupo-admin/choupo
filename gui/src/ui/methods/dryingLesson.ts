@@ -113,9 +113,13 @@ export const DRYING_STEPS: readonly LessonStep[] = [
         + "engine finds it by bisection and holds the surface at it by "
         + "HYPOTHESIS for as long as the surface stays wet.", unit: "K" },
       { sym: "T_air", means: "The DRY-BULB temperature of the air — constant "
-        + "for the whole run.  The solid is never integrated toward it: while "
-        + "the surface is wet the solid sits at T_wb, not at T_air.",
-        unit: "K" },
+        + "for the whole run.  The solid is never integrated toward it, and "
+        + "note what that means precisely: the SURFACE is held at T_wb by "
+        + "hypothesis while it stays wet, but the vessel's own temperature "
+        + "is not a state this model solves — it is carried at whatever the "
+        + "case charged.  On this witness the two agree because the tray was "
+        + "authored AT the wet bulb (300.53 K against T_wb 300.5343), not "
+        + "because the engine computed the agreement.", unit: "K" },
       { sym: "cp_c", means: "The specific heat of the dry CARRIER gas — the "
         + "dry-gas term of the humid heat.", unit: "J/(kg·K)" },
       { sym: "cp_v", means: "The specific heat of the moisture VAPOUR — the "

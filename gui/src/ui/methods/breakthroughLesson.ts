@@ -169,8 +169,11 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
         + "you switched, which is the price of a front with width",
         unit: "m" },
       { sym: "t_b", means: "the BREAKTHROUGH time — when the outlet first "
-        + "reaches the concentration you declared unacceptable.  It is a "
-        + "CHOICE, not a property of the bed", unit: "s" },
+        + "reaches the concentration you declared unacceptable.  In DESIGN "
+        + "it is a CHOICE and not a property of the bed; in this engine it "
+        + "is not a knob at all — the unit publishes crossings at a fixed "
+        + "5 %, 50 % and 95 % of the feed value, and the 5 % one is what "
+        + "this page reads", unit: "s" },
     ],
     note: "On the witness's own numbers t_b(5 %) = 2891 s against t_st = "
       + "3041 s, so about 5 % of the 0.5 m bed — some 2.5 cm — is unused when "

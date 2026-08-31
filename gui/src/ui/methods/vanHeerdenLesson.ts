@@ -237,11 +237,14 @@ export const VAN_HEERDEN_STEPS: readonly LessonStep[] = [
       + "intercept = −(F·c_p·T_in + UA·T_coolant)   feed and coolant slide it",
     note: "This page's witness is ADIABATIC: UA is zero and there is no "
       + "coolant to move, so the handles here are the feed temperature, the "
-      + "feed flows and the reactor volume.  The corpus carries the jacketed "
-      + "twin of the same chemistry — "
+      + "feed flows and the reactor volume.  The corpus carries a jacketed "
+      + "SIBLING of the same esterification — "
       + "tutorials/steady/reactors/cstr06_jacketed, which declares thermalMode "
       + "heatExchange with UA and T_coolant — so run that case and switch the "
       + "source to \"Current run\" to see a removal line with a jacket in it.  "
+      + "Expect ONE steady state there, not three: it runs the un-steepened "
+      + "kinetics (Ea 70 kJ/mol against this witness's didactic 100), so it "
+      + "shows you the jacket and not the multiplicity.  "
       + "And watch the feed-flow knobs: raising a feed steepens the removal "
       + "line AND lifts the generation curve's plateau, so what happens to the "
       + "number of crossings cannot be read off either curve alone.",

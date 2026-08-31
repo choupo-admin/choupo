@@ -98,19 +98,40 @@ describe("the ledger arithmetic — the page's only physics", () => {
     //  them against the engine on every run): the page's re-addition must
     //  land on the engine's assembled S_ig within round-off of the
     //  published 4-decimal diagnostics.
+    //  All eight from tutorials/props/molecular/entropy01_air_ledger's
+    //  `expected`.  The three LINE keys joined the required set on
+    //  2026-08-31, when the page stopped recomputing the mixing and
+    //  pressure rows in TypeScript and started reading the ones the
+    //  explainProperty op publishes -- which is what its caption always
+    //  claimed.
     const lg = rebuildLedger({
       s_ig_N2: 200.1887, s_ig_O2: 213.8979,
+      pure_line: 203.0676, mixing_line: 4.2733, pressure_line: -5.7631,
       S_ig: 201.5778, S_R: -0.0192, S_real: 201.5586,
     })!;
     expect(lg).toBeTruthy();
     expect(lg.rebuilt).toBeCloseTo(lg.S_ig, 3);
     expect(lg.gap).toBeLessThan(1e-3);
-    expect(lg.pure).toBeCloseTo(0.79 * 200.1887 + 0.21 * 213.8979, 6);
+    //  This assertion got STRONGER on 2026-08-31 and its tolerance had to
+    //  loosen for that reason.  It used to compare the page's own
+    //  composition-weighted sum against itself (exact by construction);
+    //  now the page reads the engine's published `pure_line`, so this
+    //  compares TWO INDEPENDENTLY PUBLISHED engine numbers -- the assembled
+    //  pure line against the per-component s_ig lines it was built from.
+    //  They agree to 3.2e-5, which is round-off of the 4-decimal
+    //  diagnostics, so the band is 4 decimals and not 6.
+    expect(lg.pure).toBeCloseTo(0.79 * 200.1887 + 0.21 * 213.8979, 4);
     expect(lg.S_real).toBeCloseTo(lg.S_ig + lg.S_R, 6);
   });
 
   it("returns null rather than a partial ledger when a key is missing", () => {
     expect(rebuildLedger({ S_ig: 1, S_R: 0, S_real: 1 })).toBeNull();
+    //  a run that publishes the totals but not the LINES is also partial:
+    //  the page would otherwise have to invent two of its three rows
+    expect(rebuildLedger({
+      s_ig_N2: 200.1887, s_ig_O2: 213.8979,
+      S_ig: 201.5778, S_R: -0.0192, S_real: 201.5586,
+    })).toBeNull();
     expect(rebuildLedger(undefined)).toBeNull();
   });
 });
