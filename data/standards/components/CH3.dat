@@ -25,5 +25,7 @@ idealGasHeatCapacity
 {
     model         polynomial;
     coefficients  (2.773898e+01   3.717719e-02   -4.310241e-06   -1.759106e-09);
-    Trange        (250  3000);
+    //  the window is the FIT's range (fit_cp_poly3, 250-1500 K).
+    //  It used to say 3000: 1500 K of validity nobody regressed.
+    Trange        (250  1500);
 }
