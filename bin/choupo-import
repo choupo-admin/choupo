@@ -553,12 +553,48 @@ def closure_of(pp_path, caseDir, std, AQ):
         #  canonically, so the gap had never been reached.
         cstem = canonical_component_stem(std, c)
         if cstem is None:
+            #  A COMPONENT THE CASE INVENTED IS NOT A MISSING RECORD.
+            #
+            #  The catalogue is not the only home: property axiom 4 lets a
+            #  case carry its own constant/components/<name>.dat, and a
+            #  SEALED run reads exactly there with the catalogue hidden.  So
+            #  a component that exists ONLY case-locally already satisfies
+            #  the closure -- there is nothing to stage, because it is
+            #  staged by construction.
+            #
+            #  Until 2026-09-01 this branch refused it, telling the author
+            #  to "fix the spelling, or add the record" about a record
+            #  sitting in the very directory the seal would read.  Nobody
+            #  had reached it because every sealed case in the corpus used
+            #  catalogue components only; the first case to write a new
+            #  compound of its own (claus01's S8, which NASA TM-4513 has and
+            #  the catalogue does not) could not be sealed at all.  Adding a
+            #  compound is the thing this project most wants a student to
+            #  do, and it was the one thing the seal refused.
+            own = walk_up_local("components/" + c + ".dat")
+            if own is not None:
+                print("  [case-original] component '%s' has no catalogue "
+                      "record and is carried by the case itself (%s).  "
+                      "Nothing to stage." % (c, own.name))
+                for ctext in ((read(own) or ""),):
+                    d2t = block(ctext, "speciesMap") or block(ctext,
+                                                             "dissociatesTo")
+                    if d2t:
+                        ion_candidates.update(w for w in words(d2t)
+                                              if not w.isdigit())
+                    if re.search(r'\brole\s+solute\s*;', ctext):
+                        solute_comps.add(c)
+                if c in AQ:
+                    ion_candidates.add(c)
+                continue
             die("component '%s' is declared by the case and resolves to no"
-                " record.\n  Looked for components/%s.dat and, through"
-                " data/standards/components/ALIASES, for the canonical stem"
-                " it names.\n  A sealed case must carry every record it uses,"
-                " so this cannot be skipped: fix the spelling, or add the"
-                " record." % (c, c))
+                " record.\n  Looked for components/%s.dat in the catalogue,"
+                " through data/standards/components/ALIASES for the canonical"
+                " stem it names, AND for a case-local"
+                " constant/components/%s.dat.\n  A sealed case must carry"
+                " every record it uses, so this cannot be skipped: fix the"
+                " spelling, add the catalogue record, or write the component"
+                " into the case's own constant/components/." % (c, c, c))
         want("components/" + cstem + ".dat")
         csrc = std / "components" / (cstem + ".dat")
         loc = walk_up_local("components/" + cstem + ".dat")

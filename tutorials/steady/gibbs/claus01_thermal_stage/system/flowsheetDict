@@ -1,0 +1,139 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Claus thermal stage: an adiabatic furnace and the boiler behind it, the
+  same twelve species over the same five elements, 900 K apart.
+
+  Element order in every atoms( ) list is the order of `elements` below:
+  ( C  H  N  O  S ).  Nothing in this file declares a conversion, a
+  temperature for the furnace, or which sulfur allotrope forms -- all three
+  are results.  See system/controlDict for what comes out and what the model
+  deliberately does not do.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    //  The burner mixes before it burns, and so does this flowsheet.  The
+    //  gibbsReactor takes ONE inlet; a mixer is the honest way to say that
+    //  two streams meet, and it costs nothing to read.  Its outlet
+    //  temperature is solved from the enthalpy balance -- not declared --
+    //  which matters here because the furnace is adiabatic and every joule
+    //  in the feed ends up in the flame temperature.
+    {
+        name        burnerMix;
+        type        mixer;
+        inputs      ( acidGas  air );
+        outputs     ( feedGas );
+    }
+
+    {
+        name        furnace;
+        type        gibbsReactor;
+        in          feedGas;
+        outputs     ( furnaceGas );
+
+        operation
+        {
+            T          1400.0 K;    // initial guess for the outer Newton on T
+            P          1.5 bar;
+            mode       adiabatic;   // H_out(T) = H_in;  the flame T is a RESULT
+
+            elements   ( C  H  N  O  S );
+
+            species
+            (
+                { name  H2S;              atoms  ( 0  2  0  0  1 ); }
+                { name  SO2;              atoms  ( 0  0  0  2  1 ); }
+                { name  water;            atoms  ( 0  2  0  1  0 ); }
+                { name  CO2;              atoms  ( 1  0  0  2  0 ); }
+                { name  CO;               atoms  ( 1  0  0  1  0 ); }
+                { name  N2;               atoms  ( 0  0  2  0  0 ); }
+                { name  O2;               atoms  ( 0  0  0  2  0 ); }
+                { name  H2;               atoms  ( 0  2  0  0  0 ); }
+
+                //  The sulfur pool.  S2 dominates at furnace temperature and
+                //  S8 below about 600 K; both are offered and the minimisation
+                //  decides.  S and SO are the radicals that make the ratio a
+                //  real equilibrium rather than a switch.
+                { name  S2;               atoms  ( 0  0  0  0  2 ); }
+                { name  S8;               atoms  ( 0  0  0  0  8 ); }
+                { name  S;                atoms  ( 0  0  0  0  1 ); }
+                { name  SO;               atoms  ( 0  0  0  1  1 ); }
+
+                //  The two by-products a Claus plant is actually judged on:
+                //  they carry sulfur past the catalytic beds and out of the
+                //  stack.  Both need CO2 or CO and a carbon source, which is
+                //  why the 10 % CO2 in the acid gas is not inert.
+                { name  carbonylSulfide;  atoms  ( 1  0  0  1  1 ); }
+                { name  CS2;              atoms  ( 1  0  0  0  2 ); }
+            );
+        }
+    }
+
+    //  ---------------------------------------------------------------
+    //  THE SAME SULFUR, 1000 K COLDER.
+    //
+    //  The furnace gas leaves at ~1500 K and goes to a waste-heat boiler,
+    //  and this unit is that boiler's outlet: the SAME elements, the SAME
+    //  species list, one isothermal Gibbs minimisation at 600 K.  Nothing
+    //  else changes.  Read S2 and S8 in the two stream tables side by side
+    //  and the allotrope question answers itself -- which is the whole
+    //  reason a hand calculation of a Claus plant has to assume "S2" or
+    //  "S8" before it can even write a stoichiometry, and this does not.
+    //
+    //  WHAT THIS IS NOT.  Real sulfur CONDENSES around here, and the
+    //  package carries no liquid sulfur: S2, S8, S and SO are declared
+    //  `role nonvolatile;` and the run says so on every pass.  So this is
+    //  the composition of the GAS, and the condensed phase a real
+    //  condenser drops out is outside the model.  Said here rather than
+    //  discovered later.
+    {
+        name        boiler;
+        type        gibbsReactor;
+        in          furnaceGas;
+        outputs     ( boilerGas );
+
+        operation
+        {
+            T          600.0 K;
+            P          1.4 bar;
+            mode       isothermal;   // a boiler SETS the temperature
+
+            elements   ( C  H  N  O  S );
+
+            species
+            (
+                { name  H2S;              atoms  ( 0  2  0  0  1 ); }
+                { name  SO2;              atoms  ( 0  0  0  2  1 ); }
+                { name  water;            atoms  ( 0  2  0  1  0 ); }
+                { name  CO2;              atoms  ( 1  0  0  2  0 ); }
+                { name  CO;               atoms  ( 1  0  0  1  0 ); }
+                { name  N2;               atoms  ( 0  0  2  0  0 ); }
+                { name  O2;               atoms  ( 0  0  0  2  0 ); }
+                { name  H2;               atoms  ( 0  2  0  0  0 ); }
+
+                //  The sulfur pool.  S2 dominates at furnace temperature and
+                //  S8 below about 600 K; both are offered and the minimisation
+                //  decides.  S and SO are the radicals that make the ratio a
+                //  real equilibrium rather than a switch.
+                { name  S2;               atoms  ( 0  0  0  0  2 ); }
+                { name  S8;               atoms  ( 0  0  0  0  8 ); }
+                { name  S;                atoms  ( 0  0  0  0  1 ); }
+                { name  SO;               atoms  ( 0  0  0  1  1 ); }
+
+                //  The two by-products a Claus plant is actually judged on:
+                //  they carry sulfur past the catalytic beds and out of the
+                //  stack.  Both need CO2 or CO and a carbon source, which is
+                //  why the 10 % CO2 in the acid gas is not inert.
+                { name  carbonylSulfide;  atoms  ( 1  0  0  1  1 ); }
+                { name  CS2;              atoms  ( 1  0  0  0  2 ); }
+            );
+        }
+    }
+);

@@ -1,0 +1,91 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE CLAUS THERMAL STAGE, as an adiabatic Gibbs reactor.
+
+  Acid gas from an amine regenerator (90 mol% H2S, 10 mol% CO2) meets exactly
+  enough air to burn ONE THIRD of the H2S:
+
+      H2S + 3/2 O2  ->  SO2 + H2O          (the burner's job)
+      2 H2S + SO2   ->  3/x Sx + 2 H2O     (the Claus reaction)
+
+  Nothing here declares a conversion.  The air rate is the only knob; the
+  temperature, the H2S/SO2 ratio and WHICH SULFUR ALLOTROPE dominates all come
+  out of one Gibbs minimisation.  That last part is why the case exists:
+  sulfur vapour is S2 near 1300 K and S8 near 500 K, and a hand calculation
+  has to ASSUME one before it can write a stoichiometry.  This does not.
+
+  TWO COMPONENTS ARE THE USER'S OWN, and they are two different kinds of act:
+
+    * constant/components/S8.dat -- a component the catalogue does NOT have.
+      A new record, written where the case can see it and nowhere else.
+
+    * constant/components/carbonylSulfide.dat -- a component the catalogue
+      HAS, carrying critical properties, an Antoine fit and an ideal-gas Cp,
+      and NO formation data at all.  So it cannot enter a Gibbs reactor: the
+      element-potential method needs a Gibbs energy, and there is none.  The
+      case-local file OVERLAYS the standard record field by field (property
+      axiom 4) and adds only the missing block.  It is NOT a second COS.
+
+  Both were generated from NASA TM-4513 (McBride, Gordon & Reno 1993 -- a US
+  government work, public domain) by
+
+      bin/import_nasa.py --tm4513 S8 COS --outdir <case>/constant/components
+
+  and neither was typed by hand.  Read docs/ai/components.md for why they stay
+  local: promoting a record to data/standards/ is a curation act, and this
+  case is not one.
+
+  WHAT THE RUN ACTUALLY SAYS (recorded, not predicted -- read `expected`):
+
+    furnace, adiabatic          1515.34 K
+      S2   10.42 %      S8   9.4e-14      <- sulfur vapour is the DIMER here
+      H2S   3.91 %      SO2   3.75 %      ratio 1.04
+      H2    2.85 %      CO    0.80 %      <- thermal cracking of H2S, which
+                                             is why the ratio is not 2
+      COS   0.04 %                        <- the 10 % CO2 is not inert
+
+    boiler, isothermal at 600 K
+      S2    0.05 %      S8    3.44 %      <- the SAME sulfur, now the ring
+      H2S   2.78 %      SO2   1.39 %      ratio 1.99926
+      H2, CO, COS  all back to ~0
+
+  Two things worth stopping on.
+
+  The allotrope FLIPS across the two units and nobody told it to.  Both
+  reactors were handed the same twelve species over the same five elements;
+  the only difference is 900 K.  A textbook Claus calculation must ASSUME S2
+  or S8 before it can write a stoichiometry, and the assumption changes the
+  mole count of every stream downstream.
+
+  And the H2S : SO2 ratio comes out at 1.99926 in the boiler -- the 2 : 1
+  every Claus plant is controlled to -- from a Gibbs minimisation that was
+  never told about it.  In the furnace it is 1.04 instead, and the reason is
+  visible two lines up: H2S also CRACKS at 1500 K (H2S -> H2 + 1/2 S2),
+  which consumes H2S without consuming SO2.  The hydrogen in Claus tail gas
+  is a real and well-known nuisance, and here it is a consequence rather
+  than a correction.
+
+  WHAT THIS MODEL DOES NOT DO, said here and not discovered later:
+
+    * Sulfur CONDENSES near 600 K and the package has no liquid sulfur --
+      S2, S8, S and SO are `role nonvolatile;` and the run announces it on
+      every pass.  The boiler outlet is therefore the composition of the
+      GAS, not of a condenser with liquid running out of the bottom.
+    * Equilibrium is not conversion.  The catalytic beds that follow exist
+      precisely because the Claus reaction is kinetically slow at 500 K, and
+      a real plant does not reach the numbers above.
+    * The furnace answer sits 15 K outside the ideal-gas Cp fits (250-1500 K)
+      and the run says so, once per component, in the caveat block.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Claus thermal stage: adiabatic Gibbs reactor over C-H-N-O-S";
+
+verbosity     3;

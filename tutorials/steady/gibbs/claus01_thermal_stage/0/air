@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Combustion air.  45 kmol/h O2 burns one third of the 90 kmol/h H2S
+     (H2S + 3/2 O2 -> SO2 + H2O), and 79/21 of that is nitrogen. ---*/
+
+componentMolarFlows
+{
+    O2     45.0 kmol/h;
+    N2    169.285714 kmol/h;
+}
+
+T               298.15 K;
+P               1.5 bar;

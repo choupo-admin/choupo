@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Acid gas off the amine regenerator.  Basis 100 kmol/h. ---*/
+
+componentMolarFlows
+{
+    H2S    90.0 kmol/h;
+    CO2    10.0 kmol/h;
+}
+
+T               320 K;
+P               1.5 bar;
+
+//  DECLARED, not left to be inferred.  H2S at 320 K and 1.5 bar is a gas
+//  (Tc = 373 K, and its saturation pressure here is far above 1.5 bar), but
+//  a stream file that says nothing is seeded vf = 0 and the mixer then
+//  prices this stream as a LIQUID -- which sent the first run's mixed feed
+//  to 183 K on a condensation enthalpy nobody meant to spend.
+vaporFraction   1.0;

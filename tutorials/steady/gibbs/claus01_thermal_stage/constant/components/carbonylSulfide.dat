@@ -1,0 +1,111 @@
+/*----------------------------------------------------------*\
+  constant/components/carbonylSulfide.dat -- MERGED sealed record: the standards base with
+  this case's partial overlay applied top-level (Choupo-2607 release).
+  Materialised by bin/choupo-import so the sealed case reads ONE
+  complete record with the catalogue hidden; provenance (base +
+  overlay hashes) is recorded in constant/propertyManifest.
+\*----------------------------------------------------------*/
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  OVERLAY, not a component.  data/standards/components/carbonylSulfide.dat
+  already carries this substance -- MW, critical constants, an Antoine fit
+  and an ideal-gas Cp -- and states in its own banner that CoolProp does not
+  publish formation properties, so it omits them rather than inventing any.
+  That omission is honest and it is also disqualifying: the element-potential
+  method minimises a Gibbs energy, and a species with no dHf_298 / s_298 has
+  none, so COS could not enter a Claus furnace at all.
+
+  This file adds THE MISSING BLOCK AND NOTHING ELSE.  `Database` overlays a
+  case-local record field by field over the standard entry (property axiom 4),
+  so everything else still comes from the catalogue and there is no second
+  carbonyl sulfide anywhere.  Change the standard record and this case follows
+  it; that is the point of an overlay and the reason not to copy the whole
+  file down here.
+
+  Generated, never typed:
+      bin/import_nasa.py --tm4513 COS --outdir <case>/constant/components
+  and the block below is that output verbatim.
+\*---------------------------------------------------------------------------*/
+
+name        carbonylSulfide;
+
+reviewStatus   interim;
+
+reviewReason   importedFromCoolProp720_notCheckedAgainstPrimaries;
+
+formula     C1O1S1;
+
+CAS         463-58-1;
+
+MW          60.0751;
+
+Tc          378.7703;
+
+Pc          63.68800;
+
+omega       0.09780;
+
+Tb          222.9886;
+
+HvapTb      18558.3;
+
+Vliq        6.0663e-05;
+
+solubilityParameter 14270;
+
+vaporPressure
+{
+    model         Antoine;
+    
+    coefficients  (4.13179   844.694   -18.433);
+    Trange        (170.45  371.19);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (19.3425  0.101022  -0.000103704  4.05263e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    
+    coefficients  (124.908  -0.66629  0.00243768  -2.39516e-06);
+    Trange        (189  223);
+}
+
+triplePoint
+{
+    T   134.3000;
+    P   64.4346;
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.70%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.75%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1054-PROF.txt bundled in usnistgov/COSMOSAC; CAS 463-58-1";
+        licence     externalRestricted;   
+        installed   false;                 
+    }
+}
+
+standardThermochemistry
+{
+    dHf_298    -138398.5580;            
+    s_298      231.5848;           
+}
