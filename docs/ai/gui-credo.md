@@ -563,6 +563,16 @@ repeals none of the invariants below it:
   turns writing a page into READING the implementation, and that is where
   the 2026-08-28/29 glossing slice found eight defects nobody was hunting.
 
+A SCOPE LIMIT, added the day after: **management and organisational
+material is OUT for now** (owner, 2026-09-01: *"para já vamos evitar o
+management"*).  A page working through a capital cost's chain of judgement
+was built and then WITHDRAWN at his word, and the "Economics & management"
+shelf went with it — a discipline label with nothing under it is exactly
+what the shelf test forbids.  Recorded so the next session does not
+re-propose it as a fresh idea: it was tried, and the owner did not want it.
+What the ruling above binds is the DERIVATION of what the engine computes;
+it is not a licence to widen the syllabus.
+
 THE ARITY QUESTION THIS OPENS, recorded because it is unresolved and the
 next session must not assume it away: derivations already have a home, the
 Theory Guide (`docs/theoryGuide.tex`), and every registry entry carries a

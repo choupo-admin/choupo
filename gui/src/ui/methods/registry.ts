@@ -63,7 +63,7 @@ export type MethodToolId =
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
-  | "pcsaft-theory" | "ponchon-savarit" | "number-nobody-checked";
+  | "pcsaft-theory" | "ponchon-savarit";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -101,14 +101,6 @@ export const METHOD_DISCIPLINES = [
   "Heat transfer & energy",
   "Reaction engineering",
   "Hydraulics & control",
-  //  ADDED 2026-08-31 on the owner's suggestion.  The shelf exists because
-  //  the curriculum gap is real: engineers are taught to compute a capital
-  //  cost and not what happens around one -- who signs it, what its class
-  //  permits it to claim, and why the large process accidents had
-  //  organisational root causes rather than arithmetic ones.  Written for
-  //  everyone in the room; see NumberNobodyCheckedTool's header for why the
-  //  framing that came with the suggestion was deliberately dropped.
-  "Economics & management",
 ] as const;
 
 export type MethodDiscipline = typeof METHOD_DISCIPLINES[number];
@@ -406,25 +398,6 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "straight lines, so how far they are from that IS how wrong "
       + "McCabe-Thiele is for your system.",
     theory: "ch:ponchon",
-  },
-  {
-    //  BUILT ON A REAL ARTEFACT of this repository -- a shipped case whose
-    //  published NPV does not match its own declared construction period --
-    //  rather than on a textbook case study, because the point is that this
-    //  happens in work you have in front of you.
-    id: "number-nobody-checked",
-    label: "The number nobody checked (defending a capital cost)",
-    discipline: "Economics & management",
-    kind: "notes", status: "live",
-    teaches: "That an NPV is the end of a chain of judgements and a viva "
-      + "panel attacks a link, not the last step; that twelve digits are a "
-      + "regression pin and never a claim about how well a value is known; "
-      + "and what to do on finding a discrepancy you are NOT authorised to "
-      + "resolve -- make it visible and route it to whoever owns it, which "
-      + "is what the engine itself does with this one.  Worked on a case "
-      + "that ships in this corpus, whose NPV is discounted over a one-year "
-      + "construction while its own file declares two.",
-    theory: "ch:economics",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the
