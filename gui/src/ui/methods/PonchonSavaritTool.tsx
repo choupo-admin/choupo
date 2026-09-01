@@ -55,7 +55,7 @@ import { Alert, Box, Code, Group, Loader, Slider, Stack, Switch, Text, Title }
   from "@mantine/core";
 
 import { useMethodRun } from "../../case/methodRun.js";
-import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAtLiquid }
+import { readHxy, deltaD, hAt, leverLV, vapourEnthalpyAt }
   from "../../case/ponchonSavarit.js";
 import { PonchonPlot } from "../plotting/PonchonPlot.js";
 import { LessonStepView } from "./lessonStep.js";
@@ -101,7 +101,15 @@ export const PONCHON_STEPS: readonly LessonStep[] = [
     title: "Two balances at once, and why that forces a straight line",
     body: "Take any envelope around the top of the column — the condenser, "
       + "the trays above the cut, and the distillate leaving.  Write BOTH "
-      + "balances over it: material, and energy.",
+      + "balances over it: material, and energy.  The condenser here is a "
+      + "TOTAL one, and the page had never said so: it condenses the top "
+      + "vapour entirely, so the distillate is a LIQUID at h_D and the "
+      + "vapour leaving the top tray carries the SAME COMPOSITION as it, "
+      + "y₁ = x_D.  A partial condenser is a different diagram — its "
+      + "distillate is a vapour, and the reflux is the liquid in "
+      + "EQUILIBRIUM with it, one tie line away.  Confusing the two moves "
+      + "the difference point, which is exactly the defect this page "
+      + "carried until 2026-09-01.",
     derivation: [
       { step: "Total, component and energy balances over the top envelope.  "
           + "Q_C is the condenser duty, negative because heat leaves.",
@@ -239,7 +247,7 @@ function ConstructionPane(): JSX.Element {
     if (rows.length < 2) return null;
     const d = deltaD(rows, xD, R);
     const h = hAt(rows, xD);
-    const H = vapourEnthalpyAtLiquid(rows, xD);
+    const H = vapourEnthalpyAt(rows, xD);
     if (!d || h === null || H === null) return null;
     return { delta: d.y, lv: leverLV(d, H, h) };
   }, [rows, xD, R]);
@@ -307,9 +315,26 @@ function ConstructionPane(): JSX.Element {
             </Text>
             , against{" "}
             <Text span ff="monospace">R/(R+1) = {(R / (R + 1)).toFixed(4)}</Text>
-            {" "}from the reflux you dialled.  They agree because they are the
-            same statement — which is the check to demand of any construction
-            before trusting a stage count read off it.
+            {" "}from the reflux you dialled.
+          </Text>
+          <Text size="sm" mt={6}>
+            <strong>They agree identically, and that is worth less than it
+            looks.</strong>  Δ_D was PLACED from R, so
+            Δ_D − H₁ = R(H₁ − h_D) and Δ_D − h_D = (R + 1)(H₁ − h_D) by
+            construction: the ratio comes out R/(R+1) whatever H₁ is, even a
+            wrong one.  This readback confirms the difference point was put
+            where the reflux says, and nothing else — it cannot tell you the
+            enthalpies underneath it are right.  (An earlier version of this
+            page called it “the check to demand of any construction”.  It is
+            an identity, not a check, and the arithmetic above says which.)
+          </Text>
+          <Text size="sm" mt={6}>
+            The check that WOULD bite is the one this page does not yet reach:
+            step to the next tray and read the lever there.  L₁/V₂ is no
+            longer R/(R+1) — it depends on the SHAPE of the two curves — so
+            comparing it against the material balance V₂ = L₁ + D tests the
+            enthalpies rather than restating the reflux.  That needs the
+            staircase named below as missing.
           </Text>
         </Box>
       )}

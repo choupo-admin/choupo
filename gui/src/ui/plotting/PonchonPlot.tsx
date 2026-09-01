@@ -33,7 +33,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Plot, PLOT_CONFIG, PLOT_COLORS, darkLayout } from "./plotly.js";
-import { deltaD, leverLV, hAt, vapourEnthalpyAtLiquid }
+import { deltaD, leverLV, hAt, vapourEnthalpyAt }
   from "../../case/ponchonSavarit.js";
 import type { HxyRow } from "../../case/ponchonSavarit.js";
 
@@ -78,10 +78,12 @@ export function PonchonPlot({ rows, xD, R, showTies }: {
 
   //  THE DIFFERENCE POINT and one ray through the top tray.  The ray is the
   //  construction's whole content: it passes through the difference point,
-  //  the liquid at x_D and the vapour in equilibrium with it.
+  //  the distillate liquid at x_D and the top vapour at y_1 = x_D (a TOTAL
+  //  condenser condenses it entirely, so it shares the distillate's
+  //  composition and is NOT the vapour in equilibrium with it).
   if (dD) {
     const hD = hAt(rows, xD);
-    const H1 = vapourEnthalpyAtLiquid(rows, xD);
+    const H1 = vapourEnthalpyAt(rows, xD);
     data.push({
       x: [dD.x], y: [kJ(dD.y)], type: "scatter", mode: "markers+text",
       name: "Δ_D  (difference point)", text: ["Δ_D"], textposition: "top center",
