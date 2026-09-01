@@ -115,3 +115,76 @@ does not get re-observed and the manifest drifts.  Each entry is independent
 and the file carries no global timestamp, so a merged entry asserts nothing
 about the others — and the arm refuses on failure or timeout exactly as the
 full one does, because a failure is the absence of a claim, not a claim.
+
+---
+
+## Reading the catalogue back against the clean source (same day)
+
+Pinning is only half an answer if nobody knows what the remedy costs.  So
+`bin/curate/verify_against_nasa.py` was written to measure it: every catalogue
+record declaring `standardThermochemistry` against NASA TM-4513 (via cantera's
+bundled `nasa_gas.yaml`), matched by name and **verified against the record's
+own formula**, reference-rung filtered, writing to `data/local/` and committing
+nothing.  A TOOL, not a gate — cantera is not a project dependency, so in CI it
+could only skip, and *a check that cannot run must not pass*.
+
+**48 records compared: 34 agree within 0.5 kJ/mol, 9 differ mildly, 5 differ by
+more than 5.**  The headline is how well the two agree, not how badly.
+
+### The entropy result, and the mistake that nearly buried it
+
+Cantera labels NASA polynomials with a reference pressure of 1 atm, so the
+first draft "corrected" every TM-4513 entropy by `R ln(101325/1e5) =
++0.1094 J/(mol·K)`.  The median difference across the catalogue then came out
+at **exactly 0.109**, which reads like a systematic standard-state error
+running through this project's records.
+
+It was the correction.  Measured without it, the median |Δs_298| is
+**0.0022 J/(mol·K)** — the two tables share a convention and agree far better
+than anyone measured.
+
+*A correction applied on the strength of a label rather than a measurement will
+manufacture exactly the discrepancy it was meant to remove.*  The tool now
+prints both columns so the next reader can see which one is the small one.
+
+### The reference rung, again
+
+The largest "disagreement" in the first run was **CaO at 679 kJ/mol** — our
+datum is on the solid rung, TM-4513 is an ideal-gas table, and the difference
+is a heat of sublimation being printed as an error.  Six records were in that
+state (CaO, H2SO4, HNO3, K2SO4, KOH, Na2SO4).  They are skipped with the reason
+stated, not compared and forgiven.
+
+### The five that genuinely differ
+
+| species | ours | TM-4513 | Δ kJ/mol | pinned? |
+|---|---|---|---|---|
+| N2H2 | 300.936 | 211.859 | −89.077 | yes (.THR) |
+| C2O | 378.858 | 291.038 | −87.820 | yes (.THR) |
+| NCO | 131.796 | 177.465 | +45.669 | no (GRI-Mech) |
+| C4H2 | 460.362 | 449.997 | −10.365 | yes (.THR) |
+| CH2OH | −14.628 | −8.900 | +5.728 | no (GRI-Mech) |
+
+`N2H2` is almost certainly not an error in either table: trans-diazene and the
+1,1- isomer differ by about that much, and TM-4513 names many species by
+formula alone.  That is the tool's stated blind spot — **same formula,
+different isomer is invisible to it** — and it is why the tool reports and does
+not import.
+
+**The consequence for the pins is the substantive part: three of the five are
+pinned records, so discharging those pins is not bookkeeping — it moves a value
+by 10 to 89 kJ/mol, and with it the goldens of the Gibbs tutorials that use
+them.**  The other 23 pinned records agree with the clean source closely enough
+that re-importing them changes nothing a reader would notice.  That is two
+different curation jobs wearing one label, and knowing which is which is what
+the measurement bought.
+
+### And the sulfur pool the tutorial needed
+
+TM-4513 carries **S, S2, S8, COS, CS, CS2, SH, SO, SO2, SO3** — and **not S3
+through S7**.  So the Claus tutorial gets S2 and S8 (the two allotropes that
+dominate above and below roughly 700 K) from a public-domain source, S6 is
+honestly unavailable and will be said to be, and COS — which is in the
+catalogue with **no formation data at all**, so it cannot enter a Gibbs
+reactor — can be given some.  The licence finding did not block the tutorial;
+it decided where its data comes from.
