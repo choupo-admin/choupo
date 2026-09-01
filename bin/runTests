@@ -2319,6 +2319,22 @@ PYEOF
     fi
     rm -f /tmp/guidemenu.$$
 
+    # Rules-of-Thumb index (2026-09-01).  The Design Guide IS the heuristics
+    # reference and the EduTool that opens it must INDEX it, never quote it:
+    # a second home for numbers that sit beside named safety standards is the
+    # drift class this tree found three times in a week.  Checks the index is
+    # current against the .tex, every deep link lands on a real label, and the
+    # page carries no rule text.  4 sabotages, arm (b) recorded as latent.
+    if "$ROOT/bin/curate/check_rules_of_thumb.py" > /tmp/rot.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "rules-of-thumb-gate" "$(head -1 /tmp/rot.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_rules_of_thumb.py)\n" "rules-of-thumb-gate"
+        cat /tmp/rot.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rot.$$
+
     # shortcutColumn refusals (2026-08-29).  FUG had three places where an
     # ABSENCE came back as a number at exit 0: the feed bubble point falling
     # back on the feed's declared temperature (the method's ONLY thermodynamic

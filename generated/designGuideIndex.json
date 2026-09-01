@@ -1,0 +1,281 @@
+{
+  "note": "DERIVED by bin/curate/design_guide_index.py from docs/designGuide.tex.  Titles and labels only -- NO rule text, deliberately: the guide is the one home for the heuristics and a copy in the GUI would drift on exactly the numbers a student would act on.",
+  "guide": "designGuide",
+  "sections": [
+    {
+      "title": "Process synthesis & flowsheet structure",
+      "label": "process-synthesis--flowsheet-structure",
+      "subsections": []
+    },
+    {
+      "title": "Reactors & reaction engineering",
+      "label": "reactors--reaction-engineering",
+      "subsections": [
+        {
+          "title": "Type selection",
+          "label": "type-selection"
+        },
+        {
+          "title": "How far to push conversion",
+          "label": "how-far-to-push-conversion"
+        },
+        {
+          "title": "Temperature, pressure & exotherm policy",
+          "label": "temperature-pressure--exotherm-policy"
+        },
+        {
+          "title": "Sizing rules",
+          "label": "sizing-rules"
+        }
+      ]
+    },
+    {
+      "title": "Distillation & separation-train design",
+      "label": "distillation--separation-train-design",
+      "subsections": [
+        {
+          "title": "Internals selection (trays vs packing)",
+          "label": "internals-selection-trays-vs-packing"
+        },
+        {
+          "title": "Diameter from vapour load (flooding)",
+          "label": "diameter-from-vapour-load-flooding"
+        },
+        {
+          "title": "Reflux and FUG sizing",
+          "label": "reflux-and-fug-sizing"
+        },
+        {
+          "title": "Sequencing multicomponent splits",
+          "label": "sequencing-multicomponent-splits"
+        },
+        {
+          "title": "Azeotropes",
+          "label": "azeotropes"
+        }
+      ]
+    },
+    {
+      "title": "Absorption, stripping & gas treating",
+      "label": "absorption-stripping--gas-treating",
+      "subsections": []
+    },
+    {
+      "title": "Liquid-liquid extraction",
+      "label": "liquid-liquid-extraction",
+      "subsections": []
+    },
+    {
+      "title": "Membranes & aqueous/advanced separations",
+      "label": "membranes--aqueousadvanced-separations",
+      "subsections": [
+        {
+          "title": "Selecting the membrane class",
+          "label": "selecting-the-membrane-class"
+        },
+        {
+          "title": "Recovery vs scaling — the master trade-off",
+          "label": "recovery-vs-scaling--the-master-trade-off"
+        },
+        {
+          "title": "Crossflow, flux and polarisation",
+          "label": "crossflow-flux-and-polarisation"
+        },
+        {
+          "title": "Staging, trains, pretreatment",
+          "label": "staging-trains-pretreatment"
+        }
+      ]
+    },
+    {
+      "title": "Solids processing & particle technology",
+      "label": "solids-processing--particle-technology",
+      "subsections": [
+        {
+          "title": "Crystallisation route — pick by the solubility curve",
+          "label": "crystallisation-route--pick-by-the-solubility-curve"
+        },
+        {
+          "title": "Solid--liquid separation — filtration vs centrifugation",
+          "label": "solidliquid-separation--filtration-vs-centrifugation"
+        },
+        {
+          "title": "Dryer selection — by feed state and particle size",
+          "label": "dryer-selection--by-feed-state-and-particle-size"
+        },
+        {
+          "title": "Gas--solid separation & fluidisation velocities",
+          "label": "gassolid-separation--fluidisation-velocities"
+        }
+      ]
+    },
+    {
+      "title": "Evaporation & multiple-effect",
+      "label": "evaporation--multiple-effect",
+      "subsections": []
+    },
+    {
+      "title": "Gas-liquid separators & process drums",
+      "label": "gas-liquid-separators--process-drums",
+      "subsections": []
+    },
+    {
+      "title": "Heat exchangers — type selection & sizing",
+      "label": "heat-exchangers--type-selection--sizing",
+      "subsections": [
+        {
+          "title": "Type-selection table",
+          "label": "type-selection-table"
+        },
+        {
+          "title": "Gas-phase service",
+          "label": "gas-phase-service"
+        },
+        {
+          "title": "Allocation & velocities",
+          "label": "allocation--velocities"
+        },
+        {
+          "title": "Phase-change service",
+          "label": "phase-change-service"
+        },
+        {
+          "title": "\\(\\)T_min, LMTD correction, fouling",
+          "label": "ux3b4t_min-lmtd-correction-fouling"
+        }
+      ]
+    },
+    {
+      "title": "Heat integration & pinch analysis",
+      "label": "heat-integration--pinch-analysis",
+      "subsections": []
+    },
+    {
+      "title": "Fired heaters & furnaces",
+      "label": "fired-heaters--furnaces",
+      "subsections": []
+    },
+    {
+      "title": "Compressors, expanders & pressure change",
+      "label": "compressors-expanders--pressure-change",
+      "subsections": [
+        {
+          "title": "TYPE SELECTION",
+          "label": "type-selection-1"
+        },
+        {
+          "title": "Stages, ratio per stage & intercooling",
+          "label": "stages-ratio-per-stage--intercooling"
+        },
+        {
+          "title": "Efficiency, surge & turndown",
+          "label": "efficiency-surge--turndown"
+        },
+        {
+          "title": "When an expander pays back",
+          "label": "when-an-expander-pays-back"
+        }
+      ]
+    },
+    {
+      "title": "Drivers: electric motors, steam & gas turbines",
+      "label": "drivers-electric-motors-steam--gas-turbines",
+      "subsections": []
+    },
+    {
+      "title": "Fluid transport, line sizing & hydraulics",
+      "label": "fluid-transport-line-sizing--hydraulics",
+      "subsections": [
+        {
+          "title": "Driver selection by pressure ratio",
+          "label": "driver-selection-by-pressure-ratio"
+        },
+        {
+          "title": "Recommended superficial velocities",
+          "label": "recommended-superficial-velocities"
+        },
+        {
+          "title": "Economic pipe diameter & \\(\\)P budget",
+          "label": "economic-pipe-diameter--ux3b4p-budget"
+        },
+        {
+          "title": "NPSH (the pump killer)",
+          "label": "npsh-the-pump-killer"
+        }
+      ]
+    },
+    {
+      "title": "Control valves, pressure letdown & choking",
+      "label": "control-valves-pressure-letdown--choking",
+      "subsections": []
+    },
+    {
+      "title": "Refrigeration & vacuum systems",
+      "label": "refrigeration--vacuum-systems",
+      "subsections": [
+        {
+          "title": "Refrigeration — pick the warmest level that works",
+          "label": "refrigeration--pick-the-warmest-level-that-works"
+        },
+        {
+          "title": "Vacuum — match the pump to the absolute pressure",
+          "label": "vacuum--match-the-pump-to-the-absolute-pressure"
+        }
+      ]
+    },
+    {
+      "title": "Storage & intermediate tanks",
+      "label": "storage--intermediate-tanks",
+      "subsections": []
+    },
+    {
+      "title": "Process control & instrumentation heuristics",
+      "label": "process-control--instrumentation-heuristics",
+      "subsections": []
+    },
+    {
+      "title": "Pressure relief, flare & safety basics",
+      "label": "pressure-relief-flare--safety-basics",
+      "subsections": []
+    },
+    {
+      "title": "Effluent treatment — liquid & gaseous",
+      "label": "effluent-treatment--liquid--gaseous",
+      "subsections": [
+        {
+          "title": "Liquid effluent (wastewater)",
+          "label": "liquid-effluent-wastewater"
+        },
+        {
+          "title": "Gaseous effluent (air emissions)",
+          "label": "gaseous-effluent-air-emissions"
+        }
+      ]
+    },
+    {
+      "title": "Cost estimation & profitability",
+      "label": "cost-estimation--profitability",
+      "subsections": []
+    },
+    {
+      "title": "Materials of construction & mechanical design",
+      "label": "materials-of-construction--mechanical-design",
+      "subsections": []
+    },
+    {
+      "title": "Standards & further reading",
+      "label": "standards--further-reading",
+      "subsections": []
+    },
+    {
+      "title": "Equipment selection at a glance",
+      "label": "equipment-selection-at-a-glance",
+      "subsections": []
+    },
+    {
+      "title": "Equipment selection at a glance",
+      "label": "equipment-selection-at-a-glance-1",
+      "subsections": []
+    }
+  ]
+}

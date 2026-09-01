@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 32,
-  "registryTools": 32,
+  "liveTools": 33,
+  "registryTools": 33,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -110,6 +110,13 @@
       "discipline": "Separations & phase equilibria",
       "teaches": "That a dissolved acid gas is not one substance: H2S(aq), HS- and S2- coexist and the pH decides the split, so a stream carries BOTH bases -- the apparent components that close the mass balance and a declared speciation of the liquid.  That the equilibrium is a small Newton (mass action, master balances, electroneutrality when the pH is solved) whose K's move with temperature by van't Hoff on each record's own enthalpy.  That a reactive TRAY is just that flash, reached through one K-value entry point, so the column's Jacobian never sees an ion.  And the prediction a reader gets wrong: stripping the acid gas makes the pH FALL, because the ammonia leaves too and the sulfide does not follow the carbonate out.",
       "href": "/app/?workspace=methods&tool=sour-water"
+    },
+    {
+      "id": "rules-of-thumb",
+      "label": "Rules of thumb (what equipment do I even pick?)",
+      "discipline": "Heat transfer & energy",
+      "teaches": "Where to start when the problem stops being 'solve this flash' and becomes 'what equipment do I even choose?' -- twenty-six chapters of process-design heuristics, from flowsheet structure and reactor type through separation trains, membranes, solids, exchangers and pinch to hydraulics, relief and cost, each one click from the chapter that states it.  And the posture that makes a heuristic useful rather than dangerous: a rule is a starting bet, not a verdict, this simulator is glass-box so you can falsify it in an afternoon, and anything that could touch safety follows the named standard instead.",
+      "href": "/app/?workspace=methods&tool=rules-of-thumb"
     },
     {
       "id": "flash-operating-line",

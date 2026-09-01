@@ -880,6 +880,11 @@
       "exit": 0,
       "claim": "check_guide_menu: OK -- all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice.",
       "seconds": 0.0
+    },
+    "check_rules_of_thumb": {
+      "exit": 0,
+      "claim": "check_rules_of_thumb: OK -- 60 indexed entr(ies) over 26 chapter(s) are current against docs/designGuide.tex, every one deep-links to a label the guide defines, and the page quotes no rule.  NOT CHECKED: whether any heuristic in the guide is RIGHT, whether a browser renders the page, or a rule transcribed WITHOUT a number -- arm (c) is a tripwire against transcription, not a proof of its absence.",
+      "seconds": 0.1
     }
   }
 }

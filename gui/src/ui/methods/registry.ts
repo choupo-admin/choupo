@@ -64,7 +64,7 @@ export type MethodToolId =
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
-  | "sour-water";
+  | "sour-water" | "rules-of-thumb";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -452,6 +452,33 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "ammonia leaves too and the sulfide does not follow the carbonate "
       + "out.",
     theory: "ch:speciation",
+  },
+  {
+    //  ASKED FOR by the owner the same evening he could not find the Design
+    //  Guide in the Help menu -- and the two are one problem: that guide IS
+    //  the rules-of-thumb reference and was unreachable from the app.
+    //
+    //  The page carries NO rule text, deliberately.  Transcribing heuristics
+    //  into TypeScript would be a second home for numbers a student acts on,
+    //  several beside named safety standards; the index is DERIVED and every
+    //  row deep-links into the guide's own chapter.  What it adds is a filter
+    //  across all sixty titles at once and the guide's framing kept in front
+    //  of the reader.
+    id: "rules-of-thumb",
+    label: "Rules of thumb (what equipment do I even pick?)",
+    discipline: "Heat transfer & energy",
+    kind: "notes", status: "live",
+    teaches: "Where to start when the problem stops being 'solve this flash' "
+      + "and becomes 'what equipment do I even choose?' -- twenty-six "
+      + "chapters of process-design heuristics, from flowsheet structure and "
+      + "reactor type through separation trains, membranes, solids, "
+      + "exchangers and pinch to hydraulics, relief and cost, each one click "
+      + "from the chapter that states it.  And the posture that makes a "
+      + "heuristic useful rather than dangerous: a rule is a starting bet, "
+      + "not a verdict, this simulator is glass-box so you can falsify it in "
+      + "an afternoon, and anything that could touch safety follows the "
+      + "named standard instead.",
+    theory: "ch:gibbs-reactor",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the

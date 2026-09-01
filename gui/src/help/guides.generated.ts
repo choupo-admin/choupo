@@ -7,9 +7,9 @@ export const GUIDES = [
     { name: "userGuide", label: "User Guide" },
     { name: "developerGuide", label: "Developer Guide" },
     { name: "theoryGuide", label: "Theory Guide" },
-    { name: "propsGuide", label: "Properties Guide" },
+    { name: "propsGuide", label: "Props Workflow Guide" },
     { name: "eduToolsGuide", label: "EduTools Guide" },
-    { name: "designGuide", label: "Design Guide" },
+    { name: "designGuide", label: "Process Design Heuristics" },
     { name: "explorerGuide", label: "Explorer Guide" },
     { name: "tutorialsGuide", label: "Tutorials Guide" },
 ] as const;
