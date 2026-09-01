@@ -166,6 +166,51 @@ def main() -> int:
               "by nature (several gates build or run the engine).")
         return 0
 
+    #  --only NAME [NAME ...]: re-observe a subset.
+    #
+    #  WHY THIS IS NOT A HAND-EDIT OF A DERIVED FILE.  A gate whose OK line
+    #  changes leaves a stale claim behind, and the honest fix -- re-running
+    #  all 172 gates, several of which build the engine -- costs an hour for
+    #  one changed sentence, so in practice it does not happen and the
+    #  manifest drifts.  This arm still DERIVES the claim by running the
+    #  gate; it just runs the ones that changed.  Each entry is independent
+    #  ({exit, claim, seconds}) and the file carries no global timestamp, so
+    #  a merged entry asserts nothing about the others.
+    #
+    #  It refuses on failure or timeout exactly as the full arm does, and it
+    #  refuses a name that is not a gate -- a silent no-op here would leave
+    #  the reader believing a claim was refreshed when it was not.
+    if "--only" in sys.argv:
+        assert_tree_undisturbed("gate_manifest --only")
+        if not OUT.exists():
+            print("gate_manifest: FAILED -- no manifest to merge into; run "
+                  "bin/curate/gate_manifest.py first.")
+            return 1
+        want = sys.argv[sys.argv.index("--only") + 1:]
+        unknown = [w for w in want if w not in names]
+        if not want or unknown:
+            print("gate_manifest: FAILED -- --only needs gate name(s); "
+                  f"unknown: {unknown or '(none given)'}")
+            return 1
+        doc = json.loads(OUT.read_text())
+        for w in want:
+            rc, claim, secs = claim_of(HERE / f"{w}.py")
+            if rc != 0:
+                print(f"gate_manifest: REFUSING TO WRITE -- {w} "
+                      + ("TIMED OUT" if rc is None else f"exited {rc}")
+                      + f": {claim[:90]}\n  A failure is the absence of a "
+                      "claim, not a claim.  Nothing was written.")
+                return 1
+            before = doc["gates"].get(w, {}).get("claim", "")
+            doc["gates"][w] = {"exit": rc, "claim": claim, "seconds": secs}
+            print(f"  {w}: {'claim UNCHANGED' if before == claim else 'claim updated'}"
+                  f" ({secs:.1f}s)")
+        OUT.write_text(json.dumps(doc, indent=2, sort_keys=False) + "\n")
+        print(f"merged {len(want)} re-observed gate(s) into "
+              f"{OUT.relative_to(ROOT)}; every OTHER entry is untouched and "
+              "as old as its last observation.")
+        return 0
+
     #  Full regeneration.
     out = {"note": "DERIVED by running each gate and capturing the one-line "
                    "claim it prints.  Never transcribed from a docstring -- a "

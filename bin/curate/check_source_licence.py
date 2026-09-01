@@ -35,6 +35,36 @@ The violation is the aggregator standing AS the authority:
 -- the second calling an aggregator "Primary data", which is the exact
 inversion the invariant forbids.
 
+THE SECOND RULE, added 2026-09-01: a NONCOMMERCIAL COMPILATION.  Burcat's
+Third Millennium database (hosted at ReSpecTh) is "provided free of charge
+for non commercial use" -- and NonCommercial is on the excluded list
+regardless of copyleft, because the objection is not a licence to honour but
+a restriction against this project's free-for-commercial ethos.  Unlike an
+aggregator, no `via` rescues it: the compilation IS what would be copied,
+and the protocol says "do not enter their numbers, EVEN CITED".  What is
+allowed is the name as a CROSS-CHECK, which enters no value; OH.dat is the
+one record in the tree that uses it that way.
+
+This gate had never heard the name, while bin/curate/import_gibbs_nasa.py
+had said in capitals since 2026-06-14 that Burcat is licence-excluded and
+that every package bundling it is provenance laundering.  ONE DECISION, TWO
+HOMES, DISAGREEING -- and the disagreement shipped: 36 records in the public
+tree name it as the origin of their formation data.  They are PINNED, not
+deleted (debt_registry.NC_COMPILATION carries why, the remedy, and what is
+reserved to Vitor).
+
+SABOTAGES, 2026-09-01, all five behave:
+  S1  a new record whose banner names BURCAT.THR      -> FAILS, names it
+  S2  a record saying "dHf via Burcat's database"     -> FAILS (no via rescue;
+      this is the arm that distinguishes the two rules, and the one an
+      aggregator-shaped implementation would have got wrong)
+  S3  "from ATcT, cross-checked with Burcat"          -> stays compliant, so
+      the allow-branch is real rather than permanently-true
+  S4  a pin for a file that does not mention Burcat   -> STALE, naming the
+      registry constant it lives in
+  S5  the detector regex disarmed                     -> all 36 pins go stale,
+      so the pins are load-bearing and cannot outlive the check
+
 So the rule is: an encumbered name may appear ONLY after a `via`/`through`
 marker, i.e. as a route, never as the subject of a source/citation field.
 
@@ -54,7 +84,7 @@ from pathlib import Path
 #  tolerating?" is a fact with exactly one home.
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).resolve().parent))
-from debt_registry import SOURCE_LICENCE
+from debt_registry import SOURCE_LICENCE, NC_COMPILATION
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,6 +95,35 @@ ENCUMBERED = re.compile(
     r'\b(CRC\s+Handbook|NIST\s+WebBook|NIST\s+SRD|DIPPR|Yaws|'
     r'CAS\s+Common\s+Chemistry|DDBST|Dortmund\s+Data\s+Bank)\b', re.I)
 DECHEMA = re.compile(r'\bDECHEMA\b', re.I)
+
+#  A NONCOMMERCIAL COMPILATION -- a SECOND shape, and the difference from
+#  the aggregators above is the whole reason it needs its own rule.
+#
+#  Burcat's Third Millennium database (now hosted at ReSpecTh) states:
+#  "provided free of charge for non commercial use".  NonCommercial is on
+#  the excluded list REGARDLESS of copyleft -- it is not a copyleft problem
+#  to honour but a use restriction against this project's ethos.
+#
+#  For an aggregator, `via` rescues the citation: the value came from the
+#  journal and the aggregator is only where somebody read it.  Here it
+#  rescues nothing -- the compilation IS what would be copied, and the
+#  protocol says "do not enter their numbers, even cited".  So this rule
+#  has no VIA branch.  What it does allow is the name as a CROSS-CHECK: a
+#  record that computes its value elsewhere and compares it against Burcat
+#  enters no Burcat number, and OH.dat is exactly that.
+#
+#  THE SECOND HOME THIS CLOSES.  bin/curate/import_gibbs_nasa.py has said
+#  in capitals since 2026-06-14 that Burcat is licence-excluded and that
+#  every package bundling it is provenance laundering -- while THIS gate,
+#  the one that enforces licence, had never heard the name.  One decision,
+#  two homes, disagreeing, and the disagreement shipped: 36 records in the
+#  public tree name it as the origin of their formation data.
+NC_COMPILATION_SOURCE = re.compile(r'\b(BURCAT\.THR|Burcat|ReSpecTh)\b', re.I)
+
+#  Markers that make a mention a CHECK rather than an origin.  Deliberately
+#  narrower than VIA below: `via` is not among them.
+CHECK_MARKER = re.compile(
+    r'\b(cross-check\w*|compared|verified\s+against|anchor\w*)\b', re.I)
 
 #  A route marker: the aggregator is where the value was READ.
 VIA = re.compile(r'\b(via|through|accessed\s+(?:via|through)|retrieved\s+from)\b', re.I)
@@ -82,6 +141,7 @@ SCAN = ["data/standards"]
 
 def main() -> int:
     violations, pinned_seen, nfiles = [], set(), 0
+    nc_new, nc_seen = [], set()
     #  A SCAN OVER NOTHING IS NOT A CLEAN CATALOGUE (2026-08-15 fleet
     #  census).  This gate shared the check_true_ions death shape: rename
     #  data/standards and rglob returns nothing, zero violations are found
@@ -104,6 +164,17 @@ def main() -> int:
             nfiles += 1
             rel = p.relative_to(ROOT).as_posix()
             lines = text.splitlines()
+            for n, line in enumerate(lines, 1):
+                nc = NC_COMPILATION_SOURCE.search(line)
+                if nc and not CHECK_MARKER.search(line[:nc.start()]):
+                    if rel in NC_COMPILATION:
+                        nc_seen.add(rel)
+                    else:
+                        nc_new.append(
+                            f"{rel}:{n}  {nc.group(0)} is the ORIGIN of a "
+                            f"value; the database is NonCommercial and no "
+                            f"'via' rescues it\n        {line.strip()[:110]}")
+                    break
             for n, line in enumerate(lines, 1):
                 hit = ENCUMBERED.search(line) or DECHEMA.search(line)
                 if not hit:
@@ -133,13 +204,22 @@ def main() -> int:
                                   f"authority (not 'via')\n        {line.strip()[:110]}")
 
     stale = sorted(set(PINNED) - pinned_seen)
+    stale += [f"{s} (NC_COMPILATION)"
+              for s in sorted(set(NC_COMPILATION) - nc_seen)]
+    violations += nc_new
     if violations or stale:
         print("check_source_licence: FAILED")
         for v in violations:
             print("  NEW encumbered source: " + v)
         for s in stale:
-            print(f"  STALE PIN: {s} no longer cites an encumbered source "
-                  "-- remove it from PINNED")
+            #  Name the list the entry is actually in.  Two lists now feed
+            #  this arm, and "remove it from PINNED" sent the reader to the
+            #  wrong constant for every NC_COMPILATION entry.
+            where = "NC_COMPILATION" if s.endswith("(NC_COMPILATION)") \
+                else "SOURCE_LICENCE"
+            name = s.replace(" (NC_COMPILATION)", "")
+            print(f"  STALE PIN: {name} no longer cites an encumbered "
+                  f"source -- remove it from debt_registry.{where}")
         if violations:
             print("\n  curation-protocol.md: 'do not enter their numbers, even "
                   "cited'.\n  A primary cited THROUGH an aggregator is fine "
@@ -161,7 +241,20 @@ def main() -> int:
           f"encumbered source stands as the authority for a value, except "
           f"{len(PINNED)} pinned violations awaiting curation (a primary "
           "datum, not a guess).  A primary cited via an aggregator is "
-          "compliant and is not counted.")
+          "compliant and is not counted.  "
+          f"NonCommercial compilations: no new record names Burcat/ReSpecTh "
+          f"as a value's origin; {len(NC_COMPILATION)} existing ones do and "
+          f"are pinned.")
+    #  THE MANIFEST READS ONLY THE FIRST LINE.  gate_manifest.py captures
+    #  `line[0]` as the gate's claim, so a claim printed on a second line is
+    #  invisible in the one place that answers "what does this project
+    #  check?" -- which is why the NC clause sits above and not here.  What
+    #  is here is the caveat, and a caveat is not a claim.
+    print("  The NonCommercial arm does NOT say the pinned records "
+          "are acceptable -- it says the ratchet is on and that what "
+          "to do with them is Vitor's, per the registry entry.  A "
+          "mention after a cross-check marker enters no value and is "
+          "not counted.")
     return 0
 
 

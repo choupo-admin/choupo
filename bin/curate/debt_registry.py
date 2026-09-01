@@ -89,6 +89,115 @@ SOURCE_LICENCE = {
         "either way it should be explicit, not incidental.",
 }
 
+#  NC_COMPILATION -- values whose ORIGIN is a NonCommercially-licensed
+#  compilation.  A DIFFERENT SHAPE from SOURCE_LICENCE above, and the
+#  difference is why it needs its own list.
+#
+#  For an aggregator (NIST WebBook, CRC) the question is authority-vs-route:
+#  a primary read THROUGH one is compliant, because the value came from the
+#  journal article and the aggregator is only where somebody looked.  For a
+#  NonCommercial compilation there is no route that rescues it -- the
+#  arrangement IS what was copied, and the protocol says "do not enter their
+#  numbers, even cited".  So `via Burcat` is not a defence; only Burcat as a
+#  CROSS-CHECK (entering no value) is, and OH.dat is the one record that
+#  does that.
+#
+#  THE LICENCE, read at ReSpecTh (which now hosts the database): "provided
+#  free of charge for non commercial use, on condition that proper quotation
+#  will be included in the pertinent publications."  NonCommercial is on
+#  CLAUDE.md 10's excluded list REGARDLESS of copyleft, against Choupo's
+#  free-for-commercial ethos.
+#
+#  NOT FIXED HERE, and the reason is the usual one.  Deleting 36 curated
+#  records removes the entire radical/sulfur/chlorine pool six Gibbs
+#  tutorials are built on; re-fitting them from a clean source is a curation
+#  act with a primary in hand, and inventing replacement numbers to close a
+#  licence gap would put a fabrication where a measured value belongs.  It
+#  is also not mine to rule: whether the Burcat 2005 PUBLICATION is a
+#  citable paper distinct from the database file is a legal reading, and
+#  both answers are defensible.  Vitor decides; the pin keeps the question
+#  visible until he does.
+#
+#  REMEDY, the same for every entry and already established in the tree:
+#  bin/curate/import_gibbs_nasa.py names NASA TM-4513 (McBride, Gordon &
+#  Reno 1993 -- a US government work, public domain) as the clean route for
+#  dHf_298/s_298/Cp, and ATcT (DOE, versioned OSTI DOI, no NC clause) for
+#  dHf.  Re-import each species from there and the pin goes.
+NC_COMPILATION = {
+    "data/standards/components/C2O.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C3H3.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C3H5.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C4H2.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C4H4.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C5H5.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C6H5.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/CH3CO.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/CH3O2.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/CS.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/CS2.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/Cl.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/ClO.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/HOCl.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/HONO.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/HSO.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/HSO3.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/N2H2.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/N2H3.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/N2H4.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/NO3.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/S.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/S2.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/SH.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/SO.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/SO3.dat":
+        "the card was read out of BURCAT.THR itself.",
+    "data/standards/components/C.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/CH3.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/H.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/H2O2.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/HO2.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/N.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/NH.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/NH2.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/O.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+    "data/standards/components/O3.dat":
+        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+}
+
 #  INVERTED_VALIDITY_WINDOWS -- REMOVED 2026-08-05, the waiver is discharged.
 #
 #  Six records declared `Trange (hi lo)` with hi <= lo and the engine merely

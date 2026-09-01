@@ -2309,6 +2309,26 @@ standards it ships Choupo's OWN open group-contribution estimates under
 `data/groupEstimative/` (Joback / Lee-Kesler, flagged as estimates), never
 third-party databank values.  Never mix those ownership boundaries.
 
+**A NONCOMMERCIAL COMPILATION IS NOT RESCUED BY `via` (settled 2026-09-01).**
+For an aggregator (NIST WebBook, CRC) the licence question is
+authority-vs-route: a primary read THROUGH one is compliant, because the value
+came from the journal.  For a NonCommercial COMPILATION there is no such
+route — the arrangement IS what would be copied, and the protocol's phrasing
+is *"do not enter their numbers, even cited"*.  What is allowed is the name as
+a CROSS-CHECK, which enters no value.  **Burcat / ReSpecTh (the Third
+Millennium database) is that class** — "provided free of charge for non
+commercial use" — and `check_source_licence` now enforces it, so no new record
+can name it as a value's origin.  The records that already do are PINNED in
+`debt_registry.NC_COMPILATION` with the remedy (NASA TM-4513 and ATcT, the
+clean routes `bin/curate/import_gibbs_nasa.py` already names); whether the
+"Burcat 2005 / JANAF" citation is a citable publication or the database under
+another name is RESERVED for Vítor.  How it was found, and why nothing was
+deleted:
+[`docs/design/a-noncommercial-compilation-in-the-public-tree.md`](docs/design/a-noncommercial-compilation-in-the-public-tree.md).
+The general rule, which is the durable half: **a licence decision recorded in a
+tool's comment is not enforced anywhere — put it in the gate, or it is a
+sentence rather than a contract.**
+
 * **`components/` stays PHYSICALLY FLAT — do NOT relitigate (settled 2026-06-07).**
   The loader resolves `components/<name>.dat` by EXACT NAME (`Database.cpp`,
   O(1) path concat, replicated across the tools); category (solid/fluid/family)
