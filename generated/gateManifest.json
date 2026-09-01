@@ -870,6 +870,11 @@
       "exit": 0,
       "claim": "check_workspace_truth: OK -- HEAD 251c52f66d is AHEAD of (2 commit(s), push soon -- the recycler eats local refs) origin/main (freshly fetched), and the poisoned overlay is absent.  NOT GUARANTEED: the recycler itself, and the window between this proof and the action it guards -- git's own non-fast-forward refusal is the backstop there.",
       "seconds": 0.8
+    },
+    "check_claus_prose": {
+      "exit": 0,
+      "claim": "check_claus_prose: OK -- 32 quotation(s) of 13 quantit(ies) across 3 prose home(s) all reproduce the witness's golden to the precision they print at.  NOT CHECKED: whether the golden is RIGHT (it is self-recorded), whether the sentence AROUND a number is true, or any number not listed in QUOTED -- which is how a 1.99926 survived three homes on the day this case was written.",
+      "seconds": 0.0
     }
   }
 }

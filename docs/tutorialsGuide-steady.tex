@@ -5199,6 +5199,45 @@ Use it when a physics model is overkill ("assume 90 \% capture"), as a placehold
 \subsection{gibbs}
 \grouptheory{gibbs}
 \clearpage
+\tutentry{claus01\_thermal\_stage}{tutorials/steady/gibbs/claus01\_thermal\_stage}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (burnerMix) at (0.0,-0.0) {\textbf{burnerMix}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (furnace) at (2.9,-0.0) {\textbf{furnace}\\[-1pt]{\tiny gibbsReactor}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (boiler) at (5.8,-0.0) {\textbf{boiler}\\[-1pt]{\tiny gibbsReactor}};
+  \draw[->] ($(burnerMix.west)+(-1.05,-0.17)$) -- ($(burnerMix.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {acidGas};
+  \draw[->] ($(burnerMix.west)+(-1.05,0.17)$) -- ($(burnerMix.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {air};
+  \draw[->] (burnerMix) -- (furnace) node[midway, above, font=\tiny] {feedGas};
+  \draw[->] (furnace) -- (boiler) node[midway, above, font=\tiny] {furnaceGas};
+  \draw[->] ($(boiler.east)+(0,0.00)$) -- ($(boiler.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {boilerGas};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Claus thermal stage: adiabatic Gibbs reactor over C-H-N-O-S}
+\begin{tutnarrative}
+Claus thermal stage: an adiabatic furnace and the boiler behind it, the same twelve species over the same five elements, 900 K apart.
+
+Element order in every atoms( ) list is the order of `elements` below: ( C H N O S ). Nothing in this file declares a conversion, a temperature for the furnace, or which sulfur allotrope forms -- all three are results. See system/controlDict for what comes out and what the model deliberately does not do.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{acidGas}{F}{0.0277777777778}
+\goldrow{stream}{acidGas}{T}{320}
+\goldrow{stream}{air}{F}{0.0595238094444}
+\goldrow{stream}{air}{T}{298.15}
+\goldrow{stream}{boilerGas}{F}{0.0786432844729}
+\goldrow{stream}{boilerGas}{T}{600}
+\goldrow{stream}{feedGas}{F}{0.0873015872222}
+\goldrow{stream}{feedGas}{T}{305.967920996}
+\goldrow{stream}{furnaceGas}{F}{0.0872586259716}
+\goldrow{stream}{furnaceGas}{T}{1515.34061493}
+\goldrow{kpi}{boiler}{F\_in\_kmol\_h}{314.131053498}
+\goldrow{kpi}{boiler}{F\_out\_kmol\_h}{283.115824103}
+\goldrow{kpi}{boiler}{N\_in\_mol\_s}{87.2586259716}
+\goldrow{kpi}{boiler}{N\_out\_mol\_s}{78.6432844729}
+\goldmore{55}
+\end{tutgolden}
+
+\clearpage
 \tutentry{gibbs01\_water\_gas\_shift}{tutorials/steady/gibbs/gibbs01\_water\_gas\_shift}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

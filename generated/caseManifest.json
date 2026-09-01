@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 392,
+  "cases": 393,
   "witnesses": 15,
   "validationOp": 6,
   "anchored": 11
@@ -4289,6 +4289,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/gibbs/claus01_thermal_stage": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "gibbsReactor",
+    "mixer"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/gibbs/gibbs01_water_gas_shift": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -6020,6 +6035,7 @@
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
     "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd",
     "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd",
+    "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
     "tutorials/steady/gibbs/gibbs02_steam_reforming",
     "tutorials/steady/gibbs/gibbs03_methane_combustion",
@@ -6405,6 +6421,7 @@
    "gibbsReactor": [
     "tutorials/steady/flowsheets/ammonia01_synthesis_loop",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
+    "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
     "tutorials/steady/gibbs/gibbs02_steam_reforming",
     "tutorials/steady/gibbs/gibbs03_methane_combustion",
@@ -6522,7 +6539,8 @@
     "tutorials/steady/flowsheets/process03_recycle",
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/proxy01_gas_loop",
-    "tutorials/steady/flowsheets/recycle_autoinit_tear"
+    "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/gibbs/claus01_thermal_stage"
    ],
    "multiStreamHX": [
     "tutorials/steady/heat/mheatx01_two_hot_one_cold"
@@ -6946,6 +6964,7 @@
     "tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler",
     "tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd",
     "tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd",
+    "tutorials/steady/gibbs/claus01_thermal_stage",
     "tutorials/steady/gibbs/gibbs01_water_gas_shift",
     "tutorials/steady/gibbs/gibbs02_steam_reforming",
     "tutorials/steady/gibbs/gibbs03_methane_combustion",

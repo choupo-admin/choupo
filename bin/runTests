@@ -2285,6 +2285,23 @@ PYEOF
     fi
     rm -f /tmp/bjerprose.$$
 
+    # Claus prose gate (2026-09-01).  The bjerrum argument with one more home:
+    # claus01's numbers -- the solved flame temperature, the two allotrope
+    # fractions, the H2S:SO2 ratio in both units -- are transcribed into a case
+    # header, an EduTool page AND the tutorials catalogue, all derived from the
+    # golden.  Three of them had already drifted before the page shipped (the
+    # ratio is 1.999270 and two homes said 1.99926; COS is 0.037 % and one
+    # said 0.04 %).  6 sabotages.
+    if "$ROOT/bin/curate/check_claus_prose.py" > /tmp/clausprose.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "claus-prose-gate" "$(head -1 /tmp/clausprose.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_claus_prose.py)\n" "claus-prose-gate"
+        cat /tmp/clausprose.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/clausprose.$$
+
     # shortcutColumn refusals (2026-08-29).  FUG had three places where an
     # ABSENCE came back as a number at exit 0: the feed bubble point falling
     # back on the feed's declared temperature (the method's ONLY thermodynamic

@@ -63,7 +63,7 @@ export type MethodToolId =
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
-  | "pcsaft-theory" | "ponchon-savarit";
+  | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -398,6 +398,31 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "straight lines, so how far they are from that IS how wrong "
       + "McCabe-Thiele is for your system.",
     theory: "ch:ponchon",
+  },
+  {
+    //  THE FIRST PROCESS PAGE on this shelf, and it earns the place because
+    //  its lesson only exists BETWEEN two units: the same twelve species
+    //  minimised twice, 900 K apart, and the sulfur allotrope flips.  A
+    //  one-unit page could not show it, which is why it is not a method
+    //  page with a worked example.
+    id: "claus-gibbs",
+    label: "The allotrope nobody declared (a Claus plant)",
+    discipline: "Reaction engineering",
+    kind: "notes", status: "live",
+    teaches: "That a Claus stoichiometry CANNOT be written by hand, because "
+      + "'3/x S_x' contains an unknown that is itself an equilibrium -- and "
+      + "that the way out is to stop specifying reactions: declare the "
+      + "atoms and the candidate species and minimise G subject to A n = b, "
+      + "which collapses N unknowns into one element potential per ELEMENT "
+      + "plus a total.  That an adiabatic temperature is a RESULT of the "
+      + "air rate, not a specification.  That the 2 : 1 H2S : SO2 every "
+      + "Claus plant is controlled to falls out of a minimisation never "
+      + "told about it, while the furnace's 1.04 is explained by the "
+      + "hydrogen on the same line.  And that a species with no formation "
+      + "data has no Gibbs energy and cannot play at all -- which is why "
+      + "the case writes two components of its own, one new and one an "
+      + "overlay filling a gap the catalogue record honestly declares.",
+    theory: "ch:gibbs-reactor",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the

@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 30,
-  "registryTools": 30,
+  "liveTools": 31,
+  "registryTools": 31,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -96,6 +96,13 @@
       "discipline": "Separations & phase equilibria",
       "teaches": "That putting ENTHALPY on the vertical axis turns the energy balance into a point on the diagram: the difference point, whose enthalpy is a net flow over a flow and belongs to no stream, and from which every operating line is a ray.  The lever rule then reads the internal reflux off the page with a ruler, total reflux is the difference point at infinity, and minimum reflux is a ray coinciding with a tie line.  Above all: constant molar overflow is exactly the claim that the two enthalpy curves are parallel straight lines, so how far they are from that IS how wrong McCabe-Thiele is for your system.",
       "href": "/app/?workspace=methods&tool=ponchon-savarit"
+    },
+    {
+      "id": "claus-gibbs",
+      "label": "The allotrope nobody declared (a Claus plant)",
+      "discipline": "Reaction engineering",
+      "teaches": "That a Claus stoichiometry CANNOT be written by hand, because '3/x S_x' contains an unknown that is itself an equilibrium -- and that the way out is to stop specifying reactions: declare the atoms and the candidate species and minimise G subject to A n = b, which collapses N unknowns into one element potential per ELEMENT plus a total.  That an adiabatic temperature is a RESULT of the air rate, not a specification.  That the 2 : 1 H2S : SO2 every Claus plant is controlled to falls out of a minimisation never told about it, while the furnace's 1.04 is explained by the hydrogen on the same line.  And that a species with no formation data has no Gibbs energy and cannot play at all -- which is why the case writes two components of its own, one new and one an overlay filling a gap the catalogue record honestly declares.",
+      "href": "/app/?workspace=methods&tool=claus-gibbs"
     },
     {
       "id": "flash-operating-line",
