@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 25,
-  "registryTools": 25,
+  "liveTools": 30,
+  "registryTools": 30,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -43,7 +43,7 @@
     },
     {
       "id": "property-origins",
-      "label": "Where do properties come from?",
+      "label": "Where do properties come from? (estimation, Joback)",
       "discipline": "Thermodynamics",
       "teaches": "That every number in a component's data file has a PROVENANCE -- measured, fitted, or estimated -- and the reflex question to ask of each: measured by whom, fitted over what window, estimated from which groups at what typical error.  The anatomy of a .dat file by what CONSUMES each field, and the standing rule that estimation is a curation-time act, never a runtime one.",
       "href": "/app/?workspace=methods&tool=property-origins"
@@ -57,10 +57,45 @@
     },
     {
       "id": "four-ways-mixture",
-      "label": "Four ways to price a mixture",
+      "label": "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
       "discipline": "Thermodynamics",
       "teaches": "That every mixture model answers one question -- what did it KNOW about this pair before it priced it: nothing (ideal), the pair's own measured data (Wilson/NRTL), the groups (UNIFAC), the quantum charge surface (COSMO-SAC), or molecular theory with association (PC-SAFT).  The engine grades four of them against 12 measured ethanol/water points live; a fit wins where its evidence was taken and loses where it was not, and the predictive rungs buy reach at a price the page shows in kelvin.",
       "href": "/app/?workspace=methods&tool=four-ways-mixture"
+    },
+    {
+      "id": "cosmo-sac-theory",
+      "label": "COSMO-SAC, derived (σ-profiles → activity coefficient)",
+      "discipline": "Thermodynamics",
+      "teaches": "The full derivation of COSMO-SAC 2002 as the engine runs it: the quantum charge surface, the σ-profile, the misfit and hydrogen-bond exchange energy, the IMPLICIT segment activity coefficient solved as a damped fixed point, the residual as a move between environments, and Staverman-Guggenheim for size.  Every equation cited to the line of CosmoSac.cpp that runs it, every constant quoted with its units, every assumption named where it is made — and the licence honesty that the shipped σ-profiles are synthetic teaching surrogates.",
+      "href": "/app/?workspace=methods&tool=cosmo-sac-theory"
+    },
+    {
+      "id": "local-composition",
+      "label": "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+      "discipline": "Thermodynamics",
+      "teaches": "That Wilson, NRTL and UNIQUAC are one idea carried three distances -- a molecule's neighbourhood is not the bulk composition -- and that each exists because of something the previous one could not do: Wilson STRUCTURALLY cannot produce a liquid-liquid split, NRTL buys that with a third parameter, UNIQUAC separates size from energy and opens the door UNIFAC walks through.  Every equation cited to the engine line that runs it, every assumption named where it is made -- including the one no textbook can teach, that a pair with no parameters does not fail but runs at tau = 0, exactly ideal, announced and refused unless the case authorised it.",
+      "href": "/app/?workspace=methods&tool=local-composition"
+    },
+    {
+      "id": "unifac-theory",
+      "label": "UNIFAC, derived (a pair nobody has measured)",
+      "discipline": "Thermodynamics",
+      "teaches": "That UNIFAC is not a new theory but UNIQUAC's residual term moved one level down, from molecules to their groups: r and q assembled from group counts, a liquid treated as a solution OF GROUPS, one interaction number per ordered main-group pair, and the pure-minus-mixture subtraction that makes a group activity into an activity coefficient.  And that its ideal fallback is a DIFFERENT failure from NRTL's despite identical arithmetic -- NRTL's gap is nobody fitted your pair and closes with data, UNIFAC's is a hole in the published table and does not.",
+      "href": "/app/?workspace=methods&tool=unifac-theory"
+    },
+    {
+      "id": "pcsaft-theory",
+      "label": "PC-SAFT, derived (chains, dispersion, association)",
+      "discipline": "Thermodynamics",
+      "teaches": "That PC-SAFT builds a residual HELMHOLTZ energy from named contributions -- hard chain, dispersion, association -- so one surface yields both phases and their densities, which no activity model on this shelf can express.  The temperature-dependent segment diameter, the four zeta moments, the perturbation series in packing fraction, van der Waals one-fluid mixing with k_ij as a CORRECTION rather than the whole interaction, and Wertheim TPT1's site-fraction fixed point.  And the lesson this repository paid for: the association SCHEME is part of the fit -- water curated as 4C instead of the paper's 2B passed a pure-density anchor by coincidence while the mixture flash collapsed.",
+      "href": "/app/?workspace=methods&tool=pcsaft-theory"
+    },
+    {
+      "id": "ponchon-savarit",
+      "label": "Ponchon-Savarit, derived (the enthalpy diagram)",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "That putting ENTHALPY on the vertical axis turns the energy balance into a point on the diagram: the difference point, whose enthalpy is a net flow over a flow and belongs to no stream, and from which every operating line is a ray.  The lever rule then reads the internal reflux off the page with a ruler, total reflux is the difference point at infinity, and minimum reflux is a ray coinciding with a tie line.  Above all: constant molar overflow is exactly the claim that the two enthalpy curves are parallel straight lines, so how far they are from that IS how wrong McCabe-Thiele is for your system.",
+      "href": "/app/?workspace=methods&tool=ponchon-savarit"
     },
     {
       "id": "flash-operating-line",
