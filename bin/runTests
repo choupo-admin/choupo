@@ -2302,6 +2302,23 @@ PYEOF
     fi
     rm -f /tmp/clausprose.$$
 
+    # Guide-menu reachability (2026-09-01).  buildSite checks every guide in
+    # DOCS reaches the SITE and copyDocs refuses one with no label; nothing
+    # checked it reaches a READER.  The Help menu named four by hand while
+    # DOCS carried eight, so the Design Guide -- 2400 lines of heuristics --
+    # was built, published and reachable from nowhere in the app, and was
+    # reported as deleted.  An unreachable document is indistinguishable from
+    # a deleted one.  4 sabotages.
+    if "$ROOT/bin/curate/check_guide_menu.py" > /tmp/guidemenu.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guide-menu-gate" "$(head -1 /tmp/guidemenu.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_guide_menu.py)\n" "guide-menu-gate"
+        cat /tmp/guidemenu.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/guidemenu.$$
+
     # shortcutColumn refusals (2026-08-29).  FUG had three places where an
     # ABSENCE came back as a number at exit 0: the feed bubble point falling
     # back on the feed's declared temperature (the method's ONLY thermodynamic

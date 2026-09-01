@@ -54,8 +54,11 @@ License
       returned handle is severed here anyway for the older ones.
 \*---------------------------------------------------------------------------*/
 
-/** The four manuals, by the bare name `guide.html?g=` expects. */
-export type GuideName = "theoryGuide" | "propsGuide" | "userGuide" | "developerGuide";
+/** Every manual docs/Makefile publishes, by the bare name `guide.html?g=`
+ *  expects.  This used to be a hand-written union of FOUR while DOCS carried
+ *  eight, so four published guides -- Design, EduTools, Explorer, Tutorials --
+ *  could not even be NAMED here, let alone linked.  Derived now. */
+export type { GuideName } from "./guides.generated.js";
 
 /** Accept either `theoryGuide` or `theoryGuide.pdf` -- callers historically
  *  carried both spellings, and a link is not the place to be fussy about it. */

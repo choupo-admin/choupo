@@ -875,6 +875,11 @@
       "exit": 0,
       "claim": "check_process_prose: OK -- 43 quotation(s) of 24 quantit(ies) across 2 process page(s) all reproduce their witness's golden to the precision each home prints at.  NOT CHECKED: whether a golden is RIGHT (they are self-recorded), whether the sentence AROUND a number is true, or any number not listed in quantities() -- which is how a 1.99926 survived three homes on the day the Claus case was written.",
       "seconds": 0.0
+    },
+    "check_guide_menu": {
+      "exit": 0,
+      "claim": "check_guide_menu: OK -- all 8 guide(s) in docs/Makefile's DOCS (userGuide, developerGuide, theoryGuide, propsGuide, eduToolsGuide, designGuide, explorerGuide, tutorialsGuide) reach the Help menu, which MAPS the generated list rather than naming any of them, and GuideName is derived from the same line.  NOT CHECKED: that a browser paints the items, that each PDF exists (copyDocs warns, buildSite refuses), or the LANDING page, which links two of eight by editorial choice.",
+      "seconds": 0.0
     }
   }
 }
