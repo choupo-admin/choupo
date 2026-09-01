@@ -225,6 +225,10 @@ const UnifacTheoryTool = lazy(() =>
 const PcSaftTheoryTool = lazy(() =>
   import("./methods/PcSaftTheoryTool.js")
     .then((m) => ({ default: m.PcSaftTheoryTool })));
+const SourWaterTool = lazy(() =>
+  import("./methods/SourWaterTool.js")
+    .then((m) => ({ default: m.SourWaterTool })));
+
 const ClausGibbsTool = lazy(() =>
   import("./methods/ClausGibbsTool.js")
     .then((m) => ({ default: m.ClausGibbsTool })));
@@ -421,6 +425,7 @@ export function MethodsWorkspace() {
             : tool === "unifac-theory" ? <UnifacTheoryTool />
             : tool === "pcsaft-theory" ? <PcSaftTheoryTool />
             : tool === "claus-gibbs" ? <ClausGibbsTool />
+            : tool === "sour-water" ? <SourWaterTool />
             : tool === "ponchon-savarit" ? <PonchonSavaritTool />
             : tool === "flash-operating-line" ? <FlashOperatingLineTool />
             : tool === "bjerrum" ? <BjerrumTool />

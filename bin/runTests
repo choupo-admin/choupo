@@ -2285,18 +2285,18 @@ PYEOF
     fi
     rm -f /tmp/bjerprose.$$
 
-    # Claus prose gate (2026-09-01).  The bjerrum argument with one more home:
-    # claus01's numbers -- the solved flame temperature, the two allotrope
+    # Process-page prose gate (2026-09-01).  The bjerrum argument with one
+    # more home, over every process EduTool.  claus01's numbers -- the solved flame temperature, the two allotrope
     # fractions, the H2S:SO2 ratio in both units -- are transcribed into a case
     # header, an EduTool page AND the tutorials catalogue, all derived from the
     # golden.  Three of them had already drifted before the page shipped (the
     # ratio is 1.999270 and two homes said 1.99926; COS is 0.037 % and one
     # said 0.04 %).  6 sabotages.
-    if "$ROOT/bin/curate/check_claus_prose.py" > /tmp/clausprose.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "claus-prose-gate" "$(head -1 /tmp/clausprose.$$)"
+    if "$ROOT/bin/curate/check_process_prose.py" > /tmp/clausprose.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "process-prose-gate" "$(head -1 /tmp/clausprose.$$)"
         pass=$((pass+1))
     else
-        printf "FAIL  %-40s  (run bin/curate/check_claus_prose.py)\n" "claus-prose-gate"
+        printf "FAIL  %-40s  (run bin/curate/check_process_prose.py)\n" "process-prose-gate"
         cat /tmp/clausprose.$$
         fail=$((fail+1))
     fi

@@ -63,7 +63,8 @@ export type MethodToolId =
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
-  | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs";
+  | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
+  | "sour-water";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -423,6 +424,34 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the case writes two components of its own, one new and one an "
       + "overlay filling a gap the catalogue record honestly declares.",
     theory: "ch:gibbs-reactor",
+  },
+  {
+    //  THE PAIR IS THE POINT.  Read beside `claus-gibbs`: that page
+    //  minimises a Gibbs energy over ideal gases with no solvent and no
+    //  charge; this one solves an aqueous equilibrium where the same sulfur
+    //  wears three names and the pH decides which.  A student who meets only
+    //  one of them learns that "the model" is whichever one they met.
+    //
+    //  It does NOT claim the two streams join, and its last box says so --
+    //  a rich-amine acid gas is not a sour-water overhead, and the tidy
+    //  story would be worth less than the distinction.
+    id: "sour-water",
+    label: "The same sulfur, one unit earlier (sour water)",
+    discipline: "Separations & phase equilibria",
+    kind: "notes", status: "live",
+    teaches: "That a dissolved acid gas is not one substance: H2S(aq), HS- "
+      + "and S2- coexist and the pH decides the split, so a stream carries "
+      + "BOTH bases -- the apparent components that close the mass balance "
+      + "and a declared speciation of the liquid.  That the equilibrium is a "
+      + "small Newton (mass action, master balances, electroneutrality when "
+      + "the pH is solved) whose K's move with temperature by van't Hoff on "
+      + "each record's own enthalpy.  That a reactive TRAY is just that "
+      + "flash, reached through one K-value entry point, so the column's "
+      + "Jacobian never sees an ion.  And the prediction a reader gets "
+      + "wrong: stripping the acid gas makes the pH FALL, because the "
+      + "ammonia leaves too and the sulfide does not follow the carbonate "
+      + "out.",
+    theory: "ch:speciation",
   },
   {
     //  FIRST among the constructions, deliberately.  Until this existed the

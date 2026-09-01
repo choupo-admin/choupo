@@ -10,8 +10,8 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 31,
-  "registryTools": 31,
+  "liveTools": 32,
+  "registryTools": 32,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -103,6 +103,13 @@
       "discipline": "Reaction engineering",
       "teaches": "That a Claus stoichiometry CANNOT be written by hand, because '3/x S_x' contains an unknown that is itself an equilibrium -- and that the way out is to stop specifying reactions: declare the atoms and the candidate species and minimise G subject to A n = b, which collapses N unknowns into one element potential per ELEMENT plus a total.  That an adiabatic temperature is a RESULT of the air rate, not a specification.  That the 2 : 1 H2S : SO2 every Claus plant is controlled to falls out of a minimisation never told about it, while the furnace's 1.04 is explained by the hydrogen on the same line.  And that a species with no formation data has no Gibbs energy and cannot play at all -- which is why the case writes two components of its own, one new and one an overlay filling a gap the catalogue record honestly declares.",
       "href": "/app/?workspace=methods&tool=claus-gibbs"
+    },
+    {
+      "id": "sour-water",
+      "label": "The same sulfur, one unit earlier (sour water)",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "That a dissolved acid gas is not one substance: H2S(aq), HS- and S2- coexist and the pH decides the split, so a stream carries BOTH bases -- the apparent components that close the mass balance and a declared speciation of the liquid.  That the equilibrium is a small Newton (mass action, master balances, electroneutrality when the pH is solved) whose K's move with temperature by van't Hoff on each record's own enthalpy.  That a reactive TRAY is just that flash, reached through one K-value entry point, so the column's Jacobian never sees an ion.  And the prediction a reader gets wrong: stripping the acid gas makes the pH FALL, because the ammonia leaves too and the sulfide does not follow the carbonate out.",
+      "href": "/app/?workspace=methods&tool=sour-water"
     },
     {
       "id": "flash-operating-line",

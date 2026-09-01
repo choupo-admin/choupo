@@ -205,6 +205,16 @@ def main() -> int:
             doc["gates"][w] = {"exit": rc, "claim": claim, "seconds": secs}
             print(f"  {w}: {'claim UNCHANGED' if before == claim else 'claim updated'}"
                   f" ({secs:.1f}s)")
+        #  A RENAMED GATE LEAVES A GHOST.  --only merges an entry in; it
+        #  must also drop entries for gates that no longer exist, or the
+        #  manifest answers "what does this project check?" with a name
+        #  nothing runs.  This is not a transcription -- it is the same
+        #  removal the full arm performs, from the same observation of the
+        #  gate directory.
+        gone = [k for k in list(doc["gates"]) if k not in names]
+        for k in gone:
+            del doc["gates"][k]
+            print(f"  {k}: dropped -- no such gate any more")
         OUT.write_text(json.dumps(doc, indent=2, sort_keys=False) + "\n")
         print(f"merged {len(want)} re-observed gate(s) into "
               f"{OUT.relative_to(ROOT)}; every OTHER entry is untouched and "
