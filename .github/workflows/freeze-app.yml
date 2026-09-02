@@ -132,17 +132,43 @@ jobs:
           #  restamp CHOUPO_VERSION -- if it did, the frozen app would announce
           #  a version no citation names, which is the same lie in the other
           #  direction.
+          #
+          #  THIS ARM USED TO OVERCLAIM, and measuring the published copy is
+          #  what showed it.  make/wasm.mk embeds data/standards into the
+          #  binary, and data/standards/CATALOGUE.dat declares the CATALOGUE's
+          #  own release -- a different thing from the engine's version, and
+          #  today a different value (the corpus is still sealed against
+          #  Choupo-2607; renaming it is a reseal, reserved for Vitor).  So a
+          #  bare `grep "Choupo-YYMM"` can be satisfied by the catalogue
+          #  rather than by the banner, and the comment saying "the engine
+          #  states its own identity" was describing more than the grep did.
+          #
+          #  So the arm is a SET, not a presence: every Choupo-* string in the
+          #  binary must be either the release's own version or the catalogue
+          #  identity declared in this same checkout.  A development build
+          #  carries Choupo-dev and fails; a stale or mixed build carries a
+          #  third name and fails; and the catalogue's name is accounted for
+          #  BY NAME rather than quietly satisfying the check.
           want="Choupo-${REL#v}"
-          if ! grep -qa "$want" "$d/wasm/choupoSolve.wasm"; then
+          cat_rel=$(sed -n 's/.*release[[:space:]]\+\(Choupo-[0-9A-Za-z.-]*\);.*/\1/p' \
+                    data/standards/CATALOGUE.dat | head -1)
+          echo "engine must state: $want; catalogue declares: ${cat_rel:-<none>}"
+          found=$(grep -oaE 'Choupo-[0-9A-Za-z.]+' "$d/wasm/choupoSolve.wasm" | sort -u)
+          if ! printf '%s\n' "$found" | grep -qx "$want"; then
             echo "REFUSED: the WASM does not carry '$want' -- this is not the"
-            echo "engine of $TAG.  A frozen app running a different engine"
-            echo "than its label is the defect this check exists for."
+            echo "engine of $TAG.  It carries:"; printf '  %s\n' $found
             exit 1
           fi
-          if grep -qa "Choupo-dev" "$d/wasm/choupoSolve.wasm"; then
-            echo "REFUSED: the WASM carries 'Choupo-dev'."
-            exit 1
-          fi
+          for v in $found; do
+            if [ "$v" != "$want" ] && [ "$v" != "$cat_rel" ]; then
+              echo "REFUSED: the WASM carries '$v', which is neither this"
+              echo "release's engine version ($want) nor the catalogue"
+              echo "identity this checkout declares (${cat_rel:-<none>})."
+              echo "A frozen app running a different engine than its label is"
+              echo "the defect this check exists for."
+              exit 1
+            fi
+          done
 
           #  (4) Help must open something.  CORRECTION, 2026-09-02: this
           #  comment used to say "/v2607/app/docs/guides.json is a 404, so the
