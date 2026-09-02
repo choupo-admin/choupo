@@ -1,0 +1,102 @@
+#  PUBLISH THE GITHUB RELEASE FOR A TAG, with the CHANGELOG as its notes.
+#
+#  WHY IT IS SEPARATE FROM release-tag.  Creating a tag and announcing a
+#  release are two acts with different failure modes: the tag is immutable and
+#  must be right the first time, the announcement can be rewritten.  Folding
+#  them into one job would mean a bad paragraph could only be fixed by touching
+#  the workflow that also mints tags.
+#
+#  THE NOTES ARE NOT AUTHORED HERE.  They are the release's own CHANGELOG
+#  section, read out of the tag's copy of CHANGELOG.md -- so what the release
+#  page says and what the repository says cannot drift, and a release whose
+#  section was never written is refused rather than announced with a
+#  placeholder.  Same permission and the same trigger constraints as
+#  release-tag: `contents: write` for one run, workflow_dispatch, startable
+#  only by someone who already has write access.
+name: release-notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to announce — vYYMM'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract the release's own CHANGELOG section
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v[0-9][0-9][0-9][0-9]) ;;
+            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+          esac
+          git rev-parse -q --verify "refs/tags/$TAG" >/dev/null \
+            || { echo "REFUSED: tag $TAG does not exist.  Run release-tag first."; exit 1; }
+          #  READ THE TAG'S OWN COPY, not the branch's: the notes must describe
+          #  the release, and the branch has moved on since it was cut.
+          git show "$TAG:CHANGELOG.md" > /tmp/ch.md
+          python3 - "$TAG" <<'PY'
+          import sys
+          tag = sys.argv[1]
+          name = "Choupo-" + tag[1:]
+          text = open("/tmp/ch.md").read().splitlines()
+          start = None
+          for i, line in enumerate(text):
+              if line.startswith("## ") and name in line:
+                  start = i
+                  break
+          if start is None:
+              sys.exit("REFUSED: CHANGELOG.md at %s has no section for %s.  A "
+                       "release announced with notes nobody wrote is worse than "
+                       "one not yet announced." % (tag, name))
+          end = len(text)
+          for j in range(start + 1, len(text)):
+              if text[j].startswith("## "):
+                  end = j
+                  break
+          body = "\n".join(text[start + 1:end]).strip()
+          if len(body) < 200:
+              sys.exit("REFUSED: the %s section is %d characters -- too short to "
+                       "be the notes of a release." % (name, len(body)))
+          open("/tmp/notes.md", "w").write(body + "\n")
+          print("notes: %d characters from the %s section" % (len(body), name))
+          PY
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          TITLE="Choupo-${TAG#v}"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "$TITLE" --notes-file /tmp/notes.md
+            echo "updated the existing release for $TAG"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              --title "$TITLE" --notes-file /tmp/notes.md --verify-tag
+            echo "created the release for $TAG"
+          fi
+
+      - name: Read it back
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --json tagName,name,isDraft,body \
+            --jq '"\(.tagName) | \(.name) | draft=\(.isDraft) | \(.body|length) chars"'
