@@ -163,12 +163,20 @@ release.
    where it cannot be skipped by a green suite.  Exit 1 is a finding to
    read; exit 2 means it could not honestly run.
 
-   `freeze-app` will not overwrite a frozen app — with **one self-limiting
-   exception**, in the shape of `withdraw-release`: it replaces an existing
-   copy only when it can prove from the published bytes that the copy fetches
-   its engine from a root path, i.e. that it never was a frozen copy of
-   anything.  Once a correct copy is in place the guard can never fire on it
-   again.
+   `freeze-app` will not overwrite a frozen app — with **two exceptions, each
+   proved from the published bytes before it acts**.  The first is in the
+   shape of `withdraw-release`: a copy whose worker fetches its engine from a
+   root path never was a frozen copy of anything, and is replaced.  The
+   second is the patch itself (2026-09-03, when `v2608.2` met the guard): a
+   patch is published at the release's own address, so the second patch of a
+   line necessarily replaces the copy the first one built.  The copy records
+   the commit it was built from in `wasm/version.json`; the guard admits a
+   `vYYMM.N` tag only when that commit is in the checked-out history AND an
+   ancestor of the tag — a copy with no recorded commit, one this line did
+   not produce, one already at the tag's own commit, or a tag that does not
+   descend from it, is refused.  "Never touched" therefore means *never
+   replaced by anything the release line did not itself produce later*; the
+   tag list, which is immutable, records which bytes were served when.
 
    To withdraw a release, write the decision into
    `docs/withdrawn-releases.txt` first and then run `withdraw-release`; it

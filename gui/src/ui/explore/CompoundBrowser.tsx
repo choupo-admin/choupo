@@ -13,6 +13,7 @@ import { Badge, Box, Button, Chip, CloseButton, Group, ScrollArea, Stack, Text, 
 import { IconArrowRight, IconFlask } from "@tabler/icons-react";
 
 import { CATALOGUE, DATA_LOCAL_CATALOGUE, type ComponentMeta, formulaIfDistinct, searchCatalogue } from "../../case/catalogue.js";
+import { FIRST_PATH } from "../../cases/tutorials.js";
 
 type RoleFilter = "all" | "vle" | "solute";
 
@@ -38,9 +39,27 @@ function pushRecent(name: string): string[] {
 // that ALREADY exists (vleAble, isElectrolyte, isPermanentGas, kind), no new
 // data, no recommended badge.  Grouping-by-what-it-unlocks is self-documenting:
 // a student wanting a psychro chart SEES "Permanent gases" and learns the
-// carrier concept.  Order matters (the most VLE-rich groups first).
+// carrier concept.
+//
+// TWO ORDERS, TWO LISTS (2026-09-03).  Classification is first-match and its
+// precedence is a fact about the tests (a radical is also a gas, so radicals
+// must be tested before gases); display is a fact about WHO IS LOOKING.  One
+// list served both until today, so the 44 combustion radicals opened the
+// Explore browser -- the opposite of what was asked for on 2026-09-01.
+// `groupOf` carries the precedence in its statement order; DISPLAY_ORDER
+// carries the reading order; neither is derived from the other.
 type GroupKey =
-  | "radicals" | "salts" | "gases25" | "volatiles" | "combustion" | "nonvolatile" | "synthetic";
+  | "firstPath" | "radicals" | "salts" | "gases25" | "volatiles" | "combustion" | "nonvolatile" | "synthetic";
+
+/** The components the first-path tutorials declare (`tier tutorial;` cases,
+ *  read off the bundle -- recounted, never listed by hand).  A student's
+ *  first screen opens on the substances the first cases actually use. */
+export const FIRST_PATH_COMPONENTS: ReadonlySet<string> = new Set(
+  FIRST_PATH.flatMap((e) => {
+    const c = (e.files.thermoPackage as { components?: unknown }).components;
+    return Array.isArray(c) ? c.map(String) : [];
+  }),
+);
 
 //  EVERY GROUP IS DERIVED FROM DECLARED RECORD FACTS (catalogue.ts metaFromDat)
 //  -- tags, solidPhases, dissociatesTo, Tb, vaporPressure -- never from a
@@ -48,6 +67,7 @@ type GroupKey =
 //  salts are the obvious ones", and radicals filed as their own group before
 //  the release, so a student does not meet OH between octane and phenol.
 const GROUP_LABEL: Record<GroupKey, string> = {
+  firstPath: "Used in the first-path tutorials",
   radicals: "Radicals (open-shell species)",
   salts: "Salts & minerals",
   gases25: "Gases at 25 °C (Tb below 298.15 K)",
@@ -58,14 +78,20 @@ const GROUP_LABEL: Record<GroupKey, string> = {
   //  suite.  Kept visible, kept LAST, labelled for what they are.
   synthetic: "Synthetic test stand-ins (NOT real substances)",
 };
-const GROUP_ORDER: GroupKey[] =
-  ["radicals", "salts", "gases25", "volatiles", "combustion", "nonvolatile", "synthetic"];
+/** READING order: what a student charges to a vessel first; the mechanism
+ *  library, the radicals and the synthetic stand-ins last and folded. */
+export const DISPLAY_ORDER: GroupKey[] =
+  ["firstPath", "volatiles", "gases25", "salts", "nonvolatile", "combustion", "radicals", "synthetic"];
+/** Folded on first sight: a count and a click, never 44 radicals at the top. */
+const FOLDED_BY_DEFAULT: ReadonlySet<GroupKey> = new Set(["combustion", "radicals", "synthetic"]);
 
-//  ORDER MATTERS: a record can satisfy several tests (a radical is also a
-//  gas, a salt may carry a Tb), so the first match files it.  Synthetic first
-//  because it is a claim about the RECORD, not the substance.
+//  CLASSIFICATION precedence: a record can satisfy several tests (a radical
+//  is also a gas, a salt may carry a Tb), so the first match files it.
+//  Synthetic first because it is a claim about the RECORD, not the substance;
+//  first-path membership next because it is a claim about the CORPUS.
 function groupOf(m: ComponentMeta): GroupKey {
   if (m.isSynthetic) return "synthetic";
+  if (FIRST_PATH_COMPONENTS.has(m.name)) return "firstPath";
   if (m.isRadical) return "radicals";
   if (m.isSaltOrMineral) return "salts";
   if (m.isRoomTemperatureGas) return "gases25";
@@ -100,6 +126,10 @@ export function CompoundBrowser({
   const [filter, setFilter] = useState<RoleFilter>("all");
   const [recent, setRecent] = useState<string[]>(loadRecent);
   const [showDataLocal, setShowDataLocal] = useState(false);
+  const [unfolded, setUnfolded] = useState<Set<GroupKey>>(() => new Set());
+  const toggleFold = (g: GroupKey) => setUnfolded((u) => {
+    const n = new Set(u); if (n.has(g)) n.delete(g); else n.add(g); return n;
+  });
 
   // Adding a component records it in the MRU (the "Recently used" group); the
   // recompute is driven by the parent's selected[] as before.
@@ -170,11 +200,19 @@ export function CompoundBrowser({
   const recentSet = useMemo(() => new Set(recentRows.map((m) => m.name)), [recentRows]);
   const stdGroups = useMemo(() => {
     const buckets: Record<GroupKey, ComponentMeta[]> =
-    { radicals: [], salts: [], gases25: [], volatiles: [], combustion: [], nonvolatile: [], synthetic: [] };
+    { firstPath: [], radicals: [], salts: [], gases25: [], volatiles: [], combustion: [], nonvolatile: [], synthetic: [] };
     for (const m of stdResults) {
       if (grouped && recentSet.has(m.name)) continue;   // already in "Recently used"
       buckets[groupOf(m)].push(m);
     }
+    // Within a group, read by the NAME and not by its locants: a plain sort
+    // opened "Volatile liquids" on 112Trichloroethane, 11Dichloroethane,
+    // 1234Tetramethylbenzene -- every digit-prefixed IUPAC name ahead of
+    // acetone.  The key moves leading locants aside (112Trichloroethane
+    // files under T); the displayed name is untouched.
+    const key = (m: ComponentMeta) => m.name.replace(/^[0-9,]+/, "").toLowerCase();
+    for (const g of Object.keys(buckets) as GroupKey[])
+      buckets[g].sort((x, y) => key(x).localeCompare(key(y)) || x.name.localeCompare(y.name));
     return buckets;
   }, [stdResults, grouped, recentSet]);
 
@@ -276,14 +314,18 @@ export function CompoundBrowser({
             <>
               {recentRows.length > 0 && <SubHeader label="Recently used" />}
               {recentRows.map((m) => renderRow(m, "recent-"))}
-              {GROUP_ORDER.map((g) =>
-                stdGroups[g].length > 0 ? (
-                  <Box key={g}>
-                    <SubHeader label={`${GROUP_LABEL[g]} (${stdGroups[g].length})`} />
-                    {stdGroups[g].map((m) => renderRow(m, `${g}-`))}
+              {DISPLAY_ORDER.map((g) => {
+                if (stdGroups[g].length === 0) return null;
+                const foldable = FOLDED_BY_DEFAULT.has(g);
+                const open = !foldable || unfolded.has(g);
+                return (
+                  <Box key={g} data-group={g} data-open={open ? "true" : "false"}>
+                    <SubHeader label={`${GROUP_LABEL[g]} (${stdGroups[g].length})`}
+                      onToggle={foldable ? () => toggleFold(g) : undefined} open={open} />
+                    {open && stdGroups[g].map((m) => renderRow(m, `${g}-`))}
                   </Box>
-                ) : null,
-              )}
+                );
+              })}
             </>
           ) : (
             <>
@@ -347,14 +389,24 @@ export function CompoundBrowser({
 
 /** A sticky sub-header for a catalogue group — stays pinned at the top of the
  *  scroll area as the group scrolls under it. */
-function SubHeader({ label, c = "dimmed" }: { label: string; c?: string }) {
+function SubHeader({ label, c = "dimmed", onToggle, open = true }: {
+  label: string; c?: string;
+  /** when given, the header is a fold: click shows / hides its rows */
+  onToggle?: () => void; open?: boolean;
+}) {
+  const style = {
+    position: "sticky" as const, top: 0, zIndex: 2, letterSpacing: 0.3,
+    background: "light-dark(var(--mantine-color-body), var(--mantine-color-dark-7))",
+  };
+  if (!onToggle) {
+    return <Text size="xs" fw={700} c={c} mt={6} pb={1} style={style}>{label}</Text>;
+  }
   return (
-    <Text size="xs" fw={700} c={c} mt={6} pb={1}
-      style={{
-        position: "sticky", top: 0, zIndex: 2, letterSpacing: 0.3,
-        background: "light-dark(var(--mantine-color-body), var(--mantine-color-dark-7))",
-      }}>
-      {label}
-    </Text>
+    <UnstyledButton onClick={onToggle} aria-expanded={open} style={{ ...style, width: "100%" }}
+      mt={6} pb={1}>
+      <Text size="xs" fw={700} c={c} component="span">
+        {open ? "▾" : "▸"} {label} <Text component="span" size="xs" c="dimmed" fw={400}>· {open ? "hide" : "show"}</Text>
+      </Text>
+    </UnstyledButton>
   );
 }

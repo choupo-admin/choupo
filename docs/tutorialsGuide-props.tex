@@ -1735,9 +1735,12 @@ The FIRST stage of the props lifecycle (CREATE $\to$ curate $\to$ wire $\to$ sim
 
 Acetone CH3-CO-CH3 = 2 x CH3 + 1 x ketone (>C=O).
 
-The reference block validates the estimate against NIST: Joback lands within \textasciitilde{}2\% on Tc/Pc/Vc and \textasciitilde{}0.3\% on dHf -- and you SEE the (small) error, the whole point of "estimation, then trust". omega comes from (Tb,Tc,Pc) by Lee-Kesler, not a group sum.
+The reference block below validates FOUR numbers -- Tb, Tc, Pc, omega -- and no others: Joback lands 2.2 \% low on Tb, 1.5 \% low on Tc, 2.2 \% high on Pc (read off the golden against the block, 2026-09-02), and you SEE the error, the whole point of "estimation, then trust". This header used to claim "\textasciitilde{}2 \% on Tc/Pc/Vc and \textasciitilde{}0.3 \% on dHf"; the block carries no reference Vc and no reference dHf, so those two were claims nothing in the case checks. omega comes from (Tb,Tc,Pc) by Lee-Kesler, not a group sum.
 
 \end{tutnarrative}
+\tutreadme{Acetone is 2 $\times$ CH3 + 1 $\times$ ketone. This case runs under choupoProps and asks Joback's group-contribution method to create a property set from those three groups, then lays the estimate beside the reference values the case itself declares. The golden: Tb 322.11 K, Tc 500.56 K, Pc 48.02 bar, ? 0.30, Vc 209.5 cm$^3$/mol, $\Delta$Hf -217.83 kJ/mol.}
+\tutreadme{1. Estimation is a resolution problem, not a runtime one. Choupo does not estimate properties while a flowsheet runs; it estimates them HERE, at curation time, so a student can look at the number before trusting it. output \{ proposal auto; \} writes the estimate as a record you can read, edit, and only then wire into a case --- the run prints where: constant/components/acetone.estimated.dat, with the GAPS the method left listed in its header. 2. The error is the point. Against the reference block in system/propsDict (Tb 329.2 K, Tc 508.1 K, Pc 47.0 bar, ? 0.307): Tb is 2.2 \% low, Tc 1.5 \% low, Pc 2.2 \% high --- Joback's usual band for a small ketone, and you can see it rather than be told. 3. ? is not a group sum. It comes from (Tb, Tc, Pc) through Lee-Kesler; an error in Tb propagates into it. That chain is printed in the run's log. 4. A reference is a citation, not an endorsement. The block names where its four numbers were read; the run compares against those four and nothing else.}
+\tutreadme{Open estimate\_ethanol\_benzene: the same method on a hydrogen-bonding molecule, where Joback's Tb goes noticeably wrong --- the honest limit of a group method, shown rather than warned about.}
 \begin{tutgolden}
 \goldrow{diag}{estimate\_acetone}{Cp298}{74.97}
 \goldrow{diag}{estimate\_acetone}{Hvap\_kJmol}{27.53}

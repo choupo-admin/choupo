@@ -253,6 +253,21 @@ jobs:
           #  defect from the published bytes before it will act, so once a
           #  correct copy is in place this branch can never fire on it again,
           #  and it can never fire on an honest frozen app at all.
+          #
+          #  THE SECOND EXCEPTION IS THE PATCH ITSELF (2026-09-03, when the
+          #  second patch of a line met this guard).  A patch tag vYYMM.N is
+          #  published at the SAME address as the release (RELEASING.md: a
+          #  patch does not get its own URL), so the second patch of a line
+          #  necessarily replaces the copy the first one built.  That is not
+          #  a frozen copy being rebuilt over: the copy RECORDS the commit it
+          #  was built from (wasm/version.json), the new tag DESCENDS from
+          #  that commit on the release branch, and the record of which bytes
+          #  were served when is the tag list, which is immutable.  The guard
+          #  PROVES the descent from the published bytes and the checked-out
+          #  history before it acts: a copy whose commit is unknown, not an
+          #  ancestor of this tag, or already this tag's own, is refused.
+          #  "Never touched" therefore means: never replaced by anything the
+          #  release line did not itself produce later.
           replacing=""
           if [ -e "/tmp/site/$REL/app" ]; then
             pub="/tmp/site/$REL/app/workers/solverWorker.js"
@@ -269,10 +284,36 @@ jobs:
               grep -nE '["`]/wasm/' "$pub" | grep -vE ':[[:space:]]*(//|/\*|\*)'
               replacing="yes"
             else
-              echo "REFUSED: /$REL/app/ already exists in the site repository"
-              echo "and resolves its own engine.  A frozen release app is never"
-              echo "overwritten (CLAUDE.md §2)."
-              exit 1
+              vj="/tmp/site/$REL/app/wasm/version.json"
+              was=$(grep -oE '"commit"[[:space:]]*:[[:space:]]*"[0-9a-f]+"' "$vj" 2>/dev/null \
+                    | grep -oE '[0-9a-f]+"$' | tr -d '"' || true)
+              here=$(git rev-parse "$TAG^{commit}")
+              if [ "$TAG" = "$REL" ]; then
+                echo "REFUSED: /$REL/app/ already exists and resolves its own"
+                echo "engine; '$TAG' is the release tag itself, not a patch of it."
+                exit 1
+              elif [ -z "$was" ]; then
+                echo "REFUSED: /$REL/app/ exists but its wasm/version.json records"
+                echo "no build commit, so its descent cannot be proved."
+                exit 1
+              elif ! git cat-file -e "$was^{commit}" 2>/dev/null; then
+                echo "REFUSED: /$REL/app/ records build commit $was, which this"
+                echo "checkout does not contain -- not a copy this line produced."
+                exit 1
+              elif [ "$(git rev-parse "$was^{commit}")" = "$here" ]; then
+                echo "REFUSED: /$REL/app/ is already built from $TAG's own commit."
+                exit 1
+              elif ! git merge-base --is-ancestor "$was" "$here"; then
+                echo "REFUSED: /$REL/app/ was built from $was, and '$TAG' does not"
+                echo "descend from it -- a patch must continue the published line."
+                exit 1
+              else
+                echo "::warning::/$REL/app/ was built from $was; '$TAG' descends"
+                echo "from it on the same release line.  Superseding the copy --"
+                echo "the tag list records which bytes were served when."
+                git log --oneline "$was..$here" | sed 's/^/    /'
+                replacing="yes"
+              fi
             fi
           fi
 
