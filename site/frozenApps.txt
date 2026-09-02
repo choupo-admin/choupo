@@ -21,25 +21,32 @@
 #  builds from the tag with --base=/vYYMM/app/ and refuses to publish unless
 #  the engine compiled into the WASM states that release's own version.
 #
-#  THE LIST IS EMPTY, AND THAT IS A FINDING, NOT AN OVERSIGHT.
+#  v2608 IS LISTED, AND IT WAS NOT FOR MOST OF 2026-09-02.
 #
-#  v2608's copy was built and published on 2026-09-02 and DECLARED here, and
-#  the declaration was withdrawn the same day.  A four-way audit drove the
+#  Its copy was built, published and declared here that morning, and the
+#  declaration was withdrawn hours later.  A four-way audit drove the
 #  published copy in a browser and recorded every request it makes: the front
-#  end is correctly its own, but on RUNNING A CASE the bundle fetches
+#  end was correctly its own, but on RUNNING A CASE the bundle fetched
 #  /workers/solverWorker.js and /wasm/choupoSolve.js from the SITE ROOT.  The
-#  frozen tree ships its own correct engines and they are never loaded.
+#  frozen tree shipped its own correct engines and they were never loaded.
 #
-#  Two independent causes, both verified by reading the published files:
-#  the app bundle carries the literals "/wasm/choupoSolve.js" and
-#  "/workers/solverWorker.js", which vite's --base never rewrites; and the
-#  worker itself hardcodes `/wasm/${binary}.js`, so fixing the first is not
-#  enough.  /v2607/app/workers/solverWorker.js carries the same lines -- this
-#  has never worked for any release.
+#  Two independent causes, both verified by reading the published files: the
+#  app bundle carried the literal "/wasm/choupoSolve.js", which vite's --base
+#  never rewrites when it is written as a root-absolute string; and the worker
+#  hardcoded `/wasm/${binary}.js` -- and public/ files are copied verbatim, so
+#  vite never sees them at all.  Fixing either alone was not enough.
+#  /v2607/app/workers/solverWorker.js carried the same lines: no frozen
+#  release had ever run its own engine.
 #
 #  A frozen shell around a live engine is worse than no frozen app, because
 #  the version badge reads its own frozen version.json and stays reassuringly
-#  correct while the answers come from elsewhere.  Nothing is listed here
-#  until the engine a copy loads is provably its own.
+#  correct while the answers come from elsewhere.
 #
-#  v2607 is also absent because it was WITHDRAWN (2026-09-02).
+#  The tag v2608 is immutable and untouched.  The packaging was patched on
+#  release-2608 and tagged v2608.1, and freeze-app built this copy from that
+#  tag: same engine, same citation, its own paths.  A patch does not get its
+#  own URL -- /v2608/app/ is the address /releases/ tells a student to cite.
+#
+#  v2607 is absent because it was WITHDRAWN (2026-09-02).
+
+v2608

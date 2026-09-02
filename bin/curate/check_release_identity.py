@@ -42,20 +42,35 @@ WHAT THIS CHECKS.
   (e) NO BARE HAND COUNTS.  A 2-4 digit number adjacent to "runnable
       tutorials/cases" in site prose OUTSIDE a data-inv span is refused by
       name -- that is exactly the form the 331 took.
+  (f) EVERY /vYYMM/app/ LINK IS DECLARED in site/frozenApps.txt, and every
+      declared id has a release artefact.  The site cannot see the site
+      repository, so the existence of a frozen copy is a CLAIM somebody
+      makes in writing rather than a fact this gate can read -- but an
+      undeclared link is refused, which is what a renamed button needed on
+      2026-09-02 and did not have.
+  (g) A PUBLISHED ARTEFACT THAT NAMES A RELEASE NAMES THE CURRENT ONE, so a
+      hand-maintained file served live (generated/modelsCatalogue.json) cannot
+      go on announcing the previous release invisibly.
+  (h) A PATCH GETS NO ARTEFACT.  vYYMM.N is a packaging fix to a release, so
+      an artefact named v2608.1.json would sort last, become "the newest
+      release" for (c) and (g), and rewrite every site literal to a version
+      no citation carries.
 
 WHAT THIS DOES NOT CHECK, stated plainly.
   * THE PRODUCTION HOST.  This gate reads the repository's site sources; what
     is actually served at choupo.org may differ, and cannot be verified from
     here.
-  * /vYYMM/app/ HAS NO PRODUCER.  releases.html and the homepage link a
-    frozen app at the release's own /vYYMM/app/ -- "the URL you cite, teach
-    from, and archive" -- and NOTHING in bin/buildSite creates or copies that
-    tree.  If the
-    production host does not carry a hand-uploaded archive, those buttons
-    404.  This gate cannot verify either way and says so instead of
-    implying coverage; the finding is escalated in the audit report, because
-    fixing it properly (archiving a frozen WASM build) is a decision about
-    public artefacts, not a patch.
+  * WHETHER A DECLARED FROZEN COPY IS BEING SERVED.  Arm (f) reads a
+    DECLARATION, not the host.  This blind spot used to read "/vYYMM/app/
+    HAS NO PRODUCER ... nothing in bin/buildSite creates or copies that
+    tree", which was true when it was written and stopped being true on
+    2026-09-02: .github/workflows/freeze-app.yml builds the copy from the
+    tag and publishes it, with five checks including one that greps the
+    WASM for the release's own compiled-in version string.  A blind-spot
+    list that outlives its blind spot tells the reader something false with
+    authority, which is why this entry was rewritten rather than kept.
+    What remains genuinely unverifiable from here is the last step: the
+    workflow says it pushed, and this gate cannot fetch the host to see.
   * ONLY THE RELEASES THAT HAVE AN ARTEFACT.  A release joins by generating
     its artefact at tag time; the gate iterates over generated/releases/*.json
     and knows nothing of a tag whose artefact was never committed.  Where two
@@ -103,6 +118,23 @@ def main() -> int:
               "authoritative home, which is the exact state this gate was "
               "built to end.")
         return 1
+
+    #  (h) A PATCH GETS NO ARTEFACT.  vYYMM.N is a packaging fix to a
+    #  release (RELEASING.md), so nothing a reader cites moves: the public
+    #  name, the citation and the badge stay the release's.  An artefact
+    #  named v2608.1.json would sort LAST, become "the newest release" for
+    #  arms (c) and (g), and drag every data-inv literal on the site to
+    #  "Choupo-2608.1" -- a version no citation carries.  The artefact
+    #  describes a RELEASE and its inventory, and a patch changes neither.
+    for af in artefacts:
+        if re.fullmatch(r"v\d{4}\.\d+\.json", af.name):
+            fail.append(
+                f"{af.name} is a PATCH artefact.  A patch tag (vYYMM.N) is a "
+                "packaging fix to its release: the inventory it would record "
+                "is the release's own, and publishing it here would make the "
+                "patch the newest release and rewrite the site's literals to "
+                "a version no citation carries.  Delete it; the release's "
+                "artefact already describes what a patch does not change.")
 
     flats = {}
     for af in artefacts:
