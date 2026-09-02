@@ -4,7 +4,7 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> **Choupo-2607** — four binaries, one per problem class.
+> **Choupo-2608** — four binaries, one per problem class.
 > `main` is the development line, `Choupo-dev`; a release is an immutable tag
 > `vYYMM` (public name `Choupo-YYMM`).  Cite the
 > exact version you used — see [`CITATION.cff`](CITATION.cff) and the
@@ -276,7 +276,7 @@ name or marks — the code is open; the name is a trademark of
 
 ## Roadmap
 
-**Choupo-2607.**  Four binaries, three-layer architecture
+**Choupo-2608.**  Four binaries, three-layer architecture
 (outer driver / simulator / post-processor); the runnable-case tally is
 generated (`generated/releaseInventory.json`), never written here.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,

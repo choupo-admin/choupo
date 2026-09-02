@@ -71,7 +71,7 @@
   <p class="eyebrow">Model catalogue</p>
   <h1>Every model, counted from the release.</h1>
   <p class="sub">The implemented thermodynamic, phase-equilibrium, unit-operation, solver and databank models in Choupo — with implementation status, engine and source location. Roadmap items are not listed. Generated from the published tree, not written by hand.</p>
-  <p class="meta"><span data-inv="release">Choupo-2607</span> · <span id="totalCount">…</span> catalogued entries</p>
+  <p class="meta"><span data-inv="release">Choupo-2608</span> · <span id="totalCount">…</span> catalogued entries</p>
 </div></header>
 
 <div class="controls"><div class="wrap">
@@ -83,7 +83,7 @@
 </div></main>
 
 <footer><div class="wrap">
-  <span data-inv="release">Choupo-2607</span> · GPL-3.0-or-later ·
+  <span data-inv="release">Choupo-2608</span> · GPL-3.0-or-later ·
   <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Source</a> ·
   <a href="/">Home</a>
 </div></footer>
@@ -158,7 +158,7 @@
     });
   }
 
-  fetch("/releases/v2607.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;})
+  fetch("/releases/v2608.json",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null;})
     .then(function(inv){ if(!inv) return;
       document.querySelectorAll('[data-inv="release"]').forEach(function(e){ e.textContent = inv.release; });
     }).catch(function(){});
@@ -173,5 +173,5 @@
       document.getElementById("loading").textContent =
         "The model catalogue could not be loaded. Browse the source on GitHub instead.";
     });
-</script>Choupo-2607</body>
+</script></body>
 </html>

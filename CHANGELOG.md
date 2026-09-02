@@ -8,19 +8,21 @@ tag `v2607` = version `2607`).  Development happens on `main`, the default
 branch, which carries `Choupo-dev`; a release is an immutable tag.
 **Choupo-2607** is the first version.
 
-## Choupo-dev (2026-08-29) — the August line, written for the Choupo-2608 cut
+## [Choupo-2608] — 2026-09-02 — the August line
 
 A month of work in one section, by theme; the full dated records live in
-`docs/architecture/decision-records.md` (95 design records, indexed and
+`docs/architecture/decision-records.md` (97 design records, indexed and
 gate-counted).  What follows is what a user of Choupo-2608 gets that
 Choupo-2607 did not have.
 
 ### Verification became the product's spine
 
-- **The golden corpus now pins what it publishes.**  555 tutorial cases run
-  under golden-master comparison, and an August sweep added 2 922 rows the
-  corpus published but never checked — among them **865 stream temperatures
-  (there was exactly one before)**, 38 stream flows, and ~2 000 KPIs and
+- **The golden corpus now pins what it publishes.**  383 of the 393 runnable
+  tutorial cases ship a golden `expected` and run under golden-master
+  comparison (both counts are generated — `generated/releaseInventory.json`),
+  and an August sweep added 2 922 rows the corpus published but never
+  checked — among them **865 stream temperatures (there was exactly one
+  before)**, 38 stream flows, and ~2 000 KPIs and
   diagnostics (mass closures, duties, campaign inventories).  Append-only by
   construction: not one existing value, hand-tuned tolerance or published
   anchor moved.
@@ -113,8 +115,8 @@ but passed, the parsed-and-discarded validity windows, the golden row kinds
 for every published result block.  Left, each pinned with its reason: the
 NF270 40x contradiction, eighteen missing species citations, the
 water-record 0.70 K self-inconsistency (now a teaching example), and the
-reserved rulings (Guthrie→Turton attribution, the pump/pipe density
-unification beyond water, the v2608 cut itself).
+reserved rulings (Guthrie→Turton attribution, the Burcat/ReSpecTh
+citations, the pump/pipe density unification beyond water).
 
 ## Choupo-dev (2026-07-28)
 
