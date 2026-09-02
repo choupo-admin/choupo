@@ -172,6 +172,47 @@ cp "$src/sw.js" "$dist/" 2>/dev/null || true    # offline service worker (scope 
 #  the SITE, versioned beside the pages it names, not a setting in a web UI
 #  that no clone can see.
 cp "$src/CNAME" "$dist/" 2>/dev/null || true
+
+#  ANALYTICS — configuration, never code.  A GoatCounter site code in
+#  $CHOUPO_GOATCOUNTER_SITE (or, second, the single non-comment line of
+#  site/analytics.conf) injects the cookieless counter script before </head>
+#  on the landing and the app.  Absent, NOTHING is injected and the log says
+#  so: the site keeps its promise (no per-user state, no cookies, a case never
+#  leaves the machine); the counter, when present, sees page loads and
+#  content-free events only.
+gc_site="${CHOUPO_GOATCOUNTER_SITE:-}"
+if [ -z "$gc_site" ] && [ -s "$src/analytics.conf" ]; then
+    gc_site="$(grep -v '^[[:space:]]*#' "$src/analytics.conf" | grep -v '^[[:space:]]*$' | head -1 | tr -d '[:space:]')"
+fi
+if [ -n "$gc_site" ]; then
+    case "$gc_site" in
+        *[!A-Za-z0-9_-]*) echo "buildSite: refusing analytics site code '$gc_site' (letters, digits, - and _ only)" >&2; exit 1 ;;
+    esac
+    gc_tag="<script data-goatcounter=\"https://${gc_site}.goatcounter.com/count\" async src=\"//gc.zgo.at/count.js\"></script>"
+    for page in "$dist/index.html" "$dist/app/index.html"; do
+        sed -i "s#</head>#  ${gc_tag}\n</head>#" "$page"
+        grep -q 'data-goatcounter=' "$page" || { echo "buildSite: analytics injection failed on $page" >&2; exit 1; }
+    done
+    echo "analytics: GoatCounter site '$gc_site' injected into index.html and app/index.html"
+else
+    echo "analytics: not configured (CHOUPO_GOATCOUNTER_SITE unset, site/analytics.conf empty) -- nothing injected"
+fi
+
+#  SITEMAP + ROBOTS — generated beside the pages they list, so the list
+#  cannot drift from what the build ships; a page that does not exist in
+#  _dist is not listed.
+site_url="https://www.choupo.org"
+{
+    echo '<?xml version="1.0" encoding="UTF-8"?>'
+    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    for p in "/" "/app/" "/models/" "/releases/" "/releases.html" "/guide.html"; do
+        [ -e "$dist${p%/}/index.html" ] || [ -e "$dist$p" ] || continue
+        echo "  <url><loc>${site_url}${p}</loc></url>"
+    done
+    echo '</urlset>'
+} > "$dist/sitemap.xml"
+printf 'User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n' "$site_url" > "$dist/robots.txt"
+echo "sitemap: $(grep -c '<loc>' "$dist/sitemap.xml") URLs in sitemap.xml; robots.txt written"
 #  Jekyll is not involved and must not be: a directory or file beginning with
 #  an underscore (the app's chunks can) would be silently dropped otherwise.
 touch "$dist/.nojekyll"

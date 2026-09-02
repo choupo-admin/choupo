@@ -1,6 +1,6 @@
 # Choupo
 
-**Educational process simulator** — C++17, GPL-3.0-or-later, file-first case
+**Choupo is a free and open-source chemical process simulator** written in C++17 (GPL-3.0-or-later) — educational, glass-box, file-first case
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 

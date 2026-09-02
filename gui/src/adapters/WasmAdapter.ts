@@ -82,6 +82,7 @@ import type {
   UtilityAllocationRow,
 } from "./SolverAdapter.js";
 import { WASM_WORKER_URL } from "./wasmModule.js";
+import { countRunCase } from "../analytics.js";
 
 // The markers the WASM solver wraps its structured-result JSON in.  Exported
 // for tests; the C++ side prints these around the ResultEmitter JSON block.
@@ -242,6 +243,7 @@ export class WasmAdapter implements SolverAdapter {
       const binary = selectBinary(app);
       emit(`[adapter] dispatching to ${binary} WASM`);
 
+      countRunCase();
       worker.postMessage({
         type: "run",
         binary,

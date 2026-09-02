@@ -129,7 +129,7 @@ jobs:
           set -e
           d=site/_dist
           for f in index.html app/index.html models/index.html \
-                   wasm/choupoSolve.wasm wasm/choupoProps.wasm CNAME; do
+                   wasm/choupoSolve.wasm wasm/choupoProps.wasm sitemap.xml robots.txt CNAME; do
             [ -s "$d/$f" ] || { echo "MISSING or EMPTY: $f"; exit 1; }
           done
           # the solver is megabytes; a stub or a git-lfs pointer is kilobytes
