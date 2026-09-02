@@ -924,6 +924,431 @@ problems for $\beta$.
 \section*{Part II --- Pure-component thermodynamic models}
 
 
+% ---------------------------------------------------------------------
+\section{The four laws: accepted, then tested}\label{ch:foundations}
+
+\begin{whatyoulllearn}
+Thermodynamics is the one subject in the curriculum whose foundations
+cannot be explained from anything more basic inside the theory.  Its
+four laws are postulates: summaries of every failed attempt to break
+them, accepted because nothing has ever contradicted them, and tested
+again on every calculation since.  This chapter says what a law of that
+kind is, what each of the four rests on, where the laws stop and
+\emph{models} begin, and what ``tested without end'' means concretely
+inside Choupo --- which balance closes on every run, which quantity is
+compared against which, and which test the engine does not yet perform.
+If the subject felt slippery the first two times, this is the third
+reading.
+\end{whatyoulllearn}
+
+\subsection{The curse, named}
+
+A remark is usually attributed to Arnold Sommerfeld: that the first
+time through thermodynamics you understand nothing; the second time you
+think you understand it except for a point or two; the third time you
+know you do not understand it, but you are used to it and it no longer
+bothers you.  He published no such sentence --- it reaches us by report,
+and this guide quotes it as an attribution, not as a source.  It is
+repeated here because every cohort recognises it, and because the
+recognition points at something real.
+
+The difficulty is not that the theory is incomplete, and it is not that
+the mathematics is hard.  The mathematics of classical thermodynamics is
+a few exact differentials and a Legendre transform.  The difficulty is
+\emph{epistemic}: the subject is taught as if its laws were derived, and
+they are not.  They are \textbf{accepted}.  A student who keeps looking
+for the derivation underneath the second law will circle forever,
+because there is nothing underneath it inside the theory --- only the
+record of every engine that failed to run without a cold sink.  The
+third reading is the one in which you stop asking the laws to be
+explained and start asking what they forbid, what follows from them, and
+how often they have been checked.
+
+\begin{keyidea}
+\textbf{A law of thermodynamics is the summary of every failed attempt
+to violate it.}  It is not derived; it is accepted, deduced from, and
+tested without end.  Everything a process simulator computes sits on
+that structure: postulate, deduction, test.
+\end{keyidea}
+
+\subsection{What a postulate is, and what it is not}
+
+A theory of this kind has three layers, and confusing them is the whole
+of Sommerfeld's curse.
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=3pt]
+\item \textbf{Postulates.}  Statements taken as true because experience
+  has never contradicted them.  They are not derived; they can only be
+  \emph{denied}, by an experiment that succeeds where every previous one
+  failed.  The four laws live here.
+\item \textbf{Deductions.}  Everything that follows from the postulates
+  by mathematics alone: the existence of state functions, the potentials
+  $H$, $A$, $G$, the Maxwell relations, the equilibrium criteria (equal
+  temperature, pressure and chemical potential across phases;
+  $\Delta G^\circ = -RT\ln K$ for a reaction), the phase rule, the
+  Clapeyron equation.  These are as certain as the postulates and no
+  more.
+\item \textbf{Tests.}  Every measurement and every calculation that
+  could have contradicted the postulates and did not.  A test never
+  \emph{proves} a law; it fails to refute it once more.
+\end{enumerate}
+
+Statistical mechanics is sometimes offered as the explanation
+underneath.  It is not one, in the sense that matters here.  It supplies
+a \emph{mechanism} for entropy --- the count of microstates --- but it
+rests on a postulate of its own (equal a priori probability of
+accessible microstates) that is accepted on exactly the same grounds:
+nothing has contradicted it.  The explanation moves the acceptance down
+one floor; it does not remove it.  Every physical theory has this floor.
+Thermodynamics is simply the one where the floor is closest to the
+surface, which is why it is the best subject in which to learn that the
+floor exists.
+
+\begin{pitfall}
+``The second law can be proved from the kinetic theory of gases'' is the
+sentence that keeps the curse alive.  Boltzmann's $H$-theorem needs the
+molecular-chaos assumption, which is a postulate about correlations, and
+the Loschmidt and Zermelo objections were never answered by proof ---
+they were answered by accepting a probabilistic reading.  Ask a student
+to state what was \emph{assumed} and the circle closes.  The honest
+sentence is: the second law is consistent with kinetic theory under an
+assumption of the same standing as the law itself.
+\end{pitfall}
+
+\subsection{The zeroth law: a temperature exists}
+
+\textbf{What is postulated.}  If body $A$ is in thermal equilibrium
+with $B$, and $B$ with $C$, then $A$ is in thermal equilibrium with $C$.
+
+\textbf{What it buys.}  Transitivity is what makes ``the same
+temperature'' a relation that can be \emph{measured by a third body}.
+It licenses the thermometer: an object whose one property is read, and
+whose reading is then assigned to anything in equilibrium with it.
+Without the zeroth law a temperature would be a property of a
+\emph{pair} of bodies, and a stream could not carry one on its own.
+
+\textbf{What is tested.}  Every thermometer ever placed in every bath.
+The test is so routine it is invisible, which is the first lesson in
+what ``tested without end'' means: the tests you no longer notice are
+the ones that have never failed.
+
+\textbf{Where it lives in Choupo.}  A stream's temperature is a
+\emph{declared state} (Section~\ref{ch:stream-as-state}): the engine
+never asks whether a temperature exists, because the zeroth law says it
+does.  What the engine does ask is whether the number is
+\emph{trustworthy} --- which is a question about the measurement chain,
+not about the law, and it has its own EduTool pages (\emph{What is a
+temperature?} and \emph{How do we know a thermometer is right?}).
+
+\subsection{The first law: energy is conserved}
+
+\textbf{What is postulated.}  There exists a state function $U$ such
+that for any process on a closed system $\Delta U = Q + W$, with $Q$ the
+heat crossing the boundary and $W$ the work done on the system.
+Equivalently: a machine that produces work from nothing, cycle after
+cycle, does not exist.
+
+\textbf{What it rests on.}  Joule's paddle wheel (1843--1850): a measured
+weight falling a measured height warms a measured mass of water by a
+measured amount, and the ratio is the same whatever the path ---
+mechanical, electrical, frictional.  Before Joule, heat and work had
+different units because nobody had shown them exchangeable at a fixed
+rate.  After him, the rate is a \emph{conversion factor} and the sum is
+conserved.  The postulate is the generalisation of that constancy to
+every process there is.  It cannot be derived; it can only be
+contradicted by a perpetual-motion machine of the first kind, and every
+one ever built has failed.
+
+\textbf{What follows.}  For an open system at steady state, with kinetic
+and potential terms neglected, the deduction is the enthalpy balance
+\begin{equation}
+  \sum_{\mathrm{in}} \dot n\,h \;=\; \sum_{\mathrm{out}} \dot n\,h
+  \;+\; \dot Q \;+\; \dot W ,
+  \label{eq:foundations-first-law}
+\end{equation}
+the equation every unit operation in this guide is built on.  Enthalpy
+itself is a deduction: $H = U + PV$ is the combination that makes the
+flow work at the boundary disappear into the state function.
+
+\textbf{What is tested, in Choupo, on every run.}  The energy-balance
+report runs by default on every converged steady case --- it is the third
+of three default balances: total mass, per-element atoms, energy.  It
+prices every stream in the case's own thermodynamic world, sums duties
+and shaft work, and publishes the closure: a residual a student can read
+beside the answer.  That residual is the first law being tested once
+more.  Change a flow, a temperature, a reflux ratio, and watch the
+closure hold: \textbf{the balance is not something the engine imposes;
+it is something the engine checks}, and a case that broke it would be
+reported, not published.
+
+\begin{example}
+Run any steady tutorial and read the energy-balance artefact beside the
+stream table.  On \code{tutorials/steady/heat/hx01\_heater} the duty the
+heater reports and the enthalpy difference the streams carry are the same
+number, because both are the first law applied to the same two states.
+That is the whole content of ``conservation'': two routes to one
+quantity, agreeing.
+\end{example}
+
+\textbf{Where the test is honest about its own limits.}  A unit carrying
+a per-unit \code{thermo \{\}} override solves in \emph{its} world while
+the report prices streams in the \emph{case's}, and the difference is an
+enthalpy \emph{step} at the model boundary --- not a violation of the
+first law, a change of the function $h$.  The model-boundary ledger
+therefore publishes three quantities and never collapses them: the raw
+imbalance, the declared step, and what remains.  The verdict is taken on
+the third.  A first-law test that credited the step silently would be
+testing nothing; one that alarmed on it would be testing the wrong thing.
+
+\subsection{The second law: some things do not come back}
+
+\textbf{What is postulated.}  Two classical statements, provably
+equivalent, and both \emph{denials}:
+\begin{itemize}[leftmargin=1.6em,itemsep=2pt]
+\item \textbf{Clausius.}  No process has as its sole result the transfer
+  of heat from a colder body to a hotter one.
+\item \textbf{Kelvin--Planck.}  No process has as its sole result the
+  complete conversion of heat from a single reservoir into work.
+\end{itemize}
+Equivalently: a machine that runs a cycle by drawing heat from one
+reservoir and producing nothing but work --- a perpetual-motion machine
+of the \emph{second} kind --- does not exist.
+
+\textbf{What it rests on.}  Every heat engine ever built rejects heat to
+a cold sink; every attempt to do without one has failed.  Carnot (1824)
+turned that record into a bound: no engine between two reservoirs can
+beat the reversible one, and the reversible efficiency depends on the
+two temperatures alone.  Clausius (1854--1865) turned Carnot's bound into
+a state function: because $\oint \delta Q_{\mathrm{rev}}/T = 0$ around
+any reversible cycle, the quantity $\mathrm{d}S = \delta
+Q_{\mathrm{rev}}/T$ integrates to a property of the state, and for any
+process at all,
+\begin{equation}
+  \mathrm{d}S \;\ge\; \frac{\delta Q}{T_{\mathrm{boundary}}}, \qquad
+  S_{\mathrm{gen}} \;=\; \Delta S_{\mathrm{system}}
+  \;-\; \sum_k \frac{Q_k}{T_k} \;\ge\; 0 .
+  \label{eq:foundations-sgen}
+\end{equation}
+$S_{\mathrm{gen}}$ is the bookkeeping of what cannot be undone.  It is
+zero only for the reversible limit that no real device reaches.
+
+\begin{intuition}
+Entropy is not disorder, and it is not a substance.  It is a
+\emph{ledger entry}: the running total of heat divided by the
+temperature at which it crossed, along a reversible path to the present
+state.  The second law says the ledger of the universe only ever grows.
+A simulator does not need the microscopic picture to use this; it needs
+$s(T, P, \mathbf{y})$ as a state function, which is exactly what the
+engine's \code{ThermoPackage::S\_real} provides: the ideal-gas entropy
+plus the equation of state's residual.
+\end{intuition}
+
+\textbf{What follows.}  Equilibrium is the state of maximum entropy of
+an isolated system, which at fixed $(T,P)$ becomes the state of minimum
+Gibbs energy.  Every phase split, every reaction equilibrium, every
+``which phases are present'' decision in this guide is that theorem.
+The Michelsen stability test (tangent-plane distance, in
+\code{src/solver/StabilityTest}) is the second law asked as a question:
+is there any composition at which a new phase would \emph{lower} $G$?
+If yes, the single phase is not the equilibrium, whatever the flash
+converged to.
+
+\textbf{What is tested, in Choupo, today --- and what is not.}  Here the
+chapter has to be exact, because the answer is weaker than for the first
+law.
+\begin{itemize}[leftmargin=1.6em,itemsep=3pt]
+\item The \textbf{turbine and compressor} carry the second law as an
+  inequality.  The isentropic reference state is found by solving
+  $S(T_{\mathrm{out,s}}, P_{\mathrm{out}}, \mathbf{y}) =
+  S(T_{\mathrm{in}}, P_{\mathrm{in}}, \mathbf{y})$ on the engine's own
+  entropy surface, and the published \code{eta\_isen} is the ratio of
+  actual to isentropic work.  A turbine that produced \emph{more} than
+  the isentropic work would be a perpetual-motion machine of the second
+  kind; the engine cannot produce one because it computes the real
+  outlet \emph{from} a declared efficiency below unity.
+\item The \textbf{exergy} operation
+  (\code{tutorials/props/molecular/exergy01\_air\_dead\_state})
+  publishes $b = (h - h_0) - T_0\,(s - s_0)$ with both legs, \code{dh}
+  and \code{T0ds}, as separate diagnostics, every term an engine call.
+  The $T_0\,\Delta s$ leg is the second law's price on a state: the part
+  of the enthalpy difference that no device can turn into work.
+\item The \textbf{entropy ledger} operation
+  (\code{tutorials/props/molecular/entropy01\_air\_ledger}, via
+  \code{explainProperty}) re-adds $s$ term by term --- the record's
+  $s_{298}$, the engine's own $\int c_p/T\,\mathrm{d}T$, the pressure
+  term, the ideal mixing term --- and refuses if the sum disagrees with
+  the assembled value.  That is a test of the \emph{deduction} (that $s$
+  is a state function with those parts), not of the postulate.
+\end{itemize}
+
+\textbf{Not tested today, said plainly.}  No unit operation in Choupo
+publishes its own entropy generation.  The first law is checked on every
+unit of every run by the energy-balance report; the second law is checked
+only where a device is defined \emph{by} an entropy reference (the
+rotating machines) or where a property operation asks for it.  A heat
+exchanger that moved heat from cold to hot, a mixer whose outlet entropy
+fell below its inlets', would not be caught by any balance.  The engine
+cannot produce such a state from consistent thermodynamics ---
+$S_{\mathrm{gen}} < 0$ would require an entropy surface that violates
+its own construction --- but \emph{not being able to produce it} and
+\emph{checking that it was not produced} are different things, and this
+guide records the second as absent.  The missing piece is a per-unit
+$S_{\mathrm{gen}} = \sum_{\mathrm{out}} \dot n s - \sum_{\mathrm{in}}
+\dot n s - \sum_k \dot Q_k / T_k \ge 0$ on the same footing as the
+energy closure.  When it exists, this paragraph is the one to rewrite.
+
+\begin{pitfall}
+``Entropy always increases'' is wrong as stated and is the commonest
+misreading of the law.  The entropy of a \emph{system} falls whenever it
+is cooled; what never falls is the entropy \emph{generated},
+$S_{\mathrm{gen}}$, which includes the surroundings' share $-\sum_k
+Q_k/T_k$.  A refrigerator lowers the entropy of its contents and raises
+the entropy of the kitchen by more.  In a flowsheet, a condenser's outlet
+stream has less entropy than its inlet; the cooling water carries away
+the difference and something extra.  Read every ``entropy decreased'' as
+a question about where the rest went.
+\end{pitfall}
+
+\subsection{The third law: entropy has a zero}
+
+\textbf{What is postulated.}  The entropy of a perfect crystal
+approaches zero as $T \to 0$ (Nernst 1906, Planck 1911).
+
+\textbf{What it rests on.}  Calorimetry to ever-lower temperatures
+showing $\Delta S \to 0$ for every reaction between crystalline solids,
+and the impossibility, in practice, of reaching $0\,\mathrm{K}$ in
+finitely many steps.
+
+\textbf{What it buys, and why a simulator needs it.}  The first two laws
+only ever define \emph{differences} of entropy.  The third gives every
+substance an \emph{absolute} $s(T)$, which can be built from
+heat-capacity measurements and transition enthalpies alone --- no
+reaction need be run.  That is the single fact that lets $\Delta G^\circ
+= \Delta H^\circ - T\,\Delta S^\circ$, and hence an equilibrium constant,
+be computed from \textbf{calorimetry on the pure substances}.  Every
+\code{standardThermochemistry} block in the catalogue carries an
+$s_{298}$ on exactly that footing, and every Gibbs reactor
+(Section~\ref{ch:gibbs-reactor}) and every $K_p$ in this guide is the
+third law being used.  Without it, chemical equilibrium would need one
+measured $K$ per reaction per temperature; with it, one $s_{298}$ per
+substance serves every reaction that substance enters.
+
+\subsection{Where the laws stop: the seam}
+
+The laws and their deductions are parameter-free.  They say \emph{that}
+chemical potentials must match across phases; they never say \emph{how}
+to compute one for a real mixture.  The Properties Guide draws this as a
+target --- the four laws at the core, the formalism around them, and the
+first fault line at the ring of \textbf{constitutive models}: equations
+of state, activity models, kinetic laws.  From that ring outward the
+theory is necessary and no longer sufficient.  Confusion in
+thermodynamics is almost always that seam showing through: a derivation
+that felt exact suddenly needs a number nobody derived.
+
+The way to see the seam is to follow one result from postulate to
+printed number and name what kind of statement each step is.
+Section~\ref{ch:vap} does the algebra; here is the reading.
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.34\linewidth}p{0.30\linewidth}p{0.30\linewidth}@{}}
+\toprule
+\textbf{Step} & \textbf{Statement} & \textbf{Kind} \\
+\midrule
+$\mu^{\mathrm{L}} = \mu^{\mathrm{V}}$ along coexistence
+  & equilibrium criterion
+  & \textbf{deduction} from the second law \\
+$\mathrm{d}P/\mathrm{d}T = \Delta s/\Delta v = \Delta h/(T\,\Delta v)$
+  & Clapeyron
+  & \textbf{deduction}, exact \\
+$v^{\mathrm{V}} \gg v^{\mathrm{L}}$, $v^{\mathrm{V}} = RT/P$
+  & ideal vapour, negligible liquid volume
+  & \textbf{model} --- two approximations the laws do not license \\
+$\Delta h^{\mathrm{vap}}$ constant
+  & Clausius--Clapeyron integrated
+  & \textbf{model} --- a third approximation \\
+$\log_{10} P = A - B/(C+T)$
+  & Antoine
+  & \textbf{fit} --- an empirical correction with three constants \\
+$A, B, C$ for benzene, \code{Trange (287.7 354.07)} K
+  & the catalogue record
+  & \textbf{data} --- measured, with a declared window \\
+$T_{\mathrm{bubble}}$ of the feed in \code{flash01\_benzene\_toluene}
+  & the engine's answer
+  & \textbf{test} --- compared with a recorded golden on every run \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three of the seven rows are as certain as the laws.  Two are
+approximations that hold well for benzene at one atmosphere and fail
+near the critical point.  One is a fit.  One is data with a declared
+range.  The number a student reads off the flash is all seven at once,
+and the curse is lifted the moment the student can say which row each
+doubt belongs to.  When Antoine is asked for a temperature outside its
+window the engine announces the extrapolation
+(Section~\ref{ch:vap}) --- that is the \emph{data} row being honest, not
+the law being doubted.
+
+\begin{keyidea}
+Every number a simulator prints is a stack: postulate, deduction, model,
+fit, data, test.  The laws are never the weak layer.  Learn to read which
+layer a discrepancy comes from, and thermodynamics stops being slippery
+--- the slipperiness was always the seam between ``exact'' and
+``measured''.
+\end{keyidea}
+
+\subsection{Tested without end}
+
+``Tested'' has a precise meaning in this project, and it is deliberately
+modest.
+
+\begin{itemize}[leftmargin=1.6em,itemsep=3pt]
+\item \textbf{A golden is a regression, not a validation.}  Most of the
+  runnable tutorial cases carry an \code{expected} file, and every full
+  run compares thousands of published numbers against it.  A PASS proves
+  the answer \emph{has not moved} from a self-recorded value; it does not
+  prove the value is right.  The cases that are compared against
+  \emph{independent published results} are a small, named subset
+  (\code{docs/architecture/verification-and-validation.md}).  A student
+  who confuses the two has confused a test with a proof --- the same
+  confusion, one level up, as asking a law to be explained.
+\item \textbf{The balances are the laws being tested.}  Mass, atoms and
+  energy close on every converged steady run by default.  Each closure
+  is a measurement that could have contradicted a conservation postulate
+  and did not.  Their residuals are published so that the test is
+  \emph{visible}, which is what distinguishes a test from an assumption.
+\item \textbf{A refusal is a test that the engine performs on itself.}
+  When a case declares a validity window and the run leaves it, the
+  engine says so; when a record lacks a datum the law needs, the engine
+  refuses rather than substituting.  The alternative --- a plausible
+  number with nothing behind it --- is precisely the state Sommerfeld
+  describes: used to it, no longer bothered.
+\end{itemize}
+
+\begin{tutoriallink}
+\code{tutorials/steady/flash/flash01\_benzene\_toluene} for the seam,
+\code{tutorials/steady/heat/hx01\_heater} for the first law closing,
+\code{tutorials/props/molecular/entropy01\_air\_ledger} for entropy as a
+ledger, \code{tutorials/props/molecular/exergy01\_air\_dead\_state} for
+the second law's price on a state.  Run each, change one declared
+number, and find the closure that still holds.
+\end{tutoriallink}
+
+\subsection{The third reading}
+
+Sommerfeld's third pass --- ``you know you don't understand it, but it
+no longer bothers you'' --- is usually told as resignation.  It is not.
+It is the moment the student stops demanding of the four laws something
+no law can give, and starts holding them to the only standard that
+applies: \emph{have they ever been contradicted?}  They have not.
+Everything else in this guide is deduction from them, models beside
+them, data under them, and tests around them.  Read that way, the
+subject is not slippery at all.  It is the clearest example in
+engineering of what a theory is: a floor you accept, a building you
+deduce, and a lifetime of trying to knock it down.
+
+
 \partepigraph{What I do not know I do not think I know either.}{Socrates, in Plato's \emph{Apology} 21d}
 \phantomsection
 \addcontentsline{toc}{section}{Part II --- Pure-component thermodynamic models}
