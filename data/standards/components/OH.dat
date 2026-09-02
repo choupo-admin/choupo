@@ -25,6 +25,7 @@ CAS            3352-57-6;
 
 MW             17.008;       // kg/kmol
 role        nonvolatile;         // never a liquid in any process context
+tags        ( radical gasPhase combustion );   // open-shell species; classified as such in the GUI
 
 standardThermochemistry
 {

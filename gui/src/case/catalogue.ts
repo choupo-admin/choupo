@@ -46,6 +46,21 @@ export interface ComponentMeta {
   /** A permanent / non-condensable carrier gas (declared `noncondensable true;`
    *  — air/N2/O2/CO2) — gates the psychrometric view (carrier + condensable). */
   isPermanentGas: boolean;
+  /** `tags ( radical ... )` on the record: an open-shell species (OH, CH3,
+   *  HO2, ...) -- never a substance a student would charge to a vessel, and
+   *  filed as its own group so a browser does not list it among liquids. */
+  isRadical: boolean;
+  /** A salt or mineral: the record declares its own solid (`solidPhases{}`),
+   *  an `electrolyte{}` block, an ion stoichiometry (`dissociatesTo`) or a
+   *  van't Hoff `dissociation > 1`.  Declared facts, never a name test. */
+  isSaltOrMineral: boolean;
+  /** `tags ( combustion ... )`: a GRI-Mech / Burcat gas-phase species whose
+   *  reason to exist is a mechanism, not a separation. */
+  isCombustion: boolean;
+  /** Gas at room temperature: the declared normal boiling point sits below
+   *  298.15 K.  Read off Tb ALONE (0 < Tb < 298.15) -- `noncondensable` is a
+   *  different, narrower claim (see isPermanentGas). */
+  isRoomTemperatureGas: boolean;
   /** the record DECLARES `provenance { source synthetic; }` -- a numerical
    *  test stand-in, not a chemical.  Read, never inferred: a CAS of 00-00-0
    *  would have been a fair guess, and guessing is what philosophy 3c forbids. */
@@ -152,6 +167,17 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const isElectrolyte = (j.electrolyte !== undefined && j.electrolyte !== null)
     || (dissoc > 1 && !isSolid);
   const isPermanentGas = j.noncondensable === "true" || j.noncondensable === true;
+  //  `tags ( a b c )` renders as a string[] through toJson; a record with
+  //  no tags line has j.tags undefined, which reads as "no tags".
+  const tags: string[] = Array.isArray(j.tags) ? (j.tags as unknown[]).map(String) : [];
+  const isRadical = tags.includes("radical");
+  const isCombustion = tags.includes("combustion");
+  const present = (v: unknown) => v !== undefined && v !== null;
+  const isSaltOrMineral = present(j.solidPhases) || present(j.electrolyte)
+    || present(j.dissociatesTo) || dissoc > 1;
+  //  Tb 0 is a sentinel some molten-salt records carry (hitecSalt): not a
+  //  boiling point, so it must not read as "boils below 0 K".
+  const isRoomTemperatureGas = typeof j.Tb === "number" && j.Tb > 0 && j.Tb < 298.15;
   const prov = j.provenance as Record<string, unknown> | undefined;
   const isSynthetic = !!prov && prov.source === "synthetic";
   const grp = j.groups as Record<string, unknown> | undefined;
@@ -164,7 +190,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isSynthetic, hasUnifac,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasUnifac,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 
