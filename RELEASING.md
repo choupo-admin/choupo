@@ -9,6 +9,7 @@ main          THE DEVELOPMENT LINE, Choupo-dev — the default branch, the
               continuously-updated latest, no pre-announced target version
 
 vYYMM         a release: an IMMUTABLE tag, never deleted, moved or reused
+vYYMM.N       a PATCH of that release, tagged on its release-YYMM branch
 release-YYMM  cut FROM a tag, and only on the day a patch actually ships
 
 Public name:      Choupo-2608
@@ -49,6 +50,20 @@ baked into the code or docs beforehand.
   is nothing for it to carry.
 - The published tag is never touched by fixes; the `release-YYMM` branch
   carries them and a patch gets its own tag.
+
+**A PATCH TAG IS `vYYMM.N`, AND IT DOES NOT MAKE A NEW RELEASE** (settled
+2026-09-02, when the first patch actually shipped and the rule above turned
+out never to have said what "its own tag" looks like).  `v2608.1` is a
+packaging fix to Choupo-2608, so **everything a reader cites stays put**: the
+public name is still `Choupo-2608`, `CHOUPO_VERSION` is *not* restamped (a
+frozen app announcing `Choupo-2608.1` would name a version no citation
+carries — the same lie in the other direction), the citation and the badge do
+not move, and `freeze-app` publishes the built copy at **`/vYYMM/app/`**, the
+address `/releases/` tells a student to cite.  A patch that moved the URL
+would be a release under another name.  What the patch tag buys is the
+record: which commit the published bytes were built from, readable a year
+later.  A change that alters an *answer* is not a patch — it is the next
+release.
 
 ## Publishing a release
 
@@ -118,11 +133,25 @@ baked into the code or docs beforehand.
    and point the "Run" buttons at the frozen copy.  That order is the gate's:
    a `/vYYMM/app/` link whose id is not declared there is refused.
 
-   **`freeze-app` cannot yet produce a working frozen app for a release cut
-   before 2026-09-02** — the app hardcoded root-absolute engine paths, so a
-   copy served from `/vYYMM/app/` loaded the development engine.  Fixed on the
-   development line the same day; Choupo-2608 therefore ships with no frozen
-   app, which `/releases/` states plainly.
+   **THE FROZEN APP WAS A SHELL UNTIL 2026-09-02, and the checks that were
+   supposed to prevent it could not see it.**  The app fetched its engine from
+   two root-absolute literals (`gui/src/adapters/wasmModule.ts`, and
+   `gui/public/workers/solverWorker.js`, which vite never rewrites because it
+   is plain JavaScript in `public/`), so a copy served from `/vYYMM/app/`
+   loaded correctly, and then on running a case fetched `Choupo-dev` from the
+   site root — true of `/v2607/app/` as well, so no frozen release had ever
+   run its own engine.  Checks (1)–(4) all passed on it, because every one of
+   them reads what the app *is at rest*: the entry point, the binary, the
+   manifest.  Check (5) reads what it **fetches when it runs**, which is the
+   only place the defect was ever visible.  Fixed on the development line and
+   shipped as `v2608.1`.
+
+   `freeze-app` will not overwrite a frozen app — with **one self-limiting
+   exception**, in the shape of `withdraw-release`: it replaces an existing
+   copy only when it can prove from the published bytes that the copy fetches
+   its engine from a root path, i.e. that it never was a frozen copy of
+   anything.  Once a correct copy is in place the guard can never fire on it
+   again.
 
    To withdraw a release, write the decision into
    `docs/withdrawn-releases.txt` first and then run `withdraw-release`; it

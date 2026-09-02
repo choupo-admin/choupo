@@ -39,10 +39,22 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
+          #  vYYMM, or vYYMM.N for a patch cut from a release-YYMM branch.
+          #  RELEASING.md line 51 always said "a patch gets its own tag" and
+          #  never said what it looks like; v2608.1 is that form, settled
+          #  2026-09-02 when the first patch actually shipped.
           case "$TAG" in
             v[0-9][0-9][0-9][0-9]) ;;
-            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+            v[0-9][0-9][0-9][0-9].[0-9]) ;;
+            *) echo "REFUSED: '$TAG' is neither vYYMM nor vYYMM.N."; exit 1 ;;
           esac
+          #  A PATCH DOES NOT GET ITS OWN URL.  v2608.1 is a packaging fix to
+          #  Choupo-2608: the engine is the same engine, the citation is the
+          #  same citation, and the copy is published at /v2608/app/ -- the
+          #  address /releases/ tells a student to cite.  A patch that moved
+          #  the URL would be a release under another name.
+          echo "REL=${TAG%%.*}" >> "$GITHUB_ENV"
+          echo "app URL prefix: /${TAG%%.*}/app/"
 
       #  THE TAG, not the branch.  fetch-depth 0 so the checkout carries the
       #  history the build's own freshness checks read.
@@ -81,15 +93,13 @@ jobs:
       #  the root.  A frozen copy must resolve from ITS OWN prefix or it will
       #  quietly load the development bundle's assets.
       - name: Build the app rooted at its own URL
-        env:
-          TAG: ${{ inputs.tag }}
         working-directory: gui
         run: |
           set -euo pipefail
           npm run prebuild
           npx tsc -p tsconfig.json --noEmit
           node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build \
-               --base="/$TAG/app/"
+               --base="/$REL/app/"
 
       - name: Prove it is the release, and self-contained
         env:
@@ -107,8 +117,8 @@ jobs:
             grep -oE '(src|href)="[^"]*"' "$d/index.html" | sort -u
             exit 1
           fi
-          grep -q "/$TAG/app/assets/" "$d/index.html" \
-            || { echo "REFUSED: index.html does not reference /$TAG/app/assets/"; exit 1; }
+          grep -q "/$REL/app/assets/" "$d/index.html" \
+            || { echo "REFUSED: index.html does not reference /$REL/app/assets/"; exit 1; }
 
           #  (2) it carries its own engine, and a real one
           sz=$(stat -c%s "$d/wasm/choupoSolve.wasm")
@@ -118,7 +128,11 @@ jobs:
           #  binary, so the engine states its own identity independently of
           #  the directory it was filed under.  A dev build parked at a
           #  version URL fails here and passes everything else.
-          want="Choupo-${TAG#v}"
+          #  The engine's identity is the RELEASE's.  A patch tag does not
+          #  restamp CHOUPO_VERSION -- if it did, the frozen app would announce
+          #  a version no citation names, which is the same lie in the other
+          #  direction.
+          want="Choupo-${REL#v}"
           if ! grep -qa "$want" "$d/wasm/choupoSolve.wasm"; then
             echo "REFUSED: the WASM does not carry '$want' -- this is not the"
             echo "engine of $TAG.  A frozen app running a different engine"
@@ -145,7 +159,34 @@ jobs:
           for g in $(python3 -c "import json;print(' '.join(json.load(open('$d/docs/guides.json'))))"); do
             [ -s "$d/docs/$g.pdf" ] || { echo "REFUSED: docs/$g.pdf missing"; exit 1; }
           done
-          echo "frozen app OK: $(du -sh $d | cut -f1), engine states $want"
+          #  (5) WHAT IT FETCHES WHEN IT RUNS.  Checks (1)-(4) read the entry
+          #  point, the binary and the manifest -- everything the app IS at
+          #  rest -- and every one of them passed on the bundle published at
+          #  /v2608/app/ on 2026-09-02, which loaded correctly and then, on
+          #  running a case, fetched the engine from the SITE ROOT: a frozen
+          #  shell around the development solver, and true of /v2607/app/ too.
+          #  A check that reads only the resting state cannot see it.  The
+          #  worker is plain JavaScript in public/, so vite never rewrites its
+          #  paths and `import.meta.env.BASE_URL` is not available to it; the
+          #  engine URL must therefore be relative to the worker's own
+          #  location, and a root-absolute one here is the defect itself.
+          w="$d/workers/solverWorker.js"
+          [ -s "$w" ] || { echo "REFUSED: no solverWorker.js -- nothing would run"; exit 1; }
+          if grep -qE '["`]/wasm/' "$w"; then
+            echo "REFUSED: solverWorker.js fetches the engine from a ROOT path."
+            echo "This copy would load the DEVELOPMENT solver while claiming"
+            echo "to be $TAG.  The engine URL must resolve from the worker's"
+            echo "own location (new URL('../wasm/…', self.location.href))."
+            grep -nE '["`]/wasm/' "$w"
+            exit 1
+          fi
+          if grep -rqE '["`]/(wasm|workers)/' "$d/assets/" 2>/dev/null; then
+            echo "REFUSED: a bundled asset names a ROOT /wasm/ or /workers/ path."
+            grep -rnoE '["`]/(wasm|workers)/[a-zA-Z.]*' "$d/assets/" | head
+            exit 1
+          fi
+          echo "frozen app OK: $(du -sh $d | cut -f1), engine states $want,"
+          echo "  and resolves it from /$REL/app/ when it runs"
 
       - name: Publish it beside the other releases
         env:
@@ -165,17 +206,42 @@ jobs:
 
           git clone --depth 1 "$SITE_REPO" /tmp/site
 
-          #  NEVER-TOUCHED IS THE CLAIM.  A frozen copy that can be rebuilt
-          #  over is not frozen, it is merely old.
-          if [ -e "/tmp/site/$TAG/app" ]; then
-            echo "REFUSED: /$TAG/app/ already exists in the site repository."
-            echo "A frozen release app is never overwritten (CLAUDE.md 2)."
-            exit 1
+          #  NEVER-TOUCHED IS THE CLAIM, and it stands.  A frozen copy that
+          #  can be rebuilt over is not frozen, it is merely old.
+          #
+          #  ONE EXCEPTION, and it is SELF-LIMITING in the shape of
+          #  withdraw-release.yml: a bundle whose worker fetches the engine
+          #  from a ROOT path is not a frozen copy of anything -- it is a
+          #  shell that runs whatever solver happens to sit at the site root
+          #  today, which on 2026-09-02 was Choupo-dev.  Such a copy never was
+          #  the release's app, so replacing it does not overwrite a frozen
+          #  app; it makes one exist for the first time.  The guard PROVES the
+          #  defect from the published bytes before it will act, so once a
+          #  correct copy is in place this branch can never fire on it again,
+          #  and it can never fire on an honest frozen app at all.
+          replacing=""
+          if [ -e "/tmp/site/$REL/app" ]; then
+            pub="/tmp/site/$REL/app/workers/solverWorker.js"
+            if [ -s "$pub" ] && grep -qE '["`]/wasm/' "$pub"; then
+              echo "::warning::/$REL/app/ exists and fetches its engine from the"
+              echo "site ROOT -- it is a shell around the live solver, not a"
+              echo "frozen copy of Choupo-${REL#v}.  Replacing it."
+              grep -nE '["`]/wasm/' "$pub"
+              replacing="yes"
+            else
+              echo "REFUSED: /$REL/app/ already exists in the site repository"
+              echo "and resolves its own engine.  A frozen release app is never"
+              echo "overwritten (CLAUDE.md §2)."
+              exit 1
+            fi
           fi
 
           #  Only its own subtree.  No --delete, nothing near the site root.
-          mkdir -p "/tmp/site/$TAG/app"
-          rsync -a --exclude='.git' gui/dist/ "/tmp/site/$TAG/app/"
+          if [ -n "$replacing" ]; then
+            rm -rf "/tmp/site/$REL/app"
+          fi
+          mkdir -p "/tmp/site/$REL/app"
+          rsync -a --exclude='.git' gui/dist/ "/tmp/site/$REL/app/"
 
           grep -q 'www.choupo.org' /tmp/site/CNAME \
             || { echo "CNAME lost -- refusing to publish"; exit 1; }
@@ -183,7 +249,12 @@ jobs:
           cd /tmp/site
           git config user.name  "Vítor Geraldes"
           git config user.email "talentgroundlda@gmail.com"
-          git add "$TAG"
-          git commit -m "freeze the app of Choupo-${TAG#v} at /$TAG/app/"
+          git add "$REL"
+          subject="freeze the app of Choupo-${REL#v} at /$REL/app/, built from $TAG"
+          if [ -n "$replacing" ]; then
+            git commit -m "$subject" -m "The copy previously served here fetched its engine from the site root, so it ran the development solver under a release label.  It was never a frozen copy of this release."
+          else
+            git commit -m "$subject"
+          fi
           git push
-          echo "published /$TAG/app/"
+          echo "published /$REL/app/"

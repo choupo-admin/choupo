@@ -41,9 +41,14 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
+          #  vYYMM, or vYYMM.N for a patch cut from a release-YYMM branch.
+          #  RELEASING.md line 51 always said "a patch gets its own tag" and
+          #  never said what it looks like; v2608.1 is that form, settled
+          #  2026-09-02 when the first patch actually shipped.
           case "$TAG" in
             v[0-9][0-9][0-9][0-9]) ;;
-            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+            v[0-9][0-9][0-9][0-9].[0-9]) ;;
+            *) echo "REFUSED: '$TAG' is neither vYYMM nor vYYMM.N."; exit 1 ;;
           esac
           rec=docs/withdrawn-releases.txt
           [ -f "$rec" ] || { echo "REFUSED: $rec is missing -- without the record there is no authorisation."; exit 1; }

@@ -38,9 +38,13 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
+          #  vYYMM, or vYYMM.N for a patch (see release-tag.yml).  The
+          #  section name follows the tag: Choupo-2608.1's notes come from
+          #  the "[Choupo-2608.1]" heading and no other.
           case "$TAG" in
             v[0-9][0-9][0-9][0-9]) ;;
-            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+            v[0-9][0-9][0-9][0-9].[0-9]) ;;
+            *) echo "REFUSED: '$TAG' is neither vYYMM nor vYYMM.N."; exit 1 ;;
           esac
           git rev-parse -q --verify "refs/tags/$TAG" >/dev/null \
             || { echo "REFUSED: tag $TAG does not exist.  Run release-tag first."; exit 1; }

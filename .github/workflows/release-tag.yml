@@ -50,10 +50,15 @@ jobs:
           SHA: ${{ inputs.sha }}
         run: |
           set -euo pipefail
+          #  vYYMM for a release; vYYMM.N for a PATCH cut from its
+          #  release-YYMM branch.  RELEASING.md always said a patch gets its
+          #  own tag and never said what one looks like; v2608.1 is that form,
+          #  settled 2026-09-02 when the first patch actually shipped.
           case "$TAG" in
             v[0-9][0-9][0-9][0-9]) ;;
-            *) echo "REFUSED: '$TAG' is not vYYMM.  RELEASING.md: never use a" \
-                    "variant (v26.08, 2026.08, Choupo-v2608)."; exit 1 ;;
+            v[0-9][0-9][0-9][0-9].[0-9]) ;;
+            *) echo "REFUSED: '$TAG' is neither vYYMM nor vYYMM.N.  RELEASING.md:" \
+                    "never use a variant (v26.08, 2026.08, Choupo-v2608)."; exit 1 ;;
           esac
           if [ "${#SHA}" -ne 40 ]; then
             echo "REFUSED: '$SHA' is not a full 40-character commit SHA." \
@@ -66,10 +71,25 @@ jobs:
           if ! git cat-file -e "${SHA}^{commit}" 2>/dev/null; then
             echo "REFUSED: $SHA is not a commit in this repository."; exit 1
           fi
-          if ! git merge-base --is-ancestor "$SHA" origin/"${GITHUB_REF_NAME}"; then
-            echo "REFUSED: $SHA is not an ancestor of ${GITHUB_REF_NAME}." \
+          #  PUBLISHED HISTORY, on ANY branch of this remote.  The first
+          #  version of this check compared against the branch the workflow
+          #  runs from (always the default one), which was right while main
+          #  was the only release line -- and would have refused v2608.1,
+          #  whose commit lives on release-2608 where RELEASING.md puts it.
+          #  What the check is for is that a tag never names a commit nobody
+          #  can fetch; the branch it is reachable FROM is not the point, so
+          #  it names the branch it found rather than dictating one.
+          on_branch=""
+          for b in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin); do
+            if git merge-base --is-ancestor "$SHA" "$b" 2>/dev/null; then
+              on_branch="$b"; break
+            fi
+          done
+          if [ -z "$on_branch" ]; then
+            echo "REFUSED: $SHA is not reachable from any branch on this remote." \
                  "A tag must name history that is actually published."; exit 1
           fi
+          echo "reachable from $on_branch"
           echo "OK: $TAG will name $SHA — $(git log -1 --format=%s "$SHA")"
 
       - name: Create and push the annotated tag
