@@ -10,6 +10,7 @@
   pfr01_first_order -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "PFR with the same kinetics as cstr01 (RK4 integration)";
 

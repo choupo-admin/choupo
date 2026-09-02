@@ -10,6 +10,7 @@
   cstr01_first_order -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "CSTR with pseudo-first-order Arrhenius esterification (AcOH + EtOH <-> EtOAc + H2O), ~53% conversion of ethanol";
 

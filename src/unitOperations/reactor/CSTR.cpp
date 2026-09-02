@@ -848,12 +848,28 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     if (verbosity >= 2)
     {
         std::cout << "\n=================  CSTR (multi-reaction) Result  ====================\n"
+                  //  nIter is CUMULATIVE: every trial T of the steady-state
+                  //  scan (and each bisection) re-enters the extent Newton and
+                  //  adds its count, so an adiabatic case prints hundreds where
+                  //  the answer itself took a handful.  Say so on the line --
+                  //  the isothermal flash learned the same lesson
+                  //  ("CUMULATIVE ... across ALL composition-outer passes").
+                  //  Found 2026-09-02 writing cstr04_adiabatic's README: a
+                  //  student reading "Newton 882 it" for ONE reaction concludes
+                  //  the solver is struggling.
                   << "  Reactions:        " << R << "   (Newton " << nIter
-                  << " it, residual " << std::scientific << std::setprecision(2)
+                  << " it CUMULATIVE across the steady-state scan, final residual "
+                  << std::scientific << std::setprecision(2)
                   << lastRes << ")\n" << std::fixed << std::setprecision(5)
                   << "  V_R = " << V_R << " m^3    tau = " << std::setprecision(2)
+                  //  F_out is mol/s; mol/s -> kmol/h is x3.6 and nothing else.
+                  //  This line printed "* 3.6 / 1000.0" and so reported a
+                  //  1 kmol/h feed as "F_out = 0.0010 kmol/h" -- the KPI beside
+                  //  it (F_out_kmol_h, golden-pinned) was right all along, only
+                  //  the console the student reads first was 1000x off.  Same
+                  //  day, same README.
                   << tau << " s    F_out = " << std::setprecision(4)
-                  << (F_out * 3.6 / 1000.0) << " kmol/h\n";
+                  << (F_out * 3.6) << " kmol/h\n";
         if (catLoad > 0.0)
             std::cout << "  catalyst:         " << std::fixed << std::setprecision(1)
                       << catLoad << " kg/m^3 bulk  (rate constants are per gram of catalyst)\n";

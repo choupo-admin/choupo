@@ -10,7 +10,8 @@
   process03_recycle -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
-description   "Recycle loop: the tear stream is solved by Newton (5 iters, |r|2~5e-6)";
+description   "Recycle loop: the tear stream is solved by Newton (2 iterations, |r|2 3.9e-6)";
 
 verbosity     3;

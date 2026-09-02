@@ -10,6 +10,7 @@
   cstr01_first_order -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "ADIABATIC CSTR: T_out solved WITH the extents; Q=0 by construction (elements datum)";
 
