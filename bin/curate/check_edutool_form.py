@@ -39,6 +39,12 @@ WHAT THIS CHECKS, deliberately structural rather than editorial:
   (e) every Explorer view is reachable only through a component SELECTION;
   (f) the pellet is not an Explorer view.
 
+  (g) an INDEX PAGE is the THIRD form: it scrolls, carries no equation of its
+      own, and deep-links a guide (`guideUrl("designGuide"`) whose chapters
+      hold the rules -- counted apart from the lessons in the OK line.
+      Sabotage: RulesOfThumbTool with its guideUrl calls removed must FAIL
+      under (d) as a lesson with no equation block.
+
 WHAT IT CANNOT CHECK, said plainly: whether the prose is any GOOD, whether
 the equations are the right ones, whether the steps are in a sensible order.
 Those are teaching judgements and no gate can make them.  This buys only that
@@ -63,6 +69,13 @@ EQUATION_MARKERS = ('ff="monospace"', "ff='monospace'")
 #  The shared step renderer draws the formula AND its `where`
 #  gloss; a tool that calls it carries equations by delegation.
 STEPPER_MARKER = "lessonStepper("
+#  THE THIRD FORM (2026-09-02): an INDEX page.  RulesOfThumbTool scrolls and
+#  carries no equation on purpose -- every rule lives in the Design Guide and
+#  the page deep-links its chapters, because a quoted heuristic beside a named
+#  safety standard is a second home for a number a student acts on.  The
+#  marker is the deep link itself: a page that opens a guide at a named
+#  destination has its equations THERE.
+INDEX_MARKER = 'guideUrl("designGuide"'
 
 
 def fail(msg):
@@ -125,7 +138,7 @@ def main():
         body = rest[: nxt.start() + 1] if nxt else rest
         return f"MethodsWorkspace.tsx::{comp}", body
 
-    panels, lessons, seen = [], [], {}
+    panels, lessons, index_pages, seen = [], [], [], {}
     for tid in ids:
         comp = rendered.get(tid)
         if not comp:
@@ -179,12 +192,17 @@ def main():
         #  point.  A check that reads presentation out of a caller's own file
         #  measures where the code lives, not what the page shows.
         if not any(m in src for m in EQUATION_MARKERS) \
+           and STEPPER_MARKER not in src and INDEX_MARKER in src:
+            index_pages.append((tid, label))
+            continue
+        if not any(m in src for m in EQUATION_MARKERS) \
            and STEPPER_MARKER not in src:
             fail(f"{label} ({tid}) scrolls but carries no equation block: it "
-                 f"has no monospace Text of its own and does not call "
-                 f"{STEPPER_MARKER!r}.  The form exists to hold the "
-                 "equations, so a lesson without one kept the layout and "
-                 "dropped the point.")
+                 f"has no monospace Text of its own, does not call "
+                 f"{STEPPER_MARKER!r}, and is not an index page deep-linking "
+                 f"a guide ({INDEX_MARKER!r} absent).  The form exists to "
+                 "hold the equations, so a lesson without one kept the layout "
+                 "and dropped the point.")
 
     ev = strip_comments(EXPLORE_VIEWS.read_text(encoding="utf-8"))
     views = set(re.findall(r'out\.add\("([A-Za-z0-9_]+)"\)', ev))
@@ -208,8 +226,11 @@ def main():
         f"check_edutool_form: OK -- all {len(ids)} LIVE registry id(s) "
         f"resolve through the workspace to a source ({inline} defined inline "
         f"in MethodsWorkspace.tsx, which the file-glob this gate replaced "
-        f"could not see at all).  {len(lessons)} are scrolling lessons, each "
+        f"could not see at all).  {len(lessons) - len(index_pages)} are scrolling lessons, each "
         f"with a scroll container and at least one equation block; "
+        f"{len(index_pages)} are index pages whose equations live in the "
+        f"guide they deep-link (quoting them on the page would be a second "
+        f"home); "
         f"{len(panels)} are instrument panels, every one NAMED in "
         f"debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has "
         f"outlived its violation.  On the Explorer side, viewsFor() is still "
