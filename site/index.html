@@ -345,6 +345,23 @@
     <p class="hero-copy">Choupo is a free and open-source chemical process simulator written in C++17. Build steady, batch and controlled processes; inspect thermodynamics; fit property models; and follow the balances and nonlinear solves all the way to the answer.</p>
     <div class="hero-actions">
       <a class="button" href="/app/" target="choupo-app" rel="noopener">Run Choupo-dev — latest</a>
+      <!--  THE RELEASE HAS A BUTTON, and it promises what it can keep.  The
+           earlier one said "Run Choupo-2608" and opened /v2608/app/, which
+           is a frozen shell around the DEVELOPMENT engine (2026-09-02): the
+           bundle asks for the solver at the site root, so the visitor read
+           2608 and computed with dev.  The cause is fixed on the
+           development line, but 2608 is an immutable tag and freeze-app
+           builds FROM the tag, so that copy cannot be repaired -- it is the
+           next release that gets a runnable frozen app.  Until then the
+           release is CITABLE, not RUNNABLE, and this button says so: it
+           leads to the notes, the tag and the citation rather than to
+           something that would answer with another version's engine.  -->
+      <!--  `display:contents` because this span is a DATA HOOK, not a layout
+           box: as a flex item it wrapped as its own line and the label broke
+           in two.  Hoisting its text into the parent's inline flow makes the
+           whole label one run again, and the span stays in the DOM for
+           data-inv to fill and for check_release_identity to read.  -->
+      <a class="button secondary" href="/releases/"><span data-inv="release" style="display:contents">Choupo-2608</span> — release notes &amp; citation</a>
       <a class="button secondary" href="/app/?workspace=explore" target="choupo-app" rel="noopener">Explore properties</a>
       <a class="button secondary" href="/models/">View model catalogue</a>
       <a class="button secondary" href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Read the source</a>
