@@ -162,7 +162,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "uncertainty.  The quantity T, the unit K and the practical scale "
       + "T90 are three different things; no instrument observes temperature "
       + "itself; and decimal places are not uncertainty.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  ONE page, ONE mental model (the temperature page's ruling, applied to
@@ -181,7 +181,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "separation has a price floor (T times the mixing line), how an "
       + "isentropic machine spends entropy (dS_gen), and which lines cancel "
       + "when two states are compared.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  THE SEQUEL the entropy ledger buys: exergy is the PRICE TAG -- what
@@ -202,7 +202,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "datum-independent but NOT model-independent, and Gouy-Stodola: "
       + "every dS_gen an adiabatic machine publishes costs T0 times itself "
       + "in exergy destroyed.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  THE DEEP DIVE behind the page above, for the reader who wants the
@@ -218,7 +218,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "cross-examined.  ITS-90's own fixed points, the gas thermometer "
       + "solved live by the engine, why platinum's melting point cannot "
       + "carry a tenth of a degree, and Hasok Chang's four circles.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  THE STEP BEFORE the trust page: before a reader can judge whether a
@@ -238,7 +238,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "which groups at what typical error.  The anatomy of a .dat file by "
       + "what CONSUMES each field, and the standing rule that estimation is "
       + "a curation-time act, never a runtime one.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  THE PROPERTY-DATA LESSON that used to sit inside the temperature
@@ -253,7 +253,7 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "Thirteen records cross-examined against themselves, live -- water's "
       + "own file disagrees with itself by 0.70 K, and a predictive glycerol "
       + "correlation that asked to be validated misses by a factor of 19.",
-    theory: "ch:criticals",
+    theory: "ch:foundations",
   },
   {
     //  THE MODELS LESSON the owner asked for by name (2026-08-31: "o COSMO,
