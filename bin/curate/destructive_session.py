@@ -66,6 +66,7 @@ DECLARED destruction only.
 import hashlib
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -92,6 +93,12 @@ class DestructiveSession:
 
     def __enter__(self):
         JOURNAL.parent.mkdir(parents=True, exist_ok=True)
+        #  Taken BEFORE the record is written, and kept, because __exit__
+        #  compares against it.  Until 2026-09-02 these hashes were written
+        #  into the journal and READ BY NOTHING -- a measurement taken and
+        #  discarded, the PolynomialCp Tmin_/Tmax_ shape.
+        self.before = {p: (sha256_of(p) if p.exists() else None)
+                       for p in self.files}
         record = {
             "owner": self.owner,
             "pid": os.getpid(),
@@ -102,7 +109,7 @@ class DestructiveSession:
                    "may be recorded from either.",
             "files": [
                 {"path": p.relative_to(ROOT).as_posix(),
-                 "sha256Before": sha256_of(p) if p.exists() else None}
+                 "sha256Before": self.before[p]}
                 for p in self.files
             ],
             "alsoDamages": "build/ -- the gate rebuilds the engine from "
@@ -116,12 +123,47 @@ class DestructiveSession:
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        #  Removed ONLY on a clean exit.  An exception leaves the journal
+        #  Removed ONLY on a VERIFIED restore.  An exception leaves the journal
         #  standing, because an interrupted restore is exactly the state the
         #  journal exists to announce.  Suppress nothing.
-        if exc_type is None:
+        #
+        #  IT USED TO BE REMOVED ON A CLEAN *RETURN*, which is a different
+        #  claim and a weaker one: a restore that silently did not happen
+        #  returns cleanly, the journal is unlinked, and every later harness
+        #  is told the tree is trustworthy.  CLAUDE.md said "removed only on a
+        #  verified restore" from the day this was written; the code did not
+        #  verify, and the hashes it recorded for that purpose were read by
+        #  nothing.  Found on 2026-09-02 after a curated record
+        #  (data/standards/components/NaCl.dat) was left carrying a selftest
+        #  marker with NO journal standing, so bin/runTests ran a full pass
+        #  over it and reported three failures that were the poisoned record
+        #  rather than the tree.
+        #
+        #  What this does NOT close, said plainly: TWO RUNS COLLIDING.  This
+        #  is a journal and not a lock, by decision -- and a second run whose
+        #  own `finally` writes back bytes it read while the first had them
+        #  sabotaged restores the SABOTAGE and verifies it happily, because
+        #  both processes believe those bytes are the original.  The cure is
+        #  not to overlap destructive runs.
+        if exc_type is not None:
+            return False
+        moved = [p for p in self.files
+                 if (sha256_of(p) if p.exists() else None) != self.before[p]]
+        if not moved:
             JOURNAL.unlink(missing_ok=True)
-        return False
+            return False
+        names = "\n    ".join(p.relative_to(ROOT).as_posix() for p in moved)
+        sys.stderr.write(
+            f"\n{self.owner}: THE TREE WAS NOT RESTORED.\n"
+            f"  These file(s) do not match the bytes recorded before the "
+            f"session began:\n    {names}\n"
+            "  The journal is LEFT STANDING so every evidence-producing "
+            "harness refuses until this is fixed.\n"
+            "  Restore them (`git checkout -- <file>`), then `make all` -- a "
+            "clean `git status` is NOT evidence that the build is clean.\n")
+        raise RuntimeError(
+            f"{self.owner}: restore incomplete; {len(moved)} file(s) differ "
+            "from their pre-session bytes.  The journal stands.")
 
 
 def journal():

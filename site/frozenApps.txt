@@ -48,5 +48,21 @@
 #  own URL -- /v2608/app/ is the address /releases/ tells a student to cite.
 #
 #  v2607 is absent because it was WITHDRAWN (2026-09-02).
+#
+#  ONE KNOWN PROPERTY OF THIS COPY, recorded rather than repaired.  It makes
+#  ONE failed request per load, to http://www.choupo.org:7682/api/browse --
+#  the LOCAL development bridge, which of course is not there.  The hostname
+#  guard that skips that probe off localhost landed in ef04c9803, AFTER v2608
+#  was cut, so the frozen copy predates it and will carry it for as long as it
+#  is served; that is what frozen means.  Measured in a browser, both ways:
+#  /v2608/app/ makes 1 such request, /app/ makes 0.  It is console noise and
+#  touches no answer -- the engine, the corpus and every number come from
+#  inside the prefix.
+#
+#  It is NOT repaired, deliberately.  freeze-app has exactly one exception to
+#  never-touched, and that exception exists for a copy running the WRONG
+#  ENGINE.  Spending it on a console warning would be using the emergency
+#  brake for a speck on the windscreen -- and would leave the next real defect
+#  facing a guard somebody had already argued their way past once.
 
 v2608
