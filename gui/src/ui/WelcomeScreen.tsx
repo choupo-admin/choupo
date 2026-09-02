@@ -140,7 +140,7 @@ export function WelcomeScreen() {
               <Text fw={800} style={{ fontSize: "clamp(30px, 9vw, 40px)", letterSpacing: 1, lineHeight: 1 }}>
                 <span style={{ color: "light-dark(var(--mantine-color-accent-7), var(--mantine-color-accent-4))" }}>C</span>HOUPO<sup style={{ fontSize: "0.38em", fontWeight: 600, verticalAlign: "super", letterSpacing: 0 }}>™</sup>
               </Text>
-              <Text c="dimmed" size="sm" style={{ lineHeight: 1.15 }}>A glass-box chemical process simulator</Text>
+              <Text c="dimmed" size="sm" style={{ lineHeight: 1.15 }}>Open-source, glass-box chemical process simulator</Text>
             </Stack>
           </Group>
           <Stack gap={4} align="center">
@@ -150,7 +150,8 @@ export function WelcomeScreen() {
             <Text c="dimmed" size="sm" ta="center" maw={620}>
               Describe the process — the assistant authors transparent case
               dictionaries; Choupo validates them, calculates, and shows every
-              balance and model choice. Open-source, in your browser.
+              balance and model choice. Free software under the
+              GPL-3.0-or-later, running in your browser.
             </Text>
           </Stack>
         </Stack>
