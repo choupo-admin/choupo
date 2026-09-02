@@ -8,6 +8,13 @@ tag `v2607` = version `2607`).  Development happens on `main`, the default
 branch, which carries `Choupo-dev`; a release is an immutable tag.
 **Choupo-2607** is the first version.
 
+## Choupo-dev (unreleased)
+
+The development line, continuously updated on `main`.  Entries land here
+as they ship; the section is renamed to `## [Choupo-YYMM] — <date>` on the
+day it is cut, which is the form `bin/curate/release_inventory.py` reads to
+decide what the storefront announces as the latest release.
+
 ## [Choupo-2608] — 2026-09-02 — the August line
 
 A month of work in one section, by theme; the full dated records live in

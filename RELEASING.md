@@ -53,32 +53,63 @@ baked into the code or docs beforehand.
 ## Publishing a release
 
 1. Update the internal version: `src/core/Banner.H` (`CHOUPO_VERSION
-   "Choupo-YYMM"`, drop the dev suffix), `CITATION.cff` (`version`,
-   `date-released`, preferred-citation tag URL).
-2. Update `README.md` and the `CHANGELOG.md` section for the release.
-3. Update the landing page (release name, date, citation block).
+   "Choupo-YYMM"`, drop the dev suffix), then **run
+   `bin/curate/banner_version.py`** — it restamps the decorative
+   `Version:  Choupo-...` banner label on every tracked file from Banner.H,
+   and `banner-version-gate` fails the suite if you skip it.  Then
+   `CITATION.cff` (`version`, `date-released`, preferred-citation tag URL).
+2. Update `README.md` and the `CHANGELOG.md` section for the release.  **The
+   heading must take the bracketed form `## [Choupo-YYMM] — YYYY-MM-DD`**:
+   that is the shape `release_inventory.py`'s `release_id()`/`released_at()`
+   match, and it is what decides which release the storefront announces.  A
+   prose heading leaves the whole site announcing the PREVIOUS release from a
+   tree that has just cut this one — silently, because nothing else reads it.
+   Then regenerate the dev inventory: `bin/curate/release_inventory.py`
+   (writes `generated/releaseInventory.json`, whose `latestRelease` follows
+   that heading).
+3. Update the landing page: `site/index.html`, `site/models.html` and
+   `site/releases.html` — release name, date, citation block, the `/vYYMM/app/`
+   Run links, the `blob/vYYMM/CITATION.cff` and `tree/vYYMM/docs` links, and
+   the `/releases/vYYMM.json` fetch.  Move the previous release into the
+   history list.  Do NOT hand-fill the `data-inv` literals yet; step 6 does it
+   from the artefact.
 4. Run everything: `bin/runTests` (0 FAIL), `cd gui && npx tsc --noEmit &&
    npx vitest run`, `make wasm-gui`.
-5. Commit and tag:
+5. Commit and tag (do NOT push yet — steps 6-8 still change the tree):
 
    ```bash
    git checkout main
    git commit ...                       # the version bump of steps 1-3
-   git push origin main
    git tag -a vYYMM -m "Choupo-YYMM"
-   git push origin vYYMM
    ```
 
-6. Create the GitHub Release: tag `vYYMM`, title `Choupo-YYMM`, notes from
-   the CHANGELOG section.
-7. Freeze the release's app at `/vYYMM/app/` (see "Site deployment"); add the
-   release to the /releases/ history list and point its "Run" button at the
-   frozen copy.
-8. Bump the Banner back to `Choupo-dev` (no target string to set — there
-   isn't one) and open the next CHANGELOG section, on `main`.
+6. Generate the release artefact — it records the commit its tag resolves to,
+   so it can only exist AFTER the tag:
 
-The push in step 5 publishes the site; the tag does not deploy anything by
-itself.
+   ```bash
+   bin/curate/release_inventory.py --release vYYMM   # generated/releases/vYYMM.json
+   ```
+
+   Then refill every `data-inv` literal in the three site pages from that
+   artefact and run `bin/curate/check_release_identity.py` until it is OK.
+   The gate reads the NEWEST artefact, so literals that were true for the last
+   release are now stale by definition — this is the arm doing its job, not a
+   regression.
+7. Bump the Banner back to `Choupo-dev` (no target string to set — there
+   isn't one), **re-run `bin/curate/banner_version.py`**, and open the next
+   CHANGELOG section on `main` as `## Choupo-dev (unreleased)` — unbracketed,
+   so `release_id()` keeps pointing at the release you just cut.  Commit this
+   as a follow-up; the suite is expected to be green HERE, not at the tag.
+8. Push both commits and the tag, then create the GitHub Release (tag
+   `vYYMM`, title `Choupo-YYMM`, notes from the CHANGELOG section) and freeze
+   the release's app at `/vYYMM/app/` (see "Site deployment"), pointing the
+   history entry's "Run" button at the frozen copy.
+
+The push in step 8 publishes the site; the tag does not deploy anything by
+itself.  The tagged commit is deliberately NOT a green tree: the release
+artefact and the banner's return to `Choupo-dev` both belong to the follow-up
+commit, so `check_release_identity` and `banner-version-gate` are satisfied at
+the head, not at the tag.  `v2607` was cut the same way.
 
 ## Identification in the binaries
 

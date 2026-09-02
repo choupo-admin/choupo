@@ -24,11 +24,11 @@ may exist for static correctness, but a gate recounts it every run, so it can
 never quietly become an independent home).
 
 WHAT THIS CHECKS.
-  (a) THE ARTEFACT IS THE TAG'S.  generated/releases/v2607.json records the
-      commit it was counted from, and that commit must be what the tag
+  (a) THE ARTEFACT IS THE TAG'S.  each generated/releases/<tag>.json records
+      the commit it was counted from, and that commit must be what the tag
       resolves to today.  An artefact whose commit does not match its tag is
       describing something other than the release it names.
-  (b) THE ARTEFACT SURVIVES A RECOUNT.  `--check-release v2607` rebuilds the
+  (b) THE ARTEFACT SURVIVES A RECOUNT.  `--check-release <tag>` rebuilds the
       inventory from a fresh worktree of the tag and diffs -- so a hand-edit
       of the committed artefact, or a generator change that alters the
       counts' meaning, is caught rather than shipped.
@@ -36,7 +36,7 @@ WHAT THIS CHECKS.
       names.  The literals exist so the static HTML is truthful without
       JavaScript; this arm is what stops them drifting the way 284 and 41 did.
   (d) ONE CITATION.  The artefact's rendered citation is recomputed here from
-      `git show v2607:CITATION.cff` through the SAME parse_cff the generator
+      `git show <tag>:CITATION.cff` through the SAME parse_cff the generator
       uses (imported, not copied -- a second implementation would drift), and
       every on-page citation string must equal it byte for byte.
   (e) NO BARE HAND COUNTS.  A 2-4 digit number adjacent to "runnable
@@ -47,16 +47,20 @@ WHAT THIS DOES NOT CHECK, stated plainly.
   * THE PRODUCTION HOST.  This gate reads the repository's site sources; what
     is actually served at choupo.org may differ, and cannot be verified from
     here.
-  * /v2607/app/ HAS NO PRODUCER.  releases.html and the homepage link a
-    frozen app at /v2607/app/ -- "the URL you cite, teach from, and archive"
-    -- and NOTHING in bin/buildSite creates or copies that tree.  If the
+  * /vYYMM/app/ HAS NO PRODUCER.  releases.html and the homepage link a
+    frozen app at the release's own /vYYMM/app/ -- "the URL you cite, teach
+    from, and archive" -- and NOTHING in bin/buildSite creates or copies that
+    tree.  If the
     production host does not carry a hand-uploaded archive, those buttons
     404.  This gate cannot verify either way and says so instead of
     implying coverage; the finding is escalated in the audit report, because
     fixing it properly (archiving a frozen WASM build) is a decision about
     public artefacts, not a patch.
-  * ONLY v2607.  Future releases join by generating their artefact at tag
-    time; the gate iterates over generated/releases/*.json.
+  * ONLY THE RELEASES THAT HAVE AN ARTEFACT.  A release joins by generating
+    its artefact at tag time; the gate iterates over generated/releases/*.json
+    and knows nothing of a tag whose artefact was never committed.  Where two
+    artefacts carry the same fact the NEWEST wins, because the site speaks for
+    the current stable release.
 """
 import importlib.util
 import json
@@ -183,7 +187,7 @@ def main() -> int:
         f"{len(SITE_PAGES)} site source pages equals its artefact value, and "
         "no bare hand count sits beside 'runnable tutorials' in prose.  NOT "
         "CHECKED, said plainly: the PRODUCTION HOST (this gate reads repo "
-        "sources; choupo.org may differ), and /v2607/app/ -- the frozen-app "
+        "sources; choupo.org may differ), and /vYYMM/app/ -- the frozen-app "
         "URL the pages promise -- has NO PRODUCER in bin/buildSite, so "
         "whether it exists depends on a hand-uploaded archive this gate "
         "cannot see.  That finding is escalated, not covered.")

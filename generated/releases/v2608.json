@@ -1,0 +1,46 @@
+{
+  "release": "Choupo-2608",
+  "tag": "v2608",
+  "commit": "400dd8ff839479d9e9c99086b04e9e8d73ee45a7",
+  "releasedAt": "2026-09-02",
+  "citation": {
+    "author": "Geraldes, V.",
+    "year": "2026",
+    "title": "Choupo \u2014 Open-source Chemical Process Simulator",
+    "version": "2608",
+    "dateReleased": "2026-09-02",
+    "url": "https://www.choupo.org/",
+    "rendered": "Geraldes, V. (2026). Choupo \u2014 Open-source Chemical Process Simulator (version 2608) [Computer software]. https://www.choupo.org/"
+  },
+  "citationRendered": "Geraldes, V. (2026). Choupo \u2014 Open-source Chemical Process Simulator (version 2608) [Computer software]. https://www.choupo.org/",
+  "catalogue": {
+    "components": 603,
+    "aqueousSpecies": 53,
+    "nrtlPairs": 2,
+    "wilsonPairs": 0,
+    "uniquacPairs": 3,
+    "henryPairs": 205,
+    "pitzerPairs": 55,
+    "enrtlPairs": 3,
+    "materials": 4,
+    "membranes": 4,
+    "adsorbents": 3,
+    "utilities": 9
+  },
+  "engine": {
+    "unitOperations": 50,
+    "engines": 4
+  },
+  "tutorials": {
+    "runnableCases": 393,
+    "regressionChecks": 383,
+    "byTier": {
+      "witness": 380,
+      "tutorial": 5,
+      "showcase": 8
+    }
+  },
+  "totals": {
+    "mixtureParameterRecords": 268
+  }
+}
