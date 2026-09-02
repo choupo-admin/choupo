@@ -253,8 +253,8 @@
     },
     "check_edutool_form": {
       "exit": 0,
-      "claim": "check_edutool_form: OK -- all 33 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  32 are scrolling lessons, each with a scroll container and at least one equation block; 1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 12 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
-      "seconds": 0.0
+      "claim": "check_edutool_form: OK -- all 34 LIVE registry id(s) resolve through the workspace to a source (2 defined inline in MethodsWorkspace.tsx, which the file-glob this gate replaced could not see at all).  33 are scrolling lessons, each with a scroll container and at least one equation block; 1 are index pages whose equations live in the guide they deep-link (quoting them on the page would be a second home); 0 are instrument panels, every one NAMED in debt_registry.EDUTOOL_STILL_A_PANEL with its remedy, and no pin has outlived its violation.  On the Explorer side, viewsFor() is still gated on a component SELECTION and the pellet is not among its 12 registered view(s).  NOT CHECKED, and it is the half that matters most: whether the prose is any good, whether the equations are the right ones, or whether the steps are in a sensible order -- teaching judgements no gate can make.  This buys only that the SHAPE cannot regress and the debt cannot be forgotten.",
+      "seconds": 0.1
     },
     "check_edwards_model": {
       "exit": 0,
@@ -383,7 +383,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 3410 environment openings across 17 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 3435 environment openings across 17 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_paths": {
@@ -448,7 +448,7 @@
     },
     "check_lesson_symbols": {
       "exit": 0,
-      "claim": "check_lesson_symbols: OK -- 16 of 16 lesson module(s) gloss every symbol their formulas use; 0 are NAMED as unglossed in the debt registry (0 symbol(s) outstanding across them) and none may grow a new one.  WHAT THIS DOES NOT CHECK, and it is the half that matters: whether a definition is CORRECT, whether it is useful, or whether the symbol needed one -- 'X  the reflux ratio' in the drying lesson would pass here and be nonsense on the page.  Chemical formulas are filtered out by SHAPE, so the filter is occasionally wrong in both directions.",
+      "claim": "check_lesson_symbols: OK -- 18 of 18 lesson module(s) gloss every symbol their formulas use; 0 are NAMED as unglossed in the debt registry (0 symbol(s) outstanding across them) and none may grow a new one.  WHAT THIS DOES NOT CHECK, and it is the half that matters: whether a definition is CORRECT, whether it is useful, or whether the symbol needed one -- 'X  the reflux ratio' in the drying lesson would pass here and be nonsense on the page.  Chemical formulas are filtered out by SHAPE, so the filter is occasionally wrong in both directions.",
       "seconds": 0.0
     },
     "check_liquid_cp_fallback": {
@@ -493,8 +493,8 @@
     },
     "check_method_tools": {
       "exit": 0,
-      "claim": "check_method_tools: the landing's EduTools list IS the live registry -- 25 live tool(s) of 25 in gui/src/ui/methods/registry.ts, re-derived by importing the module; same 25 ids both ways, labels/blurbs/deep links identical, every href on the `?workspace=methods&tool=` contract; site/index.html fetches the artefact, carries no tool id, label or blurb of its own, and bin/buildSite publishes it.  BLIND SPOT: the page's JavaScript is never executed here, so this checks the DATA the landing fetches and the absence of a second list -- not that a browser paints 25 cards.",
-      "seconds": 0.8
+      "claim": "check_method_tools: the landing's EduTools list IS the live registry -- 34 live tool(s) of 34 in gui/src/ui/methods/registry.ts, re-derived by importing the module; same 34 ids both ways, labels/blurbs/deep links identical, every href on the `?workspace=methods&tool=` contract; site/index.html fetches the artefact, carries no tool id, label or blurb of its own, and bin/buildSite publishes it.  BLIND SPOT: the page's JavaScript is never executed here, so this checks the DATA the landing fetches and the absence of a second list -- not that a browser paints 34 cards.",
+      "seconds": 1.2
     },
     "check_mixing_ledger": {
       "exit": 0,

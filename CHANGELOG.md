@@ -19,6 +19,19 @@ as they ship; the section is renamed to `## [Choupo-YYMM] — <date>` on the
 day it is cut, which is the form `bin/curate/release_inventory.py` reads to
 decide what the storefront announces as the latest release.
 
+- **The four laws, accepted then tested** — a chapter (`ch:foundations`,
+  closing Part I of the Theory Guide) and the first page of the EduTools
+  thermodynamics shelf, on the owner's thesis that a law of thermodynamics
+  is the summary of every failed attempt to violate it: not derived, but
+  accepted, deduced from, and tested without end.  Each law is asked what it
+  postulates, what it rests on, what it buys and WHERE Choupo tests it — and
+  the answer for the second law is weaker than for the first, so both say
+  so: the energy balance closes on every unit of every steady run; no unit
+  publishes its own entropy generation, and the turbine's `dS_gen` and the
+  exergy op's `T0·Δs` leg are what the page can show live.  The six
+  thermodynamics pages that anchored at `ch:criticals` for want of a better
+  label now anchor here.
+
 ## [Choupo-2608] — 2026-09-02 — the August line
 
 A month of work in one section, by theme; the full dated records live in

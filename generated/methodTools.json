@@ -10,9 +10,16 @@
     "Reaction engineering",
     "Hydraulics & control"
   ],
-  "liveTools": 33,
-  "registryTools": 33,
+  "liveTools": 34,
+  "registryTools": 34,
   "tools": [
+    {
+      "id": "foundations",
+      "label": "The four laws: accepted, then tested",
+      "discipline": "Thermodynamics",
+      "teaches": "That a LAW OF THERMODYNAMICS IS THE SUMMARY OF EVERY FAILED ATTEMPT TO VIOLATE IT -- not derived, but accepted, deduced from, and tested without end -- and that every number a simulator prints is a stack a student can read layer by layer: postulate, deduction, model, fit, data, test.  Each of the four laws is asked what it postulates, what it rests on, what it buys and WHERE Choupo tests it; the first law's closure and the turbine's dS_gen run live.",
+      "href": "/app/?workspace=methods&tool=foundations"
+    },
     {
       "id": "what-is-temperature",
       "label": "What is a temperature?",

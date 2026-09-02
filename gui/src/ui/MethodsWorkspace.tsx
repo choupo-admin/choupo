@@ -198,6 +198,9 @@ const WhatIsTemperatureTool = lazy(() =>
 const WhatIsEntropyTool = lazy(() =>
   import("./methods/WhatIsEntropyTool.js")
     .then((m) => ({ default: m.WhatIsEntropyTool })));
+const FoundationsTool = lazy(() =>
+  import("./methods/FoundationsTool.js")
+    .then((m) => ({ default: m.FoundationsTool })));
 const WhatIsExergyTool = lazy(() =>
   import("./methods/WhatIsExergyTool.js")
     .then((m) => ({ default: m.WhatIsExergyTool })));
@@ -419,6 +422,7 @@ export function MethodsWorkspace() {
             : tool === "fug" ? <FugShortcutTool />
             : tool === "what-is-temperature" ? <WhatIsTemperatureTool />
             : tool === "what-is-entropy" ? <WhatIsEntropyTool />
+            : tool === "foundations" ? <FoundationsTool />
             : tool === "what-is-exergy" ? <WhatIsExergyTool />
             : tool === "thermometer-trust" ? <ThermometerTrustTool />
             : tool === "property-trust" ? <PropertyTrustTool />

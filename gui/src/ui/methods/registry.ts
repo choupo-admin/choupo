@@ -59,6 +59,7 @@ export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
+  | "foundations"
   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
@@ -135,6 +136,30 @@ export interface MethodTool {
 // that never existed in any build of the guide).
 
 export const METHOD_TOOLS: MethodTool[] = [
+  //  THE FIRST PAGE OF THE SHELF (2026-09-02), placed before the six that
+  //  presuppose it.  Every thermodynamics page below starts from a concept --
+  //  a temperature, an entropy, an exergy -- as if the laws were already
+  //  accepted; none said why they are.  The owner's framing: thermodynamics
+  //  is the perfect example that a theory must rest on foundations that
+  //  cannot be explained, only accepted and then tested without end.  This
+  //  page says what a law of that kind is, asks the same four questions of
+  //  each of the four laws (postulated / rests on / buys / WHERE TESTED IN
+  //  CHOUPO), and reads the seam between laws and models off one deduction.
+  //  Its theory chapter, ch:foundations, closes Part I of the guide and is
+  //  the anchor the six pages below it had lacked.
+  {
+    id: "foundations", label: "The four laws: accepted, then tested",
+    discipline: "Thermodynamics",
+    kind: "notes", status: "live",
+    teaches: "That a LAW OF THERMODYNAMICS IS THE SUMMARY OF EVERY FAILED "
+      + "ATTEMPT TO VIOLATE IT -- not derived, but accepted, deduced from, "
+      + "and tested without end -- and that every number a simulator prints "
+      + "is a stack a student can read layer by layer: postulate, deduction, "
+      + "model, fit, data, test.  Each of the four laws is asked what it "
+      + "postulates, what it rests on, what it buys and WHERE Choupo tests "
+      + "it; the first law's closure and the turbine's dS_gen run live.",
+    theory: "ch:foundations",
+  },
   //  THE FIRST TOOL OF THE NOTES KIND (2026-08-27).  It constructs nothing and
   //  helps choose nothing: it is a chapter you scroll, with the engine running
   //  inside it.  The owner's ask was for support material across several
