@@ -6,4 +6,5 @@ coverage/
 public/wasm/
 public/docs/
 tools/checkGui/artifacts/
+tools/driveApp/artifacts/
 public/pdfjs/

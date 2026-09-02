@@ -159,6 +159,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { findChromium, launch } from "./cdp.mjs";
+import { Refusal, ensureServer, stopServer, HOST, PORT } from "./server.mjs";
 import { exposureProbe, FIND_WORKSPACE_CONTAINER, MIN_SABOTAGE_REACH } from "./exposure.mjs";
 import { OCCLUSION_PROBE, OFFSCREEN_PROBE } from "./occlusion.mjs";
 
@@ -167,8 +168,6 @@ const GUI = resolve(HERE, "../..");
 const ROOT = resolve(GUI, "..");
 const ARTIFACTS = join(HERE, "artifacts");
 
-const HOST = "127.0.0.1";
-const PORT = 5173;
 const BASE = `http://${HOST}:${PORT}/`;
 
 /* THE VIEWPORTS.
@@ -183,7 +182,16 @@ const BASE = `http://${HOST}:${PORT}/`;
  * `(pointer: coarse)` as well as the width, so a 390px-wide MOUSE would
  * exercise a posture no user is in.
  *
- * THE PHONE VERDICT -- reported, NOT gated, and the reason is not squeamishness.
+ * THE PHONE VERDICT -- GATED since 2026-08-17 (53ba3bd6f, "the phone gate is
+ * armed, and only once it could see the defect it gates").  The paragraph
+ * below is the reasoning from BEFORE that day and is kept as the record of
+ * why the gate waited; read "reported, not gated" there as history.  Two
+ * consequences a reader needs today: `--desk-only` keeps every GATED
+ * viewport and so no longer skips the phone; and bin/checkGui is NOT in
+ * bin/runTests, so a phone regression is caught only when somebody runs it
+ * (2026-09-02: eight lesson pages cover the Help button with their lead
+ * paragraph at 390 px, and the suite was green -- task #44).
+ * Original text: reported, NOT gated, and the reason is not squeamishness.
  * The desk pass gates because somebody agreed its baseline; the phone pass has
  * never had one, and turning a brand-new measurement into a gate in the same
  * commit that first takes it converts every pre-existing, untriaged defect
@@ -225,14 +233,7 @@ const SELFTEST_EXPOSURE = args.includes("--selftest-exposure");
  * watch the run go red.  Labelled in the output; it can fool nobody. */
 const SELFTEST_ERROR = args.includes("--selftest-error");
 
-// ---- refusal ---------------------------------------------------------------
-
-class Refusal extends Error {
-  constructor(what, remedy) {
-    super(what);
-    this.remedy = remedy;
-  }
-}
+// ---- refusal + dev server: ONE home, ./server.mjs (shared with drive-app) ---
 
 // ---- the tool registry, DISCOVERED not hardcoded ---------------------------
 
@@ -272,64 +273,6 @@ function discoverTools() {
 }
 
 // ---- the dev server --------------------------------------------------------
-
-function portOpen(host, port, timeoutMs = 600) {
-  return new Promise((res) => {
-    const s = net.connect({ host, port });
-    const done = (v) => { s.destroy(); res(v); };
-    s.setTimeout(timeoutMs);
-    s.once("connect", () => done(true));
-    s.once("timeout", () => done(false));
-    s.once("error", () => done(false));
-  });
-}
-
-async function waitForServer(timeoutMs) {
-  const t0 = Date.now();
-  while (Date.now() - t0 < timeoutMs) {
-    if (await portOpen(HOST, PORT)) return true;
-    await new Promise((r) => setTimeout(r, 400));
-  }
-  return false;
-}
-
-/** Reuse a listening server; otherwise start bin/devGui and own it. */
-async function ensureServer(log) {
-  if (await portOpen(HOST, PORT)) {
-    log(`[server] reusing what is already listening on ${HOST}:${PORT}`);
-    return { started: null };
-  }
-  const devGui = join(ROOT, "bin/devGui");
-  if (!existsSync(devGui)) {
-    throw new Refusal(`no dev-server launcher at ${devGui}`, "start Vite yourself (cd gui && npm run dev) and re-run.");
-  }
-  log(`[server] nothing on ${HOST}:${PORT} -- starting bin/devGui (this one is ours to clean up)`);
-  const proc = spawn(devGui, [], {
-    cwd: ROOT,
-    detached: true,             // own process group, so we can reap the whole tree
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  let tail = "";
-  const keep = (c) => { tail = (tail + c.toString()).slice(-2000); };
-  proc.stdout.on("data", keep);
-  proc.stderr.on("data", keep);
-
-  if (!(await waitForServer(120000))) {
-    stopServer(proc);
-    throw new Refusal(
-      `bin/devGui did not open ${HOST}:${PORT} within 120 s.  Last output:\n${tail}`,
-      "run bin/devGui by hand and read the error; a missing gui/node_modules or a busy port is the usual cause.",
-    );
-  }
-  log("[server] up");
-  return { started: proc, tail: () => tail };
-}
-
-function stopServer(proc) {
-  if (!proc) return;
-  try { process.kill(-proc.pid, "SIGTERM"); } catch { /* already gone */ }
-  try { process.kill(-proc.pid, "SIGKILL"); } catch { /* already gone */ }
-}
 
 // ---- readiness -------------------------------------------------------------
 

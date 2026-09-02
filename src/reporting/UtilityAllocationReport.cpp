@@ -96,6 +96,24 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
                     auto it = utilStreams.find(s);
                     if (it != utilStreams.end()) { carrier[uname] = s; break; }
                 }
+
+                //  A PROCESS-PROCESS EXCHANGER IS ITS OWN CARRIER.  Its Q is
+                //  heat RECOVERED between two process streams, not a demand
+                //  on the catalogue -- the whole reason to install one instead
+                //  of a heater and a cooler.  Until 2026-09-02 it fell through
+                //  to the auto-pick with no unit T, and heatExchanger01 (a
+                //  first-path tutorial) reported 93.79 kW of UNSERVED HEATING
+                //  at "(unit T unknown)": a student reading the Reports tab
+                //  concluded the exchanger needed steam.  Twelve golden rows
+                //  in the corpus carried that reading.  The unit TYPE is the
+                //  declared fact this classification reads -- never the name,
+                //  never the duty's sign.
+                if (carrier.find(uname) == carrier.end())
+                {
+                    const std::string ty = ud->lookupWordOrDefault("type", "");
+                    if (ty == "heatExchanger" || ty == "multiStreamHX")
+                        carrier[uname] = "its own process streams (" + ty + ")";
+                }
             }
     }
 

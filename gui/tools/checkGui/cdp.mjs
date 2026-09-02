@@ -168,7 +168,24 @@ export class Page {
     /** Every error-level message the page or any of its workers produced,
      *  since the last clearErrors().  Each entry: { where, kind, text }. */
     this.consoleErrors = [];
+    /** Every URL this page or any of its workers asked for, in order, once
+     *  enableNetwork() has been called.  Empty and inert otherwise -- a
+     *  consumer that never asked pays nothing.  The worker half is the point:
+     *  the WASM solver runs in a dedicated worker, and it is the WORKER that
+     *  fetches the engine, so a page-only listener would have called the
+     *  frozen-shell defect of 2026-09-02 clean. */
+    this.requests = [];
+    this._network = false;
     this._childSessions = new Set();
+  }
+
+  /** Start recording requests from this page and from every worker it
+   *  attaches from now on (workers attached earlier are enabled too). */
+  async enableNetwork() {
+    this._network = true;
+    await this.send("Network.enable");
+    for (const child of this._childSessions)
+      this.browser.send("Network.enable", {}, child).catch(() => {});
   }
 
   send(method, params, timeoutMs) {
@@ -185,10 +202,16 @@ export class Page {
         this._childSessions.add(child);
         this.browser.send("Runtime.enable", {}, child).catch(() => {});
         this.browser.send("Log.enable", {}, child).catch(() => {});
+        if (this._network) this.browser.send("Network.enable", {}, child).catch(() => {});
         return;
       }
       if (m.sessionId !== this.sessionId && !this._childSessions.has(m.sessionId)) return;
       const where = m.sessionId === this.sessionId ? "page" : "worker";
+      if (m.method === "Network.requestWillBeSent") {
+        const u = m.params.request?.url;
+        if (u) this.requests.push({ where, url: u });
+        return;
+      }
 
       if (m.method === "Runtime.consoleAPICalled") {
         // Emscripten routes C++ stderr through printErr -> console.error (some
@@ -275,7 +298,13 @@ export class Page {
 }
 
 /** Launch Chromium with remote debugging on an ephemeral port. */
-export async function launch(binary) {
+export async function launch(binary, extraArgs = []) {
+  //  extraArgs: a consumer's own Chromium switches, appended AFTER the
+  //  fixed set.  drive-app needs `--host-resolver-rules` so a LOCAL mirror
+  //  can be reached under a non-localhost name -- the app takes the
+  //  dev-bridge code path on localhost that the real site never takes, and
+  //  driving it there measures the wrong thing.  Default keeps every
+  //  existing caller byte-identical.
   const userDataDir = await mkdtemp(join(tmpdir(), "checkGui-"));
   const args = [
     "--remote-debugging-port=0",
@@ -288,6 +317,7 @@ export async function launch(binary) {
     "--no-default-browser-check",
     "--disable-background-timer-throttling",
     "--disable-renderer-backgrounding",
+    ...extraArgs,
     "about:blank",
   ];
   if (!binary.endsWith("headless_shell")) args.unshift("--headless=new");

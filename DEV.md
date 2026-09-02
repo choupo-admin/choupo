@@ -145,7 +145,7 @@ what the student MEETS.  So, for September:
    reads it.  The choice is recorded in the controlDicts, which is the
    deliberate act the tier doctrine asks for.
 4. **The delivered artefact under the instrument that found everything on
-   2026-09-02** — a TOOL (working name `drive-app`, NOT YET BUILT -- check_doc_references refused the path form; never a gate: it needs a
+   2026-09-02** — a TOOL, `bin/drive-app` (built the same day; never a gate: it needs a
    browser and a served copy, the Poling precedent), run from
    `RELEASING.md`'s freeze step, reporting requests outside the prefix,
    views that error, hints that lie.
@@ -1129,6 +1129,21 @@ accepts today, and that is a policy call.
    every liquid+liquid merge and claims no immiscibility check.  The
    FILE-level ambiguity -- the stream grammar half -- stays exactly
    where this item put it: C3.
+
+10. **A CARRIED duty and an UNSERVED duty write the SAME golden row
+    (found 2026-09-02, fixing the exchanger mis-filing).**  `bin/runTests`'s
+    golden writer keys every `allocated: false` utility entry as
+    `<tier>.<port>.unserved 1` -- so a process-process exchanger whose heat
+    is `(carried: its own process streams)` and a condenser no catalogue
+    utility can serve (`(none adequate)`) pin identically, and the golden
+    cannot tell recovery from a real gap.  The first half (the carrier map
+    registers `heatExchanger` / `multiStreamHX` as their own carrier) shipped
+    the same day and moved no golden precisely because of this.  The second
+    half is a `carried` row kind -- `<tier>.<port>.carried 1`, the axis rule
+    "put the word in the KEY" -- which edits `bin/runTests` (cross-cutting per
+    §6a), re-records the 12 exchanger rows deliberately and leaves the 10
+    genuine unserved rows (boiler 1, distillationColumn 3, heater 3,
+    isothermalFlash 3) untouched.  Task #42.
 
 ## 5b. If you are working in a HOSTED session, read this first
 

@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 97 records already exist
+## 1. Why an index, when 98 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 97 design records, **52 state a rejected alternative and 45 do not** —
+- Of 98 design records, **52 state a rejected alternative and 46 do not** —
   so for more than half, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`the-student-walkthrough.md`](../design/the-student-walkthrough.md) | SCOPE | no | **WRITTEN 2026-09-02** — the programme behind legs 4–8 had no record of its own: legs 4 and 5 named themselves in their records, 6 in a commit body, 7 and 8 shipped the same day, and no leg below 4 is numbered anywhere in the tree (stated, not guessed).  One table, each leg cited to its commit or record; the method (drive the artefact a student meets, fix at the source) and the named next leg (output legibility) |
 | [`equilibrium-parameterisation-identity.md`](../design/equilibrium-parameterisation-identity.md) | ADR | no | SHIPPED — D2 migration closed 2026-07-26 |
 | [`computational-seal-migration.md`](../design/computational-seal-migration.md) | ADR | no | SHIPPED — `sealSchema computational`, 328/0 |
 | [`basis-reconciliation-spike.md`](../design/basis-reconciliation-spike.md) | SPIKE | yes | SHIPPED (spike only); **mass migration UNAUTHORISED** |
@@ -251,7 +252,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**45 of 97 records state no rejected alternative.**  For a FORUM or a STUDY
+**46 of 98 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

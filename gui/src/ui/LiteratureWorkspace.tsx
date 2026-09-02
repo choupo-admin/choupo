@@ -85,7 +85,13 @@ export function LiteratureWorkspace() {
     //  server PROJECTS it (70 MB of CAS/InChI down to the ~7 MB of citation
     //  this panel shows) -- see thermomlIndexPlugin -- so what arrives here is
     //  already the shape below.
-    fetch("/__thermoml/index.json")
+    //  BASE-relative, not root-absolute.  A frozen copy served from
+    //  /vYYMM/app/ sent this probe to the SITE ROOT -- the same class as the
+    //  engine paths fixed on 2026-09-02 (wasmModule.ts), harmless here only
+    //  because the dev-server middleware that answers it is absent on every
+    //  published copy anyway.  drive-app reports any request that leaves the
+    //  app's own prefix, and this was the one it found on its first run.
+    fetch(`${import.meta.env.BASE_URL}__thermoml/index.json`)
       .then(async (r) => {
         if (!r.ok) throw new Error(String(r.status));
         const raw = (await r.json()) as { entries?: Citation[] };

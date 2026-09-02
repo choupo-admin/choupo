@@ -146,6 +146,23 @@ release.
    only place the defect was ever visible.  Fixed on the development line and
    shipped as `v2608.1`.
 
+   **After `freeze-app` reports `published /vYYMM/app/`, DRIVE THE COPY:**
+
+   ```bash
+   bin/drive-app --mirror https://www.choupo.org/vYYMM/app/ /tmp/frozen --first-path
+   ```
+
+   It fetches the served copy (lazy chunks included), serves it under the
+   same prefix, opens every `tier tutorial;` case in a real Chromium, runs
+   it, walks every view, and reports any request that leaves the prefix,
+   any view that throws, and any disabled control's hint.  This is the
+   instrument that found the frozen-shell defect and the only kind of check
+   that could have; the five checks inside `freeze-app` read the copy at
+   rest.  It is a TOOL and not a gate (it needs a browser and a served
+   copy — the Poling precedent), which is why this step is written here,
+   where it cannot be skipped by a green suite.  Exit 1 is a finding to
+   read; exit 2 means it could not honestly run.
+
    `freeze-app` will not overwrite a frozen app — with **one self-limiting
    exception**, in the shape of `withdraw-release`: it replaces an existing
    copy only when it can prove from the published bytes that the copy fetches
