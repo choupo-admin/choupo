@@ -75,7 +75,21 @@ async function get(path: string): Promise<Record<string, unknown>> {
 /** Capability probe: is the local bridge serving?  Fast + silent (800 ms
  *  abort) -- the landing uses it to only offer actions that can finish
  *  (creating on disk needs the bridge; tutorials/Explore/ZIP do not). */
+/** Is the LOCAL bridge reachable?
+ *
+ *  ONLY EVER ON THE READER'S OWN MACHINE.  `bridgeBase()` builds
+ *  `http://<this host>:7682`, so on the published site the probe went to
+ *  `http://www.choupo.org:7682/api/browse` -- a failed request and, from an
+ *  HTTPS page, a mixed-content console ERROR on every single load.  It was
+ *  caught and harmless, and it was also the first thing anyone opening
+ *  devtools on choupo.org saw.  The bridge is started by `bin/runGui` beside
+ *  the browser; asking a public host for it is asking a question whose answer
+ *  is known.  TopBar already reasons this way for the local console. */
 export async function bridgeUp(): Promise<boolean> {
+  const host = typeof location !== "undefined" ? location.hostname : "";
+  if (host && host !== "localhost" && host !== "127.0.0.1" && host !== "[::1]") {
+    return false;
+  }
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 800);
   try {

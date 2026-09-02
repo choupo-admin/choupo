@@ -149,7 +149,13 @@ for (const [from, to] of [
   ["build/pdf.worker.min.mjs", "pdf.worker.min.mjs"],  // parsing/rendering worker
   ["web/pdf_viewer.mjs",       "pdf_viewer.mjs"],      // viewer components (nameddest, text layer)
   ["web/pdf_viewer.css",       "pdf_viewer.css"],
+  //  pdf_viewer.css names this as a background-image, so every guide tab
+  //  fetched it and got a 404 on the published site (measured 2026-09-02).
+  //  Cosmetic -- but a 404 in the console of a page whose whole job is to
+  //  reassure the reader that Help works is not nothing.
+  ["web/images/loading-icon.gif", "images/loading-icon.gif"],
 ]) {
+  mkdirSync(dirname(resolve(pdfjsDst, to)), { recursive: true });
   copyFileSync(resolve(pdfjsSrc, from), resolve(pdfjsDst, to));
 }
 console.log("[copyDocs] pdf.js runtime -> public/pdfjs/");

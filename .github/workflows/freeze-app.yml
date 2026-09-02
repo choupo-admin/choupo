@@ -130,8 +130,16 @@ jobs:
             exit 1
           fi
 
-          #  (4) Help must open something -- /v2607/app/docs/guides.json is a
-          #  404 to this day, so the frozen 2607 Help opens nothing.
+          #  (4) Help must open something.  CORRECTION, 2026-09-02: this
+          #  comment used to say "/v2607/app/docs/guides.json is a 404, so the
+          #  frozen 2607 Help opens nothing".  The 404 is real; the causal
+          #  claim was not, and an audit caught it.  2607 has no guide.html at
+          #  all -- the viewer postdates it -- so its Help lists four guides
+          #  and hands each to the browser's own PDF handler, which is the
+          #  behaviour that made this project write a viewer.  A true
+          #  observation with an invented cause is the failure mode this repo
+          #  hunts, and it got in here.  What the check asserts is unchanged:
+          #  a release whose Help page cannot find its manifest opens nothing.
           [ -s "$d/docs/guides.json" ] \
             || { echo "REFUSED: no guides.json -- Help would open nothing"; exit 1; }
           for g in $(python3 -c "import json;print(' '.join(json.load(open('$d/docs/guides.json'))))"); do

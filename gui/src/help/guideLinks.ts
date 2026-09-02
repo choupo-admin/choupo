@@ -77,7 +77,25 @@ function bareName(guide: string): string
 export function guideUrl(guide: string, anchor?: string): string
 {
     const dest = anchor ? `#nameddest=${encodeURIComponent(anchor)}` : "";
-    return `${import.meta.env.BASE_URL}guide.html?g=${bareName(guide)}${dest}`;
+    return absolute(`${import.meta.env.BASE_URL}guide.html?g=${bareName(guide)}${dest}`);
+}
+
+/** Make a link ABSOLUTE, because one of the readers is not an http document.
+ *
+ *  "Browse help topics" builds its page as a BLOB and opens it
+ *  (`ui/filePopOut.ts`), and inside a `blob:` document a root-relative href
+ *  has no base to resolve against -- reading `a.href` there returns the
+ *  string unchanged instead of absolutising it, so every one of the 78 topic
+ *  links opened `about:blank`.  Measured on the published site 2026-09-02;
+ *  the Help MENU was unaffected, because it opens from the app's own http
+ *  document, which is why this survived.
+ *
+ *  Absolutising here rather than at the blob is deliberate: the blob is one
+ *  reader today and the defect is a property of the LINK, not of that page. */
+function absolute(rel: string): string
+{
+    if (typeof window === "undefined") return rel;   // tests, SSR
+    return new URL(rel, window.location.href).href;
 }
 
 /** The URL that downloads the PDF itself.  Kept, and kept SEPARATE: the
@@ -85,7 +103,7 @@ export function guideUrl(guide: string, anchor?: string): string
  *  somebody asked for it rather than because they wanted to read. */
 export function guidePdfUrl(guide: string): string
 {
-    return `${import.meta.env.BASE_URL}docs/${bareName(guide)}.pdf`;
+    return absolute(`${import.meta.env.BASE_URL}docs/${bareName(guide)}.pdf`);
 }
 
 /** Open a URL in a new TAB.  See decision 2 in the header for why the third

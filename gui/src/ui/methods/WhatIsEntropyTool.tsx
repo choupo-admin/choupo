@@ -267,9 +267,23 @@ function MixingKnob() {
 export function WhatIsEntropyTool(): JSX.Element {
   const run = useMethodRun(ENTROPY_WITNESS, [], "entropy-ledger",
     "choupoProps");
+  //  FIND THE OP BY WHAT IT PUBLISHES, NEVER BY ITS NAME.  This looked up
+  //  `o.name === "ledger"` -- and the witness's op called `ledger` is a
+  //  `propertyPoint`, while the three lines this table is built from are
+  //  published only by `explainProperty`, which that case names `explainS`.
+  //  So the lookup found an op, read no lines, returned null, and the table
+  //  vanished with nothing said, while the paragraph above it went on
+  //  claiming "your browser has just asked the real engine to publish every
+  //  line".  Found 2026-09-02 by an audit that drove the published app.
+  //
+  //  A name is a label the case author may change; publishing `pure_line` is
+  //  what makes an op THIS table's source.  Asking for the fact rather than
+  //  the label is also what stops the page silently re-breaking the next time
+  //  the witness is re-authored.
   const lg = useMemo(() => {
     const ops = run.result?.operationResults;
-    const led = ops?.find((o) => o.name === "ledger");
+    const led = ops?.find((o) => o.diagnostics
+                              && "pure_line" in o.diagnostics);
     return rebuildLedger(led?.diagnostics);
   }, [run.result]);
 
@@ -365,6 +379,28 @@ export function WhatIsEntropyTool(): JSX.Element {
             </Alert>
           )}
           {lg && <LedgerTable lg={lg} />}
+          {/*  AN ABSENT LEDGER MUST SAY SO.  The table used to be rendered
+              behind `{lg && ...}` alone, so a run that produced no lines
+              removed the row this page advertises as the place you would
+              catch it disagreeing with the simulator -- and removed it
+              silently, which is the failure the whole page is about.  The
+              three states are told apart: still running, the run failed
+              (handled above), and the run SUCCEEDED and published no
+              ledger, which is an engine-or-case defect and says so. */}
+          {!lg && !run.err && (
+            <Alert color={run.busy ? "gray" : "orange"} my={8}
+                   title={run.busy ? undefined
+                                   : "The ledger did not arrive"}>
+              {run.busy
+                ? "running the ledger case in your browser…"
+                : `The witness ran, but no operation in it published the
+                   pure/mixing/pressure lines this table is built from, so
+                   there is nothing to show and this page cannot check
+                   itself against the engine.  That is a defect in
+                   tutorials/${ENTROPY_WITNESS} or in the explainProperty
+                   op, not something you did.`}
+            </Alert>
+          )}
           <Box my={8}>
             {LEDGER_META.map((m) => (
               <Box key={m.line} px="sm" py={6}

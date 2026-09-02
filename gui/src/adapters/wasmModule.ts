@@ -38,8 +38,19 @@ License
   paths, so we cannot trust the status code alone).
 \*---------------------------------------------------------------------------*/
 
-export const WASM_GLUE_URL = "/wasm/choupoSolve.js";
-export const WASM_WORKER_URL = "/workers/solverWorker.js";
+//  THESE MUST FOLLOW THE APP'S BASE, and until 2026-09-02 they did not.
+//  Both were root-absolute literals, so an app served from anywhere but the
+//  site root fetched its ENGINE from the root instead of from beside itself.
+//  The frozen release copy at /v2608/app/ was the first deployment where the
+//  two differ, and it therefore displayed "Choupo-2608" while computing every
+//  answer with the development engine -- its own correct binaries sitting
+//  unread one directory away.  Found by driving the published app and
+//  recording every request it makes; three independent audits agreed.
+//
+//  `import.meta.env.BASE_URL` is what vite's --base sets, and it always ends
+//  in "/".  At the root it is "/", so the served paths are unchanged there.
+export const WASM_GLUE_URL = `${import.meta.env.BASE_URL}wasm/choupoSolve.js`;
+export const WASM_WORKER_URL = `${import.meta.env.BASE_URL}workers/solverWorker.js`;
 
 let cached: Promise<void> | null = null;
 
