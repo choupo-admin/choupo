@@ -170,14 +170,22 @@ jobs:
           #  paths and `import.meta.env.BASE_URL` is not available to it; the
           #  engine URL must therefore be relative to the worker's own
           #  location, and a root-absolute one here is the defect itself.
+          #
+          #  The worker's own header EXPLAINS the defect and quotes the
+          #  literal, so a plain text search fires on the record of the bug as
+          #  readily as on the bug -- a search cannot tell a live claim from a
+          #  recorded one.  Comment-only lines are therefore dropped first: a
+          #  fetch is code, and live code that resolves an engine URL is never
+          #  on a line that begins with a comment marker.  Nothing else is
+          #  stripped, so an inline comment cannot hide a live literal either.
           w="$d/workers/solverWorker.js"
           [ -s "$w" ] || { echo "REFUSED: no solverWorker.js -- nothing would run"; exit 1; }
-          if grep -qE '["`]/wasm/' "$w"; then
+          if grep -vE '^[[:space:]]*(//|/\*|\*)' "$w" | grep -qE '["`]/wasm/'; then
             echo "REFUSED: solverWorker.js fetches the engine from a ROOT path."
             echo "This copy would load the DEVELOPMENT solver while claiming"
             echo "to be $TAG.  The engine URL must resolve from the worker's"
             echo "own location (new URL('../wasm/…', self.location.href))."
-            grep -nE '["`]/wasm/' "$w"
+            grep -nE '["`]/wasm/' "$w" | grep -vE ':[[:space:]]*(//|/\*|\*)'
             exit 1
           fi
           if grep -rqE '["`]/(wasm|workers)/' "$d/assets/" 2>/dev/null; then
@@ -222,11 +230,17 @@ jobs:
           replacing=""
           if [ -e "/tmp/site/$REL/app" ]; then
             pub="/tmp/site/$REL/app/workers/solverWorker.js"
-            if [ -s "$pub" ] && grep -qE '["`]/wasm/' "$pub"; then
+            #  The SAME comment-aware rule as check (5), and for a sharper
+            #  reason: here a match AUTHORISES DESTRUCTION.  A frozen app whose
+            #  worker merely mentions the defect in a comment is an honest one,
+            #  and firing on that would delete exactly what this guard exists
+            #  to protect.
+            if [ -s "$pub" ] \
+               && grep -vE '^[[:space:]]*(//|/\*|\*)' "$pub" | grep -qE '["`]/wasm/'; then
               echo "::warning::/$REL/app/ exists and fetches its engine from the"
               echo "site ROOT -- it is a shell around the live solver, not a"
               echo "frozen copy of Choupo-${REL#v}.  Replacing it."
-              grep -nE '["`]/wasm/' "$pub"
+              grep -nE '["`]/wasm/' "$pub" | grep -vE ':[[:space:]]*(//|/\*|\*)'
               replacing="yes"
             else
               echo "REFUSED: /$REL/app/ already exists in the site repository"
