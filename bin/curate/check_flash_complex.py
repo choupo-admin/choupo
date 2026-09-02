@@ -52,6 +52,9 @@ import re
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gate_prereq import require_solver
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CASE = os.path.join(ROOT, "docs", "design", "flashComplex")
 SOLVER = os.path.join(ROOT, "choupoSolve")
@@ -68,9 +71,10 @@ def ok(msg):
     print("  ok   " + msg)
 
 
-if not os.path.exists(SOLVER):
-    print("SKIP  no choupoSolve binary -- build first (make)")
-    sys.exit(0)
+#  A CHECK THAT CANNOT RUN MUST NOT PASS.  This used to print SKIP and exit
+#  0 -- see bin/curate/gate_prereq.py for what that cost and where it is
+#  latent (inside the suite) versus live (standalone, and gate_manifest).
+require_solver(SOLVER)
 if not os.path.isdir(CASE):
     fail("docs/design/flashComplex is gone -- the design-driver case has no "
          "regression signal and neither does the architecture it drove")

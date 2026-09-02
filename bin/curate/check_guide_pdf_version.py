@@ -31,9 +31,23 @@ WHAT IS CHECKED.  The rendered TITLE PAGE text of each guide must contain the
 version string from Banner.H.  Text, not metadata: the title page is what the
 reader sees, and PDF metadata can be current while the page is not.
 
-Requires `pdftotext` (poppler).  Where it is absent the gate SKIPS with a
-loud note rather than passing silently -- a check that cannot run has not
-passed, and saying so is the whole doctrine.
+Requires `pdftotext` (poppler).  Where it is absent the gate REFUSES.
+
+That sentence used to end "the gate SKIPS with a loud note rather than
+passing silently -- a check that cannot run has not passed, and saying so is
+the whole doctrine", and the code below then returned 0.  Saying so is NOT
+the whole doctrine: to `bin/runTests` and to `gate_manifest`, exit 0 IS a
+pass, and a note on a console nobody re-reads does not change what the
+harness records.  The prose was right and the return value contradicted it,
+which is the shape this repository keeps finding -- `bin/buildSite` WARNed
+and published without poppler on 2026-08-05, so this very check never ran in
+CI, the only place that publishes, and the ruling then was that it must
+refuse.  The same ruling applies to the gate itself.  Found 2026-09-02.
+
+A refusal here is cheap to clear (`apt-get install poppler-utils`) and the
+alternative is a permanently-green gate in exactly the environment where it
+matters -- the `check_true_ions` shape, which this project retired a gate
+over.
 """
 import re
 import shutil
@@ -85,10 +99,15 @@ def title_page(pdf: Path) -> str:
 
 def main() -> int:
     if not shutil.which("pdftotext"):
-        print("check_guide_pdf_version: SKIPPED -- pdftotext (poppler) not "
-              "installed, so the rendered title pages cannot be read.  This "
-              "is NOT a pass: the guides may carry any version at all.")
-        return 0
+        print("check_guide_pdf_version: FAILED\n"
+              "  pdftotext (poppler) is not installed, so the rendered title "
+              "pages cannot be read and this check CANNOT RUN.  It refuses "
+              "rather than returning 0: to the harness, exit 0 is a pass, and "
+              "a permanently-green gate is worse than no gate.\n"
+              "  The guides may carry any version at all; nothing here has "
+              "been verified either way.\n"
+              "  remedy: apt-get install -y poppler-utils")
+        return 1
 
     want = engine_version()
     stale, missing = [], []

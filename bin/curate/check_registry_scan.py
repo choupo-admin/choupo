@@ -63,6 +63,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gate_prereq import require_solver
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SOLVER = os.path.join(ROOT, "choupoSolve")
 STD = os.path.join(ROOT, "data", "standards")
@@ -86,9 +89,10 @@ def ok(msg):
     print("  ok   " + msg)
 
 
-if not os.path.exists(SOLVER):
-    print("SKIP  no choupoSolve binary -- build first (make)")
-    sys.exit(0)
+#  A CHECK THAT CANNOT RUN MUST NOT PASS.  This used to print SKIP and exit
+#  0 -- see bin/curate/gate_prereq.py for what that cost and where it is
+#  latent (inside the suite) versus live (standalone, and gate_manifest).
+require_solver(SOLVER)
 
 
 def run_mutated(case, mutate):

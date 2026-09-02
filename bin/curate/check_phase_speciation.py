@@ -62,6 +62,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gate_prereq import require_solver
+
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FLASH = os.path.join(ROOT, "tutorials", "steady", "flash")
 LIQ17 = os.path.join(FLASH, "flash17_two_liquids_reactive", "converged", "liquid")
@@ -103,9 +106,10 @@ def overall_of(text):
 #  and a SKIP is then only possible when the binary is missing, which is a
 #  fact worth saying out loud rather than passing over.
 SOLVER = os.path.join(ROOT, "choupoSolve")
-if not os.path.exists(SOLVER):
-    print("SKIP  no choupoSolve binary -- build first (make)")
-    sys.exit(0)
+#  A CHECK THAT CANNOT RUN MUST NOT PASS.  This used to print SKIP and exit
+#  0 -- see bin/curate/gate_prereq.py for what that cost and where it is
+#  latent (inside the suite) versus live (standalone, and gate_manifest).
+require_solver(SOLVER)
 for case in ("flash17_two_liquids_reactive", "flash16_calcite_precipitation"):
     r = subprocess.run([SOLVER, os.path.join(FLASH, case)],
                        capture_output=True, text=True)
