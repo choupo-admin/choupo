@@ -16,10 +16,13 @@
 
   Acetone CH3-CO-CH3  =  2 x CH3  +  1 x ketone (>C=O).
 
-  The reference block validates the estimate against NIST: Joback lands within
-  ~2% on Tc/Pc/Vc and ~0.3% on dHf -- and you SEE the (small) error, the whole
-  point of "estimation, then trust".  omega comes from (Tb,Tc,Pc) by
-  Lee-Kesler, not a group sum.
+  The reference block below validates FOUR numbers -- Tb, Tc, Pc, omega -- and
+  no others: Joback lands 2.2 % low on Tb, 1.5 % low on Tc, 2.2 % high on Pc
+  (read off the golden against the block, 2026-09-02), and you SEE the error,
+  the whole point of "estimation, then trust".  This header used to claim
+  "~2 % on Tc/Pc/Vc and ~0.3 % on dHf"; the block carries no reference Vc and
+  no reference dHf, so those two were claims nothing in the case checks.
+  omega comes from (Tb,Tc,Pc) by Lee-Kesler, not a group sum.
 \*---------------------------------------------------------------------------*/
 
 operations

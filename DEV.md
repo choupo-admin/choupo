@@ -145,7 +145,7 @@ what the student MEETS.  So, for September:
    reads it.  The choice is recorded in the controlDicts, which is the
    deliberate act the tier doctrine asks for.
 4. **The delivered artefact under the instrument that found everything on
-   2026-09-02** — a TOOL, `bin/drive-app` (never a gate: it needs a
+   2026-09-02** — a TOOL (working name `drive-app`, NOT YET BUILT -- check_doc_references refused the path form; never a gate: it needs a
    browser and a served copy, the Poling precedent), run from
    `RELEASING.md`'s freeze step, reporting requests outside the prefix,
    views that error, hints that lie.

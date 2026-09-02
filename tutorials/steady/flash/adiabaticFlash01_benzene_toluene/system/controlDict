@@ -10,6 +10,7 @@
   adiabaticFlash01_benzene_toluene -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Adiabatic flash, benzene/toluene 40/60, 380K/3bar -> 1atm";
 

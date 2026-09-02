@@ -11,7 +11,7 @@
 
                     feed                 reactorOut
         ────────────────►   reactor   ────────────────►   separator
-                            (CSTR)                       (T 355, P 1 bar)
+                            (CSTR)                       (T 365, P 1 bar)
                                                               │     │
                                                   liqProd ◄──┘     └──► vapProd
 

@@ -10,6 +10,7 @@
   flash01_benzene_toluene -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Isothermal flash benzene/toluene at 370 K, 1 bar (Raoult)";
 

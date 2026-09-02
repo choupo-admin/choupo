@@ -10,6 +10,7 @@
   process01_reactor_flash -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Two-unit flowsheet: CSTR -> isothermal flash";
 
