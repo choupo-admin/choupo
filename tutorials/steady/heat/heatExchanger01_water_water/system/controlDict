@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoSolve;
 description   "Two-stream heat exchanger (eps-NTU): hot/cold water recovery";
 

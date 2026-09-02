@@ -27,6 +27,7 @@
   merely synthesizes + plots it.
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Flash benzene/toluene at 1 bar: T swept 360->385 K across the bubble->dew window (V/F S-curve + duty)";
 

@@ -10,6 +10,7 @@
   bubbleT01_ethanol_water -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Bubble-T of 30/70 ethanol/water at 1 atm (NRTL)";
 

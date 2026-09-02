@@ -10,6 +10,7 @@
   hx01_heater -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Heater: 50/50 ethanol/water from 300 K to ~338 K (sensible)";
 
