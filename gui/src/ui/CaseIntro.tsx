@@ -52,6 +52,7 @@ import { Badge, Box, Button, Group, Paper, SimpleGrid, Stack, Text, Title } from
 import { IconArrowLeft, IconFolderCode, IconPlayerPlay, IconRobot, IconRoute, IconTerminal2 } from "@tabler/icons-react";
 
 import { useStore } from "../state/store.js";
+import { Lesson } from "./Lesson.js";
 
 const APP_LABEL: { [k: string]: string } = {
   choupoSolve: "Steady-state",
@@ -227,6 +228,9 @@ export function CaseIntro() {
   const isProps = application === "choupoProps" || (!caseFiles.flowsheet && !!caseFiles.propsDict);
 
   const tree = caseTree(raw, fileId);
+  // The case's own lesson (README.md of a `tier tutorial;` case).  Shown
+  // BEFORE the three proofs: it names what to look at once the run lands.
+  const readme = raw["README.md"];
   const inputText =
     inputExcerpt(raw["system/flowsheetDict"], 12) ||
     inputExcerpt(raw["system/propsDict"], 12) ||
@@ -293,6 +297,16 @@ export function CaseIntro() {
             </Text>
           </Group>
         </Stack>
+
+        {readme && (
+          <Paper withBorder p="md" radius="md" data-intro-lesson="1"
+            style={{ background: "light-dark(var(--mantine-color-white), var(--mantine-color-dark-6))" }}>
+            <Text size="xs" tt="uppercase" fw={700} c="accent" style={{ letterSpacing: 1.5 }} mb={6}>
+              The lesson
+            </Text>
+            <Lesson md={readme} />
+          </Paper>
+        )}
 
         {/* Light proof summary -- the three ideas at a glance; the detail is below */}
         <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="sm">

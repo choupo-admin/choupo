@@ -84,7 +84,9 @@ import { MODE_TABS } from "./workspaces.js";
 import { caseTabSearch, openAppTab } from "./openInTab.js";
 
 // A few tutorials that span the experience -- the student's first clicks.
-const SUGGESTED: { id: string; title: string; desc: string }[] = [
+// Exported for tests/firstPath.test.ts: every card must name a `tier tutorial;`
+// case, so the hand-picked entrance can never point outside the first path.
+export const SUGGESTED: { id: string; title: string; desc: string }[] = [
   { id: "steady/flash/adiabaticFlash01_benzene_toluene",
     title: "Your first flash (adiabatic)",
     desc: "A real flash drum: no heat added (Q=0) — the outlet T is the answer the energy balance gives." },

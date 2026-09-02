@@ -130,6 +130,14 @@ export interface TutorialEntry {
   subclass: string;
   /** One-line description extracted from controlDict.description (may be empty). */
   description: string;
+  /** The case's audience, the `tier` word of its controlDict ("witness" /
+   *  "tutorial" / "showcase" -- bin/curate/check_case_tiers owns the
+   *  vocabulary); "" when undeclared.  `tutorial` is the FIRST PATH: the
+   *  cases a student meets first, each carrying a README.md lesson. */
+  tier: string;
+  /** The case's README.md, raw -- the lesson (case/lesson.ts renders it).
+   *  Undefined when the case has none. */
+  readme?: string;
   files: CaseFiles;
   /** If set, the WASM solver cannot run this --- greys it out. */
   unsupportedReason?: string;
@@ -162,6 +170,7 @@ for (const t of TUTORIALS) {
   const g = TUTORIALS_BY_CATEGORY.find((x) => x.category === t.category);
   if (g) g.entries.push(t);
 }
+
 
 // -- Sub-classes (folders on disk + GUI grouping) ---------------------------
 // The 2026-06-03 reorganisation put steady/batch/props cases into sub-class
@@ -265,6 +274,25 @@ export function subclassGroupsFor(category: Category): SubclassGroup[] | null {
   return groups;
 }
 
+/** THE FIRST PATH: every `tier tutorial;` case, in category order, then in
+ *  the SUBCLASS_ORDER above (flash before distillation before reactors --
+ *  the one curriculum-shaped order the module already declares), then by
+ *  name.  It is a SET, not a sequence -- the tree declares no order, and
+ *  each README names the case to open next in prose; a declared order would
+ *  be a case-format decision and is not taken here.  Read by the Open Case
+ *  dialog's "start here" folder; the four welcome cards are the hand-picked
+ *  entrance and must all lie inside it (tests/firstPath.test.ts). */
+export const FIRST_PATH: TutorialEntry[] = TUTORIALS_BY_CATEGORY.flatMap((g) => {
+  const order = SUBCLASS_ORDER[g.category] ?? [];
+  const rank = (e: TutorialEntry) => {
+    const k = order.indexOf(e.subclass);
+    return k < 0 ? order.length : k;
+  };
+  return g.entries
+    .filter((e) => e.tier === "tutorial")
+    .sort((a, b) => rank(a) - rank(b) || a.shortName.localeCompare(b.shortName));
+});
+
 function buildIndex(): TutorialEntry[] {
   type Collected = { [rel: string]: string };
   const collected: {
@@ -332,7 +360,8 @@ function buildIndex(): TutorialEntry[] {
     }
     const rawDesc = cf.controlDict["description"];
     const description = typeof rawDesc === "string" ? rawDesc : "";
-    out.push({
+    const rawTier = cf.controlDict["tier"];
+    const entry: TutorialEntry = {
       name: key,
       shortName,
       category,
@@ -340,9 +369,12 @@ function buildIndex(): TutorialEntry[] {
       // categories (key = <cat>/<subclass>/<case>), "" for flat ones.
       subclass: isSubclassed(category) ? key.split("/")[1]! : "",
       description,
+      tier: typeof rawTier === "string" ? rawTier : "",
       files: cf,
       unsupportedReason,
-    });
+    };
+    if (files["README.md"] !== undefined) entry.readme = files["README.md"];
+    out.push(entry);
     for (const sn of subNodesFor(key, category, shortName, files)) SUBNODES[sn.name] = sn;
   }
   return out;
@@ -511,6 +543,7 @@ function subNodesFor(rootName: string,
         category,
         subclass: "", // fractal sub-nodes are reached by URL, not the menu
         description: typeof rawDesc === "string" ? rawDesc : "",
+        tier: "",   // a sub-node inherits no audience; the ROOT case declares it
         files: cf,
       });
     } catch {

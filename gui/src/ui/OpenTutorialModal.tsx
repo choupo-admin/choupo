@@ -74,6 +74,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import {
+  FIRST_PATH,
   TUTORIALS,
   TUTORIALS_BY_CATEGORY,
   subclassGroupsFor,
@@ -90,8 +91,11 @@ import {
 
 // Where we are in the tree.  cat "" is the tutorials/ root; sub null is the
 // category level (sub-class folders, or a flat case list); sub set is inside a
-// sub-class (its cases).
-type Cwd = { cat: Category | ""; sub: string | null };
+// sub-class (its cases).  FIRST_PATH is a VIRTUAL folder at the root: the
+// `tier tutorial;` cases across every category, read off the tree (one home
+// for "start here" -- the same word bin/curate/check_case_tiers reads).
+const FIRST_PATH_CWD = "firstPath";
+type Cwd = { cat: Category | "" | typeof FIRST_PATH_CWD; sub: string | null };
 
 export interface OpenTutorialModalProps {
   opened: boolean;
@@ -128,6 +132,8 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
   const breadcrumb =
     cwd.cat === ""
       ? "tutorials/"
+    : cwd.cat === FIRST_PATH_CWD
+      ? "tutorials / (start here: the first path)"
     : cwd.sub
         ? `tutorials / ${cwd.cat} / ${cwd.sub}/`
       : `tutorials / ${cwd.cat}/`;
@@ -138,7 +144,8 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
   );
 
   const canOpen =
-    !!selectedEntry && cwd.cat !== "" && selectedEntry.category === cwd.cat;
+    !!selectedEntry && cwd.cat !== ""
+    && (cwd.cat === FIRST_PATH_CWD || selectedEntry.category === cwd.cat);
 
   const openSelected = () => {
     if (canOpen && selectedEntry) {
@@ -148,7 +155,8 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
   };
 
   // The rows for the current view.
-  const groups = cwd.cat !== "" && cwd.sub === null ? subclassGroupsFor(cwd.cat) : null;
+  const groups = cwd.cat !== "" && cwd.cat !== FIRST_PATH_CWD && cwd.sub === null
+    ? subclassGroupsFor(cwd.cat) : null;
 
   return (
     <Modal
@@ -193,7 +201,7 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
               {cwd.cat !== "" && (
                 <NavRow
                   label={
-                    cwd.sub
+                    cwd.sub && cwd.cat !== FIRST_PATH_CWD
                       ? `.. (up to ${cwd.cat}/)`
                     : ".. (up to tutorials/)"
                   }
@@ -208,7 +216,7 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
               {cwd.cat === ""
                 ? renderRoot(setCwd)
               : groups
-                  ? renderSubclasses(cwd.cat, groups, setCwd)
+                  ? renderSubclasses(cwd.cat as Category, groups, setCwd)
                 : renderCases(currentCases(cwd), selected, setSelected, openSelected)}
             </Stack>
           </ScrollArea.Autosize>
@@ -267,13 +275,23 @@ export function OpenTutorialModal(props: OpenTutorialModalProps) {
 
 /** The cases to show when in a flat category (no sub-classes) or a sub-class. */
 function currentCases(cwd: Cwd): TutorialEntry[] {
+  if (cwd.cat === FIRST_PATH_CWD) return FIRST_PATH;
   const cat = TUTORIALS_BY_CATEGORY.find((g) => g.category === cwd.cat);
   if (!cat) return [];
   return cwd.sub ? cat.entries.filter((e) => e.subclass === cwd.sub) : cat.entries;
 }
 
 function renderRoot(setCwd: (c: Cwd) => void): React.ReactNode {
-  return TUTORIALS_BY_CATEGORY.map((group) => {
+  const firstPath = FIRST_PATH.length > 0 ? (
+    <NavRow
+      key={FIRST_PATH_CWD}
+      label="start here: the first path"
+      icon={<IconFolder size={14} />}
+      rightLabel={`${FIRST_PATH.length} tutorials with a lesson`}
+      onClick={() => setCwd({ cat: FIRST_PATH_CWD, sub: null })}
+    />
+  ) : null;
+  const categories = TUTORIALS_BY_CATEGORY.map((group) => {
     const allUnsupported =
       group.entries.length > 0
       && group.entries.every((e) => !!e.unsupportedReason);
@@ -290,6 +308,7 @@ function renderRoot(setCwd: (c: Cwd) => void): React.ReactNode {
       />
     );
   });
+  return [firstPath, ...categories];
 }
 
 function renderSubclasses(

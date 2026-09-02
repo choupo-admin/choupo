@@ -83,8 +83,10 @@ import {
 } from "@mantine/core";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
+import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
 import { useStore } from "../state/store.js";
+import { Lesson } from "./Lesson.js";
 import { useFitsOneRow } from "./methods/methodsChrome.js";
 
 import { useMeasuredBoxWidth } from "./methods/methodsChrome.js";
@@ -159,6 +161,9 @@ function highlightLine(line: string, inBlock: boolean): { html: string; inBlock:
 // flowsheetDict / propsDict naturally first inside their folder.
 function orderFiles(paths: string[]): string[] {
   const rank = (p: string) => {
+    // The lesson first: a tutorial's README.md is what the student reads
+    // before the dicts (it ranked LAST, after 0/, until 2026-09-02).
+    if (/^README\.md$/i.test(p)) return -1;
     if (p.startsWith("system/")) return 0;
     if (p.startsWith("constant/")) return 1;
     return 2;
@@ -268,7 +273,16 @@ export function CaseWorkspace() {
     : files.find((f) => /flowsheetDict|propsDict$/.test(f)) ?? files[0] ?? null;
 
   const activeText = active ? raw[active] ?? "" : "";
-  const outline = useMemo(() => (active ? parseOutline(activeText) : []), [active, activeText]);
+  // A README.md is the case's LESSON: rendered from its markdown subset
+  // (case/lesson.ts), never through the dict highlighter, and outlined by
+  // its headings rather than by dict keys.
+  const isLesson = !!active && /\.md$/i.test(active);
+  const outline = useMemo(() => {
+    if (!active) return [];
+    if (!isLesson) return parseOutline(activeText);
+    try { return lessonOutline(activeText).map((h) => ({ key: h.key, line: h.line })); }
+    catch { return []; }
+  }, [active, isLesson, activeText]);
 
   // Build the highlighted lines once per file.  Each line becomes a
   // <div id="ln-<N>"> so the outline can scrollIntoView.
@@ -429,7 +443,8 @@ export function CaseWorkspace() {
                 <Text size="xs" c="accent" ff="monospace">{active}</Text>
               </Box>
               <Box style={{ padding: "10px 14px" }}>
-                {lines.map((html, i) => (
+                {isLesson && <Lesson md={activeText} />}
+                {!isLesson && lines.map((html, i) => (
                   <div
                     key={i}
                     id={`ln-${i + 1}`}
@@ -597,8 +612,10 @@ function FileTree({
   }, [files]);
 
   const sortedTops = Array.from(grouped.keys()).sort((a, b) => {
-    // system/ → constant/ → everything else alphabetical
-    const rank = (k: string) => (k === "system" ? 0 : k === "constant" ? 1 : 2);
+    // the lesson (a root README.md) → system/ → constant/ → the rest alphabetical
+    const rootHasLesson = (grouped.get("(root)") ?? []).some((f) => /^README\.md$/i.test(f));
+    const rank = (k: string) =>
+      (k === "(root)" && rootHasLesson ? -1 : k === "system" ? 0 : k === "constant" ? 1 : 2);
     return rank(a) - rank(b) || a.localeCompare(b);
   });
 

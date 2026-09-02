@@ -34,6 +34,7 @@ the tree does not say, this record says so rather than filling the gap.
 | **6** | *The first hour, walked for real* — `bin/newCase`, then authoring using only the scaffold's own guide; the guide's own `shortcutColumn` example used five keys the engine never read | 2026-08-29 | commit `c9c1c2ca3` |
 | **7** | *What does a student meet FIRST?* — the app offered four "first clicks" and the inventory declared none of them a tutorial; five of 393 cases were tutorials at all.  Nineteen cases chosen by reading, each with a README written from its golden and every claim run before it was written | 2026-09-02 | the `tier tutorial;` READMEs; DEV.md §4 (September) |
 | **8** | *Does the DELIVERED app do what the engine does?* — the frozen release app fetched its engine from the site root; a disabled tab named the wrong reason | 2026-09-02 | `bin/drive-app`; RELEASING.md's freeze step |
+| **9** | *Can the student READ the lesson where they run the case?* — the nineteen READMEs of leg 7 were bundled into the app and read by nothing: listed last in the Case view, painted as a dictionary, absent from the intro and the Open Case dialog | 2026-09-02 | `gui/src/case/lesson.ts` (a rendering subset that refuses outside itself), `gui/tests/firstPath.test.ts`; the dialog's "start here" folder reads `tier tutorial;` |
 
 **Legs 1–3 are not in the tree.**  No commit, record or task numbers a leg
 below 4.  Either the numbering began at 4 (the three-walls commit of the
