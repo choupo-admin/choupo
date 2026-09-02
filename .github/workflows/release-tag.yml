@@ -1,0 +1,99 @@
+#  CREATE A RELEASE TAG, from the repository itself.
+#
+#  WHY THIS EXISTS.  RELEASING.md step 5 says "git tag -a vYYMM && git push",
+#  and on 2026-09-02 that step could not be performed from the session that had
+#  done every other step: the site was published for a tag that did not exist,
+#  and four public links went live dead at once (the tag page, the CITATION.cff
+#  and docs links, the frozen app).  A release whose tag is a manual act
+#  performed somewhere else is a release that can be half-published, and today
+#  it was.
+#
+#  WHAT IT GRANTS, said plainly: `contents: write` for the duration of one run.
+#  `workflow_dispatch` can only be started by someone who already has write
+#  access to this repository, and it always runs the copy of this file on the
+#  default branch -- never a version proposed in a pull request.  So it widens
+#  no circle; it moves an existing capability into a place with guards on it.
+#
+#  WHAT IT WILL NOT DO.  It creates tags and nothing else.  It does not delete
+#  or move one: CLAUDE.md §2 says a release tag is never deleted, moved or
+#  reused, and the single withdrawal taken on 2026-09-02 is recorded there as
+#  an exception that is not available again.  A tool that can repeat it would
+#  make the rule advisory.
+name: release-tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create — vYYMM, exactly (RELEASING.md: never a variant)'
+        required: true
+      sha:
+        description: 'Full 40-character commit SHA the tag must name'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      #  EVERY REFUSAL BEFORE THE WRITE, each by name.  A tag is immutable, so
+      #  the moment to catch a wrong one is before it exists, not after.
+      - name: Check the request
+        env:
+          TAG: ${{ inputs.tag }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v[0-9][0-9][0-9][0-9]) ;;
+            *) echo "REFUSED: '$TAG' is not vYYMM.  RELEASING.md: never use a" \
+                    "variant (v26.08, 2026.08, Choupo-v2608)."; exit 1 ;;
+          esac
+          if [ "${#SHA}" -ne 40 ]; then
+            echo "REFUSED: '$SHA' is not a full 40-character commit SHA." \
+                 "An abbreviated sha can become ambiguous; a tag may not."; exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "REFUSED: tag $TAG already exists, at $(git rev-parse "$TAG^{}")." \
+                 "A release tag is never moved or reused (CLAUDE.md §2)."; exit 1
+          fi
+          if ! git cat-file -e "${SHA}^{commit}" 2>/dev/null; then
+            echo "REFUSED: $SHA is not a commit in this repository."; exit 1
+          fi
+          if ! git merge-base --is-ancestor "$SHA" origin/"${GITHUB_REF_NAME}"; then
+            echo "REFUSED: $SHA is not an ancestor of ${GITHUB_REF_NAME}." \
+                 "A tag must name history that is actually published."; exit 1
+          fi
+          echo "OK: $TAG will name $SHA — $(git log -1 --format=%s "$SHA")"
+
+      - name: Create and push the annotated tag
+        env:
+          TAG: ${{ inputs.tag }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          git config user.name  "Vítor Geraldes"
+          git config user.email "talentgroundlda@gmail.com"
+          git tag -a "$TAG" "$SHA" -m "Choupo-${TAG#v}"
+          git push origin "refs/tags/$TAG"
+
+      #  A PUSH THAT REPORTS SUCCESS IS NOT PROOF THE TAG RESOLVES.  Read it
+      #  back from the remote and require the peeled commit to be the one asked
+      #  for -- that is what generated/releases/<tag>.json records and what
+      #  check_release_identity arm (a) compares against.
+      - name: Read it back from the remote
+        env:
+          TAG: ${{ inputs.tag }}
+          SHA: ${{ inputs.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --force origin "refs/tags/$TAG:refs/tags/$TAG"
+          got=$(git rev-parse "$TAG^{}")
+          [ "$got" = "$SHA" ] || { echo "FAILED: $TAG peels to $got, not $SHA"; exit 1; }
+          echo "$TAG exists on the remote and peels to $SHA"
