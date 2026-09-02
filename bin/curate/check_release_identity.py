@@ -71,6 +71,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SITE_PAGES = ["site/index.html", "site/releases.html", "site/models.html"]
+FROZEN_APPS = "site/frozenApps.txt"
 
 spec = importlib.util.spec_from_file_location(
     "relinv", ROOT / "bin" / "curate" / "release_inventory.py")
@@ -171,6 +172,37 @@ def main() -> int:
                 "'331 runnable tutorials' took.  Wrap it in a data-inv span "
                 "fed by the artefact.")
 
+    # (f) a frozen-app link must name a copy somebody declared exists
+    declared = set()
+    fa = ROOT / FROZEN_APPS
+    if not fa.is_file():
+        fail.append(FROZEN_APPS + " is missing -- without it a /vYYMM/app/ "
+                    "link is checked against nothing, which is the state that "
+                    "put a 404 on the homepage's release button on 2026-09-02")
+    else:
+        for line in fa.read_text().splitlines():
+            line = line.split("#", 1)[0].strip()
+            if line:
+                declared.add(line)
+        for d in sorted(declared):
+            if not (ROOT / "generated" / "releases" / (d + ".json")).is_file():
+                fail.append(
+                    f"{FROZEN_APPS} declares a frozen app for '{d}', which has "
+                    "no release artefact -- a frozen copy of a release that "
+                    "does not exist is not a thing that can be cited")
+    for page in SITE_PAGES:
+        src = ROOT / page
+        if not src.is_file():
+            continue
+        for m in re.finditer(r'href="/(v\d{4})/app/"', src.read_text()):
+            if m.group(1) not in declared:
+                fail.append(
+                    f"{page} links the frozen app at /{m.group(1)}/app/, which "
+                    f"is not declared in {FROZEN_APPS}.  Nothing in this "
+                    "repository PRODUCES that tree -- it is uploaded by hand to "
+                    "the site repo -- so a link to it is a promise this repo "
+                    "cannot keep.  Upload the copy, add the line, then link it.")
+
     if fail:
         print("check_release_identity: FAILED")
         for f in fail:
@@ -185,12 +217,14 @@ def main() -> int:
         "a fresh render of the tag's own CITATION.cff through the generator's "
         "parser (imported, not copied).  Every data-inv fallback literal in "
         f"{len(SITE_PAGES)} site source pages equals its artefact value, and "
-        "no bare hand count sits beside 'runnable tutorials' in prose.  NOT "
-        "CHECKED, said plainly: the PRODUCTION HOST (this gate reads repo "
-        "sources; choupo.org may differ), and /vYYMM/app/ -- the frozen-app "
-        "URL the pages promise -- has NO PRODUCER in bin/buildSite, so "
-        "whether it exists depends on a hand-uploaded archive this gate "
-        "cannot see.  That finding is escalated, not covered.")
+        "no bare hand count sits beside 'runnable tutorials' in prose.  Every "
+        f"frozen-app link is declared in {FROZEN_APPS} "
+        f"({len(declared) or 'none'} declared), so a link to an archive that "
+        "was never uploaded is refused by name.  NOT CHECKED, said plainly: "
+        "the PRODUCTION HOST (this gate reads repo sources; choupo.org may "
+        "differ) -- and that is exactly what the declaration cannot prove "
+        "either: it records that somebody SAYS the copy was uploaded, not "
+        "that it is being served.")
     return 0
 
 

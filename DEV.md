@@ -26,12 +26,14 @@ and prefer `generated/releaseInventory.json` to any number written in prose.*
   target version.  **Work happens on `main`.**  A release is an immutable tag
   `vYYMM`; a `release-YYMM` branch is cut from that tag only on the day a patch
   actually ships.  `dev` is retired.  Rationale and procedure: `RELEASING.md`.
-- **Latest release:** `Choupo-2607` — immutable git tag `v2607`, a GitHub
-  Release, and a frozen browser copy at `choupo.org/v2607/app/`.  `main` is
+- **Latest release:** `Choupo-2608` — immutable git tag `v2608`.  Its frozen
+  browser copy at `choupo.org/v2608/app/` is NOT published yet, so the site
+  links no frozen app today.  (`Choupo-2607` was withdrawn on 2026-09-02.)
+  `main` is
   tagged as the next `Choupo-YYMM` when the teaching term needs one (roughly
   every six months; decided at cut time, never pre-committed).
 - **Site:** served by a SECOND repository, `choupo-admin/choupo-admin.github.io`
-  — it holds the `CNAME` and the frozen `/v2607/app/`.  This repo only BUILDS
+  — it holds the `CNAME` and any frozen `/vYYMM/app/`.  This repo only BUILDS
   it: `publish-site.yml` verifies on every push to `main` and publishes
   nothing (a deploy from here would fight the user site for the domain — it
   did, for an afternoon, while the live site sat 55 commits stale).

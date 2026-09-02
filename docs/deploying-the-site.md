@@ -117,7 +117,7 @@ browser rather than a screenshot of one — worth revisiting (code-splitting the
 26 MB chunk is the obvious lever) but not a blocker.
 
 Pages' limits: 1 GB per site (the site repo uses 100 MB, of which 56 MB is the
-frozen `/v2607/`) and a soft 100 GB/month of bandwidth (~11 000 first visits).
+frozen `/vYYMM/`) and a soft 100 GB/month of bandwidth (~11 000 first visits).
 Neither binds for a teaching site.
 
 Nothing under `data/local/` or `thirdParty/` is in the repository, so nothing

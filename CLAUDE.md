@@ -98,7 +98,23 @@ Choupo/
   target version.  A release is an **immutable tag** `vYYMM` (public name
   `Choupo-YYMM`, internal version `YYMM`) — NEVER deleted, moved or reused; a
   `release-YYMM` branch is cut **from that tag only on the day a patch
-  actually ships**, never pre-emptively.  Release procedure:
+  actually ships**, never pre-emptively.  **ONE EXCEPTION HAS BEEN TAKEN, and
+  it is RECORDED rather than hidden (2026-09-02, Vítor's decision):**
+  `v2607`, the first release, was WITHDRAWN — tag, GitHub Release and site
+  entry — because it was too rudimentary to be what a student meets.  The
+  rule is not weakened by it, because what makes a tag immutable is that
+  somebody may have RELIED on it, and that window closes and never reopens:
+  the exception was available for seven weeks and is not available again.  A
+  withdrawal is not an erasure of the record — the CHANGELOG keeps 2607's
+  section, marked WITHDRAWN and **unbracketed** so `release_inventory.py` can
+  never announce it again.  Do not take a second exception without Vítor's
+  explicit decision, and never for a release anyone could have cited.  Two
+  loose ends stay open and are NOT silently tidied: 394 sealed case manifests
+  carry `catalogueRelease Choupo-2607` and `data/standards/CATALOGUE.dat`
+  names it — that is the CATALOGUE's identity, a different thing from a git
+  tag, and renaming it is a curation act (a reseal of the corpus), reserved;
+  and `paper/README.md` states the companion article is about Choupo-2607,
+  which is a claim about a publication and Vítor's to settle.  Release procedure:
   [`RELEASING.md`](RELEASING.md).
   Why the change: the earlier layout froze `main` at the last release and did
   the work on `dev`.  OpenFOAM.org — the model it claimed to follow — does the

@@ -3,10 +3,14 @@
 All notable changes to **Choupo** are documented here.  The format follows
 [Keep a Changelog](https://keepachangelog.com/).  Releases are dated, not
 semantic: the public name is `Choupo-YYMM`, the immutable git tag is
-`vYYMM`, and the internal version string is `YYMM` (so `Choupo-2607` =
-tag `v2607` = version `2607`).  Development happens on `main`, the default
+`vYYMM`, and the internal version string is `YYMM` (so `Choupo-2608` =
+tag `v2608` = version `2608`).  Development happens on `main`, the default
 branch, which carries `Choupo-dev`; a release is an immutable tag.
-**Choupo-2607** is the first version.
+**Choupo-2608** is the first supported release.  **Choupo-2607 was
+published on 2026-07-14 and WITHDRAWN on 2026-09-02** (Vitor's decision:
+too rudimentary to be what a student meets) -- its tag, its GitHub Release
+and its entry on the site are gone.  Its section below is kept as the
+record of the work, not as a release anybody can obtain.
 
 ## Choupo-dev (unreleased)
 
@@ -462,7 +466,11 @@ citations, the pump/pipe density unification beyond water).
 
 ## [Unreleased]
 
-## [Choupo-2607] — 2026-07-14, consolidated 2026-07-19
+## Choupo-2607 — 2026-07-14, consolidated 2026-07-19 — WITHDRAWN 2026-09-02
+
+*Unbracketed deliberately: the bracketed form is what
+`bin/curate/release_inventory.py` matches to decide which release the
+storefront announces, so a withdrawn release must not carry it.*
 
 Three threads under one stabilisation tag: a large **open compound-library
 expansion** with release hygiene, the **pristine-electrolyte architecture**,

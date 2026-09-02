@@ -11,13 +11,13 @@ main          THE DEVELOPMENT LINE, Choupo-dev — the default branch, the
 vYYMM         a release: an IMMUTABLE tag, never deleted, moved or reused
 release-YYMM  cut FROM a tag, and only on the day a patch actually ships
 
-Public name:      Choupo-2607
-Internal version: 2607        (CITATION.cff, Banner)
-Git tag:          v2607
-GitHub Release:   tag v2607, title "Choupo-2607"
+Public name:      Choupo-2608
+Internal version: 2608        (CITATION.cff, Banner)
+Git tag:          v2608
+GitHub Release:   tag v2608, title "Choupo-2608"
 ```
 
-Never use variants (`v26.07`, `2026.07`, `Choupo-v2607`).
+Never use variants (`v26.08`, `2026.08`, `Choupo-v2608`).
 
 **Why the default branch carries the development line.**  The earlier layout
 froze `main` at the last release and did the work on `dev`.  OpenFOAM.org —
@@ -109,7 +109,14 @@ The push in step 8 publishes the site; the tag does not deploy anything by
 itself.  The tagged commit is deliberately NOT a green tree: the release
 artefact and the banner's return to `Choupo-dev` both belong to the follow-up
 commit, so `check_release_identity` and `banner-version-gate` are satisfied at
-the head, not at the tag.  `v2607` was cut the same way.
+the head, not at the tag.
+
+**PUSH THE TAG BEFORE THE SITE, not after.**  On 2026-09-02 the site was
+published for a tag that did not exist yet, and four links went live dead at
+once: the release page, `blob/vYYMM/CITATION.cff`, `tree/vYYMM/docs` and the
+frozen app.  Three of them need only the tag; the fourth needs the upload in
+step 8.  A storefront for a release nobody can fetch is worse than no
+storefront.
 
 ## Identification in the binaries
 

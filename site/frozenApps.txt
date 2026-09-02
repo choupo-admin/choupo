@@ -1,0 +1,21 @@
+#  THE FROZEN APP COPIES THAT ACTUALLY EXIST, declared.
+#
+#  A release page offers "Run Choupo-YYMM" at /vYYMM/app/ -- the URL a student
+#  cites, teaches from and archives.  NOTHING in bin/buildSite produces that
+#  tree: it is a hand-uploaded archive living in the SITE repository
+#  (choupo-admin/choupo-admin.github.io), which this repository cannot see.
+#
+#  On 2026-09-02 that gap became a live 404 on the homepage's own release
+#  button: the label was renamed 2607 -> 2608 and the copy behind it had never
+#  been uploaded.  The link was correct-looking, the gate said in writing that
+#  it could not check it, and it shipped anyway.
+#
+#  So the fact is DECLARED here instead of remembered.  One release id per
+#  line.  check_release_identity arm (f) refuses any /vYYMM/app/ link in the
+#  site sources whose id is not listed, and refuses a listed id that has no
+#  release artefact.  Upload the copy, add the line, and the button may exist
+#  -- in that order.
+#
+#  Today the list is EMPTY, and that is the truth: v2607 was withdrawn
+#  (2026-09-02) and v2608's copy is not published yet.  An empty list is a
+#  claim, not an oversight -- it says no frozen app may be linked.
