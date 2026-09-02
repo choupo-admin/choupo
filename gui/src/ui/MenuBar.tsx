@@ -122,7 +122,7 @@ import { readCaseAt, importCase, slugifyCaseName } from "../cases/workspace.js";
 import { localCaseDir } from "../case/caseName.js";
 import { downloadCaseZip } from "../case/saveCase.js";
 import { openCaseZip, openCaseFolder, type OpenedCase } from "../cases/loadCase.js";
-import { canComputePinch } from "../case/pinch.js";
+import { canComputePinch, pinchDisabledReason } from "../case/pinch.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { guideUrl, openGuide } from "../help/guideLinks.js";
 import { GUIDES } from "../help/guides.generated.js";
@@ -286,7 +286,10 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   // Pinch needs a completed run with heat duties -> greyed until then.
   const isWorkspaceDisabled = (w: { key: WorkspaceKey | null }): boolean =>
     w.key === "pinch" && !pinchReady;
-  const PINCH_DISABLED_HINT = "Run the flowsheet first — pinch needs the converged duties";
+  //  ASK why, do not assert it: the reason lives beside the condition in
+  //  case/pinch.ts, because a converged adiabatic case was being told to
+  //  "run the flowsheet first" after running it.
+  const PINCH_DISABLED_HINT = pinchDisabledReason(runResult, flowsheet) ?? "";
 
   const openWorkspace = (label: string, key: WorkspaceKey | null) => {
     if (label === "Flowsheet") {

@@ -140,9 +140,41 @@ export function thermalStreams(runResult: RunResult | null, flowsheet: JsonDict 
   return out;
 }
 
-export function canComputePinch(runResult: RunResult | null, flowsheet: JsonDict | undefined): boolean {
+/** Why the pinch view cannot be shown, or null when it can.
+ *
+ *  ONE HOME WITH THE CONDITION, deliberately.  The Pinch tab used to be
+ *  greyed by `canComputePinch` while a CONSTANT in MenuBar.tsx explained it:
+ *  "Run the flowsheet first -- pinch needs the converged duties".  That
+ *  sentence is true for exactly one of the ways the tab can be disabled, and
+ *  the commonest case in the corpus is the other one: the first tutorial a
+ *  student meets is an ADIABATIC flash, which converges perfectly and has no
+ *  duty at all, so the reader watches Newton converge and is then told to run
+ *  the flowsheet.  A disabled control whose stated reason is not the actual
+ *  reason sends the reader to fix the thing that was not wrong.
+ *
+ *  A condition in one file and its explanation in another is two homes for
+ *  one fact, so the explanation is computed HERE, from the same streams the
+ *  condition reads. */
+export function pinchDisabledReason(runResult: RunResult | null,
+                                    flowsheet: JsonDict | undefined): string | null {
+  if (!runResult) {
+    return "Run the flowsheet first — pinch needs the converged duties";
+  }
   const s = thermalStreams(runResult, flowsheet);
-  return s.some((x) => x.kind === "hot") && s.some((x) => x.kind === "cold");
+  const hot = s.some((x) => x.kind === "hot");
+  const cold = s.some((x) => x.kind === "cold");
+  if (hot && cold) return null;
+  if (!hot && !cold) {
+    return "This run has no heating or cooling duties to integrate — "
+         + "pinch needs at least one hot and one cold stream";
+  }
+  return hot
+    ? "This run has hot streams but no cold one — pinch needs at least one of each"
+    : "This run has cold streams but no hot one — pinch needs at least one of each";
+}
+
+export function canComputePinch(runResult: RunResult | null, flowsheet: JsonDict | undefined): boolean {
+  return pinchDisabledReason(runResult, flowsheet) === null;
 }
 
 const CP = (s: ThermalStream) => s.Q_kW / Math.abs(s.Tt - s.Ts);
