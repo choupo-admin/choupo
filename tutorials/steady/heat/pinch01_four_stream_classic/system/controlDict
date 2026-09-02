@@ -17,6 +17,7 @@
   flowsheetDict header for the full table and the cascade worked by hand.
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Pinch P1 targets: classic 4-stream problem table (dTmin 20 K)";
 

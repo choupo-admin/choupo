@@ -32,6 +32,8 @@ License
 
 #include <cmath>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -223,10 +225,23 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
         // Numerical honesty: extrapolate (do NOT clamp -- that would hide the
         // out-of-range condition), but say so out loud so the student sees the
         // correlation is being used past its fitted range.
-        std::cout << "  [validity] WARNING: " << dim.equipmentType << " '"
-                  << dim.unitName << "': size " << c.sizeKey << " = " << S
-                  << " is OUTSIDE the correlation range [" << c.Smin << ", "
-                  << c.Smax << "] -- cost EXTRAPOLATED, treat with caution.\n";
+        //  PRINT WHAT WAS COMPARED.  This line inherited the ambient stream
+        //  precision and on process02_with_design read "size V_R = 0 is
+        //  OUTSIDE the correlation range [0, 520]" -- for V_R = 0.005 m^3
+        //  against Smin = 0.3.  The verdict was right and the sentence was
+        //  false: a reader cannot see why 0 is outside [0, 520].  A validity
+        //  line too coarse to reproduce is worse than none (the costing
+        //  table paid for the same lesson on B1/B2 on 2026-08-27).  Found
+        //  2026-09-02 writing the case's README.
+        {
+            std::ostringstream v;
+            v << std::defaultfloat << std::setprecision(4)
+              << "  [validity] WARNING: " << dim.equipmentType << " '"
+              << dim.unitName << "': size " << c.sizeKey << " = " << S
+              << " is OUTSIDE the correlation range [" << c.Smin << ", "
+              << c.Smax << "] -- cost EXTRAPOLATED, treat with caution.\n";
+            std::cout << v.str();
+        }
     }
 
     // Purchased cost in 2001 USD -- Turton log-quadratic OR single-anchor

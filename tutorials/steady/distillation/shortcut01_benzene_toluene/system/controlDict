@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoSolve;
 description   "Shortcut (FUG) design of a benzene/toluene column";
 

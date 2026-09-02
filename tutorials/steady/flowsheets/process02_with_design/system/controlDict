@@ -10,6 +10,7 @@
   process02_with_design -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "process02 with full reports: balances + sizing + Guthrie costing";
 
@@ -27,45 +28,9 @@ reports
     massBalance    { }
     energyBalance  { }
 
-    design
-    {
-        units
-        (
-            {
-                unitName    reactor;
-                type        stirredTank;
-                material    SS316;
-                designRules
-                {
-                    L_over_D        2.5;
-                    pressureDesign  3.0;        // bar (operating × 2 safety)
-                    corrosionAllow  0.003;      // m
-                    jointEfficiency 1.0;
-                }
-            }
+    design         { }     // serialises the sizing from system/postDict
 
-            {
-                unitName    heater;
-                type        shellTubeHX;
-                material    SS304;
-                designRules
-                {
-                    U               600.0;      // W/(m²·K)
-                    LMTD            10.0;        // K
-                    pressureDesign  2.0;        // bar
-                }
-            }
-        );
-    }
-
-    economics
-    {
-        method      Guthrie;
-        year        2026;
-        cepci       820;
-        cepci2001   397;
-        usdToEur    0.92;
-    }
+    economics      { }     // serialises the costing from system/postDict
 
     spreadsheet    { }
 }

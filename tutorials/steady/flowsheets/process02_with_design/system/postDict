@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  process02_with_design -- post-processing chain
+
+  The controlDict `reports { design {} economics {} }` blocks SERIALISE what
+  this chain produced; they size and cost nothing themselves (ruled
+  2026-08-27, docs/design/the-deliverable.md).  Until 2026-09-02 this case
+  carried its design rules and cost basis INSIDE those report blocks -- the
+  pre-ruling form -- so both reports FAILED by name on every run while the
+  case went on passing its golden (KPIs only).  The description promised
+  "balances + sizing + Guthrie costing"; a student got two failure lines.
+  The rules moved here, once.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    reactor;
+            type        stirredTank;
+            material    SS316;
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  3.0;        // bar (operating × 2 safety)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+            }
+        }
+
+        {
+            unitName    heater;
+            type        shellTubeHX;
+            material    SS304;
+            designRules
+            {
+                U               600.0;      // W/(m²·K)
+                LMTD            10.0;        // K
+                pressureDesign  2.0;        // bar
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Guthrie;
+    year        2026;
+    cepci       820;        // target-year CEPCI
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;
+}

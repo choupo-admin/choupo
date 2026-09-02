@@ -10,6 +10,7 @@
   column01_benzene_toluene -- meta-control
 \*---------------------------------------------------------------------------*/
 
+tier          tutorial;
 application   choupoSolve;
 description   "Benzene/toluene distillation column (Wang-Henke)";
 
