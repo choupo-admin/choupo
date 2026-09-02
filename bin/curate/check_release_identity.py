@@ -72,6 +72,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SITE_PAGES = ["site/index.html", "site/releases.html", "site/models.html"]
 FROZEN_APPS = "site/frozenApps.txt"
+#  A PUBLISHED ARTEFACT THAT NAMES A RELEASE IS A SITE LITERAL TOO.
+#  bin/buildSite copies this one to the site root and /models fetches it;
+#  its `release` field is hand-maintained, and on 2026-09-02 it still said
+#  Choupo-2607 three commits after the 2608 cut -- invisible to a visitor
+#  (the page renders `categories` and not `release`), which is exactly why
+#  nobody saw it.  An unread field drifts silently; a checked one cannot.
+NAMED_ARTEFACTS = ["generated/modelsCatalogue.json"]
 
 spec = importlib.util.spec_from_file_location(
     "relinv", ROOT / "bin" / "curate" / "release_inventory.py")
@@ -172,6 +179,27 @@ def main() -> int:
                 "'331 runnable tutorials' took.  Wrap it in a data-inv span "
                 "fed by the artefact.")
 
+    # (g) a published artefact that names a release must name the current one
+    newest = None
+    if artefacts:
+        newest = json.loads(artefacts[-1].read_text()).get("release")
+    for rel in NAMED_ARTEFACTS:
+        af2 = ROOT / rel
+        if not af2.is_file():
+            fail.append(f"{rel} is missing -- a published artefact this gate "
+                        "audits has moved")
+            continue
+        said = json.loads(af2.read_text()).get("release")
+        if said is None:
+            fail.append(f"{rel} carries no 'release' field, so nothing says "
+                        "which release it describes")
+        elif newest and said != newest:
+            fail.append(
+                f"{rel} says it describes '{said}' but the newest release "
+                f"artefact is '{newest}'.  bin/buildSite publishes this file, "
+                "so the site would serve a catalogue naming a release it is "
+                "not from.")
+
     # (f) a frozen-app link must name a copy somebody declared exists
     declared = set()
     fa = ROOT / FROZEN_APPS
@@ -218,6 +246,8 @@ def main() -> int:
         "parser (imported, not copied).  Every data-inv fallback literal in "
         f"{len(SITE_PAGES)} site source pages equals its artefact value, and "
         "no bare hand count sits beside 'runnable tutorials' in prose.  Every "
+        f"{len(NAMED_ARTEFACTS)} published artefact(s) naming a release "
+        "name the newest one.  Every "
         f"frozen-app link is declared in {FROZEN_APPS} "
         f"({len(declared) or 'none'} declared), so a link to an archive that "
         "was never uploaded is refused by name.  NOT CHECKED, said plainly: "

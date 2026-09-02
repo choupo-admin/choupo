@@ -16,6 +16,12 @@
 #  release artefact.  Upload the copy, add the line, and the button may exist
 #  -- in that order.
 #
-#  Today the list is EMPTY, and that is the truth: v2607 was withdrawn
-#  (2026-09-02) and v2608's copy is not published yet.  An empty list is a
-#  claim, not an oversight -- it says no frozen app may be linked.
+#  A line here is a claim that the copy EXISTS, and the workflow that builds
+#  it (.github/workflows/freeze-app.yml) is what makes the claim true: it
+#  builds from the tag with --base=/vYYMM/app/ and refuses to publish unless
+#  the engine compiled into the WASM states that release's own version.
+#
+#  v2607 is absent because it was WITHDRAWN (2026-09-02), not because its copy
+#  is missing -- /v2607/app/ is still served, and nothing on the site links it.
+
+v2608

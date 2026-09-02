@@ -1,5 +1,5 @@
 {
-  "release": "Choupo-2607",
+  "release": "Choupo-2608",
   "note": "Hand-curated from the explicit registerBuiltins() factories in src/ and from the data/standards/ tree.  Only models that are actually registered/wired are listed (no roadmap items); retired keys (e.g. outerDict fitBinaryPair, which throws) are excluded.  It is NOT machine-generated -- it used to say so, while nine databank paths pointed at directories retired by the 2026-07-16 tree migrations and one count described a directory that now holds no records at all.  bin/curate/check_models_catalogue.py now recomputes every source path and every databank count from the tree on each runTests, so the claim is checked rather than asserted.",
   "categories": {
     "activityModel": [

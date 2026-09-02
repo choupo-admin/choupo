@@ -33,8 +33,8 @@ past the tag before anyone looked.  One quantity, one home; a release is a
 quantity, and its home is the tag.
 
 `main` is never pinned to a named future release — it is just the latest,
-continuously.  Roughly every six months (not a fixed date, and not
-pre-announced), whoever is maintaining the project tags it and that tag
+continuously.  Periodically (not a fixed date, and not pre-announced),
+whoever is maintaining the project tags it and that tag
 becomes the next `Choupo-YYMM`, named for whatever calendar month it actually
 lands in.  In practice a tag is usually convenient near a teaching-term start,
 but that is a scheduling convenience decided at cut time, never a commitment

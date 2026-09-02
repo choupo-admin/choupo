@@ -30,8 +30,9 @@ and prefer `generated/releaseInventory.json` to any number written in prose.*
   browser copy at `choupo.org/v2608/app/` is NOT published yet, so the site
   links no frozen app today.  (`Choupo-2607` was withdrawn on 2026-09-02.)
   `main` is
-  tagged as the next `Choupo-YYMM` when the teaching term needs one (roughly
-  every six months; decided at cut time, never pre-committed).
+  tagged as the next `Choupo-YYMM` when the project has something worth
+  freezing (decided at cut time, never pre-committed — 2607 to 2608 was
+  seven weeks, so no cadence is promised anywhere).
 - **Site:** served by a SECOND repository, `choupo-admin/choupo-admin.github.io`
   — it holds the `CNAME` and any frozen `/vYYMM/app/`.  This repo only BUILDS
   it: `publish-site.yml` verifies on every push to `main` and publishes
