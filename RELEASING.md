@@ -100,10 +100,33 @@ baked into the code or docs beforehand.
    CHANGELOG section on `main` as `## Choupo-dev (unreleased)` — unbracketed,
    so `release_id()` keeps pointing at the release you just cut.  Commit this
    as a follow-up; the suite is expected to be green HERE, not at the tag.
-8. Push both commits and the tag, then create the GitHub Release (tag
-   `vYYMM`, title `Choupo-YYMM`, notes from the CHANGELOG section) and freeze
-   the release's app at `/vYYMM/app/` (see "Site deployment"), pointing the
-   history entry's "Run" button at the frozen copy.
+8. Push both commits, then run the workflows.  **Steps 5-8 stopped being
+   manual on 2026-09-02**, because a release performed partly by hand and
+   partly by CI is one that can be half-published, and on that day it was: the
+   site was pushed for a tag that did not exist and four public links went
+   live dead at once.  Each is `workflow_dispatch`, startable only by someone
+   who already has write access, and each refuses rather than guesses:
+
+   | workflow | what it does | inputs |
+   |---|---|---|
+   | `release-tag` | creates the annotated tag and reads it back from the remote | `tag`, full 40-char `sha` |
+   | `release-notes` | creates or updates the GitHub Release, notes taken from **the tag's own** CHANGELOG section | `tag` |
+   | `freeze-app` | builds the app **from the tag** with `--base=/vYYMM/app/` and publishes it beside the other releases | `tag` |
+
+   Then add the release to the `/releases/` history and, **only once
+   `freeze-app` has actually published**, add its id to `site/frozenApps.txt`
+   and point the "Run" buttons at the frozen copy.  That order is the gate's:
+   a `/vYYMM/app/` link whose id is not declared there is refused.
+
+   **`freeze-app` cannot yet produce a working frozen app for a release cut
+   before 2026-09-02** — the app hardcoded root-absolute engine paths, so a
+   copy served from `/vYYMM/app/` loaded the development engine.  Fixed on the
+   development line the same day; Choupo-2608 therefore ships with no frozen
+   app, which `/releases/` states plainly.
+
+   To withdraw a release, write the decision into
+   `docs/withdrawn-releases.txt` first and then run `withdraw-release`; it
+   refuses any tag that record does not name.
 
 The push in step 8 publishes the site; the tag does not deploy anything by
 itself.  The tagged commit is deliberately NOT a green tree: the release

@@ -70,15 +70,34 @@ int Valve::solve(const DictPtr& dict,
     }
     for (auto& v : z) v /= zsum;
 
-    // Isenthalpic: H_out = H_in.  Feed taken as sub-cooled liquid at Tfeed;
-    // anchoring Tref = Tfeed makes H_in == 0, so the outer residual is
-    // exactly H_out(T) at the downstream pressure.
-    const scalar Tref = Tfeed;
-    const scalar Hin   = thermo.Hliquid(Tfeed, z, Tref);   // = 0 by construction
+    // Isenthalpic: H_out = H_in.
+    //
+    // THE FEED'S OWN VAPOUR FRACTION, read rather than assumed (2026-09-02).
+    // This priced the inlet as a sub-cooled liquid unconditionally --
+    // `Hliquid(Tfeed, z, Tref)`, commented "= 0 by construction" -- and
+    // printed "(liquid)" in the banner whatever arrived.  A valve fed vapour
+    // or a two-phase stream therefore solved for the wrong outlet
+    // temperature, silently and at exit 0: the Newton converges, the regime
+    // and vf it reports are consequences of a feed enthalpy that was never
+    // the feed's.
+    //
+    // It is the SAME defect corrected in `adiabaticFlash`, and the correction
+    // was not carried across -- the twin was found by an audit, not by the
+    // suite, because no corpus case feeds this unit anything but a liquid.
+    //
+    // Priced on the SAME surface the outlet uses (`Hmixture` at this Tref),
+    // never the formation surface: an inlet and an outlet weighed on two
+    // different references is a worse error than the one being fixed.  With
+    // vf = 0 and Tref = Tfeed this is Hliquid(Tfeed, z, Tfeed) = 0 exactly,
+    // so every existing case is byte-identical.
+    const scalar Tref  = Tfeed;
+    const scalar vfFeed = feedDict->lookupScalarOrDefault("vf", 0.0);
+    const scalar Hin   = (1.0 - vfFeed) * thermo.Hliquid(Tfeed, z, Tref)
+                       +        vfFeed  * thermo.Hvapour(Tfeed, z, Tref);
     const scalar Hreq  = Hin;
 
     std::cout << "Feed:       F = " << (F * 3600.0) << " kmol/h, T = " << Tfeed
-              << " K, P = " << (Pfeed * 1.0e-5) << " bar  (liquid)\n"
+              << " K, P = " << (Pfeed * 1.0e-5) << " bar, vf = " << vfFeed << "\n"
               << "Outlet:     P = " << (Pout * 1.0e-5)
               << " bar  (isenthalpic throttle, W = 0, Q = 0)\n";
 

@@ -2291,9 +2291,10 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
 
 ## 7. Database catalogue (summary)
 
-`data/standards/` holds the FROZEN, committee-managed reference tree.  Eight
-directories, and `ls data/standards/` is the authority on both the list and the
-counts (§6: the tally is generated, never copied here):
+`data/standards/` holds the FROZEN, committee-managed reference tree.  `ls
+data/standards/` is the authority on both the list and the counts -- this
+sentence used to hand-carry a count of its own ("Eight directories") one line
+before naming that authority, and it had drifted to nine (§6: the tally is generated, never copied here):
 `components/` · `species/` · `chemistry/` (flat) · `parameters/` (the per-model
 pair catalogues — `NRTL/ UNIQUAC/ Henry/ Pitzer/ eNRTL/ SRK/ UNIFAC/
 adsorption/ solution/`, Migration 2 done 2026-07-16) · `conventions/` (the

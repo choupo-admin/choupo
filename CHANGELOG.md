@@ -37,7 +37,7 @@ Choupo-2607 did not have.
   diagnostics (mass closures, duties, campaign inventories).  Append-only by
   construction: not one existing value, hand-tuned tolerance or published
   anchor moved.
-- **167 curation gates, each recorded with the OK line it actually printed**
+- **175 curation gates, each recorded with the OK line it actually printed**
   (`generated/gateManifest.json`), sabotage-verified as a protocol; several
   gates found defects in themselves before finding any in the engine, and
   say so in their own blind-spot lists.
@@ -97,7 +97,7 @@ Choupo-2607 did not have.
 
 ### Teaching surfaces
 
-- **21 EduTools** (was 16), all in the scrolling-lesson form, and **every
+- **33 EduTools** (was 16), all in the scrolling-lesson form, and **every
   formula symbol on every lesson is now glossed** — the definitions were
   written against the ENGINE with `file:line` citations, a requirement that
   changed what the writers read and surfaced eight defects the pages had

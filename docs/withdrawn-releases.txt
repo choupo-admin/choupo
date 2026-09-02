@@ -1,0 +1,21 @@
+#  RELEASES THAT WERE PUBLISHED AND THEN WITHDRAWN.
+#
+#  A release tag is NEVER deleted, moved or reused (CLAUDE.md §2).  This file
+#  is the whole of the exception: it is the only place a withdrawal can be
+#  authorised, and `.github/workflows/withdraw-release.yml` refuses to act on
+#  any tag that is not named here.  So the tool cannot be pointed at an
+#  arbitrary release -- it can only execute a decision that is already written
+#  down, dated, and reviewable in this repository's history.
+#
+#  Adding a line here is the decision.  It is Vitor's to make, and the reason
+#  belongs beside the tag, because a withdrawal that does not say why reads as
+#  a mistake being covered rather than a judgement being taken.
+#
+#  What makes a withdrawal legitimate is that NOBODY CAN HAVE RELIED on the
+#  release yet.  That window closes and does not reopen: once a version is
+#  cited, taught from, or built against, deleting it breaks somebody else's
+#  work and no reason in this file can repair that.
+#
+#  Format: <tag> <ISO date of the decision> <reason, to end of line>
+
+v2607 2026-09-02 the first public release, withdrawn seven weeks after publication and before any known citation: too rudimentary to be what a student meets.  Its CHANGELOG section is kept, marked WITHDRAWN and unbracketed so the inventory generator can never announce it again.

@@ -1,0 +1,121 @@
+#  WITHDRAW A RELEASE — the tag, its GitHub Release, and its frozen app.
+#
+#  THIS IS THE DANGEROUS ONE, and it is built to be unable to do what it looks
+#  like it can do.  CLAUDE.md §2 says a release tag is NEVER deleted, moved or
+#  reused; a general-purpose tag-deleting button in this repository would turn
+#  that rule into a suggestion, which is why one was refused when it was first
+#  asked for.
+#
+#  What makes this acceptable is that it CANNOT CHOOSE.  It acts only on a tag
+#  already named in `docs/withdrawn-releases.txt`, so every run executes a
+#  decision that was written down, dated, reasoned and committed first.  Point
+#  it at anything else and it refuses by name.  The record is the authorisation;
+#  this file is only the hands.
+#
+#  A withdrawal is not an erasure of the record: the CHANGELOG keeps the
+#  release's section, marked WITHDRAWN, and the reason lives in the record file.
+#  What goes is the ability to FETCH the release, not the evidence that it
+#  existed.
+name: withdraw-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to withdraw — must already be listed in docs/withdrawn-releases.txt'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  withdraw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refuse anything the record does not authorise
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v[0-9][0-9][0-9][0-9]) ;;
+            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+          esac
+          rec=docs/withdrawn-releases.txt
+          [ -f "$rec" ] || { echo "REFUSED: $rec is missing -- without the record there is no authorisation."; exit 1; }
+          line=$(grep -E "^${TAG}[[:space:]]" "$rec" || true)
+          if [ -z "$line" ]; then
+            echo "REFUSED: $TAG is not listed in $rec."
+            echo "A release is withdrawn by writing the decision down first --"
+            echo "tag, date and reason -- and committing it.  This workflow"
+            echo "executes that decision; it does not take it."
+            exit 1
+          fi
+          echo "authorised by the record:"
+          echo "  $line"
+
+      - name: Delete the tag and its GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag
+            echo "deleted the release and its tag"
+          else
+            echo "no GitHub Release for $TAG"
+          fi
+          #  --cleanup-tag removes the tag with the release; if the release did
+          #  not exist, the tag may still.  Say which case happened rather than
+          #  reporting success either way.
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            git push origin ":refs/tags/$TAG"
+            echo "deleted the tag"
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "FAILED: $TAG still resolves on the remote"; exit 1
+          fi
+          echo "$TAG no longer exists on the remote"
+
+      - name: Remove its frozen app from the site
+        env:
+          DEPLOY_KEY: ${{ secrets.SITE_DEPLOY_KEY }}
+          SITE_REPO: git@github.com:choupo-admin/choupo-admin.github.io.git
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::notice::SITE_DEPLOY_KEY not configured -- the frozen app was NOT removed."
+            exit 0
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          git clone --depth 1 "$SITE_REPO" /tmp/site
+          if [ ! -e "/tmp/site/$TAG" ]; then
+            echo "no /$TAG/ in the site repository"; exit 0
+          fi
+          #  publish-site REFUSES to publish when no frozen app is left, to
+          #  catch an rsync that erased them all.  Removing the last one here
+          #  would therefore break every future publish -- so say so and stop,
+          #  rather than leaving that landmine for whoever pushes next.
+          remaining=$(ls -d /tmp/site/v[0-9]*/app 2>/dev/null | grep -cv "/$TAG/" || true)
+          if [ "$remaining" -eq 0 ]; then
+            echo "REFUSED: /$TAG/ is the last frozen app in the site repository,"
+            echo "and bin/publish-site refuses to publish when none is left."
+            echo "Removing it would break every subsequent site publish."
+            exit 1
+          fi
+          cd /tmp/site
+          git config user.name  "Vítor Geraldes"
+          git config user.email "talentgroundlda@gmail.com"
+          git rm -rq "$TAG"
+          git commit -q -m "withdraw the frozen app of $TAG"
+          git push
+          echo "removed /$TAG/ from the site"

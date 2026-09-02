@@ -115,7 +115,7 @@ or set `CHOUPO_HOME` to override the lookup.
 | [`docs/userGuide.pdf`](docs/userGuide.pdf) ([source](docs/userGuide.tex)) | Students and instructors running cases |
 | [`docs/developerGuide.pdf`](docs/developerGuide.pdf) ([source](docs/developerGuide.tex)) | Contributors adding unit ops, thermo, drivers |
 | [`docs/theoryGuide.pdf`](docs/theoryGuide.pdf) ([source](docs/theoryGuide.tex)) | The mathematics behind every model |
-| [`docs/ai/schemas-reference.md`](docs/ai/schemas-reference.md) | **Every key of every unit operation** — all 77, generated from the schemas the engine is checked against, so it is never out of date.  Filed under `ai/` because an assistant reads it too; it is plain Markdown and a person can read it just as well |
+| [`docs/ai/schemas-reference.md`](docs/ai/schemas-reference.md) | **Every key of every unit operation** — every one of them, generated from the schemas the engine is checked against, so it is never out of date.  Filed under `ai/` because an assistant reads it too; it is plain Markdown and a person can read it just as well |
 | [`docs/ai/`](docs/ai) (rest) | Case-authoring reference: dict syntax, thermo, unit ops, patterns, pitfalls |
 | [`CLAUDE.md`](CLAUDE.md) | AI assistants + conventions; authoritative state |
 | [`data/standards/README.md`](data/standards/README.md) | The curated reference data layout |
