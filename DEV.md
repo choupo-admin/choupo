@@ -26,19 +26,27 @@ and prefer `generated/releaseInventory.json` to any number written in prose.*
   target version.  **Work happens on `main`.**  A release is an immutable tag
   `vYYMM`; a `release-YYMM` branch is cut from that tag only on the day a patch
   actually ships.  `dev` is retired.  Rationale and procedure: `RELEASING.md`.
-- **Latest release:** `Choupo-2608` — immutable git tag `v2608`.  Its frozen
-  browser copy at `choupo.org/v2608/app/` is NOT published yet, so the site
-  links no frozen app today.  (`Choupo-2607` was withdrawn on 2026-09-02.)
-  `main` is
-  tagged as the next `Choupo-YYMM` when the project has something worth
-  freezing (decided at cut time, never pre-committed — 2607 to 2608 was
-  seven weeks, so no cadence is promised anywhere).
+- **Latest release:** `Choupo-2608` — immutable git tag `v2608`, patched as
+  `v2608.1` (packaging only: the frozen app's engine paths; the engine, the
+  citation and the public name are unchanged).  Its frozen browser copy at
+  `choupo.org/v2608/app/` IS published, built from `v2608.1` by
+  `freeze-app.yml`, and was driven in a browser: every engine request stays
+  inside its prefix and the answer reproduces the release's own golden.
+  (`Choupo-2607` was withdrawn on 2026-09-02.)  `main` is tagged as the next
+  `Choupo-YYMM` when the project has something worth freezing (decided at cut
+  time, never pre-committed — 2607 to 2608 was seven weeks, so no cadence is
+  promised anywhere).  This paragraph said the frozen copy was NOT published
+  for most of 2026-09-02, and went on saying so after it was — corrected the
+  same night.
 - **Site:** served by a SECOND repository, `choupo-admin/choupo-admin.github.io`
   — it holds the `CNAME` and any frozen `/vYYMM/app/`.  This repo only BUILDS
-  it: `publish-site.yml` verifies on every push to `main` and publishes
-  nothing (a deploy from here would fight the user site for the domain — it
-  did, for an afternoon, while the live site sat 55 commits stale).
-  Publishing is a hand act, one command, in `RELEASING.md`.  **The top-bar
+  it: `publish-site.yml` builds AND publishes on every push to `main` (the
+  top-bar badge reflected `09343fb0` minutes after that push on
+  2026-09-02, which is the measurement); `freeze-app.yml`, `release-tag.yml`,
+  `release-notes.yml` and `withdraw-release.yml` are `workflow_dispatch` and
+  cover the release chores — `RELEASING.md` has the table.  This paragraph
+  used to say the workflow "publishes nothing" and that publishing was a hand
+  act; that was true once and had been false for weeks.  **The top-bar
   badge (`Choupo-dev · <commit>`) is the staleness check** — if it is not the
   commit you pushed, the deploy did not land.
 - **Health:** run `bin/runTests` — it prints the verdict, and a verdict copied
@@ -107,6 +115,49 @@ ones for day-to-day work:
   otherwise in any prose.
 
 ## 4. Roadmap for the development line (candidate work, priority-ish)
+
+**SEPTEMBER 2026 — THE ENGINE IS FROZEN, BY DEFAULT (architect, 2026-09-02;
+DELEGATE-WITH-DEFAULT under philosophy §4, reversible by one line here).**
+Students adopt this month.  Measured before deciding: in the 30 days to
+2026-09-02, 848 commits — 369 to `docs/`, 256 to gates, 217 to `src/` — the
+apparatus grew faster than the engine it guards; `CLAUDE.md` gained 1678
+lines in August; 73 of 97 design records were born that month; the full
+suite takes 37 minutes and the ladder (§6a) was broken four times in one
+day by the architect himself.  And of 393 runnable cases, FIVE declare
+`tier tutorial;` while the four cases the app offers a student as "your
+first clicks" declare no tier at all — the learning surface the app
+presents and the one the inventory declares are different things.
+Gall: a system that works evolved from a simple one that worked; the
+working system is the engine and the corpus, and what does not yet work is
+what the student MEETS.  So, for September:
+
+1. **No new unit operations, models or gates.**  Engine debts (A2
+   `identity()`, #34, #35, #13) only if a student case trips one.
+2. **Cure the memory** — this file's §1 (done 2026-09-02), a home for the
+   student-walkthrough programme (legs 4–5 have records, 6 is a task
+   title, 1–3 are session memory: reconstruct from `git log`, and where
+   that fails say so), and a `CLAUDE.md` DIET by demotion: each §6 slice
+   narrative already has a design record; the file keeps the invariant
+   and the pointer.
+3. **Declare the first path** — `tier tutorial;` on the cases a student
+   should meet first, chosen by reading `docs/tutorials-catalogue.md`,
+   each one driven in the frozen app in a browser and read as the student
+   reads it.  The choice is recorded in the controlDicts, which is the
+   deliberate act the tier doctrine asks for.
+4. **The delivered artefact under the instrument that found everything on
+   2026-09-02** — a TOOL, `bin/drive-app` (never a gate: it needs a
+   browser and a served copy, the Poling precedent), run from
+   `RELEASING.md`'s freeze step, reporting requests outside the prefix,
+   views that error, hints that lie.
+5. **The last week is empty**, reserved for what students send back.
+   The mode of failure of a complex system is not predictable from its
+   structure.
+
+Reserved to Vítor, untouched: the catalogue reseal (`Choupo-2607` in the
+sealed manifests), `paper/README.md`, the Guthrie/Turton attribution, the
+Burcat citation ruling, P-swing, speciation aliases, the basis mass
+migration.
+
 
 0. ~~**A column over a chemistry (sour-water programme S1 + S2 first
    piece)**~~ — **DONE 2026-08-04.**  `ThermoPackage::stageK` is the one
