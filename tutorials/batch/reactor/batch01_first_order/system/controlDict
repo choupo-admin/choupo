@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoBatch;
 description   "Isothermal batch Fischer esterification (AcOH + EtOH <-> EtOAc + H2O) at 350 K, pseudo-first-order in ethanol; analytical exp-decay comparison";
 

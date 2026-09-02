@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoCtrl;
 description   "Dynamic CSTR (compA -> compB) with PID jacket-temperature control; T climbs from 320 K into the +/-2% setpoint band within ~20 s (no overshoot) and tracks toward 350 K across the 150 s window";
 

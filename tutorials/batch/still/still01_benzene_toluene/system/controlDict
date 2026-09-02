@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
+tier          tutorial;
 application   choupoBatch;
 description   "Rayleigh batch distillation: benzene/toluene 50/50, 1 atm, ideal Raoult";
 
