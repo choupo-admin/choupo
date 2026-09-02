@@ -52,6 +52,25 @@ const BINARIES = {
 // same case twice in a row should not re-fetch the .wasm.
 const factoryCache = {};
 
+//  WHERE THE ENGINE IS, asked of this file's own location rather than
+//  assumed to be the site root.
+//
+//  This file lives in `public/`, so vite never processes it and
+//  `import.meta.env.BASE_URL` does not exist here -- which is exactly how the
+//  two root-absolute literals `/wasm/<binary>.js` and `/wasm/<binary>.wasm`
+//  survived.  A frozen release app served from /vYYMM/app/ loaded the SITE
+//  ROOT's engine through them: the wrapper was the release and the answers
+//  were the development line's, with the version badge reading the frozen
+//  copy's own version.json and staying reassuringly correct.  Measured on the
+//  published site 2026-09-02.
+//
+//  `self.location` is this worker's URL, so `../wasm/<file>` resolves beside
+//  the app that spawned it, wherever that is.  At the site root it yields the
+//  same string as before, so nothing moves for the development deployment.
+function engineUrl(file) {
+  return new URL(`../wasm/${file}`, self.location.href).href;
+}
+
 async function loadFactory(binary) {
   if (factoryCache[binary]) return factoryCache[binary];
   const spec = BINARIES[binary];
@@ -61,7 +80,7 @@ async function loadFactory(binary) {
         Object.keys(BINARIES).join(", "),
     );
   }
-  const glueUrl = `/wasm/${binary}.js`;
+  const glueUrl = engineUrl(`${binary}.js`);
 
   factoryCache[binary] = (async () => {
     const cb = `?t=${Date.now()}`;
@@ -105,7 +124,7 @@ self.addEventListener("message", async (e) => {
   };
 
   const binary = msg.binary || "choupoSolve";
-  const wasmUrl = `/wasm/${binary}.wasm`;
+  const wasmUrl = engineUrl(`${binary}.wasm`);
 
   self.postMessage({
     type: "log",

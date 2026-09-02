@@ -8,6 +8,35 @@ tag `v2607` = version `2607`).  Development happens on `main`, the default
 branch, which carries `Choupo-dev`; a release is an immutable tag.
 **Choupo-2607** is the first version.
 
+## [Choupo-2608.1] — 2026-09-02 — packaging patch
+
+The engine, the corpus and every answer are Choupo-2608's, unchanged.  What
+this patch carries is five lines of the browser app's asset resolution, and
+nothing else.
+
+**The frozen release app ran the development engine.**  `/vYYMM/app/` is
+meant to be the copy you cite and teach from, and the bundle asked for its
+solver at the SITE ROOT: `gui/src/adapters/wasmModule.ts` held the literals
+`/wasm/choupoSolve.js` and `/workers/solverWorker.js`, and
+`gui/public/workers/solverWorker.js` — which vite never processes, so
+`import.meta.env` does not exist in it — hardcoded `/wasm/<binary>.js` of its
+own.  A visitor at /v2608/app/ therefore read `Choupo-2608` on the badge and
+computed every answer with `Choupo-dev`, the release's own correct binaries
+sitting unread one directory away.  Found by driving the published app in a
+browser and recording every request it makes; three independent audits agreed,
+and it was true of Choupo-2607's copy as well — no frozen release had ever run
+its own engine.
+
+Both paths now follow the app's base: `import.meta.env.BASE_URL` in the
+bundle, and `new URL("../wasm/<file>", self.location.href)` in the worker,
+which asks its own location instead of assuming the root.  At the site root
+both yield exactly the old strings, so the development deployment is
+unchanged.  Proved by building with `--base=/vTEST/app/`, serving under that
+prefix and driving a case run: 10 requests inside the prefix, ZERO outside.
+
+Nothing else is cherry-picked onto this branch: the only delta from v2608 is
+the five lines above and their comments.
+
 ## [Choupo-2608] — 2026-09-02 — the August line
 
 A month of work in one section, by theme; the full dated records live in
