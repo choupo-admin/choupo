@@ -167,9 +167,10 @@ release.
    proved from the published bytes before it acts**.  The first is in the
    shape of `withdraw-release`: a copy whose worker fetches its engine from a
    root path never was a frozen copy of anything, and is replaced.  The
-   second is the patch itself (2026-09-03, when `v2608.2` met the guard): a
-   patch is published at the release's own address, so the second patch of a
-   line necessarily replaces the copy the first one built.  The copy records
+   second is a later patch of the same line (rule written 2026-09-03; no
+   second patch has shipped): a patch is published at the release's own
+   address, so the second patch of a line necessarily replaces the copy the
+   first one built.  The copy records
    the commit it was built from in `wasm/version.json`; the guard admits a
    `vYYMM.N` tag only when that commit is in the checked-out history AND an
    ancestor of the tag — a copy with no recorded commit, one this line did

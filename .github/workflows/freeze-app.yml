@@ -254,8 +254,10 @@ jobs:
           #  correct copy is in place this branch can never fire on it again,
           #  and it can never fire on an honest frozen app at all.
           #
-          #  THE SECOND EXCEPTION IS THE PATCH ITSELF (2026-09-03, when the
-          #  second patch of a line met this guard).  A patch tag vYYMM.N is
+          #  THE SECOND EXCEPTION IS A LATER PATCH OF THE SAME LINE (rule
+          #  written 2026-09-03; no second patch has shipped, and whether one
+          #  ever does is Vitor's call -- a release is frozen, and the
+          #  development line is where the work goes).  A patch tag vYYMM.N is
           #  published at the SAME address as the release (RELEASING.md: a
           #  patch does not get its own URL), so the second patch of a line
           #  necessarily replaces the copy the first one built.  That is not
