@@ -1,0 +1,181 @@
+#  FREEZE THE APP OF A RELEASE at /vYYMM/app/ — built FROM THE TAG.
+#
+#  WHY.  /releases/ promises "a frozen, never-touched copy of the app: the URL
+#  you cite, teach from, and archive", and nothing in this repository produced
+#  one.  /v2607/app/ exists because somebody built and uploaded it by hand;
+#  when v2608 was cut, the homepage button was renamed to a copy that had never
+#  been made and served a 404 to every visitor (2026-09-02).
+#
+#  THE ONE THING THAT MAKES IT "FROZEN" is that it is built from the TAG, in a
+#  clean checkout, with `--base=/vYYMM/app/` so every asset it fetches is its
+#  own.  A copy built from the default branch and parked under a version URL is
+#  the failure this exists to prevent: the visitor believes they are on the
+#  release and they are running Choupo-dev.  Four checks below assert it, and
+#  the sharpest is the THIRD -- the engine's own version string is compiled
+#  into the WASM, so grepping the binary for it proves the release engine is
+#  what ships, rather than the label on the directory.
+#
+#  IT PUBLISHES ONLY ITS OWN SUBTREE.  No --delete anywhere near the site root,
+#  CNAME untouched, other releases untouched.  And it REFUSES to overwrite a
+#  frozen copy that already exists: never-touched is the whole claim.
+name: freeze-app
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag whose app to freeze — vYYMM'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the tag
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          case "$TAG" in
+            v[0-9][0-9][0-9][0-9]) ;;
+            *) echo "REFUSED: '$TAG' is not vYYMM."; exit 1 ;;
+          esac
+
+      #  THE TAG, not the branch.  fetch-depth 0 so the checkout carries the
+      #  history the build's own freshness checks read.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+
+      - name: Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: LaTeX (the guides this release's Help serves)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-recommended texlive-latex-extra texlive-pictures \
+            texlive-fonts-recommended lmodern
+
+      - name: Build the WASM of this release
+        run: make wasm-gui
+
+      - name: Build this release's guides
+        run: make -C docs all
+
+      - name: Install the app's dependencies
+        run: npm ci --no-audit --no-fund
+        working-directory: gui
+
+      #  `npm run build` hardcodes no base, so the app at /app/ resolves from
+      #  the root.  A frozen copy must resolve from ITS OWN prefix or it will
+      #  quietly load the development bundle's assets.
+      - name: Build the app rooted at its own URL
+        env:
+          TAG: ${{ inputs.tag }}
+        working-directory: gui
+        run: |
+          set -euo pipefail
+          npm run prebuild
+          npx tsc -p tsconfig.json --noEmit
+          node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build \
+               --base="/$TAG/app/"
+
+      - name: Prove it is the release, and self-contained
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          d=gui/dist
+          [ -s "$d/index.html" ] || { echo "no app was built"; exit 1; }
+
+          #  (1) every asset it asks for is under its own prefix
+          if grep -qE '(src|href)="/(assets|wasm|logo)' "$d/index.html"; then
+            echo "REFUSED: the built index.html references ROOT paths --"
+            echo "the --base did not take, and this copy would load the"
+            echo "development bundle's assets while claiming to be $TAG."
+            grep -oE '(src|href)="[^"]*"' "$d/index.html" | sort -u
+            exit 1
+          fi
+          grep -q "/$TAG/app/assets/" "$d/index.html" \
+            || { echo "REFUSED: index.html does not reference /$TAG/app/assets/"; exit 1; }
+
+          #  (2) it carries its own engine, and a real one
+          sz=$(stat -c%s "$d/wasm/choupoSolve.wasm")
+          [ "$sz" -gt 1000000 ] || { echo "choupoSolve.wasm is $sz B -- not a build"; exit 1; }
+
+          #  (3) THE SHARPEST CHECK.  CHOUPO_VERSION is compiled into the
+          #  binary, so the engine states its own identity independently of
+          #  the directory it was filed under.  A dev build parked at a
+          #  version URL fails here and passes everything else.
+          want="Choupo-${TAG#v}"
+          if ! grep -qa "$want" "$d/wasm/choupoSolve.wasm"; then
+            echo "REFUSED: the WASM does not carry '$want' -- this is not the"
+            echo "engine of $TAG.  A frozen app running a different engine"
+            echo "than its label is the defect this check exists for."
+            exit 1
+          fi
+          if grep -qa "Choupo-dev" "$d/wasm/choupoSolve.wasm"; then
+            echo "REFUSED: the WASM carries 'Choupo-dev'."
+            exit 1
+          fi
+
+          #  (4) Help must open something -- /v2607/app/docs/guides.json is a
+          #  404 to this day, so the frozen 2607 Help opens nothing.
+          [ -s "$d/docs/guides.json" ] \
+            || { echo "REFUSED: no guides.json -- Help would open nothing"; exit 1; }
+          for g in $(python3 -c "import json;print(' '.join(json.load(open('$d/docs/guides.json'))))"); do
+            [ -s "$d/docs/$g.pdf" ] || { echo "REFUSED: docs/$g.pdf missing"; exit 1; }
+          done
+          echo "frozen app OK: $(du -sh $d | cut -f1), engine states $want"
+
+      - name: Publish it beside the other releases
+        env:
+          DEPLOY_KEY: ${{ secrets.SITE_DEPLOY_KEY }}
+          SITE_REPO: git@github.com:choupo-admin/choupo-admin.github.io.git
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::notice::SITE_DEPLOY_KEY not configured -- built and verified, NOT published."
+            exit 0
+          fi
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+          git clone --depth 1 "$SITE_REPO" /tmp/site
+
+          #  NEVER-TOUCHED IS THE CLAIM.  A frozen copy that can be rebuilt
+          #  over is not frozen, it is merely old.
+          if [ -e "/tmp/site/$TAG/app" ]; then
+            echo "REFUSED: /$TAG/app/ already exists in the site repository."
+            echo "A frozen release app is never overwritten (CLAUDE.md 2)."
+            exit 1
+          fi
+
+          #  Only its own subtree.  No --delete, nothing near the site root.
+          mkdir -p "/tmp/site/$TAG/app"
+          rsync -a --exclude='.git' gui/dist/ "/tmp/site/$TAG/app/"
+
+          grep -q 'www.choupo.org' /tmp/site/CNAME \
+            || { echo "CNAME lost -- refusing to publish"; exit 1; }
+
+          cd /tmp/site
+          git config user.name  "Vítor Geraldes"
+          git config user.email "talentgroundlda@gmail.com"
+          git add "$TAG"
+          git commit -m "freeze the app of Choupo-${TAG#v} at /$TAG/app/"
+          git push
+          echo "published /$TAG/app/"
