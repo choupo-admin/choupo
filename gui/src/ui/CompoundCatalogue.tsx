@@ -224,10 +224,12 @@ export function CompoundCatalogue() {
             : <Stack gap={6} maw={560}>
                 <Text fw={600}>The compound catalogue</Text>
                 <Text size="sm" c="dimmed">
-                  Every substance the shared catalogue carries, grouped by role and
-                  then by the family its own record declares — the UNIFAC groups it
-                  decomposes into where it has them, its elemental formula otherwise.
-                  Pick one to read what the record says: identity, the curation
+                  Every substance the shared catalogue carries, grouped by the
+                  family its own record declares — the UNIFAC groups it decomposes
+                  into where it has them, its elemental formula otherwise — after
+                  the two classes a substance is named by its STATE: the gases at
+                  25 °C and the salts &amp; minerals.  Pick one to read what the
+                  record says: identity, how each value was produced, the curation
                   dossier's verdict, and the warnings that come with it.
                 </Text>
                 <Text size="sm" c="dimmed">

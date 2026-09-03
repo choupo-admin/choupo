@@ -195,7 +195,26 @@ export function CompoundBrowser({
   unlockLine?: string | null;
 }) {
   const [q, setQ] = useState("");
-  const [filter, setFilter] = useState<RoleFilter>("all");
+  //  THE CAPABILITY FILTER BELONGS TO THE SURFACE THAT NEEDS IT, NOT TO THE
+  //  CATALOGUE (2026-09-03, Vítor: "porque continuo a ter VLE no top?!").
+  //
+  //  Dissolving the `volatiles` / `nonvolatile` GROUPS was half the fix.  The
+  //  `all / VLE / nonvolatile` chips stayed, leading the first screen of the
+  //  compound catalogue with a modelling acronym -- and the catalogue's
+  //  question is "what substances exist and what do we know about them", not
+  //  "which of these can I put in a T-x-y plot".  That second question belongs
+  //  where the plot is being built, and `vleContext` already marks exactly
+  //  that: `ExploreWorkspace` passes it as `isVle || isTernary`.
+  //
+  //  Nothing is lost on the landing.  The capability is still legible where it
+  //  is ABOUT SOMETHING -- the per-row `nonvol` / `frag` badge on the
+  //  substances that cannot do VLE, and the record panel beside the tree.
+  //
+  //  The state is FORCED to "all" where the chips are not drawn: a control the
+  //  reader cannot see must not still be filtering, which would hide compounds
+  //  with no way to find out why.
+  const [rawFilter, setFilter] = useState<RoleFilter>("all");
+  const filter: RoleFilter = vleContext ? rawFilter : "all";
   const [recent, setRecent] = useState<string[]>(loadRecent);
   const [showDataLocal, setShowDataLocal] = useState(false);
   // Open tree nodes, by node key.  Groups start per OPEN_BY_DEFAULT; family
@@ -370,17 +389,19 @@ export function CompoundBrowser({
       </Group>
       <TextInput size="xs" placeholder="search name / formula"
         value={q} onChange={(e) => setQ(e.currentTarget.value)} />
-      <Chip.Group value={filter} onChange={(v) => setFilter((v as RoleFilter) || "all")}>
-        <Group gap={4}>
-          {/* color="accent" so the CHECKED chip's --chip-color comes from the
-              variant resolver (autoContrast → black) instead of the CSS default
-              white-on-teal (Chip.css sets --chip-color: white unless color/variant
-              is passed). */}
-          <Chip size="xs" value="all" color="accent">all</Chip>
-          <Chip size="xs" value="vle" color="accent">VLE</Chip>
-          <Chip size="xs" value="solute" color="accent">nonvolatile</Chip>
-        </Group>
-      </Chip.Group>
+      {vleContext && (
+        <Chip.Group value={filter} onChange={(v) => setFilter((v as RoleFilter) || "all")}>
+          <Group gap={4}>
+            {/* color="accent" so the CHECKED chip's --chip-color comes from the
+                variant resolver (autoContrast → black) instead of the CSS default
+                white-on-teal (Chip.css sets --chip-color: white unless color/variant
+                is passed). */}
+            <Chip size="xs" value="all" color="accent">all</Chip>
+            <Chip size="xs" value="vle" color="accent">VLE</Chip>
+            <Chip size="xs" value="solute" color="accent">nonvolatile</Chip>
+          </Group>
+        </Chip.Group>
+      )}
 
       <ScrollArea style={{ flex: 1, minHeight: 0 }}>
         <Stack gap={1}>
