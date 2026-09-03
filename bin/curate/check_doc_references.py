@@ -55,6 +55,15 @@ ALLOWED_PATHS = {
     "data/standards/components/true/aqueous/": "RETIRED layout, named as banned",
     "generated/indexes/":  "never built; named in CLAUDE.md as a correction, so\n"
                            "                          the next reader stops looking for it",
+    # DELETED, and named BECAUSE it was deleted.  DEV.md records the finding
+    # that a sourceless binary sits outside every source gate at once -- a
+    # v0.2.0 Theory Guide, tracked, built from no source in the tree, naming
+    # two commercial competitors the manuals doctrine forbids.  The record of
+    # a withdrawal has to name what was withdrawn; that is not a pointer a
+    # reader would follow, and removing the name would lose the finding.
+    "docs/theoryGuide-STIFF-METHODS.pdf":
+        "DELETED 2026-09-03 (sourceless render, doctrine breach); DEV.md\n"
+        "                          records the withdrawal and must name it",
     # Build outputs: created by a build, absent from a fresh clone.  The doc
     # is DESCRIBING where a build lands, which is exactly a path that is
     # absent by design until `make wasm-gui` runs.  (Found 2026-08-22: the

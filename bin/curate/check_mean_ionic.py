@@ -36,10 +36,16 @@ WHAT THIS CHECKS, all from fresh runs of the corpus witness:
        1:2 and 2:2 pairs must come out with nu+/nu- = 1/2, 2/1 and 1/1, and
        the announcement must say so with the charges it used.  A gate that
        only checked 1-1 salts would be blind to the entire defect above.
-  (R3) THE REDUCTION IDENTITY: on the single-salt PIN A composition, the
-       published gamma_pm must equal the per-ion gamma exactly (nu+ = nu- = 1
-       with gamma_Na == gamma_Cl), which is the arithmetic sanity check that
-       a wrong exponent would break.
+  (R3) THE REDUCTION IDENTITY, in TWO claims at two tolerances (repaired
+       2026-09-03): on the single-salt PIN A composition the published
+       gamma_pm must be the GEOMETRIC MEAN of the per-ion gammas to machine
+       level -- the arithmetic sanity check a wrong exponent breaks -- and
+       the two ion gammas, analytically equal for a 1:1 salt, must agree to
+       1e-6, which is what the speciation solve delivers (measured: 1.65e-8).
+       It used to demand BOTH at 1e-12 and was green over ROUNDING: the
+       result JSON printed six significant digits, so `0.657172` was compared
+       with `0.657172`.  The precision fix made the real digits visible and
+       the arm went red -- a check passing because its input was blunted.
   (R4) TWO REFUSALS fire by name, through the real reader: an anion named as
        the cation, and a species that is not in the computed table.
 
@@ -54,6 +60,9 @@ WHAT THIS DOES **NOT** COVER, stated so the green line cannot imply it:
   * it does not check the single-ion gammas themselves, nor the Pitzer kernel
     (check_*, the case goldens and the HMW oracle do that).
   * it covers the `speciate` op only.  MolecularActivity publishes no ions.
+  * R3's geometric arm cannot tell a geometric from an ARITHMETIC mean on the
+    1:1 salt it runs on -- for two equal numbers they coincide.  R1 is what
+    separates them, on the 2:1 / 1:2 / 2:2 pairs where the ions differ.
 
 SABOTAGE-VERIFIED 2026-08-10; OBSERVED output recorded, not predicted.
 
@@ -76,6 +85,7 @@ Sabotage 2 -- the charge sign check removed:
 """
 
 import json
+import math
 import os
 import re
 import shutil
@@ -174,16 +184,45 @@ for need in [(1, 1), (1, 2), (2, 1)]:
                      f"the witness must keep covering unsymmetrical salts")
 
 # ---- R3: the single-salt reduction identity ------------------------------
+#
+#  TWO CLAIMS, TWO TOLERANCES, and separating them is the whole repair
+#  (2026-09-03).  This arm read
+#
+#      abs(gna - gcl) > 1e-12 or abs(pm - gna) > 1e-12
+#
+#  and it was GREEN from the day it shipped until the result-JSON emitter
+#  stopped rounding to six significant digits.  Both ion gammas printed as
+#  `0.657172`, so 1e-12 compared two ROUNDED copies of one number.  Measured
+#  once the true digits appeared: gamma_Na and gamma_Cl differ by 1.65e-8
+#  relative -- the speciation fixed point's own convergence, not an
+#  arithmetic error -- while gamma_pm equals sqrt(gamma_Na*gamma_Cl) to the
+#  last digit printed.
+#
+#  So the arithmetic is checked AS arithmetic, at machine level, and the
+#  coincidence of the two ions is checked at the level the solver actually
+#  delivers, with that said out loud.  A tolerance a blunted input satisfied
+#  is not a tolerance; it is a coincidence with a number written beside it.
+GEOMETRIC_TOL = 1e-12    # exact: gamma_pm IS sqrt(g+ g-) for nu+ = nu- = 1
+SOLVER_TOL = 1e-6        # the two ions coincide only to the speciation solve
 if red:
     pm = red.get("gamma_pm_Na_Cl")
     gna, gcl = red.get("gamma_Na"), red.get("gamma_Cl")
     if pm is None or gna is None:
         fails.append("R3: PIN A publishes no gamma_pm_Na_Cl -- the reduction "
                      "identity has no subject")
-    elif abs(gna - gcl) > 1e-12 or abs(pm - gna) > 1e-12:
-        fails.append(f"R3: on the 1:1 single-salt composition gamma_pm "
-                     f"({pm}) must equal the per-ion gamma ({gna}/{gcl}); a "
-                     f"wrong exponent shows here as a mismatch")
+    else:
+        want = math.sqrt(gna * gcl)
+        if abs(pm - want) > GEOMETRIC_TOL * max(1.0, abs(pm)):
+            fails.append(f"R3: on the 1:1 single-salt composition gamma_pm "
+                         f"({pm}) must be the geometric mean of the per-ion "
+                         f"gammas ({gna}/{gcl} -> {want}); a wrong exponent "
+                         f"shows here as a mismatch")
+        if abs(gna - gcl) > SOLVER_TOL * max(1.0, abs(pm)):
+            fails.append(f"R3: the two ion gammas of a 1:1 single salt have "
+                         f"drifted apart by {abs(gna - gcl):.3e} "
+                         f"({gna}/{gcl}), past the {SOLVER_TOL:g} the "
+                         f"speciation solve delivers -- they are analytically "
+                         f"equal here, so this is the solver, not the mean")
 
 # ---- R4: the two refusals, through the real reader -----------------------
 
@@ -229,10 +268,15 @@ if fails:
 print("check_mean_ionic: OK -- every published gamma_pm recomputed "
       "independently from the run's own per-ion gammas and the species "
       f"charges ({len(pairs)} pair(s), 1:1 / 2:1 / 1:2 / 2:2 all covered), "
-      "each with its derived nu+/nu- announced; the single-salt reduction "
-      "identity holds; a backwards cation/anion pair and an unknown species "
-      "both refuse by name.  NOT COVERED: whether any gamma_pm AGREES WITH "
-      "MEASUREMENT -- it does not for 4 of the 6 seawater salts, which is a "
-      "recorded finding in the case header and VALIDATION.md, not a gate; "
-      "the single-ion gammas and the Pitzer kernel themselves; ops other "
-      "than `speciate`.")
+      "each with its derived nu+/nu- announced; on the single-salt "
+      "composition gamma_pm IS the geometric mean of its two ions to machine "
+      f"level and those two agree to {SOLVER_TOL:g} -- the speciation solve's "
+      "own convergence, NOT machine level, which this arm used to demand and "
+      "got only from six-digit rounded output; a backwards cation/anion pair "
+      "and an unknown species both refuse by name.  NOT COVERED: whether any "
+      "gamma_pm AGREES WITH MEASUREMENT -- it does not for 4 of the 6 "
+      "seawater salts, which is a recorded finding in the case header and "
+      "VALIDATION.md, not a gate; the single-ion gammas and the Pitzer kernel "
+      "themselves; a geometric vs ARITHMETIC mean on the 1:1 salt (for two "
+      "equal numbers they coincide -- R1's unsymmetrical pairs separate "
+      "them); ops other than `speciate`.")

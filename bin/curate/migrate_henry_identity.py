@@ -189,6 +189,21 @@ def chemistry_gas_keys():
     return keys
 
 
+def unnamed_gas_keys(gas_keys):
+    """Gas keys that no component record answers to by NAME.
+
+    A chemistry record may name its gas species by formula (`gasSpecies
+    C2H4O2;`).  Nothing resolves that to a component -- and nothing should,
+    because a formula does not identify a substance.  So it is ANNOUNCED: a
+    key listed here is one whose Henry pairs must be covered by an explicit
+    NETWORK_PARTICIPANTS entry, and a new one appearing is a curator's cue.
+    """
+    if not COMPONENTS.is_dir():
+        return sorted(gas_keys)
+    names = {p.stem for p in COMPONENTS.glob("*.dat")}
+    return sorted(k for k in gas_keys if k not in names)
+
+
 def derive(path, gas_keys):
     """Return dict(plan) or raise ValueError with the refusal reason."""
     raw = path.read_text()
@@ -209,7 +224,25 @@ def derive(path, gas_keys):
 
     spec, bridged, formula = component_facts(solute)
     reactive = (spec is not None and spec != "none") or bridged
-    in_network = solute in gas_keys or (formula and formula in gas_keys)
+    #  NETWORK MEMBERSHIP IS TESTED BY NAME, NEVER BY FORMULA.
+    #
+    #  This line used to read `solute in gas_keys or (formula and formula in
+    #  gas_keys)`, and the formula half is IDENTITY BY A NON-IDENTIFYING
+    #  ATTRIBUTE -- the F2 contract's ban on name identity, in another
+    #  spelling.  Isomers share a formula: `aceticAcid-dissolution.dat`
+    #  declares `gasSpecies C2H4O2;`, and on 2026-09-03 the `formula` backfill
+    #  gave `methylFormate.dat` its own `formula C2H4O2;` -- so the tool
+    #  concluded that methyl formate takes part in the acetic-acid chemistry
+    #  network and REFUSED its Henry pair, red on every suite run.
+    #
+    #  Measured before removing it: over all 205 pairs the formula route
+    #  resolved exactly TWO solutes that the name route did not, and one of
+    #  them (`aceticAcid`) is in NETWORK_PARTICIPANTS, which is tested FIRST.
+    #  Its whole live effect was the one wrong answer.  The safety net for a
+    #  network gas named by formula is the exception table, and `unnamed_gas_
+    #  keys` below announces any gas key no component answers to by name so a
+    #  curator can add one.
+    in_network = solute in gas_keys
 
     if ki:
         derivation = "explicit exception: " + KI_PAIRS[(solute, solvent)]
@@ -303,7 +336,16 @@ def main():
             print(f"henry-identity check FAILED: {len(pending)} pending,"
                   f" {len(refused)} refused of {len(files)}")
             return 1
-        print(f"henry-identity check: {len(files)} records conformant")
+        #  A gas key no component answers to by NAME is announced, never used
+        #  to resolve identity.  It says which network members can only be
+        #  reached through the exception table.
+        unnamed = unnamed_gas_keys(gas_keys)
+        note = ("" if not unnamed else
+                "; %d chemistry gas key(s) name no component (%s) -- their"
+                " Henry pairs are covered by the NETWORK_PARTICIPANTS table,"
+                " never by formula match"
+                % (len(unnamed), ", ".join(unnamed)))
+        print(f"henry-identity check: {len(files)} records conformant{note}")
         return 0
 
     for p in plans:

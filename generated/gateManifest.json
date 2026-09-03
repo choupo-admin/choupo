@@ -218,7 +218,7 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 299 path mention(s) and 127 case name(s) across 20 AI-facing docs all resolve; 12 deliberate absences are listed with their reason and none of them has quietly come true",
+      "claim": "check_doc_references: OK -- 313 path mention(s) and 120 case name(s) across 20 AI-facing docs all resolve; 13 deliberate absences are listed with their reason and none of them has quietly come true",
       "seconds": 0.1
     },
     "check_doctrine": {
@@ -488,7 +488,7 @@
     },
     "check_mean_ionic": {
       "exit": 0,
-      "claim": "check_mean_ionic: OK -- every published gamma_pm recomputed independently from the run's own per-ion gammas and the species charges (6 pair(s), 1:1 / 2:1 / 1:2 / 2:2 all covered), each with its derived nu+/nu- announced; the single-salt reduction identity holds; a backwards cation/anion pair and an unknown species both refuse by name.  NOT COVERED: whether any gamma_pm AGREES WITH MEASUREMENT -- it does not for 4 of the 6 seawater salts, which is a recorded finding in the case header and VALIDATION.md, not a gate; the single-ion gammas and the Pitzer kernel themselves; ops other than `speciate`.",
+      "claim": "check_mean_ionic: OK -- every published gamma_pm recomputed independently from the run's own per-ion gammas and the species charges (6 pair(s), 1:1 / 2:1 / 1:2 / 2:2 all covered), each with its derived nu+/nu- announced; on the single-salt composition gamma_pm IS the geometric mean of its two ions to machine level and those two agree to 1e-06 -- the speciation solve's own convergence, NOT machine level, which this arm used to demand and got only from six-digit rounded output; a backwards cation/anion pair and an unknown species both refuse by name.  NOT COVERED: whether any gamma_pm AGREES WITH MEASUREMENT -- it does not for 4 of the 6 seawater salts, which is a recorded finding in the case header and VALIDATION.md, not a gate; the single-ion gammas and the Pitzer kernel themselves; a geometric vs ARITHMETIC mean on the 1:1 salt (for two equal numbers they coincide -- R1's unsymmetrical pairs separate them); ops other than `speciate`.",
       "seconds": 0.1
     },
     "check_method_tools": {
