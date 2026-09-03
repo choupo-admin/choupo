@@ -507,13 +507,33 @@ function bootShowIntro(): boolean {
 // Boot workspace: the landing deep-links the Property Explorer via
 // `?workspace=explore` (a frictionless "try it" CTA).  The explorer is
 // standalone, so it opens with no case loaded.
+//
+// WHAT `?workspace=explore` LANDS ON CHANGED 2026-09-03, on the owner's
+// clarification -- "eu chamo isto a landing do explorer", of the screen that
+// address opens.  The explorer's LANDING is now where you choose compounds
+// and read their records; the property surfaces are a tab of their own.  Four
+// addresses, two surfaces:
+//
+//     ?workspace=explore                 -> the landing (catalogue + record)
+//     ?workspace=compounds               -> the same, the alias it shipped as
+//     ?workspace=properties[&components] -> the property surfaces
+//     ?workspace=explore&components=…    -> the property surfaces (LEGACY:
+//                                           the hand-over links of the first
+//                                           build, and any bookmark that
+//                                           already names a set)
+//
+// The legacy arm is not politeness: an address that NAMES COMPONENTS is
+// asking to plot them, so routing it to the landing would drop the request
+// the URL is carrying.
 function bootWorkspace(): WorkspaceKey | null {
   if (typeof window !== "undefined") {
     const params = new URLSearchParams(window.location.search);
     const w = params.get("workspace");
-    if (w === "explore") return "explore";
-    //  ?workspace=compounds -- the catalogue.  Standalone like Explore: it
-    //  synthesizes nothing and needs no case.
+    //  The internal key `explore` is the PLOTS (the surface that module has
+    //  always been); `compounds` is the landing.  The URL words moved, the
+    //  component names did not.
+    if (w === "properties") return "explore";
+    if (w === "explore") return params.has("components") ? "explore" : "compounds";
     if (w === "compounds") return "compounds";
     // The Methods workspace (2026-08-15) deep-links as
     // ?workspace=methods&tool=<id>; the tool id is read by MethodsWorkspace.

@@ -36,7 +36,8 @@ License
 
       hub      /app/
       case     /app/?case=<name>
-      explore  /app/?workspace=explore
+      explore  /app/?workspace=explore      (the landing: choose compounds)
+      props    /app/?workspace=properties   (the property surfaces)
       tools    /app/?workspace=methods&tool=<id>
 
   WHY THE ADDRESSES LIVE HERE RATHER THAN AT EACH CALL SITE.  Record §4:
@@ -77,6 +78,13 @@ export function caseTabSearch(caseName: string, opts?: { intro?: boolean }): str
 /** The address of the EXPLORE tab: property surfaces, no case. */
 export function exploreTabSearch(): string {
   return "?workspace=explore";
+}
+
+/** The address of the PROPERTY SURFACES tab -- the plots the explorer's
+ *  landing hands a set to.  Its own door on the hub, and reachable with no
+ *  selection at all: see docs/design/one-tab-one-thing.md §8.2. */
+export function propertiesTabSearch(): string {
+  return "?workspace=properties";
 }
 
 /** The address of an EDUTOOLS tab.  The `workspace=methods` key is the

@@ -65,12 +65,11 @@ will hit it at $x = 0.89$.
 
 \section{The views, one by one}
 
-\subsection{The compound browser (the Compounds tab)}
-%  MOVED 2026-09-03: the catalogue left the Explore body for a tab of its own
-%  (?workspace=compounds), so this subsection no longer describes "the left
-%  panel" of this workspace -- it describes the Compounds tab, which the hub
-%  lists beside Explore.  Explore keeps a compound rail of its own.
-%  Record: docs/design/one-tab-one-thing.md §8.
+\subsection{The compound browser (the Explorer's landing)}
+%  MOVED 2026-09-03: the catalogue IS the Explorer's landing now
+%  (?workspace=explore); the property surfaces moved to
+%  ?workspace=properties and keep a compound rail of their own.
+%  Record: docs/design/one-tab-one-thing.md §8, amended in §8.7.
 % Verified against gui/src/ui/explore/CompoundBrowser.tsx (hosted by
 % gui/src/ui/ExploreWorkspace.tsx:2149) and gui/src/case/family.ts.
 % Tree of folding groups: CompoundBrowser.tsx:86-95 (OPEN_BY_DEFAULT,
@@ -95,14 +94,15 @@ Typing in the search box flattens the tree; a double click inspects a
 component without changing the set.  The browser reads the catalogue; it
 does not edit a record.
 
-The browser is the left half of the \textbf{Compounds} tab, which the hub
-lists beside Explore; its right half shows the record of whichever compound
-you last touched --- identity, what the record carries, the curation
+The browser is the left half of the Explorer's \emph{landing} --- the screen
+\code{?workspace=explore} opens; its right half shows the record of whichever
+compound you last touched --- identity, what the record carries, the curation
 dossier's verdict --- and its \textbf{Explore properties} button opens the
-Property Explorer in a tab of its own, carrying the set in the address
-(\code{?workspace=explore\&components=water,ethanol}), which makes an
-exploration a link you can hand to somebody.  Neither tab needs the other:
-Explore keeps a compound rail and opens perfectly well with nothing selected,
+property surfaces in a tab of their own, carrying the set in the address
+(\code{?workspace=properties\&components=water,ethanol}), which makes an
+exploration a link you can hand to somebody.  Neither tab needs the other: the
+surfaces have their own door on the hub, keep a compound rail, and open
+perfectly well with nothing selected,
 and a component the address names but the catalogue cannot resolve is left
 out of the set and said so, never dropped in silence.
 

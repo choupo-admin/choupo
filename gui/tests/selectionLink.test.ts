@@ -42,6 +42,11 @@ import { componentsInSearch, propertiesLink } from "../src/ui/explore/selectionL
 
 describe("the compound SET travels in the URL", () => {
   it("reads the names an Explore URL carries, in order", () => {
+    expect(componentsInSearch("?workspace=properties&components=water,ethanol"))
+      .toEqual(["water", "ethanol"]);
+    //  The address the FIRST build emitted still parses: `?workspace=explore`
+    //  with a set reaches the surfaces (store.bootWorkspace), because a URL
+    //  that names components is asking to plot them.
     expect(componentsInSearch("?workspace=explore&components=water,ethanol"))
       .toEqual(["water", "ethanol"]);
   });
@@ -50,8 +55,8 @@ describe("the compound SET travels in the URL", () => {
     //  THE DOOR IS NOT A GATE.  The Explore tab must open with an empty SET:
     //  if it could only be reached through the catalogue, the pair would be
     //  the STEP-1/STEP-2 setup wizard docs/ai/gui-credo.md §5 forbids.
-    expect(componentsInSearch("?workspace=explore")).toEqual([]);
-    expect(propertiesLink([])).toBe("?workspace=explore");
+    expect(componentsInSearch("?workspace=properties")).toEqual([]);
+    expect(propertiesLink([])).toBe("?workspace=properties");
   });
 
   it("passes names through verbatim -- the catalogue resolves them EXACTLY", () => {

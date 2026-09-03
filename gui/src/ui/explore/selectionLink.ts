@@ -38,7 +38,7 @@ License
   what happens to be open elsewhere is not stable.  So the SET travels in the
   URL, not in a shared store and not in localStorage:
 
-      ?workspace=explore&components=water,ethanol
+      ?workspace=properties&components=water,ethanol
 
   Three things fall out, and the third is the one that matters to a class:
   the Explore tab is still reachable with NO components (the catalogue is a
@@ -83,11 +83,17 @@ export function componentsInSearch(search: string): string[] {
   return raw ? cleanNames(raw.split(",")) : [];
 }
 
-/** The address of the Explore tab for this SET.  With no names it is the bare
- *  Explore tab, which is exactly right: the door, opened empty. */
+/** The address of the property surfaces for this SET.  With no names it is
+ *  the bare surfaces tab, which is exactly right: the door, opened empty.
+ *
+ *  `?workspace=properties`, not `?workspace=explore`: since 2026-09-03 the
+ *  latter is the explorer's LANDING (where compounds are chosen), on the
+ *  owner's clarification.  `?workspace=explore&components=…` still reaches the
+ *  surfaces -- see bootWorkspace -- so the links this file emitted before the
+ *  change keep working. */
 export function propertiesLink(names: readonly string[]): string {
   const clean = cleanNames(names);
   return clean.length
-    ? `?workspace=explore&components=${clean.map(encodeURIComponent).join(",")}`
-    : "?workspace=explore";
+    ? `?workspace=properties&components=${clean.map(encodeURIComponent).join(",")}`
+    : "?workspace=properties";
 }

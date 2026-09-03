@@ -301,7 +301,9 @@ function num(v: number | string, fallback: number): number {
 
 export function ExploreWorkspace() {
   //  THE SET COMES FROM THE ADDRESS (2026-09-03).  The Compounds tab chooses
-  //  and hands over by link (`?workspace=explore&components=water,ethanol`);
+  //  and hands over by link (`?workspace=properties&components=water,ethanol`;
+  //  `?workspace=explore` with a set reaches here too -- the first build's
+  //  spelling, kept working in store.bootWorkspace);
   //  one-tab-one-thing forbids a tab that depends on state its own address
   //  does not name, so there is no shared store and no localStorage here.
   //  An EMPTY address is the normal case and not a lesser one -- this tab is a

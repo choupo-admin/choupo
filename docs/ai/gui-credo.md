@@ -175,11 +175,13 @@ composition-simplex sweep added to `choupoProps`); 3D surface optional.
 **THE CATALOGUE LEFT THIS WORKSPACE (2026-09-03, Vítor).**  The chrome budget
 below is why: with the plot as the ONE primary surface, the compound catalogue
 could only ever be a foldable rail — and a rail is the wrong shape for several
-hundred substances in a family tree.  It is now the **Compounds** tab
-(`?workspace=compounds`), listed on the hub BESIDE Explore, with the record of
-the focused compound filling its right half.  Explore keeps a rail of its own
-and opens with an empty set, and the hand-over is a link
-(`?workspace=explore&components=…`) rather than shared state — the two are
+hundred substances in a family tree.  The catalogue is now
+THE EXPLORER'S LANDING (`?workspace=explore` — the owner's own name for that
+screen), with the record of the focused compound filling its right half, and
+the property surfaces moved to `?workspace=properties`, their own door on the
+hub.  The surfaces keep a compound rail of their own and open with an empty
+set, and the hand-over is a link
+(`?workspace=properties&components=…`) rather than shared state — the two are
 DOORS, not a step 1 and a step 2, which is the difference between this pair and
 the setup wizard §5 forbids.  Record + the amendment that keeps it true:
 `docs/design/one-tab-one-thing.md` §8.

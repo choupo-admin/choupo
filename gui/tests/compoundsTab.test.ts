@@ -47,28 +47,31 @@ import { componentsInSearch } from "../src/ui/explore/selectionLink.js";
 import { MODE_TABS } from "../src/ui/workspaces.js";
 
 describe("two doors on the hub", () => {
-  it("lists Compounds and Explore side by side", () => {
+  it("lists the landing and the property surfaces side by side", () => {
     const labels = MODE_TABS.map((m) => m.label);
-    expect(labels).toContain("Compounds");
     expect(labels).toContain("Explore");
+    expect(labels).toContain("Property surfaces");
   });
 
-  it("opens Compounds first — where a student who does not know what to plot starts", () => {
-    expect(MODE_TABS[0]!.label).toBe("Compounds");
+  it("opens Explore first — the landing, where a student who does not yet know "
+     + "what to plot starts", () => {
+    expect(MODE_TABS[0]!.label).toBe("Explore");
   });
 
-  it("gives the Explore door an address that names NO components", () => {
-    //  THE ANTI-WIZARD PROPERTY, structural rather than promised: if the hub's
-    //  Explore door carried a selection, or did not exist, the only way in
-    //  would be through the catalogue and the pair would be STEP 1 / STEP 2.
-    const explore = MODE_TABS.find((m) => m.label === "Explore");
-    expect(explore, "the Explore door must stay on the hub").toBeTruthy();
-    expect(componentsInSearch(explore!.search)).toEqual([]);
+  it("gives the property-surfaces door an address that names NO components", () => {
+    //  THE ANTI-WIZARD PROPERTY, structural rather than promised: if the plots
+    //  had no door of their own, or their door carried a selection, the only
+    //  way in would be through the catalogue and the pair would be STEP 1 /
+    //  STEP 2 -- the setup wizard gui-credo §5 forbids.
+    const surfaces = MODE_TABS.find((m) => m.label === "Property surfaces");
+    expect(surfaces, "the property surfaces must keep their own door").toBeTruthy();
+    expect(componentsInSearch(surfaces!.search)).toEqual([]);
   });
 
-  it("gives Compounds its own workspace address", () => {
-    const compounds = MODE_TABS.find((m) => m.label === "Compounds");
-    expect(compounds!.search).toBe("?workspace=compounds");
+  it("keeps the explorer's landing on ?workspace=explore — the address the "
+     + "owner calls the landing of the explorer", () => {
+    const landing = MODE_TABS.find((m) => m.label === "Explore");
+    expect(landing!.search).toBe("?workspace=explore");
   });
 });
 

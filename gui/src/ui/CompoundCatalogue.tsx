@@ -36,6 +36,10 @@ License
   exploração das propriedades ... o painel direito mostra a info de cada
   componente selecionado").
 
+  THIS IS THE EXPLORER'S LANDING (`?workspace=explore`), which is the screen
+  the owner pointed at when he named it: "eu chamo isto a landing do explorer".
+  The property surfaces moved to `?workspace=properties`.
+
   The Explore workspace was doing two jobs on one surface.  Its NO-REBLOAT
   invariant (gui-credo §3) says "the plot is the ONE primary surface", which is
   why the catalogue had to live in a foldable 28-px-collapsible rail -- and a

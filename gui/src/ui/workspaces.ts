@@ -105,15 +105,17 @@ export const MODE_TABS: ModeTab[] = [
   //  forbids.  Compounds comes first because it is where a student who does
   //  not yet know what to plot should start -- not because it is step one.
   {
-    label: "Compounds",
-    search: "?workspace=compounds",
-    blurb: "The catalogue: every substance by role and family, what its record "
-      + "declares, and what the curation dossier says about it.",
-  },
-  {
     label: "Explore",
     search: "?workspace=explore",
-    blurb: "Property surfaces — T-x-y, γ(x), a Psat scan — over components you pick.",
+    blurb: "The catalogue: every substance by role and family, what its record "
+      + "declares, and what the curation dossier says about it. Pick a set and "
+      + "open it in the property surfaces.",
+  },
+  {
+    label: "Property surfaces",
+    search: "?workspace=properties",
+    blurb: "T-x-y, γ(x), a Psat scan — over components you pick, here or in the "
+      + "catalogue.",
   },
   {
     // The label is the student-facing word; the URL key stays `methods`

@@ -83,7 +83,7 @@ import {
   WORKSPACES, VIEW_LABELS, MODE_TABS, allowedWorkspaceLabels,
   visibleWorkspacesFor, type WorkspaceContext,
 } from "../src/ui/workspaces.js";
-import { exploreTabSearch, toolsTabSearch, caseTabSearch } from "../src/ui/openInTab.js";
+import { exploreTabSearch, propertiesTabSearch, toolsTabSearch, caseTabSearch } from "../src/ui/openInTab.js";
 
 const BLANK: WorkspaceContext = {
   hasCase: false, showIntro: false, isPropsCase: false, hasPid: false,
@@ -105,11 +105,12 @@ const INTRO: WorkspaceContext = { ...SOLVE, showIntro: true };
 /** The modes, by the name a reader of the decision would use.
  *
  *  THREE since 2026-09-03: Vítor split the Explore workspace, so the catalogue
- *  ("Compounds") is a mode of its own beside the property surfaces.  Adding it
- *  here strengthens both assertions below rather than relaxing either — the
+ *  (the explorer's LANDING, `?workspace=explore`) and the plots ("Property
+ *  surfaces") are separate modes.  Adding one here strengthens both assertions
+ *  below rather than relaxing either — the
  *  new mode must ALSO stay out of a case tab's menu row, and it must be
  *  reachable from the hub, which is what a mode being a tab means. */
-const MODE_NAMES = ["Compounds", "Explore", "EduTools"];
+const MODE_NAMES = ["Explore", "Property surfaces", "EduTools"];
 
 describe("a case tab's menu carries views and nothing else", () => {
   it("THE INVARIANT: no mode is in the row, in ANY context", () => {
@@ -152,6 +153,7 @@ describe("the modes moved list, they did not vanish", () => {
     // caption changed in 2026-08-16, the bookmark did not.
     const byLabel = new Map(MODE_TABS.map((m) => [m.label, m.search]));
     expect(byLabel.get("Explore")).toBe(exploreTabSearch());
+    expect(byLabel.get("Property surfaces")).toBe(propertiesTabSearch());
     expect(byLabel.get("EduTools")).toBe(toolsTabSearch());
     expect(byLabel.get("EduTools")).toContain("workspace=methods");
   });

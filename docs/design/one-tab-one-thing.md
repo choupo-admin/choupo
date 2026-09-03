@@ -175,8 +175,13 @@ substances in a family tree, which is what the catalogue became on
 
 | tab | address | carries |
 |---|---|---|
-| **compounds** | `/app/?workspace=compounds` | the catalogue, and one record at a time |
-| **explore** | `/app/?workspace=explore[&components=…]` | property surfaces |
+| **the explorer's landing** | `/app/?workspace=explore` | the catalogue, and one record at a time |
+| **property surfaces** | `/app/?workspace=properties[&components=…]` | the plots |
+
+*(Amended within the hour, on the owner's clarification — see §8.7.  The first
+build put the catalogue on `?workspace=compounds` and left `?workspace=explore`
+on the plots, which meant entering the Explorer still landed on the screen the
+change was made to fix.)*
 
 Neither tab lost anything: Explore keeps its own compound rail, because
 changing the set while plotting is the normal act and bouncing tabs for it
@@ -192,8 +197,9 @@ promise in a header:
 
 * both are listed on the hub, side by side (`MODE_TABS`), and the site's own
   landing links **Explore** directly;
-* the Explore door's address names no components, so it opens with an empty
-  set — pinned in `gui/tests/compoundsTab.test.ts`;
+* the property surfaces keep a door of their own on the hub, and its address
+  names no components, so they open with an empty set — pinned in
+  `gui/tests/compoundsTab.test.ts`;
 * the hand-over button is **enabled with an empty selection** (it then opens
   Explore empty).  A disabled button would teach "choose first", which is the
   wizard by another route.
@@ -202,7 +208,7 @@ promise in a header:
 
 §3 freed the EduTools from the flowsheet because *a tab whose answer depends
 on state its own address does not name is not stable*.  The same rule decides
-how a selection crosses here: `?workspace=explore&components=water,ethanol`,
+how a selection crosses here: `?workspace=properties&components=water,ethanol`,
 one home for the format (`gui/src/ui/explore/selectionLink.ts`), no shared
 store and no `localStorage`.  It also buys the thing the credo says an address
 should be and mostly is not — an exploration a professor can paste into a
@@ -257,3 +263,27 @@ elements off-screen, the button's right edge at 376 px.
 false: the dev server compiles a lazy chunk on demand and the probe had waited
 4.5 s.  Warming the chunk at desk width first is why the real defect was
 found rather than a phantom one reported.*
+
+### 8.7 The address the owner calls the landing
+
+Shipped, and corrected the same hour.  The first build reasoned about
+bookmarks — `?workspace=explore` was an existing deep-link contract, so the
+catalogue took a new key and the plots kept theirs.  That is defensible about
+URLs and wrong about the ASK: the owner's word for `?workspace=explore` is
+*"a landing do explorer"*, said while pointing at that screen, so leaving the
+plots there meant entering the Explorer still landed on the surface the change
+existed to replace.  A URL contract worth protecting is not worth protecting
+by not doing the thing.
+
+The map now:
+
+| address | opens | why |
+|---|---|---|
+| `?workspace=explore` | the landing | the owner's own name for it |
+| `?workspace=compounds` | the landing | alias — the address the first build shipped |
+| `?workspace=properties[&components=…]` | the surfaces | canonical |
+| `?workspace=explore&components=…` | the surfaces | LEGACY, and not mere politeness: an address that NAMES COMPONENTS is asking to plot them, so routing it to the landing would drop the request the URL carries |
+
+Two doors stay on the hub — **Explore** (the landing) and **Property
+surfaces** — so §8.2 survives the move: neither is reachable only through the
+other.
