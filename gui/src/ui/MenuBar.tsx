@@ -752,11 +752,20 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
           `overflow: hidden` so a ghost mid-measurement can never paint or
           widen the header even for the frame it exists. */}
       <Box style={{ position: "relative", height: "100%", minWidth: 0, overflow: "hidden" }}>
+        {/* `wrap="nowrap"`, like the ghost that measures this row.  It was
+            missing here and only here: Mantine's Group wraps by default, so on
+            a tool tab at 390 px -- where "Tool: Property origins" is wider
+            than the budget the case tabs were measured against -- Help wrapped
+            to a THIRD line under the 64 px header, where the lesson's lead
+            paragraph paints over it (checkGui, 2026-09-02: 8 pages, every one
+            a long tool label).  The row now shrinks its one shrinkable item
+            (the tool label, below) instead of wrapping. */}
         <Group
           gap={2}
           px={collapsed ? 4 : "xs"}
           h="100%"
           align="center"
+          wrap="nowrap"
         >
           {rowItems({ collapsed, padX })}
         </Group>
@@ -838,7 +847,11 @@ function TopMenu({
   active = false,
   rightSection,
   px = 10,
+  shrink = false,
 }: {
+  /** The ONE trigger in a row allowed to give up width: its label ellipses
+   *  instead of the row wrapping (the tool label on a phone). */
+  shrink?: boolean;
   /** ReactNode, not string: a SELECTOR trigger renders its category and its
    *  value differently (`Views: Case`), and that is one label, not two
    *  controls. */
@@ -883,7 +896,9 @@ function TopMenu({
               fontWeight: active ? 600 : 400,
               fontSize: 13,
               height: 24,
+              ...(shrink ? { minWidth: 0, flex: "0 1 auto" } : {}),
             },
+            ...(shrink ? { label: { minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" } } : {}),
             section: { marginInlineStart: 4 },
           }}
         >
@@ -995,6 +1010,7 @@ function ToolMenu({ tool, px }: { tool: MethodToolId; px: number }) {
       label={label}
       width={300}
       px={px}
+      shrink
       rightSection={<IconChevronDown size={12} stroke={2} />}
     >
       {/* GROUPED BY DISCIPLINE (owner, 2026-08-30: 23 tools had outgrown a
