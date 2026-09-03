@@ -51,6 +51,7 @@ import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
 import { FlashPlot } from "./plotting/FlashPlot.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
+import { componentsInSearch } from "./explore/selectionLink.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
 import {
@@ -299,7 +300,26 @@ function num(v: number | string, fallback: number): number {
 }
 
 export function ExploreWorkspace() {
-  const [selected, setSelected] = useState<string[]>([]);
+  //  THE SET COMES FROM THE ADDRESS (2026-09-03).  The Compounds tab chooses
+  //  and hands over by link (`?workspace=explore&components=water,ethanol`);
+  //  one-tab-one-thing forbids a tab that depends on state its own address
+  //  does not name, so there is no shared store and no localStorage here.
+  //  An EMPTY address is the normal case and not a lesser one -- this tab is a
+  //  door, not the second half of a wizard.
+  //
+  //  A name the catalogue cannot resolve is DROPPED FROM THE SET AND SAID
+  //  ALOUD, in its own alert: silently plotting two of the three components a
+  //  URL asked for is the failure mode a shared link makes likely (a typo, a
+  //  case-local component that only exists inside somebody's case), and the
+  //  reader would have no way to notice.
+  const boot = useMemo(() => {
+    const asked = typeof window === "undefined"
+      ? [] : componentsInSearch(window.location.search);
+    const known = asked.filter((n) => !!rawRecordFor(n));
+    return { known, missing: asked.filter((n) => !known.includes(n)) };
+  }, []);
+  const [selected, setSelected] = useState<string[]>(boot.known);
+  const [linkRefused] = useState<string[]>(boot.missing);
   const [plotType, setPlotType] = useState<PlotKind>("scan");
   /* The resizable left-component-bar (Vítor's ask) — drag the right border,
    * double-click to reset, `[` to fold, persisted per reader.
@@ -1127,7 +1147,8 @@ export function ExploreWorkspace() {
   // carries a standing statement (what the imposed pH costs in charge, and
   // whether that cost was measured or only asserted), not an occasional alarm —
   // and a folded footer must never be where that statement first appears.
-  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy
+  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || linkRefused.length > 0
+    || !!idealLieWarning || !!lleInTxy
     || plotType === "gibbsmap" || (plotType === "bjerrum" && !!bjRun);
   useEffect(() => { if (hasAlert) setFooterOpen(true); }, [hasAlert]);
 
@@ -1912,6 +1933,17 @@ export function ExploreWorkspace() {
           const alerts: React.ReactNode[] = [];
           if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
           if (activeReason) alerts.push(<Alert key="reason" color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>);
+          //  Its OWN cell, never folded into "Solver advisory": this one says
+          //  the question was altered before any solver ran.
+          if (linkRefused.length > 0) alerts.push(
+            <Alert key="link" color="orange" variant="light"
+              title="This link asked for components the catalogue does not have">
+              <Text size="xs">
+                Not in the SET: {linkRefused.join(", ")}.  Names resolve EXACTLY
+                (the engine looks for <code>&lt;name&gt;.dat</code>); a case-local
+                component cannot be reached from a link, because it lives in a case.
+              </Text>
+            </Alert>);
           if (opAdvisories.length > 0) alerts.push(
             <Alert key="adv" color="yellow" variant="light"
               // The Bjerrum sweep lifts MORE than advisories: which K(T) route

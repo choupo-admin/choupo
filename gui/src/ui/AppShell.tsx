@@ -84,6 +84,11 @@ const PropsView = lazy(() =>
 const ExploreWorkspace = lazy(() =>
   import("./ExploreWorkspace.js").then((m) => ({ default: m.ExploreWorkspace })),
 );
+// The Compounds tab (2026-09-03) mounts the same CompoundBrowser and
+// ComponentInspector the Explore rail does, so it is lazy for the same reason.
+const CompoundCatalogue = lazy(() =>
+  import("./CompoundCatalogue.js").then((m) => ({ default: m.CompoundCatalogue })),
+);
 // The Methods workspace (classical method constructions, 2026-08-15) pulls
 // McCabePlot/PsychroPlot -> the plotly kit, so it is lazy like Explore.
 const MethodsWorkspace = lazy(() =>
@@ -396,7 +401,11 @@ export function AppShell() {
           // (each synthesizes its own transient case), so the landing's
           // ?workspace=explore / ?workspace=methods deep-links and the menu
           // open them without a case loaded.
-          activeWorkspace === "explore" ? (
+          activeWorkspace === "compounds" ? (
+            <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+              <CompoundCatalogue />
+            </Suspense>
+          ) : activeWorkspace === "explore" ? (
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
               <ExploreWorkspace />
             </Suspense>
@@ -419,6 +428,10 @@ export function AppShell() {
             <LiteratureWorkspace />
           ) : activeWorkspace === "case" ? (
             <CaseWorkspace />
+          ) : activeWorkspace === "compounds" ? (
+            <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+              <CompoundCatalogue />
+            </Suspense>
           ) : activeWorkspace === "explore" ? (
             <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
               <ExploreWorkspace />

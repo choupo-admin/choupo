@@ -151,3 +151,109 @@ right one.  The test is concrete and should be run before the work is called
 done: watch someone compare `recovery_KPI` with `Kremser(A, N)` and see
 whether they alt-tab or whether they want both in view.  If they want both,
 this record is wrong and the pop-out model already in the credo is the answer.
+
+---
+
+## 8. The Compounds tab (2026-09-03) — the rule applied one level down
+
+*Vítor: "Eu ainda não estou satisfeito com o explorer.  Eu acho que a landing
+page deve permitir escolher os compostos.  Depois tem de haver um botão que
+quando clicar abre outro tab onde se faz a exploração das propriedades.  Isso
+deixa o painel direito da landing page para mostrar a info de cada componente
+selecionado."*  Built the same day.
+
+### 8.1 The same argument as §2, one level down
+
+§2 split the top ROW because it was doing two jobs and could not fit a phone.
+The Explore workspace was doing two jobs in one BODY, and the credo says so in
+its own words: the NO-REBLOAT invariant (`docs/ai/gui-credo.md` §3) declares
+*"the plot is the ONE primary surface"* and gives the catalogue a foldable
+rail — `PANELS.exploreRail`, default 240 px, maximum 460.  A rail is the right
+shape for a set you are assembling and the wrong shape for several hundred
+substances in a family tree, which is what the catalogue became on
+2026-09-03 when the tree landed.  So the catalogue is a tab:
+
+| tab | address | carries |
+|---|---|---|
+| **compounds** | `/app/?workspace=compounds` | the catalogue, and one record at a time |
+| **explore** | `/app/?workspace=explore[&components=…]` | property surfaces |
+
+Neither tab lost anything: Explore keeps its own compound rail, because
+changing the set while plotting is the normal act and bouncing tabs for it
+would be worse than the crowding this fixes.
+
+### 8.2 THE AMENDMENT: a door, not a gate
+
+The ask, taken literally, builds the thing `gui-credo.md` §5 forbids by name —
+a *"setup wizard / modal property selector / first-step dialog"*.  A pair of
+tabs where the second is reachable only through the first is STEP 1 and STEP
+2 however it is drawn.  What keeps it a pair of doors is structural, not a
+promise in a header:
+
+* both are listed on the hub, side by side (`MODE_TABS`), and the site's own
+  landing links **Explore** directly;
+* the Explore door's address names no components, so it opens with an empty
+  set — pinned in `gui/tests/compoundsTab.test.ts`;
+* the hand-over button is **enabled with an empty selection** (it then opens
+  Explore empty).  A disabled button would teach "choose first", which is the
+  wizard by another route.
+
+### 8.3 The hand-over is a LINK, and that is §3's rule again
+
+§3 freed the EduTools from the flowsheet because *a tab whose answer depends
+on state its own address does not name is not stable*.  The same rule decides
+how a selection crosses here: `?workspace=explore&components=water,ethanol`,
+one home for the format (`gui/src/ui/explore/selectionLink.ts`), no shared
+store and no `localStorage`.  It also buys the thing the credo says an address
+should be and mostly is not — an exploration a professor can paste into a
+lecture, and a reload that keeps it.
+
+A name the catalogue cannot resolve is **dropped from the set and said aloud**
+in its own alert, never silently: a shared link makes a typo, or a case-local
+component that exists only inside somebody's case, the likely failure — and
+plotting two of the three components a URL asked for, quietly, is exactly the
+kind of answer-to-a-different-question this project refuses elsewhere.
+
+### 8.4 What the screenshot found that the tests could not
+
+The first build drew the SET twice on one screen — the browser's own `SET`
+footer on the left, and a chip row this tab added on the right.  Two homes for
+one fact, in pixels.  The header now says what the right panel is *showing*
+("reading …"), which is a different question and the one its reader has.
+Nothing but driving the page in a browser would have reported it; the suite
+was green across both versions.
+
+### 8.5 Not done, and named
+
+The catalogue column is a fixed 420 px.  `panelContract` would give it a drag
+handle in three lines, but the same contract also gives a FOLD, and folding
+away the one thing a tab exists to show is a trap rather than a feature.
+Resize-without-fold is a change to the contract, not to a call site, and it
+was not taken here.
+
+### 8.6 The phone, and a clean overflow check that would have lied
+
+Driven at 390×844 with the chunk warm, the first two-column build put **103
+elements outside the viewport**, the hand-over button among them, its right
+edge 215 px past the screen: a fixed 420-px catalogue column beside a flexible
+one leaves the second column nothing on a 390-px phone.
+
+The measurement worth keeping is not the number but the INSTRUMENT: this
+page's `scrollWidth` read 390, exactly equal to `innerWidth`, because the
+container clips rather than scrolls.  The horizontal-overflow test that
+cleared the landing page the same morning would have called this page clean
+while its primary action sat off-screen and unreachable — *clipped is not
+absent, and a page that cannot scroll to its own content passes an overflow
+check by failing worse.*  Count the elements whose right edge is past the
+viewport, not the document's scroll width.
+
+Fixed by stacking: on a narrow viewport the two columns become two rows
+(catalogue 45 %, the hand-over bar, then the record), through
+`methods/methodsChrome.useNarrowViewport` — the one home for the posture
+question, which reads the pointer as well as the width.  Re-measured: 0
+elements off-screen, the button's right edge at 376 px.
+
+*A first attempt to measure this reported the page BLANK at 390 px, which was
+false: the dev server compiles a lazy chunk on demand and the probe had waited
+4.5 s.  Warming the chunk at desk width first is why the real defect was
+found rather than a phantom one reported.*

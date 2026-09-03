@@ -108,7 +108,16 @@ export interface TabState {
  *  case -> explore -> methods -> the hub's welcome. */
 export function tabKindFor(state: TabState): TabKind {
   if (state.hasCase) return "case";
-  if (state.activeWorkspace === "explore") return "explore";
+  //  The Compounds tab (2026-09-03) wears Explore's CHROME, and that is a
+  //  statement about chrome only: it asks the two questions this module
+  //  answers -- does the tab speak about a case (no), and which help does it
+  //  answer with (the Property Explorer's) -- and gives Explore's answer to
+  //  both.  It is not a claim that the two tabs are one thing; they were split
+  //  precisely because they are not.  A fifth TabKind would need a help target
+  //  of its own, and inventing one that points nowhere is worse than sharing
+  //  the one that is true.
+  if (state.activeWorkspace === "explore"
+      || state.activeWorkspace === "compounds") return "explore";
   if (state.activeWorkspace === "methods") return "tool";
   return "hub";
 }

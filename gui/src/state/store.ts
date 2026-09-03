@@ -237,6 +237,9 @@ export type WorkspaceKey =
   | "plots"
   | "log"
   | "props"
+  //  The Compounds tab (2026-09-03): the catalogue as a surface of its own,
+  //  the door the Explore tab used to have to be as well.
+  | "compounds"
   | "explore"
   | "methods"
   | "control"
@@ -509,6 +512,9 @@ function bootWorkspace(): WorkspaceKey | null {
     const params = new URLSearchParams(window.location.search);
     const w = params.get("workspace");
     if (w === "explore") return "explore";
+    //  ?workspace=compounds -- the catalogue.  Standalone like Explore: it
+    //  synthesizes nothing and needs no case.
+    if (w === "compounds") return "compounds";
     // The Methods workspace (2026-08-15) deep-links as
     // ?workspace=methods&tool=<id>; the tool id is read by MethodsWorkspace.
     if (w === "methods") return "methods";
@@ -582,6 +588,7 @@ export const useStore = create<AppState>((set, get) => ({
     bootWorkspace()
     ?? (initial.name === ""
         && (bootSession?.activeWorkspace === "explore"
+            || bootSession?.activeWorkspace === "compounds"
             || bootSession?.activeWorkspace === "methods")
           ? null
           // A result view (plots/reports/streams/variables/log/pinch) needs a

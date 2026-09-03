@@ -98,6 +98,18 @@ export interface ModeTab {
 /** The modes, in the order the hub offers them.  These are NOT in WORKSPACES
  *  and must never be put back there: that is the whole decision. */
 export const MODE_TABS: ModeTab[] = [
+  //  TWO DOORS, NOT A SEQUENCE (Vítor, 2026-09-03).  Compounds chooses and
+  //  reads records; Explore plots.  They are listed side by side, and Explore
+  //  opens perfectly well with no selection, because a pair where the second
+  //  is reachable only through the first is the setup wizard gui-credo §5
+  //  forbids.  Compounds comes first because it is where a student who does
+  //  not yet know what to plot should start -- not because it is step one.
+  {
+    label: "Compounds",
+    search: "?workspace=compounds",
+    blurb: "The catalogue: every substance by role and family, what its record "
+      + "declares, and what the curation dossier says about it.",
+  },
   {
     label: "Explore",
     search: "?workspace=explore",

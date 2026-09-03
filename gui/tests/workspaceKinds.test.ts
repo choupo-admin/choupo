@@ -102,8 +102,14 @@ const CTRL_PID: WorkspaceContext = {
 const CTRL_NO_PID: WorkspaceContext = { ...CTRL_PID, hasPid: false };
 const INTRO: WorkspaceContext = { ...SOLVE, showIntro: true };
 
-/** The two modes, by the name a reader of the decision would use. */
-const MODE_NAMES = ["Explore", "EduTools"];
+/** The modes, by the name a reader of the decision would use.
+ *
+ *  THREE since 2026-09-03: Vítor split the Explore workspace, so the catalogue
+ *  ("Compounds") is a mode of its own beside the property surfaces.  Adding it
+ *  here strengthens both assertions below rather than relaxing either — the
+ *  new mode must ALSO stay out of a case tab's menu row, and it must be
+ *  reachable from the hub, which is what a mode being a tab means. */
+const MODE_NAMES = ["Compounds", "Explore", "EduTools"];
 
 describe("a case tab's menu carries views and nothing else", () => {
   it("THE INVARIANT: no mode is in the row, in ANY context", () => {
@@ -136,7 +142,7 @@ describe("a case tab's menu carries views and nothing else", () => {
 });
 
 describe("the modes moved list, they did not vanish", () => {
-  it("MODE_TABS names both, in the order the hub offers them", () => {
+  it("MODE_TABS names them all, in the order the hub offers them", () => {
     expect(MODE_TABS.map((m) => m.label)).toEqual(MODE_NAMES);
   });
 
