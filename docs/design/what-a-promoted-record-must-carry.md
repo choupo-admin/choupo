@@ -132,3 +132,80 @@ regex that matched the word where it appears in the dict's HEADER COMMENT,
 deleted the entire liquid phase, and then reported that *the promoted record
 does not RUN*.  **A probe that mangles its own input blames the engine for its
 own edit.**
+
+---
+
+## 6. The same defect one artefact along: the Explorer could not see an estimate
+
+**Slice 2, the same day.**  §1 was about a file carrying what the run
+concluded.  This is about the screen carrying what the file declares.
+
+`choupoProps estimateComponent` already does the honest thing.  Every value it
+derives is written with its own provenance block:
+
+    provenance
+    {
+        Tc { origin estimated; method "Joback";
+             methodVersion "joback-poling5e-table2-2";
+             inputFingerprint "CH3:2,ketone:1";
+             uncertainty { status unquantified;
+                           reason "first-order group estimate -- review against data before design"; } }
+    }
+
+**Nothing read them.**  The Explorer's component inspector drew `reviewStatus`,
+`role nonvolatile` and `provenance.source synthetic`, and walked past the
+per-value blocks entirely — so a student who generated a component by group
+contribution and opened it in the Explorer saw a panel indistinguishable from
+a curated, measured record.  Joback carries roughly 10 % on Tc; the screen said
+nothing.
+
+The inspector's own model had carried a mark kind for exactly this since it was
+written:
+
+    kind: "reviewStatus" | "tier" | "role" | "estimate" | "synthetic";
+
+and `"estimate"` was **never constructed anywhere in the codebase**.  A declared
+vocabulary with no emitter.
+
+### 6.1 The rule is structural on both sides
+
+A per-value block is a sub-dict of `provenance` that DECLARES `origin` — that
+is the reader's whole test, and the gate applies the same one.  A list of field
+names (`Tb`, `Tc`, `Pc`, …) would be a second home for the engine's own
+vocabulary and would go stale the first time a generator learns a new value.
+
+The mark distinguishes experimental origins (`measured` / `experimental` /
+`literature`, the words `core/Origin.H` accepts) from every other — estimated,
+predictive, regressed, assumed, placeholder — because those are numbers
+something PRODUCED, and the reader is told which values and by what.
+`unquantified` is rendered as the record's own answer about its error, not as a
+missing field.
+
+### 6.2 A contract across two languages, and the transcription problem
+
+The writer is C++ and the reader is TypeScript.  The GUI's unit tests run
+against a TRANSCRIPTION of the engine's output, because the generated file is a
+run output and gitignored — and a transcription drifts from its original in
+silence.
+
+`bin/curate/check_estimate_visible.py` is what stops that: it RUNS the
+generator on the corpus witness and requires every per-value fact the live
+record declares to appear verbatim in `gui/tests/componentRecord.test.ts`.
+Three sabotages on the engine (drop `origin`, drop `uncertainty`, change
+`methodVersion`) each fire their own arm.
+
+### 6.3 A guard whose only case satisfies it
+
+Two more sabotages were run on the reader, and **the first survived**.
+
+Removing the `origin` requirement — so any sub-dict of `provenance` would count
+as a per-value block — changed nothing, because every sub-dict in the acetone
+fixture happens to declare `origin`.  The test claimed to check the structural
+rule and had no case that could fail it: the diafiltration `reason` shape
+again, in a different file.
+
+`componentRecord.test.ts` now carries a `validity {}` block beside a real
+per-value block — real vocabulary, since `thermo/PairAudit.H` reads exactly
+that — and the sabotage fires.  The second reader sabotage (narrowing the
+filter so `measured` counts as derived) fires the curated-record arm: an
+`estimate` mark on a measured record is the same defect pointing the other way.

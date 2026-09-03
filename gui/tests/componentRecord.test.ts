@@ -103,6 +103,119 @@ describe("readComponentRecord", () => {
   });
 });
 
+//  THE GENERATED RECORD, verbatim from `choupoProps estimateComponent` on
+//  tutorials/props/estimate/estimate_acetone (2026-09-03).  It is transcribed
+//  rather than hand-written on purpose: what is under test is whether the
+//  inspector can tell a GENERATED component from a curated one, and a fixture
+//  invented here would test the fixture.
+const ESTIMATED_ACETONE = `
+name        acetone;
+MW          58.08;
+Tc          500.559;
+Pc          48.025;
+omega       0.296784;
+Tb          322.110000;
+HvapTb      27534.000000;
+Vliq        0.000082;
+vaporPressure { model AmbroseWalton; }
+liquidHeatCapacity { model RowlinsonBondi; }
+idealGasHeatCapacity { model polynomial; coefficients (7.52 0.26084 -1.207e-04 1.546e-08); Trange (200 1500); }
+groups { joback ( { group CH3; count 2; } { group ketone; count 1; } ); }
+
+provenance
+{
+    Tb
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH3:2,ketone:1";
+        uncertainty      { status unquantified; reason "first-order group estimate -- review against data before design"; }
+    }
+    Tc
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH3:2,ketone:1";
+        uncertainty      { status unquantified; reason "first-order group estimate -- review against data before design"; }
+    }
+    Pc
+    {
+        origin           estimated;
+        method           "Joback";
+        methodVersion    "joback-poling5e-table2-2";
+        input            joback;
+        inputFingerprint "CH3:2,ketone:1";
+        uncertainty      { status unquantified; reason "first-order group estimate -- review against data before design"; }
+    }
+
+    method        "Joback group contribution (Joback & Reid 1987)";
+    estimateDate  "2026-09-03";
+    status        "ESTIMATE -- only s_298 gap remains";
+}
+`;
+
+describe("per-value provenance — a generated component must not read as a curated one", () => {
+  it("reads one entry per value that DECLARES an origin, and only those", () => {
+    const r = readComponentRecord(ESTIMATED_ACETONE)!;
+    expect(r.valueOrigins.map((v) => v.field)).toEqual(["Tb", "Tc", "Pc"]);
+    //  `method`, `estimateDate` and `status` are flat strings in the same
+    //  block.  They are NOT per-value origins, and the test is structural --
+    //  a sub-dict declaring `origin` -- never a list of field names.
+    for (const v of r.valueOrigins) {
+      expect(v.origin).toBe("estimated");
+      expect(v.method).toBe("Joback");
+      expect(v.methodVersion).toBe("joback-poling5e-table2-2");
+      expect(v.inputFingerprint).toBe("CH3:2,ketone:1");
+      expect(v.uncertaintyStatus).toBe("unquantified");
+    }
+  });
+
+  it("raises an `estimate` mark naming the values, the method and the unquantified count", () => {
+    const r = readComponentRecord(ESTIMATED_ACETONE)!;
+    const m = r.marks.find((x) => x.kind === "estimate");
+    expect(m).toBeDefined();
+    expect(m!.tone).toBe("warn");
+    expect(m!.text).toContain("Tb, Tc, Pc");
+    expect(m!.text).toContain("Joback");
+    expect(m!.text).toContain("UNQUANTIFIED");
+  });
+
+  //  THE ARM THAT MAKES THE STRUCTURAL RULE TESTABLE.  Without it, dropping
+  //  the `origin` requirement from the reader changed nothing and the suite
+  //  went on passing (sabotage S4, 2026-09-03): every sub-dict in the acetone
+  //  fixture happens to declare `origin`, so the guard had no case.  A guard
+  //  whose only case satisfies it is a guard nothing tests.  `validity` is
+  //  real vocabulary -- `thermo/PairAudit.H` reads exactly that block -- and
+  //  it is a sub-dict that is NOT a per-value origin.
+  it("a sub-dict that declares no `origin` is not a per-value block", () => {
+    const r = readComponentRecord(
+      "name x;\n" +
+      "provenance {\n" +
+      "  validity { temperature { min 273; max 373; } }\n" +
+      "  Tc { origin estimated; method \"Joback\"; }\n" +
+      "}\n")!;
+    expect(r.valueOrigins.map((v) => v.field)).toEqual(["Tc"]);
+  });
+
+  it("a curated record with no per-value provenance carries neither", () => {
+    const r = readComponentRecord(ETHANOL)!;
+    expect(r.valueOrigins).toEqual([]);
+    expect(r.marks.find((x) => x.kind === "estimate")).toBeUndefined();
+  });
+
+  it("an experimental origin is not marked as derived", () => {
+    const r = readComponentRecord(
+      "name x;\nprovenance { Tc { origin measured; method \"ebulliometry\"; } }\n")!;
+    expect(r.valueOrigins).toHaveLength(1);
+    expect(r.valueOrigins[0]!.origin).toBe("measured");
+    expect(r.marks.find((x) => x.kind === "estimate")).toBeUndefined();
+  });
+});
+
 describe("rawRecordFor — the catalogue's own records", () => {
   it("resolves a real catalogue name back to a parseable record", () => {
     const raw = rawRecordFor("water");

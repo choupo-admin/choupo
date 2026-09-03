@@ -150,6 +150,53 @@ export function ComponentInspector({ record, onClose }: {
             </Section>
           )}
 
+          {record.valueOrigins.length > 0 && (
+            <Section title="HOW EACH VALUE WAS PRODUCED">
+              <Table fz="xs" withRowBorders={false}>
+                <Table.Tbody>
+                  {record.valueOrigins.map((v) => (
+                    <Table.Tr key={v.field}>
+                      <Table.Td w={70}><Text size="xs" ff="monospace">{v.field}</Text></Table.Td>
+                      <Table.Td w={90}>
+                        <Badge size="xs" variant="light"
+                          color={v.origin === "measured" || v.origin === "experimental"
+                                   || v.origin === "literature" ? "green" : "yellow"}>
+                          {v.origin}
+                        </Badge>
+                      </Table.Td>
+                      <Table.Td>
+                        <Text size="xs" ff="monospace" c="dimmed">
+                          {v.method}{v.methodVersion ? ` · ${v.methodVersion}` : ""}
+                        </Text>
+                        {v.inputFingerprint && (
+                          <Text size="xs" c="dimmed" ff="monospace">
+                            inputs {v.inputFingerprint}
+                          </Text>
+                        )}
+                      </Table.Td>
+                      <Table.Td w={130} ta="right">
+                        {v.uncertaintyStatus
+                          ? <Text size="xs" c={v.uncertaintyStatus === "unquantified"
+                                                 ? "yellow.6" : "dimmed"}>
+                              {v.uncertaintyStatus}
+                            </Text>
+                          : <Text size="xs" c="dimmed" fs="italic">not declared</Text>}
+                      </Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+              <Text size="xs" c="dimmed" mt={4}>
+                Read straight off the record&apos;s own <Code>provenance {"{}"}</Code>
+                {" "}blocks — one per value that declares an <Code>origin</Code>.  A
+                value produced by a correlation is not a measured one, and a
+                generated component would otherwise be indistinguishable on this
+                screen from a curated one.  <b>unquantified</b> is the
+                record&apos;s own answer about its error, not a missing field.
+              </Text>
+            </Section>
+          )}
+
           <Section title="EVIDENCE / PROVENANCE">
             <Text size="xs" c="dimmed">
               No curation dossier is attached to this component.  A dossier is

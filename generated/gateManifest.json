@@ -895,6 +895,11 @@
       "exit": 0,
       "claim": "check_promoted_pair_record: OK -- the record curate02 proposes for promotion states its VERDICT in the header above the `mv` line; declares `origin fitted;` as a TYPED word inside the `provenance {}` block PairAudit parses (never `source fitted;`, which that parser reads as a deprecated source word); names BOTH declared datasets with the role each was frozen in plus the partition fingerprint; carries the held-out verdict, point count and pre-declared acceptance band, each AGREEING with the same run's console; and ROUND-TRIPS -- promoted into a flash case with its inline pair stripped, it runs and resolves to `origin regressed` with its method carried and no deprecation advisory, and the resolution JSON names each of those keys exactly once.  NOT COVERED: whether any number in the record is RIGHT (they are the run's own output); the v1 flat `pairs[K]` grammar; the legacy single-`dataset` branch, which no corpus case combines with `proposal`; and whether a record SHOULD be promoted, which stays a curation act.",
       "seconds": 0.1
+    },
+    "check_estimate_visible": {
+      "exit": 0,
+      "claim": "check_estimate_visible: OK -- the generated component carries per-value provenance on 3 value(s), each declaring an `origin`, a `method` and an `uncertainty { status }`, which is exactly the structural rule the Explorer's inspector reads (a sub-dict that declares `origin`; never a list of field names); and every one of those facts appears verbatim in the GUI fixture, so the reader's tests are written against the record the engine actually writes.  NOT COVERED: any NUMBER (check_estimates recomputes those against the recipe); whether the inspector RENDERS the section (that is the vitest suite); and any generator path other than Joback.",
+      "seconds": 0.0
     }
   }
 }

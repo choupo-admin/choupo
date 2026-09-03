@@ -877,8 +877,21 @@ formatter that emits them (duplicate JSON keys on every pair), and a
 `.gitignore` rule outlived its directory rename by seven weeks.  NOT done: the
 ~95-value corpus migration, which no record authorises.  Gate:
 `check_promoted_pair_record` (5 sabotages; the artefact is rebuilt, never
-tracked — its `fitDate` would go dirty daily).  Record:
-[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md).
+tracked — its `fitDate` would go dirty daily).  **Slice 2, same day, one
+artefact along: the SCREEN must carry what the FILE declares.**
+`estimateComponent` writes per-value provenance (`origin`/`method`/
+`methodVersion`/`inputFingerprint`/`uncertainty`) and NOTHING read it, so a
+generated component drew in the Explorer exactly like a curated one — while
+the inspector's own model had carried an `estimate` mark kind that was never
+constructed anywhere.  The rule is STRUCTURAL on both sides (a sub-dict that
+declares `origin`; a field-name list would be a second home for the engine's
+vocabulary).  The writer is C++ and the reader TypeScript, and the GUI tests
+run on a TRANSCRIPTION because the generated file is gitignored — so the gate
+RUNS the generator and holds that transcription to it.  A reader sabotage
+SURVIVED first contact (every sub-dict in the fixture already declared
+`origin`, so the guard had no case); the fixture now carries a `validity {}`
+block beside a real one.  Gate: `check_estimate_visible`.  Record:
+[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md) (§6 for the second slice).
 
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own

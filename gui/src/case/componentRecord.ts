@@ -66,6 +66,38 @@ export interface ModelRow {
   detail: string;
 }
 
+/** ONE per-value provenance block, as `estimateComponent` writes them:
+ *
+ *      provenance
+ *      {
+ *          Tc { origin estimated; method "Joback"; methodVersion "...";
+ *               inputFingerprint "CH3:2,ketone:1";
+ *               uncertainty { status unquantified; reason "..."; } }
+ *      }
+ *
+ *  A GENERATED component and a CURATED one are the same shape on screen until
+ *  something reads these, and the difference is the whole point: Joback's Tc
+ *  carries ~10 % error and the inspector was showing it exactly like a
+ *  measured critical temperature.  Nothing here is inferred -- a block counts
+ *  as a per-value origin only when it DECLARES `origin`, which is the axis
+ *  itself, never a list of field names this file would have to keep in step
+ *  with the engine. */
+export interface ValueOrigin {
+  /** the value the block is about -- `Tb`, `Tc`, `Pc`, ... */
+  field: string;
+  /** the declared origin word, verbatim: `estimated`, `measured`, ... */
+  origin: string;
+  /** the operation that produced it, and which revision of it */
+  method: string;
+  methodVersion: string;
+  /** the identity of the inputs, so a drift is detectable from the file */
+  inputFingerprint: string;
+  /** what the record says about its own error.  `unquantified` is a REAL
+   *  answer and is shown as one -- it is not the same as saying nothing. */
+  uncertaintyStatus: string;
+  uncertaintyReason: string;
+}
+
 export interface RecordMark {
   kind: "reviewStatus" | "tier" | "role" | "estimate" | "synthetic";
   text: string;
@@ -78,6 +110,10 @@ export interface ComponentRecord {
   identity: IdentityRow[];
   capabilities: CapabilityRow[];
   models: ModelRow[];
+  /** per-value provenance, in the order the record declares it.  Empty for a
+   *  record that carries none -- which is most of the curated catalogue, and
+   *  is itself worth seeing. */
+  valueOrigins: ValueOrigin[];
   marks: RecordMark[];
   /** the record verbatim — "[view raw record]" shows this, never a re-render */
   raw: string;
@@ -239,6 +275,57 @@ export function readComponentRecord(raw: string): ComponentRecord | null {
   // not infer one -- a CAS of 00-00-0 would have been a reasonable guess and
   // guessing is exactly what philosophy §3c forbids here.
   const prov = dict(j.provenance);
+
+  // -- PER-VALUE PROVENANCE.  A generated component must not read like a
+  //    curated one.  `estimateComponent` writes a block per value it derived;
+  //    nothing read them, so a Joback Tc (~10 % error) was drawn exactly like
+  //    a measured critical temperature.
+  //
+  //    The test is STRUCTURAL: a sub-dict of `provenance` that declares
+  //    `origin` IS a per-value block.  A name list would be a second home for
+  //    the engine's own field vocabulary and would go stale the first time a
+  //    generator learns a new value.
+  const valueOrigins: ValueOrigin[] = [];
+  if (prov) {
+    for (const [field, v] of Object.entries(prov)) {
+      const blk = dict(v);
+      const originWord = blk ? str(blk.origin) : null;
+      if (!blk || !originWord) continue;
+      const unc = dict(blk.uncertainty);
+      valueOrigins.push({
+        field,
+        origin: originWord,
+        method: str(blk.method) ?? "",
+        methodVersion: str(blk.methodVersion) ?? "",
+        inputFingerprint: str(blk.inputFingerprint) ?? "",
+        uncertaintyStatus: unc ? (str(unc.status) ?? "") : "",
+        uncertaintyReason: unc ? (str(unc.reason) ?? "") : "",
+      });
+    }
+  }
+
+  // The mark is raised for any origin that is NOT an experimental one.  The two
+  // experimental words are the engine's own (`core/Origin.H`: `literature`
+  // accepts `experimental` and `measured`); everything else -- estimated,
+  // predictive, regressed, assumed, placeholder -- is a number somebody or
+  // something PRODUCED, and the reader is told which values and by what.
+  const derivedOrigins = valueOrigins.filter(
+    (v) => v.origin !== "measured" && v.origin !== "experimental" && v.origin !== "literature");
+  if (derivedOrigins.length > 0) {
+    const words = [...new Set(derivedOrigins.map((v) => v.origin))].join(" / ");
+    const methods = [...new Set(derivedOrigins.map((v) => v.method).filter(Boolean))].join(", ");
+    const fields = derivedOrigins.map((v) => v.field).join(", ");
+    const unquantified = derivedOrigins.filter((v) => v.uncertaintyStatus === "unquantified").length;
+    marks.push({
+      kind: "estimate", tone: "warn",
+      text: `origin ${words} on ${derivedOrigins.length} declared value(s): ${fields}` +
+        (methods ? ` — ${methods}` : "") +
+        (unquantified > 0
+          ? `.  ${unquantified} of them declare their uncertainty UNQUANTIFIED, which is the record's own answer and not a missing field.`
+          : "."),
+    });
+  }
+
   if (prov && str(prov.source) === "synthetic") {
     const why = str(prov.reason);
     marks.push({ kind: "synthetic", tone: "warn", text:
@@ -247,5 +334,5 @@ export function readComponentRecord(raw: string): ComponentRecord | null {
       ".  Any number computed with it describes the algorithm, never a chemical." });
   }
 
-  return { name, formula, identity, capabilities, models, marks, raw };
+  return { name, formula, identity, capabilities, models, valueOrigins, marks, raw };
 }
