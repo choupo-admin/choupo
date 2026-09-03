@@ -731,10 +731,22 @@ try
     for (const auto& u : units)
         for (const auto& lbl : u->stateLabels())
             csv << "," << u->name() << "." << lbl;
+    //  A controller WITHOUT a measurement (a Schedule: hasPV() false) has
+    //  no PV and no set-point distinct from what it drives -- it writes ONE
+    //  column, its MV.  Until 2026-09-03 every controller wrote the SP/PV/MV
+    //  triple, so a schedule published `PV = 0.0` at every instant and a
+    //  `PV_final 0` KPI: an absence printed as a measurement of zero, on
+    //  the machine surfaces a student plots.  The console echo below had
+    //  already made this distinction; the CSV and the KPIs now agree with it.
     for (const auto& c : controllers)
-        csv << "," << c->name() << ".SP,"
-            << c->name() << ".PV,"
-            << c->name() << ".MV";
+    {
+        if (c->hasPV())
+            csv << "," << c->name() << ".SP,"
+                << c->name() << ".PV,"
+                << c->name() << ".MV";
+        else
+            csv << "," << c->name() << ".MV";
+    }
     csv << "\n";
 
     auto writeSnapshot = [&](scalar t)
@@ -744,9 +756,12 @@ try
             for (auto v : u->stateVector())
                 csv << "," << v;
         for (const auto& c : controllers)
-            csv << "," << c->setpoint()
-                << "," << c->lastCV()
-                << "," << c->lastMV();
+        {
+            if (c->hasPV())
+                csv << "," << c->setpoint()
+                    << "," << c->lastCV();
+            csv << "," << c->lastMV();
+        }
         csv << "\n";
 
         // OpenFOAM-style real-time instant: each unit's HOLDUP state at t.
@@ -1440,8 +1455,13 @@ try
         for (const auto& c : controllers)
         {
             auto& k = result.kpis[c->name()];
-            k["SP_final"] = c->setpoint();
-            k["PV_final"] = c->lastCV();
+            //  No PV -> no PV_final and no SP_final: a schedule's terminal
+            //  value IS its MV_final (see the trajectory header above).
+            if (c->hasPV())
+            {
+                k["SP_final"] = c->setpoint();
+                k["PV_final"] = c->lastCV();
+            }
             k["MV_final"] = c->lastMV();
         }
 

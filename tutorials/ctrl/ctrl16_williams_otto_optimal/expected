@@ -2,11 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     FfBprof                MV_final         0.00463988515428   1e-4
-kpi     FfBprof                PV_final         0                  1e-4
-kpi     FfBprof                SP_final         0.00463988515428   1e-4
 kpi     Tprof                  MV_final         300.373635533      1e-4
-kpi     Tprof                  PV_final         0                  1e-4
-kpi     Tprof                  SP_final         300.373635533      1e-4
 kpi     balance                energy_balance_available 0                  1e-4
 kpi     balance                mass_closure_rel 1.14401865779e-07  1e-4
 kpi     balance                mass_kg_final    723583.798797      1e-4
@@ -29,11 +25,7 @@ kpi     plant                  wo_G_final       18.1750523198      1e-4
 kpi     plant                  wo_P_final       176.69950323       1e-4
 kpi     plant                  yield_klb_final  605.400054609      1e-4
 kpi     FfBprof                MV_final         0.00463988515428   1e-4
-kpi     FfBprof                PV_final         0                  1e-4
-kpi     FfBprof                SP_final         0.00463988515428   1e-4
 kpi     Tprof                  MV_final         300.373635533      1e-4
-kpi     Tprof                  PV_final         0                  1e-4
-kpi     Tprof                  SP_final         300.373635533      1e-4
 kpi     balance                energy_balance_available 0                  1e-4
 kpi     balance                mass_closure_rel 1.14401865779e-07  1e-4
 kpi     balance                mass_kg_final    723583.798797      1e-4

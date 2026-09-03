@@ -2,8 +2,6 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     FeedStep               MV_final         0.0058333333       1e-4
-kpi     FeedStep               PV_final         0                  1e-4
-kpi     FeedStep               SP_final         0.0058333333       1e-4
 kpi     balance                energy_balance_available 0                  1e-4
 kpi     balance                mass_closure_rel 1.45035580918e-09  1e-4
 kpi     balance                mass_kg_final    19794.220051       1e-4
