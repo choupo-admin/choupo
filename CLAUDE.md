@@ -778,57 +778,20 @@ Supersedes the `basisMaps`/`apparent-true` layout in the older
   `choupoCtrl` (dynamic + control loops), `choupoProps` (property eval + the
   PROPS BENCH).
 
-**A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED — three found
-in one day (2026-08-12).**  `bin/runTests` compares a run against `expected`
-row by row, and each row's `kind` says WHERE the number is read from.  The
-result JSON kept growing; every slice that shipped a new top-level block added
-one the golden format could not reach, and **an unreadable block does not fail
-— it just stops being checked**, silently, with the suite green.  Three:
-`validation` (the AAD of each model against MEASURED data — the headline result
-of every `compare_*` case), `energyClosures` (the model-boundary ledger's three
-quantities, unpinned since the slice shipped) and `utilityAllocation` (which
-catalogue utility `pickForDuty` chose, its kg/s and its €/h, on **every case
-that allocates one** — the unit's own `Q_kW` does not move when the picker
-does; the live count is in `check_utility_allocation_pinned`'s own OK line,
-which recounts it).  Closed with the
-`aad` / `closure` / `utility` kinds, auto-generation in `--record`, and a gate
-each requiring **published ⇒ pinned AND pinned ⇒ published**.  **THE RULE, and
-it is the Edwards lesson one layer up:** when you add a top-level result block
-carrying a number a reader would act on, add the row kind that reads it IN THE
-SAME COMMIT.  A word cannot be a golden value, so a decision is pinned either
-by putting the word in the KEY (`heating.steamLP.eur_h` — a changed pick
-reports MISSING and names itself) or, where the word is free text, through its
-numeric consequences, said plainly rather than claimed as direct coverage.
-What is deliberately NOT pinned is audited with its reason (residual histories
-and curves are paths, not answers; words have their own gates).  Gates:
+**A RESULT BLOCK THE GOLDEN FORMAT CANNOT READ ARRIVES UNPINNED (2026-08-12).**
+An unreadable block does not fail — it just stops being checked, silently,
+with the suite green; so when you add a top-level result block carrying a
+number a reader would act on, add the row kind that reads it IN THE SAME
+COMMIT (published ⇒ pinned AND pinned ⇒ published).  Gates:
 `check_overlay_aad_pinned` · `check_closure_ledger_pinned` ·
-`check_utility_allocation_pinned` — the third FAILED its own first run because
-it derived keys by a rule of its own instead of the writer's, which is the
-arity sin inside the machinery built to enforce it.  Record:
+`check_utility_allocation_pinned`.  Record:
 [`docs/design/which-result-blocks-a-golden-can-read.md`](docs/design/which-result-blocks-a-golden-can-read.md).
 
-**THE `aad` ROW — an overlay's comparison against measured data becomes
-falsifiable (2026-08-12).**  A choupoProps `experimental {}` overlay publishes
-how far each model sits from a MEASURED dataset — the headline result of every
-`compare_*` case — into a **top-level `"validation"` block** of the result
-JSON, and `bin/runTests` could read `kpis`, `streams` and
-`operationResults[].diagnostics` and nothing else.  So no golden row could
-reach an AAD and **every AAD in the corpus was pinned by nothing**; what
-survived was prose, and the prose was wrong.  `compare_vle_etoh_water`'s header
-claimed original UNIFAC gave "T_bubble AAD ~2.6 K" with the azeotrope
-"misplaced to x_eth ~0.77" — the case's own output says **0.407 K** and
-**0.888**, six times and 0.12 mole fraction off, both in the direction that
-made the predictive method look worse than it is.  `compare_kinetics_order`
-shipped **no golden at all**, so its whole lesson was a smoke pass.  Fixed on
-the doctrine's own axis rule: a new **`aad` kind** (`aad <dataset>
-<model>.<property>.<statistic>`) — the kind says WHERE, the name says which
-dataset, the key says which model/property/statistic — plus auto-generation in
-`--record`, so the NEXT overlay case gets its rows without anyone remembering.
-**They are self-recorded rows, never `anchor` rows**: an AAD is derived from
-the model and the published dataset *together*, so nobody published it and no
-primary can be quoted for it; what it pins is that the agreement has not MOVED.
-Gate: `check_overlay_aad_pinned` (published ⇒ pinned AND pinned ⇒ published;
-three sabotages).  Record:
+**THE `aad` ROW (2026-08-12).**  An overlay's AAD against a MEASURED dataset is
+pinned by an `aad` kind row (`aad <dataset> <model>.<property>.<statistic>`),
+auto-generated in `--record`; they are self-recorded rows, never `anchor` rows
+— what they pin is that the agreement has not MOVED.  Gate:
+`check_overlay_aad_pinned`.  Record:
 [`docs/architecture/verification-and-validation.md`](docs/architecture/verification-and-validation.md) §3b.
 
 **THE HONESTY SLICE — twelve gates in one day (2026-08-05), and what building
@@ -884,264 +847,47 @@ state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
-(2026-08-25).**  Every record carrying critical constants had gone its whole
-life uncompared with a published table, for the banal reason that the compilation
-they descend from (Poling/Prausnitz/O'Connell App. A) is copyrighted and
-cannot live here.  Vítor supplied his own copy, so
-`bin/curate/verify_against_poling.py` reads the CURATOR's file, matches by
-**CAS never by name**, and prints a report to `data/local/` (gitignored — a
-`generated/` file rebuildable only from a book this repo lacks would go stale
-with nothing able to notice).  It is NOT wired into `bin/runTests` and never
-will be: it structurally cannot run in CI, and *a check that cannot run must
-not pass* — a skip-when-absent gate would be permanently green exactly where
-it matters (the `check_true_ions` shape).  Of 158 CAS-bearing records the
-appendix lists 75; across them **238 values reproduce it to its printed
-precision, 105 differ by under 1 % (a different compilation, not an error),
-37 by more**, and 19 Vliq comparisons are REFUSED rather than counted either
-way because the appendix states its volume at the measurement temperature and
-ours is at 25 °C.  **The finding is the opposite of the usual one: no
-transcription error, and the notable disagreements are mostly OURS BEING
-NEWER** (helium's Tb 4.22 vs the book's 4.30, where 4.222 is modern; neon's
-ω −0.03549 vs −0.016) — which is why nothing was changed and no
-`reviewStatus` was flipped.  **THE SHARPEST RESULT IS PER QUANTITY, and the
-tool computes that table itself rather than letting it be remembered into
-prose:** molecular weight agrees on every substance, **not one critical
-temperature disagrees by as much as 1 %**, and every notable difference is in
-Pc, ω or ΔHvap(Tb) — the hard-to-measure and the DERIVED (ω is regressed from
-a vapour-pressure correlation, so it is a parameter of a model as much as a
-property of a substance).  A Tc difference would be a transcription error and
-there are none; an ω difference is a question about which correlation each
-compilation used, resolved by reading and never by picking.  It also puts evidence under the reserved
-CoolProp-provenance ruling without pre-empting it.  **THE PARSE INVENTED
-THREE FINDINGS BEFORE IT STOPPED**, each plausible: the form feed is not the
-page (half the table orphaned, 209 rows of 440, silently); a ragged row slides
-(CO2 sublimes, so its ΔHvap cell is empty and the report announced its GIBBS
-ENERGY OF FORMATION as a 106 % disagreement); and **the header names the
-columns but does not position them** (R-245fa's *critical temperature* of
-427 K read as a normal boiling point).  What made any of it detectable is the
-REDUNDANT COLUMN — Table A prints Zc = PcVc/RTc, so a mis-assignment cannot
-survive recomputation (311 of 393 rows confirmed, 75 rejected and counted);
-Table B has none, so its every value is marked unaudited **per value, not per
-record**, and columns are now calibrated from each block's own complete rows.
-Record:
+(2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
+copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and
+prints its report to `data/local/`; it is NOT wired into `bin/runTests` and
+never will be — a check that cannot run must not pass, and a skip-when-absent
+gate would be permanently green exactly where it matters.  Record:
 [`docs/design/verifying-the-catalogue-against-a-book.md`](docs/design/verifying-the-catalogue-against-a-book.md).
 
-**A DESTRUCTIVE GATE POISONED THE EVIDENCE, AND THE EVIDENCE WAS COMMITTED
-(2026-08-18).**  `check_gate_selftest` proves other gates can fail by
-SABOTAGING records and sources, REBUILDING the engine, and requiring the
-failure.  It restores inside `try/finally` — which is exception-safe and
-**not death-safe**: `gate_manifest.py` runs every gate through
-`subprocess.run(timeout=…)`, CPython kills the child with **SIGKILL**, and no
-`finally` runs against SIGKILL.  The gate was MEASURED at 250 s but exceeded
-the 600 s ceiling under concurrent load, was killed mid-sabotage, and left a
-**poisoned binary**; the alphabetical walk then recorded 7 later
-engine-running gates as FAILED, every one of which recovered from a single
-`make all` **with no source change**.  Two properties made it silent: the
-working tree was CLEAN (only the BINARY carried the damage, and
-`check_build_fresh` sits *earlier* in the alphabet), and **`gate_manifest`
-recorded failures as claims and wrote the file anyway** — 12 such entries
-were already in the manifest committed on 2026-08-17.  *A claim is what a
-gate says when it has something to say; a failure is the absence of one, and
-recording it as the gate's own account of itself answers "what does this
-project check?" wrongly, with authority.*  THE CORRECTION, three parts:
-(1) `bin/curate/destructive_session.py` — a **disk JOURNAL** (not a lock: the
-failure is one run dying, not two colliding) written before the first
-mutation and removed only on a verified restore, so it outlives SIGKILL;
-(2) **the campaign-invalidating rule** — `bin/runTests` (at the very top,
-before `check_workspace_truth`), `runTests --record` and both arms of
-`gate_manifest` REFUSE while a journal stands, the full manifest arm checking
-**between every gate** because the tree was clean when that run began; the
-refusal is spelled ONCE in Python and bash calls it through `--assert`;
-(3) `gate_manifest` **refuses to write** on any failure or timeout, and
-`TIMEOUT` is 3600 s with each gate's elapsed seconds RECORDED, so the ceiling
-is judged against measurement rather than memory.  Sabotage-verified by
-reproducing the mechanism (SIGKILL mid-run): the journal survived, **`git
-status` reported nothing on all five files** — the incident's exact shape —
-and all three harnesses refused.  Deliberately NOT done: automatic repair (a
-mechanism that silently fixes a tree it does not understand destroys real
-edits) and reordering the walk (that hides the class instead of detecting
-it).  Goldens were verified UNCONTAMINATED by full regression against a clean
-build.  Record:
+**A DESTRUCTIVE GATE POISONED THE EVIDENCE (2026-08-18).**  `check_gate_selftest`
+restores inside `try/finally`, which is not death-safe against SIGKILL (a clean
+tree hides a poisoned binary from `check_build_fresh`), so
+`bin/curate/destructive_session.py` writes a disk JOURNAL before the first
+mutation, and `bin/runTests` (before `check_workspace_truth`), `--record` and
+both arms of `gate_manifest` REFUSE while a journal stands; `gate_manifest`
+refuses to write on any failure or timeout.  Deliberately NOT done: automatic
+repair, and reordering the walk.  Record:
 [`docs/design/destructive-gate-contamination.md`](docs/design/destructive-gate-contamination.md).
 
 **THE MESH DECLARES ITS STRUCTURE, AND THE SOLVER AUDITS THE DECLARATION
-(2026-08-25).**  The simultaneous MESH was already equation-oriented per unit
-and solved the most expensive way possible: dense FD Jacobian (N*nv residual
-evaluations per iteration) + dense Gauss.  The structure was MEASURED on the
-corpus before anything was built on it (a 20-line probe: off-band max |J| =
-0, EXACTLY -- no dense condenser rows; an early misaligned probe showed 2e-5
-at dist 2, so measure with the real blocking).  `opts.blockTri = {N, nv}`
-buys Curtis-Powell-Reid 3-color finite differences (~6*nv evaluations per
-Jacobian, INDEPENDENT of stage count) and a block-Thomas solve
-(O(N*nv^3)).  **A declared structure is a solver aid, and aids report
-aloud**: the first iteration also builds the dense Jacobian, measures the
-off-band maximum, ANNOUNCES it, and REFUSES by name when the declaration is
-materially false -- one dense Jacobian per solve is the price of never
-converging on a silently wrong structure.  Measured (48-stage reactive
-stripper, same machine, same day): 62.7 s dense -> 28.9 s structured with
-identical convergence, Jacobian evaluations /16; all 20 column tutorials
-byte-identical, the Klemola primary-anchored pair included.  **The sabotage
-pair worth keeping**: a COARSE false declaration is still true (wide bands
-contain narrow ones) and is caught by the evaluation-count arithmetic; a
-FINE one deletes real coupling and trips the named runtime refusal --
-both directions pinned.  NOT done, said plainly: the fullMESH keeps its
-dense solve (its structure is BORDERED, and declaring it clean would be the
-lie the audit exists to catch); the universal equation-oriented flowsheet
-solver stays deferred per the constitution -- the named next step
-(DesignSpecs solved jointly with the tears) is September's and Vitor's.
-Gate: `check_block_tridiagonal` (5 sabotages).  Record:
-[`docs/design/block-tridiagonal-mesh.md`](docs/design/block-tridiagonal-mesh.md).
+(2026-08-25).**  `opts.blockTri = {N, nv}` buys Curtis-Powell-Reid finite
+differences and a block-Thomas solve; a declared structure is a solver aid,
+and aids report aloud — the first iteration measures the off-band maximum and
+REFUSES by name when the declaration is materially false.  The fullMESH keeps
+its dense solve (its structure is BORDERED).  Gate: `check_block_tridiagonal`.
+Record: [`docs/design/block-tridiagonal-mesh.md`](docs/design/block-tridiagonal-mesh.md).
 
-**A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE — with a
-result the witness was not built expecting (2026-08-25).**
-`fitParameters(kind T_bubble)` read ONE scalar `residual.P` and priced every
-point at it, so a study that measured three isobars could only be fitted by
-discarding two — and an NRTL pair's temperature dependence (`tau = a + b/T`)
-is identifiable only from data that SPAN temperature.  `EvidencePoint` gained
-an optional third coordinate (a quiet NaN when undeclared, **never zero** —
-zero is a pressure, NaN is the absence of one), `loadColumns`/`loadAll` a
-defaulted `zNames`, so the three existing callers are byte-unaffected.  The
-reader takes BOTH forms a faithful transcription uses — a `Pressure` COLUMN
-where the study varied it (ThermoML's Variable), a held-constant SCALAR where
-it fixed it (ThermoML's Constraint) — because the two halves of one partition
-must be priced the same way when one study varied the pressure and another
-did not.  **The dangerous failure is never an error, it is a plausible
-number**, so four refusals, each by name: `residual.P` beside evidence
-carrying its own (two homes for one fact — the scalar is what the header
-prints, the column is what the bubble points are computed at, so a reader
-could be told 101.325 kPa about a fit performed at 13.15); a fit set only
-half-carrying one; a fit set with a pressure and a held-out set without (the
-held-out residual would measure the difference between two pressures and
-publish it as a MODEL error); and a held-constant with **no unit** — the
-sabotage worth keeping, because with that check removed the probe case did
-not crash, it CONVERGED, reading `Pressure 101.3;` as 101.3 Pa and dragging
-ethanol's Antoine far outside its window with no other symptom.  **Witness
-`fitNRTL02_thermoml_isobars`, and its finding contradicts the case's own
-first draft**: 45 points on three vacuum isobars (Voutsas 2011,
-doi:10.1016/j.fluid.2011.06.009) fit to a reduced chi-square of 0.023 and an
-in-sample rms of 0.144 K, then predict 21 held-out points at 101.3 kPa from a
-different laboratory (Kamihama 2012, doi:10.1021/je2008704) at **AAD 0.3857 K
-against the catalogue pair's 0.0821 K on the same points** — the regression
-bought 11 % where it looked and lost a factor of 4.7 where it did not.  Two
-`mode evaluate` control ops score the catalogue pair on BOTH datasets, so all
-four numbers come from one run and each pair is visibly best where its
-evidence was taken.  Second lesson, also measured: three isobars span 28 K
-instead of 12 and `cond(J'J)` falls from 3.6e11 to 5.6e9 — two orders of
-magnitude — while `max|correlation|` stays 1.000 and `identifiable` stays 0.
-**Conditioning is not identifiability**; `b_ij = -539 +/- 456` pins nothing,
-so nothing constrains 101 kPa.  Also: `aad_heldout_K` beside
-`aad_heldout_pct` (two ops reporting "AAD" in two units invite exactly the
-comparison the units make wrong), a `P_Pa` column in the parity CSV, and the
-LEGACY single `dataset "<path>";` form wired into this path so a control op
-can SCORE a pair against a measured file without transcribing it.
-**`reviewStatus` ON A DATASET (same slice), AND THE CHECK PERFORMED THE SAME
-DAY:** the archive assessment admits point values "cited to the ORIGINAL
-article, CHECKED against it when the paper is in hand", and the second half
-was unmet at birth — so the extractor writes `provenance { reviewStatus
-transcribedNotCheckedAgainstArticle; }`, the partition reads it, and the run
-announces it on the console AND on the `AdvisoryLog`.  A transcribed file
-carries the DOI from birth, which is exactly what makes the unchecked state
-look checked; *a citation says where numbers are supposed to come from, not
-that anybody looked.*  **Vítor then supplied both articles and the values
-were read back**: all 45 fit points against Voutsas's Table 1 and all 21
-held-out points against Kamihama's Table 3, digit for digit, per-isobar
-counts included, DOIs confirmed off the articles' own pages — both datasets
-declare `reviewStatus checked` (method and counts:
-[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §5a).
-Two rules came out of the flip.  **`checked` MUST NOT BE SILENT** — the first
-implementation announced only the unchecked state, so a dataset a curator had
-verified was indistinguishable IN THE OUTPUT from one declaring no review at
-all (the absence-reads-as-affirmation shape); it announces on the console and
-raises NO advisory, because a caveat block that reports a discharged caveat
-teaches the reader to skim it, while an UNDECLARED status stays silent (it
-makes no claim either way).  And the flip left the unchecked branch with no
-live case — the `check_diafiltration` sabotage-8 shape — so arm (f) BUILDS a
-probe with the mark flipped back and requires both surfaces to return (S6/S7).
-The endpoints both articles bracket their isobars with are deliberately
-OMITTED and each header says so: with a pure component both NRTL activity
-coefficients are exactly 1, so the residual measures the Antoine fit and not
-the pair — a selection, never two rows lost.  Two smaller
-provenance fixes rode along: the extractor's citation lived only in a banner
-COMMENT the parser discards (the 2026-08-05 shape) and is now a
-machine-readable `provenance {}` + `system ( )` block; and
-`readOwnProvenance` was extracted so BOTH declaration forms use it — it sat
-inside the `evidence ( )` branch, so a legacy single-`dataset` op announced a
-fully cited file as one "with no declared identity", an announcement about
-the READER rather than about the evidence.  **102 IDENTICAL PARAGRAPHS, and
-the guard scoped wrong:** `VaporPressureModel::noteRange` latched its
-announce-once on `announcedOutside_`, a member of the model INSTANCE, and
-Levenberg-Marquardt rebuilds the whole package once per iteration and once
-per FD perturbation — so "announce once" became "announce once per rebuild",
-102 copies of one temperature in one run.  The console echo now asks
-`AdvisoryLog::add`, which outlives every rebuild and is the only thing in the
-process that can answer *has this been said?*; 102 became 2.  **A guard
-scoped to an object the caller recreates in a loop guards nothing** — the
-arity doctrine applied to an announcement rather than a value.  NOT widened,
-said plainly: the instance latch stays as the hot-path early-out, so one
-instance still reports only its FIRST excursion (an extrapolation then a
-supercritical request = two physically different situations, one report) —
-pre-existing, recorded, not closed.  **AND THE GAP THIS SLICE DID NOT
-CLOSE, named:** the two caveats `fitNRTL02` still reports (ethanol's Antoine
-at 371.8 K and 372.8 K) are `BubblePoint::compute`'s INITIAL GUESS — the
-mole-fraction-weighted normal boiling point of each set's first datum, where
-the answer is 335 K — and framing the LM search does not fix it, because the
-parity and held-out passes re-provoke the same guess with the frame closed
-and the promotion rule then correctly marks it `accepted`: the mechanism
-working perfectly on a raise site scoped one level too high.  The fix is a
-frame INSIDE `newton1D`'s T loop plus a re-evaluation at the converged T, and
-it needs the per-instance latch restructured first.  Gate:
-`check_held_out_pressure` (5 sabotages; S1 is the one to know — with
-`pData_Pa[k]` replaced by `[0]` the header went on printing `across 3
-isobars` TRUTHFULLY, because the span is computed from the loaded points
-while the pressure is used in the residual).  Record:
+**A BUBBLE POINT IS (x, P, T), AND THE FIT NOW READS ALL THREE (2026-08-25).**
+`EvidencePoint` carries a per-point pressure (a quiet NaN when undeclared,
+never zero — zero is a pressure), as a `Pressure` COLUMN or a held-constant
+SCALAR; `residual.P` beside evidence carrying its own, and a held-constant
+with no unit, REFUSE by name.  A dataset's `reviewStatus` is announced, and
+`checked` MUST NOT BE SILENT; a guard scoped to an object the caller
+recreates in a loop guards nothing.  Gate: `check_held_out_pressure`.  Record:
 [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md).
 
-**ONE THERMOML TOOLCHAIN, NOT TWO — my own arity sin, found and paid the same
-day (2026-08-25).**  `bin/choupo-thermoml` has existed since 2026-08-11 with
-`sync` · `index` · `search` · `extract` · `extract-vle`; on 2026-08-25 I built
-`choupo-import-thermoml`, `thermoml_locate.py` and `thermoml_extract.py`
-without finding it.  All three are DELETED and the one tool absorbed them.
-`sync` now PERFORMS the download it had described and deliberately refused to
-fake (verified against the sha256 NIST publishes in the same record, deleting
-on mismatch, path-traversal-checked before extracting a single member) —
-*that refusal was right on the day it was written, and became a gap to close
-rather than a position to hold when the network opened.*  `extract-vle` reads
-the VARIABLE-PRESSURE geometry it used to refuse, because its refusal was
-never about the file but about the CONSUMER, and the per-point pressure above
-removes it.  The cache moved to **`thirdParty/thermoml/`**, which is where
-CLAUDE.md §7 always said third-party databank originals live: `data/local/` is
-for Choupo RECORDS held privately, and the loader RESOLVES that tree by name,
-so 4 GB of NIST XML one directory from the resolver was a correctness risk and
-not merely a filing error.  The GUI reads the ONE index, PROJECTED by the
-dev-server middleware (70 MB of CAS/InChI down to the ~7 MB of citation the
-Literature panel shows) — a second slim file on disk would have been the same
-sin again.  The online Cordra query survived as `search --online`: it was never
-duplication, because *"what does my cache hold?"* and *"what has anybody
-measured?"* are two questions, so they are two flags on one command.
-**THREE PRE-EXISTING DEFECTS FELL OUT OF THE FOLD**, all found by pointing the
-older tool at a real article for the first time: (1) `system` was emitted in
-the file's `<Compound>` order while `x1` followed the BLOCK's `<Component>`
-order — they coincide in most files, which is why the fixture never caught it,
-and in `j.fluid.2011.06.009` they do not, so the tool wrote `x1 is water` over
-an x_ethanol column with the DATA CORRECT UNDERNEATH; *a mislabelled axis is a
-wrong answer nothing downstream can detect*, and an unresolvable component now
-REFUSES rather than being guessed; (2) a multi-block article was refused on its
-FIRST block (its own "no interpretable dataset found" line was dead code the
-loop could never reach) — every block is examined now and the refusals
-COLLECTED, one interpretable block used, several LISTED by index demanding
-`--block N` because choosing is the curator's act; (3) an ISOBARIC set was
-unreachable, because the reader looked only at ThermoML *Variables* and never
-at *Constraints* — the commonest form of VLE there is, refused with a message
-that was true and useless.  **AND A STALE CLAIM CLOSED:** the tool and its gate
-both said the published-dialect reader was "unverified until a real archive
-file has passed through it"; **11 921 of the archive's 11 923 files now parse**
-(the two refusals are malformed XML IN THE ARCHIVE, listed with the parse
-error), so the by-name matching held at scale, and the gate's blind-spot list
-was corrected to say it CANNOT CHECK this rather than that it is UNSETTLED —
-*a gate whose blind-spot list outlives the blind spot tells the reader
-something false, with authority.*  The witness's two datasets were re-extracted
-through the consolidated tool and **every number in its golden is unchanged**.
-Record: [`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
+**ONE THERMOML TOOLCHAIN, NOT TWO (2026-08-25).**  `bin/choupo-thermoml` is
+the one tool (`sync` · `index` · `search [--online]` · `extract` ·
+`extract-vle`); its cache lives in `thirdParty/thermoml/`, never `data/local/`
+(the loader RESOLVES that tree by name); an unresolvable component REFUSES
+rather than being guessed, and a multi-block article demands `--block N`
+because choosing is the curator's act.  Record:
+[`docs/design/held-out-pressure.md`](docs/design/held-out-pressure.md) §8.
 
 **THE WASM BUILD DIED WHERE THE NATIVE ONE PASSED, AND THE SITE WENT STALE
 (2026-08-27).**  A lambda captured a STRUCTURED BINDING —
@@ -1176,252 +922,49 @@ moving: the WASM toolchain is pinned at **emscripten 3.1.6 (2022)** and the
 whole site is built from it — whether it does C++20 well enough is a
 MEASUREMENT nobody has taken, not a guess to make.
 
-**A CITATION REQUIREMENT CHANGED WHAT THE READERS READ — and found eight
-defects nobody was looking for (2026-08-28/29).**  Measured first: **133 symbol
-uses across sixteen EduTool lessons where the LETTER never appeared outside a
-formula** — a student meeting `Me = KaV/L` or `c_s` or `θ` had nothing to read.
-The obvious response, writing 133 definitions, is the wrong one: *a missing
-definition is visible and a WRONG one is not*, and at that volume a meaningful
-fraction written from memory would have been wrong.  So the constraint came
-first — **every symbol needs a `file:line` citation into the ENGINE, verified
-mechanically**, eleven agents, each forbidden to write a file.  The requirement
-was introduced to make the glosses checkable; what it actually did was change
-what the agents READ.  A definition written against a page paraphrases the
-page; one that must carry a line number forces somebody to open the unit that
-computes the answer — and then they notice the page above it is wrong.  **Two
-of the eight defects are in files this session had already read that day
-without seeing them.**  The sharpest: `merkelLesson` said "L/G … on the diagram
-it is the slope of the operating line" while the engine's line is `h1 +
-LG*cpL*(T−T_out)` — and **the step's OWN formula two lines below was already
-correct**, so the page contradicted itself and the equation was the honest half
-(a reader who checks the units concludes THEY misunderstood, which is the
-characteristic cost of a wrong definition).  `CoolingTower.H` declared a
-hypothesis the code does not implement ("the arithmetic mean of the relevant
-inlet/outlet temperatures"; in fact the gas cp's are at the mean of the two
-INLETS and the liquid cp at a fixed 25 °C surrogate — **and the reason is
-good**, since in rating mode the outlet is the unknown being solved, so the
-vagueness was hiding a defensible decision AND an honest limitation, both).
-**AND ONE THIS PROJECT WROTE ABOUT ITSELF:** the Bjerrum page claimed "there is
-no pH input anywhere in Choupo, by a settled decision" — false, `Speciate.cpp`
-takes both `pH <number>;` and `pH solve;` — in SIX places, one of them **a
-green test asserting the page says it**.  *A test over a false claim is worse
-than no test: it converts an error into a maintained invariant.*  The true
-version is stronger, which is the usual outcome and worth expecting rather than
-noting as luck: the given-pH mode exists for a MEASURED laboratory pH, and what
-it costs is the electroneutrality row (the run then reports the net charge the
-composition carries — a textbook diagram drawn that way is a sequence of
-compositions no beaker can hold), so the witness declaring `pH solve;` is a
-CHOICE visible in one word of the case file, not an absence in the engine.
-Three numeric drifts rode along, in prose quoting a golden from two homes that
-cannot share a variable — γ_CO3 0.81 vs 0.82 against the golden's 0.8130, and a
-crossover pH quoted from the nearest computed BEAKER (10.269, where the ratio
-is 0.982) instead of the interpolation (10.262) **while the FIRST crossover had
-been interpolated correctly**, so the two were not even done the same way.  A
-fourth reported drift was NOT one (0.9997 and 0.99966 are both correct
-roundings of 0.999657) and is recorded as such — *a report that checks and
-finds nothing is worth as much as one that finds something.*  Where two prose
-homes cannot share a variable, **a gate that recomputes is the only available
-single source**.  FUG got the same treatment (three absences returning as
-numbers: the feed bubble point falling back on the declared T — the method's
-ONLY thermodynamic evaluation; `R = 1.3*Rmin` as a silent "sensible default",
-refused because *the stage count is what a student reads off this unit and a
-reflux the engine chose is one nobody can defend at a viva*, and BOTH corpus
-cases already declare it so the branch was reached by nothing; and `feed_stage
-0.0`, whose branch is **LATENT not live** — both routes to it are refused
-earlier by Underwood, so the gate pins the UNREACHABILITY rather than claiming
-coverage).  Named as NOT fixed at the time: the pump and the pipe computed
-liquid density by two routes 12 % apart on ONE diagram (constant `Vliq` vs
-Rackett, which announces itself ~12 % low), so heads could not be compared
-across the operating point.  **CLOSED 2026-08-29** — the package now ANCHORS
-Rackett on the record's own declared `Vliq`,
-`V(T) = Vliq·Rackett(T)/Rackett(298.15 K)`, and both sides of the witness read
-996.95 kg/m³ (agreeing to 2e-5), so pressures AND heads may be compared; what
-still differs is the temperature dependence, the pump's molar volume being
-constant in T.  **This paragraph, the decision record and the EduTool page all
-went on saying it was unfixed until 2026-08-31**, when an auditor sent to
-verify the page's warning read the engine instead and found the warning
-obsolete — a stale ABSENCE outliving the gap it named, in three homes at once,
-which is exactly the class that audit was hunting.  Gates: `check_lesson_symbols` (16/16, waiver dict
-kept EMPTY because an empty waiver list is the claim "nothing is excused") ·
-`check_bjerrum_prose` · `check_shortcut_column_refusals`.  Record:
+**A CITATION REQUIREMENT CHANGED WHAT THE READERS READ (2026-08-28/29).**
+Every EduTool lesson symbol needs a `file:line` citation into the ENGINE,
+verified mechanically (waiver dict kept EMPTY); a missing definition is
+visible and a WRONG one is not, and a test over a false claim is worse than no
+test.  Where two prose homes cannot share a variable, a gate that recomputes
+is the only available single source.  The pump/pipe liquid-density split named
+there as NOT fixed was CLOSED 2026-08-29 (Rackett anchored on the record's own
+declared `Vliq`) — a stale ABSENCE outliving the gap it named.  Gates:
+`check_lesson_symbols` · `check_bjerrum_prose` · `check_shortcut_column_refusals`.
+Record:
 [`docs/design/what-a-citation-requirement-found.md`](docs/design/what-a-citation-requirement-found.md).
 
-**AND THEN: CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  Sizing and
-costing printed their tables and left **no file at all**: the equipment list
-and the capital cost, which a project report is built around, existed only in
-terminal scrollback.  Measured before touching anything: of twelve registered
-reports, **`design` and `economics` are declared by ZERO corpus cases** (74
-declare `streamTable`) — *the two a final-year project needs most are the two
-nobody had ever run*, which is why what follows had survived.  Three defects:
-(1) **both reports RE-RAN their pipeline pass** out of the REPORT's own dict,
-so the equipment list and the whole cost basis each needed TWO homes and the
-re-run overwrote what costing had consumed — they SERIALISE `result` now and
-refuse naming the remedy when it is empty (*a report draws, it does not
-recompute* — the architecture already said so); (2) **one failing report
-killed every report after it, silently** — the chain loop had no guard, so
-"never reached" read as "produced nothing", which is absence read as a result
-one layer out from where leg 4 found it; each is caught by name now, the chain
-continues, the count is stated and raised on `AdvisoryLog`; (3) the CSVs
-carried bare numbers, so leg 4's traceability stopped at the screen —
-`sizing.csv` carries the design BASIS and `costs.csv` reproduces its own total
-from its own columns.  NOT done, named: the twelve report kinds are still
-UNDISCOVERABLE from a run's output (a student finds the syntax by reading
-another case), making `design`/`economics` default is a corpus-wide change and
-is RESERVED, and `kind;` still refuses saying what is wrong and not what is
-right.  Gate: `check_cost_provenance` arms (f)(g)(h), 9 sabotages total — and
-its own defect recorded: the new arms were first written AFTER the `finally`
-that deletes the probe directory, so they checked an empty directory and
-blamed the engine.  Record:
+**CAN THE STUDENT GET IT OUT? — leg 5 (2026-08-27).**  The `design` and
+`economics` reports SERIALISE `result` and refuse naming the remedy when it is
+empty (a report draws, it does not recompute); one failing report no longer
+kills every report after it — each is caught by name, the count raised on
+`AdvisoryLog`; `sizing.csv` carries the design BASIS and `costs.csv` reproduces
+its own total.  Making `design`/`economics` default is RESERVED.  Gate:
+`check_cost_provenance`.  Record:
 [`docs/design/the-deliverable.md`](docs/design/the-deliverable.md).
 
-**A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 of the
-student walkthrough, and it found five things (2026-08-27).**  The test was
-concrete: take €166,653 off the costing table and try to answer *"where did
-that come from?"* as a jury would ask it.
-
-* **THE AUDIT WAS WIRED AT ONE SITE AND `postDict` WAS OUTSIDE IT.**
-  `src/core/DictAudit` has caught unread keys since 2026-08-14 — in each
-  unit's `operation {}` and nowhere else.  A `costing {}` declaring
-  `targetYearCEPCI 800;` priced a plant at the **default** index of 820: 2.5 %
-  of the capital cost, silent, on a number the author believed they had set.
-  `postDict` is a PURE parameter file (every key belongs to the pass named
-  above it), so the scope argument that keeps the audit off the case file at
-  large does not apply.  `Dictionary::childDictsUnnoted()` + `auditTree()`
-  reach the nested blocks; an unread BLOCK is ONE finding and is **not**
-  descended into.  The walker reads `entries_` DIRECTLY — never
-  `subDict()`/`lookupDictList()`, which `note()` — because **an auditor that
-  marks every block it visits as read reports that nothing was unread**.
-  (Measured: that defect is LATENT today, because `auditTree` audits before
-  descending; the source-reading arm is a guard against the ordering
-  changing, and claiming otherwise would credit it with coverage it lacks.)
-* **`solverDict` AND `outerDict` FOLLOWED, MEASURED FIRST THIS TIME.**  Same
-  kind of file, same argument.  Wired behind an env var, run over **every
-  case** that carries either, and only then shipped: the findings were all
-  **one benign class** — five recycle cases declaring `recycleWegsteinQmin/Qmax`
-  beside `recycleSolver Newton;`, so the Wegstein branch is never entered and
-  the bounds are never read.  Dead configuration reading as a live setting.
-  The five were COMMENTED OUT in the same commit rather than left to
-  announce: *a shipped tutorial that warns on every run teaches the reader to
-  skip the warnings*, which is the failure the pass exists to prevent.  The
-  corpus is silent after it — the dated measurement, with the case list, is in
-  the record, which is where a count belongs.  (`Dictionary::found()` notes, so a real Wegstein
-  case marks them read through `recScalar`'s own `found(k)` test — the audit
-  tells the two situations apart without being told about either.)
-* **THE CORPUS RUN FOUND TWO REAL DEFECTS.**  Nine cases carry a `postDict`;
-  six were clean.  `method discountedCashFlow;` in the economics block was
-  **decorative** — the pass is hardcoded DCF and read nothing.  And
-  **`constructionPeriod` was read by nothing in the whole tree** while the
-  cash-flow timeline hardcodes one year — so **`ammonia02_full_plant`, which
-  declares `constructionPeriod 2;` beside `projectLife 15`, has been
-  publishing a €196.5 M NPV discounted over a ONE-year construction**: a
-  shipped case whose answer does not match its own declaration.  `method`
-  refuses an unimplemented value; `constructionPeriod` ANNOUNCES (console +
-  caveat block) and does not refuse — a real multi-year draw-down MOVES a
-  published NPV, which is reserved, and refusing would be my judgement
-  overriding an author who meant 2.  No number moved.
-  **AND THE MISTAKE HERE IS THE SLICE'S OWN SUBJECT, twice:** the first fix
-  REFUSED, on the strength of "all three flagged cases declare 1" — an
-  inference from the three the audit flagged, recorded as a measurement of the
-  nine that exist (six declare the key; one declares 2).  Then I verified it
-  by re-running those cases and reading **zero `[dict]` findings as success**
-  — but a CRASHED run prints zero findings too, so `ammonia02` was failing
-  outright and recorded as clean.  *Absence read as affirmation, inside the
-  machinery built against absence being read as affirmation.*
-* **`(void)basis;`** — `VesselSize` computed the design rule that determines
-  the vessel volume in three careful branches (`drum V = Q*tau`,
-  `catalyst V = Q/SV`, `volume (author-set)`) and cast it away to silence an
-  unused-variable warning.  Published now, beside the fact that the driving
-  `Q = N R T / P` is **IDEAL GAS whatever thermo the case declared** (exact
-  enough at a drum's 1 bar; a fifth undersized at 50 bar with Z = 0.8).
-  Announced, never judged — the Antoine/η=1 posture.
-* **THE COSTING TABLE NOW PRINTS ITS OWN ARITHMETIC** (correlation,
-  coefficients, size driver, CEPCI ratio, EUR/USD, B1/B2, the 1.18, and Turton
-  App. A as the source).  `F_M` is deliberately NOT cited there: its material
-  record is its one home.  **A PROVENANCE LINE TOO COARSE TO REPRODUCE IS
-  WORSE THAN NONE** — the first version used `setprecision` on a fresh stream
-  (SIGNIFICANT digits), printed `B1, B2 = 2.2, 1.8` and `F_M = 3`, and a
-  reader redoing the arithmetic lands 2.6 % out and concludes **they** erred.
-  Caught only because it was printed; the same defect then turned up one field
-  over in `Q`, caught by the gate doing what a student would do.
-* **A REFUSAL MUST READ THE EVIDENCE IN ITS HAND.**  `missing sub-dictionary
-  'designRules'` was true and silent about the `designRuls` three lines above
-  in the same dict.  All four `Dictionary` missing-key failures now list what
-  the dict declares and name the closest match, through
-  `dictAudit::editDistance` (never a second copy).  Mirror of the audit: the
-  audit matches an UNREAD key against what the code asked for; this matches an
-  ASKED-FOR key against what is present.
-
-**AND A PROCESS LESSON, paid for in a killed suite: NEVER EDIT `bin/runTests`
-WHILE IT RUNS** — bash reads a script incrementally from a held offset, so the
-live run executes torn bytes.  `check_component_name_hint` then reported *"a
-case whose component names are all correct no longer reproduces its golden"*
-and sent the reader to `Database.cpp`, where nothing was wrong.  Two gates had
-each grown their own half of this test, each catching the reasons ALREADY
-SEEN, so a NEW way for the harness to produce no verdict read as a moved
-answer again.  `bin/curate/runtests_verdict.py` is the ONE home, and its claim
-is POSITIVE: *moved* is asserted only when the harness printed a verdict for
-that case; anything else is `could-not-run`, with the reason carried back.
-*A check that cannot run must not pass — and must not fail with a FALSE REASON
-either.*  Converted: `check_component_name_hint`, `check_friction_correlations`
-(every other gate that shells out still carries its own reader).
-Gates: `check_postdict_audit` (5 sabotages) · `check_cost_provenance` (6
-sabotages; S2 reproduces the shipped precision defect and fires at −1.43 %).
-Records: [`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
+**A NUMBER YOU CANNOT TRACE IS A NUMBER YOU CANNOT DEFEND — leg 4 (2026-08-27).**
+`DictAudit` reaches `postDict`, `solverDict` and `outerDict` (PURE parameter
+files; the walker reads `entries_` DIRECTLY — never `subDict()`, which
+`note()`); `constructionPeriod` ANNOUNCES and does not refuse; the costing
+table prints its own arithmetic (a provenance line too coarse to reproduce is
+worse than none); a missing-key refusal names the closest match.  NEVER EDIT
+`bin/runTests` WHILE IT RUNS; `bin/curate/runtests_verdict.py` is the ONE home
+for a harness verdict — *moved* only when a verdict was printed, anything else
+`could-not-run` (converted: `check_component_name_hint`,
+`check_friction_correlations`).  RESERVED for Vítor: the costing model is registered as
+`Guthrie` and every coefficient in the file is Turton's.  Gates:
+`check_postdict_audit` · `check_cost_provenance`.  Records:
+[`docs/design/the-key-nobody-read-in-the-postdict.md`](docs/design/the-key-nobody-read-in-the-postdict.md)
 and [`docs/design/a-cost-you-can-defend.md`](docs/design/a-cost-you-can-defend.md).
-**RESERVED for Vítor:** the costing model is registered as `Guthrie` and every
-coefficient in the file is **Turton's** — an attribution ruling and a
-corpus-wide rename, and no value moves either way.
 
-**A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR — the
-pattern applied to a SECOND family (2026-08-25).**  `HeatTransferCorrelation`
-has had the right shape since it was written (declared validity window +
-`verify()` pinned to a published anchor + a bench that runs them all and
-prints the deviation beside the source; *"an unwired self-check is itself a
-no-silent-crutch violation -- this op is the wire"*).  It covered exactly ONE
-family.  Everywhere else Choupo's ~20 named correlations are free functions
-inside the unit op that uses them — correct, cited IN COMMENTS, unreachable.
-`FrictionFactorCorrelation` fixes that for the Darcy factor: Blasius,
-Colebrook-White, Haaland and Churchill leave `Pipe.cpp` and become registered
-objects, plus one property the heat family did not need — `citation()`, because
-*a correlation whose source is a comment is one the reader cannot check* (the
-2026-08-05 rule applied to a formula instead of a datum).  **THE ANCHORS ARE
-DELIBERATELY OF DIFFERENT KINDS**, because what CAN be checked differs:
-Blasius against its own closed form (the **arithmetic**, and the output says
-so — a 0.000 % deviation must not read as a validation); Colebrook against the
-fully-rough von Karman limit (that the **fixed-point iteration** arrives);
-Haaland against **Colebrook**, because agreement within ~2 % is the claim
-Haaland published and anchoring him elsewhere would check a claim nobody made;
-Churchill against the **exact** laminar law his single expression contains as
-its own limit — the strongest, since a mis-typed exponent fails there while
-the turbulent branch still looks plausible (sabotage S1: 12.5 % off, turbulent
-branch untouched).  **THE WITNESS PUBLISHES TWO SPREADS AND NEVER ONE**
-(`moody01_friction_correlations`, Re 1e5 / eps/D 1e-3): **25.74 % over all
-four, 1.72 % over the three inside their windows.**  One headline number would
-say "the correlations disagree by 26 %" when the truth is "three agree within
-2 % and one was asked a question it was never fitted for" — different lessons,
-both worth having, and collapsing them is the true-sounding statement this
-project refuses.  Blasius ANSWERS at eps/D > 0, confidently, 20 % low, with
-nothing wrong-looking about the number: only its window stands between that
-answer and a reader, which is what a window is FOR.  The bench never ranks
-them — that depends on the pipe, and ranking would hide the choice the
-engineer has to make, which is exactly what a silent default does.  `Pipe`
-reads the same objects at BOTH its call sites (it dispatched the model TWICE,
-300 lines apart in one file — one decision, two transcriptions); all three
-hydraulics goldens are byte-identical, because *a refactor that moves an
-answer is not a refactor*.  **NOT ESTABLISHED, said plainly:** no correlation
-here is checked against MEASURED data — two anchors are self-consistency by
-construction, Haaland's is agreement with Colebrook, and the corpus holds no
-friction measurements at all; the gate's OK line says so rather than letting
-four PASSes imply validation.  Also out: the transition band, Ergun, and the
-two-phase multipliers.  Gate: `check_friction_correlations` (4 sabotages —
-S4 is the one to know: a private `f_churchill` restored beside the factory
-call moved NO golden, because both computed the same thing, and only reading
-the SOURCE can see a second home that happens to agree).  **The sabotages also
-found a defect in the gate**: three of four reported "pipe01's golden moved"
-having touched nothing the pipe computes, because `bin/runTests` REFUSES while
-a destructive journal is open and the arm read that absence as a moved answer
-— *a check that cannot run must not pass, and must not fail with a FALSE
-REASON either*; it distinguishes the two now.  Record:
+**A CORRELATION IS AN OBJECT, WITH A WINDOW, A CITATION AND AN ANCHOR
+(2026-08-25).**  `FrictionFactorCorrelation` (Blasius, Colebrook-White,
+Haaland, Churchill) joins `HeatTransferCorrelation`: declared validity window
++ `verify()` anchor + `citation()` — a correlation whose source is a comment
+is one the reader cannot check.  The bench never ranks them; the witness
+publishes two spreads and never one.  NOT ESTABLISHED: no correlation here is
+checked against MEASURED data.  Gate: `check_friction_correlations`.  Record:
 [`docs/design/correlations-as-objects.md`](docs/design/correlations-as-objects.md).
 
 **A BATCH MEMBRANE, AND THE WASHOUT LAW FAILING WHERE A STUDENT CAN WATCH
@@ -1505,55 +1048,14 @@ guard nothing tests.*  The gate now BUILDS the offending cases (reason stripped,
 `standard` requested, a law nobody implemented) and requires each to refuse AND
 name why.  8 sabotages total, two of which survived first contact.
 
-**AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  The caveat
-block exists because *a warning a thousand lines above the answer has been
-delivered and not received* — and the reactive path reintroduced that exact
-failure from the other side: not too few announcements, too many.  An
-iterative solver WALKS: it evaluates the physics at compositions it invented
-and throws nearly all of them away, and on an electrolyte feed most of those
-states raise a caveat.  `column13` ended with **103 advisories, 95 of which
-describe compositions its answer does not contain** (ionic strengths of 8.01,
-7.93, 6.77 mol/kg — states no sour water is in); the twelve that qualify
-PUBLISHED numbers sat among them, indistinguishable and unread.  An advisory
-now carries `where` (the innermost open `AdvisoryFrame`) and `status`
-(`accepted` | `trial`), **both stamped by the SINK, not by the 111 sites that
-raise them**.  THE DEFAULT IS `accepted`: a site that says nothing keeps
-exactly its old behaviour, so nothing is silently demoted by a mechanism
-nobody opted into.  Status only ever moves TOWARD the answer (an accepted add
-PROMOTES a matching trial entry; a trial never demotes an accepted one) —
-otherwise iteration order would decide whether a caveat is about the result.
-The block PARTITIONS on that stamped field; it never decides two differently
--worded advisories are "the same fact" (a similarity heuristic, and
-heuristics rot).  103 lines became 12, and across the corpus **326 of 365 cases are
-UNTOUCHED** (no frame opened) while **none lost a caveat about its answer**;
-`column13` was not even the worst -- `stripper02_sour_water_h2s` printed 385.
-**Frame the search where the search
-IS, not at every caller**: the first draft framed the MESH column (7 of 103),
-the second added the adiabatic flash's T loop (42), and only the third — at
-`ReactiveVLE`'s outer Newton, where the advisories are BORN — reached 12,
-because the column, the flash and the energy report all pass through it.  The
-prior art was already in the file: `innerVerbosity` had solved the identical
-problem for the inner speciation on 2026-07-27 (first call traced, middle
-silent, FINAL call on the converged state carries the diagnostics), fixed then
-because the block reported the INITIAL GUESS's pH as the answer.  **A DATA
-RACE rode along and is closed**: the sink is written from `newtonND`'s
-PARALLEL finite-difference Jacobian, and an unguarded `push_back` from N
-threads is UB — it did not manifest in 18 consecutive runs on a two-thread box
-(identical count and order), which is evidence about that machine and not
-about the contract.  Two things measured rather than assumed: **`walk.close()`
-in `ReactiveVLE` is TODAY INERT** (removing it leaves column13 byte-identical
-— every accepted advisory arrives by the unframed post-solve pass in
-`Flowsheet::solve`; it stays because otherwise the reader's caveats would
-depend on an unrelated subsystem continuing to exist, and a contract that
-holds by coincidence is not a contract), and the `I = 8.01` block is REAL (four
-streams carry 1.4-1.9 mol of water).  NOT covered, said plainly: the recycle
-Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators still
-report their paths as answers.  Gate: `check_advisory_attribution` — five
-sabotages, of which **the first SURVIVED** (it attacked one caller when the
-over-demotion arm needed the MECHANISM attacked), and sabotage 5's first run
-found a defect INSIDE the gate: the accepted counter matched the path
-section's own lines, reading 15 where the truth is 12 and keeping the
-`accepted == 0` clause from ever firing.  Record:
+**AN ADVISORY NOW SAYS WHICH STATE IT IS ABOUT (2026-08-24).**  An advisory
+carries `where` (the innermost open `AdvisoryFrame`) and `status` (`accepted`
+| `trial`), both stamped by the SINK, not by the sites that raise them; THE
+DEFAULT IS `accepted`, status only ever moves TOWARD the answer, and the block
+PARTITIONS on that stamped field — never on a similarity heuristic.  Frame the
+search where the search IS, not at every caller.  NOT covered: the recycle
+Wegstein, the Gibbs multi-start, Wang-Henke and both time integrators.  Gate:
+`check_advisory_attribution`.  Record:
 [`docs/design/advisory-attribution.md`](docs/design/advisory-attribution.md).
 
 **THE PELLET IS A POINT, AND NOW THE ENGINE SAYS SO (2026-08-18).**
@@ -1589,92 +1091,38 @@ Gate: `check_pellet_announcement` (4 sabotages; states the reach it does NOT
 have — no corpus case declares `catalystLoading` on a `pfr`).
 
 **THE REFERENCE RUNG — a declared field the hot path did not honour
-(2026-08-06).**  `standardThermochemistry.referenceState` (`idealGas` default ·
-`pureLiquid` · `pureSolid`) says which standard state `dHf_298` / `s_298` are
-tabulated on, and `h_formation(T, phase)` honours it.  **`h_pure_ig` /
-`s_pure_ig` / `g_pure_ig` did not** — they read the two numbers straight off
-the record and integrate the ideal-gas Cp whatever it declares, which is every
-Gibbs reactor, `Reaction::Kp`, `ReactiveFlash` and `H_ig`/`S_ig`.  A
-`pureSolid` datum read there is wrong by a heat of sublimation, silently.
-The catalogue was measured before the fix and the numbers live in the ADR
-(dated, one home): most records take the default rung and it is correct for
-every one of them, a small minority declare a non-gas rung, and **NONE of
-those carries a gas Cp** — so the catalogue could not reach the defect, and
-the refusal it got instead said *"needs idealGasHeatCapacity block"*.  **The
-error message was advice that creates the bug.**  They refuse on the rung now,
-before the Cp check, quoting the record's own word and naming `h_formation` as
-the remedy; `ThermoPackage`'s nonvolatile guard gained `datumOnIdealGasRung()`
-beside `hasCpIdealGas()` (kept SEPARATE — folding in `hasGibbsData_` would have
-rerouted every record that carries a gas Cp and no datum).  A generic remedy stapled to a specific diagnosis contradicts it:
-the energy-balance refusal appended *"add standardThermochemistry{ … phase; }"*
-to every gap — to a record that already has the block, naming a key that has
-never existed — and is now conditional on the generic branch.  NOT closed, and
-said so: `water.dat` carries only the ideal-gas datum, so an aqueous reaction
-wanting the LIQUID one derives `water-dissociation` at logK25 **−12.4986
-against a stored −14**; that is a MISSING SECOND DATUM, a data-layer change,
-and it gates `gStd`.  Gate: `check_reference_rung` (probe-built defective
-record — it must never enter the catalogue).  Record:
-[`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
+(2026-08-06).**  `h_pure_ig` / `s_pure_ig` / `g_pure_ig` refuse on a non-gas
+`standardThermochemistry.referenceState` before the Cp check, quoting the
+record's own word and naming `h_formation` as the remedy — the old message was
+advice that creates the bug; `datumOnIdealGasRung()` is kept SEPARATE from
+`hasCpIdealGas()`.  NOT closed: `water.dat` carries only the ideal-gas datum
+(a MISSING SECOND DATUM, gating `gStd`).  Gate: `check_reference_rung`.
+Record: [`docs/design/reference-rung-refusal.md`](docs/design/reference-rung-refusal.md).
 
-**ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07) — and the whole model is one
-virtual.**  Vítor's instruction was that classical thermodynamics already
-handles a freezing solvent, so the class architecture must express it NATURALLY
-(the OpenFOAM posture) rather than by a grammar bolted onto the mineral path.
-It does: `Phase::fEffective` was already the ONE interface and `Kvec_phases`
-already DERIVES K from it, so `SolidPhase::fEffective` returning
-`Psat(T)·exp(−ΔG_fus/RT)` at the crystal's index — and ZERO at every other —
-is the entire implementation.  Freezing-point depression then falls out of
-K = 1 as `ln a_w = −ΔG_fus/(R T)`, derived and never declared; nothing above
-`SolidPhase` knows a solid is present.  `component <name>;` is REQUIRED (a
-pure crystal is ONE component's solid, and the zero at every other index is a
-CLAIM — solute inclusion is not modelled, which is exactly what makes the
-concentrate's balance exact); four more refusals name their remedy.  Psat comes
-from the SAME `components_[i].vp().Psat_Pa(T)` call `LiquidPhase` uses, so the
-two phases cannot drift onto different references.  `K_f` was PROMOTED from
-reference-only to derived by the condition `Component.H` set for itself (a
-cited `Hfus` and a consumer): 1.8603 derived against the declared 1.853, two
-independent primaries 0.39 % apart — a finding, not an error — while a record
-with no `Hfus` keeps its declared value, because an absence must go on meaning
-what it meant.  **Three things this slice paid for.**  (1) The pure-water
-crossing is 0.999903 and NOT 1: `Tfus` in the record is the TRIPLE point, and
-the gate pins the residual BOTH ways so a declared approximation can neither be
-hidden by a loose tolerance nor exceeded by real error.  (2) Below 273 K the
-liquid reference is an EXTRAPOLATED Antoine by construction — water's fit
-*starts* at the melting point — announced, never judged.  (3) **A status guard
-armed on one of two routes guards neither**: `check_ebullioscopic` failed the
-day anything called `K_f()`, the consumer reads `subHfus()`/`subTripleT()`
-instead, and the gate went on printing four false clauses at exit 0 (the
-`check_true_ions` shape by a different road).  `K_f` moved to the gate beside
-its consumer; what stays is a HANDOVER arm.  Prose staleness is deliberately
-NOT gated — three attempts failed three ways, and a text search cannot tell a
-live claim from a recorded one.  Gate: `check_ice_freezing` (4 sabotages; the
-fourth SURVIVED first time because its negative's subject did not exist in the
-catalogue, so both negatives are now synthesised in the probe).  NOT witnessed
-by a case: the freeze-concentration tutorial waits for a published anchor.
-Record:
+**ICE IS A PHASE, NOT A SPECIAL CASE (2026-08-07).**  `SolidPhase::fEffective`
+returning `Psat(T)·exp(−ΔG_fus/RT)` at the crystal's index — and ZERO at every
+other — is the entire implementation; freezing-point depression falls out of
+K = 1, derived and never declared.  `component <name>;` is REQUIRED (solute
+inclusion is not modelled); `K_f` is derived from a cited `Hfus`, and a record
+with none keeps its declared value.  A status guard armed on one of two routes
+guards neither.  Prose staleness is deliberately NOT gated.  Gate:
+`check_ice_freezing`.  Record:
 [`docs/design/ice-as-a-solid-phase-of-the-solvent.md`](docs/design/ice-as-a-solid-phase-of-the-solvent.md).
 
 **THE STRUCTURAL SLICE (2026-08-05/06) — the layering now HOLDS, and the
 machinery that enforces it got its own arity treatment.**
 
-* **I17 and I18 are ASSERTED, not bounded** (`global-invariants.md`).  The
-  layering gate shipped pinning FIVE upward edges and EIGHT cycles; all five
-  and seven of the eight are paid.  Every one was the same defect — ONE shared
-  concept filed inside a consumer: `FlatUnit` left `SimulationResult` (which
-  is *why* `core` reached up — a header declaring both a topology record and
-  an output record), `DerivedClosures` and `readExchange` moved to `thermo`,
-  `UnitProfile` to the new `result/`, `OdsWriter` to `core`.  `PINNED_UP` is
-  empty; the only cycle left is the ACCEPTED `solver ↔ thermo` (§7.3).  Debts
-  D1/D2/D4/D6/D7 in [`docs/architecture/module-boundaries.md`](docs/architecture/module-boundaries.md).
-* **`result/` and the tooling plane.**  Two new subsystems in the layering:
-  `result` (the pipeline's output records) and `io` (domain serialisation);
+* **I17 and I18 are ASSERTED, not bounded** (`global-invariants.md`).  Every
+  pinned upward edge was the same defect — ONE shared concept filed inside a
+  consumer.  `PINNED_UP` is empty; the only cycle left is the ACCEPTED
+  `solver ↔ thermo` (§7.3).  Debts in
+  [`docs/architecture/module-boundaries.md`](docs/architecture/module-boundaries.md).
+* **`result/` and the tooling plane.**  `result` (the pipeline's output
+  records) and `io` (domain serialisation) are subsystems in the layering;
   `curation` sits BESIDE the stack under a stronger rule — *a tool may read
   the runtime, nothing in the runtime may read a tool, only `applications/`
   joins the planes.*  A finding record is neutral data and belongs at the
-  bottom: [`docs/design/where-a-finding-record-lives.md`](docs/design/where-a-finding-record-lives.md),
-  settled against DWSIM, whose `Interfaces` assembly has zero dependencies
-  (the pattern) while its solver reaches a diagnostics subsystem that owns a
-  WinForms window (the warning).
+  bottom: [`docs/design/where-a-finding-record-lives.md`](docs/design/where-a-finding-record-lives.md).
 * **`bin/curate/debt_registry.py` — ONE home for every accepted violation.**
   Waivers were scattered across eight of the 92 `check_*` scripts: the arity
   doctrine broken by the machinery built to enforce it.  Each entry carries
@@ -1718,51 +1166,13 @@ gates themselves rather than in the engine.
 
 **A COLUMN OVER A CHEMISTRY — the effective stage K (built 2026-08-04).**
 `ThermoPackage::stageK(T, P, zStage, x, y)` is the ONE entry a tray asks for
-equilibrium.  Molecular package → forwards to `Kvec`, byte-identical (all 12
-column tutorials unmoved).  Reactive package → solves the stage's own
-equilibrium at its own (T, P, z) and returns an **effective APPARENT** K; the
-apparent components stay the state, the ions stay internal to the stage
-exactly as in a flash, and the Jacobian never sees one.  Nested, not rigorous
-species-basis MESH — one reactive flash per stage per residual, and a case
-that runs it must say so.  **A K-VALUE IS AN INCIPIENT QUANTITY** (paid for
-once): K = y/x off the flash is right only while the stage is two-phase and
-returns a column of ZEROS the moment a trial state is subsaturated — residual
-−1 everywhere, flat in T, singular Jacobian, `Newton iters: 0` over an
-untouched guess.  The subsaturated branch uses the equilibrium partial
-pressures over the fully speciated liquid, K_i = (p_i/P)/x_i (published per
-apparent component as `ReactiveVLE`'s `pEqAtm`; a declared dimer contributes
-on the monomer basis).  The branches agree where they meet.  **The SAME
-construction closes the HIGH side too (2026-08-23):** a MESH initial ramp can
-visit trial T's ABOVE the two-phase band, where the reactive Newton has no
-interior V/F — it throws the TYPED `ReactiveVLE::NonConvergence` (the
-singular-Jacobian degeneracy at a simplex-corner trial is the same class),
-and `stageK` catches exactly that type and prices the trial incipient over
-the hypothetical speciated liquid (`solve(..., subsaturatedProbe = true)`),
-announced once; a REFUSAL is a different type and is never absorbed.  A
-converged stage sits at saturation, where the constructions agree — the aid
-shapes the path, never the answer.  **A trial
-composition can leave the simplex** — the Newton overshoots the minor
-component first (CO2 at −8.5e-4 against a feed of 8e-3) — so `stageK` projects
-onto the simplex and ANNOUNCES it once: negatives clamped (overshoot), exact
-zeros left alone (absent means absent).  A refusal raised inside a stage now
-names the trial (T, z) that provoked it.  Witnesses: `column12_stage_is_a_flash`
-(molecular CONTROL, adiabatic re-flash so the recovered T is an energy result)
-and `column13_sour_water_stage_identity` (NH3+CO2/water, 7 Newton iters to
-|F| 8e-10, identity closing at 1e-9 **on the ions too**).  Gate:
-`check_stage_identity` (4 identity claims + 2 guards + the off-stage negative;
-R1 speciation, R2 the SOLVED adiabatic T against the column's own profile.csv,
-R3 the twin really reacts), sabotage-verified twice.  The named gap CLOSED
-2026-08-23: the adiabatic flash's outer Newton now survives a trial T the
-package cannot answer (announced, treated as the HIGH side — the reactive path
-loses its liquid there — and re-seeded by bisection when the inlet's own T is
-unanswerable, e.g. a mixer's fictitious dominant-phase readout), so column13
-re-flashes ADIABATICALLY and claims BOTH halves of the identity (T solved to
-367.3398 K against the stage's own).  Also fixed on the way: `adiabaticFlash`
-priced EVERY inlet as a sub-cooled liquid regardless of its vapour fraction
-(silent — it converges, to the wrong temperature); it now reads the stream's
-`vf`.  Scope + the record of what the one-stage identity turned into and why:
-[`docs/design/sour-water-stripper-scope.md`](docs/design/sour-water-stripper-scope.md) §6a.
-Theory: `sec:stagek`.
+equilibrium: molecular → `Kvec`, byte-identical; reactive → an effective
+APPARENT K, the ions internal to the stage, the Jacobian never sees one.  A
+K-VALUE IS AN INCIPIENT QUANTITY: a subsaturated or above-band trial is priced
+over the speciated liquid (a typed `NonConvergence` is absorbed, a REFUSAL
+never is); a trial leaving the simplex is projected and ANNOUNCED.
+`adiabaticFlash` reads the stream's `vf`.  Gate: `check_stage_identity`.
+Record: [`docs/design/sour-water-stripper-scope.md`](docs/design/sour-water-stripper-scope.md) §6a.
 
 **Pinch — P1 targets + P2 analysis table (built 2026-08-03; P3 area-cost
 stays UNAUTHORISED).**  A `pinchPass` PostProcessor in the postDict chain:
@@ -1800,85 +1210,26 @@ guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
 importer's dependency closure since flash20 (a sealed case must never change
 physics on sealing).
 
-**THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED, AND THE DIFFERENCE NOW
-TRAVELS WITH THE ANSWER (ruled 2026-08-11).**  An end-to-end agent test reached
-a converged acetone process by downgrading the physics TWICE -- a rigorous
-column replaced by an FUG shortcut, and a declared NRTL liquid run as IDEAL on
-two pairs with no parameters.  Both were declared, in COMMENTS the agent chose
-to write; nothing in the result JSON, the KPIs or `converged/` carried either,
-and the distillate still read 99.55 mol%.  **An ADVISORY says the answer is
-qualified; a DIVERGENCE says the answer is to a DIFFERENT QUESTION** -- so they
-do not share a channel (`core/ProblemDivergence.H`, printed ABOVE the caveats,
-emitted ABOVE the KPIs, and written to `converged/problemDivergence`; all three
-ALWAYS, empty included -- plus a FOURTH surface, the GUI results band, above
-the advisories band and rendering the engine's own words).  The contract is INVERTED: an approximation the case
-AUTHORISED runs and is RECORDED, one nobody authorised is REFUSED with four
-named paths and a paste-ready block.  TWO KINDS, deliberately: a **substitution**
-(the engine would deliver other than what was asked -- refused) and a **declared
-approximation** (an FUG column IS what was asked -- recorded, never refused,
-because a stream table cannot show that the column was a shortcut).  The
-authorisation lives ONCE at the TOP LEVEL of the thermophysical system beside
-`idealMolecularVLE` -- *it is a statement about the CASE, not a parameter of the
-model* -- and the problem it created was PROPAGATION, not grammar: a constructor
-sees only its own sub-dict, so the block is parsed ONCE at `buildV2Dispatch`
-(the dispatch EVERY v2 formulation passes) and consulted from
-`thermo/ApproximationAuthorisation`.  The first version put that parse inside
-the reactive-electrolyte branch, where four formulations out of five never
-reach it -- unenforceable on exactly the molecular cases it exists for.  The
-refusal/record/announce DECISION has ONE home (`resolveIdealPairSubstitution`,
-shared by NRTL/UNIQUAC/Wilson): three transcriptions of one refusal would be the
-arity sin inside the machinery built to enforce it.  **The sabotage that caught
-NOTHING is the one worth knowing**: forcing the tri-valued authorisation's
-NotRead branch on changed no probe, because no path reaches it -- so the branch
-now ANNOUNCES itself as an engine defect, stamps its divergences `UNEXAMINED`,
-and arm A8 asserts it stays unreached (S4, bypassing the ONE parse, is the only
-sabotage whose failure names the CAUSE).  Corpus: TWO cases out of ~480 were
-hiding a substitution, and they are different findings.
-`crystalliser09_KHT_KCl_series` (rectifier overridden to NRTL, two salts with no
-pair) is DEFENSIBLE -- both salts leave in the bottoms and take no part in the
-VLE -- and its flowsheetDict comment said so, which was the only record
-anywhere.  `esterification2sector` is NOT: its two uncurated ACETIC-ACID pairs
-ran ideal, and acetic acid + water is strongly non-ideal and associates in the
-vapour, so ideal there is KNOWN-POOR.  Its block says so, states that no
-separation number it reports is a physical claim, and that the answer is
-EXPECTED TO MOVE when the pairs are curated -- the pairs were NOT invented to
-close it (unsourced must never become falsely sourced).  *The engine cannot
-judge whether ideal is acceptable; it can force somebody to say in writing,
-beside the number, that the question was changed.*  **Neither golden moved** --
-the substitutions were already happening, only their declaration is new, and
-that is the expected outcome for every case this touches.  NOT covered, said plainly: only `shortcutColumn`
-and the three pair-parameter activity models are wired; every other downgrade is
-UNCOVERED.  Gate: `check_problem_divergence` (8 arms, 4 sabotages).  Record:
+**THE PROBLEM SOLVED IS NOT ALWAYS THE PROBLEM POSED (ruled 2026-08-11).**  An
+ADVISORY says the answer is qualified; a DIVERGENCE says the answer is to a
+DIFFERENT QUESTION — `core/ProblemDivergence.H`, printed ABOVE the caveats,
+emitted ABOVE the KPIs, written to `converged/problemDivergence`, ALWAYS.  A
+substitution nobody authorised is REFUSED; a declared approximation is
+RECORDED, never refused.  The authorisation lives ONCE at the TOP LEVEL of the
+thermophysical system, parsed ONCE at `buildV2Dispatch`; the decision has ONE
+home (`resolveIdealPairSubstitution`).  NOT covered: only `shortcutColumn` and
+the three pair-parameter activity models are wired.  Gate:
+`check_problem_divergence`.  Record:
 [`docs/design/problem-divergence-contract.md`](docs/design/problem-divergence-contract.md).
 
-**THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT
-(2026-08-09).**  A unit carrying a per-unit `thermo {}` override solves in
-ITS OWN world while the energy report prices every stream in the CASE's, and
-the difference is the enthalpy STEP the settled architecture predicts (hold
-(T,P,z), let H jump).  It was being charged to the unit as "an UNEXPLAINED
-first-law residual" under the RED alarm — 2.9851 kW on `basis01`, and the
-same defect one field away on `flash20`'s NRTL flash at 42.86 kW, which
-nobody had connected.  **Three quantities now travel apart and are never
-collapsed**: the RAW imbalance · the declared STEP · what REMAINS.  The
-verdict is taken on the third; the raw stays on every surface that showed it
-(the six original CSV columns are unchanged, `energy_closure_pct` still
-means the raw closure).  **The audit is INDEPENDENT, deliberately, against
-the arity doctrine**: it accepts no dH from the unit and never calls
-`Flowsheet::thermoFor` — it reads the unit's `thermo{}` from the
-flowsheetDict, assembles that world itself through the public
-`ThermoPackageBuilder`, prices both streams in both packages at the same
-(T,P,z), and credits the step ONLY if its own number reproduces the
-imbalance.  *An auditor that reuses the auditee's arithmetic checks
-nothing.*  A step is credited only when DECLARED (never inferred from
-coincident numbers) · UNAMBIGUOUS · PRICEABLE (the doctrine's speciation and
-datum refusals) · READABLE · REPRODUCED under `solver/Convergence.H`
-(`modelBoundaryClosure { tolerance; relTol; }`, ONE normalization, `maxIter`
-refused because a closure is not an iteration); every other outcome leaves
-the remaining equal to the raw and the alarm standing, saying which
-condition failed.  Two deviations stated rather than forked: three terms
-instead of the degenerate pair, and the pre-existing closure band is NOT
-retro-judged over the corpus.  Gate: `check_model_boundary_ledger` (3
-sabotages, observed output in the docstring).  Record:
+**THE MODEL-BOUNDARY STEP IS ACCOUNTED, NOT CHARGED TO THE UNIT (2026-08-09).**
+Three quantities travel apart and are never collapsed: the RAW imbalance · the
+declared STEP · what REMAINS; the verdict is taken on the third.  The audit is
+INDEPENDENT (it never calls `Flowsheet::thermoFor` — an auditor that reuses
+the auditee's arithmetic checks nothing), and a step is credited only when
+DECLARED · UNAMBIGUOUS · PRICEABLE · READABLE · REPRODUCED under
+`solver/Convergence.H` (`modelBoundaryClosure`; `maxIter` refused).  Gate:
+`check_model_boundary_ledger`.  Record:
 [`docs/design/model-boundary-energy-ledger.md`](docs/design/model-boundary-energy-ledger.md).
 
 **Balance diagnostics, three levels (2026-07-19): total mass · per-element
@@ -1924,71 +1275,36 @@ functor, idempotent.
 
 **External-reference battery (2026-08-01).**  Beyond self-recorded goldens,
 cases pinned on PRIMARY published anchors, each stating what is and is not
-the portable part: `cavett01_recycle_train` (Rosen-Pauls spec verbatim;
-Wegstein DEFEATED on the real conditions, Newton 7 it; SRK products beside
-the published APR/FLOWTRAN tables) and the Williams-Otto four
-(`ctrl12`-`ctrl14`, `ctrl16`: the published x* to all digits, Fig.-2 step,
-Fig.-4 PI shape, §5.3 optimum at 99.1 % of the published collocation value
-from K=5 shooting — the gap stated up front and measured).  Spec + anchors:
+the portable part: `cavett01_recycle_train` and the Williams-Otto four
+(`ctrl12`-`ctrl14`, `ctrl16`).  Pattern for future references: one coherent
+primary source end to end, never a blend; provenance of every number stated
+in the case.  Spec + anchors:
 [`docs/design/williams-otto-reference-case.md`](docs/design/williams-otto-reference-case.md).
-Pattern for future references: one coherent primary source end to end,
-never a blend; provenance of every number stated in the case.
 
 **Batch campaign LEDGERS — material + energy (built 2026-07-11, forum
 #99/#101/#102).**  choupoBatch carries two structured ledgers: the MATERIAL
 ledger (one `TransferRecord` per material edge, per-package enthalpy at each
 package's own T, MONOTONIC H-validity — a poisoned record never resurrects)
-and the ENERGY ledger (one `EnergyRecord` per segment of constant physics;
-kinds reaction/reboiler/condenser/latent/impulse live, sensible/mixing/
-externalH/shaftWork/heatLoss reserved).  Every integral is an EXACT state
-difference on the elements datum, never a quadrature (Hess collapses
-per-reaction duty to Σ Δn·h(T); the still's reboiler is first-law over the
-pot; the crystalliser prices Δμ3; the setParameter-T impulse is
-H(n,T₁)−H(n,T₀)); `chargeFrom` solves T_mix by H-EQUALITY (fallback = molar
+and the ENERGY ledger (one `EnergyRecord` per segment of constant physics).
+Every integral is an EXACT state difference on the elements datum, never a
+quadrature; `chargeFrom` solves T_mix by H-EQUALITY (fallback = molar
 average, announced + drained as a named gap).  The campaign energy balance
 claims a verdict ONLY when every piece is ledgered and priceable — otherwise
-UNAVAILABLE quoting each `energyLedgerGap()` verbatim.  Reference cases:
-recipe01 (react-then-distil INTO a receiver; vessels retain all mass, closure ~1e-15), recipe02 (T-programme + impulses,
-2e-15), still06/batch08 (adversarial validity).  Heat-of-crystallisation is
-SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  **DATUM AMENDMENTS
-(A5, 2026-08-01):** an open-boundary unit's declared feed commitment is
-campaign matter from t = 0, so a recipe that RE-DECLARES the feed (the fixed
-bed's isothermal feed switch, `setParameter feed.<component>` = new mole
-fraction) jumps the datum — the jump is priced by the unit
-(`takeDatumAmendments()`, `BatchUnitOperation::DatumAmendment`) and ledgered
-as `feedAmendment` records against the external boundary; mass/element/energy
-closures read the records (witness batch19_feed_switch_purge; gate
-check_feed_switch, sabotage-verified; T/u/P swings refuse by name).  Phase
-(f), first half SHIPPED (forum #98.3-6 as amended by #99-5): every VALID
-ledger record with a service T is allocated to a catalogue utility by the
-SAME `pickForDuty` rule the steady report uses (phase-aware dutyPerKg —
-condensing steam is latent), campaign cost = Σ E·price, unserved records
-LISTED never dropped (`utility_*_kJ/kg/eur` + `utility_cost_eur_total`
-KPIs).  The TEMPORAL half SHIPPED 2026-08-03 (form B as ratified): the
-demand STAIRCASE on the accepted-driver-step grid
-(`reports/utilities/utilityDemand.csv`, row = tStart/tEnd/unit/eventType/
-utility/deltaEnergy/averageRate — the rate an explicit step MEAN), the
-ledger stays the SOLE authority (per record Σprofile == exact E at 1e-6
-rel or the profile is REFUSED and the record stands; unprofiled records
-LISTED), impulses are an explicit class (no rate, excluded from peaks,
-warned), peaks (`utility_*_peak_kW/_t_peak_s`) come from the canonical
-profile only, ONE allocator (the profile inherits each record's
-`pickForDuty`).  Samplers live in `noteTimeAdvanced` (a `hasOdeForm()`
-unit never runs `step()`).  The reconciliation caught two REAL ledger
-bugs on first contact, both fixed with it: (1) transfers were priced
-into duty records (`chargeFrom`/`discharge*` mutated before notifying —
-recipe01's "reaction" +6716.6 kJ was H(empty)−H(charge), and steam was
-billed for a vessel transfer; now `notifyStateWillChange()` closes the
-segment PRE-mutation, `notifyStateChanged()` only re-bases); (2) the
-driver routed continuous discharges AFTER the clock-note, so hand-off
-accumulators lagged their sample window by one step (now
-`routeDischarges` → `noteTimeAdvanced` → events, and
-`takeContinuousDischarge(tNow)` carries the committed time — the fixed
-bed's algebraic carrier outlet must never read its own stale clock).
-Witnesses recipe01 (steam peak 16.96 kW at the bring-to-boil vs 0.76 kW
-mean — the number the total hides) + recipe02 (impulses) + batch13
-(unprofiled listing); gate `check_temporal_utilities` (3 mandated
-sabotages).  Full record:
+UNAVAILABLE quoting each `energyLedgerGap()` verbatim.  Heat-of-crystallisation
+is SHARED steady↔batch (`CrystallisationHeat.{H,cpp}`).  **DATUM AMENDMENTS
+(A5, 2026-08-01):** a recipe that RE-DECLARES the feed jumps the datum — the
+jump is priced by the unit (`takeDatumAmendments()`) and ledgered as
+`feedAmendment` records against the external boundary (witness
+batch19_feed_switch_purge; gate check_feed_switch; T/u/P swings refuse by
+name).  **Phase (f) UTILITIES, both halves SHIPPED (temporal half
+2026-08-03):** every VALID ledger record with a service T is allocated by the
+SAME `pickForDuty` rule the steady report uses, unserved records LISTED never
+dropped; the demand STAIRCASE (`reports/utilities/utilityDemand.csv`) keeps
+the ledger as SOLE authority (a profile that does not reproduce its record is
+REFUSED and the record stands), impulses are an explicit class, ONE
+allocator.  `notifyStateWillChange()` closes the segment PRE-mutation, and
+`takeContinuousDischarge(tNow)` carries the committed time.  Gate:
+`check_temporal_utilities`.  Full record:
 [`docs/design/batch-temporal-utilities-proposal.md`](docs/design/batch-temporal-utilities-proposal.md) §8.
 
 **General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
@@ -2010,18 +1326,13 @@ versioned `Choupo-2607` per `data/standards/CATALOGUE.dat`).  The
 architecture is
 [`docs/architecture/property-architecture.md`](docs/architecture/property-architecture.md);
 the 2026-07-06 working notes were a session memory and are NOT in the
-repository, so this paragraph is the record of the decision.  **The seal is COMPUTATIONAL
-since 2026-08-03** (`sealSchema computational;`, corpus migrated 328/0 —
-a sealing-SCHEMA migration, never a scientific reseal): the claim is the
-PARSED content (`src/core/DictCanonical`, surface `choupoProps
---canonical-hash/--canonical-dump`; exclusion by typed fields — the
-parser's tree — never comment-stripping), so comment/formatting/
-unit-spelling drift is COSMETIC (announced, verdict intact) while a
-moved value/dimension/key diverges and `onDivergence refuse` fires
-exactly as before; the legacy byte hashes stay in the manifests as
-historical provenance and seal-drift is now classified
-cosmetic-vs-computational.  Gate `check_seal_schema`
-(sabotage-verified); record:
+repository, so this paragraph is the record of the decision.  **The seal is
+COMPUTATIONAL since 2026-08-03** (`sealSchema computational;` — a
+sealing-SCHEMA migration, never a scientific reseal): the claim is the PARSED
+content (`src/core/DictCanonical`), so comment/formatting/unit-spelling drift
+is COSMETIC (announced, verdict intact) while a moved value/dimension/key
+diverges and `onDivergence refuse` fires exactly as before.  Gate
+`check_seal_schema`; record:
 [`docs/design/computational-seal-migration.md`](docs/design/computational-seal-migration.md).
 
 **Sequential-plan contract (tears + order) — SETTLED 2026-07-25, do NOT
@@ -2050,32 +1361,14 @@ separate feature, never a tear), stream freshness marks (batch/ctrl future).
 **Stream-state directories + topological drill-in — RATIFIED 2026-07-06 (the
 constitutional spine; do NOT reopen the ontology unless a concrete case proves
 the contract fails).**  A stream's STATE lives in its OWN file on disk,
-OpenFOAM-style — never inside `flowsheetDict`.  `flowsheetDict` declares the
-TOPOLOGY; the state directories carry the NUMBERS: **`0/`** (COMPLETE initial
-state, one file per stream), **`converged/`** (steady solution — not `final/`,
-not numeric), **`iterations/`** (optional numerical history, NEVER physical
-time), **`0.01/` `0.02/`…** (physical transient snapshots), **`design/`**
-(equipment realisation), **`economics/`** (cost/value).  Rules FROZEN: the graph
-is fractal (root assembles sectors + inter-sector links only); **completeness
-contract** — N streams == N files in `0/`, missing/orphan is FATAL for
-`choupoSolve`; **stream role is inferred from TOPOLOGY** (no producer+consumer →
-inlet · producer+consumer → internal · producer+no-consumer → outlet; no
-`fixed`/`guess`/boundary mini-language); inter-sector streams stored ONCE (owned
-by the producing sector); **`choupo-init0`** materialises `0/` by explicit
-propagation from authored inlets + required cycle-breaking seeds (incomplete `0/`
-+ `choupoSolve` = FATAL; never overwrites without `--force`); **drill-in changes
-the DOMAIN, not the stream** — a sector's producer leaving the domain flips the
-role internal→inlet, and the child `0/` is materialised from the parent's
-persisted state, **`converged/` by default, never a silent "latest"**; canonical
-material blocks are **`componentMolarFlows`** or `componentMassFlows`
-(flow-plus-fractions is also accepted); `componentFlows` is a legacy fluid-only
-alias; process-unit ≠ physical-equipment (`designDict` maps → `design/`);
-economics aggregates over DESIGNED equipment.  This RETIRES
-the volatile in-memory drill-in feed injection (inherited-result/`&feeds=`) —
-those were band-aids for the missing persisted-state model.  Migration is
-COMPLETE (2026-07-10): `0/` is the ONLY steady state home; a `streams {}`
-block in any flowsheetDict (root or nested) is REFUSED loudly — no dual
-reader, no fallback.  Full contract:
+OpenFOAM-style — never inside `flowsheetDict` (TOPOLOGY only): `0/` (COMPLETE
+initial state, N streams == N files, missing/orphan FATAL), `converged/`
+(steady solution), `iterations/` (numerical history, NEVER physical time),
+`0.01/` `0.02/`… (transient snapshots), `design/`, `economics/`.  Stream role
+is inferred from TOPOLOGY; drill-in changes the DOMAIN, not the stream (the
+child `0/` from `converged/` by default, never a silent "latest");
+`choupo-init0` never overwrites without `--force`; a `streams {}` block in any
+flowsheetDict is REFUSED loudly — no dual reader, no fallback.  Full contract:
 [`docs/architecture/stream-state-architecture.md`](docs/architecture/stream-state-architecture.md).
 
 **The `phases {}` decomposition names AQUEOUS · ORGANIC · SOLID (2026-07-30).**
@@ -2143,47 +1436,14 @@ was performed, while this copy said the opposite.  A doc is not exempt from
 arity: the observation has ONE home, and it is beside the gate that made it.
 
 **A2 SHIPPED 2026-08-09 — `method weightedLeastSquares;`, and the ruling's
-one-way arrow made STRUCTURAL.**  Minimise `Σ ((x−m)/σ)²` over the measured
-quantities subject to the laws the case DECLARES in
-`enforce ( electroneutrality elementalConservation )` plus non-negativity,
-solved as a convex QP by the existing hand-rolled `solver/ActiveSetQP`.
+one-way arrow made STRUCTURAL.**  Minimise `Σ ((x−m)/σ)²` subject to the laws
+the case DECLARES in `enforce ( … )`, a convex QP on `solver/ActiveSetQP`;
 Vítor's boundary — *analysis → reconciliation → ONE admissible composition →
-equilibrium, never a coupled loop* — is enforced by a translation unit rather
-than a comment: `src/streams/AnalysisReconciler.{H,cpp}` includes NOTHING
-from `thermo/`, so it cannot NAME a speciation solver or an activity model,
-and its object references exactly ONE Choupo symbol (`solver::activeSetQP`) —
-a compile fact the gate reads off `nm`, whitelist not blacklist.  Posed in
-SIGMA UNITS, so the objective Hessian is the identity and the number the
-solver works in is the number the report publishes.  **The per-law
-attribution of every correction is a KKT identity** (`u_r = −Σ λ_k A_{k,r} +
-μ_r`), asserted to reconstruct the correction before it is published.  New:
-the ELEMENT-TOTAL row (`element Ca;` — a redundant determination carrying NO
-material, which is what makes `elementalConservation` real; unenforced it
-refuses as a measured number nothing reads), and the rule that **an element
-row's surrogate ratio is ARITHMETIC where a species row's is a CONVENTION**
-(declaring `perFormulaUnit` on an element row refuses — the formula already
-says how many Ca are in a CaCO3).  `maximumCorrection { value 3; in sigma; }`
-beside the per-cent form — two limits, not two spellings; the sub-dict
-spelling exists because a sigma is not a unit of measure and teaching the
-global unit table the word would make `T 3 sigma;` parse.
-**`genericWaterAnalysis-v1` was REFUSED, not shipped**: an uncertainty
-belongs to a laboratory and a method, not to an analyte, so a versioned table
-would be invented and would look authoritative *because* it carried a
-version; a missing σ refuses naming both one-line remedies (a per-row
-`uncertainty`, or `uncertainties { default … }` — equal weights, stated).
-**pH stays refused and A2 found the REASON**: adjusting it needs an activity
-coefficient, hence an ionic strength, hence the speciation — it is not
-deferred, it is on the other side of the boundary.  The record separates a
-MEASUREMENT-correction from a CHEMISTRY result by marks that survive being
-read out of order (`reportedValue` exists only on the measurement side,
-corrections are in SIGMA, the two use disjoint key spaces, the measured pH is
-`pHReported`).  Witness `analysis02_weighted_least_squares` — the same water
-plus an EDTA hardness that disagrees with the ICP calcium by 0.84 %; four
-quantities move, worst 0.2813 σ, against A1's single 5.12 % shove.  Gate
-`check_aqueous_reconciliation` (an independent KKT oracle; four sabotages,
-one of which showed the OBJECT-level boundary reading is blind to
-header-inline reach — stated in the gate rather than discovered later).
-ZERO existing goldens moved.  Record:
+equilibrium, never a coupled loop* — is enforced by a translation unit:
+`src/streams/AnalysisReconciler.{H,cpp}` includes NOTHING from `thermo/`.  A
+missing σ refuses (`genericWaterAnalysis-v1` was REFUSED, not shipped); pH
+stays refused — it is on the other side of the boundary.  Gate:
+`check_aqueous_reconciliation`.  Record:
 [`docs/design/aqueous-analysis-inlet-scope.md`](docs/design/aqueous-analysis-inlet-scope.md) §8 (A1) and §9 (A2).
 
 **Three-axiom property layout** (referenced by `docs/ai/overview.md`):
@@ -2275,19 +1535,10 @@ not conflict.  (This sentence used to credit `generated/indexes/` and
 does not exist sends the next reader looking for it.)  **General basis reconciliation — the vertical SPIKE is BUILT (2026-08-03),
 the MASS MIGRATION stays UNAUTHORISED.**  The two-unit chain
 (`tutorials/steady/thermo/basis01_two_unit_chain`) carries the species basis
-across a model boundary as MATTER: a `speciation {}` block a unit solved is
-stamped `origin "solved:<unit>"`, and a composition-preserving unit whose
-LOCAL `thermo {}` world resolves no chemistry TRANSPORTS its inlet's block
-(`origin "transported:<unit>"`) instead of letting the post-solve pass
-re-derive it with the global package — that re-derivation was silent
-respeciation across a boundary.  A carried equilibrium also states
-`solvedAtT` (the outlet is at 332 K carrying a block solved at 313 K; saying
-"transported" without saying from where leaves the reader to assume the two
-agree).  The reader STORES a verified block (carriage, not just checking),
-rows are written in canonical sorted order, and a block declaring no
-`network`/`basis` is REFUSED.  Gate `check_basis_spike` — ten criteria, five
-refusals, sabotage-verified twice; full record incl. the three finds and the
-open questions a migration must answer:
+across a model boundary as MATTER — a `speciation {}` block stamped
+`origin "solved:<unit>"` or `"transported:<unit>"`, `solvedAtT` stated — and
+a block declaring no `network`/`basis` is REFUSED.  Gate `check_basis_spike`;
+record:
 [`docs/design/basis-reconciliation-spike.md`](docs/design/basis-reconciliation-spike.md).
 **Do NOT generalise to the corpus without Vítor's decision.**  **Grammar
 consolidated 2026-07-04** (professors+students fora, `docs/design/thermo-grammar-*`):
@@ -2712,7 +1963,17 @@ those workarounds without re-validating.
 
 ---
 
-*Last reviewed: 2026-08-31 — a SEVEN-WAY EduTools audit read every lesson
+*Last reviewed: 2026-09-03 — DIET BY DEMOTION of §6.  Twenty-four dated
+narrative paragraphs that already had a design record were compacted to
+their rule, their trap, their gates and their record link (numbers dropped:
+they are the class of claim this file says must not live here); every
+paragraph WITHOUT a record was left whole, because its content exists only
+here, and the thirteen "do NOT relitigate" markers all survive.  What to do
+with the record-less paragraphs is the next slice: write the record first,
+then demote.  §10's rule that this file is the next session's memory is why
+the diet is worth the risk of a lost nuance — a memory a session cannot
+finish reading is not a memory.
+Earlier (2026-08-31) — a SEVEN-WAY EduTools audit read every lesson
 page against the engine it cites (§10's citation-requirement method, run
 again at scale): 43 confirmed defects, of which 33 are fixed in five
 commits ordered by damage to a student — wrong symbol DEFINITIONS first
