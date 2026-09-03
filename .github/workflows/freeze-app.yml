@@ -138,7 +138,8 @@ jobs:
           #  binary, and data/standards/CATALOGUE.dat declares the CATALOGUE's
           #  own release -- a different thing from the engine's version, and
           #  today a different value (the corpus is still sealed against
-          #  Choupo-2607; renaming it is a reseal, reserved for Vitor).  So a
+          #  Choupo-2607 in 394 sealed manifests -- their true freeze-time
+          #  identity, kept by the 2026-09-03 ruling in CATALOGUE.dat).  So a
           #  bare `grep "Choupo-YYMM"` can be satisfied by the catalogue
           #  rather than by the banner, and the comment saying "the engine
           #  states its own identity" was describing more than the grep did.

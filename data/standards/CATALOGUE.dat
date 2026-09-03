@@ -5,10 +5,18 @@
   here" -- origin, not universal truth.  choupo-import stamps every copied
   record with this release-set id; a case's snapshot then records exactly which
   Choupo catalogue it was frozen from.  Bump this when cutting a new release.
+  A MANIFEST THAT NAMES Choupo-2607 IS NOT WRONG (ruled 2026-09-03).  The
+  2607 RELEASE was withdrawn on 2026-09-02, but the catalogue identity a
+  sealed case records is the catalogue AS IT STOOD when the case was frozen,
+  and 394 manifests were frozen from that one; the standards tree has moved
+  since (check_seal_drift counts the value-moved records), so relabelling
+  them 2608 would claim a freeze that never happened.  They keep their true
+  identity; only NEW seals take the name below, which is the catalogue the
+  maintained release Choupo-2608 shipped.
 \*---------------------------------------------------------------------------*/
 
 catalogue
 {
-    release     Choupo-2607;
-    curatedAt   "2026-07";
+    release     Choupo-2608;
+    curatedAt   "2026-08";
 }

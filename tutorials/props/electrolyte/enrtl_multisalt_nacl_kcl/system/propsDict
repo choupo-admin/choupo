@@ -92,6 +92,17 @@
                 tau=+1 -> flat, dip to -0.101, back to -0.106   (the figure's
                           circle-marked curve shows the same shallow dip)
                 tau=-1 -> -0.364      (figure ~ -0.365)
+
+  THE PARAGRAPH ABOVE IS A DATED READING, NOT THE LIVE STATE (2026-09-03).
+  The golden this case ships today pins gamma1_pure = 0.801 for pure NaCl at
+  4 m, i.e. log10 = -0.096, where the reading of 2026-07-02 recorded -0.106
+  against the figure's -0.105: the kernel's answer has moved by ~0.01 in
+  log10 since the figure was read (the 2026-08-29 fleet audit found the
+  drift).  Whether the CURRENT curves still sit on the figure can only be
+  settled by reading the figure again, and that has not been done -- so "to
+  the pixel" is what was true on 2026-07-02, kept as the record of that
+  check, and is not a claim about this golden.  Nothing here was adjusted
+  toward the figure.
 \*---------------------------------------------------------------------------*/
 
 operations

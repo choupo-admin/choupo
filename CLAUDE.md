@@ -109,12 +109,15 @@ Choupo/
   section, marked WITHDRAWN and **unbracketed** so `release_inventory.py` can
   never announce it again.  Do not take a second exception without Vítor's
   explicit decision, and never for a release anyone could have cited.  Two
-  loose ends stay open and are NOT silently tidied: 394 sealed case manifests
-  carry `catalogueRelease Choupo-2607` and `data/standards/CATALOGUE.dat`
-  names it — that is the CATALOGUE's identity, a different thing from a git
-  tag, and renaming it is a curation act (a reseal of the corpus), reserved;
-  and `paper/README.md` states the companion article is about Choupo-2607,
-  which is a claim about a publication and Vítor's to settle.
+  loose ends were RULED on 2026-09-03: `data/standards/CATALOGUE.dat` now
+  names `Choupo-2608` (the catalogue the maintained release shipped), while
+  the 394 sealed manifests KEEP `catalogueRelease Choupo-2607` — the
+  catalogue identity a seal records is the catalogue AS IT STOOD when the
+  case was frozen, and the tree has moved since, so relabelling them would
+  claim a freeze that never happened (the ruling is written in
+  CATALOGUE.dat's own header); and `paper/README.md` states that both
+  artifacts were written against 2607, since withdrawn, and must be re-read
+  against 2608 before submission.
   **A SECOND EXCEPTION WAS TAKEN, of a different kind, and it is RECORDED
   the same way (2026-09-03, Vítor's decision: "one release, one tag"):**
   `v2608` was MOVED, from the commit it was cut at to the commit of its
