@@ -72,8 +72,6 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}
-\goldrow{kpi}{FeedDist}{PV\_final}{0}
-\goldrow{kpi}{FeedDist}{SP\_final}{335}
 \goldrow{kpi}{TC1}{MV\_final}{347.976535585}
 \goldrow{kpi}{TC1}{PV\_final}{350.00207645}
 \goldrow{kpi}{TC1}{SP\_final}{350}
@@ -85,7 +83,9 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \goldrow{kpi}{balance}{mass\_closure\_rel}{2.79221090693e-14}
 \goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
 \goldrow{kpi}{balance}{mass\_kg\_in\_cum}{3}
-\goldmore{7}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{3}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -114,8 +114,6 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}
-\goldrow{kpi}{FeedDist}{PV\_final}{0}
-\goldrow{kpi}{FeedDist}{SP\_final}{335}
 \goldrow{kpi}{TC1}{MV\_final}{347.976535626}
 \goldrow{kpi}{TC1}{PV\_final}{350.002076468}
 \goldrow{kpi}{TC1}{SP\_final}{350}
@@ -127,7 +125,9 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \goldrow{kpi}{balance}{mass\_closure\_rel}{2.66083451568e-14}
 \goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
 \goldrow{kpi}{balance}{mass\_kg\_in\_cum}{3}
-\goldmore{7}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{3}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -190,8 +190,6 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedDist}{MV\_final}{335}
-\goldrow{kpi}{FeedDist}{PV\_final}{0}
-\goldrow{kpi}{FeedDist}{SP\_final}{335}
 \goldrow{kpi}{TC1}{MV\_final}{347.976535585}
 \goldrow{kpi}{TC1}{PV\_final}{350.00207645}
 \goldrow{kpi}{TC1}{SP\_final}{350}
@@ -203,7 +201,9 @@ The trajectory.csv columns now include both controllers' SP / PV / MV. The Sched
 \goldrow{kpi}{balance}{mass\_closure\_rel}{2.79221090693e-14}
 \goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
 \goldrow{kpi}{balance}{mass\_kg\_in\_cum}{3}
-\goldmore{7}
+\goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
+\goldrow{kpi}{balance}{mass\_kg\_out\_cum}{3}
+\goldmore{5}
 \end{tutgolden}
 
 \clearpage
@@ -480,8 +480,6 @@ u$\ast$ of eq. (3.20) plus the paper's FIRST simulation experiment (section 3.2,
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FeedStep}{MV\_final}{0.0058333333}
-\goldrow{kpi}{FeedStep}{PV\_final}{0}
-\goldrow{kpi}{FeedStep}{SP\_final}{0.0058333333}
 \goldrow{kpi}{balance}{energy\_balance\_available}{0}
 \goldrow{kpi}{balance}{mass\_closure\_rel}{1.45035580918e-09}
 \goldrow{kpi}{balance}{mass\_kg\_final}{19794.220051}
@@ -493,7 +491,9 @@ u$\ast$ of eq. (3.20) plus the paper's FIRST simulation experiment (section 3.2,
 \goldrow{kpi}{plant}{F\_pP\_klbh\_final}{4.44568758172}
 \goldrow{kpi}{plant}{F\_wG\_klbh\_final}{1.90791543668}
 \goldrow{kpi}{plant}{J\_combined\_klb\_final}{529.364471374}
-\goldmore{10}
+\goldrow{kpi}{plant}{T\_final}{322.2222}
+\goldrow{kpi}{plant}{t\_end}{720000}
+\goldmore{8}
 \end{tutgolden}
 
 \clearpage
@@ -544,11 +544,7 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{FfBprof}{MV\_final}{0.00463988515428}
-\goldrow{kpi}{FfBprof}{PV\_final}{0}
-\goldrow{kpi}{FfBprof}{SP\_final}{0.00463988515428}
 \goldrow{kpi}{Tprof}{MV\_final}{300.373635533}
-\goldrow{kpi}{Tprof}{PV\_final}{0}
-\goldrow{kpi}{Tprof}{SP\_final}{300.373635533}
 \goldrow{kpi}{balance}{energy\_balance\_available}{0}
 \goldrow{kpi}{balance}{mass\_closure\_rel}{1.14401865779e-07}
 \goldrow{kpi}{balance}{mass\_kg\_final}{723583.798797}
@@ -557,7 +553,11 @@ The section-5.3 combined optimisation: system/outerDict shapes the two profiles 
 \goldrow{kpi}{balance}{mass\_kg\_out\_cum}{1415747.06346}
 \goldrow{kpi}{balance}{mass\_residual\_kg}{0.243519095471}
 \goldrow{kpi}{balance}{material\_available}{1}
-\goldmore{40}
+\goldrow{kpi}{plant}{F\_pP\_klbh\_final}{7.05702728738}
+\goldrow{kpi}{plant}{F\_wG\_klbh\_final}{1.47544148411}
+\goldrow{kpi}{plant}{J\_combined\_klb\_final}{546.81259418}
+\goldrow{kpi}{plant}{T\_final}{300.373635533}
+\goldmore{32}
 \end{tutgolden}
 
 \clearpage
@@ -614,20 +614,20 @@ Nothing was tuned to make that happen. It is one plant, one experiment, and two 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{kpi}{JacketStep}{MV\_final}{320}
-\goldrow{kpi}{JacketStep}{SP\_final}{320}
 \goldrow{kpi}{reactor}{T\_final}{320.759149686}
 \goldrow{kpi}{reactor}{n\_compA\_final}{0.0117959393424}
 \goldrow{kpi}{reactor}{n\_compB\_final}{0.000204060657576}
 \goldrow{kpi}{reactor}{F\_in\_final}{5e-05}
 \goldrow{kpi}{reactor}{t\_end}{15000}
-\goldrow{kpi}{JacketStep}{PV\_final}{0}
 \goldrow{kpi}{balance}{energy\_balance\_available}{0}
 \goldrow{kpi}{balance}{mass\_closure\_rel}{9.91527847481e-14}
 \goldrow{kpi}{balance}{mass\_kg\_final}{0.36}
 \goldrow{kpi}{balance}{mass\_kg\_in\_cum}{22.5}
 \goldrow{kpi}{balance}{mass\_kg\_initial}{0.36}
 \goldrow{kpi}{balance}{mass\_kg\_out\_cum}{22.5}
-\goldmore{4}
+\goldrow{kpi}{balance}{mass\_residual\_kg}{2.23093765683e-12}
+\goldrow{kpi}{balance}{material\_available}{1}
+\goldmore{2}
 \end{tutgolden}
 
 \clearpage
