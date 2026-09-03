@@ -32,6 +32,7 @@ License
 
 #include <memory>
 #include "core/Advisory.H"
+#include "core/Banner.H"
 #include "core/Constants.H"
 #include "core/ThermoResolution.H"
 #include "core/Units.H"
@@ -68,6 +69,29 @@ struct ParamSpec
     scalar      value;
     scalar      lo;
     scalar      hi;
+};
+
+//  A BINARY-PAIR PROPOSAL, CAPTURED AT THE FIT AND WRITTEN AFTER THE VERDICT.
+//
+//  The fit knows the coefficients; only the held-out pass knows whether they
+//  reproduced evidence they never saw.  Carrying the first forward so the
+//  record can state both is the whole reason this struct exists -- a promoted
+//  `.dat` outlives every console line that qualified it.
+struct PairProposal
+{
+    bool        ready = false;      // a single activityModel pair was fitted
+    std::string outPath;
+    std::string model;
+    std::string pairName;
+    std::string ci, cj;
+    scalar      alpha = 0.30;
+    scalar      a_ij = 0.0, b_ij = 0.0, a_ji = 0.0, b_ji = 0.0;
+    scalar      chi2 = 0.0;
+    scalar      rmsK = 0.0;
+    std::size_t nFit = 0;
+    bool        identifiable = false;
+    bool        corrComputed = false;
+    scalar      maxAbsCorr = 0.0;
 };
 
 std::string isoDateUtc()
@@ -951,6 +975,16 @@ int FitParameters::run(const DictPtr& dict,
     //    the parameter correlation matrix, and a condition-number proxy.
     //    These are emitted into the choupoProps result JSON for the GUI Fit
     //    view -- the engineer JUDGES the fit; nothing here certifies it.
+    //  THE PROPOSAL IS CAPTURED HERE AND WRITTEN AFTER THE VERDICT.
+    //
+    //  It used to be written INSIDE this block, which runs before the held-out
+    //  comparison -- so the record could not carry the one fact a reader most
+    //  needs before running `mv`: whether the fitted pair reproduced evidence
+    //  it never saw.  The run knew (it prints the verdict thirty lines later)
+    //  and the artefact did not, which is the published-but-unpinned shape in
+    //  another register: the console says it, the file that outlives the
+    //  console does not.
+    PairProposal proposal;
     int nFailed = 0;
     {
         sVector r_final;
@@ -1109,13 +1143,14 @@ int FitParameters::run(const DictPtr& dict,
             std::cout << "=====================================================================\n\n";
         }
 
-        // -- PROMOTE (opt-in): write a binary-pair proposal .dat -----------
+        // -- PROMOTE (opt-in): CAPTURE the binary-pair proposal -------------
         // Migrated from FitBinaryPair so FitParameters is the single canonical
         // fit engine (fit + judge + promote).  Only when every fitted path is a
-        // coefficient of ONE activityModel pair (a_ij/b_ij/a_ji/b_ji).  The
-        // proposal carries the fit quality AND the identifiability verdict --
-        // promoting parameters that are not individually identifiable is loudly
-        // flagged in the header, never hidden (the bar we hold).
+        // coefficient of ONE activityModel pair (a_ij/b_ij/a_ji/b_ji).
+        //
+        // NOTHING IS WRITTEN HERE.  The record is emitted after the held-out
+        // pass, because a promoted parameter file must carry the verdict and
+        // the evidence, not only the fit statistics -- see PairProposal.
         if (!proposalPath.empty())
         {
             // Two recognised path grammars, ONE pair either way:
@@ -1173,66 +1208,36 @@ int FitParameters::run(const DictPtr& dict,
 
             if (pd)
             {
+                const std::string ci = pd->lookupWord("i");
+                const std::string cj = pd->lookupWord("j");
+                auto co = [&](const std::string& k)
+                          { auto it = coef.find(k); return it == coef.end() ? 0.0 : it->second; };
+
+                proposal.ready        = true;
+                proposal.model        = model;
+                proposal.ci           = ci;
+                proposal.cj           = cj;
+                proposal.pairName     = (ci < cj ? ci + "-" + cj : cj + "-" + ci);
+                proposal.alpha        = pd->lookupScalarOrDefault("alpha", 0.30);
+                proposal.a_ij         = co("a_ij");
+                proposal.b_ij         = co("b_ij");
+                proposal.a_ji         = co("a_ji");
+                proposal.b_ji         = co("b_ji");
+                proposal.chi2         = chi2;
+                proposal.rmsK         = std::sqrt(chi2 / static_cast<scalar>(N));
+                proposal.nFit         = N;
+                proposal.identifiable = identifiable;
+                proposal.corrComputed = corrComputed;
+                proposal.maxAbsCorr   = maxAbsCorr;
+
+                namespace fs = std::filesystem;
+                proposal.outPath = proposalPath;
+                if (proposalPath == "auto")
                 {
-                    const std::string ci = pd->lookupWord("i");
-                    const std::string cj = pd->lookupWord("j");
-                    const scalar alpha = pd->lookupScalarOrDefault("alpha", 0.30);
-                    const std::string pairName = (ci < cj ? ci + "-" + cj : cj + "-" + ci);
-
-                    namespace fs = std::filesystem;
-                    std::string outPath = proposalPath;
-                    if (proposalPath == "auto")
-                    {
-                        fs::path outDir = fs::path("constant") / "parameters" / model;
-                        std::error_code ec; fs::create_directories(outDir, ec);
-                        outPath = (outDir / (pairName + ".fit-" + isoDateUtc() + ".dat")).string();
-                    }
-
-                    auto co = [&](const std::string& k){ auto it = coef.find(k); return it == coef.end() ? 0.0 : it->second; };
-                    std::ofstream f(outPath);
-                    if (f)
-                    {
-                        const scalar rms = std::sqrt(chi2 / static_cast<scalar>(N));
-                        f << "/*---------------------------------------------------------------------------*\\\n"
-                          << "  fitParameters proposal -- pair " << pairName << " -- model " << model << "\n"
-                          << "  " << N << " data points -- chi^2 = " << chi2
-                          << "  RMS = " << rms << " K  (generated " << isoDateUtc() << ")\n";
-                        if (!identifiable)
-                            f << "  !! WARNING: these parameters are NOT individually identifiable\n"
-                              << "  !! (max|correlation| = " << std::fixed << std::setprecision(3) << maxAbsCorr
-                              << ").  The fit reproduces the data, but the individual a/b\n"
-                              << "  !! values are not uniquely determined -- promote with care, or\n"
-                              << "  !! add data at another pressure to separate a from b/T.\n";
-                        f << "  Promote by:\n"
-                          << "      mv " << outPath << "  constant/parameters/" << model << "/" << pairName << ".dat\n"
-                          << "\\*---------------------------------------------------------------------------*/\n\n"
-                          << "components  ( " << ci << "  " << cj << " );\n"
-                          << "model       " << model << ";\n\n"
-                          << "parameters\n{\n"
-                          << "    i           " << ci << ";\n"
-                          << "    j           " << cj << ";\n"
-                          << std::setprecision(8)
-                          << "    a_ij        " << co("a_ij") << ";\n"
-                          << "    b_ij        " << co("b_ij") << ";\n"
-                          << "    a_ji        " << co("a_ji") << ";\n"
-                          << "    b_ji        " << co("b_ji") << ";\n"
-                          << "    alpha       " << alpha << ";\n"
-                          << "}\n\n"
-                          << "provenance\n{\n"
-                          << "    source        fitted;\n"
-                          << "    fitDate       \"" << isoDateUtc() << "\";\n"
-                          << "    algorithm     \"Levenberg-Marquardt (choupoProps fitParameters)\";\n"
-                          << "    chi2          " << chi2 << ";\n"
-                          << "    nDataPoints   " << N << ";\n"
-                          << "    identifiable  " << (identifiable ? "true" : "false") << ";\n"
-                          << "}\n";
-                        if (verbosity >= 2)
-                            std::cout << "  proposal written to: " << outPath
-                                      << (identifiable ? "" : "  (NOT individually identifiable -- see header)")
-                                      << "\n\n";
-                    }
-                    else if (verbosity >= 1)
-                        std::cerr << "  fitParameters: could not write proposal " << outPath << "\n";
+                    fs::path outDir = fs::path("constant") / "parameters" / model;
+                    std::error_code ec; fs::create_directories(outDir, ec);
+                    proposal.outPath =
+                        (outDir / (proposal.pairName + ".fit-" + isoDateUtc() + ".dat")).string();
                 }
             }
             else if (verbosity >= 1)
@@ -1440,6 +1445,178 @@ int FitParameters::run(const DictPtr& dict,
                 ? dict->subDict("residual")->lookupWordList("components")[0]
                 : std::string("binaryPair"),
             std::move(rec));
+    }
+
+    //  ===================================================================
+    //  THE PROMOTABLE RECORD, ON THE FIVE AXES (2026-09-03).
+    //
+    //  This file is what a student MOVES into `constant/parameters/<model>/`
+    //  and then simulates with, so it outlives every console line that
+    //  qualified it.  Until today it carried a `provenance {}` block holding
+    //  the ORIGIN word (`source fitted;`), the METHOD (`algorithm`), and the
+    //  fit statistics -- three axes in the slot whose one job is to say WHERE
+    //  THE DATA CAME FROM, and it named no dataset, no DOI, and no verdict.
+    //  The run had all four: it printed the evidence, the held-out AAD, the
+    //  acceptance band declared before the fit, and the verdict, and then
+    //  wrote a file that mentioned none of them.
+    //
+    //  The axes are docs/design/provenance-semantics-five-axes.md:
+    //    origin      HOW the number was produced          -> `fitted`
+    //    provenance  WHERE the evidence came from         -> the datasets
+    //    method      WHICH operation, which revision      -> LM, this op
+    //    validation  what MATURITY it has                 -> the verdict
+    //
+    //  THE FILE LAYOUT FOLLOWS THE CURATED CORPUS, NOT A NEW ONE.  `origin`,
+    //  `method` and `methodVersion` are keys INSIDE `provenance {}` -- that is
+    //  where `data/standards/parameters/NRTL/*.dat` carry them, and where
+    //  `thermo/PairAudit.H` (the ONE parser every family loader shares) reads
+    //  them.  A proposal written in a shape its own reader cannot see would be
+    //  the writer/reader split in another register: `origin` one level out
+    //  resolves to `unattributed` at run time, silently.  Only `validation {}`
+    //  is new, because the corpus has no home for a held-out verdict yet.
+    //  ===================================================================
+    if (proposal.ready)
+    {
+        std::ofstream f(proposal.outPath);
+        if (f)
+        {
+            const std::string verdict = engaged
+                ? CurationDossier::verdictOf(*partPtr, nHeldOut > 0, aadHeldOut)
+                : std::string("notClaimed");
+
+            f << "/*---------------------------------------------------------------------------*\\\n"
+              << "  fitParameters proposal -- pair " << proposal.pairName
+              << " -- model " << proposal.model << "\n"
+              << "  generated " << isoDateUtc() << " by choupoProps fitParameters\n"
+              << "\n"
+              << "  VERDICT: " << verdict << "\n";
+            //  THE VERDICT IS SPELT OUT IN THE HEADER, not left as a word.
+            //  The header is what a reader sees before running `mv`, and
+            //  `notClaimed` and `validated` differ by everything.
+            if (verdict == "validated")
+                f << "  The fitted pair reproduced held-out evidence within an acceptance band\n"
+                     "  declared BEFORE the fit.  See the validation block below.\n";
+            else if (verdict == "notValidated")
+                f << "  !! The held-out test was PERFORMED and the declared criterion was MISSED.\n"
+                     "  !! This is a completed experiment with a negative result.  Promoting these\n"
+                     "  !! parameters ships a pair known not to meet its own acceptance band.\n";
+            else if (verdict == "heldOutPerformed")
+                f << "  Held-out evidence was tested and its residual is recorded below, but NO\n"
+                     "  acceptance criterion was declared beforehand -- so no pass/fail is claimed.\n";
+            else if (verdict == "validationRefused")
+                f << "  !! VALIDATION REFUSED: no independent experimental evidence remains after\n"
+                     "  !! fitting.  The chi2 below is IN-SAMPLE and is not an external validation.\n";
+            else
+                f << "  !! NO VALIDATION CLAIM: this fit used the legacy single-`dataset` form, which\n"
+                     "  !! fits every point and withholds none.  The chi2 below is IN-SAMPLE.\n"
+                     "  !! Declare `evidence ( ... role validation ... )` to make a held-out claim.\n";
+            if (!proposal.identifiable)
+                f << "\n  !! WARNING: these parameters are NOT individually identifiable";
+            if (!proposal.identifiable && proposal.corrComputed)
+                f << "\n  !! (max|correlation| = " << std::fixed << std::setprecision(3)
+                  << proposal.maxAbsCorr << ").  The fit reproduces the data, but the individual\n"
+                     "  !! a/b values are not uniquely determined -- promote with care, or add data\n"
+                     "  !! at another pressure to separate a from b/T.\n";
+            else if (!proposal.identifiable)
+                f << " (correlation matrix not computed).\n";
+            f << "\n  Promote by:\n"
+              << "      mv " << proposal.outPath << "  constant/parameters/"
+              << proposal.model << "/" << proposal.pairName << ".dat\n"
+              << "\\*---------------------------------------------------------------------------*/\n\n"
+              << "components  ( " << proposal.ci << "  " << proposal.cj << " );\n"
+              << "model       " << proposal.model << ";\n\n"
+              << "parameters\n{\n"
+              << "    i           " << proposal.ci << ";\n"
+              << "    j           " << proposal.cj << ";\n"
+              << std::fixed << std::setprecision(8)
+              << "    a_ij        " << proposal.a_ij << ";\n"
+              << "    b_ij        " << proposal.b_ij << ";\n"
+              << "    a_ji        " << proposal.a_ji << ";\n"
+              << "    b_ji        " << proposal.b_ji << ";\n"
+              << "    alpha       " << proposal.alpha << ";\n"
+              << "}\n\n"
+              << "provenance\n{\n"
+              //  AXIS 1 -- HOW.  One typed word, and it is `fitted` whatever
+              //  the verdict: a fit that missed its band is still a fit.
+              //  It replaces `source fitted;`, which put the origin word in
+              //  the slot that says where the DATA came from -- and which
+              //  PairAudit then read as a legacy source word, raising a
+              //  deprecation advisory on every promoted proposal.
+              << "    origin        fitted;\n"
+              //  AXIS 3 -- WHICH OPERATION, and which revision of it.
+              << "    method        \"fitParameters(" << kind
+              << "), Levenberg-Marquardt\";\n"
+              << "    methodVersion \"choupoProps " << CHOUPO_VERSION << "\";\n"
+              << "    fitDate       \"" << isoDateUtc() << "\";\n\n"
+              //  AXIS 2 -- WHERE THE EVIDENCE CAME FROM.  The axis's one job,
+              //  and the one the record used to leave empty.
+              ;
+            if (engaged)
+            {
+                const EvidencePartition& part = *partPtr;
+                f << "    evidence\n    (\n";
+                CurationDossier::writeEvidenceSets(f, "fit", part.fit(), "        ");
+                CurationDossier::writeEvidenceSets(f, "validation", part.validation(), "        ");
+                f << "    );\n"
+                  << "    fingerprint \"" << part.fingerprint()
+                  << "\";   // of the declaration, frozen before the fit\n";
+            }
+            else
+                f << "    evidence    undeclared;   // legacy single-`dataset` form: the op\n"
+                     "                             // named one file, fitted every point in it,\n"
+                     "                             // and froze no fit/validation partition\n";
+            //  THE OPERATION'S OWN OUTCOME, in the same block and the same
+            //  keys the curated records use (`chi2`, `nDataPoints`).  It is
+            //  IN-SAMPLE and labelled so: the held-out claim is `validation`.
+            f << "\n    //  IN-SAMPLE: the model reproducing the very points it was\n"
+                 "    //  fitted to.  It is NOT a validation; see the block below.\n"
+              << "    chi2          " << std::setprecision(8) << proposal.chi2 << ";\n"
+              << "    rms_K         " << proposal.rmsK << ";\n"
+              << "    nDataPoints   " << proposal.nFit << ";\n"
+              << "    identifiable  " << (proposal.identifiable ? "true" : "false") << ";\n";
+            if (proposal.corrComputed)
+                f << "    maxAbsCorr    " << proposal.maxAbsCorr << ";\n";
+            else
+                f << "    maxAbsCorr    undeclared;   // J^T J singular -- not computed\n";
+            f << "}\n\n"
+              //  AXIS 4 -- MATURITY.  The verdict and the numbers behind it.
+              //  The one block with no home in the corpus yet, because until
+              //  today no promotable record could state a held-out result.
+              << "validation\n{\n"
+              << "    verdict     " << verdict << ";\n";
+            if (engaged && nHeldOut > 0)
+                f << "\n    heldOut\n    {\n"
+                  << "        points      " << nHeldOut << ";\n"
+                  << "        aad_pct     " << std::setprecision(6) << aadHeldOut << ";\n"
+                  << "        aad_K       " << std::setprecision(6) << aadHeldOutK_ << ";\n"
+                  << "        domain_x1   ( " << heldOutXmin << " " << heldOutXmax << " );\n"
+                  << "    }\n";
+            else if (engaged)
+                f << "\n    heldOut     none;   // every declared dataset carried `role fit`\n";
+            if (engaged && partPtr->hasAcceptance())
+                f << "\n    acceptance\n    {\n"
+                  << "        maxAAD      " << std::setprecision(6)
+                  << partPtr->acceptanceMaxAADPct() << ";   // per cent\n"
+                  //  THE BAND's own origin -- where the LIMIT came from, not
+                  //  where the parameters came from.  Same key, different
+                  //  subject, and it is spelt out because one file now
+                  //  carries both.
+                  << "        origin      \"" << partPtr->acceptanceOrigin() << "\";\n"
+                  << "    }\n";
+            else if (engaged)
+                f << "\n    acceptance  none;   // no band was declared before the fit, so no\n"
+                     "                        // pass/fail may be read out of the residual above\n";
+            f << "}\n";
+
+            if (verbosity >= 2)
+                std::cout << "  proposal written to: " << proposal.outPath
+                          << "  (verdict " << verdict
+                          << (proposal.identifiable ? "" : ", NOT individually identifiable")
+                          << " -- see header)\n\n";
+        }
+        else if (verbosity >= 1)
+            std::cerr << "  fitParameters: could not write proposal "
+                      << proposal.outPath << "\n";
     }
 
     diag_["n_data"]    = static_cast<scalar>(N);

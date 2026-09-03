@@ -90,6 +90,7 @@ Description
 
 #include <cstddef>
 #include <limits>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -157,6 +158,16 @@ public:
     //  ONE home and both ops cannot drift into two readings of it.
     static std::string verdictOf(const EvidencePartition& part,
                                  bool heldOut, scalar aadPct);
+
+    //  ONE WRITER for a declared piece of evidence, because two artefacts now
+    //  record the same fact and a second copy of this formatting is a second
+    //  place for it to drift: the curation dossier, and the promotable pair
+    //  record `fitParameters` proposes.  `indent` is the column the entry's
+    //  opening brace sits at; its keys sit four further in.
+    static void writeEvidenceSets(std::ostream& os,
+                                  const char* role,
+                                  const std::vector<EvidenceDataset>& sets,
+                                  const std::string& indent);
 
     //  Write one `<cwd>/curation/<component>.dossier` per component seen.
     //  Returns the paths written.

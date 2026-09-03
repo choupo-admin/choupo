@@ -2420,6 +2420,24 @@ PYEOF
     fi
     rm -f /tmp/heldoutp.$$
 
+    # promoted-pair-record gate (2026-09-03).  The `.dat` a student MOVES into
+    # constant/parameters/ outlives every console line that qualified it, and
+    # it used to carry none of them: the origin word sat in the `source` slot,
+    # the fit statistics sat in `provenance`, and the evidence, the held-out
+    # AAD, the pre-declared band and the verdict -- all four printed by the
+    # same run -- were absent.  Five sabotages; the round-trip arm is the one
+    # that matters, because a record whose own reader cannot see its `origin`
+    # resolves to `unattributed` silently.
+    if "$ROOT/bin/curate/check_promoted_pair_record.py" > /tmp/pairrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "promoted-pair-record-gate" "$(head -1 /tmp/pairrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_promoted_pair_record.py)\n" "promoted-pair-record-gate"
+        cat /tmp/pairrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pairrec.$$
+
     # solubility-parameter gate (2026-08-26).  delta is DERIVED from HvapTb,
     # Tc and Vliq -- the tree stores no derivative -- and 63 records carry an
     # independently published delta as an ANCHOR so the derivation has

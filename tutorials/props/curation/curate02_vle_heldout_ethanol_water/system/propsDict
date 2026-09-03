@@ -53,6 +53,21 @@
   The run also announces an extrapolation: ethanol's vapour pressure is
   evaluated at 372 K, outside its declared Trange (273-369).  Announced, not
   judged -- it rides the caveat surface like every other extrapolation.
+
+  WHAT THE STUDENT TAKES AWAY: `ethanol-water.proposal.dat`.
+
+  The console says all of the above and then scrolls.  The file is what
+  survives -- it is moved into `constant/parameters/NRTL/ethanol-water.dat`
+  and simulated with, months later, by someone who never saw this run.  So it
+  carries the whole qualification, not the numbers alone: the two datasets and
+  the role each was frozen in, the fingerprint of that declaration, the
+  held-out AAD over the three withheld points, the 0.1 % band with the reason
+  it was set at 0.1 %, the verdict, and -- in the header, above everything --
+  the fact that these four coefficients are NOT individually identifiable.
+
+  Both facts of (1) are readable off that one file: `verdict validated` beside
+  `identifiable false`.  A validated prediction is not a determined parameter
+  set, and the record says so in the artefact rather than only in a run log.
 \*---------------------------------------------------------------------------*/
 
 operations
@@ -112,6 +127,17 @@ operations
         {
             fit_log    fit_history.csv;
             parity     parity.csv;
+            //  THE PROMOTABLE RECORD.  `proposal` writes the fitted pair as a
+            //  `.dat` a reader can MOVE into `constant/parameters/NRTL/` and
+            //  simulate with -- so it must carry, in the file itself, every
+            //  qualification the console printed above it: the evidence it
+            //  rests on, the held-out result, the band declared before the
+            //  fit, the verdict, and the identifiability warning.
+            //
+            //  The path is EXPLICIT rather than `auto` so the artefact has a
+            //  stable name in the corpus; `auto` dates the filename, which is
+            //  right for a student's own run and wrong for a tracked witness.
+            proposal   ethanol-water.proposal.dat;
         }
     }
 );

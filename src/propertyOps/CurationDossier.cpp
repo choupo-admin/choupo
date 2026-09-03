@@ -63,48 +63,46 @@ std::string CurationDossier::verdictOf(const EvidencePartition& part,
     return (aadPct <= part.acceptanceMaxAADPct()) ? "validated" : "notValidated";
 }
 
-namespace {
-
-void writeSets(std::ofstream& f, const char* role,
-               const std::vector<EvidenceDataset>& sets)
+void CurationDossier::writeEvidenceSets(std::ostream& f, const char* role,
+                                        const std::vector<EvidenceDataset>& sets,
+                                        const std::string& indent)
 {
+    const std::string in2 = indent + "    ";
     for (const auto& d : sets)
     {
-        f << "        {\n"
-          << "            role      " << role << ";\n"
-          << "            dataset   \"" << d.path << "\";\n";
-        if (!d.doi.empty())    f << "            doi       \"" << d.doi << "\";\n";
-        if (!d.sha256.empty()) f << "            sha256    \"" << d.sha256 << "\";\n";
+        f << indent << "{\n"
+          << in2 << "role      " << role << ";\n"
+          << in2 << "dataset   \"" << d.path << "\";\n";
+        if (!d.doi.empty())    f << in2 << "doi       \"" << d.doi << "\";\n";
+        if (!d.sha256.empty()) f << in2 << "sha256    \"" << d.sha256 << "\";\n";
         if (d.doi.empty() && d.sha256.empty())
-            f << "            identity  none;    // declares no DOI or hash --"
+            f << in2 << "identity  none;    // declares no DOI or hash --"
                  " it cannot take part in the cross-role identity check\n";
         //  WHAT THE NUMBERS ARE, read from the dataset itself.  A dossier that
         //  records a verdict without recording whether the evidence was
         //  MEASURED lets a structural fixture read like an experiment months
         //  later, when nobody remembers which case was which.
         if (!d.provenanceSource.empty())
-            f << "            provenance " << d.provenanceSource
+            f << in2 << "provenance " << d.provenanceSource
               << ";" << (d.provenanceSource == "synthetic"
                             ? "   // GENERATED, not measured -- any verdict"
                               " here is about the machinery"
                             : "") << "\n";
         else
-            f << "            provenance undeclared;   // the dataset states"
+            f << in2 << "provenance undeclared;   // the dataset states"
                  " neither measured nor generated\n";
         //  WHERE THE EVIDENCE CAME FROM, carried across the ThermoML crossing.
         //  A verdict whose dossier cannot name the archive file, the system
         //  and the pressure is a number, not a finding.
         if (!d.archiveFile.empty())
-            f << "            archiveFile \"" << d.archiveFile << "\";\n";
+            f << in2 << "archiveFile \"" << d.archiveFile << "\";\n";
         if (!d.system.empty())
-            f << "            system    \"" << d.system << "\";\n";
+            f << in2 << "system    \"" << d.system << "\";\n";
         if (!d.pressure.empty())
-            f << "            pressure  \"" << d.pressure << "\";\n";
-        f << "        }\n";
+            f << in2 << "pressure  \"" << d.pressure << "\";\n";
+        f << indent << "}\n";
     }
 }
-
-} // namespace
 
 std::vector<std::string> CurationDossier::write() const
 {
@@ -196,8 +194,8 @@ std::vector<std::string> CurationDossier::write() const
                 f << "        partitionFingerprint  \"" << r->fingerprint
                   << "\";   // frozen before the fit\n";
             f << "\n        datasets\n        (\n";
-            writeSets(f, "fit", r->fitSets);
-            writeSets(f, "validation", r->validationSets);
+            writeEvidenceSets(f, "fit", r->fitSets, "        ");
+            writeEvidenceSets(f, "validation", r->validationSets, "        ");
             f << "        );\n";
             f << "\n        domain\n        {\n"
               << "            fit         { min " << r->fitMin << " " << r->domainUnit

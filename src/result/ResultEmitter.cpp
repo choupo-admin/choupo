@@ -819,11 +819,13 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"j\": " << esc(p.j)
                << ", \"status\": " << esc(p.status)
                << ", \"source\": " << esc(p.source)
-               << ", \"provSource\": " << esc(p.provSource)
-               << ", \"origin\": " << esc(originToWord(p.origin));
-            // P1 audit detail (forum #67 D-c): full structured record, always.
-            if (!p.method.empty())        os << ", \"method\": " << esc(p.method);
-            if (!p.methodVersion.empty()) os << ", \"methodVersion\": " << esc(p.methodVersion);
+               << ", \"provSource\": " << esc(p.provSource);
+            //  P1 audit detail (forum #67 D-c): full structured record, from
+            //  the ONE shared formatter.  This site used to ALSO emit
+            //  `origin`, `method` and `methodVersion` by hand immediately
+            //  before calling it, so every pair came out with those three keys
+            //  TWICE in one JSON object -- the shared emitter existing exactly
+            //  to prevent a second copy, with the second copy beside it.
             os << pairResolutionAuditJson(p, esc);
             os << " }";
         }

@@ -116,9 +116,20 @@ tutorials/**/balanceTrajectory.meta
 !tutorials/**/constant/experimental/*.csv
 # Generated fit / estimate proposals (any nesting depth -- cases live under a
 # sub-class folder since 2026-06-03, e.g. steady/optimisation/<case>/).
+#
+# `binaryPairs/` was renamed `parameters/` by Migration 2 (2026-07-16) and this
+# line was not moved with it, so for seven weeks the `proposal auto;` records
+# landed in a directory nothing ignored.  Both spellings are kept: the old one
+# so an archived tree stays clean, the new one because it is where they land.
 tutorials/**/constant/binaryPairs/*/*.fit-*.dat
+tutorials/**/constant/parameters/*/*.fit-*.dat
 tutorials/**/constant/components/*.estimate-*.dat
 tutorials/**/constant/components/*.estimated.dat
+# A `proposal <path>;` with an EXPLICIT name (a witness wants a stable one) is
+# still a run output: its header and `fitDate` carry the day it was generated,
+# so a tracked copy would go dirty every day the case is re-run.  The record's
+# CONTRACT is pinned by check_promoted_pair_record, which rebuilds it.
+tutorials/**/*.proposal.dat
 
 # ------ LaTeX intermediate files (PDFs are tracked) --------------------
 docs/*.aux

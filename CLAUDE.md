@@ -861,6 +861,25 @@ how a withdrawn v0.2.0 guide naming two competitors survived the doctrine rule
 that banned them.  Rebuild with `make -C docs all` and commit the PDFs beside
 the sources that moved.
 
+**THE RECORD A STUDENT PROMOTES MUST CARRY WHAT THE RUN CONCLUDED
+(2026-09-03).**  `fitParameters`' promotable pair `.dat` printed the evidence,
+the held-out AAD, the band declared before the fit and the verdict, and then
+wrote a file naming none of them — with the ORIGIN word (`source fitted;`) in
+the slot that says where the DATA came from, which `PairAudit` reads as a
+LEGACY source word and deprecates.  Now: `origin`/`method`/`methodVersion`
+typed INSIDE `provenance {}` (the axis is a RESPONSIBILITY, not a nesting
+level — a first draft put `origin` at top level, ran, and resolved
+`unattributed` silently), the evidence with each role and the partition
+fingerprint, and a `validation {}` block with the verdict.  The write MOVED
+after the held-out pass, because the verdict does not exist before it.  Found
+on the way: `ResultEmitter` emitted three keys BY HAND beside the ONE shared
+formatter that emits them (duplicate JSON keys on every pair), and a
+`.gitignore` rule outlived its directory rename by seven weeks.  NOT done: the
+~95-value corpus migration, which no record authorises.  Gate:
+`check_promoted_pair_record` (5 sabotages; the artefact is rebuilt, never
+tracked — its `fitDate` would go dirty daily).  Record:
+[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md).
+
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
 copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and
