@@ -42,10 +42,12 @@
 #  the version badge reads its own frozen version.json and stays reassuringly
 #  correct while the answers come from elsewhere.
 #
-#  The tag v2608 is immutable and untouched.  The packaging was patched on
-#  release-2608 and tagged v2608.1, and freeze-app built this copy from that
-#  tag: same engine, same citation, its own paths.  A patch does not get its
-#  own URL -- /v2608/app/ is the address /releases/ tells a student to cite.
+#  The packaging was fixed on the release line and freeze-app built this
+#  copy from that commit: same engine, same citation, its own paths.  The
+#  fix was tagged v2608.1 for one day and then FOLDED into v2608 (Vitor,
+#  2026-09-03: one release, one tag -- docs/folded-patches.txt), so the tag
+#  v2608 names exactly the commit this copy records in wasm/version.json.
+#  /v2608/app/ is the address /releases/ tells a student to cite.
 #
 #  v2607 is absent because it was WITHDRAWN (2026-09-02).
 #

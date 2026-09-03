@@ -350,10 +350,11 @@
            frozen shell that fetched the solver from the SITE ROOT, so the
            reader saw 2608 in the address bar and computed with dev.  This
            comment used to add that 2608 is an immutable tag and so the copy
-           could never be repaired.  That was wrong: the tag is untouched
-           and the PACKAGING was patched as v2608.1, from which freeze-app
-           built the copy now served here.  The engine it loads states
-           Choupo-2608 and resolves from /v2608/app/.  -->
+           could never be repaired.  The packaging was fixed on the release
+           line and the tag v2608 names the commit freeze-app built the
+           copy served here from (the fix was briefly tagged v2608.1 and
+           then folded into v2608 -- docs/folded-patches.txt).  The engine
+           it loads states Choupo-2608 and resolves from /v2608/app/.  -->
       <a class="button" href="/app/" target="choupo-app" rel="noopener">Run Choupo-dev — latest</a>
       <!--  `display:contents` because this span is a DATA HOOK, not a layout
            box: as a flex item it wrapped as its own line and the label broke
