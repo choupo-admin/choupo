@@ -2870,7 +2870,7 @@ sizing
 
 costing
 {
-    method      Guthrie;
+    method      Turton;
     year        2026;
     cepci       820;
     cepci2001   397;
@@ -2883,7 +2883,7 @@ costing
 inversions such as the spray dryer's, \S\ref{sec:spray-design});
 materials come from \file{data/standards/assets/} (carbon steel,
 SS304, SS316, aluminium --- each with density, Guthrie material factor,
-yield stress, ratings).  The \code{Guthrie} costing model uses
+yield stress, ratings).  The \code{Turton} costing model (Turton App.~A coefficients on Guthrie's bare-module form; \code{Guthrie} is accepted as an announced alias) uses
 Turton-style purchased-cost correlations, the ASME wall-thickness
 pressure factor for vessels, then
 $C_{BM} = C_p (B_1 + B_2 F_M F_P)$ and $C_{TM} = 1.18\,C_{BM}$,
@@ -2891,7 +2891,7 @@ printing a per-unit table:
 
 \begin{lstlisting}
 ========================  Equipment Costing  =========================
-  Method:  Guthrie    Year:  2026.0    CEPCI: 820.0
+  Method:  Turton     Year:  2026.0    CEPCI: 820.0
 
   unit      equipment       F_M   F_P    C_purchased   C_bare_mod    C_total_mod
   heater    shellTubeHX     2.34  1.09     365 249      2 146 753    2 533 169

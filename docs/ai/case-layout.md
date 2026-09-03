@@ -301,7 +301,7 @@ convergence and augment the result (they never change the solution):
 
 ```
 sizing    { ... }                 // equipment sizes from the converged duties
-costing   { method Guthrie; ... } // cost from the sizes (case-sensitive)
+costing   { method Turton; ... }  // cost from the sizes (case-sensitive; `Guthrie` is an announced alias)
 economics { ... }                 // cash-flow aggregation over the costed plant
 pinchPass { dTmin 20 K; }         // pinch TARGETS (P1): the Linnhoff-Flower
                                   // problem table printed cascade by cascade,

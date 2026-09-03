@@ -38,7 +38,7 @@ Description
     `economics` in the reports{} block.  The block body is the legacy
     postDict `costing {... }` block (method, year, cepci, usdToEur):
 
-        economics { method Guthrie; year 2026; cepci 820; cepci2001 397; }
+        economics { method Turton; year 2026; cepci 820; cepci2001 397; }
 \*---------------------------------------------------------------------------*/
 
 #pragma once

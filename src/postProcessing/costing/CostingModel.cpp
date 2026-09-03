@@ -28,6 +28,7 @@ License
 
 #include "CostingModel.H"
 #include "Guthrie.H"
+#include <iostream>
 
 #include <map>
 #include <memory>
@@ -79,9 +80,24 @@ std::unique_ptr<CostingModel> CostingModel::New(const DictPtr& dict)
 
 void CostingModel::registerBuiltins()
 {
-    registerType("Guthrie",
+    //  THE KEY NAMES WHOSE NUMBERS THESE ARE (ruled 2026-09-03).  Every
+    //  coefficient in Guthrie.cpp is Turton's (Analysis, Synthesis and Design
+    //  of Chemical Processes, Appendix A, 2001 USD); Guthrie (1969) supplied
+    //  the bare-module FORM the coefficients sit in.  A student cites the
+    //  numbers, so the registered name is `Turton`.  `Guthrie` stays accepted
+    //  -- eight corpus cases and the guides said it for a month -- and is
+    //  ANNOUNCED as the alias it is, never silently rewritten.
+    registerType("Turton",
         [](const DictPtr& d) -> std::unique_ptr<CostingModel>
         { return std::make_unique<Guthrie>(d); });
+    registerType("Guthrie",
+        [](const DictPtr& d) -> std::unique_ptr<CostingModel>
+        {
+            std::cerr << "  [costing] `method Guthrie;` is accepted as an ALIAS of"
+                         " `Turton`: the coefficients are Turton App. A's on"
+                         " Guthrie's bare-module form.  Write `method Turton;`.\n";
+            return std::make_unique<Guthrie>(d);
+        });
 }
 
 } // namespace Choupo

@@ -167,7 +167,7 @@ sizing
 
 costing
 {
-    method  Guthrie;
+    method  Turton;
     cepci   820;
 }
 """

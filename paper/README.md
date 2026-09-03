@@ -21,17 +21,22 @@ This folder holds the draft paper for the *Journal of Open Source Software*
 JOSS review criteria the repo already meets: OSI licence (GPL-3.0-or-later),
 public repository, installation + usage documentation (`docs/`, `README.md`),
 automated tests (`bin/runTests`), community guidelines (`CONTRIBUTING.md`),
-version tag (`Choupo-2607`).
+version tag (`Choupo-2608`; `Choupo-2607` was withdrawn on 2026-09-02).
 
 ## The two artifacts
 
 - **`paper.md`** — the JOSS submission (JOSS only accepts Markdown and
   caps Summary + Statement of need at 250–1000 words).
-- **`paper.tex`** — the FULL companion article on Choupo-2607 (~7 pages:
+- **`paper.tex`** — the FULL companion article, written against Choupo-2607
+  (~7 pages:
   architecture, case grammar, thermodynamics, numerics, unit operations,
   the three-level conservation discipline, the browser front-end,
   validation, data governance, limitations).  Preprint / co-author
-  circulation; shares `paper.bib`.  Build:
+  circulation; shares `paper.bib`.  **Choupo-2607 was WITHDRAWN on
+  2026-09-02** (`docs/withdrawn-releases.txt`); the maintained release is
+  Choupo-2608, and every claim in both artifacts must be re-read against
+  it before submission — the August line changed answers (`CHANGELOG.md`,
+  "The physics that moved").  Build:
   `pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper`.
 
 When facts change (new release numbers, new validations), update BOTH —

@@ -52,7 +52,7 @@ sizing
 
 costing
 {
-    method      Guthrie;
+    method      Turton;
     year        2026;
     cepci       820;        // target-year CEPCI
     cepci2001   397;        // Turton base-year basis

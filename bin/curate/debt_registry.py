@@ -102,6 +102,17 @@ SOURCE_LICENCE = {
 #  CROSS-CHECK (entering no value) is, and OH.dat is the one record that
 #  does that.
 #
+#  WHETHER "Burcat 2005 / JANAF" IS A CITABLE PUBLICATION -- read 2026-09-03.
+#  Eight records cite it in that form beside the twenty-five that name
+#  BURCAT.THR outright.  "Burcat 2005" is Burcat & Ruscic, *Third Millennium
+#  Ideal Gas and Condensed Phase Thermochemical Database for Combustion*,
+#  ANL-05/20 / TAE 960 (2005): the report that DESCRIBES the database, whose
+#  tables ARE the database.  Citing the report is citing the compilation
+#  under its publication name, so those eight are the same class as the
+#  twenty-five and stay in this list.  The remedy is unchanged and is a
+#  curation act (re-sourcing from NASA TM-4513 / ATcT); nothing here changes
+#  a value.
+#
 #  THE LICENCE, read at ReSpecTh (which now hosts the database): "provided
 #  free of charge for non commercial use, on condition that proper quotation
 #  will be included in the pertinent publications."  NonCommercial is on

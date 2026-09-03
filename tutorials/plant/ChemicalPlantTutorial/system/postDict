@@ -81,7 +81,7 @@ sizing
 
 costing
 {
-    method      Guthrie;
+    method      Turton;
     year        2024;
     cepci       800;        // target-year CEPCI (Chemical Engineering, 2024 ~800)
     cepci2001   397;        // Turton base-year basis
