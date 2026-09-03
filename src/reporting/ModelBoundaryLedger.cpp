@@ -90,7 +90,8 @@ void collectDeclarations(const DictPtr&                  node,
                          const std::string&              prefix,
                          const std::string&              folderPath,
                          std::map<std::string, DictPtr>& out,
-                         std::map<std::string, int>&     count)
+                         std::map<std::string, int>&     count,
+                         std::map<std::string, std::string>& bases)
 {
     if (!node) return;
     auto declareFrom = [&](const DictPtr& u, const std::string& name)
@@ -111,7 +112,7 @@ void collectDeclarations(const DictPtr&                  node,
             declareFrom(u, name);
             //  An inline entry may itself be composite (a nested dict-list).
             if (u->hasDictList("units"))
-                collectDeclarations(u, name + ".", folderPath, out, count);
+                collectDeclarations(u, name + ".", folderPath, out, count, bases);
         }
         return;
     }
@@ -129,14 +130,17 @@ void collectDeclarations(const DictPtr&                  node,
         const std::string name = prefix + member;
         if (cd->found("type"))
         {
-            //  A LEAF unit: its override is at the top of its own dict.
+            //  A LEAF unit: its override is at the top of its own dict, and
+            //  its pair records resolve by the walk-up from ITS folder.
             ++count[name];
             declareFrom(cd, name);
+            if (out.count(name) && !base.empty())
+                bases[name] = nearestPairBase(base.substr(0, base.size() - 1));
         }
         else
         {
             //  A composite: its members are named under it.
-            collectDeclarations(cd, name + ".", base, out, count);
+            collectDeclarations(cd, name + ".", base, out, count, bases);
         }
     }
 }
@@ -261,7 +265,7 @@ ModelBoundaryLedger::ModelBoundaryLedger(const DictPtr&         flowsheetDict,
 
     //  "" = the case directory, which is the process's cwd at solve time --
     //  the same base flattenNode resolves member folders against.
-    collectDeclarations(flowsheetDict_, "", "", declared_, declarations_);
+    collectDeclarations(flowsheetDict_, "", "", declared_, declarations_, declaredBase_);
     reportWorld_ = describeThermoWorld(packageDict_);
 
     if (!declared_.empty() && (!db_ || !packageDict_))
@@ -302,6 +306,18 @@ const ThermoPackage* ModelBoundaryLedger::worldOf(const std::string& unit,
         for (std::size_t i = 0; i < reportPackage_.n(); ++i)
             gnames.push_back(reportPackage_.comp(i).name());
         merged->insert("components", EntryValue(gnames));
+        //  The same aid the flatten hands a folder unit: its pair records
+        //  resolve from the nearest ancestor owning constant/parameters/
+        //  (MemberFolder.H's nearestPairBase, one rule for both readers).
+        //  Without it the auditor priced esterification2sector's flash with
+        //  the ROOT's ethylAcetate-water pair while the unit ran the
+        //  SECTOR's -- and 7.74 kW of an 808 kW step stayed "unconfirmed"
+        //  for a record the auditor never opened.  Proved by experiment:
+        //  with the root record made equal to the sector's, the remainder
+        //  was 6.7e-5 kW.
+        auto bit = declaredBase_.find(unit);
+        if (bit != declaredBase_.end() && !bit->second.empty())
+            merged->insert("binaryPairsBase", EntryValue(bit->second));
 
         auto pkg = std::make_unique<ThermoPackage>(
             ThermoPackageBuilder::build(merged, *db_, chem_));

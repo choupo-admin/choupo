@@ -797,11 +797,14 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 // Looking only at the unit's own folder made the sector's pair
                 // invisible from a whole-plant run, and the standard library won
                 // silently.  Nearest owner wins; the standard library is the floor.
-                std::filesystem::path node =
-                    std::filesystem::path(memberBase.substr(0, memberBase.size() - 1));
-                for (int up = 0; up < 6; ++up)
+                //  The owning node is found by MemberFolder.H's nearestPairBase
+                //  -- ONE rule, shared with the model-boundary auditor since
+                //  2026-09-03 (it had its own copy and read one level too few).
+                const std::string ownerStr =
+                    nearestPairBase(memberBase.substr(0, memberBase.size() - 1));
+                std::filesystem::path node(ownerStr);
+                if (!ownerStr.empty())
                 {
-                    if (std::filesystem::exists(node / "constant" / "parameters"))
                     {
                         DictPtr th = u->found("thermo")
                             ? u->subDict("thermo")
@@ -826,10 +829,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                             }
                         }
                         if (!u->found("thermo")) u->insert("thermo", EntryValue(th));
-                        break;
                     }
-                    if (!node.has_parent_path() || node.parent_path() == node) break;
-                    node = node.parent_path();
                 }
             }
             // PER-UNIT PROPERTY CONTEXT (F2): hand the unit the `constant/` base of

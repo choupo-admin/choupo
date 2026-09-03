@@ -251,6 +251,14 @@ private:
 
     std::string                             reportWorld_;   // described
     std::map<std::string, DictPtr>          declared_;      // unit -> thermo{}
+    //  unit -> the base its pair records resolve from (the nearest ancestor
+    //  of its folder owning constant/parameters/, MemberFolder.H), for a
+    //  member reached through a word list; absent for an inline unit.  The
+    //  flatten hands such a unit the same base as `binaryPairsBase`; the
+    //  auditor must assemble the world from the same place or it prices a
+    //  different pair (esterification2sector's SEPARATION sector carries its
+    //  own ethylAcetate-water NRTL record, 2026-09-03).
+    std::map<std::string, std::string>      declaredBase_;
     std::map<std::string, int>              declarations_;  // unit -> count
     std::map<std::string, std::unique_ptr<ThermoPackage>> built_;
     std::map<std::string, std::string>      builtName_;

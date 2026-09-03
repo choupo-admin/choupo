@@ -517,3 +517,19 @@ case's 360 K feed declaration, which the open task blamed, is not the cause
 and is unchanged.  No golden moved (`esterification2sector`, `basis01`,
 `flash20` all PASS; `check_model_boundary_ledger` and
 `check_closure_ledger_pinned` OK).
+
+**And the 7.74 kW, the same day.**  Neither candidate above was it.  The
+sector `SEPARATION` owns its own `ethylAcetate-water` NRTL record (b_ij
+600/1200 K, α 0.40 — a placeholder "particular to the sector"), the case
+root owns another (647/808 K, α 0.4393), and the flash ran with the
+sector's through the fractal walk-up while the auditor assembled the world
+with the root's.  Proved by experiment before it was fixed: with the root
+record made equal to the sector's, the remainder was 6.7e-5 kW.  The
+walk-up rule ("nearest ancestor owning `constant/parameters/`") was a loop
+inside the flatten; it is `MemberFolder.H::nearestPairBase` now, and the
+auditor inserts the same `binaryPairsBase` the flatten hands the unit.
+Status `accounted`, remaining 6.7e-5 kW, and the showcase no longer
+prints ENERGY BALANCE FAILED.  The lesson generalises: *an auditor that
+reads the same disk as the solver must read it by the same rule* — the
+declaration walk (folder members) and the data walk (pair records) were
+two rules the auditor lacked, found one day apart.

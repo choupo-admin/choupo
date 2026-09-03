@@ -13,3 +13,6 @@ stream  Feed                   T                360              1e-4
 stream  liquid                 T                355              1e-4
 stream  reactorOut             T                360              1e-4
 stream  vapor                  T                355              1e-4
+closure SEPARATION.flash       raw_kW           807.999502666    1e-4
+closure SEPARATION.flash       step_kW          807.999435904    1e-4
+closure SEPARATION.flash       remaining_kW     6.67622151695e-05 1e-4

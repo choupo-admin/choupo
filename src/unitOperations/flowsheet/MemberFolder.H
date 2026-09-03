@@ -94,4 +94,25 @@ inline DictPtr readMemberDict(const DictPtr&     parent,
         + ") nor an inline block");
 }
 
+/// The NEAREST ancestor folder (the member's own included, at most six
+/// levels up) that owns a `constant/parameters/` directory -- the base a
+/// unit's pair records resolve from ("the data lives with the sector that
+/// owns it").  Empty when none does.  The flatten hands this to the unit as
+/// `binaryPairsBase`; the model-boundary auditor must assemble the unit's
+/// world from the SAME base or it prices a different pair (2026-09-03:
+/// esterification2sector's sector-owned ethylAcetate-water record was the
+/// whole of a 7.74 kW "unexplained" remainder).
+inline std::string nearestPairBase(const std::string& memberFolder)
+{
+    std::filesystem::path node(memberFolder);
+    for (int up = 0; up < 6; ++up)
+    {
+        if (std::filesystem::exists(node / "constant" / "parameters"))
+            return node.string();
+        if (!node.has_parent_path() || node.parent_path() == node) break;
+        node = node.parent_path();
+    }
+    return "";
+}
+
 } // namespace Choupo
