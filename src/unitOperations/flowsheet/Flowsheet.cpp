@@ -52,7 +52,8 @@ License
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/PropertyContext.H"
 #include "thermo/ThermoOverride.H"
-#include "unitOperations/flash/IsothermalFlash.H"   // solveCore: feed-flash for the true vf
+#include "unitOperations/flash/IsothermalFlash.H"
+#include "unitOperations/flowsheet/MemberFolder.H"   // solveCore: feed-flash for the true vf
 
 // The dispatcher for unit-op types lives in UnitOperation::New().
 // The Flowsheet no longer needs to know about each derived class.
@@ -282,25 +283,9 @@ struct CompositeTear
 //                 sector becomes a flat-case-style tear after flattening.
 //    thermo   : needed to interpret stream state (units, composition).
 // ---------------------------------------------------------------------------
-// Resolve a flowsheet MEMBER's DIRECTORY (with trailing '/').  A member is a
-// UNIT operation or a SECTOR -- never a generic "member": a dignified unit lives
-// under `unitOperations/<name>/`, a real sector under `sectors/<name>/`; the
-// bare `<name>/` layout (member folder at the domain root) is still read for
-// cases not yet migrated to the grouped layout.  The first location that
-// actually carries a flowsheetDict wins, and the resolved base is used for the
-// member's dict AND every `constant/` lookup below, so a member is found in
-// exactly one place.
-static std::string resolveMemberBase(const std::string& folderPath,
-                                     const std::string& member)
-{
-    for (const std::string& cand : { folderPath + "unitOperations/" + member + "/",
-                                     folderPath + "sectors/"        + member + "/",
-                                     folderPath + member + "/" })
-        if (std::filesystem::exists(cand + "system/flowsheetDict")
-         || std::filesystem::exists(cand + "flowsheetDict"))
-            return cand;
-    return folderPath + member + "/";   // inline block / legacy fallback
-}
+// Where a member lives on disk and how its dict is opened: ONE rule, in
+// unitOperations/flowsheet/MemberFolder.H, shared with the model-boundary
+// auditor (extracted 2026-09-03 -- it was a `static` here, unreachable).
 
 std::map<std::string,std::string> flattenNode(const DictPtr&                                  dict,
     const std::string&                              nsPrefix,
@@ -446,7 +431,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
 
     for (const auto& member : members)
     {
-        const std::string memberBase = resolveMemberBase(folderPath, member);
+        std::string memberBase;   // resolved by readMemberDict below
         // GUARD (forum 2026-07-03, reproducibility): a purely-NUMERIC sector
         // name collides with the OpenFOAM-style instant directories (0/ 1/ 2/)
         // the SolutionWriter puts at the case root -- and .gitignore excludes
@@ -472,14 +457,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
         //       twoSectorDemo) load UNCHANGED via this fallback.
         // The two are never both present for a given node; if neither exists the
         // member must be an inline block in the parent dict.
-        const std::string leanDict   = memberBase + "flowsheetDict";
-        const std::string systemDict = memberBase + "system/flowsheetDict";
-        if      (std::filesystem::exists(leanDict))   cd = Dictionary::fromFile(leanDict);
-        else if (std::filesystem::exists(systemDict)) cd = Dictionary::fromFile(systemDict);
-        else if (dict->found(member))                  cd = dict->subDict(member);
-        else throw std::runtime_error("Flowsheet: member '" + member
-            + "' has neither a folder (" + leanDict + " or " + systemDict
-            + ") nor an inline block");
+        cd = readMemberDict(dict, folderPath, member, memberBase);
 
         // Stream state never lives in a flowsheetDict -- refuse a member's
         // `streams {}` block just as loudly as the root's, naming the node.

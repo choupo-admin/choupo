@@ -1147,6 +1147,19 @@ accepts today, and that is a policy call.
     1e-12 relative on re-record).  A carried duty that stops being carried
     now reports MISSING instead of silently passing as unserved.
 
+11. **The model-boundary auditor explains 800 of esterification2sector's
+    808 kW and cannot credit the rest (found 2026-09-03, the day the
+    auditor learned to read a folder member).**  With the flash's own
+    folder declaration read, the independently priced step reproduces the
+    raw imbalance to 7.74 kW (normalized 6.3e-3 against a 1e-6 criterion),
+    so the row stays `unconfirmed` and the red alarm stays -- correctly,
+    since a partial explanation is not a credit.  Two candidate homes for
+    the remainder, neither measured yet: the unit's own first law in ITS
+    world (no report computes a unit's closure in the unit's world), and
+    the `vapor` outlet's +7.05 kW, which may be a phase re-resolution the
+    flip rule should refuse rather than a hold-T step.  Record:
+    `docs/design/model-boundary-energy-ledger.md`, last section.
+
 ## 5b. If you are working in a HOSTED session, read this first
 
 ### RUN THIS FIRST, before believing anything about the workspace

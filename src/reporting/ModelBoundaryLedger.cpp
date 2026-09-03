@@ -34,6 +34,7 @@ License
 #include "thermo/ThermoOverride.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
+#include "unitOperations/flowsheet/MemberFolder.H"
 
 #include <algorithm>
 #include <cmath>
@@ -75,26 +76,68 @@ bool fragmentDeclaresWorld(const DictPtr& th)
 //  declaration, so it does not claim to -- such a unit keeps status `none`
 //  and, if it has an imbalance, keeps the RED alarm.  A named gap is worth
 //  more than a guessed boundary.
+//  THE AUDITOR READS THE SAME DISK THE SOLVER READS (2026-09-03).  A member
+//  listed by NAME (`sectors ( ... )` / `units ( ... )` as word lists) lives in
+//  its own folder, and its `thermo {}` override sits at the top of ITS OWN
+//  flowsheetDict.  Until today this walk saw only inline dict-lists, so every
+//  folder-referenced unit was UNREADABLE and esterification2sector's flash
+//  stood under a red alarm for the latent heat of its own declared world.
+//  The folder rule is MemberFolder.H's -- one rule, two readers -- and what
+//  is read here is a DECLARATION; the world it names is still assembled
+//  independently in worldOf().  A member that cannot be opened is skipped:
+//  the solver already refused it, or will.
 void collectDeclarations(const DictPtr&                  node,
                          const std::string&              prefix,
+                         const std::string&              folderPath,
                          std::map<std::string, DictPtr>& out,
                          std::map<std::string, int>&     count)
 {
-    if (!node || !node->hasDictList("units")) return;
-    for (const auto& u : node->lookupDictList("units"))
+    if (!node) return;
+    auto declareFrom = [&](const DictPtr& u, const std::string& name)
     {
-        const std::string name = prefix + u->lookupWordOrDefault("name", "?");
-        ++count[name];
-        if (u->found("thermo"))
+        if (!u->found("thermo")) return;
+        DictPtr th;
+        try { th = u->subDict("thermo"); }
+        catch (const std::exception&) { th = nullptr; }
+        if (fragmentDeclaresWorld(th)) out[name] = th;
+    };
+    //  Inline members: a dict-list under `units`.
+    if (node->hasDictList("units"))
+    {
+        for (const auto& u : node->lookupDictList("units"))
         {
-            DictPtr th;
-            try { th = u->subDict("thermo"); }
-            catch (const std::exception&) { th = nullptr; }
-            if (fragmentDeclaresWorld(th)) out[name] = th;
+            const std::string name = prefix + u->lookupWordOrDefault("name", "?");
+            ++count[name];
+            declareFrom(u, name);
+            //  An inline entry may itself be composite (a nested dict-list).
+            if (u->hasDictList("units"))
+                collectDeclarations(u, name + ".", folderPath, out, count);
         }
-        //  An inline entry may itself be composite (a nested dict-list).
-        if (u->hasDictList("units"))
-            collectDeclarations(u, name + ".", out, count);
+        return;
+    }
+    //  Folder members: word lists under `sectors` and/or `units`.
+    std::vector<std::string> members;
+    for (const char* key : { "sectors", "units" })
+        if (node->found(key))
+            for (const auto& m : node->lookupWordList(key)) members.push_back(m);
+    for (const std::string& member : members)
+    {
+        DictPtr cd;
+        std::string base;
+        try { cd = readMemberDict(node, folderPath, member, base); }
+        catch (const std::exception&) { continue; }
+        const std::string name = prefix + member;
+        if (cd->found("type"))
+        {
+            //  A LEAF unit: its override is at the top of its own dict.
+            ++count[name];
+            declareFrom(cd, name);
+        }
+        else
+        {
+            //  A composite: its members are named under it.
+            collectDeclarations(cd, name + ".", base, out, count);
+        }
     }
 }
 
@@ -216,7 +259,9 @@ ModelBoundaryLedger::ModelBoundaryLedger(const DictPtr&         flowsheetDict,
     controls_ = solver::readConvergenceControls(solverDict,
         "modelBoundaryClosure", defaults, defaulted_);
 
-    collectDeclarations(flowsheetDict_, "", declared_, declarations_);
+    //  "" = the case directory, which is the process's cwd at solve time --
+    //  the same base flattenNode resolves member folders against.
+    collectDeclarations(flowsheetDict_, "", "", declared_, declarations_);
     reportWorld_ = describeThermoWorld(packageDict_);
 
     if (!declared_.empty() && (!db_ || !packageDict_))

@@ -489,3 +489,31 @@ touches how every inlet in the corpus is priced, which is not a change to
 make at the end of a long session.  What is fixed is the record: the number
 above was written into five places in one day, which is the arity sin
 committed by the person documenting it.
+
+## The auditor reads a folder member (2026-09-03)
+
+`esterification2sector`'s flash carries its `thermo {}` override in its OWN
+folder (`sectors/SEPARATION/unitOperations/flash/system/flowsheetDict`), and
+the auditor's declaration walk saw only inline dict-lists — so the unit was
+UNREADABLE to it, the row said so honestly since 2026-08-24, and an 808 kW
+residual stood under the red alarm.  The rule for where a member lives and
+how its dict is opened was a `static` inside `Flowsheet.cpp`; it is now
+`unitOperations/flowsheet/MemberFolder.H`, one rule with two readers, and
+the auditor walks `sectors ( … )` / `units ( … )` word lists through it —
+a leaf folder's override at the top of its own dict, a composite's members
+named under it.  What is read is a DECLARATION; the world it names is still
+assembled independently in `worldOf()`.
+
+What that reach found, measured: the independently computed step is
+**800.26 kW of the 808.00 kW raw imbalance** (per stream: reactorOut
++793.2, liquid 0, vapor +7.05), and **7.74 kW remains**, which fails the
+declared criterion — so the step is NOT credited, and the row says why with
+the number.  That is the doctrine working: a partial explanation is not a
+credit.  The remainder is now a real question and not a blind spot: the
+flash's own first law in its NRTL world (the report never computes a unit's
+closure in the unit's world), and whether the `vapor` outlet's +7.05 kW is a
+hold-T step or a phase re-resolution the flip rule should have refused.  The
+case's 360 K feed declaration, which the open task blamed, is not the cause
+and is unchanged.  No golden moved (`esterification2sector`, `basis01`,
+`flash20` all PASS; `check_model_boundary_ledger` and
+`check_closure_ledger_pinned` OK).
