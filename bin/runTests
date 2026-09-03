@@ -352,8 +352,20 @@ get_closure() {
 #     allocated, that row reports MISSING, and the improvement is reported
 #     rather than absorbed.
 #
-#     `name` is the unit, `key` is `<tier>.<utility>.<field>` or
-#     `<tier>.<port>.unserved` (port `-` when the entry declares none).
+#     A CARRIED DUTY IS A THIRD SHAPE, NOT AN UNSERVED ONE (2026-09-03).  A
+#     duty met by the unit's own process streams, by a utility stream on its
+#     topology or by a heat-link is `allocated: false` too -- there is nothing
+#     to buy -- and the record says so in its typed `carried` field.  It gets
+#     one row, `<tier>.<port>.carried`, value 1.  Until this kind existed the
+#     writer keyed every unallocated entry `unserved`, so fifteen of the
+#     corpus's twenty-one "unserved" rows were process-process exchangers and
+#     heat-links pinned as demands nobody met.  A carried duty that stops
+#     being carried (a heat-link removed) now reports MISSING on its
+#     `carried` row instead of silently becoming an `unserved` pass.
+#
+#     `name` is the unit, `key` is `<tier>.<utility>.<field>`,
+#     `<tier>.<port>.unserved` or `<tier>.<port>.carried` (port `-` when the
+#     entry declares none).
 get_utility() {
     local out="$1" unit="$2" key="$3"
     local tier util field
@@ -367,8 +379,12 @@ get_utility() {
                 if (index(rec[i], "\"unit\": \"" u "\"") == 0) continue
                 if (index(rec[i], "\"tier\": \"" t "\"") == 0) continue
                 alloc = (index(rec[i], "\"allocated\": true") > 0)
-                if (f == "unserved") {
+                carried = (index(rec[i], "\"carried\": true") > 0)
+                if (f == "unserved" || f == "carried") {
                     if (alloc) continue
+                    #  The two unallocated shapes are told apart by the typed
+                    #  field, never by the prose in `utility`.
+                    if ((f == "carried") != carried) continue
                     p = "-"
                     if (match(rec[i], /"port": "[^"]*"/))
                         { p = substr(rec[i], RSTART+9, RLENGTH-10); if (p == "") p = "-" }
@@ -775,9 +791,10 @@ auto_generate() {
         #  check_record_self_consistency already guards.  `allocated` is not a
         #  field either -- it SELECTS which shape of row is written (see
         #  get_utility): a served duty is pinned by its utility's name and
-        #  numbers, an unserved one by a single `unserved` row, and the two
-        #  must never be confused, because an unserved entry's utility field
-        #  is a prose placeholder rather than a name.
+        #  numbers, an unserved one by a single `unserved` row, a carried one
+        #  by a single `carried` row, and the three must never be confused,
+        #  because an unallocated entry's utility field is a prose placeholder
+        #  rather than a name (see get_utility).
         printf '%s\n' "$util_sec" | awk -v tol="$reltol" '
             function norm(s) { gsub(/[ \t]+/, "_", s); return s }
             {
@@ -791,8 +808,9 @@ auto_generate() {
                         p = "-"
                         if (match(rec[i], /"port": "[^"]*"/))
                             { p = substr(rec[i], RSTART+9, RLENGTH-10); if (p == "") p = "-" }
+                        kind = (index(rec[i], "\"carried\": true") > 0) ? "carried" : "unserved"
                         printf "utility %-22s %-16s %-18s %s\n", u,
-                               t "." norm(p) ".unserved", 1, tol
+                               t "." norm(p) "." kind, 1, tol
                         continue
                     }
                     if (!match(rec[i], /"utility": "[^"]*"/)) continue

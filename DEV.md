@@ -1130,20 +1130,22 @@ accepts today, and that is a policy call.
    FILE-level ambiguity -- the stream grammar half -- stays exactly
    where this item put it: C3.
 
-10. **A CARRIED duty and an UNSERVED duty write the SAME golden row
-    (found 2026-09-02, fixing the exchanger mis-filing).**  `bin/runTests`'s
-    golden writer keys every `allocated: false` utility entry as
-    `<tier>.<port>.unserved 1` -- so a process-process exchanger whose heat
-    is `(carried: its own process streams)` and a condenser no catalogue
-    utility can serve (`(none adequate)`) pin identically, and the golden
-    cannot tell recovery from a real gap.  The first half (the carrier map
-    registers `heatExchanger` / `multiStreamHX` as their own carrier) shipped
-    the same day and moved no golden precisely because of this.  The second
-    half is a `carried` row kind -- `<tier>.<port>.carried 1`, the axis rule
-    "put the word in the KEY" -- which edits `bin/runTests` (cross-cutting per
-    §6a), re-records the 12 exchanger rows deliberately and leaves the 10
-    genuine unserved rows (boiler 1, distillationColumn 3, heater 3,
-    isothermalFlash 3) untouched.  Task #42.
+10. **A CARRIED duty and an UNSERVED duty wrote the SAME golden row --
+    CLOSED 2026-09-03.**  Found 2026-09-02 fixing the exchanger mis-filing:
+    the golden writer keyed every `allocated: false` utility entry
+    `<tier>.<port>.unserved 1`, so a process-process exchanger whose heat is
+    `(carried: its own process streams)` and a condenser no catalogue utility
+    can serve pinned identically.  Measured before the fix: of the corpus's
+    21 unallocated rows, 15 (in 13 cases) were CARRIED -- exchangers,
+    heat-links, utility-stream heaters -- and 6 (in 5 cases) genuinely
+    unserved.  Closed by the axis rule "put the word in the KEY": the record
+    carries a typed `carried` field (`ResultRecords.H`, emitted beside
+    `allocated`), the writer and reader in `bin/runTests` and
+    `check_utility_allocation_pinned` all key on it (`<tier>.<port>.carried
+    1`), and the 13 goldens were re-recorded with every other row proven
+    identical whitespace-aside (one KPI's last printed digit flickered by
+    1e-12 relative on re-record).  A carried duty that stops being carried
+    now reports MISSING instead of silently passing as unserved.
 
 ## 5b. If you are working in a HOSTED session, read this first
 

@@ -158,6 +158,15 @@ struct UtilityAllocation
     scalar      MW      = 0.0;
     scalar      eur_h   = 0.0;
     bool        allocated = false;
+    //  A duty that is NOT allocated is one of TWO things, and until 2026-09-03
+    //  the record could not say which: CARRIED (met by the unit's own process
+    //  streams, a utility stream on its topology, or a heat-link -- nothing to
+    //  buy) or UNSERVED (no catalogue utility can meet it).  The `utility`
+    //  prose said so ("(carried: ...)" vs "(none adequate)"), but prose is not
+    //  a field a reader may test, so the golden format pinned both as
+    //  `unserved` and heatExchanger01 stood for a month as 93.79 kW of
+    //  UNSERVED HEATING.  `carried` is the typed fact; `allocated` stays.
+    bool        carried   = false;
 };
 
 // Per-component thermo COVERAGE: which capabilities the loaded component data

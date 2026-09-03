@@ -131,12 +131,16 @@ def published(case: Path):
         #  arity sin, inside the machinery built to enforce it.  Both were
         #  paid for on this gate's first run.
         if '"allocated": true' not in rec:
-            #  An unserved duty's `utility` field is PROSE ("(none adequate)"),
-            #  never a name; it is pinned by one `unserved` row keyed on the
-            #  port.
+            #  An unallocated duty's `utility` field is PROSE ("(none
+            #  adequate)", "(carried: ...)"), never a name; it is pinned by one
+            #  row keyed on the port, whose KIND is the record's typed
+            #  `carried` field (2026-09-03) -- `carried` for a duty met by the
+            #  unit's own streams or a heat-link, `unserved` for one no
+            #  catalogue utility can meet.  The same rule as the writer's.
             p = re.search(r'"port": "([^"]*)"', rec)
             port = norm(p.group(1)) if p and p.group(1) else "-"
-            keys.add((u.group(1), t.group(1), port, "unserved"))
+            kind = "carried" if '"carried": true' in rec else "unserved"
+            keys.add((u.group(1), t.group(1), port, kind))
             continue
         w = re.search(r'"utility": "([^"]*)"', rec)
         if not w:

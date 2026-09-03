@@ -223,6 +223,7 @@ allocateUtilities(const SimulationResult& result, const DictPtr& flowsheet, scal
             if (!carriedBy.empty())
             {
                 r.utility = "(carried: " + carriedBy + ")";
+                r.carried = true;
                 rows.push_back(std::move(r));
                 continue;
             }

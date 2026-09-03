@@ -623,7 +623,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                << ", \"kg_s\": " << num(a.kg_s)
                << ", \"MW\": " << num(a.MW)
                << ", \"eur_h\": " << num(a.eur_h)
-               << ", \"allocated\": " << (a.allocated ? "true" : "false") << " }";
+               << ", \"allocated\": " << (a.allocated ? "true" : "false")
+               << ", \"carried\": " << (a.carried ? "true" : "false") << " }";
         }
         os << " ]";
     }

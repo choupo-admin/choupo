@@ -20,8 +20,8 @@ kpi     preheater              U                600              1e-4
 kpi     preheater              UA               15000            1e-4
 kpi     preheater              area             25               1e-4
 kpi     preheater              effectiveness    0.986890111481   1e-4
-utility preheater              heating.-.unserved 1                1e-4
 stream  hotOil                 T                623.15           1e-4
 stream  oilReturn              T                571.484587546    1e-4
 stream  processFeed            T                320              1e-4
 stream  processOut             T                619.175737295    1e-4
+utility preheater              heating.-.carried 1                1e-4

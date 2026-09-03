@@ -1,27 +1,27 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  brineReturn            F                0.416666666667     1e-4
-stream  brineSupply            F                0.416666666667     1e-4
-stream  ethanolOut             F                0.00555555555556   1e-4
-stream  ethanolVapour          F                0.00555555555556   1e-4
-kpi     condChiller            C_cold           57599.6888818      1e-4
-kpi     condChiller            C_hot            623.888888889      1e-4
-kpi     condChiller            C_r              0.0108314628256    1e-4
-kpi     condChiller            LMTD             12.519257418       1e-4
-kpi     condChiller            NTU              4.48797862867      1e-4
-kpi     condChiller            Q                35053.9207703      1e-4
-kpi     condChiller            Q_kW             35.0539207703      1e-4
-kpi     condChiller            T_cold_in        273.15             1e-4
-kpi     condChiller            T_cold_out       273.758578301      1e-4
-kpi     condChiller            T_hot_in         330                1e-4
-kpi     condChiller            T_hot_out        273.813840261      1e-4
-kpi     condChiller            U                350                1e-4
-kpi     condChiller            UA               2800               1e-4
-kpi     condChiller            area             8                  1e-4
-kpi     condChiller            effectiveness    0.988322950547     1e-4
-utility condChiller            heating.-.unserved 1                  1e-4
+stream  brineReturn            F                0.416666666667   1e-4
+stream  brineSupply            F                0.416666666667   1e-4
+stream  ethanolOut             F                0.00555555555556 1e-4
+stream  ethanolVapour          F                0.00555555555556 1e-4
+kpi     condChiller            C_cold           57599.6888818    1e-4
+kpi     condChiller            C_hot            623.888888889    1e-4
+kpi     condChiller            C_r              0.0108314628256  1e-4
+kpi     condChiller            LMTD             12.519257418     1e-4
+kpi     condChiller            NTU              4.48797862867    1e-4
+kpi     condChiller            Q                35053.9207703    1e-4
+kpi     condChiller            Q_kW             35.0539207703    1e-4
+kpi     condChiller            T_cold_in        273.15           1e-4
+kpi     condChiller            T_cold_out       273.758578301    1e-4
+kpi     condChiller            T_hot_in         330              1e-4
+kpi     condChiller            T_hot_out        273.813840261    1e-4
+kpi     condChiller            U                350              1e-4
+kpi     condChiller            UA               2800             1e-4
+kpi     condChiller            area             8                1e-4
+kpi     condChiller            effectiveness    0.988322950547   1e-4
 stream  brineReturn            T                273.758578301    1e-4
 stream  brineSupply            T                273.15           1e-4
 stream  ethanolOut             T                273.813840261    1e-4
 stream  ethanolVapour          T                330              1e-4
+utility condChiller            heating.-.carried 1                1e-4
