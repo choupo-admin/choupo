@@ -3307,6 +3307,23 @@ PYEOF
     fi
     rm -f /tmp/estvis.$$
 
+    # dossier-grammar gate (2026-09-03).  The curation dossier was written in a
+    # grammar NO dict parser in this project accepts -- a keyword-prefixed named
+    # block, and the domain's coordinate label sitting in the unit slot -- so
+    # the GUI could not read it at all and `promote-from-dossier` hand-rolls
+    # regexes under a comment saying a second parser would be wrong.  The
+    # Explorer therefore told every reader that "no dossier is attached" about
+    # components that have three.  Three sabotages; S2 survived twice.
+    if "$ROOT/bin/curate/check_dossier_grammar.py" > /tmp/dossgram.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "dossier-grammar-gate" "$(head -1 /tmp/dossgram.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_dossier_grammar.py)\n" "dossier-grammar-gate"
+        cat /tmp/dossgram.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/dossgram.$$
+
     #  ion-records-gate RETIRED 2026-08-05.  It was a MIGRATION-time guard:
     #  it compared the per-ion records of the pre-2026-07-01 aqueous layout
     #  against electrolyte/ions.dat.  BOTH are gone -- that home was deleted

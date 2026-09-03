@@ -209,3 +209,80 @@ per-value block — real vocabulary, since `thermo/PairAudit.H` reads exactly
 that — and the sabotage fires.  The second reader sabotage (narrowing the
 filter so `measured` counts as derived) fires the curated-record arm: an
 `estimate` mark on a measured record is the same defect pointing the other way.
+
+---
+
+## 7. Slice 3: the dossier was written in a grammar nothing could read
+
+§6 ended by saying the Explorer could not see an estimate.  Wiring it to see a
+CURATION DOSSIER — the record of what was actually tested against withheld
+evidence — turned out to be blocked one layer lower, and by something worse.
+
+**The dossier was not in the dict grammar.**  Two separate violations, both
+found by pointing the project's own parser at its own file:
+
+    property binaryVLE.T_bubble          -> "expected ';' after word value of 'property'"
+    {                                       a keyword-prefixed named block is not a form
+                                            the grammar has
+
+    fit { min 0.05 x1; max 0.95 x1; }    -> "unknown unit suffix 'x1'"
+                                            the domain's COORDINATE LABEL, written in the
+                                            unit slot; x1 is a mole fraction — dimensionless
+
+The consequences were measured:
+
+* `bin/curate/promote-from-dossier` hand-rolls regexes under a comment reading
+  *"a parser here would be a second implementation of one Choupo already has"* —
+  the principle stated, and not followed, because it could not be.
+* The Explorer's component inspector told every reader that "no curation dossier
+  is attached to this component" while three dossiers in the corpus name
+  `ethanol` and one names `water`.  **An absence nobody checked is not a
+  finding.**
+
+### 7.1 A list, not a keyed block — and curate01 is why
+
+The first fix opened each block with the property name alone (`binaryVLE.T_bubble
+{ … }`), which parses.  It is still wrong, and the corpus said so within
+minutes: `curate01` curates `vapourPressure` **twice**, once `validated` and
+once `validationRefused`, and that contrast is the entire point of the witness.
+As a dict KEY the second entry silently replaces the first — and the half that
+disappears is the refused one, which is the half a reader most needs.
+
+Measured before it shipped: the gate counted **4 property blocks where the
+corpus declares 5 verdicts**.  The format is a LIST now, each entry naming its
+own property, and both the gate and the GUI reader carry an arm that fails when
+the walker finds fewer entries than the file declares verdicts.
+
+The entries sit at column 0 so the indentation INSIDE them is unchanged — two
+other gates check for exact-spacing substrings, and shifting every line would
+have broken them for no gain.
+
+### 7.2 The sabotage that survived twice
+
+`check_dossier_grammar`'s S2 puts the coordinate back in the unit slot.
+
+The first attempt regenerated only ONE witness, whose domain coordinate is `K`
+— a real unit — so the sabotage produced a perfectly legal file: *a sabotage
+that never reaches its subject has tested nothing.*
+
+With every dossier regenerated it survived **again**, and that one was the
+gate's own fault.  The pattern was anchored with `^\s*`, while the domain writes
+its intervals inline (`fit  { min 0.05 x1; max 0.95 x1; n 8; }`), so the key it
+had to match never begins a line.  The gate reported OK over a file the real
+parser refuses.  **A pattern anchored where its subject does not live is a check
+that cannot fire.**
+
+### 7.3 What the panel says now
+
+The inspector renders each dossier as itself: the engine's property key, the
+case it ran in, the held-out AAD beside the band declared before the fit, the
+datasets with the provenance each declares, and the verdict.  When there is
+none it says *how many dossiers were read* — so "nobody curated this component"
+is distinguishable from "the reader found nothing anywhere", which are different
+failures and only one of them is about the component.
+
+The property keys are deliberately NOT translated into the coverage rows above
+them.  One of them, `binaryVLE.T_bubble`, is a binary pair's property and has no
+pure-component row to map onto; a translation table would be a second home for
+that correspondence and would attach a verdict to the wrong property the first
+time it drifted.

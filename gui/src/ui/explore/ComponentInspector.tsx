@@ -30,6 +30,7 @@ import { IconAlertTriangle, IconExternalLink, IconFileText } from "@tabler/icons
 import { useState } from "react";
 
 import type { ComponentRecord, CurationVerdict } from "../../case/componentRecord.js";
+import { dossierCorpusSize, dossiersFor } from "../../case/dossier.js";
 
 /** How each dossier verdict is drawn.  The GUI picks a COLOUR and a sentence;
  *  it does not pick the verdict, and it does not collapse two verdicts into one
@@ -64,6 +65,12 @@ export function ComponentInspector({ record, onClose }: {
   onClose?: () => void;
 }) {
   const [rawOpen, setRawOpen] = useState(false);
+  //  Every dossier the CORPUS carries for this component, and how many it
+  //  carries in total -- so the empty case can say "nobody curated this"
+  //  rather than "the reader found nothing anywhere", which are different
+  //  failures and only one of them is about the component.
+  const dossiers = dossiersFor(record.name);
+  const corpusSize = dossierCorpusSize();
 
   return (
     <Stack gap="sm" style={{ height: "100%", minHeight: 0 }}>
@@ -197,16 +204,61 @@ export function ComponentInspector({ record, onClose }: {
             </Section>
           )}
 
-          <Section title="EVIDENCE / PROVENANCE">
-            <Text size="xs" c="dimmed">
-              No curation dossier is attached to this component.  A dossier is
-              produced by <Code>bin/choupo-curate &lt;{record.name}&gt;</Code>,
-              which extracts ThermoML datasets, DECLARES which are fitted and
-              which are held out <i>before</i> fitting, and records the held-out
-              residuals beside the acceptance band.  Until then every property
-              above reads <b>no dossier</b> — not because the data is bad, but
-              because nobody has declared evidence for it.
-            </Text>
+          <Section title="CURATION DOSSIERS">
+            {dossiers.length === 0 ? (
+              <Text size="xs" c="dimmed">
+                No dossier in the corpus names this component ({corpusSize}{" "}
+                dossier{corpusSize === 1 ? "" : "s"} were read).  One is produced
+                by <Code>bin/choupo-curate &lt;{record.name}&gt;</Code>, which
+                extracts ThermoML datasets, DECLARES which are fitted and which
+                are held out <i>before</i> fitting, and records the held-out
+                residuals beside the acceptance band.
+              </Text>
+            ) : (
+              <>
+                <Table fz="xs" withRowBorders={false}>
+                  <Table.Tbody>
+                    {dossiers.map((d) => (
+                      <Table.Tr key={d.casePath + d.property}>
+                        <Table.Td w={150}>
+                          <Text size="xs" ff="monospace">{d.property}</Text>
+                          <Text size="xs" c="dimmed">{d.caseName}</Text>
+                        </Table.Td>
+                        <Table.Td>
+                          {d.aadHeldOutPct !== null ? (
+                            <Text size="xs" ff="monospace" c="dimmed">
+                              held-out AAD {d.aadHeldOutPct.toPrecision(4)} %
+                              {d.acceptanceMaxAADPct !== null
+                                ? ` · band ${d.acceptanceMaxAADPct} % declared before the fit`
+                                : " · no band was declared beforehand"}
+                            </Text>
+                          ) : (
+                            <Text size="xs" c="dimmed" fs="italic">
+                              no held-out residual recorded
+                            </Text>
+                          )}
+                          <Text size="xs" c="dimmed">
+                            {d.datasets.length} dataset(s):{" "}
+                            {d.datasets.map((s) => `${s.role}${s.provenance ? ` (${s.provenance})` : ""}`).join(", ")}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td w={110} ta="right">
+                          <VerdictCell v={d.verdict} />
+                        </Table.Td>
+                      </Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+                <Text size="xs" c="dimmed" mt={4}>
+                  Each row is one curation run in the case named beneath its
+                  property — not a property of the catalogue record.  The
+                  property keys are the <b>engine&apos;s</b> and are deliberately
+                  not translated into the coverage rows above: one of them
+                  (<Code>binaryVLE.T_bubble</Code>) is a binary pair&apos;s
+                  property and has no pure-component row to map onto.
+                </Text>
+              </>
+            )}
           </Section>
 
           <Box>

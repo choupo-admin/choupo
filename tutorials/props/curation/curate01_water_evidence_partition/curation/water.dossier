@@ -20,8 +20,10 @@
 component      water;
 reviewStatus   unreviewed;
 
-property vapourPressure
+properties
+(
 {
+    property       vapourPressure;
     operation      psat_water_validated;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
     verdict        validated;
@@ -55,8 +57,9 @@ property vapourPressure
 
         domain
         {
-            fit         { min 275 K; max 320 K; n 10; }
-            validation  { min 325 K; max 370 K; n 10; }
+            coordinate  K;
+            fit         { min 275; max 320; n 10; }
+            validation  { min 325; max 370; n 10; }
         }
     }
 
@@ -70,8 +73,8 @@ property vapourPressure
     }
 }
 
-property vapourPressure
 {
+    property       vapourPressure;
     operation      psat_water_refused;   // type vaporPressureFit
     model          "Antoine  log10(Psat[bar]) = A - B/(T + C)";
     verdict        validationRefused;
@@ -106,7 +109,8 @@ property vapourPressure
 
         domain
         {
-            fit         { min 275 K; max 370 K; n 20; }
+            coordinate  K;
+            fit         { min 275; max 370; n 20; }
         }
     }
 
@@ -118,3 +122,4 @@ property vapourPressure
     }
 }
 
+);

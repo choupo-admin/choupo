@@ -168,11 +168,38 @@ std::vector<std::string> CurationDossier::write() const
              "----------------*/\n\n";
 
         f << "component      " << comp << ";\n"
-          << "reviewStatus   unreviewed;\n\n";
+          << "reviewStatus   unreviewed;\n\n"
+          << "properties\n(\n";
 
         for (const auto* r : recs)
         {
-            f << "property " << r->property << "\n{\n";
+            //  THE PROPERTY BLOCK IS PLAIN DICT GRAMMAR (2026-09-03).
+            //
+            //  It used to be written `property <name>\n{ ... }` -- a
+            //  keyword-prefixed named block, which is NOT a form any dict
+            //  parser in this project accepts.  Measured: the GUI's shared
+            //  parser refuses the file outright ("expected ';' after word
+            //  value of 'property'"), and `bin/curate/promote-from-dossier`
+            //  hand-rolls a regex under a comment saying that "a parser here
+            //  would be a second implementation of one Choupo already has" --
+            //  the principle stated and, of necessity, not followed.  So the
+            //  dossier was a work record NOTHING could read back, which is why
+            //  the Explorer's inspector said "no dossier is attached" about
+            //  components that have three.
+            //
+            //  A LIST, NOT A KEYED BLOCK, and curate01 is why.  It curates
+            //  `vapourPressure` TWICE -- once validated, once
+            //  validationRefused -- and that contrast is the whole point of
+            //  the witness.  Written as `<name> { ... }` the property name is
+            //  a dict KEY, so the second entry silently replaces the first and
+            //  the half a reader most needs to see is the half that
+            //  disappears.  A list keeps both, and each entry names its own
+            //  property.  The entries sit at column 0 so the indentation
+            //  INSIDE them is unchanged -- two other gates check for
+            //  exact-spacing substrings, and shifting every line would break
+            //  them for no gain.
+            f << "{\n"
+              << "    property       " << r->property << ";\n";
             f << "    operation      " << r->opName
               << ";   // type " << r->opType << "\n";
             f << "    model          \"" << r->model << "\";\n";
@@ -197,13 +224,21 @@ std::vector<std::string> CurationDossier::write() const
             writeEvidenceSets(f, "fit", r->fitSets, "        ");
             writeEvidenceSets(f, "validation", r->validationSets, "        ");
             f << "        );\n";
+            //  THE COORDINATE IS DECLARED, NOT WORN AS A UNIT SUFFIX.
+            //  This used to write `min 0.05 x1;`, putting the domain's
+            //  variable NAME where the grammar expects a unit -- so the
+            //  parser refused the file with "unknown unit suffix 'x1'".
+            //  `x1` is a mole fraction: dimensionless, and a label for WHICH
+            //  coordinate the interval is on.  It gets its own key, which is
+            //  also the more honest statement.
             f << "\n        domain\n        {\n"
-              << "            fit         { min " << r->fitMin << " " << r->domainUnit
-              << "; max " << r->fitMax << " " << r->domainUnit << "; n "
+              << "            coordinate  " << r->domainUnit << ";\n"
+              << "            fit         { min " << r->fitMin
+              << "; max " << r->fitMax << "; n "
               << r->nFit << "; }\n";
             if (r->nValidation > 0)
-                f << "            validation  { min " << r->valMin << " " << r->domainUnit
-                  << "; max " << r->valMax << " " << r->domainUnit << "; n "
+                f << "            validation  { min " << r->valMin
+                  << "; max " << r->valMax << "; n "
                   << r->nValidation << "; }\n";
             f << "        }\n    }\n";
 
@@ -250,6 +285,7 @@ std::vector<std::string> CurationDossier::write() const
             }
             f << "    }\n}\n\n";
         }
+        f << ");\n";
         written.push_back(path);
     }
     return written;

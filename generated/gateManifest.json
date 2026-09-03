@@ -900,6 +900,11 @@
       "exit": 0,
       "claim": "check_estimate_visible: OK -- the generated component carries per-value provenance on 3 value(s), each declaring an `origin`, a `method` and an `uncertainty { status }`, which is exactly the structural rule the Explorer's inspector reads (a sub-dict that declares `origin`; never a list of field names); and every one of those facts appears verbatim in the GUI fixture, so the reader's tests are written against the record the engine actually writes.  NOT COVERED: any NUMBER (check_estimates recomputes those against the recipe); whether the inspector RENDERS the section (that is the vitest suite); and any generator path other than Joback.",
       "seconds": 0.0
+    },
+    "check_dossier_grammar": {
+      "exit": 0,
+      "claim": "check_dossier_grammar: OK -- 4 dossier(s) carrying 5 property block(s) are written in grammar the project's own dict parser reads back: no keyword-prefixed named block, no coordinate label wearing a unit's slot.  Every block is found by the structural rule both readers apply (a top-level sub-dict declaring `verdict`), every verdict is one of the engine's five, and no `validated` sits beside a held-out AAD outside its own pre-declared band.  NOT COVERED: this is a REPLICA of the dict reader (there is no Python dict parser here to call, and writing one would be the second implementation this gate's own subject warns about), so a third kind of grammar violation nobody has hit would pass; and no NUMBER is checked, only that a verdict agrees with the two printed next to it.",
+      "seconds": 0.1
     }
   }
 }

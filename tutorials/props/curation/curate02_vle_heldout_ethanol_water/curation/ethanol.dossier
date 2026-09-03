@@ -20,8 +20,10 @@
 component      ethanol;
 reviewStatus   unreviewed;
 
-property binaryVLE.T_bubble
+properties
+(
 {
+    property       binaryVLE.T_bubble;
     operation      nrtl_etoh_water_heldout;   // type fitParameters
     model          "NRTL binary pair, bubble-T residual at fixed P";
     verdict        validated;
@@ -56,8 +58,9 @@ property binaryVLE.T_bubble
 
         domain
         {
-            fit         { min 0.05 x1; max 0.95 x1; n 8; }
-            validation  { min 0.2 x1; max 0.8 x1; n 3; }
+            coordinate  x1;
+            fit         { min 0.05; max 0.95; n 8; }
+            validation  { min 0.2; max 0.8; n 3; }
         }
     }
 
@@ -71,3 +74,4 @@ property binaryVLE.T_bubble
     }
 }
 
+);

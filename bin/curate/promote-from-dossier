@@ -71,8 +71,17 @@ def parse_dossier(path: pathlib.Path):
     text = path.read_text()
     comp = re.search(r"^component\s+(\S+);", text, re.M)
     props = {}
-    for m in re.finditer(r"^property\s+(\S+)\s*\n\{(.*?)^\}", text, re.M | re.S):
-        name, body = m.group(1), m.group(2)
+    #  A LIST of entries, each naming its own property -- plain dict grammar
+    #  since 2026-09-03, so the file the engine writes is one the project's own
+    #  parsers can read.  The old `property <name>` + `{ }` form was accepted
+    #  by no dict parser here, and a keyed block would have LOST curate01's
+    #  second `vapourPressure` entry (same name, opposite verdict).
+    for m in re.finditer(r"^\{(.*?)^\}", text, re.M | re.S):
+        body_probe = m.group(1)
+        pm = re.search(r"^\s*property\s+(\S+);", body_probe, re.M)
+        if not pm or not re.search(r"^\s*verdict\s+\S+;", body_probe, re.M):
+            continue
+        name, body = pm.group(1), body_probe
         v = re.search(r"^\s*verdict\s+(\S+);", body, re.M)
         op = re.search(r"^\s*operation\s+(\S+);", body, re.M)
         model = re.search(r'^\s*model\s+"([^"]*)";', body, re.M)

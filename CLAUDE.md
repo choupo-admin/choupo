@@ -890,8 +890,22 @@ run on a TRANSCRIPTION because the generated file is gitignored — so the gate
 RUNS the generator and holds that transcription to it.  A reader sabotage
 SURVIVED first contact (every sub-dict in the fixture already declared
 `origin`, so the guard had no case); the fixture now carries a `validity {}`
-block beside a real one.  Gate: `check_estimate_visible`.  Record:
-[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md) (§6 for the second slice).
+block beside a real one.  Gate: `check_estimate_visible`.  **Slice 3: THE CURATION DOSSIER WAS WRITTEN
+IN A GRAMMAR NO DICT PARSER HERE ACCEPTS** — a keyword-prefixed named block
+(`property <name>` then `{`) and the domain's COORDINATE LABEL sitting in the
+unit slot (`min 0.05 x1;`).  So `promote-from-dossier` hand-rolls regexes
+under a comment saying a second parser would be wrong, and the Explorer told
+every reader that "no dossier is attached" about components that have three:
+*an absence nobody checked is not a finding.*  The property list is now plain
+dict grammar — **a LIST, not a keyed block**, because `curate01` curates
+`vapourPressure` twice with opposite verdicts and a name-keyed collection
+drops the `validationRefused` half (measured: 4 blocks found where 5 verdicts
+are declared).  Both readers carry a count arm.  A sabotage SURVIVED TWICE:
+once because it reached only a witness whose coordinate is a real unit, once
+because the gate's pattern was anchored to the line start while the domain
+writes its intervals inline — *a pattern anchored where its subject does not
+live is a check that cannot fire.*  Gate: `check_dossier_grammar`.  Record:
+[`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md) (§6, §7 for the later slices).
 
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
