@@ -69,6 +69,10 @@ export interface ComponentMeta {
    *  — the engine reads it directly, so the component is UNIFAC-able (gates the
    *  γ=UNIFAC views without a hardcoded map). */
   hasUnifac: boolean;
+  /** The UNIFAC group NAMES the record decomposes into (`groups { unifac (
+   *  { group OH; count 1; } ... ) }`), for the family tree in the browser
+   *  (case/family.ts).  Empty when the record carries no block. */
+  unifacGroups: string[];
   /** Carries the three data a Hildebrand solubility parameter is DERIVED from:
    *  HvapTb, Tc and Vliq.  Not a stored delta -- the tree holds no derivative
    *  -- but the ability to compute one.  A component without all three is
@@ -182,6 +186,12 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
   const isSynthetic = !!prov && prov.source === "synthetic";
   const grp = j.groups as Record<string, unknown> | undefined;
   const hasUnifac = !!grp && grp.unifac !== undefined && grp.unifac !== null;
+  const unifacGroups: string[] = hasUnifac && Array.isArray(grp!.unifac)
+    ? (grp!.unifac as unknown[]).map((e) => {
+        const g = (e as { group?: unknown } | null)?.group;
+        return typeof g === "string" ? g : "";
+      }).filter((g) => g !== "")
+    : [];
   const num = (v: unknown) => (typeof v === "number" && v > 0 ? v : undefined);
   //  The SAME three the engine's solubilityParameter op requires, and it
   //  refuses by name for each one missing.  Read here so a study is offered
@@ -190,7 +200,7 @@ function metaFromDat(body: string, origin: ComponentMeta["origin"] = "standard")
     && typeof j.HvapTb === "number" && j.HvapTb > 0
     && typeof j.Vliq === "number" && j.Vliq > 0
     && !nonvol;
-  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasUnifac,
+  return { name, formula, kind, vleAble, isElectrolyte, isPermanentGas, isRadical, isSaltOrMineral, isCombustion, isRoomTemperatureGas, isSynthetic, hasUnifac, unifacGroups,
     deltaAble, origin, tc: num(j.Tc), pc: num(j.Pc), tb: num(j.Tb) };
 }
 

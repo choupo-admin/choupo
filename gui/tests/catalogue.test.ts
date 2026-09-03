@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { CATALOGUE, type ComponentMeta, formulaIfDistinct, metaByName, searchCatalogue } from "../src/case/catalogue.js";
 
 const mk = (name: string, formula: string): ComponentMeta =>
-  ({ name, formula, kind: "volatile", vleAble: true, isElectrolyte: false, isPermanentGas: false, isSynthetic: false, hasUnifac: false, deltaAble: false, isRadical: false, isSaltOrMineral: false, isCombustion: false, isRoomTemperatureGas: false });
+  ({ name, formula, kind: "volatile", vleAble: true, isElectrolyte: false, isPermanentGas: false, isSynthetic: false, hasUnifac: false, unifacGroups: [], deltaAble: false, isRadical: false, isSaltOrMineral: false, isCombustion: false, isRoomTemperatureGas: false });
 
 describe("standard component catalogue (Property Explorer browser)", () => {
   it("harvests the standard components from data/standards/components/*.dat", () => {

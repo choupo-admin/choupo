@@ -14,6 +14,7 @@ import { IconArrowRight, IconFlask } from "@tabler/icons-react";
 
 import { CATALOGUE, DATA_LOCAL_CATALOGUE, type ComponentMeta, formulaIfDistinct, searchCatalogue } from "../../case/catalogue.js";
 import { FIRST_PATH } from "../../cases/tutorials.js";
+import { familyOf, familyRank, type Family } from "../../case/family.js";
 
 type RoleFilter = "all" | "vle" | "solute";
 
@@ -82,8 +83,18 @@ const GROUP_LABEL: Record<GroupKey, string> = {
  *  library, the radicals and the synthetic stand-ins last and folded. */
 export const DISPLAY_ORDER: GroupKey[] =
   ["firstPath", "volatiles", "gases25", "salts", "nonvolatile", "combustion", "radicals", "synthetic"];
-/** Folded on first sight: a count and a click, never 44 radicals at the top. */
-const FOLDED_BY_DEFAULT: ReadonlySet<GroupKey> = new Set(["combustion", "radicals", "synthetic"]);
+/** THE BROWSER IS A TREE (2026-09-03, Vítor: "GUI em forma de tree").  Every
+ *  group is a node that folds; a group with more members than a screen holds
+ *  is subdivided into FAMILIES (case/family.ts -- from the record's own UNIFAC
+ *  groups, else from its formula, each label saying which), and families fold
+ *  too, closed on first sight with their count.  Open by default: the groups
+ *  a student charges to a vessel; folded: the mechanism library, the radicals
+ *  and the synthetic stand-ins -- never 44 radicals or 352 names at the top. */
+const OPEN_BY_DEFAULT: ReadonlySet<GroupKey> = new Set(["firstPath", "volatiles", "gases25", "salts", "nonvolatile"]);
+/** A group with more members than this is shown as families. */
+const FAMILY_THRESHOLD = 24;
+const groupNode = (g: GroupKey) => `g:${g}`;
+const familyNode = (g: GroupKey, f: Family) => `g:${g}/f:${f.key}`;
 
 //  CLASSIFICATION precedence: a record can satisfy several tests (a radical
 //  is also a gas, a salt may carry a Tb), so the first match files it.
@@ -126,9 +137,12 @@ export function CompoundBrowser({
   const [filter, setFilter] = useState<RoleFilter>("all");
   const [recent, setRecent] = useState<string[]>(loadRecent);
   const [showDataLocal, setShowDataLocal] = useState(false);
-  const [unfolded, setUnfolded] = useState<Set<GroupKey>>(() => new Set());
-  const toggleFold = (g: GroupKey) => setUnfolded((u) => {
-    const n = new Set(u); if (n.has(g)) n.delete(g); else n.add(g); return n;
+  // Open tree nodes, by node key.  Groups start per OPEN_BY_DEFAULT; family
+  // nodes start closed (a family is a count until it is asked for).
+  const [openNodes, setOpenNodes] = useState<Set<string>>(
+    () => new Set([...OPEN_BY_DEFAULT].map(groupNode)));
+  const toggleNode = (k: string) => setOpenNodes((u) => {
+    const n = new Set(u); if (n.has(k)) n.delete(k); else n.add(k); return n;
   });
 
   // Adding a component records it in the MRU (the "Recently used" group); the
@@ -315,14 +329,36 @@ export function CompoundBrowser({
               {recentRows.length > 0 && <SubHeader label="Recently used" />}
               {recentRows.map((m) => renderRow(m, "recent-"))}
               {DISPLAY_ORDER.map((g) => {
-                if (stdGroups[g].length === 0) return null;
-                const foldable = FOLDED_BY_DEFAULT.has(g);
-                const open = !foldable || unfolded.has(g);
+                const members = stdGroups[g];
+                if (members.length === 0) return null;
+                const gk = groupNode(g);
+                const open = openNodes.has(gk);
+                // Families: only where a flat list would be a wall.
+                const families = members.length > FAMILY_THRESHOLD ? (() => {
+                  const map = new Map<string, { fam: Family; rows: ComponentMeta[] }>();
+                  for (const m of members) {
+                    const fam = familyOf(m);
+                    const e = map.get(fam.key) ?? { fam, rows: [] };
+                    e.rows.push(m); map.set(fam.key, e);
+                  }
+                  return [...map.values()].sort((a, b) => familyRank(a.fam) - familyRank(b.fam));
+                })() : null;
                 return (
                   <Box key={g} data-group={g} data-open={open ? "true" : "false"}>
-                    <SubHeader label={`${GROUP_LABEL[g]} (${stdGroups[g].length})`}
-                      onToggle={foldable ? () => toggleFold(g) : undefined} open={open} />
-                    {open && stdGroups[g].map((m) => renderRow(m, `${g}-`))}
+                    <SubHeader label={`${GROUP_LABEL[g]} (${members.length})`}
+                      onToggle={() => toggleNode(gk)} open={open} />
+                    {open && !families && members.map((m) => renderRow(m, `${g}-`))}
+                    {open && families && families.map(({ fam, rows }) => {
+                      const fk = familyNode(g, fam);
+                      const fopen = openNodes.has(fk);
+                      return (
+                        <Box key={fk} data-family={fam.key} data-basis={fam.basis} data-open={fopen ? "true" : "false"}>
+                          <SubHeader label={`${fam.label} (${rows.length})`} indent={1} sticky={false}
+                            onToggle={() => toggleNode(fk)} open={fopen} />
+                          {fopen && <Box pl={14}>{rows.map((m) => renderRow(m, `${g}-${fam.key}-`))}</Box>}
+                        </Box>
+                      );
+                    })}
                   </Box>
                 );
               })}
@@ -389,13 +425,19 @@ export function CompoundBrowser({
 
 /** A sticky sub-header for a catalogue group — stays pinned at the top of the
  *  scroll area as the group scrolls under it. */
-function SubHeader({ label, c = "dimmed", onToggle, open = true }: {
+function SubHeader({ label, c = "dimmed", onToggle, open = true, indent = 0, sticky = true }: {
   label: string; c?: string;
   /** when given, the header is a fold: click shows / hides its rows */
   onToggle?: () => void; open?: boolean;
+  /** tree depth: a family header sits one step in under its group */
+  indent?: number;
+  /** group headers pin to the top as their rows scroll under them; a family
+   *  header must not, or it would stack over its group's */
+  sticky?: boolean;
 }) {
   const style = {
-    position: "sticky" as const, top: 0, zIndex: 2, letterSpacing: 0.3,
+    ...(sticky ? { position: "sticky" as const, top: 0, zIndex: 2 } : {}),
+    letterSpacing: 0.3, paddingLeft: indent * 14,
     background: "light-dark(var(--mantine-color-body), var(--mantine-color-dark-7))",
   };
   if (!onToggle) {
@@ -405,7 +447,7 @@ function SubHeader({ label, c = "dimmed", onToggle, open = true }: {
     <UnstyledButton onClick={onToggle} aria-expanded={open} style={{ ...style, width: "100%" }}
       mt={6} pb={1}>
       <Text size="xs" fw={700} c={c} component="span">
-        {open ? "▾" : "▸"} {label} <Text component="span" size="xs" c="dimmed" fw={400}>· {open ? "hide" : "show"}</Text>
+        {open ? "▾" : "▸"} {label}
       </Text>
     </UnstyledButton>
   );
