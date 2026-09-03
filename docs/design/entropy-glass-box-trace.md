@@ -198,3 +198,11 @@ now saves/restores the stream state; the emitter defect itself is
 RECORDED, not fixed — giving the emitter its own precision changes the
 JSON representation corpus-wide and moves goldens recorded from truncated
 values, a deliberate migration for its own slice.
+
+**CLOSED 2026-09-03 (§8's precision defect).**  `result/ResultEmitter`
+exports `jsonNumber` (12 significant digits, plain notation, non-finite as
+null) and choupoProps' diagnostics and validation blocks go through it.  Of
+94 choupoProps cases 21 had goldens recorded at the console's leftover
+fixed(4); each was re-recorded and every changed value was proved a
+ROUNDING of the new one (434 rows, none moved) before the 94 ran green
+again.

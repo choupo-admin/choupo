@@ -9,9 +9,9 @@
 #  FIGURES the result JSON renders: both sides of the comparison come from
 #  that rendering, so a tighter number here does not buy more precision than
 #  the payload carries.  Six figures of exact recovery is the claim.
-diag    psat_water_fit         A                5.40221            1e-9
-diag    psat_water_fit         B                1838.68            1e-6
-diag    psat_water_fit         C                -31.737            1e-6
-diag    psat_water_fit         R2               1                  1e-12
-diag    psat_water_fit         dHvap_kJ_per_mol 42.1162            1e-4
-diag    psat_water_fit         n_points         20                 1e-4
+diag    psat_water_fit         A                5.40221000142    1e-9
+diag    psat_water_fit         B                1838.67500085    1e-6
+diag    psat_water_fit         C                -31.7369999323   1e-6
+diag    psat_water_fit         R2               1                1e-12
+diag    psat_water_fit         dHvap_kJ_per_mol 42.1162117513    1e-4
+diag    psat_water_fit         n_points         20               1e-4

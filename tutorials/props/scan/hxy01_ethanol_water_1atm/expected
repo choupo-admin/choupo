@@ -7,14 +7,14 @@
 # is 1.107, and that spread is the whole reason this case exists.
 #
 # kind   name      key         expected        reltol
-diag    hxy                    H_vapour_pure1_J_per_mol     -231233.2          1e-4
-diag    hxy                    H_vapour_pure2_J_per_mol     -239304.0          1e-4
-diag    hxy                    P_Pa                         101325.0           1e-4
-diag    hxy                    T_bubble_pure1_K             351.5              1e-4
-diag    hxy                    T_bubble_pure2_K             372.5              1e-4
-diag    hxy                    h_liquid_pure1_J_per_mol     -271912.8          1e-4
-diag    hxy                    h_liquid_pure2_J_per_mol     -280791.7          1e-4
-diag    hxy                    lambda_max_J_per_mol         45052.6            1e-4
-diag    hxy                    lambda_min_J_per_mol         40679.6            1e-4
-diag    hxy                    n_nodes                      82.0               1e-4
-diag    hxy                    n_refused                    0.0                1e-4
+diag    hxy                    H_vapour_pure1_J_per_mol -231233.18018    1e-4
+diag    hxy                    H_vapour_pure2_J_per_mol -239303.954931   1e-4
+diag    hxy                    P_Pa             101325           1e-4
+diag    hxy                    T_bubble_pure1_K 351.452745505    1e-4
+diag    hxy                    T_bubble_pure2_K 372.453622433    1e-4
+diag    hxy                    h_liquid_pure1_J_per_mol -271912.766061   1e-4
+diag    hxy                    h_liquid_pure2_J_per_mol -280791.66824    1e-4
+diag    hxy                    lambda_max_J_per_mol 45052.6104262    1e-4
+diag    hxy                    lambda_min_J_per_mol 40679.5858814    1e-4
+diag    hxy                    n_nodes          82               1e-4
+diag    hxy                    n_refused        0                1e-4

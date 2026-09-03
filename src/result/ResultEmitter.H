@@ -73,6 +73,13 @@ namespace Choupo {
 
 void emitResultJson(std::ostream& os, const SimulationResult& r);
 
+//  ONE JSON number formatter for every binary's machine channel: 12
+//  significant digits, plain notation, independent of whatever precision or
+//  flags a console table left on the stream; a non-finite value is `null`.
+//  choupoProps' diagnostics inherited the console's fixed(4) until
+//  2026-09-03 (task #34).
+std::string jsonNumber(scalar v);
+
 // THE JSON string escaper (forum #75-2): one implementation, used by every
 // result emitter in every binary.  A human justification with quotes or a
 // newline must never corrupt the machine stream.

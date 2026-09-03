@@ -915,7 +915,9 @@ try
             // Drop non-finite values (a NaN stderr from an ill-conditioned
             // fit) -- "nan"/"inf" tokens are invalid JSON; absence => GUI "--".
             if (!std::isfinite(val)) continue;
-            std::cout << (i++ ? ", " : "") << "\"" << key << "\": " << val;
+            //  jsonNumber: the machine channel's own precision (12 significant
+            //  digits), never the console table's leftover fixed(4).
+            std::cout << (i++ ? ", " : "") << "\"" << key << "\": " << jsonNumber(val);
         }
         std::cout << "}";
         if (!orr.head.empty())
@@ -1058,9 +1060,10 @@ try
     // (or a coverage-flagged variant); otherwise JSON null + the status reason --
     // a wrong AAD is worse than no AAD.
     {
+        //  jsonNumber: the same 12 significant digits as every other number
+        //  on the machine channel (a fresh ostringstream defaulted to 6).
         auto numOrNull = [](bool has, double v) -> std::string
-        { if (!has || !std::isfinite(v)) return "null";
-          std::ostringstream os; os << v; return os.str(); };
+        { return has ? jsonNumber(v) : std::string("null"); };
         std::cout << ",\n  \"validation\": [";
         for (std::size_t i = 0; i < validation.size(); ++i)
         {

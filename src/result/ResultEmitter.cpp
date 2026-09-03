@@ -65,15 +65,24 @@ std::string esc(const std::string& s) { return escImpl_(s); }
 
 // Emit a number in a JSON-safe way.  NaN / Inf are not valid JSON, so
 // we serialise them as null with no surprise.
-std::string num(scalar v)
+std::string num(scalar v) { return jsonNumber(v); }
+
+} // namespace
+
+//  THE MACHINE CHANNEL OWNS ITS PRECISION (2026-09-03).  choupoProps wrote
+//  its diagnostics with a bare `<< val`, inheriting whatever precision and
+//  flags the LAST op's console table had left on std::cout -- de facto
+//  fixed(4) across the corpus, so `v_molar 0.0166` where the engine held
+//  0.016638, and a golden recorded from it pinned the accident of op order.
+//  One formatter, one home, every binary: 12 significant digits, plain
+//  notation, a non-finite value as JSON null.
+std::string jsonNumber(scalar v)
 {
     if (!std::isfinite(v)) return "null";
     std::ostringstream os;
-    os << std::setprecision(12) << v;
+    os << std::defaultfloat << std::setprecision(12) << v;
     return os.str();
 }
-
-} // namespace
 
 void emitResultJson(std::ostream& os, const SimulationResult& r)
 {
