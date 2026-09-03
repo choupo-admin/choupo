@@ -51,10 +51,13 @@ Description
     the schedule and writes the value of the latest entry whose time
     has already elapsed.
 
-    No PV reading, no integration, no gains.  The "lastCV" reported in
-    the trajectory CSV is NaN, "lastMV" is the most recently written
-    value, and "setpoint" mirrors lastMV (so the SP column shows the
-    same step train --- useful for plotting).
+    No PV reading, no integration, no gains.  `hasPV()` is false, so the
+    trajectory CSV carries ONLY this controller's `<name>.MV` column and
+    the summary publishes ONLY `MV_final` (2026-09-03: a column exists
+    where a measurement does, and a schedule has none -- the SP/PV
+    columns it used to write were zeros a reader could mistake for a
+    measured 0.0).  `lastCV()` returns 0.0 and `setpoint()` mirrors
+    lastMV for the Controller interface's sake; neither reaches a file.
 \*---------------------------------------------------------------------------*/
 
 #pragma once

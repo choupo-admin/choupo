@@ -41,9 +41,12 @@ operations
         //  the same kind: a conductivity in the range usually quoted for a
         //  porous alumina pellet, and a heat of reaction and a surface
         //  concentration chosen so that beta lands where the lesson is: the
-        //  centre runs about 163 K hotter than the surface, which is the
-        //  intuition a student does not have and a line plot of c/c_s cannot
-        //  give them.  No number here is a claim about CO oxidation.
+        //  centre runs measurably hotter than the surface (`deltaT_centre_K`,
+        //  pinned in the golden -- it read about 163 K while c_s was the
+        //  impossible 0.021 kmol/m3 below, and is an order of magnitude less
+        //  with the physical value), which is the intuition a student does
+        //  not have and a line plot of c/c_s cannot give them.  No number
+        //  here is a claim about CO oxidation.
         //
         //  AND THE FIELD IS EXACT.  `rateConstant` above is a NUMBER, not an
         //  Arrhenius law, so the reaction does not depend on temperature and

@@ -1533,6 +1533,64 @@ consulted: the two cascades were asymmetric.  No-silent-crutch: the cascade is
 loud.
 \end{keyidea}
 
+
+% Source: bin/choupo-thermoml:1-60 (module docstring: why a curation tool,
+% what is not redistributed, the two dialects refused by name, matching by
+% local element name), :101-103 (cache root and CHOUPO_THERMOML_HOME),
+% :360-411 (the multi-block refusal and --block N), :593-601 (extract with
+% no index / no match), :1108-1115 (search --online unreachable),
+% :1195-1240 (the argparse surface, quoted as it prints).
+% CLAUDE.md §6 "ONE THERMOML TOOLCHAIN, NOT TWO" (cache never in data/local/).
+\subsection{\code{bin/choupo-thermoml} --- the local ThermoML archive}\label{sec:tool-thermoml}
+
+The one ThermoML tool.  The engine carries no network and compiles to
+WASM, so downloading lives here and the engine only reads the cache this
+tool builds --- \file{thirdParty/thermoml/} (gitignored;
+\code{\$CHOUPO\_THERMOML\_HOME} overrides it), never
+\file{data/local/}, which the loader resolves by name.  Nothing from the
+archive enters the repository.
+
+\begin{lstlisting}
+bin/choupo-thermoml sync [--index-only]          # download the official NIST archive
+bin/choupo-thermoml index                        # build the local index over the cache
+bin/choupo-thermoml search <query> [--online] [--raw-query Q] [--max-n N]
+bin/choupo-thermoml extract <query> [--into DIR]  # Choupo datasets for a compound
+bin/choupo-thermoml extract-vle <file> --into DIR [--block N] [--provenance measured|synthetic]
+\end{lstlisting}
+
+Refusals, each by name: a root element of neither known dialect; a
+required element absent (matching is by local element name, never by
+path); \code{extract} with no index, or a query nothing in the index
+matches; \code{search --online} when the archive is unreachable; and an
+\code{extract-vle} file carrying several interpretable bubble-point
+blocks, listed by index and requiring \code{--block N} --- choosing is
+the curator's act.  \code{index} lists the files it could not parse
+rather than dropping them.
+
+% Source: bin/choupo-curate:1-36 (docstring: the six steps, the declared
+% partition rule, the one-dataset refusal, nothing promoted), :47-50 (the
+% two properties with a fit operation), :61-71 (argparse), :108-128
+% (SKIPPED lines and the exit-1 "Nothing to curate"), :186-189 (the
+% promotion command it names).
+\subsection{\code{bin/choupo-curate} --- evidence to dossier, promoting nothing}\label{sec:tool-curate}
+
+\begin{lstlisting}
+bin/choupo-curate <compound> [--case DIR] [--rule byDoiOrder] [--nFit N] [--maxAAD pct]
+\end{lstlisting}
+
+One command in a curator's order: resolve the compound in the local
+ThermoML index, extract every dataset Choupo can read into the case,
+\emph{declare} the partition (\code{byDoiOrder}: datasets sorted by DOI,
+the first \code{nFit} fitted, the rest held out --- stated before any
+residual is seen, recorded in the dossier), run \code{choupoProps},
+report the held-out residuals, write the evidence record.  Only
+\code{vapourPressure} and \code{heatCapacity} have a fit operation;
+other properties are \code{SKIPPED}, and with none left it exits 1.  A
+single dataset makes the validation \code{REFUSED}, not split smaller.
+Without \code{--maxAAD} no verdict is claimed.  Nothing is promoted: the
+dossier sits in \file{<case>/curation/}; admission to
+\file{data/standards/} is the separate act
+\file{bin/curate/promote-from-dossier}.
 % =====================================================================
 \section{Adding an outer driver / post-processor}
 
@@ -1795,8 +1853,25 @@ The \file{expected} file lives in the case directory.  Format
 kpi      flash01   V_over_F    0.30398357314   1e-6
 stream   vapor     F           0.00844398814   1e-6
 \end{lstlisting}
-\code{kind} is \code{kpi} (inside the named unit's KPIs) or
-\code{stream} (inside the named stream).  Pin the numbers worth
+%  The kind list is bin/runTests:83-92's own; this paragraph used to name
+%  two kinds against seven in the corpus (2026-09-03 coverage sweep).
+\code{kind} names WHERE the number is read from: \code{kpi} (inside the
+named unit's KPIs), \code{stream} (inside the named stream),
+\code{diag} (inside a props op's \code{operationResults[].diagnostics},
+\code{name} = the op), \code{aad} (the top-level \code{validation}
+overlay table, \code{name} = the dataset, \code{key} =
+\code{<model>.<property>.<statistic>}), \code{closure} (the top-level
+\code{energyClosures} model-boundary ledger, \code{name} = the unit),
+\code{utility} (the top-level \code{utilityAllocation} array,
+\code{key} = \code{<tier>.<utility>.<field>}, or
+\code{<tier>.<port>.unserved} for a duty no catalogue utility can meet
+and \code{<tier>.<port>.carried} for one a physical stream carries to
+another unit --- two different facts that once wrote the same row), and
+\code{csv} (a sweep's answer, which lives in a CSV and emits no result
+block).  A sixth column \code{anchor} is a CLAIM, not a kind: a
+self-recorded row pins that the answer has not \emph{moved}; an anchor
+row carries a published value and pins that it \emph{agrees}, and
+\code{--record} copies it through verbatim.  Pin the numbers worth
 guarding; \code{--record} writes them from the current run once you trust
 it.  A case with no \file{expected} still gets the NaN guard.
 \end{keyidea}
@@ -1828,6 +1903,94 @@ independently runnable, states in its own output what it does \emph{not}
 cover, and has been sabotage-verified --- a gate nobody has ever seen fail
 is not evidence.
 
+
+% Source: bin/runTests:507-518 (the flag and its contract), :833-842 (the
+% not-recordable markers; a case with no golden is skipped), :845-849 and
+% :862-895 (existing rows untouched; the append stanza, its kinds, the
+% fresh-record tolerance and the "+ N new row(s)" line).
+\subsection{\code{bin/runTests --record-append}}\label{sec:record-append}
+
+The append-only half of \code{--record}.  It refreshes nothing: every
+existing row keeps its value, tolerance and claim (anchors included);
+only the \code{(kind, name, key)} triples the golden lacks are appended
+from a fresh run (kinds \code{kpi}, \code{stream}, \code{diag},
+\code{aad}, \code{closure}, \code{utility}, generated tolerance
+\code{1e-4}).  The point is the diff: a change git, a gate and a reader
+can verify line by line.  A case with no golden is skipped (creating one
+is a recording decision, not a sweep side-effect), and a case marked
+\file{.expect-nonconvergence} or \file{.known-broken} is never
+recorded.  It reports \code{+ N new row(s) appended}.
+
+\paragraph{Three instruments that are deliberately NOT gates.}  Each
+needs something \code{bin/runTests} cannot guarantee --- a browser, a
+served copy, a site that publishes asynchronously --- and a gate that
+skips when it cannot run is permanently green exactly where it matters.
+Each exits \code{2} when it could not honestly run, never a silent skip.
+
+% Source: bin/checkGui:31-56 (purpose, usage, exit codes, implementation
+% home, the browser rule), :63-70 (node absent -> exit 2).
+\subsection{\code{bin/checkGui}}\label{sec:tool-checkgui}
+
+The GUI visual-defect harness.  The node/jsdom tests cannot see layout
+(every box is $0\times0$); this opens the real app in a real Chromium at
+a real viewport and asks the one question they cannot: for every visible
+interactive control, would a click at its centre actually reach it?
+
+\begin{lstlisting}
+bin/checkGui                 # walk the EduTools workspace at 1400x900
+bin/checkGui --screenshots   # also save a PNG per page (gitignored)
+bin/checkGui --keep-server   # leave a dev server this run started up
+\end{lstlisting}
+
+Exit \code{0} no covered control; \code{1} at least one control is
+covered; \code{2} REFUSED --- no Chromium, no \file{node\_modules}, no
+dev server, empty registry, or \code{node} not on \code{PATH}.
+Implementation \file{gui/tools/checkGui/}; it drives Chromium over the
+DevTools protocol with no new dependency and never runs
+\code{playwright install}.
+
+% Source: bin/drive-app:31-43 (wrapper, exit codes, node refusal);
+% gui/tools/driveApp/driveApp.mjs:30-82 (why, the six steps, tool-not-gate,
+% mirrors, usage as printed by --help), :111 (unknown argument refused);
+% RELEASING.md:162-175 (the freeze step it runs from); DEV.md:147-151.
+\subsection{\code{bin/drive-app}}\label{sec:tool-driveapp}
+
+Open the \emph{delivered} app in a real browser, run a case, read every
+view as a student reads it, and report what it actually fetched.  Built
+2026-09-02, when the frozen release app passed every at-rest check and,
+on running a case, fetched the solver from the site root --- visible only
+by driving it.  For each case it navigates to \code{<base>?case=<id>},
+presses run, walks every view, records every request the page and its
+workers made, and reports requests leaving the app's prefix, views that
+throw or go empty, disabled controls with their hint, console errors.
+
+\begin{lstlisting}
+bin/drive-app --base http://127.0.0.1:5173/ --case steady/flash/flash01_benzene_toluene
+bin/drive-app --first-path                      # every `tier tutorial;` case, dev server
+bin/drive-app --mirror https://www.choupo.org/v2608/app/ /tmp/m --first-path
+bin/drive-app --serve /tmp/m --prefix /v2608/app/ --case ...
+bin/drive-app ... --screenshots                # PNG per view (gitignored)
+\end{lstlisting}
+
+Exit \code{0} no finding, \code{1} findings, \code{2} REFUSED (no
+\code{node}, an unknown argument).  It runs from \file{RELEASING.md}'s
+freeze step, the one moment it must.
+
+% Source: bin/checkSitePublished:1-32 (why it exists, why a tool, what it
+% cannot tell), :58-118 (the printed lines and the exit codes).
+\subsection{\code{bin/checkSitePublished}}\label{sec:tool-sitepublished}
+
+Is \code{www.choupo.org} serving what \code{main} has?  No arguments:
+it prints local \code{HEAD} and \code{origin/main}, fetches
+\file{/buildinfo.json} from the site and compares the served commit.
+Exit \code{0} \code{CURRENT} (the site serves \code{origin/main});
+\code{1} when the stamp is absent or \code{UNCONFIRMED}; \code{2}
+outside a git repository or on an unreadable stamp.  Not a gate:
+publishing happens minutes after the push, so at test time the site is
+legitimately behind.  It can prove currency but not staleness: a commit
+that changes no built file leaves the site byte-identical and the stamp
+behind, so an older stamp is \code{UNCONFIRMED}, never stale --- settle
+it from the publish run, where a cancelled run is the real failure.
 % =====================================================================
 \section{Debugging}\label{sec:debug}
 

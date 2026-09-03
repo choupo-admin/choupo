@@ -459,6 +459,29 @@ itself, on both legs).  Chemical exergy is deliberately refused by
 name: it needs a standard-environment model (Szargut) that is a curated
 data decision, not a formula.
 
+% Drawn from src/propertyOps/ExplainProperty.H:31-67 (scope, dictionary form,
+% refusals) and src/propertyOps/ExplainProperty.cpp:138-159 (the round-off
+% identity check that refuses); numbers from
+% tutorials/props/molecular/entropy01_air_ledger/expected.
+\subsection{The ledger, explained: \code{explainProperty}}
+
+The witness above publishes the lines; \code{explainProperty} publishes
+where each line \emph{came from}.  For one property at one \code{state}
+(\code{S\_real}, \code{S\_ig}, \code{H\_real}, \code{H\_ig}) it lists every
+term with the record field or engine call behind it --- the
+$s^{\circ}_{298}$ or $\Delta H^{\circ}_{f}$ datum, the $\int C_p/T$ term
+as the \emph{difference} of two engine calls, the mixing and pressure
+lines, the EoS residual --- re-adds them, and checks the sum against the
+engine.  It computes no thermodynamics of its own; a gap beyond
+round-off refuses.  In
+\code{entropy01\_air\_ledger} the \code{explainS} op re-adds air's
+$S_{\mathrm{ig}}$ at $400$~K and $2$~bar, $203.068 + 4.273 - 5.763 =
+201.578$~J/(mol\,K), \code{gap\_total} pinned at $0$; the \code{explainH}
+twin has no mixing and no pressure line.  Refused by name: an unknown
+property, a datum off the ideal-gas rung, and a state answered by a
+\code{pureFluids \{\}} override, whose ledger is the release's own
+equation.
+
 \subsection{From \texorpdfstring{$G$}{G} to equilibrium: what \texorpdfstring{$\Delta G^\circ$}{dG0} is (and is not)}
 
 The single most common confusion in this whole subject is $\Delta G^\circ$
@@ -602,13 +625,48 @@ problem; it is five problems wearing one temperature axis.
 What Choupo ships \emph{today} covers the middle of this span honestly: cubic
 EoS, \code{ideal}/\code{NRTL}/\code{Wilson}/\code{UNIFAC} activity, Antoine
 $P^{\mathrm{sat}}$, Watson $\Delta H_{\mathrm{vap}}$, three-phase VLLE by Gibbs
-minimisation, and azeotropic columns via the simultaneous MESH solver. It does
-\emph{not} (yet) carry association models (PC-SAFT/CPA) for the hydrogen-bonding
-non-ideality, nor electrolyte or wide-range near-critical packages. So for the
-H-bonding mid-span and the two edges, Choupo's job is not to fake accuracy it
-does not have --- it is to predict where it can and to \emph{say so} where it
-cannot. That honesty is the product.
+minimisation, and azeotropic columns via the simultaneous MESH solver.  Since
+2026-08-03 it also carries PC-SAFT with Wertheim association (the 2B and 4C
+schemes; Theory Guide, the PC-SAFT chapter) for the hydrogen-bonding
+non-ideality, and the electrolyte engines --- Pitzer, eNRTL, the
+Harvie--M{\o}ller--Weare and Edwards truncations --- for the ionic edge.  What it
+does \emph{not} carry is a wide-range near-critical package, and no
+association or electrolyte model here is a general-purpose black box: each
+is declared by the case, announced by the run, and parameterised from a cited
+record.  So for the near-critical edge, and for any mixture the curated
+parameters do not reach, Choupo's job is not to fake accuracy it does not
+have --- it is to predict where it can and to \emph{say so} where it cannot.
+That honesty is the product.
+%  This box used to say Choupo carried NO association and NO electrolyte
+%  models; both had shipped before the 2026-09-03 coverage sweep read it
+%  back (CLAUDE.md §10: bury the absence you just filled).
 \end{intuition}
+
+% Drawn from src/propertyOps/FreezingPoint.H:31-60 (the equality, the bracket,
+% the refusal, the diagnostics) and src/propertyOps/FreezingPoint.cpp:72-87,
+% 110-118, 134-140; numbers from
+% tutorials/props/electrolyte/fpd01_nacl_freezing/system/propsDict and
+% tutorials/props/electrolyte/fpd01_nacl_freezing/expected.
+\subsection{The low-\texorpdfstring{$T$}{T} edge on a real case: \code{freezingPoint}}
+
+The solid row above, on a case.  \code{freezingPoint} traces the
+freezing-point curve $T_f(m)$ of a single salt in water as
+chemical-potential equality between ice and the solution's water,
+\[
+   f_{\mathrm{solid}}(T) \;=\; a_w(m,T)\,P^{\mathrm{sat}}(T),
+\]
+the left side an actual crystallising \code{SolidPhase}, the right the
+Pitzer salt surface's water activity.  Routing through the phase makes
+its refusals (no $\Delta H_{\mathrm{fus}}$, no triple point) and its
+announced approximations (the neglected heat-capacity term, the
+sub-freezing $P^{\mathrm{sat}}$ extrapolation) fire on a real run.  It
+publishes the curve, $T_f$ and the depression at the grid end, the
+dilute-limit slope against $\nu K_f$ (water's \emph{derived} cryoscopic
+constant) and the AAD against a \code{validation} dataset.  A grid point
+whose bracket holds no root is refused by name --- a eutectic the
+single-salt model does not contain.  Witness \code{fpd01\_nacl\_freezing}:
+NaCl to $2.0$~mol/kg, $T_f = 266.325$~K there (depression $6.835$~K),
+slope$/\nu K_f = 0.931$, one interim measured point (AAD $0.046$\,\%).
 
 % =====================================================================
 \section{The Choupo property architecture --- the complete map}
@@ -886,6 +944,57 @@ pick HOW to write $f$ per phase (an EoS or a $G^E$ model + a reference
 convention) $\to$ a K-value.  When an equation in this guide looks arbitrary,
 walk it back up this chain --- it never is.
 \end{intuition}
+
+% Drawn from src/propertyOps/MixingRules.H:31-71 (the rule, the ledger source,
+% the refusals) and src/propertyOps/MixingRules.cpp:112-121 (the re-addition
+% check); numbers from tutorials/props/molecular/mixrules01_natural_gas/expected.
+\subsection{Route A, decomposed: \code{mixingRules}}
+
+A cubic prices a mixture through two numbers, and the one-fluid rule
+builds them from $n$ pures and $n(n-1)/2$ binary corrections:
+\[
+   a_{\mathrm{mix}}(T)=\sum_i\sum_j y_i\,y_j\,(1-k_{ij})\sqrt{a_i a_j},
+   \qquad b_{\mathrm{mix}}=\sum_i y_i\,b_i .
+\]
+\code{mixingRules} publishes that decomposition at one \code{state}:
+every pure $a_i(T)$ and $b_i$, every $k_{ij}$ as constructed, every pair's
+term, and the identity that re-adds them to the $a_{\mathrm{mix}}$ the
+engine runs.  The numbers come from \code{EquationOfState::mixingLedger},
+a window on the \emph{same} \code{buildMix} the hot path runs --- the op
+transcribes no rule of its own, and a re-addition gap beyond round-off
+refuses.  Witness \code{mixrules01\_natural\_gas} (CH$_4$/N$_2$/CO$_2$,
+$250$~K): one declared $k_{ij}$ (N$_2$--CH$_4$, $0.0289$) beside two pairs
+on the announced $k_{ij}=0$ default; $a_{\mathrm{mix}}$ and
+$b_{\mathrm{mix}}$ identical at $30$ and $1$~bar while $Z$ moves from
+$0.9967$ to $0.9010$.  Refused by name: no equation-of-state slot, or a
+model with no one-fluid rule --- ideal gas has no $a$, PC-SAFT mixes
+inside its dispersion sum.
+
+% Drawn from src/propertyOps/PhaseEnvelope.H:28-80 (purpose, geometry, what is
+% not closed, the shared saturation solves) and
+% src/propertyOps/PhaseEnvelope.cpp:118-140 (the root-jump test), 242-262 (the
+% bracketed cricondentherm), 285-299 (a branch that never started); numbers
+% from tutorials/props/molecular/envelope01_natural_gas/expected and
+% tutorials/props/molecular/envelope02_root_jump/expected.
+\subsection{The K-values, traced: \code{phaseEnvelope}}
+
+\code{phaseEnvelope} draws the $P$--$T$ envelope of a mixture at fixed
+feed \code{composition}: the bubble curve ($V/F \to 0$) and the dew curve
+($V/F \to 1$), marched in \code{pressure}, written as CSV.
+The saturation solves are \code{BubblePoint::compute} and
+\code{DewPoint::compute}, the \code{bubbleT}/\code{dewT} units' own
+routines.  The cricondentherm and the retrograde region live at the
+nose, exactly where a single-specification march dies, so the op does
+\emph{not} pretend to close the nose: each branch is traced while its
+specification stays single-valued, and the last point is a stopping
+point, never an extremum.  An \emph{interior} temperature maximum is
+reported as a \emph{bracketed} cricondentherm; a converged point
+discontinuous with its branch (a root jump) ends the branch.  Witnesses:
+\code{envelope01\_natural\_gas} ($40$ dew points, cricondentherm
+bracketed at $274.705$~K, bubble branch never started) and
+\code{envelope02\_root\_jump} (bubble stopped at $18$~bar, dew at
+$26$~bar).  Michelsen's arc-length continuation is the named,
+unimplemented next step.
 
 % =====================================================================
 \section{Why a separate guide}
@@ -1319,6 +1428,70 @@ later fitted to the set.
 \file{tutorials/props/compare/compare\_vle\_etoh\_water} --- the \code{vleConsistency} op
 on the Carey--Lewis ethanol/water data (Herington $|D-J|=4.6<10$, PASS).
 \end{tutoriallink}
+
+% =====================================================================
+\section{The bench beyond thermodynamics}
+\label{ch:bench-beyond}
+% =====================================================================
+
+Two operations ship in the props bench whose subject is not a property
+package at all: a catalyst pellet and a recorded step response.  They are
+here because the bench already has the right shape --- a model, a declared
+input, a published answer with its own verification beside it.
+
+% Drawn from src/propertyOps/ThielePellet.H:31-110 (scope, the published
+% columns, what the op does not do) and src/propertyOps/ThielePellet.cpp:249-262
+% (the scope announced on every run), 424-440 (verification tolerances);
+% numbers from tutorials/props/reactor/thiele01_sphere_first_order/expected and
+% tutorials/props/reactor/thiele02_prater_temperature/expected.
+\subsection{One pellet: \code{thielePellet}}
+
+\code{thielePellet} resolves a \code{kind catalyst;} asset record and
+its effective diffusivity, solves the isothermal first-order
+intraparticle problem numerically, and \emph{verifies} the answer against
+the closed form --- a run missing its declared \code{verification}
+tolerances exits~1.  It publishes the field $c(r)/c_s$, the Thiele
+modulus $\phi$ with the effectiveness factor $\eta$ it produces, the
+Weisz--Prater observable $\eta\phi^2$ and the swept $\eta(\phi)$ family
+over three geometries.  The physics lives in
+\file{src/unitOperations/reactor/pellet/PelletDiffusion}, where the four
+reactors that today assume $\eta = 1$ will reach it.  Witness
+\code{thiele01\_sphere\_first\_order}: CO in a $3$~mm alumina sphere at
+$573.15$~K with a teaching $k = 40$~s$^{-1}$ gives $\phi = 1.016$,
+$\eta = 0.6657$, verified to $1.3\times10^{-6}$;
+\code{thiele02\_prater\_temperature} adds Prater's temperature field
+($\Delta T_{\mathrm{centre}} = 15.57$~K).  It never decides whether
+diffusion matters in the reader's case: it announces its scope on every
+run --- first order, one temperature, one pellet size, both
+external films neglected --- and judges nothing.
+
+% Drawn from src/propertyOps/ReactionCurve.H:31-195 (the surrogate, the rules
+% and their primaries, the refusals, what it does not do) and
+% src/propertyOps/ReactionCurve.cpp:468-480 (the regression), 596-623 (the
+% unresolved dead time); settings from
+% tutorials/ctrl/ctrl17_step_reaction_curve/system/propsDict.
+\subsection{A recorded experiment: \code{reactionCurve}}
+
+Open-loop identification off a trajectory somebody else recorded.
+\code{reactionCurve} reads a \code{choupoCtrl} trajectory, a
+\code{manipulated} column and a \code{measured} one, cuts it into step
+segments and fits each to the first-order-plus-dead-time surrogate
+\[
+   y(t) = y_0 + K\,\Delta u\left[1 - e^{-(t - t_{\mathrm{step}} - \theta)/\tau}\right],
+   \qquad t \ge t_{\mathrm{step}} + \theta,
+\]
+by Nelder--Mead, then applies the named rules (\code{zieglerNichols},
+\code{cohenCoon}, \code{imcLambda}).  It solves no plant: a missing
+trajectory refuses.  It publishes $(K, \tau, \theta)$
+with the fit's residual, plus segment, curve and tuning CSVs.  A segment that has not settled under the declared \code{settling}
+test yields no time constant; a dead time within the sampling interval is
+unresolved, and every rule dividing by $\theta$ is refused by name (IMC
+never does).  Witness
+\file{tutorials/ctrl/ctrl17\_step\_reaction\_curve} (a \code{ctrl} case,
+run first): the composition loop takes all three rules; the temperature
+loop refuses Ziegler--Nichols and Cohen--Coon.  The surrogate is a
+surrogate: the op never judges its adequacy, simulates the tuned loop, or
+recommends a rule.
 
 % ---------------------------------------------------------------------
 %  The operations reference is GENERATED from the op schemas in

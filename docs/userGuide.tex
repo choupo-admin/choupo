@@ -3078,7 +3078,12 @@ $\sim$2\,\%; \file{still02\_ethanol\_water\_azeo} shows the pot moving
 \emph{away} from the azeotrope --- a Rayleigh still cannot cross it from
 below).  \code{dischargeTo receiver;} routes the condensed vapour into
 a passive \code{batchAccumulator}, so pot + receiver conserve the
-charge at all times.
+charge at all times.  The first time that edge hands material over, the
+log says so --- \code{* t=…s continuous discharge begins: 'still' ->
+'receiver' (the unit's declared `dischargeTo receiver;` -- accumulates
+every step)} --- because matter appearing in a receiver that no recipe
+event named used to arrive, in a first-week student's words, ``from
+nowhere''.
 
 \code{model rectifier;} adds the classical batch rectification:
 \code{nStages} ideal stages above the pot and a total condenser, with
@@ -3119,6 +3124,56 @@ moments $(\mu_0,\mu_1,\mu_2,\mu_3,n_{\mathrm{solute}})$, against the
 same kinetics library the steady MSMPR uses
 (\file{constant/crystallisation}), so the crystal-size distribution
 grows through the batch (\file{batch05\_crystalliser}).
+
+%  Engine: src/unitOperations/batch/BatchDryer.{H,cpp} (schema
+%  gui/schemas/operations/batchDryer.schema.json); witness
+%  tutorials/batch/drying/dryer01_sucrose_tray.  Added 2026-09-03 by the
+%  coverage sweep: the unit had no manual entry.
+\subsection{\code{batchDryer}}
+
+A tray of wet solid losing its moisture into air of \emph{declared,
+constant} condition --- the air is an environment, not a ledgered stream.
+The state is the dry-basis moisture $X$; above the critical moisture the
+wetted surface sits at the air's wet-bulb temperature and the flux is
+gas-film controlled, below it the flux falls linearly in the free moisture
+(announced at run time as a modelling choice).  The equilibrium moisture
+comes from the GAB isotherm on the solid's \code{sorption \{\}} record ---
+a solid without one is refused by name --- and the declared
+\code{criticalMoisture} must lie above it.  The latent heat is the air's,
+from outside the campaign, so it is published as \code{latentDuty\_kW}
+while the energy ledger refuses to claim a verdict
+(\file{dryer01\_sucrose\_tray}; theory: Theory Guide, drying).
+
+%  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (schema
+%  gui/schemas/operations/batchDiafilter.schema.json); witnesses
+%  tutorials/batch/membrane/diafilter01_nf_desalting and
+%  diafilter02_fouling_decline; numbers from their goldens.  Added
+%  2026-09-03 by the coverage sweep: the unit had no documentation at all.
+\subsection{\code{batchDiafilter}}
+
+A stirred retentate vessel behind a membrane: the same local flux law,
+membrane record, film coefficient and osmotic model the steady
+\code{spiralWoundModule} uses, asked once per instant instead of once per
+channel node.  \code{mode concentration;} lets the vessel shrink;
+\code{mode constantVolume;} makes solvent up at the permeate rate so the
+solutes wash out (the make-up enters the campaign ledger under its own
+kind word, \code{externalIntake}).  The initial holdup is
+\file{0/internalState}; an inline \code{initial \{\}} is refused, and so is
+a missing \code{k\_film} --- the unit invents no correlation for a stirred
+geometry it was not told.  What it publishes is the lesson: the observed
+rejection at every instant, and in constant-volume mode
+\code{washoutActual} beside \code{washoutIdeal}, the ideal evaluated from
+this run's own initial rejection so the gap with the hand derivation
+$c/c_0 = e^{-(1-R)N}$ cannot have been arranged
+(\file{diafilter01\_nf\_desalting}: 0.5015 against 0.4970 after 5.44
+diavolumes).  An optional \code{fouling \{ law cake; k …; reason "…"; \}}
+block adds a Hermia blocking resistance to the permeance; the
+\code{reason} is mandatory because a blocking law is a claim about a
+mechanism, and \code{standard}/\code{complete} refuse by name
+(\file{diafilter02\_fouling\_decline}).  The pump work is not ledgered:
+the campaign energy balance names it as a gap rather than closing with a
+term quietly zero.  Theory: Theory Guide, membrane chapter, ``Batch
+diafiltration''.
 
 \subsection{Recipes --- scripting a campaign}
 
@@ -3350,7 +3405,8 @@ derivative-on-PV), \code{Schedule} (open-loop piecewise-constant steps
 --- the disturbance injector of \file{ctrl02\_disturbance\_rejection}),
 and \code{Signal} --- the full forcing-function vocabulary
 (\code{step}, \code{staircase}, \code{ramp}, \code{pulse},
-\code{sine}, \code{prbs}).  Inject a sinusoid on an inlet and watch the
+\code{sine} --- alias \code{sinusoidal}, the spelling the witness cases use ---
+\code{prbs}).  Inject a sinusoid on an inlet and watch the
 loop's forced response, attenuated and phase-lagged; sweep the period to
 build a Bode plot one point at a time (\file{ctrl06\_sine\_disturbance}).
 For identification experiments, \code{type prbs;} generates the classic
@@ -3374,6 +3430,100 @@ arithmetic).  The trajectory carries \code{F\_in} and \code{z\_in\_*}
 as first-class columns.
 The trajectory CSV carries every CV, MV and setpoint --- plot it and
 read the tuning off the page.
+
+% Source: src/applications/choupoCtrl/main.cpp:575-618 (declaration, the two
+% refusals, the armed line), :700-722 (accepted-step trapezoid),
+% :1470-1524 (KPIs, reports/rtd/E.csv, the printed moments and spread).
+% Grammar as written by tutorials/ctrl/ctrl18_rtd_pulse_cstr/system/controlDict
+% and its system/flowsheetDict (the pulse drive on the inlet face).
+\subsection{Residence-time distribution by pulse tracer: \code{rtd}}\label{sec:ctrl-rtd}
+
+A tracer experiment is declared in \file{controlDict}, beside the time
+controls, and driven by an ordinary \code{Signal} controller on the
+inlet face:
+
+\begin{lstlisting}[language=dict]
+rtd
+{
+    unit    reactor;
+    tracer  compB;
+}
+\end{lstlisting}
+
+The engine integrates the \emph{outlet} molar flow of \code{tracer}
+leaving \code{unit} on the same accepted-step trapezoid as the balance
+ledger, prints \code{[rtd] response moments: area \ldots kmol, tbar
+\ldots s, sigma2 \ldots s\^{}2} plus the spread
+$\sigma^2/\bar t^{\,2}$, and writes the $E(t)$ curve to
+\file{reports/rtd/E.csv} (\code{t\_s}, \code{n\_tracer\_kmol\_s},
+\code{E\_per\_s}).  KPIs under \code{rtd}: \code{area\_kmol},
+\code{tbar\_s}, \code{sigma2\_s2}, \code{variance\_ratio},
+\code{truncation\_final\_over\_peak}.  The engine \emph{measures}; it
+never deconvolves --- the $\tau$ arithmetic belongs to the case.  It refuses a \code{unit} that is not a
+dynamic unit, a \code{tracer} that is not a declared component, and a
+run in which no tracer ever left the outlet
+(\file{ctrl18\_rtd\_pulse\_cstr}).
+
+% Source: src/applications/choupoCtrl/main.cpp:620-697 (declaration,
+% `frequency` XOR `reference`, the five refusals, the armed line),
+% :1527-1577 (the fit, its KPIs, the fewer-than-8-samples refusal).
+% Grammar as written by tutorials/ctrl/ctrl19_freq_response_cstr/system/controlDict;
+% the drive from its system/flowsheetDict; the Bode sweep from
+% tutorials/ctrl/ctrl20_bode_cstr/system/outerDict.
+\subsection{Frequency response and the Bode table: \code{frequencyResponse}}\label{sec:ctrl-freq}
+
+\begin{lstlisting}[language=dict]
+frequencyResponse
+{
+    unit           reactor;
+    tracer         compB;
+    reference      TracerSine;   // the frequency is READ from the drive
+    discardCycles  5;
+    fitCycles      4;
+}
+\end{lstlisting}
+
+\code{reference} names a \code{Signal} controller carrying a
+\code{sinusoidal} signal; the frequency is read from that drive, so it
+has one home.  Declaring \code{frequency} (Hz) instead is the
+alternative --- both, or neither, is refused.  After
+\code{discardCycles} periods the outlet tracer flow is sampled for
+\code{fitCycles} periods and least-squares fitted to
+$a + b\sin\omega t + c\cos\omega t$; the run prints
+\code{[frequencyResponse] fit: amplitude \ldots, phase \ldots deg, mean
+\ldots, residual \ldots} and publishes \code{frequency\_Hz},
+\code{out\_amplitude\_kmol\_s}, \code{out\_phase\_rad},
+\code{out\_mean\_kmol\_s} and \code{fit\_residual\_rel} (the variance
+one sinusoid does not explain).  The amplitude \emph{ratio} is your
+division by the drive's declared amplitude.  A fit window that
+\code{endTime} does not reach is refused by name.  The Bode table is an
+\file{outerDict} sweep over \code{controllers[0].signal.frequency} with
+\code{linkedTargets ( controllers[1].signal.frequency );} so the carrier
+mirror moves in lockstep (\file{ctrl20\_bode\_cstr}).
+
+% Source: src/applications/choupoCtrl/main.cpp:731-750 (trajectory.csv
+% header and rows), :855-860 (console echo), :1433-1440 (the summary
+% line), :1455-1466 (SP_final / PV_final / MV_final);
+% src/control/ScheduleController.H:80 (hasPV() false) against
+% src/control/Controller.H:96 (the default, true);
+% tutorials/ctrl/ctrl02_disturbance_rejection/expected:4-6.
+\subsection{A column exists only where a measurement does}\label{sec:ctrl-pv-columns}
+
+\file{trajectory.csv} is headed \code{t}, then one column per unit state
+(\code{<unit>.<label>}), then the controllers.  A controller with a
+measurement writes the triple \code{<name>.SP}, \code{<name>.PV},
+\code{<name>.MV}; a controller \emph{without} one writes
+\code{<name>.MV} alone.  The \code{Schedule} type is the one that
+declares no measurement (\code{hasPV()} false); every other type
+inherits the default.  The same rule governs the console echo, the
+end-of-run summary --- which prints \code{PV = (open-loop -- no
+measurement)} for a schedule --- and the KPIs: \code{SP\_final} and
+\code{PV\_final} exist only with a PV, while \code{MV\_final} always
+does, so a schedule's terminal value \emph{is} its \code{MV\_final}.
+That is what \file{ctrl02\_disturbance\_rejection} pins:
+\code{FeedDist MV\_final} beside \code{TC1 PV\_final}.  Until 2026-09-03
+a schedule published \code{PV = 0.0} at every instant --- an absence
+printed as a measurement of zero.
 
 \subsection{The first law in a dynamic run, and when it refuses}\label{sec:ctrl-energy}
 
@@ -3722,6 +3872,21 @@ A typical steady run with \code{verbosity 3} prints, in order:
         \code{<<<Choupo:result-begin>>>} markers carrying every stream,
         KPI, convergence history and advisory (this is what the GUI and
         scripts read).
+  %  src/core/AdvisorySummary.H:150-202 (the block, its two headings and the
+  %  \code{where}/\code{status} stamps of src/core/Advisory.H).
+  \item \textbf{Assumptions and caveats} --- every advisory the run
+        raised (an extrapolated correlation, an unverified or estimated
+        record, a defaulted control), replayed once, grouped, under
+        \code{ASSUMPTIONS AND CAVEATS} just before the end --- because a
+        warning a thousand lines above the answer has been delivered, not
+        received.  Each line names its site and, in brackets, the solve it
+        was raised in.  Advisories raised about states a solver visited and
+        did \emph{not} publish are counted separately under \code{THE
+        SOLVER'S PATH} (status \code{trial} in the result JSON; the
+        default status is \code{accepted}): they describe how the answer
+        was reached, not the answer.  A run with nothing to say prints
+        \code{none raised about the answer} --- silence means nothing was
+        raised, never that the block did not run.
 \end{enumerate}
 
 An excerpt of the part that matters, from the first tutorial:

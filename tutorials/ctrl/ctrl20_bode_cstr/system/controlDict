@@ -7,21 +7,15 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
-  ctrl09_stream_disturbance / system/controlDict
+  ctrl20_bode_cstr / system/controlDict
 
-  WHAT THIS CASE IS: the INLET-FIELD actuator test (design forum
-  #100.4/#101/#103).  A Signal controller steps the inlet's
-  componentMolarFlow.compA while compB's molar flow stays untouched ---
-  and the golden PROVES the derived pair changed by the arithmetic, not
-  merely that the reactor responded:
+  THE BODE TABLE of the LTI mixing tank: system/outerDict sweeps the
+  drive frequency and the `frequencyResponse {}` block below measures
+  amplitude and phase at each point -- the sweep CSV is the Bode table.
 
-      before:  nA = 3.5e-5, nB = 1.5e-5  =>  F = 5.0e-5,  z_A = 0.70
-      after :  nA = 5.25e-5 (stepped)    =>  F = 6.75e-5, z_A = 7/9 = 0.7778
-
-  The trajectory carries F_in and z_in_* as first-class columns; the
-  final-state KPIs pin them to the hand-derived values.
-
-  Narrative: system/flowsheetDict header.  Run log: log.choupoCtrl.
+  This banner used to be ctrl09_stream_disturbance's, copied with the
+  case and never rewritten (found 2026-09-03).  Narrative and anchors:
+  system/flowsheetDict header.  Run log: log.choupoCtrl.
 \*---------------------------------------------------------------------------*/
 
 application   choupoCtrl;
