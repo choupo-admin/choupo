@@ -8,6 +8,7 @@
 
 name        nHeneicosane;
 CAS         629-94-7;
+formula     C21H44;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)19CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          296.5741;      // kg/kmol [origin=ChemSep v8.3]
 Tc          778;      // K [origin=ChemSep v8.3]

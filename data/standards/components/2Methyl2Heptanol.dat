@@ -8,6 +8,7 @@
 
 name        2Methyl2Heptanol;
 CAS         625-25-2;
+formula     C8H18O;      // counted from the ChemSep v8.3 structure formula "(CH3)2(OH)C(CH2)4CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          130.2279;      // kg/kmol [origin=ChemSep v8.3]
 Tc          636.6534;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        1Phenylnaphthalene;
 CAS         605-02-7;
+formula     C16H12;      // counted from the ChemSep v8.3 structure formula "(C6H4)(C4H3)(C6H5)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          204.2665;      // kg/kmol [origin=ChemSep v8.3]
 Tc          849;      // K [origin=ChemSep v8.3]

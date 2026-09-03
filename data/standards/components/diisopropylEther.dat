@@ -8,6 +8,7 @@
 
 name        diisopropylEther;
 CAS         108-20-3;
+formula     C6H14O;      // counted from the ChemSep v8.3 structure formula "CH3CH(CH3)OCH(CH3)CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          102.1748;      // kg/kmol [origin=ChemSep v8.3]
 Tc          500.05;      // K [origin=ChemSep v8.3]

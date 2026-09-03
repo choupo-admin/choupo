@@ -8,6 +8,7 @@
 
 name        propionitrile;
 CAS         107-12-0;
+formula     C3H5N;      // counted from the ChemSep v8.3 structure formula "CH3CH2CN" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          55.0785;      // kg/kmol [origin=ChemSep v8.3]
 Tc          564.4;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        nPropylMercaptan;
 CAS         107-03-9;
+formula     C3H8S;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH2SH" (derived 2026-09-03; reproduces MW to 0.005 %)
 reviewStatus interim;
 MW          76.16061;      // kg/kmol [origin=ChemSep v8.3]
 Tc          536;      // K [origin=ChemSep v8.3]

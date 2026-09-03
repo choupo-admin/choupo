@@ -8,6 +8,7 @@
 
 name        nPropylFormate;
 CAS         110-74-7;
+formula     C4H8O2;      // counted from the ChemSep v8.3 structure formula "HCOOCH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          88.10513;      // kg/kmol [origin=ChemSep v8.3]
 Tc          538;      // K [origin=ChemSep v8.3]

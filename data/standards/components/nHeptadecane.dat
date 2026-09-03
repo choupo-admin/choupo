@@ -8,6 +8,7 @@
 
 name        nHeptadecane;
 CAS         629-78-7;
+formula     C17H36;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)15CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          240.4677;      // kg/kmol [origin=ChemSep v8.3]
 Tc          736;      // K [origin=ChemSep v8.3]

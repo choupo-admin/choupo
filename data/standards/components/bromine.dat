@@ -8,6 +8,7 @@
 
 name        bromine;
 CAS         7726-95-6;
+formula     Br2;      // counted from the ChemSep v8.3 structure formula "BrBr" (derived 2026-09-03; reproduces MW to 0.000 %)
 reviewStatus interim;
 MW          159.808;      // kg/kmol [origin=ChemSep v8.3]
 Tc          584.15;      // K [origin=ChemSep v8.3]

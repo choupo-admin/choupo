@@ -8,6 +8,7 @@
 
 name        2Methylindene;
 CAS         2177-47-1;
+formula     C10H10;      // counted from the ChemSep v8.3 structure formula "CH3(C9H7)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          130.1864;      // kg/kmol [origin=ChemSep v8.3]
 Tc          711;      // K [origin=ChemSep v8.3]

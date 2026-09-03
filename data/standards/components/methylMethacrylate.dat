@@ -8,6 +8,7 @@
 
 name        methylMethacrylate;
 CAS         80-62-6;
+formula     C5H8O2;      // counted from the ChemSep v8.3 structure formula "CH2C(CH3)COOCH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          100.1158;      // kg/kmol [origin=ChemSep v8.3]
 Tc          563.15;      // K [origin=ChemSep v8.3]

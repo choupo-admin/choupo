@@ -8,6 +8,7 @@
 
 name        nAminoethylPiperazine;
 CAS         140-31-8;
+formula     C6H15N3;      // counted from the ChemSep v8.3 structure formula "H2NC2H4(NCH2CH2NHCH2CH2)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          129.2034;      // kg/kmol [origin=ChemSep v8.3]
 Tc          708;      // K [origin=ChemSep v8.3]

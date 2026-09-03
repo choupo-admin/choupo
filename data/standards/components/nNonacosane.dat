@@ -8,6 +8,7 @@
 
 name        nNonacosane;
 CAS         630-03-5;
+formula     C29H60;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)27CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          408.7867;      // kg/kmol [origin=ChemSep v8.3]
 Tc          838;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        diButylCarbonate;
 CAS         542-52-9;
+formula     C9H18O3;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH2CH2(OCOO)CH2CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          174.2374;      // kg/kmol [origin=ChemSep v8.3]
 Tc          669.0997;      // K [origin=ChemSep v8.3]

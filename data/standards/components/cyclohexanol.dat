@@ -8,6 +8,7 @@
 
 name        cyclohexanol;
 CAS         108-93-0;
+formula     C6H12O;      // counted from the ChemSep v8.3 structure formula "-CH(OH)(CH2)4CH2-" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          100.1589;      // kg/kmol [origin=ChemSep v8.3]
 Tc          650.1;      // K [origin=ChemSep v8.3]

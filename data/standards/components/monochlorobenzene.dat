@@ -8,6 +8,7 @@
 
 name        monochlorobenzene;
 CAS         108-90-7;
+formula     C6H5Cl;      // counted from the ChemSep v8.3 structure formula "C6H5Cl" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          112.5569;      // kg/kmol [origin=ChemSep v8.3]
 Tc          632.4;      // K [origin=ChemSep v8.3]

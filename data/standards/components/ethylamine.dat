@@ -8,6 +8,7 @@
 
 name        ethylamine;
 CAS         75-04-7;
+formula     C2H7N;      // counted from the ChemSep v8.3 structure formula "CH3CH2NH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          45.08368;      // kg/kmol [origin=ChemSep v8.3]
 Tc          456.4;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        tertButylbenzene;
 CAS         98-06-6;
+formula     C10H14;      // counted from the ChemSep v8.3 structure formula "(C6H5)C(CH3)2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          134.2182;      // kg/kmol [origin=ChemSep v8.3]
 Tc          660;      // K [origin=ChemSep v8.3]

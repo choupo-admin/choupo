@@ -8,6 +8,7 @@
 
 name        indene;
 CAS         95-13-6;
+formula     C9H8;      // counted from the ChemSep v8.3 structure formula "C6H4(CH2CHCH)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          116.1598;      // kg/kmol [origin=ChemSep v8.3]
 Tc          687;      // K [origin=ChemSep v8.3]

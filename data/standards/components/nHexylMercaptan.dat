@@ -8,6 +8,7 @@
 
 name        nHexylMercaptan;
 CAS         111-31-9;
+formula     C6H14S;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)5SH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          118.2404;      // kg/kmol [origin=ChemSep v8.3]
 Tc          622;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        isobutylAcetate;
 CAS         110-19-0;
+formula     C6H12O2;      // counted from the ChemSep v8.3 structure formula "CH3COOCH2CH(CH3)2" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          116.1583;      // kg/kmol [origin=ChemSep v8.3]
 Tc          561;      // K [origin=ChemSep v8.3]

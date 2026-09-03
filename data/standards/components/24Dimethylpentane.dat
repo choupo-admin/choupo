@@ -8,6 +8,7 @@
 
 name        24Dimethylpentane;
 CAS         108-08-7;
+formula     C7H16;      // counted from the ChemSep v8.3 structure formula "(CH3)2CHCH2CH(CH3)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          100.202;      // kg/kmol [origin=ChemSep v8.3]
 Tc          519.7;      // K [origin=ChemSep v8.3]

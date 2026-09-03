@@ -8,6 +8,7 @@
 
 name        maleicAcid;
 CAS         110-16-7;
+formula     C4H4O4;      // counted from the ChemSep v8.3 structure formula "HOOCCHCHCOOH" (derived 2026-09-03; reproduces MW to 0.000 %)
 reviewStatus interim;
 MW          116.0722;      // kg/kmol [origin=ChemSep v8.3]
 Tc          773;      // K [origin=ChemSep v8.3]

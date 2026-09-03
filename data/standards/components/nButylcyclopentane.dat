@@ -8,6 +8,7 @@
 
 name        nButylcyclopentane;
 CAS         2040-95-1;
+formula     C9H18;      // counted from the ChemSep v8.3 structure formula "(C5H9)CH2CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          126.2392;      // kg/kmol [origin=ChemSep v8.3]
 Tc          621;      // K [origin=ChemSep v8.3]

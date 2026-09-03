@@ -8,6 +8,7 @@
 
 name        1Octene;
 CAS         111-66-0;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "CH2CH(CH2)5CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          567;      // K [origin=ChemSep v8.3]

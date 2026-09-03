@@ -8,6 +8,7 @@
 
 name        dichloroacetylChloride;
 CAS         79-36-7;
+formula     C2HCl3O;      // counted from the ChemSep v8.3 structure formula "CHCl2COCl" (derived 2026-09-03; reproduces MW to 0.006 %)
 reviewStatus interim;
 MW          147.3877;      // kg/kmol [origin=ChemSep v8.3]
 Tc          585;      // K [origin=ChemSep v8.3]

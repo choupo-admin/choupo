@@ -8,6 +8,7 @@
 
 name        2Nitropropane;
 CAS         79-46-9;
+formula     C3H7NO2;      // counted from the ChemSep v8.3 structure formula "CH3CH(NO2)CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          89.09318;      // kg/kmol [origin=ChemSep v8.3]
 Tc          595;      // K [origin=ChemSep v8.3]

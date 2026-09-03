@@ -8,6 +8,7 @@
 
 name        acrylonitrile;
 CAS         107-13-1;
+formula     C3H3N;      // counted from the ChemSep v8.3 structure formula "CH2CHCN" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          53.06262;      // kg/kmol [origin=ChemSep v8.3]
 Tc          535;      // K [origin=ChemSep v8.3]

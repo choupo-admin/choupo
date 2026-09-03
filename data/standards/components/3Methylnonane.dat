@@ -8,6 +8,7 @@
 
 name        3Methylnonane;
 CAS         5911-04-6;
+formula     C10H22;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH(CH3)(CH2)5CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          142.2817;      // kg/kmol [origin=ChemSep v8.3]
 Tc          613.7;      // K [origin=ChemSep v8.3]

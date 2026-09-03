@@ -8,6 +8,7 @@
 
 name        diTertButylDisulfide;
 CAS         110-06-5;
+formula     C8H18S2;      // counted from the ChemSep v8.3 structure formula "(CH3)3CS2C(CH3)3" (derived 2026-09-03; reproduces MW to 0.004 %)
 reviewStatus interim;
 MW          178.3585;      // kg/kmol [origin=ChemSep v8.3]
 Tc          689.7;      // K [origin=ChemSep v8.3]

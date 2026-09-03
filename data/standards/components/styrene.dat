@@ -8,6 +8,7 @@
 
 name        styrene;
 CAS         100-42-5;
+formula     C8H8;      // counted from the ChemSep v8.3 structure formula "(C6H5)CHCH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          104.149;      // kg/kmol [origin=ChemSep v8.3]
 Tc          636;      // K [origin=ChemSep v8.3]

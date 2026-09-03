@@ -8,6 +8,7 @@
 
 name        methylDiEthanolAmine;
 CAS         105-59-9;
+formula     C5H13NO2;      // counted from the ChemSep v8.3 structure formula "CH3N(CH2CH2OH)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          119.1622;      // kg/kmol [origin=ChemSep v8.3]
 Tc          741.9;      // K [origin=ChemSep v8.3]

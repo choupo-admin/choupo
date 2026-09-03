@@ -8,6 +8,7 @@
 
 name        3Hexanone;
 CAS         589-38-8;
+formula     C6H12O;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH2COCH2CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          100.1589;      // kg/kmol [origin=ChemSep v8.3]
 Tc          582.8;      // K [origin=ChemSep v8.3]

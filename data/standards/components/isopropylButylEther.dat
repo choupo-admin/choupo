@@ -8,6 +8,7 @@
 
 name        isopropylButylEther;
 CAS         1860-27-1;
+formula     C7H16O;      // counted from the ChemSep v8.3 structure formula "C4H9OCH(CH3)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          116.2013;      // kg/kmol [origin=ChemSep v8.3]
 Tc          549;      // K [origin=ChemSep v8.3]

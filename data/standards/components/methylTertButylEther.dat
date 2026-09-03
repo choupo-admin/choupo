@@ -8,6 +8,7 @@
 
 name        methylTertButylEther;
 CAS         1634-04-4;
+formula     C5H12O;      // counted from the ChemSep v8.3 structure formula "CH3OC(CH3)3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          88.14818;      // kg/kmol [origin=ChemSep v8.3]
 Tc          497.1;      // K [origin=ChemSep v8.3]

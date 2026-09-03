@@ -8,6 +8,7 @@
 
 name        methylIsobutylKetone;
 CAS         108-10-1;
+formula     C6H12O;      // counted from the ChemSep v8.3 structure formula "CH3COCH2CH(CH3)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          100.1589;      // kg/kmol [origin=ChemSep v8.3]
 Tc          574.6;      // K [origin=ChemSep v8.3]

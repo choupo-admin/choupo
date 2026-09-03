@@ -8,6 +8,7 @@
 
 name        nNDimethylacetamide;
 CAS         127-19-5;
+formula     C4H9NO;      // counted from the ChemSep v8.3 structure formula "(CH3)2NCOCH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          87.12036;      // kg/kmol [origin=ChemSep v8.3]
 Tc          658;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        glycerol;
 CAS         56-81-5;
+formula     C3H8O3;      // counted from the ChemSep v8.3 structure formula "HOCH2CH(OH)CH2OH" (derived 2026-09-03; reproduces MW to 0.000 %)
 reviewStatus interim;
 MW          92.09382;      // kg/kmol [origin=ChemSep v8.3]
 Tc          850;      // K [origin=ChemSep v8.3]

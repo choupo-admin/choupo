@@ -8,6 +8,7 @@
 
 name        acetonitrile;
 CAS         75-05-8;
+formula     C2H3N;      // counted from the ChemSep v8.3 structure formula "CH3CN" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          41.05192;      // kg/kmol [origin=ChemSep v8.3]
 Tc          545.5;      // K [origin=ChemSep v8.3]

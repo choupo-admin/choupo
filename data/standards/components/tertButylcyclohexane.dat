@@ -8,6 +8,7 @@
 
 name        tertButylcyclohexane;
 CAS         3178-22-1;
+formula     C10H20;      // counted from the ChemSep v8.3 structure formula "C6H11C(CH3)3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          140.2658;      // kg/kmol [origin=ChemSep v8.3]
 Tc          652;      // K [origin=ChemSep v8.3]

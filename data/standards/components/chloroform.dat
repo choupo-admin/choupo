@@ -8,6 +8,7 @@
 
 name        chloroform;
 CAS         67-66-3;
+formula     CHCl3;      // counted from the ChemSep v8.3 structure formula "CHCl3" (derived 2026-09-03; reproduces MW to 0.007 %)
 reviewStatus interim;
 MW          119.3776;      // kg/kmol [origin=ChemSep v8.3]
 Tc          536.5;      // K [origin=ChemSep v8.3]

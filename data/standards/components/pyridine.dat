@@ -8,6 +8,7 @@
 
 name        pyridine;
 CAS         110-86-1;
+formula     C5H5N;      // counted from the ChemSep v8.3 structure formula "-CHCHCHCHCHN-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          79.0999;      // kg/kmol [origin=ChemSep v8.3]
 Tc          620;      // K [origin=ChemSep v8.3]

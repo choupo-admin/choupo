@@ -8,6 +8,7 @@
 
 name        11Dimethylcyclopentane;
 CAS         1638-26-2;
+formula     C7H14;      // counted from the ChemSep v8.3 structure formula "-CH2C(CH3)2CH2CH2CH2-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          98.18607;      // kg/kmol [origin=ChemSep v8.3]
 Tc          547;      // K [origin=ChemSep v8.3]

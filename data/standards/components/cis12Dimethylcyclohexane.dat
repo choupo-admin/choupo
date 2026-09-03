@@ -8,6 +8,7 @@
 
 name        cis12Dimethylcyclohexane;
 CAS         2207-01-4;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "-CH(CH3)CH(CH3)(CH2)4-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          606.15;      // K [origin=ChemSep v8.3]

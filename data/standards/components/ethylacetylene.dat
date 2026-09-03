@@ -8,6 +8,7 @@
 
 name        ethylacetylene;
 CAS         107-00-6;
+formula     C4H6;      // counted from the ChemSep v8.3 structure formula "CH3CH2CCH" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          54.09044;      // kg/kmol [origin=ChemSep v8.3]
 Tc          440;      // K [origin=ChemSep v8.3]

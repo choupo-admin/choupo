@@ -8,6 +8,7 @@
 
 name        nOctacosane;
 CAS         630-02-4;
+formula     C28H58;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)26CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          394.7601;      // kg/kmol [origin=ChemSep v8.3]
 Tc          832;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        ethylenediamine;
 CAS         107-15-3;
+formula     C2H8N2;      // counted from the ChemSep v8.3 structure formula "H2NCH2CH2NH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          60.09832;      // kg/kmol [origin=ChemSep v8.3]
 Tc          592.95;      // K [origin=ChemSep v8.3]

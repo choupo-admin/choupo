@@ -8,6 +8,7 @@
 
 name        124Trichlorobenzene;
 CAS         120-82-1;
+formula     C6H3Cl3;      // counted from the ChemSep v8.3 structure formula "(C6H3)Cl3" (derived 2026-09-03; reproduces MW to 0.004 %)
 reviewStatus interim;
 MW          181.447;      // kg/kmol [origin=ChemSep v8.3]
 Tc          725;      // K [origin=ChemSep v8.3]

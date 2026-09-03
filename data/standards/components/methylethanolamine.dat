@@ -8,6 +8,7 @@
 
 name        methylethanolamine;
 CAS         109-83-1;
+formula     C3H9NO;      // counted from the ChemSep v8.3 structure formula "CH3NHCH2CH2OH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          75.10966;      // kg/kmol [origin=ChemSep v8.3]
 Tc          630;      // K [origin=ChemSep v8.3]

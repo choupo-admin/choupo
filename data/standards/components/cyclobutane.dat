@@ -8,6 +8,7 @@
 
 name        cyclobutane;
 CAS         287-23-0;
+formula     C4H8;      // counted from the ChemSep v8.3 structure formula "-(CH2)4-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          56.10632;      // kg/kmol [origin=ChemSep v8.3]
 Tc          459.93;      // K [origin=ChemSep v8.3]

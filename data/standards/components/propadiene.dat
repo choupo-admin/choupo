@@ -8,6 +8,7 @@
 
 name        propadiene;
 CAS         463-49-0;
+formula     C3H4;      // counted from the ChemSep v8.3 structure formula "CH2CCH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          40.06386;      // kg/kmol [origin=ChemSep v8.3]
 Tc          394;      // K [origin=ChemSep v8.3]

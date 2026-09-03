@@ -8,6 +8,7 @@
 
 name        nOctadecane;
 CAS         593-45-3;
+formula     C18H38;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)16CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          254.4943;      // kg/kmol [origin=ChemSep v8.3]
 Tc          747;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        ethyleneGlycol;
 CAS         107-21-1;
+formula     C2H6O2;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2OH" (derived 2026-09-03; reproduces MW to 0.000 %)
 reviewStatus interim;
 MW          62.06784;      // kg/kmol [origin=ChemSep v8.3]
 Tc          719;      // K [origin=ChemSep v8.3]

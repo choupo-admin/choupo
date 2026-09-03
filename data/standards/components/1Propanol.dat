@@ -8,6 +8,7 @@
 
 name        1Propanol;
 CAS         71-23-8;
+formula     C3H8O;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)2OH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          60.09502;      // kg/kmol [origin=ChemSep v8.3]
 Tc          536.78;      // K [origin=ChemSep v8.3]

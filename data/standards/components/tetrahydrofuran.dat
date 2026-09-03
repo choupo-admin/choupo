@@ -8,6 +8,7 @@
 
 name        tetrahydrofuran;
 CAS         109-99-9;
+formula     C4H8O;      // counted from the ChemSep v8.3 structure formula "-CH2CH2CH2CH2O-" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          72.10572;      // kg/kmol [origin=ChemSep v8.3]
 Tc          540.2;      // K [origin=ChemSep v8.3]

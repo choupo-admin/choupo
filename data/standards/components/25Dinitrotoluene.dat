@@ -8,6 +8,7 @@
 
 name        25Dinitrotoluene;
 CAS         619-15-8;
+formula     C7H6N2O4;      // counted from the ChemSep v8.3 structure formula "CH3(C6H3)(NO2)2" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          182.1335;      // kg/kmol [origin=ChemSep v8.3]
 Tc          814;      // K [origin=ChemSep v8.3]

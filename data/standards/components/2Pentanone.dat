@@ -8,6 +8,7 @@
 
 name        2Pentanone;
 CAS         107-87-9;
+formula     C5H10O;      // counted from the ChemSep v8.3 structure formula "CH3CO(CH2)2CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          86.1323;      // kg/kmol [origin=ChemSep v8.3]
 Tc          561.1;      // K [origin=ChemSep v8.3]

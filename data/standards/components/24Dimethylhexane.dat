@@ -8,6 +8,7 @@
 
 name        24Dimethylhexane;
 CAS         589-43-5;
+formula     C8H18;      // counted from the ChemSep v8.3 structure formula "CH3CH(CH3)CH2CH(CH3)CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          114.2285;      // kg/kmol [origin=ChemSep v8.3]
 Tc          553.5;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        12PropyleneOxide;
 CAS         75-56-9;
+formula     C3H6O;      // counted from the ChemSep v8.3 structure formula "CH3-CHCH2O-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          58.07804;      // kg/kmol [origin=ChemSep v8.3]
 Tc          482.25;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        nHexacosane;
 CAS         630-01-3;
+formula     C26H54;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)24CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          366.707;      // kg/kmol [origin=ChemSep v8.3]
 Tc          819;      // K [origin=ChemSep v8.3]

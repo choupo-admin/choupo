@@ -8,6 +8,7 @@
 
 name        diethylethanolamine;
 CAS         100-37-8;
+formula     C6H15NO;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2N(CH2CH3)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          117.1894;      // kg/kmol [origin=ChemSep v8.3]
 Tc          616;      // K [origin=ChemSep v8.3]

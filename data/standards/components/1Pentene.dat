@@ -8,6 +8,7 @@
 
 name        1Pentene;
 CAS         109-67-1;
+formula     C5H10;      // counted from the ChemSep v8.3 structure formula "CH2CH(CH2)2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          70.1329;      // kg/kmol [origin=ChemSep v8.3]
 Tc          464.8;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        phenol;
 CAS         108-95-2;
+formula     C6H6O;      // counted from the ChemSep v8.3 structure formula "(C6H5)OH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          94.11124;      // kg/kmol [origin=ChemSep v8.3]
 Tc          694.25;      // K [origin=ChemSep v8.3]

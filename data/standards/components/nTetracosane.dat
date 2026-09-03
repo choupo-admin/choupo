@@ -8,6 +8,7 @@
 
 name        nTetracosane;
 CAS         646-31-1;
+formula     C24H50;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)22CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          338.6538;      // kg/kmol [origin=ChemSep v8.3]
 Tc          804;      // K [origin=ChemSep v8.3]

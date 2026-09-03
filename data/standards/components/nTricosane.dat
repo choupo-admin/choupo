@@ -8,6 +8,7 @@
 
 name        nTricosane;
 CAS         638-67-5;
+formula     C23H48;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)21CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          324.6272;      // kg/kmol [origin=ChemSep v8.3]
 Tc          796;      // K [origin=ChemSep v8.3]

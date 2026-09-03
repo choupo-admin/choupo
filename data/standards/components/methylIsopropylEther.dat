@@ -8,6 +8,7 @@
 
 name        methylIsopropylEther;
 CAS         598-53-8;
+formula     C4H10O;      // counted from the ChemSep v8.3 structure formula "CH3OCH(CH3)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          74.1216;      // kg/kmol [origin=ChemSep v8.3]
 Tc          464.48;      // K [origin=ChemSep v8.3]

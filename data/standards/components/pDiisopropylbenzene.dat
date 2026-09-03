@@ -8,6 +8,7 @@
 
 name        pDiisopropylbenzene;
 CAS         100-18-5;
+formula     C12H18;      // counted from the ChemSep v8.3 structure formula "(CH3)2CH(C6H4)CH(CH3)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          162.2713;      // kg/kmol [origin=ChemSep v8.3]
 Tc          675;      // K [origin=ChemSep v8.3]

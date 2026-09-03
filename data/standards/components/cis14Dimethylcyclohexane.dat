@@ -8,6 +8,7 @@
 
 name        cis14Dimethylcyclohexane;
 CAS         624-29-3;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "-CH(CH3)CH2CH2CH(CH3)(CH2)2-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          598.15;      // K [origin=ChemSep v8.3]

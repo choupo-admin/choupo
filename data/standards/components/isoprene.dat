@@ -8,6 +8,7 @@
 
 name        isoprene;
 CAS         78-79-5;
+formula     C5H8;      // counted from the ChemSep v8.3 structure formula "CH2C(CH3)CHCH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          68.11702;      // kg/kmol [origin=ChemSep v8.3]
 Tc          484;      // K [origin=ChemSep v8.3]

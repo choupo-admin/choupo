@@ -8,6 +8,7 @@
 
 name        piperazine;
 CAS         110-85-0;
+formula     C4H10N2;      // counted from the ChemSep v8.3 structure formula "-NHCH2CH2NHCH2CH2-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          86.1356;      // kg/kmol [origin=ChemSep v8.3]
 Tc          656.3;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        propanal;
 CAS         123-38-6;
+formula     C3H6O;      // counted from the ChemSep v8.3 structure formula "CH3CH2CHO" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          58.07914;      // kg/kmol [origin=ChemSep v8.3]
 Tc          493.15;      // K [origin=ChemSep v8.3]

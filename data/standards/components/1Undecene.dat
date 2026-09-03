@@ -8,6 +8,7 @@
 
 name        1Undecene;
 CAS         821-95-4;
+formula     C11H22;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)8CHCH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          154.2924;      // kg/kmol [origin=ChemSep v8.3]
 Tc          637.8;      // K [origin=ChemSep v8.3]

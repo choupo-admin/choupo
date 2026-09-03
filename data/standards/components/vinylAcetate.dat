@@ -8,6 +8,7 @@
 
 name        vinylAcetate;
 CAS         108-05-4;
+formula     C4H6O2;      // counted from the ChemSep v8.3 structure formula "CH3COOCHCH2" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          86.08924;      // kg/kmol [origin=ChemSep v8.3]
 Tc          501.45;      // K [origin=ChemSep v8.3]

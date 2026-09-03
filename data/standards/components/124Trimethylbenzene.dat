@@ -8,6 +8,7 @@
 
 name        124Trimethylbenzene;
 CAS         95-63-6;
+formula     C9H12;      // counted from the ChemSep v8.3 structure formula "(C6H3)(CH3)3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          120.1916;      // kg/kmol [origin=ChemSep v8.3]
 Tc          649.1;      // K [origin=ChemSep v8.3]

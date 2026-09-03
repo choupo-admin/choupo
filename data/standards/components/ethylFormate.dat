@@ -8,6 +8,7 @@
 
 name        ethylFormate;
 CAS         109-94-4;
+formula     C3H6O2;      // counted from the ChemSep v8.3 structure formula "HCOOCH2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          74.07854;      // kg/kmol [origin=ChemSep v8.3]
 Tc          508.5;      // K [origin=ChemSep v8.3]

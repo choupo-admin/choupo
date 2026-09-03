@@ -8,6 +8,7 @@
 
 name        3Methylhexane;
 CAS         589-34-4;
+formula     C7H16;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH(CH3)CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          100.202;      // kg/kmol [origin=ChemSep v8.3]
 Tc          535.2;      // K [origin=ChemSep v8.3]

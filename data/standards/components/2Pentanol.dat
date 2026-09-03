@@ -8,6 +8,7 @@
 
 name        2Pentanol;
 CAS         6032-29-7;
+formula     C5H12O;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)2CH(OH)CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          88.14818;      // kg/kmol [origin=ChemSep v8.3]
 Tc          552;      // K [origin=ChemSep v8.3]

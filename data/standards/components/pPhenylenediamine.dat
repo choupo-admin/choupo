@@ -8,6 +8,7 @@
 
 name        pPhenylenediamine;
 CAS         106-50-3;
+formula     C6H8N2;      // counted from the ChemSep v8.3 structure formula "(C6H4)(NH2)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          108.1411;      // kg/kmol [origin=ChemSep v8.3]
 Tc          796;      // K [origin=ChemSep v8.3]

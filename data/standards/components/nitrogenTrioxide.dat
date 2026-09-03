@@ -8,6 +8,7 @@
 
 name        nitrogenTrioxide;
 CAS         10544-73-7;
+formula     N2O3;      // counted from the ChemSep v8.3 structure formula "O2NNO" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          76.0116;      // kg/kmol [origin=ChemSep v8.3]
 Tc          451;      // K [origin=ChemSep v8.3]

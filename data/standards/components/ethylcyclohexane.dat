@@ -8,6 +8,7 @@
 
 name        ethylcyclohexane;
 CAS         1678-91-7;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "(C6H11)CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          609.15;      // K [origin=ChemSep v8.3]

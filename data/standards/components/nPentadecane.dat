@@ -8,6 +8,7 @@
 
 name        nPentadecane;
 CAS         629-62-9;
+formula     C15H32;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)13CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          212.4146;      // kg/kmol [origin=ChemSep v8.3]
 Tc          708;      // K [origin=ChemSep v8.3]

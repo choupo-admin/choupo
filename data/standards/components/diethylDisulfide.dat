@@ -8,6 +8,7 @@
 
 name        diethylDisulfide;
 CAS         110-81-6;
+formula     C4H10S2;      // counted from the ChemSep v8.3 structure formula "C2H5SSC2H5" (derived 2026-09-03; reproduces MW to 0.007 %)
 reviewStatus interim;
 MW          122.2522;      // kg/kmol [origin=ChemSep v8.3]
 Tc          642;      // K [origin=ChemSep v8.3]

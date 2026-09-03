@@ -8,6 +8,7 @@
 
 name        acenaphthene;
 CAS         83-32-9;
+formula     C12H10;      // counted from the ChemSep v8.3 structure formula "C12H10" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          154.2078;      // kg/kmol [origin=ChemSep v8.3]
 Tc          803.15;      // K [origin=ChemSep v8.3]

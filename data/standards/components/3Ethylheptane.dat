@@ -8,6 +8,7 @@
 
 name        3Ethylheptane;
 CAS         15869-80-4;
+formula     C9H20;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH(C2H5)CH2(CH2)2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          128.2551;      // kg/kmol [origin=ChemSep v8.3]
 Tc          594.3;      // K [origin=ChemSep v8.3]

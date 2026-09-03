@@ -8,6 +8,7 @@
 
 name        diEthylCarbonate;
 CAS         105-58-8;
+formula     C5H10O3;      // counted from the ChemSep v8.3 structure formula "CH3CH2(OCOO)CH2CH3" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          118.1311;      // kg/kmol [origin=ChemSep v8.3]
 Tc          577;      // K [origin=ChemSep v8.3]

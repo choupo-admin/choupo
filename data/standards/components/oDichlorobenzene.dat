@@ -8,6 +8,7 @@
 
 name        oDichlorobenzene;
 CAS         95-50-1;
+formula     C6H4Cl2;      // counted from the ChemSep v8.3 structure formula "(C6H4)Cl2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          147.002;      // kg/kmol [origin=ChemSep v8.3]
 Tc          705;      // K [origin=ChemSep v8.3]

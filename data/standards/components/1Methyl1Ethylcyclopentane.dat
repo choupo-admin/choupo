@@ -8,6 +8,7 @@
 
 name        1Methyl1Ethylcyclopentane;
 CAS         16747-50-5;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "-C(CH3)(C2H5)CH2CH2CH2CH2-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          582;      // K [origin=ChemSep v8.3]

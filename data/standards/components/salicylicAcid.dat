@@ -8,6 +8,7 @@
 
 name        salicylicAcid;
 CAS         69-72-7;
+formula     C7H6O3;      // counted from the ChemSep v8.3 structure formula "HO(C6H4)COOH" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          138.1207;      // kg/kmol [origin=ChemSep v8.3]
 Tc          739;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        11Dimethylcyclohexane;
 CAS         590-66-9;
+formula     C8H16;      // counted from the ChemSep v8.3 structure formula "-C(CH3)2(CH2)5-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          112.2126;      // kg/kmol [origin=ChemSep v8.3]
 Tc          591.15;      // K [origin=ChemSep v8.3]

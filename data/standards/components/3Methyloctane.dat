@@ -8,6 +8,7 @@
 
 name        3Methyloctane;
 CAS         2216-33-3;
+formula     C9H20;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH(CH3)(CH2)4CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          128.2551;      // kg/kmol [origin=ChemSep v8.3]
 Tc          590.15;      // K [origin=ChemSep v8.3]

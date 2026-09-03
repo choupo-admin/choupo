@@ -8,6 +8,7 @@
 
 name        diethyleneGlycol;
 CAS         111-46-6;
+formula     C4H10O3;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2OCH2CH2OH" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          106.1204;      // kg/kmol [origin=ChemSep v8.3]
 Tc          744.6;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        nNDimethylformamide;
 CAS         68-12-2;
+formula     C3H7NO;      // counted from the ChemSep v8.3 structure formula "HCON(CH3)2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          73.09378;      // kg/kmol [origin=ChemSep v8.3]
 Tc          649.6;      // K [origin=ChemSep v8.3]

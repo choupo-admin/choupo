@@ -8,6 +8,7 @@
 
 name        dimethylSulfide;
 CAS         75-18-3;
+formula     C2H6S;      // counted from the ChemSep v8.3 structure formula "(CH3)2S" (derived 2026-09-03; reproduces MW to 0.007 %)
 reviewStatus interim;
 MW          62.13404;      // kg/kmol [origin=ChemSep v8.3]
 Tc          503;      // K [origin=ChemSep v8.3]

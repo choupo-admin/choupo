@@ -8,6 +8,7 @@
 
 name        butanal;
 CAS         123-72-8;
+formula     C4H8O;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH2CHO" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          72.10572;      // kg/kmol [origin=ChemSep v8.3]
 Tc          521.15;      // K [origin=ChemSep v8.3]

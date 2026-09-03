@@ -8,6 +8,7 @@
 
 name        methylamine;
 CAS         74-89-5;
+formula     CH5N;      // counted from the ChemSep v8.3 structure formula "CH3NH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          31.0571;      // kg/kmol [origin=ChemSep v8.3]
 Tc          430;      // K [origin=ChemSep v8.3]

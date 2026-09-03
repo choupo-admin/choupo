@@ -8,6 +8,7 @@
 
 name        nitrobenzene;
 CAS         98-95-3;
+formula     C6H5NO2;      // counted from the ChemSep v8.3 structure formula "C6H5NO2" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          123.1094;      // kg/kmol [origin=ChemSep v8.3]
 Tc          719;      // K [origin=ChemSep v8.3]

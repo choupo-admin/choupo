@@ -8,6 +8,7 @@
 
 name        aniline;
 CAS         62-53-3;
+formula     C6H7N;      // counted from the ChemSep v8.3 structure formula "C6H5NH2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          93.12648;      // kg/kmol [origin=ChemSep v8.3]
 Tc          699;      // K [origin=ChemSep v8.3]

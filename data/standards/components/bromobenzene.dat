@@ -8,6 +8,7 @@
 
 name        bromobenzene;
 CAS         108-86-1;
+formula     C6H5Br;      // counted from the ChemSep v8.3 structure formula "(C6H5)Br" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          157.0079;      // kg/kmol [origin=ChemSep v8.3]
 Tc          670.15;      // K [origin=ChemSep v8.3]

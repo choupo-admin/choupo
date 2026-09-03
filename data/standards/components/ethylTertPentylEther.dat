@@ -8,6 +8,7 @@
 
 name        ethylTertPentylEther;
 CAS         919-94-8;
+formula     C7H16O;      // counted from the ChemSep v8.3 structure formula "C2H5C(CH3)2OC2H5" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          116.2013;      // kg/kmol [origin=ChemSep v8.3]
 Tc          544;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        4MethylCis2Pentene;
 CAS         691-38-3;
+formula     C6H12;      // counted from the ChemSep v8.3 structure formula "CH3CHCHCH(CH3)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          84.15948;      // kg/kmol [origin=ChemSep v8.3]
 Tc          499;      // K [origin=ChemSep v8.3]

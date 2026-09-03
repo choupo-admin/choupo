@@ -8,6 +8,7 @@
 
 name        secButylMercaptan;
 CAS         513-53-1;
+formula     C4H10S;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH(SH)CH3" (derived 2026-09-03; reproduces MW to 0.004 %)
 reviewStatus interim;
 MW          90.18719;      // kg/kmol [origin=ChemSep v8.3]
 Tc          551;      // K [origin=ChemSep v8.3]

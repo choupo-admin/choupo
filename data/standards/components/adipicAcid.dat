@@ -8,6 +8,7 @@
 
 name        adipicAcid;
 CAS         124-04-9;
+formula     C6H10O4;      // counted from the ChemSep v8.3 structure formula "HOOC(CH2)4COOH" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          146.1412;      // kg/kmol [origin=ChemSep v8.3]
 Tc          809;      // K [origin=ChemSep v8.3]

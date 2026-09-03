@@ -8,6 +8,7 @@
 
 name        diisopropanolamine;
 CAS         110-97-4;
+formula     C6H15NO2;      // counted from the ChemSep v8.3 structure formula "CH3CH(OH)CH2NHCH2CH(OH)CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          133.1888;      // kg/kmol [origin=ChemSep v8.3]
 Tc          672;      // K [origin=ChemSep v8.3]

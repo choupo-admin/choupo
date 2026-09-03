@@ -8,6 +8,7 @@
 
 name        fluoranthene;
 CAS         206-44-0;
+formula     C16H10;      // counted from the ChemSep v8.3 structure formula "C16H10" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          202.2506;      // kg/kmol [origin=ChemSep v8.3]
 Tc          905;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        nButylcyclohexane;
 CAS         1678-93-9;
+formula     C10H20;      // counted from the ChemSep v8.3 structure formula "(C6H11)CH2CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          140.2658;      // kg/kmol [origin=ChemSep v8.3]
 Tc          667;      // K [origin=ChemSep v8.3]

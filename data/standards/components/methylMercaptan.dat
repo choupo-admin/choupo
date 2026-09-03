@@ -8,6 +8,7 @@
 
 name        methylMercaptan;
 CAS         74-93-1;
+formula     CH4S;      // counted from the ChemSep v8.3 structure formula "CH3SH" (derived 2026-09-03; reproduces MW to 0.009 %)
 reviewStatus interim;
 MW          48.10746;      // kg/kmol [origin=ChemSep v8.3]
 Tc          470;      // K [origin=ChemSep v8.3]

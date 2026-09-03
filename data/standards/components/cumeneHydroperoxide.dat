@@ -8,6 +8,7 @@
 
 name        cumeneHydroperoxide;
 CAS         80-15-9;
+formula     C9H12O2;      // counted from the ChemSep v8.3 structure formula "(C6H5)C(CH3)2OOH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          152.1904;      // kg/kmol [origin=ChemSep v8.3]
 Tc          605;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        diethylamine;
 CAS         109-89-7;
+formula     C4H11N;      // counted from the ChemSep v8.3 structure formula "C2H5NHC2H5" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          73.13684;      // kg/kmol [origin=ChemSep v8.3]
 Tc          496.6;      // K [origin=ChemSep v8.3]

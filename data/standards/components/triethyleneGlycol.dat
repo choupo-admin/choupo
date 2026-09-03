@@ -8,6 +8,7 @@
 
 name        triethyleneGlycol;
 CAS         112-27-6;
+formula     C6H14O4;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2OCH2CH2OCH2CH2OH" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          150.173;      // kg/kmol [origin=ChemSep v8.3]
 Tc          769.5;      // K [origin=ChemSep v8.3]

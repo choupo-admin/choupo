@@ -8,6 +8,7 @@
 
 name        1Methyl3NPropylbenzene;
 CAS         1074-43-7;
+formula     C10H14;      // counted from the ChemSep v8.3 structure formula "CH3(C6H4)CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          134.2182;      // kg/kmol [origin=ChemSep v8.3]
 Tc          656;      // K [origin=ChemSep v8.3]

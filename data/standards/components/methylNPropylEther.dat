@@ -8,6 +8,7 @@
 
 name        methylNPropylEther;
 CAS         557-17-5;
+formula     C4H10O;      // counted from the ChemSep v8.3 structure formula "CH3OCH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          74.1216;      // kg/kmol [origin=ChemSep v8.3]
 Tc          472;      // K [origin=ChemSep v8.3]

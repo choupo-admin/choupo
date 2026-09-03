@@ -8,6 +8,7 @@
 
 name        fluorene;
 CAS         86-73-7;
+formula     C13H10;      // counted from the ChemSep v8.3 structure formula "(C6H4)CH2(C6H4)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          166.2185;      // kg/kmol [origin=ChemSep v8.3]
 Tc          826;      // K [origin=ChemSep v8.3]

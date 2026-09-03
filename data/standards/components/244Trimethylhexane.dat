@@ -8,6 +8,7 @@
 
 name        244Trimethylhexane;
 CAS         16747-30-1;
+formula     C9H20;      // counted from the ChemSep v8.3 structure formula "CH3CH2C(CH3)2CH2CH(CH3)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          128.2551;      // kg/kmol [origin=ChemSep v8.3]
 Tc          583;      // K [origin=ChemSep v8.3]

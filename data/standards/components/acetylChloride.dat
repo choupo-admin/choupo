@@ -8,6 +8,7 @@
 
 name        acetylChloride;
 CAS         75-36-5;
+formula     C2H3ClO;      // counted from the ChemSep v8.3 structure formula "CH3COCl" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          78.49762;      // kg/kmol [origin=ChemSep v8.3]
 Tc          508;      // K [origin=ChemSep v8.3]

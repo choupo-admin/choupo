@@ -8,6 +8,7 @@
 
 name        trans13Dimethylcyclopentane;
 CAS         1759-58-6;
+formula     C7H14;      // counted from the ChemSep v8.3 structure formula "-CH2CH(CH3)CH2CH(CH3)CH2-" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          98.18607;      // kg/kmol [origin=ChemSep v8.3]
 Tc          553;      // K [origin=ChemSep v8.3]

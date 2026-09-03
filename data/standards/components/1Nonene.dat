@@ -8,6 +8,7 @@
 
 name        1Nonene;
 CAS         124-11-8;
+formula     C9H18;      // counted from the ChemSep v8.3 structure formula "CH2CH(CH2)6CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          126.2392;      // kg/kmol [origin=ChemSep v8.3]
 Tc          594;      // K [origin=ChemSep v8.3]

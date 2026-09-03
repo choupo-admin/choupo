@@ -8,6 +8,7 @@
 
 name        2Methylnonane;
 CAS         871-83-0;
+formula     C10H22;      // counted from the ChemSep v8.3 structure formula "(CH3)2CH(CH2)6CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          142.2817;      // kg/kmol [origin=ChemSep v8.3]
 Tc          621;      // K [origin=ChemSep v8.3]

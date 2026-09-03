@@ -8,6 +8,7 @@
 
 name        1Methylindene;
 CAS         767-59-9;
+formula     C10H10;      // counted from the ChemSep v8.3 structure formula "CH3(C9H7)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          130.1864;      // kg/kmol [origin=ChemSep v8.3]
 Tc          703;      // K [origin=ChemSep v8.3]

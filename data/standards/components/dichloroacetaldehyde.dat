@@ -8,6 +8,7 @@
 
 name        dichloroacetaldehyde;
 CAS         79-02-7;
+formula     C2H2Cl2O;      // counted from the ChemSep v8.3 structure formula "CHCl2CHO" (derived 2026-09-03; reproduces MW to 0.005 %)
 reviewStatus interim;
 MW          112.9427;      // kg/kmol [origin=ChemSep v8.3]
 Tc          555;      // K [origin=ChemSep v8.3]

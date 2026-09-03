@@ -8,6 +8,7 @@
 
 name        1234Tetramethylbenzene;
 CAS         488-23-3;
+formula     C10H14;      // counted from the ChemSep v8.3 structure formula "(C6H2)(CH3)4" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          134.2182;      // kg/kmol [origin=ChemSep v8.3]
 Tc          690;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        monoethanolamine;
 CAS         141-43-5;
+formula     C2H7NO;      // counted from the ChemSep v8.3 structure formula "HOCH2CH2NH2" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          61.08308;      // kg/kmol [origin=ChemSep v8.3]
 Tc          671.4;      // K [origin=ChemSep v8.3]

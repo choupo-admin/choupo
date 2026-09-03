@@ -8,6 +8,7 @@
 
 name        nPentylAcetate;
 CAS         628-63-7;
+formula     C7H14O2;      // counted from the ChemSep v8.3 structure formula "CH3COOCH2(CH2)3CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          130.1849;      // kg/kmol [origin=ChemSep v8.3]
 Tc          605.15;      // K [origin=ChemSep v8.3]

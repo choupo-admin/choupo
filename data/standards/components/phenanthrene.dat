@@ -8,6 +8,7 @@
 
 name        phenanthrene;
 CAS         85-01-8;
+formula     C14H10;      // counted from the ChemSep v8.3 structure formula "C14H10" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          178.2292;      // kg/kmol [origin=ChemSep v8.3]
 Tc          869;      // K [origin=ChemSep v8.3]

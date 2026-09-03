@@ -8,6 +8,7 @@
 
 name        propyleneCarbonate;
 CAS         108-32-7;
+formula     C4H6O3;      // counted from the ChemSep v8.3 structure formula "-OCH(CH3)CH2OCO-" (derived 2026-09-03; reproduces MW to 0.000 %)
 reviewStatus interim;
 MW          102.0886;      // kg/kmol [origin=ChemSep v8.3]
 Tc          778;      // K [origin=ChemSep v8.3]

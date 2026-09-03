@@ -8,6 +8,7 @@
 
 name        oCresol;
 CAS         95-48-7;
+formula     C7H8O;      // counted from the ChemSep v8.3 structure formula "CH3(C6H4)OH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          108.1378;      // kg/kmol [origin=ChemSep v8.3]
 Tc          697.6;      // K [origin=ChemSep v8.3]

@@ -8,6 +8,7 @@
 
 name        transDecahydronaphthalene;
 CAS         493-02-7;
+formula     C10H18;      // counted from the ChemSep v8.3 structure formula "(CH2)4CHCH(CH2)4" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          138.2499;      // kg/kmol [origin=ChemSep v8.3]
 Tc          687.05;      // K [origin=ChemSep v8.3]

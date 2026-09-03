@@ -8,6 +8,7 @@
 
 name        naphthalene;
 CAS         91-20-3;
+formula     C10H8;      // counted from the ChemSep v8.3 structure formula "(C6H4)(C4H4)" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          128.1705;      // kg/kmol [origin=ChemSep v8.3]
 Tc          748.4;      // K [origin=ChemSep v8.3]

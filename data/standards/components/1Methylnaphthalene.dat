@@ -8,6 +8,7 @@
 
 name        1Methylnaphthalene;
 CAS         90-12-0;
+formula     C11H10;      // counted from the ChemSep v8.3 structure formula "(C6H4)(C4H3)CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          142.1971;      // kg/kmol [origin=ChemSep v8.3]
 Tc          772;      // K [origin=ChemSep v8.3]

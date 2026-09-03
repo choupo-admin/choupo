@@ -8,6 +8,7 @@
 
 name        diSecButylEther;
 CAS         6863-58-7;
+formula     C8H18O;      // counted from the ChemSep v8.3 structure formula "C2H5(CH3)CHOCH(CH3)C2H5" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          130.2279;      // kg/kmol [origin=ChemSep v8.3]
 Tc          562;      // K [origin=ChemSep v8.3]

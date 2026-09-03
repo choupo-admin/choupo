@@ -8,6 +8,7 @@
 
 name        112Trichloroethane;
 CAS         79-00-5;
+formula     C2H3Cl3;      // counted from the ChemSep v8.3 structure formula "CHCl2CH2Cl" (derived 2026-09-03; reproduces MW to 0.006 %)
 reviewStatus interim;
 MW          133.4042;      // kg/kmol [origin=ChemSep v8.3]
 Tc          602;      // K [origin=ChemSep v8.3]

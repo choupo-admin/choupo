@@ -8,6 +8,7 @@
 
 name        nitrogenTetroxide;
 CAS         10544-72-6;
+formula     N2O4;      // counted from the ChemSep v8.3 structure formula "O2NNO2" (derived 2026-09-03; reproduces MW to 0.001 %)
 reviewStatus interim;
 MW          92.011;      // kg/kmol [origin=ChemSep v8.3]
 Tc          431.15;      // K [origin=ChemSep v8.3]

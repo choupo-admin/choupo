@@ -8,6 +8,7 @@
 
 name        ethylMethylDisulfide;
 CAS         20333-39-5;
+formula     C3H8S2;      // counted from the ChemSep v8.3 structure formula "CH3CH2SSCH3" (derived 2026-09-03; reproduces MW to 0.008 %)
 reviewStatus interim;
 MW          108.2256;      // kg/kmol [origin=ChemSep v8.3]
 Tc          628.9;      // K [origin=ChemSep v8.3]

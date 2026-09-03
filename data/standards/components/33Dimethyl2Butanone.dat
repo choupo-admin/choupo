@@ -8,6 +8,7 @@
 
 name        33Dimethyl2Butanone;
 CAS         75-97-8;
+formula     C6H12O;      // counted from the ChemSep v8.3 structure formula "(CH3)3CCOCH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          100.1589;      // kg/kmol [origin=ChemSep v8.3]
 Tc          567;      // K [origin=ChemSep v8.3]

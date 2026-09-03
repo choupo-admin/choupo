@@ -8,6 +8,7 @@
 
 name        squalane;
 CAS         111-01-3;
+formula     C30H62;      // counted from the ChemSep v8.3 structure formula "((CH3)2CH(C3H6CH(CH3))2C2H4)2" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          422.8133;      // kg/kmol [origin=ChemSep v8.3]
 Tc          863;      // K [origin=ChemSep v8.3]

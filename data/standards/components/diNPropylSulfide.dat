@@ -8,6 +8,7 @@
 
 name        diNPropylSulfide;
 CAS         111-47-7;
+formula     C6H14S;      // counted from the ChemSep v8.3 structure formula "CH3CH2CH2SCH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          118.2404;      // kg/kmol [origin=ChemSep v8.3]
 Tc          608;      // K [origin=ChemSep v8.3]

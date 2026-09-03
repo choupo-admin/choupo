@@ -8,6 +8,7 @@
 
 name        vinylChloride;
 CAS         75-01-4;
+formula     C2H3Cl;      // counted from the ChemSep v8.3 structure formula "CH2CHCl" (derived 2026-09-03; reproduces MW to 0.004 %)
 reviewStatus interim;
 MW          62.49822;      // kg/kmol [origin=ChemSep v8.3]
 Tc          432;      // K [origin=ChemSep v8.3]

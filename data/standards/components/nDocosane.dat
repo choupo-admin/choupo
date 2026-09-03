@@ -8,6 +8,7 @@
 
 name        nDocosane;
 CAS         629-97-0;
+formula     C22H46;      // counted from the ChemSep v8.3 structure formula "CH3(CH2)20CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          310.6006;      // kg/kmol [origin=ChemSep v8.3]
 Tc          787;      // K [origin=ChemSep v8.3]

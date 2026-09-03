@@ -8,6 +8,7 @@
 
 name        methylIsopropylKetone;
 CAS         563-80-4;
+formula     C5H10O;      // counted from the ChemSep v8.3 structure formula "CH3CH(CH3)COCH3" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          86.1323;      // kg/kmol [origin=ChemSep v8.3]
 Tc          567.7;      // K [origin=ChemSep v8.3]

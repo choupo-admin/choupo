@@ -8,6 +8,7 @@
 
 name        nPropylcyclohexane;
 CAS         1678-92-8;
+formula     C9H18;      // counted from the ChemSep v8.3 structure formula "(C6H11)CH2CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          126.2392;      // kg/kmol [origin=ChemSep v8.3]
 Tc          639.15;      // K [origin=ChemSep v8.3]

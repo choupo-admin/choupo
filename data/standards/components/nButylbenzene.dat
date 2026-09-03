@@ -8,6 +8,7 @@
 
 name        nButylbenzene;
 CAS         104-51-8;
+formula     C10H14;      // counted from the ChemSep v8.3 structure formula "(C6H5)(CH2)3CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          134.2182;      // kg/kmol [origin=ChemSep v8.3]
 Tc          660.5;      // K [origin=ChemSep v8.3]

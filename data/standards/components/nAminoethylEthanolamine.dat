@@ -8,6 +8,7 @@
 
 name        nAminoethylEthanolamine;
 CAS         111-41-1;
+formula     C4H12N2O;      // counted from the ChemSep v8.3 structure formula "H2NCH2CH2NHCH2CH2OH" (derived 2026-09-03; reproduces MW to 0.002 %)
 reviewStatus interim;
 MW          104.1509;      // kg/kmol [origin=ChemSep v8.3]
 Tc          698;      // K [origin=ChemSep v8.3]

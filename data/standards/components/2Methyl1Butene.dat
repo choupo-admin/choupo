@@ -8,6 +8,7 @@
 
 name        2Methyl1Butene;
 CAS         563-46-2;
+formula     C5H10;      // counted from the ChemSep v8.3 structure formula "CH2C(CH3)CH2CH3" (derived 2026-09-03; reproduces MW to 0.003 %)
 reviewStatus interim;
 MW          70.1329;      // kg/kmol [origin=ChemSep v8.3]
 Tc          465;      // K [origin=ChemSep v8.3]
