@@ -287,3 +287,74 @@ The map now:
 Two doors stay on the hub — **Explore** (the landing) and **Property
 surfaces** — so §8.2 survives the move: neither is reachable only through the
 other.
+
+### 8.8 The instrument's OTHER half, and a false alarm it cost
+
+Half a rule is not a rule.  "Count the elements past the viewport edge" caught
+the catalogue's real defect and then, an hour later, produced a **false alarm**
+about the property surfaces: 68 elements past the edge, reported here and to
+the owner as the next thing to fix.  It was not a defect.  Those 68 were 67
+children of ONE toolbar, and that toolbar sits in a box with
+`overflow-x: auto` — it SCROLLS, which is precisely the shape the NO-REBLOAT
+invariant demands (one row, never two).  Re-measured with the ancestor walk:
+**0 unreachable** on the property surfaces; **101** on the catalogue before its
+fix and **0** after, the same tool answering both.  So the rule, whole:
+
+> An element past the viewport edge is a defect only when NO ancestor between
+> it and the viewport can be scrolled to bring it into view.  `scrollWidth`
+> lies about a clipping container; a raw edge count lies about a scrolling one.
+
+**The instrument already existed, and that is the finding.**
+`gui/tools/checkGui/occlusion.mjs` has carried `clippedBy` and
+`OFFSCREEN_PROBE` for weeks — the ancestor walk, the axis, and a docstring
+recording that this module's own first false finding was of exactly this
+family.  A second, cruder home for a question the tree had already answered
+carefully is the arity sin committed against oneself, and it cost a wrong
+claim rather than only duplicated work.  **Reach for `checkGui` before writing
+a probe.**
+
+### 8.9 The same blind spot, one container in — and I nearly "fixed" the app for it
+
+Widening the walk paid on its first run, and then charged for the lesson
+twice.  The new `property-surfaces` page reported **2 COVERED** at desk width:
+two compound-family headers, *Nitrogen compounds (41)* and *Sulfur compounds
+(24)*, each "blocked by" a piece of the rail's own SET block.  I diagnosed a
+squeezed flex child, added `flexShrink: 0`, re-ran — **and the finding did not
+move.**
+
+The geometry said why, and it was not the app: the tree's scroll viewport ends
+at y=791; the two buttons are at y=793 and y=849, two pixels past its fold,
+with 2002 px of content in a 624 px box.  Scrolling the tree by 1378 px moves
+them to y=−585.  They are reachable; the SET block is simply what is painted
+in that region of the SCREEN.
+
+So the occlusion arm had the same shape of blind spot the crude probe of §8.8
+had — one container in.  It already skips a control whose centre leaves the
+WINDOW, saying exactly the right thing about it ("`elementFromPoint` is not
+defined there, so this is NOT evidence either way").  A control whose centre
+leaves its own SCROLLABLE BOX while staying inside the window was not skipped,
+and the hit test then answered with the next panel down.  `scrolledPastFold`
+now puts those in the same non-evidence pile, which the second arm resolves by
+scrolling and re-asking rather than by assuming.
+
+**The app change was reverted.**  A fix justified by a wrong story does not
+get to stay because it is harmless: it would have stood as evidence for a
+defect that was never there, and the next reader would have believed it.
+
+Two rules, and the second is the one that keeps costing:
+
+> A hit test asked outside the asker's own visible box is not evidence — at
+> any level of nesting.  The viewport is only the outermost box.
+
+> When an instrument reports a defect, reproduce the DEFECT before repairing
+> what the instrument blamed.  Both times here the report was true as a
+> measurement and false as a conclusion, and both times the cheapest check —
+> can a user reach it? — was one scroll away.
+
+What the harness could NOT have said, because it was not looking: its walk
+covered ONE workspace (EduTools) in its default state — a limit it names in
+its own header, beside the sentence *"the owner found it on his own phone.
+The harness could not."*  That happened again here.  So the walk now opens the
+explorer's landing and the property surfaces too; both are standalone pages,
+so neither meets the React-Flow shape the exposure arm refuses, and the
+landing reports a reach of 31 against a tool page's 1.

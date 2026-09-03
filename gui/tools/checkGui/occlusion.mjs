@@ -83,6 +83,29 @@ export const OCCLUSION_PROBE = `(() => {
     };
   };
 
+  /** The scrollable ancestor whose own box the point (cx, cy) falls outside,
+   *  or null.  Walks up because the fold that hides a control may belong to a
+   *  container several levels above it (Mantine's ScrollArea puts the scroll
+   *  on a viewport child of the root, so the first hit here is usually that
+   *  viewport rather than anything the caller would name).
+   *
+   *  "hidden"/"clip" count as well as "auto"/"scroll": what matters is that
+   *  the box has more content than it shows, so the point asked about is not
+   *  where this control is painted. */
+  const scrolledPastFold = (el, cx, cy) => {
+    for (let p = el.parentElement; p; p = p.parentElement) {
+      const cs = getComputedStyle(p);
+      const holds = (o) => o === "auto" || o === "scroll" || o === "hidden" || o === "clip";
+      const moreY = holds(cs.overflowY) && p.scrollHeight > p.clientHeight + 1;
+      const moreX = holds(cs.overflowX) && p.scrollWidth > p.clientWidth + 1;
+      if (!moreY && !moreX) continue;
+      const pr = p.getBoundingClientRect();
+      if ((moreY && (cy < pr.top || cy > pr.bottom))
+       || (moreX && (cx < pr.left || cx > pr.right))) return p;
+    }
+    return null;
+  };
+
   const covered = [];
   let checked = 0, skippedInvisible = 0, skippedOffscreen = 0;
 
@@ -101,6 +124,18 @@ export const OCCLUSION_PROBE = `(() => {
       // silently dropped.
       skippedOffscreen++; continue;
     }
+    // THE SAME NON-EVIDENCE, ONE CONTAINER IN (added 2026-09-03, after this
+    // arm reported two of them as COVERED).  A row scrolled just past the
+    // fold of its OWN scrollable box still has its centre inside the WINDOW,
+    // so the guard above lets it through -- and elementFromPoint then
+    // answers with whatever is painted in that region, which is the next
+    // panel down.  Reported as "covered by the SET chips", it was a compound
+    // family header sitting two pixels below its tree's fold: scrolling the
+    // tree brings it into view and it clicks.  A hit test asked outside the
+    // asker's own visible box is not evidence, exactly as above; it belongs
+    // in the same pile, which THE SKIPPED PILE below resolves by scrolling
+    // and re-asking rather than by assuming.
+    if (scrolledPastFold(el, cx, cy)) { skippedOffscreen++; continue; }
 
     checked++;
     const hit = document.elementFromPoint(cx, cy);

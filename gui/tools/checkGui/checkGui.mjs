@@ -527,6 +527,25 @@ async function main() {
        *  carrying it.  */
       const walk = [
         ...tools.map((t) => ({ id: t.id, url: `${BASE}?workspace=methods&tool=${t.id}` })),
+        //  THE OTHER TWO MODE TABS (2026-09-03).  The limit named below --
+        //  "this walks ONE workspace (EduTools)" -- cost something again the
+        //  day the Explorer was split in two: a fixed-width catalogue column
+        //  beside a flexible one left the second column nothing on a phone,
+        //  101 controls behind an unscrollable edge, and the harness could
+        //  not see it because it does not open that page.  The owner found
+        //  the shape of it on his own phone, for the second time.
+        //
+        //  These two are cheap and honest to add: both are STANDALONE (no
+        //  case, no flowsheet canvas), so neither hits the React-Flow shape
+        //  the exposure arm refuses, and both are addresses a student reaches
+        //  from the hub.  The landing carries a compound so the record panel
+        //  is populated rather than showing its empty state -- an empty
+        //  surface is exactly the state whose controls cannot go missing.
+        { id: "explore-landing",  url: `${BASE}?workspace=explore` },
+        { id: "explore-landing+record",
+          url: `${BASE}?workspace=compounds` },
+        { id: "property-surfaces",
+          url: `${BASE}?workspace=properties&components=acetone` },
         { id: "shell+case",
           url: `${BASE}?case=steady/flash/flash01_benzene_toluene`
              + "&workspace=methods&tool=mccabe" },
