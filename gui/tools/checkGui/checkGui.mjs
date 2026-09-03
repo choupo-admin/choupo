@@ -40,10 +40,13 @@ License
     1. reuses the dev server on 127.0.0.1:5173, or starts one and cleans it up;
     2. drives Chromium over the DevTools protocol (no new dependency -- see
        cdp.mjs);
-    3. opens the EduTools workspace at TWO viewports -- 1400x900 (the gated
+    3. opens the MODE TABS at TWO viewports -- 1400x900 (the gated
        claim) and 390x844 with touch (the phone the original bug report came
-       from) -- with each tool in the registry selected in turn, via the
-       `?workspace=methods&tool=<id>` deep link registry.ts calls a contract;
+       from): each tool in the registry in turn, via the
+       `?workspace=methods&tool=<id>` deep link registry.ts calls a contract,
+       and since 2026-09-03 the explorer's landing and the property surfaces
+       too, because walking one workspace is how the last two phone defects
+       stayed invisible to this harness;
     4. asks, of every visible interactive control, whether a click at its
        centre would reach it (occlusion.mjs);
     5. resolves the controls that question could NOT be asked of, by scrolling
@@ -501,7 +504,11 @@ async function main() {
       passes.push(pass);
 
       log("");
-      log(`[walk] EduTools workspace at ${vp.w}x${vp.h} (${vp.label}`
+      //  "the mode tabs", not "EduTools": since 2026-09-03 the walk also
+      //  opens the explorer's landing and the property surfaces, and a
+      //  harness that names less than it walked under-describes its own
+      //  evidence exactly as one that names more over-describes it.
+      log(`[walk] the mode tabs at ${vp.w}x${vp.h} (${vp.label}`
         + `${vp.touch ? ", touch" : ""}) -- ${vp.gated ? "GATED" : "reported, not gated"}`);
       log("");
 
@@ -920,7 +927,9 @@ async function main() {
     return EXIT_DEFECT;
   }
   log("");
-  log(`OK -- every visible interactive control on every EduTools page is reachable, and `
+  log(`OK -- every visible interactive control on every walked page is reachable `
+    + `(the EduTools registry, the explorer's landing, the property surfaces, and `
+    + `the workspace with a case open), and `
     + `no checked page errored${GATE_PHONE ? "" : " (gated viewports only)"}.`);
   return EXIT_CLEAN;
 }
