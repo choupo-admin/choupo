@@ -1106,6 +1106,98 @@ library (`constant/crystallisation`) the steady MSMPR uses.
 }
 ```
 
+### `batchDryer`
+A tray of wet solid losing its moisture into air of DECLARED, CONSTANT
+condition (the air is an environment, not a ledgered stream).  State:
+`X = m_moisture / m_drySolid`.  Above the critical moisture the wetted
+surface sits at the air's wet-bulb temperature and the flux is gas-film
+controlled, `R_c = k_Y (Y_sat(T_wb) − Y)`; below it the flux falls
+LINEARLY in the free moisture, `R = R_c (X − X_eq)/(X_c − X_eq)` —
+announced at run time as a modelling CHOICE.  `X_eq` is the GAB
+equilibrium moisture at the air's water activity, read from the solid
+component's `sorption {}` record (a solid without one is refused by name);
+`criticalMoisture` must lie above it or the falling-rate law has no domain.
+The evaporated water leaves the campaign across the air boundary and is
+reported as the unit's declared material residual; the latent heat is
+published as `latentDuty_kW` while the energy ledger refuses to claim a
+verdict (the heat is the air's, from outside the campaign).
+
+```
+{ name dryer;  type batchDryer;
+  operation
+  {
+      area              0.5 m2;                // exposed tray surface
+      k_Y               [1 -2 -1 0 0] 0.05;    // kg/(m2 s) per (kg/kg) -- equipment data
+      criticalMoisture  0.12;                  // kg/kg dry solid -- MEASURED
+      air { T 333.15 K;  Y 0.010;  carrier N2; }   // declared, constant
+  }
+}
+```
+KPIs: `X_initial`, `X_critical`, `X_equilibrium`, `X_final`, `T_wb`,
+`R_constant`, `latentDuty_kW`, `latentEnergy_kJ`.  Witness:
+`tutorials/batch/drying/dryer01_sucrose_tray`.
+
+### `batchDiafilter`
+A stirred RETENTATE vessel behind a membrane — the batch half of the
+pressure-driven separation the steady `spiralWoundModule` solves.  It adds
+no architecture: it asks the same `TransportModel::localFluxes`
+(`solutionDiffusion` or `DSPM_DE`, the same `membrane` asset record, the
+same `osmotic {}` block) once per instant instead of once per channel node.
+Well mixed, so one bulk composition; the permeate's solvent is closed on
+the SAME declared solution density the concentrations were built from, so
+the vessel conserves mass to machine precision.  Two modes, one line apart:
+`concentration` (no make-up: the vessel shrinks, solutes concentrate) and
+`constantVolume` (diafiltrate added at the permeate rate: solutes wash out).
+The vessel is open in BOTH directions, so the make-up enters the campaign
+ledger under its own kind word `externalIntake` (never as a re-declared
+feed).  Initial holdup comes from `0/internalState` — an inline
+`initial {}` is refused.
+
+```
+{ name retentate;  type batchDiafilter;
+  operation
+  {
+      membrane     NF270;               // the curated asset record
+      transport    solutionDiffusion;   // or DSPM_DE
+      mode         constantVolume;      // or concentration
+      area         5.0;                 // m2
+      P_feed       10 bar;  P_permeate 0 bar;
+      rho          1000;                // kg/m3 -- declared, never defaulted
+      k_film       1.0e-4 m/s;          // DECLARED: no correlation is invented
+      osmotic { model vanHoff; }        // or pitzer
+      fouling                           // OPTIONAL -- absent = no fouling, byte-identical run
+      {
+          law     cake;                 // or intermediate; standard/complete REFUSE by name
+          k       4.0e11;               // s.Pa/m2 per (m3/m2) -- equipment-and-feed data
+          reason  "why this blocking law describes this feed";   // REQUIRED
+      }
+  }
+}
+```
+**The lesson is the point.**  The hand derivation of constant-volume
+diafiltration, `c/c0 = exp(−(1−R)·N)` with `N` the diavolumes, assumes a
+CONSTANT rejection; it is not constant (the solute leaves, the osmotic
+pressure falls, the flux climbs, the observed rejection rises).  So the
+unit publishes `R_obs_<solute>` at every instant and, in `constantVolume`
+mode, `washoutActual_<solute>` beside `washoutIdeal_<solute>` — the ideal
+evaluated from THIS RUN's own initial R and its own diavolumes, computed
+and never declared, so the gap cannot have been arranged.  Fouling is
+resistance in series on the permeance handed to the transport law,
+`1/A_eff = 1/A_w + r_f(v)`, `v = V_permeated/A`, by one of Hermia's
+blocking laws (`cake`: `r_f = k·v`; `intermediate`: `1/A_eff = e^{k v}/A_w`);
+a blocking law is a claim about a MECHANISM, hence the mandatory `reason`.
+KPIs: `J_w_LMH`/`J_w_final_LMH`, `TMP_bar`, `R_initial_<s>`/`R_final_<s>`,
+`recovery_<s>`, `diavolumes`, `concentrationFactor`, `washoutActual_<s>`,
+`washoutIdeal_<s>`, `A_eff_over_A_w_final` (with fouling).  NOT modelled,
+said plainly: any k_film correlation, temperature transients, critical
+flux, gel layers, cleaning/backwash cycles, any prediction of `k`, and the
+pump work (`energyLedgerGap` names it; the campaign energy balance is
+UNAVAILABLE rather than closed with a term quietly zero).  Witnesses:
+`tutorials/batch/membrane/diafilter01_nf_desalting` (5.44 diavolumes: NaCl
+washed to 50.2 %, MgSO4 held at 99.2 %, actual 0.5015 vs ideal 0.4970) and
+`diafilter02_fouling_decline` (same run plus a HYPOTHETICAL `cake` law:
+permeance to 72.5 % of clean, 4.74 diavolumes, 53.4 % of the NaCl left).
+
 ## Recipe events (in `flowsheetDict`)
 
 ```

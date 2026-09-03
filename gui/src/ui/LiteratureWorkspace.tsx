@@ -138,8 +138,8 @@ export function LiteratureWorkspace() {
           This workspace searches your private mirror of the NIST/TRC
           ThermoML Archive — 11 923 articles from five journals, with the
           citation and measured properties of each. The mirror lives on
-          your machine (data/local is never committed) and the runtime
-          never reads it. Install it once with:
+          your machine (thirdParty/thermoml/, gitignored and never
+          committed) and the runtime never reads it. Install it once with:
         </Text>
         <Code>bin/choupo-thermoml sync</Code>
         <Text size="xs" c="dimmed" ta="center" maw={560}>

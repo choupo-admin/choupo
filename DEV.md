@@ -887,6 +887,26 @@ accepts today, and that is a policy call.
    **The remaining debt is that nothing checks COVERAGE.**  A gate can
    refuse a stale number; no gate notices a capability nobody documented.
    That sweep was done by hand and will need doing again.
+   **Done again 2026-09-03**, for everything shipped since 2026-08-04: of
+   30 user-visible capabilities, 12 had NO manual entry and 13 were only
+   LISTED (by the generated props-op reference, a stub list, or the
+   AI-facing docs), 7 were covered.  All 25 now have prose in the guide a
+   student would open (batchDiafilter had zero documentation of any kind
+   — no schema, no catalogue entry, no manual — and `batchDryer` no
+   catalogue entry; both written).  Two STRUCTURAL findings, which are the
+   half worth keeping: (1) the generated `propsGuide-operations.tex` fixed
+   the stale-reference defect and created a new one — every new props op is
+   LISTED automatically and EXPLAINED never, six ops sat behind that green
+   gate; a generated list is coverage of NAMES, not of lessons.  (2)
+   `docs/engine-capabilities.md`, whose own header names engine editors as
+   its audience, had absorbed three user-facing capabilities (`rtd`,
+   `frequencyResponse`, the carried/unserved semantics) as their only home.
+   Also found on the way: the EduTools guide hand-carried "six live tools"
+   against a registry several times that size (retired: the registry is the
+   authority, no count in prose), and the Explorer guide described
+   McCabe-Thiele and the psychrometric chart as Explorer views three weeks
+   after they moved to EduTools.  Still no gate — the sweep stays a hand
+   task, and the next one is due when the next capability ships.
 
 1. ~~**SEAL DRIFT**~~ — **NOT A DEBT.  RULED 2026-08-04 (Vítor): the sealed
    cases stay PINNED, permanently, and this is a POLICY rather than a

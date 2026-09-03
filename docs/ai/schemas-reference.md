@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*88 of 88 registered operations carry a schema and are documented below.*
+*89 of 89 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -87,6 +87,25 @@ Fabric (bag-house) filter. Collection is near-total; the cake-dominated pressure
 | `arealDustLoad` |   | number | kg/m2 | Cake mass per unit cloth area; drives the cake pressure drop. |
 | `penetration0` |   | number | - | Penetration of the finest particles in η(d) = 1 - P0·exp(-d/d_c). |
 | `dCharacteristic` |   | number | m | Size scale of the grade-efficiency rise. |
+
+## `batchDiafilter`  (batchDiafilter operation)
+
+A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM_DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalState (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `membrane` | ✓ | string | - | Name of the curated membrane record (data/standards/assets/, kind membrane) whose permeabilities the transport law reads. |
+| `transport` | ✓ | string | - | The same local flux law the steady module uses; DSPM_DE needs the record's pore data and a charged feed. |
+| `transportParameters` |   | object | - | Optional block handed verbatim to the chosen transport law's readParameters (the DSPM-DE pore/charge inputs). Absent for solutionDiffusion. |
+| `mode` | ✓ | string | - | `concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeate… |
+| `area` | ✓ | number | m2 |  |
+| `P_feed` | ✓ | number | Pa | Retentate-side pressure; the transmembrane pressure is P_feed - P_permeate. |
+| `P_permeate` | ✓ | number | Pa |  |
+| `rho` | ✓ | number | kg/m3 | Declared, never defaulted: the density the concentrations and the permeate mass closure are both built on (BulkConversion.H). |
+| `rho_diafiltrate` |   | number | kg/m3 | Density of the make-up solvent in constantVolume mode; defaults to rho when omitted. |
+| `k_film` | ✓ | number | m/s | Concentration-polarisation coefficient, DECLARED by the case: the unit refuses without it rather than inventing a correlation for a stirr… |
+| `osmotic` | ✓ | object | — | The same block the steady module reads: `model vanHoff;` or `model pitzer;`. |
+| `fouling` |   | object | — | OPTIONAL. Resistance in series on the permeance handed to the transport law, 1/A_eff = 1/A_w + r_f(v), v = V_permeated/A, applied where t… |
 
 ## `batchDryer`  (batchDryer operation)
 

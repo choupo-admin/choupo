@@ -65,6 +65,31 @@ will hit it at $x = 0.89$.
 
 \section{The views, one by one}
 
+\subsection{The compound browser (the left panel)}
+% Verified against gui/src/ui/explore/CompoundBrowser.tsx (hosted by
+% gui/src/ui/ExploreWorkspace.tsx:2149) and gui/src/case/family.ts.
+% Tree of folding groups: CompoundBrowser.tsx:86-95 (OPEN_BY_DEFAULT,
+% FAMILY_THRESHOLD), groups derived from record facts: 63-82, display
+% order: 84-85; families built and ranked: 337-344, family headers folded
+% with their count: 355-358; search flattens the tree: 207; double click
+% inspects: 244.  Classification rule: family.ts:37-50 (header), 105-132
+% (familyOf: UNIFAC groups first, formula second, "(by formula)" suffix at
+% 124, "No formula declared in the record" at 121).
+The catalogue is a \emph{tree}, not a list.  Groups derived from each
+record's own facts fold and unfold with their member count; the groups a
+student charges to a vessel open by default, the combustion library, the
+radicals and the synthetic test stand-ins start folded.  A group too large
+for one screen is subdivided into \emph{families}, and the family comes from
+the record, never from the name: first the \emph{declared UNIFAC groups}
+(the highest-precedence group present decides --- an acid before an ester
+before an alcohol, down to an alkane); only for a record with no group
+decomposition, the \emph{elemental formula}, coarser and labelled so with a
+``(by formula)'' suffix.  A record with neither is shown under \emph{``No
+formula declared in the record''} --- a visible curation gap, never a guess.
+Typing in the search box flattens the tree; a double click inspects a
+component without changing the set.  The browser reads the catalogue; it
+does not edit a record.
+
 \subsection{Property vs $T$/$P$ (scan)}
 Any pure-component property --- $P^{\mathrm{sat}}$, liquid density,
 $c_p$, viscosity, enthalpy --- swept over temperature or pressure, for one
@@ -94,14 +119,6 @@ azeotropes); $\gamma < 1$: association (maximum-boiling).  The
 Gibbs--Duhem constraint ties the two curves together --- one cannot bend
 without the other answering.
 
-\subsection{McCabe--Thiele (distillation)}
-The classic $x$--$y$ construction: equilibrium curve, operating lines,
-$q$-line, stages stepped off graphically.  Change reflux and watch the
-stage count respond; push the specs toward an azeotrope and watch the pinch
-strangle the staircase.  The fastest intuition-builder for distillation
-that exists --- and it runs on the same $K$-values the rigorous column
-uses.
-
 \subsection{Binary flash ($x$--$y$ + lever rule)}
 One flash, drawn: feed, vapour and liquid on the equilibrium diagram with
 the lever rule made visible.  Use it to understand what a single
@@ -117,11 +134,6 @@ whole thermodynamics of demixing.
 \subsection{Ternary boiling surface}
 $T_{\mathrm{bubble}}$ over the composition triangle: valleys are
 distillation boundaries, and azeotropes sit at the stationary points.
-
-\subsection{Psychrometric chart}
-Humid air: humidity vs temperature with saturation, wet-bulb and enthalpy
-structure --- the working chart for dryers and HVAC, computed from the same
-gas-phase thermodynamics as everything else.
 
 \subsection{Scaling (SI vs recovery)}
 The membrane/brine screening view: concentrate a water composition over
@@ -152,6 +164,63 @@ interpolated.
 Saturation and superheat properties of water from IAPWS-IF97 ---
 $h_f, h_g, h_{fg}$, entropies, volumes --- the backbone of every steam and
 power-cycle case, browsable.
+
+%  McCabe--Thiele and the psychrometric chart used to have their own
+%  subsections here as Explorer views.  Both moved to EduTools on
+%  2026-08-15 (gui/src/ui/ExploreWorkspace.tsx:20-24, 97-98: the Explore
+%  workspace is PROPERTY-PURE, method constructions live in
+%  MethodsWorkspace.tsx), and this guide went on describing them as
+%  Explorer views for three weeks.  Retired 2026-09-03 by the coverage
+%  sweep; they are reached from the EduTools workspace described next.
+\subsection{EduTools (the Methods workspace)}
+% Verified against gui/src/ui/MethodsWorkspace.tsx (criterion 36-41; zero
+% physics in TS 42-48; chooser on a tool tab leads the chrome row, on a case
+% tab it is a Select 96-101, 350, 518; TeachesLine 563; "Author -> copy
+% propsDict" 618-635), gui/src/ui/methods/registry.ts (EDUTOOLS_LABEL 687;
+% METHOD_TOOLS one home 125-137; planned entries visible, disabled
+% 125-128), gui/src/ui/workspaces.ts (MODE_TABS 100-115: its own tab,
+% independent of the flowsheet 56-62), gui/src/ui/WelcomeScreen.tsx:184-190
+% (the hub opens it), docs/ai/gui-credo.md section 9 (line 410 on),
+% docs/design/one-tab-one-thing.md.
+Since 2026-08-15 the classical \emph{method constructions} live in their own
+workspace, \textbf{EduTools}, split from the Explorer by one criterion:
+\emph{a property surface answers ``what does this system's property look
+like?''} (the Explorer); \emph{a method construction answers ``what does
+the classical graphical method say about a design question?''} ---
+McCabe--Thiele, Kremser, Rayleigh, $\varepsilon$-NTU, pinch composites,
+and derivation pages for the property models.  Open it from the
+hub's \textbf{EduTools} button: it is a tab of its own, needs no case, and
+does not talk to the flowsheet.  A tool is chosen from the top row of the
+tab; every tool carries a one-line ``teaches'' caption and its Theory Guide
+link.  Every curve is an engine run (\code{choupoProps} in WebAssembly) over
+a transient synthesized case --- \emph{zero physics in TypeScript}; the
+staircase drawn on it is geometry.  Planned tools stay visible and
+disabled, naming what will feed them.  It never writes a case: ``Author
+$\to$ copy propsDict'' emits the dict for you to author on disk.
+
+\subsection{Literature (``who measured this?'')}
+% Verified against gui/src/ui/LiteratureWorkspace.tsx (header 1-27: the
+% private ThermoML mirror installed by bin/choupo-thermoml sync, a reading
+% list never a value; honest absence 21-27, 136-144; search rule: every
+% word must match a compound, 160; the open case's components as chips,
+% 168; hit = authors, year, title, journal, DOI link, measured properties,
+% 199-230; closing line 240), gui/src/ui/workspaces.ts (Literature is a
+% case-tab menu view, 135-137, offered for every case type and never
+% without a case, 174-190), gui/src/ui/AppShell.tsx:418-419, 443-444.
+Provenance is the differentiator, and this workspace puts its question one
+click from the flowsheet.  With a case open, the tab's menu carries
+\textbf{Literature}: type compound names (every word must match a compound
+in the article) or click a chip for one of the case's own components, and
+read who measured that system --- authors, year, title, journal, a DOI
+link, and the properties measured.  It searches your \emph{private} mirror
+of the NIST/TRC ThermoML Archive, installed once with
+\code{bin/choupo-thermoml sync} on your own machine; the runtime never reads
+it and the public site has no mirror, so there it shows the install
+instructions instead.  That absence is a status, not an empty result:
+\emph{``nobody measured this''} and \emph{``you have no mirror''} are
+different sentences.  It is a \emph{reading list, never a value}: no number
+is copied into a case or a record, and the only outbound action is opening
+the article.  Read it and cite it --- never this index.
 
 \section{Provenance and honesty rules}
 

@@ -17900,6 +17900,103 @@ sweeps $k$ to draw the polarisation curve. \\
 diminishing-returns recovery down the series.
 \end{tutoriallink}
 
+%  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (the model, the
+%  two modes, the published pair, the fouling block and its refusals);
+%  src/unitOperations/membrane/BulkConversion.H (the density closure).
+%  Numbers: tutorials/batch/membrane/diafilter01_nf_desalting/expected and
+%  diafilter02_fouling_decline/expected (self-recorded goldens, no
+%  measured diafiltration behind them).  Added 2026-09-03 by the coverage
+%  sweep: the unit had shipped on 2026-08-25 with no manual entry.
+\subsection{Batch diafiltration: the same flux law, once per instant}
+
+Everything above serves a steady module marching down a channel.  At
+laboratory and pilot scale a membrane is run the other way round: a stirred
+\emph{retentate} vessel behind the membrane, the permeate leaving, and
+either nothing replacing it (\textbf{concentration} --- the vessel shrinks
+and the solutes concentrate) or solvent made up as fast as it permeates
+(\textbf{constant-volume diafiltration} --- the volume holds and the solutes
+wash out).  \code{batchDiafilter} in \code{choupoBatch} adds no physics to
+what this chapter already has: it asks the same local flux law
+(solution-diffusion or DSPM-DE), with the same membrane record, the same
+film coefficient and the same osmotic model, once per instant instead of
+once per channel node.  The vessel is well mixed, so there is one bulk
+composition; with $V$ the retentate volume, $A$ the area and $Q_d$ the
+make-up rate,
+\[
+   \frac{dn_i}{dt} = -J_{s,i}\,A + Q_d\,c_{d,i}\quad\text{(solutes)},\qquad
+   Q_d = 0 \ \text{(concentration)}\ \ \text{or}\ \ Q_d = Q_p = J_w A
+   \ \text{(constant volume)},
+\]
+and the solvent line closes the permeate's \emph{mass} on the same declared
+solution density the concentrations were built from, which is why the
+vessel conserves mass to machine precision rather than leaking the percent
+that a pure-water permeate concentration would.
+
+\paragraph{The washout law, and where it fails.}  The hand derivation every
+student meets for constant-volume diafiltration is
+\begin{equation}
+   \frac{c}{c_0} = \exp\!\bigl[-(1-R)\,N\bigr],\qquad
+   N = \frac{1}{V_0}\int Q_d\,dt \ \ \text{(diavolumes)},
+\end{equation}
+and it assumes the rejection $R$ is a \emph{constant}.  It is not: the
+solute leaves, the osmotic pressure falls, the flux climbs, the wall
+concentration changes and the observed rejection rises with it.  So the
+unit publishes the observed rejection \code{R\_obs} at every instant and, in
+constant-volume mode, \code{washoutActual} beside \code{washoutIdeal} --- the
+ideal evaluated from \emph{this run's} own initial $R$ and its own
+diavolumes, computed and never declared, so the gap between the two cannot
+have been arranged.  Where they agree the hand derivation was safe; where
+they part the $R$ trajectory says which assumption failed and when.
+
+\begin{example}[NF desalting, \file{diafilter01\_nf\_desalting}]
+Ten litres of a dilute NaCl/MgSO$_4$ brine behind 5\,m$^2$ of NF270 at
+10\,bar, constant volume for 160\,s: 5.44 diavolumes; NaCl washed down to
+50.2\,\% of its charge while MgSO$_4$ is held at 99.2\,\%; the flux
+\emph{rises} from 233 to 256\,LMH as the osmotic back-pressure falls, and
+the observed NaCl rejection climbs from 0.8714 to 0.8748.  The washout pair
+reads 0.5015 actual against 0.4970 ideal --- the constant-$R$ derivation is
+safe to about one percent here, and the run says so.
+\end{example}
+
+\paragraph{Fouling: resistance in series, declared as a mechanism.}  A rising
+flux is what the model has; a real rig's flux \emph{falls}, because the
+membrane fouls, and every schedule a student writes is sized on that
+decline.  The unit carries it where the transport context is assembled, so
+both flux laws see it and neither is modified:
+\[
+   \frac{1}{A_{\text{eff}}} = \frac{1}{A_w} + r_f(v),\qquad
+   v = \frac{V_{\text{permeated}}}{A},
+\]
+with $r_f$ growing by one of Hermia's blocking laws (Hermia, \emph{Trans.\
+IChemE} 60 (1982) 183): \code{cake} ($r_f = k\,v$, a deposited layer) or
+\code{intermediate} ($1/A_{\text{eff}} = e^{k v}/A_w$, pores progressively
+covered).  A blocking law is a claim about a \emph{mechanism}, not a fitting
+exponent, so the block requires a written \code{reason}; the \code{standard}
+and \code{complete} laws describe pore-internal geometry a lumped permeance
+cannot represent and refuse by name.  The constant $k$ is equipment-and-feed
+data: it lives in the case and never on a membrane record.  Absent the
+block there is no fouling and the run is byte-identical.  In
+\file{diafilter02\_fouling\_decline} --- the same run with a
+\emph{hypothetical} cake law, declared as such in its own header, because a
+fully dissolved brine has nothing to deposit --- the flux turns round
+(233\,$\to$\,196\,LMH), the permeance ends at 72.5\,\% of clean, and the
+same 160\,s buys 4.74 diavolumes instead of 5.44, leaving 53.4\,\% of the
+NaCl behind against 50.2\,\%.
+
+\paragraph{What is not modelled, said plainly.}  Any correlation for the film
+coefficient (the case declares $k_{\text{film}}$ and the unit refuses
+without it), temperature transients, critical flux and gel layers,
+cleaning or backwash cycles, any prediction of $k$ itself --- the tree
+carries no fouling data at all --- and the pump work, which the campaign's
+energy ledger names as a gap rather than closing with a term quietly zero.
+
+\begin{tutoriallink}
+\file{tutorials/batch/membrane/diafilter01\_nf\_desalting} --- constant-volume
+NF desalting; the washout pair. \\
+\file{tutorials/batch/membrane/diafilter02\_fouling\_decline} --- the same
+run under a declared cake law; the difference is the fouling.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{Nanofiltration with charge: the Donnan-Steric Pore Model with
 Dielectric Exclusion (DSPM-DE)}\label{ch:dspmde}
@@ -20796,6 +20893,35 @@ Both Wang--Henke and \code{simultaneous} assume \textbf{constant molal overflow}
 (CMO): the internal flows $L_j$, $V_j$ are fixed by a mass march down the
 column, and only $x_j, T_j$ are solved.  CMO is exact only when all components
 have equal molar latent heats and sensible/mixing effects are negligible.
+
+%  Engine: src/unitOperations/distillation/DistillationColumn.cpp (the
+%  declaration `opts.blockTri = {N, nv}` and the VERIFIED announcement),
+%  src/solver/NewtonND.H (colored Jacobian, block-Thomas, the audit);
+%  record and measurements: docs/design/block-tridiagonal-mesh.md §2-§6.
+%  Added 2026-09-03 by the coverage sweep (the feature shipped 2026-08-25
+%  and no manual named it).
+\paragraph{The Jacobian has a shape, and the solver is told so.}  Stage
+$j$'s residuals see only stages $j-1$, $j$ and $j+1$, so the Newton
+Jacobian of the simultaneous CMO model is \emph{block-tridiagonal} with
+$N$ diagonal blocks of size $n_v = n$ (the $n-1$ compositions and $T_j$).
+The column declares that structure to the solver, and the declaration buys
+two classical pieces: a \emph{colored} finite-difference Jacobian (Curtis,
+Powell \& Reid, \emph{J.\ Inst.\ Maths Applics} 13 (1974) 117 --- one
+variable slot of every third stage is perturbed at once, so the cost is
+about $3\,n_v$ residual evaluations per Jacobian, \emph{independent of the
+stage count}, against $N n_v$ dense) and a block-Thomas solve on the three
+bands, $\mathcal O(N n_v^3)$ against $\mathcal O((N n_v)^3)$.  A declared
+structure is a solver aid, and aids report aloud: on the first iteration
+the solver also builds the dense Jacobian, measures the largest entry
+outside the bands, \emph{refuses by name} when the declaration is
+materially false, and prints the measured maximum with the evaluation count
+(\code{[solver] block-tridiagonal structure VERIFIED \ldots}).  On the
+48-stage reactive sour-water stripper, where every residual evaluation is
+48 reactive flashes, the same 10 iterations to the same residual took
+28.9\,s structured against 62.7\,s dense, with 18 residual evaluations
+per Jacobian instead of 288.  The full MESH below keeps its dense solve:
+its structure is \emph{bordered} tridiagonal, and declaring it clean would
+be exactly the lie the audit exists to catch.
 
 \subsection{The full MESH (Naphtali--Sandholm): the energy balance}
 

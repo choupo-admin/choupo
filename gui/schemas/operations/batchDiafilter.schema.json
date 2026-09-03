@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/batchDiafilter.schema.json",
+  "title": "batchDiafilter operation",
+  "description": "A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of the pressure-driven separation the steady spiralWoundModule solves. It adds no architecture — the same TransportModel::localFluxes (solutionDiffusion or DSPM_DE), the same membrane asset record and osmotic block, asked once per instant instead of once per channel node. Well mixed, so one bulk composition; the permeate's solvent is closed on the declared solution density the concentrations were built from, so the vessel conserves mass to machine precision. Two modes: `concentration` (no make-up, the vessel shrinks) and `constantVolume` (diafiltrate added at the permeate rate, solutes wash out; the make-up is ledgered under its own kind word externalIntake). The unit publishes the OBSERVED rejection R_obs_<solute> at every instant and, in constantVolume mode, washoutActual_<solute> beside washoutIdeal_<solute> — the ideal evaluated from this run's own initial R, computed and never declared, so the gap between the hand derivation c/c0 = exp(-(1-R)N) and the run cannot have been arranged. Initial holdup comes from 0/internalState (an inline initial{} is refused). The pump work is NOT ledgered: energyLedgerGap names it and the campaign energy balance stays UNAVAILABLE.",
+  "type": "object",
+  "properties": {
+    "membrane": {
+      "type": "string",
+      "title": "Membrane asset record",
+      "description": "Name of the curated membrane record (data/standards/assets/, kind membrane) whose permeabilities the transport law reads.",
+      "unit": "-"
+    },
+    "transport": {
+      "type": "string",
+      "enum": ["solutionDiffusion", "DSPM_DE"],
+      "title": "Local transport law",
+      "description": "The same local flux law the steady module uses; DSPM_DE needs the record's pore data and a charged feed.",
+      "unit": "-"
+    },
+    "transportParameters": {
+      "type": "object",
+      "title": "Transport-law parameters",
+      "description": "Optional block handed verbatim to the chosen transport law's readParameters (the DSPM-DE pore/charge inputs). Absent for solutionDiffusion.",
+      "unit": "-"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["concentration", "constantVolume"],
+      "title": "Operating mode",
+      "description": "`concentration`: Q_d = 0, the vessel shrinks and solutes concentrate. `constantVolume`: Q_d = Q_p, solvent made up as fast as it permeates and solutes wash out.",
+      "unit": "-"
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Membrane area",
+      "unit": "m2"
+    },
+    "P_feed": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Feed-side pressure",
+      "description": "Retentate-side pressure; the transmembrane pressure is P_feed - P_permeate.",
+      "unit": "Pa"
+    },
+    "P_permeate": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Permeate-side pressure",
+      "unit": "Pa"
+    },
+    "rho": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Solution density",
+      "description": "Declared, never defaulted: the density the concentrations and the permeate mass closure are both built on (BulkConversion.H).",
+      "unit": "kg/m3"
+    },
+    "rho_diafiltrate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Diafiltrate density",
+      "description": "Density of the make-up solvent in constantVolume mode; defaults to rho when omitted.",
+      "unit": "kg/m3"
+    },
+    "k_film": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Film mass-transfer coefficient",
+      "description": "Concentration-polarisation coefficient, DECLARED by the case: the unit refuses without it rather than inventing a correlation for a stirred geometry it was not told.",
+      "unit": "m/s"
+    },
+    "osmotic": {
+      "type": "object",
+      "title": "Osmotic pressure model",
+      "description": "The same block the steady module reads: `model vanHoff;` or `model pitzer;`.",
+      "properties": {
+        "model": { "type": "string", "enum": ["vanHoff", "pitzer"], "title": "Osmotic model", "unit": "-" }
+      },
+      "required": ["model"]
+    },
+    "fouling": {
+      "type": "object",
+      "title": "Fouling (Hermia blocking law)",
+      "description": "OPTIONAL. Resistance in series on the permeance handed to the transport law, 1/A_eff = 1/A_w + r_f(v), v = V_permeated/A, applied where the transport context is assembled so both laws see it. Absent the block there is no fouling and the run is byte-identical. A blocking law is a claim about a MECHANISM, so `reason` is required; `standard` and `complete` refuse by name (pore-internal geometry a lumped permeance cannot represent).",
+      "properties": {
+        "law": {
+          "type": "string",
+          "enum": ["cake", "intermediate"],
+          "title": "Blocking law",
+          "description": "`cake`: r_f = k v (a deposited layer). `intermediate`: 1/A_eff = exp(k v)/A_w (progressive pore covering).",
+          "unit": "-"
+        },
+        "k": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Fouling constant",
+          "description": "EQUIPMENT-AND-FEED data (a rig and a material): declared in the case, never on a catalogue record; nothing here predicts it.",
+          "unit": "s.Pa/m2 per (m3/m2)"
+        },
+        "reason": {
+          "type": "string",
+          "title": "Why this law fits this feed",
+          "description": "Required: the author states in writing why a deposited layer (cake) or covered pores (intermediate) describes this material.",
+          "unit": "-"
+        }
+      },
+      "required": ["law", "k", "reason"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["membrane", "transport", "mode", "area", "P_feed", "P_permeate", "rho", "k_film", "osmotic"],
+  "additionalProperties": false
+}
