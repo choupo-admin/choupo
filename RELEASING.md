@@ -65,6 +65,19 @@ record: which commit the published bytes were built from, readable a year
 later.  A change that alters an *answer* is not a patch — it is the next
 release.
 
+**A PATCH MAY BE FOLDED INTO ITS RELEASE TAG — once, recorded, and only
+while the release's own commit was never runnable as the release (ruled
+2026-09-03, Vítor: "one release, one tag").**  `docs/folded-patches.txt` is
+the whole of the authorisation, on the `withdrawn-releases.txt` model, and
+`fold-patch.yml` executes exactly the recorded pair of commits and nothing
+else: the release tag comes to name the patch commit, the patch tag and the
+`release-YYMM` branch are deleted, and `generated/releases/vYYMM.json` is
+regenerated on `main` afterwards (until it is, `check_release_identity`
+refuses — that is the gate doing its job).  The window is the one the
+record file states: v2608's own frozen app was a shell, so nobody ever ran
+Choupo-2608 at the tag's first commit; a release whose own copy has been
+served correctly cannot be folded later.
+
 ## Publishing a release
 
 1. Update the internal version: `src/core/Banner.H` (`CHOUPO_VERSION

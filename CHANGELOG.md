@@ -21,6 +21,12 @@ decide what the storefront announces as the latest release.
 
 ## [Choupo-2608] — 2026-09-02 — the August line
 
+**Tag note (2026-09-03).**  `v2608` names the commit the published
+`/v2608/app/` copy was built from — the packaging fix that made the frozen
+app load its own engine, first tagged `v2608.1` and then FOLDED into the
+release tag by Vítor's decision (one release, one tag).  The record is
+`docs/folded-patches.txt`; the engine, the citation and the URL did not move.
+
 A month of work in one section, by theme; the full dated records live in
 `docs/architecture/decision-records.md` (97 design records, indexed and
 gate-counted).  What follows is what a user of Choupo-2608 gets that

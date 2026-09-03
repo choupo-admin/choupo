@@ -1,0 +1,127 @@
+#  FOLD A PATCH TAG INTO ITS RELEASE TAG — vYYMM comes to name vYYMM.N's
+#  commit; the patch tag and the release-YYMM branch go.
+#
+#  This is the second exception to "a release tag is never deleted, moved or
+#  reused" (CLAUDE.md §2), on the same model as withdraw-release.yml: the
+#  workflow CANNOT CHOOSE.  It acts only on a fold that docs/folded-patches.txt
+#  already records — patch tag, release tag, the release tag's commit BEFORE,
+#  the patch commit, date, reason — and it verifies every one of those against
+#  the remote before it moves anything.  A record that does not match what the
+#  remote holds is refused, because then either the record or the remote is
+#  wrong and a workflow is not the place to decide which.
+#
+#  What it checks, in order: the patch tag exists at the recorded patch
+#  commit; the release tag exists at the recorded BEFORE commit; the release
+#  tag's commit is an ancestor of the patch commit (a patch continues its
+#  release, never replaces it with unrelated history); the patch commit is
+#  reachable from a remote branch.  Then: re-create the annotated release tag
+#  at the patch commit and force-push it; delete the patch tag; delete the
+#  release-YYMM branch if it equals the patch commit (a release branch is cut
+#  only on the day a patch ships, and after the fold there is no patch); read
+#  everything back from the remote.  Nothing on the site is touched: the
+#  frozen copy at /vYYMM/app/ was built from the patch commit and records it
+#  in wasm/version.json, so after the fold it is exactly the release tag's
+#  copy.  generated/releases/vYYMM.json must be regenerated on main afterwards
+#  (check_release_identity refuses until it is).
+name: fold-patch
+
+on:
+  workflow_dispatch:
+    inputs:
+      patch:
+        description: 'Patch tag to fold — vYYMM.N, must be listed in docs/folded-patches.txt'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  fold:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refuse anything the record does not authorise
+        env:
+          PATCH: ${{ inputs.patch }}
+        run: |
+          set -euo pipefail
+          case "$PATCH" in
+            v[0-9][0-9][0-9][0-9].[0-9]) ;;
+            *) echo "REFUSED: '$PATCH' is not a patch tag vYYMM.N."; exit 1 ;;
+          esac
+          rec=docs/folded-patches.txt
+          [ -f "$rec" ] || { echo "REFUSED: $rec is missing -- without the record there is no authorisation."; exit 1; }
+          line=$(grep -E "^${PATCH}[[:space:]]" "$rec" || true)
+          if [ -z "$line" ]; then
+            echo "REFUSED: $PATCH is not listed in $rec."
+            echo "A patch is folded by writing the decision down first -- patch"
+            echo "tag, release tag, both commits, date and reason -- and"
+            echo "committing it.  This workflow executes that decision; it does"
+            echo "not take it."
+            exit 1
+          fi
+          echo "authorised by the record:"
+          echo "  $line"
+          read -r _ REL BEFORE AFTER _ <<<"$line"
+          if [ "$REL" != "${PATCH%%.*}" ]; then
+            echo "REFUSED: the record folds $PATCH into $REL, but $PATCH is a patch of ${PATCH%%.*}."; exit 1
+          fi
+          for x in "$BEFORE" "$AFTER"; do
+            if [ "${#x}" -ne 40 ]; then echo "REFUSED: '$x' in the record is not a full 40-character sha."; exit 1; fi
+          done
+          git fetch --tags --force origin
+          #  The remote must hold exactly what the record says it holds.
+          pt=$(git rev-parse -q --verify "refs/tags/$PATCH^{commit}" || true)
+          rt=$(git rev-parse -q --verify "refs/tags/$REL^{commit}" || true)
+          [ "$pt" = "$AFTER" ]  || { echo "REFUSED: $PATCH resolves to '${pt:-nothing}', the record says $AFTER."; exit 1; }
+          [ "$rt" = "$BEFORE" ] || { echo "REFUSED: $REL resolves to '${rt:-nothing}', the record says $BEFORE."; exit 1; }
+          git merge-base --is-ancestor "$BEFORE" "$AFTER" \
+            || { echo "REFUSED: $AFTER does not descend from $BEFORE -- a patch continues its release."; exit 1; }
+          on_branch=""
+          for b in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin); do
+            if git merge-base --is-ancestor "$AFTER" "$b" 2>/dev/null; then on_branch="$b"; break; fi
+          done
+          [ -n "$on_branch" ] || { echo "REFUSED: $AFTER is not reachable from any remote branch."; exit 1; }
+          echo "reachable from $on_branch"
+          {
+            echo "REL=$REL"; echo "BEFORE=$BEFORE"; echo "AFTER=$AFTER"
+          } >> "$GITHUB_ENV"
+          echo "OK: $REL will move $BEFORE -> $AFTER ($(git log -1 --format=%s "$AFTER")); $PATCH will be deleted."
+
+      - name: Move the release tag, delete the patch tag and the release branch
+        env:
+          PATCH: ${{ inputs.patch }}
+        run: |
+          set -euo pipefail
+          git config user.name  "Vítor Geraldes"
+          git config user.email "talentgroundlda@gmail.com"
+          git tag -f -a "$REL" "$AFTER" -m "Choupo-${REL#v}"
+          git push --force origin "refs/tags/$REL"
+          git push origin ":refs/tags/$PATCH"
+          br="release-${REL#v}"
+          bt=$(git rev-parse -q --verify "refs/remotes/origin/$br^{commit}" || true)
+          if [ "$bt" = "$AFTER" ]; then
+            git push origin ":refs/heads/$br"
+            echo "deleted branch $br (it equalled the patch commit)"
+          elif [ -n "$bt" ]; then
+            echo "::warning::branch $br is at $bt, not the patch commit -- left alone"
+          else
+            echo "no branch $br on the remote"
+          fi
+
+      - name: Read it back from the remote
+        env:
+          PATCH: ${{ inputs.patch }}
+        run: |
+          set -euo pipefail
+          got=$(git ls-remote --tags origin "refs/tags/$REL^{}" | cut -f1)
+          [ "$got" = "$AFTER" ] || { echo "FAILED: $REL resolves to '$got' on the remote, expected $AFTER"; exit 1; }
+          if git ls-remote --exit-code --tags origin "refs/tags/$PATCH" >/dev/null 2>&1; then
+            echo "FAILED: $PATCH still exists on the remote"; exit 1
+          fi
+          echo "$REL names $AFTER; $PATCH is gone."
+          echo "NEXT, on main: git fetch --tags --force; bin/curate/release_inventory.py --release $REL;"
+          echo "then bin/curate/check_release_identity.py, and commit generated/releases/$REL.json."

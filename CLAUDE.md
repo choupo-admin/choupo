@@ -114,7 +114,19 @@ Choupo/
   names it — that is the CATALOGUE's identity, a different thing from a git
   tag, and renaming it is a curation act (a reseal of the corpus), reserved;
   and `paper/README.md` states the companion article is about Choupo-2607,
-  which is a claim about a publication and Vítor's to settle.  Release procedure:
+  which is a claim about a publication and Vítor's to settle.
+  **A SECOND EXCEPTION WAS TAKEN, of a different kind, and it is RECORDED
+  the same way (2026-09-03, Vítor's decision: "one release, one tag"):**
+  `v2608` was MOVED, from the commit it was cut at to the commit of its
+  packaging patch `v2608.1`, and the patch tag and `release-2608` branch were
+  deleted — a FOLD, authorised only by a line in `docs/folded-patches.txt`
+  and executed only by `fold-patch.yml`, which verifies both commits against
+  the remote and refuses anything else.  Why the immutability argument did
+  not bind: the tag's first commit built a frozen app that was a shell around
+  the live engine, so nobody ever RAN Choupo-2608 at that commit, and the
+  moved tag names exactly the commit the published `/v2608/app/` copy was
+  built from.  That window closes for any release whose own copy has been
+  served correctly; a fold is not available then.  Release procedure:
   [`RELEASING.md`](RELEASING.md).
   Why the change: the earlier layout froze `main` at the last release and did
   the work on `dev`.  OpenFOAM.org — the model it claimed to follow — does the

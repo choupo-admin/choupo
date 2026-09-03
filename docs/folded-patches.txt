@@ -1,0 +1,34 @@
+#  PATCH TAGS FOLDED INTO THEIR RELEASE TAG.
+#
+#  A release tag is NEVER deleted, moved or reused (CLAUDE.md §2).  This file
+#  is the whole of the second exception, on the withdrawn-releases model: it
+#  is the only place a fold can be authorised, and
+#  `.github/workflows/fold-patch.yml` refuses to act on any patch tag that is
+#  not named here, at any commit pair other than the one written here.  The
+#  tool cannot choose; it executes a decision that is already written down,
+#  dated, and reviewable in this repository's history.
+#
+#  WHAT A FOLD IS.  A patch vYYMM.N is cut on the release-YYMM branch and
+#  published at the release's own address.  Folding it makes the release tag
+#  vYYMM name the patch's commit, deletes the patch tag, and deletes the
+#  release branch if it then equals the tag.  The release's public name, its
+#  citation and its URL never moved; what moves is the commit the ONE tag
+#  resolves to.  The release artefact (generated/releases/vYYMM.json) records
+#  that commit and must be regenerated after the fold, or
+#  check_release_identity refuses -- which is the gate doing its job.
+#
+#  WHY THIS IS AN EXCEPTION AND NOT A RULE.  What makes a tag immutable is
+#  that somebody may have RELIED on it.  A fold is defensible only while the
+#  patch commit is what the published bytes were built from AND the release
+#  tag's own commit was never what anybody could run as the release -- v2608's
+#  own frozen app was a shell around the live engine (RELEASING.md), so no one
+#  ever ran the engine at 400dd8ff8 under the name Choupo-2608.  That window
+#  closes the day a release's own copy is served correctly; a later fold is
+#  not available.
+#
+#  Adding a line here is the decision.  It is Vitor's to make.
+#
+#  Format, one line per fold:
+#      <patch tag> <release tag> <release tag's commit before> <patch commit> <date> <reason>
+
+v2608.1 v2608 400dd8ff839479d9e9c99086b04e9e8d73ee45a7 c9e7b54a44cc7dd9122ac39f4f11f026354c06cb 2026-09-03 Vitor's decision: one release, one tag.  v2608.1 was the packaging fix that made /v2608/app/ load its own engine (RELEASING.md); the release tag itself named a commit whose frozen app was a shell, so nobody ever ran Choupo-2608 at 400dd8ff8.  The tag now names the commit the published copy was built from; the patch tag and the release-2608 branch go.
