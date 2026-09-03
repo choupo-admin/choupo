@@ -174,6 +174,7 @@ export function groupOf(m: ComponentMeta): GroupKey {
 
 export function CompoundBrowser({
   selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, onInspect, unlockLine,
+  setFirst = false,
 }: {
   selected: string[];
   onAdd: (name: string) => void;
@@ -181,6 +182,28 @@ export function CompoundBrowser({
   /** true when the active plot needs VLE-able compounds (VLE / ternary) — then
    *  non-VLE rows are dimmed (still clickable) so ineligibility is visible. */
   vleContext?: boolean;
+  /** THE DESTINATION SHOWS ITS SUBJECT (2026-09-03, Vítor: "os tabs são
+   *  fantásticos, porque saímos de uma janela com complexidade para onde se
+   *  reduz a complexidade.  Neste caso, o novo tab mantém a lista completa de
+   *  compostos!").
+   *
+   *  The property surfaces are opened from the catalogue with a CHOSEN SET in
+   *  the address, and arrived carrying the whole 570-compound tree with that
+   *  set at the very bottom — the reader had already answered "which
+   *  substances?" and the tab asked it again, hiding the answer.
+   *
+   *  This app already does the opposite well, twelve times over: the unit
+   *  internals pop-out synthesises a ONE-UNIT case and mounts with no shell at
+   *  all, `?component=<name>` re-derives a single record from the name, the
+   *  McCabe pop-out carries its pair in the key.  This flag brings the last
+   *  hand-over into line rather than inventing a pattern: the SET goes FIRST,
+   *  and the catalogue becomes something the reader OPENS when they want to
+   *  add another compound.
+   *
+   *  It is a MODE of this component and not a second component: the landing
+   *  and the rail must keep drawing the same tree from the same code, or the
+   *  two screens start to disagree about what the catalogue contains. */
+  setFirst?: boolean;
   /** the open case's case-local components — shown as a SEPARATE list above the
    *  frozen standard catalogue (walked from the whole case tree). */
   caseComponents: ComponentMeta[];
@@ -376,8 +399,53 @@ export function CompoundBrowser({
     );
   };
 
+  //  ONE definition, rendered at the TOP in `setFirst` mode and at the foot
+  //  otherwise.  Two copies of this markup would be two homes for what the SET
+  //  looks like, and they would drift the first time one of them was styled.
+  const setBlock = selected.length > 0 ? (
+        <Box>
+          <Text size="xs" c="dimmed" mb={3}>SET ({selected.length})</Text>
+          <Group gap={4}>
+            {selected.map((n) => (
+              <Badge key={n} size="sm" variant="filled" color="accent" tt="none"
+                rightSection={<CloseButton size={12} onClick={() => onRemove(n)}
+                  aria-label={`remove ${n}`} style={{ color: "inherit" }} />}>
+                {n}
+              </Badge>
+            ))}
+          </Group>
+          {/* "What unlocks next" — a structural fact (two VLE compounds HAVE a
+              McCabe diagram), not a recommendation.  Teaching, no badge. */}
+          {unlockLine && (
+            <Group gap={4} mt={6} wrap="nowrap" align="flex-start">
+              <IconArrowRight size={13} style={{ marginTop: 2, flexShrink: 0, opacity: 0.7 }} />
+              <Text size="xs" c="dimmed" style={{ lineHeight: 1.3 }}>{unlockLine}</Text>
+            </Group>
+          )}
+        </Box>
+  ) : null;
+
+  //  THE CATALOGUE IS OPEN WHEN CHOOSING IS THE TASK, and closed when it is
+  //  not.  Arriving at the surfaces with two compounds already chosen, the
+  //  reader's next question is about THOSE two; arriving with none, it is
+  //  "which?" -- and then the catalogue IS the answer and must be open.
+  //  Seeded once from the set the tab was opened with, never re-derived, so
+  //  emptying the set by hand does not make the tree jump open underneath the
+  //  reader.
+  const [browseOpen, setBrowseOpen] = useState(() => !setFirst || selected.length === 0);
+
   return (
     <Stack gap={6} style={{ height: "100%", minHeight: 0 }}>
+      {setFirst && setBlock}
+      {setFirst && (
+        <Button size="compact-xs" variant={browseOpen ? "subtle" : "light"} color="accent"
+          leftSection={<IconFlask size={13} />}
+          onClick={() => setBrowseOpen((v) => !v)}
+          aria-expanded={browseOpen}>
+          {browseOpen ? "hide the catalogue" : "add a compound"}
+        </Button>
+      )}
+      {(!setFirst || browseOpen) && (<>
       <Group justify="space-between" align="center" gap={4} wrap="nowrap">
         <Text size="xs" fw={700} c="dimmed">COMPONENTS</Text>
         <Tooltip label="Estimate a component the catalogue lacks, by Joback groups" withArrow multiline w={220}>
@@ -490,28 +558,8 @@ export function CompoundBrowser({
         </Stack>
       </ScrollArea>
 
-      {selected.length > 0 && (
-        <Box>
-          <Text size="xs" c="dimmed" mb={3}>SET ({selected.length})</Text>
-          <Group gap={4}>
-            {selected.map((n) => (
-              <Badge key={n} size="sm" variant="filled" color="accent" tt="none"
-                rightSection={<CloseButton size={12} onClick={() => onRemove(n)}
-                  aria-label={`remove ${n}`} style={{ color: "inherit" }} />}>
-                {n}
-              </Badge>
-            ))}
-          </Group>
-          {/* "What unlocks next" — a structural fact (two VLE compounds HAVE a
-              McCabe diagram), not a recommendation.  Teaching, no badge. */}
-          {unlockLine && (
-            <Group gap={4} mt={6} wrap="nowrap" align="flex-start">
-              <IconArrowRight size={13} style={{ marginTop: 2, flexShrink: 0, opacity: 0.7 }} />
-              <Text size="xs" c="dimmed" style={{ lineHeight: 1.3 }}>{unlockLine}</Text>
-            </Group>
-          )}
-        </Box>
-      )}
+      </>)}
+      {!setFirst && setBlock}
     </Stack>
   );
 }

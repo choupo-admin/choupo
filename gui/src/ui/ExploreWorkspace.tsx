@@ -2176,11 +2176,20 @@ function LeftRail({
           : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
       }}>
       <Group justify="space-between" align="center" mb={6} wrap="nowrap" gap={4}>
+        {/*  The header used to say SET while the set itself was rendered at the
+             BOTTOM of the browser, with ~20 catalogue nodes in between: the
+             word at the top and its subject out of sight.  The browser now
+             draws the set directly beneath this header, so the label finally
+             names what is under it. */}
         <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>SET</Text>
         <PanelCollapseButton panel={rail} />
       </Group>
       <Box style={{ height: "calc(100% - 28px)" }}>
-        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} />
+        {/*  `setFirst`: this rail's subject is the SET being plotted, not the
+             catalogue.  See CompoundBrowser's prop doc -- the tab is reached
+             from the catalogue with the set already chosen, and it used to
+             re-present the whole tree with that set at the bottom. */}
+        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} onInspect={onInspect} unlockLine={unlockLine} setFirst />
       </Box>
     </Box>
   );

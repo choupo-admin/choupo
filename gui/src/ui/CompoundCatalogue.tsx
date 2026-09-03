@@ -99,17 +99,6 @@ import {
  *  which reads the pointer as well as the width; a second breakpoint spelled
  *  here would be the arity sin in CSS. */
 
-/** Width of the catalogue column on a desk.  Generous on purpose: this tab exists
- *  because a family tree of several hundred substances does not fit a rail --
- *  the Explore rail it came from maxes out at 460 and defaults to 240
- *  (state/prefs.ts PANELS.exploreRail), so the split alone is most of the room
- *  the owner asked for.
- *
- *  DELIBERATELY NOT RESIZABLE YET.  `panelContract` would give it a drag
- *  handle in three lines, but the same contract also gives a FOLD, and folding
- *  away the one thing a tab exists to show is a trap rather than a feature.
- *  Resize without fold is a change to the contract, not a call site, and it is
- *  not this slice's. */
 export function CompoundCatalogue() {
   const narrow = useNarrowViewport();
   //  THE WIDTH IS THE READER'S, through the ONE contract (2026-09-03, Vítor:

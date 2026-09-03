@@ -172,10 +172,21 @@ Build order (Pareto, on data the engine already produces): Fase 1 = xy
 multi-curve + 2D contour/isolines + binary x-y/T-x-y; Fase 2 = ternary (needs a
 composition-simplex sweep added to `choupoProps`); 3D surface optional.
 
-**THE CATALOGUE LEFT THIS WORKSPACE (2026-09-03, Vítor).**  The chrome budget
-below is why: with the plot as the ONE primary surface, the compound catalogue
-could only ever be a foldable rail — and a rail is the wrong shape for several
-hundred substances in a family tree.  The catalogue is now
+**THE CATALOGUE LEFT THIS WORKSPACE (2026-09-03, Vítor) — and for six hours it
+had NOT, which is recorded here because the record was the thing that lied.**
+The chrome budget below is why: with the plot as the ONE primary surface, the
+compound catalogue could only ever be a foldable rail — and a rail is the wrong
+shape for several hundred substances in a family tree.  The paragraph said
+"left" while the split had in fact mounted the SAME `CompoundBrowser` in both
+places, so the catalogue had not left, it had gained a second home — and the
+reason given for the split ("a rail is the wrong shape for a family tree") was
+contradicted by the rail still containing exactly that family tree.  An audit
+found it the same evening, along with a comment in `state/prefs.ts` justifying
+the landing's wider default against "a chosen-set list" that was also a family
+tree of several hundred names: a distinction that did not exist in code.
+**Both are true now** (the surfaces rail leads with the SET and mounts no
+catalogue nodes at all when it arrives with one — measured 0 group nodes
+against 22), but they were written before they were true.  The catalogue is now
 THE EXPLORER'S LANDING (`?workspace=explore` — the owner's own name for that
 screen), with the record of the focused compound filling its right half, and
 the property surfaces moved to `?workspace=properties`, their own door on the
@@ -203,8 +214,13 @@ foot of the browser, carrying the count.
 352 of 570 records — 62 % of the catalogue behind a label describing what the
 solver can do — and "Non-volatile solutes / polymers / others" was 18 in a bin
 whose name ends in "others".  The clinching argument was already on screen: the
-browser carries `all / VLE / nonvolatile` filter chips, so the same fact was
-drawn twice and the hierarchy copy was most of the catalogue.  Both buckets are
+browser carried `all / VLE / nonvolatile` filter chips, so the same fact was
+drawn twice and the hierarchy copy was most of the catalogue.  (Those chips
+have since moved off the landing entirely — the owner asked "porque continuo a
+ter VLE no top?!" of the row itself, and the capability question belongs where
+the plot is built: they render only under `vleContext`, i.e. on a VLE or
+ternary surface.  This sentence describes the screen as it was when the
+argument was made, and is kept in the past tense for that reason.)  Both buckets are
 gone as GROUPS; their members file by chemical FAMILY (`case/family.ts` — the
 record's own UNIFAC groups, else its formula, each label saying which).  The
 classification PRECEDENCE is untouched, so no record changed hands between the

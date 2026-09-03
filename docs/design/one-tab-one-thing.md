@@ -229,13 +229,28 @@ one fact, in pixels.  The header now says what the right panel is *showing*
 Nothing but driving the page in a browser would have reported it; the suite
 was green across both versions.
 
-### 8.5 Not done, and named
+### 8.5 Not done, and named — CLOSED the same day (2026-09-03)
 
-The catalogue column is a fixed 420 px.  `panelContract` would give it a drag
-handle in three lines, but the same contract also gives a FOLD, and folding
-away the one thing a tab exists to show is a trap rather than a feature.
-Resize-without-fold is a change to the contract, not to a call site, and it
-was not taken here.
+The catalogue column shipped as a fixed 420 px.  `panelContract` would give it
+a drag handle in three lines, but the same contract also gives a FOLD, and
+folding away the one thing a tab exists to show is a trap rather than a
+feature.  Resize-without-fold looked like a change to the contract rather than
+to a call site, and it was not taken here.
+
+**That reading was wrong, and the owner reported the consequence within hours:
+"o painel da esquerda não dá para mudar a largura."**  The fold is OPT-IN —
+`contentMin: 0` disables the measured auto-collapse and omitting `shortcut`
+binds no key — so the panel takes the drag, the arrow keys, the double-click
+reset and the remembered width while nothing folds it.  It is
+`PANELS.catalogueBrowser` (min 260, max 620, default 420), the first registry
+entry with a size and deliberately no fold key, and `tests/panelContract.test.ts`
+carries that as the declared `NO_FOLD` category.
+
+This section is kept rather than deleted: it is the record of a deferral whose
+stated reason did not survive contact with the contract it was deferring to.
+It also outlived the fix by three commits, contradicting `gui-credo.md` and a
+doc-comment in `CompoundCatalogue.tsx` at the same time — three homes for one
+stale claim, found by an audit and not by anyone re-reading them.
 
 ### 8.6 The phone, and a clean overflow check that would have lied
 
