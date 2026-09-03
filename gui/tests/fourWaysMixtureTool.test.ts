@@ -36,6 +36,12 @@ const SRC = readFileSync(
   new URL("../src/ui/methods/FourWaysMixtureTool.tsx", import.meta.url),
   "utf-8");
 const prose = (src: string): string => src.replace(/\s+/g, " ");
+const golden = (text: string, key: RegExp): number => {
+  const m = text.match(key);
+  expect(m, `${key} is not in the golden`).toBeTruthy();
+  return Number(m![1]);
+};
+const dec4 = (x: number): number => Number(x.toFixed(4));
 
 //  The goldens the page quotes static numbers from -- re-read here so the
 //  page's copy is pinned against the file runTests re-verifies.
@@ -88,8 +94,13 @@ describe("the static quotes match their goldens", () => {
   });
 
   it("fitNRTL02's held-out lesson", () => {
-    expect(fitNRTL02).toMatch(/aad_heldout_K\s+0\.3857/);
-    expect(fitNRTL02).toMatch(/score_catalogue_pair_at_101kPa aad\s+0\.0821/);
+    //  The props golden carries the engine's own precision since
+    //  2026-09-03 (aad_heldout_K 0.385655690401, no longer the console's
+    //  fixed(4)); the page quotes it to four decimals, so the
+    //  pin is the ROUNDING of the golden's number -- a string match on
+    //  "0.3857" failed the day the golden stopped rounding for it.
+    expect(dec4(golden(fitNRTL02, /aad_heldout_K\s+([0-9.eE+-]+)/))).toBe(0.3857);
+    expect(dec4(golden(fitNRTL02, /score_catalogue_pair_at_101kPa aad\s+([0-9.eE+-]+)/))).toBe(0.0821);
     expect(prose(SRC)).toContain("0.0821 K");
     expect(prose(SRC)).toContain("0.3857 K");
     expect(prose(SRC)).toContain("4.7");

@@ -19674,6 +19674,19 @@ the cake $\Delta P$. \\
 % ---------------------------------------------------------------------
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
+%  This section and \S\ref{ch:drying} are a deliberate PAIR, not a double
+%  treatment (settled 2026-09-03): this one is the UNITS as the simulator
+%  runs them -- the four coupled pieces, the endpoint split, the tutorials;
+%  the other is the THEORY they draw on -- moisture basis, the drying-rate
+%  curve and its time integral, the atomiser correlations, the chamber.
+%  Each opens by naming the other.  Do not merge them: a student running
+%  sprayDryer01 needs the first, a student deriving t_c needs the second.
+This section is the drying \emph{units} as the simulator runs them; the
+theory they draw on --- the dry-basis moisture and its equilibrium, the
+constant- and falling-rate periods and the drying-time integral, the
+three atomiser families and their correlations, the single-droplet and
+chamber balances --- is \S\ref{ch:drying}.
+
 \begin{whatyoulllearn}
 Drying couples four physics at once --- a mass/energy balance, droplet
 atomisation, the wet-bulb temperature, and the drying-rate kinetics ---
@@ -21699,6 +21712,11 @@ than being absorbed.
 % ---------------------------------------------------------------------
 \section{Drying of solids and spray drying}\label{ch:drying}
 
+This section is the \emph{theory}; the units that run it ---
+\code{sprayDryer} and \code{solidDryer}, the four coupled pieces the
+spray dryer solves at once, and the tutorials --- are
+\S\ref{ch:drying-overview}.
+
 Drying removes a liquid (usually water) from a wet solid by evaporation.  It
 competes with distillation as the most energy-intensive unit operation --- the
 latent heat must be supplied and the (usually air) drying medium is
@@ -21715,7 +21733,10 @@ air of a given relative humidity reaches an \emph{equilibrium moisture} $X_e(a_w
 \emph{free moisture} $X-X_e$ is what can be removed; the bound fraction (held in
 capillaries and by sorption, its vapour pressure depressed) dries only under a
 lower humidity.  Choupo reads $X_e$ from a GAB isotherm on the solid component's
-\code{sorption} block; drying stops at $X_{\text{final}}=\max(X_e,\,\dots)$.
+\code{sorption} block, and no dryer takes a solid below it: the solid
+dryer's outlet is $X_{\text{final}}=\min(X_{\text{in}},X_e)$
+(\file{SolidDryer.cpp}), the spray dryer's is the drying curve evaluated at
+the residence time, never below $X_e$.
 
 \subsection{The drying-rate curve: constant and falling rate}
 Plot the drying rate $N=-\frac{m_s}{A}\frac{dX}{dt}$ against $X$ and two regimes

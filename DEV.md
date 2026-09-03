@@ -791,7 +791,25 @@ accepts today, and that is a policy call.
 
 ## 5. Known debts (severity-ish)
 
-000. **EDITORIAL, for Vítor and Pedro: the theory guide treats DRYING twice.**
+000. ~~**EDITORIAL: the theory guide treats DRYING twice.**~~ — **SETTLED
+   2026-09-03 (the assistant's call, under the 2026-09-03 ruling that
+   nothing is "reserved"; Vítor's veto stands).**  Read side by side, the
+   two are a deliberate PAIR and not a double treatment: `ch:drying-overview`
+   sits among the unit-operation walkthroughs (cyclone, dryer, exchanger)
+   and is the UNITS — the four coupled pieces, the endpoint split, the
+   three tutorials; `ch:drying` sits among the deeper theory (MESH,
+   hydraulics, MHeatX) and is the THEORY — dry-basis moisture, the
+   drying-rate curve and its time integral, the three atomiser families
+   with their correlations and references, the single-droplet and chamber
+   balances.  They shared GAB, the Lewis falling rate and Ranz--Marshall
+   with no cross-reference, and `ch:drying-overview` was referenced from
+   nowhere — which is what made them READ as a duplicate.  Done: each now
+   opens by naming the other and its role (a LaTeX comment at the first
+   records the decision), and the theory's vague `X_final = max(X_e, …)`
+   was replaced by the engine's own rule (`min(X_in, X_e)` for the solid
+   dryer, the curve at the residence time for the spray dryer, never below
+   `X_e`).  Nothing was deleted or merged.  The original finding follows.
+   **EDITORIAL, for Vítor and Pedro: the theory guide treats DRYING twice.**
    `\section{Drying: spray dryer and solid dryer}` (line 18572, 923 words) and
    `\section{Drying of solids and spray drying}` (line 20078, 1914 words) are
    two sections on one subject with **zero shared 8-word phrases** -- a double
@@ -1103,10 +1121,17 @@ accepts today, and that is a policy call.
    through the registry, no structured property may leak into the flat view
    (sabotage-verified — removing the scalar filter fails 2 of 3), and pipe's
    flat view is exactly its one scalar.
-8. **Landing mobile** — the 390 px responsive fix WAS applied (`b9f17421a`,
-   `f7b69592f`: minWidth:0 + clamp + wrap).  Not a standing debt, but no fresh
-   390 px screenshot confirms it end-to-end (Codex: prove clean or it stays
-   a check).  The adsorption debt is roadmap #7 above.
+8. ~~**Landing mobile**~~ — **PROVEN 2026-09-03.**  The 390 px responsive fix
+   (`b9f17421a`, `f7b69592f`: minWidth:0 + clamp + wrap) was measured
+   end-to-end: the landing served locally with the two JSONs it fetches,
+   Chromium driven through `gui/tools/checkGui/cdp.mjs` at 390×844, mobile
+   + touch emulation.  `scrollWidth` 390 = `innerWidth` 390 (no horizontal
+   scroll anywhere on a 24 761 px page); exactly ONE element extends past
+   the viewport, a `span.dim` line of the flash01 trace block, and that
+   block is `overflow: auto` by design — the trace scrolls inside its own
+   box, which is the rule the artifact guidance states for wide code.
+   Three screenshots (top, middle, bottom) read clean.  What this does NOT
+   prove: any width but 390, and the app itself (checkGui's business).  The adsorption debt is roadmap #7 above.
 9. **Phase-absence ambiguity in the stream contract** (semantic, raised by
    Vítor 2026-08-08, deliberately NOT patched with the pop-out fix it was
    found beside).  A stream file with no `phases {}` block currently covers
