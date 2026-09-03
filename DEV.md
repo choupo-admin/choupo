@@ -905,8 +905,25 @@ accepts today, and that is a policy call.
    against a registry several times that size (retired: the registry is the
    authority, no count in prose), and the Explorer guide described
    McCabe-Thiele and the psychrometric chart as Explorer views three weeks
-   after they moved to EduTools.  Still no gate — the sweep stays a hand
-   task, and the next one is due when the next capability ships.
+   after they moved to EduTools.  Still no gate for COVERAGE — that sweep
+   stays a hand task, and the next one is due when the next capability ships.
+   **The RENDER half now has one** (`check_guide_pdf_fresh`, same day).
+   Writing the prose exposed the defect under it: every manual gate this
+   project owns reads the `.tex` (`check_doctrine`, `check_guide_paths`,
+   `check_lesson_symbols`), the tree SHIPS the `.pdf`, and the two are the
+   same claim only while the render is fresh — which nothing checked.  Seven
+   of the eight committed PDFs were renders of sources that had since moved,
+   and `check_guide_pdf_version` was green over all of them, because it reads
+   the title page for the version string and a stale render of a
+   `Choupo-dev` source says `Choupo-dev`.  Same version, stale content: the
+   shape `bin/buildSite` records for the site copy, one artefact inwards.
+   The second arm found the sharper case: `docs/theoryGuide-STIFF-METHODS.pdf`,
+   a v0.2.0 Theory Guide built 2026-06-18, tracked, referenced by nothing,
+   with no source in the tree — and naming Aspen and HYSYS in its text and a
+   trademark line, which the manuals doctrine forbids (settled 2026-07-03,
+   after that build).  `check_doctrine` was right about every surface it can
+   see; a sourceless binary is outside every source gate at once.  Deleted —
+   git keeps the record, and a withdrawal is not an erasure.
 
 1. ~~**SEAL DRIFT**~~ — **NOT A DEBT.  RULED 2026-08-04 (Vítor): the sealed
    cases stay PINNED, permanently, and this is a POLICY rather than a

@@ -849,6 +849,18 @@ Gates: `check_forward_order` · `check_review_status` · `check_ebullioscopic` �
 state coverage they do NOT have, because a gate that implies more is worse
 than one that reports less.
 
+**EVERY MANUAL GATE READS THE SOURCE; THE TREE SHIPS THE RENDER (2026-09-03).**
+`check_doctrine`, `check_guide_paths` and `check_lesson_symbols` scan `.tex`;
+a reader opens the committed `.pdf`, and the two are the SAME CLAIM only while
+the render is fresh.  `check_guide_pdf_version` cannot see the gap (a stale
+render of a `Choupo-dev` source still prints `Choupo-dev`), so
+`check_guide_pdf_fresh` decides it by git ancestry over each guide's own
+`\input` closure, and refuses a top-level `docs/*.pdf` that no Makefile rule
+builds — **a sourceless binary is outside every source gate at once**, which is
+how a withdrawn v0.2.0 guide naming two competitors survived the doctrine rule
+that banned them.  Rebuild with `make -C docs all` and commit the PDFs beside
+the sources that moved.
+
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
 copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and

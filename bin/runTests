@@ -3858,6 +3858,23 @@ PYEOF
     fi
     rm -f /tmp/gpdf.$$
 
+    #  ITS SIBLING, AND THE DEFECT THE VERSION GATE CANNOT SEE.  The check
+    #  above reads the rendered TITLE PAGE for the version string; a PDF built
+    #  a month ago from a source that already said `Choupo-dev` passes it while
+    #  its CONTENT is a month behind.  Measured 2026-09-03: seven of the eight
+    #  shipped PDFs were renders of sources that had since moved.  Every other
+    #  manual gate in this suite reads the .tex; the tree ships the .pdf, and
+    #  the two are the same claim only while this one holds.
+    if "$ROOT/bin/curate/check_guide_pdf_fresh.py" > /tmp/gfresh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "guide-pdf-fresh-gate" "$(tail -1 /tmp/gfresh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (rebuild: make -C docs all)\n" "guide-pdf-fresh-gate"
+        cat /tmp/gfresh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gfresh.$$
+
     # Banner version-stamp gate (Vitor, 2026-08-04 -- the OpenFOAM.org
     # arrangement).  Every file in the tree carries the version of the LINE
     # it belongs to: `Choupo-dev` on main, rewritten to `Choupo-YYMM` when a
