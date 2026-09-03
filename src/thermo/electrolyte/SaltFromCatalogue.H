@@ -291,6 +291,24 @@ inline std::string resolveTCorrelationForm(const DictPtr& p,
                        || p->found("dCphi_dT");
     const std::string declared =
         p->found("tCorrelationForm") ? p->lookupWord("tCorrelationForm") : "";
+    //  TWO PARAMETERISATIONS IN ONE RECORD, ONE OF THEM READ (2026-09-03).
+    //  Na-Cl.dat carries the SP77 T-functions AND the linear calorimetric
+    //  slots fitted to Parker; the SP form wins (declared or inferred) and
+    //  the slots are NOT read.  That is exactly why pitzer01's in-engine
+    //  L_phi AAD vs Parker is 10.24 % (SP77's own disagreement, fitted
+    //  0-300 C) while the fit tool, which evaluates the slots, reports
+    //  ~2.5 % -- two true numbers about two parameterisations, and a reader
+    //  who sees the record's slots assumes the engine runs them.  Said where
+    //  the choice is made, on both routes to it, never silently.
+    auto announceUnreadSlots = [&]()
+    {
+        if (hasSlope)
+            AdvisoryLog::instance().add("provenance", "info",
+                "pitzer pair " + pairName,
+                "tCorrelationForm silvesterPitzer1977 is read; the record's"
+                " dbeta*_dT/dCphi_dT linear slots are present but NOT read"
+                " (the SP77 form supersedes them)");
+    };
     if (declared.empty())
     {
         const std::string inferred =
@@ -301,6 +319,7 @@ inline std::string resolveTCorrelationForm(const DictPtr& p,
                 "pitzer pair " + pairName,
                 "tCorrelationForm not declared -- inferred '" + inferred
                 + "' from the record's fields; declare it in the record");
+        if (inferred == "silvesterPitzer1977") announceUnreadSlots();
         return inferred;
     }
     if (declared == "silvesterPitzer1977")
@@ -309,6 +328,7 @@ inline std::string resolveTCorrelationForm(const DictPtr& p,
             throw std::runtime_error("pitzer pair " + pairName
                 + ": tCorrelationForm silvesterPitzer1977 declared but the"
                 " record carries no sp_q1..q14 coefficients");
+        announceUnreadSlots();
     }
     else if (declared == "linearSlopes")
     {

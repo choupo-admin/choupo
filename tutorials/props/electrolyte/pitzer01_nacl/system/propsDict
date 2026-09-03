@@ -25,9 +25,22 @@
   near 1 mol/kg, the deep negative branch to -480 cal/mol -- while the
   anchored column (slots zeroed, Gibbs-Helmholtz-consistent but uncalibrated)
   misses it entirely.  The validation block below pins the IN-ENGINE AAD vs
-  the same curated Parker series, golden-locked (rel-AAD 10.24 % on this
-  op's scan grid -- the fit tool's 2.5 % above is its own residual, a
-  separate measurement).  The gamma_pm / phi / a_w values come
+  the same curated Parker series, golden-locked (rel-AAD 10.24 % at the 25
+  measured points with |Phi_L| >= 50 cal/mol in 0.1-6 mol/kg).
+
+  WHY 10.24 % HERE AND ~2.5 % IN THE FIT TOOL -- adjudicated 2026-09-03.
+  Both compute the SAME statistic on the SAME 25 points, and the tool's
+  Python replica reproduces this kernel's L_phi to 7e-6 J/mol given the same
+  parameters -- so it is not two implementations of one equation.  It is
+  two PARAMETERISATIONS in one record: Na-Cl.dat declares
+  tCorrelationForm silvesterPitzer1977 and carries the SP77 T-functions
+  (sp_q1..q14, fitted by Silvester and Pitzer over 0-300 C) AND the linear
+  calorimetric slots fitted to Parker.  The engine honours the DECLARED
+  form, so the 10.24 % is SP77's disagreement with Parker at 25 C; the fit
+  tool evaluates the linear slots it fitted to exactly these points, which
+  is where 2.5 % (2.59 % with the stored slots) comes from.  The engine now
+  announces, when it reads this record, that the slots are present and not
+  read.  Nothing was adjusted toward Parker.  The gamma_pm / phi / a_w values come
   from the untouched 25 C surface and are identical in both.
 \*---------------------------------------------------------------------------*/
 operations
