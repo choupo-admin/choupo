@@ -186,6 +186,32 @@ DOORS, not a step 1 and a step 2, which is the difference between this pair and
 the setup wizard §5 forbids.  Record + the amendment that keeps it true:
 `docs/design/one-tab-one-thing.md` §8.
 
+**THE LANDING'S THREE CORRECTIONS (2026-09-03, Vítor, on the built screen).**
+(1) **The compound browser's width is the reader's.**  It shipped at a fixed
+420 px because adopting `panelContract` looked like it brought a FOLD, and
+folding away a tab's own subject is a trap.  The fold is opt-in: the panel
+declares `contentMin: 0` and no shortcut, so nothing folds it, while the drag,
+the arrow keys, the double-click reset and the remembered width all come from
+the ONE contract.  It is the first entry in `state/prefs.ts` with a size and
+deliberately NO fold key, and `tests/panelContract.test.ts` carries that as a
+declared category (`NO_FOLD`) rather than an omission.
+(2) **The action sits with the SET it consumes.**  "Explore properties" already
+opened a dedicated browser tab; it lived on the RIGHT header, whose subject is
+the one focused compound, while the set is chosen on the left.  It is now at the
+foot of the browser, carrying the count.
+(3) **Capability is a FILTER, not a level.**  "Volatile liquids (VLE-able)" held
+352 of 570 records — 62 % of the catalogue behind a label describing what the
+solver can do — and "Non-volatile solutes / polymers / others" was 18 in a bin
+whose name ends in "others".  The clinching argument was already on screen: the
+browser carries `all / VLE / nonvolatile` filter chips, so the same fact was
+drawn twice and the hierarchy copy was most of the catalogue.  Both buckets are
+gone as GROUPS; their members file by chemical FAMILY (`case/family.ts` — the
+record's own UNIFAC groups, else its formula, each label saying which).  The
+classification PRECEDENCE is untouched, so no record changed hands between the
+groups that remain; only the way in (`firstPath`) opens by default, because ~20
+chemistry nodes each carrying a count read better than five open ones holding
+several hundred names.
+
 **Explorer chrome budget — the NO-REBLOAT invariant (ratified 2026-06-24).**
 The plot is the one primary surface. There are exactly **three chrome homes**:
 (1) the **collapsible left SET rail** (component authoring only — folds to a

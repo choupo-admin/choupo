@@ -186,6 +186,17 @@ export const EXPLORE_SET_PANEL: PanelChrome = {
   contentMin: RAIL_CONTENT_MIN, shortcut: "[",
 };
 
+/** The Explorer landing's compound browser.  `contentMin: 0` DISABLES the
+ *  measured auto-collapse and there is no `shortcut`, so nothing folds it:
+ *  this panel is the tab's subject, and a catalogue you cannot pick from is
+ *  not a narrower catalogue, it is a different screen.  Everything else the
+ *  contract gives — drag with pointer capture, arrow keys, double-click reset,
+ *  a remembered width — is exactly what was missing. */
+export const CATALOGUE_BROWSER_PANEL: PanelChrome = {
+  prefs: PANELS.catalogueBrowser, edge: "left", label: "compound browser",
+  contentMin: 0,
+};
+
 export const CONTROL_RAIL_PANEL: PanelChrome = {
   prefs: PANELS.controlRail, edge: "left", label: "tuning rail",
   contentMin: RAIL_CONTENT_MIN, shortcut: "[",

@@ -265,6 +265,24 @@ export const PANELS = {
     collapsedKey: "choupo.explore.railCollapsed",
   }),
 
+  /** The Explorer LANDING's compound browser.  It is the tab's SUBJECT, not a
+   *  rail beside one, so it is the first panel in this registry with a size
+   *  and NO fold key: a reader who folded it away would be left on a catalogue
+   *  screen with nothing to pick from, and the "reopen strip" answer is worse
+   *  than not offering the fold.  Wider default than the SET rail because the
+   *  browser here is a family TREE of several hundred names rather than a
+   *  chosen-set list.  (This panel could not be resized at all until
+   *  2026-09-03, and the owner asked for it in those words.) */
+  catalogueBrowser: panel("catalogueBrowser", {
+    sizeKey: "choupo.panel.catalogueBrowser.size",
+    size: { min: 260, max: 620, default: 420 },
+    //  NO `collapsedKey` -- the field is optional and its absence is the
+    //  declaration.  panelContract's own comment says every panel there
+    //  carries one; this is the first that must not, and the test that
+    //  asserted "every panel has a fold key" is amended rather than worked
+    //  around, because a panel that must not fold is a real category.
+  }),
+
   /** The Control Room's left tuning rail.  Its FOLD key is the legacy one (it
    *  existed before this registry); its SIZE is new — the rail could not be
    *  resized at all until the panel contract of 2026-08-18. */

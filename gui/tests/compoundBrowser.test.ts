@@ -39,17 +39,53 @@ License
 import { describe, expect, it } from "vitest";
 
 import { CATALOGUE } from "../src/case/catalogue.js";
-import { DISPLAY_ORDER, FIRST_PATH_COMPONENTS } from "../src/ui/explore/CompoundBrowser.js";
+import { DISPLAY_ORDER, FIRST_PATH_COMPONENTS, groupOf } from "../src/ui/explore/CompoundBrowser.js";
 
 describe("compound browser reading order", () => {
+  //  `at` REFUSES A KEY THAT IS NOT THERE.  It used to return `indexOf`'s -1,
+  //  and -1 is less than every real index -- so when `volatiles` was dissolved
+  //  into chemical families on 2026-09-03 the two assertions naming it went on
+  //  passing over a group that no longer existed.  An ordering assertion whose
+  //  subject is absent is not a weaker check, it is a green one that checks
+  //  nothing.
+  const at = (g: string) => {
+    const i = DISPLAY_ORDER.indexOf(g);
+    if (i < 0) throw new Error(`DISPLAY_ORDER has no '${g}' -- the assertion has no subject`);
+    return i;
+  };
+
   it("opens on the first-path substances and ends on the mechanism library", () => {
     expect(DISPLAY_ORDER[0]).toBe("firstPath");
-    const at = (g: string) => DISPLAY_ORDER.indexOf(g as (typeof DISPLAY_ORDER)[number]);
-    expect(at("volatiles")).toBeLessThan(at("combustion"));
-    expect(at("volatiles")).toBeLessThan(at("radicals"));
     expect(at("gases25")).toBeLessThan(at("radicals"));
     expect(at("salts")).toBeLessThan(at("radicals"));
     expect(at("synthetic")).toBe(DISPLAY_ORDER.length - 1);
+  });
+
+  it("chemistry, not solver capability, is what the top level names", () => {
+    //  The owner's report: "VLE e nonvolatile no topo não faz muita lógica."
+    //  Measured then: `volatiles` held 352 of 570 records -- 62 % of the
+    //  catalogue behind a label describing what the SOLVER can do -- and
+    //  `nonvolatile` was 18 in a bin whose name ended in "others".  Both are
+    //  gone as groups; their members file by family.  Capability remains where
+    //  it belongs, as the browser's `all / VLE / nonvolatile` filter chips.
+    expect(DISPLAY_ORDER).not.toContain("volatiles");
+    expect(DISPLAY_ORDER).not.toContain("nonvolatile");
+    const families = DISPLAY_ORDER.filter((g) => g.startsWith("fam:"));
+    expect(families.length).toBeGreaterThan(6);
+    //  The families sit between the state classes and the mechanism library.
+    for (const f of families) {
+      expect(at(f)).toBeGreaterThan(at("salts"));
+      expect(at(f)).toBeLessThan(at("radicals"));
+    }
+  });
+
+  it("every catalogue record lands in a group the reading order names", () => {
+    //  A record filed under a key DISPLAY_ORDER does not carry would simply
+    //  not be drawn, and a browser that loses a compound in silence is the
+    //  failure this screen exists to avoid.
+    const known = new Set(DISPLAY_ORDER);
+    const orphans = CATALOGUE.filter((m) => !known.has(groupOf(m)));
+    expect(orphans.map((m) => m.name)).toEqual([]);
   });
 
   it("the first-path group is read off the tutorials", () => {

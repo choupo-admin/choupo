@@ -49,8 +49,27 @@ function pushRecent(name: string): string[] {
 // Explore browser -- the opposite of what was asked for on 2026-09-01.
 // `groupOf` carries the precedence in its statement order; DISPLAY_ORDER
 // carries the reading order; neither is derived from the other.
-type GroupKey =
-  | "firstPath" | "radicals" | "salts" | "gases25" | "volatiles" | "combustion" | "nonvolatile" | "synthetic";
+//  CAPABILITY IS A FILTER, NOT A LEVEL (2026-09-03, Vítor: "VLE e nonvolatile
+//  no topo não faz muita lógica").  He is right, and the numbers say how much:
+//  "Volatile liquids (VLE-able)" held 352 of 570 records -- 62 % of the
+//  catalogue behind a label describing what the SOLVER can do, with the actual
+//  chemistry (102 alkanes, 26 aromatics, 18 alcohols, ...) buried one level
+//  below it; and "Non-volatile solutes / polymers / others" was 18 records in a
+//  bin whose name ends in "others", which is what a classification says when it
+//  has stopped classifying.
+//
+//  The clinching argument was already on screen: the browser carries `all /
+//  VLE / nonvolatile` FILTER CHIPS.  The same fact was drawn twice -- once as a
+//  filter, correctly, and once as a hierarchy -- and the hierarchy copy was
+//  most of the catalogue.
+//
+//  So the two capability buckets are gone as GROUPS.  Their members are filed
+//  by WHAT THEY ARE, using the family machinery that already existed one level
+//  down (`case/family.ts`: the record's own UNIFAC groups, else its formula,
+//  each label saying which -- never a name).  Nothing else moved: the
+//  classification PRECEDENCE below is untouched, so no record changes hands
+//  between the groups that remain.
+type GroupKey = string;   // a fixed key below, or `fam:<familyKey>`
 
 /** The components the first-path tutorials declare (`tier tutorial;` cases,
  *  read off the bundle -- recounted, never listed by hand).  A student's
@@ -67,22 +86,51 @@ export const FIRST_PATH_COMPONENTS: ReadonlySet<string> = new Set(
 //  name.  Asked for by the owner 2026-09-01: "gases at room temperature and
 //  salts are the obvious ones", and radicals filed as their own group before
 //  the release, so a student does not meet OH between octane and phenol.
-const GROUP_LABEL: Record<GroupKey, string> = {
+const FIXED_LABEL: Record<string, string> = {
   firstPath: "Used in the first-path tutorials",
   radicals: "Radicals (open-shell species)",
   salts: "Salts & minerals",
   gases25: "Gases at 25 °C (Tb below 298.15 K)",
-  volatiles: "Volatile liquids (VLE-able)",
   combustion: "Gas-phase combustion species",
-  nonvolatile: "Non-volatile solutes / polymers / others",
   //  compA/compB/compC and friends: synthetic stand-ins used by the regression
   //  suite.  Kept visible, kept LAST, labelled for what they are.
   synthetic: "Synthetic test stand-ins (NOT real substances)",
 };
+
+/** The label of any group key -- a fixed one, or the family's own.  ONE home:
+ *  a family's wording belongs to `case/family.ts`, which derives it from the
+ *  record, and copying it here would be a second spelling of the same fact. */
+export function groupLabel(g: GroupKey): string {
+  if (FIXED_LABEL[g]) return FIXED_LABEL[g]!;
+  const key = g.startsWith("fam:") ? g.slice(4) : g;
+  return FAMILY_LABEL.get(key) ?? key;
+}
 /** READING order: what a student charges to a vessel first; the mechanism
  *  library, the radicals and the synthetic stand-ins last and folded. */
-export const DISPLAY_ORDER: GroupKey[] =
-  ["firstPath", "volatiles", "gases25", "salts", "nonvolatile", "combustion", "radicals", "synthetic"];
+/** Every family the catalogue actually contains, in the PRINCIPAL-GROUP order
+ *  `family.ts` already declares (acids, esters, aldehydes, ketones, alcohols,
+ *  amines, ethers, ... then the formula-derived ones, then the unplaced).  That
+ *  is a chemical reading order and it is not re-decided here -- deriving it
+ *  from the same `familyRank` the sub-tree used keeps one home for it. */
+const CATALOGUE_FAMILIES: { key: string; label: string; rank: number }[] = (() => {
+  const seen = new Map<string, { key: string; label: string; rank: number }>();
+  for (const m of CATALOGUE) {
+    const f = familyOf(m);
+    if (!seen.has(f.key)) seen.set(f.key, { key: f.key, label: f.label, rank: familyRank(f) });
+  }
+  return [...seen.values()].sort((a, b) => a.rank - b.rank || a.label.localeCompare(b.label));
+})();
+const FAMILY_LABEL = new Map(CATALOGUE_FAMILIES.map((f) => [f.key, f.label]));
+
+/** READING order: the way in first, then the two classes a student names by
+ *  STATE rather than by chemistry (gases at 25 °C, salts & minerals), then the
+ *  chemical families, then the mechanism library, the radicals and the
+ *  synthetic stand-ins last. */
+export const DISPLAY_ORDER: GroupKey[] = [
+  "firstPath", "gases25", "salts",
+  ...CATALOGUE_FAMILIES.map((f) => `fam:${f.key}`),
+  "combustion", "radicals", "synthetic",
+];
 /** THE BROWSER IS A TREE (2026-09-03, Vítor: "GUI em forma de tree").  Every
  *  group is a node that folds; a group with more members than a screen holds
  *  is subdivided into FAMILIES (case/family.ts -- from the record's own UNIFAC
@@ -90,7 +138,12 @@ export const DISPLAY_ORDER: GroupKey[] =
  *  too, closed on first sight with their count.  Open by default: the groups
  *  a student charges to a vessel; folded: the mechanism library, the radicals
  *  and the synthetic stand-ins -- never 44 radicals or 352 names at the top. */
-const OPEN_BY_DEFAULT: ReadonlySet<GroupKey> = new Set(["firstPath", "volatiles", "gases25", "salts", "nonvolatile"]);
+//  ONLY THE WAY IN IS OPEN.  With the capability buckets dissolved the top
+//  level is ~20 nodes, every one of them a chemistry a student recognises, and
+//  opening five of those would put several hundred names on the first screen --
+//  the very thing the tree was built to stop.  Each folded node carries its
+//  count, so the shape of the catalogue is readable without opening anything.
+const OPEN_BY_DEFAULT: ReadonlySet<GroupKey> = new Set(["firstPath"]);
 /** A group with more members than this is shown as families. */
 const FAMILY_THRESHOLD = 24;
 const groupNode = (g: GroupKey) => `g:${g}`;
@@ -100,15 +153,23 @@ const familyNode = (g: GroupKey, f: Family) => `g:${g}/f:${f.key}`;
 //  is also a gas, a salt may carry a Tb), so the first match files it.
 //  Synthetic first because it is a claim about the RECORD, not the substance;
 //  first-path membership next because it is a claim about the CORPUS.
-function groupOf(m: ComponentMeta): GroupKey {
+/** EXPORTED for the test that checks no record lands outside DISPLAY_ORDER.
+ *  The test must call THIS function: a copy of the precedence in a test file
+ *  would be a second home for the classification, and the two would agree
+ *  exactly until the day one of them changed. */
+export function groupOf(m: ComponentMeta): GroupKey {
   if (m.isSynthetic) return "synthetic";
   if (FIRST_PATH_COMPONENTS.has(m.name)) return "firstPath";
   if (m.isRadical) return "radicals";
   if (m.isSaltOrMineral) return "salts";
   if (m.isRoomTemperatureGas) return "gases25";
-  if (m.vleAble) return "volatiles";
+  //  The two branches that used to answer `volatiles` and `nonvolatile` now
+  //  answer with the substance's own family.  The TESTS and their order are
+  //  untouched, so a record files exactly where it filed before -- only the
+  //  NAME of the bucket it lands in has stopped being a solver capability.
+  if (m.vleAble) return `fam:${familyOf(m).key}`;
   if (m.isCombustion) return "combustion";
-  return "nonvolatile";
+  return `fam:${familyOf(m).key}`;
 }
 
 export function CompoundBrowser({
@@ -213,11 +274,17 @@ export function CompoundBrowser({
   }, [grouped, stdResults, recent]);
   const recentSet = useMemo(() => new Set(recentRows.map((m) => m.name)), [recentRows]);
   const stdGroups = useMemo(() => {
-    const buckets: Record<GroupKey, ComponentMeta[]> =
-    { firstPath: [], radicals: [], salts: [], gases25: [], volatiles: [], combustion: [], nonvolatile: [], synthetic: [] };
+    const buckets: Record<GroupKey, ComponentMeta[]> = {};
+    for (const g of DISPLAY_ORDER) buckets[g] = [];
     for (const m of stdResults) {
       if (grouped && recentSet.has(m.name)) continue;   // already in "Recently used"
-      buckets[groupOf(m)].push(m);
+      //  A family key not in DISPLAY_ORDER cannot happen -- the order is
+      //  derived from the same `familyOf` over the whole catalogue -- but a
+      //  missing bucket would drop the record SILENTLY, and a browser that
+      //  loses a compound without saying so is the failure mode this whole
+      //  screen exists to avoid.
+      const g = groupOf(m);
+      (buckets[g] ??= []).push(m);
     }
     // Within a group, read by the NAME and not by its locants: a plain sort
     // opened "Volatile liquids" on 112Trichloroethane, 11Dichloroethane,
@@ -225,8 +292,8 @@ export function CompoundBrowser({
     // acetone.  The key moves leading locants aside (112Trichloroethane
     // files under T); the displayed name is untouched.
     const key = (m: ComponentMeta) => m.name.replace(/^[0-9,]+/, "").toLowerCase();
-    for (const g of Object.keys(buckets) as GroupKey[])
-      buckets[g].sort((x, y) => key(x).localeCompare(key(y)) || x.name.localeCompare(y.name));
+    for (const list of Object.values(buckets))
+      list.sort((x, y) => key(x).localeCompare(key(y)) || x.name.localeCompare(y.name));
     return buckets;
   }, [stdResults, grouped, recentSet]);
 
@@ -329,12 +396,17 @@ export function CompoundBrowser({
               {recentRows.length > 0 && <SubHeader label="Recently used" />}
               {recentRows.map((m) => renderRow(m, "recent-"))}
               {DISPLAY_ORDER.map((g) => {
-                const members = stdGroups[g];
+                const members = stdGroups[g] ?? [];
                 if (members.length === 0) return null;
                 const gk = groupNode(g);
                 const open = openNodes.has(gk);
                 // Families: only where a flat list would be a wall.
-                const families = members.length > FAMILY_THRESHOLD ? (() => {
+                //  A FAMILY GROUP DOES NOT SUB-DIVIDE INTO ITSELF.  Since
+                //  2026-09-03 the families ARE the top level for everything
+                //  that is not a state class, so asking for families inside
+                //  one would produce a single child node wearing its parent's
+                //  name -- a fold that folds nothing.
+                const families = (!g.startsWith("fam:") && members.length > FAMILY_THRESHOLD) ? (() => {
                   const map = new Map<string, { fam: Family; rows: ComponentMeta[] }>();
                   for (const m of members) {
                     const fam = familyOf(m);
@@ -345,7 +417,7 @@ export function CompoundBrowser({
                 })() : null;
                 return (
                   <Box key={g} data-group={g} data-open={open ? "true" : "false"}>
-                    <SubHeader label={`${GROUP_LABEL[g]} (${members.length})`}
+                    <SubHeader label={`${groupLabel(g)} (${members.length})`}
                       onToggle={() => toggleNode(gk)} open={open} />
                     {open && !families && members.map((m) => renderRow(m, `${g}-`))}
                     {open && families && families.map(({ fam, rows }) => {

@@ -47,13 +47,15 @@ License
 import { describe, it, expect } from "vitest";
 
 import {
-  BOTTOM_DOCK_PANEL, CASE_FILES_PANEL, CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
+  BOTTOM_DOCK_PANEL, CASE_FILES_PANEL, CATALOGUE_BROWSER_PANEL,
+  CONTROL_RAIL_PANEL, EXPLORE_SET_PANEL,
   HANDLE_HIT_PX, HANDLE_KEY_STEP_PX, HANDLE_SEAM_PX, LOG_JUMP_PANEL,
   METHOD_KNOBS_PANEL, PLOTS_NAV_PANEL, STREAMS_NAV_PANEL, panelBoxStyle,
   autoCollapseDefault, collapseTooltip, expandTooltip, nudgeSize, shortcutHint,
   swallowsShortcut,
   type PanelChrome,
 } from "../src/ui/panelContract.js";
+import { PANELS } from "../src/state/prefs.js";
 
 const ALL: [string, PanelChrome][] = [
   ["explore SET rail", EXPLORE_SET_PANEL],
@@ -69,13 +71,38 @@ const ALL: [string, PanelChrome][] = [
   // a panel nobody checked.
   ["EduTools setup panel", METHOD_KNOBS_PANEL],
   ["bottom dock", BOTTOM_DOCK_PANEL],
+  // The Explorer landing's compound browser joined on 2026-09-03, when the
+  // owner asked for a width he could change.  It is the first panel that must
+  // NOT fold -- see NO_FOLD below.
+  ["catalogue browser", CATALOGUE_BROWSER_PANEL],
 ];
+
+/** Panels that deliberately carry NO fold, with the reason.  A panel that is
+ *  its tab's SUBJECT cannot be folded away: what is left is not a narrower
+ *  screen, it is a different one — a catalogue you cannot pick from.  The set
+ *  is explicit so the absence is a DECLARATION and not an omission; adding a
+ *  name here is a decision somebody has to write down. */
+const NO_FOLD: Record<string, string> = {
+  "catalogue browser":
+    "it IS the Explorer landing's subject; folded, the tab shows a record and "
+    + "no way to choose one",
+};
 
 describe("every panel answers all three questions — the owner's 'algumas não têm'", () => {
   for (const [name, p] of ALL) {
     it(`${name}: has a size, a fold, and a home for both`, () => {
       expect(p.prefs.sizeKey, `${name} has no persisted size`).toBeTruthy();
-      expect(p.prefs.collapsedKey, `${name} has no persisted fold`).toBeTruthy();
+      if (NO_FOLD[name]) {
+        expect(p.prefs.collapsedKey,
+          `${name} declares no fold (${NO_FOLD[name]}) and must carry no fold key`)
+          .toBeFalsy();
+        expect(p.contentMin,
+          `${name} must not auto-collapse either`).toBe(0);
+        expect(p.shortcut,
+          `${name} must not bind a fold shortcut`).toBeUndefined();
+      } else {
+        expect(p.prefs.collapsedKey, `${name} has no persisted fold`).toBeTruthy();
+      }
       expect(p.prefs.size.min).toBeGreaterThan(0);
       expect(p.prefs.size.max).toBeGreaterThan(p.prefs.size.min);
       expect(p.prefs.size.default).toBeGreaterThanOrEqual(p.prefs.size.min);
@@ -84,14 +111,44 @@ describe("every panel answers all three questions — the owner's 'algumas não 
   }
 
   it("no two panels share a storage key", () => {
-    const keys = ALL.flatMap(([, p]) => [p.prefs.sizeKey, p.prefs.collapsedKey]);
+    const keys = ALL.flatMap(([, p]) => [p.prefs.sizeKey, p.prefs.collapsedKey])
+                    .filter(Boolean);
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  //  THE TABLE ABOVE IS THE CLAIM, so nothing may sit outside it.  It was
+  //  hand-written, and on 2026-09-03 a new panel was added to the registry and
+  //  simply did not join — the fold assertion passed over it without ever
+  //  seeing it, which is a check that cannot fire dressed as a green test.
+  //  This arm derives completeness from the registry that owns the keys.
+  it("every RESIZABLE panel in the preference registry is in the table", () => {
+    //  Scoped to entries that declare a SIZE, because that is what this
+    //  contract governs.  `selectionCard` is fold-only and has no size: the
+    //  credo makes it a floating card rather than a docked panel, so it is
+    //  outside this contract by design and not by omission.  The distinction
+    //  is drawn from the registry's own data (`sizeKey`), not from a second
+    //  hand-written list of exceptions.
+    const declared = new Set(ALL.map(([, p]) => p.prefs.id));
+    const missing = Object.values(PANELS)
+      .filter((p) => Boolean(p.sizeKey))
+      .map((p) => p.id)
+      .filter((id) => !declared.has(id));
+    expect(missing,
+      `resizable panels in state/prefs.ts that no test covers: ${missing.join(", ")}`)
+      .toEqual([]);
   });
 
   it("the bottom window does not share the left rails' shortcut", () => {
     // It is the one panel mounted ALONGSIDE a rail, so one key would fold two.
-    const railKeys = ALL.filter(([, p]) => p.edge === "left").map(([, p]) => p.shortcut);
+    //  Every left rail THAT FOLDS binds the same key.  A panel that must not
+    //  fold binds nothing — there is no fold for a key to toggle — so it is
+    //  excluded here by the same declaration that excludes it from the fold
+    //  assertion above, rather than by a second list.
+    const railKeys = ALL.filter(([n, p]) => p.edge === "left" && !NO_FOLD[n])
+                        .map(([, p]) => p.shortcut);
     expect(new Set(railKeys)).toEqual(new Set(["["]));
+    for (const [n, p] of ALL.filter(([n]) => NO_FOLD[n]))
+      expect(p.shortcut, `${n} must bind no fold shortcut`).toBeUndefined();
     expect(BOTTOM_DOCK_PANEL.shortcut).not.toBe("[");
   });
 });

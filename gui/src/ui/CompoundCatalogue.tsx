@@ -82,6 +82,9 @@ import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { propertiesLink } from "./explore/selectionLink.js";
 import { openAppTab } from "./openInTab.js";
+import {
+  CATALOGUE_BROWSER_PANEL, PanelResizeHandle, usePanel,
+} from "./panelContract.js";
 
 /*  ON A PHONE THE TWO COLUMNS BECOME TWO ROWS, and this is not a nicety.
  *  Measured at 390x844 with the chunk warm: a fixed 420-px column beside a
@@ -107,10 +110,17 @@ import { openAppTab } from "./openInTab.js";
  *  away the one thing a tab exists to show is a trap rather than a feature.
  *  Resize without fold is a change to the contract, not a call site, and it is
  *  not this slice's. */
-const BROWSER_W = 420;
-
 export function CompoundCatalogue() {
   const narrow = useNarrowViewport();
+  //  THE WIDTH IS THE READER'S, through the ONE contract (2026-09-03, Vítor:
+  //  "o painel da esquerda não dá para mudar a largura").  It was a fixed 420
+  //  px because adopting the contract seemed to bring a FOLD with it, and
+  //  folding away this tab's own subject is a trap -- but the fold is opt-in:
+  //  `CATALOGUE_BROWSER_PANEL` declares `contentMin: 0` and no shortcut, so
+  //  nothing folds it, while the drag, the arrow keys, the double-click reset
+  //  and the remembered width all come from `panelContract`.  Writing a second
+  //  resizer here would have been the arity sin in pixels.
+  const browser = usePanel(CATALOGUE_BROWSER_PANEL);
   const [selected, setSelected] = useState<string[]>([]);
   //  The compound whose record the right panel shows.  It is the last one
   //  TOUCHED, not "the first selected": a student walking a family reads them
@@ -147,13 +157,35 @@ export function CompoundCatalogue() {
       <Box style={narrow
         ? { flex: "0 0 45%", minHeight: 0, width: "100%", padding: 10,
             borderBottom: "1px solid var(--mantine-color-default-border)" }
-        : { width: BROWSER_W, flex: `0 0 ${BROWSER_W}px`, minWidth: 0,
-            height: "100%", padding: 10,
+        : { width: browser.size, flex: `0 0 ${browser.size}px`, minWidth: 0,
+            height: "100%", padding: 10, display: "flex",
+            flexDirection: "column", gap: 8,
             borderRight: "1px solid var(--mantine-color-default-border)" }}>
-        <CompoundBrowser
-          selected={selected} onAdd={add} onRemove={remove}
-          caseComponents={[]} onEstimate={openEstimate} onInspect={setFocus} />
+        <Box style={{ flex: 1, minHeight: 0 }}>
+          <CompoundBrowser
+            selected={selected} onAdd={add} onRemove={remove}
+            caseComponents={[]} onEstimate={openEstimate} onInspect={setFocus} />
+        </Box>
+        {/*  THE ACTION SITS WITH THE SET IT CONSUMES (2026-09-03, Vítor:
+             "depois de escolher o set de compostos devia de abrir um tab
+             dedicado, para não complicar").  It DID open a dedicated browser
+             tab already -- the defect was where the button lived: on the
+             right-hand header, whose subject is the ONE focused compound,
+             while the set is chosen on the left.  A reader who has just
+             built a set looks at the set, and the button that acts on it
+             must be there.  Still enabled with an empty set: a disabled
+             button would teach "choose first", which is the wizard this pair
+             of tabs exists not to be. */}
+        <Button size="compact-sm" color="accent" variant="light"
+          fullWidth
+          leftSection={<IconExternalLink size={14} />}
+          onClick={() => openAppTab(propertiesLink(selected))}>
+          {selected.length === 0
+            ? "Explore properties"
+            : `Explore properties of ${selected.length} compound${selected.length === 1 ? "" : "s"}`}
+        </Button>
       </Box>
+      {!narrow && <PanelResizeHandle panel={browser} />}
 
       {/* RIGHT — the set, the hand-over, and the record of the focused one. */}
       <Box style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex",
@@ -184,15 +216,6 @@ export function CompoundCatalogue() {
                   record without changing anything
                 </Text>}
           </Group>
-          {/*  ENABLED WITH AN EMPTY SET, deliberately: see the header.  A
-              disabled button here would teach "choose first", which is the
-              wizard this pair of tabs exists NOT to be. */}
-          <Button size="compact-sm" color="accent" variant="light"
-            style={{ flex: "0 0 auto" }}
-            leftSection={<IconExternalLink size={14} />}
-            onClick={() => openAppTab(propertiesLink(selected))}>
-            Explore properties
-          </Button>
         </Group>
 
         <Box style={{ flex: 1, minHeight: 0, overflow: "auto", padding: 16 }}>
