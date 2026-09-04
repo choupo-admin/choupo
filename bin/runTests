@@ -539,6 +539,93 @@ if [ "${1:-}" = "--witnesses" ]; then
     set -- "${WLIST[@]}"
 fi
 
+#  --gui: THE GUI-ONLY PATH (2026-09-04, Vitor: "precisas de correr a suite
+#  toda quando so muda a gui?!").  No.
+#
+#  A change confined to `gui/` cannot move a solver answer: the 576 corpus
+#  cases run the C++ binaries, and TypeScript is not in them.  Running the
+#  full sweep for a panel width costs ~30 minutes and proves nothing that was
+#  in question -- and a check whose cost is out of proportion to its subject
+#  is a check people learn to skip, which is worse than not having it.
+#
+#  What DOES bear on a GUI change: the app's own tests, its typecheck, and
+#  every gate that READS gui/ -- the registry/landing agreement, the EduTool
+#  shapes, the prose-vs-golden arms, the estimate marks, the doc references.
+#  Measured 2026-09-04: 142 s of npm test + ~11 s of gates, against ~30 min.
+#
+#  THE GATE LIST IS DERIVED, NEVER WRITTEN HERE.  A hand-kept list is a second
+#  home for "which gates read the GUI", and it would go stale the first time
+#  someone adds one -- silently, because a missing gate does not fail, it just
+#  stops running.  So the list is recomputed on every invocation by asking the
+#  gate sources themselves, and the count is PRINTED so a reader can see it
+#  move.  Same reasoning as check_origin_census, one register along.
+#
+#  THIS IS NOT A SUBSTITUTE FOR THE FULL SWEEP.  It is scoped to a diff that
+#  touches gui/ ALONE; the moment a commit also moves C++, a dict or a record,
+#  the full sweep is the check, and this flag refuses to pretend otherwise --
+#  it says so in its own verdict line rather than leaving the reader to
+#  remember.
+if [ "${1:-}" = "--gui" ]; then
+    shift
+    [ "$#" -eq 0 ] || { echo "usage: runTests --gui  (takes no cases -- it is the gui/-only path)"; exit 2; }
+    [ -d "$ROOT/gui/node_modules" ] || { echo "ERROR: gui/node_modules missing -- run 'npm ci' in gui/ first"; exit 1; }
+
+    gpass=0; gfail=0
+    echo "[gui path] gui/ tests + typecheck + every gate that reads gui/"
+    echo
+
+    if (cd "$ROOT/gui" && npm test --silent > /tmp/guitest.$$ 2>&1); then
+        printf "PASS  %-40s  (%s)\n" "gui-tests" \
+            "$(grep -oE 'Tests +[0-9]+ passed \([0-9]+\)' /tmp/guitest.$$ | tail -1)"
+        gpass=$((gpass+1))
+    else
+        printf "FAIL  %-40s  (cd gui && npm test)\n" "gui-tests"
+        tail -30 /tmp/guitest.$$
+        gfail=$((gfail+1))
+    fi
+    rm -f /tmp/guitest.$$
+
+    if (cd "$ROOT/gui" && npm run typecheck --silent > /tmp/guitc.$$ 2>&1); then
+        printf "PASS  %-40s  (tsc --noEmit clean)\n" "gui-typecheck"
+        gpass=$((gpass+1))
+    else
+        printf "FAIL  %-40s  (cd gui && npm run typecheck)\n" "gui-typecheck"
+        tail -30 /tmp/guitc.$$
+        gfail=$((gfail+1))
+    fi
+    rm -f /tmp/guitc.$$
+
+    #  DERIVED: every gate whose SOURCE mentions a gui/ path.  Deliberately
+    #  generous -- a wrongly included gate costs milliseconds, a wrongly
+    #  excluded one costs a regression nobody sees.
+    gates=$(grep -rlE '"gui/|/gui/|gui/(src|tests|public|tools)' \
+              "$ROOT"/bin/curate/check_*.py 2>/dev/null | sort)
+    ngates=$(printf '%s\n' "$gates" | grep -c . || true)
+    [ "$ngates" -gt 0 ] || { echo "ERROR: derived ZERO gui-reading gates -- the derivation is broken, and an empty list would pass vacuously"; exit 1; }
+    echo
+    echo "[gui path] $ngates gate(s) derived from the gate sources themselves"
+    for g in $gates; do
+        name=$(basename "$g" .py)
+        if "$g" > /tmp/guigate.$$ 2>&1; then
+            printf "PASS  %-40s  (%s)\n" "$name" "$(head -1 /tmp/guigate.$$ | cut -c1-150)"
+            gpass=$((gpass+1))
+        else
+            printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "$name" "$name"
+            cat /tmp/guigate.$$
+            gfail=$((gfail+1))
+        fi
+        rm -f /tmp/guigate.$$
+    done
+
+    echo
+    echo "PASS $gpass / FAIL $gfail"
+    echo "  ^ the gui/-ONLY path.  It says nothing about the solver: no corpus"
+    echo "    case ran, and no C++ was compiled.  If this commit also touches"
+    echo "    src/, tutorials/ or data/, run bin/runTests -- this is not it."
+    [ "$gfail" -eq 0 ] || exit 1
+    exit 0
+fi
+
 # --- gather cases ---------------------------------------------------------
 CASES=()
 if [ "$#" -gt 0 ]; then
