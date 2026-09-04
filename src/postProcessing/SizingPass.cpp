@@ -31,8 +31,12 @@ License
 #include "materials/MaterialRegistry.H"
 #include "sizing/EquipmentSize.H"
 
+#include <algorithm>
 #include <iomanip>
 #include <iostream>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -47,6 +51,17 @@ int SizingPass::run(SimulationResult& result)
     //  to tell an empty `sizings` that means "no pass" from one that means
     //  "every unit failed, and the reasons are printed above".
     result.sizingAttempted = true;
+
+    //  WHICH SECTOR OWNS EACH UNIT.  Read from the flattened TOPOLOGY, which
+    //  is where the hierarchy is known, and never recovered by splitting
+    //  `unitName` on its last dot -- that would be name identity, and a unit
+    //  whose name carries a dot for any other reason would be misfiled by it.
+    //  A flat case leaves every entry empty and the reports below fall back
+    //  to exactly the table they printed before this field existed.
+    std::map<std::string, std::string> sectorOf;
+    for (const auto& fu : result.topology)
+        if (!fu.sector.empty()) sectorOf[fu.name] = fu.sector;
+
     auto units = sizingDict_->lookupDictList("units");
     if (units.empty())
     {
@@ -54,23 +69,78 @@ int SizingPass::run(SimulationResult& result)
         return 0;
     }
 
+    //  THE NAME COLUMN FITS THE NAMES.  A flattened plant's units are
+    //  `SECTOR.unit`, and at a fixed 14 the two longest in the corpus printed
+    //  as `CONCENTRATION.Crystcrystalliser` -- the name running straight into
+    //  the equipment type with no space, on exactly the cases whose hierarchy
+    //  this table exists to show.  `std::setw` is a MINIMUM, so it never
+    //  truncates; it just stops separating.
+    //
+    //  Floored at the 14 it has always been, so every case whose names fit
+    //  today prints character-for-character what it printed before (measured:
+    //  the longest name in every flat corpus case is 11).  A table that
+    //  reflows for short names would be a format change claiming to be a fix.
+    std::size_t wName = 14;
+    for (const auto& u : units)
+        wName = std::max(wName, u->lookupWordOrDefault("unitName", "").size() + 2);
+
     std::cout << "\n========================  Equipment Sizing  ==========================\n";
     std::cout << "  " << std::left
-              << std::setw(14) << "unit"
+              << std::setw(int(wName)) << "unit"
               << std::setw(16) << "equipment"
               << std::setw(12) << "material"
               << std::setw(10) << "size"
               << std::setw(12) << "value"
               << std::setw(10) << "wall (mm)"
               << std::setw(12) << "weight (kg)"
-              << "\n  " << std::string(86, '-') << "\n";
+              << "\n  " << std::string(86 + wName - 14, '-') << "\n";
 
     int failures = 0;
 
+    //  THE ORDER THE TABLE IS PRINTED IN.  A plant is BUILT as sectors of
+    //  units, and until now the design table printed a flat list of dotted
+    //  names in whatever order the postDict happened to declare them -- so
+    //  the one structural fact a reader needs to allocate capital was on the
+    //  screen only as a prefix they had to parse by eye.
+    //
+    //  Grouping is applied ONLY when a hierarchy exists.  A flat case has no
+    //  sectors, `sectorOf` is empty, this reorders nothing and prints no
+    //  banner, and its table is character-for-character the one it printed
+    //  before this existed.  Inventing a "root" section for it would make
+    //  every flat case's output differ for a hierarchy it does not have.
+    std::vector<DictPtr> ordered(units.begin(), units.end());
+    const bool byS = !sectorOf.empty();
+    if (byS)
+        std::stable_sort(ordered.begin(), ordered.end(),
+            [&](const DictPtr& a, const DictPtr& b)
+            {
+                auto sec = [&](const DictPtr& d) {
+                    auto it = sectorOf.find(d->lookupWordOrDefault("unitName", ""));
+                    return it == sectorOf.end() ? std::string() : it->second;
+                };
+                return sec(a) < sec(b);
+            });
+
+    std::string shown;              // the sector heading currently printed
     std::vector<std::string> notSized;
-    for (const auto& u : units)
+    for (const auto& u : ordered)
     {
         const std::string uname    = u->lookupWord("unitName");
+        if (byS)
+        {
+            auto sit = sectorOf.find(uname);
+            //  A unit with NO sector inside a plant that has them is not an
+            //  error and is not hidden: it is filed under its own honest
+            //  heading rather than being absorbed into whichever section
+            //  happened to be open.
+            const std::string here = (sit == sectorOf.end())
+                                   ? std::string("(no sector)") : sit->second;
+            if (here != shown)
+            {
+                std::cout << "  -- sector: " << here << "\n";
+                shown = here;
+            }
+        }
         const std::string utype    = u->lookupWord("type");
         const std::string matName  = u->lookupWord("material");
         auto              rulesDict = u->subDict("designRules");
@@ -89,7 +159,7 @@ int SizingPass::run(SimulationResult& result)
             const scalar w    = dims.values.count("weight") ? dims.values.at("weight") : 0.0;
 
             std::cout << "  " << std::left
-                      << std::setw(14) << uname
+                      << std::setw(int(wName)) << uname
                       << std::setw(16) << utype
                       << std::setw(12) << matName
                       << std::setw(10) << sizeKey
@@ -145,6 +215,10 @@ int SizingPass::run(SimulationResult& result)
                               << std::fixed << std::setprecision(3) << val << "\n";
                 }
 
+            {
+                auto sit = sectorOf.find(uname);
+                if (sit != sectorOf.end()) dims.sector = sit->second;
+            }
             result.sizings[uname] = std::move(dims);
         }
         catch (const std::exception& e)

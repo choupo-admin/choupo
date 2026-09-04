@@ -98,6 +98,13 @@ struct EquipmentSizing
     //  the vessel volume was known to the engine and said nowhere -- and a
     //  volume whose rule is invisible cannot be defended, only reported.
     std::string                                  basis;
+
+    //  THE OWNING SECTOR (empty for a flat case).  Copied from the flattened
+    //  topology, which is where the hierarchy is known; the sizing pass does
+    //  not parse it out of `unitName`.  The design report groups on it and
+    //  the economics report subtotals capital on it, so a plant's cost is
+    //  read the way the plant is built.
+    std::string                                  sector;
 };
 
 // Energy wire.  A direct scalar coupling from one unit's
@@ -138,6 +145,12 @@ struct CostBreakdown
     std::string                                  sizeKey;      // "V_R", "A", ...
     std::string                                  correlation;  // "log-quadratic" | "power-law"
     std::string                                  material;     // the record F_M came from
+
+    //  THE OWNING SECTOR, COPIED FROM THE SIZING (empty for a flat case).
+    //  Capital is what a sector IS, to anyone deciding where a plant's money
+    //  goes, so the cost record carries the same hierarchy the sizing does --
+    //  from the same single origin, never re-derived from the unit's name.
+    std::string                                  sector;
 };
 
 // One row of the utility-allocation summary: a unit's heat duty (or a

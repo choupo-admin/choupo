@@ -71,6 +71,24 @@ struct FlatUnit
     std::string              type;
     std::vector<std::string> ins;
     std::vector<std::string> outs;
+
+    //  WHICH SECTOR OWNS THIS UNIT.  The dotted parent chain WITHOUT the
+    //  unit's own leaf name -- "EXTRACTION" for `EXTRACTION.mix01`, "A.B" for
+    //  a doubly nested one -- and EMPTY at the plant root, where the unit has
+    //  no owning sector at all.
+    //
+    //  It is a DECLARED field and not a substring of `name` on purpose.  The
+    //  hierarchy is a fact the flatten seam KNOWS exactly (`nsPrefix` is the
+    //  parent chain, held in hand at the moment the leaf is emitted), and
+    //  recovering it downstream by splitting on the last dot would be name
+    //  identity -- the crossing this project bans everywhere else.  A unit
+    //  named with a dot for any other reason would be misfiled by the split
+    //  and correctly filed by this field.
+    //
+    //  Empty is not a sector called "root".  A flat case has no hierarchy to
+    //  report, and inventing one for it would make every flat report differ
+    //  from what it printed the day before.
+    std::string              sector;
 };
 
 } // namespace Choupo

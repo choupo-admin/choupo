@@ -4395,6 +4395,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/costprov.$$
 
+    # Sector-hierarchy gate (2026-09-04): a fractal plant's SECTORS must reach
+    # the design table, both CSVs and the capital-by-sector block -- carried as
+    # DATA from the flatten seam, never recovered by splitting a dotted name --
+    # and a flat case must be left exactly as it was, with no invented root
+    # section.  The subtotals are recomputed here from costs.csv's own rows.
+    if "$ROOT/bin/curate/check_sector_hierarchy.py" > /tmp/sectorh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "sector-hierarchy-gate" "$(tail -1 /tmp/sectorh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_sector_hierarchy.py)\n" "sector-hierarchy-gate"
+        cat /tmp/sectorh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/sectorh.$$
+
     # WASM-dialect gate (2026-08-27): what g++ lends as an extension,
     # emscripten's clang refuses.  A lambda capturing a structured binding is
     # illegal in C++17, silent under g++ -Wall -Wextra -Wpedantic, and fatal

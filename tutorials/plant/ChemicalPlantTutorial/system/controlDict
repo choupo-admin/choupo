@@ -24,7 +24,13 @@ verbosity     3;
 // stream table, mass balance and energy balance close over the whole factory
 // at once -- per-unit too, with the namespaced equipment (concentration.evap1,
 // drying.SD, ...).
-reports { streamTable {}  massBalance {}  elementBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
+// `design` and `economics` SERIALISE what system/postDict already computed
+// (they do not size or cost anything themselves), and `design` comes first
+// because economics reads the sizing.  Declared here because this is the
+// plant whose SECTORS the two files carry: sizing.csv gains a `sector`
+// column and costs.csv a per-sector capital subtotal, so the hierarchy the
+// case is built from reaches the file a reader opens.
+reports { streamTable {}  massBalance {}  elementBalance {}  energyBalance {}  utilities {}  spreadsheet {}  design {}  economics {} }
 
 // Report-output layout: the CHT-faithful `postProcessing/<report>/<instant>/`
 // tree (OpenFOAM functionObject convention) instead of the legacy `reports/`.

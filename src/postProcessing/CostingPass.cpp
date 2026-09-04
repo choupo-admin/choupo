@@ -31,9 +31,11 @@ License
 #include "costing/CostingModel.H"
 #include "materials/MaterialRegistry.H"
 
+#include <algorithm>
 #include <iomanip>
-#include <sstream>
 #include <iostream>
+#include <map>
+#include <sstream>
 
 namespace Choupo {
 
@@ -76,15 +78,24 @@ int CostingPass::run(SimulationResult& result)
               << "    CEPCI: " << costingDict_->lookupScalarOrDefault("cepci", 820.0)
               << "\n\n";
 
+    //  THE NAME COLUMN FITS THE NAMES.  Same rule and the same reason as the
+    //  sizing table: a flattened plant's `SECTOR.unit` overflowed a fixed 14
+    //  and ran into the equipment column on exactly the cases whose hierarchy
+    //  these tables exist to show.  Floored at 14, so every case whose names
+    //  already fit prints exactly what it printed before.
+    std::size_t wName = 14;
+    for (const auto& [uname, dim] : result.sizings)
+    { (void)dim; wName = std::max(wName, uname.size() + 2); }
+
     std::cout << "  " << std::left
-              << std::setw(14) << "unit"
+              << std::setw(int(wName)) << "unit"
               << std::setw(16) << "equipment"
               << std::setw(8)  << "F_M"
               << std::setw(8)  << "F_P"
               << std::setw(14) << "C_purchased"
               << std::setw(14) << "C_bare_mod"
               << std::setw(14) << "C_total_mod"
-              << "\n  " << std::string(88, '-') << "\n";
+              << "\n  " << std::string(88 + wName - 14, '-') << "\n";
 
     scalar totalPurchased  = 0.0;
     scalar totalBareMod    = 0.0;
@@ -98,9 +109,10 @@ int CostingPass::run(SimulationResult& result)
             const auto& mat = MaterialRegistry::byName(dim.material);
             auto cb         = model->cost(dim, mat);
             cb.unitName     = uname;
+            cb.sector       = dim.sector;   // one origin: the flatten seam
 
             std::cout << "  " << std::left
-                      << std::setw(14) << uname
+                      << std::setw(int(wName)) << uname
                       << std::setw(16) << dim.equipmentType
                       << std::setw(8)  << std::fixed << std::setprecision(2)
                       << cb.factors.at("F_M")
@@ -124,13 +136,72 @@ int CostingPass::run(SimulationResult& result)
         }
     }
 
-    std::cout << "  " << std::string(88, '-') << "\n  "
-              << std::left << std::setw(30)
+    std::cout << "  " << std::string(88 + wName - 14, '-') << "\n  "
+              //  The TOTALS label spans the unit AND equipment columns, so
+              //  it tracks the name width rather than a literal 30.
+              << std::left << std::setw(int(wName + 16))
               << (notCosted.empty() ? "TOTALS (EUR)" : "TOTALS (EUR) -- INCOMPLETE")
               << std::setw(16) << " "
               << std::setw(14) << std::fixed << std::setprecision(0) << totalPurchased
               << std::setw(14) << totalBareMod
               << std::setw(14) << totalModule << "\n";
+
+    //  WHERE THE MONEY IS, BY SECTOR.  Capital allocation is the question a
+    //  plant's hierarchy exists to answer -- "the extraction sector is 41 %
+    //  of the capex" is the sentence a student takes away, and until now the
+    //  only route to it was adding up dotted names by hand.
+    //
+    //  The block is printed ONLY when a hierarchy exists.  A flat case has no
+    //  sectors, prints nothing extra, and its console output is unchanged.
+    //  The shares are computed from the SAME accumulated `totalModule` the
+    //  TOTALS line above prints, so the two can never disagree; when the set
+    //  is incomplete the caveat below applies to both, which is why this
+    //  block sits before it rather than after.
+    {
+        std::map<std::string, scalar> byP, byB, byT;
+        std::map<std::string, int>    byN;
+        bool anySector = false;
+        for (const auto& [uname, cb] : result.costs)
+        {
+            (void)uname;
+            if (!cb.sector.empty()) anySector = true;
+            const std::string s = cb.sector.empty() ? "(no sector)" : cb.sector;
+            byP[s] += cb.purchasedCost;
+            byB[s] += cb.bareModuleCost;
+            byT[s] += cb.totalModuleCost;
+            byN[s] += 1;
+        }
+        if (anySector)
+        {
+            std::cout << "\n  ---- capital by sector ----\n  " << std::left
+                      << std::setw(24) << "sector"
+                      << std::setw(8)  << "units"
+                      << std::setw(14) << "purchased"
+                      << std::setw(14) << "bare module"
+                      << std::setw(14) << "total module"
+                      << "share of C_TM\n  " << std::string(88 + wName - 14, '-') << "\n";
+            for (const auto& [s, tt] : byT)
+            {
+                //  A SHARE OF ZERO IS NOT ZERO PER CENT, it is a share of
+                //  nothing; printing "0.0 %" for it would be a number with
+                //  no arithmetic behind it.
+                std::ostringstream share;
+                if (totalModule > 0.0)
+                    share << std::fixed << std::setprecision(1)
+                          << 100.0 * tt / totalModule << " %";
+                else
+                    share << "(total is zero)";
+                std::cout << "  " << std::left
+                          << std::setw(24) << s
+                          << std::setw(8)  << byN.at(s)
+                          << std::setw(14) << std::fixed << std::setprecision(0)
+                          << byP.at(s)
+                          << std::setw(14) << byB.at(s)
+                          << std::setw(14) << tt
+                          << share.str() << "\n";
+            }
+        }
+    }
 
     //  A TOTAL OVER AN INCOMPLETE SET SAYS SO (AS6).  The failures were
     //  counted and returned, and BOTH call sites threw the count away -- so a
@@ -189,12 +260,12 @@ int CostingPass::run(SimulationResult& result)
                   << " EUR/USD     basis: 2001 USD\n\n";
 
         std::cout << "  " << std::left
-                  << std::setw(14) << "unit"
+                  << std::setw(int(wName)) << "unit"
                   << std::setw(16) << "correlation"
                   << std::setw(20) << "size driver S"
                   << std::setw(26) << "coefficients"
                   << std::setw(12) << "B1, B2"
-                  << "F_M (material)\n  " << std::string(103, '-') << "\n";
+                  << "F_M (material)\n  " << std::string(103 + wName - 14, '-') << "\n";
 
         for (const auto& [uname, entry] : result.costs)
         {
@@ -239,7 +310,7 @@ int CostingPass::run(SimulationResult& result)
                << " (" << cb.material << ")";
 
             std::cout << "  " << std::left
-                      << std::setw(14) << uname
+                      << std::setw(int(wName)) << uname
                       << std::setw(16) << cb.correlation
                       << std::setw(20) << sz.str()
                       << std::setw(26) << co.str()

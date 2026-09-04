@@ -660,6 +660,16 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
 
             auto u = std::make_shared<Dictionary>(qname);
             u->insert("name", std::string(qname));
+            //  THE OWNING SECTOR, STAMPED WHERE IT IS KNOWN.  `nsPrefix` is
+            //  the parent chain with a trailing dot ("" at the plant root,
+            //  "EXTRACTION." one level down, "A.B." two).  This is the only
+            //  place in the engine that holds the hierarchy in hand; every
+            //  reader downstream sees a flat list of dotted names, and a
+            //  reader that recovered the sector by splitting the last dot
+            //  would be doing name identity.  Empty at the root, so a flat
+            //  case gains no key and its dict is unchanged.
+            if (!nsPrefix.empty())
+                u->insert("sector", nsPrefix.substr(0, nsPrefix.size() - 1));
             u->insert("type", cd->entryValue("type"));
             for (const char* k : { "operation", "model", "thermo" })
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
@@ -2497,6 +2507,7 @@ int Flowsheet::solve(const DictPtr& dict,
         FlatUnit fu;
         fu.name = u->lookupWordOrDefault("name", "?");
         fu.type = u->lookupWordOrDefault("type", "");
+        fu.sector = u->lookupWordOrDefault("sector", "");
         if (u->found("inputs"))   fu.ins = u->lookupWordList("inputs");
         else if (u->found("in"))  fu.ins = { u->lookupWord("in") };
         if (u->found("outputs"))  fu.outs = u->lookupWordList("outputs");

@@ -29,11 +29,13 @@ License
 #include "DesignReport.H"
 #include "postProcessing/PostProcessor.H"
 
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <set>
+#include <utility>
 #include <stdexcept>
 #include <vector>
 
@@ -76,17 +78,54 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     for (const auto& [unit, sz] : ctx.result.sizings)
         for (const auto& [k, v] : sz.values) { (void)v; keys.insert(k); }
 
+    //  THE HIERARCHY TRAVELS WITH THE FILE.  A plant is sectors of units,
+    //  and this CSV is what a reader opens; without the owning sector the
+    //  only way to recover it is to split the dotted unit name, which is the
+    //  name identity this project bans everywhere else -- and which would
+    //  misfile any unit whose name carries a dot for a different reason.
+    //
+    //  The column appears ONLY when at least one sizing carries a sector.  A
+    //  flat case has no hierarchy to report, so it gets the same header and
+    //  the same rows it got before this column existed; an empty column added
+    //  to every flat case would be a change of format claiming a structure
+    //  that is not there.
+    bool anySector = false;
+    for (const auto& [unit, sz] : ctx.result.sizings)
+    { (void)unit; if (!sz.sector.empty()) { anySector = true; break; } }
+
+    //  Rows ORDERED BY SECTOR when there is one, so the file reads as the
+    //  plant is built.  `result.sizings` is a std::map, so a flat case is
+    //  already unit-name ordered and stays exactly so.
+    //  Keyed by the MAP KEY, not by `sz.unitName`.  Every sizer sets both
+    //  and they agree, which is exactly why reading the copy would be the
+    //  arity sin: the key is what `result.sizings` is indexed on and what
+    //  every other reader resolves against.
+    std::vector<std::pair<const std::string*, const EquipmentSizing*>> rows;
+    rows.reserve(ctx.result.sizings.size());
+    for (const auto& [unit, sz] : ctx.result.sizings) rows.emplace_back(&unit, &sz);
+    if (anySector)
+        std::stable_sort(rows.begin(), rows.end(),
+            [](const std::pair<const std::string*, const EquipmentSizing*>& a,
+               const std::pair<const std::string*, const EquipmentSizing*>& b)
+            { return a.second->sector < b.second->sector; });
+
     //  THE BASIS TRAVELS WITH THE FILE, not only with the screen.  A volume
     //  is the same number whether a residence time, a space velocity or the
     //  author produced it, and this CSV is what goes into the report -- so
     //  the design ARGUMENT has to be in it.  Solving that on the console and
     //  not here would be half the fix.
-    f << "unit,equipmentType,material,basis";
+    f << "unit";
+    if (anySector) f << ",sector";
+    f << ",equipmentType,material,basis";
     for (const auto& k : keys) f << "," << k;
     f << "\n";
-    for (const auto& [unit, sz] : ctx.result.sizings)
+    for (const auto& row : rows)
     {
-        f << unit << "," << sz.equipmentType << "," << sz.material << ","
+        const EquipmentSizing& sz = *row.second;
+        f << *row.first;
+        if (anySector)
+            f << "," << (sz.sector.empty() ? std::string("(no sector)") : sz.sector);
+        f << "," << sz.equipmentType << "," << sz.material << ","
           << (sz.basis.empty() ? std::string("(not stated)") : sz.basis);
         for (const auto& k : keys)
         {

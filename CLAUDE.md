@@ -928,6 +928,24 @@ that CALLS `verdictOf` to publish one — `heatCapacityFit` has no witness and
 only that arm catches it) · `check_verdict_parity`.  Record:
 [`docs/design/the-verdict-that-reached-everyone-except-the-machine.md`](docs/design/the-verdict-that-reached-everyone-except-the-machine.md).
 
+**A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
+knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
+it concatenated that into the qualified name and kept only the string, so
+every reader downstream got a flat list of dotted names.  The sector now
+TRAVELS AS DATA (`FlatUnit::sector` → `EquipmentSizing` → `CostBreakdown`),
+stamped once at the flatten seam: recovering it downstream by splitting the
+last dot is **name identity**, right on today's corpus and silently wrong for
+the first unit whose name carries a dot for another reason.  The design table
+groups by sector, both CSVs carry the column, and the costing console
+subtotals capital per sector with each one's share of C_TM.  **EMPTY IS NOT A
+SECTOR CALLED "root"**: a flat case gains no key, no banner, no column and no
+block, and that was verified byte-identical against a build of the previous
+commit rather than argued.  Gate: `check_sector_hierarchy` — its strongest arm
+is a SOURCE arm, because no output arm can tell a correct stamp from a correct
+split.  RESERVED for Vítor: making `design`/`economics` run by default.
+Record:
+[`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
+
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
 copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and
