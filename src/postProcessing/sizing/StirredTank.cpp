@@ -97,13 +97,13 @@ EquipmentSizing StirredTank::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "stirredTank";
     d.material       = material.name;
-    d.values["V_R"]            = V_R;
-    d.values["D"]              = D;
-    d.values["H"]              = H;
-    d.values["L_over_D"]       = L_over_D;
-    d.values["t_wall"]         = t_wall;
-    d.values["pressureDesign"] = pressureDesign;
-    d.values["weight"]         = weight;
+    d.set("V_R",            V_R,            "m3");
+    d.set("D",              D,              "m");
+    d.set("H",              H,              "m");
+    d.set("L_over_D",       L_over_D,       "-");
+    d.set("t_wall",         t_wall,         "m");
+    d.set("pressureDesign", pressureDesign, "bar");
+    d.set("weight",         weight,         "kg");
     return d;
 }
 

@@ -60,10 +60,10 @@ EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "sprayDryer";
     d.material       = material.name;
-    d.values["W_evap"]         = W_evap;
-    d.values["pressureDesign"] = P_des;
-    if (k.count("chamberDiameter")) d.values["chamberDiameter"] = k.at("chamberDiameter");
-    if (k.count("chamberHeight"))   d.values["chamberHeight"]   = k.at("chamberHeight");
+    d.set("W_evap",         W_evap,      "kg/s");
+    d.set("pressureDesign", P_des,       "bar");
+    if (k.count("chamberDiameter")) d.set("chamberDiameter", k.at("chamberDiameter"), "m");
+    if (k.count("chamberHeight"))   d.set("chamberHeight",   k.at("chamberHeight"),   "m");
 
     // ------------------------------------------------------------------
     //  DESIGN INVERSION (opt-in: a `design { ... }` block in the sizing
@@ -86,8 +86,9 @@ EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
         if (d32_rated > 0.0 && N_rated > 0.0 && d32_tgt > 0.0)
         {
             // Friedman d32 ~ N^-0.6  ->  N_req = N_rated (d32_rated/d32_tgt)^(1/0.6)
-            d.values["design_targetSize_um"] = d32_tgt;
-            d.values["design_wheelSpeed_rpm"] = N_rated * std::pow(d32_rated / d32_tgt, 1.0 / 0.6);
+            d.set("design_targetSize_um", d32_tgt, "um");
+            d.set("design_wheelSpeed_rpm",
+                  N_rated * std::pow(d32_rated / d32_tgt, 1.0 / 0.6), "rpm");
         }
 
         const scalar t_c       = k.count("tau_dry_constant") ? k.at("tau_dry_constant") : 0.0;
@@ -102,10 +103,10 @@ EquipmentSizing SprayDryerSize::size(const std::string&     unitName,
             // cube root of the required volume ratio.
             const scalar res_req  = sf * t_c;
             const scalar dimScale = std::cbrt(res_req / res_rated);
-            d.values["design_residenceFactor"]    = sf;
-            d.values["design_residence_s"]        = res_req;
-            d.values["design_chamberDiameter_m"]  = Dch * dimScale;
-            d.values["design_chamberHeight_m"]    = Lch * dimScale;
+            d.set("design_residenceFactor",   sf,             "-");
+            d.set("design_residence_s",       res_req,        "s");
+            d.set("design_chamberDiameter_m", Dch * dimScale, "m");
+            d.set("design_chamberHeight_m",   Lch * dimScale, "m");
         }
     }
     return d;

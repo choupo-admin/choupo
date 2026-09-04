@@ -60,9 +60,9 @@ EquipmentSizing CycloneSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "cyclone";
     d.material       = material.name;
-    d.values["Q_gas"]          = Q_gas;
-    d.values["pressureDesign"] = P_des;
-    if (k.count("bodyDiameter")) d.values["bodyDiameter"] = k.at("bodyDiameter");
+    d.set("Q_gas",          Q_gas,       "m3/s");
+    d.set("pressureDesign", P_des,       "bar");
+    if (k.count("bodyDiameter")) d.set("bodyDiameter", k.at("bodyDiameter"), "m");
     return d;
 }
 

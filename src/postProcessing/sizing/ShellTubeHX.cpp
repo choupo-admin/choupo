@@ -68,12 +68,12 @@ EquipmentSizing ShellTubeHX::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "shellTubeHX";
     d.material       = material.name;
-    d.values["Q_kW"]           = Q_kW;
-    d.values["U"]              = U;
-    d.values["LMTD"]           = LMTD;
-    d.values["A"]              = A;
-    d.values["pressureDesign"] = pressureDesign;
-    d.values["weight"]         = weight;
+    d.set("Q_kW",           Q_kW,           "kW");
+    d.set("U",              U,              "W/(m2.K)");
+    d.set("LMTD",           LMTD,           "K");
+    d.set("A",              A,              "m2");
+    d.set("pressureDesign", pressureDesign, "bar");
+    d.set("weight",         weight,         "kg");
     return d;
 }
 

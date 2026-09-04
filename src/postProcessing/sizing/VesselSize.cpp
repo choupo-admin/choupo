@@ -121,14 +121,14 @@ EquipmentSizing VesselSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "vessel";
     d.material       = material.name;
-    d.values["V_R"]            = V;
-    d.values["D"]              = D;
-    d.values["H"]              = H;
-    d.values["L_over_D"]       = L_over_D;
-    d.values["t_wall"]         = t_wall;
-    d.values["weight"]         = weight;
-    d.values["pressureDesign"] = pressureDesign;
-    d.values["Q_gas"]          = Q_m3s;
+    d.set("V_R",            V,              "m3");
+    d.set("D",              D,              "m");
+    d.set("H",              H,              "m");
+    d.set("L_over_D",       L_over_D,       "-");
+    d.set("t_wall",         t_wall,         "m");
+    d.set("weight",         weight,         "kg");
+    d.set("pressureDesign", pressureDesign, "bar");
+    d.set("Q_gas",          Q_m3s,          "m3/s");
     d.basis                    = basis;
     return d;
 }

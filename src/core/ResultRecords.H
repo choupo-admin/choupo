@@ -89,7 +89,63 @@ struct EquipmentSizing
     std::string                                  unitName;
     std::string                                  equipmentType;
     std::string                                  material;
-    std::map<std::string, scalar>                values;   // "D", "H", "A", "t_wall", "weight",...
+
+    //  THE SIZE, AND THE UNIT IT IS IN.  Write through `set()`; never touch
+    //  the two maps directly.
+    //
+    //  WHY THE UNIT IS CARRIED AND NOT REMEMBERED.  This was a bare
+    //  `map<std::string, scalar>` whose comment listed the keys and whose
+    //  units lived in TWO places, neither of them readable by a machine: a
+    //  `//` comment beside each sizer's local variable, and a hand-written
+    //  table four call-frames away inside the pass that PRINTS the table
+    //  (`V_R [m3]`, `A [m2]`, `t_wall * 1000` for mm, `weight` in kg).  A
+    //  sizer that invents a key the printing table does not know emits it
+    //  with no unit at all, and nothing notices.
+    //
+    //  Worse than a missing unit: the values are NOT all canonical SI, and
+    //  nothing said so.  `power` and `Q_kW` are kW, `pressureDesign` is bar,
+    //  `design_targetSize_um` is micrometres, `design_wheelSpeed_rpm` is rpm
+    //  -- and six keys carry their unit inside the KEY NAME, which is the
+    //  name identity this project bans for the sector and bans here for the
+    //  same reason.  A student reading `power 145.2` off a specification
+    //  sheet takes it for watts.
+    //
+    //  So the unit is DECLARED WHERE THE VALUE IS COMPUTED -- the one place
+    //  that knows it -- and travels with it.  This is OpenFOAM's rule for a
+    //  field file, which carries its own `dimensions` entry so that adding a
+    //  field touches no reader: an object that describes itself needs no
+    //  external table, and an external table is a second home.
+    //
+    //  The unit is a NAMED UNIT (`m3`, `kW`, `bar`), the form Choupo's dict
+    //  grammar recommends and a reader wants, not the `[M L T Theta N]`
+    //  exponent vector -- which the grammar also accepts, in a DIFFERENT
+    //  slot (before the value), and which would read as noise on a sheet a
+    //  student hands in.  A dimensionless value declares `-`.
+    //
+    //  NOTHING IS CONVERTED.  Each value declares the unit it is ACTUALLY
+    //  in.  Rebasing the map on SI would move numbers in every golden that
+    //  pins them, which is a scientific change riding on a formatting one.
+    std::map<std::string, scalar>                values;
+    std::map<std::string, std::string>           units;
+
+    //  The ONE door.  Two maps that must agree can only stay in agreement if
+    //  a single call writes both; a caller that reaches past this into
+    //  `values` leaves a value the sheet writer will refuse by name.
+    void set(const std::string& key, scalar value, const std::string& unit)
+    {
+        values[key] = value;
+        units[key]  = unit;
+    }
+
+    //  The declared unit, or the empty string when the key carries none.
+    //  Readers that must not invent one ask HERE and refuse on empty; a
+    //  reader that returned a plausible default would be the printing table
+    //  again, one indirection further away.
+    std::string unitOf(const std::string& key) const
+    {
+        auto it = units.find(key);
+        return it == units.end() ? std::string() : it->second;
+    }
 
     //  WHICH RULE PRODUCED THE SIZE.  `VesselSize` computed exactly this
     //  string in three careful branches ("drum V = Q*tau", "catalyst V =

@@ -1700,11 +1700,31 @@ EquipmentSizing d;
 d.unitName       = unitName;
 d.equipmentType  = "myEquip";
 d.material       = material.name;
-d.values["V_R"]    =...;       // canonical size
-d.values["t_wall"] =...;       // m
-d.values["weight"] =...;       // kg
+d.set("V_R",    ..., "m3");    // canonical size
+d.set("t_wall", ..., "m");
+d.set("weight", ..., "kg");
 return d;
 \end{lstlisting}
+
+\begin{pitfall}
+\textbf{Declare the unit; never write \code{d.values[...]} directly.}
+\code{set()} is the one door, and it writes both the value and its unit.
+A value written past it reaches the reader with no unit, and the design
+sheet writer refuses it by name.
+
+The unit is a \emph{named} unit --- \code{m3}, \code{kW}, \code{bar},
+\code{W/(m2.K)}, or \code{-} for a dimensionless ratio --- spelled exactly
+as the dict grammar spells it, because it is printed into a file a student
+reads. It is not the \code{[M L T Theta N]} exponent vector: that form
+exists in the grammar too, in a different slot, and would read as noise on
+a specification sheet.
+
+\textbf{Declare the unit the value is actually in, and do not convert.}
+Choupo's sizing values are \emph{not} uniformly canonical SI --- there are
+values in \code{kW} and in \code{bar} in the shipped sizers --- and
+rebasing one to SI moves numbers in every golden that pins it. The unit
+travels so the reader knows; converting is a separate, deliberate act.
+\end{pitfall}
 
 Register in \code{EquipmentSize::registerBuiltins()}.
 

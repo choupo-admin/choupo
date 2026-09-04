@@ -61,9 +61,9 @@ EquipmentSizing EvaporatorSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "evaporator";
     d.material       = material.name;
-    d.values["A"]              = A;        // Guthrie sizeKey
-    d.values["A_m2"]           = A;
-    d.values["pressureDesign"] = P_des;
+    d.set("A",              A,           "m2");   // Guthrie sizeKey
+    d.set("A_m2",           A,           "m2");
+    d.set("pressureDesign", P_des,       "bar");
     return d;
 }
 

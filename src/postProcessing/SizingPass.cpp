@@ -150,12 +150,48 @@ int SizingPass::run(SimulationResult& result)
             auto sizer = EquipmentSize::New(utype);
             auto dims  = sizer->size(uname, result, material, rulesDict);
 
-            // Pick a canonical "size" to display.
+            //  Pick a canonical "size" to display, AND NAME ITS UNIT FROM
+            //  THE RECORD.  This block used to assert `V_R [m³]` and
+            //  `A [m²]` in string literals here, four call-frames from the
+            //  sizer that knows them -- a hand-written table for a fact the
+            //  engine already had, and the only place any sizing key's unit
+            //  was ever stated to a reader.  A sizer inventing a key this
+            //  table did not know printed it with no unit at all.
+            auto sized = [&](const char* key) -> std::string
+            {
+                const std::string u = dims.unitOf(key);
+                //  A key with no declared unit is NAMED, not silently
+                //  printed bare: the sheet writer refuses it and the reader
+                //  should see the same gap on the screen.
+                return u.empty() ? std::string(key) + " [unit not declared]"
+                     : u == "-"  ? std::string(key)
+                                 : std::string(key) + " [" + u + "]";
+            };
             std::string sizeKey;
             scalar      sizeVal = 0.0;
-            if      (dims.values.count("V_R")) { sizeKey = "V_R [m³]"; sizeVal = dims.values.at("V_R"); }
-            else if (dims.values.count("A"))   { sizeKey = "A [m²]";   sizeVal = dims.values.at("A");   }
-            const scalar t_mm = dims.values.count("t_wall") ? dims.values.at("t_wall") * 1000.0 : 0.0;
+            if      (dims.values.count("V_R")) { sizeKey = sized("V_R"); sizeVal = dims.values.at("V_R"); }
+            else if (dims.values.count("A"))   { sizeKey = sized("A");   sizeVal = dims.values.at("A");   }
+
+            //  The wall column is printed in MILLIMETRES and the record
+            //  declares metres, so the conversion is stated against the
+            //  DECLARED unit rather than assumed.  A sizer that one day
+            //  reports `t_wall` already in mm would otherwise be multiplied
+            //  by a thousand again, silently.
+            scalar t_mm = 0.0;
+            if (dims.values.count("t_wall"))
+            {
+                const std::string tu = dims.unitOf("t_wall");
+                if      (tu == "m")  t_mm = dims.values.at("t_wall") * 1000.0;
+                else if (tu == "mm") t_mm = dims.values.at("t_wall");
+                else
+                    AdvisoryLog::instance().add("design", "warning",
+                        "sizing '" + uname + "'",
+                        "wall thickness declares unit '"
+                        + (tu.empty() ? std::string("(none)") : tu)
+                        + "', which this table cannot convert to mm -- the"
+                          " `wall (mm)` column is left at 0 rather than"
+                          " printing a number in an unknown unit");
+            }
             const scalar w    = dims.values.count("weight") ? dims.values.at("weight") : 0.0;
 
             std::cout << "  " << std::left
@@ -198,7 +234,8 @@ int SizingPass::run(SimulationResult& result)
                     //  over, found because it was printed.
                     std::cout << "   (Q = N R T / P, IDEAL GAS, "
                               << std::defaultfloat << std::setprecision(6)
-                              << dims.values.at("Q_gas") << " m3/s -- not the"
+                              << dims.values.at("Q_gas") << " "
+                              << dims.unitOf("Q_gas") << " -- not the"
                                  " case's thermo package)";
                 std::cout << "\n";
             }

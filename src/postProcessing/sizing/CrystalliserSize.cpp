@@ -62,10 +62,10 @@ EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
     d.unitName       = unitName;
     d.equipmentType  = "crystalliser";
     d.material       = material.name;
-    d.values["V_magma"]        = V_magma;     // Guthrie sizeKey
-    d.values["liquorFlow"]     = lf->second;
-    d.values["residenceTime"]  = rt->second;
-    d.values["pressureDesign"] = P_des;
+    d.set("V_magma",       V_magma,      "m3");    // Guthrie sizeKey
+    d.set("liquorFlow",    lf->second,   "m3/s");
+    d.set("residenceTime", rt->second,   "s");
+    d.set("pressureDesign", P_des,       "bar");
     return d;
 }
 
