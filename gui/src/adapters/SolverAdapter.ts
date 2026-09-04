@@ -148,6 +148,23 @@ export interface OperationResult {
   /** The WHY behind the decision: model used, author rationale, source
    *  ("fitted"/"literature"/"assumed"/"undeclared"). Feeds the decision ledger. */
   provenance?: { [key: string]: string };
+  /** The CURATION axis: what MATURITY this answer claims, as words.
+   *
+   *  `verdict` is one of validated / notValidated / heldOutPerformed /
+   *  validationRefused / notClaimed, computed by the engine from a held-out
+   *  pass against a band declared BEFORE the fit, plus the band itself
+   *  (`acceptanceMaxAADPct`, `acceptanceOrigin`) and the evidence partition's
+   *  `partitionFingerprint`.
+   *
+   *  It is a DIFFERENT question from the identifiability verdict FitStatsPanel
+   *  already draws, and the two must never be merged: identifiability asks
+   *  whether the parameters are separately determined, this asks whether the
+   *  model survived evidence it never saw.  A fit can be green on one and red
+   *  on the other.
+   *
+   *  Absent = the op claims no maturity (not "the block did not run" -- every
+   *  op that computes a verdict publishes one, `notClaimed` included). */
+  curation?: { [key: string]: string };
 }
 
 /** Provenance of a raw experimental dataset (B1): where the lab data came from. */

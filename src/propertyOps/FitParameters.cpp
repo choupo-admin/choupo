@@ -1351,6 +1351,28 @@ int FitParameters::run(const DictPtr& dict,
         }
     }
 
+    //  ===================================================================
+    //  THE VERDICT IS TAKEN ONCE, HERE, AND EVERY SINK READS THIS ONE WORD.
+    //
+    //  `CurationDossier::verdictOf` is the one home for the RULE; it was
+    //  being CALLED three times, with three separately-assembled argument
+    //  lists, for one decision -- the console's, the dossier's and the
+    //  promotable record's.  Three sinks that recompute a decision can
+    //  disagree the day one argument list drifts, and one of them already
+    //  differed in a way nothing would have caught: the console's copy sat
+    //  INSIDE `if (verbosity >= 2)`, so at verbosity 0 or 1 the run took the
+    //  decision twice instead of three times.  A verdict that depends on how
+    //  loudly the run was asked to speak is not a verdict.
+    //
+    //  It is also what the MACHINE channel was missing.  The verdict reached
+    //  the human (console), the work record (dossier) and the promotable
+    //  file, and not the result JSON -- so the GUI's own fit panel could not
+    //  show it and no golden could pin it.  `validation()` below publishes
+    //  exactly this word, plus the band it was judged against.
+    const std::string curationVerdict = engaged
+        ? CurationDossier::verdictOf(*partPtr, nHeldOut > 0, aadHeldOut)
+        : std::string("notClaimed");
+
     if (verbosity >= 2)
     {
         std::cout << "\n  FIT QUALITY\n"
@@ -1390,8 +1412,7 @@ int FitParameters::run(const DictPtr& dict,
             else
                 std::cout << "    none declared BEFORE the fit.\n";
 
-            const std::string verdict = CurationDossier::verdictOf(
-                part, nHeldOut > 0, aadHeldOut);
+            const std::string& verdict = curationVerdict;   // taken once, above
             std::cout << "\n  VERDICT\n    " << verdict << "\n";
             if (verdict == "validationRefused")
                 std::cout << "    VALIDATION REFUSED: no independent"
@@ -1452,8 +1473,7 @@ int FitParameters::run(const DictPtr& dict,
         rec.hasAcceptance   = part.hasAcceptance();
         rec.acceptMaxAADPct = part.acceptanceMaxAADPct();
         rec.acceptOrigin    = part.acceptanceOrigin();
-        rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
-                                                 rec.aadHeldOutPct);
+        rec.verdict = curationVerdict;                     // taken once, above
         if (part.validationRefused())
             rec.refusal = "No independent experimental evidence remains after fitting.";
         CurationDossier::instance().add(
@@ -1496,9 +1516,7 @@ int FitParameters::run(const DictPtr& dict,
         std::ofstream f(proposal.outPath);
         if (f)
         {
-            const std::string verdict = engaged
-                ? CurationDossier::verdictOf(*partPtr, nHeldOut > 0, aadHeldOut)
-                : std::string("notClaimed");
+            const std::string& verdict = curationVerdict;  // taken once, above
 
             f << "/*---------------------------------------------------------------------------*\\\n"
               << "  fitParameters proposal -- pair " << proposal.pairName
@@ -1646,6 +1664,38 @@ int FitParameters::run(const DictPtr& dict,
     diag_["converged"] = converged ? 1.0 : 0.0;
     for (const auto& ps : params)
         diag_[ps.path] = ps.value;
+
+    //  ---- THE CURATION AXIS reaches the machine channel ------------------
+    //  The verdict, and the two facts a reader needs to judge it WITH: the
+    //  band declared before the fit, and where that band came from.  A
+    //  verdict published without its criterion is a badge; this project's
+    //  whole posture on fitting is "see, then decide", and the criterion is
+    //  half of what there is to see.
+    //
+    //  ALWAYS present, including `notClaimed` -- an op that ran and claims
+    //  nothing must say so, because an ABSENT key reads as "the block did not
+    //  run" and those are different states (core/AdvisorySummary.H makes the
+    //  same distinction for caveats).
+    curation_["verdict"] = curationVerdict;
+    if (engaged)
+    {
+        curation_["partitionFingerprint"] = partPtr->fingerprint();
+        if (partPtr->hasAcceptance())
+        {
+            std::ostringstream b;
+            b << partPtr->acceptanceMaxAADPct();
+            curation_["acceptanceMaxAADPct"] = b.str();
+            curation_["acceptanceOrigin"]    = partPtr->acceptanceOrigin();
+        }
+        else
+            //  NAMED, not omitted: "nobody said what would count as passing"
+            //  is a finding about the CASE, and the verdict above is
+            //  `heldOutPerformed` precisely because of it.
+            curation_["acceptanceMaxAADPct"] = "none declared before the fit";
+    }
+    else
+        curation_["evidence"] = "legacy inline residual.data ( ) -- every point"
+                           " fitted, no validation claimed";
 
     return converged ? 0 : 1;
 }

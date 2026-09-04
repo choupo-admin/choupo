@@ -587,7 +587,13 @@ try
     auto opsList = propsDict->lookupDictList("operations");
     struct OpResult { std::string name, type; std::map<std::string, scalar> diag;
                       std::map<std::string, std::string> prov;
-                      std::vector<std::string> head; };
+                      std::vector<std::string> head;
+                      //  The CURATION axis (maturity), kept apart from
+                      //  `diag` (numbers) and `prov` (where the data came
+                      //  from) -- see PropertyOperation::curation().  NOT
+                      //  `validation`: that key is already this document's
+                      //  top-level overlay AAD table.
+                      std::map<std::string, std::string> val; };
     std::vector<OpResult> opResults;
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
@@ -651,7 +657,7 @@ try
             verbosity);
 
         opResults.push_back({ opName, opType, diags, opProv,
-                              op->headline() });
+                              op->headline(), op->curation() });
     }
 
     // --- Experimental datasets: echo each to a CSV in the case dir -------
@@ -931,7 +937,22 @@ try
         std::size_t j = 0;
         for (const auto& [key, val] : orr.prov)
             std::cout << (j++ ? ", " : "") << "\"" << key << "\": \"" << val << "\"";
-        std::cout << "} }";
+        std::cout << "}";
+        //  CURATION -- emitted only when the op claims maturity at all, so
+        //  an absent object means "this op makes no such claim" and an empty
+        //  one is never printed to be mistaken for one.  jsonEscape, because
+        //  an acceptance ORIGIN is a curator's sentence and will contain
+        //  punctuation the raw `prov` loop above would not survive.
+        if (!orr.val.empty())
+        {
+            std::cout << ", \"curation\": {";
+            std::size_t v = 0;
+            for (const auto& [key, val] : orr.val)
+                std::cout << (v++ ? ", " : "") << "\"" << key << "\": "
+                          << jsonEscape(val);
+            std::cout << "}";
+        }
+        std::cout << " }";
     }
     std::cout << "\n  ]";
 

@@ -907,6 +907,27 @@ writes its intervals inline — *a pattern anchored where its subject does not
 live is a check that cannot fire.*  Gate: `check_dossier_grammar`.  Record:
 [`docs/design/what-a-promoted-record-must-carry.md`](docs/design/what-a-promoted-record-must-carry.md) (§6, §7 for the later slices).
 
+**A VERDICT PUBLISHED TO A HUMAN AND PINNED BY NOTHING (2026-09-04).**  Three
+fit ops decide a CURATION verdict from a held-out pass against a band declared
+BEFORE the fit; it reached the console, the dossier and the promotable record
+and NOT the result JSON — so the GUI's fit panel drew the *identifiability*
+verdict instead (a different question) and no golden could pin it.  Now
+`PropertyOperation::curation()` — the maturity axis, as WORDS, kept apart from
+`diagnostics()` (numbers) and `provenance {}` (where the data came from), and
+named `curation` because `validation` already names this document's overlay AAD
+table.  The decision is taken ONCE (it had three call sites, one of them inside
+`if (verbosity >= 2)` — a verdict must not depend on how loudly the run was
+asked to speak).  New golden row kind `verdict`, compared as a WORD with
+`exact`.  Traps paid for: `--record-append` carries a hard-coded kind allowlist
+that DROPS an unknown kind in silence, and drawing the five verdicts in the fit
+panel made a FOURTH hand-written home for that vocabulary — added to
+`check_verdict_parity` in the same commit.  NOT unified: the two op families
+print the verdict in two different console shapes, recorded rather than papered
+over.  Gates: `check_fit_verdict_channel` (its strongest arm requires every op
+that CALLS `verdictOf` to publish one — `heatCapacityFit` has no witness and
+only that arm catches it) · `check_verdict_parity`.  Record:
+[`docs/design/the-verdict-that-reached-everyone-except-the-machine.md`](docs/design/the-verdict-that-reached-everyone-except-the-machine.md).
+
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
 copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and

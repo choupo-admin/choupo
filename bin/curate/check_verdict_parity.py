@@ -10,6 +10,11 @@ the five verdicts a SECOND time, in TypeScript:
     src/propertyOps/CurationDossier.cpp   verdictOf() -- the authority
     gui/src/case/componentRecord.ts       type CurationVerdict -- the copy
     gui/src/ui/explore/ComponentInspector.tsx   VERDICT{} -- the rendering
+    gui/src/ui/FitStatsPanel.tsx                cMeans{} -- the FOURTH home,
+                                                added 2026-09-04 when the fit
+                                                verdict reached the machine
+                                                channel and the fit panel began
+                                                drawing it
 
 That is a scientific vocabulary with three homes, and the GUI tests could not
 catch a divergence because they check TypeScript against TypeScript.  Vitor
@@ -80,6 +85,12 @@ ROOT = Path(__file__).resolve().parents[2]
 CPP = ROOT / "src" / "propertyOps" / "CurationDossier.cpp"
 TS_UNION = ROOT / "gui" / "src" / "case" / "componentRecord.ts"
 TS_RENDER = ROOT / "gui" / "src" / "ui" / "explore" / "ComponentInspector.tsx"
+#  THE FOURTH HOME.  On 2026-09-04 the curation verdict was published into the
+#  result JSON so a PROGRAM could read it, and `FitStatsPanel` began drawing it
+#  for a fit.  That renderer spells the same five words a fourth time, which is
+#  precisely what this gate exists to stop going unwatched -- so it is added
+#  here in the same commit rather than left as a copy nothing compares.
+TS_FIT = ROOT / "gui" / "src" / "ui" / "FitStatsPanel.tsx"
 
 #  A file may make a held-out claim only if it CONSUMES a partition -- reads
 #  one, or asks it for its fit / held-out subsets.  Mentioning the class is not
@@ -210,18 +221,27 @@ def ts_render_keys(text: str) -> set:
     return set(re.findall(r"^\s*([A-Za-z]+)\s*:\s*\{", m.group(1), re.M)) if m else set()
 
 
+def ts_fit_keys(text: str) -> set:
+    """The fit panel's meaning table -- one entry per verdict it can explain."""
+    m = re.search(r"const cMeans: Record<string, string> = \{(.*?)\n  \};",
+                  text, re.S)
+    return set(re.findall(r"^\s*([A-Za-z]+):", m.group(1), re.M)) if m else set()
+
+
 def main() -> int:
     failures = []
 
     cpp = cpp_verdicts(CPP.read_text())
     union = ts_union(TS_UNION.read_text())
     render = ts_render_keys(TS_RENDER.read_text())
+    fitkeys = ts_fit_keys(TS_FIT.read_text())
 
     #  An empty harvest is a gate that cannot run, and a check that cannot run
     #  must not pass (the check_true_ions lesson, 2026-08-05).
     for label, got, path in (("verdictOf()", cpp, CPP),
                              ("CurationVerdict union", union, TS_UNION),
-                             ("VERDICT renderer table", render, TS_RENDER)):
+                             ("VERDICT renderer table", render, TS_RENDER),
+                             ("fit panel cMeans table", fitkeys, TS_FIT)):
         if not got:
             failures.append(
                 f"harvested NOTHING from {label} ({path.relative_to(ROOT)}) -- "
@@ -242,6 +262,14 @@ def main() -> int:
                 f"only in the union {sorted(union - render) or '-'}, "
                 f"only in the table {sorted(render - union) or '-'}.  A union "
                 f"member with no row renders as undefined.")
+        if cpp != fitkeys:
+            failures.append(
+                f"verdictOf() and the FIT PANEL's meaning table disagree: "
+                f"only in C++ {sorted(cpp - fitkeys) or '-'}, "
+                f"only in the panel {sorted(fitkeys - cpp) or '-'}.  A verdict "
+                f"the engine can publish and the panel cannot explain draws a "
+                f"grey badge with no sentence beside it -- the reader sees a "
+                f"word and is told nothing about what it means.")
 
     #  (b) THE CENSUS -- zero exceptions.  Any output string in src/ carrying
     #  the bare word must live in a file that CONSUMES a partition.
@@ -274,7 +302,10 @@ def main() -> int:
 
     print(f"check_verdict_parity: OK -- the {len(cpp)} curation verdicts "
           f"({', '.join(sorted(cpp))}) are spelled identically in "
-          f"CurationDossier.cpp, the TS union and the renderer table; every "
+          f"all FOUR of their homes -- CurationDossier.cpp (the authority), "
+          f"the TS union, the Component Inspector's renderer table and the fit "
+          f"panel's meaning table, the last added 2026-09-04 when the verdict "
+          f"reached the machine channel; every "
           f"human-visible \"validation\" in src/ ({scanned} file(s) carry the "
           f"word in an output string) sits where a partition is CONSUMED.  Does NOT check the dossier's written JSON, nor whether "
           f"a verdict is correct for a given fit.")

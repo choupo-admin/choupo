@@ -17,3 +17,5 @@ diag    psat_water_refused     R2               1                1e-4
 diag    psat_water_refused     dHvap_kJ_per_mol 42.1162          1e-4
 diag    psat_water_refused     n_heldout        0                1e-4
 diag    psat_water_refused     n_points         20               1e-4
+verdict psat_water_validated   verdict          validated        exact
+verdict psat_water_refused     verdict          validationRefused exact

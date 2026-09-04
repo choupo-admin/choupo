@@ -36,6 +36,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -223,6 +224,26 @@ int HeatCapacityFit::run(const DictPtr& dict,
         rec.acceptOrigin    = part.acceptanceOrigin();
         rec.verdict = CurationDossier::verdictOf(part, rec.heldOut,
                                                  rec.aadHeldOutPct);
+
+    //  THE CURATION AXIS reaches the machine channel (2026-09-04).  The
+    //  verdict this op computes went to the console and the curation dossier
+    //  and stopped there; the result JSON carried its numbers and not its
+    //  judgement, so no golden could pin it and the GUI could not show it.
+    //  Kept beside the dossier record so the two cannot say different words.
+    curation_["verdict"] = rec.verdict;
+    if (part.engaged())
+    {
+        curation_["partitionFingerprint"] = part.fingerprint();
+        if (part.hasAcceptance())
+        {
+            std::ostringstream ab;
+            ab << part.acceptanceMaxAADPct();
+            curation_["acceptanceMaxAADPct"] = ab.str();
+            curation_["acceptanceOrigin"]    = part.acceptanceOrigin();
+        }
+        else
+            curation_["acceptanceMaxAADPct"] = "none declared before the fit";
+    }
         if (part.validationRefused())
             rec.refusal = "No independent experimental evidence remains after fitting.";
         CurationDossier::instance().add(comp, std::move(rec));

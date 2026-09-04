@@ -83,6 +83,38 @@ public:
     // Concrete classes populate as appropriate (e.g. "n_points", "fit_chisq").
     virtual std::map<std::string, scalar> diagnostics() const { return {}; }
 
+    // THE CURATION AXIS -- what MATURITY the answer has, as WORDS.
+    //
+    // Kept apart from `diagnostics()` (numbers) and from the op dict's
+    // `provenance {}` (where the DATA came from) because the five-axes
+    // contract makes those three different questions, and this project has
+    // already paid once for collapsing two of them: the promoted pair record
+    // carried the ORIGIN word in the slot that says where the data came from,
+    // and its own reader deprecated it (2026-09-03).
+    //
+    // WHY IT EXISTS AT ALL.  `fitParameters` computes a curation verdict --
+    // validated / notValidated / heldOutPerformed / validationRefused /
+    // notClaimed -- from a held-out pass against a band declared BEFORE the
+    // fit.  It printed that verdict to the console, wrote it into the curation
+    // dossier, and stamped it on the promotable record; the result JSON, the
+    // one channel a PROGRAM reads, carried three numbers and no verdict.  So
+    // the GUI's own fit panel could not show it and no golden could pin it --
+    // published to a human, pinned by nothing, which is the inverse of this
+    // project's published-implies-pinned rule.
+    //
+    // An op with nothing to claim returns empty, and empty MEANS "this op
+    // claims no maturity", never "the block did not run".
+    // NAMED `curation`, NOT `validation`, and the reason is in the document
+    // it is emitted into: choupoProps' result JSON ALREADY carries a
+    // top-level `"validation": [...]` -- the overlay table of AADs against
+    // measured data.  That is a different question (how far is the model from
+    // the data?) from this one (what maturity does this fit claim?), and one
+    // word naming two things in one document is the defect this project spent
+    // a slice removing when `T_top` meant two temperatures.  The verdict's own
+    // vocabulary is curation: CurationDossier, the curation dossier, the
+    // curate0N witnesses.
+    virtual std::map<std::string, std::string> curation() const { return {}; }
+
     // The op's OWN ranking of its answer: which diagnostic keys are the
     // headline (shown first / emphasised in the GUI's Results epilogue).
     // Default empty = no ranking, every diagnostic shown equally.  Keys the

@@ -23,3 +23,4 @@ diag    thermoml_fixture_bubble rms              0.309202676456   1e-4
 diag    thermoml_fixture_bubble t_crit95         3.182            1e-4
 diag    thermoml_fixture_bubble well_conditioned 0                1e-4
 diag    thermoml_fixture_bubble aad_heldout_K    0.187890937011   1e-4
+verdict thermoml_fixture_bubble verdict          validated        exact

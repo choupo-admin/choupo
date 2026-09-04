@@ -49,7 +49,7 @@ License
   tau = a + b/T at a single temperature makes a and b/T collinear).
 \*---------------------------------------------------------------------------*/
 
-import { Alert, Badge, Box, Group, Stack, Table, Text, Title } from "@mantine/core";
+import { Alert, Badge, Box, Group, Stack, Table, Text, Title, Tooltip } from "@mantine/core";
 
 import type { OperationResult } from "../adapters/SolverAdapter.js";
 import type { JsonDict } from "../dict/index.js";
@@ -135,12 +135,81 @@ function OneFit({ fit, paths }: { fit: OperationResult; paths: string[] }) {
   if (atBound > 0)
     reasons.push(`${atBound} parameter(s) pinned at a bound — the optimum may lie outside the allowed range; widen the bounds and refit`);
 
+  /*  THE CURATION VERDICT, AND WHY IT IS A SECOND BADGE RATHER THAN A BETTER
+   *  ONE.  This panel already carries a verdict, and it answers "are these
+   *  parameters separately determined?".  The engine also decides something
+   *  else entirely -- did the model reproduce evidence THE FIT NEVER SAW,
+   *  inside a band declared BEFORE the fit -- and until 2026-09-04 that word
+   *  reached the console, the curation dossier and the promotable record and
+   *  never the result JSON, so this panel could not have shown it.
+   *
+   *  The two are ORTHOGONAL and a fit can be green on one and red on the
+   *  other: `fitNRTL02` is `heldOutPerformed` (the test ran, nobody declared
+   *  what would count as passing) while being perfectly identifiable, and
+   *  `curate01` carries `validated` and `validationRefused` on the same
+   *  property from two ops.  Merging them into one badge would destroy
+   *  exactly the distinction this project's fitting doctrine is built on --
+   *  "reproduces what it was given" is not "survives what it never saw" --
+   *  so they sit side by side, each labelled with the question it answers. */
+  const cur = fit.curation ?? {};
+  const cVerdict = cur.verdict;
+  const cColor: Record<string, string> = {
+    validated: "teal", notValidated: "red", heldOutPerformed: "yellow",
+    validationRefused: "orange", notClaimed: "gray",
+  };
+  const cMeans: Record<string, string> = {
+    validated:
+      "the model reproduced evidence it never saw, inside a band declared BEFORE the fit",
+    notValidated:
+      "the held-out test ran and the band declared before the fit was MISSED",
+    heldOutPerformed:
+      "the held-out test ran, but nobody declared what would count as passing — so no verdict is claimed on it",
+    validationRefused:
+      "no independent evidence remains after fitting; the statistics below are IN-SAMPLE and are not an external check",
+    notClaimed:
+      "this operation claims no validation: every point was fitted",
+  };
+
   return (
     <Box>
       <Group justify="space-between" align="center" mb={6}>
         <Title order={5} c="accent">{fit.name}</Title>
-        <Badge color={verdictColor} variant="light" size="lg">{verdictTitle}</Badge>
+        <Group gap={6} wrap="nowrap">
+          {cVerdict && (
+            <Tooltip
+              label={`Curation verdict — ${cMeans[cVerdict] ?? "see the run log"}`}
+              withArrow multiline w={300}>
+              <Badge color={cColor[cVerdict] ?? "gray"} variant="filled" size="lg"
+                style={{ textTransform: "none" }}>{cVerdict}</Badge>
+            </Tooltip>
+          )}
+          <Badge color={verdictColor} variant="light" size="lg">{verdictTitle}</Badge>
+        </Group>
       </Group>
+
+      {cVerdict && (
+        <Alert color={cColor[cVerdict] ?? "gray"} variant="light" mb="sm"
+          title="Did it survive evidence it never saw?">
+          <Text size="sm">{cMeans[cVerdict] ?? cVerdict}</Text>
+          {cur.acceptanceMaxAADPct && (
+            <Text size="xs" c="dimmed" mt={4}>
+              Criterion: {cur.acceptanceMaxAADPct === "none declared before the fit"
+                ? "none declared before the fit"
+                : `AAD ≤ ${cur.acceptanceMaxAADPct} %`}
+              {cur.acceptanceOrigin ? ` — ${cur.acceptanceOrigin}` : ""}
+            </Text>
+          )}
+          {cur.partitionFingerprint && (
+            <Text size="xs" c="dimmed">
+              Evidence partition frozen before the fit · fingerprint {cur.partitionFingerprint}
+            </Text>
+          )}
+          <Text size="xs" c="dimmed" mt={4}>
+            A different question from the badge beside it, which asks whether
+            the parameters are separately identifiable.
+          </Text>
+        </Alert>
+      )}
 
       {trouble && (
         <Alert color={verdictColor} variant="light" mb="sm" title="What the statistics say">

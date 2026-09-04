@@ -47,3 +47,4 @@ diag    score_catalogue_pair_at_vacuum penalised_points 0                1e-4
 diag    score_catalogue_pair_at_vacuum rms              0.161920300802   1e-4
 diag    score_catalogue_pair_at_vacuum sse              1.17981827153    1e-4
 diag    score_catalogue_pair_at_vacuum validity_declared 0                1e-4
+verdict fit_NRTL_across_isobars verdict          heldOutPerformed exact

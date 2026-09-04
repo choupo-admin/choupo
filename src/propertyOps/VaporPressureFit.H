@@ -81,10 +81,16 @@ public:
     { return { "R2", "dHvap_kJ_per_mol" }; }
 
     std::map<std::string, scalar> diagnostics() const override { return diag_; }
+    //  The CURATION axis (maturity), as WORDS -- see
+    //  PropertyOperation::curation().  NOT `validation`: that key
+    //  already names this document's top-level overlay AAD table.
+    std::map<std::string, std::string> curation() const override
+    { return curation_; }
 
 private:
     std::string type_ = "vaporPressureFit";
     std::map<std::string, scalar> diag_;
+    std::map<std::string, std::string> curation_;
 };
 
 } // namespace Choupo

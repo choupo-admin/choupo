@@ -147,6 +147,17 @@ public:
         return diag_;
     }
 
+    //  THE CURATION AXIS -- the verdict and the band it was judged against,
+    //  as WORDS, for the channel a program reads.  See
+    //  PropertyOperation::curation() for why this is not `diagnostics()`
+    //  (numbers), not the dict's `provenance {}` (where the data came from),
+    //  and not named `validation` (that word is already taken, one level up,
+    //  by the overlay AAD table).
+    std::map<std::string, std::string> curation() const override
+    {
+        return curation_;
+    }
+
 private:
     // fit keeps its historical trio; evaluate swaps in its honest scores.
     std::vector<std::string> headline_ =
@@ -161,6 +172,7 @@ private:
 
     inline static const std::string type_ = "fitParameters";
     std::map<std::string, scalar>   diag_;
+    std::map<std::string, std::string> curation_;
 };
 
 } // namespace Choupo
