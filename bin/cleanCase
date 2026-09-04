@@ -35,17 +35,35 @@
 #      *.log            (legacy)
 #      processor*       (placeholder for future parallel runs)
 #      reports/         (the reports{} output tree: CSV, .ods, sub-folders)
+#      design/          (the equipment specification sheets)
 #      trajectory.csv   (choupoBatch / choupoCtrl time series)
 #      code/.build/     (per-case compiled binary from buildCode)
+#      0.01/ 0.02/ ...  (all-numeric transient instants)
 #
 #  Source files (controlDict, flowsheetDict, thermoPackage, code/*.cpp, ...)
 #  are NEVER touched.
+#
+#  DELIBERATELY NOT REMOVED, and said here because a list of what a cleaner
+#  removes is read as the list of what is generated:
+#      converged/       the solved state.  It is generated, but a DRILL-IN
+#                       materialises a child case's `0/` FROM it, so deleting
+#                       it silently destroys the input of a workflow the
+#                       architecture supports.
+#      postProcessing/  the `reportsLayout postProcessing;` tree, the modern
+#                       home of what `reports/` holds in the default layout.
+#  Both are gitignored, so neither dirties a checkout.  Whether this tool
+#  should offer to take them is an open question, not an oversight -- it is
+#  recorded here rather than answered by a pattern nobody argued for.
 # =============================================================================
 
 set -euo pipefail
 
 if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
-    sed -n '3,12p' "$0" | sed 's/^# \{0,1\}//'
+    #  The USAGE block, not the licence banner.  This read lines 3-12, which
+    #  is the ASCII logo and the first line of the GPL notice -- so
+    #  `cleanCase --help`, the one thing a reader types before deleting
+    #  files, printed no usage at all.
+    sed -n '31,53p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
 fi
 
@@ -58,7 +76,7 @@ fi
 count=0
 
 # Top-level generated artifacts (logs, reports/ tree, trajectory.csv, ...).
-for pat in 'log.*' '*.log' 'processor[0-9]*' 'reports' 'trajectory.csv'; do
+for pat in 'log.*' '*.log' 'processor[0-9]*' 'reports' 'design' 'trajectory.csv'; do
     while IFS= read -r -d '' f; do
         rm -rf "$f"
         count=$((count + 1))

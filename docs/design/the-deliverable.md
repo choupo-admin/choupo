@@ -121,6 +121,12 @@ reports/balances/*.csv              the three conservation reports
 * **`design` and `economics` still run by declaration only.**  Whether they
   should join the three default reports is a corpus-wide behaviour change
   (every case that sizes would start writing files) and is reserved.
+  **The stated cost was PAID on 2026-09-04, by another route:** every case that
+  sizes now writes `design/<SECTOR>/<unit>/<tag>` specification sheets, because
+  those ride the `sizing {}` PASS in `postDict` and not the `reports {}` block.
+  What stays reserved is narrower than this sentence reads -- whether the two
+  REPORT KINDS join the three defaults.  Record:
+  [`the-specification-sheet-a-project-is-audited-from.md`](the-specification-sheet-a-project-is-audited-from.md).
 * The `reports {}` grammar is `kind { }`, and writing `kind;` refuses with a
   message that says what is wrong and **not what is right** — the same defect
   the missing-key hint closed for dictionaries.  Not fixed here.

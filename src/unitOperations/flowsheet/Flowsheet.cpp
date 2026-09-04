@@ -2630,6 +2630,14 @@ int Flowsheet::solve(const DictPtr& dict,
             tears.push_back(ct.qualifiedName);
     }
 
+    //  THE TEAR LIST IS FINAL HERE, which is why the plan validator below is
+    //  allowed to read it -- so this is where it is stamped for every reader
+    //  downstream.  Recovering it later from the authored `tearStreams ( ... )`
+    //  words means matching a qualified name against a bare one on its last
+    //  dotted segment; that is name identity, and it misfiles any two streams
+    //  sharing a leaf name across two sectors.
+    tears_ = tears;
+
     // ---- Sequential-plan validation (tear/order contract, 2026-07-25) ----
     //  Runs the moment the tear list is FINAL and before any state work, so
     //  an invalid plan refuses before seeding noise.  -init0 keeps its own

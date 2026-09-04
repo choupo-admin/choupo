@@ -131,6 +131,7 @@ Description
 #pragma once
 
 #include "streams/ProcessStream.H"
+#include "core/PortRoles.H"
 #include "result/SimulationResult.H"   // FlatUnit (flattened unit interface)
 #include "core/Types.H"
 
@@ -282,7 +283,13 @@ private:
     // is consumed but never produced (Dirichlet); a product is produced but
     // never consumed; a tear is an internal torn stream; everything else is an
     // ordinary interior stream (no tag).
-    enum class Bc { Feed, Product, Tear, Interior };
+    //  THE ROLE VOCABULARY LIVES IN `core/PortRoles.H`, not here.  This
+    //  enum and the role->word mapping used to be private to this class,
+    //  with the mapping as a lambda inside the function that printed it;
+    //  the equipment specification sheet needs the same answer, and a
+    //  second "is this stream a feed?" would be two homes for one fact,
+    //  agreeing today and drifting the first time a role is added.
+    using Bc = PortRoles::Role;
 
     std::string                caseRoot_;      // the case root (instants live here)
     SolutionControl            cfg_;

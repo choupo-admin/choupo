@@ -249,6 +249,15 @@ public:
     // flowsheetDict at the top would only expose the boundary).
     const std::vector<FlatUnit>& topology() const { return topology_; }
 
+    //  THE RESOLVED TEAR LIST -- the qualified, flattened names the outer
+    //  loop actually cut, not the bare words the case declared.  A composite
+    //  sector's recycle enters as `SECTOR.stream`; the authored word is
+    //  `stream`.  Recovering one from the other outside the engine means
+    //  matching on the last dotted segment, which is the name identity this
+    //  project bans, and which misfiles any two streams sharing a leaf name
+    //  across sectors.  So it travels as data, from the moment it is final.
+    const std::vector<std::string>& tearStreams() const { return tears_; }
+
     // Energy wires resolved during the last solve().  See
     // EnergyWire in SimulationResult.H.  The value reflects the FINAL
     // converged pass (after the recycle loop, where applicable).
@@ -317,6 +326,11 @@ private:
     std::map<std::string,std::string>                      boundaryAliasOf_;  // alias -> source identity
     std::vector<ModelBoundaryFinding>                      modelBoundaries_;
     std::vector<FlatUnit>                                  topology_;
+
+    //  The tear list AS RESOLVED (see `tearStreams()`).  Stamped once, at
+    //  the moment the list is final -- the same instant the sequential-plan
+    //  validator is allowed to read it.
+    std::vector<std::string>                               tears_;
     std::vector<EnergyWire>                                energyWires_;
     std::map<std::string, std::map<std::string, scalar>>   unitKpis_;
     std::map<std::string, std::vector<scalar>>             unitResiduals_;

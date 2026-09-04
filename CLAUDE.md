@@ -946,6 +946,53 @@ userOps tutorials as violations.  Gate: `check_mass_closure`.  RESERVED for
 Vítor: whether a sweep reports on its final point.  Record:
 [`docs/design/a-dryer-that-ended-wetter-than-it-started.md`](docs/design/a-dryer-that-ended-wetter-than-it-started.md).
 
+**THE SPECIFICATION SHEET A PROJECT IS AUDITED FROM (2026-09-04).**  A student
+hands in a final-year project and somebody must audit it PER UNIT OPERATION:
+what goes in, what comes out, what was sized, what it costs.  Those three
+answers lived in three unrelated places, none per unit and none where anybody
+audits — the ports only inside `iterations/` (opt-in, off by default,
+numerical history), the sizing in two flat CSVs, the cost beside it — and
+`design/` was a ratified directory NAME nothing had ever written.  Now
+`design/<SECTOR>/<unit>/<equipmentTag>`, ONE dictionary per physical item,
+regenerated whole every run like `converged/`.  **The shape is 1:N with N = 1**,
+which honours §2.8's "one unit may realise MANY items" without building the
+`system/designDict` it names (no reader anywhere): a column that one day
+yields five gains siblings and nothing above changes.  **The durable half is
+D4, and it is OpenFOAM's rule:** an object declares its own dimensions, so
+adding one touches no reader.  `EquipmentSizing::set(key, value, unit)` is the
+one door; the units had been living in `//` comments and in a hand-written
+table four call frames away inside the pass that PRINTS them — the fifth such
+home this project has closed — and the migration found that the values are
+**not all canonical SI** (`power`/`Q_kW` in kW, `pressureDesign` in bar,
+micrometres, rpm; six keys carrying their unit inside the KEY NAME).  Nothing
+was converted: rebasing on SI moves numbers in every golden that pins them.
+**A dimensionless value declares `[0 0 0 0 0]`**, because omitting the unit
+writes the grammar's raw-SI form and a reader cannot then tell a declared
+ratio from a forgotten declaration — the exact ambiguity the slice exists to
+end, found by the gate reporting a false positive that was really a format
+defect.  Traps paid for: a port mass computed as `F * Σ z_i MW_i` **drops the
+crystals** (437 kg/h on one stream, while that unit's own balance closed at
+100.0000 %) — `StreamMass::F_massTotal` is the home, and its header describes
+this very mistake, made before, by someone else; the first gate draft
+**patched a source and rebuilt the engine**, which is the 2026-08-18
+tree-poisoning shape that only `check_gate_selftest` may take, so the refusal
+was fired BY HAND under the journal instead — and that firing found a SECOND
+defect, a `throw` inside the per-unit loop leaving a PARTIAL tree that lies by
+omission; and **`**/design/` swallows `docs/design/`**, this project's own
+records, silently, for every NEW file.  The ignore rule is not tidiness: the
+GUI bundle is a Vite glob that inlines every tutorial file as a raw string, so
+a committable run output is one machine's stale sizing baked into the shipped
+site (second lock in the glob itself).  `bin/cleanCase` would have left the
+tree behind while announcing a removal count, and its `--help` printed the GPL
+notice instead of the usage.  NOT done: no `designDict`, no new sizing content
+(the sheet draws what `SizingPass` computes and invents no field), and it does
+NOT reach the GUI — the case tree groups by the FIRST path segment and the
+MEMFS harvest is hard-coded to the literal `"/case/converged/"`.  Gate:
+`check_design_sheet` (its load-bearing arm reads `massBalance_byUnit.csv`, a
+report this writer does not produce, which is what caught the crystals).
+Record:
+[`docs/design/the-specification-sheet-a-project-is-audited-from.md`](docs/design/the-specification-sheet-a-project-is-audited-from.md).
+
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
 knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
 it concatenated that into the qualified name and kept only the string, so
@@ -960,7 +1007,10 @@ SECTOR CALLED "root"**: a flat case gains no key, no banner, no column and no
 block, and that was verified byte-identical against a build of the previous
 commit rather than argued.  Gate: `check_sector_hierarchy` — its strongest arm
 is a SOURCE arm, because no output arm can tell a correct stamp from a correct
-split.  RESERVED for Vítor: making `design`/`economics` run by default.
+split.  RESERVED for Vítor: making the `design`/`economics` REPORT KINDS run by
+default (they are declared in `controlDict`'s `reports {}`).  Not affected by
+the 2026-09-04 specification sheets, which ride the `sizing {}` PASS in
+`postDict` instead.
 Record:
 [`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
 

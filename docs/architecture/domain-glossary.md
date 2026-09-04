@@ -181,7 +181,7 @@ length 1.  There is no "standalone" mode.
 **Unit** (unit operation) — CANONICAL.  A node in the flowsheet graph, with a
 `type`, an optional `model`, and an `operation` block.  A unit is **not** a
 piece of equipment: equipment is a post-processing realisation
-(`designDict` → `design/`), and one unit may become several.
+(postDict's `sizing {}` → `design/`), and one unit may become several.
 
 **World** — CANONICAL (a Choupo coinage).  The thermodynamic context a unit
 computes in: its resolved property package, which may be the global one or a

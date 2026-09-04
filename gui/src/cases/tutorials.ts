@@ -65,6 +65,14 @@ const CASE_FILES = import.meta.glob(
   [
     "../../../tutorials/*/*/**/*",
     "!../../../tutorials/**/reports/**",
+    // Equipment specification sheets: a RUN OUTPUT, regenerated whole on
+    // every run like `converged/`.  Gitignored, so today the glob cannot
+    // reach one -- this line is the second lock, because the first is one
+    // `.gitignore` edit away from being gone and the failure is invisible:
+    // a committed sheet becomes a raw string in the shipped bundle, and one
+    // machine's stale sizing is served to every visitor before they run
+    // anything.
+    "!../../../tutorials/**/design/**",
     "!../../../tutorials/**/.build/**",
     "!../../../tutorials/**/log.*",
     "!../../../tutorials/**/trajectory.csv",

@@ -100,6 +100,15 @@ struct SimulationResult
     std::map<std::string,std::string>                              boundaryAliasOf;
     std::map<std::string, std::map<std::string, scalar>>           kpis;
     std::vector<FlatUnit>                                          topology;
+
+    //  THE RESOLVED TEAR STREAMS -- the qualified, flattened names the outer
+    //  loop cut.  Topology, like `topology` above, and here for the same
+    //  reason: every reader that needs to know whether a stream is a torn
+    //  recycle edge would otherwise recover it by matching the authored bare
+    //  word against a qualified name on its LAST DOTTED SEGMENT.  That is the
+    //  name identity this project bans, and it misfiles any two streams that
+    //  share a leaf name across sectors.  Empty for a tear-free flowsheet.
+    std::vector<std::string>                                       tearStreams;
     std::map<std::string, std::vector<scalar>>                     convergence;
     std::map<std::string, UnitProfile>                             profiles;
     std::map<std::string, EquipmentSizing>                         sizings;

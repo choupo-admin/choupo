@@ -117,8 +117,13 @@ arithmetic behind it.
 ## 5.  Deliberately NOT done
 
 * **The `design` and `economics` reports still do not run by default.**  A
-  case must declare them in `system/postDict`.  Making them default changes
-  the behaviour of the entire corpus and is RESERVED for Vítor.
+  case declares them in `controlDict`'s `reports {}` block -- NOT in
+  `system/postDict`, which declares the sizing and costing PASSES; this bullet
+  named the wrong file.  Making them default changes the behaviour of the
+  entire corpus and is RESERVED for Vítor.  Note since 2026-09-04: declaring
+  the `sizing {}` PASS alone is now enough to get `design/` specification
+  sheets on disk, so the "changes the behaviour of the entire corpus" premise
+  is about the two report kinds only.
 * **The GUI does not read the sector yet.**  The Plot menu is a flat list;
   turning it into a tree (global / sectors / unit operations) is Vítor's
   request of the same day and is its own slice, whose prerequisite this work

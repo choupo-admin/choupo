@@ -70,6 +70,7 @@ Description
 #include "thermo/adsorbent/AdsorbentRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
+#include "io/DesignSheetWriter.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
@@ -270,6 +271,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     r.boundaryAliasOf  = flowsheet.boundaryAliasOf();
     r.kpis        = flowsheet.unitKpis();
     r.topology    = flowsheet.topology();
+    r.tearStreams = flowsheet.tearStreams();
     r.energyWires = flowsheet.energyWires();
     r.modelBoundaries = flowsheet.modelBoundaries();
     r.convergence = flowsheet.unitResiduals();
@@ -978,6 +980,35 @@ try
                       << ")\n";
     };
 
+    //  THE EQUIPMENT SPECIFICATION SHEETS.  One dictionary per physical item
+    //  under `design/<SECTOR>/<unit>/<tag>`, written whenever a sizing pass
+    //  produced anything -- the same posture as `converged/`: removed and
+    //  rewritten whole, never edited, never read back.
+    //
+    //  It rides here rather than inside `SizingPass` because the pass is a
+    //  PostProcessor and a PostProcessor's contract is to augment the result;
+    //  the sheet is a projection of the finished result, and it needs the
+    //  costs, which a LATER pass adds.
+    auto writeDesignSheets = [&](const SimulationResult& result) {
+        if (!result.converged) return;
+        try {
+            //  Built HERE, from the same declaration `writeConverged` builds
+            //  from, because the port mass flows are `F_massTotal` and that
+            //  needs the package's molar masses AND its solid indices.
+            ThermoPackage tp;
+            tp = ThermoPackageBuilder::build(packageDict, db, chemPtr);
+            DesignSheetWriter::write(fs::current_path().string(), result,
+                                     tp, verbosity);
+        } catch (const std::exception& e) {
+            //  A sheet that cannot be written must SAY so and must not kill
+            //  the run: the answer is already computed and the reports are
+            //  already on screen.  The same posture the report chain took
+            //  when one failing member used to kill every report after it.
+            std::cerr << "\nWARNING: the equipment specification sheets were"
+                         " not written:\n  " << e.what() << "\n";
+        }
+    };
+
     // ---- 0/ COMPLETENESS validator (arch doc rule 8.2, no heuristics) ------
     //  When the case ran from a `0/` state directory, the graph's stream IDs
     //  must correspond EXACTLY to the state files: N declared streams == N files.
@@ -1067,6 +1098,7 @@ try
             runReports(r);
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
+            writeDesignSheets(r);
         }
         else if (reportsDict && !reportsDict->keys().empty())
         {
@@ -1156,6 +1188,7 @@ try
         runReports(result);
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
+        writeDesignSheets(result);
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

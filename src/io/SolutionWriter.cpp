@@ -167,26 +167,13 @@ std::map<std::string, SolutionWriter::Bc> SolutionWriter::classifyStreams(
     const std::set<std::string>&                 tearSet,
     const std::map<std::string, ProcessStream>&  streams) const
 {
-    std::set<std::string> produced;   // appears as some unit's output
-    std::set<std::string> consumed;   // appears as some unit's input
-    for (const auto& u : units)
-    {
-        for (const auto& in  : u.ins)  consumed.insert(in);
-        for (const auto& out : u.outs) produced.insert(out);
-    }
-
-    std::map<std::string, Bc> roles;
-    for (const auto& [name, s] : streams)
-    {
-        (void)s;
-        if (tearSet.count(name))                    roles[name] = Bc::Tear;
-        else if (consumed.count(name) && !produced.count(name))
-                                                    roles[name] = Bc::Feed;
-        else if (produced.count(name) && !consumed.count(name))
-                                                    roles[name] = Bc::Product;
-        else                                        roles[name] = Bc::Interior;
-    }
-    return roles;
+    //  ONE HOME: `core/PortRoles.H`.  This body was the classification
+    //  itself until the design sheet needed the same answer; it forwards
+    //  now so the two writers can never disagree about whether a stream is
+    //  a feed.
+    std::set<std::string> names;
+    for (const auto& [name, s] : streams) { (void)s; names.insert(name); }
+    return PortRoles::classify(units, tearSet, names);
 }
 
 // ---------------------------------------------------------------------------
@@ -365,17 +352,11 @@ void SolutionWriter::writeByUnit(
     const fs::path byUnit = fs::path(baseDir) / "byUnit";
     fs::create_directories(byUnit, ec);
 
+    //  The role WORDS come from `core/PortRoles.H` too: they are written
+    //  into files a student opens, so they belong beside the enum they
+    //  name and not inside whichever function happened to print first.
     auto roleWord = [&](const std::string& g) -> std::string {
-        auto it = roles.find(g);
-        if (it == roles.end()) return "interior";
-        switch (it->second)
-        {
-            case Bc::Feed:     return "fixedValue";
-            case Bc::Product:  return "computed";
-            case Bc::Tear:     return "tear";
-            case Bc::Interior: return "interior";
-        }
-        return "interior";
+        return PortRoles::word(PortRoles::of(roles, g));
     };
 
     for (const auto& u : viewUnits)

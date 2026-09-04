@@ -232,6 +232,27 @@ iterations/
 **/converged/
 **/iterations/
 
+# equipment specification sheets (regenerated WHOLE by the solver, like
+# converged/).  This entry is not tidiness: the GUI bundle is assembled by a
+# Vite glob over tutorials/*/*/**/* that inlines every matching file as a raw
+# string into the browser build (gui/src/cases/tutorials.ts).  A run output
+# that is committable is therefore a run output that gets BAKED INTO THE
+# SHIPPED SITE -- one machine's stale sizing sheets served to every visitor
+# before they run anything.  That is why the glob is safe today, and it stays
+# safe only while every generated tree is listed here.
+#
+# SCOPED TO CASES, and the scope is load-bearing: a bare `**/design/` also
+# swallows `docs/design/`, this project's home for its design records.  The
+# 135 already tracked would have survived (git never ignores a tracked file)
+# and every NEW record would have been ignored in SILENCE -- in a tree whose
+# own rule is "write the record before you promote".  Verified both ways with
+# `git check-ignore` before this line was written.
+tutorials/**/design/
+#  The one case root outside `tutorials/` is `docs/design/flashComplex/`,
+#  which lives INSIDE the directory the rule above must not touch -- so it is
+#  named, rather than reached by a pattern that would take the records with it.
+docs/design/flashComplex/design/
+
 # F3: projected local unit runs (regenerable artifacts, never authored state)
 **/.runs/
 

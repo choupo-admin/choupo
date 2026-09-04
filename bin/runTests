@@ -4410,6 +4410,23 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/sectorh.$$
 
+    # Design-sheet gate (2026-09-04): every sized unit gets ONE dictionary at
+    # `design/<SECTOR>/<unit>/<equipmentTag>` carrying its inlets, outlets,
+    # sizing (each value with the unit its sizer DECLARED) and cost -- the page
+    # somebody auditing a final-year project opens.  The strongest arm is the
+    # one that reads a report this writer does not produce: each sheet's port
+    # mass flows must sum to the unit's row in massBalance_byUnit.csv, which is
+    # what caught a first draft computing the port mass without the crystals.
+    if "$ROOT/bin/curate/check_design_sheet.py" > /tmp/designsheet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "design-sheet-gate" "$(tail -1 /tmp/designsheet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_design_sheet.py)\n" "design-sheet-gate"
+        cat /tmp/designsheet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/designsheet.$$
+
     # Mass-closure gate (2026-09-04): no steady case may ship a plant that does
     # not conserve mass, and a case that DECLARES a balance report and never
     # gets one fails by name.  Built after Vitor found a 113 % closure on the

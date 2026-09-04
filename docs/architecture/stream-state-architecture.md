@@ -75,7 +75,8 @@ lithiumBrinePlant/
 │   ├── controlDict
 │   ├── flowsheetDict     global domain assembly (units + inter-sector links)
 │   ├── solverDict        tears, convergence, numerics
-│   ├── designDict        [optional] process-unit -> physical-equipment mapping
+│   ├── designDict        [RATIFIED, NO READER] process-unit -> equipment mapping.
+│   │                       `design/` is filled by postDict's `sizing {}`, not by this.
 │   └── economicsDict     [optional] economic-analysis configuration
 ├── constant/         model + data that do not change during execution
 │   ├── thermoPhysPropDict   the declared thermophysical system (v2)
@@ -94,7 +95,8 @@ lithiumBrinePlant/
 ├── converged/        CONVERGED STEADY STATE       (same tree as 0/)
 ├── iterations/       [optional] numerical history  000001/ 000002/ …   NEVER physical time
 ├── 0.01/ 0.02/ …     PHYSICAL TRANSIENT TIME snapshots
-├── design/           PHYSICAL EQUIPMENT REALISATION  (BRINE/EV-101/{design,geometry,rating} …)
+├── design/           PHYSICAL EQUIPMENT REALISATION  (BRINE/EV-101/crystalliser …)
+│                     ONE dictionary per equipment item -- see below
 ├── economics/        COST & VALUE  (equipment/ · sectors/ · plant)
 └── postProcessing/   reports/ plots/ pinch/ comparisons/
 ```
@@ -189,9 +191,25 @@ state is ever selected silently.
 ### 2.8 Process unit is NOT physical equipment
 A flowsheet unit is a MATHEMATICAL/process operation; design equipment is a
 PHYSICAL object. One process unit may realise MANY physical items (a column
-model → shell + condenser + reboiler + reflux drum + pumps). `system/designDict`
-maps process models → equipment; `design/` stores the calculated equipment
-results.
+model → shell + condenser + reboiler + reflux drum + pumps). `design/` stores
+the calculated equipment results.
+
+**IMPLEMENTED 2026-09-04, and the shape differs from the sketch above in two
+ways that are decisions, not drift.**  `src/io/DesignSheetWriter.cpp` writes
+`design/<SECTOR>/<unit>/<equipmentTag>` — a `<unit>` level this section did
+not have, and ONE file per item rather than the `{design,geometry,rating}`
+triple.  Both were argued in
+[`docs/design/the-specification-sheet-a-project-is-audited-from.md`](../design/the-specification-sheet-a-project-is-audited-from.md):
+the unit level makes the shape 1:N with N = 1 today, so a column yielding five
+items gains siblings and nothing above changes; the single file is because
+somebody auditing a final-year project opens ONE thing and reads it top to
+bottom, and three files per pump is fragmentation.
+
+**`system/designDict` is NOT the producer, and has no reader anywhere in
+`src/`.**  What fills `design/` is the `sizing { units ( … ) }` block of
+`system/postDict`.  The mapping this section names stays unbuilt until a case
+needs one unit to realise several items; the DIRECTORY shape is what makes
+that day cheap.
 
 ### 2.9 Economics depends on physical design
 ```
@@ -385,6 +403,9 @@ executable.
 7. **Design + economics layers** — only after the state model is stable, add
    `designBasis/`+`design/` and `economicBasis/`+`economics/` WITHOUT
    contaminating the stream-state directories.
+   **`design/` DONE 2026-09-04** (`src/io/DesignSheetWriter.cpp`, filled from
+   postDict's `sizing {}` pass — no `designBasis/` was needed).  `designBasis/`,
+   `economicBasis/` and `economics/` remain outstanding.
 
 ---
 
