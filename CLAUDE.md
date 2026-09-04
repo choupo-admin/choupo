@@ -87,8 +87,26 @@ Choupo/
 
 * **Never `git add -A`.**  Stage explicitly per file; keep run outputs and
   editor / auto-saved files out of commits.
-* **Git identity** for project commits: `Vítor Geraldes` /
-  `talentgroundlda@gmail.com` (the copyright holder).
+* **Git identity: the AUTHOR is the copyright holder; the COMMITTER is
+  whoever applied the commit** (ruled 2026-09-04, Vítor).  Git carries two
+  identities and they answer two different questions, which this line used to
+  conflate:
+    - `author` = **`Vítor Geraldes` / `talentgroundlda@gmail.com`**.  This is
+      the copyright record — the one `AUTHORS`, the source headers, the DCO
+      sign-offs and §1 all follow.  It is NEVER rewritten to a tool's
+      identity, and `git commit --amend --reset-author` (which would) is
+      exactly the flag to avoid.
+    - `committer` = the identity of whoever/whatever applied it.  For an
+      assistant working in a managed container that is
+      `Claude <noreply@anthropic.com>`, because GitHub verifies a signature
+      against the COMMITTER and the container's signing key is registered to
+      that identity.  A commit whose committer does not match its signing key
+      shows as "Unverified" — a cosmetic failure, but one that recurs on every
+      push and invites the wrong fix.
+  Setting both to the tool would erase the authorship of a GPL project from
+  its own history to silence a badge; setting both to the human leaves every
+  commit unverifiable.  The split is the honest reading of what each field
+  means, and it satisfies both.
 * **No `Co-Authored-By` trailer** in commit messages.
 * **Version** lives in `src/core/Banner.H` (`CHOUPO_VERSION`), `CITATION.cff`,
   and `CHANGELOG.md` — bump them together when tagging a release.
@@ -1995,6 +2013,19 @@ philosophy wins and this list is the stale copy.
 * **Never** add macro magic for self-registration (RTS-style macros).
 * **Never** import a heavy CFD framework or any heavy dep.
 * **Never** joke about "$N in tokens replacing commercial software".
+* **Never trade a gate for speed (ruled 2026-09-04, Vítor).**  He raised the
+  question himself — *"não era melhor seguir a regra do Facebook, move fast &
+  break things?"* — and then closed it from experience: he had been burned by
+  exactly that on his company's own OpenFOAM simulator.  The same day paid for
+  it twice, in facts rather than argument: a spray dryer creating 2948 kg/h of
+  water on a case the suite PASSED (nothing looked at closure), and a missing
+  `#include <map>` that compiled natively, passed all 581 cases and every gate,
+  and would have killed `make wasm` on the next publish — leaving
+  www.choupo.org serving a stale bundle with nothing in the tree saying so.
+  **Neither was a case failing.  Both were gates seeing what no case can see.**
+  The permitted direction is FASTER gates, never fewer: `check_wasm_dialect`
+  419 s → 98 s and `check_impossible_phase_pins` 186 s → 0.08 s, both with
+  every arm intact.  Do not reopen.
 * **Never** skip alignment when proposing architecture changes — propose, wait
   for confirmation, then code.  Amended 2026-08-08: DELEGATE-WITH-DEFAULT items
   ship on a stated, recorded default (philosophy §4 carries the rule and the
