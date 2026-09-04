@@ -31,6 +31,12 @@ WHAT THIS CHECKS:
       flat case has no hierarchy; giving it an invented "root" section would
       make every flat case's output differ for a structure it does not have.
 
+  (f) THE EQUIPMENT LIST IS PUBLISHED AND AGREES WITH THE CSV.  The run emits
+      an `equipment` array so the app can draw the plant's design and cost as a
+      tree; every unit sizing.csv carries must appear in it under the same
+      sector, and its costs must match costs.csv.  Published-and-unchecked is
+      how a block drifts with the suite green.
+
   (e) THE RESULT JSON AGREES WITH THE FILES.  The run emits a `unitSectors`
       map so the browser can build its hierarchy without splitting a dotted
       name; every sector it names must be a declared one, and every unit the
@@ -325,6 +331,52 @@ def main() -> int:
                             "publications, and they disagree."
                             % (FRACTAL, r[0], want, got))
 
+    # ---------------------------------------------------------------- (f)
+    #  `equipment` is one JSON object per line inside a top-level array.
+    equip = {}
+    for m in re.finditer(r'\{ "unit": "([^"]+)"(.*)$', txt, re.M):
+        unit, rest = m.group(1), m.group(2)
+        s = re.search(r'"sector": "([^"]+)"', rest)
+        c = re.search(r'"totalModule": (-?[0-9.eE+]+)', rest)
+        if '"type":' in rest:
+            equip[unit] = (s.group(1) if s else None,
+                           float(c.group(1)) if c else None)
+    if not equip:
+        problems.append(
+            "%s: the result JSON emits no `equipment` array -- the sizing and "
+            "costing passes ran and produced a table and two CSVs, and the app "
+            "still cannot draw one row of the plant's design." % FRACTAL)
+    elif dcsv is not None:
+        head, rows = csv_rows(dcsv)
+        si = head.index("sector") if "sector" in head else None
+        for r in rows:
+            if r[0] not in equip:
+                problems.append(
+                    "%s: sizing.csv lists unit '%s' and the result JSON's "
+                    "`equipment` array does not." % (FRACTAL, r[0]))
+            elif si is not None and r[si] != "(no sector)" \
+                    and equip[r[0]][0] != r[si]:
+                problems.append(
+                    "%s: unit '%s' is filed under sector '%s' in sizing.csv "
+                    "and '%s' in the equipment array."
+                    % (FRACTAL, r[0], r[si], equip[r[0]][0]))
+        #  The MONEY must agree too: two publications of one cost that differ
+        #  is the defect this whole slice exists to prevent.
+        if ecsv is not None:
+            head2, rows2 = csv_rows(ecsv)
+            ti = next((i for i, h in enumerate(head2)
+                       if h.startswith("totalModule_")), None)
+            if ti is not None:
+                for r in rows2:
+                    if r[0] in ("SUBTOTAL", "TOTAL"):
+                        continue
+                    got = equip.get(r[0], (None, None))[1]
+                    if got is None or abs(got - float(r[ti])) > 0.02:
+                        problems.append(
+                            "%s: costs.csv gives unit '%s' a total module cost "
+                            "of %s and the equipment array gives %s."
+                            % (FRACTAL, r[0], r[ti], got))
+
     # ---------------------------------------------------------------- (d)
     #  The rejected design, refused at the source.  A `rfind('.')` or
     #  `find_last_of` on a unit name inside these readers IS the name identity
@@ -370,14 +422,15 @@ def main() -> int:
           "`sectors ( ... )` declaration, with leaves separated by the engine's "
           "own test (a member whose dict declares a `type`), the result JSON's "
           "`unitSectors` map (%d entr(ies)) agrees with sizing.csv unit for "
-          "unit, and none of the %d "
+          "unit, the `equipment` array (%d item(s)) agrees with BOTH CSVs on "
+          "sector and on cost, and none of the %d "
           "reader(s) takes a last-dot substring of a unit name.  NOT "
           "CHECKED: whether any cost is right, nesting deeper than one level "
           "(no corpus case nests twice), and the GUI, which does not read the "
           "sector yet."
           % (FRACTAL, len(declared), sorted(declared), nsub,
              notes[0] if notes else "no shares read", FLAT,
-             len(jsonSectors), nread))
+             len(jsonSectors), len(equip), nread))
     return 0
 
 

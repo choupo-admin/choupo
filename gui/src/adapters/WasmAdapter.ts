@@ -60,7 +60,9 @@ import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
 import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
-import type { PairOrigin, ValidityDomain, PromotionOverride } from "./SolverAdapter.js";
+import type { PairOrigin, ValidityDomain, PromotionOverride,
+  EquipmentItem,
+} from "./SolverAdapter.js";
 import type {
   AadRecord,
   Advisory,
@@ -155,7 +157,7 @@ export class WasmAdapter implements SolverAdapter {
         settled = true;
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
-        const { displayLog, streams, convergence, profiles, txy, componentMolarMass, unitSectors, kpis,
+        const { displayLog, streams, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, kpis,
           utilityAllocation, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
@@ -165,6 +167,7 @@ export class WasmAdapter implements SolverAdapter {
         if (txy) result.txy = txy;
         if (componentMolarMass) result.componentMolarMass = componentMolarMass;
         if (unitSectors && Object.keys(unitSectors).length > 0) result.unitSectors = unitSectors;
+        if (equipment && equipment.length > 0) result.equipment = equipment;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
@@ -326,6 +329,7 @@ export function extractStructured(log: string,
   txy?: TxyData;
   componentMolarMass?: { [comp: string]: number };
   unitSectors?: { [unitName: string]: string };
+  equipment?: EquipmentItem[];
   /** Per-unit KPIs (yield, supersaturation, Q_removed,...) -- empty {} when
    *  no JSON block or no kpis object in it. */
   kpis: { [unitName: string]: { [k: string]: number } };
@@ -545,6 +549,9 @@ export function extractStructured(log: string,
 ...(parsed.unitSectors
       ? { unitSectors: { ...parsed.unitSectors } }
       : {}),
+...(parsed.equipment && parsed.equipment.length > 0
+      ? { equipment: parsed.equipment }
+      : {}),
     ...(parsed.componentMolarMass
       ? { componentMolarMass: {...parsed.componentMolarMass } }
     : {}),
@@ -610,6 +617,7 @@ interface ResultPayload {
   components: string[];
   componentMolarMass?: { [comp: string]: number };
   unitSectors?: { [unitName: string]: string };
+  equipment?: EquipmentItem[];
   streams: {
     [name: string]: {
       F: number;

@@ -652,6 +652,70 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << " }";
     }
 
+    // ---- EQUIPMENT: what the design and costing passes concluded --------
+    //  The sizing and costing passes produce the plant's equipment list -- the
+    //  vessel volumes, exchanger areas, wall thicknesses, materials, the design
+    //  BASIS that produced each size, and the money that follows from it -- and
+    //  until now NONE of it crossed into the result JSON.  The engine printed a
+    //  table, wrote two CSVs, and the browser could not draw a single row of
+    //  it: the app's Reports workspace showed balances, utilities, exchanger
+    //  datasheets and the DCF appraisal, and no equipment list at all.
+    //
+    //  Same shape as the sector stamp and the fit verdict before it: the engine
+    //  computes the fact, the crossing drops it, and the reader is left without.
+    //
+    //  Emitted only when a sizing pass actually produced something, so a case
+    //  with no postDict gains no block.  The COST is nested inside its unit
+    //  rather than shipped as a second array keyed by name: a unit's size and
+    //  its price are one row of one table to every reader, and two arrays that
+    //  must be joined by name is the crossing this project keeps paying for.
+    if (!r.sizings.empty())
+    {
+        os << ",\n  \"equipment\": [";
+        bool firstE = true;
+        for (const auto& [uname, sz] : r.sizings)
+        {
+            os << (firstE ? "\n" : ",\n");
+            firstE = false;
+            os << "    { \"unit\": " << esc(uname);
+            if (!sz.sector.empty()) os << ", \"sector\": " << esc(sz.sector);
+            os << ", \"type\": " << esc(sz.equipmentType)
+               << ", \"material\": " << esc(sz.material);
+            if (!sz.basis.empty()) os << ", \"basis\": " << esc(sz.basis);
+            os << ", \"values\": {";
+            bool firstV = true;
+            for (const auto& [k, v] : sz.values)
+            {
+                os << (firstV ? " " : ", ");
+                firstV = false;
+                os << esc(k) << ": " << num(v);
+            }
+            os << " }";
+            auto ci = r.costs.find(uname);
+            if (ci != r.costs.end())
+            {
+                const auto& c = ci->second;
+                os << ", \"cost\": { \"purchased\": " << num(c.purchasedCost)
+                   << ", \"bareModule\": " << num(c.bareModuleCost)
+                   << ", \"totalModule\": " << num(c.totalModuleCost)
+                   << ", \"currency\": " << esc(c.currency);
+                if (!c.sizeKey.empty())     os << ", \"sizeKey\": " << esc(c.sizeKey);
+                if (!c.correlation.empty()) os << ", \"correlation\": " << esc(c.correlation);
+                os << ", \"factors\": {";
+                bool firstF = true;
+                for (const auto& [k, v] : c.factors)
+                {
+                    os << (firstF ? " " : ", ");
+                    firstF = false;
+                    os << esc(k) << ": " << num(v);
+                }
+                os << " } }";
+            }
+            os << " }";
+        }
+        os << "\n  ]";
+    }
+
     // ---- which SECTOR owns each unit ------------------------------------
     //  The browser draws a flat list of dotted names and has no way to
     //  recover the hierarchy: the result JSON carries no topology, and

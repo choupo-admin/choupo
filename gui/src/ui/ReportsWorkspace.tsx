@@ -34,12 +34,15 @@ License
   (direct + outer), and the balances are computed from the boundary streams.
 \*---------------------------------------------------------------------------*/
 
+import { Fragment } from "react";
+
 import { Box, Button, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
 import { massBalance, energyBalance, unitEnergy } from "../case/balances.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import type { UnitSpec } from "../case/types.js";
+import type { EquipmentItem } from "../adapters/SolverAdapter.js";
 
 export function ReportsWorkspace() {
   const runResult = useStore((s) => s.runResult);
@@ -107,6 +110,19 @@ export function ReportsWorkspace() {
   return (
     <ScrollArea h="100%" type="auto">
       <Stack gap="lg" p="md">
+        {/*  ---- Equipment design, by sector ------------------------------
+             Rendered only when the sizing pass produced something, exactly
+             like the two sections below it (`hxUnits.length > 0 && ...`,
+             `econ && ...`).  The first version rendered UNCONDITIONALLY and
+             put a paragraph explaining its own absence at the TOP of the
+             workspace -- so 224 of the 233 steady tutorials, which declare no
+             `sizing {}` block, opened Reports on an apology.  That is the
+             lit-but-dead button the credo forbids, applied inside a workspace
+             instead of in the menu row.  */}
+        {(runResult.equipment?.length ?? 0) > 0 && (
+          <EquipmentDesign items={runResult.equipment ?? []} />
+        )}
+
         {/* ---- Utilities ------------------------------------------------- */}
         <Section title="Utilities" subtitle="plant services sized by temperature level">
           {ua.length === 0
@@ -306,6 +322,147 @@ export function ReportsWorkspace() {
         )}
       </Stack>
     </ScrollArea>
+  );
+}
+
+/*  THE PLANT'S EQUIPMENT, IN THE SHAPE THE PLANT HAS.
+ *
+ *  The sizing and costing passes have always produced this list -- what each
+ *  unit IS, how big, in what material, on what design BASIS, and what it costs
+ *  -- and it reached a console table and two CSV files and never the app.  A
+ *  reader opening the Reports workspace saw balances, utilities, exchanger
+ *  datasheets and a DCF appraisal, and no equipment list at all.
+ *
+ *  It is drawn as a TREE because a plant is built as one: sector, then the
+ *  unit operations inside it, then each unit's design and its price.  The
+ *  sector comes from the engine's own stamp (`item.sector`, made at the
+ *  flatten seam) -- never by splitting the dotted unit name, which is right
+ *  for today's corpus and silently wrong for the first unit whose name carries
+ *  a dot for another reason.
+ *
+ *  A FLAT CASE HAS NO SECTOR LEVEL.  No entry carries one, so the rows are
+ *  listed directly with no invented heading -- the same rule the design table,
+ *  the CSV column and the costing console follow.  A unit with no sector
+ *  INSIDE a plant that has them keeps its own honest heading rather than being
+ *  absorbed into a neighbour.
+ */
+function EquipmentDesign({ items }: { items: EquipmentItem[] }) {
+  const anySector = items.some((i) => !!i.sector);
+  //  Group in the engine's own order.  A Map preserves insertion order, which
+  //  is the flowsheet's declared order -- a plant reads in the order it was
+  //  built, not alphabetically.
+  const groups = new Map<string, EquipmentItem[]>();
+  for (const it of items) {
+    const key = anySector ? (it.sector ?? "(no sector)") : "";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(it);
+  }
+
+  const cur = items.find((i) => i.cost)?.cost?.currency ?? "EUR";
+  const totalCTM = items.reduce((s, i) => s + (i.cost?.totalModule ?? 0), 0);
+
+  //  The size a reader wants FIRST, and the key it came under -- the same
+  //  choice the console table makes, so the two cannot describe a unit
+  //  differently.
+  const headline = (v: { [k: string]: number }) =>
+    v["V_R"] !== undefined ? { k: "V_R (m³)", v: v["V_R"] }
+    : v["A"] !== undefined ? { k: "A (m²)", v: v["A"] }
+    : v["V_magma"] !== undefined ? { k: "V_magma (m³)", v: v["V_magma"] }
+    : v["W_evap"] !== undefined ? { k: "W_evap (kg/s)", v: v["W_evap"] }
+    : undefined;
+
+  const eur = (x: number) =>
+    x.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+  return (
+    <Section title="Equipment design"
+      subtitle={anySector
+        ? `${items.length} item(s) across ${groups.size} sector(s) — size, material, design basis and capital cost`
+        : `${items.length} item(s) — size, material, design basis and capital cost`}>
+      <Table striped withTableBorder fz="sm" ff="monospace">
+        <Table.Thead><Table.Tr>
+          <Table.Th>unit</Table.Th>
+          <Table.Th>equipment</Table.Th>
+          <Table.Th>material</Table.Th>
+          <Table.Th ta="right">size</Table.Th>
+          <Table.Th ta="right">C_TM ({cur})</Table.Th>
+          <Table.Th ta="right">share</Table.Th>
+        </Table.Tr></Table.Thead>
+        <Table.Tbody>
+          {[...groups.entries()].map(([sector, rows]) => {
+            const sub = rows.reduce((s, i) => s + (i.cost?.totalModule ?? 0), 0);
+            return (
+              //  A KEYED fragment, not `<>`: these siblings are generated in a
+              //  map and React needs a stable identity for each group or it
+              //  re-keys rows across sectors on any re-render.
+              <Fragment key={sector || "flat"}>
+                {sector && (
+                  <Table.Tr key={`h-${sector}`}>
+                    <Table.Td colSpan={4}>
+                      <Text fw={700} c="accent.3" tt="uppercase" size="xs"
+                        style={{ letterSpacing: 0.5 }}>{sector}</Text>
+                    </Table.Td>
+                    <Table.Td ta="right"><Text fw={700} size="xs">{eur(sub)}</Text></Table.Td>
+                    <Table.Td ta="right">
+                      {/*  A SHARE OF ZERO IS NOT ZERO PER CENT.  With no costed
+                          item there is nothing to take a share of, and printing
+                          0.0 % would be a number with no arithmetic behind it. */}
+                      <Text fw={700} size="xs">
+                        {totalCTM > 0 ? `${(100 * sub / totalCTM).toFixed(1)} %` : "—"}
+                      </Text>
+                    </Table.Td>
+                  </Table.Tr>
+                )}
+                {rows.map((it) => {
+                  const h = headline(it.values);
+                  //  The row shows the LEAF name under its sector heading; the
+                  //  full qualified name stays in the title, because that is
+                  //  the name a student types into a dict.
+                  const leaf = sector && it.unit.startsWith(sector + ".")
+                    ? it.unit.slice(sector.length + 1) : it.unit;
+                  return (
+                    <Table.Tr key={it.unit}>
+                      <Table.Td pl={sector ? "lg" : undefined} title={it.unit}>{leaf}</Table.Td>
+                      <Table.Td>{it.type}</Table.Td>
+                      <Table.Td>{it.material}</Table.Td>
+                      <Table.Td ta="right">
+                        {h ? `${h.v.toPrecision(4)} ${h.k}` : "—"}
+                      </Table.Td>
+                      <Table.Td ta="right">
+                        {it.cost ? eur(it.cost.totalModule) : "—"}
+                      </Table.Td>
+                      <Table.Td ta="right">
+                        {it.cost && totalCTM > 0
+                          ? `${(100 * it.cost.totalModule / totalCTM).toFixed(1)} %` : "—"}
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+              </Fragment>
+            );
+          })}
+          <Table.Tr>
+            <Table.Td colSpan={4}><Text fw={700}>TOTAL</Text></Table.Td>
+            <Table.Td ta="right"><Text fw={700}>{eur(totalCTM)}</Text></Table.Td>
+            <Table.Td ta="right"><Text fw={700}>{totalCTM > 0 ? "100.0 %" : "—"}</Text></Table.Td>
+          </Table.Tr>
+        </Table.Tbody>
+      </Table>
+      {/*  THE DESIGN ARGUMENT, not only the number.  A volume is the same
+          figure whether a residence time, a space velocity or the author
+          produced it, and those are three different design arguments -- so the
+          basis is stated for every item that carries one. */}
+      {items.some((i) => i.basis) && (
+        <Stack gap={2} mt="xs">
+          <Text size="xs" c="dimmed" fw={600}>design basis</Text>
+          {items.filter((i) => i.basis).map((i) => (
+            <Text size="xs" c="dimmed" key={i.unit} ff="monospace">
+              {i.unit} — {i.basis}
+            </Text>
+          ))}
+        </Stack>
+      )}
+    </Section>
   );
 }
 

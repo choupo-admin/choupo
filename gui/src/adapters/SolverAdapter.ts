@@ -317,6 +317,30 @@ export interface TrajectoryData {
   vars: { [name: string]: number[] };
 }
 
+export interface EquipmentCost {
+  purchased: number;
+  bareModule: number;
+  totalModule: number;
+  currency: string;
+  sizeKey?: string;
+  correlation?: string;
+  factors?: { [k: string]: number };
+}
+
+export interface EquipmentItem {
+  unit: string;
+  /** Absent for a flat case, which has no hierarchy to report. */
+  sector?: string;
+  type: string;
+  material: string;
+  /** The design ARGUMENT that produced the size -- a residence time, a space
+   *  velocity, or the author setting it.  A volume whose rule is invisible can
+   *  be reported and not defended. */
+  basis?: string;
+  values: { [k: string]: number };
+  cost?: EquipmentCost;
+}
+
 export interface RunResult {
   status: "done" | "error";
   log: string;
@@ -341,6 +365,13 @@ export interface RunResult {
    *  ABSENT for a flat case, which has no hierarchy: an empty map would be a
    *  claim about a structure that is not there. */
   unitSectors?: { [unitName: string]: string };
+  /** The plant's EQUIPMENT LIST as the sizing and costing passes concluded it:
+   *  one entry per sized unit, carrying its owning sector, the design values
+   *  (vessel volume, exchanger area, wall thickness, weight...), the BASIS
+   *  that produced the size, and -- nested, not in a second array to be joined
+   *  by name -- the cost that follows from it.
+   *  ABSENT unless the case declares a `sizing {}` block in system/postDict. */
+  equipment?: EquipmentItem[];
   txy?: TxyData;
   trajectory?: TrajectoryData;
   /** OpenFOAM-style real-time INSTANTS harvested from MEMFS after a dynamic run
