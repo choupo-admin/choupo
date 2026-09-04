@@ -3472,6 +3472,21 @@ PYEOF
     fi
     rm -f /tmp/dossgram.$$
 
+    # runCase-reports-failure gate (2026-09-04).  Both wrappers ended in a
+    # FAILED branch that `set -euo pipefail` made unreachable: a non-zero exit
+    # killed the script at the invocation, before `rc=$?`.  A student's first
+    # typo printed three lines that look like a normal start, then nothing,
+    # while the engine's own excellent message sat in the log.
+    if "$ROOT/bin/curate/check_runcase_reports_failure.py" > /tmp/rcfail.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "runcase-reports-failure-gate" "$(head -1 /tmp/rcfail.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_runcase_reports_failure.py)\n" "runcase-reports-failure-gate"
+        cat /tmp/rcfail.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/rcfail.$$
+
     # operation-result crossing gate (2026-09-04).  WasmAdapter REBUILDS each
     # operationResults row field by field, so a field it was not taught is
     # dropped in SILENCE -- an absent optional field looks exactly like one the

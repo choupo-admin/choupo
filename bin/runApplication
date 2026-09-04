@@ -66,12 +66,15 @@ echo "Running $APP_NAME on $(pwd)"
 [ "$#" -gt 0 ] && echo "  args: $*"
 echo "  log:  $LOG"
 
+#  `|| rc=$?`: under `set -euo pipefail` a bare call lets a non-zero exit
+#  kill the script before `rc=$?`, so the FAILED branch below never runs --
+#  the silent-terminal defect found in runCase on 2026-09-04.
+rc=0
 if [ -n "$APPEND" ]; then
-    "$APP_FULL" "$@" >> "$LOG" 2>&1
+    "$APP_FULL" "$@" >> "$LOG" 2>&1 || rc=$?
 else
-    "$APP_FULL" "$@" > "$LOG" 2>&1
+    "$APP_FULL" "$@" > "$LOG" 2>&1 || rc=$?
 fi
-rc=$?
 
 if [ $rc -eq 0 ]; then
     echo "  done."

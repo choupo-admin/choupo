@@ -251,12 +251,26 @@ else
     fi
 fi
 
+#  `|| rc=$?` IS LOAD-BEARING, and its absence was the worst defect a
+#  newcomer could meet (found 2026-09-04).  This script runs under
+#  `set -euo pipefail`, so a NON-ZERO exit from the binary killed the script
+#  HERE -- before `rc=$?`, and therefore before the FAILED branch below that
+#  exists to print the log's last lines.  A student's very first typo produced
+#  three lines that look like a normal start and then a silent terminal, while
+#  the engine's own message -- which is excellent, naming the unknown type and
+#  listing all 48 available ones -- sat unread in the log.
+#
+#  Reproduced before fixing: `runCase` on a case with `isothermalFlashh` exited
+#  2 having printed nothing to stdout OR stderr about the failure.
+#
+#  So the invocation must SWALLOW the status into `rc` rather than let `set -e`
+#  act on it.  Do not "simplify" this back to a bare call.
+rc=0
 if [ -n "$APPEND" ]; then
-    "$RUN_BIN" "$CASE_ABS" >> "$LOG" 2>&1
+    "$RUN_BIN" "$CASE_ABS" >> "$LOG" 2>&1 || rc=$?
 else
-    "$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1
+    "$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1 || rc=$?
 fi
-rc=$?
 
 if [ $rc -eq 0 ]; then
     if [ -n "$QUIET" ]; then
