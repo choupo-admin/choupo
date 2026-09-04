@@ -3341,6 +3341,22 @@ PYEOF
     fi
     rm -f /tmp/origcensus.$$
 
+    # standards-write-guard gate (2026-09-04).  Four documents state that the
+    # engine refuses to write under data/standards/; one code site enforced it.
+    # Reproduced before the fix: `fitParameters proposal` wrote a promotable
+    # pair record into a standards path and exited 0.  The rule has ONE home
+    # now and every writer calls it; this recounts the writers and proves both
+    # of the guard's rules through the real binary.
+    if "$ROOT/bin/curate/check_standards_write_guard.py" > /tmp/stdwrite.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "standards-write-guard-gate" "$(head -1 /tmp/stdwrite.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_standards_write_guard.py)\n" "standards-write-guard-gate"
+        cat /tmp/stdwrite.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/stdwrite.$$
+
     #  ion-records-gate RETIRED 2026-08-05.  It was a MIGRATION-time guard:
     #  it compared the per-ion records of the pre-2026-07-01 aqueous layout
     #  against electrolyte/ions.dat.  BOTH are gone -- that home was deleted

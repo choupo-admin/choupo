@@ -32,6 +32,7 @@ License
 #include "postProcessing/PostProcessor.H"
 #include "streams/StreamOverrides.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -63,6 +64,7 @@ SweepDriver::SweepDriver(const DictPtr& dict)
     {
         auto rd = dict->subDict("report");
         reportFile_ = rd->lookupWordOrDefault("file", "sweep_results.csv");
+        records::refuseStandardsWrite("sweep", "file", reportFile_);
     }
 }
 

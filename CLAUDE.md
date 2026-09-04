@@ -1627,7 +1627,11 @@ versioned convention profiles of the D2 identity) · `assets/` (FLAT with a
 the CMX_AMX ion-exchange pair, adsorbents, the SAC_Na resin) · `mixtures/` ·
 `utilities/` (steam LP/MP/HP, coolingWater, chilledWater, dowthermA,
 hitecSalt, refrigerationPG, electricity).  The engine REFUSES to write under
-`data/standards/` — new data is a curation act.
+`data/standards/` — new data is a curation act.  That sentence was true in ONE
+operation until 2026-09-04 and false in the other thirty-one that take an
+output path from a dict; the rule has one home now
+(`records::refuseStandardsWrite`) and a gate that recounts its callers
+(`check_standards_write_guard`; record: [`docs/design/a-rule-enforced-in-one-place.md`](docs/design/a-rule-enforced-in-one-place.md)).
 
 **Two data tiers only — `standards` (public) and `local` (private); the
 public `proposed` tier was RETIRED 2026-07-13 (do NOT reintroduce it).**  The

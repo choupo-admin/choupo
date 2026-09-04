@@ -51,6 +51,7 @@ License
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 namespace propertyOps {
@@ -360,7 +361,9 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
               solver, in, admitted, verbosity).aqueous;
 
     // -- species table CSV ------------------------------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("speciate", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("speciate: cannot open output file");
     csv << "species,molality,activity,gamma\n";

@@ -42,6 +42,7 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 namespace {
@@ -111,7 +112,9 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
     if (dict->found("wetBulb")) wbList = dict->lookupList("wetBulb");
 
     auto outDict = dict->subDict("output");
-    std::ofstream csv(outDict->lookupWord("file"));
+    const std::string outFile_ = outDict->lookupWord("file");
+    records::refuseStandardsWrite("psychrometricChart", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("psychrometricChart: cannot open output file");
     csv << "T_C,Y,curve\n";

@@ -33,6 +33,7 @@ License
 #include "solver/NewtonND.H"
 #include "streams/StreamOverrides.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -113,6 +114,7 @@ DesignSpec::DesignSpec(const DictPtr& dict)
     {
         auto r = dict->subDict("report");
         reportFile_ = r->lookupWordOrDefault("file", reportFile_);
+        records::refuseStandardsWrite("designSpec", "file", reportFile_);
     }
 }
 

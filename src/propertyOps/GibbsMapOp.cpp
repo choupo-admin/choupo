@@ -29,6 +29,7 @@ License
 #include "GibbsMapOp.H"
 #include "unitOperations/reactor/gibbsMethod/ElementPotential.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -143,7 +144,9 @@ int GibbsMapOp::run(const DictPtr& dict, const ThermoPackage& thermo, int verbos
 
     // ---- the sweep -------------------------------------------------------------
     ElementPotential solver;
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("gibbsMap", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open()) throw std::runtime_error("gibbsMap: cannot open output file");
     csv << "T_K,P_Pa,deltaT_K,converged,metric";
     for (const auto& nm : spNames) csv << ",x_" << nm;

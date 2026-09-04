@@ -44,6 +44,7 @@ License
 #include <vector>
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 namespace {
@@ -150,7 +151,9 @@ int HeatCapacityFit::run(const DictPtr& dict,
     const scalar CpMid = cpFit(Tmid);
 
     // -- output -------------------------------------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("heatCapacityFit", "file", outFile_);
+    std::ofstream csv(outFile_);
     csv << "T_K,Cp_data,Cp_fit\n";
     std::vector<std::size_t> ord(M); for (std::size_t i = 0; i < M; ++i) ord[i] = i;
     std::sort(ord.begin(), ord.end(), [&](std::size_t i, std::size_t j) { return T[i] < T[j]; });

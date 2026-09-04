@@ -32,6 +32,7 @@ License
 #include "unitOperations/saturation/BubblePoint.H"
 #include "unitOperations/saturation/DewPoint.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -191,6 +192,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
     if (dict->found("output"))
     {
         const std::string file = dict->subDict("output")->lookupWord("file");
+        records::refuseStandardsWrite("phaseEnvelope", "file", file);
         std::ofstream csv(file);
         if (!csv.is_open())
             throw std::runtime_error("phaseEnvelope: cannot open output file '"

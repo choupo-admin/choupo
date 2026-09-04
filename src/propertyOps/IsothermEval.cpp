@@ -31,6 +31,7 @@ License
 #include "thermo/Database.H"
 #include "thermo/adsorbent/AdsorbentRegistry.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -156,6 +157,7 @@ int IsothermEval::run(const DictPtr& dict,
     std::string csvPath;
     if (dict->found("output"))
         csvPath = dict->subDict("output")->lookupWordOrDefault("file", "");
+    records::refuseStandardsWrite("isothermEval", "file", csvPath);
     std::ofstream csv;
     if (!csvPath.empty())
     {

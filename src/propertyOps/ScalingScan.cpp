@@ -35,6 +35,7 @@ License
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "CasePackage.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -197,7 +198,9 @@ int ScalingScan::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int v
     const bool hasCaHCO3 = feed.totals.count(SpeciesId("Ca"))
                     && feed.totals.count(SpeciesId("HCO3"));
 
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("scalingScan", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("scalingScan: cannot open output file");
 

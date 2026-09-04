@@ -37,6 +37,7 @@ License
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/phase/SolidPhase.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -92,7 +93,9 @@ int FreezingPoint::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
     const scalar mTo   = md->lookupScalar("to");
     const int    n     = static_cast<int>(md->lookupScalar("n"));
 
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("freezingPoint", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("freezingPoint: cannot open output file");
     csv << "m,Tf_K,depression_K,a_w\n" << std::scientific

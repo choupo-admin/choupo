@@ -32,6 +32,7 @@ License
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/saturation/BubblePoint.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -140,6 +141,7 @@ int PropertyScanTernary::run(const DictPtr& dict,
     {
         auto outDict = dict->subDict("output");
         const std::string outFile = outDict->lookupWord("file");
+        records::refuseStandardsWrite("propertyScanTernary", "file", outFile);
         std::ofstream csv(outFile);
         if (!csv.is_open())
             throw std::runtime_error("propertyScanTernary: cannot open '" + outFile + "'");
@@ -192,6 +194,7 @@ int PropertyScanTernary::run(const DictPtr& dict,
     // -- output -----------------------------------------------------------
     auto outDict = dict->subDict("output");
     const std::string outFile = outDict->lookupWord("file");
+    records::refuseStandardsWrite("propertyScanTernary", "file", outFile);
 
     std::ofstream csv(outFile);
     if (!csv.is_open())

@@ -33,6 +33,7 @@ License
 #include "core/Dictionary.H"
 #include "core/Units.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -133,7 +134,9 @@ int VaporPressureFit::run(const DictPtr& dict,
                        * (Tmax / (Tmax + C)) * (Tmax / (Tmax + C));   // J/mol
 
     // -- output: T, Psat_data, Psat_fit (bar) -------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("vaporPressureFit", "file", outFile_);
+    std::ofstream csv(outFile_);
     csv << "T_K,Psat_data,Psat_fit\n";   // Psat in canonical SI (Pa); GUI display-converts
     std::vector<std::size_t> order(T.size());
     for (std::size_t i = 0; i < T.size(); ++i) order[i] = i;

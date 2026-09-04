@@ -42,6 +42,7 @@ License
 #include <vector>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 namespace {
@@ -158,7 +159,9 @@ int VleConsistency::run(const DictPtr& dict,
     //    x1 d(lnG1)/dx1 + x2 d(lnG2)/dx2 ~ 0  (ISOTHERMAL form; isobaric adds a
     //    small -Hmix/RT^2 dT/dx term -- stated as a caveat).
     auto out = dict->subDict("output");
-    std::ofstream csv(out->lookupWord("file"));
+    const std::string outFile_ = out->lookupWord("file");
+    records::refuseStandardsWrite("vleConsistency", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("vleConsistency: cannot open output file");
     csv << "x1,lnGamma1,lnGamma2,lnRatio,gdResidual\n";

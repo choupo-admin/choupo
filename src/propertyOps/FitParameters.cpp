@@ -59,6 +59,7 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 namespace {
@@ -580,6 +581,15 @@ int FitParameters::run(const DictPtr& dict,
         // pair (the author's explicit act; the GUI never writes -- credo).
         // `auto` => the canonical constant/parameters/<model>/<pair>.fit-<date>.dat.
         if (o->found("proposal")) proposalPath = o->lookupWord("proposal");
+
+        //  THE FROZEN CATALOGUE IS NOT A DESTINATION.  Checked HERE, where the
+        //  paths are read, and not at the three streams they later open: a
+        //  fit that runs for a minute and then refuses has wasted the minute,
+        //  and `proposal` in particular is captured now and written only after
+        //  the held-out pass, so its refusal would arrive at the very end.
+        records::refuseStandardsWrite("fitParameters", "fit_log",  fitLogPath);
+        records::refuseStandardsWrite("fitParameters", "parity",   parityPath);
+        records::refuseStandardsWrite("fitParameters", "proposal", proposalPath);
     }
 
     // -- Build initial thermoPackage --------------------------------------
@@ -1239,6 +1249,12 @@ int FitParameters::run(const DictPtr& dict,
                     proposal.outPath =
                         (outDir / (proposal.pairName + ".fit-" + isoDateUtc() + ".dat")).string();
                 }
+                //  `auto` names a path the declaration could not show, so the
+                //  RESOLVED value is checked too.  Guarding only what the case
+                //  wrote would wave `auto` through and then write wherever the
+                //  resolution happened to land.
+                records::refuseStandardsWrite("fitParameters", "proposal",
+                                              proposal.outPath);
             }
             else if (verbosity >= 1)
                 std::cout << "  (proposal skipped: the fitted parameters are not a single "
@@ -2561,6 +2577,7 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
     if (dict->found("output") && dict->subDict("output")->found("proposal"))
     {
         const std::string prop = dict->subDict("output")->lookupWord("proposal");
+        records::refuseStandardsWrite("fitParameters(isotherm)", "proposal", prop);
         if (mode != IsoMode::LangFull)
         {
             if (verbosity >= 1)
@@ -2599,6 +2616,8 @@ int FitParameters::runIsothermFit(const DictPtr& dict, int verbosity)
                 fs::create_directories(dir, ec);
                 outPath = (dir / (species + ".dat")).string();
             }
+            records::refuseStandardsWrite("fitParameters(isotherm)", "proposal",
+                                          outPath);
             scalar Tlo = distinctT[0], Thi = distinctT[0];
             for (scalar T : distinctT)
             { Tlo = std::min(Tlo, T); Thi = std::max(Thi, T); }

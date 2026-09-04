@@ -20,6 +20,7 @@ License
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "unitOperations/saturation/BubblePoint.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -160,6 +161,7 @@ int EnthalpyConcentration::run(const DictPtr& dict,
 
     auto outDict = dict->subDict("output");
     const std::string outFile = outDict->lookupWord("file");
+    records::refuseStandardsWrite("enthalpyConcentration", "file", outFile);
     std::string metaFile = outFile;
     if (metaFile.size() > 4 && metaFile.compare(metaFile.size() - 4, 4, ".csv") == 0)
         metaFile.erase(metaFile.size() - 4);

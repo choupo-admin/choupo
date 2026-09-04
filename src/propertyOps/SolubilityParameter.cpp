@@ -31,6 +31,7 @@ License
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -245,6 +246,7 @@ int SolubilityParameter::run(const DictPtr& dict,
     if (dict->found("output"))
     {
         const std::string file = dict->subDict("output")->lookupWord("file");
+        records::refuseStandardsWrite("solubilityParameter", "file", file);
         std::ofstream csv(file);
         if (!csv.is_open())
             throw std::runtime_error("solubilityParameter: cannot open output"

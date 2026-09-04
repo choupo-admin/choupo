@@ -34,6 +34,7 @@ License
 #include "EvidencePartition.H"
 #include "EvidencePartition.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -101,7 +102,9 @@ int PitzerActivity::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, in
     }
 
     // -- output ---------------------------------------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("pitzerActivity", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("pitzerActivity: cannot open output file");
     // L_phi by the universal identity (the slice-1 FD, J/mol salt).  TWO

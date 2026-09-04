@@ -29,6 +29,7 @@ License
 #include "GridSweepDriver.H"
 #include "ResponseExtractor.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -76,6 +77,7 @@ GridSweepDriver::GridSweepDriver(const DictPtr& dict)
     {
         auto rd = dict->subDict("report");
         reportFile_ = rd->lookupWordOrDefault("file", "gridsweep_results.csv");
+        records::refuseStandardsWrite("gridSweep", "file", reportFile_);
     }
 }
 

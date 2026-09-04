@@ -31,6 +31,7 @@ License
 #include "core/Dictionary.H"
 #include "core/Units.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -192,6 +193,7 @@ int Kinetics1D::run(const DictPtr& dict,
     const std::string col  = comp.empty() ? "concentration" : "c_" + comp;
     auto out = dict->subDict("output");
     const std::string outFile = out->lookupWord("file");
+    records::refuseStandardsWrite("kinetics1D", "file", outFile);
 
     // -- lab data (if any) ------------------------------------------------
     KineticData kd;

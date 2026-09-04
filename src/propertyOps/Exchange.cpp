@@ -38,6 +38,7 @@ License
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "CasePackage.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -141,7 +142,9 @@ int Exchange::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
     const auto res = solver.solve(in, verbosity);
 
     // -- post-exchange (softened) aqueous species table -------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("exchange", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("exchange: cannot open output file");
     csv << "species,molality,activity,gamma\n";

@@ -29,6 +29,7 @@ License
 #include "ENRTLMixedSolventOp.H"
 #include "thermo/electrolyte/ENRTLMixedSolvent.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -59,7 +60,9 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
         model.MwAlcohol = a->lookupScalarOrDefault("MW", model.MwAlcohol);
     }
 
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("enrtlMixedSolvent", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("enrtlMixedSolvent: cannot open output file");
     csv << "wt_alcohol,m,gamma_exp,gamma_calc,err_pct\n" << std::setprecision(8);

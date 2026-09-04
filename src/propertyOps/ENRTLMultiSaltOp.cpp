@@ -31,6 +31,7 @@ License
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -116,7 +117,9 @@ int ENRTLMultiSaltOp::run(const DictPtr& dict, const ThermoPackage&, int verbosi
     };
 
     // ---- the sweep ----------------------------------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("enrtlMultiSalt", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open()) throw std::runtime_error("enrtlMultiSalt: cannot open output file");
     csv << "x2,m1,m2,gamma1,gamma2,ln_gamma1,ln_gamma2\n" << std::scientific << std::setprecision(8);
 

@@ -30,6 +30,7 @@ License
 
 #include "thermo/iapws/IF97.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -67,6 +68,7 @@ void announceFormulationOnce()
 std::ofstream openCsv(const DictPtr& dict)
 {
     const std::string file = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("steamTables", "file", file);
     std::ofstream csv(file);
     if (!csv.is_open())
         throw std::runtime_error("steamTables: cannot open output file '"

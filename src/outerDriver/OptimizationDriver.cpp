@@ -35,6 +35,7 @@ License
 #include "solver/SQP.H"
 #include "streams/StreamOverrides.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -217,6 +218,7 @@ OptimizationDriver::OptimizationDriver(const DictPtr& d)
     {
         auto rp = d->subDict("report");
         reportFile_ = rp->lookupWordOrDefault("file", "optimization_history.csv");
+        records::refuseStandardsWrite("optimization", "file", reportFile_);
     }
 }
 

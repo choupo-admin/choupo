@@ -33,6 +33,7 @@ License
 #include "Topology.H"
 #include "streams/StreamMass.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -48,6 +49,7 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
 
     const std::string outFile =
         dict->lookupWordOrDefault("file", "report.ods");
+    records::refuseStandardsWrite("spreadsheet report", "file", outFile);
     const scalar closureTol = dict->lookupScalarOrDefault("closureTol", 0.5);
     const scalar Tref       = dict->lookupScalarOrDefault("Tref", 298.15);
 

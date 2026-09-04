@@ -8,6 +8,7 @@
 #include "thermo/ThermoPackage.H"
 #include "thermo/electrolyte/ElectrolyteModel.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -41,7 +42,9 @@ int ElectrolytePackageActivity::run(const DictPtr& dict,
     }
 
     // -- output ---------------------------------------------------------------
-    std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+    const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+    records::refuseStandardsWrite("electrolyteActivity", "file", outFile_);
+    std::ofstream csv(outFile_);
     if (!csv.is_open())
         throw std::runtime_error("electrolyteActivity: cannot open output file");
     csv << "m,gamma_pm,phi,a_w\n";

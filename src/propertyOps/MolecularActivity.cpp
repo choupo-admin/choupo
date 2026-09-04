@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include "thermo/activityCoefficient/ActivityModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 int MolecularActivity::run(const DictPtr& dict, const ThermoPackage& thermo, int /*verbosity*/)
@@ -41,7 +42,9 @@ int MolecularActivity::run(const DictPtr& dict, const ThermoPackage& thermo, int
 
     if (dict->found("output"))
     {
-        std::ofstream csv(dict->subDict("output")->lookupWord("file"));
+        const std::string outFile_ = dict->subDict("output")->lookupWord("file");
+        records::refuseStandardsWrite("activityCoefficients", "file", outFile_);
+        std::ofstream csv(outFile_);
         if (csv.is_open())
         {
             csv << "component,x,gamma\n";

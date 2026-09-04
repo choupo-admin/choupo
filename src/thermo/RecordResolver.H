@@ -163,6 +163,93 @@ inline fs::path standardsRecord(const std::string& sub)
 
 
 // ---------------------------------------------------------------------------
+//  THE FROZEN CATALOGUE IS READ-ONLY TO THE ENGINE -- ONE home for the rule.
+//
+//  Four documents state it flatly: CLAUDE.md Sec. 7 ("the engine REFUSES to
+//  write under data/standards/ -- new data is a curation act"),
+//  docs/ai/data-doctrine.md, docs/architecture/domain-glossary.md, and
+//  `fitParameters`' own console text ("the engine never writes the standards
+//  catalogue").  Measured 2026-09-04: exactly ONE code site enforced it --
+//  `estimateComponent`'s `proposal` key -- while dozens of sites across the
+//  props ops, the outer drivers and the reporting chain take an output path
+//  from a dict and write to it.
+//
+//  It was not hypothetical.  Reproduced before this was written: point
+//  `fitParameters`' `proposal` at a `.../standards/parameters/NRTL/<pair>.dat`
+//  and it writes a 2663-byte promotable pair record there and EXITS 0 -- a
+//  file carrying a `provenance {}` block that the pair loader reads as
+//  authoritative, admitted to the frozen tree by nobody.
+//
+//  A rule enforced in one of many places is a sentence, not a contract.
+//
+//  TWO RULES, AND EACH COVERS THE OTHER'S BLIND SPOT.
+//
+//   (a) A path COMPONENT literally named `standards`.  Coarse -- it also
+//       refuses a scratch directory that happens to carry the word -- and
+//       deliberately KEPT, because it is the rule that still fires when the
+//       catalogue root is not where this process thinks it is: an unset
+//       CHOUPO_HOME, a case run against another tree, or a SEALED case, which
+//       forbids the installation catalogue entirely and so has no root to
+//       compare against.  It is also `estimateComponent`'s existing behaviour,
+//       and generalising a guard must not quietly loosen it.
+//
+//   (b) CONTAINMENT under the resolved catalogue root.  Catches the routes the
+//       literal scan cannot see -- a symlink, or `data/../data/standards`.
+//       Compared WEAKLY-canonically because the target does not exist yet;
+//       that is the whole point of asking before writing.
+//
+//  Neither rule alone is the contract; their DISJUNCTION is.  The refusal
+//  names WHICH one fired, because a reader who hit (a) on a scratch path and a
+//  reader who hit (b) on the real catalogue need different next steps.
+// ---------------------------------------------------------------------------
+inline bool targetsStandardsTree(const std::string& outPath, std::string& rule)
+{
+    if (outPath.empty()) return false;
+
+    for (const auto& part : fs::path(outPath))
+        if (part == "standards")
+        {
+            rule = "a path component is literally named `standards`";
+            return true;
+        }
+
+    std::error_code ec;
+    const fs::path root =
+        fs::weakly_canonical(fs::path(Database::currentRoot()) / "standards", ec);
+    if (ec) return false;          // no resolvable catalogue: rule (a) stands alone
+    const fs::path want = fs::weakly_canonical(fs::absolute(outPath, ec), ec);
+    if (ec) return false;
+
+    auto r = root.begin(); auto w = want.begin();
+    for (; r != root.end() && w != want.end(); ++r, ++w)
+        if (*r != *w) return false;
+    if (r != root.end()) return false;     // shorter than the root: outside it
+
+    rule = "it resolves inside the installation catalogue at " + root.string();
+    return true;
+}
+
+//  The refusal itself, so the MESSAGE has one home too.  Throws: every binary
+//  catches std::exception at top level and exits 1 with the text, which is the
+//  same outcome `estimateComponent` produced by hand and reaches the void
+//  call sites the return-code form could not.
+inline void refuseStandardsWrite(const std::string& who,
+                                 const std::string& key,
+                                 const std::string& outPath)
+{
+    std::string rule;
+    if (!targetsStandardsTree(outPath, rule)) return;
+    throw std::runtime_error(
+        who + ": refusing to write `" + key + " " + outPath + "` -- " + rule
+        + ".\n  data/standards/ is the FROZEN catalogue: committee-managed,"
+          " audited, and admitted to only by an explicit curation act"
+          " (bin/curate/promote-from-dossier)."
+          "\n  Write it inside the case instead -- constant/ for a property"
+          " record, the case directory for a run artefact.");
+}
+
+
+// ---------------------------------------------------------------------------
 //  THE CONSUMPTION LEDGER  (debt D3, 2026-08-05)
 //
 //  WHAT PROBLEM.  `bin/choupo-import` seals a case by materialising its

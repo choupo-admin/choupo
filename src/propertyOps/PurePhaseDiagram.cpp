@@ -39,6 +39,7 @@ License
 #include <string>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
+#include "thermo/RecordResolver.H"
 namespace Choupo {
 
 int PurePhaseDiagram::run(const DictPtr& dict,
@@ -106,6 +107,7 @@ int PurePhaseDiagram::run(const DictPtr& dict,
 
     auto outDict = dict->subDict("output");
     const std::string outFile = outDict->lookupWord("file");
+    records::refuseStandardsWrite("purePhaseDiagram", "file", outFile);
     std::ofstream csv(outFile);
     if (!csv.is_open())
         throw std::runtime_error("purePhaseDiagram: cannot open '" + outFile + "'");

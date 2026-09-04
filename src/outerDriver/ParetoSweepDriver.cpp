@@ -30,6 +30,7 @@ License
 #include "OptimizationDriver.H"
 #include "result/ResultEmitter.H"
 
+#include "thermo/RecordResolver.H"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -78,6 +79,7 @@ ParetoSweepDriver::ParetoSweepDriver(const DictPtr& outerDict)
     if (outerDict->found("report"))
         reportFile_ = outerDict->subDict("report")
                     ->lookupWordOrDefault("file", reportFile_);
+    records::refuseStandardsWrite("paretoSweep", "file", reportFile_);
 }
 
 int ParetoSweepDriver::run()

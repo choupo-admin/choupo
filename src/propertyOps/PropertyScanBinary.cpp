@@ -20,6 +20,7 @@ License
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 
+#include "thermo/RecordResolver.H"
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -80,6 +81,7 @@ int PropertyScanBinary::run(const DictPtr& dict,
 
     auto outDict = dict->subDict("output");
     const std::string outFile = outDict->lookupWord("file");
+    records::refuseStandardsWrite("propertyScanBinary", "file", outFile);
     std::ofstream csv(outFile);
     if (!csv)
         throw std::runtime_error("propertyScanBinary: cannot open '" + outFile + "'");

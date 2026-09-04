@@ -35,6 +35,7 @@ License
 #include "thermo/Database.H"
 #include "thermo/vaporPressure/AmbroseWalton.H"
 
+#include "thermo/RecordResolver.H"
 #include <chrono>
 #include <cmath>
 #include <ctime>
@@ -313,17 +314,17 @@ int EstimateComponent::run(const DictPtr& dict,
         }
         // POLICY: a proposal is a CASE-LOCAL artefact.  It must NEVER be written
         // into data/standards/ -- the official catalogue is FROZEN, managed and
-        // audited by the committee.  Refuse any path that targets it.
-        for (const auto& part : fs::path(outPath))
-            if (part == "standards")
-            {
-                std::cerr << "estimateComponent '" << comp
-                          << "': refusing to write the proposal into '" << outPath << "'.\n"
-                          << "  The standard catalogue (data/standards/) is FROZEN -- "
-                             "committee-managed and audited.\n"
-                          << "  Promote estimates only into a case's constant/components/.\n";
-                return 1;
-            }
+        // audited by the committee.
+        //
+        // This guard used to live here, hand-rolled, and it was the ONLY one in
+        // the engine: every other op that takes an output path from a dict wrote
+        // wherever it was pointed, `fitParameters proposal` included -- which is
+        // the op that writes a promotable RECORD.  The rule now has one home
+        // (records::refuseStandardsWrite) and every writer calls it.  The
+        // literal path-component test that was written here survives inside it,
+        // as rule (a), so nothing this op refused before is admitted now.
+        records::refuseStandardsWrite("estimateComponent '" + comp + "'",
+                                      "proposal", outPath);
         std::ofstream f(outPath);
         if (f)
         {

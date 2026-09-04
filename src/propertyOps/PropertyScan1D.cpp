@@ -31,6 +31,7 @@ License
 #include "thermo/ThermoPackage.H"
 #include "core/Advisory.H"
 
+#include "thermo/RecordResolver.H"
 #include <algorithm>
 #include <cmath>
 #include <fstream>
@@ -149,6 +150,7 @@ int PropertyScan1D::run(const DictPtr& dict,
     // -- output block ------------------------------------------------------
     auto outDict = dict->subDict("output");
     const std::string outFile = outDict->lookupWord("file");
+    records::refuseStandardsWrite("propertyScan1D", "file", outFile);
 
     std::ofstream csv(outFile);
     if (!csv.is_open())
