@@ -28,12 +28,14 @@ License
 
 #include "SprayDryer.H"
 #include "atomizer/Atomizer.H"
+#include "core/Advisory.H"
 #include "solver/NewtonRaphson.H"
 #include "streams/StreamMass.H"
 
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
@@ -564,7 +566,52 @@ int SprayDryer::solve(const DictPtr& dict,
     // and the energy floor (solvent the air could not carry to saturation).
     const scalar n_resid_kinetic = X_final * m_solid / MW_w;  // kmol/s
     const scalar n_resid_energy  = energy_limited ? std::max(0.0, n_solv_feed - n_evap_max) : 0.0;
-    const scalar n_water_resid   = std::max(n_resid_kinetic, n_resid_energy);  // kmol/s
+    const scalar n_resid_model   = std::max(n_resid_kinetic, n_resid_energy);  // kmol/s
+
+    //  A DRYER CANNOT END WETTER THAN IT STARTED.  Both residual routes above
+    //  are MODEL quantities: the kinetic one is `X_final * m_solid`, a moisture
+    //  RATIO carried by the dry solid, and nothing in it knows how much water
+    //  the feed actually brought.  Fed a stream that is already drier than the
+    //  model's equilibrium moisture at the declared water activity, it asks the
+    //  powder to hold more water than exists -- and the line below used to
+    //  clamp only the EVAPORATION at zero, so the surplus was silently emitted
+    //  as powder moisture.  The unit created matter, reported
+    //  `water_evaporated 0`, and exited 0.
+    //
+    //  Measured when this was found (Vitor, on the live site, 2026-09-04):
+    //  the flagship sugar plant's spray dryer took 685 kg/h of water in and
+    //  put 3633 kg/h out, a 22.46 % unit closure and 2948 kg/h of water from
+    //  nowhere -- the whole of that plant's 13.4 % boundary violation, in one
+    //  unit, on a case whose reports were switched off by its outer driver.
+    //
+    //  The cap is NOT silent.  A model asked for a state its inputs cannot
+    //  supply is a model outside its domain, and this project announces that
+    //  rather than quietly amending it (the posture of the extrapolated
+    //  Antoine and the out-of-band Davies).  The answer is the physical one --
+    //  the powder keeps the water it was given and nothing evaporates -- and
+    //  the reader is told the equilibrium the model wanted.
+    const scalar n_water_resid   = std::min(n_solv_feed, n_resid_model);  // kmol/s
+    if (n_resid_model > n_solv_feed * (1.0 + 1.0e-9))
+    {
+        std::ostringstream msg;
+        msg << "the drying model asks the powder to hold "
+            << std::fixed << std::setprecision(4)
+            << (n_resid_model * MW_w * 3600.0) << " kg/h of moisture, but the"
+               " feed carries only " << (n_solv_feed * MW_w * 3600.0)
+            << " kg/h.  The feed is ALREADY drier than this model's"
+               " equilibrium moisture at the declared water activity, so there"
+               " is nothing to evaporate: the powder leaves with the water it"
+               " arrived with and `water_evaporated` is 0.  A dryer cannot end"
+               " wetter than it started -- the residual is held at the feed"
+               " water rather than made up, and the drying kinetics are"
+               " reporting outside their domain for this feed.";
+        AdvisoryLog::instance().add(
+            "drying", "warning",
+            "sprayDryer '" + dict->lookupWordOrDefault("name", "sprayDryer") + "'",
+            msg.str());
+        if (verbosity >= 1)
+            std::cout << "  [drying] " << msg.str() << "\n";
+    }
     const scalar m_water_resid   = n_water_resid * MW_w;      // kg/s held in the powder
     const scalar n_evap          = std::max(0.0, n_solv_feed - n_water_resid);
 

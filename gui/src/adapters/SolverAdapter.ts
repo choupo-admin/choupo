@@ -332,6 +332,15 @@ export interface RunResult {
    *  workspace's "solved value" column. */
   computed?: { [name: string]: number };
   profiles?: UnitProfile[];
+  /** Which SECTOR owns each unit, keyed by the flattened dotted unit name
+   *  (`CONCENTRATION.Evap1` -> `CONCENTRATION`).  Stamped by the engine at
+   *  the flatten seam, where the hierarchy is actually known, and carried
+   *  here rather than recovered by splitting the dotted name -- that would be
+   *  name identity, right on today's corpus and silently wrong for the first
+   *  unit whose name carries a dot for another reason.
+   *  ABSENT for a flat case, which has no hierarchy: an empty map would be a
+   *  claim about a structure that is not there. */
+  unitSectors?: { [unitName: string]: string };
   txy?: TxyData;
   trajectory?: TrajectoryData;
   /** OpenFOAM-style real-time INSTANTS harvested from MEMFS after a dynamic run

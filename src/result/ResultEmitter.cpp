@@ -652,6 +652,38 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << " }";
     }
 
+    // ---- which SECTOR owns each unit ------------------------------------
+    //  The browser draws a flat list of dotted names and has no way to
+    //  recover the hierarchy: the result JSON carries no topology, and
+    //  splitting `SECTOR.unit` on its last dot is the name identity the F2
+    //  contract bans (right on today's corpus, silently wrong for the first
+    //  unit whose name carries a dot for another reason).  So the stamp made
+    //  at the flatten seam travels here too -- same origin as the design and
+    //  costing surfaces, never re-derived.
+    //
+    //  Emitted ONLY when a hierarchy exists, so a flat case's JSON is
+    //  byte-identical to what it was before this block: an empty map on every
+    //  flat case would assert a structure that is not there, the same rule
+    //  the CSV column and the console banner follow.
+    {
+        bool anySector = false;
+        for (const auto& fu : r.topology)
+            if (!fu.sector.empty()) { anySector = true; break; }
+        if (anySector)
+        {
+            os << ",\n  \"unitSectors\": {";
+            bool firstS = true;
+            for (const auto& fu : r.topology)
+            {
+                if (fu.sector.empty()) continue;
+                os << (firstS ? "\n" : ",\n");
+                firstS = false;
+                os << "    " << esc(fu.name) << ": " << esc(fu.sector);
+            }
+            os << "\n  }";
+        }
+    }
+
     // ---- profiles (1-D internal state: PFR axial sweep, column stages) ---
     if (!r.profiles.empty())
     {

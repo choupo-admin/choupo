@@ -1068,6 +1068,36 @@ try
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
         }
+        else if (reportsDict && !reportsDict->keys().empty())
+        {
+            //  A DECLARED REPORT THAT DOES NOT RUN MUST SAY SO.  Skipping the
+            //  chain here is deliberate -- a sweep has no single representative
+            //  pass -- but the case ASKED for these reports, and until
+            //  2026-09-04 it was told nothing at all.
+            //
+            //  That silence is not cosmetic.  The flagship sugar plant declares
+            //  `massBalance {}`, is driven by a SweepDriver, and therefore
+            //  never printed a closure -- while its spray dryer was creating
+            //  2948 kg/h of water out of nothing (a 113 % plant closure).  The
+            //  ONE instrument that catches a violation of conservation was
+            //  switched off, silently, on exactly the case that needed it, and
+            //  a student met it on the live site before any of us did.
+            //
+            //  Announced, not repaired: whether a sweep SHOULD report on its
+            //  final point is a design decision, and inventing a
+            //  "representative pass" here would answer it by accident.
+            std::string named;
+            for (const auto& k : reportsDict->keys())
+                named += (named.empty() ? "" : ", ") + k;
+            const std::string msg =
+                "this case declares reports { " + named + " } and an outer"
+                " driver that has no single representative pass, so NONE of"
+                " them ran.  Nothing here has been verified by those reports"
+                " -- a declared balance that does not run is not a balance.";
+            AdvisoryLog::instance().add("reporting", "warning",
+                                        "outer driver", msg);
+            std::cout << "\n  [reports] " << msg << "\n";
+        }
     }
     else
     {

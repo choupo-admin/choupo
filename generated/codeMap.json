@@ -6392,6 +6392,7 @@
    "src/unitOperations/heatTransfer/SolidDryer.H"
   ],
   "src/unitOperations/heatTransfer/SprayDryer.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
@@ -7349,6 +7350,7 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
    "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/reactor/CatalystPellet.cpp",

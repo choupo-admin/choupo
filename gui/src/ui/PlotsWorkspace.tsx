@@ -106,6 +106,10 @@ interface PlotItem {
   label: string;
   available: boolean;
   hint?: string;
+  /** The flattened unit this row is ABOUT, when the row is a unit operation
+   *  under its sector rather than a plant-wide view.  Selecting it opens the
+   *  same plot focused on that unit. */
+  unit?: string;
   /** Regime/driver-gated views vanish when absent (they belong to another
    *  binary or an outerDict, not to choices inside this case); case-gated
    *  views stay dimmed with the hint saying how to produce them. */
@@ -129,6 +133,10 @@ export function PlotsWorkspace() {
   const result = useStore((s) => s.runResult);
   const prefs = useStore((s) => s.displayPrefs);
   const [view, setView] = useState<PlotKey>("profile");
+  /** The unit a UNIT-SCOPED row selected, if any.  Kept beside `view` rather
+   *  than folded into it: the plot KIND and the unit it is about are two
+   *  facts, and a compound key would have to be split to use either. */
+  const [viewUnit, setViewUnit] = useState<string | undefined>(undefined);
   const [scanFile, setScanFile] = useState<string | null>(null);
 
   // Engine-written scan/sweep CSVs (outerDict sweeps, choupoProps scans...)
@@ -142,6 +150,37 @@ export function PlotsWorkspace() {
         && n !== "trajectory.csv"
         && n !== "balanceTrajectory.csv" && n !== "balanceTrajectory.meta")
       .sort();
+  }, [result]);
+
+  //  One group per sector, its units as rows, in the order the engine
+  //  reports them (which is the flowsheet's own declared order, not
+  //  alphabetical -- a plant reads in the order it was built).
+  const sectorGroups = useMemo<PlotGroup[]>(() => {
+    const owns = result?.unitSectors;
+    if (!owns || Object.keys(owns).length === 0) return [];
+    const profiled = new Set((result?.profiles ?? []).map((p) => p.unit));
+    const bySector = new Map<string, PlotItem[]>();
+    for (const [unit, sector] of Object.entries(owns)) {
+      if (!bySector.has(sector)) bySector.set(sector, []);
+      //  The row's LABEL is the leaf name, because the sector heading already
+      //  carries the rest -- but everything the row DOES uses the full
+      //  qualified name, which is the unit's identity everywhere else.
+      const leaf = unit.startsWith(sector + ".")
+        ? unit.slice(sector.length + 1) : unit;
+      const has = profiled.has(unit);
+      bySector.get(sector)!.push({
+        key: "profile",
+        label: leaf,
+        available: has,
+        unit,
+        hint: has
+          ? `The 1-D internal state of ${unit} -- the profile this unit computed along its own coordinate (reactor axis, column stages, particle sizes).`
+          : `${unit} produced no 1-D profile in this run.  A profile comes from a unit that HAS an internal coordinate -- a pfr along its length, a distillation column across its stages, a crystalliser over its size distribution.  A mixer, a splitter or a flash is a point: it has KPIs (see the selection card on the flowsheet) and nothing to draw along.`,
+      });
+    }
+    return [...bySector.entries()].map(([sector, items]) => ({
+      label: sector, items,
+    }));
   }, [result]);
 
   // Build the navigator from what the current run produced.  Items
@@ -217,8 +256,28 @@ export function PlotsWorkspace() {
             hint: "CSV written by the run itself -- an outerDict sweep (KPIs vs the swept parameter) or a props scan.  The same file runCase leaves in the case folder." },
         ],
       },
+      //  THE PLANT'S OWN SHAPE, one group per SECTOR, its units inside.
+      //
+      //  Everything above is a PLANT-WIDE view; a fractal plant also has
+      //  structure, and until now the only trace of it in this navigator was
+      //  a dotted prefix inside the profile plot's own dropdown -- so a
+      //  student looking for "what did the concentration section do?" had to
+      //  know which plot hid the answer.
+      //
+      //  THE HIERARCHY IS READ, NEVER RECONSTRUCTED.  `unitSectors` is
+      //  stamped by the engine at the flatten seam, where the parent chain is
+      //  actually in hand.  Splitting `CONCENTRATION.Evap1` on its last dot
+      //  would give the same answer for every case in the corpus today and be
+      //  silently wrong for the first unit whose name carries a dot for
+      //  another reason -- the name identity the F2 contract bans.
+      //
+      //  A FLAT CASE GETS NOTHING HERE.  No `unitSectors`, no groups, and the
+      //  navigator is exactly what it was: a flat case has no hierarchy, and
+      //  an invented "root" section would be a claim about a structure that
+      //  does not exist.
+      ...sectorGroups,
     ];
-  }, [result, scanCsvs]);
+  }, [result, scanCsvs, sectorGroups]);
 
   // After a run lands, jump to the most informative GENUINE plot available.
   // Balances now live in the Streams-workspace summary band, so they are no
@@ -232,6 +291,10 @@ export function PlotsWorkspace() {
     // "Sweep / scan" even when the (last-pass) result also carries a profile
     // or a T-x-y envelope.  Consumed here; never set by parent-case surfaces.
     const hint = useStore.getState().plotsViewHint;
+    //  A NEW RUN CLEARS THE UNIT FOCUS.  The previous run's unit may not
+    //  exist in this one (the case can have changed between runs), and a
+    //  heading naming a unit the result does not carry is worse than none.
+    setViewUnit(undefined);
     if (hint === "scanCsv" && scanCsvs.length > 0) {
       useStore.getState().setPlotsViewHint(null);
       setView("scanCsv");
@@ -329,7 +392,10 @@ export function PlotsWorkspace() {
       case "energyBalance": return <EnergyBalancePlot streams={result.streams}
         added={unitEnergy(result.utilityAllocation, result.kpis)} />;
       case "txy":         return result.txy         ? <TxyPlot txy={result.txy} /> : null;
-      case "profile":     return result.profiles    ? <ProfilePlot profiles={result.profiles} /> : null;
+      case "profile":     return result.profiles
+        ? <ProfilePlot profiles={result.profiles}
+            {...(viewUnit !== undefined ? { unit: viewUnit } : {})} />
+        : null;
       case "convergence": return <ConvergencePlot curves={result.convergence} />;
       case "scanCsv": {
         const file = scanFile && scanCsvs.includes(scanFile) ? scanFile : scanCsvs[0];
@@ -421,7 +487,8 @@ export function PlotsWorkspace() {
                     </Text>
                   </Group>
                   {!isCollapsed && g.items.map((it) => {
-                    const isSelected = view === it.key && it.available;
+                    const isSelected = view === it.key && it.available
+                      && viewUnit === it.unit;
                     return (
                       <Tooltip
                         key={it.key}
@@ -449,7 +516,15 @@ export function PlotsWorkspace() {
                               ? "2px solid var(--mantine-color-accent-3)"
                             : "2px solid transparent",
                           }}
-                          onClick={() => { if (it.available) setView(it.key); }}
+                          onClick={() => {
+                            if (!it.available) return;
+                            setView(it.key);
+                            //  A plant-wide row CLEARS the unit focus; a
+                            //  unit row sets it.  Leaving a stale unit behind
+                            //  would draw the last sector's unit under a
+                            //  plant-wide heading.
+                            setViewUnit(it.unit);
+                          }}
                         >
                           <Text size="xs" c="var(--mantine-color-text)">
                             {it.label}
@@ -494,14 +569,19 @@ export function PlotsWorkspace() {
         >
           <Text size="sm" c="dimmed" tt="uppercase" fw={600}
             style={{ letterSpacing: 0.5 }}>
-            {groups.flatMap((g) => g.items).find((it) => it.key === view)?.label ?? view}
+            {viewUnit ?? (groups.flatMap((g) => g.items)
+              .find((it) => it.key === view && it.unit === undefined)?.label
+              ?? view)}
           </Text>
           <Tooltip
             label="Open this plot as a high-resolution PNG in a separate browser tab"
             withArrow position="left" multiline w={280}
           >
             <ActionIcon size="sm" variant="subtle" color="cyan"
-              onClick={() => { void popOutCurrentPlot(`${view}`); }}>
+              onClick={() => {
+                void popOutCurrentPlot(
+                  viewUnit ? `${view}-${viewUnit}` : `${view}`);
+              }}>
               <IconExternalLink size={14} />
             </ActionIcon>
           </Tooltip>

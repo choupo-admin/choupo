@@ -4410,6 +4410,21 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/sectorh.$$
 
+    # Mass-closure gate (2026-09-04): no steady case may ship a plant that does
+    # not conserve mass, and a case that DECLARES a balance report and never
+    # gets one fails by name.  Built after Vitor found a 113 % closure on the
+    # live site: a spray dryer creating 2948 kg/h of water, on a case whose
+    # outer driver switched the one instrument that would have caught it off.
+    if "$ROOT/bin/curate/check_mass_closure.py" > /tmp/massclos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "mass-closure-gate" "$(tail -1 /tmp/massclos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_mass_closure.py)\n" "mass-closure-gate"
+        cat /tmp/massclos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/massclos.$$
+
     # WASM-dialect gate (2026-08-27): what g++ lends as an extension,
     # emscripten's clang refuses.  A lambda capturing a structured binding is
     # illegal in C++17, silent under g++ -Wall -Wextra -Wpedantic, and fatal

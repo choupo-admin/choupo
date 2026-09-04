@@ -928,6 +928,24 @@ that CALLS `verdictOf` to publish one — `heatCapacityFit` has no witness and
 only that arm catches it) · `check_verdict_parity`.  Record:
 [`docs/design/the-verdict-that-reached-everyone-except-the-machine.md`](docs/design/the-verdict-that-reached-everyone-except-the-machine.md).
 
+**A DRYER THAT ENDED WETTER THAN IT STARTED (2026-09-04).**  Vítor opened the
+flagship plant on the LIVE SITE and saw mass not conserved; a spray dryer was
+inventing water because its residual-moisture model is a RATIO carried by the
+dry solid and knows nothing about how much water the feed brought, while the
+only clamp protected the vapour from going negative.  Fixed and **announced**,
+never silently clamped.  **The unit is one bug; the substance is three
+silences** — under an `outerDict` the declared balance reports did not run (now
+announced by name), the case ships no golden, and NOTHING looked at closure at
+all, because a golden pins what a run PRINTS and a stable wrong answer passes
+by construction.  Two durable rules came out of it: **reason from the case in
+front of you, never from its twin** (I called this a GUI defect first, from the
+non-sweep twin, and was wrong); and **a gate that accuses the innocent teaches
+the reader to ignore it** — the first `check_mass_closure` collapsed four
+states into two and flagged a closed Rankine cycle and two uncompilable
+userOps tutorials as violations.  Gate: `check_mass_closure`.  RESERVED for
+Vítor: whether a sweep reports on its final point.  Record:
+[`docs/design/a-dryer-that-ended-wetter-than-it-started.md`](docs/design/a-dryer-that-ended-wetter-than-it-started.md).
+
 **A HIERARCHY THE ENGINE BUILT AND THREW AWAY (2026-09-04).**  `flattenNode`
 knows each leaf's owning sector exactly — `nsPrefix` IS the parent chain — and
 it concatenated that into the qualified name and kept only the string, so

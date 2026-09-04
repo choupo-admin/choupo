@@ -31,6 +31,13 @@ WHAT THIS CHECKS:
       flat case has no hierarchy; giving it an invented "root" section would
       make every flat case's output differ for a structure it does not have.
 
+  (e) THE RESULT JSON AGREES WITH THE FILES.  The run emits a `unitSectors`
+      map so the browser can build its hierarchy without splitting a dotted
+      name; every sector it names must be a declared one, and every unit the
+      design CSV files a sector for must be filed the same way in the JSON.  A
+      published block no reader checks is a block that drifts with the suite
+      green -- this is the arm that makes the emit falsifiable.
+
   (d) NOBODY RECOVERS THE SECTOR FROM THE NAME.  A source arm over the four
       readers: none of them takes a last-dot substring of a unit name.  This
       arm exists because arms (a)-(c) CANNOT tell a correct stamp from a
@@ -278,6 +285,46 @@ def main() -> int:
                     "sectors -- an empty column is a format change claiming a "
                     "structure that is not there." % (FLAT, name))
 
+    # ---------------------------------------------------------------- (e)
+    #  `unitSectors` is a flat one-line-per-entry object in the result JSON.
+    #  Parsed with the same posture as the rest of this gate: from the RUN,
+    #  never from the dict.
+    jsonSectors = {}
+    inBlock = False
+    for line in txt.splitlines():
+        if '"unitSectors"' in line:
+            inBlock = True
+            continue
+        if inBlock:
+            m = re.match(r'\s*"([^"]+)": "([^"]+)"', line)
+            if m:
+                jsonSectors[m.group(1)] = m.group(2)
+            elif line.strip().startswith("}"):
+                break
+    if not jsonSectors:
+        problems.append(
+            "%s: the result JSON emits no `unitSectors` map, so the browser "
+            "has no way to build the hierarchy except by splitting a dotted "
+            "unit name -- which is exactly what this design refuses."
+            % FRACTAL)
+    else:
+        check_set(set(jsonSectors.values()), "the result JSON's `unitSectors`")
+        #  Cross-check against the design CSV: two publications of one fact
+        #  must agree, or one of them is lying to whoever reads it.
+        if dcsv is not None:
+            head, rows = csv_rows(dcsv)
+            if "sector" in head:
+                i = head.index("sector")
+                for r in rows:
+                    want = r[i]
+                    got = jsonSectors.get(r[0])
+                    if want != "(no sector)" and got != want:
+                        problems.append(
+                            "%s: sizing.csv files unit '%s' under sector '%s' "
+                            "while the result JSON says '%s'.  One fact, two "
+                            "publications, and they disagree."
+                            % (FRACTAL, r[0], want, got))
+
     # ---------------------------------------------------------------- (d)
     #  The rejected design, refused at the source.  A `rfind('.')` or
     #  `find_last_of` on a unit name inside these readers IS the name identity
@@ -321,13 +368,16 @@ def main() -> int:
           "prints no banner, no capital-by-sector block and no `sector` column "
           "in either CSV.  Every heading is checked against the case's own "
           "`sectors ( ... )` declaration, with leaves separated by the engine's "
-          "own test (a member whose dict declares a `type`), and none of the %d "
+          "own test (a member whose dict declares a `type`), the result JSON's "
+          "`unitSectors` map (%d entr(ies)) agrees with sizing.csv unit for "
+          "unit, and none of the %d "
           "reader(s) takes a last-dot substring of a unit name.  NOT "
           "CHECKED: whether any cost is right, nesting deeper than one level "
           "(no corpus case nests twice), and the GUI, which does not read the "
           "sector yet."
           % (FRACTAL, len(declared), sorted(declared), nsub,
-             notes[0] if notes else "no shares read", FLAT, nread))
+             notes[0] if notes else "no shares read", FLAT,
+             len(jsonSectors), nread))
     return 0
 
 

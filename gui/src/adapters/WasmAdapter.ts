@@ -155,7 +155,7 @@ export class WasmAdapter implements SolverAdapter {
         settled = true;
         if (signal) signal.removeEventListener("abort", onAbort);
         worker.terminate();
-        const { displayLog, streams, convergence, profiles, txy, componentMolarMass, kpis,
+        const { displayLog, streams, convergence, profiles, txy, componentMolarMass, unitSectors, kpis,
           utilityAllocation, computed, timeline, advisories, divergences, modelBoundaries, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
@@ -164,6 +164,7 @@ export class WasmAdapter implements SolverAdapter {
         if (profiles && profiles.length > 0) result.profiles = profiles;
         if (txy) result.txy = txy;
         if (componentMolarMass) result.componentMolarMass = componentMolarMass;
+        if (unitSectors && Object.keys(unitSectors).length > 0) result.unitSectors = unitSectors;
         if (utilityAllocation && utilityAllocation.length > 0) result.utilityAllocation = utilityAllocation;
         if (computed && Object.keys(computed).length > 0) result.computed = computed;
         if (timeline && timeline.length > 0) result.timeline = timeline;
@@ -324,6 +325,7 @@ export function extractStructured(log: string,
   profiles: UnitProfile[];
   txy?: TxyData;
   componentMolarMass?: { [comp: string]: number };
+  unitSectors?: { [unitName: string]: string };
   /** Per-unit KPIs (yield, supersaturation, Q_removed,...) -- empty {} when
    *  no JSON block or no kpis object in it. */
   kpis: { [unitName: string]: { [k: string]: number } };
@@ -540,7 +542,10 @@ export function extractStructured(log: string,
     profiles,
     kpis,
 ...(txy ? { txy } : {}),
-...(parsed.componentMolarMass
+...(parsed.unitSectors
+      ? { unitSectors: { ...parsed.unitSectors } }
+      : {}),
+    ...(parsed.componentMolarMass
       ? { componentMolarMass: {...parsed.componentMolarMass } }
     : {}),
 ...(parsed.utilityAllocation
@@ -604,6 +609,7 @@ interface ResultPayload {
   converged: boolean;
   components: string[];
   componentMolarMass?: { [comp: string]: number };
+  unitSectors?: { [unitName: string]: string };
   streams: {
     [name: string]: {
       F: number;

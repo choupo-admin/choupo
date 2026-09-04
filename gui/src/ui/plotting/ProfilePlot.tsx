@@ -44,16 +44,25 @@ License
   is hidden.
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Group, SegmentedControl, Stack, Text } from "@mantine/core";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
-export function ProfilePlot({ profiles }: { profiles: UnitProfile[] }) {
+export function ProfilePlot(
+  { profiles, unit }: { profiles: UnitProfile[]; unit?: string },
+) {
   const [unitName, setUnitName] = useState<string>(
-    () => profiles[0]?.unit ?? "",
+    () => unit ?? profiles[0]?.unit ?? "",
   );
+  //  DRIVEN FROM OUTSIDE, but still selectable from inside.  The plots
+  //  navigator can now select a unit directly (its sector tree), and the
+  //  SegmentedControl below stays live so the plot is still usable on its
+  //  own.  An effect rather than a controlled prop, because the two must not
+  //  fight: the outside sets the unit when it changes, the user moves freely
+  //  afterwards.
+  useEffect(() => { if (unit !== undefined) setUnitName(unit); }, [unit]);
   const active = useMemo(
     () => profiles.find((p) => p.unit === unitName) ?? profiles[0],
     [profiles, unitName],
