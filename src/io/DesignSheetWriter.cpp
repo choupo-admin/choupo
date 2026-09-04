@@ -31,13 +31,22 @@ License
 #include "core/PortRoles.H"
 #include "streams/StreamMass.H"
 
+//  INCLUDE WHAT THIS FILE USES, not what its own header happens to pull in.
+//  `std::map`, `std::string` and `std::size_t` reached here through
+//  `DesignSheetWriter.H`, which g++ is happy to lend and emscripten's libc++
+//  is not obliged to -- the failure mode that killed `make wasm` on
+//  2026-08-27 while the native build and the whole suite stayed green, and
+//  which `check_std_includes` caught here on the first full run.
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <set>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace fs = std::filesystem;
