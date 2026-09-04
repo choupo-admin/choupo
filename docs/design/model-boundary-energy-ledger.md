@@ -377,8 +377,10 @@ audit would produce.  Above the floor the default band applies, so the
 turbine's three real numbers are pinned tight.
 
 **What is NOT covered, and it is a real difference.**  `status`, `rule`,
-`criterion` and the two world strings are prose; a golden row compares
-numbers.  A status downgrade is caught *indirectly* — it zeroes `step_kW` and
+`criterion` and the two world strings are prose, and no golden kind reads
+them.  (This said "a golden row compares numbers" until 2026-09-04, when the
+`verdict` kind made that false — the sentence had three homes and all three
+went stale together.)  A status downgrade is caught *indirectly* — it zeroes `step_kW` and
 pushes `remaining_kW` back up to the raw, both pinned — but it is not read
 directly, and the gate says so rather than implying coverage it lacks.
 

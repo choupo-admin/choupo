@@ -89,9 +89,18 @@ Therefore:
   fallback (diagnostics band + the op's CSV, or an honest note) — no op can be
   born invisible; the shape-group taxonomy (Consistency/Estimate/Fit/Points/
   Scan) retired to one "Operations" group; unclaimed CSVs keep a defensive
-  tail pill. **P4b residual (small, engine-side):** `headline()` in
+  tail pill. **P4b residual (small, engine-side):** ~~`headline()` in
   `PropertyOperation` so ops rank their own answer keys in the Results
-  epilogue (today it honestly shows ALL diagnostics), and retiring
+  epilogue~~ — **BUILT, and corrected here 2026-09-04.**
+  `PropertyOperation::headline()` is declared, `choupoProps` REFUSES when an
+  op names a headline diagnostic it did not publish, and `PropsView` puts
+  those keys first.  The parenthesis "(today it honestly shows ALL
+  diagnostics)" WAS true of the browser, and for a reason this line could not
+  have guessed: `WasmAdapter` rebuilt each operation row field by field and
+  dropped `headline` at the crossing, so the engine ranked and the browser
+  never heard.  Fixed in commit 6d43d8eb0 and gated by
+  `check_operation_result_crossing`.  What remains open here is only the
+  second half: retiring
   `parsePropertyPointLog` by emitting the point values through the machine
   block (the table's units/reference formatting must move with it).
 

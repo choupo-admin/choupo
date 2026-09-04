@@ -52,16 +52,29 @@ The kinds today, each naming WHERE and nothing else:
 | `aad` | `validation[]` | dataset | `<model>.<property>.<statistic>` |
 | `closure` | `energyClosures[]` | unit | field |
 | `utility` | `utilityAllocation[]` | unit | `<tier>.<utility>.<field>` |
+| `csv` | one cell of a case-emitted CSV | file | `<rowIdx>:<colName>` |
+| `verdict` | `operationResults[].curation` | op | field (compares a WORD) |
 
 The `claim` column (`anchor`) stays orthogonal: the kind says where the number
 is read from, the claim says what the row asserts about it.  One column per
 axis — folding them cost this project a rewrite once already.
 
-## 3. A word cannot be a golden value, and two ways round it
+## 3. A word as a golden value: two ways round it, and then the direct one
 
-A golden row compares numbers, so the *decisions* these blocks record —
-which utility, which closure status — are not directly comparable.  Two
-techniques were used, and the difference matters:
+**Amended 2026-09-04.**  This section used to open "a word cannot be a golden
+value", and that is no longer true: the `verdict` kind compares a WORD,
+exactly, with `exact` in the tolerance column.  It arrived when a fit's
+curation verdict was published into the result JSON and had to be pinned, and
+a numeric band beside `validated` / `notValidated` would have read as though
+two verdicts could be 0.1 apart.
+
+The two techniques below came FIRST and are still what the utility and closure
+blocks use, so they are not superseded — but a new block carrying a decision
+should reach for the direct kind before either of them.
+
+A golden row compared only numbers when these were written, so the *decisions*
+those blocks record — which utility, which closure status — were not directly
+comparable.  Two techniques were used, and the difference matters:
 
 * **Put the word in the KEY** (`utility`).  A row keyed
   `heating.steamLP.eur_h` matches only while steamLP is the allocation.  A

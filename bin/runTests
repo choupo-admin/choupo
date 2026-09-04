@@ -86,10 +86,13 @@
 #  `operationResults[].diagnostics` object, `name` = the op), `aad` (inside
 #  the top-level `"validation"` overlay table, `name` = the dataset and `key`
 #  = `<model>.<property>.<statistic>`), `closure` (inside the top-level
-#  `"energyClosures"` model-boundary ledger, `name` = the unit) or `utility`
+#  `"energyClosures"` model-boundary ledger, `name` = the unit), `utility`
 #  (inside the top-level `"utilityAllocation"` array, `name` = the unit and
 #  `key` = `<tier>.<utility>.<field>`, or `<tier>.<port>.unserved` for a duty
-#  no catalogue utility can meet).  `reltol` is |actual-exp|/|exp| (falls
+#  no catalogue utility can meet), `csv` (one cell of a case-emitted CSV) or
+#  `verdict` (inside an `operationResults[].curation` object, `name` = the op)
+#  -- the LAST of these compares a WORD, exactly, and its tolerance column
+#  must read `exact`; every other kind compares a number.  `reltol` is |actual-exp|/|exp| (falls
 #  back to absolute when exp is ~0).
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
@@ -319,8 +322,10 @@ get_aad() {
 #
 #     `name` is the unit, `key` is any numeric field (raw_kW, step_kW,
 #     remaining_kW, magnitude, normResidual).  `status`, `rule` and the two
-#     world strings are WORDS and are deliberately NOT reachable here -- a
-#     golden row compares numbers.  A status downgrade is caught INDIRECTLY
+#     world strings are WORDS and are deliberately NOT reachable here.  The
+#     reason USED to be that a golden row compares numbers; since the
+#     `verdict` kind that is no longer true, and what stands is the narrower
+#     claim: no kind reads THIS block's words, and none is proposed.  A status downgrade is caught INDIRECTLY
 #     and reliably: it zeroes step_kW and pushes remaining_kW back up to raw,
 #     both of which are numbers these rows pin.  Said plainly rather than
 #     claimed as coverage it does not have.

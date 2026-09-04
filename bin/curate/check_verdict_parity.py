@@ -16,13 +16,14 @@ the five verdicts a SECOND time, in TypeScript:
                                                 channel and the fit panel began
                                                 drawing it
 
-That is a scientific vocabulary with three homes, and the GUI tests could not
+That is a scientific vocabulary with three homes -- FOUR since 2026-09-04, when
+the fit panel began drawing them too -- and the GUI tests could not
 catch a divergence because they check TypeScript against TypeScript.  Vitor
 asked the right question -- is the correspondence gated, or are we now
 maintaining the same five-value vocabulary independently? -- and the answer was
 that it was not.  This gate is the answer, and it is deliberately the smallest
 one available: the project's own remedy for a fact with two homes is a gate
-that RECOUNTS, never a generator.  No code is emitted; the three files stay
+that RECOUNTS, never a generator.  No code is emitted; the four files stay
 hand-written, and they may not disagree.
 
 THE DOCTRINE IT PROTECTS (Vitor, 2026-08-11):
@@ -37,7 +38,7 @@ engine can no longer produce.  Both directions fail here.
 
 WHAT THIS GATE CHECKS.
 
-  (a) SET PARITY, three ways.  The literals returned by verdictOf(), the
+  (a) SET PARITY, FOUR ways.  The literals returned by verdictOf(), the
       members of the TS union, and the keys of the renderer's table must be
       the SAME set.  Checked in both directions, because the two failures are
       different lies: a value only in C++ is a verdict the GUI cannot draw
@@ -70,7 +71,7 @@ WHAT THIS GATE CHECKS.
       in exactly such a file, so it needs no exception either.
 
 WHAT THIS GATE DOES NOT CHECK.  It does not read the JSON the dossier writes,
-so a verdict correctly spelled in all three files but written to the dossier
+so a verdict correctly spelled in all four files but written to the dossier
 under a fourth name would pass here.  It also says nothing about whether a
 verdict is CORRECT for a given fit -- that is check_evidence_partition's arm.
 Stated because a gate that implies more coverage than it has is worse than one

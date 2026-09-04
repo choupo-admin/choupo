@@ -45,7 +45,10 @@ WHAT THIS DOES NOT CHECK, said plainly:
   * WHETHER A STEP IS RIGHT.  A wrong step pins as happily as a right one.
     This gate is about the three numbers being falsifiable.
   * THE STATUS WORD.  `status`, `rule`, `criterion` and the two world strings
-    are prose, and a golden row compares numbers.  A status downgrade is
+    are prose, and no golden kind reads them.  (The reason given here until
+    2026-09-04 was that "a golden row compares numbers"; the `verdict` kind
+    made that false, and the sentence was standing in three homes at once.)
+    A status downgrade is
     caught INDIRECTLY and reliably -- it zeroes step_kW and pushes
     remaining_kW back up to raw, both of which these rows pin -- but it is not
     read directly, and that is a real difference.

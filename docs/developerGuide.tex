@@ -1854,7 +1854,10 @@ kpi      flash01   V_over_F    0.30398357314   1e-6
 stream   vapor     F           0.00844398814   1e-6
 \end{lstlisting}
 %  The kind list is bin/runTests:83-92's own; this paragraph used to name
-%  two kinds against seven in the corpus (2026-09-03 coverage sweep).
+%  two kinds against seven in the corpus (2026-09-03 coverage sweep), and
+%  then went stale AGAIN one day later when the `verdict` kind arrived --
+%  together with the list it cites, which is the second-home failure this
+%  provenance comment was written to prevent (2026-09-04 audit).
 \code{kind} names WHERE the number is read from: \code{kpi} (inside the
 named unit's KPIs), \code{stream} (inside the named stream),
 \code{diag} (inside a props op's \code{operationResults[].diagnostics},
@@ -1868,7 +1871,10 @@ overlay table, \code{name} = the dataset, \code{key} =
 and \code{<tier>.<port>.carried} for one a physical stream carries to
 another unit --- two different facts that once wrote the same row), and
 \code{csv} (a sweep's answer, which lives in a CSV and emits no result
-block).  A sixth column \code{anchor} is a CLAIM, not a kind: a
+block), and \code{verdict} (a props op's
+\code{operationResults[].curation}, \code{name} = the op) --- which is
+the one kind that compares a \emph{word} rather than a number, so its
+tolerance column must read \code{exact}.  A sixth column \code{anchor} is a CLAIM, not a kind: a
 self-recorded row pins that the answer has not \emph{moved}; an anchor
 row carries a published value and pins that it \emph{agrees}, and
 \code{--record} copies it through verbatim.  Pin the numbers worth
@@ -1914,8 +1920,11 @@ The append-only half of \code{--record}.  It refreshes nothing: every
 existing row keeps its value, tolerance and claim (anchors included);
 only the \code{(kind, name, key)} triples the golden lacks are appended
 from a fresh run (kinds \code{kpi}, \code{stream}, \code{diag},
-\code{aad}, \code{closure}, \code{utility}, generated tolerance
-\code{1e-4}).  The point is the diff: a change git, a gate and a reader
+\code{aad}, \code{closure}, \code{utility}, \code{verdict};
+generated tolerance \code{1e-4}, except \code{verdict} rows, which are
+generated \code{exact} because they compare a word).  A kind missing
+from that list is dropped in silence --- which is how the first
+\code{verdict} append reported ``refreshed'' over an unchanged file.  The point is the diff: a change git, a gate and a reader
 can verify line by line.  A case with no golden is skipped (creating one
 is a recording decision, not a sweep side-effect), and a case marked
 \file{.expect-nonconvergence} or \file{.known-broken} is never
