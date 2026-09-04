@@ -86,6 +86,7 @@ count alone cannot provide:
     - phasechange01_partial_condenser: the worst energy residual beside its impossible phase label grew from 1 kW to 898.6 kW, past the 2 kW band
 """
 
+import os
 import re
 import subprocess
 import sys
@@ -130,11 +131,34 @@ def steady_cases():
         yield cd.parent.parent
 
 
-def measure(case: Path):
-    """-> (n impossible lines, worst |dH - declared| in kW)."""
+#  Single-pass cache (2026-09-04): this arm re-ran EVERY steady case with
+#  choupoSolve and then grepped the text -- which is the same run the suite
+#  had already made moments earlier, so the whole corpus was solved twice.
+#  Under bin/runTests it now reads the suite's own pass
+#  (env CHOUPO_SUITE_OUTPUTS; the cached file holds stdout+stderr merged,
+#  which is exactly the text this arm greps).  Standalone there is no env var
+#  and every case runs live, and a case ABSENT from the cache runs live too --
+#  never silently skipped, because a case that quietly stopped being measured
+#  would be a gate reporting coverage it does not have.
+_CACHE = os.environ.get("CHOUPO_SUITE_OUTPUTS")
+
+
+def case_output(case: Path):
+    if _CACHE:
+        rel = case.resolve().relative_to(ROOT).as_posix().replace("/", "__")
+        f = Path(_CACHE) / (rel + ".out")
+        try:
+            return f.read_text(errors="replace")
+        except OSError:
+            pass
     p = subprocess.run([str(SOLVE), str(case)], capture_output=True,
                        text=True, timeout=900)
-    out = p.stdout + p.stderr
+    return p.stdout + p.stderr
+
+
+def measure(case: Path):
+    """-> (n impossible lines, worst |dH - declared| in kW)."""
+    out = case_output(case)
     n = out.count("IMPOSSIBLE INLET PHASE")
     worst = 0.0
     for m in BAL.finditer(out):

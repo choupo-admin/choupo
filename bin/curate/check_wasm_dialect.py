@@ -96,9 +96,11 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its OK line cannot imply it:
     that the local clang accepts it silently while emscripten rejects it would
     pass here.  Only `make wasm` closes that, and it stays the complete check.
 """
+import os
 import subprocess
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -169,13 +171,23 @@ def main():
               "clean tree")
         return 1
 
+    #  ONE SUBPROCESS PER FILE, RUN IN PARALLEL.  Each invocation is
+    #  `-fsyntax-only`: it writes no object, no temporary and no shared state,
+    #  so the files are independent and the only thing serialising them was
+    #  the loop.  Measured 2026-09-04 on the gate manifest's own timings: this
+    #  was the single most expensive gate in the tree at 419 s, against 87 s
+    #  for `check_compile_clean` -- which compiles the SAME sweep with g++ and
+    #  had been using an executor all along.  Same shape, same worker count,
+    #  and NOTHING about what is checked changes: every source file is still
+    #  compiled, with the same flags, and every failure is still reported.
     hits = []
-    for f in sources:
-        rc, out = compile_one(f)
-        if rc != 0:
-            first = next((l for l in out.splitlines() if " error:" in l),
-                         out.strip().splitlines()[0] if out.strip() else "?")
-            hits.append(f"{f.relative_to(ROOT)}: {first.strip()}")
+    with ThreadPoolExecutor(max_workers=max(2, (os.cpu_count() or 4))) as ex:
+        for f, (rc, out) in zip(sources, ex.map(compile_one, sources)):
+            if rc != 0:
+                first = next((l for l in out.splitlines() if " error:" in l),
+                             out.strip().splitlines()[0] if out.strip() else "?")
+                hits.append(f"{f.relative_to(ROOT)}: {first.strip()}")
+    hits.sort()      # deterministic order regardless of completion order
     if hits:
         fails.append(f"{len(hits)} source file(s) use a g++ extension that "
                      "emscripten's clang rejects:\n    " + "\n    ".join(hits))
