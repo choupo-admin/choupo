@@ -118,3 +118,64 @@ for its new fourth home.
   own declared band; these gates check only that every sink reports the same one.
 * Only `choupoProps` emits the channel.  No flowsheet operation decides a
   curation verdict today, so there is nothing to publish from `choupoSolve`.
+
+---
+
+## 6. The crossing that dropped it anyway (same day, one layer out)
+
+The gate above states plainly that it does not check the GUI renders the
+verdict.  That disclaimer was covering a real hole, and reading the crossing
+found it within the hour.
+
+`WasmAdapter.parseResult` does not hand `operationResults` through — it
+**rebuilds each row field by field**, filtering types as it goes.  That is the
+right shape for a trust boundary; it has one failure mode nothing else here can
+see:
+
+> A crossing drops what it was not taught, and it drops it in SILENCE, because
+> an absent optional field is indistinguishable from one the engine never sent.
+
+Two fields were being lost:
+
+* **`curation`** — published that morning, declared in the type, drawn by
+  `FitStatsPanel`, and thrown away here.  In a real browser the badge could
+  never have appeared.  The engine, the type and the panel were all correct and
+  the feature did not work.
+* **`headline`** — **pre-existing, and much older.**  It is the op's own ranking
+  of which diagnostics ARE its answer; `PropsView` reads `op.headline` to
+  emphasise them, and `choupoProps` REFUSES at runtime when an op names a
+  headline it did not publish.  The engine treats it as a contract.  The
+  browser had simply never received it.
+
+**A third spelling of the same row.**  The typecheck then refused the fix,
+which is how the root cause surfaced: the adapter carried its own inline type
+for the parsed row, so the shape lived in THREE places — the `OperationResult`
+interface, the parsed shape, and the rebuild — and a field added to the first
+reached neither of the others.  The parsed shape now derives:
+`Partial<OperationResult>[]`.  `Partial` is the honest modifier — it describes
+what a worker MIGHT have sent, and every field is type-validated before it is
+carried.
+
+Gate: `check_operation_result_crossing` — every field the type declares must be
+written by the rebuild, or be listed in `CROSSING_DROPS` **with its reason**, so
+that "not carried" is a decision a reader can see rather than an omission
+nobody noticed.  The list is empty, which is the honest state.
+
+**And the fast path was under-covering.**  `bin/runTests --gui` derives its gate
+list by grepping the gate sources for a `gui/` path, and matched only the
+literal spelling — not `ROOT / "gui" / "src"`, which is the idiom most gates
+use.  Four gates were being skipped, three of them pre-existing
+(`check_lesson_symbols`, `check_rules_of_thumb`, `check_schema_coverage`), one
+day after that path shipped claiming "generous matching".  It was generous
+about which gates COUNT and blind to how they SPELL a path — the derivation
+falling to the defect class it exists to prevent.  Both spellings now; the path
+runs 18 gates where it ran 14.
+
+**A sabotage note, again.**  Verifying the new gate's blind-harvest arm took two
+attempts: the first renamed the interface inside the *gate's own docstring*,
+which quotes the phrase its regex looks for, so nothing about the TypeScript
+changed and the gate went on passing.  That is the third sabotage in one day to
+edit the wrong copy of a string.  **A green run after a sabotage that did not
+apply is evidence of nothing, and it reads exactly like a gate that cannot
+fail.**  Check that the sabotage changed what you meant before reading its
+result.

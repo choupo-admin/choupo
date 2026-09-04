@@ -417,9 +417,41 @@ export function extractStructured(log: string,
       for (const [k, v] of Object.entries(orr.provenance ?? {})) {
         if (typeof v === "string") prov[k] = v;
       }
+      //  THE CURATION AXIS (maturity, as words) and the op's own HEADLINE.
+      //
+      //  THIS REBUILD IS A CROSSING, AND A CROSSING DROPS WHAT IT WAS NOT
+      //  TAUGHT -- silently, because an absent optional field is
+      //  indistinguishable from one the engine did not send.  Both of these
+      //  were being lost here:
+      //
+      //    `curation`  -- added 2026-09-04 so a fit's VERDICT could reach a
+      //                   program.  The engine published it, the type declared
+      //                   it, FitStatsPanel drew it, and this loop threw it
+      //                   away, so in the BROWSER the badge never appeared.
+      //                   Found the same day, by reading the crossing rather
+      //                   than trusting that publishing was enough.
+      //    `headline`  -- PRE-EXISTING, and older.  It is the op's own ranking
+      //                   of its answer -- which diagnostics ARE the answer --
+      //                   and `PropsView` reads `op.headline` to emphasise
+      //                   them.  choupoProps REFUSES at runtime when an op
+      //                   declares a headline it did not publish, so the
+      //                   engine treats it as a contract; the browser had
+      //                   simply never received it.
+      //
+      //  `check_operation_result_crossing` now holds this loop to the fields
+      //  the TYPE declares, so the next one added cannot go missing quietly.
+      const cur: { [k: string]: string } = {};
+      for (const [k, v] of Object.entries(orr.curation ?? {})) {
+        if (typeof v === "string") cur[k] = v;
+      }
+      const head = Array.isArray(orr.headline)
+        ? orr.headline.filter((h: unknown): h is string => typeof h === "string")
+        : [];
       rows.push({
         name: orr.name, type: orr.type ?? "", diagnostics: clean,
+        ...(head.length > 0 ? { headline: head } : {}),
         ...(Object.keys(prov).length > 0 ? { provenance: prov } : {}),
+        ...(Object.keys(cur).length > 0 ? { curation: cur } : {}),
       });
     }
     if (rows.length > 0) operationResults = rows;
@@ -621,7 +653,13 @@ interface ResultPayload {
     Tdew: number[];
   };
   utilityAllocation?: UtilityAllocationRow[];
-  operationResults?: { name: string; type: string; diagnostics: { [k: string]: number }; provenance?: { [k: string]: string } }[];
+  //  DERIVED FROM THE CONTRACT, never re-spelled.  This used to list the row's
+  //  fields a SECOND time -- so the shape lived in three places (the
+  //  `OperationResult` interface, this parsed shape, and the rebuild below)
+  //  and a field added to the first reached neither of the others.  `Partial`
+  //  is the honest modifier: this describes what a worker MIGHT have sent, and
+  //  every field is validated by type before it is carried across.
+  operationResults?: Partial<OperationResult>[];
   thermoResolution?: { model: string; i: string; j: string; status: string;
     source: string; provSource: string; origin?: PairOrigin; method?: string;
     methodVersion?: string; validity?: ValidityDomain;

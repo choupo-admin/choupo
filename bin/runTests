@@ -621,7 +621,17 @@ if [ "${1:-}" = "--gui" ]; then
     #  DERIVED: every gate whose SOURCE mentions a gui/ path.  Deliberately
     #  generous -- a wrongly included gate costs milliseconds, a wrongly
     #  excluded one costs a regression nobody sees.
-    gates=$(grep -rlE '"gui/|/gui/|gui/(src|tests|public|tools)' \
+    #  TWO SPELLINGS, because a gate may name a path either way and the first
+    #  version of this derivation saw only one.  A gate that writes a literal
+    #  `gui/src/...` matched; a gate that COMPOSES the path from segments --
+    #  `ROOT / "gui" / "src" / ...`, which is the idiom most of these use --
+    #  did not.  Measured 2026-09-04, one day after this path shipped: FOUR
+    #  gates were being skipped by it, three of them pre-existing
+    #  (check_lesson_symbols, check_rules_of_thumb, check_schema_coverage).
+    #  So the "generous matching" this path claims was generous about which
+    #  gates COUNT and blind to how they SPELL a path -- the same defect class
+    #  the derivation exists to avoid, in the derivation itself.
+    gates=$(grep -rlE '"gui/|/gui/|gui/(src|tests|public|tools)|/ "gui"|"gui" /' \
               "$ROOT"/bin/curate/check_*.py 2>/dev/null | sort)
     ngates=$(printf '%s\n' "$gates" | grep -c . || true)
     [ "$ngates" -gt 0 ] || { echo "ERROR: derived ZERO gui-reading gates -- the derivation is broken, and an empty list would pass vacuously"; exit 1; }
@@ -3456,6 +3466,22 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/dossgram.$$
+
+    # operation-result crossing gate (2026-09-04).  WasmAdapter REBUILDS each
+    # operationResults row field by field, so a field it was not taught is
+    # dropped in SILENCE -- an absent optional field looks exactly like one the
+    # engine never sent.  It lost `curation` the day it was published and
+    # `headline` for far longer.  The TYPE is the contract; this holds the
+    # crossing to it.
+    if "$ROOT/bin/curate/check_operation_result_crossing.py" > /tmp/opcross.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "operation-result-crossing-gate" "$(head -1 /tmp/opcross.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_operation_result_crossing.py)\n" "operation-result-crossing-gate"
+        cat /tmp/opcross.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/opcross.$$
 
     # fit-verdict-channel gate (2026-09-04).  Three fit ops decide a CURATION
     # verdict from a held-out pass against a band declared before the fit.  It
