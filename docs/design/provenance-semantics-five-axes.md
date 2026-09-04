@@ -294,6 +294,56 @@ migration.  What changed is that the scheme was incomplete, and it was caught
 by counting BEFORE the first generated file — which is the only reason this
 record exists at all.
 
+### 5.1 SECOND CORRECTION, 2026-09-03 — the same miss, one nesting level out
+
+**The paragraph above is wrong, and it is wrong the way §5 says a census goes
+wrong.**  It reads:
+
+> Praising a form and never reading its values is how a census misses the
+> largest population it was written to find.
+
+That is exactly what happened again.  The corrected census counted `origin` as
+a DIRECT CHILD of a `provenance {}` block.  It did not count the PER-VALUE
+blocks nested one level deeper —
+
+    provenance
+    {
+        MW { origin literature; ... }
+        Tc { origin literature; ... }
+        Pc { origin literature; ... }
+    }
+
+— which is the form `src/propertyOps/EstimateComponent.cpp` writes for every
+value it derives, and the form the Explorer's component inspector was taught to
+read on 2026-09-03.  Recounted at both depths:
+
+**census: 23 direct + 2184 per-value = 2207 across 478 files**
+
+against the "~95 values across 72 files" above.  Two of the four numbers the
+first correction got right stayed right (`assumed` 16, `standard` 3); the
+population it was written to find was one level further in.
+
+**THE LARGEST WORD IS THE ONE THE CONTRACT SAYS IS NOT AN ORIGIN.**
+`literature` accounts for 1786 of the 2207, and §3.1 rules it off this axis
+entirely — it answers *where the value came from*, which is `provenance`'s
+question.  So the biggest population is not a rename but a restructuring, on
+records that are ChemSep imports carrying their own licence notes.  "Bounded
+and mechanical" does not describe it.
+
+**AND THE FIVE WORDS AND THE ENGINE DISAGREE.**  §3.1 offers `predicted` for
+what the tree spells `predictive` (356) *and* `estimated` (40).  `core/Origin.H`
+holds those as two enum values, and `CLAUDE.md` records the separation as
+deliberate — forum #67, "a distinct class; collapsing it into `estimated`
+contradicted the resolution-priority ladder".  Collapsing them is therefore a
+SCIENTIFIC CLASSIFICATION decision, not a spelling one, and it is **reserved**.
+
+**What is done instead of the migration.**  `bin/curate/check_origin_census.py`
+recounts at every depth on every run and requires the line above to equal what
+it finds.  The size of this migration is this record's central claim; it has
+been wrong twice, each time by counting at one depth, so it is now a DERIVED
+number with a gate behind it.  A doc is not exempt from arity — this record
+said so about other people's numbers before it was true of its own.
+
 **THE FIFTH WORD WAS ALREADY BEING MINTED.**  `src/propertyOps/EstimateComponent.cpp`
 writes `origin estimated;` into every component it generates, at three sites.
 That is a generator producing new files in a vocabulary the scheme did not

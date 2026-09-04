@@ -905,6 +905,11 @@
       "exit": 0,
       "claim": "check_dossier_grammar: OK -- 4 dossier(s) carrying 5 property block(s) are written in grammar the project's own dict parser reads back: no keyword-prefixed named block, no coordinate label wearing a unit's slot.  Every block is found by the structural rule both readers apply (a top-level sub-dict declaring `verdict`), every verdict is one of the engine's five, and no `validated` sits beside a held-out AAD outside its own pre-declared band.  NOT COVERED: this is a REPLICA of the dict reader (there is no Python dict parser here to call, and writing one would be the second implementation this gate's own subject warns about), so a third kind of grammar violation nobody has hit would pass; and no NUMBER is checked, only that a verdict agrees with the two printed next to it.",
       "seconds": 0.1
+    },
+    "check_origin_census": {
+      "exit": 0,
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 478 file(s) carrying a `provenance {}`: 23 origin declaration(s) as direct children and 2184 nested one level deeper in per-value blocks (2207 total; the largest are literature 1782, predictive 356, estimated 40, measured 4), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "seconds": 0.1
     }
   }
 }
