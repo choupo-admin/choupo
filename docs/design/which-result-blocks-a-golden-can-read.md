@@ -54,6 +54,7 @@ The kinds today, each naming WHERE and nothing else:
 | `utility` | `utilityAllocation[]` | unit | `<tier>.<utility>.<field>` |
 | `csv` | one cell of a case-emitted CSV | file | `<rowIdx>:<colName>` |
 | `verdict` | `operationResults[].curation` | op | field (compares a WORD) |
+| `equipment` | `equipment[]` | unit | `basis` (a WORD, `exact`, whitespace→`_`) · `values.<key>` · `cost.<purchased\|bareModule\|totalModule>` |
 
 The `claim` column (`anchor`) stays orthogonal: the kind says where the number
 is read from, the claim says what the row asserts about it.  One column per
@@ -67,6 +68,18 @@ exactly, with `exact` in the tolerance column.  It arrived when a fit's
 curation verdict was published into the result JSON and had to be pinned, and
 a numeric band beside `validated` / `notValidated` would have read as though
 two verdicts could be 0.1 apart.
+
+**Amended again 2026-09-05, and this one was a defect.**  The word comparison
+in `bin/runTests` was keyed on `kind = verdict`, not on the tolerance column
+reading `exact`.  That held for exactly as long as `verdict` was the only
+word-valued kind.  The day `equipment` arrived with a `basis` row (a sentence,
+whitespace-normalised, `exact`), the row fell through to the numeric
+`within_tol` with two non-numbers and PASSED — found by sabotage: a golden's
+basis word was changed to a different sizer's rule and the case stayed green.
+The comparison mode is DECLARED in the tolerance column, and that column is
+its one home; the kind is not a second one.  `exact` now means "compare as a
+word" for any kind, and `verdict` keeps only its extra rule that its column
+MUST read `exact`.
 
 The two techniques below came FIRST and are still what the utility and closure
 blocks use, so they are not superseded — but a new block carrying a decision

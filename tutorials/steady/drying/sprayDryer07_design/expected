@@ -51,3 +51,13 @@ stream  exhaustAir             T                372.025243986    1e-4
 stream  feed                   T                298.15           1e-4
 stream  powder                 T                372.025243986    1e-4
 kpi     dryer                  atomiserPower    183.957161449    1e-4
+equipment dryer                  values.W_evap    0.0165190239944  1e-4
+equipment dryer                  values.chamberDiameter 1                1e-4
+equipment dryer                  values.chamberHeight 5                1e-4
+equipment dryer                  values.design_chamberDiameter_m 0.325298417146   1e-4
+equipment dryer                  values.design_chamberHeight_m 1.62649208573    1e-4
+equipment dryer                  values.design_residenceFactor 3                1e-4
+equipment dryer                  values.design_residence_s 0.242937288631   1e-4
+equipment dryer                  values.design_targetSize_um 40               1e-4
+equipment dryer                  values.design_wheelSpeed_rpm 39751.5114383    1e-4
+equipment dryer                  values.pressureDesign 1                1e-4

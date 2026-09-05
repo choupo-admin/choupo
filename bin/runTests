@@ -432,6 +432,83 @@ get_utility() {
 # --- dispatch by `kind`: diag -> operation diagnostics, aad -> the validation
 #     overlay table, closure -> the model-boundary energy ledger, utility ->
 #     the utility allocation, else kpi/stream object
+# --- pull one field out of the top-level `"equipment": [...]` array
+#     (choupoSolve; what the sizing pass sized and what the costing pass
+#     priced, per unit).
+#
+#     WHY IT NEEDS ITS OWN KIND.  The block carries a CAPITAL COST per unit --
+#     a number a reader acts on -- and it shipped on 2026-09-04 with no kind
+#     able to read it, so it was unchecked by construction while the suite ran
+#     green.  That is this document's own failure mode, one block along.
+#
+#     EACH ITEM IS ONE LINE (`ResultEmitter.cpp` emits `,\n    { "unit": ...`),
+#     so no brace-depth walk is needed -- but the `"unit"` key is NOT unique to
+#     this block (`energyClosures` and `utilityAllocation` carry it too), so the
+#     extractor tracks whether it is INSIDE the array rather than matching the
+#     key anywhere it appears.  A field name is matched with its own quotes and
+#     the sub-object it lives in, so `values.A` cannot be answered by a
+#     `factors` entry that happens to be called `A`.
+#
+#     `name` is the unit; `key` is one of:
+#         sector | type | material | basis          the header words
+#         values.<sizeKey>                          a sizing value
+#         cost.<purchased|bareModule|totalModule>   the three costs
+#         cost.factors.<name>                       one costing factor
+#     A WORD-valued key (sector/type/material/basis, cost.currency, sizeKey,
+#     correlation) is compared as a word with `exact`, on the `verdict`
+#     precedent -- a numeric band beside `crystalliser` would read as though
+#     two equipment types could be 0.1 apart.
+get_equipment() {
+    local out="$1" unit="$2" key="$3"
+    printf '%s\n' "$out" | awk -v u="$unit" -v k="$key" '
+        /"equipment": \[/ { inblk = 1; next }
+        inblk && /^  \]/  { inblk = 0 }
+        !inblk { next }
+        index($0, "\"unit\": \"" u "\"") == 0 { next }
+        {
+            line = $0
+            #  Narrow to the sub-object the key names, so a name that exists in
+            #  two of them cannot be answered by the wrong one.
+            if (k ~ /^cost\.factors\./) {
+                f = substr(k, length("cost.factors.") + 1)
+                if (match(line, /"factors": \{[^}]*\}/) == 0) exit
+                line = substr(line, RSTART, RLENGTH); k2 = f
+            } else if (k ~ /^cost\./) {
+                f = substr(k, length("cost.") + 1)
+                if (match(line, /"cost": \{.*/) == 0) exit
+                line = substr(line, RSTART, RLENGTH)
+                #  Drop the nested factors so `cost.B1` cannot resolve.
+                sub(/"factors": \{[^}]*\}/, "", line); k2 = f
+            } else if (k ~ /^values\./) {
+                f = substr(k, length("values.") + 1)
+                if (match(line, /"values": \{[^}]*\}/) == 0) exit
+                line = substr(line, RSTART, RLENGTH); k2 = f
+            } else {
+                #  A header word: cut the line before the first sub-object so a
+                #  header key cannot be answered from inside `values`/`cost`.
+                if (match(line, /"values": \{/)) line = substr(line, 1, RSTART - 1)
+                k2 = k
+            }
+            if (match(line, "\"" k2 "\": \"[^\"]*\"")) {
+                s = substr(line, RSTART, RLENGTH)
+                sub("^\"" k2 "\": \"", "", s); sub(/"$/, "", s)
+                #  A golden row is whitespace-delimited, so a WORD-valued
+                #  field that carries spaces -- `basis` is a sentence -- is
+                #  normalised to `_` on BOTH sides, from the same rule as the
+                #  generator.  Same treatment `get_utility` gives a catalogue
+                #  name like `electricity (generated)`.
+                gsub(/[ \t]+/, "_", s)
+                print s; exit
+            }
+            if (match(line, "\"" k2 "\": -?[0-9.eE+-]+")) {
+                s = substr(line, RSTART, RLENGTH)
+                sub("^\"" k2 "\": ", "", s)
+                print s; exit
+            }
+            exit
+        }'
+}
+
 get_any() {
     local out="$1" kind="$2" name="$3" key="$4"
     #  The CLAIM (published vs self-recorded) is a different column and does
@@ -442,6 +519,7 @@ get_any() {
     elif [ "$kind" = utility ]; then get_utility "$out" "$name" "$key"
     elif [ "$kind" = csv     ]; then get_csv     "${5:-}" "$name" "$key"
     elif [ "$kind" = verdict ]; then get_verdict "$out" "$name" "$key"
+    elif [ "$kind" = equipment ]; then get_equipment "$out" "$name" "$key"
     else get_value "$out" "$name" "$key"; fi
 }
 
@@ -838,6 +916,77 @@ auto_generate() {
             [ -z "$w" ] && continue
             printf 'verdict %-22s %-16s %-18s %s\n' "$o" verdict "$w" exact
         done
+        #  EQUIPMENT: what the sizing pass sized and the costing pass priced.
+        #  Until 2026-09-04 this block was emitted and NO kind could read it,
+        #  so a capital cost per unit shipped unchecked with the suite green --
+        #  this document's own failure mode, one block along.
+        #
+        #  WHAT IS EMITTED, and what is deliberately left out.  The `values`
+        #  map and the three `cost` totals are what the two passes COMPUTED,
+        #  and `basis` is the RULE the sizer chose among its own branches
+        #  ("drum V = Q*tau" vs "catalyst V = Q/SV" vs the author's volume) --
+        #  a decision, pinned as a WORD with `exact`, on the `verdict`
+        #  precedent.
+        #
+        #  NOT emitted: `cost.factors.*`, and the reason is arity rather than
+        #  cost.  Those are the costing provenance, which
+        #  `check_cost_provenance` already RECOMPUTES the total from,
+        #  independently; a golden row beside it would be a second home for
+        #  the same claim, and the weaker of the two.  Nor `sector`/`type`/
+        #  `material`, which are the case's own declaration and are gated by
+        #  `check_sector_hierarchy` against the case's `sectors ( ... )` list.
+        #
+        #  A few `values` entries ARE pass-through (`pressureDesign` comes
+        #  from the case's designRules).  They are pinned anyway rather than
+        #  filtered, because telling computed from pass-through needs a list
+        #  of which is which -- a second home for a fact each SIZER knows.
+        #  What such a row pins is that the declaration reached the output,
+        #  which is worth a line and is stated here so it is not mistaken for
+        #  a check of the arithmetic.
+        printf '%s\n' "$out" | awk -v tol="$reltol" '
+            /"equipment": \[/ { inblk = 1; next }
+            inblk && /^  \]/  { inblk = 0 }
+            !inblk { next }
+            {
+                if (!match($0, /"unit": "[^"]*"/)) next
+                u = substr($0, RSTART+9, RLENGTH-10)
+                #  THE BASIS IS A SENTENCE, and a golden row is
+                #  whitespace-delimited -- `V = liquorFlow * residenceTime`
+                #  would parse as value `V`, tolerance `=`, rest discarded.
+                #  Normalised to `_` HERE and in `get_equipment` from the same
+                #  rule, exactly as `get_utility` does for a catalogue name
+                #  that carries spaces, so the two cannot disagree.
+                if (match($0, /"basis": "[^"]*"/)) {
+                    b = substr($0, RSTART+10, RLENGTH-11)
+                    gsub(/[ \t]+/, "_", b)
+                    printf "equipment %-20s %-16s %-18s %s\n", u, "basis", b, "exact"
+                }
+                if (match($0, /"values": \{[^}]*\}/)) {
+                    v = substr($0, RSTART+11, RLENGTH-11)
+                    n = split(v, kv, /, */)
+                    for (i = 1; i <= n; i++)
+                        if (match(kv[i], /"[A-Za-z_][A-Za-z0-9_]*": *-?[0-9][0-9.eE+-]*/)) {
+                            s = substr(kv[i], RSTART, RLENGTH)
+                            split(s, p, /": */); gsub(/^"/, "", p[1])
+                            printf "equipment %-20s %-16s %-18s %s\n", \
+                                   u, "values." p[1], p[2], tol
+                        }
+                }
+                #  The three totals only -- `factors` is stripped first so a
+                #  factor cannot be emitted as though it were a cost.
+                line = $0
+                if (match(line, /"cost": \{.*/)) {
+                    line = substr(line, RSTART, RLENGTH)
+                    sub(/"factors": \{[^}]*\}/, "", line)
+                    split("purchased bareModule totalModule", c, " ")
+                    for (i = 1; i <= 3; i++)
+                        if (match(line, "\"" c[i] "\": *-?[0-9][0-9.eE+-]*")) {
+                            s = substr(line, RSTART, RLENGTH); sub(/^"[^"]*": */, "", s)
+                            printf "equipment %-20s %-16s %-18s %s\n", \
+                                   u, "cost." c[i], s, tol
+                        }
+                }
+            }'
         #  overlay AADs: how far each model sits from the MEASURED dataset.
         #  These are the numbers a `compare_*` case exists to publish, and
         #  until 2026-08-12 auto-generation walked straight past them, so the
@@ -1033,7 +1182,7 @@ if [ -n "$RECORD" ]; then
                     #  is the second home for the list of kinds, and the check
                     #  loop below has no such list at all, so the two cannot
                     #  be kept honest by reading one of them.
-                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict) ;; *) continue;; esac
+                    case "$gkind" in kpi|stream|diag|aad|closure|utility|verdict|equipment) ;; *) continue;; esac
                     if ! awk -v k="$gkind" -v n="$gname" -v y="$gkey" \
                          '$1==k && $2==n && $3==y {found=1} END{exit !found}' "$exp"; then
                         printf '%-7s %-22s %-16s %-16s %s\n' \
@@ -4280,16 +4429,26 @@ for case_dir in "${CASES[@]}"; do
             [ -z "${tol:-}" ] && continue
             golden_rows=$((golden_rows+1))
             act=$(get_any "$out" "$kind" "$name" "$key" "$case_dir")
-            #  A VERDICT IS A WORD, so it is compared as one.  `exact` is
-            #  REQUIRED in the tolerance column: a row that wrote a number
-            #  there would read as though two verdicts could be close.
-            if [ "$kind" = verdict ]; then
-                if [ "$tol" != exact ]; then
-                    bad="$bad\n    verdict.$name.$key: tolerance column reads '$tol' -- a verdict is a WORD and the column must read 'exact'"
-                elif [ -z "$act" ]; then
-                    bad="$bad\n    verdict.$name.$key: MISSING (expected $exp_v) -- the op published no \`curation\` object"
+            #  A VERDICT IS A WORD, and `exact` is REQUIRED in its tolerance
+            #  column: a row that wrote a number there would read as though
+            #  two verdicts could be close.
+            if [ "$kind" = verdict ] && [ "$tol" != exact ]; then
+                bad="$bad\n    verdict.$name.$key: tolerance column reads '$tol' -- a verdict is a WORD and the column must read 'exact'"
+                continue
+            fi
+            #  `exact` IN THE TOLERANCE COLUMN IS WHAT SAYS "THIS ROW IS A
+            #  WORD" -- for ANY kind.  Until 2026-09-05 this branch was keyed
+            #  on `kind = verdict` instead, so the first OTHER word-valued row
+            #  (`equipment <unit> basis <sentence> exact`) fell through to the
+            #  numeric within_tol with two non-numbers and PASSED.  Found by
+            #  sabotage: the basis word in a golden was changed to a different
+            #  sizer's rule and the case stayed green.  The declared comparison
+            #  mode is the one home; the kind is not a second one.
+            if [ "$tol" = exact ]; then
+                if [ -z "$act" ]; then
+                    bad="$bad\n    $kind.$name.$key: MISSING (expected '$exp_v') -- the run published no such word"
                 elif [ "$act" != "$exp_v" ]; then
-                    bad="$bad\n    verdict.$name.$key: got '$act' expected '$exp_v'"
+                    bad="$bad\n    $kind.$name.$key: got '$act' expected '$exp_v'"
                 fi
                 continue
             fi
@@ -4426,6 +4585,21 @@ if [ "$#" -eq 0 ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/designsheet.$$
+
+    # Equipment-pinned gate (2026-09-05): every (unit, key) the run publishes
+    # under `equipment` has a golden row and every row names a published key
+    # -- the published-implies-pinned rule, applied to the block that shipped
+    # a day ahead of the kind that reads it.  A sweep with no golden is
+    # excused BY NAME (which point is the answer is RESERVED, task #77).
+    if "$ROOT/bin/curate/check_equipment_pinned.py" > /tmp/equippin.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "equipment-pinned-gate" "$(tail -1 /tmp/equippin.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_equipment_pinned.py)\n" "equipment-pinned-gate"
+        cat /tmp/equippin.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/equippin.$$
 
     # Mass-closure gate (2026-09-04): no steady case may ship a plant that does
     # not conserve mass, and a case that DECLARES a balance report and never
