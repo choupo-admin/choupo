@@ -144,8 +144,25 @@ describe("caseTree: the wiring the pure functions cannot see", () => {
   const workspace = readFileSync(resolve(root, "src/ui/CaseWorkspace.tsx"), "utf8");
   const adapter = readFileSync(resolve(root, "src/adapters/WasmAdapter.ts"), "utf8");
 
-  it("the worker selects run-output trees from ONE list, and design/ is in it", () => {
-    expect(worker).toMatch(/OUTPUT_ROOTS\s*=\s*\[\s*"converged",\s*"design"\s*\]/);
+  it("the worker selects run-output trees from ONE list, and design/ and internalStates/ are in it", () => {
+    //  The list, not a fixed literal: it grew from two roots to three on
+    //  2026-09-05 (internalStates/), and a test pinning the exact pair read
+    //  a ratified addition as a defect.  Each root the tree classifies as
+    //  output that the engine WRITES must be here, or it is written into
+    //  MEMFS and thrown away with the worker.
+    const m = worker.match(/OUTPUT_ROOTS\s*=\s*\[([^\]]*)\]/);
+    expect(m).not.toBeNull();
+    const roots = m![1]!.split(",").map((x) => x.trim().replace(/"/g, "")).filter(Boolean);
+    expect(roots).toContain("converged");
+    expect(roots).toContain("design");
+    expect(roots).toContain("internalStates");
+  });
+
+  it("the worker posts internal states on their OWN channel, never folded into convergedFiles", () => {
+    expect(worker).toContain('type: "internalStateFiles"');
+    expect(adapter).toContain('msg.type === "internalStateFiles"');
+    expect(adapter).toContain("result.internalStateFiles = internalStateFiles");
+    expect(workspace).toContain("internalStateFiles");
   });
 
   it("the worker carries no hard-coded converged literal (the defect this replaced)", () => {

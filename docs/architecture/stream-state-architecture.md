@@ -97,6 +97,9 @@ lithiumBrinePlant/
 ├── 0.01/ 0.02/ …     PHYSICAL TRANSIENT TIME snapshots
 ├── design/           PHYSICAL EQUIPMENT REALISATION  (BRINE/EV-101/crystalliser …)
 │                     ONE dictionary per equipment item -- see below
+├── internalStates/   WHAT HAPPENS INSIDE EACH UNIT  (BRINE/EV-101/axialProfile …)
+│                     ONE dictionary per unit that publishes a profile; a
+│                     PROJECTION of `SimulationResult::profiles` (2026-09-05)
 ├── economics/        COST & VALUE  (equipment/ · sectors/ · plant)
 └── postProcessing/   reports/ plots/ pinch/ comparisons/
 ```
@@ -113,6 +116,7 @@ lithiumBrinePlant/
 | `iterations/` | Optional numerical history. **Never** physical time. |
 | `0.01/`, `0.02/`, … | Physical transient-time snapshots. |
 | `design/` | Physical equipment realisation derived from process state + design basis. |
+| `internalStates/` | A field over a coordinate of the equipment (stage, position, particle size) or its inventory (loadings per component), per unit. A projection of the published profiles; a construction over a swept parameter (van Heerden, Merkel) is an analysis and is NOT here. |
 | `economics/` | Equipment, sector and plant cost/value results. |
 | `postProcessing/` | Derived reporting and presentation outputs. |
 
@@ -406,6 +410,13 @@ executable.
    **`design/` DONE 2026-09-04** (`src/io/DesignSheetWriter.cpp`, filled from
    postDict's `sizing {}` pass — no `designBasis/` was needed).  `designBasis/`,
    `economicBasis/` and `economics/` remain outstanding.
+   **`internalStates/` DONE 2026-09-05** (`src/io/InternalStateWriter.cpp`,
+   a projection of `SimulationResult::profiles`, on the `design/` precedent;
+   record
+   [`../design/internal-states-are-a-projection-of-profiles.md`](../design/internal-states-are-a-projection-of-profiles.md)).
+   It was not in this list because it is not a design or economics layer: it
+   is a VIEW of the solved state, beside `converged/`, and it arrived once
+   the per-unit run-output shape existed.
 
 ---
 

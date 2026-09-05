@@ -73,6 +73,9 @@ const CASE_FILES = import.meta.glob(
     // machine's stale sizing is served to every visitor before they run
     // anything.
     "!../../../tutorials/**/design/**",
+    // What happens inside each unit: the same class of RUN OUTPUT as design/
+    // (regenerated whole, gitignored), the same second lock.
+    "!../../../tutorials/**/internalStates/**",
     "!../../../tutorials/**/.build/**",
     "!../../../tutorials/**/log.*",
     "!../../../tutorials/**/trajectory.csv",

@@ -31,7 +31,7 @@ the case repeats it:
 0/               MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the state before solving (authored)
 converged/       MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/   the steady solution
 design/          …/<unit>/<equipment>                          one specification sheet per item
-internalStates/  …/<unit>/                                     what happens INSIDE the equipment (task #90)
+internalStates/  …/<unit>/<kind>                               what happens INSIDE the equipment (written 2026-09-05)
 iterations/      numerical history — how the solver got there, never physical time
 postProcessing/  the reports derived from the result
 ```

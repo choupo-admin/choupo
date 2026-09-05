@@ -71,6 +71,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
 #include "io/DesignSheetWriter.H"
+#include "io/InternalStateWriter.H"
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
@@ -1009,6 +1010,25 @@ try
         }
     };
 
+    //  WHAT HAPPENS INSIDE THE EQUIPMENT.  One dictionary per unit that
+    //  publishes a profile, under `internalStates/<SECTOR>/<unit>/<kind>` --
+    //  a PROJECTION of `result.profiles`, the same record the JSON and
+    //  `profile.csv` carry, so nothing is computed here and no golden moves.
+    //  Same posture as `design/`: only on a converged run, removed and
+    //  rewritten whole, a failure SAID and never fatal.  A `T_K` profile (van
+    //  Heerden, Merkel) is an analysis over a swept parameter, not equipment
+    //  state; the writer skips and announces it.
+    auto writeInternalStates = [&](const SimulationResult& result) {
+        if (!result.converged) return;
+        try {
+            InternalStateWriter::write(fs::current_path().string(), result,
+                                       verbosity);
+        } catch (const std::exception& e) {
+            std::cerr << "\nWARNING: the internal-state files were not"
+                         " written:\n  " << e.what() << "\n";
+        }
+    };
+
     // ---- 0/ COMPLETENESS validator (arch doc rule 8.2, no heuristics) ------
     //  When the case ran from a `0/` state directory, the graph's stream IDs
     //  must correspond EXACTLY to the state files: N declared streams == N files.
@@ -1099,6 +1119,7 @@ try
             if (!validate0(r)) finalRc = 1;
             writeConverged(r);
             writeDesignSheets(r);
+            writeInternalStates(r);
         }
         else if (reportsDict && !reportsDict->keys().empty())
         {
@@ -1189,6 +1210,7 @@ try
         if (!validate0(result)) finalRc = 1;
         writeConverged(result);
         writeDesignSheets(result);
+        writeInternalStates(result);
 
         // (utility allocation now done inside `simulate` -- carried on every
         // pass, direct + outer -- so the GUI always has it.)

@@ -253,6 +253,13 @@ tutorials/**/design/
 #  named, rather than reached by a pattern that would take the records with it.
 docs/design/flashComplex/design/
 
+# what happens INSIDE each unit (internalStates/<SECTOR>/<unit>/<kind>, a
+# projection of the profiles, regenerated WHOLE by the solver like design/).
+# Scoped to cases for the same reason as design/, and for the same reader:
+# the GUI's Vite glob (second lock in gui/src/cases/tutorials.ts).
+tutorials/**/internalStates/
+docs/design/flashComplex/internalStates/
+
 # F3: projected local unit runs (regenerable artifacts, never authored state)
 **/.runs/
 

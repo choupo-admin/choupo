@@ -950,6 +950,11 @@
       "exit": 0,
       "claim": "check_energy_boundary_pinned: OK -- 523 plant-boundary first-law quantit(ies) pinned across 151 golden-shipping case(s) that publish `globalEnergyBoundary`, in both directions (published implies pinned for the three terms; every pinned row is still emitted).  The residual row follows the generator's own >= 1 W rule and is checked only for existence here.  NOT JUDGED standalone: 3 case(s) whose bare run fails here (tutorials/props/estimate/userEstimate01_linear_tb, tutorials/steady/userops/userOp01_yield_reactor, tutorials/steady/userops/userOp02_component_splitter) -- judged under the suite, whose cache carries the harness's own run.  NOT CHECKED: whether the engine's ledger is right, and the per-unit residuals the report cannot attribute.",
       "seconds": 794.5
+    },
+    "check_internal_states": {
+      "exit": 0,
+      "claim": "check_internal_states: OK -- 2 file(s) on the fractal witness, 1 on the flat column and 1 on the PSA bed, each at the address its unit's STAMPED sector dictates (unitSectors from the JSON, never a split name; no level at all on a flat case), each reproducing its unit's published profile value by value at 1e-9 (Cryst/sizeDistribution (32 pts); SD/sizeDistribution (15 pts); column09/stageProfile (15 pts); h2psa/swingTable (5 pts)); no file answers to an unpublished profile; the T_K construction on the cooling tower produced no file and no directory and was announced; the swing table is filed as internal state; the tree is gitignored and excluded from the GUI glob while docs/design/ stays committable; the exclusion and the boundary sentence are still at their source.  NOT CHECKED: that the engine's own parser accepts a file (structural arm only), whether any profile is RIGHT (agreement between two surfaces, not truth), the V/z/z_m/position axes and the two undeclared ones (module, chainLength) beyond the suite running them, nesting deeper than one level, and the browser harvest itself.",
+      "seconds": 0.2
     }
   }
 }

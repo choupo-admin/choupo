@@ -257,9 +257,13 @@ export function CaseWorkspace() {
   //  the same read-only merge, from their own channel.  Same rule: display
   //  only, never into caseFiles.
   const designOut = useStore((s) => s.runResult?.designFiles);
+  //  What happens inside each unit (internalStates/<SECTOR>/<unit>/<kind>),
+  //  the third run-output tree on the same read-only merge.
+  const internalOut = useStore((s) => s.runResult?.internalStateFiles);
   const raw = useMemo(
-    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}) }),
-    [caseFiles.rawFiles, convergedOut, designOut]);
+    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}),
+             ...(internalOut ?? {}) }),
+    [caseFiles.rawFiles, convergedOut, designOut, internalOut]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
 

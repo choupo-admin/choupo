@@ -4639,6 +4639,22 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/designsheet.$$
 
+    # Internal-states gate (2026-09-05): every unit that publishes a profile
+    # gets ONE dictionary at `internalStates/<SECTOR>/<unit>/<kind>` -- a
+    # PROJECTION of the JSON's `profiles` block, held to it value by value; a
+    # T_K construction (van Heerden, Merkel) is an analysis and gets NO file;
+    # a flat case grows no sector level; the tree is gitignored and excluded
+    # from the GUI glob while docs/design/ stays committable.
+    if "$ROOT/bin/curate/check_internal_states.py" > /tmp/internalstates.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "internal-states-gate" "$(tail -1 /tmp/internalstates.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_internal_states.py)\n" "internal-states-gate"
+        cat /tmp/internalstates.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/internalstates.$$
+
     # Equipment-pinned gate (2026-09-05): every (unit, key) the run publishes
     # under `equipment` has a golden row and every row names a published key
     # -- the published-implies-pinned rule, applied to the block that shipped

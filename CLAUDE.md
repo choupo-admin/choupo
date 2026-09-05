@@ -1097,6 +1097,25 @@ the 2026-09-04 specification sheets, which ride the `sizing {}` PASS in
 Record:
 [`docs/design/the-hierarchy-that-only-existed-in-the-name.md`](docs/design/the-hierarchy-that-only-existed-in-the-name.md).
 
+**WHAT HAPPENS INSIDE THE EQUIPMENT IS A PROJECTION, NOT A RESULT
+(2026-09-05).**  `internalStates/<SECTOR>/<unit>/<kind>` is written by
+`src/io/InternalStateWriter.cpp` from `SimulationResult::profiles` — the
+record `UnitOperation::profile()` already publishes to the JSON, the Plot tab
+and `profile.csv` — on the `design/` precedent: sector as stamped data, no
+level on a flat case, rewritten whole, only when converged, gitignored under
+`tutorials/**/`, its own `internalStateFiles` channel to the Case tab.  The
+kind is derived mechanically from the axis (`stageProfile` · `axialProfile` ·
+`sizeDistribution` · `swingTable`; anything else `profile`, announced).  **THE
+BOUNDARY (Vítor):** internal state is a field over a coordinate of the
+equipment (position, stage, particle size) or its inventory (loadings per
+component); a construction over a parameter sweep (van Heerden, Merkel) is
+an analysis and stays in the reports — so a `T_K` profile gets NO file and is
+announced, and the PSA/TSA swing table IS internal state.  Trap: a gate that
+re-runs the case cannot be fired by deleting a file beforehand — the run
+rewrites it — so the sabotage has to land BETWEEN the run and the check.
+Gate: `check_internal_states`.  Record:
+[`docs/design/internal-states-are-a-projection-of-profiles.md`](docs/design/internal-states-are-a-projection-of-profiles.md).
+
 **THE CATALOGUE READ BACK AGAINST A BOOK — a TOOL, deliberately not a gate
 (2026-08-25).**  `bin/curate/verify_against_poling.py` reads the CURATOR's own
 copy of Poling/Prausnitz/O'Connell App. A, matches by CAS never by name, and

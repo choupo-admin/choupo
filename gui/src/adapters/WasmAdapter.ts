@@ -125,6 +125,7 @@ type WorkerMessage =
   | { type: "csvFiles"; files: { [relPath: string]: string } }
   | { type: "convergedFiles"; files: { [relPath: string]: string } }
   | { type: "designFiles"; files: { [relPath: string]: string } }
+  | { type: "internalStateFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } };
 
@@ -140,6 +141,7 @@ export class WasmAdapter implements SolverAdapter {
       let csvFiles: { [relPath: string]: string } | null = null;
       let convergedFiles: { [relPath: string]: string } | null = null;
       let designFiles: { [relPath: string]: string } | null = null;
+      let internalStateFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
@@ -200,6 +202,11 @@ export class WasmAdapter implements SolverAdapter {
         if (designFiles && Object.keys(designFiles).length > 0) {
           result.designFiles = designFiles;
         }
+        //  Same rule, third tree: a case whose units publish no profile must
+        //  not read as a case that failed to solve.
+        if (internalStateFiles && Object.keys(internalStateFiles).length > 0) {
+          result.internalStateFiles = internalStateFiles;
+        }
         if (instantFiles && Object.keys(instantFiles).length > 0) {
           const parsed = parseDynamicInstants(instantFiles);
           if (parsed) result.instants = parsed;
@@ -235,6 +242,8 @@ export class WasmAdapter implements SolverAdapter {
           convergedFiles = msg.files;
         } else if (msg.type === "designFiles") {
           designFiles = msg.files;
+        } else if (msg.type === "internalStateFiles") {
+          internalStateFiles = msg.files;
         } else if (msg.type === "instants") {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {

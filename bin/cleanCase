@@ -36,6 +36,8 @@
 #      processor*       (placeholder for future parallel runs)
 #      reports/         (the reports{} output tree: CSV, .ods, sub-folders)
 #      design/          (the equipment specification sheets)
+#      internalStates/  (what happens inside each unit -- a projection of
+#                        the profiles, regenerated whole like design/)
 #      trajectory.csv   (choupoBatch / choupoCtrl time series)
 #      code/.build/     (per-case compiled binary from buildCode)
 #      0.01/ 0.02/ ...  (all-numeric transient instants)
@@ -63,7 +65,7 @@ if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
     #  is the ASCII logo and the first line of the GPL notice -- so
     #  `cleanCase --help`, the one thing a reader types before deleting
     #  files, printed no usage at all.
-    sed -n '31,53p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '31,58p' "$0" | sed 's/^# \{0,1\}//'
     exit 0
 fi
 
@@ -76,7 +78,7 @@ fi
 count=0
 
 # Top-level generated artifacts (logs, reports/ tree, trajectory.csv, ...).
-for pat in 'log.*' '*.log' 'processor[0-9]*' 'reports' 'design' 'trajectory.csv'; do
+for pat in 'log.*' '*.log' 'processor[0-9]*' 'reports' 'design' 'internalStates' 'trajectory.csv'; do
     while IFS= read -r -d '' f; do
         rm -rf "$f"
         count=$((count + 1))

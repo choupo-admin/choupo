@@ -425,6 +425,16 @@ export interface RunResult {
    *  "the run converged", and "no sizing pass" must stay a different fact
    *  from "did not solve". */
   designFiles?: { [relPath: string]: string };
+  /** WHAT HAPPENS INSIDE EACH UNIT: the files the run wrote under
+   *  internalStates/ -- one Choupo dictionary per unit that publishes a
+   *  profile, at `internalStates/<SECTOR>/<unit>/<kind>` (no sector level on
+   *  a flat case; kind = stageProfile | axialProfile | sizeDistribution |
+   *  swingTable | profile).  A PROJECTION of `profiles`, the same record the
+   *  Plot tab draws, regenerated whole on every run.  Keys are
+   *  case-root-relative, like convergedFiles.  A SEPARATE field for the same
+   *  reason designFiles is: "no unit publishes a profile" must stay a
+   *  different fact from "did not solve". */
+  internalStateFiles?: { [relPath: string]: string };
   /** Per-duty utility allocation from the solver: each heat duty (a unit's
    *  Q, or a column reboiler/condenser port) sized to a plant utility by
    *  temperature level, or flagged carried.  Lets the GUI show "which
