@@ -82,6 +82,7 @@ import {
   Text,
 } from "@mantine/core";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { buildTree, squash, sortedChildren, type TreeNode } from "./caseTree";
 
 import { lessonOutline } from "../case/lesson.js";
 import { parse, type DictEntry } from "../dict/index.js";
@@ -260,9 +261,13 @@ export function CaseWorkspace() {
   //  run output for a user edit.  Before the first run the tree is exactly
   //  the authored case, as before.
   const convergedOut = useStore((s) => s.runResult?.convergedFiles);
+  //  The equipment specification sheets (design/<SECTOR>/<unit>/<tag>) ride
+  //  the same read-only merge, from their own channel.  Same rule: display
+  //  only, never into caseFiles.
+  const designOut = useStore((s) => s.runResult?.designFiles);
   const raw = useMemo(
-    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}) }),
-    [caseFiles.rawFiles, convergedOut]);
+    () => ({ ...(caseFiles.rawFiles ?? {}), ...(convergedOut ?? {}), ...(designOut ?? {}) }),
+    [caseFiles.rawFiles, convergedOut, designOut]);
   const files = useMemo(() => orderFiles(Object.keys(raw)), [raw]);
   const [activePath, setActivePath] = useState<string | null>(null);
 
@@ -591,6 +596,25 @@ export function CaseWorkspace() {
 
 // ---- File tree -------------------------------------------------------------
 
+/*  THE CASE TREE IS A TREE.
+ *
+ *  It used to group by the FIRST path segment only and draw everything after
+ *  it as one row, so `constant/components/water.dat` read as
+ *  `components/water.dat` under a `constant/` heading and a sector's
+ *  `sectors/BRINE/system/flowsheetDict` as `BRINE/system/flowsheetDict`.  That
+ *  was tolerable while a case was two levels deep.  It stopped being tolerable
+ *  when the engine started writing `design/<SECTOR>/<unit>/<equipmentTag>`
+ *  (2026-09-04): the point of that tree is that a reader navigates to a UNIT
+ *  and finds its specification sheet, and a flat row spelling the route out
+ *  is not navigation.
+ *
+ *  So the grouping is recursive on the real path separator and the same code
+ *  draws every depth (`./caseTree.ts` builds the shape, and is tested).
+ *
+ *  COLLAPSE STATE IS KEYED ON THE FULL PREFIX, not the segment: the case's
+ *  `system/` and a sector's `system/` are two nodes and fold independently.
+ *  Keying on the segment folded both -- name identity, applied to a UI.
+ */
 function FileTree({
   files, active, onSelect,
 }: {
@@ -598,31 +622,10 @@ function FileTree({
   active: string | null;
   onSelect: (path: string) => void;
 }) {
-  // Group by top-level folder so the tree stays compact for fractal cases.
-  const grouped = useMemo(() => {
-    const g = new Map<string, string[]>();
-    for (const f of files) {
-      if (f.endsWith(".cho")) continue;
-      const top = f.includes("/") ? f.slice(0, f.indexOf("/")) : "(root)";
-      const list = g.get(top) ?? [];
-      list.push(f);
-      g.set(top, list);
-    }
-    return g;
-  }, [files]);
+  const tree = useMemo(() => squash(buildTree(files)), [files]);
+  const isLesson = (f: string) => /^README\.md$/i.test(f);
 
-  const sortedTops = Array.from(grouped.keys()).sort((a, b) => {
-    // the lesson (a root README.md) → system/ → constant/ → the rest alphabetical
-    const rootHasLesson = (grouped.get("(root)") ?? []).some((f) => /^README\.md$/i.test(f));
-    const rank = (k: string) =>
-      (k === "(root)" && rootHasLesson ? -1 : k === "system" ? 0 : k === "constant" ? 1 : 2);
-    return rank(a) - rank(b) || a.localeCompare(b);
-  });
-
-  // Per-group collapse state.  All expanded by default; clicking the
-  // chevron of a sector folder collapses its files away so the student
-  // can focus on system/ + constant/ without scrolling around DRYING's
-  // half-dozen sub-folders.
+  //  All expanded by default, as before.  Keyed on the full prefix.
   const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
   const toggle = (k: string) =>
     setCollapsed((prev) => {
@@ -631,73 +634,81 @@ function FileTree({
       return next;
     });
 
+  const renderLeaf = (f: string, depth: number) => {
+    const isActive = f === active;
+    const leaf = f.includes("/") ? f.slice(f.lastIndexOf("/") + 1) : f;
+    return (
+      <Group
+        key={f}
+        gap={6}
+        wrap="nowrap"
+        style={{
+          cursor: "pointer",
+          padding: "2px 8px 2px 0",
+          paddingLeft: 26 + depth * 12,
+          background: isActive ? "light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))" : undefined,
+          borderLeft: isActive
+            ? "2px solid var(--mantine-color-accent-3)"
+            : "2px solid transparent",
+        }}
+        onClick={() => onSelect(f)}
+      >
+        <Text
+          size="xs"
+          ff="monospace"
+          c={isActive ? "accent" : "var(--mantine-color-text)"}
+          style={{ wordBreak: "break-all" }}
+        >
+          {leaf}
+        </Text>
+      </Group>
+    );
+  };
+
+  const renderNode = (node: TreeNode, depth: number) => {
+    const isCollapsed = collapsed.has(node.prefix);
+    const declared = node.prefix === "system" || node.prefix === "constant";
+    return (
+      <Stack key={node.prefix} gap={0} mb={depth === 0 ? 4 : 0}>
+        <Group
+          gap={4}
+          wrap="nowrap"
+          style={{ cursor: "pointer", padding: "4px 4px 2px", paddingLeft: 4 + depth * 12 }}
+          onClick={() => toggle(node.prefix)}
+        >
+          <ActionIcon
+            variant="transparent"
+            size="xs"
+            c="dimmed"
+            onClick={(e) => { e.stopPropagation(); toggle(node.prefix); }}
+          >
+            {isCollapsed ? <IconChevronRight size={12} /> : <IconChevronDown size={12} />}
+          </ActionIcon>
+          <Text size="xs" c={declared ? "yellow" : "accent"} fw={600} ff="monospace">
+            {node.label}/
+          </Text>
+        </Group>
+        {!isCollapsed && (
+          <>
+            {sortedChildren(node).map((k) => renderNode(k, depth + 1))}
+            {node.leaves.map((f) => renderLeaf(f, depth + 1))}
+          </>
+        )}
+      </Stack>
+    );
+  };
+
   return (
     <Stack gap={0} p="xs">
       <Text size="xs" c="dimmed" tt="uppercase" mb={6}
         style={{ letterSpacing: 0.5, fontWeight: 600 }}>
         Files
       </Text>
-      {sortedTops.map((top) => {
-        const isCollapsed = collapsed.has(top);
-        return (
-          <Stack key={top} gap={0} mb={4}>
-            <Group
-              gap={4}
-              wrap="nowrap"
-              style={{ cursor: "pointer", padding: "4px 4px 2px" }}
-              onClick={() => toggle(top)}
-            >
-              <ActionIcon
-                variant="transparent"
-                size="xs"
-                c="dimmed"
-                onClick={(e) => { e.stopPropagation(); toggle(top); }}
-              >
-                {isCollapsed
-                  ? <IconChevronRight size={12} />
-                  : <IconChevronDown size={12} />}
-              </ActionIcon>
-              <Text
-                size="xs"
-                c={top === "system" || top === "constant" ? "yellow" : "accent"}
-                fw={600}
-                ff="monospace"
-              >
-                {top}/
-              </Text>
-            </Group>
-            {!isCollapsed && grouped.get(top)!.map((f) => {
-              const leaf = top === "(root)" ? f : f.slice(top.length + 1);
-              const isActive = f === active;
-              return (
-                <Group
-                  key={f}
-                  gap={6}
-                  wrap="nowrap"
-                  style={{
-                    cursor: "pointer",
-                    padding: "2px 8px 2px 26px",
-                    background: isActive ? "light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5))" : undefined,
-                    borderLeft: isActive
-                      ? "2px solid var(--mantine-color-accent-3)"
-                    : "2px solid transparent",
-                  }}
-                  onClick={() => onSelect(f)}
-                >
-                  <Text
-                    size="xs"
-                    ff="monospace"
-                    c={isActive ? "accent" : "var(--mantine-color-text)"}
-                    style={{ wordBreak: "break-all" }}
-                  >
-                    {leaf}
-                  </Text>
-                </Group>
-              );
-            })}
-          </Stack>
-        );
-      })}
+      {/*  The lesson first: a root README.md is what a student reads before
+          anything else.  Then the folders, then the other root files.  */}
+      {tree.leaves.filter(isLesson).map((f) => renderLeaf(f, 0))}
+      {sortedChildren(tree).map((k) => renderNode(k, 0))}
+      {tree.leaves.filter((f) => !isLesson(f)).map((f) => renderLeaf(f, 0))}
     </Stack>
   );
 }

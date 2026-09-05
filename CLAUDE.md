@@ -1003,9 +1003,17 @@ a committable run output is one machine's stale sizing baked into the shipped
 site (second lock in the glob itself).  `bin/cleanCase` would have left the
 tree behind while announcing a removal count, and its `--help` printed the GPL
 notice instead of the usage.  NOT done: no `designDict`, no new sizing content
-(the sheet draws what `SizingPass` computes and invents no field), and it does
-NOT reach the GUI — the case tree groups by the FIRST path segment and the
-MEMFS harvest is hard-coded to the literal `"/case/converged/"`.  Gate:
+(the sheet draws what `SizingPass` computes and invents no field).  **The GUI
+half shipped 2026-09-05:** the Case tree is RECURSIVE (`gui/src/ui/caseTree.ts`,
+pure and tested — it had grouped by the FIRST path segment and drawn the rest
+as one row, on every case), collapse state is keyed on the full path (keying
+on the segment folded the case's `system/` and a sector's `system/` together —
+name identity, applied to a UI), and the worker harvest selects run-output
+trees from ONE list (`OUTPUT_ROOTS`) instead of a hard-coded converged literal
+— the literal being exactly why the sheets did not reach the browser the day
+the engine wrote them.  `designFiles` is its own `RunResult` field: folding it
+into `convergedFiles` would make "no sizing pass" read as "did not solve".
+Gate:
 `check_design_sheet` (its load-bearing arm reads `massBalance_byUnit.csv`, a
 report this writer does not produce, which is what caught the crystals).
 Record:

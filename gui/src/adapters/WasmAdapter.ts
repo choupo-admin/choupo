@@ -123,6 +123,7 @@ type WorkerMessage =
   | { type: "trajectory"; csv: string }
   | { type: "csvFiles"; files: { [relPath: string]: string } }
   | { type: "convergedFiles"; files: { [relPath: string]: string } }
+  | { type: "designFiles"; files: { [relPath: string]: string } }
   | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } };
 
@@ -137,6 +138,7 @@ export class WasmAdapter implements SolverAdapter {
       let trajectoryCsv: string | null = null;
       let csvFiles: { [relPath: string]: string } | null = null;
       let convergedFiles: { [relPath: string]: string } | null = null;
+      let designFiles: { [relPath: string]: string } | null = null;
       let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
@@ -190,6 +192,12 @@ export class WasmAdapter implements SolverAdapter {
         if (convergedFiles && Object.keys(convergedFiles).length > 0) {
           result.convergedFiles = convergedFiles;
         }
+        //  Its own field, never folded into convergedFiles: that one's
+        //  non-empty guard is read as "the run converged", and a case with
+        //  no sizing pass must not look like a case that failed to solve.
+        if (designFiles && Object.keys(designFiles).length > 0) {
+          result.designFiles = designFiles;
+        }
         if (instantFiles && Object.keys(instantFiles).length > 0) {
           const parsed = parseDynamicInstants(instantFiles);
           if (parsed) result.instants = parsed;
@@ -223,6 +231,8 @@ export class WasmAdapter implements SolverAdapter {
           csvFiles = msg.files;
         } else if (msg.type === "convergedFiles") {
           convergedFiles = msg.files;
+        } else if (msg.type === "designFiles") {
+          designFiles = msg.files;
         } else if (msg.type === "instants") {
           instantFiles = msg.files;
         } else if (msg.type === "proposals") {

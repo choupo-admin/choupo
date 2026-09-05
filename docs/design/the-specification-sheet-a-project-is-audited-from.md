@@ -224,11 +224,26 @@ pattern nobody argued for.
 * **It does not make `design`/`economics` reports run by default.**  RESERVED
   for Vítor, and untouched — the sheets ride on a `sizing {}` PASS in
   `postDict`, which is a different declaration from the `reports {}` block.
-* **It does not reach the GUI.**  The case file tree groups by the FIRST path
-  segment and draws the rest as one row (`CaseWorkspace.tsx:602-612,670`), and
-  the MEMFS harvest is hard-coded to the literal string `"/case/converged/"`
-  (`solverWorker.js:242`).  So `design/` would arrive as a flat list under one
-  header — not the tree Vítor photographed.  That is slice 2.
+* ~~It does not reach the GUI.~~  **Slice 2 shipped 2026-09-05.**  The case
+  file tree grouped by the FIRST path segment and drew the rest as one row,
+  and the MEMFS harvest was a single hard-coded `startsWith()` on the
+  converged/ path — so `design/` would have arrived as a flat list under one
+  header.  Now: the tree is RECURSIVE on the real path separator
+  (`gui/src/ui/caseTree.ts`, pure and tested; `CaseWorkspace.tsx` draws it),
+  collapse state is keyed on the full prefix (the case's `system/` and a
+  sector's `system/` fold independently — keying on the segment was name
+  identity applied to a UI), and single-child folder chains squash into one
+  label while keeping the real path as identity.  The worker selects
+  run-output trees from ONE list, `OUTPUT_ROOTS = ["converged", "design"]`,
+  each on its own channel: `designFiles` is a separate `RunResult` field
+  because `convergedFiles`' non-empty guard is read as "the run converged",
+  and "no sizing pass" must stay a different fact from "did not solve".
+  The tree change is visible on EVERY case, not only the nine that size —
+  `constant/components/water.dat` is now a folder and a file, as it always
+  was on disk.  Test: `gui/tests/caseTree.test.ts` (7 shape arms + 4 wiring
+  arms that read the worker and adapter as text, because a test over the pure
+  functions alone would pass with the wiring missing).  Record of the slice
+  and its six mapped routes: task #74's description, folded here.
 * **No number is validated.**  The gate checks that two surfaces AGREE and
   that mass is conserved; nothing here says a size is right.
 

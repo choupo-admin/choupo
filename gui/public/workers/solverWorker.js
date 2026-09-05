@@ -228,8 +228,32 @@ self.addEventListener("message", async (e) => {
               // Case tab can show the solution files a native run leaves on
               // disk; without this a browser run ended with the answer
               // written into MEMFS and thrown away with it.
-              const convergedFiles = {};
+              //  THE RUN-OUTPUT TREES THE CASE TAB SHOWS -- ONE HOME.
+              //
+              //  This was a single hard-coded startsWith() on the converged/
+              //  path, and that literal is exactly why the design sheets did not reach
+              //  the browser on the day the engine started writing them: the
+              //  MEMFS walk below is general, the SELECTION was not.  A second
+              //  literal would have been the same defect with two instances.
+              //
+              //  Each root gets its OWN bucket and its OWN message, never one
+              //  merged bag: `convergedFiles` has a declared contract ("one
+              //  file per stream") and its non-empty guard is read as "the run
+              //  converged".  Folding a design tree into it would make an
+              //  absent sizing pass indistinguishable from a failed solve.
+              //
+              //  Adding a tree (economics/ is the next one the architecture
+              //  names) is one entry here plus one channel in the adapter.
+              const OUTPUT_ROOTS = ["converged", "design"];
+              const outputs = {};
+              for (const r of OUTPUT_ROOTS) outputs[r] = {};
+
               const isNumericDir = (n) => /^[0-9]+(\.[0-9]+)?$/.test(n);
+              const rootOf = (path) => {
+                for (const r of OUTPUT_ROOTS)
+                  if (path.startsWith("/case/" + r + "/")) return r;
+                return null;
+              };
               const walk = (dir, parentName) => {
                 const entries = Module.FS.readdir(dir);
                 for (const name of entries) {
@@ -239,9 +263,15 @@ self.addEventListener("message", async (e) => {
                   try { st = Module.FS.stat(path); } catch (_) { continue; }
                   if (Module.FS.isDir(st.mode)) {
                     walk(path, name);
-                  } else if (path.startsWith("/case/converged/")) {
+                    continue;
+                  }
+                  const root = rootOf(path);
+                  if (root) {
+                    //  Checked BEFORE the .csv branch on purpose: a .csv that
+                    //  one day lands under an output tree belongs to that tree,
+                    //  not to the plotting channel.
                     try {
-                      convergedFiles[path.substring("/case/".length)] =
+                      outputs[root][path.substring("/case/".length)] =
                         Module.FS.readFile(path, { encoding: "utf8" });
                     } catch (_) {
                       /* ignore individual file failures */
@@ -273,10 +303,19 @@ self.addEventListener("message", async (e) => {
               walk("/case", null);
 
               // The solved stream state -> the Case tab, read-only.
-              if (Object.keys(convergedFiles).length > 0) {
-                log("[worker] collected " + Object.keys(convergedFiles).length
+              if (Object.keys(outputs.converged).length > 0) {
+                log("[worker] collected " + Object.keys(outputs.converged).length
                     + " converged/ stream file(s)");
-                self.postMessage({ type: "convergedFiles", files: convergedFiles });
+                self.postMessage({ type: "convergedFiles", files: outputs.converged });
+              }
+
+              // The equipment specification sheets -> the Case tab, read-only.
+              // Its own channel, so "no sizing pass ran" and "the solve did not
+              // converge" stay two different facts.
+              if (Object.keys(outputs.design).length > 0) {
+                log("[worker] collected " + Object.keys(outputs.design).length
+                    + " design/ specification sheet(s)");
+                self.postMessage({ type: "designFiles", files: outputs.design });
               }
 
               // Real-time instant files -> the time scrubber.  Carried on their

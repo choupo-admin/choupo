@@ -397,6 +397,15 @@ export interface RunResult {
    *  glass-box way -- without this the WASM run wrote the solution into
    *  MEMFS and discarded it with the worker. */
   convergedFiles?: { [relPath: string]: string };
+  /** The EQUIPMENT SPECIFICATION SHEETS the run wrote under design/ -- one
+   *  Choupo dictionary per physical item, at
+   *  `design/<SECTOR>/<unit>/<equipmentTag>` (no sector level on a flat
+   *  case), written only when a `sizing {}` pass ran and regenerated whole
+   *  on every run.  Keys are case-root-relative, like convergedFiles.  A
+   *  SEPARATE field on purpose: convergedFiles' non-empty guard is read as
+   *  "the run converged", and "no sizing pass" must stay a different fact
+   *  from "did not solve". */
+  designFiles?: { [relPath: string]: string };
   /** Per-duty utility allocation from the solver: each heat duty (a unit's
    *  Q, or a column reboiler/condenser port) sized to a plant utility by
    *  temperature level, or flagged carried.  Lets the GUI show "which
