@@ -2158,6 +2158,7 @@ domains like membranes).
 | Run a case | `runCase tutorials/<category>/<name>` (auto-dispatches by `application`) |
 | List tutorials | `listCases` |
 | Full regression | `bin/runTests` |
+| Where the suite's wall clock goes | `build/suiteTimings.csv` — written by every check-mode `bin/runTests` (item, kind, seconds); the ten slowest are printed after the tally.  A measurement, not a gate: the item's seconds are the gap since the previous result line |
 | A change confined to `gui/` | `bin/runTests --gui` — the app's tests + typecheck + every gate that READS `gui/` (list DERIVED from the gate sources, never hand-kept).  ~3 min against ~30: no corpus case runs and no C++ is compiled, so it says nothing about the solver.  The moment a commit also touches `src/`, `tutorials/` or `data/`, the full sweep is the check |
 | Materialise a case's `0/` | `bin/choupo-init0 <case>` (propagates from authored inlets + tear seeds; `--force` regenerates estimates; refuses $variable streams{}) |
 | Validate a case WITHOUT solving | `bin/choupo-lint <case>` (read-only: load+compose+0/-completeness+unit-type/duplicate checks + topology-inferred stream roles; bails at the same `Flowsheet::solve` seam as `-init0`) |

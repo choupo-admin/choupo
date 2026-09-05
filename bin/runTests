@@ -162,6 +162,49 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 python3 "$ROOT/bin/curate/destructive_session.py" --assert "runTests" || exit 1
 cd "$ROOT"
 
+# --- per-item wall clock (2026-09-05, task #84) -------------------------------
+#  Vitor's question, relayed from Henry Werner: is an exhaustive 590-case walk
+#  needed, or should the list be minimised to fast cases that stand for the
+#  larger ones?  The honest answer starts with a MEASUREMENT nobody had taken:
+#  the suite ran 34 min and nothing said where.  A 36-case sample the same
+#  day ran at a MEDIAN of 0.02 s per case with one column at 64 s -- so the
+#  exhaustive list is not the cost; the tail and the gates are.  This wrapper
+#  makes that a number on every run instead of a sample once remembered.
+#
+#  HOW: the sweep re-executes itself under a line-stamping filter; every
+#  output line is written to build/suiteTimings.raw with the epoch it
+#  arrived, and bin/curate/suite_timings.py turns the PASS/FAIL lines into
+#  build/suiteTimings.csv (item, kind, seconds) and prints the slowest ten
+#  after the summary.  ONE home for the numbers; nothing here is a gate --
+#  a measurement is not a claim, and the decisions it informs (a derived
+#  --smoke tier, a parallel walk, a named long tail) are separate slices.
+#
+#  CAVEAT the reader must know: an item's seconds are the gap since the
+#  PREVIOUS result line, so whatever printed in between (a gate's own
+#  diagnostics, the header checks before the first PASS) is charged to the
+#  item that ENDS the gap.  Fine for finding the tail; not a profiler.
+#
+#  The wrapper is skipped for --record/--record-append/--gui and for the
+#  chunk/single-case forms' callers that pipe stdout elsewhere would see
+#  stderr merged in: the sweep's output is a log read by people and by
+#  runtests_verdict.py, both of which read the merged stream already.
+if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
+    case "${1:-}" in
+        --record|--record-append|--gui|-h|--help) ;;
+        *)
+            mkdir -p "$ROOT/build"
+            _raw="$ROOT/build/suiteTimings.raw"; : > "$_raw"
+            CHOUPO_SUITE_TIMED=1 "$0" "$@" 2>&1 | while IFS= read -r _line; do
+                printf '%s\t%s\n' "$EPOCHREALTIME" "$_line" >> "$_raw"
+                printf '%s\n' "$_line"
+            done
+            _rc=${PIPESTATUS[0]}
+            "$ROOT/bin/curate/suite_timings.py" "$_raw" "$ROOT/build/suiteTimings.csv" || true
+            exit "$_rc"
+            ;;
+    esac
+fi
+
 # --- PREFLIGHT: is the build a build OF this tree? ------------------------
 #
 # ABORTS rather than counting a FAIL, and the distinction is the whole point.
