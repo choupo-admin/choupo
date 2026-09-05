@@ -2019,8 +2019,8 @@ philosophy wins and this list is the stale copy.
   exactly that on his company's own OpenFOAM simulator.  The same day paid for
   it twice, in facts rather than argument: a spray dryer creating 2948 kg/h of
   water on a case the suite PASSED (nothing looked at closure), and a missing
-  `#include <map>` that compiled natively, passed all 581 cases and every gate,
-  and would have killed `make wasm` on the next publish — leaving
+  `#include <map>` that compiled natively, passed the whole corpus and every
+  gate, and would have killed `make wasm` on the next publish — leaving
   www.choupo.org serving a stale bundle with nothing in the tree saying so.
   **Neither was a case failing.  Both were gates seeing what no case can see.**
   The permitted direction is FASTER gates, never fewer: `check_wasm_dialect`
