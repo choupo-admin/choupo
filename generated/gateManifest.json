@@ -413,7 +413,7 @@
     },
     "check_guide_pdf_fresh": {
       "exit": 0,
-      "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
+      "claim": "check_guide_pdf_fresh: OK -- 8 guide PDF(s) are renders of the sources now in the tree (freshness by git ancestry over each guide's own .tex plus everything it \\inputs, plus preamble/version), and all 8 tracked top-level docs/*.pdf are guides that docs/Makefile builds.  1 of them (tutorialsGuide) predate a source commit in git and were REBUILT here: identical bytes, so the committed render already reproduces the sources.  NOT checked: that a PDF dirty beside a dirty source was really rebuilt from it, that any render is CORRECT (that is the compile), the 7 PDF(s) under docs/slides/, or the published site's own copies.",
       "seconds": 0.3
     },
     "check_guide_pdf_version": {

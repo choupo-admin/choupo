@@ -122,9 +122,13 @@ export function kindOf(prefix: string): NodeKind {
 }
 
 /*  The reading order a student needs: what the case DECLARES (system/, then
- *  constant/), the initial state it AUTHORS (0/), the SECTORS it is made of,
- *  and last what the RUN produced -- by kind, then by name.  Applied at every
- *  depth by the same rule, from the node's PATH (see kindOf).  */
+ *  constant/), the SECTORS it is made of, and then the VIEWS of that same
+ *  geography -- 0/ first (the state before solving, and the one view the
+ *  student authors), then what the RUN produced.  0/ moved from beside the
+ *  declared dicts to the head of the views on 2026-09-05 (Vitor, with a
+ *  reading he brought from ChatGPT): the views repeat the plant's geography
+ *  and read best adjacent; colour, not position, says which of them is
+ *  authored.  By kind, then by name; every depth; from the node's PATH.  */
 /*  A node's OWN kind -- decided on its first own segment, never on a squashed
  *  tail.  `squash()` joins `DRYING` + `system` into the label `DRYING/system`
  *  with prefix `DRYING/system`; read from the tail that node is "declared"
@@ -141,7 +145,7 @@ export function nodeKind(node: TreeNode): NodeKind {
 export function rankNode(node: TreeNode): number {
   const k = nodeKind(node);
   if (k === "declared") return (node.label.split("/")[0] ?? "") === "system" ? 0 : 1;
-  return k === "state0" ? 2 : k === "sector" ? 3 : 4;
+  return k === "sector" ? 2 : k === "state0" ? 3 : 4;
 }
 
 export function sortedChildren(node: TreeNode): TreeNode[] {

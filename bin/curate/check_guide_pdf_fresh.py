@@ -113,6 +113,23 @@ def sources_of(guide: str) -> list[str]:
     return sorted(f"docs/{r}" for r in seen)
 
 
+def rebuild_reproduces(guide: str):
+    """-> True when `make -C docs <guide>.pdf` reproduces the committed PDF
+    byte for byte; a string naming the outcome otherwise (rebuilt-and-changed,
+    or why the rebuild could not run).  Writes only docs/<guide>.pdf, and only
+    when the render actually differs."""
+    import shutil, subprocess
+    if shutil.which("pdflatex") is None and shutil.which("lualatex") is None:
+        return "no TeX toolchain here, so the ancestry verdict stands"
+    r = subprocess.run(["make", "-C", str(ROOT / "docs"), f"{guide}.pdf"],
+                       capture_output=True, text=True, timeout=1200)
+    if r.returncode != 0:
+        return "the rebuild failed: " + (r.stderr or r.stdout).strip().splitlines()[-1][:80]
+    changed = subprocess.run(["git", "diff", "--quiet", "--", f"docs/{guide}.pdf"],
+                             cwd=ROOT).returncode != 0
+    return True if not changed else "rebuilt: the fresh render now sits in the working tree -- commit it"
+
+
 def main() -> int:
     if not (ROOT / ".git").exists():
         print("check_guide_pdf_fresh: REFUSED -- not a git working tree, and "
@@ -122,6 +139,7 @@ def main() -> int:
 
     guides = public_guides()
     stale_committed: list[str] = []
+    reproduced: list[str] = []      # ancestry said stale, a rebuild reproduced the bytes
     stale_worktree: list[str] = []
     missing: list[str] = []
     dirty = {ln[3:].strip() for ln in git("status", "--porcelain").splitlines()}
@@ -150,11 +168,27 @@ def main() -> int:
         after = git("log", "--format=%h %s", f"{head}..HEAD", "--", *srcs)
         lines = [ln for ln in after.splitlines() if ln.strip()]
         if lines:
+            #  ANCESTRY IS A PROXY, and here is where it lies (2026-09-05): a
+            #  PDF built from a working tree whose source edit was committed
+            #  ONE COMMIT LATER is byte-for-byte the fresh render and still
+            #  "older" than its source in git.  So when ancestry says stale,
+            #  REBUILD and compare: identical bytes mean the committed render
+            #  already reproduces the sources now in the tree, and that is a
+            #  stronger claim than ancestry ever made.  Different bytes leave
+            #  the fresh render in the working tree (it is the remedy this
+            #  gate prescribes) and the verdict stays STALE until it is
+            #  committed.  No TeX toolchain -> the ancestry verdict stands
+            #  and says why: a check that cannot run must not pass.
+            verdict = rebuild_reproduces(g)
+            if verdict is True:
+                reproduced.append(g)
+                continue
             shown = "; ".join(ln[:60] for ln in lines[:3])
             more = f" (+{len(lines) - 3} more)" if len(lines) > 3 else ""
+            why = "" if verdict is None else f"  [{verdict}]"
             stale_committed.append(
                 f"{g}: {len(lines)} commit(s) touched its sources after the "
-                f"PDF was last committed -- {shown}{more}")
+                f"PDF was last committed -- {shown}{more}{why}")
 
     #  Arm B: a manual with no source is outside every source gate at once.
     #  Top level only: `docs/slides/` and the figures under it are not
@@ -183,11 +217,14 @@ def main() -> int:
                   "who clones opens them, not the .tex.")
         return 1
 
+    rep = (f"  {len(reproduced)} of them ({', '.join(reproduced)}) predate a source commit in "
+           f"git and were REBUILT here: identical bytes, so the committed render already "
+           f"reproduces the sources." if reproduced else "")
     print(f"check_guide_pdf_fresh: OK -- {len(guides)} guide PDF(s) are renders "
           f"of the sources now in the tree (freshness by git ancestry over each "
           f"guide's own .tex plus everything it \\inputs, plus preamble/version), "
           f"and all {len(top)} tracked top-level docs/*.pdf are guides that "
-          f"docs/Makefile builds.  NOT checked: "
+          f"docs/Makefile builds.{rep}  NOT checked: "
           "that a PDF dirty beside a dirty source was really rebuilt from it, "
           "that any render is CORRECT (that is the compile), the "
           f"{len(tracked) - len(top)} PDF(s) under docs/slides/, or the "

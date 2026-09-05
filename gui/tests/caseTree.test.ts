@@ -81,14 +81,14 @@ describe("caseTree: the shape", () => {
     expect(Array.from(t.children.keys())).toEqual(["system"]);
   });
 
-  it("orders by KIND -- declared, 0/, sectors, run outputs -- then by name, at every depth", () => {
+  it("orders by KIND -- declared, sectors, then the VIEWS with 0/ first -- then by name, at every depth", () => {
     const t = squash(buildTree([...plant,
       "0/RawJuice", "DRYING/system/flowsheetDict", "iterations/0001/RawJuice"]));
     //  Alphabetically `converged` would sit between CONCENTRATION and DRYING
     //  (the flagship screenshot: a fifth sector).  By kind it goes last.
     expect(sortedChildren(t).map((n) => n.label))
-      .toEqual(["system", "constant", "0", "CONCENTRATION", "DRYING/system",
-                "converged/CONCENTRATION", "design", "iterations/0001"]);
+      .toEqual(["system", "constant", "CONCENTRATION", "DRYING/system",
+                "0", "converged/CONCENTRATION", "design", "iterations/0001"]);
     const conc = t.children.get("CONCENTRATION")!;
     expect(sortedChildren(conc).map((n) => n.label)).toEqual(["system", "Evap1/system", "Evap2/system"]);
   });

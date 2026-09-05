@@ -2984,23 +2984,6 @@ PYEOF
     fi
     rm -f /tmp/namehint.$$
 
-    # impossible-phase pins (2026-08-27).  The energy report proves a stream
-    # cannot hold the phase its state file declares (Rachford-Rice) and says
-    # so -- and SEVEN shipped tutorials trigger it, five with a real energy
-    # residual beside the label, up to 899 kW.  PINNED, NOT FIXED: correcting
-    # them changes what each case DECLARES about its streams and so moves
-    # published answers, which is a curation decision and reserved.  What is
-    # not deferred is the ratchet: a new case may not join the list quietly,
-    # and a pinned one may not get worse.  Three sabotages.
-    if "$ROOT/bin/curate/check_impossible_phase_pins.py" > /tmp/impphase.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "impossible-phase-pins" "$(head -1 /tmp/impphase.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_impossible_phase_pins.py)\n" "impossible-phase-pins"
-        cat /tmp/impphase.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/impphase.$$
 
     # gate-manifest gate (2026-08-06).  generated/gateManifest.json records
     # what each gate CLAIMS, derived by running it and capturing its own OK
@@ -3225,23 +3208,13 @@ PYEOF
     fi
     rm -f /tmp/solidsvc.$$
 
-    # Mass-closure gate (2026-08-09, reported by Vitor).  A crystal is
-    # matter on EVERY mass surface: the per-unit balance used FLUID mass
-    # and had been dropping crystal product for as long as crystal streams
-    # existed (crystalliser01 at 69.5 %, two tonnes an hour of its own
-    # sugar, silently green).  Asserts closure on five solid-bearing
-    # witnesses AND that the two surfaces AGREE -- plus that the
-    # non-closure warning stays wired, since the silence is what let the
-    # arithmetic travel.
-    if "$ROOT/bin/curate/check_mass_closure.py" > /tmp/massclose.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "mass-closure-gate" "$(head -1 /tmp/massclose.$$)"
-        pass=$((pass+1))
-    else
-        printf "FAIL  %-40s  (run bin/curate/check_mass_closure.py)\n" "mass-closure-gate"
-        cat /tmp/massclose.$$
-        fail=$((fail+1))
-    fi
-    rm -f /tmp/massclose.$$
+    #  THE MASS-CLOSURE GATE USED TO RUN HERE TOO (2026-09-05).  It was wired
+    #  twice -- once here, before the case walk, and once after it -- and the
+    #  first copy could not see the single-pass cache the walk fills, so it
+    #  re-ran the whole steady corpus by itself: 220 s against 0.3 s for the
+    #  copy that reads the cache.  The first per-item timing of the suite
+    #  (build/suiteTimings.csv) is what made the second home visible; the one
+    #  that stays is after the walk, with the other cache-reading gates.
 
     # Inlet-resolution gate (2026-08-09, ratified ADR R-E1/R-E2/R-E5).  A
     # flash at its feed's OWN (T, P) is the identity operation and costs
@@ -4695,7 +4668,30 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/ebpin.$$
 
-    # Mass-closure gate (2026-09-04): no steady case may ship a plant that does
+    # impossible-phase pins (2026-08-27; moved after the walk 2026-09-05 --
+    # it reads the single-pass cache, and before the walk there is none, so
+    # it re-ran the corpus on its own: 181 s, measured, for the same claim).  The energy report proves a stream
+    # cannot hold the phase its state file declares (Rachford-Rice) and says
+    # so -- and SEVEN shipped tutorials trigger it, five with a real energy
+    # residual beside the label, up to 899 kW.  PINNED, NOT FIXED: correcting
+    # them changes what each case DECLARES about its streams and so moves
+    # published answers, which is a curation decision and reserved.  What is
+    # not deferred is the ratchet: a new case may not join the list quietly,
+    # and a pinned one may not get worse.  Three sabotages.
+    if "$ROOT/bin/curate/check_impossible_phase_pins.py" > /tmp/impphase.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "impossible-phase-pins" "$(head -1 /tmp/impphase.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_impossible_phase_pins.py)\n" "impossible-phase-pins"
+        cat /tmp/impphase.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/impphase.$$
+
+    # Mass-closure gate (2026-09-04; the crystal-mass arm since 2026-08-09, when
+    # the per-unit balance was found dropping crystal product -- crystalliser01
+    # at 69.5 %, two tonnes an hour of its own sugar, silently green): no steady
+    # case may ship a plant that does
     # not conserve mass, and a case that DECLARES a balance report and never
     # gets one fails by name.  Built after Vitor found a 113 % closure on the
     # live site: a spray dryer creating 2948 kg/h of water, on a case whose
