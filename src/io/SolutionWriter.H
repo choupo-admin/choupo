@@ -63,7 +63,9 @@ Description
                                     (feeds + products) and the INTER-SECTOR
                                     interface streams (a face whose two sides live
                                     in different sectors).  Single-segment units
-                                    (a leaf at the plant root, e.g. JuiceSplitter)
+                                    (a leaf listed directly in the plant's `sectors`;
+                                    the flagship had one until 2026-09-05, when it
+                                    moved into a MAIN/ sector by convention)
                                     are plant residents, so their streams live here.
       - `<n>/<sector>/streamFaces` -- one BRANCH's view: every stream that TOUCHES a
                                     unit in that sector (its internal flows + its
@@ -307,7 +309,8 @@ private:
 
     // The SECTOR a dotted unit name belongs to: the FIRST segment of a
     // multi-segment name (`CONCENTRATION.Cryst` -> `CONCENTRATION`).  A
-    // single-segment name (`JuiceSplitter`) is a plant-root resident and has
+    // single-segment name (a leaf listed in the plant's own `sectors`) is a
+    // plant-root resident and has
     // NO sector --- returns "" (it lives in the plant `<n>/streamFaces`).
     static std::string sectorOf(const std::string& dottedUnit);
 

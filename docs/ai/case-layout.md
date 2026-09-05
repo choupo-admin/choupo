@@ -62,6 +62,32 @@ are the source of truth.
                               (gitignored)
 ```
 
+## The views repeat the plant
+
+Read a fractal case as **PLANT → SECTOR → UNIT / STREAM**, and read the
+top-level folders that are not `system/` or `constant/` as **views of that
+same geography**.  The nine-line language a student needs:
+
+```
+constant        what we know         (thermo, components, reactions, kinetics -- at EVERY level)
+system          how we solve         (controlDict, flowsheetDict, solverDict -- at EVERY level)
+MAIN/SECTORS    where we are in the plant
+0               where we started     (the state before solving; authored)
+converged       where we ended       (the steady solution)              [run output]
+design          how big the equipment is (one sheet per item)           [run output]
+internalStates  what happens inside it   (named; not written yet -- see the record below)
+iterations      how the solver got there (numerical history, never physical time)  [run output]
+postProcessing  what we report       (with `reportsLayout postProcessing;`; else reports/)  [run output]
+```
+
+`0/`, `converged/`, `design/` and (when it arrives) `internalStates/` all carry
+`MAIN/ CONCENTRATION/ DRYING/ FERMENTATION/` — the same list the plant's
+`sectors ( … )` declares — so a student who has learned the geography once
+finds it in every view.  `system/` and `constant/` exist at every level of
+the fractal (the plant's, a sector's, a unit's) and never inside the
+geography.  Record:
+[`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).
+
 ## The `.cho` marker
 
 A file named `<caseName>.cho` inside the case folder.  It is the GUI's
@@ -179,19 +205,31 @@ tooltips.  Decided 2026-05-27.
 Reading any flowsheetDict, the eye picks up three sharp levels:
 
 ```
-sectors     ( CONCENTRATION  DRYING );      // members -- the buildings
+sectors     ( MAIN  CONCENTRATION  DRYING );  // members -- the buildings
 
-operation   { area 60 m2;  U 2200 W/m2/K; } // hardware values
+operation   { area 60 m2;  U 2200 W/m2/K; }   // hardware values
 
-// stream STATE is never in this dict: the domain inlet rawJuice is an
-// authored 0/CONCENTRATION/rawJuice file (componentMolarFlows + T + P)
+// stream STATE is never in this dict: the domain inlet RawJuice is an
+// authored 0/MAIN/RawJuice file (componentMolarFlows + T + P)
 
-connections {                               // NAMED edges: key = stream id
-    rawJuice  { to CONCENTRATION/dilutedJuice; }
-    magma     { from CONCENTRATION/magma;  to DRYING/magma; }
-    vap1      { from evap1/vap1;           to evap2/steam; }
+connections {                                 // NAMED edges: key = stream id
+    RawJuice  { to MAIN/RawJuice; }
+    Magma     { from CONCENTRATION/Magma;  to DRYING/Magma; }
+    Vap1      { from Evap1/Vap1;           to Evap2/Steam; }
 }
 ```
+
+**A plant-level unit lives in a sector — conventionally `MAIN/`** (2026-09-05).
+In a fractal case every folder in CAPS is a sector, so a unit that belongs to
+no specialised sector (the flagship's `JuiceSplitter`, which splits the raw
+juice between two lines) goes in `MAIN/` rather than beside the sectors at
+the root.  The plant's geography is then ONE list — `MAIN · CONCENTRATION ·
+DRYING · FERMENTATION` — and, because stream state is owned by the sector
+that produces it, `0/MAIN/` and `converged/MAIN/` follow with no further
+rule.  The convention is for humans: the engine never infers "sector" from
+capital letters (a member with a `type` is a leaf, whatever its name), and a
+FLAT case has no `MAIN/` — its units are the plant.  Record:
+[`../design/main-is-a-sector-and-the-views-repeat-the-plant.md`](../design/main-is-a-sector-and-the-views-repeat-the-plant.md).
 
 No special characters in identifiers: only letters, digits, and
 underscore.  Symbols like `@`, `&`, `#`, `?` break shell expansion,

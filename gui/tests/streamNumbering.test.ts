@@ -44,7 +44,7 @@ const RESULT_STREAMS = [
   "FERMENTATION.Fermentor.Out", "FERMENTATION.Flash.Liquid",
   "FERMENTATION.Flash.Vapour", "FERMENTATION.Mixer.Mixed",
   "FERMENTATION.Recycle", "FERMENTATION.Splitter.Purge",
-  "JuiceSplitter.ToConcentration", "JuiceSplitter.ToFermentation",
+  "MAIN.JuiceSplitter.ToConcentration", "MAIN.JuiceSplitter.ToFermentation",
   "PlantSteam", "Powder", "Purge", "RawJuice", "RecoveredDust", "Stack",
 ];
 

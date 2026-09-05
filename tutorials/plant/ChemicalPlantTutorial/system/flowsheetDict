@@ -14,13 +14,14 @@
   list its units -- one level up.  This is the fractal.
 
   Naming convention (see docs/ai/case-layout.md):
-    SECTORS in CAPS         : CONCENTRATION, DRYING
+    SECTORS in CAPS         : MAIN, CONCENTRATION, DRYING, FERMENTATION
+    (a plant-level unit lives in a sector -- MAIN/ is the conventional one)
     Units in PascalCase     : Cryst, Evap1, Evap2
     Streams in PascalCase   : RawJuice, Magma, Powder, EvapVapour
     Components in lowercase : water, sucrose, N2
 \*---------------------------------------------------------------------------*/
 
-sectors    ( JuiceSplitter  CONCENTRATION  DRYING  FERMENTATION );
+sectors    ( MAIN  CONCENTRATION  DRYING  FERMENTATION );
 
 // The plant's own interface: raw materials + utilities in, products out.
 // `Must` no longer a boundary inlet -- it is now produced internally by
@@ -38,8 +39,8 @@ boundary
 // DEFAULTS; nothing overrides them because the plant is the top level.
 // RawJuice is now sized to feed BOTH lines (150 kmol/h): 100 kmol/h
 // continues to CONCENTRATION (= the old direct feed) and 50 kmol/h goes
-// to FERMENTATION (= the old `Must` feed), via the JuiceSplitter's
-// 2/3 + 1/3 split.
+// to FERMENTATION (= the old `Must` feed), via MAIN's JuiceSplitter
+// (2/3 + 1/3 split).
 // Stream STATE lives in 0/ (one file per stream, sector-owned) -- materialised
 // by `bin/choupo-init0`, solved from by choupoSolve.  The topology below is all
 // this dict carries.  The plant utilities (PlantSteam / DryingAir / BdAir) are
@@ -53,13 +54,13 @@ connections
     // NAMED graph edges (constitution 2.2): the KEY is the stream identity ==
     // its 0/ state filename; an edge takes its producing PORT's name (the
     // engine convention the lithium plant set).  Role is inferred from shape.
-    RawJuice         { to JuiceSplitter/In; }
+    RawJuice         { to MAIN/RawJuice; }
     PlantSteam       { to CONCENTRATION/Steam; }
     DryingAir        { to DRYING/DryingAir; }
     BdAir            { to DRYING/BdAir; }
 
-    ToConcentration  { from JuiceSplitter/ToConcentration; to CONCENTRATION/DilutedJuice; }
-    ToFermentation   { from JuiceSplitter/ToFermentation;  to FERMENTATION/Must; }
+    ToConcentration  { from MAIN/ToConcentration; to CONCENTRATION/DilutedJuice; }
+    ToFermentation   { from MAIN/ToFermentation;  to FERMENTATION/Must; }
     Magma            { from CONCENTRATION/Magma;           to DRYING/Magma; }
 
     Powder           { from DRYING/DryPowder; }

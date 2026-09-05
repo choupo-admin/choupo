@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+|       \|/       C hemicals     | Choupo: open-source, glass-box simulation      |
+|      \\|//      H eat-transfer | Version:  Choupo-dev                           |
+|     \\\|///     O perations    | Website:  https://choupo.org                   |
+|      \\|//      U nits         | Licence:  GPL-3.0-or-later                     |
+|       \|/       P roperties    | Tutorial case file -- part of Choupo           |
+|        |        O ptimization  |                                                |
+\*-----------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------*\
+  ChemicalPlantTutorial / MAIN / system/flowsheetDict   (SECTOR -- COMPOSITE)
+
+  THE MAIN SECTOR: the plant-level operations that belong to no specialised
+  sector.  Here that is one unit, the JuiceSplitter, which takes the single
+  RawJuice header and splits it 2/3 to CONCENTRATION and 1/3 to FERMENTATION.
+
+  WHY A SECTOR FOR ONE UNIT (2026-09-05).  Until today the JuiceSplitter sat
+  at the plant root beside the sectors -- a PascalCase unit folder among
+  CAPS sector folders, breaking the convention this case's own header
+  declares.  The rule the plant now teaches: a folder in CAPS is always a
+  SECTOR, and a plant-level unit lives in one, conventionally MAIN/.  What
+  falls out of it, with no new rule: the streams this sector produces live
+  under 0/MAIN/ and converged/MAIN/ like every other sector's, so the four
+  views of the case repeat ONE geography -- MAIN, CONCENTRATION, DRYING,
+  FERMENTATION.  Flat cases are untouched: a case with no sectors has no
+  MAIN either (its units ARE the plant).
+\*-----------------------------------------------------------------------------*/
+
+sectors    ( JuiceSplitter );
+
+boundary
+{
+    inlets   ( RawJuice );
+    outlets  ( ToConcentration  ToFermentation );
+}
+
+connections
+{
+    RawJuice         { to JuiceSplitter/In; }
+    ToConcentration  { from JuiceSplitter/ToConcentration; }
+    ToFermentation   { from JuiceSplitter/ToFermentation; }
+}

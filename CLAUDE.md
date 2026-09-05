@@ -186,6 +186,14 @@ case/
 
 * **A single isolated unit is just a `flowsheetDict` of length 1.**  No
   "standalone" mode — one consistent case format for everything.
+* **In a FRACTAL case a CAPS folder is always a SECTOR, and a plant-level
+  unit lives in one — conventionally `MAIN/`** (2026-09-05).  Every VIEW of
+  the case (`0/`, `converged/`, `design/`, `internalStates/`) repeats the one
+  geography `MAIN · <SECTORS>`; `system/` (HOW) and `constant/` (WITH WHAT)
+  sit at every level of the fractal and never inside the geography.  A
+  convention for humans, never inferred by the engine from capitals, never
+  forced on a flat case (its units ARE the plant).  Record:
+  [`docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md`](docs/design/main-is-a-sector-and-the-views-repeat-the-plant.md).
 * **The `.cho` marker file** is the openable entity in the GUI (the CLI is
   unaffected; `runCase`/`choupoSolve` take the folder path).  Intentionally
   empty for now; future GUI-only metadata lives here without polluting the

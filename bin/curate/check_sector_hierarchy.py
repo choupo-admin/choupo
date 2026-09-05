@@ -113,8 +113,9 @@ def authored_sectors(rel: str):
     (`if (cd->found("type"))`), applied here from outside.  Everything else is
     a composite SECTOR.  Having a folder is NOT the test: a leaf unit is
     entitled to its own dignified folder and this case's `JuiceSplitter` has
-    one, so a folder-based rule called it a sector and the gate said so in its
-    own OK line."""
+    one (under `MAIN/` since 2026-09-05; at the plant root before), so a
+    folder-based rule called it a sector and the gate said so in its own OK
+    line."""
     fd = ROOT / rel / "system" / "flowsheetDict"
     if not fd.is_file():
         return set(), set()

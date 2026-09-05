@@ -105,7 +105,7 @@ export type NodeKind = "declared" | "state0" | "sector" | "output";
  *  a case opened from a folder with `iterations/` draws it dimmed too.
  *  caseTree.test.ts pins that the worker's list is a subset of this one.  */
 export const RUN_OUTPUT_ROOTS: readonly string[] =
-  ["converged", "design", "iterations", "economics", "postProcessing"];
+  ["converged", "design", "internalStates", "iterations", "economics", "postProcessing"];
 
 const isInstant = (seg: string) => /^\d+(\.\d+)?$/.test(seg);   // 0.01/ 0.02/ ... transient snapshots
 

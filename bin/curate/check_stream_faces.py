@@ -93,9 +93,19 @@ def check_writer(tmp, bad):
         bad.append(f"instant carries a file named 'streams': {f}")
     if not (inst / "streamFaces").exists():
         bad.append(f"{inst.name}/streamFaces missing")
-    by = inst / "byUnit"
-    if by.exists():
-        units = [d for d in by.iterdir() if d.is_dir()]
+    #  The byUnit/ projection lives where the UNITS live: at the plant root
+    #  for a leaf listed in the plant's own `sectors`, and under each
+    #  sector's instant directory for the units inside it.  Until 2026-09-05
+    #  the flagship kept one leaf at the root (JuiceSplitter), so this arm
+    #  looked at the root alone and was satisfied by it; the day that unit
+    #  moved into MAIN/ the root held no unit, the arm reported the projection
+    #  "missing", and every sector's byUnit/ was sitting one level down.  A
+    #  gate that knows one layout of a fractal is a gate about one case.
+    by_dirs = [d for d in [inst / "byUnit"]
+               + sorted(sd / "byUnit" for sd in inst.iterdir() if sd.is_dir() and sd.name != "byUnit")
+               if d.exists()]
+    if by_dirs:
+        units = [d for by in by_dirs for d in by.iterdir() if d.is_dir()]
         if not units:
             bad.append("byUnit/ has no unit projections")
         for u in units[:1]:
@@ -111,7 +121,8 @@ def check_writer(tmp, bad):
                 bad.append(f"{u.name}/ports still emits the retired streams"
                            " alias")
     else:
-        bad.append("byUnit/ projection missing (plant controlDict enables it)")
+        bad.append("byUnit/ projection missing at the plant root and under every "
+                   "sector (plant controlDict enables it)")
 
 
 def main():
